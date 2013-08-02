@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{2c5d58ba-afab-4612-8617-23de959bbc89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\01_Files">
+      <UniqueIdentifier>{3d4e804a-43f8-453d-ad0d-86f52aefb06d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\03_Interfaces">
+      <UniqueIdentifier>{bfa4a9c1-f312-49ac-82ed-5d5226a570cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\02_Utilities">
+      <UniqueIdentifier>{9b3ed126-70d5-40a1-b2fe-bc4f7f3b248d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\04_Components">
+      <UniqueIdentifier>{c117e230-3b7a-4a56-85d4-a03fc06af73d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\04_Components\01_Graphic">
+      <UniqueIdentifier>{405473ff-78af-4cfd-a7e5-5a401861a41c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\05_Manager">
+      <UniqueIdentifier>{dac8ec8c-25b0-44ea-9479-0d3ee19c18de}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\Core.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreConfig.cpp">
+      <Filter>Engine\01_Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreLog.cpp">
+      <Filter>Engine\01_Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreArchive.cpp">
+      <Filter>Engine\01_Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\CoreGraphic.cpp">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\CoreInput.cpp">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\CoreSound.cpp">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\CoreSystem.cpp">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreMath.cpp">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreMatrix.cpp">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreRand.cpp">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreSpline.cpp">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreUtils.cpp">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreVector.cpp">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\source\Core.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreConfig.h">
+      <Filter>Engine\01_Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreLog.h">
+      <Filter>Engine\01_Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreArchive.h">
+      <Filter>Engine\01_Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\CoreGraphic.h">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\CoreInput.h">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\CoreSound.h">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\CoreSystem.h">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreMath.h">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreMatrix.h">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreRand.h">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreSpline.h">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreUtils.h">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreVector.h">
+      <Filter>Engine\02_Utilities</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
