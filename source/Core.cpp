@@ -12,6 +12,8 @@ CoreGraphic* Core::Graphic = NULL;
 CoreSound*   Core::Sound   = NULL;
 CoreInput*   Core::Input   = NULL;
 
+coreResourceManager* Core::Manager::Resource = NULL;
+
 
 // ****************************************************************    
 // constructor
@@ -31,6 +33,10 @@ Core::Core()
     Graphic = new CoreGraphic();
     Sound   = new CoreSound();
     Input   = new CoreInput();
+
+    // init manager
+    Log->Header("Manager");
+    Manager::Resource = new coreResourceManager();
 }
 
 
@@ -38,6 +44,9 @@ Core::Core()
 // destructor
 Core::~Core()
 {
+    // delete manager
+    SAFE_DELETE(Manager::Resource)
+
     // delete main interfaces
     SAFE_DELETE(Input)
     SAFE_DELETE(Sound)
@@ -61,11 +70,13 @@ void Core::Run()
 {
     if(System) return;
 
-    // init engine and application
+    // init engine
     Core* pEngine = new Core();
-    CoreApp* pApplication = new CoreApp();
 
-    pEngine->Log->Header("Application");
+    // init application
+    pEngine->Log->Header("Application Init");
+    CoreApp* pApplication = new CoreApp();
+    pEngine->Log->Header("Application Run");
 
     // update the window event system
     while(pEngine->System->__UpdateEvents())
@@ -101,6 +112,8 @@ void Core::Reset()
 {
     Log->Info("Reset Engine");
     Log->SetLevel(-1);
+
+    // TODO: handle manager
 
     // delete main interfaces
     SAFE_DELETE(Input)

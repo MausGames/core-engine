@@ -81,6 +81,15 @@
     <ClCompile Include="..\..\..\source\coreVector.cpp">
       <Filter>Engine\02_Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\coreTexture.cpp">
+      <Filter>Engine\04_Components\01_Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreResourceManager.cpp">
+      <Filter>Engine\05_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreThread.cpp">
+      <Filter>Headerdateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\Core.h">
@@ -124,6 +133,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\coreVector.h">
       <Filter>Engine\02_Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreTexture.h">
+      <Filter>Engine\04_Components\01_Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreResourceManager.h">
+      <Filter>Engine\05_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreThread.h">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

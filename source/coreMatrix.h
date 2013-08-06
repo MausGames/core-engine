@@ -28,7 +28,7 @@ public:
                const float& f31, const float& f32, const float& f33, const float& f34,
                const float& f41, const float& f42, const float& f43, const float& f44);
 
-    // assignment operator
+    // assignment operators
     coreMatrix& operator = (const coreMatrix& c);
     coreMatrix& operator = (coreMatrix&& c);
 
@@ -62,10 +62,10 @@ public:
     coreMatrix& Invert();
     coreMatrix Inverted()const {return coreMatrix(*this).Invert();}
 
-    // direct retrieve functions
+    // direct functions
     float Determinant()const;
 
-    // static retrieve functions
+    // static functions
     static coreMatrix Identity();
     static coreMatrix Translation(const coreVector3& vPosition);
     static coreMatrix Scaling(const coreVector3& vSize);

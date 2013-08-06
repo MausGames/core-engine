@@ -15,14 +15,21 @@ CoreGraphic::CoreGraphic()
 {
     Core::Log->Header("Graphic Interface");
 
-    // create OpenGL context
-    m_Context = SDL_GL_CreateContext(Core::System->GetWindow());
-    if(!m_Context) Core::Log->Error(1, coreUtils::Print("OpenGL context could not be created (%s)", SDL_GetError()));
-    else Core::Log->Info("OpenGL context created");
+    // create OpenGL contexts
+    m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
+    m_RenderContext   = SDL_GL_CreateContext(Core::System->GetWindow());
+         if(!m_ResourceContext) Core::Log->Error(1, coreUtils::Print("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
+    else if(!m_RenderContext)   Core::Log->Error(1, coreUtils::Print("Primary OpenGL context could not be created (SDL: %s)",   SDL_GetError()));
+    else Core::Log->Info("Primary and secondary OpenGL context created");
+
+    // assign primary OpenGL context to main window
+    if(SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext))
+        Core::Log->Error(1, coreUtils::Print("Primary OpenGL context could not be assigned to main window (SDL: %s)", SDL_GetError()));
+    else Core::Log->Info("Primary OpenGL context assigned to main window");
 
     // init GLEW
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error(1, coreUtils::Print("GLEW could not be initialized (%s)", glewGetErrorString(iError)));
+    if(iError != GLEW_OK) Core::Log->Error(1, coreUtils::Print("GLEW could not be initialized (GLEW: %s)", glewGetErrorString(iError)));
     else Core::Log->Info("GLEW initialized");
 
     // log video card information
@@ -34,9 +41,27 @@ CoreGraphic::CoreGraphic()
     Core::Log->ListEntry((const char*)glGetString(GL_EXTENSIONS));
     Core::Log->ListEnd();
 
+    // set numerical OpenGL version
+    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHIC_FORCEOPENGL, 0.0f);
+    if(fForceOpenGL) m_fOpenGL = fForceOpenGL;
+    else
+    {
+             if(GLEW_VERSION_4_4) m_fOpenGL = 4.4f;
+        else if(GLEW_VERSION_4_3) m_fOpenGL = 4.3f;
+        else if(GLEW_VERSION_4_2) m_fOpenGL = 4.2f;
+        else if(GLEW_VERSION_4_1) m_fOpenGL = 4.1f;
+        else if(GLEW_VERSION_4_0) m_fOpenGL = 4.0f;
+        else if(GLEW_VERSION_3_3) m_fOpenGL = 3.3f;
+        else if(GLEW_VERSION_3_2) m_fOpenGL = 3.2f;
+        else if(GLEW_VERSION_3_1) m_fOpenGL = 3.1f;
+        else if(GLEW_VERSION_3_0) m_fOpenGL = 3.0f;
+        else if(GLEW_VERSION_2_1) m_fOpenGL = 2.1f;
+        else if(GLEW_VERSION_2_0) m_fOpenGL = 2.0f;
+                             else m_fOpenGL = 0.0f;
+    }    
+
     // check OpenGL version
-    if(!GLEW_VERSION_2_0) Core::Log->Error(1, "Minimum system requirements are not met, video card with at least OpenGL 2.0 is required");
-    m_bOpenGL3 = GLEW_VERSION_3_0 && !Core::Config->GetBool(CORE_CONFIG_GRAPHIC_COMPATIBILITY, false);
+    if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements are not met, video card with at least OpenGL 2.0 is required");
 
     // define base geometry attributes
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -93,8 +118,9 @@ CoreGraphic::~CoreGraphic()
     // clear memory
     m_abFeature.clear();
 
-    // delete OpenGL context
-    SDL_GL_DeleteContext(m_Context);
+    // delete OpenGL contexts
+    SDL_GL_DeleteContext(m_RenderContext);
+    SDL_GL_DeleteContext(m_ResourceContext);
 }
 
 

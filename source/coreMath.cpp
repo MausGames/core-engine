@@ -19,8 +19,8 @@ float coreMath::Sqrt(float fInput)
     // normal
     const float fValue     = fInput;
     const float fHalfValue = fInput*0.5f;
-    coreUint* pdwPointer   = (coreUint*)&fInput;
-    *pdwPointer            = (0xbe6f0000-*pdwPointer)>>1;
+    coreUint* piPointer    = (coreUint*)&fInput;
+    *piPointer             = (0xbe6f0000-*piPointer)>>1;
 
     fInput *= 1.5f - fInput*fInput*fHalfValue;
     fInput *= 1.5f - fInput*fInput*fHalfValue;

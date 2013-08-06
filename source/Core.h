@@ -69,18 +69,22 @@ class coreVector3;
 class coreVector4;
 class coreMatrix;
 
+class coreFile;
+class coreArchive;
+
+class coreTexture;
+
 class coreObject;
 class coreObject2D;
 class coreObject3D;
 class coreSprite;
-
-class coreResource;
 
 
 // ****************************************************************
 // base libraries
 #ifdef _WIN32
     #include <windows.h>
+    #undef DeleteFile
 #else
     #include <sys/stat.h>
     #include <unistd.h>
@@ -93,6 +97,7 @@ class coreResource;
 #include <time.h>
 #include <math.h>
 #include <cstdio>
+#include <cassert>
 #include <vector>
 #include <deque>
 #include <map>
@@ -145,14 +150,17 @@ class coreResource;
 #include "CoreInput.h"
 
 
-// ****************************************************************
-// component classes
-//#include "coreTexture.h"
+#include "coreThread.h"
 
 
 // ****************************************************************
 // manager classes
-//#include "coreResourceManager.h"
+#include "coreResourceManager.h"
+
+
+// ****************************************************************
+// component classes
+#include "coreTexture.h"
 
 
 // ****************************************************************    
@@ -196,9 +204,9 @@ public:
     class Manager
     {
     public:
-    // object manager
-    // resource manager
-    // memory manager
+        // object manager
+        static coreResourceManager* Resource;
+        // memory manager
     };
 
 

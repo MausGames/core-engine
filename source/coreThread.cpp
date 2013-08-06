@@ -1,0 +1,92 @@
+#include "Core.h"
+
+// ****************************************************************    
+// constructor
+coreThread::coreThread()
+: m_pThread   (NULL)
+, m_sName     ("")
+, m_iCurFrame (0)
+, m_bEnd      (true)
+{
+}
+
+
+// ****************************************************************    
+// destructor
+coreThread::~coreThread()
+{
+    this->KillThread();
+}    
+
+
+// ****************************************************************    
+// start thread
+SDL_Thread* coreThread::StartThread(const char* pcName)
+{
+    if(!m_bEnd) return NULL;
+
+    // save name of the thread
+    m_sName = pcName;
+
+    // create thread object
+    m_pThread = SDL_CreateThread(coreThreadMain, pcName, this);
+    if(!m_pThread) Core::Log->Error(1, coreUtils::Print("Could not start thread (%s) (SDL: %s)", pcName, SDL_GetError()));
+
+    m_bEnd = false;
+    return m_pThread;
+}
+
+
+// ****************************************************************    
+// kill thread
+void coreThread::KillThread()
+{
+    if(m_bEnd) return;
+
+    // set end status and wait
+    m_bEnd = true;
+    SDL_WaitThread(m_pThread, NULL);
+}
+
+
+// ****************************************************************    
+// execute thread
+int coreThread::__Main()
+{
+    // init thread implementation
+    Core::Log->Info(coreUtils::Print("Start Thread (%s:%04d)", m_sName.c_str(), SDL_ThreadID()));
+    int iReturn = this->__Init();
+
+    while(iReturn == 0)
+    {
+        // wait for next frame
+        while(m_iCurFrame >= Core::System->GetCurFrame() && !m_bEnd)
+            SDL_Delay(1);
+        m_iCurFrame = Core::System->GetCurFrame();
+
+        // check for kill
+        if(m_bEnd) break;
+
+        // run thread implementation
+        iReturn = this->__Run();
+    }
+
+    // exit thread implementation
+    this->__Exit();
+    Core::Log->Info(coreUtils::Print("End Thread (%s:%04d)", m_sName.c_str(), SDL_ThreadID()));
+
+    m_bEnd = true;
+    return iReturn;
+}
+
+
+// ****************************************************************    
+// wrapper for thread creation
+int coreThreadMain(void* pData)
+{
+    // retrieve thread object
+    coreThread* pThread = (coreThread*)pData;
+
+    // execute thread
+    return pThread->__Main();
+}

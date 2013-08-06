@@ -3,6 +3,104 @@
 
 // ****************************************************************
 // constructor
+coreFile::coreFile(const char* pcPath)
+: m_sPath     (pcPath)
+, m_iSize     (0)
+, m_pData     (NULL)
+, m_pArchive  (NULL)
+, m_iPosition (0)
+{
+    // open file
+    FILE* pFile = fopen(m_sPath.c_str(), "rb");
+    if(!pFile)
+    {
+        Core::Log->Error(0, coreUtils::Print("File (%s) could not be opened", pcPath));
+        return;
+    }
+
+    // get file size
+    fseek(pFile, 0, SEEK_END);
+    m_iSize = (coreUint)ftell(pFile);
+    fseek(pFile, 0, SEEK_SET);
+
+    // get file data
+    m_pData = new coreByte[m_iSize];
+    fread(m_pData, sizeof(coreByte), m_iSize, pFile);
+
+    // close file
+    fclose(pFile);
+}
+
+coreFile::coreFile(const char* pcPath, const coreUint& iSize, coreByte* pData)
+: m_sPath     (pcPath)
+, m_iSize     (iSize)
+, m_pData     (pData)
+, m_pArchive  (NULL)
+, m_iPosition (0)
+{
+}
+
+coreFile::coreFile(const char* pcPath, const coreUint& iSize, coreArchive* pArchive, const coreUint& iPosition)
+: m_sPath     (pcPath)
+, m_iSize     (iSize)
+, m_pData     (NULL)
+, m_pArchive  (pArchive)
+, m_iPosition (iPosition)
+{
+}
+
+
+// ****************************************************************
+// destructor
+coreFile::~coreFile()
+{
+    // delete file data
+    SAFE_DELETE_ARRAY(m_pData)
+}
+
+
+// ****************************************************************
+// check if file exists
+bool coreFile::FileExists(const char* pcPath)
+{
+    // open file
+    FILE* pFile = fopen(pcPath, "r");
+    if(pFile)
+    {
+        // file exists
+        fclose(pFile);
+        return true;
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+// cache file data
+void coreFile::__CacheData()
+{
+    if(!m_pArchive) return;
+    if(m_pData) return;
+
+    // open archive file
+    FILE* pArchive = fopen(m_pArchive->GetPath(), "wb");
+    if(!pArchive) return;
+
+    // seek file data position
+    fseek(pArchive, m_iPosition, SEEK_SET);
+
+    // cache file data
+    m_pData = new coreByte[m_iSize];
+    fread(m_pData, sizeof(coreByte), m_iSize, pArchive);
+
+    // close archive file
+    fclose(pArchive);
+}
+
+
+// ****************************************************************
+// constructor
 coreArchive::coreArchive()
 : m_sName ("")
 , m_sPath ("")
@@ -12,9 +110,9 @@ coreArchive::coreArchive()
 }
 
 coreArchive::coreArchive(const char* pcPath)
+: m_sPath (pcPath)
 {
-    // save name and path
-    m_sPath = pcPath;
+    // save name
     m_sName = m_sPath.substr(m_sPath.find_last_of("/\\")+1);
     m_sName = m_sName.substr(0, m_sName.find_last_of("_.\0")-1);
 
@@ -34,27 +132,23 @@ coreArchive::coreArchive(const char* pcPath)
     m_aFile.reserve(iSize);
     for(coreUint i = 0; i < iSize; ++i)
     {
-        coreFile* pNewFile = new coreFile();
-
         coreUint iLength; 
-        char acName[256];
+        char acPath[256];
+        coreUint iSize;
+        coreUint iPosition;
 
-        // read name 
-        fread(&iLength, sizeof(coreUint), 1,                           pArchive);
-        fread(acName,   sizeof(char),     MAX(iLength, (unsigned)256), pArchive);
-        pNewFile->sName = acName;
-
-        // read remaining file header
-        fread(&pNewFile->iSize,     sizeof(coreUint), 1, pArchive);
-        fread(&pNewFile->iPosition, sizeof(coreUint), 1, pArchive);
-        pNewFile->pData = NULL;
+        // read file header data
+        fread(&iLength,   sizeof(coreUint), 1,                           pArchive);
+        fread(acPath,     sizeof(char),     MAX(iLength, (unsigned)255), pArchive);
+        fread(&iSize,     sizeof(coreUint), 1,                           pArchive);
+        fread(&iPosition, sizeof(coreUint), 1,                           pArchive);
 
         // add new file object
-        m_aFile.push_back(pNewFile);
-        m_aFileMap[pNewFile->sName] = pNewFile;
+        m_aFile.push_back(new coreFile(acPath, iSize, this, iPosition));
+        m_aFileMap[acPath] = m_aFile.back();
     }
 
-    // close archive
+    // close archive file
     fclose(pArchive);
 }
 
@@ -65,10 +159,7 @@ coreArchive::~coreArchive()
 {
     // delete file objects
     for(coreUint i = 0; i < m_aFile.size(); ++i)
-    {
-        SAFE_DELETE_ARRAY(m_aFile[i]->pData)
         SAFE_DELETE(m_aFile[i])
-    }
 
     // clear memory
     m_aFile.clear();
@@ -84,14 +175,14 @@ bool coreArchive::Save(const char* pcPath)
 
     // cache missing file data
     for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
-        if(!(*it)->pData) this->__CacheFile(*it);
+        (*it)->GetData();
 
     // save name and path
     m_sPath = pcPath;
     m_sName = m_sPath.substr(m_sPath.find_last_of("/\\")+1);
     m_sName = m_sName.substr(0, m_sName.find_last_of("_.\0")-1);
 
-    // open archive
+    // open archive file
     FILE* pArchive = fopen(m_sPath.c_str(), "wb");
     if(!pArchive)
     {
@@ -107,21 +198,21 @@ bool coreArchive::Save(const char* pcPath)
     this->__CalculatePositions();
     for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
     {
-        // get name length
-        const coreUint iLength = (*it)->sName.length();
+        // get path length
+        const coreUint iLength = strlen((*it)->GetPath());
 
         // write header
-        fwrite(&iLength,             sizeof(coreUint), 1,       pArchive);
-        fwrite((*it)->sName.c_str(), sizeof(char),     iLength, pArchive);
-        fwrite(&(*it)->iSize,        sizeof(coreUint), 1,       pArchive);
-        fwrite(&(*it)->iPosition,    sizeof(coreUint), 1,       pArchive);
+        fwrite(&iLength,              sizeof(coreUint), 1,       pArchive);
+        fwrite((*it)->GetPath(),      sizeof(char),     iLength, pArchive);
+        fwrite(&(*it)->GetSize(),     sizeof(coreUint), 1,       pArchive);
+        fwrite(&(*it)->GetPosition(), sizeof(coreUint), 1,       pArchive);
     }
 
     // save file data
     for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
-        fwrite((*it)->pData, sizeof(coreByte), (*it)->iSize, pArchive);
+        fwrite((*it)->GetData(), sizeof(coreByte), (*it)->GetSize(), pArchive);
 
-    // close archive
+    // close archive file
     fclose(pArchive);
 
     return true;
@@ -132,40 +223,38 @@ bool coreArchive::Save(const char* pcPath)
 // add file object
 bool coreArchive::AddFile(const char* pcPath)
 {
-    coreFile* pNewFile = new coreFile();
-
-    // save file name
-    pNewFile->sName = pcPath;
-    pNewFile->sName = pNewFile->sName.substr(pNewFile->sName.find_last_of("/\\")+1);
-
     // check already existing file
-    if(m_aFileMap.count(pNewFile->sName))
+    if(m_aFileMap.count(pcPath))
     {
-        SAFE_DELETE(pNewFile)
+        Core::Log->Error(0, coreUtils::Print("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str()));
         return false;
     }
-
-    // open file
-    FILE* pFile = fopen(pcPath, "rb");
-    if(!pFile)
-    {
-        Core::Log->Error(0, coreUtils::Print("File (%s) could not be opened", pcPath));
-        SAFE_DELETE(pNewFile)
-        return false;
-    }
-
-    // get file data and size
-    coreUtils::FileDataSize(pFile, &pNewFile->pData, &pNewFile->iSize);
-
-    // close file
-    fclose(pFile);
 
     // add new file object
-    m_aFile.push_back(pNewFile);
-    m_aFileMap[pNewFile->sName] = pNewFile;
+    m_aFile.push_back(new coreFile(pcPath));
+    m_aFileMap[pcPath] = m_aFile.back();
 
-    // recalculate the data positions
-    this->__CalculatePositions();
+    // associate archive file
+    m_aFile.back()->__AssociateArchive(this, 0);
+
+    return true;
+}
+
+bool coreArchive::AddFile(coreFile* pFile)
+{
+    // check already existing file
+    if(m_aFileMap.count(pFile->GetPath()))
+    {
+        Core::Log->Error(0, coreUtils::Print("File (%s) already exists in Archive (%s)", pFile->GetPath(), m_sPath.c_str()));
+        return false;
+    }
+
+    // add new file object
+    m_aFile.push_back(pFile);
+    m_aFileMap[pFile->GetPath()] = m_aFile.back();
+
+    // associate archive file
+    m_aFile.back()->__AssociateArchive(this, 0);
 
     return true;
 }
@@ -178,79 +267,35 @@ bool coreArchive::DeleteFile(const coreUint& iIndex)
     if(iIndex >= m_aFile.size()) return false;
 
     coreFile* pFile = m_aFile[iIndex];
-    const std::string sName = pFile->sName;
+    const std::string sPath = pFile->GetPath();
 
-    // delete cached data and file object
-    SAFE_DELETE_ARRAY(pFile->pData)
+    // delete file object
     SAFE_DELETE(pFile)
 
     // remove file object
     m_aFile.erase(m_aFile.begin()+iIndex);
-    m_aFileMap.erase(m_aFileMap.find(sName));
-
-    // recalculate the data positions
-    this->__CalculatePositions();
+    m_aFileMap.erase(m_aFileMap.find(sPath));
 
     return true;
 }
 
-bool coreArchive::DeleteFile(const char* pcName)
+bool coreArchive::DeleteFile(const char* pcPath)
 {
-    if(!m_aFileMap.count(pcName)) return false;
+    if(!m_aFileMap.count(pcPath)) return false;
 
     // search index and delete file
     for(coreUint i = 0; i < m_aFile.size(); ++i)
     {
-        if(m_aFile[i]->sName == pcName)
+        if(m_aFile[i]->GetPath() == pcPath)
             return this->DeleteFile(i);
     }
 
     return false;
 }
 
-
-// ****************************************************************
-// cache and access file data
-const coreByte* coreArchive::GetFileData(const coreUint& iIndex)
+bool coreArchive::DeleteFile(coreFile* pFile)
 {
-    if(iIndex >= m_aFile.size()) return NULL; 
-
-    // cache data if necessary
-    coreFile* pFile = m_aFile[iIndex];
-    if(!pFile->pData) this->__CacheFile(pFile); 
-    
-    return pFile->pData;
-}
-
-const coreByte* coreArchive::GetFileData(const char* pcName)
-{
-    if(!m_aFileMap.count(pcName)) return NULL;
-
-    // cache data if necessary
-    coreFile* pFile = m_aFileMap[pcName];
-    if(!pFile->pData) this->__CacheFile(pFile); 
-    
-    return pFile->pData;
-}
-
-
-// ****************************************************************
-// cache file data
-void coreArchive::__CacheFile(coreFile* pFile)
-{
-    // open archive
-    FILE* pArchive = fopen(m_sPath.c_str(), "wb");
-    if(!pArchive) return;
-
-    // seek file data position
-    fseek(pArchive, pFile->iPosition, SEEK_SET);
-
-    // cache file data
-    pFile->pData = new coreByte[pFile->iSize];
-    fread(pFile->pData, sizeof(coreByte), pFile->iSize, pArchive);
-
-    // close archive
-    fclose(pArchive);
+    return this->DeleteFile(pFile->GetPath());
 }
 
 
@@ -261,12 +306,12 @@ void coreArchive::__CalculatePositions()
     // calculate data start position
     coreUint iCurPosition = sizeof(coreUint);
     for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
-        iCurPosition += sizeof(coreUint) + (*it)->sName.length() + sizeof(coreUint) + sizeof(coreUint);
+        iCurPosition += sizeof(coreUint) + strlen((*it)->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
 
     for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
     {
-        // calculate data position
-        (*it)->iPosition = iCurPosition;
-        iCurPosition += (*it)->iSize;
+        // set absolute data position
+        (*it)->__AssociateArchive(this, iCurPosition);
+        iCurPosition += (*it)->GetSize();
     }
 }

@@ -15,8 +15,8 @@ private:
     bool m_bMinimized;                        // window was minimized
 
     float m_fTime;                            // parametrized elapsed time
-    float m_fConstantTime;                    // constant elapsed time
-    double m_dTotalTime;                      // passed time since start of the application
+    float m_fTimeConstant;                    // constant elapsed time
+    double m_dTimeTotal;                      // passed time since start of the application
     coreUint m_iCurFrame;                     // current frame number since start of the application
 
     float m_fTimeFactor;                      // coefficient for the parametrized elapsed time
@@ -32,7 +32,7 @@ private:
 #endif
 
     int m_aaiCPUID[2][4];                     // features of the processor
-    bool m_abSSE[5];                          // SSE support (1, 2, 3, 4.1, 4.2)
+    bool m_abSSE[5];                          // available SSE versions (1, 2, 3, 4.1, 4.2)
 
 
 private:
@@ -63,8 +63,8 @@ public:
     inline const std::vector<coreVector2>& GetAvailable()const {return m_avAvailable;}
     inline const bool& GetMinimized()const                     {return m_bMinimized;}
     inline const float& GetTime()const                         {return m_fTime;}
-    inline const float& GetConstantTime()const                 {return m_fConstantTime;}
-    inline const double& GetTotalTime()const                   {return m_dTotalTime;}
+    inline const float& GetTimeConstant()const                 {return m_fTimeConstant;}
+    inline const double& GetTimeTotal()const                   {return m_dTimeTotal;}
     inline const coreUint& GetCurFrame()const                  {return m_iCurFrame;}
     inline const float& GetTimeFactor()const                   {return m_fTimeFactor;}
 

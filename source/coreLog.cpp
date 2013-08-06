@@ -16,6 +16,7 @@ coreLog::coreLog(const char* pcName)
     fprintf(pFile, ".time      {color: #AAAAAA;}\n");
     fprintf(pFile, ".header    {font-weight: bold; font-size: 22px;}\n");
     fprintf(pFile, ".liststart {font-weight: bold;}\n");
+    fprintf(pFile, ".thread    {color: green;}\n");
     fprintf(pFile, ".warning   {color: blue;}\n");
     fprintf(pFile, ".error     {color: red;}\n");
     fprintf(pFile, "</style>\n");
@@ -37,7 +38,7 @@ coreLog::~coreLog()
 void coreLog::Error(const bool& bShutdown, const char* pcText)
 {
     // write message
-    if(m_iLevel <= 0) this->__Write(true, "<span class=\"%s\">%s</span><br />", (bShutdown ? "error" : "warning"), pcText);
+    if(m_iLevel <= 0) this->__Write(true, "<span class=\"thread\">[%04d]</span> <span class=\"%s\">%s</span><br />", SDL_ThreadID(), (bShutdown ? "error" : "warning"), pcText);
 
     // shut down the application
     if(bShutdown)

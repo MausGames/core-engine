@@ -8,8 +8,8 @@ CoreSystem::CoreSystem()
 , m_iFullscreen     ((coreByte)Core::Config->GetInt(CORE_CONFIG_GRAPHIC_FULLSCREEN, 0))
 , m_bMinimized      (false)
 , m_fTime           (0.0f)
-, m_fConstantTime   (0.0f)
-, m_dTotalTime      (0.0f)
+, m_fTimeConstant   (0.0f)
+, m_dTimeTotal      (0.0f)
 , m_iCurFrame       (0)
 , m_fTimeFactor     (1.0f)
 , m_iSkipFrame      (0)
@@ -18,28 +18,38 @@ CoreSystem::CoreSystem()
 
     // init SDL libraries
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init())
-        Core::Log->Error(1, coreUtils::Print("SDL could not be initialized (%s)", SDL_GetError()));
+        Core::Log->Error(1, coreUtils::Print("SDL could not be initialized (SDL: %s)", SDL_GetError()));
     else Core::Log->Info("SDL initialized");
 
     // configure the SDL window parameters
     const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : NULL));
     
     // configure the OpenGL context parameters
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,         8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,          8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         24);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt(CORE_CONFIG_GRAPHIC_MULTISAMPLING, 0));
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 24);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHIC_MULTISAMPLING, 0));
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
     SDL_GL_SetSwapInterval(1);
+
+    // try to force OpenGL context version
+    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHIC_FORCEOPENGL, 0.0f);
+    if(fForceOpenGL)
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(floorf(fForceOpenGL))); 
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(floorf(fForceOpenGL*10.0f))%10); 
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+    }
 
     // create main window object
     m_pWindow = SDL_CreateWindow(coreUtils::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
     if(!m_pWindow)
     {
-        Core::Log->Error(0, coreUtils::Print("Problems creating main window, trying different settings (%s)", SDL_GetError()));
+        Core::Log->Error(0, coreUtils::Print("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError()));
         
         // change configuration
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
@@ -47,7 +57,7 @@ CoreSystem::CoreSystem()
         
         // create compatible main window object
         m_pWindow = SDL_CreateWindow(coreUtils::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
-        if(!m_pWindow) Core::Log->Error(1, coreUtils::Print("Main window could not be created (%s)", SDL_GetError()));
+        if(!m_pWindow) Core::Log->Error(1, coreUtils::Print("Main window could not be created (SDL: %s)", SDL_GetError()));
     }
     else Core::Log->Info("Main window created");
 
@@ -79,7 +89,7 @@ CoreSystem::CoreSystem()
         }
         Core::Log->ListEnd();
     }
-    else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (%s)", SDL_GetError()));
+    else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
 
     // init high performance time
 #ifdef _WIN32
@@ -120,9 +130,9 @@ CoreSystem::CoreSystem()
     for(int i = 0; i < 4; ++i) sCPU += (*(((char*)&m_aaiCPUID[0][2])+i));
     Core::Log->ListStart("Processor Information");
     Core::Log->ListEntry(coreUtils::Print("<b>Vendor:</b> %s", sCPU.c_str()));
-    Core::Log->ListEntry(coreUtils::Print("<b>SSE support:</b> %s%s%s%s%s", m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));
     Core::Log->ListEntry(coreUtils::Print("<b>CPUID[0]:</b> %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]));
     Core::Log->ListEntry(coreUtils::Print("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]));
+    Core::Log->ListEntry(coreUtils::Print("<b>SSE support:</b> %s%s%s%s%s", m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));
     Core::Log->ListEnd();
 }
 
@@ -208,7 +218,7 @@ bool CoreSystem::__UpdateEvents()
         // move mouse position
         case SDL_MOUSEMOTION:
             Core::Input->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /m_vResolution + coreVector2(-0.5f, 0.5f));
-            Core::Input->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/m_vResolution * m_fConstantTime*120.0f);
+            Core::Input->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/m_vResolution * m_fTimeConstant*120.0f);
             break;
 
         // move mouse wheel
@@ -249,7 +259,7 @@ void CoreSystem::__UpdateTime()
     // measure and calculate elapsed time
 #ifdef _WIN32
     QueryPerformanceCounter(&m_PerfEndTime);
-    m_fConstantTime = float(m_PerfEndTime.QuadPart - m_PerfStartTime.QuadPart) * m_fPerfFrequency;
+    m_fTimeConstant = float(m_PerfEndTime.QuadPart - m_PerfStartTime.QuadPart) * m_fPerfFrequency;
     QueryPerformanceCounter(&m_PerfStartTime);
 #else
     clock_gettime(CLOCK_MONOTONIC, &m_PerfEndTime);
@@ -258,14 +268,14 @@ void CoreSystem::__UpdateTime()
 #endif
 
     // increase total time and calculate parametrized elapsed time
-    m_dTotalTime += (double)m_fConstantTime;
-    m_fTime       = m_fTime ? (0.85f*m_fTime + 0.15f*m_fConstantTime*m_fTimeFactor) : (m_fConstantTime*m_fTimeFactor);
+    m_dTimeTotal += (double)m_fTimeConstant;
+    m_fTime       = m_fTime ? (0.85f*m_fTime + 0.15f*m_fTimeConstant*m_fTimeFactor) : (m_fTimeConstant*m_fTimeFactor);
 
     // skip frames
-    if(m_iSkipFrame || m_fConstantTime >= 1.0f) 
+    if(m_iSkipFrame || m_fTimeConstant >= 1.0f) 
     {
-        m_fConstantTime = 0.0f;
         m_fTime         = 0.0f;
+        m_fTimeConstant = 0.0f;
         if(m_iSkipFrame) --m_iSkipFrame;
     }
 

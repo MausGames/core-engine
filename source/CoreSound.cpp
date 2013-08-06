@@ -10,7 +10,7 @@ CoreSound::CoreSound()
 
     // create OpenAL context
     if(!alutInit(NULL, NULL))
-        Core::Log->Error(0, coreUtils::Print("OpenAL context could not be created (%s)", alutGetErrorString(alutGetError())));
+        Core::Log->Error(0, coreUtils::Print("OpenAL context could not be created (ALUT: %s)", alutGetErrorString(alutGetError())));
     else Core::Log->Info("OpenAL context created");
 
     // retrieve sound channels
@@ -40,7 +40,7 @@ CoreSound::CoreSound()
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR) Core::Log->Error(0, coreUtils::Print("Error initializing sound interface (Code: %d)", iError));
+    if(iError != AL_NO_ERROR) Core::Log->Error(0, coreUtils::Print("Error initializing sound interface (Error Code: %d)", iError));
 }
 
 

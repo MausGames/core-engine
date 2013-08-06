@@ -46,46 +46,6 @@ const char* coreUtils::AppPath()
 
 
 // ****************************************************************
-// check if file exists
-bool coreUtils::FileExists(const char* pcPath)
-{
-    // open file
-    FILE* pFile = fopen(pcPath, "r");
-    if(pFile)
-    {
-        // file exists
-        fclose(pFile);
-        return true;
-    }
-
-    return false;
-}
-
-
-// ****************************************************************
-// get file data and size
-void coreUtils::FileDataSize(FILE* pFile, coreByte** ppDataOut, coreUint* piSizeOut)
-{
-    // get file size
-    fseek(pFile, 0, SEEK_END);
-    const coreUint iSize = (coreUint)ftell(pFile);
-    fseek(pFile, 0, SEEK_SET);
-
-    if(ppDataOut)
-    {
-        // get and save file data
-        (*ppDataOut) = new coreByte[iSize];
-        fread((*ppDataOut), sizeof(coreByte), iSize, pFile);
-    }
-    if(piSizeOut)
-    {
-        // save file size
-        (*piSizeOut) = iSize;
-    }
-}
-
-
-// ****************************************************************
 // retrieve current date and time
 void coreUtils::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea)
 {

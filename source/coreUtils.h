@@ -20,12 +20,6 @@ public:
     static const char* AppName();
     static const char* AppPath();
 
-    // check if file exists
-    static bool FileExists(const char* pcPath);
-
-    // get file data and size (data is allocated into ppDataOut)
-    static void FileDataSize(FILE* pFile, coreByte** ppDataOut, coreUint* piSizeOut);
-
     // retrieve current date and time
     static void DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea);
 

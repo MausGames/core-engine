@@ -6,7 +6,8 @@
 class CoreGraphic
 {
 private:
-    SDL_GLContext m_Context;                   // OpenGL context
+    SDL_GLContext m_RenderContext;             // primary OpenGL context for render operations
+    SDL_GLContext m_ResourceContext;           // secondary OpenGL context for resource loading
                                                
     float m_fFOV;                              // field-of-view
     float m_fNearClip;                         // near clipping plane
@@ -22,8 +23,8 @@ private:
     coreMatrix m_mCurProjection;               // current loaded projection matrix
     coreVector2 m_vCurResolution;              // current viewport resolution
 
-    bool m_bOpenGL3;                           // support for OpenGL 3.0+
-    std::map<std::string, bool> m_abFeature;   // support for hardware features
+    std::map<std::string, bool> m_abFeature;   // cached features of the video card
+    float m_fOpenGL;                           // available OpenGL version
 
 
 private:
@@ -50,18 +51,19 @@ public:
     void Screenshot();
 
     // get attributes
-    inline const SDL_GLContext& GetContext()const      {return m_Context;}
-    inline const float& GetFOV()const                  {return m_fFOV;}
-    inline const float& GetNearClip()const             {return m_fNearClip;}
-    inline const float& GetFarClip()const              {return m_fFarClip;}
-    inline const coreVector3& GetCamPosition()const    {return m_vCamPosition;}
-    inline const coreVector3& GetCamDirection()const   {return m_vCamDirection;}
-    inline const coreVector3& GetCamOrientation()const {return m_vCamOrientation;}
-    inline const coreMatrix& GetCamera()const          {return m_mCamera;}
-    inline const coreMatrix& GetPerspective()const     {return m_mPerspective;}
-    inline const coreMatrix& GetOrtho()const           {return m_mOrtho;}
+    inline const SDL_GLContext& GetRenderContext()const   {return m_RenderContext;}
+    inline const SDL_GLContext& GetResourceContext()const {return m_ResourceContext;}
+    inline const float& GetFOV()const                     {return m_fFOV;}
+    inline const float& GetNearClip()const                {return m_fNearClip;}
+    inline const float& GetFarClip()const                 {return m_fFarClip;}
+    inline const coreVector3& GetCamPosition()const       {return m_vCamPosition;}
+    inline const coreVector3& GetCamDirection()const      {return m_vCamDirection;}
+    inline const coreVector3& GetCamOrientation()const    {return m_vCamOrientation;}
+    inline const coreMatrix& GetCamera()const             {return m_mCamera;}
+    inline const coreMatrix& GetPerspective()const        {return m_mPerspective;}
+    inline const coreMatrix& GetOrtho()const              {return m_mOrtho;}
 
     // check hardware support
-    inline const bool& SupportOpenGL3()const           {return m_bOpenGL3;}
-    inline const bool& SupportFeature(char* acFeature) {if(!m_abFeature.count(acFeature)) m_abFeature[acFeature] = (glewIsSupported(acFeature) ? true : false); return m_abFeature.at(acFeature);}
+    inline const bool& SupportFeature(char* pcFeature) {if(!m_abFeature.count(pcFeature)) m_abFeature[pcFeature] = (glewIsSupported(pcFeature) ? true : false); return m_abFeature.at(pcFeature);}
+    inline const float& SupportOpenGL()const           {return m_fOpenGL;}
 };

@@ -26,7 +26,7 @@ public:
     coreVector2(coreVector2&& c);
     coreVector2(const float& fx, const float& fy);
 
-    // assignment operator
+    // assignment operators
     coreVector2& operator = (const coreVector2& c);
     coreVector2& operator = (coreVector2&& c);
 
@@ -70,7 +70,7 @@ public:
     coreVector2& Normalize();
     coreVector2 Normalized()const {return coreVector2(*this).Normalize();}
 
-    // direct retrieve functions
+    // direct functions
     float LengthSq()const;
     inline float Length()const      {return coreMath::Sqrt(this->LengthSq());}
     inline float Min()const         {return coreMath::Min(x, y);}
@@ -78,7 +78,7 @@ public:
     inline float Angle()const       {if(y == 0.0f) return DEG_TO_RAD((x < 0.0f) ? 90.0f : 270.0f); return atanf(x/y) + ((y <= 0.0f) ? PI : 0.0f);}
     inline float AspectRatio()const {return x/y;}
 
-    // static retrieve functions
+    // static functions
     static float Dot(const coreVector2& vInA, const coreVector2& vInB);
     static coreVector2 Rand();
     static coreVector2 Rand(const float& fMin, const float& fMax);
@@ -115,7 +115,7 @@ public:
     coreVector3(coreVector2&& c);
     coreVector3(const float& fx, const float& fy, const float& fz);
 
-    // assignment operator
+    // assignment operators
     coreVector3& operator = (const coreVector3& c);
     coreVector3& operator = (coreVector3&& c);
 
@@ -165,13 +165,13 @@ public:
     coreVector3& Normalize();
     coreVector3 Normalized()const {return coreVector3(*this).Normalize();}
 
-    // direct retrieve functions
+    // direct functions
     float LengthSq()const;
     inline float Length()const {return coreMath::Sqrt(this->LengthSq());}
     inline float Min()const    {return coreMath::Min(coreMath::Min(x, y), z);}
     inline float Max()const    {return coreMath::Max(coreMath::Max(x, y), z);}
 
-    // static retrieve functions
+    // static functions
     static float Dot(const coreVector3& vInA, const coreVector3& vInB);
     static coreVector3 Rand();
     static coreVector3 Rand(const float& fMin, const float& fMax);
@@ -210,7 +210,7 @@ public:
     coreVector4(coreVector2&& c);
     coreVector4(const float& fx, const float& fy, const float& fz, const float& fw);
 
-    // assignment operator
+    // assignment operators
     coreVector4& operator = (const coreVector4& c);
     coreVector4& operator = (coreVector4&& c);
 

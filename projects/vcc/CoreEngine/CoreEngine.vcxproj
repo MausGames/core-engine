@@ -97,9 +97,12 @@
     <ClCompile Include="..\..\..\source\coreMath.cpp" />
     <ClCompile Include="..\..\..\source\coreMatrix.cpp" />
     <ClCompile Include="..\..\..\source\coreRand.cpp" />
+    <ClCompile Include="..\..\..\source\coreResourceManager.cpp" />
     <ClCompile Include="..\..\..\source\CoreSound.cpp" />
     <ClCompile Include="..\..\..\source\coreSpline.cpp" />
     <ClCompile Include="..\..\..\source\CoreSystem.cpp" />
+    <ClCompile Include="..\..\..\source\coreTexture.cpp" />
+    <ClCompile Include="..\..\..\source\coreThread.cpp" />
     <ClCompile Include="..\..\..\source\coreUtils.cpp" />
     <ClCompile Include="..\..\..\source\coreVector.cpp" />
     <ClCompile Include="main.cpp" />
@@ -114,9 +117,12 @@
     <ClInclude Include="..\..\..\source\coreMath.h" />
     <ClInclude Include="..\..\..\source\coreMatrix.h" />
     <ClInclude Include="..\..\..\source\coreRand.h" />
+    <ClInclude Include="..\..\..\source\coreResourceManager.h" />
     <ClInclude Include="..\..\..\source\CoreSound.h" />
     <ClInclude Include="..\..\..\source\coreSpline.h" />
     <ClInclude Include="..\..\..\source\CoreSystem.h" />
+    <ClInclude Include="..\..\..\source\coreTexture.h" />
+    <ClInclude Include="..\..\..\source\coreThread.h" />
     <ClInclude Include="..\..\..\source\coreUtils.h" />
     <ClInclude Include="..\..\..\source\coreVector.h" />
   </ItemGroup>
