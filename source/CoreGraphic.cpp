@@ -16,10 +16,10 @@ CoreGraphic::CoreGraphic()
     Core::Log->Header("Graphic Interface");
 
     // create OpenGL contexts
-    m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
     m_RenderContext   = SDL_GL_CreateContext(Core::System->GetWindow());
-         if(!m_ResourceContext) Core::Log->Error(1, coreUtils::Print("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
-    else if(!m_RenderContext)   Core::Log->Error(1, coreUtils::Print("Primary OpenGL context could not be created (SDL: %s)",   SDL_GetError()));
+    m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
+         if(!m_RenderContext)   Core::Log->Error(1, coreUtils::Print("Primary OpenGL context could not be created (SDL: %s)",   SDL_GetError()));
+    else if(!m_ResourceContext) Core::Log->Error(1, coreUtils::Print("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
     else Core::Log->Info("Primary and secondary OpenGL context created");
 
     // assign primary OpenGL context to main window
@@ -27,10 +27,10 @@ CoreGraphic::CoreGraphic()
         Core::Log->Error(1, coreUtils::Print("Primary OpenGL context could not be assigned to main window (SDL: %s)", SDL_GetError()));
     else Core::Log->Info("Primary OpenGL context assigned to main window");
 
-    // init GLEW
+    // init GLEW on primary OpenGL context
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error(1, coreUtils::Print("GLEW could not be initialized (GLEW: %s)", glewGetErrorString(iError)));
-    else Core::Log->Info("GLEW initialized");
+    if(iError != GLEW_OK) Core::Log->Error(1, coreUtils::Print("GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError)));
+    else Core::Log->Info("GLEW initialized on primary OpenGL context");
 
     // log video card information
     Core::Log->ListStart("Video Card Information");
@@ -85,7 +85,7 @@ CoreGraphic::CoreGraphic()
     // enable culling
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
 
     // enable alpha blending
     glEnable(GL_BLEND);
@@ -113,14 +113,17 @@ CoreGraphic::CoreGraphic()
 // destructor
 CoreGraphic::~CoreGraphic()
 {
-    Core::Log->Info("Graphic Interface Shut Down");
+    Core::Log->Info("Graphic Interface shut down");
 
     // clear memory
     m_abFeature.clear();
 
+    // dissociate primary OpenGL context from main window
+    SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
+
     // delete OpenGL contexts
-    SDL_GL_DeleteContext(m_RenderContext);
     SDL_GL_DeleteContext(m_ResourceContext);
+    SDL_GL_DeleteContext(m_RenderContext);
 }
 
 
@@ -132,8 +135,11 @@ void CoreGraphic::__UpdateScene()
     SDL_GL_SwapWindow(Core::System->GetWindow()); 
 
     // reset depth buffer
+#if defined (_DEBUG)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#else
     glClear(GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
+#endif
 }
 
 
@@ -203,6 +209,8 @@ void CoreGraphic::EnableOrtho()
 void CoreGraphic::Screenshot(const char* pcPath)
 {
     // TODO: implement function
+    // ? extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
+    // ? extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst);
 }
 
 void CoreGraphic::Screenshot()

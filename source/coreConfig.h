@@ -3,13 +3,14 @@
 
 // ****************************************************************
 // main configuration definitions
-#define CORE_CONFIG_GRAPHIC_WIDTH          "Graphic", "Width"
-#define CORE_CONFIG_GRAPHIC_HEIGHT         "Graphic", "Height"
-#define CORE_CONFIG_GRAPHIC_FULLSCREEN     "Graphic", "Fullscreen"
+#define CORE_CONFIG_SYSTEM_WIDTH           "System",  "Width"
+#define CORE_CONFIG_SYSTEM_HEIGHT          "System",  "Height"
+#define CORE_CONFIG_SYSTEM_FULLSCREEN      "System",  "Fullscreen"
+#define CORE_CONFIG_SYSTEM_LOG             "System",  "Log"
 #define CORE_CONFIG_GRAPHIC_FOV            "Graphic", "FOV"
 #define CORE_CONFIG_GRAPHIC_CLIP_NEAR      "Graphic", "ClipNear"
 #define CORE_CONFIG_GRAPHIC_CLIP_FAR       "Graphic", "ClipFar"
-#define CORE_CONFIG_GRAPHIC_MULTISAMPLING  "Graphic", "MultiSampling"
+#define CORE_CONFIG_GRAPHIC_MULTISAMPLING  "Graphic", "AntiAliasing"
 #define CORE_CONFIG_GRAPHIC_TEXTUREFILTER  "Graphic", "TextureFilter"
 #define CORE_CONFIG_GRAPHIC_POSTPROCESSING "Graphic", "PostProcessing"
 #define CORE_CONFIG_GRAPHIC_FORCEOPENGL    "Graphic", "ForceOpenGL"
@@ -24,8 +25,8 @@
 class coreConfig
 {
 private:
-    CSimpleIniA m_Config;   // config file interface
     std::string m_sPath;    // absolute path of the file
+    CSimpleIniA m_Config;   // config file interface
 
 
 public:

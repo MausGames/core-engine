@@ -39,8 +39,9 @@
 #pragma warning(disable : 4995)
 #define _CRT_SECURE_NO_DEPRECATE 
 #define _SCL_SECURE_NO_DEPRECATE
+
 #define WIN32_LEAN_AND_MEAN
-#define GL_GLEXT_PROTOTYPES
+#define GLEW_MX
 
 
 // ****************************************************************    
@@ -48,16 +49,30 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#ifndef _WIN32
+#if !defined (_WIN32)
     #define NULL 0
     #define ZeroMemory(x,y) memset((x), 0, (y))
 #endif
 
-#ifdef _WIN32
+#if defined (_WIN32)
     #define __align16 __declspec(align(16)) 
 #else 
-    #define __align16  __attribute__((align(16))) 
+    #define __align16  __attribute__(align(16)) 
 #endif
+
+#if defined (_WIN32)
+    #define __thread __declspec(thread)
+#endif
+
+enum CORE_ERROR
+{
+    CORE_OK            =   0,
+    CORE_BUSY          =  10,
+
+    CORE_FILE_ERROR    = -10,
+    CORE_INVALID_CALL  = -20,
+    CORE_INVALID_INPUT = -30,
+};
 
 typedef unsigned char    coreByte;
 //typedef unsigned short   coreWord;
@@ -82,7 +97,7 @@ class coreSprite;
 
 // ****************************************************************
 // base libraries
-#ifdef _WIN32
+#if defined (_WIN32)
     #include <windows.h>
     #undef DeleteFile
 #else
@@ -97,7 +112,6 @@ class coreSprite;
 #include <time.h>
 #include <math.h>
 #include <cstdio>
-#include <cassert>
 #include <vector>
 #include <deque>
 #include <map>
@@ -109,7 +123,7 @@ class coreSprite;
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <GL/glew.h>
-#ifdef _WIN32
+#if defined (_WIN32)
     #include <GL/GLAUX.H>
 #else
     #include <GL/gl.h>
@@ -123,6 +137,12 @@ class coreSprite;
 #include <vorbis/vorbisenc.h>
 #include <vorbis/vorbisfile.h>
 #include <SimpleIni.h>
+
+
+// ****************************************************************
+// GLEW multi-context declaration
+extern __thread GLEWContext g_GlewContext;
+#define glewGetContext() (&g_GlewContext)
 
 
 // ****************************************************************
@@ -150,6 +170,8 @@ class coreSprite;
 #include "CoreInput.h"
 
 
+// ****************************************************************
+// component classes
 #include "coreThread.h"
 
 
@@ -186,6 +208,7 @@ public:
 
 // ****************************************************************    
 // engine framework
+// TODO: remove deprecated stuff
 class Core
 {
 public:

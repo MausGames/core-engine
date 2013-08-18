@@ -7,54 +7,47 @@ class coreFile
 {
 private:
     std::string m_sPath;       // relative path of the file
+                               
+    coreByte* m_pData;         // file data
     coreUint m_iSize;          // size of the file
 
-    coreArchive* m_pArchive;   // associated archive file
-    coreUint m_iPosition;      // absolute data position in the archive
-
-    coreByte* m_pData;         // file data cache
+    coreArchive* m_pArchive;   // associated archive
+    coreUint m_iArchivePos;    // absolute data position in the associated archive (0 = file doesn't exist physically)
 
 
 public:
     coreFile(const char* pcPath);
-    coreFile(const char* pcPath, const coreUint& iSize, coreByte* pData);
-    coreFile(const char* pcPath, const coreUint& iSize, coreArchive* pArchive, const coreUint& iPosition);
+    coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize);
     ~coreFile();
     friend class coreArchive;
 
+    // save file
+    bool Save(const char* pcPath);
+
+    // load and unload file data
+    void LoadData();
+    inline void UnloadData() {if(m_iArchivePos) SAFE_DELETE_ARRAY(m_pData)}
+
     // get attributes
-    inline const char* GetName()const         {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
-    inline const char* GetPath()const         {return m_sPath.c_str();}
-    inline const coreUint& GetSize()const     {return m_iSize;}
-    inline coreArchive* GetArchive()const     {return m_pArchive;}
-    inline const coreUint& GetPosition()const {return m_iPosition;}
+    inline const char* GetName()const     {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
+    inline const char* GetPath()const     {return m_sPath.c_str();}
+    inline const coreByte* GetData()      {this->LoadData(); return m_pData;}
+    inline const coreUint& GetSize()const {return m_iSize;}
 
-    // cache and get file data
-    inline const coreByte* GetData() {this->__CacheData(); return m_pData;}
-
-    // check if file exists
+    // check if file exists physically
     static bool FileExists(const char* pcPath);
-
-
-private:
-    // cache file data
-    void __CacheData();
-
-    // associate archive file
-    inline void __AssociateArchive(coreArchive* pArchive, const coreUint& iPosition) {m_pArchive = pArchive; m_iPosition = iPosition;}
 };
 
 
 // ****************************************************************
-// archive file class
+// archive class
 class coreArchive
 {
 private:
+    std::string m_sPath;                           // relative path of the archive
+
     std::vector<coreFile*> m_aFile;                // file objects
     std::map<std::string, coreFile*> m_aFileMap;   // path access for file objects
-
-    std::string m_sName;                           // name of the archive
-    std::string m_sPath;                           // relative path of the archive
 
 
 public:
@@ -72,12 +65,16 @@ public:
     bool DeleteFile(const char* pcPath);
     bool DeleteFile(coreFile* pFile);
 
+    // load and unload file data
+    void LoadData();
+    void UnloadData();
+
     // access file objects
     inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_aFile.size()) return NULL; return m_aFile[iIndex];}
     inline coreFile* GetFile(const char* pcPath)     {if(!m_aFileMap.count(pcPath)) return NULL; return m_aFileMap[pcPath];}
 
     // get attributes
-    inline const char* GetName()const {return m_sName.c_str();}
+    inline const char* GetName()const {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const {return m_sPath.c_str();}
     inline coreUint GetSize()const    {return m_aFile.size();}
 

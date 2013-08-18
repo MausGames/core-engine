@@ -1,5 +1,6 @@
 #include "Core.h"
 
+
 // ****************************************************************
 // constructor
 coreMatrix::coreMatrix()

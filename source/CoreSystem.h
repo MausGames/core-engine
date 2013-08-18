@@ -22,13 +22,13 @@ private:
     float m_fTimeFactor;                      // coefficient for the parametrized elapsed time
     coreByte m_iSkipFrame;                    // skip frames
 
-#ifdef _WIN32
-    float m_fPerfFrequency;                   // high performance time coefficient (WIN32)
-    LARGE_INTEGER m_PerfStartTime;            // high performance start time value (WIN32)
-    LARGE_INTEGER m_PerfEndTime;              // high performance end time value (WIN32)
+#if defined (_WIN32)
+    float m_fPerfFrequency;                   // high precission time coefficient (WIN32)
+    LARGE_INTEGER m_PerfStartTime;            // high precission start time value (WIN32)
+    LARGE_INTEGER m_PerfEndTime;              // high precission end time value (WIN32)
 #else
-    timespec m_PerfStartTime;                 // high performance start time value (Linux)
-    timespec m_PerfEndTime;                   // high performance end time value (Linux)
+    timespec m_PerfStartTime;                 // high precission start time value (Linux)
+    timespec m_PerfEndTime;                   // high precission end time value (Linux)
 #endif
 
     int m_aaiCPUID[2][4];                     // features of the processor
@@ -43,7 +43,7 @@ private:
     // update the window event system
     bool __UpdateEvents();
 
-    // update the high performance time calculation
+    // update the high precission time calculation
     void __UpdateTime();
 
 

@@ -6,7 +6,7 @@
 coreSpline::coreSpline()
 : m_fMaxDistance (0.0f)
 {
-    // reserve some memory
+    // reserve memory for nodes
     m_apNode.reserve(32);
 }
 

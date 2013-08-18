@@ -9,7 +9,7 @@ coreRand::coreRand(const coreUint& iSize, int iInit)
 : m_NumRand (iSize)
 , m_CurRand (0)
 {
-#ifdef _DEBUG
+#if defined (_DEBUG)
     // always the same random numbers in debug-mode
     if(iInit < 0) iInit = 0;
 #endif
@@ -21,6 +21,13 @@ coreRand::coreRand(const coreUint& iSize, int iInit)
     m_piRand = new int[m_NumRand];
     for(coreUint i = 0; i < m_NumRand; ++i)
         m_piRand[i] = rand();
+}
+
+coreRand::coreRand(const coreRand& c)
+: m_piRand  (c.m_piRand)
+, m_NumRand (c.m_NumRand)
+, m_CurRand (c.m_CurRand)
+{
 }
 
 

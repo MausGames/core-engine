@@ -15,8 +15,11 @@ float coreMath::Sqrt(float fInput)
         _mm_store_ss(&fInput, _mm_sqrt_ss(_mm_load_ss(&fInput)));
         return fInput;
     }
-
+    
     // normal
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    return sqrtf(fInput);
+#else
     const float fValue     = fInput;
     const float fHalfValue = fInput*0.5f;
     coreUint* piPointer    = (coreUint*)&fInput;
@@ -26,6 +29,7 @@ float coreMath::Sqrt(float fInput)
     fInput *= 1.5f - fInput*fInput*fHalfValue;
 
     return fValue*fInput;
+#endif
 }
 
 

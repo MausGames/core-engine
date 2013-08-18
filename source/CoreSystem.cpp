@@ -4,8 +4,8 @@
 // ******************************************************************
 // constructor
 CoreSystem::CoreSystem()
-: m_vResolution     (coreVector2((float)Core::Config->GetInt(CORE_CONFIG_GRAPHIC_WIDTH, 800), (float)Core::Config->GetInt(CORE_CONFIG_GRAPHIC_HEIGHT, 600)))
-, m_iFullscreen     ((coreByte)Core::Config->GetInt(CORE_CONFIG_GRAPHIC_FULLSCREEN, 0))
+: m_vResolution     (coreVector2((float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH, 800), (float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT, 600)))
+, m_iFullscreen     ((coreByte)Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN, 0))
 , m_bMinimized      (false)
 , m_fTime           (0.0f)
 , m_fTimeConstant   (0.0f)
@@ -91,8 +91,8 @@ CoreSystem::CoreSystem()
     }
     else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
 
-    // init high performance time
-#ifdef _WIN32
+    // init high precission time
+#if defined (_WIN32)
     LARGE_INTEGER Frequency;
     QueryPerformanceCounter(&m_PerfStartTime);
     QueryPerformanceCounter(&m_PerfEndTime);
@@ -104,10 +104,10 @@ CoreSystem::CoreSystem()
 #endif
 
     // retrieve features of the processor
-#ifdef _DEBUG
+#if defined (_DEBUG)
     ZeroMemory(m_aaiCPUID, sizeof(int)*2*4);
 #else
-#ifdef _WIN32
+#if defined (_WIN32)
     __cpuid(m_aaiCPUID[0], 0);
     __cpuid(m_aaiCPUID[1], 1);
 #else
@@ -141,7 +141,7 @@ CoreSystem::CoreSystem()
 // destructor
 CoreSystem::~CoreSystem()
 {
-    Core::Log->Info("System Interface Shut Down");
+    Core::Log->Info("System Interface shut down");
 
     // clear memory
     m_avAvailable.clear();
@@ -253,11 +253,11 @@ bool CoreSystem::__UpdateEvents()
 
 
 // ******************************************************************
-// update the high performance time calculation
+// update the high precission time calculation
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate elapsed time
-#ifdef _WIN32
+#if defined (_WIN32)
     QueryPerformanceCounter(&m_PerfEndTime);
     m_fTimeConstant = float(m_PerfEndTime.QuadPart - m_PerfStartTime.QuadPart) * m_fPerfFrequency;
     QueryPerformanceCounter(&m_PerfStartTime);
@@ -288,7 +288,7 @@ void CoreSystem::__UpdateTime()
 // show message box
 void CoreSystem::MsgBox(const char* pcMessage, const char* pcTitle, const int& iType)
 {
-#ifdef _WIN32
+#if defined (_WIN32)
     switch(iType)
     {
     case 0: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONINFORMATION); break;

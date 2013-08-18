@@ -1,11 +1,11 @@
 #include "Core.h"
 
-#ifdef _WIN32
+#if defined (_WIN32)
     #include <Shellapi.h>
 #endif
 
-char     coreUtils::m_aacString[16][256];
-coreUint coreUtils::m_iIndex = 0;
+char     coreUtils::m_aacString[16][256]; // = "";
+coreUint coreUtils::m_iIndex                 = 0;
 
 
 // ****************************************************************
@@ -15,11 +15,11 @@ const char* coreUtils::AppName()
     char* pcString = __NextString();
 
     // receive name
-#ifdef _WIN32
-    GetModuleFileName(NULL, pcString, 256);
+#if defined (_WIN32)
+    GetModuleFileName(NULL, pcString, 255);
     return strrchr(pcString, '\\')+1;
 #else
-    readlink("/proc/self/exe", pcString, 256);
+    readlink("/proc/self/exe", pcString, 255);
     return strrchr(pcString, '/')+1;
 #endif
 }
@@ -32,11 +32,11 @@ const char* coreUtils::AppPath()
     char* pcString = __NextString();
 
     // receive path
-#ifdef _WIN32
-    GetCurrentDirectory(256, pcString);
+#if defined (_WIN32)
+    GetCurrentDirectory(255, pcString);
     strcat(pcString, "\\");
 #else
-    readlink("/proc/self/exe", pcString, 256);
+    readlink("/proc/self/exe", pcString, 255);
     char* pcEnd = strrchr(pcString, '/')+1;
     *pcEnd = '\0';
 #endif
@@ -55,7 +55,7 @@ void coreUtils::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, core
     // format the time value
     tm* pFormat = localtime(&Time);
 
-    // forward data
+    // forward dataz
     if(piSec) *piSec = pFormat->tm_sec;
     if(piMin) *piMin = pFormat->tm_min;
     if(piHou) *piHou = pFormat->tm_hour;
@@ -71,10 +71,10 @@ const char* coreUtils::Print(const char* pcMessage, ...)
 {
     char* pcString = __NextString();
 
-    // assemble the string fragments
+    // assemble string
     va_list pList;
     va_start(pList, pcMessage);
-    vsnprintf(pcString, 256, pcMessage, pList);
+    vsnprintf(pcString, 255, pcMessage, pList);
     va_end(pList);
 
     return pcString;
@@ -85,7 +85,7 @@ const char* coreUtils::Print(const char* pcMessage, ...)
 // open URL with webbrowser
 void coreUtils::OpenURL(const char* pcURL)
 {
-#ifdef _WIN32
+#if defined (_WIN32)
     ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL);
 #else
     if(system(NULL)) system(coreUtils::Print("xdg-open %s", pcURL));

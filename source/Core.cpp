@@ -1,18 +1,23 @@
 #include "Core.h"
 
-coreLog*     Core::Log     = NULL;
-coreConfig*  Core::Config  = NULL;
-            
-coreMath*    Core::Math    = NULL;
-coreUtils*   Core::Utils   = NULL;
-coreRand*    Core::Rand    = NULL;
-            
-CoreSystem*  Core::System  = NULL;
-CoreGraphic* Core::Graphic = NULL;
-CoreSound*   Core::Sound   = NULL;
-CoreInput*   Core::Input   = NULL;
+coreLog*             Core::Log               = NULL;
+coreConfig*          Core::Config            = NULL;
+                                             
+coreMath*            Core::Math              = NULL;
+coreUtils*           Core::Utils             = NULL;
+coreRand*            Core::Rand              = NULL;
+                                             
+CoreSystem*          Core::System            = NULL;
+CoreGraphic*         Core::Graphic           = NULL;
+CoreSound*           Core::Sound             = NULL;
+CoreInput*           Core::Input             = NULL;
 
 coreResourceManager* Core::Manager::Resource = NULL;
+
+
+// ****************************************************************
+// GLEW multi-context definition
+__thread GLEWContext g_GlewContext;
 
 
 // ****************************************************************    
@@ -78,6 +83,13 @@ void Core::Run()
     CoreApp* pApplication = new CoreApp();
     pEngine->Log->Header("Application Run");
 
+#if !defined (_DEBUG)
+    // set logging level
+    const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG, -1);
+    pEngine->Log->SetLevel(iLevel);
+    if(iLevel < 0) pEngine->Log->Error(0, "Logging level reduced, show only warnings and errors");
+#endif
+
     // update the window event system
     while(pEngine->System->__UpdateEvents())
     {    
@@ -94,13 +106,15 @@ void Core::Run()
         // update the graphic scene
         pEngine->Graphic->__UpdateScene();
 
-        // update the high performance time calculation
+        // update the high precission time calculation
         pEngine->System->__UpdateTime();
     }
 
-    pEngine->Log->Header("Shut Down");
-
+    // reset logging level
+    pEngine->Log->SetLevel(0);
+    
     // delete engine and application
+    pEngine->Log->Header("Shut Down");
     SAFE_DELETE(pApplication)
     SAFE_DELETE(pEngine)
 }
@@ -110,10 +124,10 @@ void Core::Run()
 //  reset engine
 void Core::Reset()
 {
-    Log->Info("Reset Engine");
-    Log->SetLevel(-1);
+    Log->Header("Reset Engine");
 
-    // TODO: handle manager
+    // shut down manager
+    Manager::Resource->__Reset(false);
 
     // delete main interfaces
     SAFE_DELETE(Input)
@@ -127,7 +141,11 @@ void Core::Reset()
     Sound   = new CoreSound();
     Input   = new CoreInput();
 
-    Log->SetLevel(0);
+    // re-init manager
+    Log->Header("Manager");
+    Manager::Resource->__Reset(true);
+
+    Log->Header("Application Run");
 }
 
 
@@ -146,8 +164,8 @@ void Core::Quit()
 // main function
 int main(int argc, char* argv[])
 {
-#if defined(_WIN32) && defined(_DEBUG)
-    //_crtBreakAlloc = 299;
+#if defined (_WIN32) && defined (_DEBUG)
+    //_crtBreakAlloc = 0;
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); 
 #endif
 

@@ -153,13 +153,13 @@ public:
     inline coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
 
     // convert vector
-    inline operator coreVector2& ()const {return *((coreVector2*)this);}
-    inline coreVector2 xy()const         {return coreVector2(x, y);}
-    inline coreVector2 xz()const         {return coreVector2(x, z);}
-    inline coreVector2 yx()const         {return coreVector2(y, x);}
-    inline coreVector2 yz()const         {return coreVector2(y, z);}
-    inline coreVector2 zx()const         {return coreVector2(z, x);}
-    inline coreVector2 zy()const         {return coreVector2(z, y);}
+    inline operator coreVector2& () {return *(reinterpret_cast<coreVector2*>(this));}
+    inline coreVector2 xy()const    {return coreVector2(x, y);}
+    inline coreVector2 xz()const    {return coreVector2(x, z);}
+    inline coreVector2 yx()const    {return coreVector2(y, x);}
+    inline coreVector2 yz()const    {return coreVector2(y, z);}
+    inline coreVector2 zx()const    {return coreVector2(z, x);}
+    inline coreVector2 zy()const    {return coreVector2(z, y);}
 
     // normalize vector
     coreVector3& Normalize();
@@ -248,7 +248,7 @@ public:
     inline coreVector4 operator - ()const {return coreVector4(-x, -y, -z, w);}
 
     // convert vector
-    inline operator coreVector3& ()const {return *((coreVector3*)this);}
-    inline operator coreVector2& ()const {return *((coreVector2*)this);}
-    inline coreVector3 xyz()const        {return coreVector3(x, y, z)*w;}
+    inline operator coreVector3& () {return *(reinterpret_cast<coreVector3*>(this));}
+    inline operator coreVector2& () {return *(reinterpret_cast<coreVector2*>(this));}
+    inline coreVector3 xyz()const   {return coreVector3(x, y, z)*w;}
 };

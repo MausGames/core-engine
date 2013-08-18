@@ -16,6 +16,7 @@ private:
 
 public:
     coreRand(const coreUint& iSize, int iInit = -1);
+    coreRand(const coreRand& c);
     ~coreRand();
 
     // reset the generator

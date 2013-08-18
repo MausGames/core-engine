@@ -48,7 +48,7 @@ CoreSound::CoreSound()
 // Destruktor
 CoreSound::~CoreSound()
 {
-    Core::Log->Info("Sound Interface Shut Down");
+    Core::Log->Info("Sound Interface shut down");
 
     // save global volume
     Core::Config->SetFloat(CORE_CONFIG_SOUND_VOLUME_GLOBAL, m_fVolume);

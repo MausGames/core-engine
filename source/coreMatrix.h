@@ -47,8 +47,8 @@ public:
     // scalar calculation operators
     coreMatrix operator * (const float& f)const;
     coreMatrix operator / (const float& f)const;
-    inline void operator *= (const float& f) {*this = *this * f;}
-    inline void operator /= (const float& f) {*this = *this / f;}
+    inline void operator *= (const float& f)                                  {*this = *this * f;}
+    inline void operator /= (const float& f)                                  {*this = *this / f;}
     friend inline coreMatrix operator * (const float& f, const coreMatrix& c) {return c * f;}
 
     // convert matrix

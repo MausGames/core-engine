@@ -54,9 +54,10 @@ void coreThread::KillThread()
 int coreThread::__Main()
 {
     // init thread implementation
-    Core::Log->Info(coreUtils::Print("Start Thread (%s:%04d)", m_sName.c_str(), SDL_ThreadID()));
+    Core::Log->Info(coreUtils::Print("Thread (%s:%04d) started", m_sName.c_str(), SDL_ThreadID()));
     int iReturn = this->__Init();
 
+    m_iCurFrame = 0;
     while(iReturn == 0)
     {
         // wait for next frame
@@ -73,7 +74,7 @@ int coreThread::__Main()
 
     // exit thread implementation
     this->__Exit();
-    Core::Log->Info(coreUtils::Print("End Thread (%s:%04d)", m_sName.c_str(), SDL_ThreadID()));
+    Core::Log->Info(coreUtils::Print("Thread (%s:%04d) finished", m_sName.c_str(), SDL_ThreadID()));
 
     m_bEnd = true;
     return iReturn;
@@ -85,7 +86,7 @@ int coreThread::__Main()
 int coreThreadMain(void* pData)
 {
     // retrieve thread object
-    coreThread* pThread = (coreThread*)pData;
+    coreThread* pThread = static_cast<coreThread*>(pData);
 
     // execute thread
     return pThread->__Main();

@@ -2,7 +2,7 @@
 
 
 // ****************************************************************
-// string definition
+// utility definition
 #define CORE_UTILS_STRINGS 16
 
 

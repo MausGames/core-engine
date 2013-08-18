@@ -39,7 +39,7 @@ CoreInput::CoreInput()
 // destructor
 CoreInput::~CoreInput()
 {
-    Core::Log->Info("Input Interface Shut Down");
+    Core::Log->Info("Input Interface shut down");
 
     // close joystick devices
     for(coreUint i = 0; i < m_aJoystick.size(); ++i)
@@ -119,7 +119,7 @@ void CoreInput::__UpdateCursor()
 // set mouse cursor visibility
 void CoreInput::ShowCursor(const bool& bStatus)
 {
-    // #TODO: handle unsupported RelativeMouseMode
+    // TODO: handle unsupported RelativeMouseMode
 
     // Anzeige umschalten
     SDL_ShowCursor(m_pCursor ? SDL_DISABLE : bStatus);

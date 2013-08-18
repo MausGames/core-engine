@@ -1,18 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Quelldateien">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Headerdateien">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Ressourcendateien">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Engine">
       <UniqueIdentifier>{2c5d58ba-afab-4612-8617-23de959bbc89}</UniqueIdentifier>
     </Filter>
@@ -28,16 +16,23 @@
     <Filter Include="Engine\04_Components">
       <UniqueIdentifier>{c117e230-3b7a-4a56-85d4-a03fc06af73d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\04_Components\01_Graphic">
-      <UniqueIdentifier>{405473ff-78af-4cfd-a7e5-5a401861a41c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\05_Manager">
       <UniqueIdentifier>{dac8ec8c-25b0-44ea-9479-0d3ee19c18de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\04_Components\02_Graphic">
+      <UniqueIdentifier>{405473ff-78af-4cfd-a7e5-5a401861a41c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\04_Components\01_System">
+      <UniqueIdentifier>{17f18d3e-515c-4615-a40a-4e33e837bb96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Work">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>Work</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\Core.cpp">
       <Filter>Engine</Filter>
@@ -82,13 +77,13 @@
       <Filter>Engine\02_Utilities</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\coreTexture.cpp">
-      <Filter>Engine\04_Components\01_Graphic</Filter>
+      <Filter>Engine\04_Components\02_Graphic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\coreResourceManager.cpp">
       <Filter>Engine\05_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\coreThread.cpp">
-      <Filter>Headerdateien</Filter>
+      <Filter>Engine\04_Components\01_System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,13 +130,13 @@
       <Filter>Engine\02_Utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\coreTexture.h">
-      <Filter>Engine\04_Components\01_Graphic</Filter>
+      <Filter>Engine\04_Components\02_Graphic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\coreResourceManager.h">
       <Filter>Engine\05_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\coreThread.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>Engine\04_Components\01_System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

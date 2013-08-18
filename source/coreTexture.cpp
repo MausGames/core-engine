@@ -1,36 +1,42 @@
 #include "Core.h"
 
-int          coreTexture::s_iCurUnit = -1;
-coreTexture* coreTexture::s_apActive[32]; // = NULL
+int          coreTexture::s_iActiveUnit                     = 0;
+coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS]; // = NULL;
+SDL_SpinLock coreTexture::s_iLock                           = 0;
 
 
 // ****************************************************************
 // constructor
-coreTexture::coreTexture(const bool &bGenerate)
-: coreResource  ("")
-, m_iID         (0)
+coreTexture::coreTexture(const bool bGenerate)
+: m_iID         (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iSize       (0)
+, m_iUnit       (-1)
+, m_pSync       (NULL)
 {
     // generate base texture
     if(bGenerate) glGenTextures(1, &m_iID);
 }
 
 coreTexture::coreTexture(const char* pcPath)
-: coreResource  ("")
-, m_iID         (0)
+: m_iID         (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iSize       (0)
+, m_iUnit       (-1)
+, m_pSync       (NULL)
 {
-    this->Load(pcPath);
+    // load from path
+    this->coreResource::Load(pcPath);
 }
 
 coreTexture::coreTexture(coreFile* pFile)
-: coreResource  ("")
-, m_iID         (0)
+: m_iID         (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iSize       (0)
+, m_iUnit       (-1)
+, m_pSync       (NULL)
 {
+    // load from file
     this->Load(pFile);
 }
 
@@ -44,73 +50,130 @@ coreTexture::~coreTexture()
 
 
 // ****************************************************************
-// load resource data
-void coreTexture::Load(const char* pcPath)
+// load texture resource data
+int coreTexture::Load(coreFile* pFile)
 {
-    coreFile pFile(pcPath);
-    this->Load(&pFile);
-}
+    // check sync object status
+    const int iStatus = this->CheckSync();
+    if(iStatus != CORE_INVALID_CALL) return iStatus;
 
-void coreTexture::Load(coreFile* pFile)
-{
-    assert(m_iID == 0);
+    SDL_assert(m_iID == 0);
+    SDL_assert(pFile != NULL);
 
-    //// Datei laden
-    //SDL_RWops* pWops   = SDL_RWFromMem(pData, iSize);
-    //SDL_Surface* pData = IMG_LoadTyped_RW(pWops, FALSE, strrchr(m_sPath.c_str(), '.')+1);
-    //SDL_FreeRW(pWops);
-    //
-    //if(!pData)
-    //{
-    //    m_Texture = NULL;
-    //    if(pFile->pcName) Core::Log->Error(0, "Texture (%s) could not be loaded!", pFile->pcName);
-    //    return FALSE;
-    //}
-    //if(pFile->pArchive) sprintf(m_pcPath, "%s/%s", pFile->pArchive->GetName(), pFile->pcName);
-    //               else sprintf(m_pcPath, pFile->pcName);
+    // decompress file data
+    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, strrchr(pFile->GetPath(), '.')+1);
+    if(!pData)
+    {
+        Core::Log->Error(0, coreUtils::Print("Texture (%s) could not be loaded", pFile->GetPath()));
+        return CORE_FILE_ERROR;
+    }
 
-    //// Format konvertieren
-    //SDL_Surface* pConvert = SDL_CreateRGBSurface(SDL_SWSURFACE, pData->w, pData->h, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-    //SDL_BlitSurface(pData, 0, pConvert, 0);
+    const coreUint iDataSize = pData->w * pData->h * 4;
+    const bool bMipMap       = Core::Graphic->SupportFeature("GL_ARB_framebuffer_object");
 
-    //// Texturobjekt generieren
-    //glGenTextures(1, &m_Texture);
-    //glBindTexture(GL_TEXTURE_2D, m_Texture);
-    //
-    //// MipMapping prüfen
-    //const BOOL bMipMap = Core::Graphic->GetOpenGL3Support();
+    // save texture attributes
+    m_sPath       = pFile->GetPath();
+    m_vResolution = coreVector2(float(pData->w), float(pData->h));
+    m_iSize       = pData->w * pData->h * (bMipMap ? 4 : 3);
+    
+    // convert data format
+    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, 32, CORE_TEXTURE_MASK);
+    SDL_BlitSurface(pData, NULL, pConvert, NULL);
 
-    //// Texturparameter setzen
-    //m_bClamp = bClamp;
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_bClamp ? GL_CLAMP : GL_REPEAT);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_bClamp ? GL_CLAMP : GL_REPEAT);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->Get()->Graphic.TextureFilter);
+    // generate pixel buffer object for asynchronous texture loading
+    GLuint iBuffer;
+    glGenBuffers(1, &iBuffer);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, iBuffer);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, 0, GL_STREAM_DRAW);
 
-    //// Textur laden
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pConvert->pixels);
-    //if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
-    //else glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+    // copy texture data into PBO
+    GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+    memcpy(ptr, pConvert->pixels, iDataSize);
+    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 
-    //// Daten freigeben
-    //SDL_FreeSurface(pData);
-    //SDL_FreeSurface(pConvert);
-    //glBindTexture(GL_TEXTURE_2D, NULL);
+    // generate texture
+    glGenTextures(1, &m_iID);
+
+    SDL_AtomicLock(&s_iLock);
+    {
+        // bind texture to free texture unit
+        int iLoadUnit = -1;
+        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        {
+            if(!s_apBound[i])
+            {
+                if(i != s_iActiveUnit)
+                {
+                    // switch active texture unit
+                    iLoadUnit = i;
+                    glActiveTexture(GL_TEXTURE0+iLoadUnit);
+                }
+                break;
+            }
+        }
+        glBindTexture(GL_TEXTURE_2D, m_iID);
+
+        // set texture parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,         bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,         GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,             GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,             GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHIC_TEXTUREFILTER, 0));
+
+        // load texture data from PBO
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
+
+        // unbind texture from texture unit
+        glBindTexture(GL_TEXTURE_2D, 0);
+        if(iLoadUnit >= 0) glActiveTexture(GL_TEXTURE0+s_iActiveUnit);
+    }
+    SDL_AtomicUnlock(&s_iLock);
+
+    // generate sync object or flush all commands
+    if(Core::Graphic->SupportFeature("GL_ARB_sync")) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, NULL);
+    else glFlush();
+
+    // delete PBO
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    glDeleteBuffers(1, &iBuffer);
+    
+    // delete file data
+    SDL_FreeSurface(pData);
+    SDL_FreeSurface(pConvert);
+
+    if(m_pSync) return CORE_BUSY;
+    Core::Log->Info(coreUtils::Print("Texture (%s) loaded", m_sPath.c_str()));
+    return CORE_OK;
 }
 
 
 // ****************************************************************
-// unload resource data
-void coreTexture::Unload()
+// unload texture resource data
+int coreTexture::Unload()
 {
+    SDL_assert(m_iUnit < 0);
+
+    if(!m_iID) return CORE_INVALID_CALL;
+
     // delete texture
-    if(m_iID) glDeleteTextures(1, &m_iID);
+    glDeleteTextures(1, &m_iID);
+    Core::Log->Info(coreUtils::Print("Texture (%s) unloaded", m_sPath.c_str()));
+
+    // delete sync object
+    if(m_pSync)
+    {
+        glDeleteSync(m_pSync);
+        m_pSync = NULL;
+    }
 
     // reset attributes
     m_sPath       = "";
+    m_iID         = 0;
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iSize       = 0;
+
+    return CORE_OK;
 }
 
 
@@ -118,36 +181,81 @@ void coreTexture::Unload()
 // enable texture
 void coreTexture::Enable(const coreByte& iUnit)
 {
-    assert(s_apActive[iUnit] == NULL);
-    assert(m_iID != 0);
+    SDL_assert(m_iUnit < 0);
+    SDL_assert(s_apBound[iUnit] == NULL);
 
-    // bind texture to texture unit
-    if(s_iCurUnit != iUnit)
+    // save texture binding
+    m_iUnit            = iUnit;
+    s_apBound[m_iUnit] = this;
+
+    SDL_AtomicLock(&s_iLock);
     {
-        glActiveTexture(GL_TEXTURE0+iUnit);
-        s_iCurUnit = iUnit;
+        // bind texture to texture unit
+        if(s_iActiveUnit != m_iUnit)
+        {
+            glActiveTexture(GL_TEXTURE0+m_iUnit);
+            s_iActiveUnit = m_iUnit;
+        }
+        glBindTexture(GL_TEXTURE_2D, m_iID);
     }
-    glBindTexture(GL_TEXTURE_2D, m_iID);
-
-    // save active texture
-    s_apActive[iUnit] = this;
+    SDL_AtomicUnlock(&s_iLock);
 }
 
 
 // ****************************************************************
 // disable texture
-void coreTexture::Disable(const coreByte& iUnit)
+void coreTexture::Disable()
 {
-    assert(s_apActive[iUnit] != NULL);
+    SDL_assert(m_iUnit >= 0);
+    SDL_assert(s_apBound[m_iUnit] != NULL);
 
-    // unbind texture from texture unit
-    if(s_iCurUnit != iUnit)
+    SDL_AtomicLock(&s_iLock);
     {
-        glActiveTexture(GL_TEXTURE0+iUnit);
-        s_iCurUnit = iUnit;
+        // unbind texture from texture unit
+        if(s_iActiveUnit != m_iUnit)
+        {
+            glActiveTexture(GL_TEXTURE0+m_iUnit);
+            s_iActiveUnit = m_iUnit;
+        }
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
-    glBindTexture(GL_TEXTURE_2D, NULL);
+    SDL_AtomicUnlock(&s_iLock);
 
-    // reset active texture
-    s_apActive[iUnit] = NULL;
+    // reset texture binding
+    s_apBound[m_iUnit] = NULL;
+    m_iUnit            = -1;
+}
+
+
+// ****************************************************************
+// disable all textures
+void coreTexture::DisableAll()
+{
+    // traverse all texture units
+    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    {
+        if(s_apBound[i])
+            s_apBound[i]->Disable();
+    }
+}
+
+
+// ****************************************************************
+// check sync object status
+int coreTexture::CheckSync()
+{
+    if(!m_iID || !m_pSync) return CORE_INVALID_CALL;
+
+    // check for finished texture loading
+    if(glClientWaitSync(m_pSync, NULL, 0) != GL_TIMEOUT_EXPIRED)
+    {
+        // delete sync object
+        glDeleteSync(m_pSync);
+        m_pSync = NULL;
+
+        Core::Log->Info(coreUtils::Print("Texture (%s) loaded asynchronous", m_sPath.c_str()));
+        return CORE_OK;
+    }
+
+    return CORE_BUSY;
 }
