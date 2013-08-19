@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #pragma once
 // TODO: compile SDL_image with png-support
 // TODO: check for max available texture units
@@ -39,8 +47,8 @@ public:
     ~coreTexture();
 
     // load and unload texture resource data
-    int Load(coreFile* pFile);
-    int Unload();
+    coreError Load(coreFile* pFile);
+    coreError Unload();
 
     // enable and disable the texture
     void Enable(const coreByte& iUnit);
@@ -48,13 +56,18 @@ public:
     static void DisableAll();
 
     // check sync object status
-    int CheckSync(); 
+    coreError CheckSync(); 
 
     // get attributes
     inline const GLuint& GetID()const              {return m_iID;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreUint& GetSize()const          {return m_iSize;}
 
-    // get relative path to NULL resource (required for resource management)
+    // get relative path to NULL resource
     static inline const char* GetNullPath() {return "data/textures/cursor_diff.tga";}
 };
+
+
+// ****************************************************************
+// texture access type definition
+typedef coreResourcePtr<coreTexture> coreTexturePtr;

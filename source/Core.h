@@ -43,28 +43,35 @@
 #define WIN32_LEAN_AND_MEAN
 #define GLEW_MX
 
+// TODO: remove deprecated stuff
+// TODO: add explicit keyword
+// TODO: boolean traps
+
 
 // ****************************************************************    
 // general macros and definitions
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#if !defined (_WIN32)
-    #define NULL 0
-    #define ZeroMemory(x,y) memset((x), 0, (y))
-#endif
-
 #if defined (_WIN32)
-    #define __align16 __declspec(align(16)) 
+    #define __align16 __declspec(align(16))
+    #define __thread  __declspec(thread)
 #else 
-    #define __align16  __attribute__(align(16)) 
+    #define __align16  __attribute__(align(16))
 #endif
 
-#if defined (_WIN32)
-    #define __thread __declspec(thread)
-#endif
+typedef unsigned char coreByte;
+typedef unsigned int  coreUint;
 
-enum CORE_ERROR
+class coreVector2;
+class coreVector3;
+class coreVector4;
+class coreMatrix;
+class coreFile;
+class coreArchive;
+class coreObject2D;
+
+enum coreError
 {
     CORE_OK            =   0,
     CORE_BUSY          =  10,
@@ -73,26 +80,6 @@ enum CORE_ERROR
     CORE_INVALID_CALL  = -20,
     CORE_INVALID_INPUT = -30,
 };
-
-typedef unsigned char    coreByte;
-//typedef unsigned short   coreWord;
-typedef unsigned int     coreUint;
-//typedef unsigned __int64 coreDword;
-
-class coreVector2;
-class coreVector3;
-class coreVector4;
-class coreMatrix;
-
-class coreFile;
-class coreArchive;
-
-class coreTexture;
-
-class coreObject;
-class coreObject2D;
-class coreObject3D;
-class coreSprite;
 
 
 // ****************************************************************
@@ -113,7 +100,7 @@ class coreSprite;
 #include <math.h>
 #include <cstdio>
 #include <vector>
-#include <deque>
+#include <set>
 #include <map>
 
 
@@ -124,7 +111,7 @@ class coreSprite;
 #include <SDL2/SDL_image.h>
 #include <GL/glew.h>
 #if defined (_WIN32)
-    #include <GL/GLAUX.H>
+    #include <GL/glaux.h>
 #else
     #include <GL/gl.h>
     #include <GL/glext.h>
@@ -208,7 +195,6 @@ public:
 
 // ****************************************************************    
 // engine framework
-// TODO: remove deprecated stuff
 class Core
 {
 public:
@@ -227,9 +213,9 @@ public:
     class Manager
     {
     public:
-        // object manager
-        static coreResourceManager* Resource;
         // memory manager
+        static coreResourceManager* Resource;   // resource manager
+        // object manager
     };
 
 

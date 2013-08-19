@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #pragma once
 
 
@@ -22,11 +30,11 @@ public:
     friend class coreArchive;
 
     // save file
-    bool Save(const char* pcPath);
+    coreError Save(const char* pcPath);
 
     // load and unload file data
-    void LoadData();
-    inline void UnloadData() {if(m_iArchivePos) SAFE_DELETE_ARRAY(m_pData)}
+    coreError LoadData();
+    inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
 
     // get attributes
     inline const char* GetName()const     {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
@@ -36,6 +44,9 @@ public:
 
     // check if file exists physically
     static bool FileExists(const char* pcPath);
+
+    // retrieve relative file paths from a folder
+    static bool SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
 };
 
 
@@ -56,14 +67,14 @@ public:
     ~coreArchive();
 
     // save archive
-    bool Save(const char* pcPath);
+    coreError Save(const char* pcPath);
 
     // manage file objects
-    bool AddFile(const char* pcPath);
-    bool AddFile(coreFile* pFile);
-    bool DeleteFile(const coreUint& iIndex);
-    bool DeleteFile(const char* pcPath);
-    bool DeleteFile(coreFile* pFile);
+    coreError AddFile(const char* pcPath);
+    coreError AddFile(coreFile* pFile);
+    coreError DeleteFile(const coreUint& iIndex);
+    coreError DeleteFile(const char* pcPath);
+    coreError DeleteFile(coreFile* pFile);
 
     // load and unload file data
     void LoadData();

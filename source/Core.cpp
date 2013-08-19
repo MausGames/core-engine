@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
 
 coreLog*             Core::Log               = NULL;
@@ -87,26 +95,22 @@ void Core::Run()
     // set logging level
     const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG, -1);
     pEngine->Log->SetLevel(iLevel);
-    if(iLevel < 0) pEngine->Log->Error(0, "Logging level reduced, show only warnings and errors");
+    if(iLevel < 0) pEngine->Log->Error(0, "Logging level reduced");
 #endif
 
-    // update the window event system
+    // update the window event system (main loop)
     while(pEngine->System->__UpdateEvents())
     {    
-        // update the input interface
+        // pre-update engine
         pEngine->Input->__UpdateInput();
 
-        // move and render the application
+        // move and render application
         pApplication->Move();
         pApplication->Render();
 
-        // update the graphical mouse cursor
+        // post-update engine
         pEngine->Input->__UpdateCursor();
-
-        // update the graphic scene
         pEngine->Graphic->__UpdateScene();
-
-        // update the high precission time calculation
         pEngine->System->__UpdateTime();
     }
 
@@ -121,13 +125,13 @@ void Core::Run()
 
 
 // ****************************************************************    
-//  reset engine
+// reset engine
 void Core::Reset()
 {
-    Log->Header("Reset Engine");
+    Log->Header("Engine Reset");
 
     // shut down manager
-    Manager::Resource->__Reset(false);
+    Manager::Resource->Reset(false);
 
     // delete main interfaces
     SAFE_DELETE(Input)
@@ -143,7 +147,7 @@ void Core::Reset()
 
     // re-init manager
     Log->Header("Manager");
-    Manager::Resource->__Reset(true);
+    Manager::Resource->Reset(true);
 
     Log->Header("Application Run");
 }
@@ -165,8 +169,8 @@ void Core::Quit()
 int main(int argc, char* argv[])
 {
 #if defined (_WIN32) && defined (_DEBUG)
-    //_crtBreakAlloc = 0;
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); 
+    _crtBreakAlloc = 0;
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF); 
 #endif
 
     Core::Run();

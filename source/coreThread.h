@@ -1,8 +1,16 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #pragma once
 
 
 // ****************************************************************
-// synchronous thread interface class
+// restrained thread interface class
 class coreThread
 {
 private:

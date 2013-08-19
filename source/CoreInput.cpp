@@ -1,4 +1,13 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
+
 
 // ****************************************************************    
 // constructor
@@ -10,8 +19,8 @@ CoreInput::CoreInput()
     Core::Log->Header("Input Interface");
 
     // reset memory
-    ZeroMemory(&m_Keyboard, sizeof(coreKeyboard));
-    ZeroMemory(&m_Mouse, sizeof(coreMouse));
+    memset(&m_Keyboard, 0, sizeof(coreKeyboard));
+    memset(&m_Mouse,    0, sizeof(coreMouse));
 
     // open joystick objects
     const int iNumJoysticks = SDL_NumJoysticks();
@@ -23,7 +32,7 @@ CoreInput::CoreInput()
             coreJoystick Joystick;
 
             // open joystick device
-            ZeroMemory(&Joystick, sizeof(coreJoystick));
+            memset(&Joystick, 0, sizeof(coreJoystick));
             Joystick.pHandle = SDL_JoystickOpen(i);
             m_aJoystick.push_back(Joystick);
 

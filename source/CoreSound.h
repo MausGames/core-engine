@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #pragma once
 
 
@@ -35,5 +43,5 @@ public:
     inline const ALuint& GetNextSource() {if(++m_CurSource >= m_NumSource) m_CurSource = 0; return m_pSource[m_CurSource];}
 
     // set global volume
-    inline void SetVolume(const float& fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}
+    inline void SetVolume(const float& fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}
 };

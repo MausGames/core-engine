@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #pragma once
 
 
@@ -25,6 +33,9 @@ public:
 
     // create printed string
     static const char* Print(const char* pcMessage, ...);
+
+    // compare strings with wildcards
+    static bool WildCmp(const char* s, const char* t);
 
     // open URL with webbrowser
     static void OpenURL(const char* pcURL);

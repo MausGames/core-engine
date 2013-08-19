@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
 
 
@@ -31,20 +39,35 @@ void coreResourceHandle::Update()
     if(m_iRef != 0 && m_pCur == m_pNull)
     {
         // load associated resource
-        if(m_pResource->Load(m_pFile) == CORE_OK) m_pCur = m_pResource; 
-        m_pFile->UnloadData();
+        if(m_pResource->Load(m_pFile) == CORE_OK)
+        {
+            m_pCur = m_pResource; 
+            m_pFile->UnloadData();
+        }
     }
-    else if(m_iRef == 0 && m_pCur != m_pNull) this->Unload();
+    else if(m_iRef == 0 && m_pCur != m_pNull)
+    {
+        // unload associated resource
+        this->Nullify();
+    }
 }
 
 
 // ****************************************************************
-// unload resource
-void coreResourceHandle::Unload()
+// constructor
+coreReset::coreReset()
 {
-    // unload associated resource
-    m_pCur = m_pNull;
-    m_pResource->Unload();
+    // add object to resource manager
+    Core::Manager::Resource->AddReset(this);
+}
+
+
+// ****************************************************************
+// destructor
+coreReset::~coreReset()
+{
+    // remove object from resource manager
+    Core::Manager::Resource->RemoveReset(this);
 }
 
 
@@ -70,22 +93,19 @@ coreResourceManager::~coreResourceManager()
     this->KillThread();
 
     // delete resource handles and NULL resources
-    for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
-        SAFE_DELETE(it->second)
-    for(auto it = m_apNull.begin(); it != m_apNull.end(); ++it)
-        SAFE_DELETE(it->second)
+    for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) SAFE_DELETE(it->second)
+    for(auto it = m_apNull.begin();   it != m_apNull.end();   ++it) SAFE_DELETE(it->second)
 
     // delete resource files
-    for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
-        SAFE_DELETE(*it)
-    for(auto it = m_apDirectFile.begin(); it != m_apDirectFile.end(); ++it)
-        SAFE_DELETE(it->second)
+    for(auto it = m_apArchive.begin();    it != m_apArchive.end();    ++it) SAFE_DELETE(*it)
+    for(auto it = m_apDirectFile.begin(); it != m_apDirectFile.end(); ++it) SAFE_DELETE(it->second)
 
     // clear memory
     m_apHandle.clear();
     m_apNull.clear();
     m_apArchive.clear();
     m_apDirectFile.clear();
+    m_apReset.clear();
 
     Core::Log->Info("Resource Manager destroyed");
 }
@@ -93,45 +113,79 @@ coreResourceManager::~coreResourceManager()
 
 // ****************************************************************   
 // add archive with resource files
-bool coreResourceManager::AddArchive(const char* pcPath)
+coreError coreResourceManager::AddArchive(const char* pcPath)
 {
     // load and check archive
     coreArchive* pArchive = new coreArchive(pcPath);
     if(!pArchive->GetSize())
     {
         SAFE_DELETE(pArchive)
-        return false;
+        return CORE_FILE_ERROR;
     }
 
     // add archive
     m_apArchive.push_back(pArchive);
-    return true;
+    return CORE_OK;
+}
+
+
+// ****************************************************************    
+// get resource file
+coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
+{
+    // check for direct resource file
+    if(coreFile::FileExists(pcPath))
+    {
+        if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];
+
+        // load new direct resource file
+        coreFile* pFile = new coreFile(pcPath);
+        m_apDirectFile[pcPath] = pFile;
+
+        return pFile;
+    }
+
+    // check archives
+    for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
+    {
+        coreFile* pFile = (*it)->GetFile(pcPath);
+        if(pFile) return pFile;
+    }
+
+    // resource file not found
+    return NULL;
 }
 
 
 // ****************************************************************   
 // reset resource manager
-void coreResourceManager::__Reset(const bool& bInit)
+void coreResourceManager::Reset(const bool& bInit)
 {
     if(bInit)
     {
-        // start resource thread 
-        this->StartThread("resource_thread");
-
         // re-load NULL resources
         for(auto it = m_apNull.begin(); it != m_apNull.end(); ++it)
-            it->second->Load(this->__GetResourceFile(it->first.c_str()));
+            it->second->Load(this->RetrieveResourceFile(it->first.c_str()));
+
+        // re-init reset-objects
+        for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)
+            (*it)->Reset(true);
+
+        // start resource thread 
+        this->StartThread("resource_thread");
     }
     else
     {
         // kill resource thread
         this->KillThread();
 
+        // shut down reset-objects
+        for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)
+            (*it)->Reset(false);
+
         // unload resources
-        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
-            it->second->Unload();
-        for(auto it = m_apNull.begin(); it != m_apNull.end(); ++it)
-            it->second->Unload();
+        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) it->second->Nullify();
+        for(auto it = m_apNull.begin();   it != m_apNull.end();   ++it) it->second->Unload();
     }
 }
 
@@ -172,32 +226,4 @@ void coreResourceManager::__Exit()
 {
     // dissociate secondary OpenGL context from resource thread
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
-}
-
-
-// ****************************************************************    
-// get resource file
-coreFile* coreResourceManager::__GetResourceFile(const char* pcPath)
-{
-    // check for direct resource file
-    if(coreFile::FileExists(pcPath))
-    {
-        if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];
-
-        // load new direct resource file
-        coreFile* pFile = new coreFile(pcPath);
-        m_apDirectFile[pcPath] = pFile;
-
-        return pFile;
-    }
-
-    // check archives
-    for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
-    {
-        coreFile* pFile = (*it)->GetFile(pcPath);
-        if(pFile) return pFile;
-    }
-
-    // resource file not found
-    return NULL;
 }

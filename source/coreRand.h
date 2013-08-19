@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #pragma once
 // TODO: implement mersenne twister
 
@@ -17,6 +25,7 @@ private:
 public:
     coreRand(const coreUint& iSize, int iInit = -1);
     coreRand(const coreRand& c);
+    coreRand(coreRand&& c);
     ~coreRand();
 
     // reset the generator

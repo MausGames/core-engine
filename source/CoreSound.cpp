@@ -1,10 +1,20 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
 
+
 // ****************************************************************    
-// Konstruktor
+// constructor
 CoreSound::CoreSound()
 : m_NumSource (Core::Config->GetInt(CORE_CONFIG_SOUND_CHANNELS, 24))
 , m_CurSource (0)
+, m_fVolume   (-1.0f)
 {
     Core::Log->Header("Sound Interface");
 
@@ -45,7 +55,7 @@ CoreSound::CoreSound()
 
 
 // ****************************************************************
-// Destruktor
+// destructor
 CoreSound::~CoreSound()
 {
     Core::Log->Info("Sound Interface shut down");
@@ -69,10 +79,10 @@ void CoreSound::SetListener(const coreVector3* pvPosition, const coreVector3* pv
     bool bNewOrientation = false;
 
     // set and update parameters of the listener
-    if(pvPosition)    if(m_vPosition      != *pvPosition)    {m_vPosition      = *pvPosition;    alListenerfv(AL_POSITION, (float*)&m_vPosition);}
-    if(pvVelocity)    if(m_vVelocity      != *pvVelocity)    {m_vVelocity      = *pvVelocity;    alListenerfv(AL_VELOCITY, (float*)&m_vVelocity);}
-    if(pvDirection)   if(m_avDirection[0] != *pvDirection)   {m_avDirection[0] = *pvDirection;   bNewOrientation = true;}
-    if(pvOrientation) if(m_avDirection[1] != *pvOrientation) {m_avDirection[1] = *pvOrientation; bNewOrientation = true;}
+    if(pvPosition)    {                                                          if(m_vPosition      != *pvPosition) {m_vPosition      = *pvPosition; alListenerfv(AL_POSITION, (float*)&m_vPosition);}}
+    if(pvVelocity)    {                                                          if(m_vVelocity      != *pvVelocity) {m_vVelocity      = *pvVelocity; alListenerfv(AL_VELOCITY, (float*)&m_vVelocity);}}
+    if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_avDirection[0] != vDirNorm)    {m_avDirection[0] = vDirNorm;    bNewOrientation = true;}}
+    if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_avDirection[1] != vOriNorm)    {m_avDirection[1] = vOriNorm;    bNewOrientation = true;}}
 
     if(bNewOrientation) alListenerfv(AL_ORIENTATION, (float*)m_avDirection);
 }

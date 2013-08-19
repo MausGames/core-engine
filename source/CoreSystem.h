@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #pragma once
 
 
@@ -14,12 +22,12 @@ private:
     std::vector<coreVector2> m_avAvailable;   // all available screen resolutions
     bool m_bMinimized;                        // window was minimized
 
-    float m_fTime;                            // parametrized elapsed time
+    float m_fTime;                            // parameterized elapsed time
     float m_fTimeConstant;                    // constant elapsed time
     double m_dTimeTotal;                      // passed time since start of the application
     coreUint m_iCurFrame;                     // current frame number since start of the application
 
-    float m_fTimeFactor;                      // coefficient for the parametrized elapsed time
+    float m_fTimeFactor;                      // coefficient for the parameterized elapsed time
     coreByte m_iSkipFrame;                    // skip frames
 
 #if defined (_WIN32)

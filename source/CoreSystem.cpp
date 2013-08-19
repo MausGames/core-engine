@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
 
 
@@ -105,15 +113,15 @@ CoreSystem::CoreSystem()
 
     // retrieve features of the processor
 #if defined (_DEBUG)
-    ZeroMemory(m_aaiCPUID, sizeof(int)*2*4);
+    memset(m_aaiCPUID, 0, sizeof(int)*2*4);
 #else
-#if defined (_WIN32)
-    __cpuid(m_aaiCPUID[0], 0);
-    __cpuid(m_aaiCPUID[1], 1);
-#else
-    asm volatile("cpuid" : "=a" (m_aaiCPUID[0][0]), "=b" (m_aaiCPUID[0][1]), "=c" (m_aaiCPUID[0][2]), "=d" (m_aaiCPUID[0][3]) : "a" (0), "c" (0));
-    asm volatile("cpuid" : "=a" (m_aaiCPUID[1][0]), "=b" (m_aaiCPUID[1][1]), "=c" (m_aaiCPUID[1][2]), "=d" (m_aaiCPUID[1][3]) : "a" (1), "c" (0));
-#endif
+    #if defined (_WIN32)
+        __cpuid(m_aaiCPUID[0], 0);
+        __cpuid(m_aaiCPUID[1], 1);
+    #else
+        asm volatile("cpuid" : "=a" (m_aaiCPUID[0][0]), "=b" (m_aaiCPUID[0][1]), "=c" (m_aaiCPUID[0][2]), "=d" (m_aaiCPUID[0][3]) : "a" (0), "c" (0));
+        asm volatile("cpuid" : "=a" (m_aaiCPUID[1][0]), "=b" (m_aaiCPUID[1][1]), "=c" (m_aaiCPUID[1][2]), "=d" (m_aaiCPUID[1][3]) : "a" (1), "c" (0));
+    #endif
 #endif
 
     // check for SSE support
@@ -267,7 +275,7 @@ void CoreSystem::__UpdateTime()
     clock_gettime(CLOCK_MONOTONIC, &m_PerfStartTime);
 #endif
 
-    // increase total time and calculate parametrized elapsed time
+    // increase total time and calculate parameterized elapsed time
     m_dTimeTotal += (double)m_fTimeConstant;
     m_fTime       = m_fTime ? (0.85f*m_fTime + 0.15f*m_fTimeConstant*m_fTimeFactor) : (m_fTimeConstant*m_fTimeFactor);
 

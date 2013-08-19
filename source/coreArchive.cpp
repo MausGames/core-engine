@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
 
 
@@ -48,11 +56,11 @@ coreFile::~coreFile()
 
 // ****************************************************************
 // save file
-bool coreFile::Save(const char* pcPath)
+coreError coreFile::Save(const char* pcPath)
 {
     // check file data
     this->LoadData();
-    if(!m_pData || !m_iSize) return false;
+    if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
 
     // save path
     m_sPath = pcPath;
@@ -62,7 +70,7 @@ bool coreFile::Save(const char* pcPath)
     if(!pFile)
     {
         Core::Log->Error(0, coreUtils::Print("File (%s) could not be saved", m_sPath.c_str()));
-        return false;
+        return CORE_FILE_ERROR;
     }
 
     // save file data
@@ -72,16 +80,15 @@ bool coreFile::Save(const char* pcPath)
     fclose(pFile);
     if(!m_iArchivePos) m_iArchivePos = 1;
 
-    return true;
+    return CORE_OK;
 }
 
 
 // ****************************************************************
 // load file data
-void coreFile::LoadData()
+coreError coreFile::LoadData()
 {
-    if(m_pData) return;
-    if(!m_iSize) return;
+    if(m_pData || !m_iSize) return CORE_INVALID_CALL;
 
     SDL_assert(m_iArchivePos != 0);
 
@@ -90,7 +97,7 @@ void coreFile::LoadData()
     {
         // open archive
         pFile = fopen(m_pArchive->GetPath(), "rb");
-        if(!pFile) return;
+        if(!pFile) return CORE_FILE_ERROR;
 
         // seek file data position
         fseek(pFile, m_iArchivePos, SEEK_SET);
@@ -99,7 +106,7 @@ void coreFile::LoadData()
     {
         // open direct file
         pFile = fopen(m_sPath.c_str(), "rb");
-        if(!pFile) return;
+        if(!pFile) return CORE_FILE_ERROR;
     }
 
     // cache file data
@@ -108,6 +115,8 @@ void coreFile::LoadData()
 
     // close file
     fclose(pFile);
+
+    return CORE_OK;
 }
 
 
@@ -125,6 +134,60 @@ bool coreFile::FileExists(const char* pcPath)
     }
 
     return false;
+}
+
+
+// ****************************************************************
+// retrieve relative file paths from a folder
+bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput)
+{
+    SDL_assert(pasOutput != NULL);
+
+#if defined (_WIN32)
+
+    HANDLE hFolder;
+    WIN32_FIND_DATA hFile;
+
+    // open folder
+    hFolder = FindFirstFile(coreUtils::Print("%s/%s/%s", coreUtils::AppPath(), pcFolder, pcFilter), &hFile);
+    if(hFolder == INVALID_HANDLE_VALUE) return false;
+
+    do
+    {
+        // check and add file path
+        if(hFile.cFileName[0] != '.')
+            pasOutput->push_back(coreUtils::Print("%s/%s", pcFolder, hFile.cFileName));
+    }
+    while(FindNextFile(hFolder, &hFile));
+
+    // close folder
+    FindClose(hFolder);
+
+#else
+
+    DIR* pDir;
+    struct dirent* pDirent;
+
+    // open folder
+    pDir = opendir(pcFolder);
+    if(!pDir) return false;
+
+    while((pDirent = readdir(pDir)) != NULL)
+    {
+        // check and add file path
+        if(pDirent->d_name[0] != '.')
+        {
+            if(coreUtils::WildCmp(pDirent->d_name, pcFilter))
+                pasOutput->push_back(coreUtils::Print("%s/%s", pcFolder, pDirent->d_name));
+        }
+    }
+
+    // close folder
+    closedir(pDir);
+
+#endif
+
+    return true;
 }
 
 
@@ -196,9 +259,9 @@ coreArchive::~coreArchive()
 
 // ****************************************************************
 // save archive
-bool coreArchive::Save(const char* pcPath)
+coreError coreArchive::Save(const char* pcPath)
 {
-    if(m_aFile.empty()) return false;
+    if(m_aFile.empty()) return CORE_INVALID_CALL;
 
     // cache missing file data
     for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
@@ -212,7 +275,7 @@ bool coreArchive::Save(const char* pcPath)
     if(!pArchive)
     {
         Core::Log->Error(0, coreUtils::Print("Archive (%s) could not be saved", m_sPath.c_str()));
-        return false;
+        return CORE_FILE_ERROR;
     }
 
     // save number of files
@@ -240,19 +303,19 @@ bool coreArchive::Save(const char* pcPath)
     // close archive
     fclose(pArchive);
 
-    return true;
+    return CORE_OK;
 }
 
 
 // ****************************************************************
 // add file object
-bool coreArchive::AddFile(const char* pcPath)
+coreError coreArchive::AddFile(const char* pcPath)
 {
     // check already existing file
     if(m_aFileMap.count(pcPath))
     {
         Core::Log->Error(0, coreUtils::Print("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str()));
-        return false;
+        return CORE_INVALID_INPUT;
     }
 
     // add new file object
@@ -263,16 +326,16 @@ bool coreArchive::AddFile(const char* pcPath)
     m_aFile.back()->m_pArchive    = this;
     m_aFile.back()->m_iArchivePos = 0;
 
-    return true;
+    return CORE_OK;
 }
 
-bool coreArchive::AddFile(coreFile* pFile)
+coreError coreArchive::AddFile(coreFile* pFile)
 {
     // check already existing file
     if(m_aFileMap.count(pFile->GetPath()))
     {
         Core::Log->Error(0, coreUtils::Print("File (%s) already exists in Archive (%s)", pFile->GetPath(), m_sPath.c_str()));
-        return false;
+        return CORE_INVALID_INPUT;
     }
 
     // cache missing file data
@@ -286,15 +349,15 @@ bool coreArchive::AddFile(coreFile* pFile)
     m_aFile.back()->m_pArchive    = this;
     m_aFile.back()->m_iArchivePos = 0;
 
-    return true;
+    return CORE_OK;
 }
 
 
 // ****************************************************************
 // delete file object
-bool coreArchive::DeleteFile(const coreUint& iIndex)
+coreError coreArchive::DeleteFile(const coreUint& iIndex)
 {
-    if(iIndex >= m_aFile.size()) return false;
+    if(iIndex >= m_aFile.size()) return CORE_INVALID_INPUT;
 
     coreFile* pFile = m_aFile[iIndex];
     const std::string sPath = pFile->GetPath();
@@ -304,14 +367,14 @@ bool coreArchive::DeleteFile(const coreUint& iIndex)
 
     // remove file object
     m_aFile.erase(m_aFile.begin()+iIndex);
-    m_aFileMap.erase(m_aFileMap.find(sPath));
+    m_aFileMap.erase(sPath);
 
-    return true;
+    return CORE_OK;
 }
 
-bool coreArchive::DeleteFile(const char* pcPath)
+coreError coreArchive::DeleteFile(const char* pcPath)
 {
-    if(!m_aFileMap.count(pcPath)) return false;
+    if(!m_aFileMap.count(pcPath)) return CORE_INVALID_INPUT;
 
     // search index and delete file
     for(coreUint i = 0; i < m_aFile.size(); ++i)
@@ -320,10 +383,10 @@ bool coreArchive::DeleteFile(const char* pcPath)
             return this->DeleteFile(i);
     }
 
-    return false;
+    return CORE_OK;
 }
 
-bool coreArchive::DeleteFile(coreFile* pFile)
+coreError coreArchive::DeleteFile(coreFile* pFile)
 {
     return this->DeleteFile(pFile->GetPath());
 }

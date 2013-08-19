@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
 
 const float coreRand::s_fPrecision = 1.0f/float(RAND_MAX);
@@ -28,6 +36,16 @@ coreRand::coreRand(const coreRand& c)
 , m_NumRand (c.m_NumRand)
 , m_CurRand (c.m_CurRand)
 {
+}
+
+coreRand::coreRand(coreRand&& c)
+: m_piRand  (c.m_piRand)
+, m_NumRand (c.m_NumRand)
+, m_CurRand (c.m_CurRand)
+{
+    c.m_piRand  = 0;
+    c.m_NumRand = 0;
+    c.m_CurRand = 0;
 }
 
 

@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #include "Core.h"
 
 int          coreTexture::s_iActiveUnit                     = 0;
@@ -51,10 +59,10 @@ coreTexture::~coreTexture()
 
 // ****************************************************************
 // load texture resource data
-int coreTexture::Load(coreFile* pFile)
+coreError coreTexture::Load(coreFile* pFile)
 {
     // check sync object status
-    const int iStatus = this->CheckSync();
+    const coreError iStatus = this->CheckSync();
     if(iStatus != CORE_INVALID_CALL) return iStatus;
 
     SDL_assert(m_iID == 0);
@@ -150,7 +158,7 @@ int coreTexture::Load(coreFile* pFile)
 
 // ****************************************************************
 // unload texture resource data
-int coreTexture::Unload()
+coreError coreTexture::Unload()
 {
     SDL_assert(m_iUnit < 0);
 
@@ -232,17 +240,14 @@ void coreTexture::Disable()
 void coreTexture::DisableAll()
 {
     // traverse all texture units
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
-    {
-        if(s_apBound[i])
-            s_apBound[i]->Disable();
-    }
+    for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i)
+        if(s_apBound[i]) s_apBound[i]->Disable();
 }
 
 
 // ****************************************************************
 // check sync object status
-int coreTexture::CheckSync()
+coreError coreTexture::CheckSync()
 {
     if(!m_iID || !m_pSync) return CORE_INVALID_CALL;
 
