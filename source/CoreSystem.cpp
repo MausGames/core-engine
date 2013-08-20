@@ -102,13 +102,14 @@ CoreSystem::CoreSystem()
     // init high precission time
 #if defined (_WIN32)
     LARGE_INTEGER Frequency;
-    QueryPerformanceCounter(&m_PerfStartTime);
-    QueryPerformanceCounter(&m_PerfEndTime);
     QueryPerformanceFrequency(&Frequency);
     m_fPerfFrequency = 1.0f/float(Frequency.QuadPart);
+
+    QueryPerformanceCounter(&m_PerfStartTime); 
+    m_PerfEndTime = m_PerfStartTime;
 #else
     clock_gettime(CLOCK_MONOTONIC, &m_PerfStartTime);
-    clock_gettime(CLOCK_MONOTONIC, &m_PerfEndTime);
+    m_PerfEndTime = m_PerfStartTime;
 #endif
 
     // retrieve features of the processor
@@ -264,18 +265,18 @@ bool CoreSystem::__UpdateEvents()
 // update the high precission time calculation
 void CoreSystem::__UpdateTime()
 {
-    // measure and calculate elapsed time
+    // measure and calculate constant time
 #if defined (_WIN32)
     QueryPerformanceCounter(&m_PerfEndTime);
     m_fTimeConstant = float(m_PerfEndTime.QuadPart - m_PerfStartTime.QuadPart) * m_fPerfFrequency;
     QueryPerformanceCounter(&m_PerfStartTime);
 #else
     clock_gettime(CLOCK_MONOTONIC, &m_PerfEndTime);
-    m_fConstantTime = float(0.000000001*(double(m_PerfEndTime.tv_sec - m_PerfStartTime.tv_sec)*1000000000.0 + double(m_PerfEndTime.tv_nsec - m_PerfStartTime.tv_nsec)));
+    m_fTimeConstant = float(0.000000001*(double(m_PerfEndTime.tv_sec - m_PerfStartTime.tv_sec)*1000000000.0 + double(m_PerfEndTime.tv_nsec - m_PerfStartTime.tv_nsec)));
     clock_gettime(CLOCK_MONOTONIC, &m_PerfStartTime);
 #endif
 
-    // increase total time and calculate parameterized elapsed time
+    // increase total time and calculate parameterized time
     m_dTimeTotal += (double)m_fTimeConstant;
     m_fTime       = m_fTime ? (0.85f*m_fTime + 0.15f*m_fTimeConstant*m_fTimeFactor) : (m_fTimeConstant*m_fTimeFactor);
 
