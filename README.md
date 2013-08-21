@@ -2,10 +2,10 @@
 
 # Description
 
-The Core Engine is a C++ framework based on the [SDL library][10] for Windows and Linux games, currently migrated and re-written from old code.  
-This project will take some time reaching a reasonable state, but it's constantly updated and improved.
+The Core Engine is a **C++ framework** based on the [SDL library][10] for **Windows** and **Linux** games, currently migrated and re-written from old code.  
+This project will take some time reaching a reasonable state, but it's **constantly updated and improved**.
 
-The overall focus lies on a supportive coding framework for very fast and simple development of multimedia applications and games.  
+The overall focus lies on a **supportive coding framework for very fast and simple development** of multimedia applications and games.  
 Some of the features already implemented are:
 
 - Interfaces for System (Window, Events, Time), Graphics (Camera, View Frustum), Audio and Input
@@ -13,7 +13,7 @@ Some of the features already implemented are:
 - SIMD Math (Basics, Vector, Matrix), Utilities (Data, Random, Splines) and Threads
 - HTML Logs and Configuration Files
 
-If you have any suggestions or problems, feel free to contact me or simply create an appropriate issue on Bitbucket.  
+If you have any suggestions or problems, feel free to contact me or simply create an issue on Bitbucket.  
 *(currently the framework works only with Visual C++)*
 
 # Libraries
