@@ -25,7 +25,7 @@ void CoreApp::Render()
         if(Ptr[i].IsActive())
         {
             glLoadIdentity();
-            Core::Graphic->EnableOrtho();
+            Core::Graphics->EnableOrtho();
 
             Ptr[i]->Enable(0);
             glBegin(GL_TRIANGLE_STRIP);

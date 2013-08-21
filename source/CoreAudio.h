@@ -10,8 +10,8 @@
 
 
 // ****************************************************************
-// main sound interface
-class CoreSound
+// main audio interface
+class CoreAudio
 {
 private:
     ALCcontext* m_pContext;         // OpenAL context
@@ -29,8 +29,8 @@ private:
 
 
 private:
-    CoreSound();
-    ~CoreSound();
+    CoreAudio();
+    ~CoreAudio();
     friend class Core;
 
 

@@ -16,8 +16,8 @@ coreUtils*           Core::Utils             = NULL;
 coreRand*            Core::Rand              = NULL;
                                              
 CoreSystem*          Core::System            = NULL;
-CoreGraphic*         Core::Graphic           = NULL;
-CoreSound*           Core::Sound             = NULL;
+CoreGraphics*        Core::Graphics          = NULL;
+CoreAudio*           Core::Audio             = NULL;
 CoreInput*           Core::Input             = NULL;
 
 coreResourceManager* Core::Manager::Resource = NULL;
@@ -42,10 +42,10 @@ Core::Core()
     Rand  = new coreRand(2048);
 
     // init main interfaces
-    System  = new CoreSystem();
-    Graphic = new CoreGraphic();
-    Sound   = new CoreSound();
-    Input   = new CoreInput();
+    System   = new CoreSystem();
+    Graphics = new CoreGraphics();
+    Audio    = new CoreAudio();
+    Input    = new CoreInput();
 
     // init manager
     Log->Header("Manager");
@@ -62,8 +62,8 @@ Core::~Core()
 
     // delete main interfaces
     SAFE_DELETE(Input)
-    SAFE_DELETE(Sound)
-    SAFE_DELETE(Graphic)
+    SAFE_DELETE(Audio)
+    SAFE_DELETE(Graphics)
     SAFE_DELETE(System)
 
     // delete utilities
@@ -91,7 +91,7 @@ void Core::Run()
     CoreApp* pApplication = new CoreApp();
     pEngine->Log->Header("Application Run");
 
-#if !defined (_DEBUG)
+#if !defined(_DEBUG)
     // set logging level
     const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG, -1);
     pEngine->Log->SetLevel(iLevel);
@@ -110,7 +110,7 @@ void Core::Run()
 
         // post-update engine
         pEngine->Input->__UpdateCursor();
-        pEngine->Graphic->__UpdateScene();
+        pEngine->Graphics->__UpdateScene();
         pEngine->System->__UpdateTime();
     }
 
@@ -135,15 +135,15 @@ void Core::Reset()
 
     // delete main interfaces
     SAFE_DELETE(Input)
-    SAFE_DELETE(Sound)
-    SAFE_DELETE(Graphic)
+    SAFE_DELETE(Audio)
+    SAFE_DELETE(Graphics)
     SAFE_DELETE(System)
 
     // re-init main interfaces
-    System  = new CoreSystem();
-    Graphic = new CoreGraphic();
-    Sound   = new CoreSound();
-    Input   = new CoreInput();
+    System   = new CoreSystem();
+    Graphics = new CoreGraphics();
+    Audio    = new CoreAudio();
+    Input    = new CoreInput();
 
     // re-init manager
     Log->Header("Manager");
@@ -168,7 +168,7 @@ void Core::Quit()
 // main function
 int main(int argc, char* argv[])
 {
-#if defined (_WIN32) && defined (_DEBUG)
+#if defined(_WIN32) && defined(_DEBUG)
     _crtBreakAlloc = 0;
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF); 
 #endif

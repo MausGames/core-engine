@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#if defined (_WIN32)
+#if defined(_WIN32)
     #include <Shellapi.h>
 #endif
 
@@ -23,7 +23,7 @@ const char* coreUtils::AppName()
     char* pcString = __NextString();
 
     // receive name
-#if defined (_WIN32)
+#if defined(_WIN32)
     GetModuleFileName(NULL, pcString, 255);
     return strrchr(pcString, '\\')+1;
 #else
@@ -40,7 +40,7 @@ const char* coreUtils::AppPath()
     char* pcString = __NextString();
 
     // receive path
-#if defined (_WIN32)
+#if defined(_WIN32)
     GetCurrentDirectory(255, pcString);
     strcat(pcString, "\\");
 #else
@@ -94,7 +94,6 @@ const char* coreUtils::Print(const char* pcMessage, ...)
 bool coreUtils::WildCmp(const char* s, const char* t)
 {
 	return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && WildCmp(s+1,t+1) : !*t : WildCmp(s,t+1) || *s && WildCmp(s+1,t);
-
 }
 
 
@@ -102,7 +101,7 @@ bool coreUtils::WildCmp(const char* s, const char* t)
 // open URL with webbrowser
 void coreUtils::OpenURL(const char* pcURL)
 {
-#if defined (_WIN32)
+#if defined(_WIN32)
     ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL);
 #else
     if(system(NULL)) system(coreUtils::Print("xdg-open %s", pcURL));

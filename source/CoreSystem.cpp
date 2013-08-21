@@ -40,12 +40,12 @@ CoreSystem::CoreSystem()
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 24);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHIC_MULTISAMPLING, 0));
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_MULTISAMPLING, 0));
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
     SDL_GL_SetSwapInterval(1);
 
     // try to force OpenGL context version
-    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHIC_FORCEOPENGL, 0.0f);
+    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL, 0.0f);
     if(fForceOpenGL)
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(floorf(fForceOpenGL))); 
@@ -100,23 +100,20 @@ CoreSystem::CoreSystem()
     else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
 
     // init high precission time
-#if defined (_WIN32)
-    LARGE_INTEGER Frequency;
-    QueryPerformanceFrequency(&Frequency);
-    m_fPerfFrequency = 1.0f/float(Frequency.QuadPart);
-
-    QueryPerformanceCounter(&m_PerfStartTime); 
-    m_PerfEndTime = m_PerfStartTime;
+#if defined(_WIN32)
+    QueryPerformanceFrequency(&m_PerfEndTime);
+    m_fPerfFrequency = 1.0f/float(m_PerfEndTime.QuadPart);
+    QueryPerformanceCounter(&m_PerfEndTime); 
 #else
-    clock_gettime(CLOCK_MONOTONIC, &m_PerfStartTime);
-    m_PerfEndTime = m_PerfStartTime;
+    clock_gettime(CLOCK_MONOTONIC, &m_PerfEndTime);
 #endif
+    m_PerfStartTime = m_PerfEndTime;
 
     // retrieve features of the processor
-#if defined (_DEBUG)
+#if defined(_DEBUG)
     memset(m_aaiCPUID, 0, sizeof(int)*2*4);
 #else
-    #if defined (_WIN32)
+    #if defined(_WIN32)
         __cpuid(m_aaiCPUID[0], 0);
         __cpuid(m_aaiCPUID[1], 1);
     #else
@@ -266,15 +263,14 @@ bool CoreSystem::__UpdateEvents()
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate constant time
-#if defined (_WIN32)
+#if defined(_WIN32)
     QueryPerformanceCounter(&m_PerfEndTime);
     m_fTimeConstant = float(m_PerfEndTime.QuadPart - m_PerfStartTime.QuadPart) * m_fPerfFrequency;
-    QueryPerformanceCounter(&m_PerfStartTime);
 #else
     clock_gettime(CLOCK_MONOTONIC, &m_PerfEndTime);
     m_fTimeConstant = float(0.000000001*(double(m_PerfEndTime.tv_sec - m_PerfStartTime.tv_sec)*1000000000.0 + double(m_PerfEndTime.tv_nsec - m_PerfStartTime.tv_nsec)));
-    clock_gettime(CLOCK_MONOTONIC, &m_PerfStartTime);
 #endif
+    m_PerfStartTime = m_PerfEndTime;
 
     // increase total time and calculate parameterized time
     m_dTimeTotal += (double)m_fTimeConstant;
@@ -297,7 +293,7 @@ void CoreSystem::__UpdateTime()
 // show message box
 void CoreSystem::MsgBox(const char* pcMessage, const char* pcTitle, const int& iType)
 {
-#if defined (_WIN32)
+#if defined(_WIN32)
     switch(iType)
     {
     case 0: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONINFORMATION); break;

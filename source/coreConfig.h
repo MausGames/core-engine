@@ -11,21 +11,21 @@
 
 // ****************************************************************
 // main configuration definitions
-#define CORE_CONFIG_SYSTEM_WIDTH           "System",  "Width"
-#define CORE_CONFIG_SYSTEM_HEIGHT          "System",  "Height"
-#define CORE_CONFIG_SYSTEM_FULLSCREEN      "System",  "Fullscreen"
-#define CORE_CONFIG_SYSTEM_LOG             "System",  "Log"
-#define CORE_CONFIG_GRAPHIC_FOV            "Graphic", "FOV"
-#define CORE_CONFIG_GRAPHIC_CLIP_NEAR      "Graphic", "ClipNear"
-#define CORE_CONFIG_GRAPHIC_CLIP_FAR       "Graphic", "ClipFar"
-#define CORE_CONFIG_GRAPHIC_MULTISAMPLING  "Graphic", "AntiAliasing"
-#define CORE_CONFIG_GRAPHIC_TEXTUREFILTER  "Graphic", "TextureFilter"
-#define CORE_CONFIG_GRAPHIC_POSTPROCESSING "Graphic", "PostProcessing"
-#define CORE_CONFIG_GRAPHIC_FORCEOPENGL    "Graphic", "ForceOpenGL"
-#define CORE_CONFIG_SOUND_VOLUME_GLOBAL    "Sound",   "VolumeGlobal"
-#define CORE_CONFIG_SOUND_VOLUME_SOUND     "Sound",   "VolumeSound"
-#define CORE_CONFIG_SOUND_VOLUME_MUSIC     "Sound",   "VolumeMusic"
-#define CORE_CONFIG_SOUND_CHANNELS         "Sound",   "Channels"
+#define CORE_CONFIG_SYSTEM_WIDTH            "System",   "Width"
+#define CORE_CONFIG_SYSTEM_HEIGHT           "System",   "Height"
+#define CORE_CONFIG_SYSTEM_FULLSCREEN       "System",   "Fullscreen"
+#define CORE_CONFIG_SYSTEM_LOG              "System",   "Log"
+#define CORE_CONFIG_GRAPHICS_FOV            "Graphics", "FOV"
+#define CORE_CONFIG_GRAPHICS_CLIP_NEAR      "Graphics", "ClipNear"
+#define CORE_CONFIG_GRAPHICS_CLIP_FAR       "Graphics", "ClipFar"
+#define CORE_CONFIG_GRAPHICS_MULTISAMPLING  "Graphics", "AntiAliasing"
+#define CORE_CONFIG_GRAPHICS_TEXTUREFILTER  "Graphics", "TextureFilter"
+#define CORE_CONFIG_GRAPHICS_POSTPROCESSING "Graphics", "PostProcessing"
+#define CORE_CONFIG_GRAPHICS_FORCEOPENGL    "Graphics", "ForceOpenGL"
+#define CORE_CONFIG_AUDIO_VOLUME_GLOBAL     "Audio",    "VolumeGlobal"
+#define CORE_CONFIG_AUDIO_VOLUME_SOUND      "Audio",    "VolumeSound"
+#define CORE_CONFIG_AUDIO_VOLUME_MUSIC      "Audio",    "VolumeMusic"
+#define CORE_CONFIG_AUDIO_CHANNELS          "Audio",    "Channels"
 
 
 // ****************************************************************

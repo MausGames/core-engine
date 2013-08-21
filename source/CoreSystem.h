@@ -30,7 +30,7 @@ private:
     float m_fTimeFactor;                      // coefficient for the parameterized time
     coreByte m_iSkipFrame;                    // skip frames
 
-#if defined (_WIN32)
+#if defined(_WIN32)
     float m_fPerfFrequency;                   // high precission time coefficient (WIN32)
     LARGE_INTEGER m_PerfStartTime;            // high precission start time value (WIN32)
     LARGE_INTEGER m_PerfEndTime;              // high precission end time value (WIN32)

@@ -195,7 +195,7 @@ void coreResourceManager::Reset(const bool& bInit)
 int coreResourceManager::__Init()
 {
     // assign secondary OpenGL context to resource thread
-    if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphic->GetResourceContext()))
+    if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphics->GetResourceContext()))
         Core::Log->Error(1, coreUtils::Print("Secondary OpenGL context could not be assigned to resource thread (SDL: %s)", SDL_GetError()));
     else Core::Log->Info("Secondary OpenGL context assigned to resource thread");
 

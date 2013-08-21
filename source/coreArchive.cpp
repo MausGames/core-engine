@@ -143,14 +143,18 @@ bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vec
 {
     SDL_assert(pasOutput != NULL);
 
-#if defined (_WIN32)
+#if defined(_WIN32)
 
     HANDLE hFolder;
     WIN32_FIND_DATA hFile;
 
     // open folder
     hFolder = FindFirstFile(coreUtils::Print("%s/%s/%s", coreUtils::AppPath(), pcFolder, pcFilter), &hFile);
-    if(hFolder == INVALID_HANDLE_VALUE) return false;
+    if(hFolder == INVALID_HANDLE_VALUE)
+    {
+        Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcFolder));
+        return false;
+    }
 
     do
     {
@@ -170,7 +174,11 @@ bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vec
 
     // open folder
     pDir = opendir(pcFolder);
-    if(!pDir) return false;
+    if(!pDir)
+    {
+        Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcFolder));
+        return false;
+    }
 
     while((pDirent = readdir(pDir)) != NULL)
     {

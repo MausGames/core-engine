@@ -53,7 +53,7 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#if defined (_WIN32)
+#if defined(_WIN32)
     #define __align16 __declspec(align(16))
     #define __thread  __declspec(thread)
 #else 
@@ -84,7 +84,7 @@ enum coreError
 
 // ****************************************************************
 // base libraries
-#if defined (_WIN32)
+#if defined(_WIN32)
     #include <windows.h>
     #undef DeleteFile
 #else
@@ -110,7 +110,7 @@ enum coreError
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <GL/glew.h>
-#if defined (_WIN32)
+#if defined(_WIN32)
     #include <GL/glaux.h>
 #else
     #include <GL/gl.h>
@@ -152,8 +152,8 @@ extern __thread GLEWContext g_GlewContext;
 // ****************************************************************
 // interface classes
 #include "CoreSystem.h"
-#include "CoreGraphic.h"
-#include "CoreSound.h"
+#include "CoreGraphics.h"
+#include "CoreAudio.h"
 #include "CoreInput.h"
 
 
@@ -198,17 +198,17 @@ public:
 class Core
 {
 public:
-    static coreLog* Log;           // log file
-    static coreConfig* Config;     // configuration file
+    static coreLog* Log;             // log file
+    static coreConfig* Config;       // configuration file
 
-    static coreMath* Math;         // math collection access
-    static coreUtils* Utils;       // utils collection access
-    static coreRand* Rand;         // global random number generator
+    static coreMath* Math;           // math collection access
+    static coreUtils* Utils;         // utils collection access
+    static coreRand* Rand;           // global random number generator
 
-    static CoreSystem* System;     // main system interface
-    static CoreGraphic* Graphic;   // main graphic interface
-    static CoreSound* Sound;       // main sound interface
-    static CoreInput* Input;       // main input interface
+    static CoreSystem* System;       // main system interface
+    static CoreGraphics* Graphics;   // main graphics interface
+    static CoreAudio* Audio;         // main audio interface
+    static CoreInput* Input;         // main input interface
 
     class Manager
     {

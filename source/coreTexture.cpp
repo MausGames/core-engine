@@ -77,7 +77,7 @@ coreError coreTexture::Load(coreFile* pFile)
     }
 
     const coreUint iDataSize = pData->w * pData->h * 4;
-    const bool bMipMap       = Core::Graphic->SupportFeature("GL_ARB_framebuffer_object");
+    const bool bMipMap       = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
 
     // save texture attributes
     m_sPath       = pFile->GetPath();
@@ -126,7 +126,7 @@ coreError coreTexture::Load(coreFile* pFile)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,         GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,             GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,             GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHIC_TEXTUREFILTER, 0));
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER, 0));
 
         // load texture data from PBO
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
@@ -139,7 +139,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_AtomicUnlock(&s_iLock);
 
     // generate sync object or flush all commands
-    if(Core::Graphic->SupportFeature("GL_ARB_sync")) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, NULL);
+    if(Core::Graphics->SupportFeature("GL_ARB_sync")) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, NULL);
     else glFlush();
 
     // delete PBO

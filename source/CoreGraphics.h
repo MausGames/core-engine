@@ -10,8 +10,8 @@
 
 
 // ****************************************************************
-// main graphic interface
-class CoreGraphic
+// main graphics interface
+class CoreGraphics
 {
 private:
     SDL_GLContext m_RenderContext;             // primary OpenGL context for render operations
@@ -36,11 +36,11 @@ private:
 
 
 private:
-    CoreGraphic();
-    ~CoreGraphic();
+    CoreGraphics();
+    ~CoreGraphics();
     friend class Core;
 
-    // update the graphic scene
+    // update the graphics scene
     void __UpdateScene();
 
 

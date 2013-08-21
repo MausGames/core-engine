@@ -11,12 +11,12 @@
 
 // ****************************************************************    
 // constructor
-CoreSound::CoreSound()
-: m_NumSource (Core::Config->GetInt(CORE_CONFIG_SOUND_CHANNELS, 24))
+CoreAudio::CoreAudio()
+: m_NumSource (Core::Config->GetInt(CORE_CONFIG_AUDIO_CHANNELS, 24))
 , m_CurSource (0)
 , m_fVolume   (-1.0f)
 {
-    Core::Log->Header("Sound Interface");
+    Core::Log->Header("Audio Interface");
 
     // create OpenAL context
     if(!alutInit(NULL, NULL))
@@ -46,22 +46,22 @@ CoreSound::CoreSound()
     this->SetListener(0.0f);
 
     // reset volume
-    this->SetVolume(Core::Config->GetFloat(CORE_CONFIG_SOUND_VOLUME_GLOBAL, 0.5f));
+    this->SetVolume(Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_GLOBAL, 0.5f));
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR) Core::Log->Error(0, coreUtils::Print("Error initializing sound interface (Error Code: %d)", iError));
+    if(iError != AL_NO_ERROR) Core::Log->Error(0, coreUtils::Print("Error initializing Audio Interface (Error Code: %d)", iError));
 }
 
 
 // ****************************************************************
 // destructor
-CoreSound::~CoreSound()
+CoreAudio::~CoreAudio()
 {
-    Core::Log->Info("Sound Interface shut down");
+    Core::Log->Info("Audio Interface shut down");
 
     // save global volume
-    Core::Config->SetFloat(CORE_CONFIG_SOUND_VOLUME_GLOBAL, m_fVolume);
+    Core::Config->SetFloat(CORE_CONFIG_AUDIO_VOLUME_GLOBAL, m_fVolume);
 
     // delete sound channels
     alDeleteSources(m_NumSource, m_pSource);
@@ -74,7 +74,7 @@ CoreSound::~CoreSound()
 
 // ****************************************************************
 // control the listener
-void CoreSound::SetListener(const coreVector3* pvPosition, const coreVector3* pvVelocity, const coreVector3* pvDirection, const coreVector3* pvOrientation)
+void CoreAudio::SetListener(const coreVector3* pvPosition, const coreVector3* pvVelocity, const coreVector3* pvDirection, const coreVector3* pvOrientation)
 {
     bool bNewOrientation = false;
 
@@ -87,13 +87,13 @@ void CoreSound::SetListener(const coreVector3* pvPosition, const coreVector3* pv
     if(bNewOrientation) alListenerfv(AL_ORIENTATION, (float*)m_avDirection);
 }
 
-void CoreSound::SetListener(const float& fSpeed)
+void CoreAudio::SetListener(const float& fSpeed)
 {
-    const coreVector3 vVelocity = (Core::Graphic->GetCamPosition() - m_vPosition) * fSpeed * Core::System->GetTime();
+    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * Core::System->GetTime();
 
     // adjust listener with camera attributes
-    this->SetListener(&Core::Graphic->GetCamPosition(),
+    this->SetListener(&Core::Graphics->GetCamPosition(),
                       &vVelocity,
-                      &Core::Graphic->GetCamDirection(),
-                      &Core::Graphic->GetCamOrientation());
+                      &Core::Graphics->GetCamDirection(),
+                      &Core::Graphics->GetCamOrientation());
 }

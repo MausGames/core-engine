@@ -46,13 +46,7 @@
     <ClCompile Include="..\..\..\source\coreArchive.cpp">
       <Filter>Engine\01_Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\CoreGraphic.cpp">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\CoreInput.cpp">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\CoreSound.cpp">
       <Filter>Engine\03_Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\CoreSystem.cpp">
@@ -85,6 +79,12 @@
     <ClCompile Include="..\..\..\source\coreThread.cpp">
       <Filter>Engine\04_Components\01_System</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\CoreAudio.cpp">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\CoreGraphics.cpp">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\Core.h">
@@ -99,13 +99,7 @@
     <ClInclude Include="..\..\..\source\coreArchive.h">
       <Filter>Engine\01_Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\CoreGraphic.h">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\CoreInput.h">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\CoreSound.h">
       <Filter>Engine\03_Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\CoreSystem.h">
@@ -137,6 +131,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\coreThread.h">
       <Filter>Engine\04_Components\01_System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\CoreAudio.h">
+      <Filter>Engine\03_Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\CoreGraphics.h">
+      <Filter>Engine\03_Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

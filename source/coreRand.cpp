@@ -17,7 +17,7 @@ coreRand::coreRand(const coreUint& iSize, int iInit)
 : m_NumRand (iSize)
 , m_CurRand (0)
 {
-#if defined (_DEBUG)
+#if defined(_DEBUG)
     // always the same random numbers in debug-mode
     if(iInit < 0) iInit = 0;
 #endif

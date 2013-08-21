@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////
 #pragma once
 // TODO: compile SDL_image with png-support
+// TODO: use libjpeg-turbo instead of the normal libjpeg
 // TODO: check for max available texture units
 
 

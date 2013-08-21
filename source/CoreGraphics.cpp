@@ -11,17 +11,17 @@
 
 // ******************************************************************
 // constructor
-CoreGraphic::CoreGraphic()
-: m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHIC_FOV, 45.0f))
-, m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHIC_CLIP_NEAR, 0.1f))
-, m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHIC_CLIP_FAR, 1000.0f))
+CoreGraphics::CoreGraphics()
+: m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV, 45.0f))
+, m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR, 0.1f))
+, m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR, 1000.0f))
 , m_vCamPosition    (coreVector3(0.0f,0.0f, 0.0f))
 , m_vCamDirection   (coreVector3(0.0f,0.0f,-1.0f))
 , m_vCamOrientation (coreVector3(0.0f,1.0f, 0.0f))
 , m_mCurProjection  (coreMatrix::Identity())
 , m_vCurResolution  (coreVector2(0.0f,0.0f))
 {
-    Core::Log->Header("Graphic Interface");
+    Core::Log->Header("Graphics Interface");
 
     // create OpenGL contexts
     m_RenderContext   = SDL_GL_CreateContext(Core::System->GetWindow());
@@ -50,7 +50,7 @@ CoreGraphic::CoreGraphic()
     Core::Log->ListEnd();
 
     // set numerical OpenGL version
-    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHIC_FORCEOPENGL, 0.0f);
+    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL, 0.0f);
     if(fForceOpenGL) m_fOpenGL = fForceOpenGL;
     else
     {
@@ -119,9 +119,9 @@ CoreGraphic::CoreGraphic()
 
 // ******************************************************************
 // destructor
-CoreGraphic::~CoreGraphic()
+CoreGraphics::~CoreGraphics()
 {
-    Core::Log->Info("Graphic Interface shut down");
+    Core::Log->Info("Graphics Interface shut down");
 
     // clear memory
     m_abFeature.clear();
@@ -136,14 +136,14 @@ CoreGraphic::~CoreGraphic()
 
 
 // ******************************************************************
-// update the graphic scene
-void CoreGraphic::__UpdateScene()
+// update the graphics scene
+void CoreGraphics::__UpdateScene()
 {
     // swap main frame buffers
     SDL_GL_SwapWindow(Core::System->GetWindow()); 
 
     // reset depth buffer
-#if defined (_DEBUG)
+#if defined(_DEBUG)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #else
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -153,7 +153,7 @@ void CoreGraphic::__UpdateScene()
 
 // ******************************************************************
 // set camera and create camera matrix
-void CoreGraphic::SetCamera(const coreVector3* pvPosition, const coreVector3* pvDirection, const coreVector3* pvOrientation)
+void CoreGraphics::SetCamera(const coreVector3* pvPosition, const coreVector3* pvDirection, const coreVector3* pvOrientation)
 {
     bool bNewCamera = false;
 
@@ -169,7 +169,7 @@ void CoreGraphic::SetCamera(const coreVector3* pvPosition, const coreVector3* pv
 
 // ******************************************************************
 // resize view and create projection matrices
-void CoreGraphic::ResizeView(coreVector2 vResolution)
+void CoreGraphics::ResizeView(coreVector2 vResolution)
 {
     if(!vResolution.x) vResolution.x = Core::System->GetResolution().x;
     if(!vResolution.y) vResolution.y = Core::System->GetResolution().y;
@@ -189,7 +189,7 @@ void CoreGraphic::ResizeView(coreVector2 vResolution)
 
 // ******************************************************************
 // enable perspective projection matrix
-void CoreGraphic::EnablePerspective()
+void CoreGraphics::EnablePerspective()
 {
     if(m_mCurProjection == m_mPerspective) return;
 
@@ -203,7 +203,7 @@ void CoreGraphic::EnablePerspective()
 
 // ******************************************************************
 // enable orthogonal projection matrix
-void CoreGraphic::EnableOrtho()
+void CoreGraphics::EnableOrtho()
 {
     if(m_mCurProjection == m_mOrtho) return;
 
@@ -216,14 +216,14 @@ void CoreGraphic::EnableOrtho()
 
 // ******************************************************************
 // create a screenshot
-void CoreGraphic::Screenshot(const char* pcPath)
+void CoreGraphics::Screenshot(const char* pcPath)
 {
     // TODO: implement function
     // ? extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
     // ? extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst);
 }
 
-void CoreGraphic::Screenshot()
+void CoreGraphics::Screenshot()
 {
     // TODO: implement function
     this->Screenshot("");
