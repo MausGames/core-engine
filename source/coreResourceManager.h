@@ -22,7 +22,7 @@ public:
     virtual ~coreResource()       {}
 
     // load and unload resource data
-    inline coreError Load(const char* pcPath) {return this->Load(&coreFile(pcPath));}
+    inline coreError Load(const char* pcPath) {coreFile File(pcPath); return this->Load(&File);}
     virtual coreError Load(coreFile* pFile) = 0;
     virtual coreError Unload()              = 0;
 
@@ -125,7 +125,7 @@ public:
     coreResourceManager();
     ~coreResourceManager();
 
-    // load resource and return resource handle
+    // load resource and retrieve resource handle
     template <typename T> coreResourceHandle* Load(const char* pcPath);
 
     // control resource files
@@ -212,7 +212,7 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 
 // ****************************************************************
-// load resource and return resource handle
+// load resource and retrieve resource handle
 template <typename T> coreResourceHandle* coreResourceManager::Load(const char* pcPath)
 {
     // check for existing resource handle

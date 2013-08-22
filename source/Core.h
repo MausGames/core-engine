@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//|     _____ ____  _____  ______      ______ _   _  _____ _____ _   _ ______    |//
-//|    / ____/ __ \|  __ \|  ____|    |  ____| \ | |/ ____|_   _| \ | |  ____|   |//
-//|   | |   | |  | | |__) | |__ ______| |__  |  \| | |  __  | | |  \| | |__      |//
-//|   | |   | |  | |  _  /|  __|______|  __| |     | | |_ | | | |     |  __|     |//
-//|   | |___| |__| | | \ \| |____     | |____| |\  | |__| |_| |_| |\  | |____    |//
-//|    \_____\____/|_|  \_\______|    |______|_| \_|\_____|_____|_| \_|______|   |//
+//|      _____ ____  _____  ______    ______ _   _  _____ _____ _   _ ______     |//
+//|     / ____/ __ \|  __ \|  ____|  |  ____| \ | |/ ____|_   _| \ | |  ____|    |//
+//|    | |   | |  | | |__) | |__     | |__  |  \| | |  __  | | |  \| | |__       |//
+//|    | |   | |  | |  _  /|  __|    |  __| |     | | |_ | | | |     |  __|      |//
+//|    | |___| |__| | | \ \| |____   | |____| |\  | |__| |_| |_| |\  | |____     |//
+//|     \_____\____/|_|  \_\______|  |______|_| \_|\_____|_____|_| \_|______|    |//
 //|                                                                              |//
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
@@ -35,11 +35,8 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 #pragma once
-
-#pragma warning(disable : 4995)
 #define _CRT_SECURE_NO_DEPRECATE 
 #define _SCL_SECURE_NO_DEPRECATE
-
 #define WIN32_LEAN_AND_MEAN
 #define GLEW_MX
 
@@ -53,11 +50,13 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#if defined(_WIN32)
-    #define __align16 __declspec(align(16))
-    #define __thread  __declspec(thread)
+#if defined(_MSC_VER)
+    #define __align16(v) __declspec(align(16)) v
+    #define __thread     __declspec(thread)
+#elif defined(__MINGW32__) || defined(__CYGWIN__)
+    #define __align16(v) __declspec(aligned(16)) v
 #else 
-    #define __align16  __attribute__(align(16))
+    #define __align16(v) v __attribute__(align(16))
 #endif
 
 typedef unsigned char coreByte;
@@ -84,7 +83,7 @@ enum coreError
 
 // ****************************************************************
 // base libraries
-#if defined(_WIN32)
+#if defined(_MSC_VER)
     #include <windows.h>
     #undef DeleteFile
 #else
@@ -144,6 +143,7 @@ extern __thread GLEWContext g_GlewContext;
 #include "coreMath.h"
 #include "coreUtils.h"
 #include "coreRand.h"
+#include "coreTimer.h"
 #include "coreVector.h"
 #include "coreMatrix.h"
 #include "coreSpline.h"

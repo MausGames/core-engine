@@ -33,10 +33,10 @@ CoreAudio::CoreAudio()
 
     // log sound device information 
     Core::Log->ListStart("Sound Device Information");
-    Core::Log->ListEntry(coreUtils::Print("<b>Device:</b> %s",     alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER)));
-    Core::Log->ListEntry(coreUtils::Print("<b>Vendor:</b> %s",     alGetString(AL_VENDOR)));
-    Core::Log->ListEntry(coreUtils::Print("<b>Renderer:</b> %s",   alGetString(AL_RENDERER)));
-    Core::Log->ListEntry(coreUtils::Print("<b>Version:</b> %s",    alGetString(AL_VERSION)));
+    Core::Log->ListEntry(coreUtils::Print("<b>Device:</b> %s",   alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER)));
+    Core::Log->ListEntry(coreUtils::Print("<b>Vendor:</b> %s",   alGetString(AL_VENDOR)));
+    Core::Log->ListEntry(coreUtils::Print("<b>Renderer:</b> %s", alGetString(AL_RENDERER)));
+    Core::Log->ListEntry(coreUtils::Print("<b>Version:</b> %s",  alGetString(AL_VERSION)));
     Core::Log->ListEntry((const char*)alGetString(AL_EXTENSIONS));
     Core::Log->ListEnd();
 

@@ -130,7 +130,7 @@ coreError coreResourceManager::AddArchive(const char* pcPath)
 
 
 // ****************************************************************    
-// get resource file
+// retrieve resource file
 coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
 {
     // check for direct resource file

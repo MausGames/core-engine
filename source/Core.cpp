@@ -100,7 +100,7 @@ void Core::Run()
 
     // update the window event system (main loop)
     while(pEngine->System->__UpdateEvents())
-    {    
+    {
         // pre-update engine
         pEngine->Input->__UpdateInput();
 
@@ -168,7 +168,7 @@ void Core::Quit()
 // main function
 int main(int argc, char* argv[])
 {
-#if defined(_WIN32) && defined(_DEBUG)
+#if defined(_MSC_VER) && defined(_DEBUG)
     _crtBreakAlloc = 0;
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF); 
 #endif

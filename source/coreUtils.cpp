@@ -93,7 +93,7 @@ const char* coreUtils::Print(const char* pcMessage, ...)
 // compare strings with wildcards
 bool coreUtils::WildCmp(const char* s, const char* t)
 {
-	return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && WildCmp(s+1,t+1) : !*t : WildCmp(s,t+1) || *s && WildCmp(s+1,t);
+	return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && WildCmp(s+1,t+1) : !*t : WildCmp(s,t+1) || (*s && WildCmp(s+1,t));
 }
 
 

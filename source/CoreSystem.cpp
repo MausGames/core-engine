@@ -30,7 +30,7 @@ CoreSystem::CoreSystem()
     else Core::Log->Info("SDL initialized");
 
     // configure the SDL window parameters
-    const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : NULL));
+    const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
     
     // configure the OpenGL context parameters
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
@@ -113,7 +113,7 @@ CoreSystem::CoreSystem()
 #if defined(_DEBUG)
     memset(m_aaiCPUID, 0, sizeof(int)*2*4);
 #else
-    #if defined(_WIN32)
+    #if defined(_MSC_VER)
         __cpuid(m_aaiCPUID[0], 0);
         __cpuid(m_aaiCPUID[1], 1);
     #else

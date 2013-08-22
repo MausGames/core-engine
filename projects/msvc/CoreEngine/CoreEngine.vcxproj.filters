@@ -85,6 +85,9 @@
     <ClCompile Include="..\..\..\source\CoreGraphics.cpp">
       <Filter>Engine\03_Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\coreTimer.cpp">
+      <Filter>Work</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\Core.h">
@@ -137,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\CoreGraphics.h">
       <Filter>Engine\03_Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreTimer.h">
+      <Filter>Work</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,7 +14,7 @@
 class coreMatrix
 {
 public:
-    union __align16
+    __align16(union)
     {
         struct 
         {

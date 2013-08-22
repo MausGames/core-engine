@@ -139,7 +139,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_AtomicUnlock(&s_iLock);
 
     // generate sync object or flush all commands
-    if(Core::Graphics->SupportFeature("GL_ARB_sync")) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, NULL);
+    if(Core::Graphics->SupportFeature("GL_ARB_sync")) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     else glFlush();
 
     // delete PBO
@@ -252,7 +252,7 @@ coreError coreTexture::CheckSync()
     if(!m_iID || !m_pSync) return CORE_INVALID_CALL;
 
     // check for finished texture loading
-    if(glClientWaitSync(m_pSync, NULL, 0) != GL_TIMEOUT_EXPIRED)
+    if(glClientWaitSync(m_pSync, 0, 0) != GL_TIMEOUT_EXPIRED)
     {
         // delete sync object
         glDeleteSync(m_pSync);

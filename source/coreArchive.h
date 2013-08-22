@@ -24,7 +24,7 @@ private:
 
 
 public:
-    coreFile(const char* pcPath);
+    explicit coreFile(const char* pcPath);
     coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize);
     ~coreFile();
     friend class coreArchive;
@@ -63,7 +63,7 @@ private:
 
 public:
     coreArchive();
-    coreArchive(const char* pcPath);
+    explicit coreArchive(const char* pcPath);
     ~coreArchive();
 
     // save archive

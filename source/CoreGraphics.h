@@ -72,6 +72,6 @@ public:
     inline const coreMatrix& GetOrtho()const              {return m_mOrtho;}
 
     // check hardware support
-    inline const bool& SupportFeature(char* pcFeature) {if(!m_abFeature.count(pcFeature)) m_abFeature[pcFeature] = (glewIsSupported(pcFeature) ? true : false); return m_abFeature.at(pcFeature);}
-    inline const float& SupportOpenGL()const           {return m_fOpenGL;}
+    inline const bool& SupportFeature(const char* pcFeature) {if(!m_abFeature.count(pcFeature)) m_abFeature[pcFeature] = (glewIsSupported(pcFeature) ? true : false); return m_abFeature.at(pcFeature);}
+    inline const float& SupportOpenGL()const                 {return m_fOpenGL;}
 };
