@@ -12,15 +12,13 @@
 // ******************************************************************
 // constructor
 CoreSystem::CoreSystem()
-: m_vResolution     (coreVector2((float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH, 800), (float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT, 600)))
-, m_iFullscreen     ((coreByte)Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN, 0))
-, m_bMinimized      (false)
-, m_fTime           (0.0f)
-, m_fTimeConstant   (0.0f)
-, m_dTimeTotal      (0.0f)
-, m_iCurFrame       (0)
-, m_fTimeFactor     (1.0f)
-, m_iSkipFrame      (0)
+: m_vResolution (coreVector2((float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH, 800), (float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT, 600)))
+, m_iFullscreen ((coreByte)Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN, 0))
+, m_bMinimized  (false)
+, m_dTotalTime  (0.0f)
+, m_fLastTime   (0.0f)
+, m_iCurFrame   (0)
+, m_iSkipFrame  (0)
 {
     Core::Log->Header("System Interface");
 
@@ -101,13 +99,12 @@ CoreSystem::CoreSystem()
 
     // init high precission time
 #if defined(_WIN32)
-    QueryPerformanceFrequency(&m_PerfEndTime);
-    m_fPerfFrequency = 1.0f/float(m_PerfEndTime.QuadPart);
-    QueryPerformanceCounter(&m_PerfEndTime); 
+    QueryPerformanceFrequency(&m_iPerfTime);
+    m_fPerfFrequency = 1.0f/float(m_iPerfTime.QuadPart);
+    QueryPerformanceCounter(&m_iPerfTime); 
 #else
-    clock_gettime(CLOCK_MONOTONIC, &m_PerfEndTime);
+    clock_gettime(CLOCK_MONOTONIC, &m_iPerfTime);
 #endif
-    m_PerfStartTime = m_PerfEndTime;
 
     // retrieve features of the processor
 #if defined(_DEBUG)
@@ -140,6 +137,13 @@ CoreSystem::CoreSystem()
     Core::Log->ListEntry(coreUtils::Print("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]));
     Core::Log->ListEntry(coreUtils::Print("<b>SSE support:</b> %s%s%s%s%s", m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));
     Core::Log->ListEnd();
+
+    // reset adjusted frame times
+    for(int i = 0; i < CORE_SYSTEM_TIMES; ++i)
+    {
+        m_afTime[i]      = 0.0f;
+        m_afTimeSpeed[i] = 1.0f;
+    }
 }
 
 
@@ -224,7 +228,7 @@ bool CoreSystem::__UpdateEvents()
         // move mouse position
         case SDL_MOUSEMOTION:
             Core::Input->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /m_vResolution + coreVector2(-0.5f, 0.5f));
-            Core::Input->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/m_vResolution * m_fTimeConstant*120.0f);
+            Core::Input->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/m_vResolution * m_fLastTime*120.0f);
             break;
 
         // move mouse wheel
@@ -262,27 +266,34 @@ bool CoreSystem::__UpdateEvents()
 // update the high precission time calculation
 void CoreSystem::__UpdateTime()
 {
-    // measure and calculate constant time
+    // measure and calculate last frame time
 #if defined(_WIN32)
-    QueryPerformanceCounter(&m_PerfEndTime);
-    m_fTimeConstant = float(m_PerfEndTime.QuadPart - m_PerfStartTime.QuadPart) * m_fPerfFrequency;
+    LARGE_INTEGER iNewPerfTime;
+    QueryPerformanceCounter(&iNewPerfTime);
+    const float fNewLastTime = float(iNewPerfTime.QuadPart - m_iPerfTime.QuadPart) * m_fPerfFrequency;
 #else
-    clock_gettime(CLOCK_MONOTONIC, &m_PerfEndTime);
-    m_fTimeConstant = float(0.000000001*(double(m_PerfEndTime.tv_sec - m_PerfStartTime.tv_sec)*1000000000.0 + double(m_PerfEndTime.tv_nsec - m_PerfStartTime.tv_nsec)));
+    timespec iNewPerfTime;
+    clock_gettime(CLOCK_MONOTONIC, &iNewPerfTime);
+    const float fNewLastTime = float(0.000000001*(double(iNewPerfTime.tv_sec - m_iPerfTime.tv_sec)*1000000000.0 + double(iNewPerfTime.tv_nsec - m_iPerfTime.tv_nsec)));
 #endif
-    m_PerfStartTime = m_PerfEndTime;
+    m_iPerfTime = iNewPerfTime;
 
-    // increase total time and calculate parameterized time
-    m_dTimeTotal += (double)m_fTimeConstant;
-    m_fTime       = m_fTime ? (0.85f*m_fTime + 0.15f*m_fTimeConstant*m_fTimeFactor) : (m_fTimeConstant*m_fTimeFactor);
-
-    // skip frames
-    if(m_iSkipFrame || m_fTimeConstant >= 1.0f) 
+    if(m_iSkipFrame || fNewLastTime >= 0.25f) 
     {
-        m_fTime         = 0.0f;
-        m_fTimeConstant = 0.0f;
+        // skip frames
+        m_fLastTime = 0.0f;
         if(m_iSkipFrame) --m_iSkipFrame;
     }
+    else
+    {
+        // smooth last frame time and increase total time
+        m_fLastTime = m_fLastTime ? (0.85f*m_fLastTime + 0.15f*fNewLastTime) : fNewLastTime;
+        m_dTotalTime += (double)m_fLastTime;
+    }
+
+    // update adjusted frame times
+    for(int i = 0; i < CORE_SYSTEM_TIMES; ++i)
+        m_afTime[i] = m_fLastTime*m_afTimeSpeed[i];
 
     // increate current frame number
     ++m_iCurFrame;

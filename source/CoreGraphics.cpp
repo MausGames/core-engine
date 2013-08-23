@@ -158,9 +158,9 @@ void CoreGraphics::SetCamera(const coreVector3* pvPosition, const coreVector3* p
     bool bNewCamera = false;
 
     // set attributes of the camera
-    if(pvPosition)    {                                                          if(m_vCamPosition    != *pvPosition) {m_vCamPosition    = *pvPosition; bNewCamera = true;}}
-    if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_vCamDirection   != vDirNorm)    {m_vCamDirection   = vDirNorm;    bNewCamera = true;}}
-    if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_vCamOrientation != vOriNorm)    {m_vCamOrientation = vOriNorm;    bNewCamera = true;}}
+    if(pvPosition)    {if(m_vCamPosition != *pvPosition) {m_vCamPosition = *pvPosition; bNewCamera = true;}}
+    if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_vCamDirection   != vDirNorm) {m_vCamDirection   = vDirNorm; bNewCamera = true;}}
+    if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_vCamOrientation != vOriNorm) {m_vCamOrientation = vOriNorm; bNewCamera = true;}}
 
     // create camera matrix
     if(bNewCamera) m_mCamera = coreMatrix::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);

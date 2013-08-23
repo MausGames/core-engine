@@ -37,13 +37,6 @@ coreLog::coreLog(const char* pcPath)
 
 
 // ****************************************************************
-// destructor
-coreLog::~coreLog()
-{
-}
-
-
-// ****************************************************************
 // write error message and shut down the application
 void coreLog::Error(const bool& bShutdown, const std::string& sText)
 {

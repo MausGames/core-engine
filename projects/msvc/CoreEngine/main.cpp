@@ -6,6 +6,9 @@ std::vector<coreTexturePtr> Ptr;
 
 void CoreApp::Init()
 {
+    coreSimpleTimer val;
+    float test = 1.0f*val;
+    val = 1.0f;
 }
 
 

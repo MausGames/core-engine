@@ -137,16 +137,12 @@ coreVector2 coreVector2::operator * (const coreMatrix& m)const
     // optimized
     if(Core::System->SupportSSE41())
     {
-        float afOutput[2];
-
         const __m128 A = _mm_setr_ps(x, y, 0.0f, w);
         const coreMatrix mInput = m.Transposed();
 
+        float afOutput[2];
         for(int i = 0; i < 2; ++i)
-        {
-            const __m128 B = _mm_load_ps(&mInput.m[i][0]);
-            _mm_store_ss(&afOutput[i], _mm_dp_ps(A, B, 0xF1));
-        }
+            _mm_store_ss(&afOutput[i], _mm_dp_ps(A, _mm_load_ps(&mInput.m[i][0]), 0xF1));
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
@@ -389,16 +385,12 @@ coreVector3 coreVector3::operator * (const coreMatrix& m)const
     // optimized
     if(Core::System->SupportSSE41())
     {
-        float afOutput[3];
-
         const __m128 A = _mm_setr_ps(x, y, z, w);
         const coreMatrix mInput = m.Transposed();
 
+        float afOutput[3];
         for(int i = 0; i < 3; ++i)
-        {
-            const __m128 B = _mm_load_ps(&mInput.m[i][0]);
-            _mm_store_ss(&afOutput[i], _mm_dp_ps(A, B, 0xF1));
-        }
+            _mm_store_ss(&afOutput[i], _mm_dp_ps(A, _mm_load_ps(&mInput.m[i][0]), 0xF1));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
@@ -682,16 +674,12 @@ coreVector4 coreVector4::operator * (const coreMatrix& m)const
     // optimized
     if(Core::System->SupportSSE41())
     {
-        float afOutput[4];
-
         const __m128 A = _mm_setr_ps(x, y, z, w);
         const coreMatrix mInput = m.Transposed();
 
+        float afOutput[4];
         for(int i = 0; i < 4; ++i)
-        {
-            const __m128 B = _mm_load_ps(&mInput.m[i][0]);
-            _mm_store_ss(&afOutput[i], _mm_dp_ps(A, B, 0xF1));
-        }
+            _mm_store_ss(&afOutput[i], _mm_dp_ps(A, _mm_load_ps(&mInput.m[i][0]), 0xF1));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }

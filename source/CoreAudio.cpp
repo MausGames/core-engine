@@ -79,17 +79,17 @@ void CoreAudio::SetListener(const coreVector3* pvPosition, const coreVector3* pv
     bool bNewOrientation = false;
 
     // set and update parameters of the listener
-    if(pvPosition)    {                                                          if(m_vPosition      != *pvPosition) {m_vPosition      = *pvPosition; alListenerfv(AL_POSITION, (float*)&m_vPosition);}}
-    if(pvVelocity)    {                                                          if(m_vVelocity      != *pvVelocity) {m_vVelocity      = *pvVelocity; alListenerfv(AL_VELOCITY, (float*)&m_vVelocity);}}
-    if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_avDirection[0] != vDirNorm)    {m_avDirection[0] = vDirNorm;    bNewOrientation = true;}}
-    if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_avDirection[1] != vOriNorm)    {m_avDirection[1] = vOriNorm;    bNewOrientation = true;}}
+    if(pvPosition)    {if(m_vPosition != *pvPosition) {m_vPosition = *pvPosition; alListenerfv(AL_POSITION, (float*)&m_vPosition);}}
+    if(pvVelocity)    {if(m_vVelocity != *pvVelocity) {m_vVelocity = *pvVelocity; alListenerfv(AL_VELOCITY, (float*)&m_vVelocity);}}
+    if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_avDirection[0] != vDirNorm) {m_avDirection[0] = vDirNorm; bNewOrientation = true;}}
+    if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_avDirection[1] != vOriNorm) {m_avDirection[1] = vOriNorm; bNewOrientation = true;}}
 
     if(bNewOrientation) alListenerfv(AL_ORIENTATION, (float*)m_avDirection);
 }
 
-void CoreAudio::SetListener(const float& fSpeed)
+void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
 {
-    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * Core::System->GetTime();
+    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * Core::System->GetTime(iTimeID);
 
     // adjust listener with camera attributes
     this->SetListener(&Core::Graphics->GetCamPosition(),

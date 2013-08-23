@@ -37,7 +37,7 @@ private:
 public:
     // control the listener
     void SetListener(const coreVector3* pvPosition, const coreVector3* pvVelocity, const coreVector3* pvDirection, const coreVector3* pvOrientation);
-    void SetListener(const float& fSpeed);
+    void SetListener(const float& fSpeed, const int iTimeID = -1);
 
     // get next sound channel
     inline const ALuint& GetNextSource() {if(++m_CurSource >= m_NumSource) m_CurSource = 0; return m_pSource[m_CurSource];}

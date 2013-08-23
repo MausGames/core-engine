@@ -60,7 +60,7 @@ public:
     friend inline coreMatrix operator * (const float& f, const coreMatrix& c) {return c * f;}
 
     // convert matrix
-    inline operator float* ()const {return (float*)this;}
+    inline operator float* () {return reinterpret_cast<float*>(this);}
 
     // transpose matrix
     coreMatrix& Transpose();

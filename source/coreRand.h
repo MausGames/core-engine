@@ -16,8 +16,8 @@ class coreRand
 {
 private:
     int* m_piRand;                     // precalculated random numbers
-    coreUint m_NumRand;                // number of sound channels
-    coreUint m_CurRand;                // current sound channel
+    coreUint m_NumRand;                // number of random numbers
+    coreUint m_CurRand;                // current random number
 
     static const float s_fPrecision;   // floating point precision
 

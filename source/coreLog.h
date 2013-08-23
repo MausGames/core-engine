@@ -20,7 +20,6 @@ private:
 
 public:
     coreLog(const char* pcPath);
-    ~coreLog();
 
     // message functions
     inline void Header(const std::string& sText) {if(m_iLevel >= 0) this->__Write(false, "<hr /><span class=\"header\">" + sText + "</span><br />");}

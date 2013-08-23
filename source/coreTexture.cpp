@@ -189,6 +189,7 @@ coreError coreTexture::Unload()
 // enable texture
 void coreTexture::Enable(const coreByte& iUnit)
 {
+    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
     SDL_assert(m_iUnit < 0);
     SDL_assert(s_apBound[iUnit] == NULL);
 

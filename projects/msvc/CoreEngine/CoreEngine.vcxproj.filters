@@ -86,7 +86,7 @@
       <Filter>Engine\03_Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\coreTimer.cpp">
-      <Filter>Work</Filter>
+      <Filter>Engine\02_Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,7 +142,7 @@
       <Filter>Engine\03_Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\coreTimer.h">
-      <Filter>Work</Filter>
+      <Filter>Engine\02_Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
