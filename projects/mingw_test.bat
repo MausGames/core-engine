@@ -1,2 +1,0 @@
-g++ -O2 -s -std=gnu++0x -U__STRICT_ANSI__ -Wall -Wno-unused-variable -msse3 -mssse3 -msse4.1 ../source/*.cpp ../libraries/windows/include/ConvertUTF.c msvc/CoreEngine/main.cpp -I../source -I../libraries/windows/include -L../libraries/windows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lOpenGL32 -lGLew32mx -lGLu32 -lGLaux -lOpenAL32 -lALut -lLibOGG -lLibVorbis -lLibVorbisFile -lLibcURL -o mingw_test.exe
-PAUSE

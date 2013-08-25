@@ -4,11 +4,17 @@
 std::vector<coreTexturePtr> Ptr;
 
 
+
+
+
 void CoreApp::Init()
 {
-    coreSimpleTimer val;
-    float test = 1.0f*val;
-    val = 1.0f;
+    coreFlow val;
+    float test = TO_RAD(90.0f);
+    val = 1.0f+P3;
+
+    coreSound test2;
+    test2.Stop(&test);
 }
 
 
@@ -23,6 +29,7 @@ void CoreApp::Exit()
 
 void CoreApp::Render()
 {
+    glClear(GL_COLOR_BUFFER_BIT);
     for(coreUint i = 0; i < Ptr.size(); ++i)
     {
         if(Ptr[i].IsActive())

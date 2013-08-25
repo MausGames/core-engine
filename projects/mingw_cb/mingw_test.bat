@@ -1,0 +1,2 @@
+g++ -O2 -s -std=gnu++0x -Wall -Wno-unused-variable -msse3 -mssse3 -msse4.1 ../../source/*.cpp  ../main.cpp -I../../source -I../../libraries/windows/include -L../../libraries/windows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lOpenGL32 -lGLew32mx -lGLu32 -lOpenAL32 -lALut -lLibOGG -lLibVorbis -lLibVorbisFile -lLibcURL -o mingw_test.exe
+PAUSE
