@@ -31,9 +31,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Work</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\Core.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -85,8 +82,14 @@
     <ClCompile Include="..\..\..\source\CoreGraphics.cpp">
       <Filter>Engine\03_Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\coreSound.cpp">
+      <Filter>Work</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\main.cpp">
+      <Filter>Work</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\coreTimer.cpp">
-      <Filter>Engine\02_Utilities</Filter>
+      <Filter>Engine\04_Components\01_System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -141,8 +144,11 @@
     <ClInclude Include="..\..\..\source\CoreGraphics.h">
       <Filter>Engine\03_Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\coreSound.h">
+      <Filter>Work</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\source\coreTimer.h">
-      <Filter>Engine\02_Utilities</Filter>
+      <Filter>Engine\04_Components\01_System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

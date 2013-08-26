@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="CoreEngine" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Windows">
+				<Option output="../../executable/CoreEngine_mingw_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="../../libraries/windows/include" />
+					<Add directory="../../source" />
+				</Compiler>
+				<Linker>
+					<Add library="..\..\libraries\windows\SDL2main.lib" />
+					<Add library="..\..\libraries\windows\SDL2.lib" />
+					<Add library="..\..\libraries\windows\SDL2_ttf.lib" />
+					<Add library="..\..\libraries\windows\SDL2_image.lib" />
+					<Add library="..\..\libraries\windows\OpenGL32.lib" />
+					<Add library="..\..\libraries\windows\glew32mx.lib" />
+					<Add library="..\..\libraries\windows\OpenAL32.lib" />
+					<Add library="..\..\libraries\windows\alut.lib" />
+					<Add library="..\..\libraries\windows\libogg.lib" />
+					<Add library="..\..\libraries\windows\libvorbis.lib" />
+					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
+				</Linker>
+			</Target>
+			<Target title="Release Windows">
+				<Option output="../../executable/CoreEngine_mingw" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="../../libraries/windows/include" />
+					<Add directory="../../source" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="..\..\libraries\windows\SDL2main.lib" />
+					<Add library="..\..\libraries\windows\SDL2.lib" />
+					<Add library="..\..\libraries\windows\SDL2_ttf.lib" />
+					<Add library="..\..\libraries\windows\SDL2_image.lib" />
+					<Add library="..\..\libraries\windows\OpenGL32.lib" />
+					<Add library="..\..\libraries\windows\glew32mx.lib" />
+					<Add library="..\..\libraries\windows\OpenAL32.lib" />
+					<Add library="..\..\libraries\windows\alut.lib" />
+					<Add library="..\..\libraries\windows\libogg.lib" />
+					<Add library="..\..\libraries\windows\libvorbis.lib" />
+					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
+				</Linker>
+			</Target>
+			<Target title="Debug Linux">
+				<Option output="../../executable/CoreEngine_linux_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="../../libraries/linux/include" />
+					<Add directory="../../source" />
+				</Compiler>
+				<Linker>
+					<Add library="..\..\libraries\linux\libSDL2.so" />
+					<Add library="..\..\libraries\linux\libSDL2_ttf.so" />
+					<Add library="..\..\libraries\linux\libSDL2_image.so" />
+					<Add library="..\..\libraries\linux\libGLEWmx.so" />
+					<Add library="..\..\libraries\linux\libopenal.so" />
+					<Add library="..\..\libraries\linux\libalut.so" />
+					<Add library="..\..\libraries\linux\libogg.so" />
+					<Add library="..\..\libraries\linux\libvorbis.so" />
+					<Add library="..\..\libraries\linux\libvorbisfile.so" />
+					<Add library="GL" />
+				</Linker>
+			</Target>
+			<Target title="Release Linux">
+				<Option output="../../executable/CoreEngine_linux" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="../../libraries/linux/include" />
+					<Add directory="../../source" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="..\..\libraries\linux\libSDL2.so" />
+					<Add library="..\..\libraries\linux\libSDL2_ttf.so" />
+					<Add library="..\..\libraries\linux\libSDL2_image.so" />
+					<Add library="..\..\libraries\linux\libGLEWmx.so" />
+					<Add library="..\..\libraries\linux\libopenal.so" />
+					<Add library="..\..\libraries\linux\libalut.so" />
+					<Add library="..\..\libraries\linux\libogg.so" />
+					<Add library="..\..\libraries\linux\libvorbis.so" />
+					<Add library="..\..\libraries\linux\libvorbisfile.so" />
+					<Add library="GL" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-Wall" />
+			<Add option="-Wno-unused-variable -msse3 -mssse3 -msse4.1" />
+			<Add directory="../../source" />
+		</Compiler>
+		<Unit filename="../../source/Core.cpp" />
+		<Unit filename="../../source/Core.h" />
+		<Unit filename="../../source/CoreAudio.cpp" />
+		<Unit filename="../../source/CoreAudio.h" />
+		<Unit filename="../../source/CoreGraphics.cpp" />
+		<Unit filename="../../source/CoreGraphics.h" />
+		<Unit filename="../../source/CoreInput.cpp" />
+		<Unit filename="../../source/CoreInput.h" />
+		<Unit filename="../../source/CoreSystem.cpp" />
+		<Unit filename="../../source/CoreSystem.h" />
+		<Unit filename="../../source/coreArchive.cpp" />
+		<Unit filename="../../source/coreArchive.h" />
+		<Unit filename="../../source/coreConfig.cpp" />
+		<Unit filename="../../source/coreConfig.h" />
+		<Unit filename="../../source/coreLog.cpp" />
+		<Unit filename="../../source/coreLog.h" />
+		<Unit filename="../../source/coreMath.cpp" />
+		<Unit filename="../../source/coreMath.h" />
+		<Unit filename="../../source/coreMatrix.cpp" />
+		<Unit filename="../../source/coreMatrix.h" />
+		<Unit filename="../../source/coreRand.cpp" />
+		<Unit filename="../../source/coreRand.h" />
+		<Unit filename="../../source/coreResourceManager.cpp" />
+		<Unit filename="../../source/coreResourceManager.h" />
+		<Unit filename="../../source/coreSound.cpp" />
+		<Unit filename="../../source/coreSound.h" />
+		<Unit filename="../../source/coreSpline.cpp" />
+		<Unit filename="../../source/coreSpline.h" />
+		<Unit filename="../../source/coreTexture.cpp" />
+		<Unit filename="../../source/coreTexture.h" />
+		<Unit filename="../../source/coreThread.cpp" />
+		<Unit filename="../../source/coreThread.h" />
+		<Unit filename="../../source/coreTimer.cpp" />
+		<Unit filename="../../source/coreTimer.h" />
+		<Unit filename="../../source/coreUtils.cpp" />
+		<Unit filename="../../source/coreUtils.h" />
+		<Unit filename="../../source/coreVector.cpp" />
+		<Unit filename="../../source/coreVector.h" />
+		<Unit filename="../main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="3" line="3" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

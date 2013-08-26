@@ -59,12 +59,14 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>SDL2main.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib GLu32.lib GLaux.lib OpenAL32.lib ALut.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibcURL.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>SDL2main.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib ALut.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -86,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalOptions>SDL2main.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib GLu32.lib GLaux.lib OpenAL32.lib ALut.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibcURL.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>SDL2main.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib ALut.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -102,6 +104,7 @@
     <ClCompile Include="..\..\..\source\coreRand.cpp" />
     <ClCompile Include="..\..\..\source\coreResourceManager.cpp" />
     <ClCompile Include="..\..\..\source\CoreAudio.cpp" />
+    <ClCompile Include="..\..\..\source\coreSound.cpp" />
     <ClCompile Include="..\..\..\source\coreSpline.cpp" />
     <ClCompile Include="..\..\..\source\CoreSystem.cpp" />
     <ClCompile Include="..\..\..\source\coreTexture.cpp" />
@@ -109,7 +112,7 @@
     <ClCompile Include="..\..\..\source\coreTimer.cpp" />
     <ClCompile Include="..\..\..\source\coreUtils.cpp" />
     <ClCompile Include="..\..\..\source\coreVector.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\Core.h" />
@@ -123,6 +126,7 @@
     <ClInclude Include="..\..\..\source\coreRand.h" />
     <ClInclude Include="..\..\..\source\coreResourceManager.h" />
     <ClInclude Include="..\..\..\source\CoreAudio.h" />
+    <ClInclude Include="..\..\..\source\coreSound.h" />
     <ClInclude Include="..\..\..\source\coreSpline.h" />
     <ClInclude Include="..\..\..\source\CoreSystem.h" />
     <ClInclude Include="..\..\..\source\coreTexture.h" />
