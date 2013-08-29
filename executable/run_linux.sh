@@ -1,5 +1,5 @@
-# Set the library path
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./libraries
+# set the library path
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./bin/linux
 
-# Start the game
-./<application_name>
+# start the game
+./bin/linux/CoreEngine_gcc

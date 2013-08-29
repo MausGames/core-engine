@@ -41,14 +41,15 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\windows\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\libraries\windows;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\</OutDir>
-    <TargetName>$(ProjectName)_debug</TargetName>
+    <OutDir>..\..\..\executable\bin\windows\</OutDir>
+    <TargetName>$(ProjectName)_msvc_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\windows\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\libraries\windows;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\</OutDir>
+    <OutDir>..\..\..\executable\bin\windows\</OutDir>
+    <TargetName>$(ProjectName)_msvc</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

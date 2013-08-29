@@ -9,8 +9,8 @@ The overall focus lies on a **supportive coding framework for fast and simple de
 Some of the features already implemented are:
 
 - Interfaces for System (Window, Events, Time), Graphics (Camera, View Frustum), Audio and Input
-- Asynchronous Resource Management and Textures
-- SIMD Math (Basics, Vector, Matrix), Utilities (Data, Random, Splines) and Threads
+- Asynchronous Resource Management, Textures and Sounds
+- SIMD Math (Basics, Vector, Matrix), Utilities (Data, Random, Splines), Threads and Timer
 - HTML Log and Configuration File
 
 If you have any suggestions or problems, feel free to contact me or simply create an issue on Bitbucket.  
@@ -18,9 +18,7 @@ If you have any suggestions or problems, feel free to contact me or simply creat
 # Libraries
 - [SDL][10], [SDL_image][11] (jpeg, png, zlib), [SDL_ttf][12] (freetype)
 - [OpenGL][13], [GLEW][14]
-- [OpenAL][15] (alut)
-- [Ogg Vorbis][16]
-- [cURL][17]
+- [OpenAL][15] (alut), [Ogg Vorbis][16]
 
 
 [10]: http://www.libsdl.org/
