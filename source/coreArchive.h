@@ -45,7 +45,7 @@ public:
     // check if file exists physically
     static bool FileExists(const char* pcPath);
 
-    // retrieve relative file paths from a folder
+    // retrieve relative paths of all files from a folder
     static bool SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
 
 

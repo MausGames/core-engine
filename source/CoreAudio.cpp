@@ -18,21 +18,21 @@ CoreAudio::CoreAudio()
 {
     Core::Log->Header("Audio Interface");
 
-    // create OpenAL context
-    if(!alutInit(NULL, NULL))
-        Core::Log->Error(0, coreUtils::Print("OpenAL context could not be created (ALUT: %s)", alutGetErrorString(alutGetError())));
+    // open audio device and create OpenAL context 
+    m_pDevice  = alcOpenDevice(NULL);
+    m_pContext = alcCreateContext(m_pDevice, NULL);
+
+    // activate OpenAL context
+    if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
+        Core::Log->Error(0, coreUtils::Print("OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice)));
     else Core::Log->Info("OpenAL context created");
 
     // retrieve sound sources
     m_pSource = new ALuint[m_NumSource];
     alGenSources(m_NumSource, m_pSource);
 
-    // get context and device
-    m_pContext = alcGetCurrentContext();
-    m_pDevice  = alcGetContextsDevice(m_pContext);
-
-    // log sound device information
-    Core::Log->ListStart("Sound Device Information");
+    // log audio device information
+    Core::Log->ListStart("Audio Device Information");
     Core::Log->ListEntry(coreUtils::Print("<b>Device:</b> %s",   alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER)));
     Core::Log->ListEntry(coreUtils::Print("<b>Vendor:</b> %s",   alGetString(AL_VENDOR)));
     Core::Log->ListEntry(coreUtils::Print("<b>Renderer:</b> %s", alGetString(AL_RENDERER)));
@@ -50,7 +50,7 @@ CoreAudio::CoreAudio()
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR) Core::Log->Error(0, coreUtils::Print("Error initializing Audio Interface (Error Code: %d)", iError));
+    if(iError != AL_NO_ERROR) Core::Log->Error(0, coreUtils::Print("Error initializing Audio Interface (AL Error Code: %d)", iError));
 }
 
 
@@ -67,8 +67,10 @@ CoreAudio::~CoreAudio()
     alDeleteSources(m_NumSource, m_pSource);
     SAFE_DELETE_ARRAY(m_pSource)
 
-    // shut down OpenAL library
-    alutExit();
+    // delete OpenAL context and close audio device
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(m_pContext);
+    alcCloseDevice(m_pDevice);
 }
 
 

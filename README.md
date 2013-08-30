@@ -18,7 +18,7 @@ If you have any suggestions or problems, feel free to contact me or simply creat
 # Libraries
 - [SDL][10], [SDL_image][11] (jpeg, png, zlib), [SDL_ttf][12] (freetype)
 - [OpenGL][13], [GLEW][14]
-- [OpenAL][15] (alut), [Ogg Vorbis][16]
+- [OpenAL][15], [Ogg Vorbis][16]
 
 
 [10]: http://www.libsdl.org/
@@ -26,6 +26,6 @@ If you have any suggestions or problems, feel free to contact me or simply creat
 [12]: http://www.libsdl.org/projects/SDL_ttf/
 [13]: http://www.opengl.org/
 [14]: http://glew.sourceforge.net/
-[15]: http://connect.creativelabs.com/openal/
+[15]: http://www.openal-soft.org/
 [16]: http://www.xiph.org/
 [17]: http://curl.haxx.se/

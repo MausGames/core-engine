@@ -14,7 +14,7 @@
 class CoreAudio
 {
 private:
-    ALCdevice* m_pDevice;             // OpenAL device
+    ALCdevice* m_pDevice;             // audio device
     ALCcontext* m_pContext;           // OpenAL context
                                       
     coreVector3 m_vPosition;          // position of the listener

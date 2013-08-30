@@ -127,12 +127,8 @@ CoreSystem::CoreSystem()
     m_abSSE[4] = (m_aaiCPUID[1][2] & 0x100000)  ? true : false;
 
     // log processor information
-    std::string sCPU;
-    for(int i = 0; i < 4; ++i) sCPU += (*(((char*)&m_aaiCPUID[0][1])+i));
-    for(int i = 0; i < 4; ++i) sCPU += (*(((char*)&m_aaiCPUID[0][3])+i));
-    for(int i = 0; i < 4; ++i) sCPU += (*(((char*)&m_aaiCPUID[0][2])+i));
     Core::Log->ListStart("Processor Information");
-    Core::Log->ListEntry(coreUtils::Print("<b>Vendor:</b> %s", sCPU.c_str()));
+    Core::Log->ListEntry(coreUtils::Print("<b>Vendor:</b> %.4s%.4s%.4s", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2]));
     Core::Log->ListEntry(coreUtils::Print("<b>CPUID[0]:</b> %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]));
     Core::Log->ListEntry(coreUtils::Print("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]));
     Core::Log->ListEntry(coreUtils::Print("<b>SSE support:</b> %s%s%s%s%s", m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));

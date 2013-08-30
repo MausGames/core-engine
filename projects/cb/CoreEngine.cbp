@@ -15,21 +15,16 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
-					<Add directory="../../libraries/windows/include" />
-					<Add directory="../../source" />
 				</Compiler>
 				<Linker>
-					<Add option="-static-libgcc" />
-					<Add option="-static-libstdc++" />
 					<Add library="MinGW32" />
-					<Add library="..\..\libraries\windows\libSDL2main.a" />
-					<Add library="..\..\libraries\windows\libSDL2.a" />
-					<Add library="..\..\libraries\windows\libSDL2_ttf.a" />
-					<Add library="..\..\libraries\windows\libSDL2_image.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2main.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2_ttf.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2_image.a" />
 					<Add library="..\..\libraries\windows\OpenGL32.lib" />
 					<Add library="..\..\libraries\windows\glew32mx.lib" />
-					<Add library="..\..\libraries\windows\OpenAL32.lib" />
-					<Add library="..\..\libraries\windows\alut.lib" />
+					<Add library="..\..\libraries\windows\libOpenAL32.a" />
 					<Add library="..\..\libraries\windows\libogg.lib" />
 					<Add library="..\..\libraries\windows\libvorbis.lib" />
 					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
@@ -43,22 +38,19 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="../../libraries/windows/include" />
-					<Add directory="../../source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
 					<Add library="MinGW32" />
-					<Add library="..\..\libraries\windows\libSDL2main.a" />
-					<Add library="..\..\libraries\windows\libSDL2.a" />
-					<Add library="..\..\libraries\windows\libSDL2_ttf.a" />
-					<Add library="..\..\libraries\windows\libSDL2_image.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2main.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2_ttf.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2_image.a" />
 					<Add library="..\..\libraries\windows\OpenGL32.lib" />
 					<Add library="..\..\libraries\windows\glew32mx.lib" />
-					<Add library="..\..\libraries\windows\OpenAL32.lib" />
-					<Add library="..\..\libraries\windows\alut.lib" />
+					<Add library="..\..\libraries\windows\libOpenAL32.a" />
 					<Add library="..\..\libraries\windows\libogg.lib" />
 					<Add library="..\..\libraries\windows\libvorbis.lib" />
 					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
@@ -73,8 +65,6 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
-					<Add directory="../../libraries/linux/include" />
-					<Add directory="../../source" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
@@ -83,7 +73,6 @@
 					<Add library="..\..\libraries\linux\libSDL2_image.so" />
 					<Add library="..\..\libraries\linux\libGLEWmx.so" />
 					<Add library="..\..\libraries\linux\libopenal.so" />
-					<Add library="..\..\libraries\linux\libalut.so" />
 					<Add library="..\..\libraries\linux\libogg.so" />
 					<Add library="..\..\libraries\linux\libvorbis.so" />
 					<Add library="..\..\libraries\linux\libvorbisfile.so" />
@@ -97,8 +86,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="../../libraries/linux/include" />
-					<Add directory="../../source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -108,7 +95,6 @@
 					<Add library="..\..\libraries\linux\libSDL2_image.so" />
 					<Add library="..\..\libraries\linux\libGLEWmx.so" />
 					<Add library="..\..\libraries\linux\libopenal.so" />
-					<Add library="..\..\libraries\linux\libalut.so" />
 					<Add library="..\..\libraries\linux\libogg.so" />
 					<Add library="..\..\libraries\linux\libvorbis.so" />
 					<Add library="..\..\libraries\linux\libvorbisfile.so" />
@@ -121,6 +107,7 @@
 			<Add option="-Wno-unused-variable" />
 			<Add option="-msse4.1" />
 			<Add directory="../../source" />
+			<Add directory="../../libraries/include" />
 		</Compiler>
 		<Unit filename="../../source/Core.cpp" />
 		<Unit filename="../../source/Core.h" />

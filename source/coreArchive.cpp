@@ -138,7 +138,7 @@ bool coreFile::FileExists(const char* pcPath)
 
 
 // ****************************************************************
-// retrieve relative file paths from a folder
+// retrieve relative paths of all files from a folder
 bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput)
 {
     SDL_assert(pasOutput != NULL);
