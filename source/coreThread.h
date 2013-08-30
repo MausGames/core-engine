@@ -31,6 +31,10 @@ public:
 
 
 private:
+    // disable copy
+    coreThread(const coreThread& c) __deletefunc;
+    coreThread& operator = (const coreThread& c) __deletefunc;
+
     // execute thread
     int __Main();
     virtual int __Init() {return 0;}

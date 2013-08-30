@@ -29,7 +29,7 @@ CoreSystem::CoreSystem()
 
     // configure the SDL window parameters
     const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
-    
+
     // configure the OpenGL context parameters
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
@@ -46,8 +46,8 @@ CoreSystem::CoreSystem()
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL, 0.0f);
     if(fForceOpenGL)
     {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(floorf(fForceOpenGL))); 
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(floorf(fForceOpenGL*10.0f))%10); 
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(floorf(fForceOpenGL)));
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(floorf(fForceOpenGL*10.0f))%10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     }
 
@@ -56,11 +56,11 @@ CoreSystem::CoreSystem()
     if(!m_pWindow)
     {
         Core::Log->Error(0, coreUtils::Print("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError()));
-        
+
         // change configuration
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-        
+
         // create compatible main window object
         m_pWindow = SDL_CreateWindow(coreUtils::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
         if(!m_pWindow) Core::Log->Error(1, coreUtils::Print("Main window could not be created (SDL: %s)", SDL_GetError()));
@@ -101,7 +101,7 @@ CoreSystem::CoreSystem()
 #if defined(_WIN32)
     QueryPerformanceFrequency(&m_iPerfTime);
     m_fPerfFrequency = 1.0f/float(m_iPerfTime.QuadPart);
-    QueryPerformanceCounter(&m_iPerfTime); 
+    QueryPerformanceCounter(&m_iPerfTime);
 #else
     clock_gettime(CLOCK_MONOTONIC, &m_iPerfTime);
 #endif
@@ -195,6 +195,12 @@ bool CoreSystem::__UpdateEvents()
                 case SDL_WINDOWEVENT_RESTORED:
                     m_bMinimized = true;
                     break;
+
+                // close window
+                case SDL_WINDOWEVENT_CLOSE:
+                    if(Event.window.windowID == SDL_GetWindowID(m_pWindow)) Core::Quit();
+                    else SDL_DestroyWindow(SDL_GetWindowFromID(Event.window.windowID));
+                    break;
             }
             break;
 
@@ -202,7 +208,7 @@ bool CoreSystem::__UpdateEvents()
         //case SDL_TEXTINPUT:
         //    Core::Input->SetKeyboardChar((char)Event.text.text[0]);
         //    break;
-   
+
         // press keyboard button
         case SDL_KEYDOWN:
             Core::Input->SetKeyboardButton(Event.key.keysym.scancode, true);
@@ -248,7 +254,7 @@ bool CoreSystem::__UpdateEvents()
 
         // move joystick axis
         case SDL_JOYAXISMOTION:
-            if(ABS(Event.jaxis.value) > 8000) Core::Input->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, SIG(Event.jaxis.value));
+            if(ABS(Event.jaxis.value) > 8000) Core::Input->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, (float)SIG(Event.jaxis.value));
                                          else Core::Input->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
             break;
 
@@ -278,7 +284,7 @@ void CoreSystem::__UpdateTime()
 #endif
     m_iPerfTime = iNewPerfTime;
 
-    if(m_iSkipFrame || fNewLastTime >= 0.25f) 
+    if(m_iSkipFrame || fNewLastTime >= 0.25f)
     {
         // skip frames
         m_fLastTime = 0.0f;

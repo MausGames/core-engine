@@ -31,7 +31,13 @@ private:
 
 public:
     coreSpline();
+    coreSpline(const coreSpline& c);
+    coreSpline(coreSpline&& m);
     ~coreSpline();
+
+    // assignment operators
+    coreSpline& operator = (const coreSpline& c);
+    coreSpline& operator = (coreSpline&& m);
 
     // control nodes
     void AddNode(const coreVector3& vPosition, const coreVector3& vTangent);

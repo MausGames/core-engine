@@ -16,18 +16,6 @@ coreVector2::coreVector2()
 {
 }
 
-coreVector2::coreVector2(const coreVector2& c)
-: x (c.x), y (c.y)
-{
-}
-
-coreVector2::coreVector2(coreVector2&& c)
-: x (c.x), y (c.y)
-{
-    c.x = 0;
-    c.y = 0;
-}
-
 coreVector2::coreVector2(const float& fx, const float& fy)
 : x (fx), y (fy)
 {
@@ -35,95 +23,74 @@ coreVector2::coreVector2(const float& fx, const float& fy)
 
 
 // ****************************************************************
-// assign vector
-coreVector2& coreVector2::operator = (const coreVector2& c)
-{
-    x = c.x;
-    y = c.y;
-
-    return *this;
-}
-
-coreVector2& coreVector2::operator = (coreVector2&& c)
-{
-    if(this != &c)
-    {
-        x = c.x; c.x = 0; 
-        y = c.y; c.y = 0;
-    }
-    return *this;
-}
- 
-
-// ****************************************************************
 // addition with vector
-coreVector2 coreVector2::operator + (const coreVector2& c)const
+coreVector2 coreVector2::operator + (const coreVector2& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(c.x, c.y, 0.0f, 0.0f)));
+        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
 
     // normal
-    return coreVector2(x+c.x, y+c.y);
+    return coreVector2(x+v.x, y+v.y);
 }
 
 
 // ****************************************************************
 // subtraction with vector
-coreVector2 coreVector2::operator - (const coreVector2& c)const
+coreVector2 coreVector2::operator - (const coreVector2& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(c.x, c.y, 0.0f, 0.0f)));
+        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
 
     // normal
-    return coreVector2(x-c.x, y-c.y);
+    return coreVector2(x-v.x, y-v.y);
 }
 
 
 // ****************************************************************
 // multiplication with vector
-coreVector2 coreVector2::operator * (const coreVector2& c)const
+coreVector2 coreVector2::operator * (const coreVector2& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(c.x, c.y, 0.0f, 0.0f)));
+        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
 
     // normal
-    return coreVector2(x*c.x, y*c.y);
+    return coreVector2(x*v.x, y*v.y);
 }
 
 
 // ****************************************************************
 // division with vector
-coreVector2 coreVector2::operator / (const coreVector2& c)const
+coreVector2 coreVector2::operator / (const coreVector2& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(c.x, c.y, 0.0f, 0.0f)));
+        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
 
     // normal
-    return coreVector2(x/c.x, y/c.y);
+    return coreVector2(x/v.x, y/v.y);
 }
 
 
@@ -249,29 +216,9 @@ coreVector3::coreVector3()
 {
 }
 
-coreVector3::coreVector3(const coreVector3& c)
-: x (c.x), y (c.y), z (c.z)
-{
-}
-
 coreVector3::coreVector3(const coreVector2& c)
 : x (c.x), y (c.y), z (0.0f)
 {
-}
-
-coreVector3::coreVector3(coreVector3&& c)
-: x (c.x), y (c.y), z (c.z)
-{
-    c.x = 0;
-    c.y = 0;
-    c.z = 0;
-}
-
-coreVector3::coreVector3(coreVector2&& c)
-: x (c.x), y (c.y), z (0.0f)
-{
-    c.x = 0;
-    c.y = 0;
 }
 
 coreVector3::coreVector3(const float& fx, const float& fy, const float& fz)
@@ -281,97 +228,74 @@ coreVector3::coreVector3(const float& fx, const float& fy, const float& fz)
 
 
 // ****************************************************************
-// assign vector
-coreVector3& coreVector3::operator = (const coreVector3& c)
-{
-    x = c.x;
-    y = c.y;
-    z = c.z;
-
-    return *this;
-}
-
-coreVector3& coreVector3::operator = (coreVector3&& c)
-{
-    if(this != &c)
-    {
-        x = c.x; c.x = 0; 
-        y = c.y; c.y = 0;
-        z = c.z; c.z = 0;
-    }
-    return *this;
-}
-
-
-// ****************************************************************
 // addition with vector
-coreVector3 coreVector3::operator + (const coreVector3& c)const
+coreVector3 coreVector3::operator + (const coreVector3& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(c.x, c.y, c.z, 0.0f)));
+        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
 
     // normal
-    return coreVector3(x+c.x, y+c.y, z+c.z);
+    return coreVector3(x+v.x, y+v.y, z+v.z);
 }
 
 
 // ****************************************************************
 // subtraction with vector
-coreVector3 coreVector3::operator - (const coreVector3& c)const
+coreVector3 coreVector3::operator - (const coreVector3& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(c.x, c.y, c.z, 0.0f)));
+        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
 
     // normal
-    return coreVector3(x-c.x, y-c.y, z-c.z);
+    return coreVector3(x-v.x, y-v.y, z-v.z);
 }
 
 
 // ****************************************************************
 // multiplication with vector
-coreVector3 coreVector3::operator * (const coreVector3& c)const
+coreVector3 coreVector3::operator * (const coreVector3& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(c.x, c.y, c.z, 0.0f)));
+        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
 
     // normal
-    return coreVector3(x*c.x, y*c.y, z*c.z);
+    return coreVector3(x*v.x, y*v.y, z*v.z);
 }
 
 
 // ****************************************************************
 // division with vector
-coreVector3 coreVector3::operator / (const coreVector3& c)const
+coreVector3 coreVector3::operator / (const coreVector3& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(c.x, c.y, c.z, 0.0f)));
+        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
 
     // normal
-    return coreVector3(x/c.x, y/c.y, z/c.z);
+    return coreVector3(x/v.x, y/v.y, z/v.z);
 }
 
 
@@ -525,11 +449,6 @@ coreVector4::coreVector4()
 {
 }
 
-coreVector4::coreVector4(const coreVector4& c)
-: x (c.x), y (c.y), z (c.z), w (c.w)
-{
-}
-
 coreVector4::coreVector4(const coreVector3& c)
 : x (c.x), y (c.y), z (c.z), w (0.0f)
 {
@@ -540,30 +459,6 @@ coreVector4::coreVector4(const coreVector2& c)
 {
 }
 
-coreVector4::coreVector4(coreVector4&& c)
-: x (c.x), y (c.y), z (c.z), w (c.w)
-{
-    c.x = 0;
-    c.y = 0;
-    c.z = 0;
-    c.w = 0;
-}
-
-coreVector4::coreVector4(coreVector3&& c)
-: x (c.x), y (c.y), z (c.z), w (0.0f)
-{
-    c.x = 0;
-    c.y = 0;
-    c.z = 0;
-}
-
-coreVector4::coreVector4(coreVector2&& c)
-: x (c.x), y (c.y), z (0.0f), w (0.0f)
-{
-    c.x = 0;
-    c.y = 0;
-}
-
 coreVector4::coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)
 : x (fx), y (fy), z (fz), w (fw)
 {
@@ -571,99 +466,74 @@ coreVector4::coreVector4(const float& fx, const float& fy, const float& fz, cons
 
 
 // ****************************************************************
-// assign vector
-coreVector4& coreVector4::operator = (const coreVector4& c)
-{
-    x = c.x;
-    y = c.y;
-    z = c.z;
-    w = c.w;
-
-    return *this;
-}
-
-coreVector4& coreVector4::operator = (coreVector4&& c)
-{
-    if(this != &c)
-    {
-        x = c.x; c.x = 0; 
-        y = c.y; c.y = 0;
-        z = c.z; c.z = 0;
-        w = c.w; c.w = 0;
-    }
-    return *this;
-}
-
-
-// ****************************************************************
 // addition with vector
-coreVector4 coreVector4::operator + (const coreVector4& c)const
+coreVector4 coreVector4::operator + (const coreVector4& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(c.x, c.y, c.z, c.w)));
+        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
 
     // normal
-    return coreVector4(x+c.x, y+c.y, z+c.z, w+c.w);
+    return coreVector4(x+v.x, y+v.y, z+v.z, w+v.w);
 }
 
 
 // ****************************************************************
 // subtraction with vector
-coreVector4 coreVector4::operator - (const coreVector4& c)const
+coreVector4 coreVector4::operator - (const coreVector4& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(c.x, c.y, c.z, c.w)));
+        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
 
     // normal
-    return coreVector4(x-c.x, y-c.y, z-c.z, w-c.w);
+    return coreVector4(x-v.x, y-v.y, z-v.z, w-v.w);
 }
 
 
 // ****************************************************************
 // multiplication with vector
-coreVector4 coreVector4::operator * (const coreVector4& c)const
+coreVector4 coreVector4::operator * (const coreVector4& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(c.x, c.y, c.z, c.w)));
+        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
 
     // normal
-    return coreVector4(x*c.x, y*c.y, z*c.z, w*c.w);
+    return coreVector4(x*v.x, y*v.y, z*v.z, w*v.w);
 }
 
 
 // ****************************************************************
 // division with vector
-coreVector4 coreVector4::operator / (const coreVector4& c)const
+coreVector4 coreVector4::operator / (const coreVector4& v)const
 {
     // optimized
     if(Core::System->SupportSSE2())
     {
         static __align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(c.x, c.y, c.z, c.w)));
+        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
 
     // normal
-    return coreVector4(x/c.x, y/c.y, z/c.z, w/c.w);
+    return coreVector4(x/v.x, y/v.y, z/v.z, w/v.w);
 }
 
 

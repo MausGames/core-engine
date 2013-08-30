@@ -47,6 +47,12 @@ public:
 
     // retrieve relative file paths from a folder
     static bool SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
+
+
+private:
+    // disable copy
+    coreFile(const coreFile& c) __deletefunc;
+    coreFile& operator = (const coreFile& c) __deletefunc;
 };
 
 
@@ -55,10 +61,10 @@ public:
 class coreArchive
 {
 private:
-    std::string m_sPath;                           // relative path of the archive
-
-    std::vector<coreFile*> m_aFile;                // file objects
-    std::map<std::string, coreFile*> m_aFileMap;   // path access for file objects
+    std::string m_sPath;                             // relative path of the archive
+                                                             
+    std::vector<coreFile*> m_aFile;                  // file objects
+    std::u_map<std::string, coreFile*> m_aFileMap;   // path access for file objects
 
 
 public:
@@ -91,6 +97,10 @@ public:
 
 
 private:
+    // disable copy
+    coreArchive(const coreArchive& c) __deletefunc;
+    coreArchive& operator = (const coreArchive& c) __deletefunc;
+
     // calculate absolute data positions of all files
     void __CalculatePositions();
 };

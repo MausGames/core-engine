@@ -35,29 +35,36 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#define _CRT_SECURE_NO_DEPRECATE 
-#define _SCL_SECURE_NO_DEPRECATE
-#define WIN32_LEAN_AND_MEAN
-#define GLEW_MX
-
 // TODO: remove deprecated stuff
 // TODO: add explicit keyword
 // TODO: boolean traps
 
 
-// ****************************************************************    
-// general macros and definitions
-#define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
-#define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
+// ****************************************************************
+// compiler and library specific definitions
+#define _CRT_SECURE_NO_WARNINGS
+#define WIN32_LEAN_AND_MEAN
+#define GLEW_MX
+
+#undef __STRICT_ANSI__
 
 #if defined(_MSC_VER)
     #define __align16(v) __declspec(align(16)) v
     #define __thread     __declspec(thread)
-#elif defined(__MINGW32__) || defined(__CYGWIN__)
-    #define __align16(v) __declspec(aligned(16)) v
-#else 
-    #define __align16(v) v __attribute__(align(16))
+    #define __deletefunc
+    #define constexpr
+#else
+    #define __align16(v) v __attribute__((aligned(16)))
+    #define __deletefunc = delete
 #endif
+
+
+// ****************************************************************
+// general macros and definitions
+#define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
+#define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
+
+#define u_map unordered_map
 
 typedef unsigned char coreByte;
 typedef unsigned int  coreUint;
@@ -68,39 +75,38 @@ class coreVector4;
 class coreMatrix;
 class coreFile;
 class coreArchive;
-class coreObject2D;
+class coreSound;
+class coreObject2D; //!
 
 enum coreError
 {
-    CORE_OK            =   0,
-    CORE_BUSY          =  10,
+    CORE_OK            =   0,   // everything is fine
+    CORE_BUSY          =  10,   // currently waiting for an event
 
-    CORE_FILE_ERROR    = -10,
-    CORE_INVALID_CALL  = -20,
-    CORE_INVALID_INPUT = -30,
+    CORE_FILE_ERROR    = -10,   // error on opening, writing or finding a file
+    CORE_INVALID_CALL  = -20,   // function cannot be called
+    CORE_INVALID_INPUT = -30,   // function parameters are invalid
 };
 
 
 // ****************************************************************
 // base libraries
-#if defined(_MSC_VER)
+#if defined(_WIN32)
     #include <windows.h>
     #undef DeleteFile
 #else
     #include <sys/stat.h>
     #include <unistd.h>
-    #include <dirent.h> 
+    #include <dirent.h>
     #include <string.h>
-    #include <xmmintrin.h>
-    #include <pmmintrin.h>
-    #include <smmintrin.h>
 #endif
+#include <smmintrin.h>
 #include <time.h>
 #include <math.h>
 #include <cstdio>
 #include <vector>
 #include <set>
-#include <map>
+#include <unordered_map>
 
 
 // ****************************************************************
@@ -109,10 +115,8 @@ enum coreError
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <GL/glew.h>
-#if defined(_WIN32)
-    #include <GL/glaux.h>
-#else
-    #include <GL/gl.h>
+#include <GL/gl.h>
+#if !defined(_WIN32)
     #include <GL/glext.h>
 #endif
 #include <AL/al.h>
@@ -143,7 +147,6 @@ extern __thread GLEWContext g_GlewContext;
 #include "coreMath.h"
 #include "coreUtils.h"
 #include "coreRand.h"
-#include "coreTimer.h"
 #include "coreVector.h"
 #include "coreMatrix.h"
 #include "coreSpline.h"
@@ -158,7 +161,8 @@ extern __thread GLEWContext g_GlewContext;
 
 
 // ****************************************************************
-// component classes
+// system component classes
+#include "coreTimer.h"
 #include "coreThread.h"
 
 
@@ -168,11 +172,12 @@ extern __thread GLEWContext g_GlewContext;
 
 
 // ****************************************************************
-// component classes
+// other component classes
 #include "coreTexture.h"
+#include "coreSound.h"
 
 
-// ****************************************************************    
+// ****************************************************************
 // main application interface
 class CoreApp
 {
@@ -193,7 +198,7 @@ public:
 };
 
 
-// ****************************************************************    
+// ****************************************************************
 // engine framework
 class Core
 {

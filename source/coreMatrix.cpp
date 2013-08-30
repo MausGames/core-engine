@@ -19,25 +19,6 @@ coreMatrix::coreMatrix()
 {
 }
 
-coreMatrix::coreMatrix(const coreMatrix& c)
-: _11 (c._11), _12 (c._12), _13 (c._13), _14 (c._14)
-, _21 (c._21), _22 (c._22), _23 (c._23), _24 (c._24)
-, _31 (c._31), _32 (c._32), _33 (c._33), _34 (c._34)
-, _41 (c._41), _42 (c._42), _43 (c._43), _44 (c._44)
-{
-}
-
-coreMatrix::coreMatrix(coreMatrix&& c)
-: _11 (c._11), _12 (c._12), _13 (c._13), _14 (c._14)
-, _21 (c._21), _22 (c._22), _23 (c._23), _24 (c._24)
-, _31 (c._31), _32 (c._32), _33 (c._33), _34 (c._34)
-, _41 (c._41), _42 (c._42), _43 (c._43), _44 (c._44)
-{
-    for(int i = 0; i < 4; ++i) 
-        for(int j = 0; j < 4; ++j) 
-            c.m[i][j] = 0;
-}
-
 coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14, 
                        const float& f21, const float& f22, const float& f23, const float& f24,
                        const float& f31, const float& f32, const float& f33, const float& f34, 
@@ -51,85 +32,62 @@ coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, con
 
 
 // ****************************************************************
-// assign matrix
-coreMatrix& coreMatrix::operator = (const coreMatrix& c)
-{
-    for(int i = 0; i < 4; ++i)
-        for(int j = 0; j < 4; ++j)
-            m[i][j] = c.m[i][j];
-
-    return *this;
-}
-
-coreMatrix& coreMatrix::operator = (coreMatrix&& c)
-{
-    if(this != &c)
-    {
-        for(int i = 0; i < 4; ++i)
-            for(int j = 0; j < 4; ++j)
-                {m[i][j] = c.m[i][j]; c.m[i][j] = 0;}
-    }
-    return *this;
-}
-
-
-// ****************************************************************
 // compare with matrix
-bool coreMatrix::operator == (const coreMatrix& c)const
+bool coreMatrix::operator == (const coreMatrix& v)const
 {
     // TODO: add SSE-support
-    return ((_11 == c._11) && (_12 == c._12) && (_13 == c._13) && (_14 == c._14) &&
-            (_21 == c._21) && (_22 == c._22) && (_23 == c._23) && (_24 == c._24) &&
-            (_31 == c._31) && (_32 == c._32) && (_33 == c._33) && (_34 == c._34) &&
-            (_41 == c._41) && (_42 == c._42) && (_43 == c._43) && (_44 == c._44));
+    return ((_11 == v._11) && (_12 == v._12) && (_13 == v._13) && (_14 == v._14) &&
+            (_21 == v._21) && (_22 == v._22) && (_23 == v._23) && (_24 == v._24) &&
+            (_31 == v._31) && (_32 == v._32) && (_33 == v._33) && (_34 == v._34) &&
+            (_41 == v._41) && (_42 == v._42) && (_43 == v._43) && (_44 == v._44));
 }
 
 
 // ****************************************************************
 // inverse compare with matrix
-bool coreMatrix::operator != (const coreMatrix& c)const
+bool coreMatrix::operator != (const coreMatrix& v)const
 {
     // TODO: add SSE-support
-    return ((_11 != c._11) || (_12 != c._12) || (_13 != c._13) || (_14 != c._14) ||
-            (_21 != c._21) || (_22 != c._22) || (_23 != c._23) || (_24 != c._24) ||
-            (_31 != c._31) || (_32 != c._32) || (_33 != c._33) || (_34 != c._34) ||
-            (_41 != c._41) || (_42 != c._42) || (_43 != c._43) || (_44 != c._44));
+    return ((_11 != v._11) || (_12 != v._12) || (_13 != v._13) || (_14 != v._14) ||
+            (_21 != v._21) || (_22 != v._22) || (_23 != v._23) || (_24 != v._24) ||
+            (_31 != v._31) || (_32 != v._32) || (_33 != v._33) || (_34 != v._34) ||
+            (_41 != v._41) || (_42 != v._42) || (_43 != v._43) || (_44 != v._44));
 }
 
 
 // ****************************************************************
 // addition with matrix
-coreMatrix coreMatrix::operator + (const coreMatrix& c)const
+coreMatrix coreMatrix::operator + (const coreMatrix& v)const
 {
     // TODO: add SSE-support
-    return coreMatrix(_11+c._11, _12+c._12, _13+c._13, _14+c._14,
-                      _21+c._21, _22+c._22, _23+c._23, _24+c._24,
-                      _31+c._31, _32+c._32, _33+c._33, _34+c._34,
-                      _41+c._41, _42+c._42, _43+c._43, _44+c._44);
+    return coreMatrix(_11+v._11, _12+v._12, _13+v._13, _14+v._14,
+                      _21+v._21, _22+v._22, _23+v._23, _24+v._24,
+                      _31+v._31, _32+v._32, _33+v._33, _34+v._34,
+                      _41+v._41, _42+v._42, _43+v._43, _44+v._44);
 }
 
 
 // ****************************************************************
 // subtraction with matrix
-coreMatrix coreMatrix::operator - (const coreMatrix& c)const
+coreMatrix coreMatrix::operator - (const coreMatrix& v)const
 {
     // TODO: add SSE-support
-    return coreMatrix(_11-c._11, _12-c._12, _13-c._13, _14-c._14,
-                      _21-c._21, _22-c._22, _23-c._23, _24-c._24,
-                      _31-c._31, _32-c._32, _33-c._33, _34-c._34,
-                      _41-c._41, _42-c._42, _43-c._43, _44-c._44);
+    return coreMatrix(_11-v._11, _12-v._12, _13-v._13, _14-v._14,
+                      _21-v._21, _22-v._22, _23-v._23, _24-v._24,
+                      _31-v._31, _32-v._32, _33-v._33, _34-v._34,
+                      _41-v._41, _42-v._42, _43-v._43, _44-v._44);
 }
 
 
 // ****************************************************************
 // multiplication with matrix
-coreMatrix coreMatrix::operator * (const coreMatrix& c)const
+coreMatrix coreMatrix::operator * (const coreMatrix& v)const
 {
     // optimized
     if(Core::System->SupportSSE41())
     {
         const coreMatrix mThis  = *this;
-        const coreMatrix mInput = c.Transposed();
+        const coreMatrix mInput = v.Transposed();
         coreMatrix mOutput;
 
         for(int i = 0; i < 4; ++i) 
@@ -140,14 +98,14 @@ coreMatrix coreMatrix::operator * (const coreMatrix& c)const
     }
 
     // normal
-    return coreMatrix(_11*c._11 + _12*c._21 + _13*c._31 + _14*c._41, _11*c._12 + _12*c._22 + _13*c._32 + _14*c._42,
-                      _11*c._13 + _12*c._23 + _13*c._33 + _14*c._43, _11*c._14 + _12*c._24 + _13*c._34 + _14*c._44,
-                      _21*c._11 + _22*c._21 + _23*c._31 + _24*c._41, _21*c._12 + _22*c._22 + _23*c._32 + _24*c._42,
-                      _21*c._13 + _22*c._23 + _23*c._33 + _24*c._43, _21*c._14 + _22*c._24 + _23*c._34 + _24*c._44,
-                      _31*c._11 + _32*c._21 + _33*c._31 + _34*c._41, _31*c._12 + _32*c._22 + _33*c._32 + _34*c._42,
-                      _31*c._13 + _32*c._23 + _33*c._33 + _34*c._43, _31*c._14 + _32*c._24 + _33*c._34 + _34*c._44,
-                      _41*c._11 + _42*c._21 + _43*c._31 + _44*c._41, _41*c._12 + _42*c._22 + _43*c._32 + _44*c._42,
-                      _41*c._13 + _42*c._23 + _43*c._33 + _44*c._43, _41*c._14 + _42*c._24 + _43*c._34 + _44*c._44);
+    return coreMatrix(_11*v._11 + _12*v._21 + _13*v._31 + _14*v._41, _11*v._12 + _12*v._22 + _13*v._32 + _14*v._42,
+                      _11*v._13 + _12*v._23 + _13*v._33 + _14*v._43, _11*v._14 + _12*v._24 + _13*v._34 + _14*v._44,
+                      _21*v._11 + _22*v._21 + _23*v._31 + _24*v._41, _21*v._12 + _22*v._22 + _23*v._32 + _24*v._42,
+                      _21*v._13 + _22*v._23 + _23*v._33 + _24*v._43, _21*v._14 + _22*v._24 + _23*v._34 + _24*v._44,
+                      _31*v._11 + _32*v._21 + _33*v._31 + _34*v._41, _31*v._12 + _32*v._22 + _33*v._32 + _34*v._42,
+                      _31*v._13 + _32*v._23 + _33*v._33 + _34*v._43, _31*v._14 + _32*v._24 + _33*v._34 + _34*v._44,
+                      _41*v._11 + _42*v._21 + _43*v._31 + _44*v._41, _41*v._12 + _42*v._22 + _43*v._32 + _44*v._42,
+                      _41*v._13 + _42*v._23 + _43*v._33 + _44*v._43, _41*v._14 + _42*v._24 + _43*v._34 + _44*v._44);
 }
 
 

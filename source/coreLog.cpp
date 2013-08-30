@@ -27,8 +27,7 @@ coreLog::coreLog(const char* pcPath)
     fprintf(pFile, ".data      {color: teal;}\n");
     fprintf(pFile, ".header    {font-weight: bold; font-size: 22px;}\n");
     fprintf(pFile, ".liststart {font-weight: bold;}\n");
-    fprintf(pFile, ".warning   {color: blue;}\n");
-    fprintf(pFile, ".error     {color: red;}\n");
+    fprintf(pFile, ".error     {font-weight: bold; color: red;}\n");
     fprintf(pFile, "</style>\n");
 
     // close log file
@@ -41,7 +40,7 @@ coreLog::coreLog(const char* pcPath)
 void coreLog::Error(const bool& bShutdown, const std::string& sText)
 {
     // write error message
-    if(m_iLevel <= 0) this->__Write(true, "<span class=\"" + std::string(bShutdown ? "error" : "warning") + "\">" + sText + "</span><br />");
+    if(m_iLevel <= 0) this->__Write(-1, true, "<span class=\"error\">" + sText + "</span><br />");
 
     // shut down the application
     if(bShutdown)
@@ -58,8 +57,10 @@ void coreLog::Error(const bool& bShutdown, const std::string& sText)
 
 // ****************************************************************
 // write text to the log file
-void coreLog::__Write(const bool& bTime, std::string sText)
+void coreLog::__Write(const int& iLevel, const bool& bTime, std::string sText)
 {
+    if(m_iLevel && (m_iLevel != iLevel)) return;
+
     // open log file
     FILE* pFile = fopen(m_sPath.c_str(), "a");
     if(!pFile) return;

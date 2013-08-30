@@ -16,8 +16,8 @@ class coreRand
 {
 private:
     int* m_piRand;                     // precalculated random numbers
-    coreUint m_NumRand;                // number of random numbers
-    coreUint m_CurRand;                // current random number
+    coreUint m_iNumRand;               // number of random numbers
+    coreUint m_iCurRand;               // current random number
 
     static const float s_fPrecision;   // floating point precision
 
@@ -25,14 +25,18 @@ private:
 public:
     coreRand(const coreUint& iSize, int iInit = -1);
     coreRand(const coreRand& c);
-    coreRand(coreRand&& c);
+    coreRand(coreRand&& m);
     ~coreRand();
 
+    // assignment operators
+    coreRand& operator = (const coreRand& c);
+    coreRand& operator = (coreRand&& m);
+
     // reset the generator
-    inline void Reset() {m_CurRand = 0;}
+    inline void Reset() {m_iCurRand = 0;}
 
     // get raw random number
-    inline const int& GetRaw() {if(++m_CurRand >= m_NumRand) m_CurRand = 0; return m_piRand[m_CurRand];}
+    inline const int& GetRaw() {if(++m_iCurRand >= m_iNumRand) m_iCurRand = 0; return m_piRand[m_iCurRand];}
 
     // calculate constrained random number
     inline int Int(const int& iMin, const int& iMax)         {return iMin + (this->GetRaw() % (iMax - iMin + 1));}

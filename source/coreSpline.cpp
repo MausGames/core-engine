@@ -18,12 +18,44 @@ coreSpline::coreSpline()
     m_apNode.reserve(32);
 }
 
+coreSpline::coreSpline(const coreSpline& c)
+: m_apNode       (c.m_apNode)
+, m_fMaxDistance (c.m_fMaxDistance)
+{
+}
+
+coreSpline::coreSpline(coreSpline&& m)
+: m_apNode       (std::move(m.m_apNode))
+, m_fMaxDistance (m.m_fMaxDistance)
+{
+}
+
 
 // ****************************************************************
 // destructor
 coreSpline::~coreSpline()
 {
     this->ClearNodes();
+}
+
+
+// ****************************************************************
+// assignment operators
+coreSpline& coreSpline::operator = (const coreSpline& c)
+{
+    if(this != &c)
+    {
+        // copy nodes and distance
+        m_apNode       = c.m_apNode;
+        m_fMaxDistance = c.m_fMaxDistance;
+    }
+    return *this;
+}
+
+coreSpline& coreSpline::operator = (coreSpline&& m)
+{
+    std::swap(*this, m);
+    return *this;
 }
 
 

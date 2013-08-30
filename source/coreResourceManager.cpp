@@ -36,10 +36,14 @@ coreResourceHandle::~coreResourceHandle()
 // control resource loading
 void coreResourceHandle::Update()
 {
+    if(!m_pFile) return;
+
     if(m_iRef != 0 && m_pCur == m_pNull)
     {
         // load associated resource
-        if(m_pResource->Load(m_pFile) == CORE_OK)
+        const coreError iError = m_pResource->Load(m_pFile);
+             if(iError == CORE_FILE_ERROR) m_pFile = NULL;
+        else if(iError == CORE_OK)
         {
             m_pCur = m_pResource; 
             m_pFile->UnloadData();
@@ -153,7 +157,11 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
     }
 
     // resource file not found
-    return NULL;
+    SDL_assert(false);
+    if(!m_apDirectFile.count(pcPath)) 
+        m_apDirectFile[pcPath] = new coreFile(pcPath);
+
+    return m_apDirectFile[pcPath];
 }
 
 

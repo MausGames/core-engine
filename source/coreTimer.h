@@ -27,7 +27,7 @@ private:
 
 public:
     coreTimer();
-    coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoop);
+    coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops);
 
     // update the timer
     bool Update(const float fModifier = 1.0f);
@@ -38,8 +38,8 @@ public:
     inline void Reset()                  {m_fCurrent = 0.0f; m_iCurLoop = 0;}
     inline void Stop()                   {this->Pause(); this->Reset();}
 
-    // set the timer basic attributes
-    inline void Set(const float& fEnd, const float& fSpeed, const coreUint& iLoop) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoop = iLoop;}
+    // set all basic attributes
+    inline void Set(const float& fEnd, const float& fSpeed, const coreUint& iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoop = iLoops;}
 
     // set attributes
     inline void SetCurrent(const float& fCurrent)    {m_fCurrent = fCurrent;}
@@ -61,21 +61,21 @@ public:
 
 
 // ****************************************************************
-// simple timer class
-class coreSimpleTimer
+// simple flowing value class
+class coreFlow
 {
 private:
     float m_fCurrent;   // current value
 
 
 public:
-    coreSimpleTimer() : m_fCurrent(0.0f) {}
+    coreFlow() : m_fCurrent(0.0f) {}
 
     // access current value
     inline operator float& ()                 {return m_fCurrent;}
     inline float& operator = (const float& f) {m_fCurrent = f; return m_fCurrent;}
 
-    // update the timer
+    // update the flowing value
     float& Update(const float& fSpeed);
     float& Update(const float& fSpeed, const int& iTimeID);
 };

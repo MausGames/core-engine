@@ -25,7 +25,7 @@
 #define CORE_CONFIG_AUDIO_VOLUME_GLOBAL     "Audio",    "VolumeGlobal"
 #define CORE_CONFIG_AUDIO_VOLUME_SOUND      "Audio",    "VolumeSound"
 #define CORE_CONFIG_AUDIO_VOLUME_MUSIC      "Audio",    "VolumeMusic"
-#define CORE_CONFIG_AUDIO_CHANNELS          "Audio",    "Channels"
+#define CORE_CONFIG_AUDIO_SOURCES           "Audio",    "Sources"
 
 
 // ****************************************************************
@@ -57,4 +57,10 @@ public:
 
     // direct access configuration file interface
     inline CSimpleIniA* Get() {return &m_Config;}
+
+
+private:
+    // disable copy
+    coreConfig(const coreConfig& c) __deletefunc;
+    coreConfig& operator = (const coreConfig& c) __deletefunc;
 };

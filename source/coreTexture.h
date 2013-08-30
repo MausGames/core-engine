@@ -28,12 +28,9 @@
 class coreTexture : public coreResource
 {
 private:
-    GLuint m_iID;                                        // texture identifier/OpenGL name
-                                                          
+    GLuint m_iID;                                        // texture identifier/OpenGL name                                     
     coreVector2 m_vResolution;                           // texture resolution
-    coreUint m_iSize;                                    // data size in bytes
                                                          
-    int m_iUnit;                                         // associated texture unit (-1 = disabled)
     static int s_iActiveUnit;                            // current active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   // texture objects currently associated with texture units
 
@@ -53,7 +50,7 @@ public:
 
     // enable and disable the texture
     void Enable(const coreByte& iUnit);
-    void Disable();
+    static void Disable(const coreByte& iUnit);
     static void DisableAll();
 
     // check sync object status
@@ -62,7 +59,6 @@ public:
     // get attributes
     inline const GLuint& GetID()const              {return m_iID;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
-    inline const coreUint& GetSize()const          {return m_iSize;}
 
     // get relative path to NULL resource
     static inline const char* GetNullPath() {return "data/textures/cursor_diff.tga";}
@@ -70,5 +66,5 @@ public:
 
 
 // ****************************************************************
-// texture access type definition
+// texture resource access type
 typedef coreResourcePtr<coreTexture> coreTexturePtr;

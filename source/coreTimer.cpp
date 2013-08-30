@@ -22,11 +22,11 @@ coreTimer::coreTimer()
 {
 }
 
-coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoop)
+coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)
 : m_fCurrent (0.0f)
 , m_fEnd     (fEnd)
 , m_fSpeed   (fSpeed)
-, m_iMaxLoop (iLoop)
+, m_iMaxLoop (iLoops)
 , m_iCurLoop (0)
 , m_iTimeID  (-1)
 , m_bStatus  (false)
@@ -67,14 +67,14 @@ bool coreTimer::Update(const float fModifier)
 
 
 // ****************************************************************
-// update the timer
-float& coreSimpleTimer::Update(const float& fSpeed)
+// update the flowing value
+float& coreFlow::Update(const float& fSpeed)
 {
     m_fCurrent += fSpeed*Core::System->GetTime();
     return m_fCurrent;
 }
 
-float& coreSimpleTimer::Update(const float& fSpeed, const int& iTimeID)
+float& coreFlow::Update(const float& fSpeed, const int& iTimeID)
 {
     m_fCurrent += fSpeed*Core::System->GetTime(iTimeID);
     return m_fCurrent;

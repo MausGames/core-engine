@@ -13,6 +13,12 @@
 // utility definition
 #define CORE_UTILS_STRINGS 16
 
+#if defined(_WIN32)
+    #define CORE_UTILS_SLASH "\\"
+#else
+    #define CORE_UTILS_SLASH "/"
+#endif
+
 
 // ****************************************************************
 // data and system utility collection
@@ -25,8 +31,8 @@ private:
 
 public:
     // get application parameters
-    static const char* AppName();
-    static const char* AppPath();
+    static char* AppName();
+    static char* AppPath();
 
     // retrieve current date and time
     static void DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea);

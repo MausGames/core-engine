@@ -9,10 +9,10 @@
 #include "Core.h"
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 CoreAudio::CoreAudio()
-: m_NumSource (Core::Config->GetInt(CORE_CONFIG_AUDIO_CHANNELS, 24))
+: m_NumSource (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES, 24))
 , m_CurSource (0)
 , m_fVolume   (-1.0f)
 {
@@ -23,7 +23,7 @@ CoreAudio::CoreAudio()
         Core::Log->Error(0, coreUtils::Print("OpenAL context could not be created (ALUT: %s)", alutGetErrorString(alutGetError())));
     else Core::Log->Info("OpenAL context created");
 
-    // retrieve sound channels
+    // retrieve sound sources
     m_pSource = new ALuint[m_NumSource];
     alGenSources(m_NumSource, m_pSource);
 
@@ -31,7 +31,7 @@ CoreAudio::CoreAudio()
     m_pContext = alcGetCurrentContext();
     m_pDevice  = alcGetContextsDevice(m_pContext);
 
-    // log sound device information 
+    // log sound device information
     Core::Log->ListStart("Sound Device Information");
     Core::Log->ListEntry(coreUtils::Print("<b>Device:</b> %s",   alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER)));
     Core::Log->ListEntry(coreUtils::Print("<b>Vendor:</b> %s",   alGetString(AL_VENDOR)));
@@ -63,12 +63,20 @@ CoreAudio::~CoreAudio()
     // save global volume
     Core::Config->SetFloat(CORE_CONFIG_AUDIO_VOLUME_GLOBAL, m_fVolume);
 
-    // delete sound channels
+    // delete sound sources
     alDeleteSources(m_NumSource, m_pSource);
     SAFE_DELETE_ARRAY(m_pSource)
 
     // shut down OpenAL library
     alutExit();
+}
+
+
+// ****************************************************************
+// update the sound source distribution
+void CoreAudio::__UpdateSources()
+{
+
 }
 
 
@@ -79,12 +87,12 @@ void CoreAudio::SetListener(const coreVector3* pvPosition, const coreVector3* pv
     bool bNewOrientation = false;
 
     // set and update parameters of the listener
-    if(pvPosition)    {if(m_vPosition != *pvPosition) {m_vPosition = *pvPosition; alListenerfv(AL_POSITION, (float*)&m_vPosition);}}
-    if(pvVelocity)    {if(m_vVelocity != *pvVelocity) {m_vVelocity = *pvVelocity; alListenerfv(AL_VELOCITY, (float*)&m_vVelocity);}}
+    if(pvPosition)    {if(m_vPosition != *pvPosition) {m_vPosition = *pvPosition; alListenerfv(AL_POSITION, m_vPosition);}}
+    if(pvVelocity)    {if(m_vVelocity != *pvVelocity) {m_vVelocity = *pvVelocity; alListenerfv(AL_VELOCITY, m_vVelocity);}}
     if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_avDirection[0] != vDirNorm) {m_avDirection[0] = vDirNorm; bNewOrientation = true;}}
     if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_avDirection[1] != vOriNorm) {m_avDirection[1] = vOriNorm; bNewOrientation = true;}}
 
-    if(bNewOrientation) alListenerfv(AL_ORIENTATION, (float*)m_avDirection);
+    if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
 }
 
 void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
@@ -96,4 +104,24 @@ void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
                       &vVelocity,
                       &Core::Graphics->GetCamDirection(),
                       &Core::Graphics->GetCamOrientation());
+}
+
+
+// ****************************************************************
+// retrieve next free sound source
+ALuint CoreAudio::NextSource()
+{
+    // search for next free sound source
+    for(int i = 0; i < m_NumSource; ++i)
+    {
+        if(++m_CurSource >= m_NumSource) m_CurSource = 0;
+
+        // check status and return
+        int iStatus;
+        alGetSourcei(m_pSource[m_CurSource], AL_SOURCE_STATE, &iStatus);
+        if(iStatus != AL_PLAYING) return m_pSource[m_CurSource];
+    }
+
+    // no free sound source available
+    return 0;
 }

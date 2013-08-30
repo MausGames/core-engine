@@ -22,20 +22,24 @@ public:
     coreLog(const char* pcPath);
 
     // message functions
-    inline void Header(const std::string& sText) {if(m_iLevel >= 0) this->__Write(false, "<hr /><span class=\"header\">" + sText + "</span><br />");}
-    inline void Info(const std::string& sText)   {if(m_iLevel >= 0) this->__Write(true, sText + "<br />");}
+    inline void Header(const std::string& sText) {this->__Write(1, false, "<hr /><span class=\"header\">" + sText + "</span><br />");}
+    inline void Info(const std::string& sText)   {this->__Write(1, true, sText + "<br />");}
     void Error(const bool& bShutdown, const std::string& sText);
 
     // list functions
-    inline void ListStart(const std::string& sText) {if(m_iLevel >= 0) this->__Write(true, "<span class=\"liststart\">" + sText + "</span><ul>");}
-    inline void ListEntry(const std::string& sText) {if(m_iLevel >= 0) this->__Write(false, "<li>" + sText + "</li>");}
-    inline void ListEnd()                           {if(m_iLevel >= 0) this->__Write(false, "</ul>");}
+    inline void ListStart(const std::string& sText) {this->__Write(1, true, "<span class=\"liststart\">" + sText + "</span><ul>");}
+    inline void ListEntry(const std::string& sText) {this->__Write(1, false, "<li>" + sText + "</li>");}
+    inline void ListEnd()                           {this->__Write(1, false, "</ul>");}
 
     // set logging level
     inline void SetLevel(const int& iLevel) {m_iLevel = iLevel;}
     
 
 private:
+    // disable copy
+    coreLog(const coreLog& c) __deletefunc;
+    coreLog& operator = (const coreLog& c) __deletefunc;
+
     // write text to the log file
-    void __Write(const bool& bTime, std::string sText);
+    void __Write(const int& iLevel, const bool& bTime, std::string sText);
 };

@@ -326,19 +326,14 @@ coreError coreArchive::AddFile(const char* pcPath)
         return CORE_INVALID_INPUT;
     }
 
-    // add new file object
-    m_aFile.push_back(new coreFile(pcPath));
-    m_aFileMap[pcPath] = m_aFile.back();
-
-    // associate archive
-    m_aFile.back()->m_pArchive    = this;
-    m_aFile.back()->m_iArchivePos = 0;
-
-    return CORE_OK;
+    // open and add new file object
+    return this->AddFile(new coreFile(pcPath));
 }
 
 coreError coreArchive::AddFile(coreFile* pFile)
 {
+    SDL_assert(pFile->m_pArchive == NULL);
+
     // check already existing file
     if(m_aFileMap.count(pFile->GetPath()))
     {
@@ -396,6 +391,7 @@ coreError coreArchive::DeleteFile(const char* pcPath)
 
 coreError coreArchive::DeleteFile(coreFile* pFile)
 {
+    SDL_assert(pFile->m_pArchive == this);
     return this->DeleteFile(pFile->GetPath());
 }
 

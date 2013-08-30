@@ -8,13 +8,17 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+#if defined(_WIN32)
+    #include <direct.h>
+#endif
+
 coreLog*             Core::Log               = NULL;
 coreConfig*          Core::Config            = NULL;
-                                             
+
 coreMath*            Core::Math              = NULL;
 coreUtils*           Core::Utils             = NULL;
 coreRand*            Core::Rand              = NULL;
-                                             
+
 CoreSystem*          Core::System            = NULL;
 CoreGraphics*        Core::Graphics          = NULL;
 CoreAudio*           Core::Audio             = NULL;
@@ -28,7 +32,7 @@ coreResourceManager* Core::Manager::Resource = NULL;
 __thread GLEWContext g_GlewContext;
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 Core::Core()
 {
@@ -53,7 +57,7 @@ Core::Core()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // destructor
 Core::~Core()
 {
@@ -77,7 +81,7 @@ Core::~Core()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // run the application
 void Core::Run()
 {
@@ -110,13 +114,14 @@ void Core::Run()
 
         // post-update engine
         pEngine->Input->__UpdateCursor();
+        pEngine->Audio->__UpdateSources();
         pEngine->Graphics->__UpdateScene();
         pEngine->System->__UpdateTime();
     }
 
     // reset logging level
     pEngine->Log->SetLevel(0);
-    
+
     // delete engine and application
     pEngine->Log->Header("Shut Down");
     SAFE_DELETE(pApplication)
@@ -124,7 +129,7 @@ void Core::Run()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // reset engine
 void Core::Reset()
 {
@@ -164,15 +169,22 @@ void Core::Quit()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // main function
 int main(int argc, char* argv[])
 {
 #if defined(_MSC_VER) && defined(_DEBUG)
     _crtBreakAlloc = 0;
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF); 
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+    // set new working directory (cd ../..)
+    char* pcPath = coreUtils::AppPath();
+    for(int i = 0; i < 3; ++i)
+        (*strrchr(pcPath, CORE_UTILS_SLASH[0])) = '\0';
+    _chdir(pcPath);
+
+    // run the application
     Core::Run();
     return 0;
 }

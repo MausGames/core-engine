@@ -15,22 +15,30 @@ class coreResource
 {
 protected:
     std::string m_sPath;   // relative path of the resource file
+    coreUint m_iSize;      // data size in bytes
 
 
 public:
-    coreResource() : m_sPath ("") {}
-    virtual ~coreResource()       {}
+    coreResource() : m_sPath (""), m_iSize (0) {}
+    virtual ~coreResource()                    {}
 
     // load and unload resource data
     inline coreError Load(const char* pcPath) {coreFile File(pcPath); return this->Load(&File);}
     virtual coreError Load(coreFile* pFile) = 0;
     virtual coreError Unload()              = 0;
 
-    // get relative path
-    inline const char* GetPath() {return m_sPath.c_str();}
+    // get attributes
+    inline const char* GetPath()          {return m_sPath.c_str();}
+    inline const coreUint& GetSize()const {return m_iSize;}
 
     // get relative path to NULL resource
     static inline const char* GetNullPath() {SDL_assert(false); return NULL;}
+
+
+private:
+    // disable copy
+    coreResource(const coreResource& c) __deletefunc;
+    coreResource& operator = (const coreResource& c) __deletefunc;
 };
 
 
@@ -48,10 +56,13 @@ private:
     int m_iRef;                  // reference counter
 
 
-public:
+private:
     coreResourceHandle(coreFile* pFile, coreResource* pResource, coreResource* pNull);
     ~coreResourceHandle();
-    
+    friend class coreResourceManager;
+
+
+public:
     // get active resource object
     inline coreResource* GetResource()const {return m_pCur;}
 
@@ -78,19 +89,21 @@ private:
 public:
     coreResourcePtr(coreResourceHandle* pHandle = NULL);
     coreResourcePtr(const coreResourcePtr& c);
-    coreResourcePtr(coreResourcePtr&& c);
-    ~coreResourcePtr();
+    coreResourcePtr(coreResourcePtr&& m);
+    virtual ~coreResourcePtr();
 
-    // assignment operator
+    // assignment operators
     coreResourcePtr<T>& operator = (coreResourceHandle* pHandle);
+    coreResourcePtr<T>& operator = (const coreResourcePtr& c);
+    coreResourcePtr<T>& operator = (coreResourcePtr&& m);
 
     // resource access operators
-    inline T* operator -> ()const {SDL_assert(m_pHandle != NULL); return static_cast<T*>(m_pHandle->GetResource());}
-    inline T& operator * ()const  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
+    virtual inline T* operator -> ()const {SDL_assert(m_pHandle != NULL); return   static_cast<T*>(m_pHandle->GetResource());}
+    virtual inline T& operator * ()const  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
 
     // control active status
     void SetActive(const bool& bStatus);
-    inline const bool IsActive()const {return (m_pHandle && m_bActive) ? true : false;}
+    inline bool IsActive()const {return (m_pHandle && m_bActive) ? true : false;}
 };
 
 
@@ -100,10 +113,16 @@ class coreReset
 {
 public:
     coreReset();
-    virtual ~coreReset();
+    ~coreReset();
 
     // reset the object with the resource manager
-    virtual void Reset(const bool& bInit) {}
+    virtual void Reset(const bool& bInit) = 0;
+
+
+private:
+    // disable copy
+    coreReset(const coreReset& c) __deletefunc;
+    coreReset& operator = (const coreReset& c) __deletefunc;
 };
 
 
@@ -112,19 +131,22 @@ public:
 class coreResourceManager : public coreThread
 {
 private:
-    std::map<std::string, coreResourceHandle*> m_apHandle;   // resource handles
-    std::map<std::string, coreResource*> m_apNull;           // NULL resource objects
+    std::u_map<std::string, coreResourceHandle*> m_apHandle;   // resource handles
+    std::u_map<std::string, coreResource*> m_apNull;           // NULL resource objects
 
-    std::vector<coreArchive*> m_apArchive;                   // archives with resource files
-    std::map<std::string, coreFile*> m_apDirectFile;         // direct resource files
+    std::vector<coreArchive*> m_apArchive;                     // archives with resource files
+    std::u_map<std::string, coreFile*> m_apDirectFile;         // direct resource files
 
-    std::set<coreReset*> m_apReset;                          // objects to reset with the resource manager
+    std::set<coreReset*> m_apReset;                            // objects to reset with the resource manager
+
+
+private:
+    coreResourceManager();
+    ~coreResourceManager();
+    friend class Core;
 
 
 public:
-    coreResourceManager();
-    ~coreResourceManager();
-
     // load resource and retrieve resource handle
     template <typename T> coreResourceHandle* Load(const char* pcPath);
 
@@ -134,15 +156,15 @@ public:
 
     // control resource manager reset
     void Reset(const bool& bInit);
-    inline void AddReset(coreReset* pObject)    {m_apReset.insert(pObject);}
-    inline void RemoveReset(coreReset* pObject) {m_apReset.erase(pObject);}
+    inline void AddReset(coreReset* pObject)    {SDL_assert(!m_apReset.count(pObject)); m_apReset.insert(pObject);}
+    inline void RemoveReset(coreReset* pObject) {SDL_assert( m_apReset.count(pObject)); m_apReset.erase(pObject);}
 
 
 private:
     // thread implementations
     int __Init();
     int __Run();
-    void __Exit();  
+    void __Exit();
 };
 
 
@@ -162,12 +184,11 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr&
     if(m_bActive && m_pHandle) m_pHandle->RefIncrease();
 }
 
-template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& c)
-: m_pHandle (c.m_pHandle)
-, m_bActive (c.m_bActive)
+template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& m)
+: m_pHandle (m.m_pHandle)
+, m_bActive (m.m_bActive)
 {
-    c.m_pHandle = 0;
-    c.m_bActive = 0;
+    m.m_pHandle = NULL;
 }
 
 
@@ -180,13 +201,37 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 
 
 // ****************************************************************
-// assign resource handle
+// assignment operators
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourceHandle* pHandle)
 {
-    // swap resource handles
+    // change resource handle
     if(m_bActive && m_pHandle) m_pHandle->RefDecrease();
     m_pHandle = pHandle;
     if(m_bActive && m_pHandle) m_pHandle->RefIncrease();
+
+    return *this;
+}
+
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (const coreResourcePtr& c)
+{
+    if(this != &c)
+    {
+        // change resource handle and status
+        if(m_bActive && m_pHandle) m_pHandle->RefDecrease();
+        m_pHandle = c.m_pHandle;
+        m_bActive = c.m_bActive;
+        if(m_bActive && m_pHandle) m_pHandle->RefIncrease();
+    }
+    return *this;
+}
+
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr&& m)
+{
+    // change resource handle and status
+    if(m_bActive && m_pHandle) m_pHandle->RefDecrease();
+    m_pHandle   = m.m_pHandle;
+    m_bActive   = m.m_bActive;
+    m.m_pHandle = NULL;
 
     return *this;
 }

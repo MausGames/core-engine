@@ -18,35 +18,34 @@ coreUint coreUtils::m_iIndex                 = 0;
 
 // ****************************************************************
 // get application name
-const char* coreUtils::AppName()
+char* coreUtils::AppName()
 {
     char* pcString = __NextString();
 
     // receive name
 #if defined(_WIN32)
     GetModuleFileName(NULL, pcString, 255);
-    return strrchr(pcString, '\\')+1;
 #else
     readlink("/proc/self/exe", pcString, 255);
-    return strrchr(pcString, '/')+1;
 #endif
+
+    return strrchr(pcString, CORE_UTILS_SLASH[0])+1;
 }
 
 
 // ****************************************************************
 // get application path
-const char* coreUtils::AppPath()
+char* coreUtils::AppPath()
 {
     char* pcString = __NextString();
 
     // receive path
 #if defined(_WIN32)
     GetCurrentDirectory(255, pcString);
-    strcat(pcString, "\\");
+    strcat(pcString, CORE_UTILS_SLASH);
 #else
     readlink("/proc/self/exe", pcString, 255);
-    char* pcEnd = strrchr(pcString, '/')+1;
-    *pcEnd = '\0';
+    (*(strrchr(pcString, CORE_UTILS_SLASH[0])+1)) = '\0';
 #endif
     
     return pcString;

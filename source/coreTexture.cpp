@@ -18,8 +18,6 @@ SDL_SpinLock coreTexture::s_iLock                           = 0;
 coreTexture::coreTexture(const bool bGenerate)
 : m_iID         (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
-, m_iSize       (0)
-, m_iUnit       (-1)
 , m_pSync       (NULL)
 {
     // generate base texture
@@ -29,8 +27,6 @@ coreTexture::coreTexture(const bool bGenerate)
 coreTexture::coreTexture(const char* pcPath)
 : m_iID         (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
-, m_iSize       (0)
-, m_iUnit       (-1)
 , m_pSync       (NULL)
 {
     // load from path
@@ -40,8 +36,6 @@ coreTexture::coreTexture(const char* pcPath)
 coreTexture::coreTexture(coreFile* pFile)
 : m_iID         (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
-, m_iSize       (0)
-, m_iUnit       (-1)
 , m_pSync       (NULL)
 {
     // load from file
@@ -65,8 +59,8 @@ coreError coreTexture::Load(coreFile* pFile)
     const coreError iStatus = this->CheckSync();
     if(iStatus != CORE_INVALID_CALL) return iStatus;
 
-    SDL_assert(m_iID == 0);
     SDL_assert(pFile != NULL);
+    SDL_assert(m_iID == 0);
 
     // decompress file data
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, strrchr(pFile->GetPath(), '.')+1);
@@ -81,9 +75,9 @@ coreError coreTexture::Load(coreFile* pFile)
 
     // save texture attributes
     m_sPath       = pFile->GetPath();
-    m_vResolution = coreVector2(float(pData->w), float(pData->h));
     m_iSize       = pData->w * pData->h * (bMipMap ? 4 : 3);
-    
+    m_vResolution = coreVector2(float(pData->w), float(pData->h));
+
     // convert data format
     SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, 32, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pData, NULL, pConvert, NULL);
@@ -145,7 +139,7 @@ coreError coreTexture::Load(coreFile* pFile)
     // delete PBO
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
     glDeleteBuffers(1, &iBuffer);
-    
+
     // delete file data
     SDL_FreeSurface(pData);
     SDL_FreeSurface(pConvert);
@@ -160,8 +154,6 @@ coreError coreTexture::Load(coreFile* pFile)
 // unload texture resource data
 coreError coreTexture::Unload()
 {
-    SDL_assert(m_iUnit < 0);
-
     if(!m_iID) return CORE_INVALID_CALL;
 
     // delete texture
@@ -177,9 +169,9 @@ coreError coreTexture::Unload()
 
     // reset attributes
     m_sPath       = "";
+    m_iSize       = 0;
     m_iID         = 0;
     m_vResolution = coreVector2(0.0f,0.0f);
-    m_iSize       = 0;
 
     return CORE_OK;
 }
@@ -190,20 +182,18 @@ coreError coreTexture::Unload()
 void coreTexture::Enable(const coreByte& iUnit)
 {
     SDL_assert(iUnit < CORE_TEXTURE_UNITS);
-    SDL_assert(m_iUnit < 0);
     SDL_assert(s_apBound[iUnit] == NULL);
 
     // save texture binding
-    m_iUnit            = iUnit;
-    s_apBound[m_iUnit] = this;
+    s_apBound[iUnit] = this;
 
     SDL_AtomicLock(&s_iLock);
     {
         // bind texture to texture unit
-        if(s_iActiveUnit != m_iUnit)
+        if(s_iActiveUnit != iUnit)
         {
-            glActiveTexture(GL_TEXTURE0+m_iUnit);
-            s_iActiveUnit = m_iUnit;
+            glActiveTexture(GL_TEXTURE0+iUnit);
+            s_iActiveUnit = iUnit;
         }
         glBindTexture(GL_TEXTURE_2D, m_iID);
     }
@@ -213,26 +203,24 @@ void coreTexture::Enable(const coreByte& iUnit)
 
 // ****************************************************************
 // disable texture
-void coreTexture::Disable()
+void coreTexture::Disable(const coreByte& iUnit)
 {
-    SDL_assert(m_iUnit >= 0);
-    SDL_assert(s_apBound[m_iUnit] != NULL);
+    SDL_assert(s_apBound[iUnit] != NULL);
 
     SDL_AtomicLock(&s_iLock);
     {
         // unbind texture from texture unit
-        if(s_iActiveUnit != m_iUnit)
+        if(s_iActiveUnit != iUnit)
         {
-            glActiveTexture(GL_TEXTURE0+m_iUnit);
-            s_iActiveUnit = m_iUnit;
+            glActiveTexture(GL_TEXTURE0+iUnit);
+            s_iActiveUnit = iUnit;
         }
         glBindTexture(GL_TEXTURE_2D, 0);
     }
     SDL_AtomicUnlock(&s_iLock);
 
     // reset texture binding
-    s_apBound[m_iUnit] = NULL;
-    m_iUnit            = -1;
+    s_apBound[iUnit] = NULL;
 }
 
 
@@ -242,7 +230,7 @@ void coreTexture::DisableAll()
 {
     // traverse all texture units
     for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i)
-        if(s_apBound[i]) s_apBound[i]->Disable();
+        if(s_apBound[i]) Disable(i);
 }
 
 

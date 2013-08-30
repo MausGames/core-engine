@@ -66,14 +66,14 @@ CoreGraphics::CoreGraphics()
         else if(GLEW_VERSION_2_1) m_fOpenGL = 2.1f;
         else if(GLEW_VERSION_2_0) m_fOpenGL = 2.0f;
                              else m_fOpenGL = 0.0f;
-    }    
+    }
 
     // check OpenGL version
     if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements are not met, video card with at least OpenGL 2.0 is required");
 
     // define base geometry attributes
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);    
+    glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableVertexAttribArray(1);
 
@@ -85,10 +85,10 @@ CoreGraphics::CoreGraphics()
     glDisable(GL_DITHER);
 
     // enable depth testing
-    glEnable(GL_DEPTH_TEST); 
+    glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glPolygonOffset(1.1f, 4.0f);
-    glClearDepth(1.0f); 
+    glClearDepth(1.0f);
 
     // enable culling
     glEnable(GL_CULL_FACE);
@@ -112,7 +112,7 @@ CoreGraphics::CoreGraphics()
     // reset scene
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    SDL_GL_SwapWindow(Core::System->GetWindow()); 
+    SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -140,7 +140,7 @@ CoreGraphics::~CoreGraphics()
 void CoreGraphics::__UpdateScene()
 {
     // swap main frame buffers
-    SDL_GL_SwapWindow(Core::System->GetWindow()); 
+    SDL_GL_SwapWindow(Core::System->GetWindow());
 
     // reset depth buffer
 #if defined(_DEBUG)
@@ -179,7 +179,7 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
     glViewport(0, 0, (int)vResolution.x, (int)vResolution.y);
 
     // generate projection matrices
-    m_mPerspective = coreMatrix::Perspective(vResolution, DEG_TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
+    m_mPerspective = coreMatrix::Perspective(vResolution, TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
     m_mOrtho       = coreMatrix::Ortho(vResolution);
     this->EnablePerspective();
 

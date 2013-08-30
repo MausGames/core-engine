@@ -9,12 +9,14 @@ std::vector<coreTexturePtr> Ptr;
 
 void CoreApp::Init()
 {
-    coreFlow val;
-    float test = TO_RAD(90.0f);
-    val = 1.0f+P3;
+    std::vector<int> test1;
+    test1.push_back(1);
+    test1.push_back(2);
+    test1.push_back(3);
 
-    coreSound test2;
-    test2.Stop(&test);
+    std::vector<int> test2 = std::move(test1);
+
+    //coreSoundPtr NewSound = Core::Manager::Resource->Load<coreSound>("test");
 }
 
 
@@ -57,11 +59,16 @@ void CoreApp::Move()
         std::vector<std::string> sList;
         coreFile::SearchFolder("data/textures", "*.tga", &sList);
 
+        coreTexturePtr NewPtr = Core::Manager::Resource->Load<coreTexture>("horstl.tga");
+        Ptr.push_back(NewPtr);
+
         for(coreUint i = 0; i < sList.size(); ++i)
         {
             coreTexturePtr NewPtr = Core::Manager::Resource->Load<coreTexture>(sList[i].c_str());
             Ptr.push_back(NewPtr);
         }
+
+
     }
 
     if(Core::Input->GetKeyboardButton(SDL_SCANCODE_S, CORE_INPUT_PRESS))
