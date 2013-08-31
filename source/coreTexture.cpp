@@ -62,6 +62,8 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_assert(pFile != NULL);
     SDL_assert(m_iID == 0);
 
+    if(!pFile->GetData()) return CORE_FILE_ERROR;
+
     // decompress file data
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, strrchr(pFile->GetPath(), '.')+1);
     if(!pData)

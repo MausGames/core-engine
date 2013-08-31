@@ -25,7 +25,7 @@
 
 // ****************************************************************
 // texture object class
-class coreTexture : public coreResource
+class coreTexture final : public coreResource
 {
 private:
     GLuint m_iID;                                        // texture identifier/OpenGL name                                     
@@ -45,8 +45,8 @@ public:
     ~coreTexture();
 
     // load and unload texture resource data
-    coreError Load(coreFile* pFile);
-    coreError Unload();
+    coreError Load(coreFile* pFile)override;
+    coreError Unload()override;
 
     // enable and disable the texture
     void Enable(const coreByte& iUnit);

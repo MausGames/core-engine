@@ -30,7 +30,7 @@
 
 // ****************************************************************
 // configuration file class
-class coreConfig
+class coreConfig final
 {
 private:
     std::string m_sPath;    // absolute path of the file
@@ -61,6 +61,6 @@ public:
 
 private:
     // disable copy
-    coreConfig(const coreConfig& c) __deletefunc;
-    coreConfig& operator = (const coreConfig& c) __deletefunc;
+    coreConfig(const coreConfig& c) deletefunc;
+    coreConfig& operator = (const coreConfig& c) deletefunc;
 };

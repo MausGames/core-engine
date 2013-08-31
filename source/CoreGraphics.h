@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // main graphics interface
-class CoreGraphics
+class CoreGraphics final
 {
 private:
     SDL_GLContext m_RenderContext;               // primary OpenGL context for render operations

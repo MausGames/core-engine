@@ -303,13 +303,15 @@ coreMatrix coreMatrix::Perspective(const coreVector2& vResolution, const float& 
 {
     const float V = 1.0f / tanf(fFOV/2.0f);
     const float A = vResolution.AspectRatio();
+    const float N = fNearClip;
+    const float F = fFarClip;
 
-    const float INF = 1.0f / (fNearClip-fFarClip);
+    const float INF = 1.0f / (N-F);
 
-    return coreMatrix( V/A, 0.0f,                        0.0f,  0.0f,
-                      0.0f,    V,                        0.0f,  0.0f,
-                      0.0f, 0.0f,    (fNearClip+fFarClip)*INF, -1.0f,
-                      0.0f, 0.0f, 2.0f*fNearClip*fFarClip*INF,  0.0f);
+    return coreMatrix( V/A, 0.0f,         0.0f,  0.0f,
+                      0.0f,    V,         0.0f,  0.0f,
+                      0.0f, 0.0f,    (N+F)*INF, -1.0f,
+                      0.0f, 0.0f, 2.0f*N*F*INF,  0.0f);
 }
 
 

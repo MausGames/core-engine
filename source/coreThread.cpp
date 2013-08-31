@@ -65,7 +65,7 @@ void coreThread::KillThread()
 int coreThread::__Main()
 {
     // init thread implementation
-    Core::Log->Info(coreUtils::Print("Thread (%s:%04d) started", m_sName.c_str(), (int)SDL_ThreadID()));
+    Core::Log->Info(coreUtils::Print("Thread (%s:%04lu) started", m_sName.c_str(), SDL_ThreadID()));
     int iReturn = this->__Init();
 
     m_iCurFrame = 0;
@@ -85,7 +85,7 @@ int coreThread::__Main()
 
     // exit thread implementation
     this->__Exit();
-    Core::Log->Info(coreUtils::Print("Thread (%s:%04d) finished", m_sName.c_str(), SDL_ThreadID()));
+    Core::Log->Info(coreUtils::Print("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_ThreadID()));
 
     m_bEnd = true;
     return iReturn;

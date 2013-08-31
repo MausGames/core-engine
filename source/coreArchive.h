@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // file class
-class coreFile
+class coreFile final
 {
 private:
     std::string m_sPath;       // relative path of the file
@@ -51,14 +51,14 @@ public:
 
 private:
     // disable copy
-    coreFile(const coreFile& c) __deletefunc;
-    coreFile& operator = (const coreFile& c) __deletefunc;
+    coreFile(const coreFile& c) deletefunc;
+    coreFile& operator = (const coreFile& c) deletefunc;
 };
 
 
 // ****************************************************************
 // archive class
-class coreArchive
+class coreArchive final
 {
 private:
     std::string m_sPath;                             // relative path of the archive
@@ -98,8 +98,8 @@ public:
 
 private:
     // disable copy
-    coreArchive(const coreArchive& c) __deletefunc;
-    coreArchive& operator = (const coreArchive& c) __deletefunc;
+    coreArchive(const coreArchive& c) deletefunc;
+    coreArchive& operator = (const coreArchive& c) deletefunc;
 
     // calculate absolute data positions of all files
     void __CalculatePositions();

@@ -29,7 +29,7 @@ enum CORE_INPUT_TYPE {CORE_INPUT_HOLD    = 1,
 
 // ****************************************************************
 // main input interface
-class CoreInput
+class CoreInput final
 {
 private:
     // keyboard struct

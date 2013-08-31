@@ -31,8 +31,8 @@ private:
 
 public:
     // get application parameters
-    static char* AppName();
-    static char* AppPath();
+    static const char* AppName();
+    static const char* AppPath();
 
     // retrieve current date and time
     static void DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea);

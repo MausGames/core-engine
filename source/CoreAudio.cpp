@@ -66,19 +66,12 @@ CoreAudio::~CoreAudio()
     // delete sound sources
     alDeleteSources(m_NumSource, m_pSource);
     SAFE_DELETE_ARRAY(m_pSource)
+    m_apSourceRef.clear();
 
     // delete OpenAL context and close audio device
     alcMakeContextCurrent(NULL);
     alcDestroyContext(m_pContext);
     alcCloseDevice(m_pDevice);
-}
-
-
-// ****************************************************************
-// update the sound source distribution
-void CoreAudio::__UpdateSources()
-{
-
 }
 
 
@@ -111,17 +104,22 @@ void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
 
 // ****************************************************************
 // retrieve next free sound source
-ALuint CoreAudio::NextSource()
+ALuint CoreAudio::NextSource(const void* pRef)
 {
     // search for next free sound source
     for(int i = 0; i < m_NumSource; ++i)
     {
         if(++m_CurSource >= m_NumSource) m_CurSource = 0;
 
-        // check status and return
+        // check status
         int iStatus;
         alGetSourcei(m_pSource[m_CurSource], AL_SOURCE_STATE, &iStatus);
-        if(iStatus != AL_PLAYING) return m_pSource[m_CurSource];
+        if(iStatus != AL_PLAYING)
+        {
+            // return sound sorce
+            m_apSourceRef[m_CurSource] = pRef;
+            return m_pSource[m_CurSource];
+        }
     }
 
     // no free sound source available

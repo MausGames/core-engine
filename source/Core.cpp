@@ -114,7 +114,6 @@ void Core::Run()
 
         // post-update engine
         pEngine->Input->__UpdateCursor();
-        pEngine->Audio->__UpdateSources();
         pEngine->Graphics->__UpdateScene();
         pEngine->System->__UpdateTime();
     }
@@ -179,10 +178,11 @@ int main(int argc, char* argv[])
 #endif
 
     // set new working directory (cd ../..)
-    char* pcPath = coreUtils::AppPath();
+    char acPath[256];
+    sprintf(acPath, "%s", coreUtils::AppPath());
     for(int i = 0; i < 3; ++i)
-        (*strrchr(pcPath, CORE_UTILS_SLASH[0])) = '\0';
-    _chdir(pcPath);
+        (*strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
+    _chdir(acPath);
 
     // run the application
     Core::Run();

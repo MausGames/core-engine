@@ -70,7 +70,7 @@ void coreLog::__Write(const int& iLevel, const bool& bTime, std::string sText)
     {
         coreUint awTime[3];
         coreUtils::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
-        fprintf(pFile, "<span class=\"time\">[%02d:%02d:%02d]</span> <span class=\"thread\">[%04d]</span> ", awTime[2], awTime[1], awTime[0], (int)SDL_ThreadID());
+        fprintf(pFile, "<span class=\"time\">[%02d:%02d:%02d]</span> <span class=\"thread\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], SDL_ThreadID());
     }
 
     // color brackets

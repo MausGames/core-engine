@@ -11,23 +11,23 @@
 
 // ****************************************************************
 // main audio interface
-class CoreAudio
+class CoreAudio final
 {
 private:
-    ALCdevice* m_pDevice;             // audio device
-    ALCcontext* m_pContext;           // OpenAL context
-                                      
-    coreVector3 m_vPosition;          // position of the listener
-    coreVector3 m_vVelocity;          // velocity of the listener
-    coreVector3 m_avDirection[2];     // direction and orientation of the listener
-                                      
-    ALuint* m_pSource;                // sound sources
-    coreByte m_NumSource;             // number of sound sources
-    coreByte m_CurSource;             // current sound source
+    ALCdevice* m_pDevice;                            // audio device
+    ALCcontext* m_pContext;                          // OpenAL context
 
-    std::set<coreSound*> m_apSound;   // existing sound objects
+    coreVector3 m_vPosition;                         // position of the listener
+    coreVector3 m_vVelocity;                         // velocity of the listener
+    coreVector3 m_avDirection[2];                    // direction and orientation of the listener
 
-    float m_fVolume;                  // global volume
+    ALuint* m_pSource;                               // sound sources
+    coreByte m_NumSource;                            // number of sound sources
+    coreByte m_CurSource;                            // current sound source
+
+    std::u_map<ALuint, const void*> m_apSourceRef;   // reference pointers currently using sound sources
+
+    float m_fVolume;                                 // global volume
 
 
 private:
@@ -35,17 +35,15 @@ private:
     ~CoreAudio();
     friend class Core;
 
-    // update the sound source distribution
-    void __UpdateSources();
-
 
 public:
     // control the listener
     void SetListener(const coreVector3* pvPosition, const coreVector3* pvVelocity, const coreVector3* pvDirection, const coreVector3* pvOrientation);
     void SetListener(const float& fSpeed, const int iTimeID = -1);
 
-    // retrieve next free sound source
-    ALuint NextSource();
+    // control sound source distribution
+    ALuint NextSource(const void* pRef);
+    inline ALuint CheckSource(const void* pRef, const ALuint& iSource)const {if(!m_apSourceRef.count(iSource)) return 0; return (m_apSourceRef.at(iSource) == pRef) ? iSource : 0;}
 
     // set global volume
     inline void SetVolume(const float& fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}

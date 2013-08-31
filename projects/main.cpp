@@ -5,8 +5,6 @@ std::vector<coreTexturePtr> Ptr;
 
 
 
-
-
 void CoreApp::Init()
 {
     std::vector<int> test1;
@@ -16,7 +14,8 @@ void CoreApp::Init()
 
     std::vector<int> test2 = std::move(test1);
 
-    //coreSoundPtr NewSound = Core::Manager::Resource->Load<coreSound>("test");
+    coreSoundPtr NewSound = Core::Manager::Resource->Load<coreSound>("test");
+    coreSoundPtr NewSound2 = NewSound;
 }
 
 

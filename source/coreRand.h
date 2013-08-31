@@ -12,7 +12,7 @@
 
 // ****************************************************************
 // random number generator class
-class coreRand
+class coreRand final
 {
 private:
     int* m_piRand;                     // precalculated random numbers

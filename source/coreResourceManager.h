@@ -37,14 +37,14 @@ public:
 
 private:
     // disable copy
-    coreResource(const coreResource& c) __deletefunc;
-    coreResource& operator = (const coreResource& c) __deletefunc;
+    coreResource(const coreResource& c) deletefunc;
+    coreResource& operator = (const coreResource& c) deletefunc;
 };
 
 
 // ****************************************************************
 // resource handle class
-class coreResourceHandle
+class coreResourceHandle final
 {
 private:
     coreFile* m_pFile;           // resource file
@@ -74,6 +74,12 @@ public:
     inline void RefIncrease()       {++m_iRef;}
     inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0);}
     inline const int& GetRef()const {return m_iRef;}
+
+
+private:
+    // disable copy
+    coreResourceHandle(const coreResourceHandle& c) deletefunc;
+    coreResourceHandle& operator = (const coreResourceHandle& c) deletefunc;
 };
 
 
@@ -88,22 +94,30 @@ private:
 
 public:
     coreResourcePtr(coreResourceHandle* pHandle = NULL);
-    coreResourcePtr(const coreResourcePtr& c);
-    coreResourcePtr(coreResourcePtr&& m);
-    virtual ~coreResourcePtr();
+    coreResourcePtr(const coreResourcePtr<T>& c);
+    coreResourcePtr(coreResourcePtr<T>&& m);
+    ~coreResourcePtr();
 
     // assignment operators
     coreResourcePtr<T>& operator = (coreResourceHandle* pHandle);
-    coreResourcePtr<T>& operator = (const coreResourcePtr& c);
-    coreResourcePtr<T>& operator = (coreResourcePtr&& m);
+    coreResourcePtr<T>& operator = (const coreResourcePtr<T>& c);
+    coreResourcePtr<T>& operator = (coreResourcePtr<T>&& m);
 
     // resource access operators
-    virtual inline T* operator -> ()const {SDL_assert(m_pHandle != NULL); return   static_cast<T*>(m_pHandle->GetResource());}
-    virtual inline T& operator * ()const  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
+    inline T* operator -> ()const {SDL_assert(m_pHandle != NULL); return   static_cast<T*>(m_pHandle->GetResource());}
+    inline T& operator * ()const  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
 
     // control active status
     void SetActive(const bool& bStatus);
     inline bool IsActive()const {return (m_pHandle && m_bActive) ? true : false;}
+
+
+private:
+    // disable heap creation
+    void* operator new (size_t s) deletefunc;
+    void* operator new (size_t s, void* o) deletefunc;
+    void* operator new[] (size_t s) deletefunc;
+    void* operator new[] (size_t s, void* o) deletefunc;
 };
 
 
@@ -113,7 +127,7 @@ class coreReset
 {
 public:
     coreReset();
-    ~coreReset();
+    virtual ~coreReset();
 
     // reset the object with the resource manager
     virtual void Reset(const bool& bInit) = 0;
@@ -121,14 +135,14 @@ public:
 
 private:
     // disable copy
-    coreReset(const coreReset& c) __deletefunc;
-    coreReset& operator = (const coreReset& c) __deletefunc;
+    coreReset(const coreReset& c) deletefunc;
+    coreReset& operator = (const coreReset& c) deletefunc;
 };
 
 
 // ****************************************************************
 // resource manager
-class coreResourceManager : public coreThread
+class coreResourceManager final : public coreThread
 {
 private:
     std::u_map<std::string, coreResourceHandle*> m_apHandle;   // resource handles
@@ -162,9 +176,9 @@ public:
 
 private:
     // thread implementations
-    int __Init();
-    int __Run();
-    void __Exit();
+    int __Init()override;
+    int __Run()override;
+    void __Exit()override;
 };
 
 
@@ -174,17 +188,17 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pH
 : m_pHandle (pHandle)
 , m_bActive (true)
 {
-    if(m_pHandle) m_pHandle->RefIncrease();
+    if(this->IsActive()) m_pHandle->RefIncrease();
 }
 
-template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr& c)
+template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr<T>& c)
 : m_pHandle (c.m_pHandle)
 , m_bActive (c.m_bActive)
 {
-    if(m_bActive && m_pHandle) m_pHandle->RefIncrease();
+    if(this->IsActive()) m_pHandle->RefIncrease();
 }
 
-template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& m)
+template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m)
 : m_pHandle (m.m_pHandle)
 , m_bActive (m.m_bActive)
 {
@@ -196,7 +210,7 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& m)
 // destructor
 template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 {
-    if(m_bActive && m_pHandle) m_pHandle->RefDecrease();
+    if(this->IsActive()) m_pHandle->RefDecrease();
 }
 
 
@@ -205,34 +219,29 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourceHandle* pHandle)
 {
     // change resource handle
-    if(m_bActive && m_pHandle) m_pHandle->RefDecrease();
+    if(this->IsActive()) m_pHandle->RefDecrease();
     m_pHandle = pHandle;
-    if(m_bActive && m_pHandle) m_pHandle->RefIncrease();
+    if(this->IsActive()) m_pHandle->RefIncrease();
 
     return *this;
 }
 
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (const coreResourcePtr& c)
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (const coreResourcePtr<T>& c)
 {
     if(this != &c)
     {
         // change resource handle and status
-        if(m_bActive && m_pHandle) m_pHandle->RefDecrease();
+        if(this->IsActive()) m_pHandle->RefDecrease();
         m_pHandle = c.m_pHandle;
         m_bActive = c.m_bActive;
-        if(m_bActive && m_pHandle) m_pHandle->RefIncrease();
+        if(this->IsActive()) m_pHandle->RefIncrease();
     }
     return *this;
 }
 
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr&& m)
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T>&& m)
 {
-    // change resource handle and status
-    if(m_bActive && m_pHandle) m_pHandle->RefDecrease();
-    m_pHandle   = m.m_pHandle;
-    m_bActive   = m.m_bActive;
-    m.m_pHandle = NULL;
-
+    std::swap(*this, m);
     return *this;
 }
 

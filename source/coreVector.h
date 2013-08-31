@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // two-dimensional vector
-class coreVector2
+class coreVector2 final
 {
 public:
     union
@@ -93,7 +93,7 @@ public:
 
 // ****************************************************************
 // three-dimensional vector
-class coreVector3
+class coreVector3 final
 {
 public:
     union
@@ -180,7 +180,7 @@ public:
 
 // ****************************************************************
 // four-dimensional vector
-class coreVector4
+class coreVector4 final
 {
 public:
     union

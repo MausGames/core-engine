@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // log file class
-class coreLog
+class coreLog final
 {
 private:
     std::string m_sPath;   // relative path of the log file
@@ -37,8 +37,8 @@ public:
 
 private:
     // disable copy
-    coreLog(const coreLog& c) __deletefunc;
-    coreLog& operator = (const coreLog& c) __deletefunc;
+    coreLog(const coreLog& c) deletefunc;
+    coreLog& operator = (const coreLog& c) deletefunc;
 
     // write text to the log file
     void __Write(const int& iLevel, const bool& bTime, std::string sText);

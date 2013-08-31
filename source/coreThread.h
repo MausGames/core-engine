@@ -32,8 +32,8 @@ public:
 
 private:
     // disable copy
-    coreThread(const coreThread& c) __deletefunc;
-    coreThread& operator = (const coreThread& c) __deletefunc;
+    coreThread(const coreThread& c) deletefunc;
+    coreThread& operator = (const coreThread& c) deletefunc;
 
     // execute thread
     int __Main();

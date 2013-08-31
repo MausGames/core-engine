@@ -11,10 +11,10 @@
 
 // ****************************************************************
 // 4x4 matrix class
-class coreMatrix
+class coreMatrix final
 {
 public:
-    __align16(union)
+    align16(union)
     {
         struct 
         {

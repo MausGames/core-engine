@@ -15,7 +15,7 @@
 
 // ****************************************************************
 // main system interface
-class CoreSystem
+class CoreSystem final
 {
 private:
     SDL_Window* m_pWindow;                    // SDL main window object

@@ -12,7 +12,7 @@
 
 // ****************************************************************
 // spline class
-class coreSpline
+class coreSpline final
 {
 private:
     // node struct

@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // timer class
-class coreTimer
+class coreTimer final
 {
 private:
     float m_fCurrent;      // current value
@@ -62,7 +62,7 @@ public:
 
 // ****************************************************************
 // simple flowing value class
-class coreFlow
+class coreFlow final
 {
 private:
     float m_fCurrent;   // current value

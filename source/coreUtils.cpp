@@ -18,7 +18,7 @@ coreUint coreUtils::m_iIndex                 = 0;
 
 // ****************************************************************
 // get application name
-char* coreUtils::AppName()
+const char* coreUtils::AppName()
 {
     char* pcString = __NextString();
 
@@ -35,7 +35,7 @@ char* coreUtils::AppName()
 
 // ****************************************************************
 // get application path
-char* coreUtils::AppPath()
+const char* coreUtils::AppPath()
 {
     char* pcString = __NextString();
 

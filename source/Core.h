@@ -42,6 +42,10 @@
 
 // ****************************************************************
 // compiler and library specific definitions
+#if !defined(_MSC_VER) && !defined(__GNUC__) && !defined(__MINGW32__)
+    #warning "Compiler not supported!"
+#endif
+
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
 #define GLEW_MX
@@ -49,13 +53,19 @@
 #undef __STRICT_ANSI__
 
 #if defined(_MSC_VER)
-    #define __align16(v) __declspec(align(16)) v
-    #define __thread     __declspec(thread)
-    #define __deletefunc
-    #define constexpr
+    #define align16(v) __declspec(align(16)) v
+    #define deletefunc
 #else
-    #define __align16(v) v __attribute__((aligned(16)))
-    #define __deletefunc = delete
+    #define align16(v) v __attribute__((aligned(16)))
+    #define deletefunc = delete
+#endif
+
+#if defined(_MSC_VER)
+    #define __thread __declspec(thread)
+    #define constexpr
+    #if (_MSC_VER) < 1700
+        #define final
+    #endif
 #endif
 
 
@@ -178,7 +188,7 @@ extern __thread GLEWContext g_GlewContext;
 
 // ****************************************************************
 // main application interface
-class CoreApp
+class CoreApp final
 {
 private:
     CoreApp()  {this->Init();}
@@ -199,7 +209,7 @@ public:
 
 // ****************************************************************
 // engine framework
-class Core
+class Core final
 {
 public:
     static coreLog* Log;             // log file
