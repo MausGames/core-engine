@@ -51,48 +51,48 @@ coreError coreSound::Load(coreFile* pFile)
 {
     SDL_assert(pFile != NULL);
     SDL_assert(m_iBuffer == 0);
-
+    
     char acID[4];
     coreUint iSize;
-
+    
     // get file data
     const coreByte* pData = pFile->GetData();
     if(!pData) return CORE_FILE_ERROR;
-
+    
     // read header
     memcpy(acID,   pData, 4); pData += 4;
     memcpy(&iSize, pData, 4); pData += 4;
-
+    
     // check file format
     if(!strncmp(acID, "RIFF", 4)) {memcpy(acID, pData, 4); pData += 4;}
-	if( strncmp(acID, "WAVE", 4))
+    if( strncmp(acID, "WAVE", 4))
     {
         Core::Log->Error(0, coreUtils::Print("Sound (%s) is not a valid WAVE-file", pFile->GetPath()));
         return CORE_FILE_ERROR;
     }
-
-	// read sub-chunks
+    
+    // read sub-chunks
     const coreByte* pSoundData = NULL;
     coreUint iSoundSize = 0;
-	while(true)
-	{
-		memcpy(acID,   pData, 4); pData += 4;
+    while(true)
+    {
+        memcpy(acID,   pData, 4); pData += 4;
         memcpy(&iSize, pData, 4); pData += 4;
-		
-		     if(!strncmp(acID, "fmt ", 4)) memcpy(&m_Format, pData, sizeof(m_Format));
+    	
+             if(!strncmp(acID, "fmt ", 4)) memcpy(&m_Format, pData, sizeof(m_Format));
         else if(!strncmp(acID, "data", 4)) {pSoundData = pData; iSoundSize = iSize;}
-		else break;
-
-		pData += iSize;
-	}
-
+        else break;
+    
+        pData += iSize;
+    }
+    
     // check for compression
     if(m_Format.iAudioFormat != 1)
     {
         Core::Log->Error(0, coreUtils::Print("Sound (%s) is not PCM encoded, compression is not supported", pFile->GetPath()));
         return CORE_FILE_ERROR;
     }
-
+    
     // set sound data format
     ALenum iSoundFormat = 0;
     if(m_Format.iNumChannels == 1)
@@ -105,11 +105,11 @@ coreError coreSound::Load(coreFile* pFile)
         if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_STEREO8;
         if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_STEREO16;
     }
-
+    
     // create sound buffer
     alGenBuffers(1, &m_iBuffer);
     alBufferData(m_iBuffer, iSoundFormat, pSoundData, iSoundSize, m_Format.iSampleRate);
-
+    
     // check for errors
     const ALenum iError = alGetError();
     if(iError != AL_NO_ERROR)
@@ -117,11 +117,11 @@ coreError coreSound::Load(coreFile* pFile)
         Core::Log->Error(0, coreUtils::Print("Sound (%s) could not be loaded (AL Error Code: %d)", pFile->GetPath(), iError));
         return CORE_FILE_ERROR;
     }
-
+    
     // save sound attributes
     m_sPath = pFile->GetPath();
     m_iSize = pFile->GetSize();
-
+    
     return CORE_OK;
 }
 
@@ -132,7 +132,7 @@ coreError coreSound::Unload()
 {
     if(!m_iBuffer) return CORE_INVALID_CALL;
 
-    // unbind sound buffer from all associated sound sources
+    // unbind sound buffer from all used sound sources
     for(auto it = m_aiSource.begin(); it != m_aiSource.end(); ++it)
     {
         const ALuint iSource = this->CheckRef(it->first);
@@ -167,7 +167,6 @@ void coreSound::Play(const float& fVolume, const float& fPitch, const float& fPi
     // retrieve next free sound source
     const ALuint iSource = Core::Audio->NextSource(m_pCurRef);
     if(m_pCurRef) m_aiSource[m_pCurRef] = iSource;
-    alSourceStop(iSource);
     
     // set initial sound source properties
     alSourcei(iSource,  AL_BUFFER,             m_iBuffer);
@@ -187,14 +186,13 @@ void coreSound::Play(const float& fVolume, const float& fPitch, const float& fPi
     alSourcePlay(iSource);
 }
 
-void coreSound::Play(const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop)
+void coreSound::PlayRelative(const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop)
 {
     SDL_assert(m_pCurRef || !bLoop);
 
     // retrieve next free sound source
     const ALuint iSource = Core::Audio->NextSource(m_pCurRef);
     if(m_pCurRef) m_aiSource[m_pCurRef] = iSource;
-    alSourceStop(iSource);
     
     // set initial sound source properties
     alSourcei(iSource,  AL_BUFFER,          m_iBuffer);
@@ -229,6 +227,7 @@ bool coreSound::IsPlaying()
     int iStatus;
     alGetSourcei(iSource, AL_SOURCE_STATE, &iStatus);
 
+    // check for playback
     return (iStatus == AL_PLAYING) ? true : false;
 }
 
@@ -238,10 +237,9 @@ bool coreSound::IsPlaying()
 void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity)
 {
     const ALuint iSource = this->CheckRef(m_pCurRef);
-
     if(iSource)
     {
-        // set position and velocity property
+        // set position and velocity
         if(pvPosition) alSourcefv(iSource, AL_POSITION, *pvPosition);
         if(pvVelocity) alSourcefv(iSource, AL_VELOCITY, *pvVelocity);
     }
@@ -259,10 +257,16 @@ void coreSound::SetVolume(const float& fVolume)
 
 // ****************************************************************
 // check reference pointer for valid sound source
-ALuint coreSound::CheckRef(const void* pRef)const
+ALuint coreSound::CheckRef(const void* pRef)
 {
     SDL_assert(pRef);
 
+    // check if sound source is available
     if(!m_aiSource.count(pRef)) return 0;
-    return Core::Audio->CheckSource(pRef, m_aiSource.at(pRef));
+
+    // check if sound source is still valid
+    const ALuint iSource = Core::Audio->CheckSource(pRef, m_aiSource.at(pRef));
+    if(!iSource) m_aiSource.erase(pRef);
+
+    return iSource;
 }

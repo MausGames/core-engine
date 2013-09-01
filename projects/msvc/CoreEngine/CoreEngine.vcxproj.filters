@@ -29,6 +29,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Engine\04_Components\03_Audio">
+      <UniqueIdentifier>{4b6b4e28-2005-4604-a2d7-5c20c6e1e34d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\Core.cpp">
@@ -82,14 +85,14 @@
     <ClCompile Include="..\..\..\source\CoreGraphics.cpp">
       <Filter>Engine\03_Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\coreSound.cpp">
-      <Filter>Work</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\main.cpp">
       <Filter>Work</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\coreTimer.cpp">
       <Filter>Engine\04_Components\01_System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\coreSound.cpp">
+      <Filter>Engine\04_Components\03_Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,11 +147,11 @@
     <ClInclude Include="..\..\..\source\CoreGraphics.h">
       <Filter>Engine\03_Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\coreSound.h">
-      <Filter>Work</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\coreTimer.h">
       <Filter>Engine\04_Components\01_System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreSound.h">
+      <Filter>Engine\04_Components\03_Audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

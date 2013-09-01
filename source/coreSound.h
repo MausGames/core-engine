@@ -34,7 +34,7 @@ private:
     coreWaveFormat m_Format;                      // format of the sound file
 
     std::u_map<const void*, ALuint> m_aiSource;   // currently used sound sources
-    const void* m_pCurRef;                        // active reference pointer (can also be NULL)
+    const void* m_pCurRef;                        // active reference pointer (required to control sound sources)
 
 
 public:
@@ -49,7 +49,7 @@ public:
 
     // control playback
     void Play(const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop, const coreVector3& vPosition);
-    void Play(const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop);
+    void PlayRelative(const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop);
     void Stop();
     bool IsPlaying();
 
@@ -61,7 +61,7 @@ public:
 
     // control the active reference pointer
     inline void SetCurRef(const void* pRef) {m_pCurRef = pRef;}
-    ALuint CheckRef(const void* pRef)const;
+    ALuint CheckRef(const void* pRef);
 
     // get attributes
     inline const ALuint& GetBuffer()const         {return m_iBuffer;}
