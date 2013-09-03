@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_TEXTURE_H
+#define CORE_TEXTURE_H
 // TODO: compile SDL_image with png-support
 // TODO: use libjpeg-turbo instead of the normal libjpeg
 // TODO: check for max available texture units
@@ -28,18 +30,18 @@
 class coreTexture final : public coreResource
 {
 private:
-    GLuint m_iID;                                        // texture identifier/OpenGL name                                     
-    coreVector2 m_vResolution;                           // texture resolution
+    GLuint m_iTexture;                                   //!< texture identifier/OpenGL name                                     
+    coreVector2 m_vResolution;                           //!< texture resolution
                                                          
-    static int s_iActiveUnit;                            // current active texture unit
-    static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   // texture objects currently associated with texture units
+    static int s_iActiveUnit;                            //!< current active texture unit
+    static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
 
-    GLsync m_pSync;                                      // sync object for asynchronous texture loading
-    static SDL_SpinLock s_iLock;                         // spinlock to prevent asynchronous texture unit access
+    GLsync m_pSync;                                      //!< sync object for asynchronous texture loading
+    static SDL_SpinLock s_iLock;                         //!< spinlock to prevent asynchronous texture unit access
 
 
 public:
-    coreTexture(const bool bGenerate = false);
+    coreTexture();
     coreTexture(const char* pcPath);
     coreTexture(coreFile* pFile);
     ~coreTexture();
@@ -56,15 +58,21 @@ public:
     // check sync object status
     coreError CheckSync(); 
 
+    // generate empty base texture
+    inline void Generate() {SDL_assert(m_iTexture == 0); if(!m_iTexture) glGenTextures(1, &m_iTexture);}
+
     // get attributes
-    inline const GLuint& GetID()const              {return m_iID;}
+    inline const GLuint& GetTexture()const         {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
 
     // get relative path to NULL resource
-    static inline const char* GetNullPath() {return "data/textures/cursor_diff.tga";}
+    static inline const char* GetNullPath() {return "data/textures/default.png";}
 };
 
 
 // ****************************************************************
 // texture resource access type
 typedef coreResourcePtr<coreTexture> coreTexturePtr;
+
+
+#endif // CORE_TEXTURE_H

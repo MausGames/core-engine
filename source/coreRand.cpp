@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-const float coreRand::s_fPrecision = 1.0f/float(RAND_MAX);
+const float coreRand::c_fPrecision = 1.0f/float(RAND_MAX);
 
 
 // ****************************************************************

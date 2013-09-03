@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_AUDIO_H
+#define CORE_AUDIO_H
 
 
 // ****************************************************************
@@ -14,20 +16,20 @@
 class CoreAudio final
 {
 private:
-    ALCdevice* m_pDevice;                            // audio device
-    ALCcontext* m_pContext;                          // OpenAL context
+    ALCdevice* m_pDevice;                            //!< audio device
+    ALCcontext* m_pContext;                          //!< OpenAL context
 
-    coreVector3 m_vPosition;                         // position of the listener
-    coreVector3 m_vVelocity;                         // velocity of the listener
-    coreVector3 m_avDirection[2];                    // direction and orientation of the listener
+    coreVector3 m_vPosition;                         //!< position of the listener
+    coreVector3 m_vVelocity;                         //!< velocity of the listener
+    coreVector3 m_avDirection[2];                    //!< direction and orientation of the listener
 
-    ALuint* m_pSource;                               // sound sources
-    coreByte m_NumSource;                            // number of sound sources
-    coreByte m_CurSource;                            // current sound source
+    ALuint* m_pSource;                               //!< sound sources
+    coreByte m_NumSource;                            //!< number of sound sources
+    coreByte m_CurSource;                            //!< current sound source
 
-    std::u_map<ALuint, const void*> m_apSourceRef;   // reference pointers currently using sound sources
+    std::u_map<ALuint, const void*> m_apSourceRef;   //!< reference pointers currently using sound sources
 
-    float m_fVolume;                                 // global volume
+    float m_fVolume;                                 //!< global volume
 
 
 private:
@@ -48,3 +50,6 @@ public:
     // set global volume
     inline void SetVolume(const float& fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}
 };
+
+
+#endif // CORE_AUDIO_H

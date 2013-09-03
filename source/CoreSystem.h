@@ -7,9 +7,12 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_SYSTEM_H
+#define CORE_SYSTEM_H
+
 
 // ****************************************************************
-// timer definitions
+// system definitions
 #define CORE_SYSTEM_TIMES 8
 
 
@@ -18,31 +21,31 @@
 class CoreSystem final
 {
 private:
-    SDL_Window* m_pWindow;                    // SDL main window object
+    SDL_Window* m_pWindow;                    //!< SDL main window object
                                               
-    coreVector2 m_vResolution;                // width and height of the window
-    coreByte m_iFullscreen;                   // fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
+    coreVector2 m_vResolution;                //!< width and height of the window
+    coreByte m_iFullscreen;                   //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
                                               
-    std::vector<coreVector2> m_avAvailable;   // all available screen resolutions
-    bool m_bMinimized;                        // window was minimized
+    std::vector<coreVector2> m_avAvailable;   //!< all available screen resolutions
+    bool m_bMinimized;                        //!< window was minimized
 
-    double m_dTotalTime;                      // total time since start of the application
-    float m_fLastTime;                        // smoothed last frame time
-    float m_afTime[CORE_SYSTEM_TIMES];        // adjusted frame times
-    float m_afTimeSpeed[CORE_SYSTEM_TIMES];   // speed factor for the adjusted frame times
+    double m_dTotalTime;                      //!< total time since start of the application
+    float m_fLastTime;                        //!< smoothed last frame time
+    float m_afTime[CORE_SYSTEM_TIMES];        //!< adjusted frame times
+    float m_afTimeSpeed[CORE_SYSTEM_TIMES];   //!< speed factor for the adjusted frame times
                                                
-    coreUint m_iCurFrame;                     // current frame number since start of the application
-    coreByte m_iSkipFrame;                    // skip frame status
+    coreUint m_iCurFrame;                     //!< current frame number since start of the application
+    coreByte m_iSkipFrame;                    //!< skip frame status
                                               
 #if defined(_WIN32)                           
-    float m_fPerfFrequency;                   // high precission time coefficient (WIN32)
-    LARGE_INTEGER m_iPerfTime;                // high precission time value (WIN32)
+    float m_fPerfFrequency;                   //!< high precission time coefficient (WIN32)
+    LARGE_INTEGER m_iPerfTime;                //!< high precission time value (WIN32)
 #else                                         
-    timespec m_iPerfTime;                     // high precission time value (Linux)
+    timespec m_iPerfTime;                     //!< high precission time value (Linux)
 #endif                                        
                                               
-    int m_aaiCPUID[2][4];                     // features of the processor
-    bool m_abSSE[5];                          // available SSE versions (1, 2, 3, 4.1, 4.2)
+    int m_aaiCPUID[2][4];                     //!< features of the processor
+    bool m_abSSE[5];                          //!< available SSE versions (1, 2, 3, 4.1, 4.2)
 
 
 private:
@@ -85,3 +88,6 @@ public:
     inline const bool& SupportSSE41()const {return m_abSSE[3];}
     inline const bool& SupportSSE42()const {return m_abSSE[4];}
 };
+
+
+#endif // CORE_SYSTEM_H

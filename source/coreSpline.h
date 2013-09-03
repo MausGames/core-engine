@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_SPLINE_H
+#define CORE_SPLINE_H
 // TODO: extend to NURBS
 
 
@@ -18,15 +20,15 @@ private:
     // node struct
     struct coreNode
     {
-        coreVector3 vPosition;   // position of the node
-        coreVector3 vTangent;    // tangent of the node
-        float fDistance;         // distance from this node to the next (0 = last node)
+        coreVector3 vPosition;   //!< position of the node
+        coreVector3 vTangent;    //!< tangent of the node
+        float fDistance;         //!< distance from this node to the next (0 = last node)
     };
 
 
 private:
-    std::vector<coreNode> m_apNode;   // nodes of the spline
-    float m_fMaxDistance;             // approximated maximum distance
+    std::vector<coreNode> m_apNode;   //!< nodes of the spline
+    float m_fMaxDistance;             //!< approximated maximum distance
 
 
 public:
@@ -57,3 +59,6 @@ public:
     inline const float& GetDistance()const            {return m_fMaxDistance;}
     inline float GetDistance(const float& fTime)const {return fTime*m_fMaxDistance;}
 };
+
+
+#endif // CORE_SPLINE_H

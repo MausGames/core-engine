@@ -156,6 +156,9 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
         if(pFile) return pFile;
     }
 
+    // check for special identifier
+    if(pcPath[0] == '$') return NULL;
+
     // resource file not found
     SDL_assert(false);
     if(!m_apDirectFile.count(pcPath)) 
@@ -192,7 +195,7 @@ void coreResourceManager::Reset(const bool& bInit)
             (*it)->Reset(false);
 
         // unload resources
-        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) it->second->Nullify();
+        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) if(it->second->GetFile()) it->second->Nullify();
         for(auto it = m_apNull.begin();   it != m_apNull.end();   ++it) it->second->Unload();
     }
 }

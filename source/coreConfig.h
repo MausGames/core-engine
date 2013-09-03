@@ -7,10 +7,12 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_CONFIG_H
+#define CORE_CONFIG_H
 
 
 // ****************************************************************
-// main configuration definitions
+// configuration definitions
 #define CORE_CONFIG_SYSTEM_WIDTH            "System",   "Width"
 #define CORE_CONFIG_SYSTEM_HEIGHT           "System",   "Height"
 #define CORE_CONFIG_SYSTEM_FULLSCREEN       "System",   "Fullscreen"
@@ -33,8 +35,8 @@
 class coreConfig final
 {
 private:
-    std::string m_sPath;    // absolute path of the file
-    CSimpleIniA m_Config;   // config file interface
+    std::string m_sPath;    //!< absolute path of the file
+    CSimpleIniA m_Config;   //!< config file interface
 
 
 public:
@@ -64,3 +66,6 @@ private:
     coreConfig(const coreConfig& c) deletefunc;
     coreConfig& operator = (const coreConfig& c) deletefunc;
 };
+
+
+#endif // CORE_CONFIG_H

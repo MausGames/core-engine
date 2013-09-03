@@ -7,6 +7,13 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_RESOURCE_MANAGER_H
+#define CORE_RESOURCE_MANAGER_H
+
+
+// ****************************************************************
+// resource definitions
+#define CORE_RESOURCE_UNIQUE coreUtils::Print("%s:%d", strrchr(__FILE__, CORE_UTILS_SLASH[0])+1, __LINE__)
 
 
 // ****************************************************************
@@ -14,8 +21,8 @@
 class coreResource
 {
 protected:
-    std::string m_sPath;   // relative path of the resource file
-    coreUint m_iSize;      // data size in bytes
+    std::string m_sPath;   //!< relative path of the resource file
+    coreUint m_iSize;      //!< data size in bytes
 
 
 public:
@@ -47,13 +54,13 @@ private:
 class coreResourceHandle final
 {
 private:
-    coreFile* m_pFile;           // resource file
+    coreFile* m_pFile;           //!< resource file
 
-    coreResource* m_pResource;   // associated resource object
-    coreResource* m_pNull;       // NULL resource object
+    coreResource* m_pResource;   //!< associated resource object
+    coreResource* m_pNull;       //!< NULL resource object
 
-    coreResource* m_pCur;        // pointer to active resource object
-    int m_iRef;                  // reference counter
+    coreResource* m_pCur;        //!< pointer to active resource object
+    int m_iRef;                  //!< reference counter
 
 
 private:
@@ -75,6 +82,9 @@ public:
     inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0);}
     inline const int& GetRef()const {return m_iRef;}
 
+    // get resource file
+    inline coreFile* GetFile()const {return m_pFile;}
+
 
 private:
     // disable copy
@@ -88,8 +98,8 @@ private:
 template <typename T> class coreResourcePtr
 {
 private:
-    coreResourceHandle* m_pHandle;   // resource handle
-    bool m_bActive;                  // active status for reference overloading
+    coreResourceHandle* m_pHandle;   //!< resource handle
+    bool m_bActive;                  //!< active status for reference overloading
 
 
 public:
@@ -145,13 +155,13 @@ private:
 class coreResourceManager final : public coreThread
 {
 private:
-    std::u_map<std::string, coreResourceHandle*> m_apHandle;   // resource handles
-    std::u_map<std::string, coreResource*> m_apNull;           // NULL resource objects
+    std::u_map<std::string, coreResourceHandle*> m_apHandle;   //!< resource handles
+    std::u_map<std::string, coreResource*> m_apNull;           //!< NULL resource objects
 
-    std::vector<coreArchive*> m_apArchive;                     // archives with resource files
-    std::u_map<std::string, coreFile*> m_apDirectFile;         // direct resource files
+    std::vector<coreArchive*> m_apArchive;                     //!< archives with resource files
+    std::u_map<std::string, coreFile*> m_apDirectFile;         //!< direct resource files
 
-    std::set<coreReset*> m_apReset;                            // objects to reset with the resource manager
+    std::set<coreReset*> m_apReset;                            //!< objects to reset with the resource manager
 
 
 private:
@@ -162,7 +172,8 @@ private:
 
 public:
     // load resource and retrieve resource handle
-    template <typename T> coreResourceHandle* Load(const char* pcPath);
+    template <typename T> coreResourceHandle* LoadFile(const char* pcPath);
+    template <typename T> coreResourceHandle* LoadBasic(const char* pcKey);
 
     // control resource files
     coreError AddArchive(const char* pcPath);
@@ -266,9 +277,11 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 
 // ****************************************************************
-// load resource and retrieve resource handle
-template <typename T> coreResourceHandle* coreResourceManager::Load(const char* pcPath)
+// load resource from a file and retrieve resource handle
+template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath)
 {
+    SDL_assert(pcPath);
+
     // check for existing resource handle
     if(m_apHandle.count(pcPath)) return m_apHandle[pcPath];
 
@@ -288,3 +301,18 @@ template <typename T> coreResourceHandle* coreResourceManager::Load(const char* 
 
     return pNewHandle;
 }
+
+
+// ****************************************************************
+// load basic resource with unique key and retrieve resource handle
+template <typename T> coreResourceHandle* coreResourceManager::LoadBasic(const char* pcKey)
+{
+    SDL_assert(pcKey);
+
+    // add special identifier and load normal
+    const std::string sSpecial("$", pcKey);
+    return this->LoadFile<T>(sSpecial);
+}
+
+
+#endif // CORE_RESOURCE_MANAGER_H

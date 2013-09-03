@@ -7,10 +7,12 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_MATH_H
+#define CORE_MATH_H
 
 
 // ****************************************************************
-// mathematical definitions
+// math definitions
 #define PI        (3.1415926535897932384626433832795f)         // Archimedes' constant
 #define EU        (2.7182818284590452353602874713527f)         // Euler's number
 #define P3        (0.3333333333333333333333333333333f)         // periodic value of 1.0f/3.0f
@@ -65,3 +67,6 @@ public:
     static coreVector3 HSVtoRGB(const coreVector3& vHSV);
     static coreVector3 RGBtoHSV(const coreVector3& vRGB);
 };
+
+
+#endif // CORE_MATH_H

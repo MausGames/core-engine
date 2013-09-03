@@ -10,7 +10,7 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//| Core Engine v0.0.1a (http://www.maus-games.at)                               |//
+//| Core Engine v0.0.2a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
 //| Copyright (c) 2013 Martin Mauersics                                          |//
 //|                                                                              |//
@@ -35,6 +35,8 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_H
+#define CORE_H
 // TODO: remove deprecated stuff
 // TODO: add explicit keyword
 // TODO: boolean traps
@@ -70,7 +72,7 @@
 
 
 // ****************************************************************
-// general macros and definitions
+// general definitions
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
@@ -85,17 +87,19 @@ class coreVector4;
 class coreMatrix;
 class coreFile;
 class coreArchive;
-class coreSound;
 class coreObject2D; //!
 
+
+// ****************************************************************
+// general enumerations
 enum coreError
 {
-    CORE_OK            =   0,   // everything is fine
-    CORE_BUSY          =  10,   // currently waiting for an event
+    CORE_OK            =   0,   //!< everything is fine
+    CORE_BUSY          =  10,   //!< currently waiting for an event
 
-    CORE_FILE_ERROR    = -10,   // error on opening, writing or finding a file
-    CORE_INVALID_CALL  = -20,   // function cannot be called
-    CORE_INVALID_INPUT = -30,   // function parameters are invalid
+    CORE_FILE_ERROR    = -10,   //!< error on opening, writing or finding a file
+    CORE_INVALID_CALL  = -20,   //!< function cannot be called
+    CORE_INVALID_INPUT = -30,   //!< function parameters are invalid
 };
 
 
@@ -183,6 +187,7 @@ extern __thread GLEWContext g_GlewContext;
 // ****************************************************************
 // other component classes
 #include "coreTexture.h"
+#include "coreShader.h"
 #include "coreSound.h"
 
 
@@ -212,23 +217,23 @@ public:
 class Core final
 {
 public:
-    static coreLog* Log;             // log file
-    static coreConfig* Config;       // configuration file
+    static coreLog* Log;             //!< log file
+    static coreConfig* Config;       //!< configuration file
 
-    static coreMath* Math;           // math collection access
-    static coreUtils* Utils;         // utils collection access
-    static coreRand* Rand;           // global random number generator
+    static coreMath* Math;           //!< math collection access
+    static coreUtils* Utils;         //!< utils collection access
+    static coreRand* Rand;           //!< global random number generator
 
-    static CoreSystem* System;       // main system interface
-    static CoreGraphics* Graphics;   // main graphics interface
-    static CoreAudio* Audio;         // main audio interface
-    static CoreInput* Input;         // main input interface
+    static CoreSystem* System;       //!< main system interface
+    static CoreGraphics* Graphics;   //!< main graphics interface
+    static CoreAudio* Audio;         //!< main audio interface
+    static CoreInput* Input;         //!< main input interface
 
-    class Manager
+    class Manager final
     {
     public:
         // memory manager
-        static coreResourceManager* Resource;   // resource manager
+        static coreResourceManager* Resource;   //!< resource manager
         // object manager
     };
 
@@ -248,3 +253,6 @@ public:
     // quit the application
     static void Quit();
 };
+
+
+#endif // CORE_H

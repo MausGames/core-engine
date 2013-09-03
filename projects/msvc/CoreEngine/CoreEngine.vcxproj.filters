@@ -94,6 +94,9 @@
     <ClCompile Include="..\..\..\source\coreSound.cpp">
       <Filter>Engine\04_Components\03_Audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\coreShader.cpp">
+      <Filter>Work</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\Core.h">
@@ -152,6 +155,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\coreSound.h">
       <Filter>Engine\04_Components\03_Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\coreShader.h">
+      <Filter>Work</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

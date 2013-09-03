@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_LOG_H
+#define CORE_LOG_H
 
 
 // ****************************************************************
@@ -14,8 +16,8 @@
 class coreLog final
 {
 private:
-    std::string m_sPath;   // relative path of the log file
-    int m_iLevel;          // logging level (0 = all | 1 = only non-errors | -1 = only errors)
+    std::string m_sPath;   //!< relative path of the log file
+    int m_iLevel;          //!< logging level (0 = all | 1 = only non-errors | -1 = only errors)
 
 
 public:
@@ -43,3 +45,6 @@ private:
     // write text to the log file
     void __Write(const int& iLevel, const bool& bTime, std::string sText);
 };
+
+
+#endif // CORE_LOG_H

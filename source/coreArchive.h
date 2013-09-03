@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_ARCHIVE_H
+#define CORE_ARCHIVE_H
 
 
 // ****************************************************************
@@ -14,13 +16,13 @@
 class coreFile final
 {
 private:
-    std::string m_sPath;       // relative path of the file
+    std::string m_sPath;       //!< relative path of the file
                                
-    coreByte* m_pData;         // file data
-    coreUint m_iSize;          // size of the file
+    coreByte* m_pData;         //!< file data
+    coreUint m_iSize;          //!< size of the file
 
-    coreArchive* m_pArchive;   // associated archive
-    coreUint m_iArchivePos;    // absolute data position in the associated archive (0 = file doesn't exist physically)
+    coreArchive* m_pArchive;   //!< associated archive
+    coreUint m_iArchivePos;    //!< absolute data position in the associated archive (0 = file doesn't exist physically)
 
 
 public:
@@ -61,10 +63,10 @@ private:
 class coreArchive final
 {
 private:
-    std::string m_sPath;                             // relative path of the archive
+    std::string m_sPath;                             //!< relative path of the archive
                                                              
-    std::vector<coreFile*> m_aFile;                  // file objects
-    std::u_map<std::string, coreFile*> m_aFileMap;   // path access for file objects
+    std::vector<coreFile*> m_aFile;                  //!< file objects
+    std::u_map<std::string, coreFile*> m_aFileMap;   //!< path access for file objects
 
 
 public:
@@ -104,3 +106,6 @@ private:
     // calculate absolute data positions of all files
     void __CalculatePositions();
 };
+
+
+#endif // CORE_ARCHIVE_H

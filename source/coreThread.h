@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_THREAD_H
+#define CORE_THREAD_H
 
 
 // ****************************************************************
@@ -14,11 +16,11 @@
 class coreThread
 {
 private:
-    SDL_Thread* m_pThread;   // pointer to thread struct
-    std::string m_sName;     // name of the thread
+    SDL_Thread* m_pThread;   //!< pointer to thread struct
+    std::string m_sName;     //!< name of the thread
 
-    coreUint m_iCurFrame;    // current frame
-    bool m_bEnd;             // end status
+    coreUint m_iCurFrame;    //!< current frame
+    bool m_bEnd;             //!< end status
 
 
 public:
@@ -44,3 +46,6 @@ private:
     // wrapper for thread creation
     friend int coreThreadMain(void* pData);
 };
+
+
+#endif // CORE_THREAD_H

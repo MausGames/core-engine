@@ -7,10 +7,12 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_UTILS_H
+#define CORE_UTILS_H
 
 
 // ****************************************************************
-// utility definition
+// utility definitions
 #define CORE_UTILS_STRINGS 16
 
 #if defined(_WIN32)
@@ -25,8 +27,8 @@
 class coreUtils
 {
 private:
-    static char m_aacString[CORE_UTILS_STRINGS][256];   // return-string memory
-    static coreUint m_iIndex;                           // current return-string
+    static char m_aacString[CORE_UTILS_STRINGS][256];   //!< return-string memory
+    static coreUint m_iIndex;                           //!< current return-string
 
 
 public:
@@ -51,3 +53,6 @@ private:
     // access next return-string
     static inline char* __NextString() {if(++m_iIndex >= CORE_UTILS_STRINGS) m_iIndex = 0; return m_aacString[m_iIndex];}
 };
+
+
+#endif // CORE_UTILS_H

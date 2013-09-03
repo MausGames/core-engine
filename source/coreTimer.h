@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_TIMER_H
+#define CORE_TIMER_H
 
 
 // ****************************************************************
@@ -14,15 +16,15 @@
 class coreTimer final
 {
 private:
-    float m_fCurrent;      // current value
-    float m_fEnd;          // target value
-    float m_fSpeed;        // speed factor of the timer
+    float m_fCurrent;      //!< current value
+    float m_fEnd;          //!< target value
+    float m_fSpeed;        //!< speed factor of the timer
 
-    coreUint m_iMaxLoop;   // max number of loops (0 = infinite)
-    coreUint m_iCurLoop;   // current number of loops
+    coreUint m_iMaxLoop;   //!< max number of loops (0 = infinite)
+    coreUint m_iCurLoop;   //!< current number of loops
 
-    int m_iTimeID;         // ID of the used frame time 
-    bool m_bStatus;        // current status
+    int m_iTimeID;         //!< ID of the used frame time 
+    bool m_bStatus;        //!< current status
 
 
 public:
@@ -65,7 +67,7 @@ public:
 class coreFlow final
 {
 private:
-    float m_fCurrent;   // current value
+    float m_fCurrent;   //!< current value
 
 
 public:
@@ -79,3 +81,6 @@ public:
     float& Update(const float& fSpeed);
     float& Update(const float& fSpeed, const int& iTimeID);
 };
+
+
+#endif // CORE_TIMER_H

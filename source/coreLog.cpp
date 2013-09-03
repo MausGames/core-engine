@@ -47,10 +47,9 @@ void coreLog::Error(const bool& bShutdown, const std::string& sText)
     {
 #if defined(_DEBUG)
         SDL_TriggerBreakpoint();
-#else
+#endif
         Core::System->MsgBox(sText.c_str(), "Error", 3);
         _exit(1);
-#endif
     }
 }
 

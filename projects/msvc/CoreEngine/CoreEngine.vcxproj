@@ -105,6 +105,7 @@
     <ClCompile Include="..\..\..\source\coreRand.cpp" />
     <ClCompile Include="..\..\..\source\coreResourceManager.cpp" />
     <ClCompile Include="..\..\..\source\CoreAudio.cpp" />
+    <ClCompile Include="..\..\..\source\coreShader.cpp" />
     <ClCompile Include="..\..\..\source\coreSound.cpp" />
     <ClCompile Include="..\..\..\source\coreSpline.cpp" />
     <ClCompile Include="..\..\..\source\CoreSystem.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="..\..\..\source\coreRand.h" />
     <ClInclude Include="..\..\..\source\coreResourceManager.h" />
     <ClInclude Include="..\..\..\source\CoreAudio.h" />
+    <ClInclude Include="..\..\..\source\coreShader.h" />
     <ClInclude Include="..\..\..\source\coreSound.h" />
     <ClInclude Include="..\..\..\source\coreSpline.h" />
     <ClInclude Include="..\..\..\source\CoreSystem.h" />

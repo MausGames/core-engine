@@ -12,15 +12,17 @@
 // ****************************************************************
 // constructor
 coreSound::coreSound()
-: m_iBuffer (0)
-, m_pCurRef (NULL)
+: m_iBuffer    (0)
+, m_iCurSource (0)
+, m_pCurRef    (NULL)
 {
     memset(&m_Format, 0, sizeof(m_Format));
 }
 
 coreSound::coreSound(const char* pcPath)
-: m_iBuffer (0)
-, m_pCurRef (NULL)
+: m_iBuffer    (0)
+, m_iCurSource (0)
+, m_pCurRef    (NULL)
 {
     // load from path
     memset(&m_Format, 0, sizeof(m_Format));
@@ -28,8 +30,9 @@ coreSound::coreSound(const char* pcPath)
 }
 
 coreSound::coreSound(coreFile* pFile)
-: m_iBuffer (0)
-, m_pCurRef (NULL)
+: m_iBuffer    (0)
+, m_iCurSource (0)
+, m_pCurRef    (NULL)
 {
     // load from file
     memset(&m_Format, 0, sizeof(m_Format));
@@ -120,7 +123,7 @@ coreError coreSound::Load(coreFile* pFile)
     
     // save sound attributes
     m_sPath = pFile->GetPath();
-    m_iSize = pFile->GetSize();
+    m_iSize = iSoundSize;
     
     return CORE_OK;
 }
@@ -138,6 +141,13 @@ coreError coreSound::Unload()
         const ALuint iSource = this->CheckRef(it->first);
         if(iSource)
         {
+#if defined(_DEBUG)
+            // check for loop property
+            int iPlaying; alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iPlaying);
+            int iLooping; alGetSourcei(m_iCurSource, AL_LOOPING,      &iLooping);
+            SDL_assert(!iPlaying || !iLooping);
+#endif
+            // stop sound source
             alSourceStop(iSource);
             alSourcei(iSource, AL_BUFFER, 0);
         }
@@ -149,9 +159,11 @@ coreError coreSound::Unload()
     Core::Log->Info(coreUtils::Print("Sound (%s) unloaded", m_sPath.c_str()));
 
     // reset attributes
-    m_sPath   = "";
-    m_iSize   = 0;
-    m_iBuffer = 0;
+    m_sPath      = "";
+    m_iSize      = 0;
+    m_iBuffer    = 0;
+    m_iCurSource = 0;
+    m_pCurRef    = NULL;
     memset(&m_Format, 0, sizeof(m_Format));
 
     return CORE_OK;
@@ -159,51 +171,58 @@ coreError coreSound::Unload()
 
 
 // ****************************************************************
-// play the sound
-void coreSound::Play(const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop, const coreVector3& vPosition)
+// play the sound with positional behaviour
+void coreSound::PlayPosition(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop, const coreVector3& vPosition)
 {
+    // set active reference pointer
+    m_pCurRef = pRef;
     SDL_assert(m_pCurRef || !bLoop);
 
     // retrieve next free sound source
-    const ALuint iSource = Core::Audio->NextSource(m_pCurRef);
-    if(m_pCurRef) m_aiSource[m_pCurRef] = iSource;
+    m_iCurSource = Core::Audio->NextSource(m_pCurRef);
+    if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
     
     // set initial sound source properties
-    alSourcei(iSource,  AL_BUFFER,             m_iBuffer);
-    alSourcei(iSource,  AL_SOURCE_RELATIVE,    false);
+    alSourcei(m_iCurSource,  AL_BUFFER,             m_iBuffer);
+    alSourcei(m_iCurSource,  AL_SOURCE_RELATIVE,    false);
 
-    alSourcef(iSource,  AL_GAIN,               fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
-    alSourcef(iSource,  AL_PITCH,              fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
-    alSourcei(iSource,  AL_LOOPING,            bLoop);
+    alSourcef(m_iCurSource,  AL_GAIN,               fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
+    alSourcef(m_iCurSource,  AL_PITCH,              fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
+    alSourcei(m_iCurSource,  AL_LOOPING,            bLoop);
 
-    alSourcefv(iSource, AL_POSITION,           vPosition);
-    alSourcefv(iSource, AL_VELOCITY,           coreVector3(0.0f,0.0f,0.0f));
-    alSourcef(iSource,  AL_REFERENCE_DISTANCE, 1.0f);
-    alSourcef(iSource,  AL_MAX_DISTANCE,       5.0f);
-    alSourcef(iSource,  AL_ROLLOFF_FACTOR,     1.0f);
+    alSourcefv(m_iCurSource, AL_POSITION,           vPosition);
+    alSourcefv(m_iCurSource, AL_VELOCITY,           coreVector3(0.0f,0.0f,0.0f));
+    alSourcef(m_iCurSource,  AL_REFERENCE_DISTANCE, 1.0f);
+    alSourcef(m_iCurSource,  AL_MAX_DISTANCE,       5.0f);
+    alSourcef(m_iCurSource,  AL_ROLLOFF_FACTOR,     1.0f);
 
     // start playback
-    alSourcePlay(iSource);
+    alSourcePlay(m_iCurSource);
 }
 
-void coreSound::PlayRelative(const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop)
+
+// ****************************************************************
+// play the sound with relative behaviour
+void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop)
 {
+    // set active reference pointer
+    m_pCurRef = pRef;
     SDL_assert(m_pCurRef || !bLoop);
 
     // retrieve next free sound source
-    const ALuint iSource = Core::Audio->NextSource(m_pCurRef);
-    if(m_pCurRef) m_aiSource[m_pCurRef] = iSource;
+    m_iCurSource = Core::Audio->NextSource(m_pCurRef);
+    if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
     
     // set initial sound source properties
-    alSourcei(iSource,  AL_BUFFER,          m_iBuffer);
-    alSourcei(iSource,  AL_SOURCE_RELATIVE, true);
+    alSourcei(m_iCurSource,  AL_BUFFER,          m_iBuffer);
+    alSourcei(m_iCurSource,  AL_SOURCE_RELATIVE, true);
 
-    alSourcef(iSource,  AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
-    alSourcef(iSource,  AL_PITCH,           fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
-    alSourcei(iSource,  AL_LOOPING,         bLoop);
+    alSourcef(m_iCurSource,  AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
+    alSourcef(m_iCurSource,  AL_PITCH,           fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
+    alSourcei(m_iCurSource,  AL_LOOPING,         bLoop);
 
     // start playback
-    alSourcePlay(iSource);
+    alSourcePlay(m_iCurSource);
 }
 
 
@@ -211,8 +230,8 @@ void coreSound::PlayRelative(const float& fVolume, const float& fPitch, const fl
 // stop the sound
 void coreSound::Stop()
 {
-    const ALuint iSource = this->CheckRef(m_pCurRef);
-    if(iSource) alSourceStop(iSource);
+    CORE_SOUND_ASSERT();
+    if(m_iCurSource) alSourceStop(m_iCurSource);
 }
 
 
@@ -220,12 +239,12 @@ void coreSound::Stop()
 // get playback status
 bool coreSound::IsPlaying()
 {
-    const ALuint iSource = this->CheckRef(m_pCurRef);
-    if(!iSource) return false;
+    CORE_SOUND_ASSERT();
+    if(!m_iCurSource) return false;
 
     // retrieve current status
     int iStatus;
-    alGetSourcei(iSource, AL_SOURCE_STATE, &iStatus);
+    alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iStatus);
 
     // check for playback
     return (iStatus == AL_PLAYING) ? true : false;
@@ -236,12 +255,18 @@ bool coreSound::IsPlaying()
 // control the sound source
 void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity)
 {
-    const ALuint iSource = this->CheckRef(m_pCurRef);
-    if(iSource)
+    CORE_SOUND_ASSERT();
+    if(m_iCurSource)
     {
+#if defined(_DEBUG)
+        // check for relative property
+        int iStatus;
+        alGetSourcei(m_iCurSource, AL_SOURCE_RELATIVE, &iStatus);
+        SDL_assert(!iStatus);
+#endif
         // set position and velocity
-        if(pvPosition) alSourcefv(iSource, AL_POSITION, *pvPosition);
-        if(pvVelocity) alSourcefv(iSource, AL_VELOCITY, *pvVelocity);
+        if(pvPosition) alSourcefv(m_iCurSource, AL_POSITION, *pvPosition);
+        if(pvVelocity) alSourcefv(m_iCurSource, AL_VELOCITY, *pvVelocity);
     }
 }
 
@@ -250,8 +275,8 @@ void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVe
 // control the volume
 void coreSound::SetVolume(const float& fVolume)
 {
-    const ALuint iSource = this->CheckRef(m_pCurRef);
-    if(iSource) alSourcef(iSource, AL_GAIN, fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
+    CORE_SOUND_ASSERT();
+    if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN, fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
 }
 
 

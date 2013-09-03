@@ -15,17 +15,15 @@ SDL_SpinLock coreTexture::s_iLock                           = 0;
 
 // ****************************************************************
 // constructor
-coreTexture::coreTexture(const bool bGenerate)
-: m_iID         (0)
+coreTexture::coreTexture()
+: m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_pSync       (NULL)
 {
-    // generate base texture
-    if(bGenerate) glGenTextures(1, &m_iID);
 }
 
 coreTexture::coreTexture(const char* pcPath)
-: m_iID         (0)
+: m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_pSync       (NULL)
 {
@@ -34,7 +32,7 @@ coreTexture::coreTexture(const char* pcPath)
 }
 
 coreTexture::coreTexture(coreFile* pFile)
-: m_iID         (0)
+: m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_pSync       (NULL)
 {
@@ -60,7 +58,7 @@ coreError coreTexture::Load(coreFile* pFile)
     if(iStatus != CORE_INVALID_CALL) return iStatus;
 
     SDL_assert(pFile != NULL);
-    SDL_assert(m_iID == 0);
+    SDL_assert(m_iTexture == 0);
 
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
@@ -96,7 +94,7 @@ coreError coreTexture::Load(coreFile* pFile)
     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 
     // generate texture
-    glGenTextures(1, &m_iID);
+    glGenTextures(1, &m_iTexture);
 
     SDL_AtomicLock(&s_iLock);
     {
@@ -115,7 +113,7 @@ coreError coreTexture::Load(coreFile* pFile)
                 break;
             }
         }
-        glBindTexture(GL_TEXTURE_2D, m_iID);
+        glBindTexture(GL_TEXTURE_2D, m_iTexture);
 
         // set texture parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,         bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
@@ -156,10 +154,10 @@ coreError coreTexture::Load(coreFile* pFile)
 // unload texture resource data
 coreError coreTexture::Unload()
 {
-    if(!m_iID) return CORE_INVALID_CALL;
+    if(!m_iTexture) return CORE_INVALID_CALL;
 
     // delete texture
-    glDeleteTextures(1, &m_iID);
+    glDeleteTextures(1, &m_iTexture);
     Core::Log->Info(coreUtils::Print("Texture (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
@@ -172,7 +170,7 @@ coreError coreTexture::Unload()
     // reset attributes
     m_sPath       = "";
     m_iSize       = 0;
-    m_iID         = 0;
+    m_iTexture    = 0;
     m_vResolution = coreVector2(0.0f,0.0f);
 
     return CORE_OK;
@@ -197,7 +195,7 @@ void coreTexture::Enable(const coreByte& iUnit)
             glActiveTexture(GL_TEXTURE0+iUnit);
             s_iActiveUnit = iUnit;
         }
-        glBindTexture(GL_TEXTURE_2D, m_iID);
+        glBindTexture(GL_TEXTURE_2D, m_iTexture);
     }
     SDL_AtomicUnlock(&s_iLock);
 }
@@ -240,7 +238,7 @@ void coreTexture::DisableAll()
 // check sync object status
 coreError coreTexture::CheckSync()
 {
-    if(!m_iID || !m_pSync) return CORE_INVALID_CALL;
+    if(!m_iTexture || !m_pSync) return CORE_INVALID_CALL;
 
     // check for finished texture loading
     if(glClientWaitSync(m_pSync, 0, 0) != GL_TIMEOUT_EXPIRED)

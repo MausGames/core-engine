@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_VECTOR_H
+#define CORE_VECTOR_H
 
 
 // ****************************************************************
@@ -242,3 +244,6 @@ public:
     inline operator coreVector2& ()      {return *(reinterpret_cast<coreVector2*>(this));}
     inline coreVector3 xyz()const        {return coreVector3(x, y, z)*w;}
 };
+
+
+#endif // CORE_VECTOR_H

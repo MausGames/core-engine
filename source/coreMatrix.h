@@ -7,6 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
+#ifndef CORE_MATRIX_H
+#define CORE_MATRIX_H
 
 
 // ****************************************************************
@@ -82,3 +84,6 @@ public:
     static coreMatrix Ortho(const coreVector2& vResolution);
     static coreMatrix Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrintation);
 };
+
+
+#endif // CORE_MATRIX_H
