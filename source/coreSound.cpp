@@ -52,8 +52,10 @@ coreSound::~coreSound()
 // load sound resource data
 coreError coreSound::Load(coreFile* pFile)
 {
-    SDL_assert(pFile != NULL);
-    SDL_assert(m_iBuffer == 0);
+    SDL_assert(!m_iBuffer);
+
+    if(m_iBuffer) return CORE_INVALID_CALL;
+    if(!pFile)    return CORE_INVALID_INPUT;
     
     char acID[4];
     coreUint iSize;
@@ -230,7 +232,7 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
 // stop the sound
 void coreSound::Stop()
 {
-    CORE_SOUND_ASSERT();
+    CORE_SOUND_ASSERT
     if(m_iCurSource) alSourceStop(m_iCurSource);
 }
 
@@ -239,7 +241,7 @@ void coreSound::Stop()
 // get playback status
 bool coreSound::IsPlaying()
 {
-    CORE_SOUND_ASSERT();
+    CORE_SOUND_ASSERT
     if(!m_iCurSource) return false;
 
     // retrieve current status
@@ -255,7 +257,7 @@ bool coreSound::IsPlaying()
 // control the sound source
 void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity)
 {
-    CORE_SOUND_ASSERT();
+    CORE_SOUND_ASSERT
     if(m_iCurSource)
     {
 #if defined(_DEBUG)
@@ -275,7 +277,7 @@ void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVe
 // control the volume
 void coreSound::SetVolume(const float& fVolume)
 {
-    CORE_SOUND_ASSERT();
+    CORE_SOUND_ASSERT
     if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN, fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
 }
 
@@ -284,9 +286,8 @@ void coreSound::SetVolume(const float& fVolume)
 // check reference pointer for valid sound source
 ALuint coreSound::CheckRef(const void* pRef)
 {
-    SDL_assert(pRef);
-
     // check if sound source is available
+    if(!pRef) return 0;
     if(!m_aiSource.count(pRef)) return 0;
 
     // check if sound source is still valid

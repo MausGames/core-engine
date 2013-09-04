@@ -59,7 +59,7 @@ public:
     coreError CheckSync(); 
 
     // generate empty base texture
-    inline void Generate() {SDL_assert(m_iTexture == 0); if(!m_iTexture) glGenTextures(1, &m_iTexture);}
+    inline void Generate() {SDL_assert(!m_iTexture); if(!m_iTexture) glGenTextures(1, &m_iTexture);}
 
     // get attributes
     inline const GLuint& GetTexture()const         {return m_iTexture;}

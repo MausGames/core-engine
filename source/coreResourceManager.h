@@ -277,7 +277,7 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 
 // ****************************************************************
-// load resource from a file and retrieve resource handle
+// load resource from a file and retrieve managed resource handle
 template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath)
 {
     SDL_assert(pcPath);
@@ -304,12 +304,12 @@ template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const ch
 
 
 // ****************************************************************
-// load basic resource with unique key and retrieve resource handle
+// load empty resource with unique key and retrieve unmanaged resource handle
 template <typename T> coreResourceHandle* coreResourceManager::LoadBasic(const char* pcKey)
 {
     SDL_assert(pcKey);
 
-    // add special identifier and load normal
+    // add special identifier and load as file
     const std::string sSpecial("$", pcKey);
     return this->LoadFile<T>(sSpecial);
 }

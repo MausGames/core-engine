@@ -126,11 +126,7 @@ coreMatrix coreMatrix::operator * (const float& f)const
 coreMatrix coreMatrix::operator / (const float& f)const
 {
     // TODO: add SSE-support
-    const float w = 1.0f/f;
-    return coreMatrix(_11*w, _12*w, _13*w, _14*w,
-                      _21*w, _22*w, _23*w, _24*w,
-                      _31*w, _32*w, _33*w, _34*w,
-                      _41*w, _42*w, _43*w, _44*w);
+    return (*this)*(1.0f/f);
 }
 
 
@@ -301,14 +297,14 @@ coreMatrix coreMatrix::Orientation(const coreVector3& vDirection, const coreVect
 // get perspective matrix
 coreMatrix coreMatrix::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
 {
-    const float V = 1.0f / tanf(fFOV/2.0f);
-    const float A = vResolution.AspectRatio();
-    const float N = fNearClip;
-    const float F = fFarClip;
+    const float  V = 1.0f / tanf(0.5f*fFOV);
+    const float  A = vResolution.yx().AspectRatio();
+    const float& N = fNearClip;
+    const float& F = fFarClip;
 
     const float INF = 1.0f / (N-F);
 
-    return coreMatrix( V/A, 0.0f,         0.0f,  0.0f,
+    return coreMatrix( V*A, 0.0f,         0.0f,  0.0f,
                       0.0f,    V,         0.0f,  0.0f,
                       0.0f, 0.0f,    (N+F)*INF, -1.0f,
                       0.0f, 0.0f, 2.0f*N*F*INF,  0.0f);

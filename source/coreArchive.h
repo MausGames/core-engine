@@ -48,7 +48,7 @@ public:
     static bool FileExists(const char* pcPath);
 
     // retrieve relative paths of all files from a folder
-    static bool SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
+    static coreError SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
 
 
 private:
@@ -89,8 +89,8 @@ public:
     void UnloadData();
 
     // access file objects
-    inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_aFile.size()) return NULL; return m_aFile[iIndex];}
-    inline coreFile* GetFile(const char* pcPath)     {if(!m_aFileMap.count(pcPath)) return NULL; return m_aFileMap[pcPath];}
+    inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_aFile.size())  {SDL_assert(false); return NULL;} return m_aFile[iIndex];}
+    inline coreFile* GetFile(const char* pcPath)     {if(!m_aFileMap.count(pcPath)) {SDL_assert(false); return NULL;} return m_aFileMap[pcPath];}
 
     // get attributes
     inline const char* GetName()const {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}

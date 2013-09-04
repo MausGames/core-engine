@@ -221,7 +221,7 @@ public:
     static coreConfig* Config;       //!< configuration file
 
     static coreMath* Math;           //!< math collection access
-    static coreUtils* Utils;         //!< utils collection access
+    static coreUtils* Utils;         //!< utility collection access
     static coreRand* Rand;           //!< global random number generator
 
     static CoreSystem* System;       //!< main system interface

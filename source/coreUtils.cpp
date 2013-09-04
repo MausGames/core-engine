@@ -57,12 +57,12 @@ const char* coreUtils::AppPath()
 void coreUtils::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea)
 {
     // get current time
-    const time_t Time = time(NULL);
+    const time_t iTime = time(NULL);
 
     // format the time value
-    tm* pFormat = localtime(&Time);
+    tm* pFormat = localtime(&iTime);
 
-    // forward dataz
+    // forward data
     if(piSec) *piSec = pFormat->tm_sec;
     if(piMin) *piMin = pFormat->tm_min;
     if(piHou) *piHou = pFormat->tm_hour;

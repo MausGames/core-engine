@@ -17,7 +17,7 @@
 
 // ****************************************************************
 // sound definitions
-#define CORE_SOUND_ASSERT() SDL_assert(this->CheckRef(m_pCurRef) == m_iCurSource)
+#define CORE_SOUND_ASSERT {SDL_assert(this->CheckRef(m_pCurRef) == m_iCurSource);}
 
 
 // ****************************************************************
@@ -66,8 +66,8 @@ public:
     // control sound source properties
     void SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity);
     void SetVolume(const float& fVolume);
-    inline void SetPitch(const float& fPitch) {CORE_SOUND_ASSERT(); if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
-    inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT(); if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    inline void SetPitch(const float& fPitch) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
+    inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
 
     // control active sound source with reference pointer
     inline bool SetCurRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}

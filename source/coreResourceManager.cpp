@@ -15,7 +15,7 @@ coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource,
 : m_pFile     (pFile)
 , m_pResource (pResource)
 , m_pNull     (pNull)
-, m_pCur      (pNull)
+, m_pCur      (pFile ? pNull : pResource)
 , m_iRef      (0)
 {
 }
@@ -25,7 +25,8 @@ coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource,
 // destructor
 coreResourceHandle::~coreResourceHandle()
 {
-    SDL_assert(m_iRef == 0);
+    // forgot to delete a resource, a resource-using object or used global variables
+    SDL_assert(!m_iRef); 
 
     // delete associated resource object
     SAFE_DELETE(m_pResource)
@@ -156,7 +157,7 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
         if(pFile) return pFile;
     }
 
-    // check for special identifier
+    // check for special identifier and return no file
     if(pcPath[0] == '$') return NULL;
 
     // resource file not found

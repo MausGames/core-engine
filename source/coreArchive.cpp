@@ -88,9 +88,7 @@ coreError coreFile::Save(const char* pcPath)
 // load file data
 coreError coreFile::LoadData()
 {
-    if(m_pData || !m_iSize) return CORE_INVALID_CALL;
-
-    SDL_assert(m_iArchivePos != 0);
+    if(m_pData || !m_iSize || !m_iArchivePos) return CORE_INVALID_CALL;
 
     FILE* pFile;
     if(m_pArchive)
@@ -139,9 +137,9 @@ bool coreFile::FileExists(const char* pcPath)
 
 // ****************************************************************
 // retrieve relative paths of all files from a folder
-bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput)
+coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput)
 {
-    SDL_assert(pasOutput != NULL);
+    if(!pcFolder || !pasOutput) return CORE_INVALID_INPUT;
 
 #if defined(_WIN32)
 
@@ -153,7 +151,7 @@ bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vec
     if(hFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcFolder));
-        return false;
+        return CORE_FILE_ERROR;
     }
 
     do
@@ -177,7 +175,7 @@ bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vec
     if(!pDir)
     {
         Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcFolder));
-        return false;
+        return CORE_FILE_ERROR;
     }
 
     while((pDirent = readdir(pDir)) != NULL)
@@ -195,7 +193,7 @@ bool coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vec
 
 #endif
 
-    return true;
+    return CORE_OK;
 }
 
 
@@ -332,7 +330,7 @@ coreError coreArchive::AddFile(const char* pcPath)
 
 coreError coreArchive::AddFile(coreFile* pFile)
 {
-    SDL_assert(pFile->m_pArchive == NULL);
+    if(pFile->m_pArchive) return CORE_INVALID_INPUT;
 
     // check already existing file
     if(m_aFileMap.count(pFile->GetPath()))
@@ -391,7 +389,7 @@ coreError coreArchive::DeleteFile(const char* pcPath)
 
 coreError coreArchive::DeleteFile(coreFile* pFile)
 {
-    SDL_assert(pFile->m_pArchive == this);
+    if(pFile->m_pArchive != this) return CORE_INVALID_INPUT;
     return this->DeleteFile(pFile->GetPath());
 }
 

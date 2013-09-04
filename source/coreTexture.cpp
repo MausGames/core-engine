@@ -57,9 +57,10 @@ coreError coreTexture::Load(coreFile* pFile)
     const coreError iStatus = this->CheckSync();
     if(iStatus != CORE_INVALID_CALL) return iStatus;
 
-    SDL_assert(pFile != NULL);
-    SDL_assert(m_iTexture == 0);
+    SDL_assert(!m_iTexture);
 
+    if(m_iTexture)        return CORE_INVALID_CALL;
+    if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // decompress file data
