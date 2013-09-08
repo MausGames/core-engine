@@ -7,13 +7,24 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_RESOURCE_MANAGER_H
-#define CORE_RESOURCE_MANAGER_H
+#ifndef GUARD_CORE_RESOURCE_H
+#define GUARD_CORE_RESOURCE_H
 
 
 // ****************************************************************
 // resource definitions
-#define CORE_RESOURCE_UNIQUE coreUtils::Print("%s:%d", strrchr(__FILE__, CORE_UTILS_SLASH[0])+1, __LINE__)
+#define CORE_RESOURCE_KEY_SHARED coreUtils::Print("%s:%d",    coreUtils::StrRight(__FILE__, 16), __LINE__)
+#define CORE_RESOURCE_KEY_UNIQUE coreUtils::Print("%s:%d:%p", coreUtils::StrRight(__FILE__, 16), __LINE__, this)
+
+
+// ****************************************************************
+// resource enumerations
+enum coreResourceStatus
+{
+    CORE_RESOURCE_NOT_LOADED =  0,
+    CORE_RESOURCE_LOADED     =  1,
+    CORE_RESOURCE_UNMANAGED  = -1
+};
 
 
 // ****************************************************************
@@ -29,23 +40,31 @@ public:
     coreResource() : m_sPath (""), m_iSize (0) {}
     virtual ~coreResource()                    {}
 
-    // load and unload resource data
+    //! \name load and unload resource data
+    //! @{
     inline coreError Load(const char* pcPath) {coreFile File(pcPath); return this->Load(&File);}
     virtual coreError Load(coreFile* pFile) = 0;
     virtual coreError Unload()              = 0;
+    //! @}
 
-    // get attributes
+    //! \name get attributes
+    //! @{
     inline const char* GetPath()          {return m_sPath.c_str();}
     inline const coreUint& GetSize()const {return m_iSize;}
+    //! @}
 
-    // get relative path to NULL resource
+    //! \name get relative path to NULL resource
+    //! @{
     static inline const char* GetNullPath() {SDL_assert(false); return NULL;}
+    //! @}
 
 
 private:
-    // disable copy
+    //! \name disable copy
+    //! @{
     coreResource(const coreResource& c) deletefunc;
     coreResource& operator = (const coreResource& c) deletefunc;
+    //! @}
 };
 
 
@@ -61,6 +80,7 @@ private:
 
     coreResource* m_pCur;        //!< pointer to active resource object
     int m_iRef;                  //!< reference counter
+    int m_iStatus;               //!< current loading status (0 = not loaded, 1 = loaded, -1 = unmanaged)
 
 
 private:
@@ -70,26 +90,32 @@ private:
 
 
 public:
-    // get active resource object
+    //! \name access active resource object
+    //! @{
     inline coreResource* GetResource()const {return m_pCur;}
+    //! @}
 
-    // control resource loading
+    //! \name control resource loading
+    //! @{
     void Update();
-    inline void Nullify() {m_pCur = m_pNull; m_pResource->Unload();}
+    inline void Nullify()              {if(m_iStatus == CORE_RESOURCE_UNMANAGED) return; m_iStatus = CORE_RESOURCE_NOT_LOADED; m_pCur = m_pNull; m_pResource->Unload();}
+    inline const int& GetStatus()const {return m_iStatus;}
+    //! @}
 
-    // control reference counter
+    //! \name control reference counter
+    //! @{
     inline void RefIncrease()       {++m_iRef;}
     inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0);}
     inline const int& GetRef()const {return m_iRef;}
-
-    // get resource file
-    inline coreFile* GetFile()const {return m_pFile;}
+    //! @}
 
 
 private:
-    // disable copy
+    //! \name disable copy
+    //! @{
     coreResourceHandle(const coreResourceHandle& c) deletefunc;
     coreResourceHandle& operator = (const coreResourceHandle& c) deletefunc;
+    //! @}
 };
 
 
@@ -108,26 +134,34 @@ public:
     coreResourcePtr(coreResourcePtr<T>&& m);
     ~coreResourcePtr();
 
-    // assignment operators
+    //! \name assignment operators
+    //! @{
     coreResourcePtr<T>& operator = (coreResourceHandle* pHandle);
     coreResourcePtr<T>& operator = (const coreResourcePtr<T>& c);
     coreResourcePtr<T>& operator = (coreResourcePtr<T>&& m);
+    //! @}
 
-    // resource access operators
+    //! \name resource access operators
+    //! @{
     inline T* operator -> ()const {SDL_assert(m_pHandle != NULL); return   static_cast<T*>(m_pHandle->GetResource());}
     inline T& operator * ()const  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
+    //! @}
 
-    // control active status
+    //! \name control active status
+    //! @{
     void SetActive(const bool& bStatus);
     inline bool IsActive()const {return (m_pHandle && m_bActive) ? true : false;}
+    //! @}
 
 
 private:
-    // disable heap creation
+    //! \name disable heap creation
+    //! @{
     void* operator new (size_t s) deletefunc;
     void* operator new (size_t s, void* o) deletefunc;
     void* operator new[] (size_t s) deletefunc;
     void* operator new[] (size_t s, void* o) deletefunc;
+    //! @}
 };
 
 
@@ -139,14 +173,18 @@ public:
     coreReset();
     virtual ~coreReset();
 
-    // reset the object with the resource manager
+    //! \name reset the object with the resource manager
+    //! @{
     virtual void Reset(const bool& bInit) = 0;
+    //! @}
 
 
 private:
-    // disable copy
+    //! \name disable copy
+    //! @{
     coreReset(const coreReset& c) deletefunc;
     coreReset& operator = (const coreReset& c) deletefunc;
+    //! @}
 };
 
 
@@ -161,7 +199,7 @@ private:
     std::vector<coreArchive*> m_apArchive;                     //!< archives with resource files
     std::u_map<std::string, coreFile*> m_apDirectFile;         //!< direct resource files
 
-    std::set<coreReset*> m_apReset;                            //!< objects to reset with the resource manager
+    std::u_set<coreReset*> m_apReset;                          //!< objects to reset with the resource manager
 
 
 private:
@@ -171,25 +209,33 @@ private:
 
 
 public:
-    // load resource and retrieve resource handle
+    //! \name load resource and retrieve resource handle
+    //! @{
     template <typename T> coreResourceHandle* LoadFile(const char* pcPath);
-    template <typename T> coreResourceHandle* LoadBasic(const char* pcKey);
+    template <typename T> coreResourceHandle* LoadNew(const char* pcKey);
+    //! @}
 
-    // control resource files
+    //! \name control resource files
+    //! @{
     coreError AddArchive(const char* pcPath);
     coreFile* RetrieveResourceFile(const char* pcPath);
+    //! @}
 
-    // control resource manager reset
+    //! \name control resource manager reset
+    //! @{
     void Reset(const bool& bInit);
     inline void AddReset(coreReset* pObject)    {SDL_assert(!m_apReset.count(pObject)); m_apReset.insert(pObject);}
     inline void RemoveReset(coreReset* pObject) {SDL_assert( m_apReset.count(pObject)); m_apReset.erase(pObject);}
+    //! @}
 
 
 private:
-    // thread implementations
+    //! \name thread implementations
+    //! @{
     int __Init()override;
     int __Run()override;
     void __Exit()override;
+    //! @}
 };
 
 
@@ -277,11 +323,9 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 
 // ****************************************************************
-// load resource from a file and retrieve managed resource handle
+// load resource from a file and retrieve resource handle
 template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath)
 {
-    SDL_assert(pcPath);
-
     // check for existing resource handle
     if(m_apHandle.count(pcPath)) return m_apHandle[pcPath];
 
@@ -304,15 +348,18 @@ template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const ch
 
 
 // ****************************************************************
-// load empty resource with unique key and retrieve unmanaged resource handle
-template <typename T> coreResourceHandle* coreResourceManager::LoadBasic(const char* pcKey)
+// load empty resource with unique key and retrieve resource handle
+template <typename T> coreResourceHandle* coreResourceManager::LoadNew(const char* pcKey)
 {
-    SDL_assert(pcKey);
+    // check for existing resource handle
+    if(m_apHandle.count(pcKey)) return m_apHandle[pcKey];
 
-    // add special identifier and load as file
-    const std::string sSpecial("$", pcKey);
-    return this->LoadFile<T>(sSpecial);
+    // create new resource handle
+    coreResourceHandle* pNewHandle = new coreResourceHandle(NULL, new T(), NULL);
+    m_apHandle[pcKey] = pNewHandle;
+
+    return pNewHandle;
 }
 
 
-#endif // CORE_RESOURCE_MANAGER_H
+#endif // GUARD_CORE_RESOURCE_H

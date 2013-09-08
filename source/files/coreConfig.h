@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_CONFIG_H
-#define CORE_CONFIG_H
+#ifndef GUARD_CORE_CONFIG_H
+#define GUARD_CORE_CONFIG_H
 
 
 // ****************************************************************
@@ -43,29 +43,39 @@ public:
     coreConfig(const char* pcName);
     ~coreConfig();
 
-    // load and save configuration
+    //! \name load and save configuration
+    //! @{
     inline void Load() {m_Config.LoadFile(m_sPath.c_str());}
     inline void Save() {m_Config.SaveFile(m_sPath.c_str());}
+    //! @}
 
-    // set configuration values
+    //! \name set configuration values
+    //! @{
     inline void SetBool(const char* pcSection, const char* pcKey, const bool& bValue)   {m_Config.SetBoolValue(pcSection, pcKey, bValue);}
     inline void SetInt(const char* pcSection, const char* pcKey, const int& iValue)     {m_Config.SetLongValue(pcSection, pcKey, iValue);}
     inline void SetFloat(const char* pcSection, const char* pcKey, const float& fValue) {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    //! @}
 
-    // get configuration values
+    //! \name get configuration values
+    //! @{
     bool GetBool(const char* pcSection, const char* pcKey, const bool& bDefault);
     int GetInt(const char* pcSection, const char* pcKey, const int& iDefault);
     float GetFloat(const char* pcSection, const char* pcKey, const float& fDefault);
+    //! @}
 
-    // direct access configuration file interface
+    //! \name direct access configuration file interface
+    //! @{
     inline CSimpleIniA* Get() {return &m_Config;}
+    //! @}
 
 
 private:
-    // disable copy
+    //! \name disable copy
+    //! @{
     coreConfig(const coreConfig& c) deletefunc;
     coreConfig& operator = (const coreConfig& c) deletefunc;
+    //! @}
 };
 
 
-#endif // CORE_CONFIG_H
+#endif // GUARD_CORE_CONFIG_H

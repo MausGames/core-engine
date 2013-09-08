@@ -18,6 +18,8 @@ coreFile::coreFile(const char* pcPath)
 , m_pArchive    (NULL)
 , m_iArchivePos (1)
 {
+    if(m_sPath.empty()) return;
+
     // open file
     FILE* pFile = fopen(m_sPath.c_str(), "rb");
     if(!pFile)
@@ -29,7 +31,7 @@ coreFile::coreFile(const char* pcPath)
     // get file size
     fseek(pFile, 0, SEEK_END);
     m_iSize = (coreUint)ftell(pFile);
-    
+
     // close file
     fclose(pFile);
     Core::Log->Info(coreUtils::Print("File (%s) loaded", m_sPath.c_str()));
@@ -183,7 +185,7 @@ coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std
         // check and add file path
         if(pDirent->d_name[0] != '.')
         {
-            if(coreUtils::WildCmp(pDirent->d_name, pcFilter))
+            if(coreUtils::StrCmp(pDirent->d_name, pcFilter))
                 pasOutput->push_back(coreUtils::Print("%s/%s", pcFolder, pDirent->d_name));
         }
     }
@@ -225,7 +227,7 @@ coreArchive::coreArchive(const char* pcPath)
     m_aFile.reserve(iSize);
     for(coreUint i = 0; i < iSize; ++i)
     {
-        coreUint iLength; 
+        coreUint iLength;
         char acPath[256];
         coreUint iSize;
         coreUint iPos;

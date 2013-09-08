@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_THREAD_H
-#define CORE_THREAD_H
+#ifndef GUARD_CORE_THREAD_H
+#define GUARD_CORE_THREAD_H
 
 
 // ****************************************************************
@@ -16,7 +16,7 @@
 class coreThread
 {
 private:
-    SDL_Thread* m_pThread;   //!< pointer to thread struct
+    SDL_Thread* m_pThread;   //!< pointer to thread structure
     std::string m_sName;     //!< name of the thread
 
     coreUint m_iCurFrame;    //!< current frame
@@ -27,25 +27,33 @@ public:
     coreThread();
     virtual ~coreThread();
 
-    // control thread
+    //! \name control thread
+    //! @{
     SDL_Thread* StartThread(const char* pcName);
     void KillThread();
+    //! @}
 
 
 private:
-    // disable copy
+    //! \name disable copy
+    //! @{
     coreThread(const coreThread& c) deletefunc;
     coreThread& operator = (const coreThread& c) deletefunc;
+    //! @}
 
-    // execute thread
+    //! \name execute thread
+    //! @{
     int __Main();
     virtual int __Init() {return 0;}
     virtual int __Run() = 0;
     virtual void __Exit() {}
+    //! @}
 
-    // wrapper for thread creation
+    //! \name wrapper for thread creation
+    //! @{
     friend int coreThreadMain(void* pData);
+    //! @}
 };
 
 
-#endif // CORE_THREAD_H
+#endif // GUARD_CORE_THREAD_H

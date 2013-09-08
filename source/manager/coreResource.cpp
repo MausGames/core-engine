@@ -14,9 +14,10 @@
 coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource, coreResource* pNull)
 : m_pFile     (pFile)
 , m_pResource (pResource)
-, m_pNull     (pNull)
-, m_pCur      (pFile ? pNull : pResource)
+, m_pNull     (pNull ? pNull : pResource)
+, m_pCur      (pNull ? pNull : pResource)
 , m_iRef      (0)
+, m_iStatus   (CORE_RESOURCE_NOT_LOADED)
 {
 }
 
@@ -25,8 +26,8 @@ coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource,
 // destructor
 coreResourceHandle::~coreResourceHandle()
 {
-    // forgot to delete a resource, a resource-using object or used global variables
-    SDL_assert(!m_iRef); 
+    // forgot to delete a resource access, a resource-using object or used global variables
+    SDL_assert(!m_iRef);
 
     // delete associated resource object
     SAFE_DELETE(m_pResource)
@@ -37,20 +38,22 @@ coreResourceHandle::~coreResourceHandle()
 // control resource loading
 void coreResourceHandle::Update()
 {
-    if(!m_pFile) return;
+    if(m_iStatus == CORE_RESOURCE_UNMANAGED) return;
 
-    if(m_iRef != 0 && m_pCur == m_pNull)
+    if(m_iRef != 0 && m_iStatus == CORE_RESOURCE_NOT_LOADED)
     {
         // load associated resource
         const coreError iError = m_pResource->Load(m_pFile);
-             if(iError == CORE_FILE_ERROR) m_pFile = NULL;
-        else if(iError == CORE_OK)
+        if(iError == CORE_OK)
         {
-            m_pCur = m_pResource; 
-            m_pFile->UnloadData();
+            m_pCur    = m_pResource;
+            m_iStatus = CORE_RESOURCE_LOADED;
+            if(m_pFile) m_pFile->UnloadData();
         }
+        else if(iError == CORE_FILE_ERROR)
+            m_iStatus = CORE_RESOURCE_UNMANAGED;
     }
-    else if(m_iRef == 0 && m_pCur != m_pNull)
+    else if(m_iRef == 0 && m_iStatus == CORE_RESOURCE_LOADED)
     {
         // unload associated resource
         this->Nullify();
@@ -83,8 +86,8 @@ coreResourceManager::coreResourceManager()
     // reserve memory for archives
     m_apArchive.reserve(32);
 
-    // start resource thread 
-    this->StartThread("resource_thread");
+    // start up the resource manager
+    this->Reset(true);
 
     Core::Log->Info("Resource Manager created");
 }
@@ -94,8 +97,8 @@ coreResourceManager::coreResourceManager()
 // destructor
 coreResourceManager::~coreResourceManager()
 {
-    // kill resource thread
-    this->KillThread();
+    // shut down the resource manager
+    this->Reset(false);
 
     // delete resource handles and NULL resources
     for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) SAFE_DELETE(it->second)
@@ -116,7 +119,7 @@ coreResourceManager::~coreResourceManager()
 }
 
 
-// ****************************************************************   
+// ****************************************************************
 // add archive with resource files
 coreError coreResourceManager::AddArchive(const char* pcPath)
 {
@@ -134,7 +137,7 @@ coreError coreResourceManager::AddArchive(const char* pcPath)
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // retrieve resource file
 coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
 {
@@ -157,19 +160,16 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
         if(pFile) return pFile;
     }
 
-    // check for special identifier and return no file
-    if(pcPath[0] == '$') return NULL;
-
     // resource file not found
     SDL_assert(false);
-    if(!m_apDirectFile.count(pcPath)) 
+    if(!m_apDirectFile.count(pcPath))
         m_apDirectFile[pcPath] = new coreFile(pcPath);
 
     return m_apDirectFile[pcPath];
 }
 
 
-// ****************************************************************   
+// ****************************************************************
 // reset resource manager
 void coreResourceManager::Reset(const bool& bInit)
 {
@@ -183,7 +183,7 @@ void coreResourceManager::Reset(const bool& bInit)
         for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)
             (*it)->Reset(true);
 
-        // start resource thread 
+        // start resource thread
         this->StartThread("resource_thread");
     }
     else
@@ -196,13 +196,13 @@ void coreResourceManager::Reset(const bool& bInit)
             (*it)->Reset(false);
 
         // unload resources
-        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) if(it->second->GetFile()) it->second->Nullify();
+        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) it->second->Nullify();
         for(auto it = m_apNull.begin();   it != m_apNull.end();   ++it) it->second->Unload();
     }
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // init resource thread
 int coreResourceManager::__Init()
 {
@@ -220,7 +220,7 @@ int coreResourceManager::__Init()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // run resource thread
 int coreResourceManager::__Run()
 {
@@ -232,7 +232,7 @@ int coreResourceManager::__Run()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // exit resource thread
 void coreResourceManager::__Exit()
 {

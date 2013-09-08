@@ -94,11 +94,11 @@ coreError coreTexture::Load(coreFile* pFile)
     memcpy(ptr, pConvert->pixels, iDataSize);
     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 
-    // generate texture
-    glGenTextures(1, &m_iTexture);
-
     SDL_AtomicLock(&s_iLock);
     {
+        // generate texture
+        glGenTextures(1, &m_iTexture);
+
         // bind texture to free texture unit
         int iLoadUnit = -1;
         for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
@@ -159,7 +159,7 @@ coreError coreTexture::Unload()
 
     // delete texture
     glDeleteTextures(1, &m_iTexture);
-    Core::Log->Info(coreUtils::Print("Texture (%s) unloaded", m_sPath.c_str()));
+    if(!m_sPath.empty()) Core::Log->Info(coreUtils::Print("Texture (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
     if(m_pSync)

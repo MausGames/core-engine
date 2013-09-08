@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_SOUND_H
-#define CORE_SOUND_H
+#ifndef GUARD_CORE_SOUND_H
+#define GUARD_CORE_SOUND_H
 // TODO: improve 3D sound integration and control
 // TODO: implement sound pause
 // TODO: implement global sound volume change
@@ -17,7 +17,7 @@
 
 // ****************************************************************
 // sound definitions
-#define CORE_SOUND_ASSERT {SDL_assert(this->CheckRef(m_pCurRef) == m_iCurSource);}
+#define CORE_SOUND_ASSERT(x) {SDL_assert((x)->CheckRef((x)->m_pCurRef) == (x)->m_iCurSource);}
 
 
 // ****************************************************************
@@ -25,7 +25,7 @@
 class coreSound final : public coreResource
 {
 public:
-    // WAVE-format struct
+    // WAVE-format structure
     struct coreWaveFormat
     {
         uint16_t iAudioFormat;     //!< internal audio format (1 = PCM)
@@ -53,32 +53,44 @@ public:
     coreSound(coreFile* pFile);
     ~coreSound();
 
-    // load and unload sound resource data
+    //! \name load and unload sound resource data
+    //! @{
     coreError Load(coreFile* pFile)override;
     coreError Unload()override;
+    //! @}
 
-    // control playback
+    //! \name control playback
+    //! @{
     void PlayPosition(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop, const coreVector3& vPosition);
     void PlayRelative(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop);
     void Stop();
     bool IsPlaying();
+    //! @}
 
-    // control sound source properties
+    //! \name control sound source properties
+    //! @{
     void SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity);
     void SetVolume(const float& fVolume);
-    inline void SetPitch(const float& fPitch) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
-    inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    inline void SetPitch(const float& fPitch) {CORE_SOUND_ASSERT(this) if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
+    inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT(this) if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    //! @}
 
-    // control active sound source with reference pointer
+    //! \name control active sound source with reference pointer
+    //! @{
     inline bool SetCurRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
     ALuint CheckRef(const void* pRef);
+    //! @}
 
-    // get attributes
+    //! \name get attributes
+    //! @{
     inline const ALuint& GetBuffer()const         {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
+    //! @}
 
-    // get relative path to NULL resource
+    //! \name get relative path to NULL resource
+    //! @{
     static inline const char* GetNullPath() {return "data/sounds/default.wav";}
+    //! @}
 };
 
 
@@ -87,4 +99,4 @@ public:
 typedef coreResourcePtr<coreSound> coreSoundPtr;
 
 
-#endif // CORE_SOUND_H
+#endif // GUARD_CORE_SOUND_H

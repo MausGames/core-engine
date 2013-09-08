@@ -47,7 +47,7 @@ const char* coreUtils::AppPath()
     readlink("/proc/self/exe", pcString, 255);
     (*(strrchr(pcString, CORE_UTILS_SLASH[0])+1)) = '\0';
 #endif
-    
+
     return pcString;
 }
 
@@ -56,10 +56,8 @@ const char* coreUtils::AppPath()
 // retrieve current date and time
 void coreUtils::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea)
 {
-    // get current time
+    // format the current time
     const time_t iTime = time(NULL);
-
-    // format the time value
     tm* pFormat = localtime(&iTime);
 
     // forward data
@@ -73,7 +71,7 @@ void coreUtils::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, core
 
 
 // ****************************************************************
-// create printed string
+// create formated string
 const char* coreUtils::Print(const char* pcMessage, ...)
 {
     char* pcString = __NextString();
@@ -90,14 +88,23 @@ const char* coreUtils::Print(const char* pcMessage, ...)
 
 // ****************************************************************
 // compare strings with wildcards
-bool coreUtils::WildCmp(const char* s, const char* t)
+bool coreUtils::StrCmp(const char* s, const char* t)
 {
-	return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && WildCmp(s+1,t+1) : !*t : WildCmp(s,t+1) || (*s && WildCmp(s+1,t));
+    return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && StrCmp(s+1,t+1) : !*t : StrCmp(s,t+1) || (*s && StrCmp(s+1,t));
+}
+
+
+// ****************************************************************
+// get last characters of a string
+const char* coreUtils::StrRight(const char* pcInput, const coreUint& iNum)
+{
+    const coreUint iLen = strlen(pcInput);
+    return pcInput + (iLen-coreMath::Min(iLen, iNum));
 }
 
 
 // ******************************************************************
-// open URL with webbrowser
+// open URL with web-browser
 void coreUtils::OpenURL(const char* pcURL)
 {
 #if defined(_WIN32)

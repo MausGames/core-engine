@@ -7,10 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_TEXTURE_H
-#define CORE_TEXTURE_H
-// TODO: compile SDL_image with png-support
-// TODO: use libjpeg-turbo instead of the normal libjpeg
+#ifndef GUARD_CORE_TEXTURE_H
+#define GUARD_CORE_TEXTURE_H
 // TODO: check for max available texture units
 
 
@@ -30,9 +28,9 @@
 class coreTexture final : public coreResource
 {
 private:
-    GLuint m_iTexture;                                   //!< texture identifier/OpenGL name                                     
+    GLuint m_iTexture;                                   //!< texture identifier/OpenGL name
     coreVector2 m_vResolution;                           //!< texture resolution
-                                                         
+
     static int s_iActiveUnit;                            //!< current active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
 
@@ -46,27 +44,38 @@ public:
     coreTexture(coreFile* pFile);
     ~coreTexture();
 
-    // load and unload texture resource data
+    //! \name load and unload texture resource data
+    //! @{
     coreError Load(coreFile* pFile)override;
     coreError Unload()override;
+    //! @}
 
-    // enable and disable the texture
+    //! \name enable and disable the texture
+    //! @{
     void Enable(const coreByte& iUnit);
     static void Disable(const coreByte& iUnit);
     static void DisableAll();
+    //! @}
 
-    // check sync object status
-    coreError CheckSync(); 
+    //! \name check sync object status
+    //! @{
+    coreError CheckSync();
+    //! @}
 
-    // generate empty base texture
+    //! \name generate empty base texture
+    //! @{
     inline void Generate() {SDL_assert(!m_iTexture); if(!m_iTexture) glGenTextures(1, &m_iTexture);}
+    //! @}
 
-    // get attributes
+    //! \name get attributes
     inline const GLuint& GetTexture()const         {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
+    //! @}
 
-    // get relative path to NULL resource
+    //! \name get relative path to NULL resource
+    //! @{
     static inline const char* GetNullPath() {return "data/textures/default.png";}
+    //! @}
 };
 
 
@@ -75,4 +84,4 @@ public:
 typedef coreResourcePtr<coreTexture> coreTexturePtr;
 
 
-#endif // CORE_TEXTURE_H
+#endif // GUARD_CORE_TEXTURE_H

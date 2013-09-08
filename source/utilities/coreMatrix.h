@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_MATRIX_H
-#define CORE_MATRIX_H
+#ifndef GUARD_CORE_MATRIX_H
+#define GUARD_CORE_MATRIX_H
 
 
 // ****************************************************************
@@ -18,7 +18,7 @@ class coreMatrix final
 public:
     align16(union)
     {
-        struct 
+        struct
         {
             float _11, _12, _13, _14;
             float _21, _22, _23, _24;
@@ -27,7 +27,7 @@ public:
         };
         float m[4][4];
     };
-    
+
 
 public:
     coreMatrix();
@@ -36,40 +36,55 @@ public:
                const float& f31, const float& f32, const float& f33, const float& f34,
                const float& f41, const float& f42, const float& f43, const float& f44);
 
-    // compare operators
+    //! \name compare operators
+    //! @{
     bool operator == (const coreMatrix& v)const;
     bool operator != (const coreMatrix& v)const;
+    //! @}
 
-    // matrix calculation operators
+    //! \name matrix calculation operators
+    //! @{
     coreMatrix operator + (const coreMatrix& v)const;
     coreMatrix operator - (const coreMatrix& v)const;
     coreMatrix operator * (const coreMatrix& v)const;
     inline void operator += (const coreMatrix& v) {*this = *this + v;}
     inline void operator -= (const coreMatrix& v) {*this = *this - v;}
     inline void operator *= (const coreMatrix& v) {*this = *this * v;}
+    //! @}
 
-    // scalar calculation operators
+    //! \name scalar calculation operators
+    //! @{
     coreMatrix operator * (const float& f)const;
     coreMatrix operator / (const float& f)const;
     inline void operator *= (const float& f)                                  {*this = *this * f;}
-    inline void operator /= (const float& f)                                  {*this = *this / f;}
+    inline void operator /= (const float& f)                                  {*this = *this / f;} //! @} @{
     friend inline coreMatrix operator * (const float& f, const coreMatrix& v) {return v * f;}
+    //! @}
 
-    // convert matrix
+    //! \name convert matrix
+    //! @{
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
+    //! @}
 
-    // transpose matrix
+    //! \name transpose matrix
+    //! @{
     coreMatrix& Transpose();
     coreMatrix Transposed()const {return coreMatrix(*this).Transpose();}
+    //! @}
 
-    // invert matrix
+    //! \name invert matrix
+    //! @{
     coreMatrix& Invert();
     coreMatrix Inverted()const {return coreMatrix(*this).Invert();}
+    //! @}
 
-    // direct functions
+    //! \name direct functions
+    //! @{
     float Determinant()const;
+    //! @}
 
-    // static functions
+    //! \name static functions
+    //! @{
     static coreMatrix Identity();
     static coreMatrix Translation(const coreVector3& vPosition);
     static coreMatrix Scaling(const coreVector3& vSize);
@@ -83,7 +98,8 @@ public:
     static coreMatrix Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
     static coreMatrix Ortho(const coreVector2& vResolution);
     static coreMatrix Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrintation);
+    //! @}
 };
 
 
-#endif // CORE_MATRIX_H
+#endif // GUARD_CORE_MATRIX_H

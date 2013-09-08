@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_RAND_H
-#define CORE_RAND_H
+#ifndef GUARD_CORE_RAND_H
+#define GUARD_CORE_RAND_H
 // TODO: implement mersenne twister
 
 
@@ -30,20 +30,28 @@ public:
     coreRand(coreRand&& m);
     ~coreRand();
 
-    // assignment operators
+    //! \name assignment operators
+    //! @{
     coreRand& operator = (const coreRand& c);
     coreRand& operator = (coreRand&& m);
+    //! @}
 
-    // reset the generator
+    //! \name reset the generator
+    //! @{
     inline void Reset() {m_iCurRand = 0;}
+    //! @}
 
-    // get raw random number
+    //! \name get raw random number
+    //! @{
     inline const int& GetRaw() {if(++m_iCurRand >= m_iNumRand) m_iCurRand = 0; return m_piRand[m_iCurRand];}
+    //! @}
 
-    // calculate constrained random number
+    //! \name calculate constrained random number
+    //! @{
     inline int Int(const int& iMin, const int& iMax)         {return iMin + (this->GetRaw() % (iMax - iMin + 1));}
     inline float Float(const float& fMin, const float& fMax) {return fMin + (fMax - fMin) * float(this->GetRaw()) * c_fPrecision;}
+    //! @}
 };
 
 
-#endif // CORE_RAND_H
+#endif // GUARD_CORE_RAND_H

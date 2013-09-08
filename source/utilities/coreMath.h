@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_MATH_H
-#define CORE_MATH_H
+#ifndef GUARD_CORE_MATH_H
+#define GUARD_CORE_MATH_H
 
 
 // ****************************************************************
@@ -38,7 +38,8 @@
 class coreMath
 {
 public:
-    // convenient logical operations
+    //! \name convenient logical operations
+    //! @{
     template <typename T> static inline constexpr T Lerp(const T& x, const T& y, const float& s)       {return x + (y - x) * s;}
     template <typename T> static inline constexpr T LerpSmooth(const T& x, const T& y, const float& s) {return Lerp(x, y, 0.5f-0.5f*Cos(s*PI));}
     template <typename T> static inline constexpr T LerpBreak(const T& x, const T& y, const float& s)  {return Lerp(x, y, Sin(s*0.5f*PI));}
@@ -49,24 +50,35 @@ public:
     static inline constexpr float Abs(const float& x)                                                  {return (x < 0.0f) ? -x : x;}
     static inline constexpr int Sig(const int& x)                                                      {return (x < 0) ? -1 : 1;}
     static inline constexpr float Sig(const float& x)                                                  {return (x < 0.0f) ? -1.0f : 1.0f;}
+    //! @}
 
-    // calculate square root
+    //! \name calculate square root
+    //! @{
     static float Sqrt(float fInput);
+    //! @}
 
-    // calculate trigonometric values
+    //! \name calculate trigonometric values
+    //! @{
     static float Sin(const float& fInput);
     static float Cos(const float& fInput);
-        
-    // check if inside field-of-view
+    //! @}
+
+    //! \name check if inside field-of-view
+    //! @{
     static bool CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection);
+    //! @}
 
-    // calculate next power-of-two
+    //! \name calculate next power-of-two
+    //! @{
     static inline coreUint NextPOT(const coreUint& iInput) {coreUint k = 1; while(k < iInput) k = k<<1; return k;}
+    //! @}
 
-    // convert color format
+    //! \name convert color format
+    //! @{
     static coreVector3 HSVtoRGB(const coreVector3& vHSV);
     static coreVector3 RGBtoHSV(const coreVector3& vRGB);
+    //! @}
 };
 
 
-#endif // CORE_MATH_H
+#endif // GUARD_CORE_MATH_H

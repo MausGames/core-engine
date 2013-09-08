@@ -20,6 +20,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -39,7 +40,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\include;C:\Program Files %28x86%29\LLVM\lib\clang\3.4;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\libraries\windows;$(MSBuildProjectDirectory)\..\..\..\libraries\windows\msvc;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows\</OutDir>
     <TargetName>$(ProjectName)_msvc_debug</TargetName>
@@ -94,49 +95,49 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp" />
+    <ClCompile Include="..\..\..\source\components\graphics\coreShader.cpp" />
+    <ClCompile Include="..\..\..\source\components\graphics\coreTexture.cpp" />
+    <ClCompile Include="..\..\..\source\components\system\coreThread.cpp" />
+    <ClCompile Include="..\..\..\source\components\system\coreTimer.cpp" />
     <ClCompile Include="..\..\..\source\Core.cpp" />
-    <ClCompile Include="..\..\..\source\coreArchive.cpp" />
-    <ClCompile Include="..\..\..\source\coreConfig.cpp" />
-    <ClCompile Include="..\..\..\source\CoreGraphics.cpp" />
-    <ClCompile Include="..\..\..\source\CoreInput.cpp" />
-    <ClCompile Include="..\..\..\source\coreLog.cpp" />
-    <ClCompile Include="..\..\..\source\coreMath.cpp" />
-    <ClCompile Include="..\..\..\source\coreMatrix.cpp" />
-    <ClCompile Include="..\..\..\source\coreRand.cpp" />
-    <ClCompile Include="..\..\..\source\coreResourceManager.cpp" />
-    <ClCompile Include="..\..\..\source\CoreAudio.cpp" />
-    <ClCompile Include="..\..\..\source\coreShader.cpp" />
-    <ClCompile Include="..\..\..\source\coreSound.cpp" />
-    <ClCompile Include="..\..\..\source\coreSpline.cpp" />
-    <ClCompile Include="..\..\..\source\CoreSystem.cpp" />
-    <ClCompile Include="..\..\..\source\coreTexture.cpp" />
-    <ClCompile Include="..\..\..\source\coreThread.cpp" />
-    <ClCompile Include="..\..\..\source\coreTimer.cpp" />
-    <ClCompile Include="..\..\..\source\coreUtils.cpp" />
-    <ClCompile Include="..\..\..\source\coreVector.cpp" />
+    <ClCompile Include="..\..\..\source\files\coreArchive.cpp" />
+    <ClCompile Include="..\..\..\source\files\coreConfig.cpp" />
+    <ClCompile Include="..\..\..\source\files\coreLog.cpp" />
+    <ClCompile Include="..\..\..\source\interfaces\CoreAudio.cpp" />
+    <ClCompile Include="..\..\..\source\interfaces\CoreGraphics.cpp" />
+    <ClCompile Include="..\..\..\source\interfaces\CoreInput.cpp" />
+    <ClCompile Include="..\..\..\source\interfaces\CoreSystem.cpp" />
+    <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\coreMath.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\coreMatrix.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\coreRand.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\coreSpline.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\coreUtils.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\coreVector.cpp" />
     <ClCompile Include="..\..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\components\audio\coreSound.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\coreShader.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\coreTexture.h" />
+    <ClInclude Include="..\..\..\source\components\system\coreThread.h" />
+    <ClInclude Include="..\..\..\source\components\system\coreTimer.h" />
     <ClInclude Include="..\..\..\source\Core.h" />
-    <ClInclude Include="..\..\..\source\coreArchive.h" />
-    <ClInclude Include="..\..\..\source\coreConfig.h" />
-    <ClInclude Include="..\..\..\source\CoreGraphics.h" />
-    <ClInclude Include="..\..\..\source\CoreInput.h" />
-    <ClInclude Include="..\..\..\source\coreLog.h" />
-    <ClInclude Include="..\..\..\source\coreMath.h" />
-    <ClInclude Include="..\..\..\source\coreMatrix.h" />
-    <ClInclude Include="..\..\..\source\coreRand.h" />
-    <ClInclude Include="..\..\..\source\coreResourceManager.h" />
-    <ClInclude Include="..\..\..\source\CoreAudio.h" />
-    <ClInclude Include="..\..\..\source\coreShader.h" />
-    <ClInclude Include="..\..\..\source\coreSound.h" />
-    <ClInclude Include="..\..\..\source\coreSpline.h" />
-    <ClInclude Include="..\..\..\source\CoreSystem.h" />
-    <ClInclude Include="..\..\..\source\coreTexture.h" />
-    <ClInclude Include="..\..\..\source\coreThread.h" />
-    <ClInclude Include="..\..\..\source\coreTimer.h" />
-    <ClInclude Include="..\..\..\source\coreUtils.h" />
-    <ClInclude Include="..\..\..\source\coreVector.h" />
+    <ClInclude Include="..\..\..\source\files\coreArchive.h" />
+    <ClInclude Include="..\..\..\source\files\coreConfig.h" />
+    <ClInclude Include="..\..\..\source\files\coreLog.h" />
+    <ClInclude Include="..\..\..\source\interfaces\CoreAudio.h" />
+    <ClInclude Include="..\..\..\source\interfaces\CoreGraphics.h" />
+    <ClInclude Include="..\..\..\source\interfaces\CoreInput.h" />
+    <ClInclude Include="..\..\..\source\interfaces\CoreSystem.h" />
+    <ClInclude Include="..\..\..\source\manager\coreResource.h" />
+    <ClInclude Include="..\..\..\source\utilities\coreMath.h" />
+    <ClInclude Include="..\..\..\source\utilities\coreMatrix.h" />
+    <ClInclude Include="..\..\..\source\utilities\coreRand.h" />
+    <ClInclude Include="..\..\..\source\utilities\coreSpline.h" />
+    <ClInclude Include="..\..\..\source\utilities\coreUtils.h" />
+    <ClInclude Include="..\..\..\source\utilities\coreVector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

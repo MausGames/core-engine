@@ -1,163 +1,163 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Engine">
-      <UniqueIdentifier>{2c5d58ba-afab-4612-8617-23de959bbc89}</UniqueIdentifier>
+    <Filter Include="source">
+      <UniqueIdentifier>{0327148b-30e9-44b1-b93b-823a2b74ce22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\01_Files">
-      <UniqueIdentifier>{3d4e804a-43f8-453d-ad0d-86f52aefb06d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\03_Interfaces">
-      <UniqueIdentifier>{bfa4a9c1-f312-49ac-82ed-5d5226a570cd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\02_Utilities">
-      <UniqueIdentifier>{9b3ed126-70d5-40a1-b2fe-bc4f7f3b248d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\04_Components">
-      <UniqueIdentifier>{c117e230-3b7a-4a56-85d4-a03fc06af73d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\05_Manager">
-      <UniqueIdentifier>{dac8ec8c-25b0-44ea-9479-0d3ee19c18de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\04_Components\02_Graphic">
-      <UniqueIdentifier>{405473ff-78af-4cfd-a7e5-5a401861a41c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\04_Components\01_System">
-      <UniqueIdentifier>{17f18d3e-515c-4615-a40a-4e33e837bb96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Work">
+    <Filter Include="projects">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Engine\04_Components\03_Audio">
-      <UniqueIdentifier>{4b6b4e28-2005-4604-a2d7-5c20c6e1e34d}</UniqueIdentifier>
+    <Filter Include="source\components">
+      <UniqueIdentifier>{b18ae8ad-eae0-4e39-838c-72f429b76e45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\files">
+      <UniqueIdentifier>{56849995-541c-4251-ae5c-287c45a3eb01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\interfaces">
+      <UniqueIdentifier>{31144bdb-cd52-4d91-ad76-77e502aab51a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\manager">
+      <UniqueIdentifier>{353c709e-a8dd-4a60-876c-948f7b466c41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\utilities">
+      <UniqueIdentifier>{f4aaf58e-ee1f-441f-a0df-c16671c961b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\components\audio">
+      <UniqueIdentifier>{6fd143c3-82bb-40a0-aebb-ed996fc4e51e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\components\graphics">
+      <UniqueIdentifier>{3539efa7-6ded-46a7-8593-4c89e6826158}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\components\system">
+      <UniqueIdentifier>{14ac0c65-cbb3-43eb-923c-c89bf8da5eaf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\Core.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreConfig.cpp">
-      <Filter>Engine\01_Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreLog.cpp">
-      <Filter>Engine\01_Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreArchive.cpp">
-      <Filter>Engine\01_Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\CoreInput.cpp">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\CoreSystem.cpp">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreMath.cpp">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreMatrix.cpp">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreRand.cpp">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreSpline.cpp">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreUtils.cpp">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreVector.cpp">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreTexture.cpp">
-      <Filter>Engine\04_Components\02_Graphic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreResourceManager.cpp">
-      <Filter>Engine\05_Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\coreThread.cpp">
-      <Filter>Engine\04_Components\01_System</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\CoreAudio.cpp">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\CoreGraphics.cpp">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\main.cpp">
-      <Filter>Work</Filter>
+      <Filter>projects</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\coreTimer.cpp">
-      <Filter>Engine\04_Components\01_System</Filter>
+    <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
+      <Filter>source\components\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\coreSound.cpp">
-      <Filter>Engine\04_Components\03_Audio</Filter>
+    <ClCompile Include="..\..\..\source\components\graphics\coreShader.cpp">
+      <Filter>source\components\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\coreShader.cpp">
-      <Filter>Work</Filter>
+    <ClCompile Include="..\..\..\source\components\graphics\coreTexture.cpp">
+      <Filter>source\components\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\components\system\coreThread.cpp">
+      <Filter>source\components\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\components\system\coreTimer.cpp">
+      <Filter>source\components\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\files\coreArchive.cpp">
+      <Filter>source\files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\files\coreConfig.cpp">
+      <Filter>source\files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\files\coreLog.cpp">
+      <Filter>source\files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\interfaces\CoreAudio.cpp">
+      <Filter>source\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\interfaces\CoreGraphics.cpp">
+      <Filter>source\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\interfaces\CoreInput.cpp">
+      <Filter>source\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\interfaces\CoreSystem.cpp">
+      <Filter>source\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\coreMath.cpp">
+      <Filter>source\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\coreMatrix.cpp">
+      <Filter>source\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\coreRand.cpp">
+      <Filter>source\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\coreSpline.cpp">
+      <Filter>source\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\coreUtils.cpp">
+      <Filter>source\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\coreVector.cpp">
+      <Filter>source\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\Core.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\manager\coreResource.cpp">
+      <Filter>source\manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
+      <Filter>source\components\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\coreShader.h">
+      <Filter>source\components\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\coreTexture.h">
+      <Filter>source\components\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\system\coreThread.h">
+      <Filter>source\components\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\system\coreTimer.h">
+      <Filter>source\components\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\files\coreArchive.h">
+      <Filter>source\files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\files\coreConfig.h">
+      <Filter>source\files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\files\coreLog.h">
+      <Filter>source\files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\interfaces\CoreAudio.h">
+      <Filter>source\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\interfaces\CoreGraphics.h">
+      <Filter>source\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\interfaces\CoreInput.h">
+      <Filter>source\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\interfaces\CoreSystem.h">
+      <Filter>source\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\coreMath.h">
+      <Filter>source\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\coreMatrix.h">
+      <Filter>source\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\coreRand.h">
+      <Filter>source\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\coreSpline.h">
+      <Filter>source\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\coreUtils.h">
+      <Filter>source\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\coreVector.h">
+      <Filter>source\utilities</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\source\Core.h">
-      <Filter>Engine</Filter>
+      <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\coreConfig.h">
-      <Filter>Engine\01_Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreLog.h">
-      <Filter>Engine\01_Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreArchive.h">
-      <Filter>Engine\01_Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\CoreInput.h">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\CoreSystem.h">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreMath.h">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreMatrix.h">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreRand.h">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreSpline.h">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreUtils.h">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreVector.h">
-      <Filter>Engine\02_Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreTexture.h">
-      <Filter>Engine\04_Components\02_Graphic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreResourceManager.h">
-      <Filter>Engine\05_Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreThread.h">
-      <Filter>Engine\04_Components\01_System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\CoreAudio.h">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\CoreGraphics.h">
-      <Filter>Engine\03_Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreTimer.h">
-      <Filter>Engine\04_Components\01_System</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreSound.h">
-      <Filter>Engine\04_Components\03_Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\coreShader.h">
-      <Filter>Work</Filter>
+    <ClInclude Include="..\..\..\source\manager\coreResource.h">
+      <Filter>source\manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

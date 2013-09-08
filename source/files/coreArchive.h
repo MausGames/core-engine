@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_ARCHIVE_H
-#define CORE_ARCHIVE_H
+#ifndef GUARD_CORE_ARCHIVE_H
+#define GUARD_CORE_ARCHIVE_H
 
 
 // ****************************************************************
@@ -17,7 +17,7 @@ class coreFile final
 {
 private:
     std::string m_sPath;       //!< relative path of the file
-                               
+
     coreByte* m_pData;         //!< file data
     coreUint m_iSize;          //!< size of the file
 
@@ -31,30 +31,42 @@ public:
     ~coreFile();
     friend class coreArchive;
 
-    // save file
+    //! \name save file
+    //! @{
     coreError Save(const char* pcPath);
+    //! @}
 
-    // load and unload file data
+    //! \name load and unload file data
+    //! @{
     coreError LoadData();
     inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
+    //! @}
 
-    // get attributes
+    //! \name get attributes
+    //! @{
     inline const char* GetName()const     {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const     {return m_sPath.c_str();}
     inline const coreByte* GetData()      {this->LoadData(); return m_pData;}
     inline const coreUint& GetSize()const {return m_iSize;}
+    //! @}
 
-    // check if file exists physically
+    //! \name check if file exists physically
+    //! @{
     static bool FileExists(const char* pcPath);
+    //! @}
 
-    // retrieve relative paths of all files from a folder
+    //! \name retrieve relative paths of all files from a folder
+    //! @{
     static coreError SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
+    //! @}
 
 
 private:
-    // disable copy
+    //! \name disable copy
+    //! @{
     coreFile(const coreFile& c) deletefunc;
     coreFile& operator = (const coreFile& c) deletefunc;
+    //! @}
 };
 
 
@@ -64,7 +76,7 @@ class coreArchive final
 {
 private:
     std::string m_sPath;                             //!< relative path of the archive
-                                                             
+
     std::vector<coreFile*> m_aFile;                  //!< file objects
     std::u_map<std::string, coreFile*> m_aFileMap;   //!< path access for file objects
 
@@ -74,38 +86,52 @@ public:
     explicit coreArchive(const char* pcPath);
     ~coreArchive();
 
-    // save archive
+    //! \name save archive
+    //! @{
     coreError Save(const char* pcPath);
+    //! @}
 
-    // manage file objects
+    //! \name manage file objects
+    //! @{
     coreError AddFile(const char* pcPath);
     coreError AddFile(coreFile* pFile);
     coreError DeleteFile(const coreUint& iIndex);
     coreError DeleteFile(const char* pcPath);
     coreError DeleteFile(coreFile* pFile);
+    //! @}
 
-    // load and unload file data
+    //! \name load and unload file data
+    //! @{
     void LoadData();
     void UnloadData();
+    //! @}
 
-    // access file objects
+    //! \name access file objects
+    //! @{
     inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_aFile.size())  {SDL_assert(false); return NULL;} return m_aFile[iIndex];}
     inline coreFile* GetFile(const char* pcPath)     {if(!m_aFileMap.count(pcPath)) {SDL_assert(false); return NULL;} return m_aFileMap[pcPath];}
+    //! @}
 
-    // get attributes
+    //! \name get attributes
+    //! @{
     inline const char* GetName()const {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const {return m_sPath.c_str();}
     inline coreUint GetSize()const    {return m_aFile.size();}
+    //! @}
 
 
 private:
-    // disable copy
+    //! \name disable copy
+    //! @{
     coreArchive(const coreArchive& c) deletefunc;
     coreArchive& operator = (const coreArchive& c) deletefunc;
+    //! @}
 
-    // calculate absolute data positions of all files
+    //! \name calculate absolute data positions of all files
+    //! @{
     void __CalculatePositions();
+    //! @}
 };
 
 
-#endif // CORE_ARCHIVE_H
+#endif // GUARD_CORE_ARCHIVE_H

@@ -7,27 +7,28 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_GRAPHICS_H
-#define CORE_GRAPHICS_H
+#ifndef GUARD_CORE_GRAPHICS_H
+#define GUARD_CORE_GRAPHICS_H
 
 
 // ****************************************************************
 // main graphics interface
+//! \ingroup interface
 class CoreGraphics final
 {
 private:
     SDL_GLContext m_RenderContext;               //!< primary OpenGL context for render operations
     SDL_GLContext m_ResourceContext;             //!< secondary OpenGL context for resource loading
-                                                 
+
     float m_fFOV;                                //!< field-of-view
     float m_fNearClip;                           //!< near clipping plane
     float m_fFarClip;                            //!< far clipping plane
-                                                 
+
     coreVector3 m_vCamPosition;                  //!< position of the camera
     coreVector3 m_vCamDirection;                 //!< direction of the camera
     coreVector3 m_vCamOrientation;               //!< orientation of the camera
     coreMatrix m_mCamera;                        //!< camera matrix
-                                                 
+
     coreMatrix m_mPerspective;                   //!< perspective projection matrix
     coreMatrix m_mOrtho;                         //!< orthogonal projection matrix
     coreMatrix m_mCurProjection;                 //!< current loaded projection matrix
@@ -42,25 +43,33 @@ private:
     ~CoreGraphics();
     friend class Core;
 
-    // update the graphics scene
+    //! \name update the graphics scene
+    //! @{
     void __UpdateScene();
 
 
 public:
-    // control camera
+    //! \name control camera
+    //! @{
     void SetCamera(const coreVector3* pvPosition, const coreVector3* pvDirection, const coreVector3* pvOrientation);
     inline void LoadCamera() {glLoadMatrixf(m_mCamera);}
+    //! @}
 
-    // control view and projection
+    //! \name control view and projection
+    //! @{
     void ResizeView(coreVector2 vResolution);
     void EnablePerspective();
     void EnableOrtho();
+    //! @}
 
-    // create a screenshot
+    //! \name create a screenshot
+    //! @{
     void Screenshot(const char* pcPath);
     void Screenshot();
+    //! @}
 
-    // get attributes
+    //! \name get attributes
+    //! @{
     inline const SDL_GLContext& GetRenderContext()const   {return m_RenderContext;}
     inline const SDL_GLContext& GetResourceContext()const {return m_ResourceContext;}
     inline const float& GetFOV()const                     {return m_fFOV;}
@@ -72,11 +81,14 @@ public:
     inline const coreMatrix& GetCamera()const             {return m_mCamera;}
     inline const coreMatrix& GetPerspective()const        {return m_mPerspective;}
     inline const coreMatrix& GetOrtho()const              {return m_mOrtho;}
+    //! @}
 
-    // check hardware support
+    //! \name check hardware support
+    //! @{
     inline const bool& SupportFeature(const char* pcFeature) {if(!m_abFeature.count(pcFeature)) m_abFeature[pcFeature] = (glewIsSupported(pcFeature) ? true : false); return m_abFeature.at(pcFeature);}
     inline const float& SupportOpenGL()const                 {return m_fOpenGL;}
+    //! @}
 };
 
 
-#endif // CORE_GRAPHICS_H
+#endif // GUARD_CORE_GRAPHICS_H

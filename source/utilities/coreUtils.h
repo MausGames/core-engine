@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_UTILS_H
-#define CORE_UTILS_H
+#ifndef GUARD_CORE_UTILS_H
+#define GUARD_CORE_UTILS_H
 
 
 // ****************************************************************
@@ -32,27 +32,40 @@ private:
 
 
 public:
-    // get application parameters
+    //! \name get application parameters
+    //! @{
     static const char* AppName();
     static const char* AppPath();
+    //! @}
 
-    // retrieve current date and time
+    //! \name retrieve current date and time
+    //! @{
     static void DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea);
+    //! @}
 
-    // create printed string
+    //! \name create formated string
+    //! @{
     static const char* Print(const char* pcMessage, ...);
+    //! @}
 
-    // compare strings with wildcards
-    static bool WildCmp(const char* s, const char* t);
+    //! \name operate with string data
+    //! @{
+    static bool StrCmp(const char* s, const char* t);
+    static const char* StrRight(const char* pcInput, const coreUint& iNum);
+    //! @}
 
-    // open URL with webbrowser
+    //! \name open URL with web-browser
+    //! @{
     static void OpenURL(const char* pcURL);
+    //! @}
 
 
 private:
-    // access next return-string
+    //! \name access next return-string
+    //! @{
     static inline char* __NextString() {if(++m_iIndex >= CORE_UTILS_STRINGS) m_iIndex = 0; return m_aacString[m_iIndex];}
+    //! @}
 };
 
 
-#endif // CORE_UTILS_H
+#endif // GUARD_CORE_UTILS_H

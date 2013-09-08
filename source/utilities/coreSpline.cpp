@@ -85,7 +85,7 @@ void coreSpline::AddNode(const coreVector3& vPosition, const coreVector3& vTange
 
 // ****************************************************************
 // remove node from spline
-void RemoveNode(const coreUint& iIndex)
+void coreSpline::RemoveNode(const coreUint& iIndex)
 {
     // TODO: implement function
 }
@@ -123,7 +123,7 @@ coreVector3 coreSpline::GetPosition(const float& fTime)const
 coreVector3 coreSpline::GetPosition(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const
 {
     // calculate position with cubic function
-    return ( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2) * fTime*fTime*fTime + 
+    return ( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2) * fTime*fTime*fTime +
            (-3.0f*vP1 + 3.0f*vP2 - 2.0f*vT1 - vT2) * fTime*fTime + vT1*fTime + vP1;
 }
 
@@ -148,7 +148,7 @@ coreVector3 coreSpline::GetDirection(const float& fTime)const
 coreVector3 coreSpline::GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const
 {
     // calculate direction with cubic function
-    return ( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2) * fTime*fTime * 3.0f + 
+    return ( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2) * fTime*fTime * 3.0f +
            (-3.0f*vP1 + 3.0f*vP2 - 2.0f*vT1 - vT2) * fTime * 2.0f + vT1;
 }
 

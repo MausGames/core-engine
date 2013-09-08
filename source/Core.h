@@ -34,12 +34,15 @@
 //|   distribution.                                                              |//
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
+//! \file
+//! \defgroup interface Interfaces
 #pragma once
-#ifndef CORE_H
-#define CORE_H
+#ifndef GUARD_CORE_H
+#define GUARD_CORE_H
 // TODO: remove deprecated stuff
 // TODO: add explicit keyword
 // TODO: boolean traps
+// TODO: check for boost integrations
 
 
 // ****************************************************************
@@ -77,6 +80,7 @@
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
 #define u_map unordered_map
+#define u_set unordered_set
 
 typedef unsigned char coreByte;
 typedef unsigned int  coreUint;
@@ -119,7 +123,7 @@ enum coreError
 #include <math.h>
 #include <cstdio>
 #include <vector>
-#include <set>
+#include <unordered_set>
 #include <unordered_map>
 
 
@@ -150,45 +154,45 @@ extern __thread GLEWContext g_GlewContext;
 
 // ****************************************************************
 // file classes
-#include "coreLog.h"
-#include "coreConfig.h"
-#include "coreArchive.h"
+#include "files/coreLog.h"
+#include "files/coreConfig.h"
+#include "files/coreArchive.h"
 
 
 // ****************************************************************
 // utility classes
-#include "coreMath.h"
-#include "coreUtils.h"
-#include "coreRand.h"
-#include "coreVector.h"
-#include "coreMatrix.h"
-#include "coreSpline.h"
+#include "utilities/coreMath.h"
+#include "utilities/coreUtils.h"
+#include "utilities/coreRand.h"
+#include "utilities/coreVector.h"
+#include "utilities/coreMatrix.h"
+#include "utilities/coreSpline.h"
 
 
 // ****************************************************************
 // interface classes
-#include "CoreSystem.h"
-#include "CoreGraphics.h"
-#include "CoreAudio.h"
-#include "CoreInput.h"
+#include "interfaces/CoreSystem.h"
+#include "interfaces/CoreGraphics.h"
+#include "interfaces/CoreAudio.h"
+#include "interfaces/CoreInput.h"
 
 
 // ****************************************************************
 // system component classes
-#include "coreTimer.h"
-#include "coreThread.h"
+#include "components/system/coreTimer.h"
+#include "components/system/coreThread.h"
 
 
 // ****************************************************************
 // manager classes
-#include "coreResourceManager.h"
+#include "manager/coreResource.h"
 
 
 // ****************************************************************
-// other component classes
-#include "coreTexture.h"
-#include "coreShader.h"
-#include "coreSound.h"
+// graphics and audio component classes
+#include "components/graphics/coreTexture.h"
+#include "components/graphics/coreShader.h"
+#include "components/audio/coreSound.h"
 
 
 // ****************************************************************
@@ -202,13 +206,17 @@ private:
 
 
 public:
-    // undefined init and exit function
+    //! \name undefined init and exit function
+    //! @{
     void Init();
     void Exit();
+    //! @}
 
-    // undefined render and move function
+    //! \name undefined render and move function
+    //! @{
     void Render();
     void Move();
+    //! @}
 };
 
 
@@ -244,15 +252,21 @@ private:
 
 
 public:
-    // run the application
+    //! \name run the application
+    //! @{
     static void Run();
+    //! @}
 
-    // reset engine
+    //! \name reset engine
+    //! @{
     static void Reset();
+    //! @}
 
-    // quit the application
+    //! \name quit the application
+    //! @{
     static void Quit();
+    //! @}
 };
 
 
-#endif // CORE_H
+#endif // GUARD_CORE_H

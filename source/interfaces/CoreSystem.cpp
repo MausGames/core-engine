@@ -97,7 +97,7 @@ CoreSystem::CoreSystem()
     }
     else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
 
-    // init high precission time
+    // init high precision time
 #if defined(_WIN32)
     QueryPerformanceFrequency(&m_iPerfTime);
     m_fPerfFrequency = 1.0f/float(m_iPerfTime.QuadPart);
@@ -265,7 +265,7 @@ bool CoreSystem::__UpdateEvents()
 
 
 // ******************************************************************
-// update the high precission time calculation
+// update the high precision time calculation
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time

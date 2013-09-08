@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_SPLINE_H
-#define CORE_SPLINE_H
+#ifndef GUARD_CORE_SPLINE_H
+#define GUARD_CORE_SPLINE_H
 // TODO: extend to NURBS
 
 
@@ -17,7 +17,7 @@
 class coreSpline final
 {
 private:
-    // node struct
+    // node structure
     struct coreNode
     {
         coreVector3 vPosition;   //!< position of the node
@@ -37,28 +37,38 @@ public:
     coreSpline(coreSpline&& m);
     ~coreSpline();
 
-    // assignment operators
+    //! \name assignment operators
+    //! @{
     coreSpline& operator = (const coreSpline& c);
     coreSpline& operator = (coreSpline&& m);
+    //! @}
 
-    // control nodes
+    //! \name control nodes
+    //! @{
     void AddNode(const coreVector3& vPosition, const coreVector3& vTangent);
     void RemoveNode(const coreUint& iIndex);
     void ClearNodes();
+    //! @}
 
-    // get position and direction
+    //! \name get position and direction
+    //! @{
     coreVector3 GetPosition(const float& fTime)const;
     coreVector3 GetPosition(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const;
     coreVector3 GetDirection(const float& fTime)const;
     coreVector3 GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const;
+    //! @}
 
-    // get relative node and time 
+    //! \name get relative node and time
+    //! @{
     void GetRelative(const float& fTime, coreUint* piIndex, float* pfRelative)const;
+    //! @}
 
-    // get distance
+    //! \name get distance
+    //! @{
     inline const float& GetDistance()const            {return m_fMaxDistance;}
     inline float GetDistance(const float& fTime)const {return fTime*m_fMaxDistance;}
+    //! @}
 };
 
 
-#endif // CORE_SPLINE_H
+#endif // GUARD_CORE_SPLINE_H

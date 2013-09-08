@@ -4,15 +4,8 @@
 std::vector<coreTexturePtr> Ptr;
 
 
-
-void test(const char* pcTest = CORE_RESOURCE_UNIQUE)
-{
-    //Core::System->MsgBox(pcTest, "Test", 1);
-}
-
 void CoreApp::Init()
 {
-    test();
 
 }
 
