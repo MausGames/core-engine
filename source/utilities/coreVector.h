@@ -34,13 +34,13 @@ public:
     coreVector2();
     coreVector2(const float& fx, const float& fy);
 
-    //! \name compare operators
+    //! compare operators
     //! @{
     inline bool operator == (const coreVector2& v)const {return ((x == v.x) && (y == v.y));}
     inline bool operator != (const coreVector2& v)const {return ((x != v.x) || (y != v.y));}
     //! @}
 
-    //! \name vector calculation operators
+    //! vector calculation operators
     //! @{
     coreVector2 operator + (const coreVector2& v)const;
     coreVector2 operator - (const coreVector2& v)const;
@@ -52,7 +52,7 @@ public:
     inline void operator /= (const coreVector2& v) {*this = *this / v;}
     //! @}
 
-    //! \name scalar calculation operators
+    //! scalar calculation operators
     //! @{
     inline coreVector2 operator + (const float& f)const                         {return *this + coreVector2(f, f);}
     inline coreVector2 operator - (const float& f)const                         {return *this - coreVector2(f, f);}
@@ -66,30 +66,30 @@ public:
     friend inline coreVector2 operator * (const float& f, const coreVector2& v) {return v * f;}
     //! @}
 
-    //! \name matrix calculation operators
+    //! matrix calculation operators
     //! @{
     coreVector2 operator * (const coreMatrix& m)const;
     inline void operator *= (const coreMatrix& m) {*this = *this * m;}
     //! @}
 
-    //! \name invert vector
+    //! invert vector
     //! @{
     inline coreVector2 operator - ()const {return coreVector2(-x, -y);}
     //! @}
 
-    //! \name convert vector
+    //! convert vector
     //! @{
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
     inline coreVector2 yx()const         {return coreVector2(y, x);}
     //! @}
 
-    //! \name normalize vector
+    //! normalize vector
     //! @{
     coreVector2& Normalize();
     coreVector2 Normalized()const {return coreVector2(*this).Normalize();}
     //! @}
 
-    //! \name direct functions
+    //! direct functions
     //! @{
     float LengthSq()const;
     inline float Length()const      {return coreMath::Sqrt(this->LengthSq());}
@@ -99,7 +99,7 @@ public:
     inline float AspectRatio()const {return x/y;}
     //! @}
 
-    //! \name static functions
+    //! static functions
     //! @{
     static float Dot(const coreVector2& vInA, const coreVector2& vInB);
     static coreVector2 Rand();
@@ -135,13 +135,13 @@ public:
     coreVector3(const coreVector2& c);
     coreVector3(const float& fx, const float& fy, const float& fz);
 
-    //! \name compare operators
+    //! compare operators
     //! @{
     inline bool operator == (const coreVector3& v)const {return ((x == v.x) && (y == v.y) && (z == v.z));}
     inline bool operator != (const coreVector3& v)const {return ((x != v.x) || (y != v.y) || (z != v.z));}
     //! @}
 
-    //! \name vector calculation operators
+    //! vector calculation operators
     //! @{
     coreVector3 operator + (const coreVector3& v)const;
     coreVector3 operator - (const coreVector3& v)const;
@@ -153,7 +153,7 @@ public:
     inline void operator /= (const coreVector3& v) {*this = *this / v;}
     //! @}
 
-    //! \name scalar calculation operators
+    //! scalar calculation operators
     //! @{
     inline coreVector3 operator + (const float& f)const                         {return *this + coreVector3(f, f, f);}
     inline coreVector3 operator - (const float& f)const                         {return *this - coreVector3(f, f, f);}
@@ -167,18 +167,18 @@ public:
     friend inline coreVector3 operator * (const float& f, const coreVector3& v) {return v * f;}
     //! @}
 
-    //! \name matrix calculation operators
+    //! matrix calculation operators
     //! @{
     coreVector3 operator * (const coreMatrix& m)const;
     inline void operator *= (const coreMatrix& m) {*this = *this * m;}
     //! @}
 
-    //! \name invert vector
+    //! invert vector
     //! @{
     inline coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
     //! @}
 
-    //! \name convert vector
+    //! convert vector
     //! @{
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
     inline operator coreVector2& ()      {return *(reinterpret_cast<coreVector2*>(this));}
@@ -190,13 +190,13 @@ public:
     inline coreVector2 zy()const         {return coreVector2(z, y);}
     //! @}
 
-    //! \name normalize vector
+    //! normalize vector
     //! @{
     coreVector3& Normalize();
     coreVector3 Normalized()const {return coreVector3(*this).Normalize();}
     //! @}
 
-    //! \name direct functions
+    //! direct functions
     //! @{
     float LengthSq()const;
     inline float Length()const {return coreMath::Sqrt(this->LengthSq());}
@@ -204,7 +204,7 @@ public:
     inline float Max()const    {return coreMath::Max(coreMath::Max(x, y), z);}
     //! @}
 
-    //! \name static functions
+    //! static functions
     //! @{
     static float Dot(const coreVector3& vInA, const coreVector3& vInB);
     static coreVector3 Rand();
@@ -241,13 +241,13 @@ public:
     coreVector4(const coreVector2& c);
     coreVector4(const float& fx, const float& fy, const float& fz, const float& fw);
 
-    //! \name compare operators
+    //! compare operators
     //! @{
     inline bool operator == (const coreVector4& v)const {return ((x == v.x) && (y == v.y) && (z == v.z) && (z == v.w));}
     inline bool operator != (const coreVector4& v)const {return ((x != v.x) || (y != v.y) || (z != v.z) || (z != v.w));}
     //! @}
 
-    //! \name vector calculation operators
+    //! vector calculation operators
     //! @{
     coreVector4 operator + (const coreVector4& v)const;
     coreVector4 operator - (const coreVector4& v)const;
@@ -259,7 +259,7 @@ public:
     inline void operator /= (const coreVector4& v) {*this = *this / v;}
     //! @}
 
-    //! \name scalar calculation operators
+    //! scalar calculation operators
     //! @{
     inline coreVector4 operator + (const float& f)const                         {return *this + coreVector4(f, f, f, f);}
     inline coreVector4 operator - (const float& f)const                         {return *this - coreVector4(f, f, f, f);}
@@ -273,18 +273,18 @@ public:
     friend inline coreVector4 operator * (const float& f, const coreVector4& v) {return v * f;}
     //! @}
 
-    //! \name matrix calculation operators
+    //! matrix calculation operators
     //! @{
     coreVector4 operator * (const coreMatrix& m)const;
     inline void operator *= (const coreMatrix& m) {*this = *this * m;}
     //! @}
 
-    //! \name invert vector
+    //! invert vector
     //! @{
     inline coreVector4 operator - ()const {return coreVector4(-x, -y, -z, w);}
     //! @}
 
-    //! \name convert vector
+    //! convert vector
     //! @{
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
     inline operator coreVector3& ()      {return *(reinterpret_cast<coreVector3*>(this));}

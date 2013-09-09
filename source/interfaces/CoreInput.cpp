@@ -56,7 +56,7 @@ CoreInput::~CoreInput()
     m_aJoystick.clear();
 
     // delete graphical mouse cursor
-    // TODO: implement with coreObject2D
+    // \todo implement with coreObject2D
     //SAFE_DELETE(m_pCursor)
 }
 
@@ -111,10 +111,10 @@ void CoreInput::__UpdateInput()
 // update the graphical mouse cursor
 void CoreInput::__UpdateCursor()
 {
-    // TODO: implement with coreObject2D
+    // \todo implement with coreObject2D
     if(!m_bCursorVisible) return;
 
-    // TODO: implement with coreObject2D
+    // \todo implement with coreObject2D
     // update cursor object
     //m_pCursor->SetPosition(m_pCursor->GetSize()*coreVector2(0.5f,-0.5f));
     //m_pCursor->SetCenter(m_Mouse.vPosition);
@@ -128,7 +128,7 @@ void CoreInput::__UpdateCursor()
 // set mouse cursor visibility
 void CoreInput::ShowCursor(const bool& bStatus)
 {
-    // TODO: handle unsupported RelativeMouseMode
+    // \todo handle unsupported RelativeMouseMode
 
     // Anzeige umschalten
     SDL_ShowCursor(m_pCursor ? SDL_DISABLE : bStatus);
@@ -143,7 +143,7 @@ void CoreInput::ShowCursor(const bool& bStatus)
 // set the graphical mouse cursor
 void CoreInput::SetCursorObject(const char* pcColorMap, const char* pcAlphaMap, const coreVector2& vSize)
 {
-    // TODO: implement with coreObject2D
+    // \todo implement with coreObject2D
     // create object
     //m_pCursor = new coreObject2D();
     //m_pCursor->DefineAppearance(pcColorMap, pcAlphaMap, NULL, true);
@@ -158,7 +158,7 @@ void CoreInput::SetCursorObject(const char* pcColorMap, const char* pcAlphaMap, 
 // control mouse with keyboard
 void CoreInput::UseMouseWithKeyboard(const SDL_Scancode& iLeft, const SDL_Scancode& iRight, const SDL_Scancode& iUp, const SDL_Scancode& iDown, const SDL_Scancode& iButton1, const SDL_Scancode& iButton2, const float& fSpeed)
 {
-    // TODO: implement function
+    // \todo implement function
 }
 
 

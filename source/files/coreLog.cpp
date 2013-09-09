@@ -64,6 +64,11 @@ void coreLog::__Write(const int& iLevel, const bool& bTime, std::string sText)
     FILE* pFile = fopen(m_sPath.c_str(), "a");
     if(!pFile) return;
 
+    // color brackets
+    int iPos = -1;
+    while((iPos = sText.find("(")) >= 0) sText.replace(iPos, 1, "<span class=\"data\">&#40;");
+    while((iPos = sText.find(")")) >= 0) sText.replace(iPos, 1, "&#41;</span>");
+
     // write timestamp
     if(bTime)
     {
@@ -71,11 +76,6 @@ void coreLog::__Write(const int& iLevel, const bool& bTime, std::string sText)
         coreUtils::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
         fprintf(pFile, "<span class=\"time\">[%02d:%02d:%02d]</span> <span class=\"thread\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], SDL_ThreadID());
     }
-
-    // color brackets
-    int iPos = -1;
-    while((iPos = sText.find("(")) >= 0) sText.replace(iPos, 1, "<span class=\"data\">&#40;");
-    while((iPos = sText.find(")")) >= 0) sText.replace(iPos, 1, "&#41;</span>");
 
     // write text
     fprintf(pFile, "%s\n", sText.c_str());

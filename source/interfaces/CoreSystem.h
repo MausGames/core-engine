@@ -54,31 +54,31 @@ private:
     ~CoreSystem();
     friend class Core;
 
-    //! \name update the window event system
+    //! update the window event system
     //! @{
     bool __UpdateEvents();
     //! @}
 
-    //! \name update the high precision time calculation
+    //! update the high precision time calculation
     //! @{
     void __UpdateTime();
     //! @}
 
 
 public:
-    //! \name control window
+    //! control window
     //! @{
     inline void SetTitle(const char* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
     void MsgBox(const char* pcMessage, const char* pcTitle, const int& iType);
     //! @}
 
-    //! \name control time
+    //! control time
     //! @{
     inline void SetTimeSpeed(const int& iID, const float& fTimeSpeed) {SDL_assert(iID < CORE_SYSTEM_TIMES); m_afTimeSpeed[iID] = fTimeSpeed;}
     inline void SkipFrame()                                           {m_iSkipFrame = 2;}
     //! @}
 
-    //! \name get attributes
+    //! get attributes
     //! @{
     inline SDL_Window* GetWindow()const                        {return m_pWindow;}
     inline const coreVector2& GetResolution()const             {return m_vResolution;}
@@ -92,7 +92,7 @@ public:
     inline const coreUint& GetCurFrame()const                  {return m_iCurFrame;}
     //! @}
 
-    //! \name check hardware support
+    //! check hardware support
     //! @{
     inline const bool& SupportSSE()const   {return m_abSSE[0];}
     inline const bool& SupportSSE2()const  {return m_abSSE[1];}

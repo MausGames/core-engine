@@ -23,34 +23,34 @@ private:
 public:
     coreLog(const char* pcPath);
 
-    //! \name message functions
+    //! message functions
     //! @{
     inline void Header(const std::string& sText) {this->__Write(1, false, "<hr /><span class=\"header\">" + sText + "</span><br />");}
     inline void Info(const std::string& sText)   {this->__Write(1, true, sText + "<br />");}
     void Error(const bool& bShutdown, const std::string& sText);
     //! @}
 
-    //! \name list functions
+    //! list functions
     //! @{
     inline void ListStart(const std::string& sText) {this->__Write(1, true, "<span class=\"liststart\">" + sText + "</span><ul>");}
     inline void ListEntry(const std::string& sText) {this->__Write(1, false, "<li>" + sText + "</li>");}
     inline void ListEnd()                           {this->__Write(1, false, "</ul>");}
     //! @}
 
-    //! \name set logging level
+    //! set logging level
     //! @{
     inline void SetLevel(const int& iLevel) {m_iLevel = iLevel;}
     //! @}
 
 
 private:
-    //! \name disable copy
+    //! disable copy
     //! @{
     coreLog(const coreLog& c) deletefunc;
     coreLog& operator = (const coreLog& c) deletefunc;
     //! @}
 
-    //! \name write text to the log file
+    //! write text to the log file
     //! @{
     void __Write(const int& iLevel, const bool& bTime, std::string sText);
     //! @}

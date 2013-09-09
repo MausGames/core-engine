@@ -36,13 +36,13 @@ public:
                const float& f31, const float& f32, const float& f33, const float& f34,
                const float& f41, const float& f42, const float& f43, const float& f44);
 
-    //! \name compare operators
+    //! compare operators
     //! @{
     bool operator == (const coreMatrix& v)const;
     bool operator != (const coreMatrix& v)const;
     //! @}
 
-    //! \name matrix calculation operators
+    //! matrix calculation operators
     //! @{
     coreMatrix operator + (const coreMatrix& v)const;
     coreMatrix operator - (const coreMatrix& v)const;
@@ -52,7 +52,7 @@ public:
     inline void operator *= (const coreMatrix& v) {*this = *this * v;}
     //! @}
 
-    //! \name scalar calculation operators
+    //! scalar calculation operators
     //! @{
     coreMatrix operator * (const float& f)const;
     coreMatrix operator / (const float& f)const;
@@ -61,29 +61,29 @@ public:
     friend inline coreMatrix operator * (const float& f, const coreMatrix& v) {return v * f;}
     //! @}
 
-    //! \name convert matrix
+    //! convert matrix
     //! @{
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
     //! @}
 
-    //! \name transpose matrix
+    //! transpose matrix
     //! @{
     coreMatrix& Transpose();
     coreMatrix Transposed()const {return coreMatrix(*this).Transpose();}
     //! @}
 
-    //! \name invert matrix
+    //! invert matrix
     //! @{
     coreMatrix& Invert();
     coreMatrix Inverted()const {return coreMatrix(*this).Invert();}
     //! @}
 
-    //! \name direct functions
+    //! direct functions
     //! @{
     float Determinant()const;
     //! @}
 
-    //! \name static functions
+    //! static functions
     //! @{
     static coreMatrix Identity();
     static coreMatrix Translation(const coreVector3& vPosition);

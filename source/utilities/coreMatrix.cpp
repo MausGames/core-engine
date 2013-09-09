@@ -12,16 +12,16 @@
 // ****************************************************************
 // constructor
 coreMatrix::coreMatrix()
-: _11 (1.0f), _12 (0.0f), _13 (0.0f), _14 (0.0f) 
+: _11 (1.0f), _12 (0.0f), _13 (0.0f), _14 (0.0f)
 , _21 (0.0f), _22 (1.0f), _23 (0.0f), _24 (0.0f)
 , _31 (0.0f), _32 (0.0f), _33 (1.0f), _34 (0.0f)
 , _41 (0.0f), _42 (0.0f), _43 (0.0f), _44 (1.0f)
 {
 }
 
-coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14, 
+coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14,
                        const float& f21, const float& f22, const float& f23, const float& f24,
-                       const float& f31, const float& f32, const float& f33, const float& f34, 
+                       const float& f31, const float& f32, const float& f33, const float& f34,
                        const float& f41, const float& f42, const float& f43, const float& f44)
 : _11 (f11), _12 (f12), _13 (f13), _14 (f14)
 , _21 (f21), _22 (f22), _23 (f23), _24 (f24)
@@ -35,7 +35,7 @@ coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, con
 // compare with matrix
 bool coreMatrix::operator == (const coreMatrix& v)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return ((_11 == v._11) && (_12 == v._12) && (_13 == v._13) && (_14 == v._14) &&
             (_21 == v._21) && (_22 == v._22) && (_23 == v._23) && (_24 == v._24) &&
             (_31 == v._31) && (_32 == v._32) && (_33 == v._33) && (_34 == v._34) &&
@@ -47,7 +47,7 @@ bool coreMatrix::operator == (const coreMatrix& v)const
 // inverse compare with matrix
 bool coreMatrix::operator != (const coreMatrix& v)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return ((_11 != v._11) || (_12 != v._12) || (_13 != v._13) || (_14 != v._14) ||
             (_21 != v._21) || (_22 != v._22) || (_23 != v._23) || (_24 != v._24) ||
             (_31 != v._31) || (_32 != v._32) || (_33 != v._33) || (_34 != v._34) ||
@@ -59,7 +59,7 @@ bool coreMatrix::operator != (const coreMatrix& v)const
 // addition with matrix
 coreMatrix coreMatrix::operator + (const coreMatrix& v)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return coreMatrix(_11+v._11, _12+v._12, _13+v._13, _14+v._14,
                       _21+v._21, _22+v._22, _23+v._23, _24+v._24,
                       _31+v._31, _32+v._32, _33+v._33, _34+v._34,
@@ -71,7 +71,7 @@ coreMatrix coreMatrix::operator + (const coreMatrix& v)const
 // subtraction with matrix
 coreMatrix coreMatrix::operator - (const coreMatrix& v)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return coreMatrix(_11-v._11, _12-v._12, _13-v._13, _14-v._14,
                       _21-v._21, _22-v._22, _23-v._23, _24-v._24,
                       _31-v._31, _32-v._32, _33-v._33, _34-v._34,
@@ -90,8 +90,8 @@ coreMatrix coreMatrix::operator * (const coreMatrix& v)const
         const coreMatrix mInput = v.Transposed();
         coreMatrix mOutput;
 
-        for(int i = 0; i < 4; ++i) 
-            for(int j = 0; j < 4; ++j) 
+        for(int i = 0; i < 4; ++i)
+            for(int j = 0; j < 4; ++j)
                 _mm_store_ss(&mOutput.m[i][j], _mm_dp_ps(_mm_load_ps(&mThis.m[i][0]), _mm_load_ps(&mInput.m[j][0]), 0xF1));
 
         return mOutput;
@@ -113,7 +113,7 @@ coreMatrix coreMatrix::operator * (const coreMatrix& v)const
 // multiplication with scalar
 coreMatrix coreMatrix::operator * (const float& f)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return coreMatrix(_11*f, _12*f, _13*f, _14*f,
                       _21*f, _22*f, _23*f, _24*f,
                       _31*f, _32*f, _33*f, _34*f,
@@ -125,7 +125,7 @@ coreMatrix coreMatrix::operator * (const float& f)const
 // division with scalar
 coreMatrix coreMatrix::operator / (const float& f)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return (*this)*(1.0f/f);
 }
 
@@ -147,7 +147,7 @@ coreMatrix& coreMatrix::Transpose()
 // invert matrix
 coreMatrix& coreMatrix::Invert()
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     *this = coreMatrix(_23*_34*_42 - _24*_33*_42 + _24*_32*_43 - _22*_34*_43 - _23*_32*_44 + _22*_33*_44,
                        _14*_33*_42 - _13*_34*_42 - _14*_32*_43 + _12*_34*_43 + _13*_32*_44 - _12*_33*_44,
                        _13*_24*_42 - _14*_23*_42 + _14*_22*_43 - _12*_24*_43 - _13*_22*_44 + _12*_23*_44,
@@ -174,7 +174,7 @@ coreMatrix& coreMatrix::Invert()
 // get determinant
 float coreMatrix::Determinant()const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return _14*_23*_32*_41 - _13*_24*_32*_41 - _14*_22*_33*_41 + _12*_24*_33*_41 +
            _13*_22*_34*_41 - _12*_23*_34*_41 - _14*_23*_31*_42 + _13*_24*_31*_42 +
            _14*_21*_33*_42 - _11*_24*_33*_42 - _13*_21*_34*_42 + _11*_23*_34*_42 +

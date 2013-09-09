@@ -43,32 +43,32 @@ private:
     ~CoreGraphics();
     friend class Core;
 
-    //! \name update the graphics scene
+    //! update the graphics scene
     //! @{
     void __UpdateScene();
 
 
 public:
-    //! \name control camera
+    //! control camera
     //! @{
     void SetCamera(const coreVector3* pvPosition, const coreVector3* pvDirection, const coreVector3* pvOrientation);
     inline void LoadCamera() {glLoadMatrixf(m_mCamera);}
     //! @}
 
-    //! \name control view and projection
+    //! control view and projection
     //! @{
     void ResizeView(coreVector2 vResolution);
     void EnablePerspective();
     void EnableOrtho();
     //! @}
 
-    //! \name create a screenshot
+    //! create a screenshot
     //! @{
     void Screenshot(const char* pcPath);
     void Screenshot();
     //! @}
 
-    //! \name get attributes
+    //! get attributes
     //! @{
     inline const SDL_GLContext& GetRenderContext()const   {return m_RenderContext;}
     inline const SDL_GLContext& GetResourceContext()const {return m_ResourceContext;}
@@ -83,7 +83,7 @@ public:
     inline const coreMatrix& GetOrtho()const              {return m_mOrtho;}
     //! @}
 
-    //! \name check hardware support
+    //! check hardware support
     //! @{
     inline const bool& SupportFeature(const char* pcFeature) {if(!m_abFeature.count(pcFeature)) m_abFeature[pcFeature] = (glewIsSupported(pcFeature) ? true : false); return m_abFeature.at(pcFeature);}
     inline const float& SupportOpenGL()const                 {return m_fOpenGL;}

@@ -39,10 +39,6 @@
 #pragma once
 #ifndef GUARD_CORE_H
 #define GUARD_CORE_H
-// TODO: remove deprecated stuff
-// TODO: add explicit keyword
-// TODO: boolean traps
-// TODO: check for boost integrations
 
 
 // ****************************************************************
@@ -153,14 +149,11 @@ extern __thread GLEWContext g_GlewContext;
 
 
 // ****************************************************************
-// file classes
+// engine header files
 #include "files/coreLog.h"
 #include "files/coreConfig.h"
 #include "files/coreArchive.h"
 
-
-// ****************************************************************
-// utility classes
 #include "utilities/coreMath.h"
 #include "utilities/coreUtils.h"
 #include "utilities/coreRand.h"
@@ -168,28 +161,17 @@ extern __thread GLEWContext g_GlewContext;
 #include "utilities/coreMatrix.h"
 #include "utilities/coreSpline.h"
 
-
-// ****************************************************************
-// interface classes
 #include "interfaces/CoreSystem.h"
 #include "interfaces/CoreGraphics.h"
 #include "interfaces/CoreAudio.h"
 #include "interfaces/CoreInput.h"
 
-
-// ****************************************************************
-// system component classes
 #include "components/system/coreTimer.h"
 #include "components/system/coreThread.h"
 
-
-// ****************************************************************
-// manager classes
+#include "manager/coreMemory.h"
 #include "manager/coreResource.h"
 
-
-// ****************************************************************
-// graphics and audio component classes
 #include "components/graphics/coreTexture.h"
 #include "components/graphics/coreShader.h"
 #include "components/audio/coreSound.h"
@@ -206,13 +188,13 @@ private:
 
 
 public:
-    //! \name undefined init and exit function
+    //! undefined init and exit function
     //! @{
     void Init();
     void Exit();
     //! @}
 
-    //! \name undefined render and move function
+    //! undefined render and move function
     //! @{
     void Render();
     void Move();
@@ -222,6 +204,10 @@ public:
 
 // ****************************************************************
 // engine framework
+// \todo remove deprecated stuff
+// \todo add explicit keyword
+// \todo boolean traps
+// \todo check for boost integrations
 class Core final
 {
 public:
@@ -240,7 +226,7 @@ public:
     class Manager final
     {
     public:
-        // memory manager
+        static coreMemoryManager* Memory;       //!< memory manager
         static coreResourceManager* Resource;   //!< resource manager
         // object manager
     };
@@ -252,17 +238,17 @@ private:
 
 
 public:
-    //! \name run the application
+    //! run the application
     //! @{
     static void Run();
     //! @}
 
-    //! \name reset engine
+    //! reset engine
     //! @{
     static void Reset();
     //! @}
 
-    //! \name quit the application
+    //! quit the application
     //! @{
     static void Quit();
     //! @}

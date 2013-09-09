@@ -218,13 +218,13 @@ void CoreGraphics::EnableOrtho()
 // create a screenshot
 void CoreGraphics::Screenshot(const char* pcPath)
 {
-    // TODO: implement function
+    // \todo implement function
     // ? extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
     // ? extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst);
 }
 
 void CoreGraphics::Screenshot()
 {
-    // TODO: implement function
+    // \todo implement function
     this->Screenshot("");
 }

@@ -9,7 +9,6 @@
 #pragma once
 #ifndef GUARD_CORE_TEXTURE_H
 #define GUARD_CORE_TEXTURE_H
-// TODO: check for max available texture units
 
 
 // ****************************************************************
@@ -25,6 +24,7 @@
 
 // ****************************************************************
 // texture object class
+// \todo check for max available texture units
 class coreTexture final : public coreResource
 {
 private:
@@ -44,35 +44,35 @@ public:
     coreTexture(coreFile* pFile);
     ~coreTexture();
 
-    //! \name load and unload texture resource data
+    //! load and unload texture resource data
     //! @{
     coreError Load(coreFile* pFile)override;
     coreError Unload()override;
     //! @}
 
-    //! \name enable and disable the texture
+    //! enable and disable the texture
     //! @{
     void Enable(const coreByte& iUnit);
     static void Disable(const coreByte& iUnit);
     static void DisableAll();
     //! @}
 
-    //! \name check sync object status
+    //! check sync object status
     //! @{
     coreError CheckSync();
     //! @}
 
-    //! \name generate empty base texture
+    //! generate empty base texture
     //! @{
     inline void Generate() {SDL_assert(!m_iTexture); if(!m_iTexture) glGenTextures(1, &m_iTexture);}
     //! @}
 
-    //! \name get attributes
+    //! get attributes
     inline const GLuint& GetTexture()const         {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     //! @}
 
-    //! \name get relative path to NULL resource
+    //! get relative path to NULL resource
     //! @{
     static inline const char* GetNullPath() {return "data/textures/default.png";}
     //! @}

@@ -31,18 +31,18 @@ public:
     ~coreFile();
     friend class coreArchive;
 
-    //! \name save file
+    //! save file
     //! @{
     coreError Save(const char* pcPath);
     //! @}
 
-    //! \name load and unload file data
+    //! load and unload file data
     //! @{
     coreError LoadData();
     inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
     //! @}
 
-    //! \name get attributes
+    //! get attributes
     //! @{
     inline const char* GetName()const     {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const     {return m_sPath.c_str();}
@@ -50,19 +50,19 @@ public:
     inline const coreUint& GetSize()const {return m_iSize;}
     //! @}
 
-    //! \name check if file exists physically
+    //! check if file exists physically
     //! @{
     static bool FileExists(const char* pcPath);
     //! @}
 
-    //! \name retrieve relative paths of all files from a folder
+    //! retrieve relative paths of all files from a folder
     //! @{
     static coreError SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
     //! @}
 
 
 private:
-    //! \name disable copy
+    //! disable copy
     //! @{
     coreFile(const coreFile& c) deletefunc;
     coreFile& operator = (const coreFile& c) deletefunc;
@@ -86,12 +86,12 @@ public:
     explicit coreArchive(const char* pcPath);
     ~coreArchive();
 
-    //! \name save archive
+    //! save archive
     //! @{
     coreError Save(const char* pcPath);
     //! @}
 
-    //! \name manage file objects
+    //! manage file objects
     //! @{
     coreError AddFile(const char* pcPath);
     coreError AddFile(coreFile* pFile);
@@ -100,19 +100,19 @@ public:
     coreError DeleteFile(coreFile* pFile);
     //! @}
 
-    //! \name load and unload file data
+    //! load and unload file data
     //! @{
     void LoadData();
     void UnloadData();
     //! @}
 
-    //! \name access file objects
+    //! access file objects
     //! @{
     inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_aFile.size())  {SDL_assert(false); return NULL;} return m_aFile[iIndex];}
     inline coreFile* GetFile(const char* pcPath)     {if(!m_aFileMap.count(pcPath)) {SDL_assert(false); return NULL;} return m_aFileMap[pcPath];}
     //! @}
 
-    //! \name get attributes
+    //! get attributes
     //! @{
     inline const char* GetName()const {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const {return m_sPath.c_str();}
@@ -121,13 +121,13 @@ public:
 
 
 private:
-    //! \name disable copy
+    //! disable copy
     //! @{
     coreArchive(const coreArchive& c) deletefunc;
     coreArchive& operator = (const coreArchive& c) deletefunc;
     //! @}
 
-    //! \name calculate absolute data positions of all files
+    //! calculate absolute data positions of all files
     //! @{
     void __CalculatePositions();
     //! @}

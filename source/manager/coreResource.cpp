@@ -17,7 +17,7 @@ coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource,
 , m_pNull     (pNull ? pNull : pResource)
 , m_pCur      (pNull ? pNull : pResource)
 , m_iRef      (0)
-, m_iStatus   (CORE_RESOURCE_NOT_LOADED)
+, m_bManaged  (true)
 {
 }
 
@@ -36,27 +36,29 @@ coreResourceHandle::~coreResourceHandle()
 
 // ****************************************************************
 // control resource loading
-void coreResourceHandle::Update()
+void coreResourceHandle::__Update()
 {
-    if(m_iStatus == CORE_RESOURCE_UNMANAGED) return;
+    if(!m_bManaged) return;
 
-    if(m_iRef != 0 && m_iStatus == CORE_RESOURCE_NOT_LOADED)
+    if(m_iRef != 0 && !this->IsLoaded())
     {
         // load associated resource
         const coreError iError = m_pResource->Load(m_pFile);
         if(iError == CORE_OK)
         {
-            m_pCur    = m_pResource;
-            m_iStatus = CORE_RESOURCE_LOADED;
-            if(m_pFile) m_pFile->UnloadData();
+            m_pCur = m_pResource;
+            m_pFile->UnloadData();
         }
-        else if(iError == CORE_FILE_ERROR)
-            m_iStatus = CORE_RESOURCE_UNMANAGED;
+        else if(iError < 0)
+        {
+            // stop managing the resource handle
+            m_bManaged = false;
+        }
     }
-    else if(m_iRef == 0 && m_iStatus == CORE_RESOURCE_LOADED)
+    else if(m_iRef == 0 && this->IsLoaded())
     {
         // unload associated resource
-        this->Nullify();
+        this->__Nullify();
     }
 }
 
@@ -196,7 +198,7 @@ void coreResourceManager::Reset(const bool& bInit)
             (*it)->Reset(false);
 
         // unload resources
-        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) it->second->Nullify();
+        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) it->second->__Nullify();
         for(auto it = m_apNull.begin();   it != m_apNull.end();   ++it) it->second->Unload();
     }
 }
@@ -226,7 +228,7 @@ int coreResourceManager::__Run()
 {
     // update resource handles
     for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
-        it->second->Update();
+        it->second->__Update();
 
     return 0;
 }

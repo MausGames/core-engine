@@ -40,19 +40,19 @@ private:
 
 
 public:
-    //! \name control the listener
+    //! control the listener
     //! @{
     void SetListener(const coreVector3* pvPosition, const coreVector3* pvVelocity, const coreVector3* pvDirection, const coreVector3* pvOrientation);
     void SetListener(const float& fSpeed, const int iTimeID = -1);
     //! @}
 
-    //! \name control sound source distribution
+    //! control sound source distribution
     //! @{
     ALuint NextSource(const void* pRef);
     inline ALuint CheckSource(const void* pRef, const ALuint& iSource)const {if(!m_apSourceRef.count(iSource)) return 0; return (m_apSourceRef.at(iSource) == pRef) ? iSource : 0;}
     //! @}
 
-    //! \name set global volume
+    //! set global volume
     //! @{
     inline void SetVolume(const float& fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}
     //! @}

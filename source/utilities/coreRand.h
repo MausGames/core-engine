@@ -9,11 +9,11 @@
 #pragma once
 #ifndef GUARD_CORE_RAND_H
 #define GUARD_CORE_RAND_H
-// TODO: implement mersenne twister
 
 
 // ****************************************************************
 // random number generator class
+// \todo implement mersenne twister
 class coreRand final
 {
 private:
@@ -30,23 +30,23 @@ public:
     coreRand(coreRand&& m);
     ~coreRand();
 
-    //! \name assignment operators
+    //! assignment operators
     //! @{
     coreRand& operator = (const coreRand& c);
     coreRand& operator = (coreRand&& m);
     //! @}
 
-    //! \name reset the generator
+    //! reset the generator
     //! @{
     inline void Reset() {m_iCurRand = 0;}
     //! @}
 
-    //! \name get raw random number
+    //! get raw random number
     //! @{
     inline const int& GetRaw() {if(++m_iCurRand >= m_iNumRand) m_iCurRand = 0; return m_piRand[m_iCurRand];}
     //! @}
 
-    //! \name calculate constrained random number
+    //! calculate constrained random number
     //! @{
     inline int Int(const int& iMin, const int& iMax)         {return iMin + (this->GetRaw() % (iMax - iMin + 1));}
     inline float Float(const float& fMin, const float& fMax) {return fMin + (fMax - fMin) * float(this->GetRaw()) * c_fPrecision;}

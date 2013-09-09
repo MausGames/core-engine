@@ -31,12 +31,12 @@ public:
     coreTimer();
     coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops);
 
-    //! \name update the timer
+    //! update the timer
     //! @{
     bool Update(const float fModifier = 1.0f);
     //! @}
 
-    //! \name control the timer
+    //! control the timer
     //! @{
     inline void Play(const bool& bReset) {if(bReset) this->Reset(); m_bStatus = true;}
     inline void Pause()                  {m_bStatus = false;}
@@ -44,12 +44,12 @@ public:
     inline void Stop()                   {this->Pause(); this->Reset();}
     //! @}
 
-    //! \name set all basic attributes
+    //! set all basic attributes
     //! @{
     inline void Set(const float& fEnd, const float& fSpeed, const coreUint& iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoop = iLoops;}
     //! @}
 
-    //! \name set attributes
+    //! set attributes
     //! @{
     inline void SetCurrent(const float& fCurrent)    {m_fCurrent = fCurrent;}
     inline void SetEnd(const float& fEnd)            {m_fEnd     = fEnd;}
@@ -59,7 +59,7 @@ public:
     inline void SetTimeID(const int& iTimeID)        {m_iTimeID  = iTimeID;}
     //! @}
 
-    //! \name get attributes
+    //! get attributes
     //! @{
     inline float GetCurrent(const bool& bReverse)const {return bReverse ? m_fEnd-m_fCurrent : m_fCurrent;}
     inline const float& GetEnd()const                  {return m_fEnd;}
@@ -83,13 +83,13 @@ private:
 public:
     coreFlow() : m_fCurrent(0.0f) {}
 
-    //! \name access current value
+    //! access current value
     //! @{
     inline operator float& ()                 {return m_fCurrent;}
     inline float& operator = (const float& f) {m_fCurrent = f; return m_fCurrent;}
     //! @}
 
-    //! \name update the flowing value
+    //! update the flowing value
     //! @{
     float& Update(const float& fSpeed);
     float& Update(const float& fSpeed, const int& iTimeID);

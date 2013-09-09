@@ -200,7 +200,7 @@ bool CoreSystem::__UpdateEvents()
             }
             break;
 
-        // TODO: implement with coreTextBox
+        // \todo implement with coreTextBox
         //case SDL_TEXTINPUT:
         //    Core::Input->SetKeyboardChar((char)Event.text.text[0]);
         //    break;
@@ -315,6 +315,6 @@ void CoreSystem::MsgBox(const char* pcMessage, const char* pcTitle, const int& i
     case 3: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONSTOP);        break;
     }
 #else
-    // TODO: implement function
+    // \todo implement function
 #endif
 }

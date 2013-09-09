@@ -9,10 +9,6 @@
 #pragma once
 #ifndef GUARD_CORE_SOUND_H
 #define GUARD_CORE_SOUND_H
-// TODO: improve 3D sound integration and control
-// TODO: implement sound pause
-// TODO: implement global sound volume change
-// TODO: cache and check sound source properties
 
 
 // ****************************************************************
@@ -22,6 +18,10 @@
 
 // ****************************************************************
 // sound object class
+// \todo improve 3D sound integration and control
+// \todo implement sound pause
+// \todo implement global sound volume change
+// \todo cache and check sound source properties
 class coreSound final : public coreResource
 {
 public:
@@ -53,13 +53,13 @@ public:
     coreSound(coreFile* pFile);
     ~coreSound();
 
-    //! \name load and unload sound resource data
+    //! load and unload sound resource data
     //! @{
     coreError Load(coreFile* pFile)override;
     coreError Unload()override;
     //! @}
 
-    //! \name control playback
+    //! control playback
     //! @{
     void PlayPosition(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop, const coreVector3& vPosition);
     void PlayRelative(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop);
@@ -67,7 +67,7 @@ public:
     bool IsPlaying();
     //! @}
 
-    //! \name control sound source properties
+    //! control sound source properties
     //! @{
     void SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity);
     void SetVolume(const float& fVolume);
@@ -75,19 +75,19 @@ public:
     inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT(this) if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
-    //! \name control active sound source with reference pointer
+    //! control active sound source with reference pointer
     //! @{
     inline bool SetCurRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
     ALuint CheckRef(const void* pRef);
     //! @}
 
-    //! \name get attributes
+    //! get attributes
     //! @{
     inline const ALuint& GetBuffer()const         {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
     //! @}
 
-    //! \name get relative path to NULL resource
+    //! get relative path to NULL resource
     //! @{
     static inline const char* GetNullPath() {return "data/sounds/default.wav";}
     //! @}

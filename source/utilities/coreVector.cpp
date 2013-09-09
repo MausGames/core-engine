@@ -98,7 +98,7 @@ coreVector2 coreVector2::operator / (const coreVector2& v)const
 // multiplication with matrix
 coreVector2 coreVector2::operator * (const coreMatrix& m)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     const float w = 1.0f / (x*m._14 + y*m._24 + m._44);
 
     // optimized
@@ -303,7 +303,7 @@ coreVector3 coreVector3::operator / (const coreVector3& v)const
 // multiplication with matrix
 coreVector3 coreVector3::operator * (const coreMatrix& m)const
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     const float w = 1.0f / (x*m._14 + y*m._24 + z*m._34 + m._44);
 
     // optimized

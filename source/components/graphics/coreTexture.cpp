@@ -64,7 +64,7 @@ coreError coreTexture::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // decompress file data
-    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, strrchr(pFile->GetPath(), '.')+1);
+    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreUtils::StrExt(pFile->GetPath()));
     if(!pData)
     {
         Core::Log->Error(0, coreUtils::Print("Texture (%s) could not be loaded", pFile->GetPath()));

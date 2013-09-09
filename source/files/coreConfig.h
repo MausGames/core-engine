@@ -43,34 +43,34 @@ public:
     coreConfig(const char* pcName);
     ~coreConfig();
 
-    //! \name load and save configuration
+    //! load and save configuration
     //! @{
     inline void Load() {m_Config.LoadFile(m_sPath.c_str());}
     inline void Save() {m_Config.SaveFile(m_sPath.c_str());}
     //! @}
 
-    //! \name set configuration values
+    //! set configuration values
     //! @{
     inline void SetBool(const char* pcSection, const char* pcKey, const bool& bValue)   {m_Config.SetBoolValue(pcSection, pcKey, bValue);}
     inline void SetInt(const char* pcSection, const char* pcKey, const int& iValue)     {m_Config.SetLongValue(pcSection, pcKey, iValue);}
     inline void SetFloat(const char* pcSection, const char* pcKey, const float& fValue) {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
     //! @}
 
-    //! \name get configuration values
+    //! get configuration values
     //! @{
     bool GetBool(const char* pcSection, const char* pcKey, const bool& bDefault);
     int GetInt(const char* pcSection, const char* pcKey, const int& iDefault);
     float GetFloat(const char* pcSection, const char* pcKey, const float& fDefault);
     //! @}
 
-    //! \name direct access configuration file interface
+    //! direct access configuration file interface
     //! @{
     inline CSimpleIniA* Get() {return &m_Config;}
     //! @}
 
 
 private:
-    //! \name disable copy
+    //! disable copy
     //! @{
     coreConfig(const coreConfig& c) deletefunc;
     coreConfig& operator = (const coreConfig& c) deletefunc;

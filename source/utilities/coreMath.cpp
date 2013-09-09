@@ -45,7 +45,7 @@ float coreMath::Sqrt(float fInput)
 // calculate sinus value
 float coreMath::Sin(const float& fInput)
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return sinf(fInput);
 }
 
@@ -54,7 +54,7 @@ float coreMath::Sin(const float& fInput)
 // calculate cosinus value
 float coreMath::Cos(const float& fInput)
 {
-    // TODO: add SSE-support
+    // \todo add SSE-support
     return cosf(fInput);
 }
 
@@ -109,6 +109,6 @@ coreVector3 coreMath::HSVtoRGB(const coreVector3& vHSV)
 // convert RGB-color to HSV-color
 coreVector3 coreMath::RGBtoHSV(const coreVector3& vRGB)
 {
-    // TODO: implement function
+    // \todo implement function
     return coreVector3(0.0f,0.0f,0.0f);
 }

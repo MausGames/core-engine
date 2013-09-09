@@ -51,7 +51,7 @@ void CoreApp::Move()
 
         for(coreUint i = 0; i < sList.size(); ++i)
         {
-            coreTexturePtr NewPtr = Core::Manager::Resource->LoadFile<coreTexture>(sList[i].c_str());
+            coreTexturePtr NewPtr = Core::Manager::Resource->Load<coreTexture>(sList[i].c_str());
             Ptr.push_back(NewPtr);
         }
     }

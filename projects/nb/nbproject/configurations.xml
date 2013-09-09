@@ -45,6 +45,8 @@
           <itemPath>../../source/interfaces/CoreSystem.h</itemPath>
         </logicalFolder>
         <logicalFolder name="manager" displayName="manager" projectFiles="true">
+          <itemPath>../../source/manager/coreMemory.cpp</itemPath>
+          <itemPath>../../source/manager/coreMemory.h</itemPath>
           <itemPath>../../source/manager/coreResource.cpp</itemPath>
           <itemPath>../../source/manager/coreResource.h</itemPath>
         </logicalFolder>
@@ -103,7 +105,7 @@
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
-          <warningLevel>2</warningLevel>
+          <warningLevel>3</warningLevel>
         </ccTool>
         <linkerTool>
           <output>../../executable/bin/windows/CoreEngine_mingw_debug.exe</output>
@@ -232,6 +234,13 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"
             tool="1"
@@ -316,7 +325,7 @@
             <pElem>../../libraries/include</pElem>
           </incDir>
           <commandLine>-Wno-unused-variable -msse4.1</commandLine>
-          <warningLevel>2</warningLevel>
+          <warningLevel>3</warningLevel>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -452,6 +461,13 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"

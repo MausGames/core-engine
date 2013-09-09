@@ -38,7 +38,7 @@
 class coreMath
 {
 public:
-    //! \name convenient logical operations
+    //! convenient logical operations
     //! @{
     template <typename T> static inline constexpr T Lerp(const T& x, const T& y, const float& s)       {return x + (y - x) * s;}
     template <typename T> static inline constexpr T LerpSmooth(const T& x, const T& y, const float& s) {return Lerp(x, y, 0.5f-0.5f*Cos(s*PI));}
@@ -52,28 +52,28 @@ public:
     static inline constexpr float Sig(const float& x)                                                  {return (x < 0.0f) ? -1.0f : 1.0f;}
     //! @}
 
-    //! \name calculate square root
+    //! calculate square root
     //! @{
     static float Sqrt(float fInput);
     //! @}
 
-    //! \name calculate trigonometric values
+    //! calculate trigonometric values
     //! @{
     static float Sin(const float& fInput);
     static float Cos(const float& fInput);
     //! @}
 
-    //! \name check if inside field-of-view
+    //! check if inside field-of-view
     //! @{
     static bool CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection);
     //! @}
 
-    //! \name calculate next power-of-two
+    //! calculate next power-of-two
     //! @{
     static inline coreUint NextPOT(const coreUint& iInput) {coreUint k = 1; while(k < iInput) k = k<<1; return k;}
     //! @}
 
-    //! \name convert color format
+    //! convert color format
     //! @{
     static coreVector3 HSVtoRGB(const coreVector3& vHSV);
     static coreVector3 RGBtoHSV(const coreVector3& vRGB);

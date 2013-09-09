@@ -32,36 +32,37 @@ private:
 
 
 public:
-    //! \name get application parameters
+    //! get application parameters
     //! @{
     static const char* AppName();
     static const char* AppPath();
     //! @}
 
-    //! \name retrieve current date and time
+    //! retrieve current date and time
     //! @{
     static void DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea);
     //! @}
 
-    //! \name create formated string
+    //! create formated string
     //! @{
     static const char* Print(const char* pcMessage, ...);
     //! @}
 
-    //! \name operate with string data
+    //! operate with string data
     //! @{
     static bool StrCmp(const char* s, const char* t);
     static const char* StrRight(const char* pcInput, const coreUint& iNum);
+    static const char* StrExt(const char* pcInput);
     //! @}
 
-    //! \name open URL with web-browser
+    //! open URL with web-browser
     //! @{
     static void OpenURL(const char* pcURL);
     //! @}
 
 
 private:
-    //! \name access next return-string
+    //! access next return-string
     //! @{
     static inline char* __NextString() {if(++m_iIndex >= CORE_UTILS_STRINGS) m_iIndex = 0; return m_aacString[m_iIndex];}
     //! @}

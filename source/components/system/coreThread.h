@@ -27,7 +27,7 @@ public:
     coreThread();
     virtual ~coreThread();
 
-    //! \name control thread
+    //! control thread
     //! @{
     SDL_Thread* StartThread(const char* pcName);
     void KillThread();
@@ -35,13 +35,13 @@ public:
 
 
 private:
-    //! \name disable copy
+    //! disable copy
     //! @{
     coreThread(const coreThread& c) deletefunc;
     coreThread& operator = (const coreThread& c) deletefunc;
     //! @}
 
-    //! \name execute thread
+    //! execute thread
     //! @{
     int __Main();
     virtual int __Init() {return 0;}
@@ -49,7 +49,7 @@ private:
     virtual void __Exit() {}
     //! @}
 
-    //! \name wrapper for thread creation
+    //! wrapper for thread creation
     //! @{
     friend int coreThreadMain(void* pData);
     //! @}

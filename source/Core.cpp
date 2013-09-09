@@ -24,6 +24,7 @@ CoreGraphics*        Core::Graphics          = NULL;
 CoreAudio*           Core::Audio             = NULL;
 CoreInput*           Core::Input             = NULL;
 
+coreMemoryManager*   Core::Manager::Memory   = NULL;
 coreResourceManager* Core::Manager::Resource = NULL;
 
 
@@ -53,6 +54,7 @@ Core::Core()
 
     // init manager
     Log->Header("Manager");
+    Manager::Memory   = new coreMemoryManager();
     Manager::Resource = new coreResourceManager();
 }
 
@@ -63,6 +65,7 @@ Core::~Core()
 {
     // delete manager
     SAFE_DELETE(Manager::Resource)
+    SAFE_DELETE(Manager::Memory)
 
     // delete main interfaces
     SAFE_DELETE(Input)

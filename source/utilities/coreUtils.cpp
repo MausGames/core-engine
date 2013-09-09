@@ -103,6 +103,15 @@ const char* coreUtils::StrRight(const char* pcInput, const coreUint& iNum)
 }
 
 
+// ****************************************************************
+// safely get file extension
+const char* coreUtils::StrExt(const char* pcInput)
+{
+    const char* pcExtension = strrchr(pcInput, '.');
+    return pcExtension ? pcExtension+1 : pcInput;
+}
+
+
 // ******************************************************************
 // open URL with web-browser
 void coreUtils::OpenURL(const char* pcURL)

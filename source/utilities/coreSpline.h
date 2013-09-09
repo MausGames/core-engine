@@ -9,11 +9,11 @@
 #pragma once
 #ifndef GUARD_CORE_SPLINE_H
 #define GUARD_CORE_SPLINE_H
-// TODO: extend to NURBS
 
 
 // ****************************************************************
 // spline class
+// \todo extend to NURBS
 class coreSpline final
 {
 private:
@@ -37,20 +37,20 @@ public:
     coreSpline(coreSpline&& m);
     ~coreSpline();
 
-    //! \name assignment operators
+    //! assignment operators
     //! @{
     coreSpline& operator = (const coreSpline& c);
     coreSpline& operator = (coreSpline&& m);
     //! @}
 
-    //! \name control nodes
+    //! control nodes
     //! @{
     void AddNode(const coreVector3& vPosition, const coreVector3& vTangent);
     void RemoveNode(const coreUint& iIndex);
     void ClearNodes();
     //! @}
 
-    //! \name get position and direction
+    //! get position and direction
     //! @{
     coreVector3 GetPosition(const float& fTime)const;
     coreVector3 GetPosition(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const;
@@ -58,12 +58,12 @@ public:
     coreVector3 GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const;
     //! @}
 
-    //! \name get relative node and time
+    //! get relative node and time
     //! @{
     void GetRelative(const float& fTime, coreUint* piIndex, float* pfRelative)const;
     //! @}
 
-    //! \name get distance
+    //! get distance
     //! @{
     inline const float& GetDistance()const            {return m_fMaxDistance;}
     inline float GetDistance(const float& fTime)const {return fTime*m_fMaxDistance;}
