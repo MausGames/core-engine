@@ -96,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp" />
+    <ClCompile Include="..\..\..\source\components\graphics\coreModel.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreShader.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreTexture.cpp" />
     <ClCompile Include="..\..\..\source\components\system\coreThread.cpp" />
@@ -108,6 +109,7 @@
     <ClCompile Include="..\..\..\source\interfaces\CoreGraphics.cpp" />
     <ClCompile Include="..\..\..\source\interfaces\CoreInput.cpp" />
     <ClCompile Include="..\..\..\source\interfaces\CoreSystem.cpp" />
+    <ClCompile Include="..\..\..\source\manager\coreMemory.cpp" />
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
     <ClCompile Include="..\..\..\source\utilities\coreMath.cpp" />
     <ClCompile Include="..\..\..\source\utilities\coreMatrix.cpp" />
@@ -119,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\coreModel.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreShader.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreTexture.h" />
     <ClInclude Include="..\..\..\source\components\system\coreThread.h" />
@@ -131,6 +134,7 @@
     <ClInclude Include="..\..\..\source\interfaces\CoreGraphics.h" />
     <ClInclude Include="..\..\..\source\interfaces\CoreInput.h" />
     <ClInclude Include="..\..\..\source\interfaces\CoreSystem.h" />
+    <ClInclude Include="..\..\..\source\manager\coreMemory.h" />
     <ClInclude Include="..\..\..\source\manager\coreResource.h" />
     <ClInclude Include="..\..\..\source\utilities\coreMath.h" />
     <ClInclude Include="..\..\..\source\utilities\coreMatrix.h" />

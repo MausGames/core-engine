@@ -97,6 +97,12 @@
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp">
       <Filter>source\manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\components\graphics\coreModel.cpp">
+      <Filter>source\components\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\manager\coreMemory.cpp">
+      <Filter>source\manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -157,6 +163,12 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\manager\coreResource.h">
+      <Filter>source\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\coreModel.h">
+      <Filter>source\components\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\manager\coreMemory.h">
       <Filter>source\manager</Filter>
     </ClInclude>
   </ItemGroup>

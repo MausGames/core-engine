@@ -25,7 +25,7 @@ coreRand::coreRand(const coreUint& iSize, int iInit)
     // init random number generator
     srand((unsigned int)((iInit < 0) ? time(NULL) : iInit));
 
-    // precalculate random numbers
+    // pre-calculate random numbers
     m_piRand = new int[m_iNumRand];
     for(coreUint i = 0; i < m_iNumRand; ++i)
         m_piRand[i] = rand();

@@ -14,6 +14,8 @@
             <itemPath>../../source/components/audio/coreSound.h</itemPath>
           </logicalFolder>
           <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
+            <itemPath>../../source/components/graphics/coreModel.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreModel.h</itemPath>
             <itemPath>../../source/components/graphics/coreShader.cpp</itemPath>
             <itemPath>../../source/components/graphics/coreShader.h</itemPath>
             <itemPath>../../source/components/graphics/coreTexture.cpp</itemPath>
@@ -138,6 +140,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -370,6 +382,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreShader.cpp"
             ex="false"
             tool="1"
@@ -464,7 +486,7 @@
       </item>
       <item path="../../source/manager/coreMemory.cpp"
             ex="false"
-            tool="0"
+            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">

@@ -55,9 +55,11 @@
 
 #if defined(_MSC_VER)
     #define align16(v) __declspec(align(16)) v
+    #define initval(v)
     #define deletefunc
 #else
     #define align16(v) v __attribute__((aligned(16)))
+    #define initval(v) {v}
     #define deletefunc = delete
 #endif
 
@@ -89,9 +91,6 @@ class coreFile;
 class coreArchive;
 class coreObject2D; //!
 
-
-// ****************************************************************
-// general enumerations
 enum coreError
 {
     CORE_OK            =   0,   //!< everything is fine
@@ -173,6 +172,7 @@ extern __thread GLEWContext g_GlewContext;
 #include "manager/coreResource.h"
 
 #include "components/graphics/coreTexture.h"
+#include "components/graphics/coreModel.h"
 #include "components/graphics/coreShader.h"
 #include "components/audio/coreSound.h"
 

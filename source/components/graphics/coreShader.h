@@ -87,6 +87,11 @@ public:
     inline bool Linked()const {return (m_iStatus == 2) ? true : false;}
     //! @}
 
+    //! write current error-log to log file
+    //! @{
+    void LogInfo(const char* pcText)const;
+    //! @}
+
     //! set uniform variables
     //! @{
     inline void SetUniform(const char* pcName, const int& iA)                                     {glUniform1i(this->GetUniform(pcName), iA);}

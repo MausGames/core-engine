@@ -112,8 +112,27 @@ const char* coreUtils::StrExt(const char* pcInput)
 }
 
 
+// ****************************************************************
+// move string pointer and skip comments
+void coreUtils::StrSkip(const char** ppcInput, const int &iNum)
+{
+    int n = iNum;
+    char c = '\0';
+
+    do
+    {
+        // move string pointer
+        *ppcInput += n;
+
+        // check for comments and skip them
+        sscanf(*ppcInput, "%c %*[^\n] %n", &c, &n);
+    }
+    while(c == '/' || c == '#');
+}
+
+
 // ******************************************************************
-// open URL with web-browser
+// open URL with the web-browser
 void coreUtils::OpenURL(const char* pcURL)
 {
 #if defined(_WIN32)

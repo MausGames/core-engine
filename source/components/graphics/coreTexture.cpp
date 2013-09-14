@@ -87,7 +87,7 @@ coreError coreTexture::Load(coreFile* pFile)
     GLuint iBuffer;
     glGenBuffers(1, &iBuffer);
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, iBuffer);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, 0, GL_STREAM_DRAW);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
     // copy texture data into PBO
     GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);

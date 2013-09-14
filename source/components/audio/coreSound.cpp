@@ -127,6 +127,7 @@ coreError coreSound::Load(coreFile* pFile)
     m_sPath = pFile->GetPath();
     m_iSize = iSoundSize;
 
+    Core::Log->Info(coreUtils::Print("Sound (%s) loaded", m_sPath.c_str()));
     return CORE_OK;
 }
 

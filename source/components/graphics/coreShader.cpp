@@ -74,9 +74,11 @@ coreError coreShader::Load(coreFile* pFile)
     glGetShaderiv(m_iShader, GL_COMPILE_STATUS, &iStatus);
     if(!iStatus)
     {
+        // get length of error-log
         int iLength;
         glGetShaderiv(m_iShader, GL_INFO_LOG_LENGTH, &iLength);
 
+        // get error-log
         char* pcLog = new char[iLength];
         glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
 
@@ -155,7 +157,7 @@ void coreProgram::Reset(const bool& bInit)
             if(!(*it).IsLoaded()) return;
 
         // create shader-program
-        SDL_assert(m_iProgram == 0);
+        SDL_assert(!m_iProgram);
         m_iProgram = glCreateProgram();
 
         // attach shader objects
@@ -169,45 +171,13 @@ void coreProgram::Reset(const bool& bInit)
         // check for errors
         int iStatus;
         glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
-        if(!iStatus)
-        {
-            int iLength;
-            glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
-
-            char* pcLog = new char[iLength];
-            glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
-
-            // write error-log
-            Core::Log->Error(0, "Shader-Program could not be linked");
-            Core::Log->ListStart("Error Log");
-            for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it) Core::Log->ListEntry((*it)->GetPath());
-            Core::Log->ListEntry(pcLog);
-            Core::Log->ListEnd();
-
-            return;
-        }
+        if(!iStatus) this->LogInfo("Shader-Program could not be linked");
 
 #if defined(_DEBUG)
         // validate shader-program
         glValidateProgram(m_iProgram);
-
-        // check for errors
         glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatus);
-        if(!iStatus)
-        {
-            int iLength;
-            glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
-
-            char* pcLog = new char[iLength];
-            glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
-
-            // write error-log
-            Core::Log->Error(0, "Shader-Program could not be validated");
-            Core::Log->ListStart("Error Log");
-            for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it) Core::Log->ListEntry((*it)->GetPath());
-            Core::Log->ListEntry(pcLog);
-            Core::Log->ListEnd();
-        }
+        if(!iStatus) this->LogInfo("Shader-Program could not be validated");
 #endif
     }
     else
@@ -264,4 +234,28 @@ void coreProgram::AttachShader(const char* pcPath)
 
     // load and add new shader object
     m_apShader.push_back(Core::Manager::Resource->Load<coreShader>(pcPath));
+}
+
+
+// ****************************************************************
+// write current error-log to log file
+void coreProgram::LogInfo(const char* pcText)const
+{
+    // get length of error-log
+    int iLength;
+    glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
+    if(!iLength) return;
+
+    // get error-log
+    char* pcLog = new char[iLength];
+    glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
+
+    // write error-log
+    Core::Log->Error(0, pcText);
+    Core::Log->ListStart("Error Log");
+    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it) Core::Log->ListEntry((*it)->GetPath());
+    Core::Log->ListEntry(pcLog);
+    Core::Log->ListEnd();
+
+    SAFE_DELETE_ARRAY(pcLog)
 }

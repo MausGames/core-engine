@@ -25,7 +25,7 @@
 class coreSound final : public coreResource
 {
 public:
-    // WAVE-format structure
+    //! WAVE-format structure
     struct coreWaveFormat
     {
         uint16_t iAudioFormat;     //!< internal audio format (1 = PCM)

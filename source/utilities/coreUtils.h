@@ -21,6 +21,8 @@
     #define CORE_UTILS_SLASH "/"
 #endif
 
+#define SCAN_DATA(s,f,...) {int n = 0; sscanf(s, f " %n", ##__VA_ARGS__, &n); coreUtils::StrSkip(&(s), n);}
+
 
 // ****************************************************************
 // data and system utility collection
@@ -53,9 +55,10 @@ public:
     static bool StrCmp(const char* s, const char* t);
     static const char* StrRight(const char* pcInput, const coreUint& iNum);
     static const char* StrExt(const char* pcInput);
+    static void StrSkip(const char** ppcInput, const int &iNum);
     //! @}
 
-    //! open URL with web-browser
+    //! open URL with the web-browser
     //! @{
     static void OpenURL(const char* pcURL);
     //! @}

@@ -113,6 +113,8 @@
 		<Unit filename="../../source/Core.h" />
 		<Unit filename="../../source/components/audio/coreSound.cpp" />
 		<Unit filename="../../source/components/audio/coreSound.h" />
+		<Unit filename="../../source/components/graphics/coreModel.cpp" />
+		<Unit filename="../../source/components/graphics/coreModel.h" />
 		<Unit filename="../../source/components/graphics/coreShader.cpp" />
 		<Unit filename="../../source/components/graphics/coreShader.h" />
 		<Unit filename="../../source/components/graphics/coreTexture.cpp" />
@@ -135,6 +137,8 @@
 		<Unit filename="../../source/interfaces/CoreInput.h" />
 		<Unit filename="../../source/interfaces/CoreSystem.cpp" />
 		<Unit filename="../../source/interfaces/CoreSystem.h" />
+		<Unit filename="../../source/manager/coreMemory.cpp" />
+		<Unit filename="../../source/manager/coreMemory.h" />
 		<Unit filename="../../source/manager/coreResourceManager.cpp" />
 		<Unit filename="../../source/manager/coreResourceManager.h" />
 		<Unit filename="../../source/utilities/coreMath.cpp" />

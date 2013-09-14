@@ -13,16 +13,13 @@
 
 // ****************************************************************
 // math definitions
-#define PI        (3.1415926535897932384626433832795f)         // Archimedes' constant
-#define EU        (2.7182818284590452353602874713527f)         // Euler's number
-#define P3        (0.3333333333333333333333333333333f)         // periodic value of 1.0f/3.0f
-#define P6        (0.6666666666666666666666666666667f)         // periodic value of 2.0f/3.0f
-#define TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   // convert degree to radian
-#define TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   // convert radian to degree
+#define PI        (3.1415926535897932384626433832795f)         //!< Archimedes' constant
+#define EU        (2.7182818284590452353602874713527f)         //!< Euler's number
+#define P3        (0.3333333333333333333333333333333f)         //!< periodic value of 1.0f/3.0f
+#define P6        (0.6666666666666666666666666666667f)         //!< periodic value of 2.0f/3.0f
+#define TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degree to radian
+#define TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radian to degree
 
-
-// ****************************************************************
-// fast access macros
 #define LERP(x,y,s)  coreMath::Lerp(x,y,s)
 #define LERPS(x,y,s) coreMath::LerpSmooth(x,y,s)
 #define LERPB(x,y,s) coreMath::LerpBreak(x,y,s)

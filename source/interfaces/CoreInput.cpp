@@ -8,8 +8,11 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+#define CORE_INPUT_PRESS(x)   {(x)[3] = false;  (x)[2] = !(x)[1]; (x)[1] = true;}
+#define CORE_INPUT_RELEASE(x) {(x)[3] = (x)[1]; (x)[2] = false;   (x)[1] = false;}
 
-// ****************************************************************    
+
+// ****************************************************************
 // constructor
 CoreInput::CoreInput()
 : m_pCursor        (NULL)
@@ -66,14 +69,14 @@ CoreInput::~CoreInput()
 void CoreInput::__UpdateInput()
 {
     // process keyboard input
-    for(int i = 0; i < CORE_INPUT_KEYBOARD_BUTTONS; ++i)
+    for(int i = 0; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
              if( m_Keyboard.aabButton[i][0]) CORE_INPUT_PRESS(m_Keyboard.aabButton[i])
         else if(!m_Keyboard.aabButton[i][0]) CORE_INPUT_RELEASE(m_Keyboard.aabButton[i])
     }
 
     // process mouse input
-    for(int i = 0; i < CORE_INPUT_MOUSE_BUTTONS; ++i)
+    for(int i = 0; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
              if( m_Mouse.aabButton[i][0]) CORE_INPUT_PRESS(m_Mouse.aabButton[i])
         else if(!m_Mouse.aabButton[i][0]) CORE_INPUT_RELEASE(m_Mouse.aabButton[i])
@@ -82,7 +85,7 @@ void CoreInput::__UpdateInput()
     // process joystick input
     for(coreUint j = 0; j < m_aJoystick.size(); ++j)
     {
-        for(int i = 0; i < CORE_INPUT_JOYSTICK_BUTTONS; ++i)
+        for(int i = 0; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
                  if( m_aJoystick[j].aabButton[i][0]) CORE_INPUT_PRESS(m_aJoystick[j].aabButton[i])
             else if(!m_aJoystick[j].aabButton[i][0]) CORE_INPUT_RELEASE(m_aJoystick[j].aabButton[i])
@@ -166,7 +169,7 @@ void CoreInput::UseMouseWithKeyboard(const SDL_Scancode& iLeft, const SDL_Scanco
 // control mouse with joystick
 void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, const int& iButton2, const float& fSpeed)
 {
-    if(iID >= m_aJoystick.size()) return; 
+    if(iID >= m_aJoystick.size()) return;
 
     // overload active status
     const bool bActive = m_bActive;
@@ -178,7 +181,7 @@ void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, c
     {
         const coreVector2 vPos = this->GetMousePosition()*coreVector2(0.5f,-0.5f);
         const coreVector2 vNew = vAcc*coreVector2(1.0f,-Core::System->GetResolution().AspectRatio()) * Core::System->GetTime()*fSpeed + vPos;
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(vNew.x*Core::System->GetResolution().x), int(vNew.y*Core::System->GetResolution().y)); 
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(vNew.x*Core::System->GetResolution().x), int(vNew.y*Core::System->GetResolution().y));
     }
 
     // press the mouse buttons

@@ -17,7 +17,7 @@
 class coreSpline final
 {
 private:
-    // node structure
+    //! node structure
     struct coreNode
     {
         coreVector3 vPosition;   //!< position of the node

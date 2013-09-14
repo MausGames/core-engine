@@ -140,14 +140,14 @@ coreVector2& coreVector2::Normalize()
 
 
 // ****************************************************************
-// get squared length 
+// get squared length
 float coreVector2::LengthSq()const
 {
     // optimized
     if(Core::System->SupportSSE41())
     {
         const __m128 A = _mm_setr_ps(x, y, 0.0f, 0.0f);
-        
+
         float fOutput;
         _mm_store_ss(&fOutput, _mm_dp_ps(A, A, 0x31));
 
@@ -181,26 +181,26 @@ float coreVector2::Dot(const coreVector2& vInA, const coreVector2& vInB)
 // get random vector
 coreVector2 coreVector2::Rand()
 {
-    return coreVector2(Core::Rand->Float(-1.0f, 1.0f), 
+    return coreVector2(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize();
 }
 
 coreVector2 coreVector2::Rand(const float& fMin, const float& fMax)
 {
-    return coreVector2(Core::Rand->Float(-1.0f, 1.0f), 
+    return coreVector2(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
 coreVector2 coreVector2::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY)
 {
-    return coreVector2(Core::Rand->Float(fMinX, fMaxX), 
+    return coreVector2(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY));
 }
 
 
 // ****************************************************************
 // get reflected vector
-coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal) 
+coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
 {
     const float fDot = coreVector2::Dot(vVelocity, vNormal);
 
@@ -346,7 +346,7 @@ coreVector3& coreVector3::Normalize()
 
 
 // ****************************************************************
-// get squared length 
+// get squared length
 float coreVector3::LengthSq()const
 {
     // optimized
@@ -387,21 +387,21 @@ float coreVector3::Dot(const coreVector3& vInA, const coreVector3& vInB)
 // get random vector
 coreVector3 coreVector3::Rand()
 {
-    return coreVector3(Core::Rand->Float(-1.0f, 1.0f), 
+    return coreVector3(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize();
 }
 
 coreVector3 coreVector3::Rand(const float& fMin, const float& fMax)
 {
-    return coreVector3(Core::Rand->Float(-1.0f, 1.0f), 
+    return coreVector3(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
 coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)
 {
-    return coreVector3(Core::Rand->Float(fMinX, fMaxX), 
+    return coreVector3(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY),
                        Core::Rand->Float(fMinZ, fMaxZ));
 }
@@ -409,7 +409,7 @@ coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, const floa
 
 // ****************************************************************
 // get reflected vector
-coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal) 
+coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
 {
     const float fDot = coreVector3::Dot(vVelocity, vNormal);
 
@@ -429,15 +429,15 @@ coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
         const __m128 B = _mm_setr_ps(vInB.x, vInB.y, vInB.z, 0.0f);
 
         static align16(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 1, 0, 2))), 
+        _mm_store_ps(afOutput, _mm_sub_ps(_mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 1, 0, 2))),
                                           _mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 0, 2, 1)))));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
 
     // normal
-    return coreVector3(vInA.y*vInB.z - vInA.z*vInB.y, 
-                       vInA.z*vInB.x - vInA.x*vInB.z, 
+    return coreVector3(vInA.y*vInB.z - vInA.z*vInB.y,
+                       vInA.z*vInB.x - vInA.x*vInB.z,
                        vInA.x*vInB.y - vInA.y*vInB.x);
 }
 
@@ -559,4 +559,36 @@ coreVector4 coreVector4::operator * (const coreMatrix& m)const
                        x*m._12 + y*m._22 + z*m._32 + w*m._42,
                        x*m._13 + y*m._23 + z*m._33 + w*m._43,
                        x*m._14 + y*m._24 + z*m._34 + w*m._44);
+}
+
+
+// ****************************************************************
+// get squared length
+float coreVector4::LengthSq()const
+{
+    // optimized
+    if(Core::System->SupportSSE41())
+    {
+        const __m128 A = _mm_setr_ps(x, y, z, w);
+
+        float fOutput;
+        _mm_store_ss(&fOutput, _mm_dp_ps(A, A, 0xF1));
+
+        return fOutput;
+    }
+
+    // normal
+    return (x*x + y*y + z*z + w*w);
+}
+
+
+// ****************************************************************
+// multiplication of two quaternions
+coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)
+{
+    // \todo add SSE-support
+    return coreVector4(vInA.x*vInB.w + vInA.w*vInB.x + vInA.y*vInB.z - vInA.z*vInB.y,
+                       vInA.y*vInB.w + vInA.w*vInB.y + vInA.z*vInB.x - vInA.x*vInB.z,
+                       vInA.z*vInB.w + vInA.w*vInB.z + vInA.x*vInB.y - vInA.y*vInB.x,
+                       vInA.w*vInB.w - vInA.x*vInB.x - vInA.y*vInB.y - vInA.z*vInB.z);
 }

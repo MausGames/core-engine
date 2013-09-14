@@ -26,6 +26,10 @@ public:
         {
             float u, v;
         };
+        struct
+        {
+            float s, t;
+        };
         float m[2];
     };
 
@@ -218,6 +222,7 @@ public:
 
 // ****************************************************************
 // four-dimensional vector
+// \todo maybe implement real quaternion class later with animations
 class coreVector4 final
 {
 public:
@@ -281,7 +286,7 @@ public:
 
     //! invert vector
     //! @{
-    inline coreVector4 operator - ()const {return coreVector4(-x, -y, -z, w);}
+    inline coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
     //! @}
 
     //! convert vector
@@ -289,7 +294,23 @@ public:
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
     inline operator coreVector3& ()      {return *(reinterpret_cast<coreVector3*>(this));}
     inline operator coreVector2& ()      {return *(reinterpret_cast<coreVector2*>(this));}
-    inline coreVector3 xyz()const        {return coreVector3(x, y, z)*w;}
+    inline coreVector3 xyzw()const       {return coreVector3(x, y, z)*w;}
+    //! @}
+
+    //! direct functions
+    //! @{
+    float LengthSq()const;
+    inline float Length()const {return coreMath::Sqrt(this->LengthSq());}
+    inline float Min()const    {return coreMath::Min(coreMath::Min(coreMath::Min(x, y), z), w);}
+    inline float Max()const    {return coreMath::Max(coreMath::Max(coreMath::Max(x, y), z), w);}
+    //! @}
+
+    //! work with quaternions
+    //! @{
+    static coreVector4 QuatMul(const coreVector4& vInA, const coreVector4& vInB);
+    inline coreVector4 QuatConjugation()const               {return coreVector4(-x, -y, -z, w);}
+    inline coreVector4 QuatInverse()const                   {return coreVector4(-x, -y, -z, w) / this->LengthSq();}
+    inline coreVector3 QuatApply(const coreVector3& v)const {return QuatMul(QuatMul((*this), coreVector4(v)), this->QuatConjugation());}
     //! @}
 };
 
