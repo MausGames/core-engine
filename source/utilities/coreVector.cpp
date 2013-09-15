@@ -216,8 +216,8 @@ coreVector3::coreVector3()
 {
 }
 
-coreVector3::coreVector3(const coreVector2& c)
-: x (c.x), y (c.y), z (0.0f)
+coreVector3::coreVector3(const coreVector2& c, const float& fz)
+: x (c.x), y (c.y), z (fz)
 {
 }
 
@@ -449,13 +449,13 @@ coreVector4::coreVector4()
 {
 }
 
-coreVector4::coreVector4(const coreVector3& c)
-: x (c.x), y (c.y), z (c.z), w (0.0f)
+coreVector4::coreVector4(const coreVector3& c, const float& fw)
+: x (c.x), y (c.y), z (c.z), w (fw)
 {
 }
 
-coreVector4::coreVector4(const coreVector2& c)
-: x (c.x), y (c.y), z (0.0f), w (0.0f)
+coreVector4::coreVector4(const coreVector2& c, const float& fz, const float& fw)
+: x (c.x), y (c.y), z (fz), w (fw)
 {
 }
 

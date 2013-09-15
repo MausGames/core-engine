@@ -171,13 +171,13 @@ void coreProgram::Reset(const bool& bInit)
         // check for errors
         int iStatus;
         glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
-        if(!iStatus) this->LogInfo("Shader-Program could not be linked");
+        if(!iStatus) this->LogError("Shader-Program could not be linked");
 
 #if defined(_DEBUG)
         // validate shader-program
         glValidateProgram(m_iProgram);
         glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatus);
-        if(!iStatus) this->LogInfo("Shader-Program could not be validated");
+        if(!iStatus) this->LogError("Shader-Program could not be validated");
 #endif
     }
     else
@@ -239,7 +239,7 @@ void coreProgram::AttachShader(const char* pcPath)
 
 // ****************************************************************
 // write current error-log to log file
-void coreProgram::LogInfo(const char* pcText)const
+void coreProgram::LogError(const char* pcText)const
 {
     // get length of error-log
     int iLength;

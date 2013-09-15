@@ -89,7 +89,7 @@ public:
 
     //! write current error-log to log file
     //! @{
-    void LogInfo(const char* pcText)const;
+    void LogError(const char* pcText)const;
     //! @}
 
     //! set uniform variables

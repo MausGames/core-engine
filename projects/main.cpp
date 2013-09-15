@@ -7,7 +7,7 @@ coreModelPtr g_pModel;
 
 void CoreApp::Init()
 {
-    g_pModel = Core::Manager::Resource->Load<coreModel>("data/test.md5mesh");
+    g_pModel = Core::Manager::Resource->Load<coreModel>("data/models/default.md5mesh");
 
     //glDisable(GL_CULL_FACE);
     //glDisable(GL_LIGHTING);
@@ -35,7 +35,7 @@ void CoreApp::Render()
     {
         if(g_apTextures[i].IsActive())
         {
-            glLoadIdentity();
+            Core::Graphics->LoadCamera();
             glMultMatrixf(coreMatrix::Translation(coreVector3(float(i),0.0f,-5.0f)));
 
             g_apTextures[i]->Enable(0);
@@ -62,4 +62,11 @@ void CoreApp::Move()
 
     if(Core::Input->GetKeyboardButton(SDL_SCANCODE_S, CORE_INPUT_PRESS))
         Core::Reset();
+
+    coreVector3 vCamPos = Core::Graphics->GetCamPosition();
+    if(Core::Input->GetKeyboardButton(SDL_SCANCODE_RIGHT, CORE_INPUT_HOLD))
+        vCamPos += coreVector3(Core::System->GetTime(),0.0f,0.0f);
+    else if(Core::Input->GetKeyboardButton(SDL_SCANCODE_LEFT, CORE_INPUT_HOLD))
+        vCamPos -= coreVector3(Core::System->GetTime(),0.0f,0.0f);
+    Core::Graphics->SetCamera(&vCamPos, NULL, NULL);
 }

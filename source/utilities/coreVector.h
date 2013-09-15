@@ -136,7 +136,7 @@ public:
 
 public:
     coreVector3();
-    coreVector3(const coreVector2& c);
+    coreVector3(const coreVector2& c, const float& fz);
     coreVector3(const float& fx, const float& fy, const float& fz);
 
     //! compare operators
@@ -185,7 +185,6 @@ public:
     //! convert vector
     //! @{
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
-    inline operator coreVector2& ()      {return *(reinterpret_cast<coreVector2*>(this));}
     inline coreVector2 xy()const         {return coreVector2(x, y);}
     inline coreVector2 xz()const         {return coreVector2(x, z);}
     inline coreVector2 yx()const         {return coreVector2(y, x);}
@@ -242,8 +241,8 @@ public:
 
 public:
     coreVector4();
-    coreVector4(const coreVector3& c);
-    coreVector4(const coreVector2& c);
+    coreVector4(const coreVector3& c, const float& fw);
+    coreVector4(const coreVector2& c, const float& fz, const float& fw);
     coreVector4(const float& fx, const float& fy, const float& fz, const float& fw);
 
     //! compare operators
@@ -292,9 +291,9 @@ public:
     //! convert vector
     //! @{
     inline operator const float* ()const {return reinterpret_cast<const float*>(this);}
-    inline operator coreVector3& ()      {return *(reinterpret_cast<coreVector3*>(this));}
-    inline operator coreVector2& ()      {return *(reinterpret_cast<coreVector2*>(this));}
     inline coreVector3 xyzw()const       {return coreVector3(x, y, z)*w;}
+    inline coreVector3 xyz()const        {return coreVector3(x, y, z);}
+    inline coreVector2 xy()const         {return coreVector2(x, y);}
     //! @}
 
     //! direct functions
@@ -310,7 +309,7 @@ public:
     static coreVector4 QuatMul(const coreVector4& vInA, const coreVector4& vInB);
     inline coreVector4 QuatConjugation()const               {return coreVector4(-x, -y, -z, w);}
     inline coreVector4 QuatInverse()const                   {return coreVector4(-x, -y, -z, w) / this->LengthSq();}
-    inline coreVector3 QuatApply(const coreVector3& v)const {return QuatMul(QuatMul((*this), coreVector4(v)), this->QuatConjugation());}
+    inline coreVector3 QuatApply(const coreVector3& v)const {return QuatMul(QuatMul((*this), coreVector4(v,0.0f)), this->QuatConjugation()).xyz();}
     //! @}
 };
 
