@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_VECTOR_H
-#define GUARD_CORE_VECTOR_H
+#ifndef _CORE_GUARD_VECTOR_H_
+#define _CORE_GUARD_VECTOR_H_
 
 
 // ****************************************************************
@@ -314,4 +314,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_VECTOR_H
+#endif // _CORE_GUARD_VECTOR_H_

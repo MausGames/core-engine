@@ -30,13 +30,11 @@ void CoreApp::Exit()
 
 void CoreApp::Render()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
     for(coreUint i = 0; i < MIN((int)g_apTextures.size(),1); ++i)
     {
         if(g_apTextures[i].IsActive())
         {
-            Core::Graphics->LoadCamera();
-            glMultMatrixf(coreMatrix::Translation(coreVector3(float(i),0.0f,-5.0f)));
+            //glMultMatrixf(coreMatrix::Translation(coreVector3(float(i),0.0f,-5.0f)));
 
             g_apTextures[i]->Enable(0);
             g_pModel->Render();

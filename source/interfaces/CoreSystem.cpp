@@ -98,7 +98,7 @@ CoreSystem::CoreSystem()
     else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
 
     // init high precision time
-#if defined(_WIN32)
+#if defined(_CORE_WINDOWS_)
     QueryPerformanceFrequency(&m_iPerfTime);
     m_fPerfFrequency = 1.0f/float(m_iPerfTime.QuadPart);
     QueryPerformanceCounter(&m_iPerfTime);
@@ -107,16 +107,16 @@ CoreSystem::CoreSystem()
 #endif
 
     // retrieve features of the processor
-#if defined(_DEBUG)
-    memset(m_aaiCPUID, 0, sizeof(int)*2*4);
-#else
-    #if defined(_MSC_VER)
+#if defined(_CORE_SSE_)
+    #if defined(_CORE_MSVC_)
         __cpuid(m_aaiCPUID[0], 0);
         __cpuid(m_aaiCPUID[1], 1);
     #else
         asm volatile("cpuid" : "=a" (m_aaiCPUID[0][0]), "=b" (m_aaiCPUID[0][1]), "=c" (m_aaiCPUID[0][2]), "=d" (m_aaiCPUID[0][3]) : "a" (0), "c" (0));
         asm volatile("cpuid" : "=a" (m_aaiCPUID[1][0]), "=b" (m_aaiCPUID[1][1]), "=c" (m_aaiCPUID[1][2]), "=d" (m_aaiCPUID[1][3]) : "a" (1), "c" (0));
     #endif
+#else
+    memset(m_aaiCPUID, 0, sizeof(int)*2*4);
 #endif
 
     // check for SSE support
@@ -269,7 +269,7 @@ bool CoreSystem::__UpdateEvents()
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
-#if defined(_WIN32)
+#if defined(_CORE_WINDOWS_)
     LARGE_INTEGER iNewPerfTime;
     QueryPerformanceCounter(&iNewPerfTime);
     const float fNewLastTime = float(iNewPerfTime.QuadPart - m_iPerfTime.QuadPart) * m_fPerfFrequency;
@@ -306,7 +306,7 @@ void CoreSystem::__UpdateTime()
 // show message box
 void CoreSystem::MsgBox(const char* pcMessage, const char* pcTitle, const int& iType)
 {
-#if defined(_WIN32)
+#if defined(_CORE_WINDOWS_)
     switch(iType)
     {
     case 0: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONINFORMATION); break;

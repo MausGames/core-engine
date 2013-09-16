@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_THREAD_H
-#define GUARD_CORE_THREAD_H
+#ifndef _CORE_GUARD_THREAD_H_
+#define _CORE_GUARD_THREAD_H_
 
 
 // ****************************************************************
@@ -56,4 +56,4 @@ private:
 };
 
 
-#endif // GUARD_CORE_THREAD_H
+#endif // _CORE_GUARD_THREAD_H_

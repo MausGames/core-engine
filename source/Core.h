@@ -37,23 +37,62 @@
 //! \file
 //! \defgroup interface Interfaces
 #pragma once
-#ifndef GUARD_CORE_H
-#define GUARD_CORE_H
+#ifndef _CORE_GUARD_H_
+#define _CORE_GUARD_H_
+
+
+// compiler
+#if defined(_MSC_VER)
+    #define _CORE_MSVC_ (_MSC_VER)
+#endif
+#if defined(__GNUC__)
+    #define _CORE_GCC_ (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
+#endif
+#if defined(__MINGW32__)
+    #define _CORE_MINGW_
+#endif
+
+// platform
+#if defined(_WIN32)
+    #define _CORE_WINDOWS_
+#endif
+#if defined(__linux__)
+    #define _CORE_LINUX_
+#endif
+#if defined(__ANDROID__)
+    #define _CORE_ANDROID_
+#endif
+
+// debug mode
+#if defined(_DEBUG) || defined(DEBUG)
+    #define _CORE_DEBUG_
+#endif
+
+// SIMD support
+#if (defined(_M_IX86) || defined(__i386__)) && !defined(_CORE_DEBUG_)
+    #define _CORE_SSE_
+#endif
+
+// GLEW support
+#if !defined(_CORE_ANDROID_)
+    #define _CORE_GLEW_
+#endif
 
 
 // ****************************************************************
-// compiler and library specific definitions
-#if !defined(_MSC_VER) && !defined(__GNUC__) && !defined(__MINGW32__)
+// compiler, platform and library specific definitions
+#if !defined(_CORE_MSVC_) && !defined(_CORE_GCC_) && !defined(_CORE_MINGW_)
     #warning "Compiler not supported!"
 #endif
 
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
 #define GLEW_MX
+#define GLEW_NO_GLU
 
 #undef __STRICT_ANSI__
 
-#if defined(_MSC_VER)
+#if defined(_CORE_MSVC_)
     #define align16(v) __declspec(align(16)) v
     #define initval(v)
     #define deletefunc
@@ -63,12 +102,17 @@
     #define deletefunc = delete
 #endif
 
-#if defined(_MSC_VER)
+#if defined(_CORE_MSVC_)
     #define __thread __declspec(thread)
     #define constexpr
-    #if (_MSC_VER) < 1700
+    #if (_CORE_MSVC_) < 1700
         #define final
     #endif
+#endif
+
+#if defined(_CORE_ANDROID_)
+    #define override
+    #define final
 #endif
 
 
@@ -104,16 +148,17 @@ enum coreError
 
 // ****************************************************************
 // base libraries
-#if defined(_WIN32)
+#if defined(_CORE_WINDOWS_)
     #include <windows.h>
-    #undef DeleteFile
 #else
     #include <sys/stat.h>
     #include <unistd.h>
     #include <dirent.h>
     #include <string.h>
 #endif
-#include <smmintrin.h>
+#if defined(_CORE_SSE_)
+    #include <smmintrin.h>
+#endif
 #include <time.h>
 #include <math.h>
 #include <cstdio>
@@ -127,10 +172,12 @@ enum coreError
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
-#include <GL/glew.h>
-#include <GL/gl.h>
-#if !defined(_WIN32)
-    #include <GL/glext.h>
+#if defined(_CORE_GLEW_)
+    #include <GL/glew.h>
+    #include <GL/gl.h>
+#else
+    #include <GLES2/gl2.h>
+    #include "glewES.h"
 #endif
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -143,8 +190,10 @@ enum coreError
 
 // ****************************************************************
 // GLEW multi-context declaration
-extern __thread GLEWContext g_GlewContext;
-#define glewGetContext() (&g_GlewContext)
+#if defined(_CORE_GLEW_)
+    extern __thread GLEWContext g_GlewContext;
+    #define glewGetContext() (&g_GlewContext)
+#endif
 
 
 // ****************************************************************
@@ -255,4 +304,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_H
+#endif // _CORE_GUARD_H_

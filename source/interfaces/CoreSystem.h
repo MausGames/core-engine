@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_SYSTEM_H
-#define GUARD_CORE_SYSTEM_H
+#ifndef _CORE_GUARD_SYSTEM_H_
+#define _CORE_GUARD_SYSTEM_H_
 
 
 // ****************************************************************
@@ -38,9 +38,9 @@ private:
     coreUint m_iCurFrame;                     //!< current frame number since start of the application
     coreByte m_iSkipFrame;                    //!< skip frame status
 
-#if defined(_WIN32)
-    float m_fPerfFrequency;                   //!< high precision time coefficient (WIN32)
-    LARGE_INTEGER m_iPerfTime;                //!< high precision time value (WIN32)
+#if defined(_CORE_WINDOWS_)
+    float m_fPerfFrequency;                   //!< high precision time coefficient (Windows)
+    LARGE_INTEGER m_iPerfTime;                //!< high precision time value (Windows)
 #else
     timespec m_iPerfTime;                     //!< high precision time value (Linux)
 #endif
@@ -103,4 +103,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_SYSTEM_H
+#endif // _CORE_GUARD_SYSTEM_H_

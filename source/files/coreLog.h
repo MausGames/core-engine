@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_LOG_H
-#define GUARD_CORE_LOG_H
+#ifndef _CORE_GUARD_LOG_H_
+#define _CORE_GUARD_LOG_H_
 
 
 // ****************************************************************
@@ -57,4 +57,4 @@ private:
 };
 
 
-#endif // GUARD_CORE_LOG_H
+#endif // _CORE_GUARD_LOG_H_

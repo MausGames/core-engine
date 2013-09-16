@@ -7,8 +7,10 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_ARCHIVE_H
-#define GUARD_CORE_ARCHIVE_H
+#ifndef _CORE_GUARD_ARCHIVE_H_
+#define _CORE_GUARD_ARCHIVE_H_
+
+#undef DeleteFile
 
 
 // ****************************************************************
@@ -134,4 +136,4 @@ private:
 };
 
 
-#endif // GUARD_CORE_ARCHIVE_H
+#endif // _CORE_GUARD_ARCHIVE_H_

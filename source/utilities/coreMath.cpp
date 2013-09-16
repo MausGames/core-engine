@@ -17,13 +17,15 @@ float coreMath::Sqrt(float fInput)
     if(fInput == 0.0f) return fInput;
     if(fInput  < 0.0f) fInput = -fInput;
 
+#if defined(_CORE_SSE_)
     // optimized
     if(Core::System->SupportSSE2())
     {
         _mm_store_ss(&fInput, _mm_sqrt_ss(_mm_load_ss(&fInput)));
         return fInput;
     }
-    
+#endif
+
     // normal
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     return sqrtf(fInput);

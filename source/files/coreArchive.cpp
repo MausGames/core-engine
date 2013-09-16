@@ -143,7 +143,7 @@ coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std
 {
     if(!pcFolder || !pasOutput) return CORE_INVALID_INPUT;
 
-#if defined(_WIN32)
+#if defined(_CORE_WINDOWS_)
 
     HANDLE hFolder;
     WIN32_FIND_DATA hFile;

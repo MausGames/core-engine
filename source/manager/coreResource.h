@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_RESOURCE_H
-#define GUARD_CORE_RESOURCE_H
+#ifndef _CORE_GUARD_RESOURCE_H_
+#define _CORE_GUARD_RESOURCE_H_
 
 
 // ****************************************************************
@@ -331,4 +331,4 @@ template <typename T> coreResourceHandle* coreResourceManager::Load(const char* 
 }
 
 
-#endif // GUARD_CORE_RESOURCE_H
+#endif // _CORE_GUARD_RESOURCE_H_

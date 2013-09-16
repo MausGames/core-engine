@@ -8,8 +8,9 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#if defined(_WIN32)
+#if defined(_CORE_WINDOWS_)
     #include <direct.h>
+    #define chdir _chdir
 #endif
 
 coreLog*             Core::Log               = NULL;
@@ -30,7 +31,9 @@ coreResourceManager* Core::Manager::Resource = NULL;
 
 // ****************************************************************
 // GLEW multi-context definition
-__thread GLEWContext g_GlewContext;
+#if defined(_CORE_GLEW_)
+    __thread GLEWContext g_GlewContext;
+#endif
 
 
 // ****************************************************************
@@ -98,7 +101,7 @@ void Core::Run()
     CoreApp* pApplication = new CoreApp();
     pEngine->Log->Header("Application Run");
 
-#if !defined(_DEBUG)
+#if !defined(_CORE_DEBUG_)
     // set logging level
     const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG, -1);
     pEngine->Log->SetLevel(iLevel);
@@ -175,7 +178,7 @@ void Core::Quit()
 // main function
 int main(int argc, char* argv[])
 {
-#if defined(_MSC_VER) && defined(_DEBUG)
+#if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
     _crtBreakAlloc = 0;
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -185,7 +188,7 @@ int main(int argc, char* argv[])
     sprintf(acPath, "%s", coreUtils::AppPath());
     for(int i = 0; i < 3; ++i)
         (*strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
-    _chdir(acPath);
+    chdir(acPath);
 
     // run the application
     Core::Run();

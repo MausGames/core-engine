@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_MEMORY_H
-#define GUARD_CORE_MEMORY_H
+#ifndef _CORE_GUARD_MEMORY_H_
+#define _CORE_GUARD_MEMORY_H_
 
 
 // ****************************************************************
@@ -36,4 +36,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_MEMORY_H
+#endif // _CORE_GUARD_MEMORY_H_

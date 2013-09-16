@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_CONFIG_H
-#define GUARD_CORE_CONFIG_H
+#ifndef _CORE_GUARD_CONFIG_H_
+#define _CORE_GUARD_CONFIG_H_
 
 
 // ****************************************************************
@@ -78,4 +78,4 @@ private:
 };
 
 
-#endif // GUARD_CORE_CONFIG_H
+#endif // _CORE_GUARD_CONFIG_H_

@@ -83,6 +83,7 @@ coreMatrix coreMatrix::operator - (const coreMatrix& v)const
 // multiplication with matrix
 coreMatrix coreMatrix::operator * (const coreMatrix& v)const
 {
+#if defined(_CORE_SSE_)
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -96,6 +97,7 @@ coreMatrix coreMatrix::operator * (const coreMatrix& v)const
 
         return mOutput;
     }
+#endif
 
     // normal
     return coreMatrix(_11*v._11 + _12*v._21 + _13*v._31 + _14*v._41, _11*v._12 + _12*v._22 + _13*v._32 + _14*v._42,

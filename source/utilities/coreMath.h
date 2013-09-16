@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_MATH_H
-#define GUARD_CORE_MATH_H
+#ifndef _CORE_GUARD_MATH_H_
+#define _CORE_GUARD_MATH_H_
 
 
 // ****************************************************************
@@ -78,4 +78,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_MATH_H
+#endif // _CORE_GUARD_MATH_H_

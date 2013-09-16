@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_SPLINE_H
-#define GUARD_CORE_SPLINE_H
+#ifndef _CORE_GUARD_SPLINE_H_
+#define _CORE_GUARD_SPLINE_H_
 
 
 // ****************************************************************
@@ -71,4 +71,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_SPLINE_H
+#endif // _CORE_GUARD_SPLINE_H_

@@ -68,6 +68,7 @@
         </logicalFolder>
         <itemPath>../../source/Core.cpp</itemPath>
         <itemPath>../../source/Core.h</itemPath>
+        <itemPath>../../source/glewES.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -204,6 +205,8 @@
       <item path="../../source/files/coreLog.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/files/coreLog.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/glewES.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../source/interfaces/CoreAudio.cpp"
             ex="false"
@@ -442,6 +445,8 @@
       <item path="../../source/files/coreLog.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/files/coreLog.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/glewES.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../source/interfaces/CoreAudio.cpp"
             ex="false"

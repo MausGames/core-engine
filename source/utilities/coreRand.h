@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_RAND_H
-#define GUARD_CORE_RAND_H
+#ifndef _CORE_GUARD_RAND_H_
+#define _CORE_GUARD_RAND_H_
 
 
 // ****************************************************************
@@ -54,4 +54,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_RAND_H
+#endif // _CORE_GUARD_RAND_H_

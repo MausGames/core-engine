@@ -7,15 +7,15 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_UTILS_H
-#define GUARD_CORE_UTILS_H
+#ifndef _CORE_GUARD_UTILS_H_
+#define _CORE_GUARD_UTILS_H_
 
 
 // ****************************************************************
 // utility definitions
 #define CORE_UTILS_STRINGS 16
 
-#if defined(_WIN32)
+#if defined(_CORE_WINDOWS_)
     #define CORE_UTILS_SLASH "\\"
 #else
     #define CORE_UTILS_SLASH "/"
@@ -72,4 +72,4 @@ private:
 };
 
 
-#endif // GUARD_CORE_UTILS_H
+#endif // _CORE_GUARD_UTILS_H_

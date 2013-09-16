@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_INPUT_H
-#define GUARD_CORE_INPUT_H
+#ifndef _CORE_GUARD_INPUT_H_
+#define _CORE_GUARD_INPUT_H_
 
 
 // ****************************************************************
@@ -165,4 +165,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_INPUT_H
+#endif // _CORE_GUARD_INPUT_H_

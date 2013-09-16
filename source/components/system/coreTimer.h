@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_TIMER_H
-#define GUARD_CORE_TIMER_H
+#ifndef _CORE_GUARD_TIMER_H_
+#define _CORE_GUARD_TIMER_H_
 
 
 // ****************************************************************
@@ -97,4 +97,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_TIMER_H
+#endif // _CORE_GUARD_TIMER_H_

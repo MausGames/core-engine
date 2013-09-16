@@ -144,7 +144,7 @@ coreError coreSound::Unload()
         const ALuint iSource = this->CheckRef(it->first);
         if(iSource)
         {
-#if defined(_DEBUG)
+#if defined(_CORE_DEBUG_)
             // check for loop property
             int iPlaying; alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iPlaying);
             int iLooping; alGetSourcei(m_iCurSource, AL_LOOPING,      &iLooping);
@@ -261,7 +261,7 @@ void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVe
     CORE_SOUND_ASSERT(this)
     if(m_iCurSource)
     {
-#if defined(_DEBUG)
+#if defined(_CORE_DEBUG_)
         // check for relative property
         int iStatus;
         alGetSourcei(m_iCurSource, AL_SOURCE_RELATIVE, &iStatus);

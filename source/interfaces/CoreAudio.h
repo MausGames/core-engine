@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_AUDIO_H
-#define GUARD_CORE_AUDIO_H
+#ifndef _CORE_GUARD_AUDIO_H_
+#define _CORE_GUARD_AUDIO_H_
 
 
 // ****************************************************************
@@ -59,4 +59,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_AUDIO_H
+#endif // _CORE_GUARD_AUDIO_H_

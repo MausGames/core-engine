@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_SOUND_H
-#define GUARD_CORE_SOUND_H
+#ifndef _CORE_GUARD_SOUND_H_
+#define _CORE_GUARD_SOUND_H_
 
 
 // ****************************************************************
@@ -99,4 +99,4 @@ public:
 typedef coreResourcePtr<coreSound> coreSoundPtr;
 
 
-#endif // GUARD_CORE_SOUND_H
+#endif // _CORE_GUARD_SOUND_H_

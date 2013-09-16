@@ -45,7 +45,7 @@ void coreLog::Error(const bool& bShutdown, const std::string& sText)
     // shut down the application
     if(bShutdown)
     {
-#if defined(_DEBUG)
+#if defined(_CORE_DEBUG_)
         SDL_TriggerBreakpoint();
 #endif
         Core::System->MsgBox(sText.c_str(), "Error", 3);
