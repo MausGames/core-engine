@@ -72,7 +72,10 @@ coreError coreTexture::Load(coreFile* pFile)
     }
 
     const coreUint iDataSize = pData->w * pData->h * 4;
-    const bool bMipMap       = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
+    const bool& bPixelBuffer = Core::Graphics->SupportFeature("GL_ARB_pixel_buffer_object");
+    const bool& bAnisotropic = Core::Graphics->SupportFeature("GL_EXT_texture_filter_anisotropic");
+    const bool& bMipMap      = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
+    const bool& bSync        = Core::Graphics->SupportFeature("GL_ARB_sync");
 
     // save texture attributes
     m_sPath       = pFile->GetPath();
@@ -83,16 +86,19 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, 32, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pData, NULL, pConvert, NULL);
 
-    // generate pixel buffer object for asynchronous texture loading
     GLuint iBuffer;
-    glGenBuffers(1, &iBuffer);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, iBuffer);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
+    if(bPixelBuffer)
+    {
+        // generate pixel buffer object for asynchronous texture loading
+        glGenBuffers(1, &iBuffer);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, iBuffer);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
-    // copy texture data into PBO
-    GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-    memcpy(ptr, pConvert->pixels, iDataSize);
-    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+        // copy texture data into PBO
+        GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+        memcpy(ptr, pConvert->pixels, iDataSize);
+        glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+    }
 
     SDL_AtomicLock(&s_iLock);
     {
@@ -117,14 +123,14 @@ coreError coreTexture::Load(coreFile* pFile)
         glBindTexture(GL_TEXTURE_2D, m_iTexture);
 
         // set texture parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,         bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,         GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,             GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,             GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER, 0));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+        if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER, 0));
 
         // load texture data from PBO
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 
         // unbind texture from texture unit
@@ -134,12 +140,15 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_AtomicUnlock(&s_iLock);
 
     // generate sync object or flush all commands
-    if(Core::Graphics->SupportFeature("GL_ARB_sync")) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    if(bSync) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     else glFlush();
 
-    // delete PBO
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-    glDeleteBuffers(1, &iBuffer);
+    if(bPixelBuffer)
+    {
+        // delete PBO
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        glDeleteBuffers(1, &iBuffer);
+    }
 
     // delete file data
     SDL_FreeSurface(pData);

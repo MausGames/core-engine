@@ -18,7 +18,6 @@ CoreGraphics::CoreGraphics()
 , m_vCamPosition    (coreVector3(0.0f,0.0f, 0.0f))
 , m_vCamDirection   (coreVector3(0.0f,0.0f,-1.0f))
 , m_vCamOrientation (coreVector3(0.0f,1.0f, 0.0f))
-, m_mCurProjection  (coreMatrix::Identity())
 , m_vCurResolution  (coreVector2(0.0f,0.0f))
 {
     Core::Log->Header("Graphics Interface");
@@ -54,41 +53,28 @@ CoreGraphics::CoreGraphics()
     if(fForceOpenGL) m_fOpenGL = fForceOpenGL;
     else
     {
-             if(GLEW_VERSION_4_4) m_fOpenGL = 4.4f;
-        else if(GLEW_VERSION_4_3) m_fOpenGL = 4.3f;
-        else if(GLEW_VERSION_4_2) m_fOpenGL = 4.2f;
-        else if(GLEW_VERSION_4_1) m_fOpenGL = 4.1f;
-        else if(GLEW_VERSION_4_0) m_fOpenGL = 4.0f;
-        else if(GLEW_VERSION_3_3) m_fOpenGL = 3.3f;
-        else if(GLEW_VERSION_3_2) m_fOpenGL = 3.2f;
-        else if(GLEW_VERSION_3_1) m_fOpenGL = 3.1f;
-        else if(GLEW_VERSION_3_0) m_fOpenGL = 3.0f;
-        else if(GLEW_VERSION_2_1) m_fOpenGL = 2.1f;
-        else if(GLEW_VERSION_2_0) m_fOpenGL = 2.0f;
-                             else m_fOpenGL = 0.0f;
+        const char* pcDot = strchr((const char*)glGetString(GL_VERSION), '.');
+        if(pcDot) m_fOpenGL = float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0');
+             else m_fOpenGL = 0.0f;
     }
+
+    // set numerical GLSL version
+    const char* pcDot = strrchr((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION), '.');
+    if(pcDot) m_fGLSL = float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0');
+         else m_fGLSL = 0.0f;
 
     // check OpenGL version
     if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements are not met, video card with at least OpenGL 2.0 is required");
 
-    // define base geometry attributes
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableVertexAttribArray(1);
-
     // enable and disable base features
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_MULTISAMPLE);
     glDisable(GL_DITHER);
 
     // enable depth testing
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glPolygonOffset(1.1f, 4.0f);
-    glClearDepth(1.0f);
+    glClearDepthf(1.0f);
 
     // enable culling
     glEnable(GL_CULL_FACE);
@@ -98,10 +84,6 @@ CoreGraphics::CoreGraphics()
     // enable alpha blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // improve texture perspective correction and mip mapping
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 
     // reset camera
     this->SetCamera(NULL, NULL, NULL);
@@ -143,7 +125,7 @@ void CoreGraphics::__UpdateScene()
     SDL_GL_SwapWindow(Core::System->GetWindow());
 
     // reset depth buffer
-#if defined(_DEBUG)
+#if defined(_CORE_DEBUG_)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #else
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -181,38 +163,10 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
     // generate projection matrices
     m_mPerspective = coreMatrix::Perspective(vResolution, TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
     m_mOrtho       = coreMatrix::Ortho(vResolution);
-    this->EnablePerspective();
 
     m_vCurResolution = vResolution;
 }
 
-
-// ******************************************************************
-// enable perspective projection matrix
-void CoreGraphics::EnablePerspective()
-{
-    if(m_mCurProjection == m_mPerspective) return;
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(m_mPerspective);
-    glMatrixMode(GL_MODELVIEW);
-
-    m_mCurProjection = m_mPerspective;
-}
-
-
-// ******************************************************************
-// enable orthogonal projection matrix
-void CoreGraphics::EnableOrtho()
-{
-    if(m_mCurProjection == m_mOrtho) return;
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(m_mOrtho);
-    glMatrixMode(GL_MODELVIEW);
-
-    m_mCurProjection = m_mOrtho;
-}
 
 // ******************************************************************
 // create a screenshot

@@ -7,12 +7,34 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_SHADER_H
-#define GUARD_CORE_SHADER_H
+#ifndef _CORE_GUARD_SHADER_H_
+#define _CORE_GUARD_SHADER_H_
+
+
+// ****************************************************************
+// shader definitions
+#define CORE_SHADER_UNIFORM_PERSPECTIVE "u_mPerspective"
+#define CORE_SHADER_UNIFORM_ORTHO       "u_mOrtho"
+#define CORE_SHADER_UNIFORM_CAMERA      "u_mCamera"
+#define CORE_SHADER_UNIFORM_TRANSFORM   "u_mTransform"
+
+#define CORE_SHADER_IN_POSITION "in_v3Position"
+#define CORE_SHADER_IN_TEXTURE  "in_v2Texture"
+#define CORE_SHADER_IN_NORMAL   "in_v3Normal"
+#define CORE_SHADER_IN_TANGENT  "in_v4Tangent"
+#define CORE_SHADER_OUT_COLOR0  "out_v4Color0"
+
+#define CORE_SHADER_IN_POSITION_NUM 0
+#define CORE_SHADER_IN_TEXTURE_NUM  1
+#define CORE_SHADER_IN_NORMAL_NUM   2
+#define CORE_SHADER_IN_TANGENT_NUM  3
+#define CORE_SHADER_OUT_COLOR0_NUM  0
+
 
 
 // ****************************************************************
 // shader object class
+// \todo store different shader-versions per file and select appropriate code
 class coreShader final : public coreResource
 {
 private:
@@ -38,7 +60,7 @@ public:
 
     //! get relative path to NULL resource
     //! @{
-    static inline const char* GetNullPath() {return "data/shader/default.fs";}
+    static inline const char* GetNullPath() {return "data/shaders/default.fs";}
     //! @}
 };
 
@@ -112,4 +134,4 @@ public:
 };
 
 
-#endif // GUARD_CORE_SHADER_H
+#endif // _CORE_GUARD_SHADER_H_

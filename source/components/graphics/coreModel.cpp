@@ -127,43 +127,37 @@ coreModel::md5File::md5File(md5File&& m)
 // ****************************************************************
 // constructor
 coreModel::coreModel()
-: m_iVertexBuffer  (0)
-, m_iNormalBuffer  (0)
-, m_iTextureBuffer (0)
-, m_iTangentBuffer (0)
-, m_iIndexBuffer   (0)
-, m_iNumVertices   (0)
-, m_iNumTriangles  (0)
-, m_iNumIndices    (0)
-, m_fRadius        (0.0f)
+: m_iVertexArray  (0)
+, m_iVertexBuffer (0)
+, m_iIndexBuffer  (0)
+, m_iNumVertices  (0)
+, m_iNumTriangles (0)
+, m_iNumIndices   (0)
+, m_fRadius       (0.0f)
 {
 }
 
 coreModel::coreModel(const char* pcPath)
-: m_iVertexBuffer  (0)
-, m_iNormalBuffer  (0)
-, m_iTextureBuffer (0)
-, m_iTangentBuffer (0)
-, m_iIndexBuffer   (0)
-, m_iNumVertices   (0)
-, m_iNumTriangles  (0)
-, m_iNumIndices    (0)
-, m_fRadius        (0.0f)
+: m_iVertexArray  (0)
+, m_iVertexBuffer (0)
+, m_iIndexBuffer  (0)
+, m_iNumVertices  (0)
+, m_iNumTriangles (0)
+, m_iNumIndices   (0)
+, m_fRadius       (0.0f)
 {
     // load from path
     this->coreResource::Load(pcPath);
 }
 
 coreModel::coreModel(coreFile* pFile)
-: m_iVertexBuffer  (0)
-, m_iNormalBuffer  (0)
-, m_iTextureBuffer (0)
-, m_iTangentBuffer (0)
-, m_iIndexBuffer   (0)
-, m_iNumVertices   (0)
-, m_iNumTriangles  (0)
-, m_iNumIndices    (0)
-, m_fRadius        (0.0f)
+: m_iVertexArray  (0)
+, m_iVertexBuffer (0)
+, m_iIndexBuffer  (0)
+, m_iNumVertices  (0)
+, m_iNumTriangles (0)
+, m_iNumIndices   (0)
+, m_fRadius       (0.0f)
 {
     // load from file
     this->Load(pFile);
@@ -182,9 +176,9 @@ coreModel::~coreModel()
 // load model resource data
 coreError coreModel::Load(coreFile* pFile)
 {
-    SDL_assert(!m_iVertexBuffer);
+    SDL_assert(!m_iVertexArray);
 
-    if(m_iVertexBuffer)   return CORE_INVALID_CALL;
+    if(m_iVertexArray)    return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
@@ -199,22 +193,20 @@ coreError coreModel::Load(coreFile* pFile)
         return CORE_FILE_ERROR;
     }
 
-    const md5Mesh& oMesh = oFile.aMesh[0];
+    const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
+    const md5Mesh& oMesh     = oFile.aMesh[0];
 
     // save model attributes
     m_iNumVertices  = oMesh.aVertex.size();
     m_iNumTriangles = oMesh.aTriangle.size();
     m_iNumIndices   = oMesh.aTriangle.size()*3;
     m_sPath         = pFile->GetPath();
-    m_iSize         = m_iNumVertices*12*sizeof(float) + m_iNumIndices*sizeof(coreUint);
+    m_iSize         = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUint);
 
-    // reserve required memory
-    coreVector3* pvVertex  = new coreVector3[m_iNumVertices];   memset(pvVertex,  0, m_iNumVertices*sizeof(pvVertex[0]));
-    coreVector3* pvNormal  = new coreVector3[m_iNumVertices];   memset(pvNormal,  0, m_iNumVertices*sizeof(pvNormal[0]));
-    coreVector2* pvTexture = new coreVector2[m_iNumVertices];   memset(pvTexture, 0, m_iNumVertices*sizeof(pvTexture[0]));
-    coreVector4* pvTangent = new coreVector4[m_iNumVertices];   memset(pvTangent, 0, m_iNumVertices*sizeof(pvTangent[0]));
-    coreVector3* pvOrtho1  = new coreVector3[m_iNumVertices*2]; memset(pvOrtho1,  0, m_iNumVertices*sizeof(pvOrtho1[0])*2);
-    coreVector3* pvOrtho2  = pvOrtho1 + m_iNumVertices;
+    // reserve required vertex memory
+    coreVertex*  pVertex  = new coreVertex [m_iNumVertices]; memset(pVertex,  0, m_iNumVertices*sizeof(pVertex[0]));
+    coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
+    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
 
     // traverse all vertices
     for(coreUint i = 0; i < m_iNumVertices; ++i)
@@ -226,31 +218,16 @@ coreError coreModel::Load(coreFile* pFile)
         {
             const md5Weight& oWeight = oMesh.aWeight[j+oVertex.iWeightStart];
             const md5Joint&  oJoint  = oFile.aJoint[oWeight.iJoint];
-            pvVertex[i] += (oJoint.vPosition + oJoint.vOrientation.QuatApply(oWeight.vPosition)) * oWeight.fBias;
+            pVertex[i].vPosition += (oJoint.vPosition + oJoint.vOrientation.QuatApply(oWeight.vPosition)) * oWeight.fBias;
         }
 
         // forward texture coordinate
-        pvTexture[i] = oVertex.vTexture;
+        pVertex[i].vTexture = oVertex.vTexture;
 
         // find maximum distance from the model center
-        m_fRadius = MAX(pvVertex[i].LengthSq(), m_fRadius);
+        m_fRadius = MAX(pVertex[i].vPosition.LengthSq(), m_fRadius);
     }
     m_fRadius = coreMath::Sqrt(m_fRadius);
-
-    SDL_AtomicLock(&s_iLock); // split into two blocks to improve asynchronous performance
-    {
-        // create vertex position buffer
-        glGenBuffers(1, &m_iVertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(pvVertex[0]), pvVertex, GL_STATIC_DRAW);
-
-        // create texture coordinate buffer
-        glGenBuffers(1, &m_iTextureBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, m_iTextureBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(pvTexture[0]), pvTexture, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-    SDL_AtomicUnlock(&s_iLock);
 
     // traverse all triangles
     for(coreUint i = 0; i < m_iNumTriangles; ++i)
@@ -258,10 +235,10 @@ coreError coreModel::Load(coreFile* pFile)
         const md5Triangle& oTriangle = oMesh.aTriangle[i];
 
         // calculate triangle sides
-        const coreVector3 A1 = pvVertex [oTriangle.aiVertex[1]] - pvVertex [oTriangle.aiVertex[0]];
-        const coreVector3 A2 = pvVertex [oTriangle.aiVertex[2]] - pvVertex [oTriangle.aiVertex[0]];
-        const coreVector2 B1 = pvTexture[oTriangle.aiVertex[1]] - pvTexture[oTriangle.aiVertex[0]];
-        const coreVector2 B2 = pvTexture[oTriangle.aiVertex[2]] - pvTexture[oTriangle.aiVertex[0]];
+        const coreVector3 A1 = pVertex[oTriangle.aiVertex[1]].vPosition - pVertex[oTriangle.aiVertex[0]].vPosition;
+        const coreVector3 A2 = pVertex[oTriangle.aiVertex[2]].vPosition - pVertex[oTriangle.aiVertex[0]].vPosition;
+        const coreVector2 B1 = pVertex[oTriangle.aiVertex[1]].vTexture  - pVertex[oTriangle.aiVertex[0]].vTexture;
+        const coreVector2 B2 = pVertex[oTriangle.aiVertex[2]].vTexture  - pVertex[oTriangle.aiVertex[0]].vTexture;
 
         // calculate local normal vector
         const coreVector3 N = coreVector3::Cross(A1, A2);
@@ -274,7 +251,7 @@ coreError coreModel::Load(coreFile* pFile)
         for(coreUint j = 0; j < 3; ++j)
         {
             // add local values to each point of the triangle
-            pvNormal[oTriangle.aiVertex[j]] += N;
+            pVertex[oTriangle.aiVertex[j]].vNormal += N;
             pvOrtho1[oTriangle.aiVertex[j]] += D1;
             pvOrtho2[oTriangle.aiVertex[j]] += D2;
         }
@@ -282,40 +259,45 @@ coreError coreModel::Load(coreFile* pFile)
     for(coreUint i = 0; i < m_iNumVertices; ++i)
     {
         // normalize the normal vector
-        pvNormal[i].Normalize();
+        pVertex[i].vNormal.Normalize();
 
         // finish the Gram–Schmidt process to calculate the tangent vector and binormal sign (w)
-        pvTangent[i] = coreVector4((pvOrtho1[i] - pvNormal[i] * coreVector3::Dot(pvNormal[i], pvOrtho1[i])).Normalize(),
-                                   SIG(coreVector3::Dot(coreVector3::Cross(pvNormal[i], pvOrtho1[i]), pvOrtho2[i])));
+        pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalize(),
+                                          SIG(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 
     SDL_AtomicLock(&s_iLock);
     {
-        // create normal vector buffer
-        glGenBuffers(1, &m_iNormalBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, m_iNormalBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(pvNormal[0]), pvNormal, GL_STATIC_DRAW);
+        if(bVertexArray)
+        {
+            // create vertex array object
+            glGenVertexArrays(1, &m_iVertexArray);
+            glBindVertexArray(m_iVertexArray);
+        }
 
-        // create tangent vector buffer
-        glGenBuffers(1, &m_iTangentBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, m_iTangentBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(pvTangent[0]), pvTangent, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        // create vertex buffer
+        glGenBuffers(1, &m_iVertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(pVertex[0]), pVertex, GL_STATIC_DRAW);
+
+        // define vertex attribute data
+        this->__BindVertexAttributes();
 
         // create index buffer
         glGenBuffers(1, &m_iIndexBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_iNumIndices*sizeof(float), oMesh.aTriangle.data(), GL_STATIC_DRAW);
+
+        if(bVertexArray) glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
     SDL_AtomicUnlock(&s_iLock);
 
-    // free required memory
-    SAFE_DELETE_ARRAY(pvVertex)
-    SAFE_DELETE_ARRAY(pvNormal)
-    SAFE_DELETE_ARRAY(pvTexture)
-    SAFE_DELETE_ARRAY(pvTangent)
+    // free required vertex memory
+    SAFE_DELETE_ARRAY(pVertex)
     SAFE_DELETE_ARRAY(pvOrtho1)
+    SAFE_DELETE_ARRAY(pvOrtho2)
 
     Core::Log->Info(coreUtils::Print("Model (%s) loaded", m_sPath.c_str()));
     return CORE_OK;
@@ -326,28 +308,26 @@ coreError coreModel::Load(coreFile* pFile)
 // unload model resource data
 coreError coreModel::Unload()
 {
-    if(!m_iVertexBuffer) return CORE_INVALID_CALL;
+    if(!m_iVertexArray) return CORE_INVALID_CALL;
 
-    // delete all data buffers
+    const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
+
+    // delete VAO and data buffers
+    if(bVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
     glDeleteBuffers(1, &m_iVertexBuffer);
-    glDeleteBuffers(1, &m_iNormalBuffer);
-    glDeleteBuffers(1, &m_iTextureBuffer);
-    glDeleteBuffers(1, &m_iTangentBuffer);
     glDeleteBuffers(1, &m_iIndexBuffer);
     Core::Log->Info(coreUtils::Print("Model (%s) unloaded", m_sPath.c_str()));
 
     // reset attributes
-    m_sPath          = "";
-    m_iSize          = 0;
-    m_iVertexBuffer  = 0;
-    m_iNormalBuffer  = 0;
-    m_iTextureBuffer = 0;
-    m_iTangentBuffer = 0;
-    m_iIndexBuffer   = 0;
-    m_iNumVertices   = 0;
-    m_iNumTriangles  = 0;
-    m_iNumIndices    = 0;
-    m_fRadius        = 0.0f;
+    m_sPath         = "";
+    m_iSize         = 0;
+    m_iVertexArray  = 0;
+    m_iVertexBuffer = 0;
+    m_iIndexBuffer  = 0;
+    m_iNumVertices  = 0;
+    m_iNumTriangles = 0;
+    m_iNumIndices   = 0;
+    m_fRadius       = 0.0f;
 
     return CORE_OK;
 }
@@ -357,23 +337,28 @@ coreError coreModel::Unload()
 // draw the model
 void coreModel::Render()
 {
-    SDL_assert(m_iVertexBuffer);
+    SDL_assert(m_iVertexArray);
+
+    const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
 
     SDL_AtomicLock(&s_iLock);
     {
-        // set all data buffers
-        // \todo define proper tangent attribute binding
-        glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);  glVertexPointer(3, GL_FLOAT, 0, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, m_iNormalBuffer);  glNormalPointer(GL_FLOAT, 0, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, m_iTextureBuffer); glTexCoordPointer(2, GL_FLOAT, 0, 0);
-        //glBindBuffer(GL_ARRAY_BUFFER, m_iTangentBuffer); glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-        // set index buffer
+        // set vertex data and index buffer
+        if(bVertexArray) glBindVertexArray(m_iVertexArray);
+        else
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
+            this->__BindVertexAttributes();
+        }
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
 
-        // draw the model and reset all buffers
+        // draw the model
+        // \todo use only GL_UNSIGNED_SHORT if big enough
         glDrawElements(GL_TRIANGLES, m_iNumIndices, GL_UNSIGNED_INT, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        // reset vertex data and index buffer
+        if(bVertexArray) glBindVertexArray(0);
+        else glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
     SDL_AtomicUnlock(&s_iLock);
@@ -381,24 +366,18 @@ void coreModel::Render()
 
 
 // ****************************************************************
-// draw only vertex buffer of the model
-void coreModel::RenderSimple()
+// define vertex attribute data
+void coreModel::__BindVertexAttributes()
 {
-    SDL_assert(m_iVertexBuffer);
+    // enable vertex attributes
+    glEnableVertexAttribArray(CORE_SHADER_IN_POSITION_NUM);   // vertex position
+    glEnableVertexAttribArray(CORE_SHADER_IN_TEXTURE_NUM);    // texture coordinate
+    glEnableVertexAttribArray(CORE_SHADER_IN_NORMAL_NUM);     // normal vector
+    glEnableVertexAttribArray(CORE_SHADER_IN_TANGENT_NUM);    // additional tangent vector
 
-    SDL_AtomicLock(&s_iLock);
-    {
-        // set only vertex buffer
-        glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
-        glVertexPointer(3, GL_FLOAT, 0, 0);
-
-        // set index buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
-
-        // draw the model and reset all buffers
-        glDrawElements(GL_TRIANGLES, m_iNumIndices, GL_UNSIGNED_INT, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-    SDL_AtomicUnlock(&s_iLock);
+    // set vertex attribute data locations
+    glVertexAttribPointer(CORE_SHADER_IN_POSITION_NUM, 3, GL_FLOAT, false, sizeof(coreVertex), 0);
+    glVertexAttribPointer(CORE_SHADER_IN_TEXTURE_NUM,  2, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(3*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_IN_NORMAL_NUM,   3, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(5*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_IN_TANGENT_NUM,  4, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(8*sizeof(float)));
 }

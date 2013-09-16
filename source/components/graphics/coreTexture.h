@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_TEXTURE_H
-#define GUARD_CORE_TEXTURE_H
+#ifndef _CORE_GUARD_TEXTURE_H_
+#define _CORE_GUARD_TEXTURE_H_
 
 
 // ****************************************************************
@@ -84,4 +84,4 @@ public:
 typedef coreResourcePtr<coreTexture> coreTexturePtr;
 
 
-#endif // GUARD_CORE_TEXTURE_H
+#endif // _CORE_GUARD_TEXTURE_H_

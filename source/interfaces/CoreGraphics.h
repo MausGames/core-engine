@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_GRAPHICS_H
-#define GUARD_CORE_GRAPHICS_H
+#ifndef _CORE_GUARD_GRAPHICS_H_
+#define _CORE_GUARD_GRAPHICS_H_
 
 
 // ****************************************************************
@@ -31,11 +31,11 @@ private:
 
     coreMatrix m_mPerspective;                   //!< perspective projection matrix
     coreMatrix m_mOrtho;                         //!< orthogonal projection matrix
-    coreMatrix m_mCurProjection;                 //!< current loaded projection matrix
     coreVector2 m_vCurResolution;                //!< current viewport resolution
 
     std::u_map<std::string, bool> m_abFeature;   //!< cached features of the video card
     float m_fOpenGL;                             //!< available OpenGL version
+    float m_fGLSL;                               //!< available GLSL version
 
 
 private:
@@ -49,17 +49,10 @@ private:
 
 
 public:
-    //! control camera
+    //! control view and camera
     //! @{
     void SetCamera(const coreVector3* pvPosition, const coreVector3* pvDirection, const coreVector3* pvOrientation);
-    inline void LoadCamera() {glLoadMatrixf(m_mCamera);}
-    //! @}
-
-    //! control view and projection
-    //! @{
     void ResizeView(coreVector2 vResolution);
-    void EnablePerspective();
-    void EnableOrtho();
     //! @}
 
     //! create a screenshot
@@ -87,8 +80,9 @@ public:
     //! @{
     inline const bool& SupportFeature(const char* pcFeature) {if(!m_abFeature.count(pcFeature)) m_abFeature[pcFeature] = (glewIsSupported(pcFeature) ? true : false); return m_abFeature.at(pcFeature);}
     inline const float& SupportOpenGL()const                 {return m_fOpenGL;}
+    inline const float& SupportGLSL()const                   {return m_fGLSL;}
     //! @}
 };
 
 
-#endif // GUARD_CORE_GRAPHICS_H
+#endif // _CORE_GUARD_GRAPHICS_H_

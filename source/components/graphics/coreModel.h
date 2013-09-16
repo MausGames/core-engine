@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef GUARD_CORE_MODEL_H
-#define GUARD_CORE_MODEL_H
+#ifndef _CORE_GUARD_MODEL_H_
+#define _CORE_GUARD_MODEL_H_
 
 
 // ****************************************************************
@@ -79,12 +79,20 @@ private:
         md5File(md5File&& m);
     };
 
+    //! vertex structure
+    struct coreVertex
+    {
+        coreVector3 vPosition;   //!< vertex position
+        coreVector2 vTexture;    //!< texture coordinate
+        coreVector3 vNormal;     //!< normal vector
+        coreVector4 vTangent;    //!< additional tangent vector
+    };
+
 
 private:
-    GLuint m_iVertexBuffer;        //!< buffer with vertex positions
-    GLuint m_iNormalBuffer;        //!< buffer with normal vectors
-    GLuint m_iTextureBuffer;       //!< buffer with texture coordinates
-    GLuint m_iTangentBuffer;       //!< buffer with additional tangent vectors
+    GLuint m_iVertexArray;         //!< vertex array object
+
+    GLuint m_iVertexBuffer;        //!< vertex data buffer
     GLuint m_iIndexBuffer;         //!< index buffer
 
     coreUint m_iNumVertices;       //!< number of vertices
@@ -111,16 +119,11 @@ public:
     //! draw the model
     //! @{
     void Render();
-    void RenderSimple();
     //! @}
 
     //! get attributes
     //! @{
-    inline const GLuint& GetVertexBuffer()const   {return m_iVertexBuffer;}
-    inline const GLuint& GetNormalBuffer()const   {return m_iNormalBuffer;}
-    inline const GLuint& GetTextureBuffer()const  {return m_iTextureBuffer;}
-    inline const GLuint& GetTangentBuffer()const  {return m_iTangentBuffer;}
-    inline const GLuint& GetIndexBuffer()const    {return m_iIndexBuffer;}
+    inline const GLuint& GetVertexArray()const    {return m_iVertexArray;}
     inline const coreUint& GetNumVertices()const  {return m_iNumVertices;}
     inline const coreUint& GetNumTriangles()const {return m_iNumTriangles;}
     inline const coreUint& GetNumIndices()const   {return m_iNumIndices;}
@@ -131,6 +134,13 @@ public:
     //! @{
     static inline const char* GetNullPath() {return "data/models/default.md5mesh";}
     //! @}
+
+
+private:
+    //! define vertex attribute data
+    //! @{
+    void __BindVertexAttributes();
+    //! @}
 };
 
 
@@ -139,4 +149,4 @@ public:
 typedef coreResourcePtr<coreModel> coreModelPtr;
 
 
-#endif // GUARD_CORE_MODEL_H
+#endif // _CORE_GUARD_MODEL_H_

@@ -164,6 +164,13 @@ void coreProgram::Reset(const bool& bInit)
         for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
             glAttachShader(m_iProgram, (*it)->GetShader());
 
+        // set general input and output identifier
+        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_POSITION_NUM, CORE_SHADER_IN_POSITION);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TEXTURE_NUM,  CORE_SHADER_IN_TEXTURE);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_NORMAL_NUM,   CORE_SHADER_IN_NORMAL);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TANGENT_NUM,  CORE_SHADER_IN_TANGENT);
+        if(Core::Graphics->SupportOpenGL() >= 3.0f) glBindFragDataLocation(m_iProgram, CORE_SHADER_OUT_COLOR0_NUM, CORE_SHADER_OUT_COLOR0);
+
         // link shader-program
         glLinkProgram(m_iProgram);
         m_iStatus = 2;
@@ -173,7 +180,7 @@ void coreProgram::Reset(const bool& bInit)
         glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
         if(!iStatus) this->LogError("Shader-Program could not be linked");
 
-#if defined(_DEBUG)
+#if defined(_CORE_DEBUG_)
         // validate shader-program
         glValidateProgram(m_iProgram);
         glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatus);
@@ -217,6 +224,13 @@ void coreProgram::Enable()
     // add shader-program to the stack and enable it
     if(s_apStack.back() != this) s_apStack.push_back(this);
     glUseProgram(m_iProgram);
+
+    // set general transformation matrices
+    // \todo use UBOs for OpenGL 3.1+
+    this->SetUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
+    this->SetUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(), false);
+    this->SetUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(), false);
+    //this->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM,   NULL, false);
 }
 
 
@@ -226,7 +240,7 @@ void coreProgram::AttachShader(const char* pcPath)
 {
     if(m_iStatus) return;
 
-#if defined(_DEBUG)
+#if defined(_CORE_DEBUG_)
     // check for already added shader object
     for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
         SDL_assert(strcmp((*it)->GetPath(), pcPath));
