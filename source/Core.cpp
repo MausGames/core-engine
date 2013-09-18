@@ -10,7 +10,8 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <direct.h>
-    #define chdir _chdir
+    #define chdir    _chdir
+    #define snprintf _snprintf
 #endif
 
 coreLog*             Core::Log               = NULL;
@@ -31,7 +32,7 @@ coreResourceManager* Core::Manager::Resource = NULL;
 
 // ****************************************************************
 // GLEW multi-context definition
-#if defined(_CORE_GLEW_)
+#if !defined(_CORE_GLES_)
     __thread GLEWContext g_GlewContext;
 #endif
 
@@ -102,10 +103,12 @@ void Core::Run()
     pEngine->Log->Header("Application Run");
 
 #if !defined(_CORE_DEBUG_)
+
     // set logging level
     const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG, -1);
     pEngine->Log->SetLevel(iLevel);
     if(iLevel < 0) pEngine->Log->Error(0, "Logging level reduced");
+
 #endif
 
     // update the window event system (main loop)
@@ -179,16 +182,22 @@ void Core::Quit()
 int main(int argc, char* argv[])
 {
 #if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
+
+    // activate memory debugging on MSVC
     _crtBreakAlloc = 0;
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 #endif
+
+#if !defined(_CORE_ANDROID_)
 
     // set new working directory (cd ../..)
     char acPath[256];
-    sprintf(acPath, "%s", coreUtils::AppPath());
-    for(int i = 0; i < 3; ++i)
-        (*strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
+    snprintf(acPath, 256, "%s", coreUtils::AppPath());
+    for(int i = 0; i < 3; ++i) (*strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
     chdir(acPath);
+
+#endif
 
     // run the application
     Core::Run();

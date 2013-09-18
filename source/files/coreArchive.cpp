@@ -21,7 +21,7 @@ coreFile::coreFile(const char* pcPath)
     if(m_sPath.empty()) return;
 
     // open file
-    FILE* pFile = fopen(m_sPath.c_str(), "rb");
+    SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
     if(!pFile)
     {
         Core::Log->Error(0, coreUtils::Print("File (%s) could not be opened", pcPath));
@@ -29,12 +29,11 @@ coreFile::coreFile(const char* pcPath)
     }
 
     // get file size
-    fseek(pFile, 0, SEEK_END);
-    m_iSize = (coreUint)ftell(pFile);
+    m_iSize = (coreUint)SDL_RWsize(pFile);
 
     // close file
-    fclose(pFile);
-    Core::Log->Info(coreUtils::Print("File (%s) loaded", m_sPath.c_str()));
+    SDL_RWclose(pFile);
+    Core::Log->Info(coreUtils::Print("File (%s) opened", m_sPath.c_str()));
 }
 
 coreFile::coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)
@@ -68,7 +67,7 @@ coreError coreFile::Save(const char* pcPath)
     m_sPath = pcPath;
 
     // open file
-    FILE* pFile = fopen(m_sPath.c_str(), "wb");
+    SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "wb");
     if(!pFile)
     {
         Core::Log->Error(0, coreUtils::Print("File (%s) could not be saved", m_sPath.c_str()));
@@ -76,10 +75,10 @@ coreError coreFile::Save(const char* pcPath)
     }
 
     // save file data
-    fwrite(m_pData, sizeof(coreByte), m_iSize, pFile);
+    SDL_RWwrite(pFile, m_pData, sizeof(coreByte), m_iSize);
 
     // close file
-    fclose(pFile);
+    SDL_RWclose(pFile);
     if(!m_iArchivePos) m_iArchivePos = 1;
 
     return CORE_OK;
@@ -92,29 +91,29 @@ coreError coreFile::LoadData()
 {
     if(m_pData || !m_iSize || !m_iArchivePos) return CORE_INVALID_CALL;
 
-    FILE* pFile;
+    SDL_RWops* pFile;
     if(m_pArchive)
     {
         // open archive
-        pFile = fopen(m_pArchive->GetPath(), "rb");
+        pFile = SDL_RWFromFile(m_pArchive->GetPath(), "rb");
         if(!pFile) return CORE_FILE_ERROR;
 
         // seek file data position
-        fseek(pFile, m_iArchivePos, SEEK_SET);
+        SDL_RWseek(pFile, m_iArchivePos, RW_SEEK_SET);
     }
     else
     {
         // open direct file
-        pFile = fopen(m_sPath.c_str(), "rb");
+        pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
         if(!pFile) return CORE_FILE_ERROR;
     }
 
     // cache file data
     m_pData = new coreByte[m_iSize];
-    fread(m_pData, sizeof(coreByte), m_iSize, pFile);
+    SDL_RWread(pFile, m_pData, sizeof(coreByte), m_iSize);
 
     // close file
-    fclose(pFile);
+    SDL_RWclose(pFile);
 
     return CORE_OK;
 }
@@ -125,11 +124,11 @@ coreError coreFile::LoadData()
 bool coreFile::FileExists(const char* pcPath)
 {
     // open file
-    FILE* pFile = fopen(pcPath, "r");
+    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "r");
     if(pFile)
     {
         // file exists
-        fclose(pFile);
+        SDL_RWclose(pFile);
         return true;
     }
 
@@ -212,7 +211,7 @@ coreArchive::coreArchive(const char* pcPath)
 : m_sPath (pcPath)
 {
     // open archive
-    FILE* pArchive = fopen(m_sPath.c_str(), "rb");
+    SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "rb");
     if(!pArchive)
     {
         Core::Log->Error(0, coreUtils::Print("Archive (%s) could not be opened", m_sPath.c_str()));
@@ -221,7 +220,7 @@ coreArchive::coreArchive(const char* pcPath)
 
     // read number of files
     coreUint iSize;
-    fread(&iSize, sizeof(coreUint), 1, pArchive);
+    SDL_RWread(pArchive, &iSize, sizeof(coreUint), 1);
 
     // read file headers
     m_aFile.reserve(iSize);
@@ -233,10 +232,10 @@ coreArchive::coreArchive(const char* pcPath)
         coreUint iPos;
 
         // read file header data
-        fread(&iLength, sizeof(coreUint), 1,                           pArchive);
-        fread(acPath,   sizeof(char),     MAX(iLength, (unsigned)255), pArchive);
-        fread(&iSize,   sizeof(coreUint), 1,                           pArchive);
-        fread(&iPos,    sizeof(coreUint), 1,                           pArchive);
+        SDL_RWread(pArchive, &iLength, sizeof(coreUint), 1);
+        SDL_RWread(pArchive, acPath,   sizeof(char),     MAX(iLength, (unsigned)255));
+        SDL_RWread(pArchive, &iSize,   sizeof(coreUint), 1);
+        SDL_RWread(pArchive, &iPos,    sizeof(coreUint), 1);
 
         // add new file object
         m_aFile.push_back(new coreFile(acPath, NULL, iSize));
@@ -246,8 +245,8 @@ coreArchive::coreArchive(const char* pcPath)
     }
 
     // close archive
-    fclose(pArchive);
-    Core::Log->Info(coreUtils::Print("Archive (%s) loaded", m_sPath.c_str()));
+    SDL_RWclose(pArchive);
+    Core::Log->Info(coreUtils::Print("Archive (%s) opened", m_sPath.c_str()));
 }
 
 
@@ -279,7 +278,7 @@ coreError coreArchive::Save(const char* pcPath)
     m_sPath = pcPath;
 
     // open archive
-    FILE* pArchive = fopen(m_sPath.c_str(), "wb");
+    SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "wb");
     if(!pArchive)
     {
         Core::Log->Error(0, coreUtils::Print("Archive (%s) could not be saved", m_sPath.c_str()));
@@ -288,7 +287,7 @@ coreError coreArchive::Save(const char* pcPath)
 
     // save number of files
     const coreUint iSize = m_aFile.size();
-    fwrite(&iSize, sizeof(coreUint), 1, pArchive);
+    SDL_RWwrite(pArchive, &iSize, sizeof(coreUint), 1);
 
     // save file headers
     this->__CalculatePositions();
@@ -298,18 +297,18 @@ coreError coreArchive::Save(const char* pcPath)
         const coreUint iLength = strlen((*it)->GetPath());
 
         // write header
-        fwrite(&iLength,              sizeof(coreUint), 1,       pArchive);
-        fwrite((*it)->GetPath(),      sizeof(char),     iLength, pArchive);
-        fwrite(&(*it)->GetSize(),     sizeof(coreUint), 1,       pArchive);
-        fwrite(&(*it)->m_iArchivePos, sizeof(coreUint), 1,       pArchive);
+        SDL_RWwrite(pArchive, &iLength,              sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, (*it)->GetPath(),      sizeof(char),     iLength);
+        SDL_RWwrite(pArchive, &(*it)->GetSize(),     sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, &(*it)->m_iArchivePos, sizeof(coreUint), 1);
     }
 
     // save file data
     for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
-        fwrite((*it)->GetData(), sizeof(coreByte), (*it)->GetSize(), pArchive);
+        SDL_RWwrite(pArchive, (*it)->GetData(), sizeof(coreByte), (*it)->GetSize());
 
     // close archive
-    fclose(pArchive);
+    SDL_RWclose(pArchive);
 
     return CORE_OK;
 }

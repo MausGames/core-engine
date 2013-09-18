@@ -87,7 +87,7 @@ void coreSpline::AddNode(const coreVector3& vPosition, const coreVector3& vTange
 // remove node from spline
 void coreSpline::RemoveNode(const coreUint& iIndex)
 {
-    // \todo implement function
+    // TODO: implement function
 }
 
 

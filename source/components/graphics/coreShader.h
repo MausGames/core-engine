@@ -34,7 +34,7 @@
 
 // ****************************************************************
 // shader object class
-// \todo store different shader-versions per file and select appropriate code
+// TODO: store different shader-versions per file and select appropriate code
 class coreShader final : public coreResource
 {
 private:
@@ -72,7 +72,7 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 
 // ****************************************************************
 // shader-program object class
-// \todo cache and check shader uniform values
+// TODO: cache and check shader uniform values
 class coreProgram final : public coreReset
 {
 private:
@@ -84,34 +84,35 @@ private:
     std::u_map<std::string, int> m_aiUniform;     //!< cached identifiers for uniform variables
     std::u_map<std::string, int> m_aiAttribute;   //!< cached identifiers for attribute variables
 
-    static std::vector<coreProgram*> s_apStack;   //!< stack of currently active shader-programs
+    static coreProgram* s_pCurrent;               //!< currently active shader-program
 
 
 public:
     coreProgram();
     ~coreProgram();
 
+    //! init and exit the shader-program
+    //! @{
+    coreError Init();
+    coreError Exit();
+    //! @}
+
     //! reset the object with the resource manager
     //! @{
-    void Reset(const bool& bInit)override;
+    inline void Reset(const bool& bInit)override {if(bInit) this->Init(); else this->Exit();}
     //! @}
 
     //! enable and disable the shader-program
     //! @{
     void Enable();
-    inline void Disable() {SDL_assert(s_apStack.back() == this); s_apStack.pop_back(); glUseProgram(s_apStack.empty() ? 0 : s_apStack.back()->GetProgram());}
+    void Disable();
     //! @}
 
     //! control shader object linking
     //! @{
     void AttachShader(const char* pcPath);
-    inline void Link()        {if(m_iStatus) return; m_iStatus = 1; this->Reset(true);}
-    inline bool Linked()const {return (m_iStatus == 2) ? true : false;}
-    //! @}
-
-    //! write current error-log to log file
-    //! @{
-    void LogError(const char* pcText)const;
+    inline void Link()          {if(m_iStatus) return; m_iStatus = 1; this->Reset(true);}
+    inline bool IsLinked()const {return (m_iStatus == 2) ? true : false;}
     //! @}
 
     //! set uniform variables
@@ -130,6 +131,11 @@ public:
     inline const GLuint& GetProgram()const             {return m_iProgram;}
     inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName); return m_aiUniform.at(pcName);}
     inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) m_aiAttribute[pcName] = glGetAttribLocation(m_iProgram,  pcName); return m_aiAttribute.at(pcName);}
+    //! @}
+
+    //! get currently active shader-program
+    //! @{
+    static inline coreProgram* GetCurrent() {return s_pCurrent;}
     //! @}
 };
 

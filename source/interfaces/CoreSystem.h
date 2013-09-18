@@ -38,12 +38,8 @@ private:
     coreUint m_iCurFrame;                     //!< current frame number since start of the application
     coreByte m_iSkipFrame;                    //!< skip frame status
 
-#if defined(_CORE_WINDOWS_)
-    float m_fPerfFrequency;                   //!< high precision time coefficient (Windows)
-    LARGE_INTEGER m_iPerfTime;                //!< high precision time value (Windows)
-#else
-    timespec m_iPerfTime;                     //!< high precision time value (Linux)
-#endif
+    float m_fPerfFrequency;                   //!< high precision time coefficient
+    uint64_t m_iPerfTime;                     //!< high precision time value
 
     int m_aaiCPUID[2][4];                     //!< features of the processor
     bool m_abSSE[5];                          //!< available SSE versions (1, 2, 3, 4.1, 4.2)
@@ -69,7 +65,6 @@ public:
     //! control window
     //! @{
     inline void SetTitle(const char* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
-    void MsgBox(const char* pcMessage, const char* pcTitle, const int& iType);
     //! @}
 
     //! control time

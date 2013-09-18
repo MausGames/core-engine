@@ -18,16 +18,18 @@ float coreMath::Sqrt(float fInput)
     if(fInput  < 0.0f) fInput = -fInput;
 
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
         _mm_store_ss(&fInput, _mm_sqrt_ss(_mm_load_ss(&fInput)));
         return fInput;
     }
+
 #endif
 
     // normal
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
     return sqrtf(fInput);
 #else
     const float fValue     = fInput;
@@ -47,7 +49,7 @@ float coreMath::Sqrt(float fInput)
 // calculate sinus value
 float coreMath::Sin(const float& fInput)
 {
-    // \todo add SSE-support
+    // TODO: add SSE-support
     return sinf(fInput);
 }
 
@@ -56,7 +58,7 @@ float coreMath::Sin(const float& fInput)
 // calculate cosinus value
 float coreMath::Cos(const float& fInput)
 {
-    // \todo add SSE-support
+    // TODO: add SSE-support
     return cosf(fInput);
 }
 
@@ -111,6 +113,6 @@ coreVector3 coreMath::HSVtoRGB(const coreVector3& vHSV)
 // convert RGB-color to HSV-color
 coreVector3 coreMath::RGBtoHSV(const coreVector3& vRGB)
 {
-    // \todo implement function
+    // TODO: implement function
     return coreVector3(0.0f,0.0f,0.0f);
 }

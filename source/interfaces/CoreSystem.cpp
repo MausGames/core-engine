@@ -27,6 +27,39 @@ CoreSystem::CoreSystem()
         Core::Log->Error(1, coreUtils::Print("SDL could not be initialized (SDL: %s)", SDL_GetError()));
     else Core::Log->Info("SDL initialized");
 
+    // load all available screen resolutions
+    const int iNumModes = SDL_GetNumDisplayModes(0);
+    if(iNumModes)
+    {
+        m_avAvailable.reserve(32);
+
+        Core::Log->ListStart("Available Screen Resolutions");
+        for(int i = 0; i < iNumModes; ++i)
+        {
+            SDL_DisplayMode Mode;
+            SDL_GetDisplayMode(0, i, &Mode);
+
+            coreUint j = 0;
+            for(; j < m_avAvailable.size(); ++j)
+            {
+                // check already added resolutions
+                if(m_avAvailable[j].x == (float)Mode.w && m_avAvailable[j].y == (float)Mode.h)
+                    break;
+            }
+            if(j == m_avAvailable.size())
+            {
+                // add new resolution
+                m_avAvailable.push_back(coreVector2((float)Mode.w, (float)Mode.h));
+                Core::Log->ListEntry(coreUtils::Print("%4d x %4d", Mode.w, Mode.h));
+            }
+        }
+        Core::Log->ListEnd();
+
+        // override screen resolution
+        if(m_avAvailable.size() == 1) m_vResolution = m_avAvailable.back();
+    }
+    else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
+
     // configure the SDL window parameters
     const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
 
@@ -67,44 +100,16 @@ CoreSystem::CoreSystem()
     }
     else Core::Log->Info("Main window created");
 
-    // load all available screen resolutions
-    const int iNumModes = SDL_GetNumDisplayModes(0);
-    if(iNumModes)
-    {
-        m_avAvailable.reserve(32);
-
-        Core::Log->ListStart("Available Screen Resolutions");
-        for(int i = 0; i < iNumModes; ++i)
-        {
-            SDL_DisplayMode Mode;
-            SDL_GetDisplayMode(0, i, &Mode);
-
-            coreUint j = 0;
-            for(; j < m_avAvailable.size(); ++j)
-            {
-                // check already added resolutions
-                if(m_avAvailable[j].x == (float)Mode.w && m_avAvailable[j].y == (float)Mode.h)
-                    break;
-            }
-            if(j == m_avAvailable.size())
-            {
-                // add new resolution
-                m_avAvailable.push_back(coreVector2((float)Mode.w, (float)Mode.h));
-                Core::Log->ListEntry(coreUtils::Print("%4d x %4d", Mode.w, Mode.h));
-            }
-        }
-        Core::Log->ListEnd();
-    }
-    else Core::Log->Error(0, coreUtils::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
-
     // init high precision time
-#if defined(_CORE_WINDOWS_)
-    QueryPerformanceFrequency(&m_iPerfTime);
-    m_fPerfFrequency = 1.0f/float(m_iPerfTime.QuadPart);
-    QueryPerformanceCounter(&m_iPerfTime);
-#else
-    clock_gettime(CLOCK_MONOTONIC, &m_iPerfTime);
-#endif
+    m_fPerfFrequency = float(1.0/double(SDL_GetPerformanceFrequency()));
+    m_iPerfTime      = SDL_GetPerformanceCounter();
+
+    // reset adjusted frame times
+    for(int i = 0; i < CORE_SYSTEM_TIMES; ++i)
+    {
+        m_afTime[i]      = 0.0f;
+        m_afTimeSpeed[i] = 1.0f;
+    }
 
     // retrieve features of the processor
 #if defined(_CORE_SSE_)
@@ -133,13 +138,6 @@ CoreSystem::CoreSystem()
     Core::Log->ListEntry(coreUtils::Print("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]));
     Core::Log->ListEntry(coreUtils::Print("<b>SSE support:</b> %s%s%s%s%s", m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));
     Core::Log->ListEnd();
-
-    // reset adjusted frame times
-    for(int i = 0; i < CORE_SYSTEM_TIMES; ++i)
-    {
-        m_afTime[i]      = 0.0f;
-        m_afTimeSpeed[i] = 1.0f;
-    }
 }
 
 
@@ -200,7 +198,7 @@ bool CoreSystem::__UpdateEvents()
             }
             break;
 
-        // \todo implement with coreTextBox
+        // TODO: implement with coreTextBox
         //case SDL_TEXTINPUT:
         //    Core::Input->SetKeyboardChar((char)Event.text.text[0]);
         //    break;
@@ -269,16 +267,9 @@ bool CoreSystem::__UpdateEvents()
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
-#if defined(_CORE_WINDOWS_)
-    LARGE_INTEGER iNewPerfTime;
-    QueryPerformanceCounter(&iNewPerfTime);
-    const float fNewLastTime = float(iNewPerfTime.QuadPart - m_iPerfTime.QuadPart) * m_fPerfFrequency;
-#else
-    timespec iNewPerfTime;
-    clock_gettime(CLOCK_MONOTONIC, &iNewPerfTime);
-    const float fNewLastTime = float(0.000000001*(double(iNewPerfTime.tv_sec - m_iPerfTime.tv_sec)*1000000000.0 + double(iNewPerfTime.tv_nsec - m_iPerfTime.tv_nsec)));
-#endif
-    m_iPerfTime = iNewPerfTime;
+    const uint64_t iNewPerfTime = SDL_GetPerformanceCounter();
+    const float fNewLastTime    = float(iNewPerfTime - m_iPerfTime) * m_fPerfFrequency;
+    m_iPerfTime                 = iNewPerfTime;
 
     if(m_iSkipFrame || fNewLastTime >= 0.25f)
     {
@@ -289,7 +280,7 @@ void CoreSystem::__UpdateTime()
     else
     {
         // smooth last frame time and increase total time
-        m_fLastTime = m_fLastTime ? (0.85f*m_fLastTime + 0.15f*fNewLastTime) : fNewLastTime;
+        m_fLastTime   = m_fLastTime ? (0.85f*m_fLastTime + 0.15f*fNewLastTime) : fNewLastTime;
         m_dTotalTime += (double)m_fLastTime;
     }
 
@@ -299,22 +290,4 @@ void CoreSystem::__UpdateTime()
 
     // increate current frame number
     ++m_iCurFrame;
-}
-
-
-// ******************************************************************
-// show message box
-void CoreSystem::MsgBox(const char* pcMessage, const char* pcTitle, const int& iType)
-{
-#if defined(_CORE_WINDOWS_)
-    switch(iType)
-    {
-    case 0: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONINFORMATION); break;
-    case 1: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONQUESTION);    break;
-    case 2: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONEXCLAMATION); break;
-    case 3: MessageBoxA(NULL, pcMessage, pcTitle, MB_OK | MB_ICONSTOP);        break;
-    }
-#else
-    // \todo implement function
-#endif
 }

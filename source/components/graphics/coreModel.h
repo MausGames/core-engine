@@ -13,10 +13,10 @@
 
 // ****************************************************************
 // model object class
-// \todo support more than one mesh per file
-// \todo add animation
-// \todo check for unnecessary calculations to increase loading speed
-// \todo check normal vector calculations
+// TODO: support more than one mesh per file
+// TODO: add animation
+// TODO: check for unnecessary calculations to increase loading speed
+// TODO: check normal vector calculations
 class coreModel final : public coreResource
 {
 private:
@@ -43,7 +43,7 @@ private:
     //! MD5-triangle structure
     struct md5Triangle
     {
-        int aiVertex[3];   //!< indexes of the defining vertices
+        coreWord aiVertex[3];   //!< indexes of the defining vertices
 
         md5Triangle(const char** ppcData);
     };
@@ -101,6 +101,7 @@ private:
 
     float m_fRadius;               //!< maximum distance from the model center
 
+    GLsync m_pSync;                //!< sync object for asynchronous model loading
     static SDL_SpinLock s_iLock;   //!< spinlock to prevent asynchronous array buffer access
 
 
@@ -128,6 +129,11 @@ public:
     inline const coreUint& GetNumTriangles()const {return m_iNumTriangles;}
     inline const coreUint& GetNumIndices()const   {return m_iNumIndices;}
     inline const float& GetRadius()const          {return m_fRadius;}
+    //! @}
+
+    //! check sync object status
+    //! @{
+    coreError CheckSync();
     //! @}
 
     //! get relative path to NULL resource

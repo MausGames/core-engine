@@ -68,6 +68,7 @@
         </logicalFolder>
         <itemPath>../../source/Core.cpp</itemPath>
         <itemPath>../../source/Core.h</itemPath>
+        <itemPath>../../source/glewES.cpp</itemPath>
         <itemPath>../../source/glewES.h</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -205,6 +206,8 @@
       <item path="../../source/files/coreLog.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/files/coreLog.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/glewES.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/glewES.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -445,6 +448,8 @@
       <item path="../../source/files/coreLog.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/files/coreLog.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/glewES.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/glewES.h" ex="false" tool="3" flavor2="0">
       </item>

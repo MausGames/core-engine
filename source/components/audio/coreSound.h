@@ -18,10 +18,10 @@
 
 // ****************************************************************
 // sound object class
-// \todo improve 3D sound integration and control
-// \todo implement sound pause
-// \todo implement global sound volume change
-// \todo cache and check sound source properties
+// TODO: improve 3D sound integration and control
+// TODO: implement sound pause
+// TODO: implement global sound volume change
+// TODO: cache and check sound source properties
 class coreSound final : public coreResource
 {
 public:

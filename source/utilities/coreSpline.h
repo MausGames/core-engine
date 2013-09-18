@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // spline class
-// \todo extend to NURBS
+// TODO: extend to NURBS
 class coreSpline final
 {
 private:

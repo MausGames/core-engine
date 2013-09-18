@@ -41,7 +41,7 @@ coreModel::md5Vertex::md5Vertex(const char** ppcData)
 // constructor
 coreModel::md5Triangle::md5Triangle(const char** ppcData)
 {
-    SCAN_DATA(*ppcData, "%*s %*d %d %d %d",
+    SCAN_DATA(*ppcData, "%*s %*d %hu %hu %hu",
               &aiVertex[0], &aiVertex[2], &aiVertex[1])
 }
 
@@ -134,6 +134,7 @@ coreModel::coreModel()
 , m_iNumTriangles (0)
 , m_iNumIndices   (0)
 , m_fRadius       (0.0f)
+, m_pSync         (NULL)
 {
 }
 
@@ -145,6 +146,7 @@ coreModel::coreModel(const char* pcPath)
 , m_iNumTriangles (0)
 , m_iNumIndices   (0)
 , m_fRadius       (0.0f)
+, m_pSync         (NULL)
 {
     // load from path
     this->coreResource::Load(pcPath);
@@ -158,6 +160,7 @@ coreModel::coreModel(coreFile* pFile)
 , m_iNumTriangles (0)
 , m_iNumIndices   (0)
 , m_fRadius       (0.0f)
+, m_pSync         (NULL)
 {
     // load from file
     this->Load(pFile);
@@ -176,9 +179,13 @@ coreModel::~coreModel()
 // load model resource data
 coreError coreModel::Load(coreFile* pFile)
 {
-    SDL_assert(!m_iVertexArray);
+    // check sync object status
+    const coreError iStatus = this->CheckSync();
+    if(iStatus != CORE_INVALID_CALL) return iStatus;
 
-    if(m_iVertexArray)    return CORE_INVALID_CALL;
+    SDL_assert(!m_iVertexBuffer);
+
+    if(m_iVertexBuffer)   return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
@@ -190,10 +197,11 @@ coreError coreModel::Load(coreFile* pFile)
     if(oFile.aMesh.empty())
     {
         Core::Log->Error(0, coreUtils::Print("Model (%s) is not a valid MD5-file", pFile->GetPath()));
-        return CORE_FILE_ERROR;
+        return CORE_INVALID_DATA;
     }
 
     const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
+    const bool& bSync        = Core::Graphics->SupportFeature("GL_ARB_sync");
     const md5Mesh& oMesh     = oFile.aMesh[0];
 
     // save model attributes
@@ -201,12 +209,12 @@ coreError coreModel::Load(coreFile* pFile)
     m_iNumTriangles = oMesh.aTriangle.size();
     m_iNumIndices   = oMesh.aTriangle.size()*3;
     m_sPath         = pFile->GetPath();
-    m_iSize         = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUint);
+    m_iSize         = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreWord);
 
     // reserve required vertex memory
     coreVertex*  pVertex  = new coreVertex [m_iNumVertices]; memset(pVertex,  0, m_iNumVertices*sizeof(pVertex[0]));
     coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
-    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
+    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; memset(pvOrtho2, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
 
     // traverse all vertices
     for(coreUint i = 0; i < m_iNumVertices; ++i)
@@ -214,7 +222,7 @@ coreError coreModel::Load(coreFile* pFile)
         const md5Vertex& oVertex = oMesh.aVertex[i];
 
         // calculate vertex position
-        for(coreUint j = 0; j < oVertex.iWeightCount; ++j)
+        for(int j = 0; j < oVertex.iWeightCount; ++j)
         {
             const md5Weight& oWeight = oMesh.aWeight[j+oVertex.iWeightStart];
             const md5Joint&  oJoint  = oFile.aJoint[oWeight.iJoint];
@@ -248,7 +256,7 @@ coreError coreModel::Load(coreFile* pFile)
         const coreVector3 D1 = (A1*B2.t - A2*B1.t) * R;
         const coreVector3 D2 = (A2*B1.s - A1*B2.s) * R;
 
-        for(coreUint j = 0; j < 3; ++j)
+        for(int j = 0; j < 3; ++j)
         {
             // add local values to each point of the triangle
             pVertex[oTriangle.aiVertex[j]].vNormal += N;
@@ -268,9 +276,9 @@ coreError coreModel::Load(coreFile* pFile)
 
     SDL_AtomicLock(&s_iLock);
     {
+        // create vertex array object
         if(bVertexArray)
         {
-            // create vertex array object
             glGenVertexArrays(1, &m_iVertexArray);
             glBindVertexArray(m_iVertexArray);
         }
@@ -278,27 +286,35 @@ coreError coreModel::Load(coreFile* pFile)
         // create vertex buffer
         glGenBuffers(1, &m_iVertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(pVertex[0]), pVertex, GL_STATIC_DRAW);
-
-        // define vertex attribute data
-        this->__BindVertexAttributes();
+        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(coreVertex), pVertex, GL_STATIC_DRAW);
 
         // create index buffer
         glGenBuffers(1, &m_iIndexBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_iNumIndices*sizeof(float), oMesh.aTriangle.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_iNumIndices*sizeof(coreWord), oMesh.aTriangle.data(), GL_STATIC_DRAW);
 
-        if(bVertexArray) glBindVertexArray(0);
+        // define vertex attribute data
+        if(bVertexArray)
+        {
+            this->__BindVertexAttributes();
+            glBindVertexArray(0);
+        }
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
     SDL_AtomicUnlock(&s_iLock);
+
+    // generate sync object or flush all commands
+    if(bSync) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    else glFlush();
 
     // free required vertex memory
     SAFE_DELETE_ARRAY(pVertex)
     SAFE_DELETE_ARRAY(pvOrtho1)
     SAFE_DELETE_ARRAY(pvOrtho2)
 
+    if(m_pSync) return CORE_BUSY;
     Core::Log->Info(coreUtils::Print("Model (%s) loaded", m_sPath.c_str()));
     return CORE_OK;
 }
@@ -308,15 +324,20 @@ coreError coreModel::Load(coreFile* pFile)
 // unload model resource data
 coreError coreModel::Unload()
 {
-    if(!m_iVertexArray) return CORE_INVALID_CALL;
+    if(!m_iVertexBuffer) return CORE_INVALID_CALL;
 
-    const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
-
-    // delete VAO and data buffers
-    if(bVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
+    // delete vertex array object and data buffers
+    if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
     glDeleteBuffers(1, &m_iVertexBuffer);
     glDeleteBuffers(1, &m_iIndexBuffer);
     Core::Log->Info(coreUtils::Print("Model (%s) unloaded", m_sPath.c_str()));
+
+    // delete sync object
+    if(m_pSync)
+    {
+        glDeleteSync(m_pSync);
+        m_pSync = NULL;
+    }
 
     // reset attributes
     m_sPath         = "";
@@ -337,31 +358,50 @@ coreError coreModel::Unload()
 // draw the model
 void coreModel::Render()
 {
-    SDL_assert(m_iVertexArray);
-
-    const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
+    SDL_assert(m_iVertexBuffer);
 
     SDL_AtomicLock(&s_iLock);
     {
-        // set vertex data and index buffer
-        if(bVertexArray) glBindVertexArray(m_iVertexArray);
+        // set vertex data
+        if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
         else
         {
             glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
             this->__BindVertexAttributes();
         }
+
+        // set index buffer and draw the model
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
-
-        // draw the model
-        // \todo use only GL_UNSIGNED_SHORT if big enough
-        glDrawElements(GL_TRIANGLES, m_iNumIndices, GL_UNSIGNED_INT, 0);
-
-        // reset vertex data and index buffer
-        if(bVertexArray) glBindVertexArray(0);
-        else glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glDrawElements(GL_TRIANGLES, m_iNumIndices, GL_UNSIGNED_SHORT, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        // reset vertex data
+        if(m_iVertexArray) glBindVertexArray(0);
+        else glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     SDL_AtomicUnlock(&s_iLock);
+}
+
+
+// ****************************************************************
+// check sync object status
+// TODO: reuse code with coreTexture
+coreError coreModel::CheckSync()
+{
+    if(!m_iVertexBuffer || !m_pSync) return CORE_INVALID_CALL;
+
+    // check for finished model loading
+    if(glClientWaitSync(m_pSync, 0, 0) != GL_TIMEOUT_EXPIRED)
+    {
+        // delete sync object
+        glDeleteSync(m_pSync);
+        m_pSync = NULL;
+
+        Core::Log->Info(coreUtils::Print("Model (%s) loaded asynchronous", m_sPath.c_str()));
+        return CORE_OK;
+    }
+
+    return CORE_BUSY;
 }
 
 
@@ -370,10 +410,10 @@ void coreModel::Render()
 void coreModel::__BindVertexAttributes()
 {
     // enable vertex attributes
-    glEnableVertexAttribArray(CORE_SHADER_IN_POSITION_NUM);   // vertex position
-    glEnableVertexAttribArray(CORE_SHADER_IN_TEXTURE_NUM);    // texture coordinate
-    glEnableVertexAttribArray(CORE_SHADER_IN_NORMAL_NUM);     // normal vector
-    glEnableVertexAttribArray(CORE_SHADER_IN_TANGENT_NUM);    // additional tangent vector
+    glEnableVertexAttribArray(CORE_SHADER_IN_POSITION_NUM);
+    glEnableVertexAttribArray(CORE_SHADER_IN_TEXTURE_NUM);
+    glEnableVertexAttribArray(CORE_SHADER_IN_NORMAL_NUM);
+    glEnableVertexAttribArray(CORE_SHADER_IN_TANGENT_NUM);
 
     // set vertex attribute data locations
     glVertexAttribPointer(CORE_SHADER_IN_POSITION_NUM, 3, GL_FLOAT, false, sizeof(coreVertex), 0);

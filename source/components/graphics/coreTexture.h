@@ -24,7 +24,7 @@
 
 // ****************************************************************
 // texture object class
-// \todo check for max available texture units
+// TODO: check for max available texture units
 class coreTexture final : public coreResource
 {
 private:

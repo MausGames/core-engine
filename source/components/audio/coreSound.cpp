@@ -73,7 +73,7 @@ coreError coreSound::Load(coreFile* pFile)
     if( strncmp(acID, "WAVE", 4))
     {
         Core::Log->Error(0, coreUtils::Print("Sound (%s) is not a valid WAVE-file", pFile->GetPath()));
-        return CORE_FILE_ERROR;
+        return CORE_INVALID_DATA;
     }
 
     // read sub-chunks
@@ -95,20 +95,20 @@ coreError coreSound::Load(coreFile* pFile)
     if(m_Format.iAudioFormat != 1)
     {
         Core::Log->Error(0, coreUtils::Print("Sound (%s) is not PCM encoded, compression is not supported", pFile->GetPath()));
-        return CORE_FILE_ERROR;
+        return CORE_INVALID_DATA;
     }
 
     // set sound data format
     ALenum iSoundFormat = 0;
     if(m_Format.iNumChannels == 1)
     {
-        if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_MONO8;
-        if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_MONO16;
+             if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_MONO8;
+        else if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_MONO16;
     }
     else if(m_Format.iNumChannels == 2)
     {
-        if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_STEREO8;
-        if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_STEREO16;
+             if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_STEREO8;
+        else if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_STEREO16;
     }
 
     // create sound buffer
@@ -120,7 +120,7 @@ coreError coreSound::Load(coreFile* pFile)
     if(iError != AL_NO_ERROR)
     {
         Core::Log->Error(0, coreUtils::Print("Sound (%s) could not be loaded (AL Error Code: %d)", pFile->GetPath(), iError));
-        return CORE_FILE_ERROR;
+        return CORE_INVALID_DATA;
     }
 
     // save sound attributes
@@ -145,10 +145,12 @@ coreError coreSound::Unload()
         if(iSource)
         {
 #if defined(_CORE_DEBUG_)
+
             // check for loop property
             int iPlaying; alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iPlaying);
             int iLooping; alGetSourcei(m_iCurSource, AL_LOOPING,      &iLooping);
             SDL_assert(!iPlaying || !iLooping);
+
 #endif
             // stop sound source
             alSourceStop(iSource);
@@ -262,10 +264,12 @@ void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVe
     if(m_iCurSource)
     {
 #if defined(_CORE_DEBUG_)
+
         // check for relative property
         int iStatus;
         alGetSourcei(m_iCurSource, AL_SOURCE_RELATIVE, &iStatus);
         SDL_assert(!iStatus);
+
 #endif
         // set position and velocity
         if(pvPosition) alSourcefv(m_iCurSource, AL_POSITION, *pvPosition);

@@ -14,6 +14,7 @@
 coreLog::coreLog(const char* pcPath)
 : m_sPath  (pcPath)
 , m_iLevel (0)
+, m_iLock  (0)
 {
     // open and reset log file
     FILE* pFile = fopen(m_sPath.c_str(), "w");
@@ -45,11 +46,12 @@ void coreLog::Error(const bool& bShutdown, const std::string& sText)
     // shut down the application
     if(bShutdown)
     {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", sText.c_str(), Core::System->GetWindow());
 #if defined(_CORE_DEBUG_)
         SDL_TriggerBreakpoint();
-#endif
-        Core::System->MsgBox(sText.c_str(), "Error", 3);
+#else
         _exit(1);
+#endif
     }
 }
 
@@ -58,26 +60,34 @@ void coreLog::Error(const bool& bShutdown, const std::string& sText)
 // write text to the log file
 void coreLog::__Write(const bool& bTime, std::string sText)
 {
-    // open log file
-    FILE* pFile = fopen(m_sPath.c_str(), "a");
-    if(!pFile) return;
-
-    // color brackets
-    int iPos = -1;
-    while((iPos = sText.find("(")) >= 0) sText.replace(iPos, 1, "<span class=\"data\">&#40;");
-    while((iPos = sText.find(")")) >= 0) sText.replace(iPos, 1, "&#41;</span>");
-
-    // write timestamp
-    if(bTime)
+    SDL_AtomicLock(&m_iLock);
     {
-        coreUint awTime[3];
-        coreUtils::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
-        fprintf(pFile, "<span class=\"time\">[%02d:%02d:%02d]</span> <span class=\"thread\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], SDL_ThreadID());
+        // write text also to standard output
+        SDL_Log(sText.c_str());
+
+        // open log file
+        FILE* pFile = fopen(m_sPath.c_str(), "a");
+        if(!pFile) {SDL_AtomicUnlock(&m_iLock); return;}
+
+        // color brackets and convert new lines
+        int iPos = -1;
+        while((iPos = sText.find("("))  >= 0) sText.replace(iPos, 1, "<span class=\"data\">&#40;");
+        while((iPos = sText.find(")"))  >= 0) sText.replace(iPos, 1, "&#41;</span>");
+        while((iPos = sText.find("\n")) >= 0) sText.replace(iPos, 1, "<br />");
+
+        // write timestamp
+        if(bTime)
+        {
+            coreUint awTime[3];
+            coreUtils::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
+            fprintf(pFile, "<span class=\"time\">[%02d:%02d:%02d]</span> <span class=\"thread\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], SDL_ThreadID());
+        }
+
+        // write text
+        fprintf(pFile, "%s\n", sText.c_str());
+
+        // close log file
+        fclose(pFile);
     }
-
-    // write text
-    fprintf(pFile, "%s\n", sText.c_str());
-
-    // close log file
-    fclose(pFile);
+    SDL_AtomicUnlock(&m_iLock);
 }

@@ -11,7 +11,7 @@
 int coreThreadMain(void* pData);
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 coreThread::coreThread()
 : m_pThread   (NULL)
@@ -22,19 +22,20 @@ coreThread::coreThread()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // destructor
 coreThread::~coreThread()
 {
     this->KillThread();
-}    
+}
 
 
-// ****************************************************************    
+// ****************************************************************
 // start thread
 SDL_Thread* coreThread::StartThread(const char* pcName)
 {
     if(!m_bEnd) return NULL;
+    m_bEnd = false;
 
     // save name of the thread
     m_sName = pcName;
@@ -43,24 +44,23 @@ SDL_Thread* coreThread::StartThread(const char* pcName)
     m_pThread = SDL_CreateThread(coreThreadMain, pcName, this);
     if(!m_pThread) Core::Log->Error(1, coreUtils::Print("Could not start thread (%s) (SDL: %s)", pcName, SDL_GetError()));
 
-    m_bEnd = false;
     return m_pThread;
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // kill thread
 void coreThread::KillThread()
 {
     if(m_bEnd) return;
+    m_bEnd = true;
 
     // set end status and wait
-    m_bEnd = true;
     SDL_WaitThread(m_pThread, NULL);
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // execute thread
 int coreThread::__Main()
 {
@@ -92,7 +92,7 @@ int coreThread::__Main()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // wrapper for thread creation
 int coreThreadMain(void* pData)
 {

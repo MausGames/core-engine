@@ -103,6 +103,9 @@
     <ClCompile Include="..\..\..\source\manager\coreMemory.cpp">
       <Filter>source\manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\glewES.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -170,6 +173,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\manager\coreMemory.h">
       <Filter>source\manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\glewES.h">
+      <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -98,6 +98,8 @@ bool coreUtils::StrCmp(const char* s, const char* t)
 // get last characters of a string
 const char* coreUtils::StrRight(const char* pcInput, const coreUint& iNum)
 {
+    if(!pcInput) return NULL;
+
     const coreUint iLen = strlen(pcInput);
     return pcInput + (iLen-coreMath::Min(iLen, iNum));
 }
@@ -105,10 +107,23 @@ const char* coreUtils::StrRight(const char* pcInput, const coreUint& iNum)
 
 // ****************************************************************
 // safely get file extension
-const char* coreUtils::StrExt(const char* pcInput)
+const char* coreUtils::StrExtension(const char* pcInput)
 {
+    if(!pcInput) return NULL;
+
     const char* pcExtension = strrchr(pcInput, '.');
     return pcExtension ? pcExtension+1 : pcInput;
+}
+
+
+// ****************************************************************
+// safely get version number
+float coreUtils::StrVersion(const char* pcInput)
+{
+    if(!pcInput) return 0.0f;
+
+    const char* pcDot = strchr(pcInput, '.');
+    return pcDot ? (float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0')) : 0.0f;
 }
 
 
@@ -116,6 +131,8 @@ const char* coreUtils::StrExt(const char* pcInput)
 // move string pointer and skip comments
 void coreUtils::StrSkip(const char** ppcInput, const int &iNum)
 {
+    if(!*ppcInput) return;
+
     int n = iNum;
     char c = '\0';
 

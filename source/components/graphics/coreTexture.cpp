@@ -64,11 +64,11 @@ coreError coreTexture::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // decompress file data
-    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreUtils::StrExt(pFile->GetPath()));
+    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreUtils::StrExtension(pFile->GetPath()));
     if(!pData)
     {
         Core::Log->Error(0, coreUtils::Print("Texture (%s) could not be loaded", pFile->GetPath()));
-        return CORE_FILE_ERROR;
+        return CORE_INVALID_DATA;
     }
 
     const coreUint iDataSize = pData->w * pData->h * 4;
@@ -95,8 +95,8 @@ coreError coreTexture::Load(coreFile* pFile)
         glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
         // copy texture data into PBO
-        GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-        memcpy(ptr, pConvert->pixels, iDataSize);
+        GLubyte* pRange = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+        memcpy(pRange, pConvert->pixels, iDataSize);
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
     }
 

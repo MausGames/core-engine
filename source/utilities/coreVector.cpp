@@ -27,6 +27,7 @@ coreVector2::coreVector2(const float& fx, const float& fy)
 coreVector2 coreVector2::operator + (const coreVector2& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -35,6 +36,7 @@ coreVector2 coreVector2::operator + (const coreVector2& v)const
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
+
 #endif
 
     // normal
@@ -47,6 +49,7 @@ coreVector2 coreVector2::operator + (const coreVector2& v)const
 coreVector2 coreVector2::operator - (const coreVector2& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -55,6 +58,7 @@ coreVector2 coreVector2::operator - (const coreVector2& v)const
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
+
 #endif
 
     // normal
@@ -67,6 +71,7 @@ coreVector2 coreVector2::operator - (const coreVector2& v)const
 coreVector2 coreVector2::operator * (const coreVector2& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -75,6 +80,7 @@ coreVector2 coreVector2::operator * (const coreVector2& v)const
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
+
 #endif
 
     // normal
@@ -87,6 +93,7 @@ coreVector2 coreVector2::operator * (const coreVector2& v)const
 coreVector2 coreVector2::operator / (const coreVector2& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -95,6 +102,7 @@ coreVector2 coreVector2::operator / (const coreVector2& v)const
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
+
 #endif
 
     // normal
@@ -106,10 +114,11 @@ coreVector2 coreVector2::operator / (const coreVector2& v)const
 // multiplication with matrix
 coreVector2 coreVector2::operator * (const coreMatrix& m)const
 {
-    // \todo add SSE-support
+    // TODO: add SSE-support
     const float w = 1.0f / (x*m._14 + y*m._24 + m._44);
 
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -122,6 +131,7 @@ coreVector2 coreVector2::operator * (const coreMatrix& m)const
 
         return coreVector2(afOutput[0], afOutput[1]);
     }
+
 #endif
 
     // normal
@@ -139,9 +149,11 @@ coreVector2& coreVector2::Normalize()
     if(fLength == 0.0f) return *this;
 
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2()) _mm_store_ss(&fLength, _mm_rsqrt_ss(_mm_load_ss(&fLength)));
     else
+
 #endif
 
     // normal
@@ -157,6 +169,7 @@ coreVector2& coreVector2::Normalize()
 float coreVector2::LengthSq()const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -167,6 +180,7 @@ float coreVector2::LengthSq()const
 
         return fOutput;
     }
+
 #endif
 
     // normal
@@ -179,6 +193,7 @@ float coreVector2::LengthSq()const
 float coreVector2::Dot(const coreVector2& vInA, const coreVector2& vInB)
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -187,6 +202,7 @@ float coreVector2::Dot(const coreVector2& vInA, const coreVector2& vInB)
 
         return fOutput;
     }
+
 #endif
 
     // normal
@@ -249,6 +265,7 @@ coreVector3::coreVector3(const float& fx, const float& fy, const float& fz)
 coreVector3 coreVector3::operator + (const coreVector3& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -257,6 +274,7 @@ coreVector3 coreVector3::operator + (const coreVector3& v)const
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
+
 #endif
 
     // normal
@@ -269,6 +287,7 @@ coreVector3 coreVector3::operator + (const coreVector3& v)const
 coreVector3 coreVector3::operator - (const coreVector3& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -277,6 +296,7 @@ coreVector3 coreVector3::operator - (const coreVector3& v)const
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
+
 #endif
 
     // normal
@@ -289,6 +309,7 @@ coreVector3 coreVector3::operator - (const coreVector3& v)const
 coreVector3 coreVector3::operator * (const coreVector3& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -297,6 +318,7 @@ coreVector3 coreVector3::operator * (const coreVector3& v)const
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
+
 #endif
 
     // normal
@@ -309,6 +331,7 @@ coreVector3 coreVector3::operator * (const coreVector3& v)const
 coreVector3 coreVector3::operator / (const coreVector3& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -317,6 +340,7 @@ coreVector3 coreVector3::operator / (const coreVector3& v)const
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
+
 #endif
 
     // normal
@@ -328,10 +352,11 @@ coreVector3 coreVector3::operator / (const coreVector3& v)const
 // multiplication with matrix
 coreVector3 coreVector3::operator * (const coreMatrix& m)const
 {
-    // \todo add SSE-support
+    // TODO: add SSE-support
     const float w = 1.0f / (x*m._14 + y*m._24 + z*m._34 + m._44);
 
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -344,6 +369,7 @@ coreVector3 coreVector3::operator * (const coreMatrix& m)const
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
+
 #endif
 
     // normal
@@ -362,9 +388,11 @@ coreVector3& coreVector3::Normalize()
     if(fLength == 0.0f) return *this;
 
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2()) _mm_store_ss(&fLength, _mm_rsqrt_ss(_mm_load_ss(&fLength)));
     else
+
 #endif
 
     // normal
@@ -380,6 +408,7 @@ coreVector3& coreVector3::Normalize()
 float coreVector3::LengthSq()const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -390,6 +419,7 @@ float coreVector3::LengthSq()const
 
         return fOutput;
     }
+
 #endif
 
     // normal
@@ -402,6 +432,7 @@ float coreVector3::LengthSq()const
 float coreVector3::Dot(const coreVector3& vInA, const coreVector3& vInB)
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -410,6 +441,7 @@ float coreVector3::Dot(const coreVector3& vInA, const coreVector3& vInB)
 
         return fOutput;
     }
+
 #endif
 
     // normal
@@ -457,6 +489,7 @@ coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3
 coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -469,6 +502,7 @@ coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
     }
+
 #endif
 
     // normal
@@ -506,6 +540,7 @@ coreVector4::coreVector4(const float& fx, const float& fy, const float& fz, cons
 coreVector4 coreVector4::operator + (const coreVector4& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -514,6 +549,7 @@ coreVector4 coreVector4::operator + (const coreVector4& v)const
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
+
 #endif
 
     // normal
@@ -526,6 +562,7 @@ coreVector4 coreVector4::operator + (const coreVector4& v)const
 coreVector4 coreVector4::operator - (const coreVector4& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -534,6 +571,7 @@ coreVector4 coreVector4::operator - (const coreVector4& v)const
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
+
 #endif
 
     // normal
@@ -546,6 +584,7 @@ coreVector4 coreVector4::operator - (const coreVector4& v)const
 coreVector4 coreVector4::operator * (const coreVector4& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -554,6 +593,7 @@ coreVector4 coreVector4::operator * (const coreVector4& v)const
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
+
 #endif
 
     // normal
@@ -566,6 +606,7 @@ coreVector4 coreVector4::operator * (const coreVector4& v)const
 coreVector4 coreVector4::operator / (const coreVector4& v)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE2())
     {
@@ -574,6 +615,7 @@ coreVector4 coreVector4::operator / (const coreVector4& v)const
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
+
 #endif
 
     // normal
@@ -586,6 +628,7 @@ coreVector4 coreVector4::operator / (const coreVector4& v)const
 coreVector4 coreVector4::operator * (const coreMatrix& m)const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -598,6 +641,7 @@ coreVector4 coreVector4::operator * (const coreMatrix& m)const
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
     }
+
 #endif
 
     // normal
@@ -613,6 +657,7 @@ coreVector4 coreVector4::operator * (const coreMatrix& m)const
 float coreVector4::LengthSq()const
 {
 #if defined(_CORE_SSE_)
+
     // optimized
     if(Core::System->SupportSSE41())
     {
@@ -623,6 +668,7 @@ float coreVector4::LengthSq()const
 
         return fOutput;
     }
+
 #endif
 
     // normal
@@ -634,7 +680,7 @@ float coreVector4::LengthSq()const
 // multiplication of two quaternions
 coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)
 {
-    // \todo add SSE-support
+    // TODO: add SSE-support
     return coreVector4(vInA.x*vInB.w + vInA.w*vInB.x + vInA.y*vInB.z - vInA.z*vInB.y,
                        vInA.y*vInB.w + vInA.w*vInB.y + vInA.z*vInB.x - vInA.x*vInB.z,
                        vInA.z*vInB.w + vInA.w*vInB.z + vInA.x*vInB.y - vInA.y*vInB.x,

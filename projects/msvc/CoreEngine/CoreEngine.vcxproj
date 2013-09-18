@@ -105,6 +105,7 @@
     <ClCompile Include="..\..\..\source\files\coreArchive.cpp" />
     <ClCompile Include="..\..\..\source\files\coreConfig.cpp" />
     <ClCompile Include="..\..\..\source\files\coreLog.cpp" />
+    <ClCompile Include="..\..\..\source\glewES.cpp" />
     <ClCompile Include="..\..\..\source\interfaces\CoreAudio.cpp" />
     <ClCompile Include="..\..\..\source\interfaces\CoreGraphics.cpp" />
     <ClCompile Include="..\..\..\source\interfaces\CoreInput.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="..\..\..\source\files\coreArchive.h" />
     <ClInclude Include="..\..\..\source\files\coreConfig.h" />
     <ClInclude Include="..\..\..\source\files\coreLog.h" />
+    <ClInclude Include="..\..\..\source\glewES.h" />
     <ClInclude Include="..\..\..\source\interfaces\CoreAudio.h" />
     <ClInclude Include="..\..\..\source\interfaces\CoreGraphics.h" />
     <ClInclude Include="..\..\..\source\interfaces\CoreInput.h" />

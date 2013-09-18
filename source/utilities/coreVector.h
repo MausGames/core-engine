@@ -221,7 +221,7 @@ public:
 
 // ****************************************************************
 // four-dimensional vector
-// \todo maybe implement real quaternion class later with animations
+// TODO: maybe implement real quaternion class later with animations
 class coreVector4 final
 {
 public:

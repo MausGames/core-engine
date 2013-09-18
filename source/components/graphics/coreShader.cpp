@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::vector<coreProgram*> coreProgram::s_apStack; // = NULL;
+coreProgram* coreProgram::s_pCurrent = NULL;
 
 
 // ****************************************************************
@@ -52,7 +52,7 @@ coreError coreShader::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // extract file extension
-    const char* pcExtension = coreUtils::StrExt(pFile->GetPath());
+    const char* pcExtension = coreUtils::StrExtension(pFile->GetPath());
 
     // set shader type
     GLenum iType;
@@ -61,12 +61,15 @@ coreError coreShader::Load(coreFile* pFile)
     else
     {
         Core::Log->Error(0, coreUtils::Print("Shader (%s) could not be identified (valid extension: vs, vert, fs, frag)", pFile->GetPath()));
-        return CORE_FILE_ERROR;
+        return CORE_INVALID_DATA;
     }
+
+    const char*  pcData = reinterpret_cast<const char*>(pFile->GetData());
+    const GLint* piSize = reinterpret_cast<const GLint*>(&pFile->GetSize());
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
-    glShaderSource(m_iShader, 1, (const GLchar**)pFile->GetData(), (const GLint*)&pFile->GetSize());
+    glShaderSource(m_iShader, 1, &pcData, piSize);
     glCompileShader(m_iShader);
 
     // check for errors
@@ -78,18 +81,21 @@ coreError coreShader::Load(coreFile* pFile)
         int iLength;
         glGetShaderiv(m_iShader, GL_INFO_LOG_LENGTH, &iLength);
 
-        // get error-log
-        char* pcLog = new char[iLength];
-        glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
+        if(iLength)
+        {
+            // get error-log
+            char* pcLog = new char[iLength];
+            glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
 
-        // write error-log
-        Core::Log->Error(0, coreUtils::Print("Shader (%s) could not be compiled", pFile->GetPath()));
-        Core::Log->ListStart("Error Log");
-        Core::Log->ListEntry(pcLog);
-        Core::Log->ListEnd();
+            // write error-log
+            Core::Log->Error(0, coreUtils::Print("Shader (%s) could not be compiled", pFile->GetPath()));
+            Core::Log->ListStart("Error Log");
+            Core::Log->ListEntry(pcLog);
+            Core::Log->ListEnd();
 
-        SAFE_DELETE_ARRAY(pcLog)
-        return CORE_FILE_ERROR;
+            SAFE_DELETE_ARRAY(pcLog)
+        }
+        return CORE_INVALID_DATA;
     }
 
     // save shader attributes
@@ -144,93 +150,150 @@ coreProgram::~coreProgram()
 
 
 // ****************************************************************
-// reset the object with the resource manager
-void coreProgram::Reset(const bool& bInit)
+// init the shader-program
+coreError coreProgram::Init()
 {
-    if(bInit)
-    {
-        // check if shader is ready for linking
-        if(m_iStatus != 1) return;
+    if(m_iStatus != 1) return CORE_INVALID_CALL;
 
-        // check if all requested shaders are loaded
-        for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
-            if(!(*it).IsLoaded()) return;
-
-        // create shader-program
-        SDL_assert(!m_iProgram);
-        m_iProgram = glCreateProgram();
-
-        // attach shader objects
-        for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
-            glAttachShader(m_iProgram, (*it)->GetShader());
-
-        // set general input and output identifier
-        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_POSITION_NUM, CORE_SHADER_IN_POSITION);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TEXTURE_NUM,  CORE_SHADER_IN_TEXTURE);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_NORMAL_NUM,   CORE_SHADER_IN_NORMAL);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TANGENT_NUM,  CORE_SHADER_IN_TANGENT);
-        if(Core::Graphics->SupportOpenGL() >= 3.0f) glBindFragDataLocation(m_iProgram, CORE_SHADER_OUT_COLOR0_NUM, CORE_SHADER_OUT_COLOR0);
-
-        // link shader-program
-        glLinkProgram(m_iProgram);
-        m_iStatus = 2;
-
-        // check for errors
-        int iStatus;
-        glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
-        if(!iStatus) this->LogError("Shader-Program could not be linked");
+    // check if all requested shaders are loaded
+    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
+        if(!(*it).IsLoaded()) return CORE_BUSY;
 
 #if defined(_CORE_DEBUG_)
-        // validate shader-program
-        glValidateProgram(m_iProgram);
-        glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatus);
-        if(!iStatus) this->LogError("Shader-Program could not be validated");
+
+    // check for duplicate shader objects
+    for(coreUint i = 0; i < m_apShader.size(); ++i)
+        for(coreUint j = i+1; j < m_apShader.size(); ++j)
+            SDL_assert(strcmp(m_apShader[i]->GetPath(), m_apShader[j]->GetPath()));
+
 #endif
-    }
-    else
+
+    // create shader-program
+    SDL_assert(!m_iProgram);
+    m_iProgram = glCreateProgram();
+
+    // attach shader objects
+    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
+        glAttachShader(m_iProgram, (*it)->GetShader());
+
+    // set input and output attribute locations
+    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_POSITION_NUM, CORE_SHADER_IN_POSITION);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TEXTURE_NUM,  CORE_SHADER_IN_TEXTURE);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_NORMAL_NUM,   CORE_SHADER_IN_NORMAL);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TANGENT_NUM,  CORE_SHADER_IN_TANGENT);
+    if(Core::Graphics->SupportOpenGL() >= 3.0f) glBindFragDataLocation(m_iProgram, CORE_SHADER_OUT_COLOR0_NUM, CORE_SHADER_OUT_COLOR0);
+
+    // link shader-program
+    glLinkProgram(m_iProgram);
+    m_iStatus = 2;
+
+    // check for errors
+    int iStatus;
+    glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
+
+#if defined(_CORE_DEBUG_)
+
+    // validate shader-program
+    glValidateProgram(m_iProgram);
+
+    // check for errors
+    int iStatusVal;
+    glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatusVal);
+    iStatus &= iStatusVal;
+
+#endif
+
+    if(!iStatus)
     {
-        if(!m_iProgram) return;
+        // get length of error-log
+        int iLength;
+        glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
 
-        // detach shader objects
-        for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
-            glDetachShader(m_iProgram, (*it)->GetShader());
+        if(iLength)
+        {
+            // get error-log
+            char* pcLog = new char[iLength];
+            glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
 
-        // clear cached identifiers
-        m_aiUniform.clear();
-        m_aiAttribute.clear();
+            // write error-log
+            Core::Log->Error(0, "Shader-Program could not be linked/validated");
+            Core::Log->ListStart("Error Log");
+            for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
+                Core::Log->ListEntry(coreUtils::Print("(%s)", (*it)->GetPath()));
+            Core::Log->ListEntry(pcLog);
+            Core::Log->ListEnd();
 
-        // delete shader-program
-        glDeleteProgram(m_iProgram);
-        m_iProgram = 0;
-        m_iStatus  = 1;
+            SAFE_DELETE_ARRAY(pcLog)
+        }
+        return CORE_INVALID_DATA;
     }
+    return CORE_OK;
+}
+
+
+ // ****************************************************************
+// exit the shader-program
+coreError coreProgram::Exit()
+{
+    if(!m_iProgram) return CORE_INVALID_CALL;
+
+    // detach shader objects
+    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
+        glDetachShader(m_iProgram, (*it)->GetShader());
+
+    // clear cached identifiers
+    m_aiUniform.clear();
+    m_aiAttribute.clear();
+
+    // delete shader-program
+    glDeleteProgram(m_iProgram);
+    m_iProgram = 0;
+    m_iStatus  = 1;
+
+    return CORE_OK;
 }
 
 
 // ****************************************************************
 // enable the shader-program
+// TODO: use UBOs for OpenGL 3.1+
+// TODO: remove/move linking part somehow
 void coreProgram::Enable()
 {
     SDL_assert(m_iStatus);
+    SDL_assert(!s_pCurrent);
+
+    // save current shader-program
+    s_pCurrent = this;
 
     // link the shader-program
-    // \todo remove this part somehow
-    if(!this->Linked())
+    if(!this->IsLinked())
     {
-        this->Reset(true);
-        if(!this->Linked()) return;
+        if(this->Init() != CORE_OK)
+            return;
     }
 
-    // add shader-program to the stack and enable it
-    if(s_apStack.back() != this) s_apStack.push_back(this);
+    // set current shader-program
     glUseProgram(m_iProgram);
 
-    // set general transformation matrices
-    // \todo use UBOs for OpenGL 3.1+
+    // forward transformation matrices
     this->SetUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
-    this->SetUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(), false);
-    this->SetUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(), false);
-    //this->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM,   NULL, false);
+    this->SetUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
+    this->SetUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(),      false);
+    //this->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM, NULL, false);
+}
+
+
+// ****************************************************************
+// disable the shader-program
+void coreProgram::Disable()
+{
+    SDL_assert(s_pCurrent == this);
+    if(!s_pCurrent) return;
+
+    // reset current shader-program
+    s_pCurrent = NULL;
+    glUseProgram(0);
 }
 
 
@@ -239,37 +302,5 @@ void coreProgram::Enable()
 void coreProgram::AttachShader(const char* pcPath)
 {
     if(m_iStatus) return;
-
-#if defined(_CORE_DEBUG_)
-    // check for already added shader object
-    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
-        SDL_assert(strcmp((*it)->GetPath(), pcPath));
-#endif
-
-    // load and add new shader object
     m_apShader.push_back(Core::Manager::Resource->Load<coreShader>(pcPath));
-}
-
-
-// ****************************************************************
-// write current error-log to log file
-void coreProgram::LogError(const char* pcText)const
-{
-    // get length of error-log
-    int iLength;
-    glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
-    if(!iLength) return;
-
-    // get error-log
-    char* pcLog = new char[iLength];
-    glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
-
-    // write error-log
-    Core::Log->Error(0, pcText);
-    Core::Log->ListStart("Error Log");
-    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it) Core::Log->ListEntry((*it)->GetPath());
-    Core::Log->ListEntry(pcLog);
-    Core::Log->ListEnd();
-
-    SAFE_DELETE_ARRAY(pcLog)
 }

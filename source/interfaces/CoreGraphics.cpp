@@ -19,6 +19,8 @@ CoreGraphics::CoreGraphics()
 , m_vCamDirection   (coreVector3(0.0f,0.0f,-1.0f))
 , m_vCamOrientation (coreVector3(0.0f,1.0f, 0.0f))
 , m_vCurResolution  (coreVector2(0.0f,0.0f))
+, m_fOpenGL         (0.0f)
+, m_fGLSL           (0.0f)
 {
     Core::Log->Header("Graphics Interface");
 
@@ -51,17 +53,10 @@ CoreGraphics::CoreGraphics()
     // set numerical OpenGL version
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL, 0.0f);
     if(fForceOpenGL) m_fOpenGL = fForceOpenGL;
-    else
-    {
-        const char* pcDot = strchr((const char*)glGetString(GL_VERSION), '.');
-        if(pcDot) m_fOpenGL = float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0');
-             else m_fOpenGL = 0.0f;
-    }
+                else m_fOpenGL = coreUtils::StrVersion((const char*)glGetString(GL_VERSION));
 
     // set numerical GLSL version
-    const char* pcDot = strrchr((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION), '.');
-    if(pcDot) m_fGLSL = float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0');
-         else m_fGLSL = 0.0f;
+    m_fGLSL = coreUtils::StrVersion((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     // check OpenGL version
     if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements are not met, video card with at least OpenGL 2.0 is required");
@@ -172,13 +167,13 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
 // create a screenshot
 void CoreGraphics::Screenshot(const char* pcPath)
 {
-    // \todo implement function
+    // TODO: implement function
     // ? extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
     // ? extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst);
 }
 
 void CoreGraphics::Screenshot()
 {
-    // \todo implement function
+    // TODO: implement function
     this->Screenshot("");
 }

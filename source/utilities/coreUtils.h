@@ -54,7 +54,8 @@ public:
     //! @{
     static bool StrCmp(const char* s, const char* t);
     static const char* StrRight(const char* pcInput, const coreUint& iNum);
-    static const char* StrExt(const char* pcInput);
+    static const char* StrExtension(const char* pcInput);
+    static float StrVersion(const char* pcInput);
     static void StrSkip(const char** ppcInput, const int &iNum);
     //! @}
 

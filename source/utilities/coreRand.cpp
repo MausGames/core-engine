@@ -18,8 +18,10 @@ coreRand::coreRand(const coreUint& iSize, int iInit)
 , m_iCurRand (0)
 {
 #if defined(_CORE_DEBUG_)
+
     // always the same random numbers in debug-mode
     if(iInit < 0) iInit = 0;
+
 #endif
 
     // init random number generator

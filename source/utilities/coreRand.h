@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // random number generator class
-// \todo implement Mersenne Twister
+// TODO: implement Mersenne Twister
 class coreRand final
 {
 private:

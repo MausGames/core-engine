@@ -16,8 +16,10 @@
 class coreLog final
 {
 private:
-    std::string m_sPath;   //!< relative path of the log file
-    int m_iLevel;          //!< logging level (0 = all | 1 = only non-errors | -1 = only errors)
+    std::string m_sPath;    //!< relative path of the log file
+    int m_iLevel;           //!< logging level (0 = all | 1 = only non-errors | -1 = only errors)
+
+    SDL_SpinLock m_iLock;   //!< spinlock to prevent asynchronous log access
 
 
 public:
