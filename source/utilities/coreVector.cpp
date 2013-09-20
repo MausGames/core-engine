@@ -123,7 +123,7 @@ coreVector2 coreVector2::operator * (const coreMatrix& m)const
     if(Core::System->SupportSSE41())
     {
         const __m128 A = _mm_setr_ps(x, y, 0.0f, w);
-        const coreMatrix mInput = m.Transposed();
+        static coreMatrix mInput; mInput = m.Transposed();
 
         float afOutput[2];
         for(int i = 0; i < 2; ++i)
@@ -361,7 +361,7 @@ coreVector3 coreVector3::operator * (const coreMatrix& m)const
     if(Core::System->SupportSSE41())
     {
         const __m128 A = _mm_setr_ps(x, y, z, w);
-        const coreMatrix mInput = m.Transposed();
+        static coreMatrix mInput; mInput = m.Transposed();
 
         float afOutput[3];
         for(int i = 0; i < 3; ++i)
@@ -633,7 +633,7 @@ coreVector4 coreVector4::operator * (const coreMatrix& m)const
     if(Core::System->SupportSSE41())
     {
         const __m128 A = _mm_setr_ps(x, y, z, w);
-        const coreMatrix mInput = m.Transposed();
+        static coreMatrix mInput; mInput = m.Transposed();
 
         float afOutput[4];
         for(int i = 0; i < 4; ++i)

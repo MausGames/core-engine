@@ -88,8 +88,8 @@ coreMatrix coreMatrix::operator * (const coreMatrix& v)const
     // optimized
     if(Core::System->SupportSSE41())
     {
-        const coreMatrix mThis  = *this;
-        const coreMatrix mInput = v.Transposed();
+        static coreMatrix mThis;  mThis  = *this;
+        static coreMatrix mInput; mInput = v.Transposed();
         coreMatrix mOutput;
 
         for(int i = 0; i < 4; ++i)
@@ -228,7 +228,6 @@ coreMatrix coreMatrix::RotationX(const coreVector2& vDirection)
     if(!vDirection.x && !vDirection.y) return coreMatrix::Identity();
 
     const coreVector2 N = vDirection.Normalized();
-
     return coreMatrix(1.0f, 0.0f, 0.0f, 0.0f,
                       0.0f,  N.y,  N.x, 0.0f,
                       0.0f, -N.x,  N.y, 0.0f,
@@ -248,7 +247,6 @@ coreMatrix coreMatrix::RotationY(const coreVector2& vDirection)
     if(!vDirection.x && !vDirection.y) return coreMatrix::Identity();
 
     const coreVector2 N = vDirection.Normalized();
-
     return coreMatrix( N.y, 0.0f, -N.x, 0.0f,
                       0.0f, 1.0f, 0.0f, 0.0f,
                        N.x, 0.0f,  N.y, 0.0f,
@@ -268,7 +266,6 @@ coreMatrix coreMatrix::RotationZ(const coreVector2& vDirection)
     if(!vDirection.x && !vDirection.y) return coreMatrix::Identity();
 
     const coreVector2 N = vDirection.Normalized();
-
     return coreMatrix( N.y,  N.x, 0.0f, 0.0f,
                       -N.x,  N.y, 0.0f, 0.0f,
                       0.0f, 0.0f, 1.0f, 0.0f,
