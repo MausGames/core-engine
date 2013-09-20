@@ -120,9 +120,8 @@ public:
 
     //! assignment operators
     //! @{
-    coreResourcePtr<T>& operator = (coreResourceHandle* pHandle);
-    coreResourcePtr<T>& operator = (const coreResourcePtr<T>& c);
-    coreResourcePtr<T>& operator = (coreResourcePtr<T>&& m);
+    coreResourcePtr<T>& operator = (coreResourcePtr<T> o);
+    template <typename S> friend void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b);
     //! @}
 
     //! access active resource object
@@ -257,33 +256,17 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 
 // ****************************************************************
 // assignment operators
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourceHandle* pHandle)
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)
 {
-    // change resource handle
-    if(this->IsActive()) m_pHandle->RefDecrease();
-    m_pHandle = pHandle;
-    if(this->IsActive()) m_pHandle->RefIncrease();
-
+    swap(*this, o);
     return *this;
 }
 
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (const coreResourcePtr<T>& c)
+template <typename S> void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)
 {
-    if(this != &c)
-    {
-        // change resource handle and status
-        if(this->IsActive()) m_pHandle->RefDecrease();
-        m_pHandle = c.m_pHandle;
-        m_bActive = c.m_bActive;
-        if(this->IsActive()) m_pHandle->RefIncrease();
-    }
-    return *this;
-}
-
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T>&& m)
-{
-    std::swap(*this, m);
-    return *this;
+    using std::swap;
+    swap(a.m_pHandle, b.m_pHandle);
+    swap(a.m_bActive, b.m_bActive);
 }
 
 

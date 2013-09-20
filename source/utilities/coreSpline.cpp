@@ -41,21 +41,17 @@ coreSpline::~coreSpline()
 
 // ****************************************************************
 // assignment operators
-coreSpline& coreSpline::operator = (const coreSpline& c)
+coreSpline& coreSpline::operator = (coreSpline o)
 {
-    if(this != &c)
-    {
-        // copy nodes and distance
-        m_apNode       = c.m_apNode;
-        m_fMaxDistance = c.m_fMaxDistance;
-    }
+    swap(*this, o);
     return *this;
 }
 
-coreSpline& coreSpline::operator = (coreSpline&& m)
+void swap(coreSpline& a, coreSpline& b)
 {
-    std::swap(*this, m);
-    return *this;
+    using std::swap;
+    swap(a.m_apNode,       b.m_apNode);
+    swap(a.m_fMaxDistance, b.m_fMaxDistance);
 }
 
 

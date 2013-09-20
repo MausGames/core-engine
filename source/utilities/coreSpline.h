@@ -39,8 +39,8 @@ public:
 
     //! assignment operators
     //! @{
-    coreSpline& operator = (const coreSpline& c);
-    coreSpline& operator = (coreSpline&& m);
+    coreSpline& operator = (coreSpline o);
+    friend void swap(coreSpline& a, coreSpline& b);
     //! @}
 
     //! control nodes
