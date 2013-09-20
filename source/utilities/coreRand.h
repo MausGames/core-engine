@@ -32,8 +32,8 @@ public:
 
     //! assignment operators
     //! @{
-    coreRand& operator = (const coreRand& c);
-    coreRand& operator = (coreRand&& m);
+    coreRand& operator = (coreRand o);
+    friend void swap(coreRand& a, coreRand& b);
     //! @}
 
     //! reset the generator

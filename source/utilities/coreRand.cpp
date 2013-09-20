@@ -62,26 +62,16 @@ coreRand::~coreRand()
 
 // ****************************************************************
 // assignment operators
-coreRand& coreRand::operator = (const coreRand& c)
+coreRand& coreRand::operator = (coreRand o)
 {
-    if(this != &c)
-    {
-        // delete random numbers
-        SAFE_DELETE_ARRAY(m_piRand)
-
-        // copy attributes
-        m_iNumRand = c.m_iNumRand;
-        m_iCurRand = c.m_iCurRand;
-
-        // copy random numbers
-        m_piRand = new int[m_iNumRand];
-        memcpy(m_piRand, c.m_piRand, m_iNumRand*sizeof(m_piRand[0]));
-    }
+    swap(*this, o);
     return *this;
 }
 
-coreRand& coreRand::operator = (coreRand&& m)
+void swap(coreRand& a, coreRand& b)
 {
-    std::swap(*this, m);
-    return *this;
+    using std::swap;
+    swap(a.m_piRand,   b.m_piRand);
+    swap(a.m_iNumRand, b.m_iNumRand);
+    swap(a.m_iCurRand, b.m_iCurRand);
 }
