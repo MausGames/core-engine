@@ -23,12 +23,12 @@ Documentation for the framework is currently not available
 
 # Libraries
 - Libraries used within the framework
- - [SDL][10], [SDL_image][11] (jpeg, png, zlib), [SDL_ttf][12] (freetype)
- - [OpenGL][13], [GLEW][14]
- - [OpenAL][15], [Ogg Vorbis][16]
+> - [SDL][10], [SDL_image][11] (jpeg, png, zlib), [SDL_ttf][12] (freetype)
+> - [OpenGL][13], [GLEW][14]
+> - [OpenAL][15], [Ogg Vorbis][16]
 - Specific libraries used for Android development
- - [OpenGL ES 2.0][17]
- - [OpenAL with Android backend][18]
+> - [OpenGL ES 2.0][17]
+> - [OpenAL with Android backend][18]
 
 
 [5]:  http://developer.android.com/sdk/
