@@ -38,7 +38,7 @@ bool coreConfig::GetBool(const char* pcSection, const char* pcKey, const bool& b
 {
     const bool bReturn = m_Config.GetBoolValue(pcSection, pcKey, bDefault);
     if(bReturn == bDefault) this->SetBool(pcSection, pcKey, bDefault);
-    
+
     return bReturn;
 }
 
@@ -49,7 +49,7 @@ int coreConfig::GetInt(const char* pcSection, const char* pcKey, const int& iDef
 {
     const int iReturn = (int)m_Config.GetLongValue(pcSection, pcKey, iDefault);
     if(iReturn == iDefault) this->SetInt(pcSection, pcKey, iDefault);
-    
+
     return iReturn;
 }
 
@@ -60,6 +60,6 @@ float coreConfig::GetFloat(const char* pcSection, const char* pcKey, const float
 {
     const float fReturn = (float)m_Config.GetDoubleValue(pcSection, pcKey, fDefault);
     if(fReturn == fDefault) this->SetFloat(pcSection, pcKey, fDefault);
-    
+
     return fReturn;
 }

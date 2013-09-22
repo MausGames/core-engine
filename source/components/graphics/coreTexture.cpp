@@ -71,7 +71,7 @@ coreError coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    const coreUint iDataSize = pData->w * pData->h * 4;
+    const coreUint iDataSize = pData->w * pData->h * 3;
     const bool& bPixelBuffer = Core::Graphics->SupportFeature("GL_ARB_pixel_buffer_object");
     const bool& bAnisotropic = Core::Graphics->SupportFeature("GL_EXT_texture_filter_anisotropic");
     const bool& bMipMap      = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
@@ -83,7 +83,7 @@ coreError coreTexture::Load(coreFile* pFile)
     m_vResolution = coreVector2(float(pData->w), float(pData->h));
 
     // convert data format
-    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, 32, CORE_TEXTURE_MASK);
+    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, 24, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pData, NULL, pConvert, NULL);
 
     GLuint iBuffer;
@@ -130,7 +130,7 @@ coreError coreTexture::Load(coreFile* pFile)
         if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER, 0));
 
         // load texture data from PBO
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 
         // unbind texture from texture unit

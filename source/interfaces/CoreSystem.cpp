@@ -73,9 +73,13 @@ CoreSystem::CoreSystem()
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_MULTISAMPLING, 0));
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-    SDL_GL_SetSwapInterval(1);
 
     // try to force OpenGL context version
+#if defined(_CORE_GLES_)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+#else
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL, 0.0f);
     if(fForceOpenGL)
     {
@@ -83,6 +87,7 @@ CoreSystem::CoreSystem()
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(floorf(fForceOpenGL*10.0f))%10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     }
+#endif
 
     // create main window object
     m_pWindow = SDL_CreateWindow(coreUtils::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
@@ -98,10 +103,10 @@ CoreSystem::CoreSystem()
         m_pWindow = SDL_CreateWindow(coreUtils::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
         if(!m_pWindow) Core::Log->Error(1, coreUtils::Print("Main window could not be created (SDL: %s)", SDL_GetError()));
     }
-    else Core::Log->Info("Main window created");
+    Core::Log->Info("Main window created");
 
     // init high precision time
-    m_fPerfFrequency = float(1.0/double(SDL_GetPerformanceFrequency()));
+    m_dPerfFrequency = 1.0/double(SDL_GetPerformanceFrequency());
     m_iPerfTime      = SDL_GetPerformanceCounter();
 
     // reset adjusted frame times
@@ -268,7 +273,7 @@ void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
     const uint64_t iNewPerfTime = SDL_GetPerformanceCounter();
-    const float fNewLastTime    = float(iNewPerfTime - m_iPerfTime) * m_fPerfFrequency;
+    const float fNewLastTime    = float(double(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
     m_iPerfTime                 = iNewPerfTime;
 
     if(m_iSkipFrame || fNewLastTime >= 0.25f)

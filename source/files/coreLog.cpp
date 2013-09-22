@@ -21,15 +21,15 @@ coreLog::coreLog(const char* pcPath)
     if(!pFile) return;
 
     // write basic style sheet
-    fprintf(pFile, "<style type=\"text/css\">\n");
-    fprintf(pFile, "body       {font-family: courier new;}\n");
-    fprintf(pFile, ".time      {color: #AAAAAA;}\n");
-    fprintf(pFile, ".thread    {color: green;}\n");
-    fprintf(pFile, ".data      {color: teal;}\n");
-    fprintf(pFile, ".header    {font-weight: bold; font-size: 22px;}\n");
-    fprintf(pFile, ".liststart {font-weight: bold;}\n");
-    fprintf(pFile, ".error     {font-weight: bold; color: red;}\n");
-    fprintf(pFile, "</style>\n");
+    fprintf(pFile, "<style type=\"text/css\">                        \n");
+    fprintf(pFile, "  body      {font-family: courier new;}          \n");
+    fprintf(pFile, " .time      {color: #AAAAAA;}                    \n");
+    fprintf(pFile, " .thread    {color: green;}                      \n");
+    fprintf(pFile, " .data      {color: teal;}                       \n");
+    fprintf(pFile, " .header    {font-weight: bold; font-size: 22px;}\n");
+    fprintf(pFile, " .liststart {font-weight: bold;}                 \n");
+    fprintf(pFile, " .error     {font-weight: bold; color: red;}     \n");
+    fprintf(pFile, "</style>                                         \n");
 
     // close log file
     fclose(pFile);
@@ -43,10 +43,12 @@ void coreLog::Error(const bool& bShutdown, const std::string& sText)
     // write error message
     if(m_iLevel <= 0) this->__Write(true, "<span class=\"error\">" + sText + "</span><br />");
 
-    // shut down the application
     if(bShutdown)
     {
+        // show critical error message
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", sText.c_str(), Core::System->GetWindow());
+
+        // trigger breakpoint or shut down the application
 #if defined(_CORE_DEBUG_)
         SDL_TriggerBreakpoint();
 #else

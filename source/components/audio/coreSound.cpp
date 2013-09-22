@@ -219,12 +219,12 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
     if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
 
     // set initial sound source properties
-    alSourcei(m_iCurSource,  AL_BUFFER,          m_iBuffer);
-    alSourcei(m_iCurSource,  AL_SOURCE_RELATIVE, true);
+    alSourcei(m_iCurSource, AL_BUFFER,          m_iBuffer);
+    alSourcei(m_iCurSource, AL_SOURCE_RELATIVE, true);
 
-    alSourcef(m_iCurSource,  AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
-    alSourcef(m_iCurSource,  AL_PITCH,           fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
-    alSourcei(m_iCurSource,  AL_LOOPING,         bLoop);
+    alSourcef(m_iCurSource, AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND, 0.5f));
+    alSourcef(m_iCurSource, AL_PITCH,           fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
+    alSourcei(m_iCurSource, AL_LOOPING,         bLoop);
 
     // start playback
     alSourcePlay(m_iCurSource);

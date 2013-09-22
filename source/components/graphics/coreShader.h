@@ -17,19 +17,19 @@
 #define CORE_SHADER_UNIFORM_ORTHO       "u_mOrtho"
 #define CORE_SHADER_UNIFORM_CAMERA      "u_mCamera"
 #define CORE_SHADER_UNIFORM_TRANSFORM   "u_mTransform"
+#define CORE_SHADER_UNIFORM_LIGHT0      "u_v3Light0"
 
-#define CORE_SHADER_IN_POSITION "in_v3Position"
-#define CORE_SHADER_IN_TEXTURE  "in_v2Texture"
-#define CORE_SHADER_IN_NORMAL   "in_v3Normal"
-#define CORE_SHADER_IN_TANGENT  "in_v4Tangent"
-#define CORE_SHADER_OUT_COLOR0  "out_v4Color0"
+#define CORE_SHADER_ATTRIBUTE_POSITION     "a_v3Position"
+#define CORE_SHADER_ATTRIBUTE_POSITION_NUM 0
+#define CORE_SHADER_ATTRIBUTE_TEXTURE      "a_v2Texture"
+#define CORE_SHADER_ATTRIBUTE_TEXTURE_NUM  1
+#define CORE_SHADER_ATTRIBUTE_NORMAL       "a_v3Normal"
+#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM   2
+#define CORE_SHADER_ATTRIBUTE_TANGENT      "a_v4Tangent"
+#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM  3
 
-#define CORE_SHADER_IN_POSITION_NUM 0
-#define CORE_SHADER_IN_TEXTURE_NUM  1
-#define CORE_SHADER_IN_NORMAL_NUM   2
-#define CORE_SHADER_IN_TANGENT_NUM  3
-#define CORE_SHADER_OUT_COLOR0_NUM  0
-
+#define CORE_SHADER_OUT_COLOR0     "o_v4Color0"
+#define CORE_SHADER_OUT_COLOR0_NUM 0
 
 
 // ****************************************************************
@@ -99,7 +99,7 @@ public:
 
     //! reset the object with the resource manager
     //! @{
-    inline void Reset(const bool& bInit)override {if(bInit) this->Init(); else this->Exit();}
+    void Reset(const bool& bInit)override {if(bInit) this->Init(); else this->Exit();}
     //! @}
 
     //! enable and disable the shader-program

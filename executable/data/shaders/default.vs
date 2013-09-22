@@ -1,18 +1,17 @@
-#version 130
-
 uniform mat4 u_mPerspective;
 uniform mat4 u_mOrtho;
 uniform mat4 u_mCamera;
+uniform mat4 u_mTransform;
 
-in vec3 in_v3Position;
-in vec2 in_v2Texture;
-in vec3 in_v3Normal;
-in vec4 in_v4Tangent;
+attribute vec3 a_v3Position;
+attribute vec2 a_v2Texture;
+attribute vec3 a_v3Normal;
+attribute vec4 a_v4Tangent;
 
+varying vec2 v_v2TexCoord;
 
 void main()
 {
-    gl_Position = u_mPerspective * u_mCamera * vec4(in_v3Position, 1.0);
+    gl_Position  = u_mPerspective * u_mCamera * u_mTransform * vec4(a_v3Position, 1.0);
+    v_v2TexCoord = a_v2Texture;
 }
-
-

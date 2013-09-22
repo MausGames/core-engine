@@ -94,7 +94,7 @@ coreModel::md5File::md5File(const char** ppcData)
 
     // check for correct file type
     SCAN_DATA(*ppcData, "")
-    SCAN_DATA(*ppcData, "%15s %d", &acIdentifier, &iVersion)
+    SCAN_DATA(*ppcData, "%15s %d", (char*)&acIdentifier, &iVersion)
     if(strcmp(acIdentifier, "MD5Version") || iVersion != 10) return;
 
     // read number of objects
@@ -410,14 +410,14 @@ coreError coreModel::CheckSync()
 void coreModel::__BindVertexAttributes()
 {
     // enable vertex attributes
-    glEnableVertexAttribArray(CORE_SHADER_IN_POSITION_NUM);
-    glEnableVertexAttribArray(CORE_SHADER_IN_TEXTURE_NUM);
-    glEnableVertexAttribArray(CORE_SHADER_IN_NORMAL_NUM);
-    glEnableVertexAttribArray(CORE_SHADER_IN_TANGENT_NUM);
+    glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_POSITION_NUM);
+    glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM);
+    glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_NORMAL_NUM);
+    glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_TANGENT_NUM);
 
     // set vertex attribute data locations
-    glVertexAttribPointer(CORE_SHADER_IN_POSITION_NUM, 3, GL_FLOAT, false, sizeof(coreVertex), 0);
-    glVertexAttribPointer(CORE_SHADER_IN_TEXTURE_NUM,  2, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(3*sizeof(float)));
-    glVertexAttribPointer(CORE_SHADER_IN_NORMAL_NUM,   3, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(5*sizeof(float)));
-    glVertexAttribPointer(CORE_SHADER_IN_TANGENT_NUM,  4, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(8*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, false, sizeof(coreVertex), 0);
+    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(3*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(5*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(8*sizeof(float)));
 }

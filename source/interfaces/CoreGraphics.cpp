@@ -52,16 +52,16 @@ CoreGraphics::CoreGraphics()
 
     // set numerical OpenGL version
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL, 0.0f);
-    if(fForceOpenGL) m_fOpenGL = fForceOpenGL;
-                else m_fOpenGL = coreUtils::StrVersion((const char*)glGetString(GL_VERSION));
-
-    // set numerical GLSL version
-    m_fGLSL = coreUtils::StrVersion((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    m_fOpenGL = fForceOpenGL ? fForceOpenGL : coreUtils::StrVersion((const char*)glGetString(GL_VERSION));
+    m_fGLSL   = coreUtils::StrVersion((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     // check OpenGL version
-    if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements are not met, video card with at least OpenGL 2.0 is required");
+    if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements are not met, video card supporting at least OpenGL 2.0 is required");
 
-    // enable and disable base features
+    // enable vertical synchronization
+    SDL_GL_SetSwapInterval(1);
+
+    // enable texturing
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_DITHER);
 

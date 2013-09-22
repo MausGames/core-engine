@@ -38,7 +38,7 @@ private:
     coreUint m_iCurFrame;                     //!< current frame number since start of the application
     coreByte m_iSkipFrame;                    //!< skip frame status
 
-    float m_fPerfFrequency;                   //!< high precision time coefficient
+    double m_dPerfFrequency;                  //!< high precision time coefficient
     uint64_t m_iPerfTime;                     //!< high precision time value
 
     int m_aaiCPUID[2][4];                     //!< features of the processor

@@ -40,7 +40,6 @@
 #ifndef _CORE_GUARD_H_
 #define _CORE_GUARD_H_
 
-
 // compiler
 #if defined(_MSC_VER)
     #define _CORE_MSVC_ (_MSC_VER)
@@ -49,7 +48,8 @@
     #define _CORE_GCC_ (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
 #endif
 #if defined(__MINGW32__)
-    #define _CORE_MINGW_
+    #include <_mingw.h>
+    #define _CORE_MINGW_ (__MINGW_MAJOR_VERSION*10000 + __MINGW_MINOR_VERSION*100 + __MINGW_PATCHLEVEL*1)
 #endif
 
 // platform
@@ -64,12 +64,12 @@
 #endif
 
 // debug mode
-#if defined(_DEBUG) || defined(DEBUG)
+#if defined(_DEBUG) || defined(DEBUG) || (defined(_CORE_GCC_) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_
 #endif
 
 // SIMD support
-#if (defined(_M_IX86) || defined(__i386__)) && !defined(_CORE_DEBUG_) && !defined(_CORE_ANDROID_)
+#if (defined(_M_IX86) || defined(__i386__)) && !defined(_CORE_ANDROID_) && !defined(_CORE_DEBUG_)
     #define _CORE_SSE_
 #endif
 
@@ -86,20 +86,17 @@
 #endif
 
 #define _CRT_SECURE_NO_WARNINGS
+#undef  __STRICT_ANSI__
+
 #define WIN32_LEAN_AND_MEAN
-#define NO_SDL_GLEXT
 #define GLEW_MX
 #define GLEW_NO_GLU
 
-#undef __STRICT_ANSI__
-
 #if defined(_CORE_MSVC_)
     #define align16(v) __declspec(align(16)) v
-    #define initval(v)
     #define deletefunc
 #else
     #define align16(v) v __attribute__((aligned(16)))
-    #define initval(v) {v}
     #define deletefunc = delete
 #endif
 
@@ -111,9 +108,11 @@
     #endif
 #endif
 
-#if defined(_CORE_ANDROID_)
-    #define override
-    #define final
+#if defined(_CORE_GCC_)
+    #if (_CORE_GCC_) < 40700
+        #define override
+        #define final
+    #endif
 #endif
 
 
@@ -178,7 +177,7 @@ enum coreError
 #include <SDL2/SDL_image.h>
 #if defined(_CORE_GLES_)
     #include <GLES2/gl2.h>
-    #include "glewES.h"
+    #include "additional/glewES.h"
 #else
     #include <GL/glew.h>
     #include <GL/gl.h>
@@ -260,8 +259,9 @@ public:
 // TODO: add explicit keyword
 // TODO: boolean traps
 // TODO: check for boost integrations
-// TODO: don't lose attributes after reset
+// TODO: don't lose engine attributes after reset
 // TODO: SDL_GetPowerInfo
+// TODO: check GCC function attributes (pure, hot, cold, nothrow)
 class Core final
 {
 public:

@@ -146,7 +146,7 @@ void Core::Reset()
     // shut down manager
     Manager::Resource->Reset(false);
 
-    // delete main interfaces
+    // shut down main interfaces
     SAFE_DELETE(Input)
     SAFE_DELETE(Audio)
     SAFE_DELETE(Graphics)

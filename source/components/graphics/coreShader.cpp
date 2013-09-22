@@ -64,12 +64,12 @@ coreError coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    const char*  pcData = reinterpret_cast<const char*>(pFile->GetData());
-    const GLint* piSize = reinterpret_cast<const GLint*>(&pFile->GetSize());
+    const char* apcData[1] = {reinterpret_cast<const char*>(pFile->GetData())};
+    const GLint aiSize[1]  = {(GLint)pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
-    glShaderSource(m_iShader, 1, &pcData, piSize);
+    glShaderSource(m_iShader, 1, apcData, aiSize);
     glCompileShader(m_iShader);
 
     // check for errors
@@ -177,10 +177,10 @@ coreError coreProgram::Init()
         glAttachShader(m_iProgram, (*it)->GetShader());
 
     // set input and output attribute locations
-    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_POSITION_NUM, CORE_SHADER_IN_POSITION);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TEXTURE_NUM,  CORE_SHADER_IN_TEXTURE);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_NORMAL_NUM,   CORE_SHADER_IN_NORMAL);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_IN_TANGENT_NUM,  CORE_SHADER_IN_TANGENT);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  CORE_SHADER_ATTRIBUTE_TEXTURE);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
     if(Core::Graphics->SupportOpenGL() >= 3.0f) glBindFragDataLocation(m_iProgram, CORE_SHADER_OUT_COLOR0_NUM, CORE_SHADER_OUT_COLOR0);
 
     // link shader-program
@@ -280,7 +280,7 @@ void coreProgram::Enable()
     this->SetUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
     this->SetUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
     this->SetUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(),      false);
-    //this->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM, NULL, false);
+    this->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM,   coreMatrix::Identity(),           false);
 }
 
 
