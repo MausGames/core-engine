@@ -18,17 +18,20 @@ Documentation and separate download **will be available with the first release**
 
 You also need the latest Android [SDK][5] and [NDK][6] if you want to develop for the respective platform.
 
-**Supported compilers:** GCC/MinGW 4.6+, MSVC 10.0+, Clang 3.3+ (not fully tested yet)  
-Documentation for the framework is currently not available
+> **Supported compilers:** GCC/MinGW 4.6+, MSVC 10.0+, Clang 3.3+ (not fully tested yet)  
+> Documentation for the framework is currently not available
 
 # Libraries
-- Libraries used within the framework
-> - [SDL][10], [SDL_image][11] (jpeg, png, zlib), [SDL_ttf][12] (freetype)
-> - [OpenGL][13], [GLEW][14]
-> - [OpenAL][15], [Ogg Vorbis][16]
-- Specific libraries used for Android development
-> - [OpenGL ES 2.0][17]
-> - [OpenAL with Android backend][18]
+External libraries used by the framework
+
+- [SDL][10], [SDL_image][11] (jpeg, png, zlib), [SDL_ttf][12] (freetype)
+- [OpenGL][13], [GLEW][14]
+- [OpenAL][15], [Ogg Vorbis][16]
+
+Specific libraries used for Android development
+
+- [OpenGL ES 2.0][17]
+- [OpenAL with Android backend][18]
 
 
 [5]:  http://developer.android.com/sdk/
