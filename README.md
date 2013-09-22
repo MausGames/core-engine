@@ -7,10 +7,10 @@ This project is focused on creating a **supportive framework for fast and simple
 
 If you have any suggestions or problems, feel free to contact me or simply create an issue on Bitbucket.
 
-- Interfaces for System (Window, Events, Time), Graphics (Camera, View Frustum), Audio and Input
-- Asynchronous Resource Management, Textures, Sounds, Shaders and Models
-- SIMD Math (Basics, Vector, Matrix), Utilities (Data, Random, Splines), Threads and Timer
-- HTML Log and Configuration File
+> - Interfaces for System (Window, Events, Time), Graphics (Camera, View Frustum), Audio and Input
+> - Asynchronous Resource Management, Textures, Sounds, Shaders and Models
+> - SIMD Math (Basics, Vector, Matrix), Utilities (Data, Random, Splines), Threads and Timer
+> - HTML Log and Configuration File
 
 # Download
 
