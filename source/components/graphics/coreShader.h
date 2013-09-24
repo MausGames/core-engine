@@ -34,7 +34,6 @@
 
 // ****************************************************************
 // shader object class
-// TODO: store different shader-versions per file and select appropriate code
 class coreShader final : public coreResource
 {
 private:

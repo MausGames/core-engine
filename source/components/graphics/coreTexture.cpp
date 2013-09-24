@@ -251,7 +251,7 @@ coreError coreTexture::CheckSync()
     if(!m_iTexture || !m_pSync) return CORE_INVALID_CALL;
 
     // check for finished texture loading
-    if(glClientWaitSync(m_pSync, 0, 0) != GL_TIMEOUT_EXPIRED)
+    if(glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, 0) != GL_TIMEOUT_EXPIRED)
     {
         // delete sync object
         glDeleteSync(m_pSync);

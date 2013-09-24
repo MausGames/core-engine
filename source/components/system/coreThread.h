@@ -51,7 +51,7 @@ private:
 
     //! wrapper for thread creation
     //! @{
-    friend int coreThreadMain(void* pData);
+    friend int coreThreadMain(void* pData) alignfunc;
     //! @}
 };
 

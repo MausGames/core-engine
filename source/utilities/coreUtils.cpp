@@ -42,12 +42,11 @@ const char* coreUtils::AppPath()
     // receive path
 #if defined(_CORE_WINDOWS_)
     GetCurrentDirectory(255, pcString);
-    strcat(pcString, CORE_UTILS_SLASH);
 #else
-    readlink("/proc/self/exe", pcString, 255);
-    (*(strrchr(pcString, CORE_UTILS_SLASH[0])+1)) = '\0';
+    getcwd(pcString, 255);
 #endif
 
+    strcat(pcString, CORE_UTILS_SLASH);
     return pcString;
 }
 
@@ -111,8 +110,8 @@ const char* coreUtils::StrExtension(const char* pcInput)
 {
     if(!pcInput) return NULL;
 
-    const char* pcExtension = strrchr(pcInput, '.');
-    return pcExtension ? pcExtension+1 : pcInput;
+    const char* pcDot = strrchr(pcInput, '.');
+    return pcDot ? pcDot+1 : pcInput;
 }
 
 
@@ -133,7 +132,7 @@ void coreUtils::StrSkip(const char** ppcInput, const int &iNum)
 {
     if(!*ppcInput) return;
 
-    int n = iNum;
+    int  n = iNum;
     char c = '\0';
 
     do

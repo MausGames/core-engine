@@ -15,11 +15,27 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>Debug_Windows</name>
+                    <name>Debug_Windows_mingw</name>
                     <type>1</type>
                 </confElem>
                 <confElem>
-                    <name>Release_Windows</name>
+                    <name>Debug_Linux_gcc</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Debug_Linux_clang</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Release_Windows_mingw</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Release_Linux_gcc</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Release_Linux_clang</name>
                     <type>1</type>
                 </confElem>
             </confList>

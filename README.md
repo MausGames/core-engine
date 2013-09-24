@@ -18,7 +18,7 @@ Documentation and separate download **will be available with the first release**
 
 You also need the latest Android [SDK][5] and [NDK][6] if you want to develop for the respective platform.
 
-> **Supported compilers:** GCC/MinGW 4.6+, MSVC 10.0+, Clang 3.3+ (not fully tested yet)  
+> **Supported compilers:** GCC/MinGW 4.6+, MSVC 10.0+, Clang 3.3+  
 > Documentation for the framework is currently not available
 
 # Libraries

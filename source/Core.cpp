@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
 
     // set new working directory (cd ../..)
     char acPath[256];
-    snprintf(acPath, 256, "%s", coreUtils::AppPath());
+    snprintf(acPath, 255, "%s", coreUtils::AppPath());
     for(int i = 0; i < 3; ++i) (*strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
     chdir(acPath);
 

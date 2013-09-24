@@ -51,6 +51,9 @@
     #include <_mingw.h>
     #define _CORE_MINGW_ (__MINGW_MAJOR_VERSION*10000 + __MINGW_MINOR_VERSION*100 + __MINGW_PATCHLEVEL*1)
 #endif
+#if defined(__clang__)
+    #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
+#endif
 
 // platform
 #if defined(_WIN32)
@@ -81,16 +84,15 @@
 
 // ****************************************************************
 // compiler, platform and library specific definitions
-#if !defined(_CORE_MSVC_) && !defined(_CORE_GCC_) && !defined(_CORE_MINGW_)
+#if !defined(_CORE_MSVC_) && !defined(_CORE_GCC_) && !defined(_CORE_MINGW_) && !defined(_CORE_CLANG_)
     #warning "Compiler not supported!"
 #endif
 
 #define _CRT_SECURE_NO_WARNINGS
-#undef  __STRICT_ANSI__
-
 #define WIN32_LEAN_AND_MEAN
 #define GLEW_MX
 #define GLEW_NO_GLU
+#define OV_EXCLUDE_STATIC_CALLBACKS
 
 #if defined(_CORE_MSVC_)
     #define align16(v) __declspec(align(16)) v
@@ -98,6 +100,12 @@
 #else
     #define align16(v) v __attribute__((aligned(16)))
     #define deletefunc = delete
+#endif
+
+#if defined(_CORE_MINGW_)
+    #define alignfunc __attribute__((force_align_arg_pointer))
+#else
+    #define alignfunc
 #endif
 
 #if defined(_CORE_MSVC_)
@@ -134,7 +142,7 @@ class coreVector4;
 class coreMatrix;
 class coreFile;
 class coreArchive;
-class coreObject2D; //!
+class coreObject2D;
 
 enum coreError
 {
@@ -142,7 +150,6 @@ enum coreError
     CORE_BUSY          =  10,    //!< currently waiting for an event
 
     CORE_FILE_ERROR    = -10,    //!< error on opening, writing or finding a file
-
     CORE_INVALID_CALL  = -110,   //!< object has wrong status
     CORE_INVALID_INPUT = -120,   //!< function parameters are invalid
     CORE_INVALID_DATA  = -130,   //!< depending objects contain wrong data
@@ -307,6 +314,11 @@ public:
     static void Quit();
     //! @}
 };
+
+
+// ****************************************************************
+// main function
+int main(int argc, char* argv[]) alignfunc;
 
 
 #endif // _CORE_GUARD_H_

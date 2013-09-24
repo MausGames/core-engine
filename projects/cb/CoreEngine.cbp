@@ -6,7 +6,7 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug Windows">
+			<Target title="Debug_Windows_mingw">
 				<Option output="../../executable/bin/windows/CoreEngine_mingw_debug" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../../executable/bin/windows/" />
 				<Option object_output="obj/Debug/" />
@@ -14,6 +14,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-std=gnu++11" />
 					<Add option="-D_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -24,45 +25,20 @@
 					<Add library="..\..\libraries\windows\mingw\libSDL2_image.a" />
 					<Add library="..\..\libraries\windows\OpenGL32.lib" />
 					<Add library="..\..\libraries\windows\glew32mx.lib" />
-					<Add library="..\..\libraries\windows\libOpenAL32.a" />
+					<Add library="..\..\libraries\windows\mingw\libOpenAL32.a" />
 					<Add library="..\..\libraries\windows\libogg.lib" />
 					<Add library="..\..\libraries\windows\libvorbis.lib" />
 					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
 				</Linker>
 			</Target>
-			<Target title="Release Windows">
-				<Option output="../../executable/bin/windows/CoreEngine_mingw" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../../executable/bin/windows/" />
-				<Option object_output="obj/Release/" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O2" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add option="-static-libgcc" />
-					<Add option="-static-libstdc++" />
-					<Add library="MinGW32" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2main.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2_ttf.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2_image.a" />
-					<Add library="..\..\libraries\windows\OpenGL32.lib" />
-					<Add library="..\..\libraries\windows\glew32mx.lib" />
-					<Add library="..\..\libraries\windows\libOpenAL32.a" />
-					<Add library="..\..\libraries\windows\libogg.lib" />
-					<Add library="..\..\libraries\windows\libvorbis.lib" />
-					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
-				</Linker>
-			</Target>
-			<Target title="Debug Linux">
+			<Target title="Debug_Linux_gcc">
 				<Option output="../../executable/bin/linux/CoreEngine_gcc_debug" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../../executable/bin/linux/" />
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++11" />
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
 				</Compiler>
@@ -78,7 +54,34 @@
 					<Add library="..\..\libraries\linux\libvorbisfile.so" />
 				</Linker>
 			</Target>
-			<Target title="Release Linux">
+			<Target title="Release_Windows_mingw">
+				<Option output="../../executable/bin/windows/CoreEngine_mingw" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/bin/windows/" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=gnu++11" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
+					<Add library="MinGW32" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2main.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2_ttf.a" />
+					<Add library="..\..\libraries\windows\mingw\libSDL2_image.a" />
+					<Add library="..\..\libraries\windows\OpenGL32.lib" />
+					<Add library="..\..\libraries\windows\glew32mx.lib" />
+					<Add library="..\..\libraries\windows\mingw\libOpenAL32.a" />
+					<Add library="..\..\libraries\windows\libogg.lib" />
+					<Add library="..\..\libraries\windows\libvorbis.lib" />
+					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
+				</Linker>
+			</Target>
+			<Target title="Release_Linux_gcc">
 				<Option output="../../executable/bin/linux/CoreEngine_gcc" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../../executable/bin/linux/" />
 				<Option object_output="obj/Release/" />
@@ -86,6 +89,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-std=c++11" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -102,9 +106,7 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-std=c++11" />
 			<Add option="-Wall" />
-			<Add option="-Wno-unused-variable" />
 			<Add option="-msse4.1" />
 			<Add directory="../../source" />
 			<Add directory="../../libraries/include" />
@@ -139,8 +141,8 @@
 		<Unit filename="../../source/interfaces/CoreSystem.h" />
 		<Unit filename="../../source/manager/coreMemory.cpp" />
 		<Unit filename="../../source/manager/coreMemory.h" />
-		<Unit filename="../../source/manager/coreResourceManager.cpp" />
-		<Unit filename="../../source/manager/coreResourceManager.h" />
+		<Unit filename="../../source/manager/coreResource.cpp" />
+		<Unit filename="../../source/manager/coreResource.h" />
 		<Unit filename="../../source/utilities/coreMath.cpp" />
 		<Unit filename="../../source/utilities/coreMath.h" />
 		<Unit filename="../../source/utilities/coreMatrix.cpp" />
