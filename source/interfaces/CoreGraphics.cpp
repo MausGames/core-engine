@@ -12,9 +12,11 @@
 // ******************************************************************
 // constructor
 CoreGraphics::CoreGraphics()
-: m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV, 45.0f))
-, m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR, 0.1f))
-, m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR, 1000.0f))
+: m_RenderContext   (NULL)
+, m_ResourceContext (NULL)
+, m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
+, m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR))
+, m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR))
 , m_vCamPosition    (coreVector3(0.0f,0.0f, 0.0f))
 , m_vCamDirection   (coreVector3(0.0f,0.0f,-1.0f))
 , m_vCamOrientation (coreVector3(0.0f,1.0f, 0.0f))
@@ -24,12 +26,18 @@ CoreGraphics::CoreGraphics()
 {
     Core::Log->Header("Graphics Interface");
 
-    // create OpenGL contexts
-    m_RenderContext   = SDL_GL_CreateContext(Core::System->GetWindow());
-    m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
-         if(!m_RenderContext)   Core::Log->Error(1, coreUtils::Print("Primary OpenGL context could not be created (SDL: %s)",   SDL_GetError()));
-    else if(!m_ResourceContext) Core::Log->Error(1, coreUtils::Print("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
-    else Core::Log->Info("Primary and secondary OpenGL context created");
+    // create primary OpenGL context
+    m_RenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
+    if(!m_RenderContext) Core::Log->Error(1, coreUtils::Print("Primary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
+    else Core::Log->Info("Primary OpenGL context created");
+
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT))
+    {
+        // create secondary OpenGL context
+        m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
+        if(!m_ResourceContext) Core::Log->Error(0, coreUtils::Print("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
+        else Core::Log->Info("Secondary OpenGL context created");
+    }
 
     // assign primary OpenGL context to main window
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext))
@@ -51,7 +59,7 @@ CoreGraphics::CoreGraphics()
     Core::Log->ListEnd();
 
     // set numerical OpenGL version
-    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL, 0.0f);
+    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
     m_fOpenGL = fForceOpenGL ? fForceOpenGL : coreUtils::StrVersion((const char*)glGetString(GL_VERSION));
     m_fGLSL   = coreUtils::StrVersion((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
@@ -80,10 +88,8 @@ CoreGraphics::CoreGraphics()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // reset camera
+    // reset camera and view
     this->SetCamera(NULL, NULL, NULL);
-
-    // reset view
     this->ResizeView(coreVector2(0.0f,0.0f));
 
     // reset scene

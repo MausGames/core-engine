@@ -10,7 +10,6 @@ void CoreApp::Init()
 {
     g_pProgram = NULL;
 g_pModel = Core::Manager::Resource->Load<coreModel>("data/models/default.md5mesh");
-    glDisable(GL_CULL_FACE);
     //glDisable(GL_LIGHTING);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
@@ -31,6 +30,8 @@ void CoreApp::Exit()
 
 void CoreApp::Render()
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     for(int i = 0; i < MIN((int)g_apTextures.size(),1); ++i)
     {
         if(g_apTextures[i].IsActive())
@@ -49,6 +50,7 @@ void CoreApp::Render()
 
 void CoreApp::Move()
 {
+
     if(Core::Input->GetKeyboardButton(SDL_SCANCODE_A, CORE_INPUT_PRESS))
     {
 //        std::vector<std::string> sList;
@@ -60,7 +62,7 @@ void CoreApp::Move()
 //            g_apTextures.push_back(NewPtr);
 //        }
 
-        g_apTextures.push_back(Core::Manager::Resource->Load<coreTexture>("data/textures/cursor_alph.tga"));
+        g_apTextures.push_back(Core::Manager::Resource->Load<coreTexture>("data/textures/android.png"));
 
 
 

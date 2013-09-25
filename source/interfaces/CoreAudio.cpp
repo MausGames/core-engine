@@ -12,19 +12,19 @@
 // ****************************************************************
 // constructor
 CoreAudio::CoreAudio()
-: m_NumSource (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES, 24))
+: m_NumSource (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
 , m_CurSource (0)
 , m_fVolume   (-1.0f)
 {
     Core::Log->Header("Audio Interface");
 
-    // open audio device and create OpenAL context 
+    // open audio device and create OpenAL context
     m_pDevice  = alcOpenDevice(NULL);
     m_pContext = alcCreateContext(m_pDevice, NULL);
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
-        Core::Log->Error(0, coreUtils::Print("OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice)));
+        Core::Log->Error(1, coreUtils::Print("OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice)));
     else Core::Log->Info("OpenAL context created");
 
     // retrieve sound sources
@@ -46,7 +46,7 @@ CoreAudio::CoreAudio()
     this->SetListener(0.0f);
 
     // reset volume
-    this->SetVolume(Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_GLOBAL, 0.5f));
+    this->SetVolume(Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_GLOBAL));
 
     // check for errors
     const ALenum iError = alGetError();
@@ -116,7 +116,7 @@ ALuint CoreAudio::NextSource(const void* pRef)
         alGetSourcei(m_pSource[m_CurSource], AL_SOURCE_STATE, &iStatus);
         if(iStatus != AL_PLAYING)
         {
-            // return sound sorce
+            // return sound source
             m_apSourceRef[m_CurSource] = pRef;
             return m_pSource[m_CurSource];
         }

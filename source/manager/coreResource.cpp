@@ -186,12 +186,14 @@ void coreResourceManager::Reset(const bool& bInit)
             (*it)->Reset(true);
 
         // start resource thread
-        this->StartThread("resource_thread");
+        if(Core::Graphics->GetResourceContext())
+            this->StartThread("resource_thread");
     }
     else
     {
         // kill resource thread
-        this->KillThread();
+        if(Core::Graphics->GetResourceContext())
+            this->KillThread();
 
         // shut down reset-objects
         for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)

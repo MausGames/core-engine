@@ -98,40 +98,44 @@ void Core::Run()
     Core* pEngine = new Core();
 
     // init application
-    pEngine->Log->Header("Application Init");
+    Core::Log->Header("Application Init");
     CoreApp* pApplication = new CoreApp();
-    pEngine->Log->Header("Application Run");
+    Core::Log->Header("Application Run");
 
 #if !defined(_CORE_DEBUG_)
 
     // set logging level
     const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG, -1);
-    pEngine->Log->SetLevel(iLevel);
-    if(iLevel < 0) pEngine->Log->Error(0, "Logging level reduced");
+    Core::Log->SetLevel(iLevel);
+    if(iLevel < 0) Core::Log->Error(0, "Logging level reduced");
 
 #endif
 
     // update the window event system (main loop)
-    while(pEngine->System->__UpdateEvents())
+    while(Core::System->__UpdateEvents())
     {
         // pre-update engine
-        pEngine->Input->__UpdateInput();
+        Core::Input->__UpdateInput();
 
         // move and render application
         pApplication->Move();
         pApplication->Render();
 
         // post-update engine
-        pEngine->Input->__UpdateCursor();
-        pEngine->Graphics->__UpdateScene();
-        pEngine->System->__UpdateTime();
+        Core::Input->__UpdateCursor();
+        Core::Graphics->__UpdateScene();
+        Core::System->__UpdateTime();
+
+        // update resource manager with only one context
+        if(!Core::Graphics->GetResourceContext())
+            Core::Manager::Resource->__Run();
     }
 
     // reset logging level
-    pEngine->Log->SetLevel(0);
+    Core::Log->SetLevel(0);
 
     // delete engine and application
-    pEngine->Log->Header("Shut Down");
+    Core::Log->Header("Shut Down");
     SAFE_DELETE(pApplication)
     SAFE_DELETE(pEngine)
 }

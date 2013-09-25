@@ -16,7 +16,7 @@ If you have any suggestions or problems, feel free to contact me or simply creat
 
 Documentation and separate download **will be available with the first release** (v0.1.0), until then the current snapshot of the framework can be retrieved from here.
 
-You also need the latest Android [SDK][5] and [NDK][6] if you want to develop for the respective platform.
+You also need the latest Android [SDK][5] and [NDK][6], the [JDK][7] and [Ant][8] if you want to develop for this platform.
 
 > **Supported compilers:** GCC/MinGW 4.6+, MSVC 10.0+, Clang 3.3+  
 > Documentation for the framework is currently not available
@@ -36,6 +36,8 @@ Specific libraries used for Android development
 
 [5]:  http://developer.android.com/sdk/
 [6]:  http://developer.android.com/tools/sdk/ndk/
+[7]:  http://www.oracle.com/technetwork/java/javase/downloads/
+[8]:  http://ant.apache.org/
 [10]: http://www.libsdl.org/
 [11]: http://www.libsdl.org/projects/SDL_image/
 [12]: http://www.libsdl.org/projects/SDL_ttf/
