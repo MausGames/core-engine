@@ -10,7 +10,7 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//| Core Engine v0.0.2a (http://www.maus-games.at)                               |//
+//| Core Engine v0.0.3a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
 //| Copyright (c) 2013 Martin Mauersics                                          |//
 //|                                                                              |//
@@ -95,21 +95,8 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
 #if defined(_CORE_MSVC_)
-    #define align16(v) __declspec(align(16)) v
-    #define deletefunc
-#else
-    #define align16(v) v __attribute__((aligned(16)))
-    #define deletefunc = delete
-#endif
-
-#if defined(_CORE_MINGW_)
-    #define alignfunc __attribute__((force_align_arg_pointer))
-#else
-    #define alignfunc
-#endif
-
-#if defined(_CORE_MSVC_)
     #define __thread __declspec(thread)
+    #define noexcept throw()
     #define constexpr
     #if (_CORE_MSVC_) < 1700
         #define final
@@ -121,6 +108,20 @@
         #define override
         #define final
     #endif
+#endif
+
+#if defined(_CORE_MSVC_)
+    #define align16(v) __declspec(align(16)) v
+    #define deletefunc
+#else
+    #define align16(v) v __attribute__((aligned(16)))
+    #define deletefunc = delete
+#endif
+
+#if defined(_CORE_MINGW_)
+    #define alignfunc __attribute__((force_align_arg_pointer))
+#else
+    #define alignfunc
 #endif
 
 
@@ -172,6 +173,7 @@ enum coreError
 #include <time.h>
 #include <math.h>
 #include <cstdio>
+#include <memory>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
@@ -268,7 +270,7 @@ public:
 // TODO: check for boost integrations
 // TODO: don't lose engine attributes after reset
 // TODO: SDL_GetPowerInfo
-// TODO: check GCC function attributes (pure, hot, cold, nothrow)
+// TODO: check GCC function attributes (pure, hot, cold)
 class Core final
 {
 public:

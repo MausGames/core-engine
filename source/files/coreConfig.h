@@ -23,15 +23,16 @@
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING   "Graphics", "AntiAliasing",   0
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER  "Graphics", "TextureFilter",  0
 #define CORE_CONFIG_GRAPHICS_POSTPROCESSING "Graphics", "PostProcessing", 0
-#define CORE_CONFIG_GRAPHICS_FORCEOPENGL    "Graphics", "ForceOpenGL",    0.0f
 #define CORE_CONFIG_AUDIO_VOLUME_GLOBAL     "Audio",    "VolumeGlobal",   0.5f
 #define CORE_CONFIG_AUDIO_VOLUME_SOUND      "Audio",    "VolumeSound",    0.5f
 #define CORE_CONFIG_AUDIO_VOLUME_MUSIC      "Audio",    "VolumeMusic",    0.5f
-#define CORE_CONFIG_AUDIO_SOURCES           "Audio",    "Sources",        24
+#define CORE_CONFIG_AUDIO_SOURCES           "Audio",    "Sources",        16
 
 #if defined(_CORE_ANDROID_)
+    #define CORE_CONFIG_GRAPHICS_FORCEOPENGL "Graphics", "ForceOpenGL", 2.0f
     #define CORE_CONFIG_GRAPHICS_DUALCONTEXT "Graphics", "DualContext", false
 #else
+    #define CORE_CONFIG_GRAPHICS_FORCEOPENGL "Graphics", "ForceOpenGL", 0.0f
     #define CORE_CONFIG_GRAPHICS_DUALCONTEXT "Graphics", "DualContext", true
 #endif
 

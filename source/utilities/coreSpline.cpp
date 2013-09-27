@@ -18,13 +18,13 @@ coreSpline::coreSpline()
     m_apNode.reserve(32);
 }
 
-coreSpline::coreSpline(const coreSpline& c)
+coreSpline::coreSpline(const coreSpline& c)noexcept
 : m_apNode       (c.m_apNode)
 , m_fMaxDistance (c.m_fMaxDistance)
 {
 }
 
-coreSpline::coreSpline(coreSpline&& m)
+coreSpline::coreSpline(coreSpline&& m)noexcept
 : m_apNode       (std::move(m.m_apNode))
 , m_fMaxDistance (m.m_fMaxDistance)
 {
@@ -41,13 +41,13 @@ coreSpline::~coreSpline()
 
 // ****************************************************************
 // assignment operators
-coreSpline& coreSpline::operator = (coreSpline o)
+coreSpline& coreSpline::operator = (coreSpline o)noexcept
 {
     swap(*this, o);
     return *this;
 }
 
-void swap(coreSpline& a, coreSpline& b)
+void swap(coreSpline& a, coreSpline& b)noexcept
 {
     using std::swap;
     swap(a.m_apNode,       b.m_apNode);

@@ -75,11 +75,6 @@ CoreSystem::CoreSystem()
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT));
 
     // try to force OpenGL context version
-#if defined(_CORE_GLES_)
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-#else
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
     if(fForceOpenGL)
     {
@@ -87,7 +82,6 @@ CoreSystem::CoreSystem()
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(floorf(fForceOpenGL*10.0f))%10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     }
-#endif
 
     // create main window object
     m_pWindow = SDL_CreateWindow(coreUtils::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);

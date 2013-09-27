@@ -1,15 +1,19 @@
 #include "Core.h"
+/* Warning: currently a sandbox-file, do not use it */
 
 
 std::vector<coreTexturePtr> g_apTextures;
 coreModelPtr g_pModel;
-coreProgram* g_pProgram;
+std::shared_ptr<coreProgram> g_pProgram1;
+std::shared_ptr<coreProgram> g_pProgram2;
 
 
 void CoreApp::Init()
 {
-    g_pProgram = NULL;
-g_pModel = Core::Manager::Resource->Load<coreModel>("data/models/default.md5mesh");
+    g_pProgram1 = NULL;
+
+    g_pModel = Core::Manager::Resource->Load<coreModel>("data/models/default.md5mesh");
+
     //glDisable(GL_LIGHTING);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
@@ -24,25 +28,27 @@ void CoreApp::Exit()
 
     g_pModel.SetActive(false);
 
-    SAFE_DELETE(g_pProgram)
+    g_pProgram1.reset();
+    g_pProgram2.reset();
+
 }
 
 
 void CoreApp::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     for(int i = 0; i < MIN((int)g_apTextures.size(),1); ++i)
     {
         if(g_apTextures[i].IsActive())
         {
             //glMultMatrixf(coreMatrix::Translation(coreVector3(float(i),0.0f,-5.0f)));
 
-            g_pProgram->Enable();
+            g_pProgram2->Enable();
             g_apTextures[i]->Enable(0);
             g_pModel->Render();
             coreTexture::DisableAll();
-            g_pProgram->Disable();
+            g_pProgram2->Disable();
         }
     }
 }
@@ -66,10 +72,12 @@ void CoreApp::Move()
 
 
 
-        g_pProgram = new coreProgram();
-        g_pProgram->AttachShader("data/shaders/default.vs");
-        g_pProgram->AttachShader("data/shaders/default.fs");
-        g_pProgram->Link();
+        g_pProgram1 = Core::Manager::Memory->Share<coreProgram>("test_ptr");
+        g_pProgram1->AttachShader("data/shaders/default.vs")
+                   ->AttachShader("data/shaders/default.fs")
+                   ->Link();
+
+        g_pProgram2 = Core::Manager::Memory->Share<coreProgram>("test_ptr");
     }
 
     if(Core::Input->GetKeyboardButton(SDL_SCANCODE_S, CORE_INPUT_PRESS))

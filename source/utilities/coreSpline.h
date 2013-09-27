@@ -33,14 +33,14 @@ private:
 
 public:
     coreSpline();
-    coreSpline(const coreSpline& c);
-    coreSpline(coreSpline&& m);
+    coreSpline(const coreSpline& c)noexcept;
+    coreSpline(coreSpline&& m)noexcept;
     ~coreSpline();
 
     //! assignment operators
     //! @{
-    coreSpline& operator = (coreSpline o);
-    friend void swap(coreSpline& a, coreSpline& b);
+    coreSpline& operator = (coreSpline o)noexcept;
+    friend void swap(coreSpline& a, coreSpline& b)noexcept;
     //! @}
 
     //! control nodes

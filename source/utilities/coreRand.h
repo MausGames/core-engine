@@ -26,14 +26,14 @@ private:
 
 public:
     coreRand(const coreUint& iSize, int iInit = -1);
-    coreRand(const coreRand& c);
-    coreRand(coreRand&& m);
+    coreRand(const coreRand& c)noexcept;
+    coreRand(coreRand&& m)noexcept;
     ~coreRand();
 
     //! assignment operators
     //! @{
-    coreRand& operator = (coreRand o);
-    friend void swap(coreRand& a, coreRand& b);
+    coreRand& operator = (coreRand o)noexcept;
+    friend void swap(coreRand& a, coreRand& b)noexcept;
     //! @}
 
     //! reset the generator

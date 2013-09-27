@@ -299,8 +299,8 @@ void coreProgram::Disable()
 
 // ****************************************************************
 // add shader object for later attachment
-void coreProgram::AttachShader(const char* pcPath)
+coreProgram* coreProgram::AttachShader(const char* pcPath)
 {
-    if(m_iStatus) return;
-    m_apShader.push_back(Core::Manager::Resource->Load<coreShader>(pcPath));
+    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->Load<coreShader>(pcPath));
+    return this;
 }

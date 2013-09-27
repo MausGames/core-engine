@@ -114,14 +114,14 @@ private:
 
 public:
     coreResourcePtr(coreResourceHandle* pHandle = NULL);
-    coreResourcePtr(const coreResourcePtr<T>& c);
-    coreResourcePtr(coreResourcePtr<T>&& m);
+    coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
+    coreResourcePtr(coreResourcePtr<T>&& m)noexcept;
     ~coreResourcePtr();
 
     //! assignment operators
     //! @{
-    coreResourcePtr<T>& operator = (coreResourcePtr<T> o);
-    template <typename S> friend void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b);
+    coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
+    template <typename S> friend void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)noexcept;
     //! @}
 
     //! access active resource object
@@ -174,6 +174,7 @@ private:
 
 // ****************************************************************
 // resource manager
+// TODO: use load- and unload-stack
 class coreResourceManager final : public coreThread
 {
 private:
@@ -231,14 +232,14 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pH
     if(this->IsActive()) m_pHandle->RefIncrease();
 }
 
-template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr<T>& c)
+template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr<T>& c)noexcept
 : m_pHandle (c.m_pHandle)
 , m_bActive (c.m_bActive)
 {
     if(this->IsActive()) m_pHandle->RefIncrease();
 }
 
-template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m)
+template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m)noexcept
 : m_pHandle (m.m_pHandle)
 , m_bActive (m.m_bActive)
 {
@@ -256,13 +257,13 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 
 // ****************************************************************
 // assignment operators
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
 {
     swap(*this, o);
     return *this;
 }
 
-template <typename S> void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)
+template <typename S> void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)noexcept
 {
     using std::swap;
     swap(a.m_pHandle, b.m_pHandle);

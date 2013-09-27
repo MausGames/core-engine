@@ -109,8 +109,8 @@ public:
 
     //! control shader object linking
     //! @{
-    void AttachShader(const char* pcPath);
-    inline void Link()          {if(m_iStatus) return; m_iStatus = 1; this->Reset(true);}
+    coreProgram* AttachShader(const char* pcPath);
+    inline void Link()          {if(m_iStatus) return; m_iStatus = 1; this->Init();}
     inline bool IsLinked()const {return (m_iStatus == 2) ? true : false;}
     //! @}
 

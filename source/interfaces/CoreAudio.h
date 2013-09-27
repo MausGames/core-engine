@@ -28,7 +28,7 @@ private:
     coreByte m_NumSource;                            //!< number of sound sources
     coreByte m_CurSource;                            //!< current sound source
 
-    std::u_map<ALuint, const void*> m_apSourceRef;   //!< reference pointers currently using sound sources
+    std::u_map<ALuint, const void*> m_apSourceRef;   //!< reference pointer currently using sound sources
 
     float m_fVolume;                                 //!< global volume
 

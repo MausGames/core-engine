@@ -26,7 +26,8 @@ coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource,
 // destructor
 coreResourceHandle::~coreResourceHandle()
 {
-    // forgot to delete a resource access, a resource-using object or used global variables
+    // forgot to delete a resource access, a resource-using object
+    // a shared memory object or used global variables
     SDL_assert(!m_iRef);
 
     // delete associated resource object

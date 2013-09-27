@@ -12,17 +12,13 @@
 // ******************************************************************
 // constructor
 CoreGraphics::CoreGraphics()
-: m_RenderContext   (NULL)
-, m_ResourceContext (NULL)
-, m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
+: m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
 , m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR))
 , m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR))
 , m_vCamPosition    (coreVector3(0.0f,0.0f, 0.0f))
 , m_vCamDirection   (coreVector3(0.0f,0.0f,-1.0f))
 , m_vCamOrientation (coreVector3(0.0f,1.0f, 0.0f))
 , m_vCurResolution  (coreVector2(0.0f,0.0f))
-, m_fOpenGL         (0.0f)
-, m_fGLSL           (0.0f)
 {
     Core::Log->Header("Graphics Interface");
 

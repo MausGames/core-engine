@@ -33,7 +33,7 @@ coreRand::coreRand(const coreUint& iSize, int iInit)
         m_piRand[i] = rand();
 }
 
-coreRand::coreRand(const coreRand& c)
+coreRand::coreRand(const coreRand& c)noexcept
 : m_iNumRand (c.m_iNumRand)
 , m_iCurRand (c.m_iCurRand)
 {
@@ -42,7 +42,7 @@ coreRand::coreRand(const coreRand& c)
     memcpy(m_piRand, c.m_piRand, m_iNumRand*sizeof(m_piRand[0]));
 }
 
-coreRand::coreRand(coreRand&& m)
+coreRand::coreRand(coreRand&& m)noexcept
 : m_piRand   (m.m_piRand)
 , m_iNumRand (m.m_iNumRand)
 , m_iCurRand (m.m_iCurRand)
@@ -62,13 +62,13 @@ coreRand::~coreRand()
 
 // ****************************************************************
 // assignment operators
-coreRand& coreRand::operator = (coreRand o)
+coreRand& coreRand::operator = (coreRand o)noexcept
 {
     swap(*this, o);
     return *this;
 }
 
-void swap(coreRand& a, coreRand& b)
+void swap(coreRand& a, coreRand& b)noexcept
 {
     using std::swap;
     swap(a.m_piRand,   b.m_piRand);

@@ -16,7 +16,8 @@
 // TODO: support more than one mesh per file
 // TODO: add animation
 // TODO: check for unnecessary calculations to increase loading speed
-// TODO: check normal vector calculations
+// TODO: check normal vector calculations (alignment, outside, etc.)
+// TODO: make default model invisible
 class coreModel final : public coreResource
 {
 private:

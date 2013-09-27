@@ -105,7 +105,7 @@ void Core::Run()
 #if !defined(_CORE_DEBUG_)
 
     // set logging level
-    const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG, -1);
+    const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG);
     Core::Log->SetLevel(iLevel);
     if(iLevel < 0) Core::Log->Error(0, "Logging level reduced");
 
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 
     // set new working directory (cd ../..)
     char acPath[256];
-    snprintf(acPath, 255, "%s", coreUtils::AppPath());
+    strcpy(acPath, coreUtils::AppPath());
     for(int i = 0; i < 3; ++i) (*strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
     chdir(acPath);
 
