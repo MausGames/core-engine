@@ -138,6 +138,7 @@ bool coreFile::FileExists(const char* pcPath)
 
 // ****************************************************************
 // retrieve relative paths of all files from a folder
+// TODO: implement for Android
 coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput)
 {
     if(!pcFolder || !pasOutput) return CORE_INVALID_INPUT;

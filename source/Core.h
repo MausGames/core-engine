@@ -130,6 +130,16 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
+#define CORE_DISABLE_COPY(c) \
+    c(const c&) deletefunc;  \
+    c& operator = (const c&) deletefunc;
+
+#define CORE_DISABLE_HEAP                          \
+    void* operator new (size_t) deletefunc;        \
+    void* operator new (size_t, void*) deletefunc; \
+    void* operator new[] (size_t) deletefunc;      \
+    void* operator new[] (size_t, void*) deletefunc;
+
 #define u_map unordered_map
 #define u_set unordered_set
 
@@ -193,9 +203,6 @@ enum coreError
 #endif
 #include <AL/al.h>
 #include <AL/alc.h>
-#include <ogg/ogg.h>
-#include <vorbis/codec.h>
-#include <vorbis/vorbisenc.h>
 #include <vorbis/vorbisfile.h>
 #include <SI/SimpleIni.h>
 
@@ -236,6 +243,7 @@ enum coreError
 #include "components/graphics/coreModel.h"
 #include "components/graphics/coreShader.h"
 #include "components/audio/coreSound.h"
+#include "components/audio/coreMusic.h"
 
 
 // ****************************************************************
@@ -265,7 +273,6 @@ public:
 
 // ****************************************************************
 // engine framework
-// TODO: add explicit keyword
 // TODO: boolean traps
 // TODO: check for boost integrations
 // TODO: don't lose engine attributes after reset
@@ -291,7 +298,7 @@ public:
     public:
         static coreMemoryManager* Memory;       //!< memory manager
         static coreResourceManager* Resource;   //!< resource manager
-        // object manager
+      //static coreObjectManager* Object;       //!< object manager
     };
 
 
@@ -299,28 +306,24 @@ private:
     Core();
     ~Core();
 
+    //! run the engine
+    //! @{
+    static void __Run();
+    //! @}
+
 
 public:
-    //! run the application
-    //! @{
-    static void Run();
-    //! @}
-
-    //! reset engine
+    //! control the engine
     //! @{
     static void Reset();
-    //! @}
-
-    //! quit the application
-    //! @{
     static void Quit();
     //! @}
+
+    //! main function
+    //! @{
+    friend int main(int argc, char* argv[]) alignfunc;
+    //! @}
 };
-
-
-// ****************************************************************
-// main function
-int main(int argc, char* argv[]) alignfunc;
 
 
 #endif // _CORE_GUARD_H_

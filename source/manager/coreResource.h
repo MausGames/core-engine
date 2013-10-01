@@ -44,11 +44,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreResource(const coreResource& c) deletefunc;
-    coreResource& operator = (const coreResource& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreResource)
 };
 
 
@@ -95,11 +91,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreResourceHandle(const coreResourceHandle& c) deletefunc;
-    coreResourceHandle& operator = (const coreResourceHandle& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreResourceHandle)
 };
 
 
@@ -139,13 +131,7 @@ public:
 
 
 private:
-    //! disable heap creation
-    //! @{
-    void* operator new (size_t s) deletefunc;
-    void* operator new (size_t s, void* o) deletefunc;
-    void* operator new[] (size_t s) deletefunc;
-    void* operator new[] (size_t s, void* o) deletefunc;
-    //! @}
+    CORE_DISABLE_HEAP
 };
 
 
@@ -164,11 +150,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreReset(const coreReset& c) deletefunc;
-    coreReset& operator = (const coreReset& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreReset)
 };
 
 

@@ -47,7 +47,7 @@ private:
 
 
 public:
-    coreConfig(const char* pcName);
+    explicit coreConfig(const char* pcName);
     ~coreConfig();
 
     //! load and save configuration
@@ -77,11 +77,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreConfig(const coreConfig& c) deletefunc;
-    coreConfig& operator = (const coreConfig& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreConfig)
 };
 
 

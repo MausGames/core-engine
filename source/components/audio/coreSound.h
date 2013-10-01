@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // sound definitions
-#define CORE_SOUND_ASSERT(x) {SDL_assert((x)->CheckRef((x)->m_pCurRef) == (x)->m_iCurSource);}
+#define CORE_SOUND_ASSERT(x) {SDL_assert((x)->CheckRef(m_pCurRef) == m_iCurSource);}   //!< may check for missing reference pointer update
 
 
 // ****************************************************************
@@ -49,8 +49,8 @@ private:
 
 public:
     coreSound();
-    coreSound(const char* pcPath);
-    coreSound(coreFile* pFile);
+    explicit coreSound(const char* pcPath);
+    explicit coreSound(coreFile* pFile);
     ~coreSound();
 
     //! load and unload sound resource data
@@ -64,7 +64,7 @@ public:
     void PlayPosition(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop, const coreVector3& vPosition);
     void PlayRelative(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop);
     void Stop();
-    bool IsPlaying();
+    bool IsPlaying()const;
     //! @}
 
     //! control sound source properties

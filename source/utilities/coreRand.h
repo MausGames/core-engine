@@ -21,8 +21,6 @@ private:
     coreUint m_iNumRand;               //!< number of random numbers
     coreUint m_iCurRand;               //!< current random number
 
-    static const float c_fPrecision;   //!< floating point precision
-
 
 public:
     coreRand(const coreUint& iSize, int iInit = -1);
@@ -49,7 +47,7 @@ public:
     //! calculate constrained random number
     //! @{
     inline int Int(const int& iMin, const int& iMax)         {return iMin + (this->GetRaw() % (iMax - iMin + 1));}
-    inline float Float(const float& fMin, const float& fMax) {return fMin + (fMax - fMin) * float(this->GetRaw()) * c_fPrecision;}
+    inline float Float(const float& fMin, const float& fMax) {return fMin + (fMax - fMin) * float(this->GetRaw()) * (1.0f/float(RAND_MAX));}
     //! @}
 };
 

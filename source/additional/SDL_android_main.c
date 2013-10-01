@@ -1,7 +1,6 @@
-
 #include "SDL2/SDL_config.h"
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
 
 /* Include the SDL main definition header */
 #include "SDL2/SDL_main.h"

@@ -108,8 +108,8 @@ private:
 
 public:
     coreModel();
-    coreModel(const char* pcPath);
-    coreModel(coreFile* pFile);
+    explicit coreModel(const char* pcPath);
+    explicit coreModel(coreFile* pFile);
     ~coreModel();
 
     //! load and unload model resource data

@@ -42,8 +42,8 @@ private:
 
 public:
     coreShader();
-    coreShader(const char* pcPath);
-    coreShader(coreFile* pFile);
+    explicit coreShader(const char* pcPath);
+    explicit coreShader(coreFile* pFile);
     ~coreShader();
 
     //! load and unload vertex-shader resource data
@@ -137,6 +137,11 @@ public:
     static inline coreProgram* GetCurrent() {return s_pCurrent;}
     //! @}
 };
+
+
+// ****************************************************************
+// shader-program shared memory type
+typedef std::shared_ptr<coreProgram> coreProgramPtr;
 
 
 #endif // _CORE_GUARD_SHADER_H_

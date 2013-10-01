@@ -35,11 +35,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreThread(const coreThread& c) deletefunc;
-    coreThread& operator = (const coreThread& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreThread)
 
     //! execute thread
     //! @{

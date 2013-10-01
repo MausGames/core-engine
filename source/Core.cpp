@@ -89,11 +89,9 @@ Core::~Core()
 
 
 // ****************************************************************
-// run the application
-void Core::Run()
+// run the engine
+void Core::__Run()
 {
-    if(System) return;
-
     // init engine
     Core* pEngine = new Core();
 
@@ -142,12 +140,12 @@ void Core::Run()
 
 
 // ****************************************************************
-// reset engine
+// reset the engine
 void Core::Reset()
 {
     Log->Header("Engine Reset");
 
-    // shut down manager
+    // shut down resource manager
     Manager::Resource->Reset(false);
 
     // shut down main interfaces
@@ -162,7 +160,7 @@ void Core::Reset()
     Audio    = new CoreAudio();
     Input    = new CoreInput();
 
-    // re-init manager
+    // re-init resource manager
     Log->Header("Manager");
     Manager::Resource->Reset(true);
 
@@ -171,7 +169,7 @@ void Core::Reset()
 
 
 // ******************************************************************
-// quit the application
+// quit the engine
 void Core::Quit()
 {
     // send quit event
@@ -203,7 +201,7 @@ int main(int argc, char* argv[])
 
 #endif
 
-    // run the application
-    Core::Run();
+    // run the engine
+    Core::__Run();
     return 0;
 }

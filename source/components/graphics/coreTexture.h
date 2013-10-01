@@ -40,8 +40,8 @@ private:
 
 public:
     coreTexture();
-    coreTexture(const char* pcPath);
-    coreTexture(coreFile* pFile);
+    explicit coreTexture(const char* pcPath);
+    explicit coreTexture(coreFile* pFile);
     ~coreTexture();
 
     //! load and unload texture resource data

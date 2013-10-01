@@ -23,7 +23,7 @@ private:
 
 
 public:
-    coreLog(const char* pcPath);
+    explicit coreLog(const char* pcPath);
 
     //! message functions
     //! @{
@@ -46,11 +46,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreLog(const coreLog& c) deletefunc;
-    coreLog& operator = (const coreLog& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreLog)
 
     //! write text to the log file
     //! @{

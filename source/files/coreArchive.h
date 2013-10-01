@@ -66,11 +66,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreFile(const coreFile& c) deletefunc;
-    coreFile& operator = (const coreFile& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreFile)
 };
 
 
@@ -125,11 +121,7 @@ public:
 
 
 private:
-    //! disable copy
-    //! @{
-    coreArchive(const coreArchive& c) deletefunc;
-    coreArchive& operator = (const coreArchive& c) deletefunc;
-    //! @}
+    CORE_DISABLE_COPY(coreArchive)
 
     //! calculate absolute data positions of all files
     //! @{
