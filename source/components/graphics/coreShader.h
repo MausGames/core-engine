@@ -52,7 +52,7 @@ public:
     coreError Unload()override;
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline const GLuint& GetShader()const {return m_iShader;}
     //! @}
@@ -107,7 +107,7 @@ public:
     void Disable();
     //! @}
 
-    //! control shader object linking
+    //! attach and link shader objects
     //! @{
     coreProgram* AttachShader(const char* pcPath);
     inline void Link()          {if(m_iStatus) return; m_iStatus = 1; this->Init();}
@@ -125,7 +125,7 @@ public:
     inline void SetUniform(const char* pcName, const coreMatrix& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline const GLuint& GetProgram()const             {return m_iProgram;}
     inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName); return m_aiUniform.at(pcName);}

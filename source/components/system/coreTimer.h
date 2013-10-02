@@ -44,12 +44,12 @@ public:
     inline void Stop()                   {this->Pause(); this->Reset();}
     //! @}
 
-    //! set all basic attributes
+    //! set all basic object attributes
     //! @{
     inline void Set(const float& fEnd, const float& fSpeed, const coreUint& iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoop = iLoops;}
     //! @}
 
-    //! set attributes
+    //! set object attributes
     //! @{
     inline void SetCurrent(const float& fCurrent)    {m_fCurrent = fCurrent;}
     inline void SetEnd(const float& fEnd)            {m_fEnd     = fEnd;}
@@ -59,7 +59,7 @@ public:
     inline void SetTimeID(const int& iTimeID)        {m_iTimeID  = iTimeID;}
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline float GetCurrent(const bool& bReverse)const {return bReverse ? m_fEnd-m_fCurrent : m_fCurrent;}
     inline const float& GetEnd()const                  {return m_fEnd;}

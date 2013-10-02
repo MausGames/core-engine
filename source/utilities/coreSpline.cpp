@@ -40,7 +40,7 @@ coreSpline::~coreSpline()
 
 
 // ****************************************************************
-// assignment operators
+// assignment operator
 coreSpline& coreSpline::operator = (coreSpline o)noexcept
 {
     swap(*this, o);

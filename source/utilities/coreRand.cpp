@@ -59,7 +59,7 @@ coreRand::~coreRand()
 
 
 // ****************************************************************
-// assignment operators
+// assignment operator
 coreRand& coreRand::operator = (coreRand o)noexcept
 {
     swap(*this, o);

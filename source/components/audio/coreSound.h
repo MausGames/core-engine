@@ -67,7 +67,7 @@ public:
     bool IsPlaying()const;
     //! @}
 
-    //! control sound source properties
+    //! change various sound source properties
     //! @{
     void SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity);
     void SetVolume(const float& fVolume);
@@ -75,13 +75,13 @@ public:
     inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT(this) if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
-    //! control active sound source with reference pointer
+    //! enable and check active sound source with reference pointer
     //! @{
-    inline bool SetCurRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
+    inline bool EnableRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
     ALuint CheckRef(const void* pRef);
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline const ALuint& GetBuffer()const         {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}

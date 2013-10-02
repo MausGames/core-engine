@@ -13,9 +13,9 @@
 
 // ****************************************************************
 // input definitions
-#define CORE_INPUT_BUTTONS_KEYBOARD 232 // SDL_NUM_SCANCODES
-#define CORE_INPUT_BUTTONS_MOUSE    16
-#define CORE_INPUT_BUTTONS_JOYSTICK 32
+#define CORE_INPUT_BUTTONS_KEYBOARD 232   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
+#define CORE_INPUT_BUTTONS_MOUSE    16    //!< number of regarded mouse buttons
+#define CORE_INPUT_BUTTONS_JOYSTICK 32    //!< number of regarded joystick buttons
 
 enum coreInputType
 {
@@ -38,7 +38,7 @@ private:
         bool aabButton[CORE_INPUT_BUTTONS_KEYBOARD][4];   //!< status of the keyboard buttons
         SDL_Scancode aiLast[2];                           //!< last pressed keyboard button
 
-        char acChar[2];                                   //!< current keyboard/textinput character
+        char acChar[2];                                   //!< current textinput character
     };
 
     //! mouse structure
@@ -68,10 +68,8 @@ private:
     coreMouse m_Mouse;                       //!< main mouse object
     std::vector<coreJoystick> m_aJoystick;   //!< list with joystick objects
 
-    coreObject2D* m_pCursor;                 //!< graphical mouse cursor object
+    coreObject2D* m_pCursor;                 //!< graphical cursor object
     bool m_bCursorVisible;                   //!< status of the mouse cursor
-
-    bool m_bActive;                          //!< input status
 
 
 private:
@@ -84,29 +82,23 @@ private:
     void __UpdateInput();
     //! @}
 
-    //! update the graphical mouse cursor
+    //! update the cursor object
     //! @{
     void __UpdateCursor();
     //! @}
 
 
 public:
-    //! control the graphical mouse cursor
+    //! control the cursor object
     //! @{
     void SetCursorObject(const char* pcColorMap, const char* pcAlphaMap, const coreVector2& vSize);
     inline coreObject2D* GetCursorObject()const {return m_pCursor;}
     //! @}
 
-    //! control mouse cursor visibility
+    //! show or hide the mouse cursor
     //! @{
     void ShowCursor(const bool& bStatus);
     inline const bool& IsCursorVisible()const {return m_bCursorVisible;}
-    //! @}
-
-    //! control active status
-    //! @{
-    inline void SetActive(const bool& bStatus) {m_bActive = bStatus;}
-    inline const bool& IsActive()const         {return m_bActive;}
     //! @}
 
     //! use mouse with other devices
@@ -123,40 +115,40 @@ public:
 
     //! access keyboard input
     //! @{
-    inline void SetKeyboardButton(const SDL_Scancode& iButton, const bool& bStatus)             {if(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; m_Keyboard.aabButton[iButton][0] = bStatus; if(bStatus) m_Keyboard.aiLast[1] = iButton;}
-    inline void SetKeyboardChar(const char& cChar)                                              {m_Keyboard.acChar[1] = cChar;}
-    inline bool GetKeyboardButton(const SDL_Scancode& iButton, const coreInputType& iType)const {return m_bActive ? m_Keyboard.aabButton[iButton][iType] : false;}
-    inline char GetKeyboardChar()const                                                          {return m_bActive ? m_Keyboard.acChar[0] : (char)NULL;}
+    inline void SetKeyboardButton(const SDL_Scancode& iButton, const bool& bStatus)                    {if(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; m_Keyboard.aabButton[iButton][0] = bStatus; if(bStatus) m_Keyboard.aiLast[1] = iButton;}
+    inline void SetKeyboardChar(const char& cChar)                                                     {m_Keyboard.acChar[1] = cChar;}
+    inline const bool& GetKeyboardButton(const SDL_Scancode& iButton, const coreInputType& iType)const {return m_Keyboard.aabButton[iButton][iType];}
+    inline const char& GetKeyboardChar()const                                                          {return m_Keyboard.acChar[0];}
     //! @}
 
     //! access mouse input
     //! @{
-    inline void SetMouseButton(const int& iButton, const bool& bStatus)                  {if(iButton >= CORE_INPUT_BUTTONS_MOUSE) return; m_Mouse.aabButton[iButton][0] = bStatus; if(bStatus) m_Mouse.aiLast[1] = iButton;}
-    inline void SetMousePosition(const coreVector2& vPosition)                           {if(m_bActive) m_Mouse.vPosition = vPosition;}
-    inline void SetMouseRelative(const coreVector2& vRelative)                           {m_Mouse.vRelative.x = vRelative.x; m_Mouse.vRelative.y = vRelative.y;}
-    inline void SetMouseWheel(const float& fValue)                                       {m_Mouse.vRelative.z = fValue;}
-    inline bool GetMouseButton(const coreByte& iButton, const coreInputType& iType)const {return m_bActive ? m_Mouse.aabButton[iButton][iType] : false;}
-    inline const coreVector2& GetMousePosition()const                                    {return m_Mouse.vPosition;}
-    inline coreVector2 GetMouseRelative()const                                           {return m_bActive ? m_Mouse.vRelative.xy() : coreVector2(0.0f,0.0f);}
-    inline float GetMouseWheel()const                                                    {return m_bActive ? m_Mouse.vRelative.z : 0.0f;}
+    inline void SetMouseButton(const int& iButton, const bool& bStatus)                         {if(iButton >= CORE_INPUT_BUTTONS_MOUSE) return; m_Mouse.aabButton[iButton][0] = bStatus; if(bStatus) m_Mouse.aiLast[1] = iButton;}
+    inline void SetMousePosition(const coreVector2& vPosition)                                  {m_Mouse.vPosition = vPosition;}
+    inline void SetMouseRelative(const coreVector2& vRelative)                                  {m_Mouse.vRelative.x = vRelative.x; m_Mouse.vRelative.y = vRelative.y;}
+    inline void SetMouseWheel(const float& fValue)                                              {m_Mouse.vRelative.z = fValue;}
+    inline const bool& GetMouseButton(const coreByte& iButton, const coreInputType& iType)const {return m_Mouse.aabButton[iButton][iType];}
+    inline const coreVector2& GetMousePosition()const                                           {return m_Mouse.vPosition;}
+    inline coreVector2 GetMouseRelative()const                                                  {return m_Mouse.vRelative.xy();}
+    inline const float& GetMouseWheel()const                                                    {return m_Mouse.vRelative.z;}
     //! @}
 
     //! access joystick input
     //! @{
     inline void SetJoystickButton(const coreUint& iID, const int& iButton, const bool& bStatus)             {if(iID >= m_aJoystick.size() || iButton >= CORE_INPUT_BUTTONS_JOYSTICK) return; m_aJoystick[iID].aabButton[iButton][0] = bStatus; if(bStatus) m_aJoystick[iID].aiLast[1] = iButton;}
     inline void SetJoystickRelative(const coreUint& iID, const coreByte& iAxis, const float& fValue)        {if(iID >= m_aJoystick.size()) return; m_aJoystick[iID].vRelative.m[iAxis] = fValue*(iAxis ? -1.0f : 1.0f);}
-    inline bool GetJoystickButton(const coreUint& iID, const int& iButton, const coreInputType& iType)const {return (m_bActive && iID >= m_aJoystick.size()) ? m_aJoystick[iID].aabButton[iButton][iType] : false;}
-    inline coreVector2 GetJoystickRelative(const coreUint& iID)const                                        {return (m_bActive && iID >= m_aJoystick.size()) ? m_aJoystick[iID].vRelative : coreVector2(0.0f,0.0f);}
+    inline bool GetJoystickButton(const coreUint& iID, const int& iButton, const coreInputType& iType)const {return (iID >= m_aJoystick.size()) ? m_aJoystick[iID].aabButton[iButton][iType] : false;}
+    inline coreVector2 GetJoystickRelative(const coreUint& iID)const                                        {return (iID >= m_aJoystick.size()) ? m_aJoystick[iID].vRelative : coreVector2(0.0f,0.0f);}
     //! @}
 
-    //! get latest input buttons
+    //! get last pressed input button
     //! @{
-    inline SDL_Scancode GetCurKeyboard()const           {return m_bActive ? m_Keyboard.aiLast[0] : SDL_SCANCODE_UNKNOWN;}
-    inline int GetCurMouse()const                       {return m_bActive ? m_Mouse.aiLast[0] : -1;}
-    inline int GetCurJoystick(const coreUint& iID)const {return (m_bActive && iID >= m_aJoystick.size()) ? m_aJoystick[iID].aiLast[0] : -1;}
+    inline const SDL_Scancode& GetCurKeyboard()const    {return m_Keyboard.aiLast[0];}
+    inline const int& GetCurMouse()const                {return m_Mouse.aiLast[0];}
+    inline int GetCurJoystick(const coreUint& iID)const {return (iID >= m_aJoystick.size()) ? m_aJoystick[iID].aiLast[0] : -1;}
     //! @}
 
-    //! clear status of input buttons
+    //! clear status of specific input button
     //! @{
     inline void ClearKeyboardButton(const SDL_Scancode& iButton)             {for(int i = 0; i < 4; ++i) m_Keyboard.aabButton[iButton][i] = false;}
     inline void ClearMouseButton(const int& iButton)                         {for(int i = 0; i < 4; ++i) m_Mouse.aabButton[iButton][i] = false;}

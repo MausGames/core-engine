@@ -31,7 +31,7 @@ public:
     virtual coreError Unload()              = 0;
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline const char* GetPath()const     {return m_sPath.c_str();}
     inline const coreUint& GetSize()const {return m_iSize;}
@@ -82,7 +82,7 @@ public:
     inline bool IsLoaded()const             {return (m_pCur == m_pNull) ? false : true;}
     //! @}
 
-    //! control reference counter
+    //! manipulate the reference counter
     //! @{
     inline void RefIncrease()       {++m_iRef;}
     inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0);}
@@ -101,7 +101,7 @@ template <typename T> class coreResourcePtr
 {
 private:
     coreResourceHandle* m_pHandle;   //!< resource handle
-    bool m_bActive;                  //!< active status for reference overloading
+    bool m_bActive;                  //!< status for dynamic reference counter control
 
 
 public:
@@ -110,7 +110,7 @@ public:
     coreResourcePtr(coreResourcePtr<T>&& m)noexcept;
     ~coreResourcePtr();
 
-    //! assignment operators
+    //! assignment operator
     //! @{
     coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
     template <typename S> friend void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)noexcept;
@@ -123,7 +123,7 @@ public:
     inline bool IsLoaded()const   {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
     //! @}
 
-    //! control active status
+    //! dynamically control the reference counter
     //! @{
     void SetActive(const bool& bStatus);
     inline bool IsActive()const {return (m_pHandle && m_bActive) ? true : false;}
@@ -187,7 +187,7 @@ public:
     coreFile* RetrieveResourceFile(const char* pcPath);
     //! @}
 
-    //! control resource manager reset
+    //! reset all resources and reset-objects
     //! @{
     void Reset(const bool& bInit);
     inline void AddReset(coreReset* pObject)    {SDL_assert(!m_apReset.count(pObject)); m_apReset.insert(pObject);}
@@ -196,7 +196,7 @@ public:
 
 
 private:
-    //! thread implementations
+    //! resource thread implementations
     //! @{
     int __Init()override;
     int __Run()override;
@@ -238,7 +238,7 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 
 
 // ****************************************************************
-// assignment operators
+// assignment operator
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
 {
     swap(*this, o);
@@ -254,18 +254,18 @@ template <typename S> void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)noe
 
 
 // ****************************************************************
-// set active status
+// dynamically control the reference counter
 template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 {
     if(m_bActive && !bStatus)
     {
-        // set resource inactive
+        // set resource access inactive
         if(m_pHandle) m_pHandle->RefDecrease();
         m_bActive = false;
     }
     else if(!m_bActive && bStatus)
     {
-        // set resource active
+        // set resource access active
         if(m_pHandle) m_pHandle->RefIncrease();
         m_bActive = true;
     }

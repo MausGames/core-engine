@@ -46,7 +46,7 @@ public:
     inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline const char* GetName()const     {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const     {return m_sPath.c_str();}
@@ -112,7 +112,7 @@ public:
     inline coreFile* GetFile(const char* pcPath)     {if(!m_aFileMap.count(pcPath)) {SDL_assert(false); return NULL;} return m_aFileMap[pcPath];}
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline const char* GetName()const {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const {return m_sPath.c_str();}

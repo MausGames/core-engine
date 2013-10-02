@@ -31,7 +31,7 @@ coreThread::~coreThread()
 
 
 // ****************************************************************
-// start thread
+// start the thread
 SDL_Thread* coreThread::StartThread(const char* pcName)
 {
     if(!m_bEnd) return NULL;
@@ -49,7 +49,7 @@ SDL_Thread* coreThread::StartThread(const char* pcName)
 
 
 // ****************************************************************
-// kill thread
+// kill the thread
 void coreThread::KillThread()
 {
     if(m_bEnd) return;
@@ -61,10 +61,10 @@ void coreThread::KillThread()
 
 
 // ****************************************************************
-// execute thread
+// execute the thread
 int coreThread::__Main()
 {
-    // init thread implementation
+    // call init implementation
     Core::Log->Info(coreUtils::Print("Thread (%s:%04lu) started", m_sName.c_str(), SDL_ThreadID()));
     int iReturn = this->__Init();
 
@@ -79,11 +79,11 @@ int coreThread::__Main()
         // check for kill
         if(m_bEnd) break;
 
-        // run thread implementation
+        // call run implementation
         iReturn = this->__Run();
     }
 
-    // exit thread implementation
+    // call exit implementation
     this->__Exit();
     Core::Log->Info(coreUtils::Print("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_ThreadID()));
 

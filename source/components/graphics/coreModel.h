@@ -123,7 +123,7 @@ public:
     void Render();
     //! @}
 
-    //! get attributes
+    //! get object attributes
     //! @{
     inline const GLuint& GetVertexArray()const    {return m_iVertexArray;}
     inline const coreUint& GetNumVertices()const  {return m_iNumVertices;}

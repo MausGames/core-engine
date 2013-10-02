@@ -173,7 +173,7 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
 
 
 // ****************************************************************
-// reset resource manager
+// reset all resources and reset-objects
 void coreResourceManager::Reset(const bool& bInit)
 {
     if(bInit)

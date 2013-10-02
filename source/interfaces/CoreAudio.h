@@ -46,7 +46,7 @@ public:
     void SetListener(const float& fSpeed, const int iTimeID = -1);
     //! @}
 
-    //! control sound source distribution
+    //! distribute sound sources
     //! @{
     ALuint NextSource(const void* pRef);
     inline ALuint CheckSource(const void* pRef, const ALuint& iSource)const {if(!m_apSourceRef.count(iSource)) return 0; return (m_apSourceRef.at(iSource) == pRef) ? iSource : 0;}

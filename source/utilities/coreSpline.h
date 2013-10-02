@@ -37,13 +37,13 @@ public:
     coreSpline(coreSpline&& m)noexcept;
     ~coreSpline();
 
-    //! assignment operators
+    //! assignment operator
     //! @{
     coreSpline& operator = (coreSpline o)noexcept;
     friend void swap(coreSpline& a, coreSpline& b)noexcept;
     //! @}
 
-    //! control nodes
+    //! manage nodes
     //! @{
     void AddNode(const coreVector3& vPosition, const coreVector3& vTangent);
     void RemoveNode(const coreUint& iIndex);

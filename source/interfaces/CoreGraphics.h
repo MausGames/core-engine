@@ -61,7 +61,7 @@ public:
     void Screenshot();
     //! @}
 
-    //! get attributes
+    //! get interface attributes
     //! @{
     inline const SDL_GLContext& GetRenderContext()const   {return m_RenderContext;}
     inline const SDL_GLContext& GetResourceContext()const {return m_ResourceContext;}

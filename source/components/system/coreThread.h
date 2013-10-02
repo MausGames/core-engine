@@ -27,7 +27,7 @@ public:
     coreThread();
     virtual ~coreThread();
 
-    //! control thread
+    //! start and kill the thread
     //! @{
     SDL_Thread* StartThread(const char* pcName);
     void KillThread();
@@ -37,7 +37,7 @@ public:
 private:
     CORE_DISABLE_COPY(coreThread)
 
-    //! execute thread
+    //! execute the thread
     //! @{
     int __Main();
     virtual int __Init() {return 0;}
