@@ -11,11 +11,11 @@
 
 // ****************************************************************
 // constructor
-coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource, coreResource* pNull)
-: m_pFile     (pFile)
-, m_pResource (pResource)
-, m_pNull     (pNull ? pNull : pResource)
-, m_pCur      (pNull ? pNull : pResource)
+coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pNull, coreFile* pFile)noexcept
+: m_pResource (pResource)
+, m_pNull     (pNull)
+, m_pFile     (pFile)
+, m_pCur      (pNull)
 , m_iRef      (0)
 , m_bManaged  (true)
 {
@@ -26,7 +26,7 @@ coreResourceHandle::coreResourceHandle(coreFile* pFile, coreResource* pResource,
 // destructor
 coreResourceHandle::~coreResourceHandle()
 {
-    // forgot to delete a resource access, a resource-using object
+    // forgot to delete a resource access, a resource-using object,
     // a shared memory object or used global variables
     SDL_assert(!m_iRef);
 
@@ -47,6 +47,7 @@ void coreResourceHandle::__Update()
         const coreError iError = m_pResource->Load(m_pFile);
         if(iError == CORE_OK)
         {
+            // successfully loaded
             m_pCur = m_pResource;
             m_pFile->UnloadData();
         }
@@ -66,7 +67,7 @@ void coreResourceHandle::__Update()
 
 // ****************************************************************
 // constructor
-coreReset::coreReset()
+coreReset::coreReset()noexcept
 {
     // add object to resource manager
     Core::Manager::Resource->AddReset(this);
@@ -84,7 +85,7 @@ coreReset::~coreReset()
 
 // ****************************************************************
 // constructor
-coreResourceManager::coreResourceManager()
+coreResourceManager::coreResourceManager()noexcept
 {
     // reserve memory for archives
     m_apArchive.reserve(32);
@@ -145,30 +146,26 @@ coreError coreResourceManager::AddArchive(const char* pcPath)
 coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
 {
     // check for direct resource file
-    if(coreFile::FileExists(pcPath))
+    if(!coreFile::FileExists(pcPath))
     {
-        if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];
+        // check archives
+        for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
+        {
+            coreFile* pFile = (*it)->GetFile(pcPath);
+            if(pFile) return pFile;
+        }
 
-        // load new direct resource file
-        coreFile* pFile = new coreFile(pcPath);
-        m_apDirectFile[pcPath] = pFile;
-
-        return pFile;
+        // resource file not found
+        SDL_assert(false);
     }
 
-    // check archives
-    for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
-    {
-        coreFile* pFile = (*it)->GetFile(pcPath);
-        if(pFile) return pFile;
-    }
+    if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];
 
-    // resource file not found
-    SDL_assert(false);
-    if(!m_apDirectFile.count(pcPath))
-        m_apDirectFile[pcPath] = new coreFile(pcPath);
+    // load new direct resource file
+    coreFile* pFile = new coreFile(pcPath);
+    m_apDirectFile[pcPath] = pFile;
 
-    return m_apDirectFile[pcPath];
+    return pFile;
 }
 
 

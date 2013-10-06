@@ -32,7 +32,7 @@ private:
 
 
 public:
-    coreSpline();
+    coreSpline()noexcept;
     coreSpline(const coreSpline& c)noexcept;
     coreSpline(coreSpline&& m)noexcept;
     ~coreSpline();

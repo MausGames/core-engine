@@ -37,16 +37,16 @@ class coreMath
 public:
     //! convenient logical operations
     //! @{
-    template <typename T> static inline constexpr T Lerp(const T& x, const T& y, const float& s)       {return x + (y - x) * s;}
-    template <typename T> static inline constexpr T LerpSmooth(const T& x, const T& y, const float& s) {return Lerp(x, y, 0.5f-0.5f*Cos(s*PI));}
-    template <typename T> static inline constexpr T LerpBreak(const T& x, const T& y, const float& s)  {return Lerp(x, y, Sin(s*0.5f*PI));}
-    template <typename T> static inline constexpr T Min(const T& x, const T& y)                        {return (x < y) ? x : y;}
-    template <typename T> static inline constexpr T Max(const T& x, const T& y)                        {return (x > y) ? x : y;}
-    template <typename T> static inline constexpr T Clamp(const T& a, const T& x, const T& y)          {return Min(Max(a, x), y);}
-    static inline constexpr int Abs(const int& x)                                                      {return (x < 0) ? -x : x;}
-    static inline constexpr float Abs(const float& x)                                                  {return (x < 0.0f) ? -x : x;}
-    static inline constexpr int Sig(const int& x)                                                      {return (x < 0) ? -1 : 1;}
-    static inline constexpr float Sig(const float& x)                                                  {return (x < 0.0f) ? -1.0f : 1.0f;}
+    template <typename T> static inline constexpr T Lerp(const T& x, const T& y, const float& s)noexcept       {return x + (y - x) * s;}
+    template <typename T> static inline constexpr T LerpSmooth(const T& x, const T& y, const float& s)noexcept {return Lerp(x, y, 0.5f-0.5f*Cos(s*PI));}
+    template <typename T> static inline constexpr T LerpBreak(const T& x, const T& y, const float& s)noexcept  {return Lerp(x, y, Sin(s*0.5f*PI));}
+    template <typename T> static inline constexpr T Min(const T& x, const T& y)noexcept                        {return (x < y) ? x : y;}
+    template <typename T> static inline constexpr T Max(const T& x, const T& y)noexcept                        {return (x > y) ? x : y;}
+    template <typename T> static inline constexpr T Clamp(const T& a, const T& x, const T& y)noexcept          {return Min(Max(a, x), y);}
+    static inline constexpr int Abs(const int& x)noexcept                                                      {return (x < 0) ? -x : x;}
+    static inline constexpr float Abs(const float& x)noexcept                                                  {return (x < 0.0f) ? -x : x;}
+    static inline constexpr int Sig(const int& x)noexcept                                                      {return (x < 0) ? -1 : 1;}
+    static inline constexpr float Sig(const float& x)noexcept                                                  {return (x < 0.0f) ? -1.0f : 1.0f;}
     //! @}
 
     //! calculate square root

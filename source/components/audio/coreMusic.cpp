@@ -11,10 +11,10 @@
 
 // ****************************************************************
 // callback functions for the music stream object
-size_t WrapFread(void* pData, size_t iSize, size_t iCount, SDL_RWops* pFile) {return SDL_RWread(pFile, pData, iSize, iCount);}
-int    WrapFseek(SDL_RWops* pFile, ogg_int64_t iOffset, int iWhence)         {return SDL_RWseek(pFile, iOffset, iWhence);}
-int    WrapFclose(SDL_RWops* pFile)                                          {return SDL_RWclose(pFile);}
-long   WrapFtell(SDL_RWops* pFile)                                           {return SDL_RWtell(pFile);}
+size_t WrapFread(void* pData, size_t iSize, size_t iCount, SDL_RWops* pFile) {return       SDL_RWread(pFile, pData, iSize, iCount);}
+int    WrapFseek(SDL_RWops* pFile, ogg_int64_t iOffset, int iWhence)         {return (int) SDL_RWseek(pFile, iOffset, iWhence);}
+int    WrapFclose(SDL_RWops* pFile)                                          {return       SDL_RWclose(pFile);}
+long   WrapFtell(SDL_RWops* pFile)                                           {return (long)SDL_RWtell(pFile);}
 
 ov_callbacks OV_CALLBACKS =
 {
@@ -27,7 +27,7 @@ ov_callbacks OV_CALLBACKS =
 
 // ****************************************************************
 // constructor
-coreMusic::coreMusic(const char* pcPath)
+coreMusic::coreMusic(const char* pcPath)noexcept
 : m_iSource  (0)
 , m_pFile    (NULL)
 , m_pInfo    (NULL)
@@ -45,7 +45,7 @@ coreMusic::coreMusic(const char* pcPath)
     this->__Init(&File);
 }
 
-coreMusic::coreMusic(coreFile* pFile)
+coreMusic::coreMusic(coreFile* pFile)noexcept
 : m_iSource  (0)
 , m_pFile    (NULL)
 , m_pInfo    (NULL)
@@ -309,7 +309,7 @@ bool coreMusic::__Stream(const ALuint& iBuffer)
 
 // ****************************************************************
 // constructor
-coreMusicPlayer::coreMusicPlayer()
+coreMusicPlayer::coreMusicPlayer()noexcept
 : m_iRepeat       (CORE_MUSIC_ALL_REPEAT)
 , m_iCurIndex     (0)
 , m_FadeTimer     (1.0f, 0.0f, 1)

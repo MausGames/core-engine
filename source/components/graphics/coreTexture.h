@@ -19,7 +19,7 @@
     #define CORE_TEXTURE_MASK 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
 #endif
 
-#define CORE_TEXTURE_UNITS 32
+#define CORE_TEXTURE_UNITS 8
 
 
 // ****************************************************************
@@ -39,9 +39,9 @@ private:
 
 
 public:
-    coreTexture();
-    explicit coreTexture(const char* pcPath);
-    explicit coreTexture(coreFile* pFile);
+    coreTexture()noexcept;
+    explicit coreTexture(const char* pcPath)noexcept;
+    explicit coreTexture(coreFile* pFile)noexcept;
     ~coreTexture();
 
     //! load and unload texture resource data

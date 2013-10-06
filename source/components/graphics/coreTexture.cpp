@@ -15,14 +15,14 @@ SDL_SpinLock coreTexture::s_iLock                           = 0;
 
 // ****************************************************************
 // constructor
-coreTexture::coreTexture()
+coreTexture::coreTexture()noexcept
 : m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_pSync       (NULL)
 {
 }
 
-coreTexture::coreTexture(const char* pcPath)
+coreTexture::coreTexture(const char* pcPath)noexcept
 : m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_pSync       (NULL)
@@ -31,7 +31,7 @@ coreTexture::coreTexture(const char* pcPath)
     this->coreResource::Load(pcPath);
 }
 
-coreTexture::coreTexture(coreFile* pFile)
+coreTexture::coreTexture(coreFile* pFile)noexcept
 : m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_pSync       (NULL)

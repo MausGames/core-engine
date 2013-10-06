@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreSound::coreSound()
+coreSound::coreSound()noexcept
 : m_iBuffer    (0)
 , m_iCurSource (0)
 , m_pCurRef    (NULL)
@@ -19,7 +19,7 @@ coreSound::coreSound()
     memset(&m_Format, 0, sizeof(m_Format));
 }
 
-coreSound::coreSound(const char* pcPath)
+coreSound::coreSound(const char* pcPath)noexcept
 : m_iBuffer    (0)
 , m_iCurSource (0)
 , m_pCurRef    (NULL)
@@ -29,7 +29,7 @@ coreSound::coreSound(const char* pcPath)
     this->coreResource::Load(pcPath);
 }
 
-coreSound::coreSound(coreFile* pFile)
+coreSound::coreSound(coreFile* pFile)noexcept
 : m_iBuffer    (0)
 , m_iCurSource (0)
 , m_pCurRef    (NULL)
@@ -243,7 +243,7 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
 // stop the sound
 void coreSound::Stop()
 {
-    CORE_SOUND_ASSERT(this)
+    CORE_SOUND_ASSERT
     if(m_iCurSource)
     {
         // stop sound source
@@ -276,7 +276,7 @@ bool coreSound::IsPlaying()const
 // change the sound source position and velocity
 void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity)
 {
-    CORE_SOUND_ASSERT(this)
+    CORE_SOUND_ASSERT
     if(m_iCurSource)
     {
 #if defined(_CORE_DEBUG_)
@@ -298,7 +298,7 @@ void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVe
 // change the sound source volume
 void coreSound::SetVolume(const float& fVolume)
 {
-    CORE_SOUND_ASSERT(this)
+    CORE_SOUND_ASSERT
     if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN, fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND));
 }
 

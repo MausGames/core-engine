@@ -13,19 +13,19 @@ coreProgram* coreProgram::s_pCurrent = NULL;
 
 // ****************************************************************
 // constructor
-coreShader::coreShader()
+coreShader::coreShader()noexcept
 : m_iShader (0)
 {
 }
 
-coreShader::coreShader(const char* pcPath)
+coreShader::coreShader(const char* pcPath)noexcept
 : m_iShader (0)
 {
     // load from path
     this->coreResource::Load(pcPath);
 }
 
-coreShader::coreShader(coreFile* pFile)
+coreShader::coreShader(coreFile* pFile)noexcept
 : m_iShader (0)
 {
     // load from file

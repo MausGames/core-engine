@@ -88,6 +88,7 @@
     #warning "Compiler not supported!"
 #endif
 
+#define _HAS_EXCEPTIONS 0
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
 #define GLEW_MX
@@ -238,6 +239,7 @@ enum coreError
 
 #include "manager/coreMemory.h"
 #include "manager/coreResource.h"
+#include "manager/coreObject.h"
 
 #include "components/graphics/coreTexture.h"
 #include "components/graphics/coreModel.h"
@@ -245,14 +247,16 @@ enum coreError
 #include "components/audio/coreSound.h"
 #include "components/audio/coreMusic.h"
 
+//#include "objects/coreObject3D.h"
+
 
 // ****************************************************************
 // main application interface
 class CoreApp final
 {
 private:
-    CoreApp()  {this->Init();}
-    ~CoreApp() {this->Exit();}
+    CoreApp()noexcept {this->Init();}
+    ~CoreApp()        {this->Exit();}
     friend class Core;
 
 
@@ -298,12 +302,12 @@ public:
     public:
         static coreMemoryManager* Memory;       //!< memory manager
         static coreResourceManager* Resource;   //!< resource manager
-      //static coreObjectManager* Object;       //!< object manager
+        static coreObjectManager* Object;       //!< object manager
     };
 
 
 private:
-    Core();
+    Core()noexcept;
     ~Core();
 
     //! run the engine

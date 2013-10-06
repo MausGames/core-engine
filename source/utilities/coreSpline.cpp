@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreSpline::coreSpline()
+coreSpline::coreSpline()noexcept
 : m_fMaxDistance (0.0f)
 {
     // reserve memory for nodes

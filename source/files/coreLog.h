@@ -23,7 +23,7 @@ private:
 
 
 public:
-    explicit coreLog(const char* pcPath);
+    explicit coreLog(const char* pcPath)noexcept;
 
     //! message functions
     //! @{

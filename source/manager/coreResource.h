@@ -21,8 +21,8 @@ protected:
 
 
 public:
-    coreResource() : m_sPath (""), m_iSize (0) {}
-    virtual ~coreResource()                    {}
+    coreResource()noexcept : m_sPath (""), m_iSize (0) {}
+    virtual ~coreResource()                            {}
 
     //! load and unload resource data
     //! @{
@@ -53,18 +53,21 @@ private:
 class coreResourceHandle final
 {
 private:
-    coreFile* m_pFile;           //!< resource file
-
-    coreResource* m_pResource;   //!< associated resource object
-    coreResource* m_pNull;       //!< NULL resource object
+    coreResource* m_pResource;   //!< associated resource object (in handle)
+    coreResource* m_pNull;       //!< NULL resource object (in manager)
+    coreFile* m_pFile;           //!< resource file (in manager)
 
     coreResource* m_pCur;        //!< pointer to active resource object
     int m_iRef;                  //!< reference counter
+
     bool m_bManaged;             //!< actively updated by the resource manager
+
+    //std::shared_ptr<coreResource> m_pShared;   //!< use handle for shared resource
 
 
 private:
-    coreResourceHandle(coreFile* pFile, coreResource* pResource, coreResource* pNull);
+    coreResourceHandle(coreResource* pResource, coreResource* pNull, coreFile* pFile)noexcept;
+    //coreResourceHandle(const std::shared_ptr<coreResource>& pShared)noexcept;
     ~coreResourceHandle();
     friend class coreResourceManager;
 
@@ -85,7 +88,7 @@ public:
     //! manipulate the reference counter
     //! @{
     inline void RefIncrease()       {++m_iRef;}
-    inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0);}
+    inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0); if(!m_pFile) delete this;}
     inline const int& GetRef()const {return m_iRef;}
     //! @}
 
@@ -105,7 +108,7 @@ private:
 
 
 public:
-    coreResourcePtr(coreResourceHandle* pHandle = NULL);
+    coreResourcePtr(coreResourceHandle* pHandle = NULL)noexcept;
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&& m)noexcept;
     ~coreResourcePtr();
@@ -118,9 +121,9 @@ public:
 
     //! access active resource object
     //! @{
-    inline T* operator -> ()const {SDL_assert(m_pHandle != NULL); return   static_cast<T*>(m_pHandle->GetResource());}
-    inline T& operator * ()const  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
-    inline bool IsLoaded()const   {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
+    inline T* operator -> ()const noexcept {SDL_assert(m_pHandle != NULL); return   static_cast<T*>(m_pHandle->GetResource());}
+    inline T& operator * ()const noexcept  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
+    inline bool IsLoaded()const            {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
     //! @}
 
     //! dynamically control the reference counter
@@ -140,7 +143,7 @@ private:
 class coreReset
 {
 public:
-    coreReset();
+    coreReset()noexcept;
     virtual ~coreReset();
 
     //! reset the object with the resource manager
@@ -170,7 +173,7 @@ private:
 
 
 private:
-    coreResourceManager();
+    coreResourceManager()noexcept;
     ~coreResourceManager();
     friend class Core;
 
@@ -207,7 +210,7 @@ private:
 
 // ****************************************************************
 // constructor
-template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pHandle)
+template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pHandle)noexcept
 : m_pHandle (pHandle)
 , m_bActive (true)
 {
@@ -290,7 +293,7 @@ template <typename T> coreResourceHandle* coreResourceManager::Load(const char* 
     else pNull = m_apNull[T::GetNullPath()];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(this->RetrieveResourceFile(pcPath), new T(), pNull);
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pNull, this->RetrieveResourceFile(pcPath));
     m_apHandle[pcPath] = pNewHandle;
 
     return pNewHandle;

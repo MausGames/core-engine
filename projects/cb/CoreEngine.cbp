@@ -107,7 +107,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-msse4.1" />
+			<Add option="-fno-exceptions -msse4.1" />
 			<Add directory="../../source" />
 			<Add directory="../../libraries/include" />
 		</Compiler>

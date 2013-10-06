@@ -34,7 +34,7 @@ private:
 
 
 private:
-    CoreAudio();
+    CoreAudio()noexcept;
     ~CoreAudio();
     friend class Core;
 

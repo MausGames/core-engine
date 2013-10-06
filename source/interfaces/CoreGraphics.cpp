@@ -11,7 +11,7 @@
 
 // ******************************************************************
 // constructor
-CoreGraphics::CoreGraphics()
+CoreGraphics::CoreGraphics()noexcept
 : m_RenderContext   (NULL)
 , m_ResourceContext (NULL)
 , m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))

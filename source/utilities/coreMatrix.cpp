@@ -10,30 +10,8 @@
 
 
 // ****************************************************************
-// constructor
-coreMatrix::coreMatrix()
-: _11 (1.0f), _12 (0.0f), _13 (0.0f), _14 (0.0f)
-, _21 (0.0f), _22 (1.0f), _23 (0.0f), _24 (0.0f)
-, _31 (0.0f), _32 (0.0f), _33 (1.0f), _34 (0.0f)
-, _41 (0.0f), _42 (0.0f), _43 (0.0f), _44 (1.0f)
-{
-}
-
-coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14,
-                       const float& f21, const float& f22, const float& f23, const float& f24,
-                       const float& f31, const float& f32, const float& f33, const float& f34,
-                       const float& f41, const float& f42, const float& f43, const float& f44)
-: _11 (f11), _12 (f12), _13 (f13), _14 (f14)
-, _21 (f21), _22 (f22), _23 (f23), _24 (f24)
-, _31 (f31), _32 (f32), _33 (f33), _34 (f34)
-, _41 (f41), _42 (f42), _43 (f43), _44 (f44)
-{
-}
-
-
-// ****************************************************************
 // compare with matrix
-bool coreMatrix::operator == (const coreMatrix& v)const
+bool coreMatrix::operator == (const coreMatrix& v)const noexcept
 {
     // TODO: add SSE-support
     return ((_11 == v._11) && (_12 == v._12) && (_13 == v._13) && (_14 == v._14) &&
@@ -45,7 +23,7 @@ bool coreMatrix::operator == (const coreMatrix& v)const
 
 // ****************************************************************
 // inverse compare with matrix
-bool coreMatrix::operator != (const coreMatrix& v)const
+bool coreMatrix::operator != (const coreMatrix& v)const noexcept
 {
     // TODO: add SSE-support
     return ((_11 != v._11) || (_12 != v._12) || (_13 != v._13) || (_14 != v._14) ||
@@ -57,7 +35,7 @@ bool coreMatrix::operator != (const coreMatrix& v)const
 
 // ****************************************************************
 // addition with matrix
-coreMatrix coreMatrix::operator + (const coreMatrix& v)const
+coreMatrix coreMatrix::operator + (const coreMatrix& v)const noexcept
 {
     // TODO: add SSE-support
     return coreMatrix(_11+v._11, _12+v._12, _13+v._13, _14+v._14,
@@ -69,7 +47,7 @@ coreMatrix coreMatrix::operator + (const coreMatrix& v)const
 
 // ****************************************************************
 // subtraction with matrix
-coreMatrix coreMatrix::operator - (const coreMatrix& v)const
+coreMatrix coreMatrix::operator - (const coreMatrix& v)const noexcept
 {
     // TODO: add SSE-support
     return coreMatrix(_11-v._11, _12-v._12, _13-v._13, _14-v._14,
@@ -81,7 +59,7 @@ coreMatrix coreMatrix::operator - (const coreMatrix& v)const
 
 // ****************************************************************
 // multiplication with matrix
-coreMatrix coreMatrix::operator * (const coreMatrix& v)const
+coreMatrix coreMatrix::operator * (const coreMatrix& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -115,7 +93,7 @@ coreMatrix coreMatrix::operator * (const coreMatrix& v)const
 
 // ****************************************************************
 // multiplication with scalar
-coreMatrix coreMatrix::operator * (const float& f)const
+coreMatrix coreMatrix::operator * (const float& f)const noexcept
 {
     // TODO: add SSE-support
     return coreMatrix(_11*f, _12*f, _13*f, _14*f,
@@ -127,7 +105,7 @@ coreMatrix coreMatrix::operator * (const float& f)const
 
 // ****************************************************************
 // division with scalar
-coreMatrix coreMatrix::operator / (const float& f)const
+coreMatrix coreMatrix::operator / (const float& f)const noexcept
 {
     // TODO: add SSE-support
     return (*this)*(1.0f/f);
@@ -136,7 +114,7 @@ coreMatrix coreMatrix::operator / (const float& f)const
 
 // ****************************************************************
 // transpose matrix
-coreMatrix& coreMatrix::Transpose()
+coreMatrix& coreMatrix::Transpose()noexcept
 {
     *this = coreMatrix(_11, _21, _31, _41,
                        _12, _22, _32, _42,
@@ -149,7 +127,7 @@ coreMatrix& coreMatrix::Transpose()
 
 // ****************************************************************
 // invert matrix
-coreMatrix& coreMatrix::Invert()
+coreMatrix& coreMatrix::Invert()noexcept
 {
     // TODO: add SSE-support
     *this = coreMatrix(_23*_34*_42 - _24*_33*_42 + _24*_32*_43 - _22*_34*_43 - _23*_32*_44 + _22*_33*_44,
@@ -176,7 +154,7 @@ coreMatrix& coreMatrix::Invert()
 
 // ****************************************************************
 // get determinant
-float coreMatrix::Determinant()const
+float coreMatrix::Determinant()const noexcept
 {
     // TODO: add SSE-support
     return _14*_23*_32*_41 - _13*_24*_32*_41 - _14*_22*_33*_41 + _12*_24*_33*_41 +
@@ -190,7 +168,7 @@ float coreMatrix::Determinant()const
 
 // ****************************************************************
 // get identity matrix
-coreMatrix coreMatrix::Identity()
+coreMatrix coreMatrix::Identity()noexcept
 {
     return coreMatrix(1.0f, 0.0f, 0.0f, 0.0f,
                       0.0f, 1.0f, 0.0f, 0.0f,
@@ -201,7 +179,7 @@ coreMatrix coreMatrix::Identity()
 
 // ****************************************************************
 // get translation matrix
-coreMatrix coreMatrix::Translation(const coreVector3& vPosition)
+coreMatrix coreMatrix::Translation(const coreVector3& vPosition)noexcept
 {
     return coreMatrix(       1.0f,        0.0f,        0.0f, 0.0f,
                              0.0f,        1.0f,        0.0f, 0.0f,
@@ -212,7 +190,7 @@ coreMatrix coreMatrix::Translation(const coreVector3& vPosition)
 
 // ****************************************************************
 // get scale matrix
-coreMatrix coreMatrix::Scaling(const coreVector3& vSize)
+coreMatrix coreMatrix::Scaling(const coreVector3& vSize)noexcept
 {
     return coreMatrix(vSize.x,    0.0f,    0.0f, 0.0f,
                          0.0f, vSize.y,    0.0f, 0.0f,
@@ -223,7 +201,7 @@ coreMatrix coreMatrix::Scaling(const coreVector3& vSize)
 
 // ****************************************************************
 // get rotation matrix around X
-coreMatrix coreMatrix::RotationX(const coreVector2& vDirection)
+coreMatrix coreMatrix::RotationX(const coreVector2& vDirection)noexcept
 {
     if(!vDirection.x && !vDirection.y) return coreMatrix::Identity();
 
@@ -234,7 +212,7 @@ coreMatrix coreMatrix::RotationX(const coreVector2& vDirection)
                       0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-coreMatrix coreMatrix::RotationX(const float& fAngle)
+coreMatrix coreMatrix::RotationX(const float& fAngle)noexcept
 {
     return coreMatrix::RotationX(coreVector2::Direction(fAngle));
 }
@@ -242,7 +220,7 @@ coreMatrix coreMatrix::RotationX(const float& fAngle)
 
 // ****************************************************************
 // get rotation matrix around Y
-coreMatrix coreMatrix::RotationY(const coreVector2& vDirection)
+coreMatrix coreMatrix::RotationY(const coreVector2& vDirection)noexcept
 {
     if(!vDirection.x && !vDirection.y) return coreMatrix::Identity();
 
@@ -253,7 +231,7 @@ coreMatrix coreMatrix::RotationY(const coreVector2& vDirection)
                       0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-coreMatrix coreMatrix::RotationY(const float& fAngle)
+coreMatrix coreMatrix::RotationY(const float& fAngle)noexcept
 {
     return coreMatrix::RotationY(coreVector2::Direction(fAngle));
 }
@@ -261,7 +239,7 @@ coreMatrix coreMatrix::RotationY(const float& fAngle)
 
 // ****************************************************************
 // get rotation matrix around Z
-coreMatrix coreMatrix::RotationZ(const coreVector2& vDirection)
+coreMatrix coreMatrix::RotationZ(const coreVector2& vDirection)noexcept
 {
     if(!vDirection.x && !vDirection.y) return coreMatrix::Identity();
 
@@ -272,7 +250,7 @@ coreMatrix coreMatrix::RotationZ(const coreVector2& vDirection)
                       0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-coreMatrix coreMatrix::RotationZ(const float& fAngle)
+coreMatrix coreMatrix::RotationZ(const float& fAngle)noexcept
 {
     return coreMatrix::RotationZ(coreVector2::Direction(fAngle));
 }
@@ -280,7 +258,7 @@ coreMatrix coreMatrix::RotationZ(const float& fAngle)
 
 // ****************************************************************
 // get orientation matrix
-coreMatrix coreMatrix::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)
+coreMatrix coreMatrix::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)noexcept
 {
     const coreVector3 F =  vDirection.Normalized();
     const coreVector3 O = -vOrientation.Normalized();
@@ -296,7 +274,7 @@ coreMatrix coreMatrix::Orientation(const coreVector3& vDirection, const coreVect
 
 // ****************************************************************
 // get perspective matrix
-coreMatrix coreMatrix::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
+coreMatrix coreMatrix::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)noexcept
 {
     const float  V = 1.0f / tanf(0.5f*fFOV);
     const float  A = vResolution.yx().AspectRatio();
@@ -314,7 +292,7 @@ coreMatrix coreMatrix::Perspective(const coreVector2& vResolution, const float& 
 
 // ****************************************************************
 // get ortho matrix
-coreMatrix coreMatrix::Ortho(const coreVector2& vResolution)
+coreMatrix coreMatrix::Ortho(const coreVector2& vResolution)noexcept
 {
     const float L = -vResolution.x*0.5f;
     const float R =  vResolution.x*0.5f;
@@ -336,7 +314,7 @@ coreMatrix coreMatrix::Ortho(const coreVector2& vResolution)
 
 // ****************************************************************
 // get camera matrix
-coreMatrix coreMatrix::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
+coreMatrix coreMatrix::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)noexcept
 {
     return coreMatrix::Translation(-vPosition) * coreMatrix::Orientation(vDirection, vOrientation);
 }

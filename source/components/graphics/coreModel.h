@@ -28,7 +28,7 @@ private:
         coreVector3 vPosition;      //!< position of the joint
         coreVector4 vOrientation;   //!< orientation of the joint
 
-        md5Joint(const char** ppcData);
+        md5Joint(const char** ppcData)noexcept;
     };
 
     //! MD5-vertex structure
@@ -38,7 +38,7 @@ private:
         int iWeightStart;       //!< index of the first associated weight
         int iWeightCount;       //!< number of associated weights
 
-        md5Vertex(const char** ppcData);
+        md5Vertex(const char** ppcData)noexcept;
     };
 
     //! MD5-triangle structure
@@ -46,7 +46,7 @@ private:
     {
         coreWord aiVertex[3];   //!< indexes of the defining vertices
 
-        md5Triangle(const char** ppcData);
+        md5Triangle(const char** ppcData)noexcept;
     };
 
     //! MD5-weight structure
@@ -56,7 +56,7 @@ private:
         float fBias;             //!< contribution factor
         coreVector3 vPosition;   //!< position of the weight
 
-        md5Weight(const char** ppcData);
+        md5Weight(const char** ppcData)noexcept;
     };
 
     //! MD5-mesh structure
@@ -66,8 +66,8 @@ private:
         std::vector<md5Triangle> aTriangle;   //!< triangle list
         std::vector<md5Weight> aWeight;       //!< weight list
 
-        md5Mesh(const char** ppcData);
-        md5Mesh(md5Mesh&& m);
+        md5Mesh(const char** ppcData)noexcept;
+        md5Mesh(md5Mesh&& m)noexcept;
     };
 
     //! MD5-file structure
@@ -76,8 +76,8 @@ private:
         std::vector<md5Joint> aJoint;   //!< joint list
         std::vector<md5Mesh> aMesh;     //!< mesh list
 
-        md5File(const char** ppcData);
-        md5File(md5File&& m);
+        md5File(const char** ppcData)noexcept;
+        md5File(md5File&& m)noexcept;
     };
 
     //! vertex structure
@@ -107,9 +107,9 @@ private:
 
 
 public:
-    coreModel();
-    explicit coreModel(const char* pcPath);
-    explicit coreModel(coreFile* pFile);
+    coreModel()noexcept;
+    explicit coreModel(const char* pcPath)noexcept;
+    explicit coreModel(coreFile* pFile)noexcept;
     ~coreModel();
 
     //! load and unload model resource data

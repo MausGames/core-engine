@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // sound definitions
-#define CORE_SOUND_ASSERT(x) {SDL_assert((x)->CheckRef(m_pCurRef) == m_iCurSource);}   //!< may check for missing reference pointer update
+#define CORE_SOUND_ASSERT {SDL_assert(this->CheckRef(m_pCurRef) == m_iCurSource);}   //!< may check for missing reference pointer update
 
 
 // ****************************************************************
@@ -48,9 +48,9 @@ private:
 
 
 public:
-    coreSound();
-    explicit coreSound(const char* pcPath);
-    explicit coreSound(coreFile* pFile);
+    coreSound()noexcept;
+    explicit coreSound(const char* pcPath)noexcept;
+    explicit coreSound(coreFile* pFile)noexcept;
     ~coreSound();
 
     //! load and unload sound resource data
@@ -71,8 +71,8 @@ public:
     //! @{
     void SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity);
     void SetVolume(const float& fVolume);
-    inline void SetPitch(const float& fPitch) {CORE_SOUND_ASSERT(this) if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
-    inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT(this) if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    inline void SetPitch(const float& fPitch) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
+    inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
     //! enable active sound source with reference pointer

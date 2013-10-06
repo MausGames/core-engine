@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreTimer::coreTimer()
+coreTimer::coreTimer()noexcept
 : m_fCurrent (0.0f)
 , m_fEnd     (1.0f)
 , m_fSpeed   (1.0f)
@@ -22,7 +22,7 @@ coreTimer::coreTimer()
 {
 }
 
-coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)
+coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept
 : m_fCurrent (0.0f)
 , m_fEnd     (fEnd)
 , m_fSpeed   (fSpeed)
@@ -51,7 +51,7 @@ bool coreTimer::Update(const float fModifier)
                 m_fCurrent -= m_fEnd;
                 ++m_iCurLoop;
             }
-            else 
+            else
             {
                 // stop the timer
                 m_fCurrent = m_fEnd;

@@ -47,7 +47,7 @@ private:
 
 
 public:
-    explicit coreConfig(const char* pcName);
+    explicit coreConfig(const char* pcName)noexcept;
     ~coreConfig();
 
     //! load and save configuration

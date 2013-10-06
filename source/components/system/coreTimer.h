@@ -28,8 +28,8 @@ private:
 
 
 public:
-    coreTimer();
-    coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops);
+    coreTimer()noexcept;
+    coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept;
 
     //! update the timer
     //! @{
@@ -81,12 +81,12 @@ private:
 
 
 public:
-    coreFlow() : m_fCurrent(0.0f) {}
+    coreFlow()noexcept : m_fCurrent(0.0f) {}
 
     //! access current value
     //! @{
-    inline operator float& ()                 {return m_fCurrent;}
-    inline float& operator = (const float& f) {m_fCurrent = f; return m_fCurrent;}
+    inline operator float& ()noexcept                 {return m_fCurrent;}
+    inline float& operator = (const float& f)noexcept {m_fCurrent = f; return m_fCurrent;}
     //! @}
 
     //! update the flowing value

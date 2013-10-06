@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreLog::coreLog(const char* pcPath)
+coreLog::coreLog(const char* pcPath)noexcept
 : m_sPath  (pcPath)
 , m_iLevel (0)
 , m_iLock  (0)

@@ -14,7 +14,7 @@
 
 // ****************************************************************
 // constructor
-CoreInput::CoreInput()
+CoreInput::CoreInput()noexcept
 : m_pCursor        (NULL)
 , m_bCursorVisible (true)
 {

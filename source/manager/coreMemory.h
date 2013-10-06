@@ -26,8 +26,8 @@ private:
 
 
 private:
-    coreMemoryManager()  {}
-    ~coreMemoryManager() {m_apPointer.clear();}
+    coreMemoryManager()noexcept {}
+    ~coreMemoryManager()        {m_apPointer.clear();}
     friend class Core;
 
 

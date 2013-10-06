@@ -30,8 +30,8 @@ private:
 
 
 public:
-    explicit coreFile(const char* pcPath);
-    coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize);
+    explicit coreFile(const char* pcPath)noexcept;
+    coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)noexcept;
     ~coreFile();
     friend class coreArchive;
 
@@ -83,8 +83,8 @@ private:
 
 
 public:
-    coreArchive();
-    explicit coreArchive(const char* pcPath);
+    coreArchive()noexcept;
+    explicit coreArchive(const char* pcPath)noexcept;
     ~coreArchive();
 
     //! save archive

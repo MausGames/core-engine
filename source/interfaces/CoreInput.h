@@ -73,7 +73,7 @@ private:
 
 
 private:
-    CoreInput();
+    CoreInput()noexcept;
     ~CoreInput();
     friend class Core;
 

@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreConfig::coreConfig(const char* pcName)
+coreConfig::coreConfig(const char* pcName)noexcept
 {
     // save absolute path
     m_sPath = coreUtils::AppPath();

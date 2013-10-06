@@ -41,9 +41,9 @@ private:
 
 
 public:
-    coreShader();
-    explicit coreShader(const char* pcPath);
-    explicit coreShader(coreFile* pFile);
+    coreShader()noexcept;
+    explicit coreShader(const char* pcPath)noexcept;
+    explicit coreShader(coreFile* pFile)noexcept;
     ~coreShader();
 
     //! load and unload vertex-shader resource data
@@ -87,7 +87,7 @@ private:
 
 
 public:
-    coreProgram();
+    coreProgram()noexcept;
     ~coreProgram();
 
     //! reset the object with the resource manager

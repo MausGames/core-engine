@@ -46,8 +46,8 @@ private:
 
 
 public:
-    explicit coreMusic(const char* pcPath);
-    explicit coreMusic(coreFile* pFile);
+    explicit coreMusic(const char* pcPath)noexcept;
+    explicit coreMusic(coreFile* pFile)noexcept;
     ~coreMusic();
 
     //! reset the object with the resource manager
@@ -140,7 +140,7 @@ private:
 
 
 public:
-    coreMusicPlayer();
+    coreMusicPlayer()noexcept;
     ~coreMusicPlayer();
 
     //! update the music player

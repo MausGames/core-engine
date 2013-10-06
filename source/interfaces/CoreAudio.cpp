@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-CoreAudio::CoreAudio()
+CoreAudio::CoreAudio()noexcept
 : m_NumSource (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
 , m_CurSource (0)
 , m_fVolume   (-1.0f)

@@ -24,7 +24,7 @@ private:
 
 
 public:
-    coreThread();
+    coreThread()noexcept;
     virtual ~coreThread();
 
     //! start and kill the thread

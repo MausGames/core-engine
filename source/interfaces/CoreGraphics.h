@@ -39,7 +39,7 @@ private:
 
 
 private:
-    CoreGraphics();
+    CoreGraphics()noexcept;
     ~CoreGraphics();
     friend class Core;
 

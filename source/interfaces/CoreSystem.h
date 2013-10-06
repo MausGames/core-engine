@@ -46,7 +46,7 @@ private:
 
 
 private:
-    CoreSystem();
+    CoreSystem()noexcept;
     ~CoreSystem();
     friend class Core;
 

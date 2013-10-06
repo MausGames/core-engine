@@ -11,7 +11,7 @@
 
 // ******************************************************************
 // constructor
-CoreSystem::CoreSystem()
+CoreSystem::CoreSystem()noexcept
 : m_vResolution (coreVector2((float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH), (float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT)))
 , m_iFullscreen ((coreByte)Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
 , m_bMinimized  (false)

@@ -51,8 +51,14 @@
         <logicalFolder name="manager" displayName="manager" projectFiles="true">
           <itemPath>../../source/manager/coreMemory.cpp</itemPath>
           <itemPath>../../source/manager/coreMemory.h</itemPath>
+          <itemPath>../../source/manager/coreObject.cpp</itemPath>
+          <itemPath>../../source/manager/coreObject.h</itemPath>
           <itemPath>../../source/manager/coreResource.cpp</itemPath>
           <itemPath>../../source/manager/coreResource.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f1" displayName="objects" projectFiles="true">
+          <itemPath>../../source/objects/coreObject3D.cpp</itemPath>
+          <itemPath>../../source/objects/coreObject3D.h</itemPath>
         </logicalFolder>
         <logicalFolder name="utilities" displayName="utilities" projectFiles="true">
           <itemPath>../../source/utilities/coreMath.cpp</itemPath>
@@ -99,12 +105,13 @@
       </toolsSet>
       <compileType>
         <ccTool>
+          <standard>8</standard>
           <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-std=gnu++11 -msse4.1</commandLine>
+          <commandLine>-std=gnu++11 -fno-exceptions -msse4.1</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -265,12 +272,24 @@
       </item>
       <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -343,7 +362,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -500,12 +519,29 @@
       </item>
       <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -578,7 +614,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -735,12 +771,29 @@
       </item>
       <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -817,7 +870,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-std=gnu++11 -msse4.1</commandLine>
+          <commandLine>-std=gnu++11 -fno-exceptions -msse4.1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -982,12 +1035,24 @@
       </item>
       <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1065,7 +1130,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1226,12 +1291,29 @@
       </item>
       <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1308,7 +1390,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1469,12 +1551,29 @@
       </item>
       <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/manager/coreResource.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/coreObject3D.h"
             ex="false"
             tool="3"
             flavor2="0">

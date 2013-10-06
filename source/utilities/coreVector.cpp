@@ -10,21 +10,8 @@
 
 
 // ****************************************************************
-// constructor
-coreVector2::coreVector2()
-: x (0.0f), y (0.0f)
-{
-}
-
-coreVector2::coreVector2(const float& fx, const float& fy)
-: x (fx), y (fy)
-{
-}
-
-
-// ****************************************************************
 // addition with vector
-coreVector2 coreVector2::operator + (const coreVector2& v)const
+coreVector2 coreVector2::operator + (const coreVector2& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -46,7 +33,7 @@ coreVector2 coreVector2::operator + (const coreVector2& v)const
 
 // ****************************************************************
 // subtraction with vector
-coreVector2 coreVector2::operator - (const coreVector2& v)const
+coreVector2 coreVector2::operator - (const coreVector2& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -68,7 +55,7 @@ coreVector2 coreVector2::operator - (const coreVector2& v)const
 
 // ****************************************************************
 // multiplication with vector
-coreVector2 coreVector2::operator * (const coreVector2& v)const
+coreVector2 coreVector2::operator * (const coreVector2& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -90,7 +77,7 @@ coreVector2 coreVector2::operator * (const coreVector2& v)const
 
 // ****************************************************************
 // division with vector
-coreVector2 coreVector2::operator / (const coreVector2& v)const
+coreVector2 coreVector2::operator / (const coreVector2& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -112,7 +99,7 @@ coreVector2 coreVector2::operator / (const coreVector2& v)const
 
 // ****************************************************************
 // multiplication with matrix
-coreVector2 coreVector2::operator * (const coreMatrix& m)const
+coreVector2 coreVector2::operator * (const coreMatrix& m)const noexcept
 {
     // TODO: add SSE-support
     const float w = 1.0f / (x*m._14 + y*m._24 + m._44);
@@ -142,7 +129,7 @@ coreVector2 coreVector2::operator * (const coreMatrix& m)const
 
 // ****************************************************************
 // normalize vector
-coreVector2& coreVector2::Normalize()
+coreVector2& coreVector2::Normalize()noexcept
 {
     float fLength = this->LengthSq();
     if(fLength == 1.0f) return *this;
@@ -166,7 +153,7 @@ coreVector2& coreVector2::Normalize()
 
 // ****************************************************************
 // get squared length
-float coreVector2::LengthSq()const
+float coreVector2::LengthSq()const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -190,7 +177,7 @@ float coreVector2::LengthSq()const
 
 // ****************************************************************
 // get dot product
-float coreVector2::Dot(const coreVector2& vInA, const coreVector2& vInB)
+float coreVector2::Dot(const coreVector2& vInA, const coreVector2& vInB)noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -212,19 +199,19 @@ float coreVector2::Dot(const coreVector2& vInA, const coreVector2& vInB)
 
 // ****************************************************************
 // get random vector
-coreVector2 coreVector2::Rand()
+coreVector2 coreVector2::Rand()noexcept
 {
     return coreVector2(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize();
 }
 
-coreVector2 coreVector2::Rand(const float& fMin, const float& fMax)
+coreVector2 coreVector2::Rand(const float& fMin, const float& fMax)noexcept
 {
     return coreVector2(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
-coreVector2 coreVector2::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY)
+coreVector2 coreVector2::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY)noexcept
 {
     return coreVector2(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY));
@@ -233,7 +220,7 @@ coreVector2 coreVector2::Rand(const float& fMinX, const float& fMaxX, const floa
 
 // ****************************************************************
 // get reflected vector
-coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
+coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)noexcept
 {
     const float fDot = coreVector2::Dot(vVelocity, vNormal);
 
@@ -243,26 +230,8 @@ coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2
 
 
 // ****************************************************************
-// constructor
-coreVector3::coreVector3()
-: x (0.0f), y (0.0f), z (0.0f)
-{
-}
-
-coreVector3::coreVector3(const coreVector2& c, const float& fz)
-: x (c.x), y (c.y), z (fz)
-{
-}
-
-coreVector3::coreVector3(const float& fx, const float& fy, const float& fz)
-: x (fx), y (fy), z (fz)
-{
-}
-
-
-// ****************************************************************
 // addition with vector
-coreVector3 coreVector3::operator + (const coreVector3& v)const
+coreVector3 coreVector3::operator + (const coreVector3& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -284,7 +253,7 @@ coreVector3 coreVector3::operator + (const coreVector3& v)const
 
 // ****************************************************************
 // subtraction with vector
-coreVector3 coreVector3::operator - (const coreVector3& v)const
+coreVector3 coreVector3::operator - (const coreVector3& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -306,7 +275,7 @@ coreVector3 coreVector3::operator - (const coreVector3& v)const
 
 // ****************************************************************
 // multiplication with vector
-coreVector3 coreVector3::operator * (const coreVector3& v)const
+coreVector3 coreVector3::operator * (const coreVector3& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -328,7 +297,7 @@ coreVector3 coreVector3::operator * (const coreVector3& v)const
 
 // ****************************************************************
 // division with vector
-coreVector3 coreVector3::operator / (const coreVector3& v)const
+coreVector3 coreVector3::operator / (const coreVector3& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -350,7 +319,7 @@ coreVector3 coreVector3::operator / (const coreVector3& v)const
 
 // ****************************************************************
 // multiplication with matrix
-coreVector3 coreVector3::operator * (const coreMatrix& m)const
+coreVector3 coreVector3::operator * (const coreMatrix& m)const noexcept
 {
     // TODO: add SSE-support
     const float w = 1.0f / (x*m._14 + y*m._24 + z*m._34 + m._44);
@@ -381,7 +350,7 @@ coreVector3 coreVector3::operator * (const coreMatrix& m)const
 
 // ****************************************************************
 // normalize vector
-coreVector3& coreVector3::Normalize()
+coreVector3& coreVector3::Normalize()noexcept
 {
     float fLength = this->LengthSq();
     if(fLength == 1.0f) return *this;
@@ -405,7 +374,7 @@ coreVector3& coreVector3::Normalize()
 
 // ****************************************************************
 // get squared length
-float coreVector3::LengthSq()const
+float coreVector3::LengthSq()const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -429,7 +398,7 @@ float coreVector3::LengthSq()const
 
 // ****************************************************************
 // get dot product
-float coreVector3::Dot(const coreVector3& vInA, const coreVector3& vInB)
+float coreVector3::Dot(const coreVector3& vInA, const coreVector3& vInB)noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -451,21 +420,21 @@ float coreVector3::Dot(const coreVector3& vInA, const coreVector3& vInB)
 
 // ****************************************************************
 // get random vector
-coreVector3 coreVector3::Rand()
+coreVector3 coreVector3::Rand()noexcept
 {
     return coreVector3(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize();
 }
 
-coreVector3 coreVector3::Rand(const float& fMin, const float& fMax)
+coreVector3 coreVector3::Rand(const float& fMin, const float& fMax)noexcept
 {
     return coreVector3(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
-coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)
+coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)noexcept
 {
     return coreVector3(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY),
@@ -475,7 +444,7 @@ coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, const floa
 
 // ****************************************************************
 // get reflected vector
-coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
+coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)noexcept
 {
     const float fDot = coreVector3::Dot(vVelocity, vNormal);
 
@@ -486,7 +455,7 @@ coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3
 
 // ****************************************************************
 // get cross product
-coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
+coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -513,31 +482,8 @@ coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
 
 
 // ****************************************************************
-// constructor
-coreVector4::coreVector4()
-: x (0.0f), y (0.0f), z (0.0f), w (0.0f)
-{
-}
-
-coreVector4::coreVector4(const coreVector3& c, const float& fw)
-: x (c.x), y (c.y), z (c.z), w (fw)
-{
-}
-
-coreVector4::coreVector4(const coreVector2& c, const float& fz, const float& fw)
-: x (c.x), y (c.y), z (fz), w (fw)
-{
-}
-
-coreVector4::coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)
-: x (fx), y (fy), z (fz), w (fw)
-{
-}
-
-
-// ****************************************************************
 // addition with vector
-coreVector4 coreVector4::operator + (const coreVector4& v)const
+coreVector4 coreVector4::operator + (const coreVector4& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -559,7 +505,7 @@ coreVector4 coreVector4::operator + (const coreVector4& v)const
 
 // ****************************************************************
 // subtraction with vector
-coreVector4 coreVector4::operator - (const coreVector4& v)const
+coreVector4 coreVector4::operator - (const coreVector4& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -581,7 +527,7 @@ coreVector4 coreVector4::operator - (const coreVector4& v)const
 
 // ****************************************************************
 // multiplication with vector
-coreVector4 coreVector4::operator * (const coreVector4& v)const
+coreVector4 coreVector4::operator * (const coreVector4& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -603,7 +549,7 @@ coreVector4 coreVector4::operator * (const coreVector4& v)const
 
 // ****************************************************************
 // division with vector
-coreVector4 coreVector4::operator / (const coreVector4& v)const
+coreVector4 coreVector4::operator / (const coreVector4& v)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -625,7 +571,7 @@ coreVector4 coreVector4::operator / (const coreVector4& v)const
 
 // ****************************************************************
 // multiplication with matrix
-coreVector4 coreVector4::operator * (const coreMatrix& m)const
+coreVector4 coreVector4::operator * (const coreMatrix& m)const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -654,7 +600,7 @@ coreVector4 coreVector4::operator * (const coreMatrix& m)const
 
 // ****************************************************************
 // get squared length
-float coreVector4::LengthSq()const
+float coreVector4::LengthSq()const noexcept
 {
 #if defined(_CORE_SSE_)
 
@@ -678,7 +624,7 @@ float coreVector4::LengthSq()const
 
 // ****************************************************************
 // multiplication of two quaternions
-coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)
+coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)noexcept
 {
     // TODO: add SSE-support
     return coreVector4(vInA.x*vInB.w + vInA.w*vInB.x + vInA.y*vInB.z - vInA.z*vInB.y,

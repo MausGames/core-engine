@@ -13,7 +13,7 @@ int coreThreadMain(void* pData);
 
 // ****************************************************************
 // constructor
-coreThread::coreThread()
+coreThread::coreThread()noexcept
 : m_pThread   (NULL)
 , m_sName     ("")
 , m_iCurFrame (0)

@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreRand::coreRand(const coreUint& iSize, int iInit)
+coreRand::coreRand(const coreUint& iSize, int iInit)noexcept
 : m_iNumRand (iSize)
 , m_iCurRand (0)
 {

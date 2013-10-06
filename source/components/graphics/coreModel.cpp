@@ -13,7 +13,7 @@ SDL_SpinLock coreModel::s_iLock = 0;
 
 // ****************************************************************
 // constructor
-coreModel::md5Joint::md5Joint(const char** ppcData)
+coreModel::md5Joint::md5Joint(const char** ppcData)noexcept
 {
     SCAN_DATA(*ppcData, "%*s %d %*s %f %f %f %*s %*s %f %f %f %*s",
               &iParent,
@@ -29,7 +29,7 @@ coreModel::md5Joint::md5Joint(const char** ppcData)
 
 // ****************************************************************
 // constructor
-coreModel::md5Vertex::md5Vertex(const char** ppcData)
+coreModel::md5Vertex::md5Vertex(const char** ppcData)noexcept
 {
     SCAN_DATA(*ppcData, "%*s %*d %*s %f %f %*s %d %d",
               &vTexture.x,   &vTexture.y,
@@ -39,7 +39,7 @@ coreModel::md5Vertex::md5Vertex(const char** ppcData)
 
 // ****************************************************************
 // constructor
-coreModel::md5Triangle::md5Triangle(const char** ppcData)
+coreModel::md5Triangle::md5Triangle(const char** ppcData)noexcept
 {
     SCAN_DATA(*ppcData, "%*s %*d %hu %hu %hu",
               &aiVertex[0], &aiVertex[2], &aiVertex[1])
@@ -48,7 +48,7 @@ coreModel::md5Triangle::md5Triangle(const char** ppcData)
 
 // ****************************************************************
 // constructor
-coreModel::md5Weight::md5Weight(const char** ppcData)
+coreModel::md5Weight::md5Weight(const char** ppcData)noexcept
 {
     SCAN_DATA(*ppcData, "%*s %*d %d %f %*s %f %f %f %*s",
               &iJoint,      &fBias,
@@ -58,7 +58,7 @@ coreModel::md5Weight::md5Weight(const char** ppcData)
 
 // ****************************************************************
 // constructor
-coreModel::md5Mesh::md5Mesh(const char** ppcData)
+coreModel::md5Mesh::md5Mesh(const char** ppcData)noexcept
 {
     int iNum = 0;
 
@@ -75,7 +75,7 @@ coreModel::md5Mesh::md5Mesh(const char** ppcData)
     for(int i = 0; i < iNum; ++i) aWeight.push_back(md5Weight(ppcData));
 }
 
-coreModel::md5Mesh::md5Mesh(md5Mesh&& m)
+coreModel::md5Mesh::md5Mesh(md5Mesh&& m)noexcept
 : aVertex   (std::move(m.aVertex))
 , aTriangle (std::move(m.aTriangle))
 , aWeight   (std::move(m.aWeight))
@@ -85,7 +85,7 @@ coreModel::md5Mesh::md5Mesh(md5Mesh&& m)
 
 // ****************************************************************
 // constructor
-coreModel::md5File::md5File(const char** ppcData)
+coreModel::md5File::md5File(const char** ppcData)noexcept
 {
     char acIdentifier[16] = "";
     int iVersion          = 0;
@@ -117,7 +117,7 @@ coreModel::md5File::md5File(const char** ppcData)
     }
 }
 
-coreModel::md5File::md5File(md5File&& m)
+coreModel::md5File::md5File(md5File&& m)noexcept
 : aJoint (std::move(m.aJoint))
 , aMesh  (std::move(m.aMesh))
 {
@@ -126,7 +126,7 @@ coreModel::md5File::md5File(md5File&& m)
 
 // ****************************************************************
 // constructor
-coreModel::coreModel()
+coreModel::coreModel()noexcept
 : m_iVertexArray  (0)
 , m_iVertexBuffer (0)
 , m_iIndexBuffer  (0)
@@ -138,7 +138,7 @@ coreModel::coreModel()
 {
 }
 
-coreModel::coreModel(const char* pcPath)
+coreModel::coreModel(const char* pcPath)noexcept
 : m_iVertexArray  (0)
 , m_iVertexBuffer (0)
 , m_iIndexBuffer  (0)
@@ -152,7 +152,7 @@ coreModel::coreModel(const char* pcPath)
     this->coreResource::Load(pcPath);
 }
 
-coreModel::coreModel(coreFile* pFile)
+coreModel::coreModel(coreFile* pFile)noexcept
 : m_iVertexArray  (0)
 , m_iVertexBuffer (0)
 , m_iIndexBuffer  (0)

@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreFile::coreFile(const char* pcPath)
+coreFile::coreFile(const char* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_pData       (NULL)
 , m_iSize       (0)
@@ -36,7 +36,7 @@ coreFile::coreFile(const char* pcPath)
     Core::Log->Info(coreUtils::Print("File (%s) opened", m_sPath.c_str()));
 }
 
-coreFile::coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)
+coreFile::coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)noexcept
 : m_sPath       (pcPath)
 , m_pData       (pData)
 , m_iSize       (iSize)
@@ -201,14 +201,14 @@ coreError coreFile::SearchFolder(const char* pcPath, const char* pcFilter, std::
 
 // ****************************************************************
 // constructor
-coreArchive::coreArchive()
+coreArchive::coreArchive()noexcept
 : m_sPath ("")
 {
     // reserve memory for file objects
     m_apFile.reserve(32);
 }
 
-coreArchive::coreArchive(const char* pcPath)
+coreArchive::coreArchive(const char* pcPath)noexcept
 : m_sPath (pcPath)
 {
     // open archive

@@ -39,7 +39,7 @@ coreResourceManager* Core::Manager::Resource = NULL;
 
 // ****************************************************************
 // constructor
-Core::Core()
+Core::Core()noexcept
 {
     // init files
     Log    = new coreLog("logfile.html");

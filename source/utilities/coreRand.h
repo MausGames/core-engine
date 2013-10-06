@@ -23,7 +23,7 @@ private:
 
 
 public:
-    coreRand(const coreUint& iSize, int iInit = -1);
+    coreRand(const coreUint& iSize, int iInit = -1)noexcept;
     coreRand(const coreRand& c)noexcept;
     coreRand(coreRand&& m)noexcept;
     ~coreRand();

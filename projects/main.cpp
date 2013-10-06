@@ -19,7 +19,7 @@ void CoreApp::Init()
     g_pMusic = new coreMusicPlayer();
     g_pMusic->AddFile("data/feel.ogg");
     g_pMusic->AddFile("data/korn.ogg");
-    //g_pMusic->SetFade(2.0f);
+    g_pMusic->SetFade(2.0f);
     g_pMusic->Control()->Play();
 
     //glDisable(GL_LIGHTING);
