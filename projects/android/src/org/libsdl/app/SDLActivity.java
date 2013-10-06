@@ -56,6 +56,9 @@ public class SDLActivity extends Activity {
         System.loadLibrary("SDL2_image");
         System.loadLibrary("SDL2_ttf");
         System.loadLibrary("OpenAL");
+        System.loadLibrary("OGG");
+        System.loadLibrary("Vorbis");
+        System.loadLibrary("VorbisFile");
         System.loadLibrary("main");
     }
 
