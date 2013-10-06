@@ -10,6 +10,8 @@
       <logicalFolder name="source" displayName="source" projectFiles="true">
         <logicalFolder name="components" displayName="components" projectFiles="true">
           <logicalFolder name="audio" displayName="audio" projectFiles="true">
+            <itemPath>../../source/components/audio/coreMusic.cpp</itemPath>
+            <itemPath>../../source/components/audio/coreMusic.h</itemPath>
             <itemPath>../../source/components/audio/coreSound.cpp</itemPath>
             <itemPath>../../source/components/audio/coreSound.h</itemPath>
           </logicalFolder>
@@ -97,7 +99,6 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <standard>8</standard>
           <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>../../source</pElem>
@@ -124,9 +125,9 @@
             <linkerLibLibItem>OpenGL32</linkerLibLibItem>
             <linkerLibLibItem>glew32mx</linkerLibLibItem>
             <linkerLibLibItem>OpenAL32</linkerLibLibItem>
-            <linkerLibLibItem>libogg</linkerLibLibItem>
-            <linkerLibLibItem>libvorbis</linkerLibLibItem>
-            <linkerLibLibItem>libvorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
           </linkerLibItems>
           <commandLine>-mwindows</commandLine>
         </linkerTool>
@@ -134,6 +135,16 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.cpp"
             ex="false"
@@ -360,6 +371,16 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/audio/coreSound.cpp"
             ex="false"
             tool="1"
@@ -585,6 +606,16 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/audio/coreSound.cpp"
             ex="false"
             tool="1"
@@ -782,7 +813,6 @@
         <ccTool>
           <developmentMode>5</developmentMode>
           <stripSymbols>true</stripSymbols>
-          <standard>8</standard>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
@@ -812,9 +842,9 @@
             <linkerLibLibItem>OpenGL32</linkerLibLibItem>
             <linkerLibLibItem>glew32mx</linkerLibLibItem>
             <linkerLibLibItem>OpenAL32</linkerLibLibItem>
-            <linkerLibLibItem>libogg</linkerLibLibItem>
-            <linkerLibLibItem>libvorbis</linkerLibLibItem>
-            <linkerLibLibItem>libvorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
           </linkerLibItems>
           <commandLine>-static-libgcc -static-libstdc++ -mwindows</commandLine>
         </linkerTool>
@@ -822,6 +852,16 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.cpp"
             ex="false"
@@ -1057,6 +1097,16 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/audio/coreSound.cpp"
             ex="false"
             tool="1"
@@ -1289,6 +1339,16 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.cpp"
             ex="false"

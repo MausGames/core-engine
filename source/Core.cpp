@@ -41,7 +41,7 @@ coreResourceManager* Core::Manager::Resource = NULL;
 // constructor
 Core::Core()
 {
-    // init log and configuration file
+    // init files
     Log    = new coreLog("logfile.html");
     Config = new coreConfig("config.ini");
 
@@ -82,7 +82,7 @@ Core::~Core()
     SAFE_DELETE(Utils)
     SAFE_DELETE(Math)
 
-    // delete log and configuration file
+    // delete files
     SAFE_DELETE(Config)
     SAFE_DELETE(Log)
 }
@@ -112,19 +112,19 @@ void Core::__Run()
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())
     {
-        // pre-update engine
+        // update the input interface
         Core::Input->__UpdateInput();
 
-        // move and render application
+        // move and render the application
         pApplication->Move();
         pApplication->Render();
 
-        // post-update engine
+        // update all remaining interfaces
         Core::Input->__UpdateCursor();
         Core::Graphics->__UpdateScene();
         Core::System->__UpdateTime();
 
-        // update resource manager with only one context
+        // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())
             Core::Manager::Resource->__Run();
     }

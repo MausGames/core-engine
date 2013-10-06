@@ -26,9 +26,9 @@
 					<Add library="..\..\libraries\windows\OpenGL32.lib" />
 					<Add library="..\..\libraries\windows\glew32mx.lib" />
 					<Add library="..\..\libraries\windows\mingw\libOpenAL32.a" />
-					<Add library="..\..\libraries\windows\libogg.lib" />
-					<Add library="..\..\libraries\windows\libvorbis.lib" />
-					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
+					<Add library="..\..\libraries\windows\mingw\libogg.a" />
+					<Add library="..\..\libraries\windows\mingw\libvorbis.a" />
+					<Add library="..\..\libraries\windows\mingw\libvorbisfile.a" />
 				</Linker>
 			</Target>
 			<Target title="Debug_Linux_gcc">
@@ -76,9 +76,9 @@
 					<Add library="..\..\libraries\windows\OpenGL32.lib" />
 					<Add library="..\..\libraries\windows\glew32mx.lib" />
 					<Add library="..\..\libraries\windows\mingw\libOpenAL32.a" />
-					<Add library="..\..\libraries\windows\libogg.lib" />
-					<Add library="..\..\libraries\windows\libvorbis.lib" />
-					<Add library="..\..\libraries\windows\libvorbisfile.lib" />
+					<Add library="..\..\libraries\windows\mingw\libogg.a" />
+					<Add library="..\..\libraries\windows\mingw\libvorbis.a" />
+					<Add library="..\..\libraries\windows\mingw\libvorbisfile.a" />
 				</Linker>
 			</Target>
 			<Target title="Release_Linux_gcc">
@@ -113,6 +113,8 @@
 		</Compiler>
 		<Unit filename="../../source/Core.cpp" />
 		<Unit filename="../../source/Core.h" />
+		<Unit filename="../../source/components/audio/coreMusic.cpp" />
+		<Unit filename="../../source/components/audio/coreMusic.h" />
 		<Unit filename="../../source/components/audio/coreSound.cpp" />
 		<Unit filename="../../source/components/audio/coreSound.h" />
 		<Unit filename="../../source/components/graphics/coreModel.cpp" />

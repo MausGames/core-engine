@@ -12,7 +12,9 @@
 // ******************************************************************
 // constructor
 CoreGraphics::CoreGraphics()
-: m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
+: m_RenderContext   (NULL)
+, m_ResourceContext (NULL)
+, m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
 , m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR))
 , m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR))
 , m_vCamPosition    (coreVector3(0.0f,0.0f, 0.0f))
@@ -60,7 +62,7 @@ CoreGraphics::CoreGraphics()
     m_fGLSL   = coreUtils::StrVersion((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     // check OpenGL version
-    if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements are not met, video card supporting at least OpenGL 2.0 is required");
+    if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements not met, video card supporting at least OpenGL 2.0 required");
 
     // enable vertical synchronization
     SDL_GL_SetSwapInterval(1);

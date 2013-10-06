@@ -273,7 +273,7 @@ bool coreSound::IsPlaying()const
 
 
 // ****************************************************************
-// control the sound source
+// change the sound source position and velocity
 void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity)
 {
     CORE_SOUND_ASSERT(this)
@@ -295,7 +295,7 @@ void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVe
 
 
 // ****************************************************************
-// control the volume
+// change the sound source volume
 void coreSound::SetVolume(const float& fVolume)
 {
     CORE_SOUND_ASSERT(this)

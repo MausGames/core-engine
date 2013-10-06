@@ -19,10 +19,10 @@
 
 enum coreInputType
 {
+    CORE_INPUT_DATA    = 0,
     CORE_INPUT_HOLD    = 1,
     CORE_INPUT_PRESS   = 2,
-    CORE_INPUT_RELEASE = 3,
-    CORE_INPUT_DATA    = 0
+    CORE_INPUT_RELEASE = 3
 };
 
 

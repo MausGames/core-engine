@@ -23,12 +23,12 @@ coreRand::coreRand(const coreUint& iSize, int iInit)
 #endif
 
     // init random number generator
-    srand((unsigned int)((iInit < 0) ? time(NULL) : iInit));
+    std::srand((unsigned int)((iInit < 0) ? time(NULL) : iInit));
 
     // pre-calculate random numbers
     m_piRand = new int[m_iNumRand];
     for(coreUint i = 0; i < m_iNumRand; ++i)
-        m_piRand[i] = rand();
+        m_piRand[i] = std::rand();
 }
 
 coreRand::coreRand(const coreRand& c)noexcept

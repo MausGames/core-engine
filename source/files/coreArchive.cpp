@@ -139,9 +139,9 @@ bool coreFile::FileExists(const char* pcPath)
 // ****************************************************************
 // retrieve relative paths of all files from a folder
 // TODO: implement for Android
-coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput)
+coreError coreFile::SearchFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput)
 {
-    if(!pcFolder || !pasOutput) return CORE_INVALID_INPUT;
+    if(!pcPath || !pasOutput) return CORE_INVALID_INPUT;
 
 #if defined(_CORE_WINDOWS_)
 
@@ -149,10 +149,10 @@ coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std
     WIN32_FIND_DATA hFile;
 
     // open folder
-    hFolder = FindFirstFile(coreUtils::Print("%s/%s/%s", coreUtils::AppPath(), pcFolder, pcFilter), &hFile);
+    hFolder = FindFirstFile(coreUtils::Print("%s/%s/%s", coreUtils::AppPath(), pcPath, pcFilter), &hFile);
     if(hFolder == INVALID_HANDLE_VALUE)
     {
-        Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcFolder));
+        Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcPath));
         return CORE_FILE_ERROR;
     }
 
@@ -160,7 +160,7 @@ coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std
     {
         // check and add file path
         if(hFile.cFileName[0] != '.')
-            pasOutput->push_back(coreUtils::Print("%s/%s", pcFolder, hFile.cFileName));
+            pasOutput->push_back(coreUtils::Print("%s/%s", pcPath, hFile.cFileName));
     }
     while(FindNextFile(hFolder, &hFile));
 
@@ -173,10 +173,10 @@ coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std
     struct dirent* pDirent;
 
     // open folder
-    pDir = opendir(pcFolder);
+    pDir = opendir(pcPath);
     if(!pDir)
     {
-        Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcFolder));
+        Core::Log->Error(0, coreUtils::Print("Folder (%s) could not be opened", pcPath));
         return CORE_FILE_ERROR;
     }
 
@@ -186,7 +186,7 @@ coreError coreFile::SearchFolder(const char* pcFolder, const char* pcFilter, std
         if(pDirent->d_name[0] != '.')
         {
             if(coreUtils::StrCmp(pDirent->d_name, pcFilter))
-                pasOutput->push_back(coreUtils::Print("%s/%s", pcFolder, pDirent->d_name));
+                pasOutput->push_back(coreUtils::Print("%s/%s", pcPath, pDirent->d_name));
         }
     }
 
@@ -205,7 +205,7 @@ coreArchive::coreArchive()
 : m_sPath ("")
 {
     // reserve memory for file objects
-    m_aFile.reserve(32);
+    m_apFile.reserve(32);
 }
 
 coreArchive::coreArchive(const char* pcPath)
@@ -224,7 +224,7 @@ coreArchive::coreArchive(const char* pcPath)
     SDL_RWread(pArchive, &iSize, sizeof(coreUint), 1);
 
     // read file headers
-    m_aFile.reserve(iSize);
+    m_apFile.reserve(iSize);
     for(coreUint i = 0; i < iSize; ++i)
     {
         coreUint iLength;
@@ -239,10 +239,10 @@ coreArchive::coreArchive(const char* pcPath)
         SDL_RWread(pArchive, &iPos,    sizeof(coreUint), 1);
 
         // add new file object
-        m_aFile.push_back(new coreFile(acPath, NULL, iSize));
-        m_aFile.back()->m_pArchive    = this;
-        m_aFile.back()->m_iArchivePos = iPos;
-        m_aFileMap[acPath] = m_aFile.back();
+        m_apFile.push_back(new coreFile(acPath, NULL, iSize));
+        m_apFile.back()->m_pArchive    = this;
+        m_apFile.back()->m_iArchivePos = iPos;
+        m_apFileMap[acPath] = m_apFile.back();
     }
 
     // close archive
@@ -255,13 +255,7 @@ coreArchive::coreArchive(const char* pcPath)
 // destructor
 coreArchive::~coreArchive()
 {
-    // delete file objects
-    for(coreUint i = 0; i < m_aFile.size(); ++i)
-        SAFE_DELETE(m_aFile[i])
-
-    // clear memory
-    m_aFile.clear();
-    m_aFileMap.clear();
+    this->ClearFiles();
 }
 
 
@@ -269,10 +263,10 @@ coreArchive::~coreArchive()
 // save archive
 coreError coreArchive::Save(const char* pcPath)
 {
-    if(m_aFile.empty()) return CORE_INVALID_CALL;
+    if(m_apFile.empty()) return CORE_INVALID_CALL;
 
     // cache missing file data
-    for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
+    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
         (*it)->LoadData();
 
     // save path
@@ -287,12 +281,12 @@ coreError coreArchive::Save(const char* pcPath)
     }
 
     // save number of files
-    const coreUint iSize = m_aFile.size();
+    const coreUint iSize = m_apFile.size();
     SDL_RWwrite(pArchive, &iSize, sizeof(coreUint), 1);
 
     // save file headers
     this->__CalculatePositions();
-    for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
+    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
     {
         // get path length
         const coreUint iLength = strlen((*it)->GetPath());
@@ -305,7 +299,7 @@ coreError coreArchive::Save(const char* pcPath)
     }
 
     // save file data
-    for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
+    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
         SDL_RWwrite(pArchive, (*it)->GetData(), sizeof(coreByte), (*it)->GetSize());
 
     // close archive
@@ -320,7 +314,7 @@ coreError coreArchive::Save(const char* pcPath)
 coreError coreArchive::AddFile(const char* pcPath)
 {
     // check already existing file
-    if(m_aFileMap.count(pcPath))
+    if(m_apFileMap.count(pcPath))
     {
         Core::Log->Error(0, coreUtils::Print("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str()));
         return CORE_INVALID_INPUT;
@@ -335,7 +329,7 @@ coreError coreArchive::AddFile(coreFile* pFile)
     if(pFile->m_pArchive) return CORE_INVALID_INPUT;
 
     // check already existing file
-    if(m_aFileMap.count(pFile->GetPath()))
+    if(m_apFileMap.count(pFile->GetPath()))
     {
         Core::Log->Error(0, coreUtils::Print("File (%s) already exists in Archive (%s)", pFile->GetPath(), m_sPath.c_str()));
         return CORE_INVALID_INPUT;
@@ -345,44 +339,43 @@ coreError coreArchive::AddFile(coreFile* pFile)
     pFile->LoadData();
 
     // add new file object
-    m_aFile.push_back(pFile);
-    m_aFileMap[pFile->GetPath()] = m_aFile.back();
+    m_apFile.push_back(pFile);
+    m_apFileMap[pFile->GetPath()] = m_apFile.back();
 
     // associate archive
-    m_aFile.back()->m_pArchive    = this;
-    m_aFile.back()->m_iArchivePos = 0;
+    m_apFile.back()->m_pArchive    = this;
+    m_apFile.back()->m_iArchivePos = 0;
 
     return CORE_OK;
 }
 
 
 // ****************************************************************
-// delete file object
+// remove file object
 coreError coreArchive::DeleteFile(const coreUint& iIndex)
 {
-    if(iIndex >= m_aFile.size()) return CORE_INVALID_INPUT;
+    if(iIndex >= m_apFile.size()) return CORE_INVALID_INPUT;
 
-    coreFile* pFile = m_aFile[iIndex];
-    const std::string sPath = pFile->GetPath();
+    coreFile* pFile = m_apFile[iIndex];
+
+    // remove file object
+    m_apFile.erase(m_apFile.begin()+iIndex);
+    m_apFileMap.erase(pFile->GetPath());
 
     // delete file object
     SAFE_DELETE(pFile)
-
-    // remove file object
-    m_aFile.erase(m_aFile.begin()+iIndex);
-    m_aFileMap.erase(sPath);
 
     return CORE_OK;
 }
 
 coreError coreArchive::DeleteFile(const char* pcPath)
 {
-    if(!m_aFileMap.count(pcPath)) return CORE_INVALID_INPUT;
+    if(!m_apFileMap.count(pcPath)) return CORE_INVALID_INPUT;
 
     // search index and delete file
-    for(coreUint i = 0; i < m_aFile.size(); ++i)
+    for(coreUint i = 0; i < m_apFile.size(); ++i)
     {
-        if(m_aFile[i]->GetPath() == pcPath)
+        if(m_apFile[i]->GetPath() == pcPath)
             return this->DeleteFile(i);
     }
 
@@ -397,15 +390,29 @@ coreError coreArchive::DeleteFile(coreFile* pFile)
 
 
 // ****************************************************************
+// remove all files
+void coreArchive::ClearFiles()
+{
+    // delete file objects
+    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
+        SAFE_DELETE(*it)
+
+    // clear memory
+    m_apFile.clear();
+    m_apFileMap.clear();
+}
+
+
+// ****************************************************************
 // calculate the data positions of all files
 void coreArchive::__CalculatePositions()
 {
     // calculate data start position
     coreUint iCurPosition = sizeof(coreUint);
-    for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
+    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
         iCurPosition += sizeof(coreUint) + strlen((*it)->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
 
-    for(auto it = m_aFile.begin(); it != m_aFile.end(); ++it)
+    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
     {
         // set absolute data position
         (*it)->m_pArchive    = this;

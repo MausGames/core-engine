@@ -68,10 +68,10 @@ void coreSpline::AddNode(const coreVector3& vPosition, const coreVector3& vTange
     // edit last node and increase max distance
     if(!m_apNode.empty())
     {
-        coreNode* pLastNode = &m_apNode.back();
+        coreNode& LastNode = m_apNode.back();
 
-        pLastNode->fDistance = (NewNode.vPosition - pLastNode->vPosition).Length();
-        m_fMaxDistance      += pLastNode->fDistance;
+        LastNode.fDistance = (NewNode.vPosition - LastNode.vPosition).Length();
+        m_fMaxDistance    += LastNode.fDistance;
     }
 
     // add new node
@@ -81,7 +81,7 @@ void coreSpline::AddNode(const coreVector3& vPosition, const coreVector3& vTange
 
 // ****************************************************************
 // remove node from spline
-void coreSpline::RemoveNode(const coreUint& iIndex)
+void coreSpline::DeleteNode(const coreUint& iIndex)
 {
     // TODO: implement function
 }
@@ -153,18 +153,18 @@ coreVector3 coreSpline::GetDirection(const float& fTime, const coreVector3& vP1,
 // get relative node and time
 void coreSpline::GetRelative(const float& fTime, coreUint* piIndex, float* pfRelative)const
 {
-    float fDistance = this->GetDistance(fTime);
+    const float fDistance = this->GetDistance(fTime);
     float fCurDistance = 0.0f;
 
     // search relevant node
     *piIndex = 0;
-    while(fCurDistance + m_apNode[*piIndex].fDistance < fDistance && *piIndex < m_apNode.size()-2)
+    while((fCurDistance + m_apNode[*piIndex].fDistance < fDistance) && (*piIndex < m_apNode.size()-2))
         fCurDistance += m_apNode[(*piIndex)++].fDistance;
 
     // calculate relative time between the nodes
     if(pfRelative)
     {
-        *pfRelative = fDistance - fCurDistance;
+        *pfRelative  = fDistance - fCurDistance;
         *pfRelative /= m_apNode[*piIndex].fDistance;
     }
 }

@@ -111,10 +111,10 @@
 #endif
 
 #if defined(_CORE_MSVC_)
-    #define align16(v) __declspec(align(16)) v
+    #define align16(x) __declspec(align(16)) x
     #define deletefunc
 #else
-    #define align16(v) v __attribute__((aligned(16)))
+    #define align16(x) x __attribute__((aligned(16)))
     #define deletefunc = delete
 #endif
 

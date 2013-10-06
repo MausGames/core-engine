@@ -46,7 +46,7 @@ public:
     //! manage nodes
     //! @{
     void AddNode(const coreVector3& vPosition, const coreVector3& vTangent);
-    void RemoveNode(const coreUint& iIndex);
+    void DeleteNode(const coreUint& iIndex);
     void ClearNodes();
     //! @}
 

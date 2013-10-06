@@ -44,6 +44,7 @@ public:
     //! @{
     coreError LoadData();
     inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
+    inline coreByte* MoveData()   {this->LoadData(); coreByte* pOutput = m_pData; m_pData = NULL; return pOutput;}
     //! @}
 
     //! get object attributes
@@ -61,7 +62,7 @@ public:
 
     //! retrieve relative paths of all files from a folder
     //! @{
-    static coreError SearchFolder(const char* pcFolder, const char* pcFilter, std::vector<std::string>* pasOutput);
+    static coreError SearchFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput);
     //! @}
 
 
@@ -75,10 +76,10 @@ private:
 class coreArchive final
 {
 private:
-    std::string m_sPath;                             //!< relative path of the archive
+    std::string m_sPath;                              //!< relative path of the archive
 
-    std::vector<coreFile*> m_aFile;                  //!< file objects
-    std::u_map<std::string, coreFile*> m_aFileMap;   //!< path access for file objects
+    std::vector<coreFile*> m_apFile;                  //!< file objects
+    std::u_map<std::string, coreFile*> m_apFileMap;   //!< path access for file objects
 
 
 public:
@@ -98,25 +99,20 @@ public:
     coreError DeleteFile(const coreUint& iIndex);
     coreError DeleteFile(const char* pcPath);
     coreError DeleteFile(coreFile* pFile);
-    //! @}
-
-    //! load and unload file data
-    //! @{
-    void LoadData();
-    void UnloadData();
+    void ClearFiles();
     //! @}
 
     //! access file objects
     //! @{
-    inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_aFile.size())  {SDL_assert(false); return NULL;} return m_aFile[iIndex];}
-    inline coreFile* GetFile(const char* pcPath)     {if(!m_aFileMap.count(pcPath)) {SDL_assert(false); return NULL;} return m_aFileMap[pcPath];}
+    inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_apFile.size())  {SDL_assert(false); return NULL;} return m_apFile[iIndex];}
+    inline coreFile* GetFile(const char* pcPath)     {if(!m_apFileMap.count(pcPath)) {SDL_assert(false); return NULL;} return m_apFileMap[pcPath];}
     //! @}
 
     //! get object attributes
     //! @{
     inline const char* GetName()const {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const {return m_sPath.c_str();}
-    inline coreUint GetSize()const    {return m_aFile.size();}
+    inline coreUint GetSize()const    {return m_apFile.size();}
     //! @}
 
 

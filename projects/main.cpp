@@ -7,12 +7,20 @@ coreModelPtr g_pModel;
 std::shared_ptr<coreProgram> g_pProgram1;
 std::shared_ptr<coreProgram> g_pProgram2;
 
+coreMusicPlayer* g_pMusic;
+
 
 void CoreApp::Init()
 {
     g_pProgram1 = NULL;
 
     g_pModel = Core::Manager::Resource->Load<coreModel>("data/models/default.md5mesh");
+
+    g_pMusic = new coreMusicPlayer();
+    g_pMusic->AddFile("data/feel.ogg");
+    g_pMusic->AddFile("data/korn.ogg");
+    //g_pMusic->SetFade(2.0f);
+    g_pMusic->Control()->Play();
 
     //glDisable(GL_LIGHTING);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -31,6 +39,7 @@ void CoreApp::Exit()
     g_pProgram1.reset();
     g_pProgram2.reset();
 
+    SAFE_DELETE(g_pMusic)
 }
 
 
@@ -90,4 +99,11 @@ void CoreApp::Move()
     else if(Core::Input->GetKeyboardButton(SDL_SCANCODE_F, CORE_INPUT_HOLD))
         vCamPos -= coreVector3(Core::System->GetTime(),0.0f,0.0f);
     Core::Graphics->SetCamera(&vCamPos, NULL, NULL);
+
+    g_pMusic->Update();
+    if(Core::Input->GetKeyboardButton(SDL_SCANCODE_Q, CORE_INPUT_PRESS))
+    {
+        g_pMusic->Next();
+        g_pMusic->Control()->SeekTime(10.0);
+    }
 }

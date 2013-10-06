@@ -90,15 +90,15 @@ public:
     coreProgram();
     ~coreProgram();
 
+    //! reset the object with the resource manager
+    //! @{
+    void Reset(const bool& bInit)override;
+    //! @}
+
     //! init and exit the shader-program
     //! @{
     coreError Init();
     coreError Exit();
-    //! @}
-
-    //! reset the object with the resource manager
-    //! @{
-    void Reset(const bool& bInit)override {if(bInit) this->Init(); else this->Exit();}
     //! @}
 
     //! enable and disable the shader-program

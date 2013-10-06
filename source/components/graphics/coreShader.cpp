@@ -150,6 +150,15 @@ coreProgram::~coreProgram()
 
 
 // ****************************************************************
+// reset the object with the resource manager
+void coreProgram::Reset(const bool& bInit)
+{
+    if(bInit) this->Init();
+         else this->Exit();
+}
+
+
+// ****************************************************************
 // init the shader-program
 coreError coreProgram::Init()
 {
