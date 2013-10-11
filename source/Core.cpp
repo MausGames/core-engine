@@ -10,8 +10,7 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <direct.h>
-    #define chdir    _chdir
-    #define snprintf _snprintf
+    #define chdir _chdir
 #endif
 
 coreLog*             Core::Log               = NULL;
@@ -195,8 +194,8 @@ int main(int argc, char* argv[])
 
     // set new working directory (cd ../..)
     char acPath[256];
-    strcpy(acPath, coreUtils::AppPath());
-    for(int i = 0; i < 3; ++i) (*strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
+    std::strcpy(acPath, coreUtils::AppPath());
+    for(int i = 0; i < 3; ++i) (*std::strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
     chdir(acPath);
 
 #endif

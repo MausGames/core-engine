@@ -96,7 +96,7 @@ coreError coreTexture::Load(coreFile* pFile)
 
         // copy texture data into PBO
         GLubyte* pRange = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-        memcpy(pRange, pConvert->pixels, iDataSize);
+        std::memcpy(pRange, pConvert->pixels, iDataSize);
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
     }
 

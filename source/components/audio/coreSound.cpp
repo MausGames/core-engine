@@ -16,7 +16,7 @@ coreSound::coreSound()noexcept
 , m_iCurSource (0)
 , m_pCurRef    (NULL)
 {
-    memset(&m_Format, 0, sizeof(m_Format));
+    std::memset(&m_Format, 0, sizeof(m_Format));
 }
 
 coreSound::coreSound(const char* pcPath)noexcept
@@ -25,7 +25,7 @@ coreSound::coreSound(const char* pcPath)noexcept
 , m_pCurRef    (NULL)
 {
     // load from path
-    memset(&m_Format, 0, sizeof(m_Format));
+    std::memset(&m_Format, 0, sizeof(m_Format));
     this->coreResource::Load(pcPath);
 }
 
@@ -35,7 +35,7 @@ coreSound::coreSound(coreFile* pFile)noexcept
 , m_pCurRef    (NULL)
 {
     // load from file
-    memset(&m_Format, 0, sizeof(m_Format));
+    std::memset(&m_Format, 0, sizeof(m_Format));
     this->Load(pFile);
 }
 
@@ -65,12 +65,12 @@ coreError coreSound::Load(coreFile* pFile)
     if(!pData) return CORE_FILE_ERROR;
 
     // read header
-    memcpy(acID,   pData, 4); pData += 4;
-    memcpy(&iSize, pData, 4); pData += 4;
+    std::memcpy(acID,   pData, 4); pData += 4;
+    std::memcpy(&iSize, pData, 4); pData += 4;
 
     // check file format
-    if(!strncmp(acID, "RIFF", 4)) {memcpy(acID, pData, 4); pData += 4;}
-    if( strncmp(acID, "WAVE", 4))
+    if(!std::strncmp(acID, "RIFF", 4)) {std::memcpy(acID, pData, 4); pData += 4;}
+    if( std::strncmp(acID, "WAVE", 4))
     {
         Core::Log->Error(0, coreUtils::Print("Sound (%s) is not a valid WAVE-file", pFile->GetPath()));
         return CORE_INVALID_DATA;
@@ -81,11 +81,11 @@ coreError coreSound::Load(coreFile* pFile)
     coreUint iSoundSize = 0;
     while(true)
     {
-        memcpy(acID,   pData, 4); pData += 4;
-        memcpy(&iSize, pData, 4); pData += 4;
+        std::memcpy(acID,   pData, 4); pData += 4;
+        std::memcpy(&iSize, pData, 4); pData += 4;
 
-             if(!strncmp(acID, "fmt ", 4)) memcpy(&m_Format, pData, sizeof(m_Format));
-        else if(!strncmp(acID, "data", 4)) {pSoundData = pData; iSoundSize = iSize;}
+             if(!std::strncmp(acID, "fmt ", 4)) std::memcpy(&m_Format, pData, sizeof(m_Format));
+        else if(!std::strncmp(acID, "data", 4)) {pSoundData = pData; iSoundSize = iSize;}
         else break;
 
         pData += iSize;
@@ -169,7 +169,7 @@ coreError coreSound::Unload()
     m_iBuffer    = 0;
     m_iCurSource = 0;
     m_pCurRef    = NULL;
-    memset(&m_Format, 0, sizeof(m_Format));
+    std::memset(&m_Format, 0, sizeof(m_Format));
 
     return CORE_OK;
 }

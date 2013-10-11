@@ -99,7 +99,7 @@ public:
     inline float Length()const noexcept      {return coreMath::Sqrt(this->LengthSq());}
     inline float Min()const noexcept         {return coreMath::Min(x, y);}
     inline float Max()const noexcept         {return coreMath::Max(x, y);}
-    inline float Angle()const noexcept       {if(y == 0.0f) return (x < 0.0f) ? TO_RAD(90.0f) : TO_RAD(270.0f); return atanf(x/y) + ((y <= 0.0f) ? PI : 0.0f);}
+    inline float Angle()const noexcept       {if(y == 0.0f) return (x < 0.0f) ? TO_RAD(90.0f) : TO_RAD(270.0f); return coreMath::Atan(x/y) + ((y <= 0.0f) ? PI : 0.0f);}
     inline float AspectRatio()const noexcept {return x/y;}
     //! @}
 

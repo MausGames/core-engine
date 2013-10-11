@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // calculate square root
-float coreMath::Sqrt(float fInput)
+float coreMath::Sqrt(float fInput)noexcept
 {
     // check input
     if(fInput == 0.0f) return fInput;
@@ -30,7 +30,7 @@ float coreMath::Sqrt(float fInput)
 
     // normal
 #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-    return sqrtf(fInput);
+    return std::sqrt(fInput);
 #else
     const float fValue     = fInput;
     const float fHalfValue = fInput*0.5f;
@@ -47,25 +47,25 @@ float coreMath::Sqrt(float fInput)
 
 // ****************************************************************
 // calculate sinus value
-float coreMath::Sin(const float& fInput)
+float coreMath::Sin(const float& fInput)noexcept
 {
     // TODO: add SSE-support
-    return sinf(fInput);
+    return std::sin(fInput);
 }
 
 
 // ****************************************************************
-// calculate cosinus value
-float coreMath::Cos(const float& fInput)
+// calculate cosine value
+float coreMath::Cos(const float& fInput)noexcept
 {
     // TODO: add SSE-support
-    return cosf(fInput);
+    return std::cos(fInput);
 }
 
 
 // ****************************************************************
 // check if inside field-of-view
-bool coreMath::CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection)
+bool coreMath::CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection)noexcept
 {
     // calculate relative position and angle
     const coreVector3 vRelative = (vPosition - vCamPosition).Normalize();
@@ -79,7 +79,7 @@ bool coreMath::CheckFOV(const coreVector3& vPosition, const float& fFOV, const c
 
 // ****************************************************************
 // convert HSV-color to RGB-color
-coreVector3 coreMath::HSVtoRGB(const coreVector3& vHSV)
+coreVector3 coreMath::HSVtoRGB(const coreVector3& vHSV)noexcept
 {
     const float& H = vHSV.x;
     const float& S = vHSV.y;
@@ -87,7 +87,7 @@ coreVector3 coreMath::HSVtoRGB(const coreVector3& vHSV)
 
     if(S == 0.0f) return coreVector3(V, V, V);
 
-    const int   h = (int)floorf(H * 6.0f);
+    const int   h = (int)std::floor(H * 6.0f);
     const float f = (H * 6.0f) - h;
 
     const float p = V * (1 - S);
@@ -111,7 +111,7 @@ coreVector3 coreMath::HSVtoRGB(const coreVector3& vHSV)
 
 // ****************************************************************
 // convert RGB-color to HSV-color
-coreVector3 coreMath::RGBtoHSV(const coreVector3& vRGB)
+coreVector3 coreMath::RGBtoHSV(const coreVector3& vRGB)noexcept
 {
     // TODO: implement function
     return coreVector3(0.0f,0.0f,0.0f);

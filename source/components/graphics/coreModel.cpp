@@ -95,7 +95,7 @@ coreModel::md5File::md5File(const char** ppcData)noexcept
     // check for correct file type
     SCAN_DATA(*ppcData, "")
     SCAN_DATA(*ppcData, "%15s %d", (char*)&acIdentifier, &iVersion)
-    if(strcmp(acIdentifier, "MD5Version") || iVersion != 10) return;
+    if(std::strcmp(acIdentifier, "MD5Version") || iVersion != 10) return;
 
     // read number of objects
     SCAN_DATA(*ppcData, "%*s %*s")
@@ -212,9 +212,9 @@ coreError coreModel::Load(coreFile* pFile)
     m_iSize         = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreWord);
 
     // reserve required vertex memory
-    coreVertex*  pVertex  = new coreVertex [m_iNumVertices]; memset(pVertex,  0, m_iNumVertices*sizeof(pVertex[0]));
-    coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
-    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; memset(pvOrtho2, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
+    coreVertex*  pVertex  = new coreVertex [m_iNumVertices]; std::memset(pVertex,  0, m_iNumVertices*sizeof(pVertex[0]));
+    coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; std::memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
+    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; std::memset(pvOrtho2, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
 
     // traverse all vertices
     for(coreUint i = 0; i < m_iNumVertices; ++i)

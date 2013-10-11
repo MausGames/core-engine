@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // system definitions
-#define CORE_SYSTEM_TIMES 8
+#define CORE_SYSTEM_TIMES 4   //!< number of used adjusted frame times
 
 
 // ****************************************************************

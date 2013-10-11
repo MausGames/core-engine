@@ -51,29 +51,31 @@ public:
 
     //! calculate square root
     //! @{
-    static float Sqrt(float fInput);
+    static float Sqrt(float fInput)noexcept;
     //! @}
 
     //! calculate trigonometric values
     //! @{
-    static float Sin(const float& fInput);
-    static float Cos(const float& fInput);
+    static float Sin(const float& fInput)noexcept;
+    static float Cos(const float& fInput)noexcept;
+    static inline float Tan(const float& fInput)noexcept  {return std::tan(fInput);}
+    static inline float Atan(const float& fInput)noexcept {return std::atan(fInput);}
     //! @}
 
     //! check if inside field-of-view
     //! @{
-    static bool CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection);
+    static bool CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection)noexcept;
     //! @}
 
     //! calculate next power-of-two
     //! @{
-    static inline coreUint NextPOT(const coreUint& iInput) {coreUint k = 1; while(k < iInput) k = k<<1; return k;}
+    static inline coreUint NextPOT(const coreUint& iInput)noexcept {coreUint k = 1; while(k < iInput) k = k<<1; return k;}
     //! @}
 
     //! convert color format
     //! @{
-    static coreVector3 HSVtoRGB(const coreVector3& vHSV);
-    static coreVector3 RGBtoHSV(const coreVector3& vRGB);
+    static coreVector3 HSVtoRGB(const coreVector3& vHSV)noexcept;
+    static coreVector3 RGBtoHSV(const coreVector3& vRGB)noexcept;
     //! @}
 };
 

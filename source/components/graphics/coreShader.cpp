@@ -56,8 +56,8 @@ coreError coreShader::Load(coreFile* pFile)
 
     // set shader type
     GLenum iType;
-         if(!strcmp(pcExtension, "vs") || !strcmp(pcExtension, "vert")) iType = GL_VERTEX_SHADER;
-    else if(!strcmp(pcExtension, "fs") || !strcmp(pcExtension, "frag")) iType = GL_FRAGMENT_SHADER;
+         if(!std::strcmp(pcExtension, "vs") || !std::strcmp(pcExtension, "vert")) iType = GL_VERTEX_SHADER;
+    else if(!std::strcmp(pcExtension, "fs") || !std::strcmp(pcExtension, "frag")) iType = GL_FRAGMENT_SHADER;
     else
     {
         Core::Log->Error(0, coreUtils::Print("Shader (%s) could not be identified (valid extension: vs, vert, fs, frag)", pFile->GetPath()));
@@ -173,7 +173,7 @@ coreError coreProgram::Init()
     // check for duplicate shader objects
     for(coreUint i = 0; i < m_apShader.size(); ++i)
         for(coreUint j = i+1; j < m_apShader.size(); ++j)
-            SDL_assert(strcmp(m_apShader[i]->GetPath(), m_apShader[j]->GetPath()));
+            SDL_assert(std::strcmp(m_apShader[i]->GetPath(), m_apShader[j]->GetPath()));
 
 #endif
 
@@ -206,9 +206,9 @@ coreError coreProgram::Init()
     glValidateProgram(m_iProgram);
 
     // check for errors
-    int iStatusVal;
-    glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatusVal);
-    iStatus &= iStatusVal;
+    int iValid;
+    glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iValid);
+    iStatus += iValid;
 
 #endif
 

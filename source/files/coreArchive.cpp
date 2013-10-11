@@ -289,7 +289,7 @@ coreError coreArchive::Save(const char* pcPath)
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
     {
         // get path length
-        const coreUint iLength = strlen((*it)->GetPath());
+        const coreUint iLength = std::strlen((*it)->GetPath());
 
         // write header
         SDL_RWwrite(pArchive, &iLength,              sizeof(coreUint), 1);
@@ -410,7 +410,7 @@ void coreArchive::__CalculatePositions()
     // calculate data start position
     coreUint iCurPosition = sizeof(coreUint);
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
-        iCurPosition += sizeof(coreUint) + strlen((*it)->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
+        iCurPosition += sizeof(coreUint) + std::strlen((*it)->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
 
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
     {

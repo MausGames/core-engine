@@ -176,14 +176,14 @@ enum coreError
     #include <sys/stat.h>
     #include <unistd.h>
     #include <dirent.h>
-    #include <string.h>
 #endif
 #if defined(_CORE_SSE_)
     #include <smmintrin.h>
 #endif
-#include <time.h>
-#include <math.h>
 #include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <ctime>
 #include <memory>
 #include <vector>
 #include <unordered_set>
@@ -204,6 +204,7 @@ enum coreError
 #endif
 #include <AL/al.h>
 #include <AL/alc.h>
+#include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <SI/SimpleIni.h>
 

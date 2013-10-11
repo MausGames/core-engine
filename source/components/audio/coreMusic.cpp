@@ -37,8 +37,8 @@ coreMusic::coreMusic(const char* pcPath)noexcept
 , m_bStatus  (false)
 {
     // reset memory
-    memset(&m_aiBuffer, 0, sizeof(m_aiBuffer));
-    memset(&m_Stream,   0, sizeof(m_Stream));
+    std::memset(&m_aiBuffer, 0, sizeof(m_aiBuffer));
+    std::memset(&m_Stream,   0, sizeof(m_Stream));
 
     // load from path
     coreFile File(pcPath);
@@ -55,8 +55,8 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 , m_bStatus  (false)
 {
     // reset memory
-    memset(&m_aiBuffer, 0, sizeof(m_aiBuffer));
-    memset(&m_Stream,   0, sizeof(m_Stream));
+    std::memset(&m_aiBuffer, 0, sizeof(m_aiBuffer));
+    std::memset(&m_Stream,   0, sizeof(m_Stream));
 
     // load from file
     this->__Init(pFile);
@@ -229,13 +229,13 @@ const char* coreMusic::GetComment(const char* pcName)const
 {
     if(m_pComment)
     {
-        const coreUint iLen = strlen(pcName);
+        const coreUint iLen = std::strlen(pcName);
 
         // traverse all comments
         for(int i = 0; i < m_pComment->comments; ++i)
         {
             // check comment and extract meta-information
-            if(!strncmp(pcName, m_pComment->user_comments[i], iLen))
+            if(!std::strncmp(pcName, m_pComment->user_comments[i], iLen))
                 return m_pComment->user_comments[i] + iLen+1;
         }
     }
@@ -530,17 +530,20 @@ void coreMusicPlayer::Goto(const coreUint& iIndex)
     // get playback status
     const bool bStatus = m_pCurMusic->IsPlaying();
 
-    if(m_FadeTimer.GetSpeed() && bStatus)
+    if(bStatus)
     {
-        // start transition to new music object
-        m_FadeTimer.Play(true);
-        m_pFadePrevious = m_pCurMusic;
-    }
-    else
-    {
-        // stop old music object
-        m_pCurMusic->Stop();
-        coreMusic::CrossLap(m_pCurMusic, m_apSequence[iIndex]);
+        if(m_FadeTimer.GetSpeed())
+        {
+            // start transition to new music object
+            m_FadeTimer.Play(true);
+            m_pFadePrevious = m_pCurMusic;
+        }
+        else
+        {
+            // stop old music object
+            m_pCurMusic->Stop();
+            coreMusic::CrossLap(m_pCurMusic, m_apSequence[iIndex]);
+        }
     }
 
     // set new music object

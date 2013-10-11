@@ -276,7 +276,7 @@ coreMatrix coreMatrix::Orientation(const coreVector3& vDirection, const coreVect
 // get perspective matrix
 coreMatrix coreMatrix::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)noexcept
 {
-    const float  V = 1.0f / tanf(0.5f*fFOV);
+    const float  V = 1.0f / coreMath::Tan(0.5f*fFOV);
     const float  A = vResolution.yx().AspectRatio();
     const float& N = fNearClip;
     const float& F = fFarClip;

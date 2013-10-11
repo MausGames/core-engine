@@ -13,6 +13,8 @@
 
 // ****************************************************************
 // shader definitions
+// TODO: define shaders with different versions and levels
+// TODO: document definitions
 #define CORE_SHADER_UNIFORM_PERSPECTIVE "u_mPerspective"
 #define CORE_SHADER_UNIFORM_ORTHO       "u_mOrtho"
 #define CORE_SHADER_UNIFORM_CAMERA      "u_mCamera"

@@ -123,7 +123,7 @@ void CoreGraphics::__UpdateScene()
     // swap main frame buffers
     SDL_GL_SwapWindow(Core::System->GetWindow());
 
-    // reset depth buffer
+    // reset the depth buffer
 #if defined(_CORE_DEBUG_)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #else

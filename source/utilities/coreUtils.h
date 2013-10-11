@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // utility definitions
-#define CORE_UTILS_STRINGS 16
+#define CORE_UTILS_STRINGS 16   //!< number of used return-strings
 
 #if defined(_CORE_WINDOWS_)
     #define CORE_UTILS_SLASH "\\"
@@ -21,7 +21,7 @@
     #define CORE_UTILS_SLASH "/"
 #endif
 
-#define SCAN_DATA(s,f,...) {int n = 0; sscanf(s, f " %n", ##__VA_ARGS__, &n); coreUtils::StrSkip(&(s), n);}
+#define SCAN_DATA(s,f,...) {int n = 0; std::sscanf(s, f " %n", ##__VA_ARGS__, &n); coreUtils::StrSkip(&(s), n);}
 
 
 // ****************************************************************

@@ -78,8 +78,8 @@ CoreSystem::CoreSystem()noexcept
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
     if(fForceOpenGL)
     {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(floorf(fForceOpenGL)));
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(floorf(fForceOpenGL*10.0f))%10);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(std::floor(fForceOpenGL)));
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL*10.0f))%10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     }
 
@@ -120,7 +120,7 @@ CoreSystem::CoreSystem()noexcept
         asm volatile("cpuid" : "=a" (m_aaiCPUID[1][0]), "=b" (m_aaiCPUID[1][1]), "=c" (m_aaiCPUID[1][2]), "=d" (m_aaiCPUID[1][3]) : "a" (1), "c" (0));
     #endif
 #else
-    memset(m_aaiCPUID, 0, sizeof(int)*2*4);
+    std::memset(m_aaiCPUID, 0, sizeof(int)*2*4);
 #endif
 
     // check for SSE support

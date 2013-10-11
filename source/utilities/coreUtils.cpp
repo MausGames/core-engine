@@ -29,7 +29,7 @@ const char* coreUtils::AppName()
     readlink("/proc/self/exe", pcString, 255);
 #endif
 
-    return strrchr(pcString, CORE_UTILS_SLASH[0])+1;
+    return std::strrchr(pcString, CORE_UTILS_SLASH[0])+1;
 }
 
 
@@ -46,7 +46,7 @@ const char* coreUtils::AppPath()
     getcwd(pcString, 255);
 #endif
 
-    strcat(pcString, CORE_UTILS_SLASH);
+    std::strcat(pcString, CORE_UTILS_SLASH);
     return pcString;
 }
 
@@ -56,8 +56,8 @@ const char* coreUtils::AppPath()
 void coreUtils::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea)
 {
     // format the current time
-    const time_t iTime = time(NULL);
-    tm* pFormat = localtime(&iTime);
+    const time_t iTime = std::time(NULL);
+    tm* pFormat = std::localtime(&iTime);
 
     // forward data
     if(piSec) *piSec = pFormat->tm_sec;
@@ -89,7 +89,7 @@ const char* coreUtils::Print(const char* pcMessage, ...)
 // compare strings with wildcards
 bool coreUtils::StrCmp(const char* s, const char* t)
 {
-    return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && StrCmp(s+1,t+1) : !*t : StrCmp(s,t+1) || (*s && StrCmp(s+1,t));
+    return *t-'*' ? *s ? (*t=='?') | (std::toupper(*s)==std::toupper(*t)) && StrCmp(s+1,t+1) : !*t : StrCmp(s,t+1) || (*s && StrCmp(s+1,t));
 }
 
 
@@ -99,7 +99,7 @@ const char* coreUtils::StrRight(const char* pcInput, const coreUint& iNum)
 {
     if(!pcInput) return NULL;
 
-    const coreUint iLen = strlen(pcInput);
+    const coreUint iLen = std::strlen(pcInput);
     return pcInput + (iLen-coreMath::Min(iLen, iNum));
 }
 
@@ -110,7 +110,7 @@ const char* coreUtils::StrExtension(const char* pcInput)
 {
     if(!pcInput) return NULL;
 
-    const char* pcDot = strrchr(pcInput, '.');
+    const char* pcDot = std::strrchr(pcInput, '.');
     return pcDot ? pcDot+1 : pcInput;
 }
 
@@ -121,7 +121,7 @@ float coreUtils::StrVersion(const char* pcInput)
 {
     if(!pcInput) return 0.0f;
 
-    const char* pcDot = strchr(pcInput, '.');
+    const char* pcDot = std::strchr(pcInput, '.');
     return pcDot ? (float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0')) : 0.0f;
 }
 
@@ -141,7 +141,7 @@ void coreUtils::StrSkip(const char** ppcInput, const int &iNum)
         *ppcInput += n;
 
         // check for comments and skip them
-        sscanf(*ppcInput, "%c %*[^\n] %n", &c, &n);
+         std::sscanf(*ppcInput, "%c %*[^\n] %n", &c, &n);
     }
     while(c == '/' || c == '#');
 }

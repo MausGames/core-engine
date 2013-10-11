@@ -21,8 +21,8 @@ CoreInput::CoreInput()noexcept
     Core::Log->Header("Input Interface");
 
     // reset memory
-    memset(&m_Keyboard, 0, sizeof(coreKeyboard));
-    memset(&m_Mouse,    0, sizeof(coreMouse));
+    std::memset(&m_Keyboard, 0, sizeof(coreKeyboard));
+    std::memset(&m_Mouse,    0, sizeof(coreMouse));
 
     // check for joystick devices
     const int iNumJoysticks = SDL_NumJoysticks();
@@ -34,7 +34,7 @@ CoreInput::CoreInput()noexcept
             coreJoystick Joystick;
 
             // open joystick device
-            memset(&Joystick, 0, sizeof(coreJoystick));
+            std::memset(&Joystick, 0, sizeof(coreJoystick));
             Joystick.pHandle = SDL_JoystickOpen(i);
             m_aJoystick.push_back(Joystick);
 

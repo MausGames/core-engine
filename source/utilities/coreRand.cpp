@@ -23,7 +23,7 @@ coreRand::coreRand(const coreUint& iSize, int iInit)noexcept
 #endif
 
     // init random number generator
-    std::srand((unsigned int)((iInit < 0) ? time(NULL) : iInit));
+    std::srand((unsigned int)((iInit < 0) ? std::time(NULL) : iInit));
 
     // pre-calculate random numbers
     m_piRand = new int[m_iNumRand];
@@ -37,7 +37,7 @@ coreRand::coreRand(const coreRand& c)noexcept
 {
     // copy random numbers
     m_piRand = new int[m_iNumRand];
-    memcpy(m_piRand, c.m_piRand, m_iNumRand*sizeof(m_piRand[0]));
+    std::memcpy(m_piRand, c.m_piRand, m_iNumRand*sizeof(m_piRand[0]));
 }
 
 coreRand::coreRand(coreRand&& m)noexcept
