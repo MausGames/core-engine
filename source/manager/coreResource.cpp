@@ -15,9 +15,9 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pN
 : m_pResource (pResource)
 , m_pNull     (pNull)
 , m_pFile     (pFile)
-, m_pCur      (pNull)
+, m_pCur      (pFile ? pNull : pResource)
 , m_iRef      (0)
-, m_bManaged  (true)
+, m_bManaged  (pFile ? true : false)
 {
 }
 

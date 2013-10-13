@@ -58,16 +58,13 @@ private:
     coreFile* m_pFile;           //!< resource file (in manager)
 
     coreResource* m_pCur;        //!< pointer to active resource object
-    int m_iRef;                  //!< reference counter
+    int m_iRef;                  //!< reference-counter
 
     bool m_bManaged;             //!< actively updated by the resource manager
-
-    //std::shared_ptr<coreResource> m_pShared;   //!< use handle for shared resource
 
 
 private:
     coreResourceHandle(coreResource* pResource, coreResource* pNull, coreFile* pFile)noexcept;
-    //coreResourceHandle(const std::shared_ptr<coreResource>& pShared)noexcept;
     ~coreResourceHandle();
     friend class coreResourceManager;
 
@@ -85,10 +82,10 @@ public:
     inline bool IsLoaded()const             {return (m_pCur == m_pNull) ? false : true;}
     //! @}
 
-    //! manipulate the reference counter
+    //! manipulate the reference-counter
     //! @{
     inline void RefIncrease()       {++m_iRef;}
-    inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0); if(!m_pFile) delete this;}
+    inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0);}
     inline const int& GetRef()const {return m_iRef;}
     //! @}
 
@@ -100,11 +97,11 @@ private:
 
 // ****************************************************************
 // resource access class
-template <typename T> class coreResourcePtr
+template <typename T> class coreResourcePtr final
 {
 private:
     coreResourceHandle* m_pHandle;   //!< resource handle
-    bool m_bActive;                  //!< status for dynamic reference counter control
+    bool m_bActive;                  //!< status for dynamic reference-counter control
 
 
 public:
@@ -126,7 +123,7 @@ public:
     inline bool IsLoaded()const            {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
     //! @}
 
-    //! dynamically control the reference counter
+    //! dynamically control the reference-counter
     //! @{
     void SetActive(const bool& bStatus);
     inline bool IsActive()const {return (m_pHandle && m_bActive) ? true : false;}
@@ -181,7 +178,8 @@ private:
 public:
     //! load resource and retrieve resource handle
     //! @{
-    template <typename T> coreResourceHandle* Load(const char* pcPath);
+    template <typename T> inline coreResourceHandle* LoadFile(const char* pcPath) {return this->__Load<T>(pcPath, true);}
+    template <typename T> inline coreResourceHandle* LoadLink(const char* pcName) {return this->__Load<T>(pcName, false);}
     //! @}
 
     //! control resource files
@@ -204,6 +202,11 @@ private:
     int __Init()override;
     int __Run()override;
     void __Exit()override;
+    //! @}
+
+    //! load resource and retrieve resource handle
+    //! @{
+    template <typename T> coreResourceHandle* __Load(const char* pcKey, const bool& bFile);
     //! @}
 };
 
@@ -257,7 +260,7 @@ template <typename S> void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)noe
 
 
 // ****************************************************************
-// dynamically control the reference counter
+// dynamically control the reference-counter
 template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 {
     if(m_bActive && !bStatus)
@@ -277,10 +280,10 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 // ****************************************************************
 // load resource and retrieve resource handle
-template <typename T> coreResourceHandle* coreResourceManager::Load(const char* pcPath)
+template <typename T> coreResourceHandle* coreResourceManager::__Load(const char* pcKey, const bool& bFile)
 {
     // check for existing resource handle
-    if(m_apHandle.count(pcPath)) return m_apHandle[pcPath];
+    if(m_apHandle.count(pcKey)) return m_apHandle[pcKey];
 
     // check for existing NULL resource
     coreResource* pNull;
@@ -293,8 +296,8 @@ template <typename T> coreResourceHandle* coreResourceManager::Load(const char* 
     else pNull = m_apNull[T::GetNullPath()];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pNull, this->RetrieveResourceFile(pcPath));
-    m_apHandle[pcPath] = pNewHandle;
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pNull, bFile ? this->RetrieveResourceFile(pcKey) : NULL);
+    m_apHandle[pcKey] = pNewHandle;
 
     return pNewHandle;
 }

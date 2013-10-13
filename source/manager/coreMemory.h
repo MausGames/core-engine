@@ -34,7 +34,7 @@ private:
 public:
     //! share memory pointer through specific identifier
     //! @{
-    template <typename T> std::shared_ptr<T> Share(const char* pcID);
+    template <typename T> std::shared_ptr<T> Share(const char* pcName);
     //! @}
 };
 
@@ -42,18 +42,18 @@ public:
 // ****************************************************************
 // share memory pointer through specific identifier
 // TODO: check if return is optimized
-template <typename T> std::shared_ptr<T> coreMemoryManager::Share(const char* pcID)
+template <typename T> std::shared_ptr<T> coreMemoryManager::Share(const char* pcName)
 {
     // check for existing shared memory pointer
-    if(m_apPointer.count(pcID))
+    if(m_apPointer.count(pcName))
     {
-        if(!m_apPointer[pcID].expired())
-            return std::static_pointer_cast<T>(m_apPointer[pcID].lock());
+        if(!m_apPointer[pcName].expired())
+            return std::static_pointer_cast<T>(m_apPointer[pcName].lock());
     }
 
     // create new shared memory pointer
     std::shared_ptr<T> pPointer = std::shared_ptr<T>(new T());
-    m_apPointer[pcID] = pPointer;
+    m_apPointer[pcName] = pPointer;
 
     return pPointer;
 }

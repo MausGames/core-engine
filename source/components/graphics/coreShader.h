@@ -111,7 +111,7 @@ public:
 
     //! attach and link shader objects
     //! @{
-    coreProgram* AttachShader(const char* pcPath);
+    coreProgram* AttachShaderFile(const char* pcPath);
     inline void Link()          {if(m_iStatus) return; m_iStatus = 1; this->Init();}
     inline bool IsLinked()const {return (m_iStatus == 2) ? true : false;}
     //! @}
@@ -143,7 +143,7 @@ public:
 
 // ****************************************************************
 // shader-program shared memory type
-typedef std::shared_ptr<coreProgram> coreProgramPtr;
+typedef std::shared_ptr<coreProgram> coreProgramShr;
 
 
 #endif // _CORE_GUARD_SHADER_H_
