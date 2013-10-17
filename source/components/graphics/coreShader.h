@@ -35,7 +35,7 @@
 
 
 // ****************************************************************
-// shader object class
+// shader class
 class coreShader final : public coreResource
 {
 private:
@@ -72,7 +72,7 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 
 
 // ****************************************************************
-// shader-program object class
+// shader-program class
 // TODO: cache and check shader uniform values
 class coreProgram final : public coreReset
 {
@@ -80,7 +80,7 @@ private:
     GLuint m_iProgram;                            //!< shader-program identifier/OpenGL name
 
     std::vector<coreShaderPtr> m_apShader;        //!< attached shader objects
-    int m_iStatus;                                //!< current status (0 = new, 1 = ready for linking, 2 = successfully linked)
+    int m_iStatus;                                //!< current status (0 = new | 1 = ready for linking | 2 = successfully linked)
 
     std::u_map<std::string, int> m_aiUniform;     //!< cached identifiers for uniform variables
     std::u_map<std::string, int> m_aiAttribute;   //!< cached identifiers for attribute variables
@@ -92,7 +92,7 @@ public:
     coreProgram()noexcept;
     ~coreProgram();
 
-    //! reset the object with the resource manager
+    //! reset with the resource manager
     //! @{
     void Reset(const bool& bInit)override;
     //! @}
@@ -106,24 +106,24 @@ public:
     //! enable and disable the shader-program
     //! @{
     void Enable();
-    void Disable();
+    static void Disable();
     //! @}
 
     //! attach and link shader objects
     //! @{
     coreProgram* AttachShaderFile(const char* pcPath);
-    inline void Link()          {if(m_iStatus) return; m_iStatus = 1; this->Init();}
-    inline bool IsLinked()const {return (m_iStatus == 2) ? true : false;}
+    coreProgram* AttachShaderLink(const char* pcName);
+    inline void Finish()          {if(m_iStatus) return; m_iStatus = 1; this->Init();}
+    inline bool IsFinished()const {return (m_iStatus == 2) ? true : false;}
     //! @}
 
     //! set uniform variables
     //! @{
-    inline void SetUniform(const char* pcName, const int& iA)                                     {glUniform1i(this->GetUniform(pcName), iA);}
-    inline void SetUniform(const char* pcName, const int& iA, const int& iB)                      {glUniform2i(this->GetUniform(pcName), iA, iB);}
-    inline void SetUniform(const char* pcName, const int& iA, const int& iB, const int& iC)       {glUniform3i(this->GetUniform(pcName), iA, iB, iC);}
-    inline void SetUniform(const char* pcName, const float& fA)                                   {glUniform1f(this->GetUniform(pcName), fA);}
-    inline void SetUniform(const char* pcName, const float& fA, const float& fB)                  {glUniform2f(this->GetUniform(pcName), fA, fB);}
-    inline void SetUniform(const char* pcName, const float& fA, const float& fB, const float& fC) {glUniform3f(this->GetUniform(pcName), fA, fB, fC);}
+    inline void SetUniform(const char* pcName, const int& iInt)                                   {glUniform1i(this->GetUniform(pcName), iInt);}
+    inline void SetUniform(const char* pcName, const float& fFloat)                               {glUniform1f(this->GetUniform(pcName), fFloat);}
+    inline void SetUniform(const char* pcName, const coreVector2& vVector)                        {glUniform2fv(this->GetUniform(pcName), 1, vVector);}
+    inline void SetUniform(const char* pcName, const coreVector3& vVector)                        {glUniform3fv(this->GetUniform(pcName), 1, vVector);}
+    inline void SetUniform(const char* pcName, const coreVector4& vVector)                        {glUniform4fv(this->GetUniform(pcName), 1, vVector);}
     inline void SetUniform(const char* pcName, const coreMatrix& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
     //! @}
 

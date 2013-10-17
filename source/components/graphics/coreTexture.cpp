@@ -18,14 +18,12 @@ SDL_SpinLock coreTexture::s_iLock                           = 0;
 coreTexture::coreTexture()noexcept
 : m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
-, m_pSync       (NULL)
 {
 }
 
 coreTexture::coreTexture(const char* pcPath)noexcept
 : m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
-, m_pSync       (NULL)
 {
     // load from path
     this->coreResource::Load(pcPath);
@@ -34,7 +32,6 @@ coreTexture::coreTexture(const char* pcPath)noexcept
 coreTexture::coreTexture(coreFile* pFile)noexcept
 : m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
-, m_pSync       (NULL)
 {
     // load from file
     this->Load(pFile);
@@ -53,9 +50,9 @@ coreTexture::~coreTexture()
 // load texture resource data
 coreError coreTexture::Load(coreFile* pFile)
 {
-    // check sync object status
-    const coreError iStatus = this->CheckSync();
-    if(iStatus != CORE_INVALID_CALL) return iStatus;
+    // check for sync object status
+    const coreError iStatus = this->_CheckSync();
+    if(iStatus >= 0) return iStatus;
 
     SDL_assert(!m_iTexture);
 
@@ -64,10 +61,10 @@ coreError coreTexture::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // decompress file data
-    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreUtils::StrExtension(pFile->GetPath()));
+    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
-        Core::Log->Error(0, coreUtils::Print("Texture (%s) could not be loaded", pFile->GetPath()));
+        Core::Log->Error(0, coreData::Print("Texture (%s) could not be loaded", pFile->GetPath()));
         return CORE_INVALID_DATA;
     }
 
@@ -75,7 +72,6 @@ coreError coreTexture::Load(coreFile* pFile)
     const bool& bPixelBuffer = Core::Graphics->SupportFeature("GL_ARB_pixel_buffer_object");
     const bool& bAnisotropic = Core::Graphics->SupportFeature("GL_EXT_texture_filter_anisotropic");
     const bool& bMipMap      = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
-    const bool& bSync        = Core::Graphics->SupportFeature("GL_ARB_sync");
 
     // save texture attributes
     m_sPath       = pFile->GetPath();
@@ -139,9 +135,8 @@ coreError coreTexture::Load(coreFile* pFile)
     }
     SDL_AtomicUnlock(&s_iLock);
 
-    // generate sync object or flush all commands
-    if(bSync) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-    else glFlush();
+    // create sync object
+    const bool bSync = this->_CreateSync();
 
     if(bPixelBuffer)
     {
@@ -154,9 +149,8 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_FreeSurface(pData);
     SDL_FreeSurface(pConvert);
 
-    if(m_pSync) return CORE_BUSY;
-    Core::Log->Info(coreUtils::Print("Texture (%s) loaded", m_sPath.c_str()));
-    return CORE_OK;
+    Core::Log->Info(coreData::Print("Texture (%s) loaded%s", m_sPath.c_str(), bSync ? " asynchronous" : ""));
+    return bSync ? CORE_BUSY : CORE_OK;
 }
 
 
@@ -168,14 +162,10 @@ coreError coreTexture::Unload()
 
     // delete texture
     glDeleteTextures(1, &m_iTexture);
-    if(!m_sPath.empty()) Core::Log->Info(coreUtils::Print("Texture (%s) unloaded", m_sPath.c_str()));
+    if(!m_sPath.empty()) Core::Log->Info(coreData::Print("Texture (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
-    if(m_pSync)
-    {
-        glDeleteSync(m_pSync);
-        m_pSync = NULL;
-    }
+    this->_DeleteSync();
 
     // reset attributes
     m_sPath       = "";
@@ -241,25 +231,4 @@ void coreTexture::DisableAll()
     // traverse all texture units
     for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i)
         if(s_apBound[i]) Disable(i);
-}
-
-
-// ****************************************************************
-// check sync object status
-coreError coreTexture::CheckSync()
-{
-    if(!m_iTexture || !m_pSync) return CORE_INVALID_CALL;
-
-    // check for finished texture loading
-    if(glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, 0) != GL_TIMEOUT_EXPIRED)
-    {
-        // delete sync object
-        glDeleteSync(m_pSync);
-        m_pSync = NULL;
-
-        Core::Log->Info(coreUtils::Print("Texture (%s) loaded asynchronous", m_sPath.c_str()));
-        return CORE_OK;
-    }
-
-    return CORE_BUSY;
 }

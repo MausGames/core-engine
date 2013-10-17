@@ -12,7 +12,7 @@
 
 
 // ****************************************************************
-// resource interface class
+// resource interface
 class coreResource
 {
 protected:
@@ -105,7 +105,8 @@ private:
 
 
 public:
-    coreResourcePtr(coreResourceHandle* pHandle = NULL)noexcept;
+    constexpr coreResourcePtr()noexcept;
+    coreResourcePtr(coreResourceHandle* pHandle)noexcept;
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&& m)noexcept;
     ~coreResourcePtr();
@@ -136,14 +137,14 @@ private:
 
 
 // ****************************************************************
-// reset interface class
+// reset interface
 class coreReset
 {
 public:
     coreReset()noexcept;
     virtual ~coreReset();
 
-    //! reset the object with the resource manager
+    //! reset with the resource manager
     //! @{
     virtual void Reset(const bool& bInit) = 0;
     //! @}
@@ -155,8 +156,34 @@ private:
 
 
 // ****************************************************************
+// sync extension
+class coreSync
+{
+private:
+    GLsync m_pSync;   //!< sync object for asynchronous OpenGL operations
+
+
+protected:
+    constexpr coreSync()noexcept : m_pSync (NULL) {}
+    ~coreSync()                                   {this->_DeleteSync();}
+
+    //! handle the sync object
+    //! @{
+    bool _CreateSync();
+    void _DeleteSync();
+    //! @}
+
+    //! check for sync object status
+    //! @{
+    coreError _CheckSync();
+    //! @}
+};
+
+
+// ****************************************************************
 // resource manager
 // TODO: use load- and unload-stack
+// TODO: update link-functionality
 class coreResourceManager final : public coreThread
 {
 private:
@@ -213,6 +240,12 @@ private:
 
 // ****************************************************************
 // constructor
+template <typename T> constexpr coreResourcePtr<T>::coreResourcePtr()noexcept
+: m_pHandle (NULL)
+, m_bActive (true)
+{
+}
+
 template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pHandle)noexcept
 : m_pHandle (pHandle)
 , m_bActive (true)

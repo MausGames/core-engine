@@ -15,10 +15,10 @@ SDL_SpinLock coreModel::s_iLock = 0;
 // constructor
 coreModel::md5Joint::md5Joint(const char** ppcData)noexcept
 {
-    SCAN_DATA(*ppcData, "%*s %d %*s %f %f %f %*s %*s %f %f %f %*s",
-              &iParent,
-              &vPosition.x,    &vPosition.y,    &vPosition.z,
-              &vOrientation.x, &vOrientation.y, &vOrientation.z)
+    CORE_DATA_SCAN(*ppcData, "%*s %d %*s %f %f %f %*s %*s %f %f %f %*s",
+                   &iParent,
+                   &vPosition.x,    &vPosition.y,    &vPosition.z,
+                   &vOrientation.x, &vOrientation.y, &vOrientation.z)
 
     // calculate w-component of the normalized quaternion
     const coreVector4 V = vOrientation * vOrientation;
@@ -31,9 +31,9 @@ coreModel::md5Joint::md5Joint(const char** ppcData)noexcept
 // constructor
 coreModel::md5Vertex::md5Vertex(const char** ppcData)noexcept
 {
-    SCAN_DATA(*ppcData, "%*s %*d %*s %f %f %*s %d %d",
-              &vTexture.x,   &vTexture.y,
-              &iWeightStart, &iWeightCount)
+    CORE_DATA_SCAN(*ppcData, "%*s %*d %*s %f %f %*s %d %d",
+                   &vTexture.x,   &vTexture.y,
+                   &iWeightStart, &iWeightCount)
 }
 
 
@@ -41,8 +41,8 @@ coreModel::md5Vertex::md5Vertex(const char** ppcData)noexcept
 // constructor
 coreModel::md5Triangle::md5Triangle(const char** ppcData)noexcept
 {
-    SCAN_DATA(*ppcData, "%*s %*d %hu %hu %hu",
-              &aiVertex[0], &aiVertex[2], &aiVertex[1])
+    CORE_DATA_SCAN(*ppcData, "%*s %*d %hu %hu %hu",
+                   &aiVertex[0], &aiVertex[2], &aiVertex[1])
 }
 
 
@@ -50,9 +50,9 @@ coreModel::md5Triangle::md5Triangle(const char** ppcData)noexcept
 // constructor
 coreModel::md5Weight::md5Weight(const char** ppcData)noexcept
 {
-    SCAN_DATA(*ppcData, "%*s %*d %d %f %*s %f %f %f %*s",
-              &iJoint,      &fBias,
-              &vPosition.x, &vPosition.y, &vPosition.z)
+    CORE_DATA_SCAN(*ppcData, "%*s %*d %d %f %*s %f %f %f %*s",
+                   &iJoint,      &fBias,
+                   &vPosition.x, &vPosition.y, &vPosition.z)
 }
 
 
@@ -62,15 +62,15 @@ coreModel::md5Mesh::md5Mesh(const char** ppcData)noexcept
 {
     int iNum = 0;
 
-    SCAN_DATA(*ppcData, "%*s %*s %*s %d", &iNum)
+    CORE_DATA_SCAN(*ppcData, "%*s %*s %*s %d", &iNum)
     aVertex.reserve(iNum);
     for(int i = 0; i < iNum; ++i) aVertex.push_back(md5Vertex(ppcData));
 
-    SCAN_DATA(*ppcData, "%*s %d", &iNum)
+    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNum)
     aTriangle.reserve(iNum);
     for(int i = 0; i < iNum; ++i) aTriangle.push_back(md5Triangle(ppcData));
 
-    SCAN_DATA(*ppcData, "%*s %d", &iNum)
+    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNum)
     aWeight.reserve(iNum);
     for(int i = 0; i < iNum; ++i) aWeight.push_back(md5Weight(ppcData));
 }
@@ -93,27 +93,27 @@ coreModel::md5File::md5File(const char** ppcData)noexcept
     int iNumMeshes        = 0;
 
     // check for correct file type
-    SCAN_DATA(*ppcData, "")
-    SCAN_DATA(*ppcData, "%15s %d", (char*)&acIdentifier, &iVersion)
+    CORE_DATA_SCAN(*ppcData, "")
+    CORE_DATA_SCAN(*ppcData, "%15s %d", (char*)&acIdentifier, &iVersion)
     if(std::strcmp(acIdentifier, "MD5Version") || iVersion != 10) return;
 
     // read number of objects
-    SCAN_DATA(*ppcData, "%*s %*s")
-    SCAN_DATA(*ppcData, "%*s %d", &iNumJoints)
-    SCAN_DATA(*ppcData, "%*s %d", &iNumMeshes)
+    CORE_DATA_SCAN(*ppcData, "%*s %*s")
+    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNumJoints)
+    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNumMeshes)
     aJoint.reserve(iNumJoints);
     aMesh.reserve(iNumMeshes);
 
     // read joint and mesh data
     for(int i = 0; i < iNumMeshes+1; ++i)
     {
-        SCAN_DATA(*ppcData, "%*s")
-        SCAN_DATA(*ppcData, "%*s")
+        CORE_DATA_SCAN(*ppcData, "%*s")
+        CORE_DATA_SCAN(*ppcData, "%*s")
 
         if(i) aMesh.push_back(std::move(md5Mesh(ppcData)));
         else for(int i = 0; i < iNumJoints; ++i) aJoint.push_back(md5Joint(ppcData));
 
-        SCAN_DATA(*ppcData, "%*s")
+        CORE_DATA_SCAN(*ppcData, "%*s")
     }
 }
 
@@ -134,7 +134,6 @@ coreModel::coreModel()noexcept
 , m_iNumTriangles (0)
 , m_iNumIndices   (0)
 , m_fRadius       (0.0f)
-, m_pSync         (NULL)
 {
 }
 
@@ -146,7 +145,6 @@ coreModel::coreModel(const char* pcPath)noexcept
 , m_iNumTriangles (0)
 , m_iNumIndices   (0)
 , m_fRadius       (0.0f)
-, m_pSync         (NULL)
 {
     // load from path
     this->coreResource::Load(pcPath);
@@ -160,7 +158,6 @@ coreModel::coreModel(coreFile* pFile)noexcept
 , m_iNumTriangles (0)
 , m_iNumIndices   (0)
 , m_fRadius       (0.0f)
-, m_pSync         (NULL)
 {
     // load from file
     this->Load(pFile);
@@ -179,9 +176,9 @@ coreModel::~coreModel()
 // load model resource data
 coreError coreModel::Load(coreFile* pFile)
 {
-    // check sync object status
-    const coreError iStatus = this->CheckSync();
-    if(iStatus != CORE_INVALID_CALL) return iStatus;
+    // check for sync object status
+    const coreError iStatus = this->_CheckSync();
+    if(iStatus >= 0) return iStatus;
 
     SDL_assert(!m_iVertexBuffer);
 
@@ -196,12 +193,11 @@ coreError coreModel::Load(coreFile* pFile)
     // check for success
     if(oFile.aMesh.empty())
     {
-        Core::Log->Error(0, coreUtils::Print("Model (%s) is not a valid MD5-file", pFile->GetPath()));
+        Core::Log->Error(0, coreData::Print("Model (%s) is not a valid MD5-file", pFile->GetPath()));
         return CORE_INVALID_DATA;
     }
 
     const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
-    const bool& bSync        = Core::Graphics->SupportFeature("GL_ARB_sync");
     const md5Mesh& oMesh     = oFile.aMesh[0];
 
     // save model attributes
@@ -305,18 +301,16 @@ coreError coreModel::Load(coreFile* pFile)
     }
     SDL_AtomicUnlock(&s_iLock);
 
-    // generate sync object or flush all commands
-    if(bSync) m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-    else glFlush();
+    // create sync object
+    const bool bSync = this->_CreateSync();
 
     // free required vertex memory
     SAFE_DELETE_ARRAY(pVertex)
     SAFE_DELETE_ARRAY(pvOrtho1)
     SAFE_DELETE_ARRAY(pvOrtho2)
 
-    if(m_pSync) return CORE_BUSY;
-    Core::Log->Info(coreUtils::Print("Model (%s) loaded", m_sPath.c_str()));
-    return CORE_OK;
+    Core::Log->Info(coreData::Print("Model (%s) loaded%s", m_sPath.c_str(), bSync ? " asynchronous" : ""));
+    return bSync ? CORE_BUSY : CORE_OK;
 }
 
 
@@ -330,14 +324,10 @@ coreError coreModel::Unload()
     if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
     glDeleteBuffers(1, &m_iVertexBuffer);
     glDeleteBuffers(1, &m_iIndexBuffer);
-    Core::Log->Info(coreUtils::Print("Model (%s) unloaded", m_sPath.c_str()));
+    Core::Log->Info(coreData::Print("Model (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
-    if(m_pSync)
-    {
-        glDeleteSync(m_pSync);
-        m_pSync = NULL;
-    }
+    this->_DeleteSync();
 
     // reset attributes
     m_sPath         = "";
@@ -380,28 +370,6 @@ void coreModel::Render()
         else glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     SDL_AtomicUnlock(&s_iLock);
-}
-
-
-// ****************************************************************
-// check sync object status
-// TODO: reuse code with coreTexture
-coreError coreModel::CheckSync()
-{
-    if(!m_iVertexBuffer || !m_pSync) return CORE_INVALID_CALL;
-
-    // check for finished model loading
-    if(glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, 0) != GL_TIMEOUT_EXPIRED)
-    {
-        // delete sync object
-        glDeleteSync(m_pSync);
-        m_pSync = NULL;
-
-        Core::Log->Info(coreUtils::Print("Model (%s) loaded asynchronous", m_sPath.c_str()));
-        return CORE_OK;
-    }
-
-    return CORE_BUSY;
 }
 
 

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#if defined(_CORE_WINDOWS_)
+#if defined(_CORE_MSVC_)
     #include <direct.h>
     #define chdir _chdir
 #endif
@@ -17,7 +17,7 @@ coreLog*             Core::Log               = NULL;
 coreConfig*          Core::Config            = NULL;
 
 coreMath*            Core::Math              = NULL;
-coreUtils*           Core::Utils             = NULL;
+coreData*            Core::Data              = NULL;
 coreRand*            Core::Rand              = NULL;
 
 CoreSystem*          Core::System            = NULL;
@@ -27,6 +27,7 @@ CoreInput*           Core::Input             = NULL;
 
 coreMemoryManager*   Core::Manager::Memory   = NULL;
 coreResourceManager* Core::Manager::Resource = NULL;
+coreObjectManager*   Core::Manager::Object   = NULL;
 
 
 // ****************************************************************
@@ -45,11 +46,11 @@ Core::Core()noexcept
     Config = new coreConfig("config.ini");
 
     // init utilities
-    Math  = new coreMath();
-    Utils = new coreUtils();
-    Rand  = new coreRand(2048);
+    Math = new coreMath();
+    Data = new coreData();
+    Rand = new coreRand(2048);
 
-    // init main interfaces
+    // init main components
     System   = new CoreSystem();
     Graphics = new CoreGraphics();
     Audio    = new CoreAudio();
@@ -59,6 +60,7 @@ Core::Core()noexcept
     Log->Header("Manager");
     Manager::Memory   = new coreMemoryManager();
     Manager::Resource = new coreResourceManager();
+    Manager::Object   = new coreObjectManager();
 }
 
 
@@ -67,10 +69,11 @@ Core::Core()noexcept
 Core::~Core()
 {
     // delete manager
+    SAFE_DELETE(Manager::Object)
     SAFE_DELETE(Manager::Resource)
     SAFE_DELETE(Manager::Memory)
 
-    // delete main interfaces
+    // delete main components
     SAFE_DELETE(Input)
     SAFE_DELETE(Audio)
     SAFE_DELETE(Graphics)
@@ -78,7 +81,7 @@ Core::~Core()
 
     // delete utilities
     SAFE_DELETE(Rand)
-    SAFE_DELETE(Utils)
+    SAFE_DELETE(Data)
     SAFE_DELETE(Math)
 
     // delete files
@@ -111,14 +114,14 @@ void Core::__Run()
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())
     {
-        // update the input interface
+        // update the input component
         Core::Input->__UpdateInput();
 
         // move and render the application
         pApplication->Move();
         pApplication->Render();
 
-        // update all remaining interfaces
+        // update all remaining components
         Core::Input->__UpdateCursor();
         Core::Graphics->__UpdateScene();
         Core::System->__UpdateTime();
@@ -147,13 +150,13 @@ void Core::Reset()
     // shut down resource manager
     Manager::Resource->Reset(false);
 
-    // shut down main interfaces
+    // shut down main components
     SAFE_DELETE(Input)
     SAFE_DELETE(Audio)
     SAFE_DELETE(Graphics)
     SAFE_DELETE(System)
 
-    // re-init main interfaces
+    // re-init main components
     System   = new CoreSystem();
     Graphics = new CoreGraphics();
     Audio    = new CoreAudio();
@@ -194,8 +197,8 @@ int main(int argc, char* argv[])
 
     // set new working directory (cd ../..)
     char acPath[256];
-    std::strcpy(acPath, coreUtils::AppPath());
-    for(int i = 0; i < 3; ++i) (*std::strrchr(acPath, CORE_UTILS_SLASH[0])) = '\0';
+    std::strcpy(acPath, coreData::AppPath());
+    for(int i = 0; i < 3; ++i) (*std::strrchr(acPath, CORE_DATA_SLASH[0])) = '\0';
     chdir(acPath);
 
 #endif

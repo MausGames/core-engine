@@ -25,9 +25,9 @@ enum coreMusicRepeat
 
 
 // ****************************************************************
-// music object class
+// music class
 // TODO: consider threaded music update
-// TODO: implement global music volume change (music player changes volume)
+// TODO: implement global music volume change (music-player changes volume already)
 class coreMusic final : public coreReset
 {
 private:
@@ -50,7 +50,7 @@ public:
     explicit coreMusic(coreFile* pFile)noexcept;
     ~coreMusic();
 
-    //! reset the object with the resource manager
+    //! reset with the resource manager
     //! @{
     void Reset(const bool& bInit)override;
     //! @}
@@ -121,7 +121,7 @@ private:
 
 
 // ****************************************************************
-// music player class
+// music-player class
 // TODO: improve the representation of the current track while shuffled
 class coreMusicPlayer final
 {
@@ -143,7 +143,7 @@ public:
     coreMusicPlayer()noexcept;
     ~coreMusicPlayer();
 
-    //! update the music player
+    //! update the music-player
     //! @{
     bool Update();
     //! @}
@@ -158,7 +158,6 @@ public:
     //! manage music objects
     //! @{
     coreError AddFile(const char* pcPath);
-    coreError AddFile(coreFile* pFile);
     coreError AddArchive(const char* pcPath);
     coreError AddFolder(const char* pcPath, const char* pcFilter);
     coreError DeleteFile(const coreUint& iIndex);
@@ -189,6 +188,11 @@ public:
 
 private:
     CORE_DISABLE_COPY(coreMusicPlayer)
+
+    //! add music object
+    //! @{
+    coreError __AddMusic(coreFile* pFile);
+    //! @}
 };
 
 

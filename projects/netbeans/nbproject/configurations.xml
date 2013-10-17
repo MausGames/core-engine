@@ -1,0 +1,1811 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="90">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="f1" displayName="projects" projectFiles="true">
+        <itemPath>../main.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="source" displayName="source" projectFiles="true">
+        <logicalFolder name="additional" displayName="additional" projectFiles="true">
+          <logicalFolder name="android" displayName="android" projectFiles="true">
+            <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
+            <itemPath>../../source/additional/android/glewES.cpp</itemPath>
+            <itemPath>../../source/additional/android/glewES.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="components" displayName="components" projectFiles="true">
+          <logicalFolder name="audio" displayName="audio" projectFiles="true">
+            <itemPath>../../source/components/audio/CoreAudio.cpp</itemPath>
+            <itemPath>../../source/components/audio/CoreAudio.h</itemPath>
+            <itemPath>../../source/components/audio/coreMusic.cpp</itemPath>
+            <itemPath>../../source/components/audio/coreMusic.h</itemPath>
+            <itemPath>../../source/components/audio/coreSound.cpp</itemPath>
+            <itemPath>../../source/components/audio/coreSound.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
+            <itemPath>../../source/components/graphics/CoreGraphics.cpp</itemPath>
+            <itemPath>../../source/components/graphics/CoreGraphics.h</itemPath>
+            <itemPath>../../source/components/graphics/coreModel.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreModel.h</itemPath>
+            <itemPath>../../source/components/graphics/coreShader.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreShader.h</itemPath>
+            <itemPath>../../source/components/graphics/coreTexture.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreTexture.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="input" displayName="input" projectFiles="true">
+            <itemPath>../../source/components/input/CoreInput.cpp</itemPath>
+            <itemPath>../../source/components/input/CoreInput.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="system" displayName="system" projectFiles="true">
+            <itemPath>../../source/components/system/CoreSystem.cpp</itemPath>
+            <itemPath>../../source/components/system/CoreSystem.h</itemPath>
+            <itemPath>../../source/components/system/coreThread.cpp</itemPath>
+            <itemPath>../../source/components/system/coreThread.h</itemPath>
+            <itemPath>../../source/components/system/coreTimer.cpp</itemPath>
+            <itemPath>../../source/components/system/coreTimer.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="manager" displayName="manager" projectFiles="true">
+          <itemPath>../../source/manager/coreMemory.cpp</itemPath>
+          <itemPath>../../source/manager/coreMemory.h</itemPath>
+          <itemPath>../../source/manager/coreObject.cpp</itemPath>
+          <itemPath>../../source/manager/coreObject.h</itemPath>
+          <itemPath>../../source/manager/coreResource.cpp</itemPath>
+          <itemPath>../../source/manager/coreResource.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="objects" displayName="objects" projectFiles="true">
+          <logicalFolder name="game" displayName="game" projectFiles="true">
+            <itemPath>../../source/objects/game/coreObject3D.cpp</itemPath>
+            <itemPath>../../source/objects/game/coreObject3D.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="utilities" displayName="utilities" projectFiles="true">
+          <logicalFolder name="data" displayName="data" projectFiles="true">
+            <itemPath>../../source/utilities/data/coreData.cpp</itemPath>
+            <itemPath>../../source/utilities/data/coreData.h</itemPath>
+            <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
+            <itemPath>../../source/utilities/data/coreRand.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="file" displayName="file" projectFiles="true">
+            <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
+            <itemPath>../../source/utilities/file/coreArchive.h</itemPath>
+            <itemPath>../../source/utilities/file/coreConfig.cpp</itemPath>
+            <itemPath>../../source/utilities/file/coreConfig.h</itemPath>
+            <itemPath>../../source/utilities/file/coreLog.cpp</itemPath>
+            <itemPath>../../source/utilities/file/coreLog.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="math" displayName="math" projectFiles="true">
+            <itemPath>../../source/utilities/math/coreMath.cpp</itemPath>
+            <itemPath>../../source/utilities/math/coreMath.h</itemPath>
+            <itemPath>../../source/utilities/math/coreMatrix.cpp</itemPath>
+            <itemPath>../../source/utilities/math/coreMatrix.h</itemPath>
+            <itemPath>../../source/utilities/math/coreSpline.cpp</itemPath>
+            <itemPath>../../source/utilities/math/coreSpline.h</itemPath>
+            <itemPath>../../source/utilities/math/coreVector.cpp</itemPath>
+            <itemPath>../../source/utilities/math/coreVector.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <itemPath>../../source/Core.cpp</itemPath>
+        <itemPath>../../source/Core.h</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../../source</Elem>
+    <Elem>..</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug_Windows_mingw" type="1">
+      <toolsSet>
+        <compilerSet>MinGW|MinGW</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <standard>8</standard>
+          <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <preprocessorList>
+            <Elem>_DEBUG</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <linkerTool>
+          <output>../../executable/bin/windows/CoreEngine_mingw_debug.exe</output>
+          <linkerAddLib>
+            <pElem>../../libraries/windows</pElem>
+            <pElem>../../libraries/windows/mingw</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerOptionItem>-lMinGW32</linkerOptionItem>
+            <linkerLibLibItem>SDL2main</linkerLibLibItem>
+            <linkerLibLibItem>SDL2</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
+            <linkerLibLibItem>OpenGL32</linkerLibLibItem>
+            <linkerLibLibItem>glew32mx</linkerLibLibItem>
+            <linkerLibLibItem>OpenAL32</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+          </linkerLibItems>
+          <commandLine>-mwindows</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Debug_Linux_gcc" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <standard>8</standard>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <preprocessorList>
+            <Elem>_DEBUG</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <linkerTool>
+          <output>../../executable/bin/linux/CoreEngine_gcc_debug</output>
+          <linkerAddLib>
+            <pElem>../../libraries/linux</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerOptionItem>-lGL</linkerOptionItem>
+            <linkerLibLibItem>SDL2</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
+            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>openal</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Debug_Linux_clang" type="1">
+      <toolsSet>
+        <compilerSet>CLang|CLang</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <standard>8</standard>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <preprocessorList>
+            <Elem>_DEBUG</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <linkerTool>
+          <output>../../executable/bin/linux/CoreEngine_clang_debug</output>
+          <linkerAddLib>
+            <pElem>../../libraries/linux</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerOptionItem>-lGL</linkerOptionItem>
+            <linkerLibLibItem>SDL2</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
+            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>openal</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release_Windows_mingw" type="1">
+      <toolsSet>
+        <compilerSet>MinGW|MinGW</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <standard>8</standard>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>../../executable/bin/windows/CoreEngine_mingw.exe</output>
+          <linkerAddLib>
+            <pElem>../../libraries/windows</pElem>
+            <pElem>../../libraries/windows/mingw</pElem>
+          </linkerAddLib>
+          <stripSymbols>true</stripSymbols>
+          <linkerLibItems>
+            <linkerOptionItem>-lMinGW32</linkerOptionItem>
+            <linkerLibLibItem>SDL2main</linkerLibLibItem>
+            <linkerLibLibItem>SDL2</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
+            <linkerLibLibItem>OpenGL32</linkerLibLibItem>
+            <linkerLibLibItem>glew32mx</linkerLibLibItem>
+            <linkerLibLibItem>OpenAL32</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+          </linkerLibItems>
+          <commandLine>-static-libgcc -static-libstdc++ -mwindows</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release_Linux_gcc" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <standard>8</standard>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>../../executable/bin/linux/CoreEngine_gcc</output>
+          <linkerAddLib>
+            <pElem>../../libraries/linux</pElem>
+          </linkerAddLib>
+          <stripSymbols>true</stripSymbols>
+          <linkerLibItems>
+            <linkerOptionItem>-lGL</linkerOptionItem>
+            <linkerLibLibItem>SDL2</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
+            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>openal</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release_Linux_clang" type="1">
+      <toolsSet>
+        <compilerSet>CLang|CLang</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <standard>8</standard>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <warningLevel>2</warningLevel>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>../../executable/bin/linux/CoreEngine_clang</output>
+          <linkerAddLib>
+            <pElem>../../libraries/linux</pElem>
+          </linkerAddLib>
+          <stripSymbols>true</stripSymbols>
+          <linkerLibItems>
+            <linkerOptionItem>-lGL</linkerOptionItem>
+            <linkerLibLibItem>SDL2</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
+            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
+            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>openal</linkerLibLibItem>
+            <linkerLibLibItem>ogg</linkerLibLibItem>
+            <linkerLibLibItem>vorbis</linkerLibLibItem>
+            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/CoreAudio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreMusic.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/CoreGraphics.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreModel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreShader.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/input/CoreInput.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/CoreSystem.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreThread.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/system/coreTimer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreMemory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreObject.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/manager/coreResource.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject3D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreArchive.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreConfig.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/file/coreLog.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMath.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreMatrix.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreSpline.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/math/coreVector.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

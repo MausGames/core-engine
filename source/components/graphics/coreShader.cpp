@@ -52,7 +52,7 @@ coreError coreShader::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // extract file extension
-    const char* pcExtension = coreUtils::StrExtension(pFile->GetPath());
+    const char* pcExtension = coreData::StrExtension(pFile->GetPath());
 
     // set shader type
     GLenum iType;
@@ -60,7 +60,7 @@ coreError coreShader::Load(coreFile* pFile)
     else if(!std::strcmp(pcExtension, "fs") || !std::strcmp(pcExtension, "frag")) iType = GL_FRAGMENT_SHADER;
     else
     {
-        Core::Log->Error(0, coreUtils::Print("Shader (%s) could not be identified (valid extension: vs, vert, fs, frag)", pFile->GetPath()));
+        Core::Log->Error(0, coreData::Print("Shader (%s) could not be identified (valid extension: vs, vert, fs, frag)", pFile->GetPath()));
         return CORE_INVALID_DATA;
     }
 
@@ -88,7 +88,7 @@ coreError coreShader::Load(coreFile* pFile)
             glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
 
             // write error-log
-            Core::Log->Error(0, coreUtils::Print("Shader (%s) could not be compiled", pFile->GetPath()));
+            Core::Log->Error(0, coreData::Print("Shader (%s) could not be compiled", pFile->GetPath()));
             Core::Log->ListStart("Error Log");
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
@@ -102,7 +102,7 @@ coreError coreShader::Load(coreFile* pFile)
     m_sPath = pFile->GetPath();
     m_iSize = pFile->GetSize();
 
-    Core::Log->Info(coreUtils::Print("Shader (%s) loaded", m_sPath.c_str()));
+    Core::Log->Info(coreData::Print("Shader (%s) loaded", m_sPath.c_str()));
     return CORE_OK;
 }
 
@@ -115,7 +115,7 @@ coreError coreShader::Unload()
 
     // delete shader
     glDeleteShader(m_iShader);
-    Core::Log->Info(coreUtils::Print("Shader (%s) unloaded", m_sPath.c_str()));
+    Core::Log->Info(coreData::Print("Shader (%s) unloaded", m_sPath.c_str()));
 
     // reset attributes
     m_sPath   = "";
@@ -228,7 +228,7 @@ coreError coreProgram::Init()
             Core::Log->Error(0, "Shader-Program could not be linked/validated");
             Core::Log->ListStart("Error Log");
             for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
-                Core::Log->ListEntry(coreUtils::Print("(%s)", (*it)->GetPath()));
+                Core::Log->ListEntry(coreData::Print("(%s)", (*it)->GetPath()));
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
 
@@ -270,19 +270,19 @@ coreError coreProgram::Exit()
 void coreProgram::Enable()
 {
     SDL_assert(m_iStatus);
-    SDL_assert(!s_pCurrent);
 
-    // save current shader-program
-    s_pCurrent = this;
+    // check current shader-program
+    if(s_pCurrent == this) return;
 
-    // link the shader-program
-    if(!this->IsLinked())
+    // link shader-program
+    if(!this->IsFinished())
     {
         if(this->Init() != CORE_OK)
             return;
     }
 
     // set current shader-program
+    s_pCurrent = this;
     glUseProgram(m_iProgram);
 
     // forward transformation matrices
@@ -297,7 +297,6 @@ void coreProgram::Enable()
 // disable the shader-program
 void coreProgram::Disable()
 {
-    SDL_assert(s_pCurrent == this);
     if(!s_pCurrent) return;
 
     // reset current shader-program
@@ -311,5 +310,11 @@ void coreProgram::Disable()
 coreProgram* coreProgram::AttachShaderFile(const char* pcPath)
 {
     if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadFile<coreShader>(pcPath));
+    return this;
+}
+
+coreProgram* coreProgram::AttachShaderLink(const char* pcName)
+{
+    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadLink<coreShader>(pcName));
     return this;
 }

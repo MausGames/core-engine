@@ -17,7 +17,7 @@
 
 
 // ****************************************************************
-// sound object class
+// sound class
 // TODO: improve 3D sound integration and control
 // TODO: implement sound pause
 // TODO: implement global sound volume change
@@ -29,7 +29,7 @@ public:
     struct coreWaveFormat
     {
         uint16_t iAudioFormat;     //!< internal audio format (1 = PCM)
-        uint16_t iNumChannels;     //!< number of sound channels (1 = mono, 2 = stereo)
+        uint16_t iNumChannels;     //!< number of sound channels (1 = mono | 2 = stereo)
         uint32_t iSampleRate;      //!< playback frequency (e.g. 44100 Hz)
         uint32_t iByteRate;        //!< required data transfer rate (iSampleRate * iBlockAlign)
         uint16_t iBlockAlign;      //!< size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))

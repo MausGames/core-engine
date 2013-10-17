@@ -23,9 +23,9 @@
 
 
 // ****************************************************************
-// texture object class
+// texture class
 // TODO: check for max available texture units
-class coreTexture final : public coreResource
+class coreTexture final : public coreResource, public coreSync
 {
 private:
     GLuint m_iTexture;                                   //!< texture identifier/OpenGL name
@@ -34,7 +34,6 @@ private:
     static int s_iActiveUnit;                            //!< current active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
 
-    GLsync m_pSync;                                      //!< sync object for asynchronous texture loading
     static SDL_SpinLock s_iLock;                         //!< spinlock to prevent asynchronous texture unit access
 
 
@@ -55,11 +54,6 @@ public:
     void Enable(const coreByte& iUnit);
     static void Disable(const coreByte& iUnit);
     static void DisableAll();
-    //! @}
-
-    //! check sync object status
-    //! @{
-    coreError CheckSync();
     //! @}
 
     //! generate empty base texture

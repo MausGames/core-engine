@@ -84,6 +84,58 @@ coreReset::~coreReset()
 
 
 // ****************************************************************
+// create sync object
+bool coreSync::_CreateSync()
+{
+    if(!m_pSync)
+    {
+        // check for available extension
+        if(Core::Graphics->SupportFeature("GL_ARB_sync"))
+        {
+            // generate new sync object
+            m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+            return true;
+        }
+
+        // flush all commands
+        glFlush();
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+// delete sync object
+void coreSync::_DeleteSync()
+{
+    if(m_pSync)
+    {
+        glDeleteSync(m_pSync);
+        m_pSync = NULL;
+    }
+}
+
+
+// ****************************************************************
+// check for sync object status
+coreError coreSync::_CheckSync()
+{
+    if(!m_pSync) return CORE_INVALID_CALL;
+
+    // retrieve status without wait
+    if(glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, 0) != GL_TIMEOUT_EXPIRED)
+    {
+        // delete sync object
+        this->_DeleteSync();
+        return CORE_OK;
+    }
+
+    return CORE_BUSY;
+}
+
+
+// ****************************************************************
 // constructor
 coreResourceManager::coreResourceManager()noexcept
 {
@@ -210,12 +262,12 @@ int coreResourceManager::__Init()
 {
     // assign secondary OpenGL context to resource thread
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphics->GetResourceContext()))
-        Core::Log->Error(1, coreUtils::Print("Secondary OpenGL context could not be assigned to resource thread (SDL: %s)", SDL_GetError()));
+        Core::Log->Error(1, coreData::Print("Secondary OpenGL context could not be assigned to resource thread (SDL: %s)", SDL_GetError()));
     else Core::Log->Info("Secondary OpenGL context assigned to resource thread");
 
     // init GLEW on secondary OpenGL context
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error(1, coreUtils::Print("GLEW could not be initialized on secondary OpenGL context (GLEW: %s)", glewGetErrorString(iError)));
+    if(iError != GLEW_OK) Core::Log->Error(1, coreData::Print("GLEW could not be initialized on secondary OpenGL context (GLEW: %s)", glewGetErrorString(iError)));
     else Core::Log->Info("GLEW initialized on secondary OpenGL context");
 
     return 0;

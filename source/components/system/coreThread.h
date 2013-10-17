@@ -12,7 +12,7 @@
 
 
 // ****************************************************************
-// restrained thread interface class
+// restrained thread interface
 class coreThread
 {
 private:

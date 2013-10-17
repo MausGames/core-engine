@@ -10,31 +10,6 @@
 
 
 // ****************************************************************
-// constructor
-coreTimer::coreTimer()noexcept
-: m_fCurrent (0.0f)
-, m_fEnd     (1.0f)
-, m_fSpeed   (1.0f)
-, m_iMaxLoop (0)
-, m_iCurLoop (0)
-, m_iTimeID  (-1)
-, m_bStatus  (false)
-{
-}
-
-coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept
-: m_fCurrent (0.0f)
-, m_fEnd     (fEnd)
-, m_fSpeed   (fSpeed)
-, m_iMaxLoop (iLoops)
-, m_iCurLoop (0)
-, m_iTimeID  (-1)
-, m_bStatus  (false)
-{
-}
-
-
-// ****************************************************************
 // update the timer
 bool coreTimer::Update(const float fModifier)
 {

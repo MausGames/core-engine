@@ -12,13 +12,13 @@
 
 
 // ****************************************************************
-// model object class
+// model class
 // TODO: support more than one mesh per file
 // TODO: add animation
 // TODO: check for unnecessary calculations to increase loading speed
 // TODO: check normal vector calculations (alignment, outside, etc.)
 // TODO: make default model invisible
-class coreModel final : public coreResource
+class coreModel final : public coreResource, public coreSync
 {
 private:
     //! MD5-joint structure
@@ -102,7 +102,6 @@ private:
 
     float m_fRadius;               //!< maximum distance from the model center
 
-    GLsync m_pSync;                //!< sync object for asynchronous model loading
     static SDL_SpinLock s_iLock;   //!< spinlock to prevent asynchronous array buffer access
 
 
@@ -130,11 +129,6 @@ public:
     inline const coreUint& GetNumTriangles()const {return m_iNumTriangles;}
     inline const coreUint& GetNumIndices()const   {return m_iNumIndices;}
     inline const float& GetRadius()const          {return m_fRadius;}
-    //! @}
-
-    //! check sync object status
-    //! @{
-    coreError CheckSync();
     //! @}
 
     //! get relative path to NULL resource

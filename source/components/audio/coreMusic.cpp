@@ -73,7 +73,7 @@ coreMusic::~coreMusic()
 
     // close music stream
     ov_clear(&m_Stream);
-    if(m_pFile) Core::Log->Info(coreUtils::Print("Music (%s) unloaded", m_pFile->GetPath()));
+    if(m_pFile) Core::Log->Info(coreData::Print("Music (%s) unloaded", m_pFile->GetPath()));
 
     // delete file object
     SAFE_DELETE(m_pFile)
@@ -261,7 +261,7 @@ coreError coreMusic::__Init(coreFile* pFile)
     if(!iError) iError = ov_test_open(&m_Stream);
     if( iError)
     {
-        Core::Log->Error(0, coreUtils::Print("Music (%s) is not a valid OGG-file (OV Error Code: %d)", pFile->GetPath(), iError));
+        Core::Log->Error(0, coreData::Print("Music (%s) is not a valid OGG-file (OV Error Code: %d)", pFile->GetPath(), iError));
         ov_clear(&m_Stream);
         SAFE_DELETE(m_pFile)
 
@@ -276,7 +276,7 @@ coreError coreMusic::__Init(coreFile* pFile)
     m_pComment = ov_comment(&m_Stream, -1);
     m_dMaxTime = ov_time_total(&m_Stream, -1);
 
-    Core::Log->Info(coreUtils::Print("Music (%s) loaded", pFile->GetPath()));
+    Core::Log->Info(coreData::Print("Music (%s) loaded", pFile->GetPath()));
     return CORE_OK;
 }
 
@@ -312,7 +312,7 @@ bool coreMusic::__Stream(const ALuint& iBuffer)
 coreMusicPlayer::coreMusicPlayer()noexcept
 : m_iRepeat       (CORE_MUSIC_ALL_REPEAT)
 , m_iCurIndex     (0)
-, m_FadeTimer     (1.0f, 0.0f, 1)
+, m_FadeTimer     (coreTimer(1.0f, 0.0f, 1))
 , m_pFadePrevious (NULL)
 {
     // reserve memory for music objects
@@ -337,7 +337,7 @@ coreMusicPlayer::~coreMusicPlayer()
 
 
 // ****************************************************************
-// update the music player
+// update the music-player
 bool coreMusicPlayer::Update()
 {
     if(m_apMusic.empty()) return false;
@@ -414,28 +414,7 @@ coreError coreMusicPlayer::AddFile(const char* pcPath)
 {
     // load from path
     coreFile File(pcPath);
-    return this->AddFile(&File);
-}
-
-coreError coreMusicPlayer::AddFile(coreFile* pFile)
-{
-    // create new music object
-    coreMusic* pNewMusic = new coreMusic(pFile);
-    if(!pNewMusic->GetInfo())
-    {
-        // remove invalid file
-        SAFE_DELETE(pNewMusic)
-        return CORE_INVALID_INPUT;
-    }
-
-    // add music object to the music player
-    m_apMusic.push_back(pNewMusic);
-    m_apSequence.push_back(pNewMusic);
-
-    // init the access pointer
-    if(m_pCurMusic == m_pNullMusic) m_pCurMusic = pNewMusic;
-
-    return CORE_OK;
+    return this->__AddMusic(&File);
 }
 
 
@@ -446,11 +425,11 @@ coreError coreMusicPlayer::AddArchive(const char* pcPath)
     // open the archive
     coreArchive Archive(pcPath);
 
-    // try to add all files to the music player
+    // try to add all files to the music-player
     bool bStatus = false;
     for(coreUint i = 0; i < Archive.GetSize(); ++i)
     {
-        if(this->AddFile(Archive.GetFile(i)) == CORE_OK)
+        if(this->__AddMusic(Archive.GetFile(i)) == CORE_OK)
             bStatus = true;
     }
 
@@ -466,7 +445,7 @@ coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
     std::vector<std::string> asFolder;
     coreFile::SearchFolder(pcPath, pcFilter, &asFolder);
 
-    // try to add all files to the music player
+    // try to add all files to the music-player
     bool bStatus = false;
     for(auto it = asFolder.begin(); it != asFolder.end(); ++it)
     {
@@ -587,4 +566,28 @@ bool coreMusicPlayer::Previous()
     // go to previous music object
     this->Goto(m_iCurIndex-1);
     return false;
+}
+
+
+// ****************************************************************
+// add music object
+coreError coreMusicPlayer::__AddMusic(coreFile* pFile)
+{
+    // create new music object
+    coreMusic* pNewMusic = new coreMusic(pFile);
+    if(!pNewMusic->GetInfo())
+    {
+        // remove invalid file
+        SAFE_DELETE(pNewMusic)
+        return CORE_INVALID_INPUT;
+    }
+
+    // add music object to the music-player
+    m_apMusic.push_back(pNewMusic);
+    m_apSequence.push_back(pNewMusic);
+
+    // init the access pointer
+    if(m_pCurMusic == m_pNullMusic) m_pCurMusic = pNewMusic;
+
+    return CORE_OK;
 }

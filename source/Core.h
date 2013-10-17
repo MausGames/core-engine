@@ -35,7 +35,7 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \defgroup interface Interfaces
+//! \defgroup component Components
 #pragma once
 #ifndef _CORE_GUARD_H_
 #define _CORE_GUARD_H_
@@ -95,10 +95,12 @@
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
+#undef __STRICT_ANSI__
+
 #if defined(_CORE_MSVC_)
     #define __thread __declspec(thread)
     #define noexcept throw()
-    #define constexpr
+    #define constexpr inline
     #if (_CORE_MSVC_) < 1700
         #define final
     #endif
@@ -186,6 +188,7 @@ enum coreError
 #include <ctime>
 #include <memory>
 #include <vector>
+#include <set>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -197,7 +200,7 @@ enum coreError
 #include <SDL2/SDL_image.h>
 #if defined(_CORE_GLES_)
     #include <GLES2/gl2.h>
-    #include "additional/glewES.h"
+    #include "additional/android/glewES.h"
 #else
     #include <GL/glew.h>
     #include <GL/gl.h>
@@ -219,40 +222,42 @@ enum coreError
 
 // ****************************************************************
 // engine header files
-#include "files/coreLog.h"
-#include "files/coreConfig.h"
-#include "files/coreArchive.h"
+#include "utilities/file/coreLog.h"
+#include "utilities/file/coreConfig.h"
+#include "utilities/file/coreArchive.h"
 
-#include "utilities/coreMath.h"
-#include "utilities/coreUtils.h"
-#include "utilities/coreRand.h"
-#include "utilities/coreVector.h"
-#include "utilities/coreMatrix.h"
-#include "utilities/coreSpline.h"
+#include "utilities/math/coreMath.h"
+#include "utilities/math/coreVector.h"
+#include "utilities/math/coreMatrix.h"
+#include "utilities/math/coreSpline.h"
 
-#include "interfaces/CoreSystem.h"
-#include "interfaces/CoreGraphics.h"
-#include "interfaces/CoreAudio.h"
-#include "interfaces/CoreInput.h"
+#include "utilities/data/coreData.h"
+#include "utilities/data/coreRand.h"
 
+#include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
 #include "components/system/coreThread.h"
 
 #include "manager/coreMemory.h"
 #include "manager/coreResource.h"
-#include "manager/coreObject.h"
 
-#include "components/graphics/coreTexture.h"
+#include "components/graphics/CoreGraphics.h"
 #include "components/graphics/coreModel.h"
+#include "components/graphics/coreTexture.h"
 #include "components/graphics/coreShader.h"
+
+#include "components/audio/CoreAudio.h"
 #include "components/audio/coreSound.h"
 #include "components/audio/coreMusic.h"
 
-//#include "objects/coreObject3D.h"
+#include "components/input/CoreInput.h"
+
+#include "manager/coreObject.h"
+#include "objects/game/coreObject3D.h"
 
 
 // ****************************************************************
-// main application interface
+// application framework
 class CoreApp final
 {
 private:
@@ -290,13 +295,13 @@ public:
     static coreConfig* Config;       //!< configuration file
 
     static coreMath* Math;           //!< math collection access
-    static coreUtils* Utils;         //!< utility collection access
+    static coreData* Data;           //!< data collection access
     static coreRand* Rand;           //!< global random number generator
 
-    static CoreSystem* System;       //!< main system interface
-    static CoreGraphics* Graphics;   //!< main graphics interface
-    static CoreAudio* Audio;         //!< main audio interface
-    static CoreInput* Input;         //!< main input interface
+    static CoreSystem* System;       //!< main system component
+    static CoreGraphics* Graphics;   //!< main graphics component
+    static CoreAudio* Audio;         //!< main audio component
+    static CoreInput* Input;         //!< main input component
 
     class Manager final
     {

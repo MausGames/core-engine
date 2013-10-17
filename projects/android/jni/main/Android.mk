@@ -50,30 +50,32 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(V_LIB_PATH)/include \
 
 LOCAL_SRC_FILES := ../../../main.cpp \
 		   $(V_SRC_PATH)/Core.cpp \
-		   $(V_SRC_PATH)/additional/SDL_android_main.c \
-		   $(V_SRC_PATH)/additional/glewES.cpp \
+		   $(V_SRC_PATH)/additional/android/glewES.cpp \
+		   $(V_SRC_PATH)/additional/android/SDL_android_main.c \
+		   $(V_SRC_PATH)/components/audio/CoreAudio.cpp \
 		   $(V_SRC_PATH)/components/audio/coreMusic.cpp \
 		   $(V_SRC_PATH)/components/audio/coreSound.cpp \
+		   $(V_SRC_PATH)/components/graphics/CoreGraphics.cpp \
 		   $(V_SRC_PATH)/components/graphics/coreModel.cpp \
 		   $(V_SRC_PATH)/components/graphics/coreShader.cpp \
 		   $(V_SRC_PATH)/components/graphics/coreTexture.cpp \
+		   $(V_SRC_PATH)/components/input/CoreInput.cpp \
+		   $(V_SRC_PATH)/components/system/CoreSystem.cpp \
 		   $(V_SRC_PATH)/components/system/coreThread.cpp \
 		   $(V_SRC_PATH)/components/system/coreTimer.cpp \
-		   $(V_SRC_PATH)/files/coreArchive.cpp \
-		   $(V_SRC_PATH)/files/coreConfig.cpp \
-		   $(V_SRC_PATH)/files/coreLog.cpp \
-		   $(V_SRC_PATH)/interfaces/CoreAudio.cpp \
-		   $(V_SRC_PATH)/interfaces/CoreGraphics.cpp \
-		   $(V_SRC_PATH)/interfaces/CoreInput.cpp \
-		   $(V_SRC_PATH)/interfaces/CoreSystem.cpp \
 		   $(V_SRC_PATH)/manager/coreMemory.cpp \
+		   $(V_SRC_PATH)/manager/coreObject.cpp \
 		   $(V_SRC_PATH)/manager/coreResource.cpp \
-		   $(V_SRC_PATH)/utilities/coreMath.cpp \
-		   $(V_SRC_PATH)/utilities/coreMatrix.cpp \
-		   $(V_SRC_PATH)/utilities/coreRand.cpp \
-		   $(V_SRC_PATH)/utilities/coreSpline.cpp \
-		   $(V_SRC_PATH)/utilities/coreUtils.cpp \
-		   $(V_SRC_PATH)/utilities/coreVector.cpp
+		   $(V_SRC_PATH)/objects/game/coreObject3D.cpp \
+		   $(V_SRC_PATH)/utilities/data/coreData.cpp \
+		   $(V_SRC_PATH)/utilities/data/coreRand.cpp \
+		   $(V_SRC_PATH)/utilities/file/coreArchive.cpp \
+		   $(V_SRC_PATH)/utilities/file/coreConfig.cpp \
+		   $(V_SRC_PATH)/utilities/file/coreLog.cpp \
+		   $(V_SRC_PATH)/utilities/math/coreMath.cpp \
+		   $(V_SRC_PATH)/utilities/math/coreMatrix.cpp \
+		   $(V_SRC_PATH)/utilities/math/coreSpline.cpp \
+		   $(V_SRC_PATH)/utilities/math/coreVector.cpp
 
 LOCAL_SHARED_LIBRARIES := SDL2 SDL2_ttf SDL2_image OpenAL Ogg Vorbis VorbisFile
 LOCAL_LDLIBS	       := -ldl -llog -lGLESv1_CM -lGLESv2

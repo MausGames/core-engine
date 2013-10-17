@@ -28,8 +28,8 @@ private:
 
 
 public:
-    coreTimer()noexcept;
-    coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept;
+    constexpr coreTimer()noexcept;
+    constexpr coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept;
 
     //! update the timer
     //! @{
@@ -81,7 +81,7 @@ private:
 
 
 public:
-    coreFlow()noexcept : m_fCurrent(0.0f) {}
+    constexpr coreFlow()noexcept : m_fCurrent(0.0f) {}
 
     //! access current value
     //! @{
@@ -95,6 +95,31 @@ public:
     float& Update(const float& fSpeed, const int& iTimeID);
     //! @}
 };
+
+
+// ****************************************************************
+// constructor
+constexpr coreTimer::coreTimer()noexcept
+: m_fCurrent (0.0f)
+, m_fEnd     (1.0f)
+, m_fSpeed   (1.0f)
+, m_iMaxLoop (0)
+, m_iCurLoop (0)
+, m_iTimeID  (-1)
+, m_bStatus  (false)
+{
+}
+
+constexpr coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept
+: m_fCurrent (0.0f)
+, m_fEnd     (fEnd)
+, m_fSpeed   (fSpeed)
+, m_iMaxLoop (iLoops)
+, m_iCurLoop (0)
+, m_iTimeID  (-1)
+, m_bStatus  (false)
+{
+}
 
 
 #endif // _CORE_GUARD_TIMER_H_
