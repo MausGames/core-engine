@@ -8,7 +8,23 @@
 //////////////////////////////////////////////////////////
 // #version defined by application
 
-void main()
-{
-    gl_FragColor = texture2D(u_s2Texture, v_v2TexCoord);
-}
+#if (__VERSION__) <= 130 // <= OpenGL 3.0
+
+    // shader input
+    varying vec2 v_v2TexCoord;
+
+    // shader output
+    vec4 o_v4Color0;
+
+#else
+
+    // shader input
+    in vec2 v_v2TexCoord;
+
+    // shader output
+    out vec4 o_v4Color0;
+
+#endif
+
+// texture uniforms
+uniform sampler2D u_s2Texture;

@@ -132,6 +132,8 @@
 		<Unit filename="../../source/components/graphics/coreModel.h" />
 		<Unit filename="../../source/components/graphics/coreShader.cpp" />
 		<Unit filename="../../source/components/graphics/coreShader.h" />
+		<Unit filename="../../source/components/graphics/coreSync.cpp" />
+		<Unit filename="../../source/components/graphics/coreSync.h" />
 		<Unit filename="../../source/components/graphics/coreTexture.cpp" />
 		<Unit filename="../../source/components/graphics/coreTexture.h" />
 		<Unit filename="../../source/components/input/CoreInput.cpp" />
@@ -152,12 +154,12 @@
 		<Unit filename="../../source/objects/game/coreObject2D.h" />
 		<Unit filename="../../source/objects/game/coreObject3D.cpp" />
 		<Unit filename="../../source/objects/game/coreObject3D.h" />
-		<Unit filename="../../source/objects/game/coreSprite.cpp" />
-		<Unit filename="../../source/objects/game/coreSprite.h" />
 		<Unit filename="../../source/utilities/data/coreData.cpp" />
 		<Unit filename="../../source/utilities/data/coreData.h" />
 		<Unit filename="../../source/utilities/data/coreRand.cpp" />
 		<Unit filename="../../source/utilities/data/coreRand.h" />
+		<Unit filename="../../source/utilities/data/coreTree.cpp" />
+		<Unit filename="../../source/utilities/data/coreTree.h" />
 		<Unit filename="../../source/utilities/file/coreArchive.cpp" />
 		<Unit filename="../../source/utilities/file/coreArchive.h" />
 		<Unit filename="../../source/utilities/file/coreConfig.cpp" />

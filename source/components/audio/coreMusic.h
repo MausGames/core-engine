@@ -127,7 +127,7 @@ class coreMusicPlayer final
 {
 private:
     std::vector<coreMusic*> m_apMusic;      //!< music objects
-    coreMusic* m_pNullMusic;                //!< NULL music object
+    coreMusic* m_pEmptyMusic;               //!< empty music object
 
     std::vector<coreMusic*> m_apSequence;   //!< playback sequence
     coreMusicRepeat m_iRepeat;              //!< repeat behavior
@@ -160,8 +160,8 @@ public:
     coreError AddFile(const char* pcPath);
     coreError AddArchive(const char* pcPath);
     coreError AddFolder(const char* pcPath, const char* pcFilter);
-    coreError DeleteFile(const coreUint& iIndex);
-    void ClearFiles();
+    coreError DeleteMusic(const coreUint& iIndex);
+    void ClearMusic();
     //! @}
 
     //! switch current music object
@@ -174,8 +174,8 @@ public:
 
     //! access music objects
     //! @{
-    inline const coreMusic* GetMusic(const coreUint& iIndex)const {SDL_assert(iIndex < m_apMusic.size()); return (iIndex < m_apMusic.size()) ? m_apMusic[iIndex] : m_pNullMusic;}
-    inline coreMusic* Control()const                              {SDL_assert(m_pCurMusic != m_pNullMusic); return m_pCurMusic;}
+    inline const coreMusic* GetMusic(const coreUint& iIndex)const {SDL_assert(iIndex < m_apMusic.size()); return (iIndex < m_apMusic.size()) ? m_apMusic[iIndex] : m_pEmptyMusic;}
+    inline coreMusic* Control()const                              {SDL_assert(m_pCurMusic != m_pEmptyMusic); return m_pCurMusic;}
     //! @}
 
     //! get object attributes

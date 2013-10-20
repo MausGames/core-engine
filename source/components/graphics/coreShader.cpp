@@ -64,12 +64,20 @@ coreError coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    const char* apcData[1] = {reinterpret_cast<const char*>(pFile->GetData())};
-    const GLint aiSize[1]  = {(GLint)pFile->GetSize()};
+    // retrieve global shader file
+    coreFile* pGlobal = Core::Manager::Resource->RetrieveResourceFile(this->GetGlobalPath(iType));
+
+    // assemble the shader
+    const char* apcData[3] = {coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->SupportGLSL()*100.0f : 110.0f),
+                              reinterpret_cast<const char*>(pGlobal->GetData()),
+                              reinterpret_cast<const char*>(pFile->GetData())};
+    const GLint aiSize[3]  = {(GLint)std::strlen(apcData[0]),
+                              (GLint)pGlobal->GetSize(),
+                              (GLint)pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
-    glShaderSource(m_iShader, 1, apcData, aiSize);
+    glShaderSource(m_iShader, 3, apcData, aiSize);
     glCompileShader(m_iShader);
 
     // check for errors
@@ -89,7 +97,7 @@ coreError coreShader::Load(coreFile* pFile)
 
             // write error-log
             Core::Log->Error(0, coreData::Print("Shader (%s) could not be compiled", pFile->GetPath()));
-            Core::Log->ListStart("Error Log");
+            Core::Log->ListStart("Shader Error Log");
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
 
@@ -100,7 +108,7 @@ coreError coreShader::Load(coreFile* pFile)
 
     // save shader attributes
     m_sPath = pFile->GetPath();
-    m_iSize = pFile->GetSize();
+    m_iSize = pFile->GetSize() + pGlobal->GetSize();
 
     Core::Log->Info(coreData::Print("Shader (%s) loaded", m_sPath.c_str()));
     return CORE_OK;
@@ -185,20 +193,30 @@ coreError coreProgram::Init()
     for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
         glAttachShader(m_iProgram, (*it)->GetShader());
 
-    // set input and output attribute locations
+    // set attribute and output locations
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  CORE_SHADER_ATTRIBUTE_TEXTURE);
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
-    if(Core::Graphics->SupportOpenGL() >= 3.0f) glBindFragDataLocation(m_iProgram, CORE_SHADER_OUT_COLOR0_NUM, CORE_SHADER_OUT_COLOR0);
+    if(Core::Graphics->SupportOpenGL() >= 3.0f)
+    {
+        glBindFragDataLocation(m_iProgram, 0, CORE_SHADER_OUTPUT_COLOR_0);
+        glBindFragDataLocation(m_iProgram, 1, CORE_SHADER_OUTPUT_COLOR_1);
+        glBindFragDataLocation(m_iProgram, 2, CORE_SHADER_OUTPUT_COLOR_2);
+        glBindFragDataLocation(m_iProgram, 3, CORE_SHADER_OUTPUT_COLOR_3);
+    }
 
     // link shader-program
     glLinkProgram(m_iProgram);
     m_iStatus = 2;
 
+    // bind global uniform buffer object
+    if(Core::Graphics->GetUniformBuffer())
+        glUniformBlockBinding(m_iProgram, glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_GLOBAL), CORE_SHADER_BUFFER_GLOBAL_NUM);
+
     // check for errors
-    int iStatus;
-    glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
+    int iLinked;
+    glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iLinked);
 
 #if defined(_CORE_DEBUG_)
 
@@ -208,11 +226,11 @@ coreError coreProgram::Init()
     // check for errors
     int iValid;
     glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iValid);
-    iStatus += iValid;
+    iLinked += iValid;
 
 #endif
 
-    if(!iStatus)
+    if(!iLinked)
     {
         // get length of error-log
         int iLength;
@@ -226,7 +244,7 @@ coreError coreProgram::Init()
 
             // write error-log
             Core::Log->Error(0, "Shader-Program could not be linked/validated");
-            Core::Log->ListStart("Error Log");
+            Core::Log->ListStart("Shader-Program Error Log");
             for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
                 Core::Log->ListEntry(coreData::Print("(%s)", (*it)->GetPath()));
             Core::Log->ListEntry(pcLog);
@@ -265,31 +283,37 @@ coreError coreProgram::Exit()
 
 // ****************************************************************
 // enable the shader-program
-// TODO: use UBOs for OpenGL 3.1+
 // TODO: remove/move linking part somehow
-void coreProgram::Enable()
+bool coreProgram::Enable()
 {
     SDL_assert(m_iStatus);
 
     // check current shader-program
-    if(s_pCurrent == this) return;
+    if(s_pCurrent == this) return true;
 
     // link shader-program
     if(!this->IsFinished())
     {
         if(this->Init() != CORE_OK)
-            return;
+            return false;
     }
 
     // set current shader-program
     s_pCurrent = this;
     glUseProgram(m_iProgram);
 
-    // forward transformation matrices
-    this->SetUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
-    this->SetUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
-    this->SetUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(),      false);
-    this->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM,   coreMatrix::Identity(),           false);
+    // forward global uniform data without UBO
+    if(!Core::Graphics->GetUniformBuffer())
+    {
+        this->SetUniform(CORE_SHADER_UNIFORM_PERSPECTIVE,     Core::Graphics->GetPerspective(), false);
+        this->SetUniform(CORE_SHADER_UNIFORM_ORTHO,           Core::Graphics->GetOrtho(),       false);
+        this->SetUniform(CORE_SHADER_UNIFORM_CAMERA,          Core::Graphics->GetCamera(),      false);
+        this->SetUniform(CORE_SHADER_UNIFORM_CAM_DIRECTION,   Core::Graphics->GetCamDirection());
+        this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, coreVector3(0.0f,0.0f,-1.0f));
+        this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_VALUE,     coreVector4(1.0f,1.0f,1.0f,1.0f));
+    }
+
+    return true;
 }
 
 

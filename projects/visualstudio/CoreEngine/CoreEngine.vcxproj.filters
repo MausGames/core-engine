@@ -44,6 +44,12 @@
     <Filter Include="source\additional\android">
       <UniqueIdentifier>{460240d2-c662-4ec1-948d-fe19c5317d48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\objects">
+      <UniqueIdentifier>{db670ba8-277e-4dc2-9410-a7d42f9b8220}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\objects\game">
+      <UniqueIdentifier>{8c6b1226-0f6b-4b50-852f-b28b59bda193}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\main.cpp">
@@ -127,6 +133,18 @@
     <ClCompile Include="..\..\..\source\components\audio\CoreAudio.cpp">
       <Filter>source\components\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\data\coreTree.cpp">
+      <Filter>source\utilities\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\components\graphics\coreSync.cpp">
+      <Filter>source\components\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp">
+      <Filter>source\objects\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp">
+      <Filter>source\objects\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -203,6 +221,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\audio\CoreAudio.h">
       <Filter>source\components\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreTree.h">
+      <Filter>source\utilities\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\coreSync.h">
+      <Filter>source\components\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\game\coreObject2D.h">
+      <Filter>source\objects\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h">
+      <Filter>source\objects\game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

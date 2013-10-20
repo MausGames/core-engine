@@ -55,16 +55,6 @@ public:
     inline const coreUint& GetSize()const {return m_iSize;}
     //! @}
 
-    //! check if file exists physically
-    //! @{
-    static bool FileExists(const char* pcPath);
-    //! @}
-
-    //! retrieve relative paths of all files from a folder
-    //! @{
-    static coreError SearchFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput);
-    //! @}
-
 
 private:
     CORE_DISABLE_COPY(coreFile)

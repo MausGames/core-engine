@@ -60,10 +60,10 @@ CoreSystem::CoreSystem()noexcept
     }
     else Core::Log->Error(0, coreData::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
 
-    // configure the SDL window parameters
+    // configure the SDL window
     const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
 
-    // configure the OpenGL context parameters
+    // configure the OpenGL context
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
@@ -74,7 +74,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT));
 
-    // try to force OpenGL context version
+    // try to force a different OpenGL context
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
     if(fForceOpenGL)
     {
@@ -82,6 +82,8 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL*10.0f))%10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     }
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     // create main window object
     m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);

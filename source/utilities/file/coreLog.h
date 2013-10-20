@@ -44,6 +44,12 @@ public:
     inline void SetLevel(const int& iLevel) {m_iLevel = iLevel;}
     //! @}
 
+    //! control OpenGL debugging
+    //! @{
+    friend void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, void* pUserParam);
+    void EnableOpenGL()const;
+    //! @}
+
 
 private:
     CORE_DISABLE_COPY(coreLog)

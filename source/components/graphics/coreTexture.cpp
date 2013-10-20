@@ -48,10 +48,11 @@ coreTexture::~coreTexture()
 
 // ****************************************************************
 // load texture resource data
+// TODO: check for proper use of PBO, maybe implement static buffer(s!)
 coreError coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iStatus = this->_CheckSync();
+    const coreError iStatus = m_Sync.CheckSync(0);
     if(iStatus >= 0) return iStatus;
 
     SDL_assert(!m_iTexture);
@@ -91,7 +92,7 @@ coreError coreTexture::Load(coreFile* pFile)
         glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
         // copy texture data into PBO
-        GLubyte* pRange = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+        void* pRange = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
         std::memcpy(pRange, pConvert->pixels, iDataSize);
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
     }
@@ -136,7 +137,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_AtomicUnlock(&s_iLock);
 
     // create sync object
-    const bool bSync = this->_CreateSync();
+    const bool bSync = m_Sync.CreateSync();
 
     if(bPixelBuffer)
     {
@@ -165,7 +166,7 @@ coreError coreTexture::Unload()
     if(!m_sPath.empty()) Core::Log->Info(coreData::Print("Texture (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
-    this->_DeleteSync();
+    m_Sync.DeleteSync();
 
     // reset attributes
     m_sPath       = "";

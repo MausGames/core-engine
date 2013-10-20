@@ -12,9 +12,7 @@
 // ******************************************************************
 // constructor
 CoreGraphics::CoreGraphics()noexcept
-: m_RenderContext   (NULL)
-, m_ResourceContext (NULL)
-, m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
+: m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
 , m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR))
 , m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR))
 , m_vCamPosition    (coreVector3(0.0f,0.0f, 0.0f))
@@ -36,6 +34,7 @@ CoreGraphics::CoreGraphics()noexcept
         if(!m_ResourceContext) Core::Log->Error(0, coreData::Print("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
         else Core::Log->Info("Secondary OpenGL context created");
     }
+    else m_ResourceContext = NULL;
 
     // assign primary OpenGL context to main window
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext))
@@ -64,6 +63,13 @@ CoreGraphics::CoreGraphics()noexcept
     // check OpenGL version
     if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements not met, video card supporting at least OpenGL 2.0 required");
 
+    // enable OpenGL debugging
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
+    {
+        if(this->SupportFeature("GL_KHR_debug"))
+            Core::Log->EnableOpenGL();
+    }
+
     // enable vertical synchronization
     SDL_GL_SetSwapInterval(1);
 
@@ -86,6 +92,23 @@ CoreGraphics::CoreGraphics()noexcept
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // create uniform buffer object for global shader-data
+    if(this->SupportFeature("GL_ARB_uniform_buffer_object"))
+    {
+        // calculate UBO size (std140)
+        const coreUint iSize = sizeof(coreMatrix)*3 + sizeof(coreVector4)*3;
+
+        // generate global UBO
+        glGenBuffers(1, &m_iUniformBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
+        glBufferData(GL_UNIFORM_BUFFER, iSize, NULL, GL_DYNAMIC_DRAW);
+
+        // bind global UBO to a buffer target
+        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_GLOBAL_NUM, m_iUniformBuffer);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
+    else m_iUniformBuffer = 0;
+
     // reset camera and view
     this->SetCamera(NULL, NULL, NULL);
     this->ResizeView(coreVector2(0.0f,0.0f));
@@ -106,6 +129,9 @@ CoreGraphics::~CoreGraphics()
 
     // clear memory
     m_abFeature.clear();
+
+    // delete global UBO
+    if(m_iUniformBuffer) glDeleteBuffers(1, &m_iUniformBuffer);
 
     // dissociate primary OpenGL context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
@@ -146,8 +172,25 @@ void CoreGraphics::SetCamera(const coreVector3* pvPosition, const coreVector3* p
     if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_vCamDirection   != vDirNorm) {m_vCamDirection   = vDirNorm; bNewCamera = true;}}
     if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_vCamOrientation != vOriNorm) {m_vCamOrientation = vOriNorm; bNewCamera = true;}}
 
-    // create camera matrix
-    if(bNewCamera) m_mCamera = coreMatrix::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
+    if(bNewCamera)
+    {
+        // create camera matrix
+        m_mCamera = coreMatrix::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
+
+        if(m_iUniformBuffer)
+        {
+            // pack uniform data
+            float afData[20];
+            std::memcpy(&afData[ 0], &m_mCamera,       sizeof(m_mCamera));
+            std::memcpy(&afData[16], &m_vCamDirection, sizeof(m_vCamDirection));
+            afData[19] = 0.0f;
+
+            // update global UBO
+            glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
+            glBufferSubData(GL_UNIFORM_BUFFER, sizeof(coreMatrix)*2, sizeof(afData), afData);
+            glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        }
+    }
 }
 
 
@@ -165,6 +208,19 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
     // generate projection matrices
     m_mPerspective = coreMatrix::Perspective(vResolution, TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
     m_mOrtho       = coreMatrix::Ortho(vResolution);
+
+    if(m_iUniformBuffer)
+    {
+        // pack uniform data
+        float afData[32];
+        std::memcpy(&afData[ 0], &m_mPerspective, sizeof(m_mPerspective));
+        std::memcpy(&afData[16], &m_mOrtho,       sizeof(m_mOrtho));
+
+        // update global UBO
+        glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(afData), afData);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
 
     m_vCurResolution = vResolution;
 }

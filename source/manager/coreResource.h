@@ -28,7 +28,7 @@ public:
     //! @{
     inline coreError Load(const char* pcPath) {coreFile File(pcPath); return this->Load(&File);}
     virtual coreError Load(coreFile* pFile) = 0;
-    virtual coreError Unload()              = 0;
+    virtual coreError Unload() = 0;
     //! @}
 
     //! get object attributes
@@ -37,9 +37,9 @@ public:
     inline const coreUint& GetSize()const {return m_iSize;}
     //! @}
 
-    //! get relative path to NULL resource
+    //! get relative path to default resource
     //! @{
-    static inline const char* GetNullPath() {SDL_assert(false); return NULL;}
+    static inline const char* GetDefaultPath() {SDL_assert(false); return NULL;}
     //! @}
 
 
@@ -54,7 +54,7 @@ class coreResourceHandle final
 {
 private:
     coreResource* m_pResource;   //!< associated resource object (in handle)
-    coreResource* m_pNull;       //!< NULL resource object (in manager)
+    coreResource* m_pDefault;    //!< default resource object (in manager)
     coreFile* m_pFile;           //!< resource file (in manager)
 
     coreResource* m_pCur;        //!< pointer to active resource object
@@ -64,14 +64,14 @@ private:
 
 
 private:
-    coreResourceHandle(coreResource* pResource, coreResource* pNull, coreFile* pFile)noexcept;
+    coreResourceHandle(coreResource* pResource, coreResource* pDefault, coreFile* pFile)noexcept;
     ~coreResourceHandle();
     friend class coreResourceManager;
 
     //! control resource loading
     //! @{
     void __Update();
-    inline void __Nullify() {if(!m_bManaged) return; m_pCur = m_pNull; m_pResource->Unload();}
+    inline void __Nullify() {if(!m_bManaged) return; m_pCur = m_pDefault; m_pResource->Unload();}
     //! @}
 
 
@@ -79,7 +79,7 @@ public:
     //! access active resource object
     //! @{
     inline coreResource* GetResource()const {return m_pCur;}
-    inline bool IsLoaded()const             {return (m_pCur == m_pNull) ? false : true;}
+    inline bool IsLoaded()const             {return (m_pCur == m_pDefault) ? false : true;}
     //! @}
 
     //! manipulate the reference-counter
@@ -156,31 +156,6 @@ private:
 
 
 // ****************************************************************
-// sync extension
-class coreSync
-{
-private:
-    GLsync m_pSync;   //!< sync object for asynchronous OpenGL operations
-
-
-protected:
-    constexpr coreSync()noexcept : m_pSync (NULL) {}
-    ~coreSync()                                   {this->_DeleteSync();}
-
-    //! handle the sync object
-    //! @{
-    bool _CreateSync();
-    void _DeleteSync();
-    //! @}
-
-    //! check for sync object status
-    //! @{
-    coreError _CheckSync();
-    //! @}
-};
-
-
-// ****************************************************************
 // resource manager
 // TODO: use load- and unload-stack
 // TODO: update link-functionality
@@ -188,7 +163,7 @@ class coreResourceManager final : public coreThread
 {
 private:
     std::u_map<std::string, coreResourceHandle*> m_apHandle;   //!< resource handles
-    std::u_map<std::string, coreResource*> m_apNull;           //!< NULL resource objects
+    std::u_map<std::string, coreResource*> m_apDefault;        //!< default resource objects
 
     std::vector<coreArchive*> m_apArchive;                     //!< archives with resource files
     std::u_map<std::string, coreFile*> m_apDirectFile;         //!< direct resource files
@@ -318,18 +293,18 @@ template <typename T> coreResourceHandle* coreResourceManager::__Load(const char
     // check for existing resource handle
     if(m_apHandle.count(pcKey)) return m_apHandle[pcKey];
 
-    // check for existing NULL resource
-    coreResource* pNull;
-    if(!m_apNull.count(T::GetNullPath()))
+    // check for existing default resource
+    coreResource* pDefault;
+    if(!m_apDefault.count(T::GetDefaultPath()))
     {
-        // load new NULL resource
-        pNull = new T(this->RetrieveResourceFile(T::GetNullPath()));
-        m_apNull[T::GetNullPath()] = pNull;
+        // load new default resource
+        pDefault = new T(this->RetrieveResourceFile(T::GetDefaultPath()));
+        m_apDefault[T::GetDefaultPath()] = pDefault;
     }
-    else pNull = m_apNull[T::GetNullPath()];
+    else pDefault = m_apDefault[T::GetDefaultPath()];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pNull, bFile ? this->RetrieveResourceFile(pcKey) : NULL);
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pDefault, bFile ? this->RetrieveResourceFile(pcKey) : NULL);
     m_apHandle[pcKey] = pNewHandle;
 
     return pNewHandle;

@@ -17,6 +17,22 @@ coreUint coreData::m_iIndex                 = 0;
 
 
 // ****************************************************************
+// create formated string
+const char* coreData::Print(const char* pcMessage, ...)
+{
+    char* pcString = __NextString();
+
+    // assemble string
+    va_list pList;
+    va_start(pList, pcMessage);
+    vsnprintf(pcString, 255, pcMessage, pList);
+    va_end(pList);
+
+    return pcString;
+}
+
+
+// ****************************************************************
 // get application name
 const char* coreData::AppName()
 {
@@ -52,6 +68,86 @@ const char* coreData::AppPath()
 
 
 // ****************************************************************
+// check if file exists
+bool coreData::FileExists(const char* pcPath)
+{
+    // open file
+    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "r");
+    if(pFile)
+    {
+        // file exists
+        SDL_RWclose(pFile);
+        return true;
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+// retrieve relative paths of all files from a folder
+// TODO: implement for Android
+coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput)
+{
+    if(!pcPath || !pasOutput) return CORE_INVALID_INPUT;
+
+#if defined(_CORE_WINDOWS_)
+
+    HANDLE hFolder;
+    WIN32_FIND_DATA hFile;
+
+    // open folder
+    hFolder = FindFirstFile(coreData::Print("%s/%s/%s", coreData::AppPath(), pcPath, pcFilter), &hFile);
+    if(hFolder == INVALID_HANDLE_VALUE)
+    {
+        Core::Log->Error(0, coreData::Print("Folder (%s) could not be opened", pcPath));
+        return CORE_FILE_ERROR;
+    }
+
+    do
+    {
+        // check and add file path
+        if(hFile.cFileName[0] != '.')
+            pasOutput->push_back(coreData::Print("%s/%s", pcPath, hFile.cFileName));
+    }
+    while(FindNextFile(hFolder, &hFile));
+
+    // close folder
+    FindClose(hFolder);
+
+#else
+
+    DIR* pDir;
+    struct dirent* pDirent;
+
+    // open folder
+    pDir = opendir(pcPath);
+    if(!pDir)
+    {
+        Core::Log->Error(0, coreData::Print("Folder (%s) could not be opened", pcPath));
+        return CORE_FILE_ERROR;
+    }
+
+    while((pDirent = readdir(pDir)) != NULL)
+    {
+        // check and add file path
+        if(pDirent->d_name[0] != '.')
+        {
+            if(coreData::StrCompare(pDirent->d_name, pcFilter))
+                pasOutput->push_back(coreData::Print("%s/%s", pcPath, pDirent->d_name));
+        }
+    }
+
+    // close folder
+    closedir(pDir);
+
+#endif
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
 // retrieve current date and time
 void coreData::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea)
 {
@@ -66,22 +162,6 @@ void coreData::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreU
     if(piDay) *piDay = pFormat->tm_mday;
     if(piMon) *piMon = pFormat->tm_mon+1;
     if(piYea) *piYea = pFormat->tm_year+1900;
-}
-
-
-// ****************************************************************
-// create formated string
-const char* coreData::Print(const char* pcMessage, ...)
-{
-    char* pcString = __NextString();
-
-    // assemble string
-    va_list pList;
-    va_start(pList, pcMessage);
-    vsnprintf(pcString, 255, pcMessage, pList);
-    va_end(pList);
-
-    return pcString;
 }
 
 

@@ -30,24 +30,30 @@ class coreData
 {
 private:
     static char m_aacString[CORE_DATA_STRINGS][256];   //!< return-string memory
-    static coreUint m_iIndex;                           //!< current return-string
+    static coreUint m_iIndex;                          //!< current return-string
 
 
 public:
+    //! create formated string
+    //! @{
+    static const char* Print(const char* pcMessage, ...);
+    //! @}
+
     //! get application parameters
     //! @{
     static const char* AppName();
     static const char* AppPath();
     //! @}
 
+    //! handle physical files and folders
+    //! @{
+    static bool FileExists(const char* pcPath);
+    static coreError FolderSearch(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput);
+    //! @}
+
     //! retrieve current date and time
     //! @{
     static void DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea);
-    //! @}
-
-    //! create formated string
-    //! @{
-    static const char* Print(const char* pcMessage, ...);
     //! @}
 
     //! operate with string data
@@ -59,7 +65,7 @@ public:
     static void StrSkip(const char** ppcInput, const int &iNum);
     //! @}
 
-    //! open URL with the web-browser
+    //! open URL with standard web-browser
     //! @{
     static void OpenURL(const char* pcURL);
     //! @}

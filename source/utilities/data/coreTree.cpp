@@ -6,9 +6,4 @@
 //| More Information in the README.md and LICENSE.txt  |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
-// #version defined by application
-
-void main()
-{
-    gl_FragColor = texture2D(u_s2Texture, v_v2TexCoord);
-}
+#include "Core.h"

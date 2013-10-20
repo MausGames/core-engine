@@ -29,6 +29,7 @@ coreLog::coreLog(const char* pcPath)noexcept
     std::fprintf(pFile, " .header    {font-weight: bold; font-size: 22px;}\n");
     std::fprintf(pFile, " .liststart {font-weight: bold;}                 \n");
     std::fprintf(pFile, " .error     {font-weight: bold; color: red;}     \n");
+    std::fprintf(pFile, " .gl        {color: purple;}                     \n");
     std::fprintf(pFile, "</style>                                         \n");
 
     // close log file
@@ -59,12 +60,36 @@ void coreLog::Error(const bool& bShutdown, const std::string& sText)
 
 
 // ****************************************************************
+// write an OpenGL debug message
+void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, void* pUserParam)
+{
+    Core::Log->ListStart("OpenGL Debug Log");
+    Core::Log->ListEntry(coreData::Print("<span class=\"gl\"><b>ID:</b>           %d</span>", iID));
+    Core::Log->ListEntry(coreData::Print("<span class=\"gl\"><b>Source:</b>   0x%04X</span>", iSource));
+    Core::Log->ListEntry(coreData::Print("<span class=\"gl\"><b>Type:</b>     0x%04X</span>", iType));
+    Core::Log->ListEntry(coreData::Print("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity));
+    Core::Log->ListEntry("<span class=\"gl\">" + std::string(pcMessage) + "</span>");
+    Core::Log->ListEnd();
+}
+
+
+// ****************************************************************
+// enable OpenGL debug messages
+void coreLog::EnableOpenGL()const
+{
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(&WriteOpenGL, NULL);
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+}
+
+
+// ****************************************************************
 // write text to the log file
 void coreLog::__Write(const bool& bTime, std::string sText)
 {
     SDL_AtomicLock(&m_iLock);
     {
-        // write text also to standard output
+        // write text also to the standard output
         SDL_Log(sText.c_str());
 
         // open log file

@@ -31,6 +31,8 @@
             <itemPath>../../source/components/graphics/coreModel.h</itemPath>
             <itemPath>../../source/components/graphics/coreShader.cpp</itemPath>
             <itemPath>../../source/components/graphics/coreShader.h</itemPath>
+            <itemPath>../../source/components/graphics/coreSync.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreSync.h</itemPath>
             <itemPath>../../source/components/graphics/coreTexture.cpp</itemPath>
             <itemPath>../../source/components/graphics/coreTexture.h</itemPath>
           </logicalFolder>
@@ -57,6 +59,8 @@
         </logicalFolder>
         <logicalFolder name="objects" displayName="objects" projectFiles="true">
           <logicalFolder name="game" displayName="game" projectFiles="true">
+            <itemPath>../../source/objects/game/coreObject2D.cpp</itemPath>
+            <itemPath>../../source/objects/game/coreObject2D.h</itemPath>
             <itemPath>../../source/objects/game/coreObject3D.cpp</itemPath>
             <itemPath>../../source/objects/game/coreObject3D.h</itemPath>
           </logicalFolder>
@@ -67,6 +71,8 @@
             <itemPath>../../source/utilities/data/coreData.h</itemPath>
             <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
             <itemPath>../../source/utilities/data/coreRand.h</itemPath>
+            <itemPath>../../source/utilities/data/coreTree.cpp</itemPath>
+            <itemPath>../../source/utilities/data/coreTree.h</itemPath>
           </logicalFolder>
           <logicalFolder name="file" displayName="file" projectFiles="true">
             <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
@@ -215,6 +221,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreSync.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreTexture.cpp"
             ex="false"
             tool="1"
@@ -289,6 +305,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject3D.h"
             ex="false"
             tool="3"
@@ -310,6 +331,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -488,6 +519,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreSync.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreTexture.cpp"
             ex="false"
             tool="1"
@@ -562,6 +603,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject2D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject3D.cpp"
             ex="false"
             tool="1"
@@ -588,6 +639,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -766,6 +827,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreSync.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreTexture.cpp"
             ex="false"
             tool="1"
@@ -840,6 +911,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject2D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject3D.cpp"
             ex="false"
             tool="1"
@@ -866,6 +947,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1057,6 +1148,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreSync.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreTexture.cpp"
             ex="false"
             tool="1"
@@ -1131,6 +1232,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject2D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject3D.cpp"
             ex="false"
             tool="1"
@@ -1157,6 +1268,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1344,6 +1465,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreSync.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreTexture.cpp"
             ex="false"
             tool="1"
@@ -1418,6 +1549,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject2D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject3D.cpp"
             ex="false"
             tool="1"
@@ -1444,6 +1585,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1630,6 +1781,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreSync.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreTexture.cpp"
             ex="false"
             tool="1"
@@ -1704,6 +1865,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreObject2D.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject3D.cpp"
             ex="false"
             tool="1"
@@ -1730,6 +1901,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">

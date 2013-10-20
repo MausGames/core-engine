@@ -69,6 +69,9 @@
 // debug mode
 #if defined(_DEBUG) || defined(DEBUG) || (defined(_CORE_GCC_) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_
+    const bool g_bDebug = true;
+#else
+    const bool g_bDebug = false;
 #endif
 
 // SIMD support
@@ -233,6 +236,7 @@ enum coreError
 
 #include "utilities/data/coreData.h"
 #include "utilities/data/coreRand.h"
+#include "utilities/data/coreTree.h"
 
 #include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
@@ -242,6 +246,7 @@ enum coreError
 #include "manager/coreResource.h"
 
 #include "components/graphics/CoreGraphics.h"
+#include "components/graphics/coreSync.h"
 #include "components/graphics/coreModel.h"
 #include "components/graphics/coreTexture.h"
 #include "components/graphics/coreShader.h"

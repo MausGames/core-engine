@@ -25,7 +25,7 @@
 // ****************************************************************
 // texture class
 // TODO: check for max available texture units
-class coreTexture final : public coreResource, public coreSync
+class coreTexture final : public coreResource
 {
 private:
     GLuint m_iTexture;                                   //!< texture identifier/OpenGL name
@@ -34,6 +34,7 @@ private:
     static int s_iActiveUnit;                            //!< current active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
 
+    coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
     static SDL_SpinLock s_iLock;                         //!< spinlock to prevent asynchronous texture unit access
 
 
@@ -66,9 +67,9 @@ public:
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     //! @}
 
-    //! get relative path to NULL resource
+    //! get relative path to default resource
     //! @{
-    static inline const char* GetNullPath() {return "data/textures/default.png";}
+    static inline const char* GetDefaultPath() {return "data/textures/default.png";}
     //! @}
 };
 

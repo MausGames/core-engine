@@ -8,23 +8,20 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#if defined(_CORE_MSVC_)
+#if defined(_CORE_WINDOWS_)
     #include <direct.h>
     #define chdir _chdir
 #endif
 
 coreLog*             Core::Log               = NULL;
 coreConfig*          Core::Config            = NULL;
-
 coreMath*            Core::Math              = NULL;
 coreData*            Core::Data              = NULL;
 coreRand*            Core::Rand              = NULL;
-
 CoreSystem*          Core::System            = NULL;
 CoreGraphics*        Core::Graphics          = NULL;
 CoreAudio*           Core::Audio             = NULL;
 CoreInput*           Core::Input             = NULL;
-
 coreMemoryManager*   Core::Manager::Memory   = NULL;
 coreResourceManager* Core::Manager::Resource = NULL;
 coreObjectManager*   Core::Manager::Object   = NULL;
@@ -134,7 +131,7 @@ void Core::__Run()
     // reset logging level
     Core::Log->SetLevel(0);
 
-    // delete engine and application
+    // delete application and engine
     Core::Log->Header("Shut Down");
     SAFE_DELETE(pApplication)
     SAFE_DELETE(pEngine)
@@ -163,7 +160,6 @@ void Core::Reset()
     Input    = new CoreInput();
 
     // re-init resource manager
-    Log->Header("Manager");
     Manager::Resource->Reset(true);
 
     Log->Header("Application Run");

@@ -33,6 +33,8 @@ private:
     coreMatrix m_mOrtho;                         //!< orthogonal projection matrix
     coreVector2 m_vCurResolution;                //!< current viewport resolution
 
+    GLuint m_iUniformBuffer;                     //!< uniform buffer object for global shader-data
+
     std::u_map<std::string, bool> m_abFeature;   //!< cached features of the video card
     float m_fOpenGL;                             //!< available OpenGL version
     float m_fGLSL;                               //!< available GLSL version
@@ -74,6 +76,7 @@ public:
     inline const coreMatrix& GetCamera()const             {return m_mCamera;}
     inline const coreMatrix& GetPerspective()const        {return m_mPerspective;}
     inline const coreMatrix& GetOrtho()const              {return m_mOrtho;}
+    inline const GLuint& GetUniformBuffer()const          {return m_iUniformBuffer;}
     //! @}
 
     //! check hardware support

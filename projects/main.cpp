@@ -1,5 +1,5 @@
 #include "Core.h"
-/* Warning: currently a sandbox-file, do not use it */
+/* !!! Warning: currently a sandbox-file, do not use it !!! */
 
 
 std::vector<coreTexturePtr> g_apTextures;
@@ -14,7 +14,8 @@ void CoreApp::Init()
 {
     g_pProgram1 = NULL;
 
-    g_pModel = Core::Manager::Resource->Load<coreModel>("data/models/default.md5mesh");
+    g_pModel = Core::Manager::Resource->LoadFile<coreModel>("data/models/default.md5mesh");
+    //g_pModel = Core::Manager::Resource->LoadLink<coreModel>("test");
 
     g_pMusic = new coreMusicPlayer();
     g_pMusic->AddFile("data/feel.ogg");
@@ -31,6 +32,7 @@ void CoreApp::Exit()
 {
     for(coreUint i = 0; i < g_apTextures.size(); ++i)
         g_apTextures[i].SetActive(false);
+
 
     g_apTextures.clear();
 
@@ -53,11 +55,18 @@ void CoreApp::Render()
         {
             //glMultMatrixf(coreMatrix::Translation(coreVector3(float(i),0.0f,-5.0f)));
 
-            g_pProgram2->Enable();
-            g_apTextures[i]->Enable(0);
-            g_pModel->Render();
-            coreTexture::DisableAll();
-            g_pProgram2->Disable();
+            if(g_pProgram2->Enable())
+            {
+                g_pProgram2->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM,  coreMatrix::Identity(), false);
+                g_pProgram2->SetUniform(CORE_SHADER_UNIFORM_COLOR,      coreVector4(1.0f,1.0f,1.0f,1.0f));
+                g_pProgram2->SetUniform(CORE_SHADER_UNIFORM_TEX_SIZE,   coreVector2(1.0f,1.0f));
+                g_pProgram2->SetUniform(CORE_SHADER_UNIFORM_TEX_OFFSET, coreVector2(0.0f,0.0f));
+
+                g_apTextures[i]->Enable(0);
+                g_pModel->Render();
+                coreTexture::DisableAll();
+            }
+
         }
     }
 }
@@ -77,14 +86,14 @@ void CoreApp::Move()
 //            g_apTextures.push_back(NewPtr);
 //        }
 
-        g_apTextures.push_back(Core::Manager::Resource->Load<coreTexture>("data/textures/android.png"));
+        g_apTextures.push_back(Core::Manager::Resource->LoadFile<coreTexture>("data/textures/android.png"));
 
 
 
         g_pProgram1 = Core::Manager::Memory->Share<coreProgram>("test_ptr");
-        g_pProgram1->AttachShader("data/shaders/default.vs")
-                   ->AttachShader("data/shaders/default.fs")
-                   ->Link();
+        g_pProgram1->AttachShaderFile("data/shaders/default.vs")
+                   ->AttachShaderFile("data/shaders/default.fs")
+                   ->Finish();
 
         g_pProgram2 = Core::Manager::Memory->Share<coreProgram>("test_ptr");
     }

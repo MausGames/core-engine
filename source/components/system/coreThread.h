@@ -40,7 +40,7 @@ private:
     //! execute the thread
     //! @{
     int __Main();
-    virtual int __Init() {return 0;}
+    virtual int __Init()  {return 0;}
     virtual int __Run() = 0;
     virtual void __Exit() {}
     //! @}

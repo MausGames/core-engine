@@ -13,25 +13,35 @@
 
 // ****************************************************************
 // shader definitions
-// TODO: define shaders with different versions and levels
 // TODO: document definitions
-#define CORE_SHADER_UNIFORM_PERSPECTIVE "u_mPerspective"
-#define CORE_SHADER_UNIFORM_ORTHO       "u_mOrtho"
-#define CORE_SHADER_UNIFORM_CAMERA      "u_mCamera"
-#define CORE_SHADER_UNIFORM_TRANSFORM   "u_mTransform"
-#define CORE_SHADER_UNIFORM_LIGHT0      "u_v3Light0"
+#define CORE_SHADER_BUFFER_GLOBAL           "b_Global"
+#define CORE_SHADER_BUFFER_GLOBAL_NUM       0
 
-#define CORE_SHADER_ATTRIBUTE_POSITION     "a_v3Position"
-#define CORE_SHADER_ATTRIBUTE_POSITION_NUM 0
-#define CORE_SHADER_ATTRIBUTE_TEXTURE      "a_v2Texture"
-#define CORE_SHADER_ATTRIBUTE_TEXTURE_NUM  1
-#define CORE_SHADER_ATTRIBUTE_NORMAL       "a_v3Normal"
-#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM   2
-#define CORE_SHADER_ATTRIBUTE_TANGENT      "a_v4Tangent"
-#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM  3
+#define CORE_SHADER_UNIFORM_PERSPECTIVE     "u_mPerspective"
+#define CORE_SHADER_UNIFORM_ORTHO           "u_mOrtho"
+#define CORE_SHADER_UNIFORM_CAMERA          "u_mCamera"
+#define CORE_SHADER_UNIFORM_CAM_DIRECTION   "u_v3CamDirection"
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION "u_v3LightDirection"
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE     "u_v4LightValue"
 
-#define CORE_SHADER_OUT_COLOR0     "o_v4Color0"
-#define CORE_SHADER_OUT_COLOR0_NUM 0
+#define CORE_SHADER_UNIFORM_TRANSFORM       "u_mTransform"
+#define CORE_SHADER_UNIFORM_COLOR           "u_v4Color"
+#define CORE_SHADER_UNIFORM_TEX_SIZE        "u_v2TexSize"
+#define CORE_SHADER_UNIFORM_TEX_OFFSET      "u_v2TexOffset"
+
+#define CORE_SHADER_ATTRIBUTE_POSITION      "a_v3Position"
+#define CORE_SHADER_ATTRIBUTE_TEXTURE       "a_v2Texture"
+#define CORE_SHADER_ATTRIBUTE_NORMAL        "a_v3Normal"
+#define CORE_SHADER_ATTRIBUTE_TANGENT       "a_v4Tangent"
+#define CORE_SHADER_ATTRIBUTE_POSITION_NUM  0
+#define CORE_SHADER_ATTRIBUTE_TEXTURE_NUM   1
+#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM    2
+#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM   3
+
+#define CORE_SHADER_OUTPUT_COLOR_0          "o_v4Color0"
+#define CORE_SHADER_OUTPUT_COLOR_1          "o_v4Color1"
+#define CORE_SHADER_OUTPUT_COLOR_2          "o_v4Color2"
+#define CORE_SHADER_OUTPUT_COLOR_3          "o_v4Color3"
 
 
 // ****************************************************************
@@ -59,9 +69,10 @@ public:
     inline const GLuint& GetShader()const {return m_iShader;}
     //! @}
 
-    //! get relative path to NULL resource
+    //! get relative path to default resource
     //! @{
-    static inline const char* GetNullPath() {return "data/shaders/default.fs";}
+    static inline const char* GetDefaultPath()                   {return "data/shaders/default.fs";}
+    static inline const char* GetGlobalPath(const GLenum& iType) {return coreData::Print("data/shaders/global.%s", (iType == GL_VERTEX_SHADER) ? "vs" : "fs");}
     //! @}
 };
 
@@ -74,6 +85,7 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 // ****************************************************************
 // shader-program class
 // TODO: cache and check shader uniform values
+// TODO: material data in UBO
 class coreProgram final : public coreReset
 {
 private:
@@ -105,7 +117,7 @@ public:
 
     //! enable and disable the shader-program
     //! @{
-    void Enable();
+    bool Enable();
     static void Disable();
     //! @}
 
@@ -130,8 +142,8 @@ public:
     //! get object attributes
     //! @{
     inline const GLuint& GetProgram()const             {return m_iProgram;}
-    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName); return m_aiUniform.at(pcName);}
-    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) m_aiAttribute[pcName] = glGetAttribLocation(m_iProgram,  pcName); return m_aiAttribute.at(pcName);}
+    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {SDL_assert(this->IsFinished()); m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
+    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {SDL_assert(this->IsFinished()); m_aiAttribute[pcName] = glGetAttribLocation(m_iProgram,  pcName);} return m_aiAttribute.at(pcName);}
     //! @}
 
     //! get currently active shader-program

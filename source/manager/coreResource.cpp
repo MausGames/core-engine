@@ -11,11 +11,11 @@
 
 // ****************************************************************
 // constructor
-coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pNull, coreFile* pFile)noexcept
+coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pDefault, coreFile* pFile)noexcept
 : m_pResource (pResource)
-, m_pNull     (pNull)
+, m_pDefault  (pDefault)
 , m_pFile     (pFile)
-, m_pCur      (pFile ? pNull : pResource)
+, m_pCur      (pFile ? pDefault : pResource)
 , m_iRef      (0)
 , m_bManaged  (pFile ? true : false)
 {
@@ -44,14 +44,14 @@ void coreResourceHandle::__Update()
     if(m_iRef != 0 && !this->IsLoaded())
     {
         // load associated resource
-        const coreError iError = m_pResource->Load(m_pFile);
-        if(iError == CORE_OK)
+        const coreError iStatus = m_pResource->Load(m_pFile);
+        if(iStatus == CORE_OK)
         {
             // successfully loaded
             m_pCur = m_pResource;
             m_pFile->UnloadData();
         }
-        else if(iError < 0)
+        else if(iStatus < 0)
         {
             // stop managing the resource handle
             m_bManaged = false;
@@ -84,58 +84,6 @@ coreReset::~coreReset()
 
 
 // ****************************************************************
-// create sync object
-bool coreSync::_CreateSync()
-{
-    if(!m_pSync)
-    {
-        // check for available extension
-        if(Core::Graphics->SupportFeature("GL_ARB_sync"))
-        {
-            // generate new sync object
-            m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-            return true;
-        }
-
-        // flush all commands
-        glFlush();
-    }
-
-    return false;
-}
-
-
-// ****************************************************************
-// delete sync object
-void coreSync::_DeleteSync()
-{
-    if(m_pSync)
-    {
-        glDeleteSync(m_pSync);
-        m_pSync = NULL;
-    }
-}
-
-
-// ****************************************************************
-// check for sync object status
-coreError coreSync::_CheckSync()
-{
-    if(!m_pSync) return CORE_INVALID_CALL;
-
-    // retrieve status without wait
-    if(glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, 0) != GL_TIMEOUT_EXPIRED)
-    {
-        // delete sync object
-        this->_DeleteSync();
-        return CORE_OK;
-    }
-
-    return CORE_BUSY;
-}
-
-
-// ****************************************************************
 // constructor
 coreResourceManager::coreResourceManager()noexcept
 {
@@ -156,9 +104,9 @@ coreResourceManager::~coreResourceManager()
     // shut down the resource manager
     this->Reset(false);
 
-    // delete resource handles and NULL resources
-    for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) SAFE_DELETE(it->second)
-    for(auto it = m_apNull.begin();   it != m_apNull.end();   ++it) SAFE_DELETE(it->second)
+    // delete resource handles and default resources
+    for(auto it = m_apHandle.begin();  it != m_apHandle.end();  ++it) SAFE_DELETE(it->second)
+    for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it) SAFE_DELETE(it->second)
 
     // delete resource files
     for(auto it = m_apArchive.begin();    it != m_apArchive.end();    ++it) SAFE_DELETE(*it)
@@ -166,7 +114,7 @@ coreResourceManager::~coreResourceManager()
 
     // clear memory
     m_apHandle.clear();
-    m_apNull.clear();
+    m_apDefault.clear();
     m_apArchive.clear();
     m_apDirectFile.clear();
     m_apReset.clear();
@@ -198,7 +146,7 @@ coreError coreResourceManager::AddArchive(const char* pcPath)
 coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
 {
     // check for direct resource file
-    if(!coreFile::FileExists(pcPath))
+    if(!coreData::FileExists(pcPath))
     {
         // check archives
         for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
@@ -227,8 +175,8 @@ void coreResourceManager::Reset(const bool& bInit)
 {
     if(bInit)
     {
-        // re-load NULL resources
-        for(auto it = m_apNull.begin(); it != m_apNull.end(); ++it)
+        // re-load default resources
+        for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it)
             it->second->Load(this->RetrieveResourceFile(it->first.c_str()));
 
         // re-init reset-objects
@@ -250,8 +198,8 @@ void coreResourceManager::Reset(const bool& bInit)
             (*it)->Reset(false);
 
         // unload resources
-        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it) it->second->__Nullify();
-        for(auto it = m_apNull.begin();   it != m_apNull.end();   ++it) it->second->Unload();
+        for(auto it = m_apHandle.begin();  it != m_apHandle.end();  ++it) it->second->__Nullify();
+        for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it) it->second->Unload();
     }
 }
 

@@ -177,7 +177,7 @@ coreModel::~coreModel()
 coreError coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iStatus = this->_CheckSync();
+    const coreError iStatus = m_Sync.CheckSync(0);
     if(iStatus >= 0) return iStatus;
 
     SDL_assert(!m_iVertexBuffer);
@@ -302,7 +302,7 @@ coreError coreModel::Load(coreFile* pFile)
     SDL_AtomicUnlock(&s_iLock);
 
     // create sync object
-    const bool bSync = this->_CreateSync();
+    const bool bSync = m_Sync.CreateSync();
 
     // free required vertex memory
     SAFE_DELETE_ARRAY(pVertex)
@@ -327,7 +327,7 @@ coreError coreModel::Unload()
     Core::Log->Info(coreData::Print("Model (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
-    this->_DeleteSync();
+    m_Sync.DeleteSync();
 
     // reset attributes
     m_sPath         = "";

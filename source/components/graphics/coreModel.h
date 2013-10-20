@@ -18,7 +18,7 @@
 // TODO: check for unnecessary calculations to increase loading speed
 // TODO: check normal vector calculations (alignment, outside, etc.)
 // TODO: make default model invisible
-class coreModel final : public coreResource, public coreSync
+class coreModel final : public coreResource
 {
 private:
     //! MD5-joint structure
@@ -102,6 +102,7 @@ private:
 
     float m_fRadius;               //!< maximum distance from the model center
 
+    coreSync m_Sync;               //!< sync object for asynchronous model loading
     static SDL_SpinLock s_iLock;   //!< spinlock to prevent asynchronous array buffer access
 
 
@@ -131,9 +132,9 @@ public:
     inline const float& GetRadius()const          {return m_fRadius;}
     //! @}
 
-    //! get relative path to NULL resource
+    //! get relative path to default resource
     //! @{
-    static inline const char* GetNullPath() {return "data/models/default.md5mesh";}
+    static inline const char* GetDefaultPath() {return "data/models/default.md5mesh";}
     //! @}
 
 

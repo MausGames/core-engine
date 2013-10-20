@@ -87,9 +87,9 @@ public:
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
     //! @}
 
-    //! get relative path to NULL resource
+    //! get relative path to default resource
     //! @{
-    static inline const char* GetNullPath() {return "data/sounds/default.wav";}
+    static inline const char* GetDefaultPath() {return "data/sounds/default.wav";}
     //! @}
 };
 

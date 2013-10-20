@@ -1,14 +1,12 @@
-uniform mat4 u_mPerspective;
-uniform mat4 u_mOrtho;
-uniform mat4 u_mCamera;
-uniform mat4 u_mTransform;
-
-attribute vec3 a_v3Position;
-attribute vec2 a_v2Texture;
-attribute vec3 a_v3Normal;
-attribute vec4 a_v4Tangent;
-
-varying vec2 v_v2TexCoord;
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under zlib License                        |//
+//| More Information in the README.md and LICENSE.txt  |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
+// #version defined by application
 
 void main()
 {

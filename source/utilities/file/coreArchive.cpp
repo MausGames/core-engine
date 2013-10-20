@@ -120,86 +120,6 @@ coreError coreFile::LoadData()
 
 
 // ****************************************************************
-// check if file exists
-bool coreFile::FileExists(const char* pcPath)
-{
-    // open file
-    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "r");
-    if(pFile)
-    {
-        // file exists
-        SDL_RWclose(pFile);
-        return true;
-    }
-
-    return false;
-}
-
-
-// ****************************************************************
-// retrieve relative paths of all files from a folder
-// TODO: implement for Android
-coreError coreFile::SearchFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput)
-{
-    if(!pcPath || !pasOutput) return CORE_INVALID_INPUT;
-
-#if defined(_CORE_WINDOWS_)
-
-    HANDLE hFolder;
-    WIN32_FIND_DATA hFile;
-
-    // open folder
-    hFolder = FindFirstFile(coreData::Print("%s/%s/%s", coreData::AppPath(), pcPath, pcFilter), &hFile);
-    if(hFolder == INVALID_HANDLE_VALUE)
-    {
-        Core::Log->Error(0, coreData::Print("Folder (%s) could not be opened", pcPath));
-        return CORE_FILE_ERROR;
-    }
-
-    do
-    {
-        // check and add file path
-        if(hFile.cFileName[0] != '.')
-            pasOutput->push_back(coreData::Print("%s/%s", pcPath, hFile.cFileName));
-    }
-    while(FindNextFile(hFolder, &hFile));
-
-    // close folder
-    FindClose(hFolder);
-
-#else
-
-    DIR* pDir;
-    struct dirent* pDirent;
-
-    // open folder
-    pDir = opendir(pcPath);
-    if(!pDir)
-    {
-        Core::Log->Error(0, coreData::Print("Folder (%s) could not be opened", pcPath));
-        return CORE_FILE_ERROR;
-    }
-
-    while((pDirent = readdir(pDir)) != NULL)
-    {
-        // check and add file path
-        if(pDirent->d_name[0] != '.')
-        {
-            if(coreData::StrCompare(pDirent->d_name, pcFilter))
-                pasOutput->push_back(coreData::Print("%s/%s", pcPath, pDirent->d_name));
-        }
-    }
-
-    // close folder
-    closedir(pDir);
-
-#endif
-
-    return CORE_OK;
-}
-
-
-// ****************************************************************
 // constructor
 coreArchive::coreArchive()noexcept
 : m_sPath ("")
@@ -390,7 +310,7 @@ coreError coreArchive::DeleteFile(coreFile* pFile)
 
 
 // ****************************************************************
-// remove all files
+// remove all file objects
 void coreArchive::ClearFiles()
 {
     // delete file objects

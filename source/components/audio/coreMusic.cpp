@@ -319,9 +319,9 @@ coreMusicPlayer::coreMusicPlayer()noexcept
     m_apMusic.reserve(16);
     m_apSequence.reserve(16);
 
-    // create NULL music object
-    m_pNullMusic = new coreMusic((coreFile*)NULL);
-    m_pCurMusic  = m_pNullMusic;
+    // create empty music object
+    m_pEmptyMusic = new coreMusic((coreFile*)NULL);
+    m_pCurMusic   = m_pEmptyMusic;
 }
 
 
@@ -329,10 +329,10 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 // destructor
 coreMusicPlayer::~coreMusicPlayer()
 {
-    this->ClearFiles();
+    this->ClearMusic();
 
-    // delete NULL music object
-    SAFE_DELETE(m_pNullMusic)
+    // delete empty music object
+    SAFE_DELETE(m_pEmptyMusic)
 }
 
 
@@ -341,7 +341,7 @@ coreMusicPlayer::~coreMusicPlayer()
 bool coreMusicPlayer::Update()
 {
     if(m_apMusic.empty()) return false;
-    SDL_assert(m_pCurMusic != m_pNullMusic);
+    SDL_assert(m_pCurMusic != m_pEmptyMusic);
 
     // update transition between two music objects
     if(m_FadeTimer.GetStatus())
@@ -443,7 +443,7 @@ coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
 {
     // get files from the folder
     std::vector<std::string> asFolder;
-    coreFile::SearchFolder(pcPath, pcFilter, &asFolder);
+    coreData::FolderSearch(pcPath, pcFilter, &asFolder);
 
     // try to add all files to the music-player
     bool bStatus = false;
@@ -459,7 +459,7 @@ coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
 
 // ****************************************************************
 // remove music object
-coreError coreMusicPlayer::DeleteFile(const coreUint& iIndex)
+coreError coreMusicPlayer::DeleteMusic(const coreUint& iIndex)
 {
     SDL_assert(iIndex < m_apMusic.size());
     if(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
@@ -471,7 +471,7 @@ coreError coreMusicPlayer::DeleteFile(const coreUint& iIndex)
     m_apSequence.erase(std::find(m_apSequence.begin(), m_apSequence.end(), pMusic));
 
     // check and switch the current music object
-    if(m_apMusic.empty()) m_pCurMusic = m_pNullMusic;
+    if(m_apMusic.empty()) m_pCurMusic = m_pEmptyMusic;
     else this->Goto(0);
 
     // delete music object
@@ -482,8 +482,8 @@ coreError coreMusicPlayer::DeleteFile(const coreUint& iIndex)
 
 
 // ****************************************************************
-// remove all files
-void coreMusicPlayer::ClearFiles()
+// remove all music objects
+void coreMusicPlayer::ClearMusic()
 {
     // delete music objects
     for(auto it = m_apMusic.begin(); it != m_apMusic.end(); ++it)
@@ -494,7 +494,7 @@ void coreMusicPlayer::ClearFiles()
     m_apSequence.clear();
 
     // reset current music object
-    m_pCurMusic = m_pNullMusic;
+    m_pCurMusic = m_pEmptyMusic;
 }
 
 
@@ -587,7 +587,7 @@ coreError coreMusicPlayer::__AddMusic(coreFile* pFile)
     m_apSequence.push_back(pNewMusic);
 
     // init the access pointer
-    if(m_pCurMusic == m_pNullMusic) m_pCurMusic = pNewMusic;
+    if(m_pCurMusic == m_pEmptyMusic) m_pCurMusic = pNewMusic;
 
     return CORE_OK;
 }
