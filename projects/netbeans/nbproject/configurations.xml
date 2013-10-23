@@ -4,10 +4,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="f1" displayName="projects" projectFiles="true">
-        <itemPath>../main.cpp</itemPath>
-      </logicalFolder>
-      <logicalFolder name="source" displayName="source" projectFiles="true">
+      <logicalFolder name="f1" displayName="source" projectFiles="true">
         <logicalFolder name="additional" displayName="additional" projectFiles="true">
           <logicalFolder name="android" displayName="android" projectFiles="true">
             <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
@@ -111,11 +108,10 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>../../source</Elem>
-    <Elem>..</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug_Windows_mingw" type="1">
+    <conf name="Debug_Windows_mingw" type="3">
       <toolsSet>
         <compilerSet>MinGW|MinGW</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -135,27 +131,9 @@
           </preprocessorList>
           <warningLevel>2</warningLevel>
         </ccTool>
-        <linkerTool>
-          <output>../../executable/bin/windows/CoreEngine_mingw_debug.exe</output>
-          <linkerAddLib>
-            <pElem>../../libraries/windows</pElem>
-            <pElem>../../libraries/windows/mingw</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerOptionItem>-lMinGW32</linkerOptionItem>
-            <linkerLibLibItem>SDL2main</linkerLibLibItem>
-            <linkerLibLibItem>SDL2</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>OpenGL32</linkerLibLibItem>
-            <linkerLibLibItem>glew32mx</linkerLibLibItem>
-            <linkerLibLibItem>OpenAL32</linkerLibLibItem>
-            <linkerLibLibItem>ogg</linkerLibLibItem>
-            <linkerLibLibItem>vorbis</linkerLibLibItem>
-            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
-          </linkerLibItems>
-          <commandLine>-mwindows</commandLine>
-        </linkerTool>
+        <archiverTool>
+          <output>../libCoreEngine_mingw_debug.a</output>
+        </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -310,6 +288,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject3D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject3D.h"
             ex="false"
             tool="3"
@@ -415,10 +398,8 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
     </conf>
-    <conf name="Debug_Linux_gcc" type="1">
+    <conf name="Debug_Linux_gcc" type="3">
       <toolsSet>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -437,23 +418,9 @@
           </preprocessorList>
           <warningLevel>2</warningLevel>
         </ccTool>
-        <linkerTool>
-          <output>../../executable/bin/linux/CoreEngine_gcc_debug</output>
-          <linkerAddLib>
-            <pElem>../../libraries/linux</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerOptionItem>-lGL</linkerOptionItem>
-            <linkerLibLibItem>SDL2</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
-            <linkerLibLibItem>openal</linkerLibLibItem>
-            <linkerLibLibItem>ogg</linkerLibLibItem>
-            <linkerLibLibItem>vorbis</linkerLibLibItem>
-            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
+        <archiverTool>
+          <output>../libCoreEngine_gcc_debug.a</output>
+        </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -723,10 +690,8 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
     </conf>
-    <conf name="Debug_Linux_clang" type="1">
+    <conf name="Debug_Linux_clang" type="3">
       <toolsSet>
         <compilerSet>CLang|CLang</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -745,23 +710,9 @@
           </preprocessorList>
           <warningLevel>2</warningLevel>
         </ccTool>
-        <linkerTool>
-          <output>../../executable/bin/linux/CoreEngine_clang_debug</output>
-          <linkerAddLib>
-            <pElem>../../libraries/linux</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerOptionItem>-lGL</linkerOptionItem>
-            <linkerLibLibItem>SDL2</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
-            <linkerLibLibItem>openal</linkerLibLibItem>
-            <linkerLibLibItem>ogg</linkerLibLibItem>
-            <linkerLibLibItem>vorbis</linkerLibLibItem>
-            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
+        <archiverTool>
+          <output>../libCoreEngine_clang_debug.a</output>
+        </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1031,10 +982,8 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
     </conf>
-    <conf name="Release_Windows_mingw" type="1">
+    <conf name="Release_Windows_mingw" type="3">
       <toolsSet>
         <compilerSet>MinGW|MinGW</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -1061,28 +1010,9 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
-        <linkerTool>
-          <output>../../executable/bin/windows/CoreEngine_mingw.exe</output>
-          <linkerAddLib>
-            <pElem>../../libraries/windows</pElem>
-            <pElem>../../libraries/windows/mingw</pElem>
-          </linkerAddLib>
-          <stripSymbols>true</stripSymbols>
-          <linkerLibItems>
-            <linkerOptionItem>-lMinGW32</linkerOptionItem>
-            <linkerLibLibItem>SDL2main</linkerLibLibItem>
-            <linkerLibLibItem>SDL2</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>OpenGL32</linkerLibLibItem>
-            <linkerLibLibItem>glew32mx</linkerLibLibItem>
-            <linkerLibLibItem>OpenAL32</linkerLibLibItem>
-            <linkerLibLibItem>ogg</linkerLibLibItem>
-            <linkerLibLibItem>vorbis</linkerLibLibItem>
-            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
-          </linkerLibItems>
-          <commandLine>-static-libgcc -static-libstdc++ -mwindows</commandLine>
-        </linkerTool>
+        <archiverTool>
+          <output>../libCoreEngine_mingw.a</output>
+        </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1232,11 +1162,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/objects/game/coreObject2D.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/objects/game/coreObject2D.h"
             ex="false"
             tool="3"
@@ -1352,10 +1277,8 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
     </conf>
-    <conf name="Release_Linux_gcc" type="1">
+    <conf name="Release_Linux_gcc" type="3">
       <toolsSet>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -1382,24 +1305,9 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
-        <linkerTool>
-          <output>../../executable/bin/linux/CoreEngine_gcc</output>
-          <linkerAddLib>
-            <pElem>../../libraries/linux</pElem>
-          </linkerAddLib>
-          <stripSymbols>true</stripSymbols>
-          <linkerLibItems>
-            <linkerOptionItem>-lGL</linkerOptionItem>
-            <linkerLibLibItem>SDL2</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
-            <linkerLibLibItem>openal</linkerLibLibItem>
-            <linkerLibLibItem>ogg</linkerLibLibItem>
-            <linkerLibLibItem>vorbis</linkerLibLibItem>
-            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
+        <archiverTool>
+          <output>../libCoreEngine_gcc.a</output>
+        </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1669,10 +1577,8 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
     </conf>
-    <conf name="Release_Linux_clang" type="1">
+    <conf name="Release_Linux_clang" type="3">
       <toolsSet>
         <compilerSet>CLang|CLang</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -1698,24 +1604,9 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
-        <linkerTool>
-          <output>../../executable/bin/linux/CoreEngine_clang</output>
-          <linkerAddLib>
-            <pElem>../../libraries/linux</pElem>
-          </linkerAddLib>
-          <stripSymbols>true</stripSymbols>
-          <linkerLibItems>
-            <linkerOptionItem>-lGL</linkerOptionItem>
-            <linkerLibLibItem>SDL2</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
-            <linkerLibLibItem>openal</linkerLibLibItem>
-            <linkerLibLibItem>ogg</linkerLibLibItem>
-            <linkerLibLibItem>vorbis</linkerLibLibItem>
-            <linkerLibLibItem>vorbisfile</linkerLibLibItem>
-          </linkerLibItems>
-        </linkerTool>
+        <archiverTool>
+          <output>../libCoreEngine_clang.a</output>
+        </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1984,8 +1875,6 @@
             ex="false"
             tool="3"
             flavor2="0">
-      </item>
-      <item path="../main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

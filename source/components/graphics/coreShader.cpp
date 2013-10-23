@@ -198,7 +198,7 @@ coreError coreProgram::Init()
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  CORE_SHADER_ATTRIBUTE_TEXTURE);
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
-    if(Core::Graphics->SupportOpenGL() >= 3.0f)
+    if(Core::Graphics->GetUniformBuffer())
     {
         glBindFragDataLocation(m_iProgram, 0, CORE_SHADER_OUTPUT_COLOR_0);
         glBindFragDataLocation(m_iProgram, 1, CORE_SHADER_OUTPUT_COLOR_1);

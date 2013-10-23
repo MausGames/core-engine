@@ -17,13 +17,12 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
@@ -42,14 +41,14 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\include;C:\Program Files %28x86%29\LLVM\lib\clang\3.4;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\libraries\windows;$(MSBuildProjectDirectory)\..\..\..\libraries\windows\msvc;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\bin\windows\</OutDir>
+    <OutDir>..\..\..\binaries\</OutDir>
     <TargetName>$(ProjectName)_msvc_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\libraries\windows;$(MSBuildProjectDirectory)\..\..\..\libraries\windows\msvc;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\bin\windows\</OutDir>
+    <OutDir>..\..\..\binaries\</OutDir>
     <TargetName>$(ProjectName)_msvc</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -123,7 +122,10 @@
     <ClCompile Include="..\..\..\source\manager\coreMemory.cpp" />
     <ClCompile Include="..\..\..\source\manager\coreObject.cpp" />
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
-    <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
+    <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
     <ClCompile Include="..\..\..\source\utilities\data\coreData.cpp" />
     <ClCompile Include="..\..\..\source\utilities\data\coreRand.cpp" />
@@ -135,7 +137,6 @@
     <ClCompile Include="..\..\..\source\utilities\math\coreMatrix.cpp" />
     <ClCompile Include="..\..\..\source\utilities\math\coreSpline.cpp" />
     <ClCompile Include="..\..\..\source\utilities\math\coreVector.cpp" />
-    <ClCompile Include="..\..\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\additional\android\glewES.h">

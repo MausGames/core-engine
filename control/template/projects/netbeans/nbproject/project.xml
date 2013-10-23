@@ -3,39 +3,41 @@
     <type>org.netbeans.modules.cnd.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>CoreEngine</name>
-            <c-extensions>c</c-extensions>
+            <name>CoreApp</name>
+            <c-extensions/>
             <cpp-extensions>cpp</cpp-extensions>
-            <header-extensions>h</header-extensions>
+            <header-extensions/>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <make-dep-projects/>
+            <make-dep-projects>
+                <make-dep-project>../../../CoreEngine/projects/netbeans</make-dep-project>
+            </make-dep-projects>
             <sourceRootList>
                 <sourceRootElem>../../source</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
                     <name>Debug_Windows_mingw</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
                 <confElem>
                     <name>Debug_Linux_gcc</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
                 <confElem>
                     <name>Debug_Linux_clang</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
                 <confElem>
                     <name>Release_Windows_mingw</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
                 <confElem>
                     <name>Release_Linux_gcc</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
                 <confElem>
                     <name>Release_Linux_clang</name>
-                    <type>3</type>
+                    <type>1</type>
                 </confElem>
             </confList>
             <formatting>

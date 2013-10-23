@@ -1,5 +1,3 @@
-*.exe
-index.html
 docs/index.html
 docs/html/
 projects/visualstudio/CoreEngine/Debug/
@@ -26,6 +24,7 @@ projects/android/gen/
 projects/android/libs/
 projects/android/obj/
 projects/android/jni/develop/
-executable/logfile.html
-executable/bin/windows/*.pdb
-executable/bin/windows/*.ilk
+projects/CoreEngine_msvc.lib
+projects/CoreEngine_msvc_debug.lib
+projects/libCoreEngine_mingw.a
+projects/libCoreEngine_mingw_debug.a

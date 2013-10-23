@@ -2,7 +2,7 @@
 <configurationDescriptor version="90">
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug_Windows_mingw" type="3">
+    <conf name="Debug_Windows_mingw" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <platform>3</platform>
@@ -27,7 +27,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir>../</rundir>
+        <rundir>../../executable/bin/windows/</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
         <terminal-type>0</terminal-type>
@@ -36,7 +36,7 @@
         </environment>
       </runprofile>
     </conf>
-    <conf name="Debug_Linux_gcc" type="3">
+    <conf name="Debug_Linux_gcc" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <platform>3</platform>
@@ -61,7 +61,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir>../</rundir>
+        <rundir>../../executable/bin/linux/</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
         <terminal-type>0</terminal-type>
@@ -70,7 +70,7 @@
         </environment>
       </runprofile>
     </conf>
-    <conf name="Debug_Linux_clang" type="3">
+    <conf name="Debug_Linux_clang" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <platform>3</platform>
@@ -95,7 +95,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir>../</rundir>
+        <rundir>../../executable/bin/linux/</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
         <terminal-type>0</terminal-type>
@@ -104,7 +104,7 @@
         </environment>
       </runprofile>
     </conf>
-    <conf name="Release_Windows_mingw" type="3">
+    <conf name="Release_Windows_mingw" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <platform>3</platform>
@@ -129,7 +129,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir>../</rundir>
+        <rundir>../../executable/bin/windows/</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
         <terminal-type>0</terminal-type>
@@ -138,7 +138,7 @@
         </environment>
       </runprofile>
     </conf>
-    <conf name="Release_Linux_gcc" type="3">
+    <conf name="Release_Linux_gcc" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <platform>3</platform>
@@ -163,7 +163,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir>../</rundir>
+        <rundir>../../executable/bin/linux/</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
         <terminal-type>0</terminal-type>
@@ -172,7 +172,7 @@
         </environment>
       </runprofile>
     </conf>
-    <conf name="Release_Linux_clang" type="3">
+    <conf name="Release_Linux_clang" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <platform>3</platform>
@@ -197,7 +197,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir>../</rundir>
+        <rundir>../../executable/bin/linux/</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
         <terminal-type>0</terminal-type>

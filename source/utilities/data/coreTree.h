@@ -16,13 +16,15 @@
 template <typename T> class coreTree
 {
 private:
-    T* m_pParent;             //!< superior object
-    std::set<T*> m_apChild;   //!< list with subordinate objects
+    T* m_pParent;               //!< superior object
+    std::u_set<T*> m_apChild;   //!< list with subordinate objects
+
+    T* m_pThis;                 //!< downcasted this-pointer
 
 
 protected:
-    coreTree()noexcept : m_pParent (NULL) {}
-    ~coreTree()                           {this->SetParent(NULL); this->ClearChildren();}
+    coreTree(T* pThis)noexcept;
+    ~coreTree();
 
 
 public:
@@ -40,11 +42,28 @@ public:
 
     //! access parent and children
     //! @{
-    inline T* GetParent()const                     {return m_pParent;}
-    inline const std::set<T*>& GetChildList()const {return m_apChild;}
+    inline T* GetParent()const                      {return m_pParent;}
+    inline const std::u_set<T*>& GetChildren()const {return m_apChild;}
     //! @}
 };
 
+
+// ****************************************************************
+// constructor
+template <typename T> coreTree<T>::coreTree(T* pThis)noexcept
+: m_pParent (NULL)
+, m_pThis   (pThis)
+{
+}
+
+
+// ****************************************************************
+// destructor
+template <typename T> coreTree<T>::~coreTree()
+{
+    this->SetParent(NULL);
+    this->ClearChildren();
+}
 
 
 // ****************************************************************
@@ -54,8 +73,8 @@ template <typename T> bool coreTree<T>::SetParent(T* pObject)
     if(m_pParent == pObject) return false;
 
     // change the current parent
-    if(m_pParent) m_pParent->RemoveChild(this);
-    if(pObject) pObject->AddChild(this);
+    if(m_pParent) m_pParent->RemoveChild(m_pThis);
+    if(pObject) pObject->AddChild(m_pThis);
 
     return true;
 }
@@ -74,7 +93,7 @@ template <typename T> bool coreTree<T>::AddChild(T* pObject)
 
     // connect child and parent
     m_apChild.insert(pObject);
-    pObject->m_pParent = this;
+    pObject->m_pParent = m_pThis;
 
     return true;
 }

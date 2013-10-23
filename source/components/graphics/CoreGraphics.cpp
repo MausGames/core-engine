@@ -146,7 +146,8 @@ CoreGraphics::~CoreGraphics()
 // update the graphics scene
 void CoreGraphics::__UpdateScene()
 {
-    // disable the last shader-program
+    // disable last textures and shader-program
+    coreTexture::DisableAll();
     coreProgram::Disable();
 
     // swap main frame buffers
@@ -179,17 +180,19 @@ void CoreGraphics::SetCamera(const coreVector3* pvPosition, const coreVector3* p
 
         if(m_iUniformBuffer)
         {
-            // pack uniform data
-            float afData[20];
-            std::memcpy(&afData[ 0], &m_mCamera,       sizeof(m_mCamera));
-            std::memcpy(&afData[16], &m_vCamDirection, sizeof(m_vCamDirection));
-            afData[19] = 0.0f;
-
-            // update global UBO
+            // map required area of the global UBO
             glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
-            glBufferSubData(GL_UNIFORM_BUFFER, sizeof(coreMatrix)*2, sizeof(afData), afData);
+            coreByte* pRange = (coreByte*)glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreMatrix)*2, sizeof(coreMatrix)+sizeof(coreVector4),
+                                                           GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+
+            // update camera shader-data
+            std::memcpy(pRange,                   &m_mCamera,       sizeof(m_mCamera));
+            std::memcpy(pRange+sizeof(m_mCamera), &m_vCamDirection, sizeof(m_vCamDirection));
+
+            glUnmapBuffer(GL_UNIFORM_BUFFER);
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }
+        else coreProgram::Disable();
     }
 }
 
@@ -211,16 +214,19 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
 
     if(m_iUniformBuffer)
     {
-        // pack uniform data
-        float afData[32];
-        std::memcpy(&afData[ 0], &m_mPerspective, sizeof(m_mPerspective));
-        std::memcpy(&afData[16], &m_mOrtho,       sizeof(m_mOrtho));
-
-        // update global UBO
+        // map required area of the global UBO
         glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(afData), afData);
+        coreByte* pRange = (coreByte*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(coreMatrix)*2,
+                                                       GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+
+        // update view shader-data
+        std::memcpy(pRange,                        &m_mPerspective, sizeof(m_mPerspective));
+        std::memcpy(pRange+sizeof(m_mPerspective), &m_mOrtho,       sizeof(m_mOrtho));
+
+        glUnmapBuffer(GL_UNIFORM_BUFFER);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
+    else coreProgram::Disable();
 
     m_vCurResolution = vResolution;
 }

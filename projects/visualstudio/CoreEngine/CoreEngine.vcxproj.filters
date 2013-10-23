@@ -4,18 +4,14 @@
     <Filter Include="source">
       <UniqueIdentifier>{0327148b-30e9-44b1-b93b-823a2b74ce22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="projects">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="source\additional">
+      <UniqueIdentifier>{ab448a9d-7329-424d-ac5c-302c3421dc19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\additional\android">
+      <UniqueIdentifier>{460240d2-c662-4ec1-948d-fe19c5317d48}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\components">
       <UniqueIdentifier>{b18ae8ad-eae0-4e39-838c-72f429b76e45}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\manager">
-      <UniqueIdentifier>{353c709e-a8dd-4a60-876c-948f7b466c41}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\utilities">
-      <UniqueIdentifier>{f4aaf58e-ee1f-441f-a0df-c16671c961b0}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\components\audio">
       <UniqueIdentifier>{6fd143c3-82bb-40a0-aebb-ed996fc4e51e}</UniqueIdentifier>
@@ -29,6 +25,18 @@
     <Filter Include="source\components\input">
       <UniqueIdentifier>{db90934d-6a12-4101-9941-185bba39d315}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\manager">
+      <UniqueIdentifier>{353c709e-a8dd-4a60-876c-948f7b466c41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\objects">
+      <UniqueIdentifier>{db670ba8-277e-4dc2-9410-a7d42f9b8220}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\objects\game">
+      <UniqueIdentifier>{8c6b1226-0f6b-4b50-852f-b28b59bda193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\utilities">
+      <UniqueIdentifier>{f4aaf58e-ee1f-441f-a0df-c16671c961b0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="source\utilities\data">
       <UniqueIdentifier>{6c2f696f-e569-4cc5-b0af-473d9b5a67f8}</UniqueIdentifier>
     </Filter>
@@ -38,23 +46,8 @@
     <Filter Include="source\utilities\file">
       <UniqueIdentifier>{56849995-541c-4251-ae5c-287c45a3eb01}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\additional">
-      <UniqueIdentifier>{ab448a9d-7329-424d-ac5c-302c3421dc19}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\additional\android">
-      <UniqueIdentifier>{460240d2-c662-4ec1-948d-fe19c5317d48}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\objects">
-      <UniqueIdentifier>{db670ba8-277e-4dc2-9410-a7d42f9b8220}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\objects\game">
-      <UniqueIdentifier>{8c6b1226-0f6b-4b50-852f-b28b59bda193}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\main.cpp">
-      <Filter>projects</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
       <Filter>source\components\audio</Filter>
     </ClCompile>
@@ -69,9 +62,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\components\system\coreTimer.cpp">
       <Filter>source\components\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\Core.cpp">
-      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp">
       <Filter>source\manager</Filter>
@@ -145,6 +135,9 @@
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp">
       <Filter>source\objects\game</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\Core.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -161,9 +154,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\system\coreTimer.h">
       <Filter>source\components\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\Core.h">
-      <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\manager\coreResource.h">
       <Filter>source\manager</Filter>
@@ -233,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h">
       <Filter>source\objects\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\Core.h">
+      <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
