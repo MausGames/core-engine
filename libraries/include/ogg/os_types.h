@@ -138,7 +138,7 @@
    typedef unsigned int ogg_uint32_t;
    typedef long long int ogg_int64_t;
 
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) || defined(__linux__)
 
    /* Android GCC */
 #  include <sys/types.h>
