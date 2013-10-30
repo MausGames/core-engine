@@ -15,6 +15,7 @@ projects/netbeans/nbproject/*.mk
 projects/netbeans/nbproject/*.bash
 projects/netbeans/nbproject/private/*.mk
 projects/netbeans/nbproject/private/launcher.properties
+projects/netbeans/nbproject/private/private.xml
 projects/netbeans/.dep.inc
 projects/netbeans/build/
 projects/android/local.properties
@@ -28,3 +29,7 @@ projects/CoreEngine_msvc.lib
 projects/CoreEngine_msvc_debug.lib
 projects/libCoreEngine_mingw.a
 projects/libCoreEngine_mingw_debug.a
+projects/libCoreEngine_gcc_debug.a
+projects/libCoreEngine_gcc.a
+projects/libCoreEngine_clang.a
+projects/libCoreEngine_clang_debug.a

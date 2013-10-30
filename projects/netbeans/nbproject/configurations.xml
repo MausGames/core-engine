@@ -66,10 +66,10 @@
           <logicalFolder name="data" displayName="data" projectFiles="true">
             <itemPath>../../source/utilities/data/coreData.cpp</itemPath>
             <itemPath>../../source/utilities/data/coreData.h</itemPath>
+            <itemPath>../../source/utilities/data/coreLookup.cpp</itemPath>
+            <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
             <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
             <itemPath>../../source/utilities/data/coreRand.h</itemPath>
-            <itemPath>../../source/utilities/data/coreTree.cpp</itemPath>
-            <itemPath>../../source/utilities/data/coreTree.h</itemPath>
           </logicalFolder>
           <logicalFolder name="file" displayName="file" projectFiles="true">
             <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
@@ -283,6 +283,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject2D.h"
             ex="false"
             tool="3"
@@ -308,22 +313,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreLookup.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreLookup.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -600,22 +605,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreLookup.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreLookup.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -892,22 +897,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreLookup.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreLookup.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -994,7 +999,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
           <stripSymbols>true</stripSymbols>
           <standard>8</standard>
           <incDir>
@@ -1162,6 +1167,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreObject2D.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/game/coreObject2D.h"
             ex="false"
             tool="3"
@@ -1187,22 +1197,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreLookup.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreLookup.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1289,7 +1299,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
           <stripSymbols>true</stripSymbols>
           <standard>8</standard>
           <incDir>
@@ -1487,22 +1497,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreLookup.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreLookup.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1589,7 +1599,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
           <standard>8</standard>
           <incDir>
             <pElem>../../source</pElem>
@@ -1786,22 +1796,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreLookup.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreLookup.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreTree.h"
             ex="false"
             tool="3"
             flavor2="0">

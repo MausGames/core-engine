@@ -123,6 +123,9 @@
     <ClCompile Include="..\..\..\source\components\audio\CoreAudio.cpp">
       <Filter>source\components\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\data\coreTree.cpp">
+      <Filter>source\utilities\data</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\components\graphics\coreSync.cpp">
       <Filter>source\components\graphics</Filter>
     </ClCompile>
@@ -134,9 +137,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\Core.cpp">
       <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\utilities\data\coreLookup.cpp">
-      <Filter>source\utilities\data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +212,9 @@
     <ClInclude Include="..\..\..\source\components\audio\CoreAudio.h">
       <Filter>source\components\audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreTree.h">
+      <Filter>source\utilities\data</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\source\components\graphics\coreSync.h">
       <Filter>source\components\graphics</Filter>
     </ClInclude>
@@ -223,9 +226,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\Core.h">
       <Filter>source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h">
-      <Filter>source\utilities\data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

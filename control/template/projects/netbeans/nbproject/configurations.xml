@@ -51,10 +51,11 @@
             <pElem>../../../CoreEngine/libraries/windows/mingw</pElem>
             <pElem>../../../CoreEngine/projects</pElem>
           </linkerAddLib>
+          <additionalDep>../../../CoreEngine/projects/libCoreEngine_mingw_debug.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lMinGW32</linkerOptionItem>
-            <linkerLibLibItem>CoreEngine_mingw_debug</linkerLibLibItem>
             <linkerLibLibItem>SDL2main</linkerLibLibItem>
+            <linkerLibLibItem>CoreEngine_mingw_debug</linkerLibLibItem>
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
@@ -109,6 +110,7 @@
             <pElem>../../../CoreEngine/libraries/linux</pElem>
             <pElem>../../../CoreEngine/projects</pElem>
           </linkerAddLib>
+          <additionalDep>../../../CoreEngine/projects/libCoreEngine_gcc_debug.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lGL</linkerOptionItem>
             <linkerLibLibItem>CoreEngine_gcc_debug</linkerLibLibItem>
@@ -164,6 +166,7 @@
             <pElem>../../../CoreEngine/libraries/linux</pElem>
             <pElem>../../../CoreEngine/projects</pElem>
           </linkerAddLib>
+          <additionalDep>../../../CoreEngine/projects/libCoreEngine_clang_debug.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lGL</linkerOptionItem>
             <linkerLibLibItem>CoreEngine_clang_debug</linkerLibLibItem>
@@ -204,7 +207,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
           <stripSymbols>true</stripSymbols>
           <standard>8</standard>
           <incDir>
@@ -229,10 +232,11 @@
             <pElem>../../../CoreEngine/projects</pElem>
           </linkerAddLib>
           <stripSymbols>true</stripSymbols>
+          <additionalDep>../../../CoreEngine/projects/libCoreEngine_mingw.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lMinGW32</linkerOptionItem>
-            <linkerLibLibItem>CoreEngine_mingw</linkerLibLibItem>
             <linkerLibLibItem>SDL2main</linkerLibLibItem>
+            <linkerLibLibItem>CoreEngine_mingw</linkerLibLibItem>
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
@@ -272,7 +276,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
           <stripSymbols>true</stripSymbols>
           <standard>8</standard>
           <incDir>
@@ -296,6 +300,7 @@
             <pElem>../../../CoreEngine/projects</pElem>
           </linkerAddLib>
           <stripSymbols>true</stripSymbols>
+          <additionalDep>../../../CoreEngine/projects/libCoreEngine_gcc.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lGL</linkerOptionItem>
             <linkerLibLibItem>CoreEngine_gcc</linkerLibLibItem>
@@ -336,7 +341,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
           <standard>8</standard>
           <incDir>
             <pElem>../../../CoreEngine/source</pElem>
@@ -359,6 +364,7 @@
             <pElem>../../../CoreEngine/projects</pElem>
           </linkerAddLib>
           <stripSymbols>true</stripSymbols>
+          <additionalDep>../../../CoreEngine/projects/libCoreEngine_clang.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lGL</linkerOptionItem>
             <linkerLibLibItem>CoreEngine_clang</linkerLibLibItem>

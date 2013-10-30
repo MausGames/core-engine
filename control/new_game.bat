@@ -1,11 +1,61 @@
 @ECHO OFF
 
-SET /p _PRJ_NAME_=Name of the game project: 
 
-SET _PRJ_CUR_=%CD%\template
+SET /p PRJ_NAME=Name of the new game project: 
+
+SET PRJ_CUR=%CD%\template
 cd ../..
-SET _PRJ_TARGET_=%CD%\%_PRJ_NAME_%\
+SET PRJ_TARGET=%CD%\%PRJ_NAME%\
 
-SET /p _PRJ_CONFIRM_=Create folder ^<%_PRJ_TARGET_%^> [y/n]: 
 
-IF %_PRJ_CONFIRM_:~0,1%==y xcopy "%_PRJ_CUR_%" "%_PRJ_TARGET_%" /E
+SET /p PRJ_CONFIRM=Create folder ^<%PRJ_TARGET%^> [y/n]: 
+IF NOT %PRJ_CONFIRM:~0,1% == y EXIT
+
+
+ECHO Copying...
+
+
+xcopy "%PRJ_CUR%" "%PRJ_TARGET%" /E /Q
+
+
+ECHO Renaming...
+
+
+SET TOOL_REPLACE="%PRJ_CUR%\..\..\tools\replace_text.bat"
+SET TOOL_NAME=CoreApp
+
+SET PATH_CODEBLOCKS=%PRJ_TARGET%\projects\codeblocks
+SET PATH_NETBEANS=%PRJ_TARGET%\projects\netbeans\nbproject
+SET PATH_VISUAL=%PRJ_TARGET%\projects\visualstudio
+
+
+cd "%PATH_CODEBLOCKS%"
+CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% %TOOL_NAME%.cbp > %PRJ_NAME%.cbp
+CALL DEL %TOOL_NAME%.cbp
+
+
+cd "%PATH_NETBEANS%"
+CALL RENAME configurations.xml configurations_temp.xml
+CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% configurations_temp.xml > configurations.xml
+CALL DEL configurations_temp.xml
+
+CALL RENAME project.xml project_temp.xml
+CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% project_temp.xml > project.xml
+CALL DEL project_temp.xml
+
+
+cd "%PATH_VISUAL%\%TOOL_NAME%"
+CALL RENAME %TOOL_NAME%.filters %PRJ_NAME%.filters
+CALL RENAME %TOOL_NAME%.vcxproj %PRJ_NAME%.vcxproj
+CALL RENAME %TOOL_NAME%.vcxproj.user %PRJ_NAME%.vcxproj.user
+
+cd "%PATH_VISUAL%"
+CALL RENAME %TOOL_NAME% %PRJ_NAME%
+CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% %TOOL_NAME%.sln > %PRJ_NAME%.sln
+CALL DEL %TOOL_NAME%.sln
+
+
+ECHO ^<%PRJ_TARGET%^> created
+%SystemRoot%\explorer.exe "%PRJ_TARGET%"
+
+PAUSE

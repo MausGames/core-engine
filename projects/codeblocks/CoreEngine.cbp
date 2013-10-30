@@ -18,16 +18,18 @@
 				</Compiler>
 				<Linker>
 					<Add library="MinGW32" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2main.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2_ttf.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2_image.a" />
-					<Add library="..\..\libraries\windows\OpenGL32.lib" />
-					<Add library="..\..\libraries\windows\glew32mx.lib" />
-					<Add library="..\..\libraries\windows\mingw\libOpenAL32.a" />
-					<Add library="..\..\libraries\windows\mingw\libogg.a" />
-					<Add library="..\..\libraries\windows\mingw\libvorbis.a" />
-					<Add library="..\..\libraries\windows\mingw\libvorbisfile.a" />
+					<Add library="SDL2main" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="OpenGL32" />
+					<Add library="glew32mx" />
+					<Add library="OpenAL32" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../libraries/windows" />
+					<Add directory="../../libraries/windows/mingw" />
 				</Linker>
 			</Target>
 			<Target title="Debug_Linux_gcc">
@@ -42,14 +44,15 @@
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
-					<Add library="..\..\libraries\linux\libSDL2.so" />
-					<Add library="..\..\libraries\linux\libSDL2_ttf.so" />
-					<Add library="..\..\libraries\linux\libSDL2_image.so" />
-					<Add library="..\..\libraries\linux\libGLEWmx.so" />
-					<Add library="..\..\libraries\linux\libopenal.so" />
-					<Add library="..\..\libraries\linux\libogg.so" />
-					<Add library="..\..\libraries\linux\libvorbis.so" />
-					<Add library="..\..\libraries\linux\libvorbisfile.so" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="GLEWmx" />
+					<Add library="openal" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../libraries/linux" />
 				</Linker>
 			</Target>
 			<Target title="Release_Windows_mingw">
@@ -59,23 +62,25 @@
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
 					<Add library="MinGW32" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2main.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2_ttf.a" />
-					<Add library="..\..\libraries\windows\mingw\libSDL2_image.a" />
-					<Add library="..\..\libraries\windows\OpenGL32.lib" />
-					<Add library="..\..\libraries\windows\glew32mx.lib" />
-					<Add library="..\..\libraries\windows\mingw\libOpenAL32.a" />
-					<Add library="..\..\libraries\windows\mingw\libogg.a" />
-					<Add library="..\..\libraries\windows\mingw\libvorbis.a" />
-					<Add library="..\..\libraries\windows\mingw\libvorbisfile.a" />
+					<Add library="SDL2main" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="OpenGL32" />
+					<Add library="glew32mx" />
+					<Add library="OpenAL32" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../libraries/windows" />
+					<Add directory="../../libraries/windows/mingw" />
 				</Linker>
 			</Target>
 			<Target title="Release_Linux_gcc">
@@ -85,19 +90,20 @@
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="GL" />
-					<Add library="..\..\libraries\linux\libSDL2.so" />
-					<Add library="..\..\libraries\linux\libSDL2_ttf.so" />
-					<Add library="..\..\libraries\linux\libSDL2_image.so" />
-					<Add library="..\..\libraries\linux\libGLEWmx.so" />
-					<Add library="..\..\libraries\linux\libopenal.so" />
-					<Add library="..\..\libraries\linux\libogg.so" />
-					<Add library="..\..\libraries\linux\libvorbis.so" />
-					<Add library="..\..\libraries\linux\libvorbisfile.so" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="GLEWmx" />
+					<Add library="openal" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../libraries/linux" />
 				</Linker>
 			</Target>
 		</Build>
@@ -112,8 +118,13 @@
 		<Unit filename="../../source/Core.h" />
 		<Unit filename="../../source/additional/android/SDL_android_main.c">
 			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
 		</Unit>
-		<Unit filename="../../source/additional/android/glewES.cpp" />
+		<Unit filename="../../source/additional/android/glewES.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../../source/additional/android/glewES.h" />
 		<Unit filename="../../source/components/audio/CoreAudio.cpp" />
 		<Unit filename="../../source/components/audio/CoreAudio.h" />
@@ -151,10 +162,10 @@
 		<Unit filename="../../source/objects/game/coreObject3D.h" />
 		<Unit filename="../../source/utilities/data/coreData.cpp" />
 		<Unit filename="../../source/utilities/data/coreData.h" />
+		<Unit filename="../../source/utilities/data/coreLookup.cpp" />
+		<Unit filename="../../source/utilities/data/coreLookup.h" />
 		<Unit filename="../../source/utilities/data/coreRand.cpp" />
 		<Unit filename="../../source/utilities/data/coreRand.h" />
-		<Unit filename="../../source/utilities/data/coreTree.cpp" />
-		<Unit filename="../../source/utilities/data/coreTree.h" />
 		<Unit filename="../../source/utilities/file/coreArchive.cpp" />
 		<Unit filename="../../source/utilities/file/coreArchive.h" />
 		<Unit filename="../../source/utilities/file/coreConfig.cpp" />

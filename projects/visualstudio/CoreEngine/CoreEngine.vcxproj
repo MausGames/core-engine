@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F56224C4-B0AE-434A-90E0-1ABE850851E2}</ProjectGuid>
+    <ProjectGuid>{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CoreEngine</RootNamespace>
   </PropertyGroup>
@@ -41,14 +41,14 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\include;C:\Program Files %28x86%29\LLVM\lib\clang\3.4;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\libraries\windows;$(MSBuildProjectDirectory)\..\..\..\libraries\windows\msvc;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\binaries\</OutDir>
+    <OutDir>..\..\</OutDir>
     <TargetName>$(ProjectName)_msvc_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(MSBuildProjectDirectory)\..\..\..\libraries\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\libraries\windows;$(MSBuildProjectDirectory)\..\..\..\libraries\windows\msvc;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\binaries\</OutDir>
+    <OutDir>..\..\</OutDir>
     <TargetName>$(ProjectName)_msvc</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -84,9 +84,9 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ExceptionHandling>false</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,14 +122,11 @@
     <ClCompile Include="..\..\..\source\manager\coreMemory.cpp" />
     <ClCompile Include="..\..\..\source\manager\coreObject.cpp" />
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
-    <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
     <ClCompile Include="..\..\..\source\utilities\data\coreData.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\data\coreLookup.cpp" />
     <ClCompile Include="..\..\..\source\utilities\data\coreRand.cpp" />
-    <ClCompile Include="..\..\..\source\utilities\data\coreTree.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreArchive.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreConfig.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp" />
@@ -162,8 +159,8 @@
     <ClInclude Include="..\..\..\source\objects\game\coreObject2D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreData.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />
-    <ClInclude Include="..\..\..\source\utilities\data\coreTree.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreArchive.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreConfig.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreLog.h" />
