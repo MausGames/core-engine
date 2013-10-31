@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -18,6 +18,7 @@
 // TODO: check for unnecessary calculations to increase loading speed
 // TODO: check normal vector calculations (alignment, outside, etc.)
 // TODO: make default model invisible
+// TODO: add optimized cube and tube model
 class coreModel final : public coreResource
 {
 private:
@@ -91,19 +92,23 @@ private:
 
 
 private:
-    GLuint m_iVertexArray;         //!< vertex array object
+    GLuint m_iVertexArray;                        //!< vertex array object
+    static bool s_bSupportArray;                  //!< cached support-value for VAOs
 
-    GLuint m_iVertexBuffer;        //!< vertex data buffer
-    GLuint m_iIndexBuffer;         //!< index buffer
+    GLuint m_iVertexBuffer;                       //!< vertex data buffer
+    GLuint m_iIndexBuffer;                        //!< index buffer
 
-    coreUint m_iNumVertices;       //!< number of vertices
-    coreUint m_iNumTriangles;      //!< number of triangles
-    coreUint m_iNumIndices;        //!< number of indices
+    coreUint m_iNumVertices;                      //!< number of vertices
+    coreUint m_iNumTriangles;                     //!< number of triangles
+    coreUint m_iNumIndices;                       //!< number of indices
+    float m_fRadius;                              //!< maximum distance from the model center
 
-    float m_fRadius;               //!< maximum distance from the model center
+    static coreModel* s_pCurrent;                 //!< currently active model object
 
-    coreSync m_Sync;               //!< sync object for asynchronous model loading
-    static SDL_SpinLock s_iLock;   //!< spinlock to prevent asynchronous array buffer access
+    coreSync m_Sync;                              //!< sync object for asynchronous model loading
+    static SDL_SpinLock s_iLock;                  //!< spinlock to prevent asynchronous array buffer access
+
+    static coreResourcePtr<coreModel> s_pPlane;   //!< optimized standard rectangle
 
 
 public:
@@ -120,12 +125,15 @@ public:
 
     //! draw the model
     //! @{
-    void Render();
+    void RenderList();
+    void RenderStrip();
     //! @}
 
     //! get object attributes
     //! @{
     inline const GLuint& GetVertexArray()const    {return m_iVertexArray;}
+    inline const GLuint& GetVertexBuffer()const   {return m_iVertexBuffer;}
+    inline const GLuint& GetIndexBuffer()const    {return m_iIndexBuffer;}
     inline const coreUint& GetNumVertices()const  {return m_iNumVertices;}
     inline const coreUint& GetNumTriangles()const {return m_iNumTriangles;}
     inline const coreUint& GetNumIndices()const   {return m_iNumIndices;}
@@ -137,11 +145,28 @@ public:
     static inline const char* GetDefaultPath() {return "data/models/default.md5mesh";}
     //! @}
 
+    //! get currently active model object
+    //! @{
+    static inline coreModel* GetCurrent() {return s_pCurrent;}
+    //! @}
+
+    //! setup and access standard model objects
+    //! @{
+    static void InitStandard();
+    static void ExitStandard();
+    static inline const coreResourcePtr<coreModel>& StandardPlane() {SDL_assert(s_pPlane); return s_pPlane;}
+    //! @}
+
 
 private:
-    //! define vertex attribute data
+    //! enable the model
     //! @{
-    void __BindVertexAttributes();
+    void __Enable();
+    //! @}
+
+    //! bind all vertex attributes
+    //! @{
+    void __BindAttributes();
     //! @}
 };
 

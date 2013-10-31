@@ -98,12 +98,9 @@
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
-#undef __STRICT_ANSI__
-
 #if defined(_CORE_MSVC_)
     #define __thread __declspec(thread)
     #define noexcept throw()
-    #define constexpr inline
     #if (_CORE_MSVC_) < 1700
         #define final
     #endif
@@ -117,17 +114,22 @@
 #endif
 
 #if defined(_CORE_MSVC_)
-    #define align16(x) __declspec(align(16)) x
-    #define deletefunc
+    #define align_16(x)    __declspec(align(16)) x
+    #define delete_func
+    #define constexpr_func inline
+    #define constexpr_var  const
 #else
-    #define align16(x) x __attribute__((aligned(16)))
-    #define deletefunc = delete
+    #define align_16(x)    x __attribute__((aligned(16)))
+    #define delete_func    = delete
+    #define constexpr_func constexpr
+    #define constexpr_var  constexpr
 #endif
 
 #if defined(_CORE_MINGW_)
-    #define alignfunc __attribute__((force_align_arg_pointer))
+    #define align_func __attribute__((force_align_arg_pointer))
+    #undef __STRICT_ANSI__
 #else
-    #define alignfunc
+    #define align_func
 #endif
 
 
@@ -137,17 +139,19 @@
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
 #define CORE_DISABLE_COPY(c) \
-    c(const c&) deletefunc;  \
-    c& operator = (const c&) deletefunc;
+    c(const c&) delete_func; \
+    c& operator = (const c&) delete_func;
 
-#define CORE_DISABLE_HEAP                          \
-    void* operator new (size_t) deletefunc;        \
-    void* operator new (size_t, void*) deletefunc; \
-    void* operator new[] (size_t) deletefunc;      \
-    void* operator new[] (size_t, void*) deletefunc;
+#define CORE_DISABLE_HEAP                           \
+    void* operator new (size_t) delete_func;        \
+    void* operator new (size_t, void*) delete_func; \
+    void* operator new[] (size_t) delete_func;      \
+    void* operator new[] (size_t, void*) delete_func;
 
-#define u_map unordered_map
-#define u_set unordered_set
+#define u_map  unordered_map
+#define u_set  unordered_set
+#define s_cast static_cast
+#define r_cast reinterpret_cast
 
 typedef unsigned char  coreByte;
 typedef unsigned short coreWord;
@@ -159,7 +163,6 @@ class coreVector4;
 class coreMatrix;
 class coreFile;
 class coreArchive;
-class coreObject2D;
 
 enum coreError
 {
@@ -180,7 +183,6 @@ enum coreError
 #else
     #include <sys/stat.h>
     #include <unistd.h>
-    #include <dirent.h>
 #endif
 #if defined(_CORE_SSE_)
     #include <smmintrin.h>
@@ -224,6 +226,8 @@ enum coreError
 
 // ****************************************************************
 // engine header files
+#include "utilities/data/coreLookup.h"
+
 #include "utilities/file/coreLog.h"
 #include "utilities/file/coreConfig.h"
 #include "utilities/file/coreArchive.h"
@@ -235,7 +239,6 @@ enum coreError
 
 #include "utilities/data/coreData.h"
 #include "utilities/data/coreRand.h"
-#include "utilities/data/coreTree.h"
 
 #include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
@@ -257,6 +260,7 @@ enum coreError
 #include "components/input/CoreInput.h"
 
 #include "manager/coreObject.h"
+#include "objects/game/coreObject2D.h"
 #include "objects/game/coreObject3D.h"
 
 
@@ -287,11 +291,11 @@ public:
 
 // ****************************************************************
 // engine framework
-// TODO: boolean traps
 // TODO: check for boost integrations
 // TODO: don't lose engine attributes after reset
 // TODO: SDL_GetPowerInfo
 // TODO: check GCC function attributes (pure, hot, cold)
+// TODO: improve sort and structure under all class access modifiers
 class Core final
 {
 public:
@@ -335,7 +339,7 @@ public:
 
     //! main function
     //! @{
-    friend int main(int argc, char* argv[]) alignfunc;
+    friend int main(int argc, char* argv[]) align_func;
     //! @}
 };
 

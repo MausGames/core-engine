@@ -2,13 +2,14 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreProgram* coreProgram::s_pCurrent = NULL;
+std::string  coreShader::s_asGlobal[3]; // = "";
+coreProgram* coreProgram::s_pCurrent       = NULL;
 
 
 // ****************************************************************
@@ -46,6 +47,7 @@ coreShader::~coreShader()
 coreError coreShader::Load(coreFile* pFile)
 {
     SDL_assert(!m_iShader);
+    coreFileLock Lock(pFile, true);
 
     if(m_iShader)         return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
@@ -64,21 +66,25 @@ coreError coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // retrieve global shader file
-    coreFile* pGlobal = Core::Manager::Resource->RetrieveResourceFile(this->GetGlobalPath(iType));
+    // init global shader data
+    __InitGlobal();
 
     // assemble the shader
-    const char* apcData[3] = {coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->SupportGLSL()*100.0f : 110.0f),
-                              reinterpret_cast<const char*>(pGlobal->GetData()),
-                              reinterpret_cast<const char*>(pFile->GetData())};
-    const GLint aiSize[3]  = {(GLint)std::strlen(apcData[0]),
-                              (GLint)pGlobal->GetSize(),
-                              (GLint)pFile->GetSize()};
+    const std::string& sGlobal = s_asGlobal[(iType == GL_VERTEX_SHADER) ? 1 : 2];
+    const char* apcData[3]     = {s_asGlobal[0].c_str(),  sGlobal.c_str(),  r_cast<const char*>(pFile->GetData())};
+    const GLint aiSize[3]      = {(GLint)s_asGlobal[0].length(), (GLint)sGlobal.length(), (GLint)pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
     glShaderSource(m_iShader, 3, apcData, aiSize);
     glCompileShader(m_iShader);
+
+    // unlock file
+    Lock.Release();
+
+    // save attributes
+    m_sPath = pFile->GetPath();
+    m_iSize = pFile->GetSize() + sGlobal.length();
 
     // check for errors
     int iStatus;
@@ -106,11 +112,7 @@ coreError coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // save shader attributes
-    m_sPath = pFile->GetPath();
-    m_iSize = pFile->GetSize() + pGlobal->GetSize();
-
-    Core::Log->Info(coreData::Print("Shader (%s) loaded", m_sPath.c_str()));
+    Core::Log->Info(coreData::Print("Shader (%s) loaded", pFile->GetPath()));
     return CORE_OK;
 }
 
@@ -135,8 +137,28 @@ coreError coreShader::Unload()
 
 
 // ****************************************************************
+// init global shader data
+void coreShader::__InitGlobal()
+{
+    if(!s_asGlobal[0].empty()) return;
+
+    // retrieve global shader files
+    coreFile* pGlobalVertex   = Core::Manager::Resource->RetrieveFile("data/shaders/global.vs");
+    coreFile* pGlobalFragment = Core::Manager::Resource->RetrieveFile("data/shaders/global.fs");
+
+    // create global shader data
+    s_asGlobal[0] = coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->SupportGLSL()*100.0f : 110.0f);
+    s_asGlobal[1] = r_cast<const char*>(pGlobalVertex->GetData());
+    s_asGlobal[2] = r_cast<const char*>(pGlobalFragment->GetData());
+
+    pGlobalVertex->UnloadData();
+    pGlobalFragment->UnloadData();
+}
+
+
+// ****************************************************************
 // constructor
-coreProgram::coreProgram()
+coreProgram::coreProgram()noexcept
 : m_iProgram (0)
 , m_iStatus  (0)
 {
@@ -149,20 +171,11 @@ coreProgram::coreProgram()
 // destructor
 coreProgram::~coreProgram()
 {
-    // shut down the shader-program
-    this->Reset(false);
+    // exit the shader-program
+    this->Exit();
 
     // remove all shader objects
     m_apShader.clear();
-}
-
-
-// ****************************************************************
-// reset the object with the resource manager
-void coreProgram::Reset(const bool& bInit)
-{
-    if(bInit) this->Init();
-         else this->Exit();
 }
 
 
@@ -268,9 +281,10 @@ coreError coreProgram::Exit()
     for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
         glDetachShader(m_iProgram, (*it)->GetShader());
 
-    // clear cached identifiers
+    // clear identifiers and cache
     m_aiUniform.clear();
     m_aiAttribute.clear();
+    m_avCache.clear();
 
     // delete shader-program
     glDeleteProgram(m_iProgram);
@@ -341,4 +355,13 @@ coreProgram* coreProgram::AttachShaderLink(const char* pcName)
 {
     if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadLink<coreShader>(pcName));
     return this;
+}
+
+
+// ****************************************************************
+// reset with the resource manager
+void coreProgram::__Reset(const bool& bInit)
+{
+    if(bInit) this->Init();
+         else this->Exit();
 }

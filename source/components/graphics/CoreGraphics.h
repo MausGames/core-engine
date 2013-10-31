@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -17,27 +17,27 @@
 class CoreGraphics final
 {
 private:
-    SDL_GLContext m_RenderContext;               //!< primary OpenGL context for render operations
-    SDL_GLContext m_ResourceContext;             //!< secondary OpenGL context for resource loading
+    SDL_GLContext m_RenderContext;     //!< primary OpenGL context for render operations
+    SDL_GLContext m_ResourceContext;   //!< secondary OpenGL context for resource loading
 
-    float m_fFOV;                                //!< field-of-view
-    float m_fNearClip;                           //!< near clipping plane
-    float m_fFarClip;                            //!< far clipping plane
+    float m_fFOV;                      //!< field-of-view
+    float m_fNearClip;                 //!< near clipping plane
+    float m_fFarClip;                  //!< far clipping plane
 
-    coreVector3 m_vCamPosition;                  //!< position of the camera
-    coreVector3 m_vCamDirection;                 //!< direction of the camera
-    coreVector3 m_vCamOrientation;               //!< orientation of the camera
-    coreMatrix m_mCamera;                        //!< camera matrix
+    coreVector3 m_vCamPosition;        //!< position of the camera
+    coreVector3 m_vCamDirection;       //!< direction of the camera
+    coreVector3 m_vCamOrientation;     //!< orientation of the camera
+    coreMatrix m_mCamera;              //!< camera matrix
 
-    coreMatrix m_mPerspective;                   //!< perspective projection matrix
-    coreMatrix m_mOrtho;                         //!< orthogonal projection matrix
-    coreVector2 m_vCurResolution;                //!< current viewport resolution
+    coreMatrix m_mPerspective;         //!< perspective projection matrix
+    coreMatrix m_mOrtho;               //!< orthogonal projection matrix
+    coreVector2 m_vCurResolution;      //!< current viewport resolution
 
-    GLuint m_iUniformBuffer;                     //!< uniform buffer object for global shader-data
+    GLuint m_iUniformBuffer;           //!< uniform buffer object for global shader-data
 
-    std::u_map<std::string, bool> m_abFeature;   //!< cached features of the video card
-    float m_fOpenGL;                             //!< available OpenGL version
-    float m_fGLSL;                               //!< available GLSL version
+    coreLookup<bool> m_abFeature;      //!< cached features of the video card
+    float m_fOpenGL;                   //!< available OpenGL version
+    float m_fGLSL;                     //!< available GLSL version
 
 
 private:

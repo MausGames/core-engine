@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -108,6 +108,9 @@ void Core::__Run()
 
 #endif
 
+    // load standard model objects
+    coreModel::InitStandard();
+
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())
     {
@@ -119,7 +122,6 @@ void Core::__Run()
         pApplication->Render();
 
         // update all remaining components
-        Core::Input->__UpdateCursor();
         Core::Graphics->__UpdateScene();
         Core::System->__UpdateTime();
 
@@ -127,6 +129,9 @@ void Core::__Run()
         if(!Core::Graphics->GetResourceContext())
             Core::Manager::Resource->__Run();
     }
+
+    // unload standard model objects
+    coreModel::ExitStandard();
 
     // reset logging level
     Core::Log->SetLevel(0);

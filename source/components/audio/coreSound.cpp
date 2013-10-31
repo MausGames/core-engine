@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -53,16 +53,17 @@ coreSound::~coreSound()
 coreError coreSound::Load(coreFile* pFile)
 {
     SDL_assert(!m_iBuffer);
+    coreFileLock Lock(pFile, true);
 
     if(m_iBuffer) return CORE_INVALID_CALL;
     if(!pFile)    return CORE_INVALID_INPUT;
 
-    char acID[4];
-    coreUint iSize;
-
     // get file data
     const coreByte* pData = pFile->GetData();
     if(!pData) return CORE_FILE_ERROR;
+
+    char acID[4];
+    coreUint iSize;
 
     // read header
     std::memcpy(acID,   pData, 4); pData += 4;
@@ -115,6 +116,13 @@ coreError coreSound::Load(coreFile* pFile)
     alGenBuffers(1, &m_iBuffer);
     alBufferData(m_iBuffer, iSoundFormat, pSoundData, iSoundSize, m_Format.iSampleRate);
 
+    // unlock file
+    Lock.Release();
+
+    // save attributes
+    m_sPath = pFile->GetPath();
+    m_iSize = iSoundSize;
+
     // check for errors
     const ALenum iError = alGetError();
     if(iError != AL_NO_ERROR)
@@ -123,11 +131,7 @@ coreError coreSound::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // save sound attributes
-    m_sPath = pFile->GetPath();
-    m_iSize = iSoundSize;
-
-    Core::Log->Info(coreData::Print("Sound (%s) loaded", m_sPath.c_str()));
+    Core::Log->Info(coreData::Print("Sound (%s) loaded", pFile->GetPath()));
     return CORE_OK;
 }
 

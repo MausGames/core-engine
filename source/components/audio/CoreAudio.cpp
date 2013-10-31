@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -37,7 +37,7 @@ CoreAudio::CoreAudio()noexcept
     Core::Log->ListEntry(coreData::Print("<b>Vendor:</b> %s",   alGetString(AL_VENDOR)));
     Core::Log->ListEntry(coreData::Print("<b>Renderer:</b> %s", alGetString(AL_RENDERER)));
     Core::Log->ListEntry(coreData::Print("<b>Version:</b> %s",  alGetString(AL_VERSION)));
-    Core::Log->ListEntry((const char*)alGetString(AL_EXTENSIONS));
+    Core::Log->ListEntry(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
     Core::Log->ListEnd();
 
     // reset listener

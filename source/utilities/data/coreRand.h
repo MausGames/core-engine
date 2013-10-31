@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -47,7 +47,7 @@ public:
     //! calculate constrained random number
     //! @{
     inline int Int(const int& iMin, const int& iMax)         {return iMin + (this->GetRaw() % (iMax - iMin + 1));}
-    inline float Float(const float& fMin, const float& fMax) {return fMin + (fMax - fMin) * float(this->GetRaw()) * (1.0f/float(RAND_MAX));}
+    inline float Float(const float& fMin, const float& fMax) {constexpr_var float fFactor = 1.0f/float(RAND_MAX); return fMin + (fMax - fMin) * float(this->GetRaw()) * fFactor;}
     //! @}
 };
 

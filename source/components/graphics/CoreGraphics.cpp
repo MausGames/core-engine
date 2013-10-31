@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -27,7 +27,7 @@ CoreGraphics::CoreGraphics()noexcept
     if(!m_RenderContext) Core::Log->Error(1, coreData::Print("Primary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
     else Core::Log->Info("Primary OpenGL context created");
 
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT))
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT) && (Core::System->SupportNumCores() >= 2))
     {
         // create secondary OpenGL context
         m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
@@ -44,7 +44,7 @@ CoreGraphics::CoreGraphics()noexcept
     // init GLEW on primary OpenGL context
     const GLenum iError = glewInit();
     if(iError != GLEW_OK) Core::Log->Error(1, coreData::Print("GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError)));
-    else Core::Log->Info("GLEW initialized on primary OpenGL context");
+    else Core::Log->Info(coreData::Print("GLEW initialized on primary OpenGL context (%s)", glewGetString(GLEW_VERSION)));
 
     // log video card information
     Core::Log->ListStart("Video Card Information");
@@ -52,13 +52,13 @@ CoreGraphics::CoreGraphics()noexcept
     Core::Log->ListEntry(coreData::Print("<b>Renderer:</b> %s",       glGetString(GL_RENDERER)));
     Core::Log->ListEntry(coreData::Print("<b>OpenGL Version:</b> %s", glGetString(GL_VERSION)));
     Core::Log->ListEntry(coreData::Print("<b>Shader Version:</b> %s", glGetString(GL_SHADING_LANGUAGE_VERSION)));
-    Core::Log->ListEntry((const char*)glGetString(GL_EXTENSIONS));
+    Core::Log->ListEntry(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
     Core::Log->ListEnd();
 
     // set numerical OpenGL version
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
-    m_fOpenGL = fForceOpenGL ? fForceOpenGL : coreData::StrVersion((const char*)glGetString(GL_VERSION));
-    m_fGLSL   = coreData::StrVersion((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    m_fOpenGL = fForceOpenGL ? fForceOpenGL : coreData::StrVersion(r_cast<const char*>(glGetString(GL_VERSION)));
+    m_fGLSL   = coreData::StrVersion(r_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // check OpenGL version
     if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements not met, video card supporting at least OpenGL 2.0 required");
@@ -105,7 +105,6 @@ CoreGraphics::CoreGraphics()noexcept
 
         // bind global UBO to a buffer target
         glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_GLOBAL_NUM, m_iUniformBuffer);
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
     else m_iUniformBuffer = 0;
 
@@ -131,7 +130,11 @@ CoreGraphics::~CoreGraphics()
     m_abFeature.clear();
 
     // delete global UBO
-    if(m_iUniformBuffer) glDeleteBuffers(1, &m_iUniformBuffer);
+    if(m_iUniformBuffer)
+    {
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        glDeleteBuffers(1, &m_iUniformBuffer);
+    }
 
     // dissociate primary OpenGL context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
@@ -181,16 +184,14 @@ void CoreGraphics::SetCamera(const coreVector3* pvPosition, const coreVector3* p
         if(m_iUniformBuffer)
         {
             // map required area of the global UBO
-            glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
-            coreByte* pRange = (coreByte*)glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreMatrix)*2, sizeof(coreMatrix)+sizeof(coreVector4),
-                                                           GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+            coreByte* pRange = r_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreMatrix)*2, sizeof(coreMatrix)+sizeof(coreVector4),
+                                                                  GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
 
             // update camera shader-data
             std::memcpy(pRange,                   &m_mCamera,       sizeof(m_mCamera));
             std::memcpy(pRange+sizeof(m_mCamera), &m_vCamDirection, sizeof(m_vCamDirection));
 
             glUnmapBuffer(GL_UNIFORM_BUFFER);
-            glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }
         else coreProgram::Disable();
     }
@@ -215,16 +216,14 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
     if(m_iUniformBuffer)
     {
         // map required area of the global UBO
-        glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
-        coreByte* pRange = (coreByte*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(coreMatrix)*2,
-                                                       GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+        coreByte* pRange = r_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(coreMatrix)*2,
+                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
 
         // update view shader-data
         std::memcpy(pRange,                        &m_mPerspective, sizeof(m_mPerspective));
         std::memcpy(pRange+sizeof(m_mPerspective), &m_mOrtho,       sizeof(m_mOrtho));
 
         glUnmapBuffer(GL_UNIFORM_BUFFER);
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
     else coreProgram::Disable();
 

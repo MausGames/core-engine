@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -49,13 +49,15 @@ coreTexture::~coreTexture()
 // ****************************************************************
 // load texture resource data
 // TODO: check for proper use of PBO, maybe implement static buffer(s!)
+// TODO: allow 1-channel textures (GLES uses GL_ALPHA, GL uses GL_RED/CL_DEPTH_COMPONENT)
 coreError coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iStatus = m_Sync.CheckSync(0);
+    const coreError iStatus = m_Sync.Check(0);
     if(iStatus >= 0) return iStatus;
 
     SDL_assert(!m_iTexture);
+    coreFileLock Lock(pFile, true);
 
     if(m_iTexture)        return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
@@ -69,18 +71,25 @@ coreError coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    const coreUint iDataSize = pData->w * pData->h * 3;
+    // unlock file
+    Lock.Release();
+
+    // check for extensions
     const bool& bPixelBuffer = Core::Graphics->SupportFeature("GL_ARB_pixel_buffer_object");
     const bool& bAnisotropic = Core::Graphics->SupportFeature("GL_EXT_texture_filter_anisotropic");
     const bool& bMipMap      = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
 
-    // save texture attributes
-    m_sPath       = pFile->GetPath();
-    m_iSize       = pData->w * pData->h * (bMipMap ? 4 : 3);
+    // calculate data size and texture format
+    const coreUint iDataSize = pData->w * pData->h * pData->format->BytesPerPixel;
+    const GLenum iFormat     = (pData->format->BytesPerPixel == 4) ? GL_RGBA : GL_RGB;
+
+    // save attributes
     m_vResolution = coreVector2(float(pData->w), float(pData->h));
+    m_sPath       = pFile->GetPath();
+    m_iSize       = (iDataSize * 4) / (bMipMap ? 3 : 4);
 
     // convert data format
-    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, 24, CORE_TEXTURE_MASK);
+    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, pData->format->BitsPerPixel, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pData, NULL, pConvert, NULL);
 
     GLuint iBuffer;
@@ -127,7 +136,7 @@ coreError coreTexture::Load(coreFile* pFile)
         if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER));
 
         // load texture data from PBO
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
+        glTexImage2D(GL_TEXTURE_2D, 0, iFormat, pConvert->w, pConvert->h, 0, iFormat, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 
         // unbind texture from texture unit
@@ -137,7 +146,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_AtomicUnlock(&s_iLock);
 
     // create sync object
-    const bool bSync = m_Sync.CreateSync();
+    const bool bSync = m_Sync.Create();
 
     if(bPixelBuffer)
     {
@@ -150,7 +159,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_FreeSurface(pData);
     SDL_FreeSurface(pConvert);
 
-    Core::Log->Info(coreData::Print("Texture (%s) loaded%s", m_sPath.c_str(), bSync ? " asynchronous" : ""));
+    Core::Log->Info(coreData::Print("Texture (%s) loaded%s", pFile->GetPath(), bSync ? " asynchronous" : ""));
     return bSync ? CORE_BUSY : CORE_OK;
 }
 
@@ -166,7 +175,7 @@ coreError coreTexture::Unload()
     if(!m_sPath.empty()) Core::Log->Info(coreData::Print("Texture (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
-    m_Sync.DeleteSync();
+    m_Sync.Delete();
 
     // reset attributes
     m_sPath       = "";
@@ -183,9 +192,9 @@ coreError coreTexture::Unload()
 void coreTexture::Enable(const coreByte& iUnit)
 {
     SDL_assert(iUnit < CORE_TEXTURE_UNITS);
-    SDL_assert(s_apBound[iUnit] == NULL);
 
-    // save texture binding
+    // check and save texture binding
+    if(s_apBound[iUnit] == this) return;
     s_apBound[iUnit] = this;
 
     SDL_AtomicLock(&s_iLock);
@@ -206,6 +215,7 @@ void coreTexture::Enable(const coreByte& iUnit)
 // disable texture
 void coreTexture::Disable(const coreByte& iUnit)
 {
+    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
     SDL_assert(s_apBound[iUnit] != NULL);
 
     SDL_AtomicLock(&s_iLock);

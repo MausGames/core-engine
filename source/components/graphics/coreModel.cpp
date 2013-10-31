@@ -2,13 +2,16 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-SDL_SpinLock coreModel::s_iLock = 0;
+bool         coreModel::s_bSupportArray = false;
+coreModel*   coreModel::s_pCurrent      = NULL;
+SDL_SpinLock coreModel::s_iLock         = 0;
+coreModelPtr coreModel::s_pPlane;    // = NULL;
 
 
 // ****************************************************************
@@ -177,18 +180,22 @@ coreModel::~coreModel()
 coreError coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iStatus = m_Sync.CheckSync(0);
+    const coreError iStatus = m_Sync.Check(0);
     if(iStatus >= 0) return iStatus;
 
     SDL_assert(!m_iVertexBuffer);
+    coreFileLock Lock(pFile, true);
 
     if(m_iVertexBuffer)   return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // extract model data
-    const char* pcData = reinterpret_cast<const char*>(pFile->GetData());
+    const char* pcData = r_cast<const char*>(pFile->GetData());
     const md5File oFile(&pcData);
+
+    // unlock file
+    Lock.Release();
 
     // check for success
     if(oFile.aMesh.empty())
@@ -197,10 +204,10 @@ coreError coreModel::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    const bool& bVertexArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
-    const md5Mesh& oMesh     = oFile.aMesh[0];
+    // take data from the first mesh
+    const md5Mesh& oMesh = oFile.aMesh[0];
 
-    // save model attributes
+    // save attributes
     m_iNumVertices  = oMesh.aVertex.size();
     m_iNumTriangles = oMesh.aTriangle.size();
     m_iNumIndices   = oMesh.aTriangle.size()*3;
@@ -265,20 +272,13 @@ coreError coreModel::Load(coreFile* pFile)
         // normalize the normal vector
         pVertex[i].vNormal.Normalize();
 
-        // finish the Gram–Schmidt process to calculate the tangent vector and binormal sign (w)
+        // finish the Gram-Schmidt process to calculate the tangent vector and binormal sign (w)
         pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalize(),
                                           SIG(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 
     SDL_AtomicLock(&s_iLock);
     {
-        // create vertex array object
-        if(bVertexArray)
-        {
-            glGenVertexArrays(1, &m_iVertexArray);
-            glBindVertexArray(m_iVertexArray);
-        }
-
         // create vertex buffer
         glGenBuffers(1, &m_iVertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
@@ -289,27 +289,20 @@ coreError coreModel::Load(coreFile* pFile)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_iNumIndices*sizeof(coreWord), oMesh.aTriangle.data(), GL_STATIC_DRAW);
 
-        // define vertex attribute data
-        if(bVertexArray)
-        {
-            this->__BindVertexAttributes();
-            glBindVertexArray(0);
-        }
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        // override current model object
+        s_pCurrent = NULL;
     }
     SDL_AtomicUnlock(&s_iLock);
 
     // create sync object
-    const bool bSync = m_Sync.CreateSync();
+    const bool bSync = m_Sync.Create();
 
     // free required vertex memory
     SAFE_DELETE_ARRAY(pVertex)
     SAFE_DELETE_ARRAY(pvOrtho1)
     SAFE_DELETE_ARRAY(pvOrtho2)
 
-    Core::Log->Info(coreData::Print("Model (%s) loaded%s", m_sPath.c_str(), bSync ? " asynchronous" : ""));
+    Core::Log->Info(coreData::Print("Model (%s) loaded%s", pFile->GetPath(), bSync ? " asynchronous" : ""));
     return bSync ? CORE_BUSY : CORE_OK;
 }
 
@@ -327,7 +320,7 @@ coreError coreModel::Unload()
     Core::Log->Info(coreData::Print("Model (%s) unloaded", m_sPath.c_str()));
 
     // delete sync object
-    m_Sync.DeleteSync();
+    m_Sync.Delete();
 
     // reset attributes
     m_sPath         = "";
@@ -346,36 +339,85 @@ coreError coreModel::Unload()
 
 // ****************************************************************
 // draw the model
-void coreModel::Render()
+void coreModel::RenderList()
 {
     SDL_assert(m_iVertexBuffer);
 
     SDL_AtomicLock(&s_iLock);
     {
-        // set vertex data
-        if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
-        else
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
-            this->__BindVertexAttributes();
-        }
-
-        // set index buffer and draw the model
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
+        // enable and draw the model
+        this->__Enable();
         glDrawElements(GL_TRIANGLES, m_iNumIndices, GL_UNSIGNED_SHORT, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+    SDL_AtomicUnlock(&s_iLock);
+}
 
-        // reset vertex data
-        if(m_iVertexArray) glBindVertexArray(0);
-        else glBindBuffer(GL_ARRAY_BUFFER, 0);
+void coreModel::RenderStrip()
+{
+    SDL_assert(m_iVertexBuffer);
+
+    SDL_AtomicLock(&s_iLock);
+    {
+        // enable and draw the model
+        this->__Enable();
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, m_iNumVertices);
     }
     SDL_AtomicUnlock(&s_iLock);
 }
 
 
 // ****************************************************************
-// define vertex attribute data
-void coreModel::__BindVertexAttributes()
+// load standard model objects
+void coreModel::InitStandard()
+{
+    // check for extensions
+    s_bSupportArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
+
+    // load optimized standard rectangle
+    if(!s_pPlane) s_pPlane = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_plane.md5mesh");
+}
+
+
+// ****************************************************************
+// unload standard model objects
+void coreModel::ExitStandard()
+{
+    s_pPlane = NULL;
+}
+
+
+// ****************************************************************
+// enable the model
+void coreModel::__Enable()
+{
+    // check and save current model object
+    if(s_pCurrent == this) return;
+    s_pCurrent = this;
+
+    // set vertex data
+    if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
+    else
+    {
+        if(s_bSupportArray)
+        {
+            // create vertex array object
+            glGenVertexArrays(1, &m_iVertexArray);
+            glBindVertexArray(m_iVertexArray);
+        }
+
+        // bind vertex buffer and all vertex attributes
+        glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
+        this->__BindAttributes();
+    }
+
+    // set index data
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
+}
+
+
+// ****************************************************************
+// bind all vertex attributes
+void coreModel::__BindAttributes()
 {
     // enable vertex attributes
     glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_POSITION_NUM);
@@ -383,9 +425,9 @@ void coreModel::__BindVertexAttributes()
     glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_NORMAL_NUM);
     glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_TANGENT_NUM);
 
-    // set vertex attribute data locations
+    // set vertex attribute locations
     glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, false, sizeof(coreVertex), 0);
-    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(3*sizeof(float)));
-    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(5*sizeof(float)));
-    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, false, sizeof(coreVertex), reinterpret_cast<const GLvoid*>(8*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, false, sizeof(coreVertex), r_cast<const GLvoid*>(3*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, false, sizeof(coreVertex), r_cast<const GLvoid*>(5*sizeof(float)));
+    glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, false, sizeof(coreVertex), r_cast<const GLvoid*>(8*sizeof(float)));
 }

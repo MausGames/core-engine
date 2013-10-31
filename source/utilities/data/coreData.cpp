@@ -2,14 +2,17 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
 #if defined(_CORE_WINDOWS_)
     #include <Shellapi.h>
+#endif
+#if defined(_CORE_LINUX_)
+    #include <dirent.h>
 #endif
 
 char     coreData::m_aacString[16][256]; // = "";

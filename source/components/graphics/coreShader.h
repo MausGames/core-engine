@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -49,7 +49,8 @@
 class coreShader final : public coreResource
 {
 private:
-    GLuint m_iShader;   //!< shader identifier/OpenGL name
+    GLuint m_iShader;                   //!< shader identifier/OpenGL name
+    static std::string s_asGlobal[3];   //!< global shader data (0 = version | 1 = vertex | 2 = fragment)
 
 
 public:
@@ -58,7 +59,7 @@ public:
     explicit coreShader(coreFile* pFile)noexcept;
     ~coreShader();
 
-    //! load and unload vertex-shader resource data
+    //! load and unload shader resource data
     //! @{
     coreError Load(coreFile* pFile)override;
     coreError Unload()override;
@@ -71,8 +72,14 @@ public:
 
     //! get relative path to default resource
     //! @{
-    static inline const char* GetDefaultPath()                   {return "data/shaders/default.fs";}
-    static inline const char* GetGlobalPath(const GLenum& iType) {return coreData::Print("data/shaders/global.%s", (iType == GL_VERTEX_SHADER) ? "vs" : "fs");}
+    static inline const char* GetDefaultPath() {return "data/shaders/default.fs";}
+    //! @}
+
+
+private:
+    //! init global shader data
+    //! @{
+    static void __InitGlobal();
     //! @}
 };
 
@@ -84,30 +91,26 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 
 // ****************************************************************
 // shader-program class
-// TODO: cache and check shader uniform values
 // TODO: material data in UBO
+// TODO: use variable template with uniform cache (C++14)
 class coreProgram final : public coreReset
 {
 private:
-    GLuint m_iProgram;                            //!< shader-program identifier/OpenGL name
+    GLuint m_iProgram;                       //!< shader-program identifier/OpenGL name
 
-    std::vector<coreShaderPtr> m_apShader;        //!< attached shader objects
-    int m_iStatus;                                //!< current status (0 = new | 1 = ready for linking | 2 = successfully linked)
+    std::vector<coreShaderPtr> m_apShader;   //!< attached shader objects
+    int m_iStatus;                           //!< current status (0 = new | 1 = ready for linking | 2 = successfully linked)
 
-    std::u_map<std::string, int> m_aiUniform;     //!< cached identifiers for uniform variables
-    std::u_map<std::string, int> m_aiAttribute;   //!< cached identifiers for attribute variables
+    coreLookup<int> m_aiUniform;             //!< identifiers for uniform variables
+    coreLookup<int> m_aiAttribute;           //!< identifiers for attribute variables
+    coreLookup<coreVector4> m_avCache;       //!< cached uniform variable values
 
-    static coreProgram* s_pCurrent;               //!< currently active shader-program
+    static coreProgram* s_pCurrent;          //!< currently active shader-program
 
 
 public:
     coreProgram()noexcept;
     ~coreProgram();
-
-    //! reset with the resource manager
-    //! @{
-    void Reset(const bool& bInit)override;
-    //! @}
 
     //! init and exit the shader-program
     //! @{
@@ -131,24 +134,36 @@ public:
 
     //! set uniform variables
     //! @{
-    inline void SetUniform(const char* pcName, const int& iInt)                                   {glUniform1i(this->GetUniform(pcName), iInt);}
-    inline void SetUniform(const char* pcName, const float& fFloat)                               {glUniform1f(this->GetUniform(pcName), fFloat);}
-    inline void SetUniform(const char* pcName, const coreVector2& vVector)                        {glUniform2fv(this->GetUniform(pcName), 1, vVector);}
-    inline void SetUniform(const char* pcName, const coreVector3& vVector)                        {glUniform3fv(this->GetUniform(pcName), 1, vVector);}
-    inline void SetUniform(const char* pcName, const coreVector4& vVector)                        {glUniform4fv(this->GetUniform(pcName), 1, vVector);}
+    inline void SetUniform(const char* pcName, const int& iInt)                                   {const int iID = this->CheckCache(pcName, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1i (iID, iInt);}
+    inline void SetUniform(const char* pcName, const float& fFloat)                               {const int iID = this->CheckCache(pcName, coreVector4(fFloat,      0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1f (iID, fFloat);}
+    inline void SetUniform(const char* pcName, const coreVector2& vVector)                        {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f, 0.0f));       if(iID >= 0) glUniform2fv(iID, 1, vVector);}
+    inline void SetUniform(const char* pcName, const coreVector3& vVector)                        {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f));             if(iID >= 0) glUniform3fv(iID, 1, vVector);}
+    inline void SetUniform(const char* pcName, const coreVector4& vVector)                        {const int iID = this->CheckCache(pcName, vVector);                                    if(iID >= 0) glUniform4fv(iID, 1, vVector);}
     inline void SetUniform(const char* pcName, const coreMatrix& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
+    //! @}
+
+    //! check for cached uniform variables
+    //! @{
+    inline int CheckCache(const char* pcName, const coreVector4& vVector) {if(m_avCache.count(pcName)) {if(m_avCache.at(pcName) == vVector) return -1;} m_avCache[pcName] = vVector; return this->GetUniform(pcName);}
     //! @}
 
     //! get object attributes
     //! @{
     inline const GLuint& GetProgram()const             {return m_iProgram;}
-    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {SDL_assert(this->IsFinished()); m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
-    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {SDL_assert(this->IsFinished()); m_aiAttribute[pcName] = glGetAttribLocation(m_iProgram,  pcName);} return m_aiAttribute.at(pcName);}
+    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {SDL_assert(this->IsFinished() && s_pCurrent == this); m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
+    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {SDL_assert(this->IsFinished() && s_pCurrent == this); m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
     //! @}
 
     //! get currently active shader-program
     //! @{
     static inline coreProgram* GetCurrent() {return s_pCurrent;}
+    //! @}
+
+
+private:
+    //! reset with the resource manager
+    //! @{
+    void __Reset(const bool& bInit)override;
     //! @}
 };
 

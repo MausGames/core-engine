@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -28,8 +28,8 @@ private:
 
 
 public:
-    constexpr coreTimer()noexcept;
-    constexpr coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept;
+    constexpr_func coreTimer()noexcept;
+    constexpr_func coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept;
 
     //! update the timer
     //! @{
@@ -81,7 +81,7 @@ private:
 
 
 public:
-    constexpr coreFlow()noexcept : m_fCurrent(0.0f) {}
+    constexpr_func coreFlow()noexcept : m_fCurrent(0.0f) {}
 
     //! access current value
     //! @{
@@ -99,7 +99,7 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr coreTimer::coreTimer()noexcept
+constexpr_func coreTimer::coreTimer()noexcept
 : m_fCurrent (0.0f)
 , m_fEnd     (1.0f)
 , m_fSpeed   (1.0f)
@@ -110,7 +110,7 @@ constexpr coreTimer::coreTimer()noexcept
 {
 }
 
-constexpr coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept
+constexpr_func coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept
 : m_fCurrent (0.0f)
 , m_fEnd     (fEnd)
 , m_fSpeed   (fSpeed)

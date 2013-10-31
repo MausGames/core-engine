@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // create sync object
-bool coreSync::CreateSync()
+bool coreSync::Create()
 {
     if(!m_pSync)
     {
@@ -33,7 +33,7 @@ bool coreSync::CreateSync()
 
 // ****************************************************************
 // delete sync object
-void coreSync::DeleteSync()
+void coreSync::Delete()
 {
     if(m_pSync)
     {
@@ -45,7 +45,7 @@ void coreSync::DeleteSync()
 
 // ****************************************************************
 // check for sync object status
-coreError coreSync::CheckSync(const coreUint& iWait)
+coreError coreSync::Check(const coreUint& iWait)
 {
     if(!m_pSync) return CORE_INVALID_CALL;
 
@@ -53,7 +53,7 @@ coreError coreSync::CheckSync(const coreUint& iWait)
     if(glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, iWait) != GL_TIMEOUT_EXPIRED)
     {
         // delete sync object
-        this->DeleteSync();
+        this->Delete();
         return CORE_OK;
     }
 

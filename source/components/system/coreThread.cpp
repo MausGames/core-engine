@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -65,7 +65,7 @@ void coreThread::KillThread()
 int coreThread::__Main()
 {
     // call init implementation
-    Core::Log->Info(coreData::Print("Thread (%s:%04lu) started", m_sName.c_str(), SDL_ThreadID()));
+    Core::Log->Info(coreData::Print("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread)));
     int iReturn = this->__Init();
 
     m_iCurFrame = 0;
@@ -85,7 +85,7 @@ int coreThread::__Main()
 
     // call exit implementation
     this->__Exit();
-    Core::Log->Info(coreData::Print("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_ThreadID()));
+    Core::Log->Info(coreData::Print("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread)));
 
     m_bEnd = true;
     return iReturn;
@@ -97,7 +97,7 @@ int coreThread::__Main()
 int coreThreadMain(void* pData)
 {
     // retrieve thread object
-    coreThread* pThread = static_cast<coreThread*>(pData);
+    coreThread* pThread = s_cast<coreThread*>(pData);
 
     // execute thread
     return pThread->__Main();
