@@ -8,10 +8,10 @@ This project is focused on creating a **supportive framework for fast and simple
 If you have any suggestions or problems, feel free to contact me or simply create an issue on Bitbucket.
 
 > - **System:** Window and Event Handling, Timer, Threads 
-> - **Graphics:** Camera and View Frustum, Models (.md5), Textures, Shaders 
-> - **Audio:** Sound Effects (.wav), Music (.ogg), Music Player
+> - **Graphics:** Camera and View Frustum Handling, Models (.md5), Textures, Shaders 
+> - **Audio:** Sound Effects (.wav), Music Files (.ogg), Music Player
 > - **Input:** Mouse, Keyboard, Joysticks/Gamepads 
-> - **Math:** SIMD implemented, Vectors (2d, 3d, 4d/Quaternions), Matrices, Splines
+> - **Math:** SIMD Implementations, Vectors (2d, 3d, 4d/Quaternions), Matrices, Splines
 > - **Data:** String/Stream Manipulation, Random Numbers, Fast-Lookup Container
 > - Asynchronous Resource Management
 > - Memory Management (currently only Memory Sharing)
