@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -261,16 +261,16 @@ coreMatrix coreMatrix::Perspective(const coreVector2& vResolution, const float& 
 // get ortho matrix
 coreMatrix coreMatrix::Ortho(const coreVector2& vResolution)noexcept
 {
-    const float L = -vResolution.x*0.5f;
-    const float R =  vResolution.x*0.5f;
-    const float B = -vResolution.y*0.5f;
-    const float T =  vResolution.y*0.5f;
-    const float N = -32.0f;
-    const float F = 128.0f;
+    const         float L = -vResolution.x*0.5f;
+    const         float R =  vResolution.x*0.5f;
+    const         float B = -vResolution.y*0.5f;
+    const         float T =  vResolution.y*0.5f;
+    constexpr_var float N = -32.0f;
+    constexpr_var float F = 128.0f;
 
-    const float IRL = 1.0f / (R-L);
-    const float ITN = 1.0f / (T-B);
-    const float IFN = 1.0f / (F-N);
+    const         float IRL = 1.0f / (R-L);
+    const         float ITN = 1.0f / (T-B);
+    constexpr_var float IFN = 1.0f / (F-N);
 
     return coreMatrix(  2.0f*IRL,       0.0f,       0.0f, 0.0f,
                             0.0f,   2.0f*ITN,       0.0f, 0.0f,

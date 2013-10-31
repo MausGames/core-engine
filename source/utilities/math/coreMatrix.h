@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -16,7 +16,7 @@
 class coreMatrix final
 {
 public:
-    align16(union)
+    align_16(union)
     {
         struct
         {
@@ -30,11 +30,11 @@ public:
 
 
 public:
-    constexpr coreMatrix()noexcept;
-    constexpr coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14,
-                         const float& f21, const float& f22, const float& f23, const float& f24,
-                         const float& f31, const float& f32, const float& f33, const float& f34,
-                         const float& f41, const float& f42, const float& f43, const float& f44)noexcept;
+    constexpr_func coreMatrix()noexcept;
+    constexpr_func coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14,
+                              const float& f21, const float& f22, const float& f23, const float& f24,
+                              const float& f31, const float& f32, const float& f33, const float& f34,
+                              const float& f41, const float& f42, const float& f43, const float& f44)noexcept;
 
     //! compare operators
     //! @{
@@ -63,7 +63,7 @@ public:
 
     //! convert matrix
     //! @{
-    inline operator const float* ()const noexcept {return reinterpret_cast<const float*>(this);}
+    inline operator const float* ()const noexcept {return r_cast<const float*>(this);}
     //! @}
 
     //! transpose matrix
@@ -85,9 +85,9 @@ public:
 
     //! static functions
     //! @{
-    static constexpr coreMatrix Identity()noexcept;
-    static constexpr coreMatrix Translation(const coreVector3& vPosition)noexcept;
-    static constexpr coreMatrix Scaling(const coreVector3& vSize)noexcept;
+    static constexpr_func coreMatrix Identity()noexcept;
+    static constexpr_func coreMatrix Translation(const coreVector3& vPosition)noexcept;
+    static constexpr_func coreMatrix Scaling(const coreVector3& vSize)noexcept;
     static coreMatrix RotationX(const coreVector2& vDirection)noexcept;
     static coreMatrix RotationX(const float& fAngle)noexcept;
     static coreMatrix RotationY(const coreVector2& vDirection)noexcept;
@@ -104,7 +104,7 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr coreMatrix::coreMatrix()noexcept
+constexpr_func coreMatrix::coreMatrix()noexcept
 : _11 (1.0f), _12 (0.0f), _13 (0.0f), _14 (0.0f)
 , _21 (0.0f), _22 (1.0f), _23 (0.0f), _24 (0.0f)
 , _31 (0.0f), _32 (0.0f), _33 (1.0f), _34 (0.0f)
@@ -112,10 +112,10 @@ constexpr coreMatrix::coreMatrix()noexcept
 {
 }
 
-constexpr coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14,
-                                 const float& f21, const float& f22, const float& f23, const float& f24,
-                                 const float& f31, const float& f32, const float& f33, const float& f34,
-                                 const float& f41, const float& f42, const float& f43, const float& f44)noexcept
+constexpr_func coreMatrix::coreMatrix(const float& f11, const float& f12, const float& f13, const float& f14,
+                                      const float& f21, const float& f22, const float& f23, const float& f24,
+                                      const float& f31, const float& f32, const float& f33, const float& f34,
+                                      const float& f41, const float& f42, const float& f43, const float& f44)noexcept
 : _11 (f11), _12 (f12), _13 (f13), _14 (f14)
 , _21 (f21), _22 (f22), _23 (f23), _24 (f24)
 , _31 (f31), _32 (f32), _33 (f33), _34 (f34)
@@ -126,7 +126,7 @@ constexpr coreMatrix::coreMatrix(const float& f11, const float& f12, const float
 
 // ****************************************************************
 // get identity matrix
-constexpr coreMatrix coreMatrix::Identity()noexcept
+constexpr_func coreMatrix coreMatrix::Identity()noexcept
 {
     return coreMatrix(1.0f, 0.0f, 0.0f, 0.0f,
                       0.0f, 1.0f, 0.0f, 0.0f,
@@ -137,7 +137,7 @@ constexpr coreMatrix coreMatrix::Identity()noexcept
 
 // ****************************************************************
 // get translation matrix
-constexpr coreMatrix coreMatrix::Translation(const coreVector3& vPosition)noexcept
+constexpr_func coreMatrix coreMatrix::Translation(const coreVector3& vPosition)noexcept
 {
     return coreMatrix(       1.0f,        0.0f,        0.0f, 0.0f,
                              0.0f,        1.0f,        0.0f, 0.0f,
@@ -148,7 +148,7 @@ constexpr coreMatrix coreMatrix::Translation(const coreVector3& vPosition)noexce
 
 // ****************************************************************
 // get scale matrix
-constexpr coreMatrix coreMatrix::Scaling(const coreVector3& vSize)noexcept
+constexpr_func coreMatrix coreMatrix::Scaling(const coreVector3& vSize)noexcept
 {
     return coreMatrix(vSize.x,    0.0f,    0.0f, 0.0f,
                          0.0f, vSize.y,    0.0f, 0.0f,

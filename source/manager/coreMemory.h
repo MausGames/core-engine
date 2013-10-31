@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -13,8 +13,8 @@
 
 // ****************************************************************
 // memory definitions
-#define CORE_MEMORY_SHARED coreData::Print("$%s:%d",    coreData::StrRight(__FILE__, 16), __LINE__)
-#define CORE_MEMORY_UNIQUE coreData::Print("$%s:%d:%p", coreData::StrRight(__FILE__, 16), __LINE__, this)
+#define CORE_MEMORY_SHARED coreData::Print("!%s:%d",    coreData::StrRight(__FILE__, 16), __LINE__)
+#define CORE_MEMORY_UNIQUE coreData::Print("!%s:%d:%p", coreData::StrRight(__FILE__, 16), __LINE__, this)
 
 
 // ****************************************************************
@@ -22,12 +22,12 @@
 class coreMemoryManager final
 {
 private:
-    std::u_map<std::string, std::weak_ptr<void> > m_apPointer;   //!< list with weak shared memory pointer
+    coreLookup<std::weak_ptr<void> > m_apPointer;   //!< list with weak shared memory pointer
 
 
 private:
-    coreMemoryManager()noexcept {}
-    ~coreMemoryManager()        {m_apPointer.clear();}
+    coreMemoryManager()noexcept;
+    ~coreMemoryManager();
     friend class Core;
 
 
@@ -47,15 +47,17 @@ template <typename T> std::shared_ptr<T> coreMemoryManager::Share(const char* pc
     // check for existing shared memory pointer
     if(m_apPointer.count(pcName))
     {
-        if(!m_apPointer[pcName].expired())
-            return std::static_pointer_cast<T>(m_apPointer[pcName].lock());
+        std::weak_ptr<void>& pPointer = m_apPointer[pcName];
+
+        if(!pPointer.expired())
+            return std::static_pointer_cast<T>(pPointer.lock());
     }
 
     // create new shared memory pointer
-    std::shared_ptr<T> pPointer = std::shared_ptr<T>(new T());
-    m_apPointer[pcName] = pPointer;
+    std::shared_ptr<T> pNewPointer = std::shared_ptr<T>(new T());
+    m_apPointer[pcName] = pNewPointer;
 
-    return pPointer;
+    return pNewPointer;
 }
 
 

@@ -2,11 +2,19 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
+
+
+// ****************************************************************
+// load resource data
+coreError coreResource::Load(const char* pcPath)
+{
+    return this->Load(Core::Manager::Resource->RetrieveFile(pcPath));
+}
 
 
 // ****************************************************************
@@ -49,18 +57,12 @@ void coreResourceHandle::__Update()
         {
             // successfully loaded
             m_pCur = m_pResource;
-            m_pFile->UnloadData();
         }
         else if(iStatus < 0)
         {
             // stop managing the resource handle
             m_bManaged = false;
         }
-    }
-    else if(m_iRef == 0 && this->IsLoaded())
-    {
-        // unload associated resource
-        this->__Nullify();
     }
 }
 
@@ -86,10 +88,8 @@ coreReset::~coreReset()
 // ****************************************************************
 // constructor
 coreResourceManager::coreResourceManager()noexcept
+: m_bActive (false)
 {
-    // reserve memory for archives
-    m_apArchive.reserve(32);
-
     // start up the resource manager
     this->Reset(true);
 
@@ -101,6 +101,8 @@ coreResourceManager::coreResourceManager()noexcept
 // destructor
 coreResourceManager::~coreResourceManager()
 {
+    SDL_assert(!m_apReset.size());
+
     // shut down the resource manager
     this->Reset(false);
 
@@ -109,7 +111,7 @@ coreResourceManager::~coreResourceManager()
     for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it) SAFE_DELETE(it->second)
 
     // delete resource files
-    for(auto it = m_apArchive.begin();    it != m_apArchive.end();    ++it) SAFE_DELETE(*it)
+    for(auto it = m_apArchive.begin();    it != m_apArchive.end();    ++it) SAFE_DELETE(it->second)
     for(auto it = m_apDirectFile.begin(); it != m_apDirectFile.end(); ++it) SAFE_DELETE(it->second)
 
     // clear memory
@@ -124,26 +126,68 @@ coreResourceManager::~coreResourceManager()
 
 
 // ****************************************************************
-// add archive with resource files
+// add archive
 coreError coreResourceManager::AddArchive(const char* pcPath)
 {
-    // load and check archive
-    coreArchive* pArchive = new coreArchive(pcPath);
-    if(!pArchive->GetSize())
-    {
-        SAFE_DELETE(pArchive)
-        return CORE_FILE_ERROR;
-    }
+    if(m_apArchive.count(pcPath)) return CORE_INVALID_INPUT;
 
-    // add archive
-    m_apArchive.push_back(pArchive);
+    // load new archive
+    coreArchive* pNewArchive = new coreArchive(pcPath);
+    m_apArchive[pcPath] = pNewArchive;
+
+    SDL_assert(pNewArchive->GetSize());
+    return pNewArchive->GetSize() ? CORE_OK : CORE_FILE_ERROR;
+}
+
+
+// ****************************************************************
+// delete archive
+coreError coreResourceManager::DeleteArchive(const char* pcPath)
+{
+    SDL_assert(!m_bActive);
+    if(!m_apArchive.count(pcPath)) return CORE_INVALID_INPUT;
+
+    // remove and delete archive
+    SAFE_DELETE(m_apArchive[pcPath])
+    m_apArchive.erase(pcPath);
+
     return CORE_OK;
 }
 
 
 // ****************************************************************
+// remove all archives
+void coreResourceManager::ClearArchives()
+{
+    SDL_assert(!m_bActive);
+
+    // delete archives
+    for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
+        SAFE_DELETE(it->second)
+
+    // clear memory
+    m_apArchive.clear();
+}
+
+
+// ****************************************************************
+// retrieve archive
+coreArchive* coreResourceManager::RetrieveArchive(const char* pcPath)
+{
+    if(m_apArchive.count(pcPath)) return m_apArchive[pcPath];
+
+    // load new archive
+    coreArchive* pNewArchive = new coreArchive(pcPath);
+    m_apArchive[pcPath] = pNewArchive;
+
+    SDL_assert(pNewArchive->GetSize());
+    return pNewArchive;
+}
+
+
+// ****************************************************************
 // retrieve resource file
-coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
+coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
 {
     // check for direct resource file
     if(!coreData::FileExists(pcPath))
@@ -151,7 +195,7 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
         // check archives
         for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
         {
-            coreFile* pFile = (*it)->GetFile(pcPath);
+            coreFile* pFile = it->second->GetFile(pcPath);
             if(pFile) return pFile;
         }
 
@@ -162,10 +206,10 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
     if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];
 
     // load new direct resource file
-    coreFile* pFile = new coreFile(pcPath);
-    m_apDirectFile[pcPath] = pFile;
+    coreFile* pNewFile = new coreFile(pcPath);
+    m_apDirectFile[pcPath] = pNewFile;
 
-    return pFile;
+    return pNewFile;
 }
 
 
@@ -173,15 +217,23 @@ coreFile* coreResourceManager::RetrieveResourceFile(const char* pcPath)
 // reset all resources and reset-objects
 void coreResourceManager::Reset(const bool& bInit)
 {
+    // check and set current status
+    if(m_bActive == bInit) return;
+    m_bActive = bInit;
+
     if(bInit)
     {
-        // re-load default resources
+        // load default resources
         for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it)
-            it->second->Load(this->RetrieveResourceFile(it->first.c_str()));
+            it->second->Load(this->RetrieveFile(it->first.c_str()));
 
-        // re-init reset-objects
+        // update resource files
+        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
+            if(it->second->m_bManaged) it->second->m_pFile = this->RetrieveFile(it->first.c_str());
+
+        // init reset-objects
         for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)
-            (*it)->Reset(true);
+            (*it)->__Reset(true);
 
         // start resource thread
         if(Core::Graphics->GetResourceContext())
@@ -195,9 +247,9 @@ void coreResourceManager::Reset(const bool& bInit)
 
         // shut down reset-objects
         for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)
-            (*it)->Reset(false);
+            (*it)->__Reset(false);
 
-        // unload resources
+        // unload all resources
         for(auto it = m_apHandle.begin();  it != m_apHandle.end();  ++it) it->second->__Nullify();
         for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it) it->second->Unload();
     }
@@ -216,7 +268,7 @@ int coreResourceManager::__Init()
     // init GLEW on secondary OpenGL context
     const GLenum iError = glewInit();
     if(iError != GLEW_OK) Core::Log->Error(1, coreData::Print("GLEW could not be initialized on secondary OpenGL context (GLEW: %s)", glewGetErrorString(iError)));
-    else Core::Log->Info("GLEW initialized on secondary OpenGL context");
+    else Core::Log->Info(coreData::Print("GLEW initialized on secondary OpenGL context (%s)", glewGetString(GLEW_VERSION)));
 
     return 0;
 }
@@ -226,10 +278,12 @@ int coreResourceManager::__Init()
 // run resource thread
 int coreResourceManager::__Run()
 {
-    // update resource handles
-    for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
-        it->second->__Update();
-
+    if(m_bActive)
+    {
+        // update resource handles
+        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
+            it->second->__Update();
+    }
     return 0;
 }
 

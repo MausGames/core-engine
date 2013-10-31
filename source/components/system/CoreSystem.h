@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -41,6 +41,7 @@ private:
     double m_dPerfFrequency;                  //!< high precision time coefficient
     uint64_t m_iPerfTime;                     //!< high precision time value
 
+    coreByte m_iNumCores;                     //!< number of logical processor cores
     int m_aaiCPUID[2][4];                     //!< features of the processor
     bool m_abSSE[5];                          //!< available SSE versions (1, 2, 3, 4.1, 4.2)
 
@@ -89,11 +90,12 @@ public:
 
     //! check hardware support
     //! @{
-    inline const bool& SupportSSE()const   {return m_abSSE[0];}
-    inline const bool& SupportSSE2()const  {return m_abSSE[1];}
-    inline const bool& SupportSSE3()const  {return m_abSSE[2];}
-    inline const bool& SupportSSE41()const {return m_abSSE[3];}
-    inline const bool& SupportSSE42()const {return m_abSSE[4];}
+    inline const coreByte& SupportNumCores()const {return m_iNumCores;}
+    inline const bool& SupportSSE()const          {return m_abSSE[0];}
+    inline const bool& SupportSSE2()const         {return m_abSSE[1];}
+    inline const bool& SupportSSE3()const         {return m_abSSE[2];}
+    inline const bool& SupportSSE41()const        {return m_abSSE[3];}
+    inline const bool& SupportSSE42()const        {return m_abSSE[4];}
     //! @}
 };
 

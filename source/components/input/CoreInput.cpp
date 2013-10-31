@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -57,9 +57,8 @@ CoreInput::~CoreInput()
         SDL_JoystickClose(m_aJoystick[i].pHandle);
     m_aJoystick.clear();
 
-    // delete the cursor object
-    // TODO: implement with coreObject2D
-    //SAFE_DELETE(m_pCursor)
+    // free the hardware mouse cursor
+    SDL_FreeCursor(m_pCursor);
 }
 
 
@@ -110,34 +109,22 @@ void CoreInput::__UpdateInput()
 
 
 // ****************************************************************
-// update the cursor object
-// TODO: implement with coreObject2D
-void CoreInput::__UpdateCursor()
-{
-    if(!m_bCursorVisible) return;
-
-    // move and render the cursor object
-    //m_pCursor->SetCenter(m_Mouse.vPosition);
-    //m_pCursor->Move();
-    //m_pCursor->Render();
-}
-
-
-// ****************************************************************
 // set the cursor object
 // TODO: implement with coreObject2D
-void CoreInput::SetCursorObject(const char* pcColorMap, const char* pcAlphaMap, const coreVector2& vSize)
+void CoreInput::DefineCursor(const char* pcTexture)
 {
-    //if(m_pCursor) SAFE_DELETE(m_pCursor)
+    if(m_pCursor) SDL_FreeCursor(m_pCursor);
 
-    // create the cursor object
-    //m_pCursor = new coreObject2D();
-    //m_pCursor->DefineAppearance(pcColorMap, pcAlphaMap, NULL, true);
-    //m_pCursor->SetPosition(vSize*coreVector2(0.5f,-0.5f));
-    //m_pCursor->SetSize(vSize);
+    // load texture from file
+    SDL_Surface* pData = IMG_Load(pcTexture);
+    SDL_assert(pData);
 
-    // update visibility
-    this->ShowCursor(m_bCursorVisible);
+    // create hardware mouse cursor
+    SDL_Cursor* pCursor = SDL_CreateColorCursor(pData, 0, 0);
+    SDL_SetCursor(pCursor);
+
+    // free the texture
+    SDL_FreeSurface(pData);
 }
 
 
@@ -149,7 +136,7 @@ void CoreInput::ShowCursor(const bool& bStatus)
     if(m_bCursorVisible == bStatus) return;
 
     // toggle cursor visibility
-    SDL_ShowCursor(m_pCursor ? 0 : (bStatus ? 1 : 0));
+    SDL_ShowCursor(bStatus ? 1 : 0);
     SDL_SetRelativeMouseMode(bStatus ? SDL_FALSE : SDL_TRUE);
 
     // save visibility status

@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -16,17 +16,25 @@
 
 
 // ****************************************************************
+// file definitions
+#define CORE_FILE_MAGIC   0x012F5B66    //!< magic number of core-archives
+#define CORE_FILE_VERSION 0x00000001    //!< current file version of core-archives
+
+
+// ****************************************************************
 // file class
 class coreFile final
 {
 private:
-    std::string m_sPath;       //!< relative path of the file
+    std::string m_sPath;           //!< relative path of the file
 
-    coreByte* m_pData;         //!< file data
-    coreUint m_iSize;          //!< size of the file
+    coreByte* m_pData;             //!< file data
+    coreUint m_iSize;              //!< size of the file
 
-    coreArchive* m_pArchive;   //!< associated archive
-    coreUint m_iArchivePos;    //!< absolute data position in the associated archive (0 = file doesn't exist physically)
+    coreArchive* m_pArchive;       //!< associated archive
+    coreUint m_iArchivePos;        //!< absolute data position in the associated archive (0 = file doesn't exist physically)
+
+    SDL_SpinLock m_iLock;          //!< spinlock to prevent asynchronous file data access
 
 
 public:
@@ -45,6 +53,12 @@ public:
     coreError LoadData();
     inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
     inline coreByte* MoveData()   {this->LoadData(); coreByte* pOutput = m_pData; m_pData = NULL; return pOutput;}
+    //! @}
+
+    //! control asynchronous file data access
+    //! @{
+    inline void Lock()   {SDL_AtomicLock(&m_iLock);}
+    inline void Unlock() {SDL_AtomicUnlock(&m_iLock);}
     //! @}
 
     //! get object attributes
@@ -66,10 +80,8 @@ private:
 class coreArchive final
 {
 private:
-    std::string m_sPath;                              //!< relative path of the archive
-
-    std::vector<coreFile*> m_apFile;                  //!< file objects
-    std::u_map<std::string, coreFile*> m_apFileMap;   //!< path access for file objects
+    std::string m_sPath;              //!< relative path of the archive
+    coreLookup<coreFile*> m_apFile;   //!< file objects
 
 
 public:
@@ -94,8 +106,8 @@ public:
 
     //! access file objects
     //! @{
-    inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_apFile.size())  {SDL_assert(false); return NULL;} return m_apFile[iIndex];}
-    inline coreFile* GetFile(const char* pcPath)     {if(!m_apFileMap.count(pcPath)) {SDL_assert(false); return NULL;} return m_apFileMap[pcPath];}
+    inline coreFile* GetFile(const coreUint& iIndex) {SDL_assert(iIndex < m_apFile.size()); if(iIndex < m_apFile.size()) return m_apFile[iIndex]; return NULL;}
+    inline coreFile* GetFile(const char* pcPath)     {SDL_assert(m_apFile.count(pcPath));   if(m_apFile.count(pcPath))   return m_apFile[pcPath]; return NULL;}
     //! @}
 
     //! get object attributes
@@ -113,6 +125,31 @@ private:
     //! @{
     void __CalculatePositions();
     //! @}
+};
+
+
+// ****************************************************************
+// file-lock helper class
+class coreFileLock final
+{
+private:
+    coreFile* m_pFile;   //!< associated file object
+    bool m_bUnload;      //!< unload file data on unlock
+
+
+public:
+    explicit coreFileLock(coreFile* pFile, const bool& bUnload)noexcept;
+    ~coreFileLock() {this->Release();}
+
+    //! release the lock
+    //! @{
+    void Release();
+    //! @}
+
+
+private:
+    CORE_DISABLE_COPY(coreFileLock)
+    CORE_DISABLE_HEAP
 };
 
 

@@ -2,13 +2,17 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
 #ifndef _CORE_GUARD_LOG_H_
 #define _CORE_GUARD_LOG_H_
+
+#if !defined(APIENTRY)
+    #define APIENTRY
+#endif
 
 
 // ****************************************************************
@@ -19,6 +23,7 @@ private:
     std::string m_sPath;    //!< relative path of the log file
     int m_iLevel;           //!< logging level (0 = all | 1 = only non-errors | -1 = only errors)
 
+    SDL_threadID m_iMain;   //!< thread-ID of the creator of this log
     SDL_SpinLock m_iLock;   //!< spinlock to prevent asynchronous log access
 
 
@@ -34,7 +39,7 @@ public:
 
     //! list functions
     //! @{
-    inline void ListStart(const std::string& sText) {if(m_iLevel >= 0) this->__Write(true, "<span class=\"liststart\">" + sText + "</span><ul>");}
+    inline void ListStart(const std::string& sText) {if(m_iLevel >= 0) this->__Write(true, "<span class=\"list\">" + sText + "</span><ul>");}
     inline void ListEntry(const std::string& sText) {if(m_iLevel >= 0) this->__Write(false, "<li>" + sText + "</li>");}
     inline void ListEnd()                           {if(m_iLevel >= 0) this->__Write(false, "</ul>");}
     //! @}

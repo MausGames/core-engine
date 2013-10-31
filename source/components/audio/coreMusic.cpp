@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -41,8 +41,7 @@ coreMusic::coreMusic(const char* pcPath)noexcept
     std::memset(&m_Stream,   0, sizeof(m_Stream));
 
     // load from path
-    coreFile File(pcPath);
-    this->__Init(&File);
+    this->__Init(Core::Manager::Resource->RetrieveFile(pcPath));
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
@@ -77,30 +76,6 @@ coreMusic::~coreMusic()
 
     // delete file object
     SAFE_DELETE(m_pFile)
-}
-
-
-// ****************************************************************
-// reset the object with the resource manager
-void coreMusic::Reset(const bool& bInit)
-{
-    if(bInit)
-    {
-        // create sound buffers
-        alGenBuffers(2, m_aiBuffer);
-    }
-    else
-    {
-        if(m_bStatus)
-        {
-            // clear sound source
-            this->Pause();
-            m_bStatus = true;
-        }
-
-        // delete sound buffers
-        alDeleteBuffers(2, m_aiBuffer);
-    }
 }
 
 
@@ -246,15 +221,49 @@ const char* coreMusic::GetComment(const char* pcName)const
 
 
 // ****************************************************************
+// reset with the resource manager
+void coreMusic::__Reset(const bool& bInit)
+{
+    if(bInit)
+    {
+        // create sound buffers
+        if(!m_aiBuffer) alGenBuffers(2, m_aiBuffer);
+    }
+    else
+    {
+        if(m_aiBuffer)
+        {
+            if(m_bStatus)
+            {
+                // clear sound source
+                this->Pause();
+                m_bStatus = true;
+            }
+
+            // delete sound buffers
+            alDeleteBuffers(2, m_aiBuffer);
+        }
+    }
+}
+
+
+// ****************************************************************
 // init the music object
 coreError coreMusic::__Init(coreFile* pFile)
 {
+    SDL_assert(m_aiBuffer[0]);
+    coreFileLock Lock(pFile, false);
+
+    if(m_aiBuffer[0])     return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // create virtual file as streaming source
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
     SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
+
+    // unlock file
+    Lock.Release();
 
     // test file format and open music stream
             int iError = ov_test_callbacks(pSource, &m_Stream, NULL, 0, OV_CALLBACKS);
@@ -320,7 +329,7 @@ coreMusicPlayer::coreMusicPlayer()noexcept
     m_apSequence.reserve(16);
 
     // create empty music object
-    m_pEmptyMusic = new coreMusic((coreFile*)NULL);
+    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(NULL));
     m_pCurMusic   = m_pEmptyMusic;
 }
 
@@ -413,24 +422,28 @@ void coreMusicPlayer::Shuffle()
 coreError coreMusicPlayer::AddFile(const char* pcPath)
 {
     // load from path
-    coreFile File(pcPath);
-    return this->__AddMusic(&File);
+    return this->__AddMusic(Core::Manager::Resource->RetrieveFile(pcPath));
 }
 
 
 // ****************************************************************
 // add music object from archive
-coreError coreMusicPlayer::AddArchive(const char* pcPath)
+coreError coreMusicPlayer::AddArchive(const char* pcPath, const char* pcFilter)
 {
-    // open the archive
-    coreArchive Archive(pcPath);
+    bool bStatus = false;
+
+    // retrieve archive with resource files
+    coreArchive* pArchive = Core::Manager::Resource->RetrieveArchive(pcPath);
 
     // try to add all files to the music-player
-    bool bStatus = false;
-    for(coreUint i = 0; i < Archive.GetSize(); ++i)
+    for(coreUint i = 0; i < pArchive->GetSize(); ++i)
     {
-        if(this->__AddMusic(Archive.GetFile(i)) == CORE_OK)
-            bStatus = true;
+        // check path and use only specific files
+        if(coreData::StrCompare(pArchive->GetFile(i)->GetPath(), pcFilter))
+        {
+            if(this->__AddMusic(pArchive->GetFile(i)) == CORE_OK)
+                bStatus = true;
+        }
     }
 
     return bStatus ? CORE_OK : CORE_INVALID_INPUT;
@@ -441,12 +454,13 @@ coreError coreMusicPlayer::AddArchive(const char* pcPath)
 // add music object from folder
 coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
 {
-    // get files from the folder
+    bool bStatus = false;
+
+    // get specific files from the folder
     std::vector<std::string> asFolder;
     coreData::FolderSearch(pcPath, pcFilter, &asFolder);
 
     // try to add all files to the music-player
-    bool bStatus = false;
     for(auto it = asFolder.begin(); it != asFolder.end(); ++it)
     {
         if(this->AddFile((*it).c_str()) == CORE_OK)
@@ -470,12 +484,12 @@ coreError coreMusicPlayer::DeleteMusic(const coreUint& iIndex)
     m_apMusic.erase(m_apMusic.begin()+iIndex);
     m_apSequence.erase(std::find(m_apSequence.begin(), m_apSequence.end(), pMusic));
 
+    // delete music object
+    SAFE_DELETE(pMusic)
+
     // check and switch the current music object
     if(m_apMusic.empty()) m_pCurMusic = m_pEmptyMusic;
     else this->Goto(0);
-
-    // delete music object
-    SAFE_DELETE(pMusic)
 
     return CORE_OK;
 }

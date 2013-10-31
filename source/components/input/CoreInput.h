@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -68,7 +68,7 @@ private:
     coreMouse m_Mouse;                       //!< main mouse object
     std::vector<coreJoystick> m_aJoystick;   //!< list with joystick objects
 
-    coreObject2D* m_pCursor;                 //!< graphical cursor object
+    SDL_Cursor* m_pCursor;                   //!< hardware mouse cursor
     bool m_bCursorVisible;                   //!< status of the mouse cursor
 
 
@@ -82,21 +82,11 @@ private:
     void __UpdateInput();
     //! @}
 
-    //! update the cursor object
-    //! @{
-    void __UpdateCursor();
-    //! @}
-
 
 public:
-    //! control the cursor object
+    //! control the mouse cursor
     //! @{
-    void SetCursorObject(const char* pcColorMap, const char* pcAlphaMap, const coreVector2& vSize);
-    inline coreObject2D* GetCursorObject()const {return m_pCursor;}
-    //! @}
-
-    //! show or hide the mouse cursor
-    //! @{
+    void DefineCursor(const char* pcTexture);
     void ShowCursor(const bool& bStatus);
     inline const bool& IsCursorVisible()const {return m_bCursorVisible;}
     //! @}

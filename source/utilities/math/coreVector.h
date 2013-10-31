@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -35,8 +35,8 @@ public:
 
 
 public:
-    constexpr coreVector2()noexcept;
-    constexpr coreVector2(const float& fx, const float& fy)noexcept;
+    constexpr_func coreVector2()noexcept;
+    constexpr_func coreVector2(const float& fx, const float& fy)noexcept;
 
     //! compare operators
     //! @{
@@ -83,7 +83,7 @@ public:
 
     //! convert vector
     //! @{
-    inline operator const float* ()const noexcept {return reinterpret_cast<const float*>(this);}
+    inline operator const float* ()const noexcept {return r_cast<const float*>(this);}
     inline coreVector2 yx()const noexcept         {return coreVector2(y, x);}
     //! @}
 
@@ -135,9 +135,9 @@ public:
 
 
 public:
-    constexpr coreVector3()noexcept;
-    constexpr coreVector3(const coreVector2& c, const float& fz)noexcept;
-    constexpr coreVector3(const float& fx, const float& fy, const float& fz)noexcept;
+    constexpr_func coreVector3()noexcept;
+    constexpr_func coreVector3(const coreVector2& c, const float& fz)noexcept;
+    constexpr_func coreVector3(const float& fx, const float& fy, const float& fz)noexcept;
 
     //! compare operators
     //! @{
@@ -184,8 +184,8 @@ public:
 
     //! convert vector
     //! @{
-    inline operator const float* ()const noexcept {return reinterpret_cast<const float*>(this);}
-    inline const coreVector2& xy()const noexcept  {return *(reinterpret_cast<const coreVector2*>(this));}
+    inline operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    inline const coreVector2& xy()const noexcept  {return *(r_cast<const coreVector2*>(this));}
     inline coreVector2 xz()const noexcept         {return coreVector2(x, z);}
     inline coreVector2 yx()const noexcept         {return coreVector2(y, x);}
     inline coreVector2 yz()const noexcept         {return coreVector2(y, z);}
@@ -241,15 +241,15 @@ public:
 
 
 public:
-    constexpr coreVector4()noexcept;
-    constexpr coreVector4(const coreVector3& c, const float& fw)noexcept;
-    constexpr coreVector4(const coreVector2& c, const float& fz, const float& fw)noexcept;
-    constexpr coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)noexcept;
+    constexpr_func coreVector4()noexcept;
+    constexpr_func coreVector4(const coreVector3& c, const float& fw)noexcept;
+    constexpr_func coreVector4(const coreVector2& c, const float& fz, const float& fw)noexcept;
+    constexpr_func coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)noexcept;
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreVector4& v)const noexcept {return ((x == v.x) && (y == v.y) && (z == v.z) && (z == v.w));}
-    inline bool operator != (const coreVector4& v)const noexcept {return ((x != v.x) || (y != v.y) || (z != v.z) || (z != v.w));}
+    inline bool operator == (const coreVector4& v)const noexcept {return ((x == v.x) && (y == v.y) && (z == v.z) && (w == v.w));}
+    inline bool operator != (const coreVector4& v)const noexcept {return ((x != v.x) || (y != v.y) || (z != v.z) || (w != v.w));}
     //! @}
 
     //! vector calculation operators
@@ -291,10 +291,10 @@ public:
 
     //! convert vector
     //! @{
-    inline operator const float* ()const noexcept {return reinterpret_cast<const float*>(this);}
+    inline operator const float* ()const noexcept {return r_cast<const float*>(this);}
     inline coreVector3 xyzw()const noexcept       {return coreVector3(x, y, z)*w;}
-    inline const coreVector3& xyz()const noexcept {return *(reinterpret_cast<const coreVector3*>(this));}
-    inline const coreVector2& xy()const noexcept  {return *(reinterpret_cast<const coreVector2*>(this));}
+    inline const coreVector3& xyz()const noexcept {return *(r_cast<const coreVector3*>(this));}
+    inline const coreVector2& xy()const noexcept  {return *(r_cast<const coreVector2*>(this));}
     inline void xyz(const coreVector3& v)noexcept {x = v.x; y = v.y; z = v.z;}
     inline void xy(const coreVector2& v)noexcept  {x = v.x; y = v.y;}
     //! @}
@@ -319,12 +319,12 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr coreVector2::coreVector2()noexcept
+constexpr_func coreVector2::coreVector2()noexcept
 : x (0.0f), y (0.0f)
 {
 }
 
-constexpr coreVector2::coreVector2(const float& fx, const float& fy)noexcept
+constexpr_func coreVector2::coreVector2(const float& fx, const float& fy)noexcept
 : x (fx), y (fy)
 {
 }
@@ -332,17 +332,17 @@ constexpr coreVector2::coreVector2(const float& fx, const float& fy)noexcept
 
 // ****************************************************************
 // constructor
-constexpr coreVector3::coreVector3()noexcept
+constexpr_func coreVector3::coreVector3()noexcept
 : x (0.0f), y (0.0f), z (0.0f)
 {
 }
 
-constexpr coreVector3::coreVector3(const coreVector2& c, const float& fz)noexcept
+constexpr_func coreVector3::coreVector3(const coreVector2& c, const float& fz)noexcept
 : x (c.x), y (c.y), z (fz)
 {
 }
 
-constexpr coreVector3::coreVector3(const float& fx, const float& fy, const float& fz)noexcept
+constexpr_func coreVector3::coreVector3(const float& fx, const float& fy, const float& fz)noexcept
 : x (fx), y (fy), z (fz)
 {
 }
@@ -350,22 +350,22 @@ constexpr coreVector3::coreVector3(const float& fx, const float& fy, const float
 
 // ****************************************************************
 // constructor
-constexpr coreVector4::coreVector4()noexcept
+constexpr_func coreVector4::coreVector4()noexcept
 : x (0.0f), y (0.0f), z (0.0f), w (0.0f)
 {
 }
 
-constexpr coreVector4::coreVector4(const coreVector3& c, const float& fw)noexcept
+constexpr_func coreVector4::coreVector4(const coreVector3& c, const float& fw)noexcept
 : x (c.x), y (c.y), z (c.z), w (fw)
 {
 }
 
-constexpr coreVector4::coreVector4(const coreVector2& c, const float& fz, const float& fw)noexcept
+constexpr_func coreVector4::coreVector4(const coreVector2& c, const float& fz, const float& fw)noexcept
 : x (c.x), y (c.y), z (fz), w (fw)
 {
 }
 
-constexpr coreVector4::coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)noexcept
+constexpr_func coreVector4::coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)noexcept
 : x (fx), y (fy), z (fz), w (fw)
 {
 }

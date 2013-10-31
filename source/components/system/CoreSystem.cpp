@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -22,10 +22,17 @@ CoreSystem::CoreSystem()noexcept
 {
     Core::Log->Header("System Interface");
 
+    // get SDL version information
+    SDL_version Version;
+    SDL_GetVersion(&Version);
+
     // init SDL libraries
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init())
         Core::Log->Error(1, coreData::Print("SDL could not be initialized (SDL: %s)", SDL_GetError()));
-    else Core::Log->Info("SDL initialized");
+    else Core::Log->Info(coreData::Print("SDL initialized (%d.%d.%d %s)", Version.major, Version.minor, Version.patch, SDL_GetRevision()));
+
+    // get number of logical processor cores
+    m_iNumCores = MAX(SDL_GetCPUCount(), 1);
 
     // load all available screen resolutions
     const int iNumModes = SDL_GetNumDisplayModes(0);
@@ -72,7 +79,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
-    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT));
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT) && (m_iNumCores >= 2));
 
     // try to force a different OpenGL context
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
@@ -99,7 +106,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
         if(!m_pWindow) Core::Log->Error(1, coreData::Print("Main window could not be created (SDL: %s)", SDL_GetError()));
     }
-    Core::Log->Info("Main window created");
+    Core::Log->Info(coreData::Print("Main window created (%.0f x %.0f)", m_vResolution.x, m_vResolution.y));
 
     // init high precision time
     m_dPerfFrequency = 1.0/double(SDL_GetPerformanceFrequency());
@@ -133,11 +140,12 @@ CoreSystem::CoreSystem()noexcept
     m_abSSE[4] = (m_aaiCPUID[1][2] & 0x100000)  ? true : false;
 
     // log processor information
-    Core::Log->ListStart("Processor Information");
-    Core::Log->ListEntry(coreData::Print("<b>Vendor:</b> %.4s%.4s%.4s", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2]));
+    Core::Log->ListStart("Platform Information");
+    Core::Log->ListEntry(coreData::Print("<b>Processor:</b> %.4s%.4s%.4s (%d Logical Cores)", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2], m_iNumCores));
+    Core::Log->ListEntry(coreData::Print("<b>System Memory:</b> %d MB",          SDL_GetSystemRAM()));
+    Core::Log->ListEntry(coreData::Print("<b>SSE Support:</b> %s%s%s%s%s",       m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));
     Core::Log->ListEntry(coreData::Print("<b>CPUID[0]:</b> %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]));
     Core::Log->ListEntry(coreData::Print("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]));
-    Core::Log->ListEntry(coreData::Print("<b>SSE support:</b> %s%s%s%s%s", m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));
     Core::Log->ListEnd();
 }
 

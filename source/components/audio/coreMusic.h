@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -49,11 +49,6 @@ public:
     explicit coreMusic(const char* pcPath)noexcept;
     explicit coreMusic(coreFile* pFile)noexcept;
     ~coreMusic();
-
-    //! reset with the resource manager
-    //! @{
-    void Reset(const bool& bInit)override;
-    //! @}
 
     //! update the music object
     //! @{
@@ -108,6 +103,11 @@ public:
 
 
 private:
+    //! reset with the resource manager
+    //! @{
+    void __Reset(const bool& bInit)override;
+    //! @}
+
     //! setup the music object
     //! @{
     coreError __Init(coreFile* pFile);
@@ -158,7 +158,7 @@ public:
     //! manage music objects
     //! @{
     coreError AddFile(const char* pcPath);
-    coreError AddArchive(const char* pcPath);
+    coreError AddArchive(const char* pcPath, const char* pcFilter);
     coreError AddFolder(const char* pcPath, const char* pcFilter);
     coreError DeleteMusic(const coreUint& iIndex);
     void ClearMusic();

@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -18,7 +18,7 @@ coreVector2 coreVector2::operator + (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
@@ -40,7 +40,7 @@ coreVector2 coreVector2::operator - (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
@@ -62,7 +62,7 @@ coreVector2 coreVector2::operator * (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
@@ -84,7 +84,7 @@ coreVector2 coreVector2::operator / (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
         return coreVector2(afOutput[0], afOutput[1]);
@@ -238,7 +238,7 @@ coreVector3 coreVector3::operator + (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
@@ -260,7 +260,7 @@ coreVector3 coreVector3::operator - (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
@@ -282,7 +282,7 @@ coreVector3 coreVector3::operator * (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
@@ -304,7 +304,7 @@ coreVector3 coreVector3::operator / (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
         return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
@@ -465,7 +465,7 @@ coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
         const __m128 A = _mm_setr_ps(vInA.x, vInA.y, vInA.z, 0.0f);
         const __m128 B = _mm_setr_ps(vInB.x, vInB.y, vInB.z, 0.0f);
 
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_sub_ps(_mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 1, 0, 2))),
                                           _mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 0, 2, 1)))));
 
@@ -490,7 +490,7 @@ coreVector4 coreVector4::operator + (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
@@ -512,7 +512,7 @@ coreVector4 coreVector4::operator - (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
@@ -534,7 +534,7 @@ coreVector4 coreVector4::operator * (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
@@ -556,7 +556,7 @@ coreVector4 coreVector4::operator / (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        static align16(float) afOutput[4];
+        static align_16(float) afOutput[4];
         _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
         return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);

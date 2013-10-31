@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -37,16 +37,16 @@ class coreMath
 public:
     //! convenient logical operations
     //! @{
-    template <typename T> static constexpr T Lerp(const T& x, const T& y, const float& s)noexcept       {return x + (y - x) * s;}
-    template <typename T> static constexpr T LerpSmooth(const T& x, const T& y, const float& s)noexcept {return Lerp(x, y, 0.5f-0.5f*Cos(s*PI));}
-    template <typename T> static constexpr T LerpBreak(const T& x, const T& y, const float& s)noexcept  {return Lerp(x, y, Sin(s*0.5f*PI));}
-    template <typename T> static constexpr T Min(const T& x, const T& y)noexcept                        {return (x < y) ? x : y;}
-    template <typename T> static constexpr T Max(const T& x, const T& y)noexcept                        {return (x > y) ? x : y;}
-    template <typename T> static constexpr T Clamp(const T& a, const T& x, const T& y)noexcept          {return Min(Max(a, x), y);}
-    static constexpr int Abs(const int& x)noexcept                                                      {return (x < 0) ? -x : x;}
-    static constexpr float Abs(const float& x)noexcept                                                  {return (x < 0.0f) ? -x : x;}
-    static constexpr int Sig(const int& x)noexcept                                                      {return (x < 0) ? -1 : 1;}
-    static constexpr float Sig(const float& x)noexcept                                                  {return (x < 0.0f) ? -1.0f : 1.0f;}
+    template <typename T> static constexpr_func T Lerp(const T& x, const T& y, const float& s)noexcept       {return x + (y - x) * s;}
+    template <typename T> static constexpr_func T LerpSmooth(const T& x, const T& y, const float& s)noexcept {return Lerp(x, y, 0.5f-0.5f*Cos(s*PI));}
+    template <typename T> static constexpr_func T LerpBreak(const T& x, const T& y, const float& s)noexcept  {return Lerp(x, y, Sin(s*0.5f*PI));}
+    template <typename T> static constexpr_func T Min(const T& x, const T& y)noexcept                        {return (x < y) ? x : y;}
+    template <typename T> static constexpr_func T Max(const T& x, const T& y)noexcept                        {return (x > y) ? x : y;}
+    template <typename T> static constexpr_func T Clamp(const T& a, const T& x, const T& y)noexcept          {return Min(Max(a, x), y);}
+    static constexpr_func int Abs(const int& x)noexcept                                                      {return (x < 0) ? -x : x;}
+    static constexpr_func float Abs(const float& x)noexcept                                                  {return (x < 0.0f) ? -x : x;}
+    static constexpr_func int Sig(const int& x)noexcept                                                      {return (x < 0) ? -1 : 1;}
+    static constexpr_func float Sig(const float& x)noexcept                                                  {return (x < 0.0f) ? -1.0f : 1.0f;}
     //! @}
 
     //! calculate square root
@@ -58,8 +58,8 @@ public:
     //! @{
     static float Sin(const float& fInput)noexcept;
     static float Cos(const float& fInput)noexcept;
-    static constexpr float Tan(const float& fInput)noexcept  {return std::tan(fInput);}
-    static constexpr float Atan(const float& fInput)noexcept {return std::atan(fInput);}
+    static constexpr_func float Tan(const float& fInput)noexcept  {return std::tan(fInput);}
+    static constexpr_func float Atan(const float& fInput)noexcept {return std::atan(fInput);}
     //! @}
 
     //! check if inside field-of-view

@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -26,7 +26,7 @@ public:
 
     //! load and unload resource data
     //! @{
-    inline coreError Load(const char* pcPath) {coreFile File(pcPath); return this->Load(&File);}
+    coreError Load(const char* pcPath);
     virtual coreError Load(coreFile* pFile) = 0;
     virtual coreError Unload() = 0;
     //! @}
@@ -85,7 +85,7 @@ public:
     //! manipulate the reference-counter
     //! @{
     inline void RefIncrease()       {++m_iRef;}
-    inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0);}
+    inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0); if(!m_iRef) this->__Nullify();}
     inline const int& GetRef()const {return m_iRef;}
     //! @}
 
@@ -105,7 +105,7 @@ private:
 
 
 public:
-    constexpr coreResourcePtr()noexcept;
+    constexpr_func coreResourcePtr()noexcept;
     coreResourcePtr(coreResourceHandle* pHandle)noexcept;
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&& m)noexcept;
@@ -119,8 +119,8 @@ public:
 
     //! access active resource object
     //! @{
-    inline T* operator -> ()const noexcept {SDL_assert(m_pHandle != NULL); return   static_cast<T*>(m_pHandle->GetResource());}
-    inline T& operator * ()const noexcept  {SDL_assert(m_pHandle != NULL); return *(static_cast<T*>(m_pHandle->GetResource()));}
+    inline T* operator -> ()const noexcept {SDL_assert(m_pHandle != NULL); return   s_cast<T*>(m_pHandle->GetResource());}
+    inline T& operator * ()const noexcept  {SDL_assert(m_pHandle != NULL); return *(s_cast<T*>(m_pHandle->GetResource()));}
     inline bool IsLoaded()const            {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
     //! @}
 
@@ -128,6 +128,11 @@ public:
     //! @{
     void SetActive(const bool& bStatus);
     inline bool IsActive()const {return (m_pHandle && m_bActive) ? true : false;}
+    //! @}
+
+    //! check for valid resource handle
+    //! @{
+    inline operator bool ()const noexcept {return m_pHandle ? true : false;}
     //! @}
 
 
@@ -143,32 +148,36 @@ class coreReset
 public:
     coreReset()noexcept;
     virtual ~coreReset();
-
-    //! reset with the resource manager
-    //! @{
-    virtual void Reset(const bool& bInit) = 0;
-    //! @}
+    friend class coreResourceManager;
 
 
 private:
     CORE_DISABLE_COPY(coreReset)
+
+    //! reset with the resource manager
+    //! @{
+    virtual void __Reset(const bool& bInit) = 0;
+    //! @}
 };
 
 
 // ****************************************************************
 // resource manager
-// TODO: use load- and unload-stack
+// TODO: use load-stack
 // TODO: update link-functionality
+// TODO: enable partially archive overriding
 class coreResourceManager final : public coreThread
 {
 private:
-    std::u_map<std::string, coreResourceHandle*> m_apHandle;   //!< resource handles
-    std::u_map<std::string, coreResource*> m_apDefault;        //!< default resource objects
+    coreLookup<coreResourceHandle*> m_apHandle;   //!< resource handles
+    coreLookup<coreResource*> m_apDefault;        //!< default resource objects
 
-    std::vector<coreArchive*> m_apArchive;                     //!< archives with resource files
-    std::u_map<std::string, coreFile*> m_apDirectFile;         //!< direct resource files
+    coreLookup<coreArchive*> m_apArchive;         //!< archives with resource files
+    coreLookup<coreFile*> m_apDirectFile;         //!< direct resource files
 
-    std::u_set<coreReset*> m_apReset;                          //!< objects to reset with the resource manager
+    std::u_set<coreReset*> m_apReset;             //!< objects to reset with the resource manager
+
+    bool m_bActive;                               //!< current management status
 
 
 private:
@@ -178,16 +187,23 @@ private:
 
 
 public:
-    //! load resource and retrieve resource handle
+    //! create and return resource with resource handle
     //! @{
     template <typename T> inline coreResourceHandle* LoadFile(const char* pcPath) {return this->__Load<T>(pcPath, true);}
     template <typename T> inline coreResourceHandle* LoadLink(const char* pcName) {return this->__Load<T>(pcName, false);}
     //! @}
 
-    //! control resource files
+    //! manage archives
     //! @{
     coreError AddArchive(const char* pcPath);
-    coreFile* RetrieveResourceFile(const char* pcPath);
+    coreError DeleteArchive(const char* pcPath);
+    void ClearArchives();
+    //! @}
+
+    //! retrieve archives and resource files
+    //! @{
+    coreArchive* RetrieveArchive(const char* pcPath);
+    coreFile* RetrieveFile(const char* pcPath);
     //! @}
 
     //! reset all resources and reset-objects
@@ -206,7 +222,7 @@ private:
     void __Exit()override;
     //! @}
 
-    //! load resource and retrieve resource handle
+    //! create and return resource with resource handle
     //! @{
     template <typename T> coreResourceHandle* __Load(const char* pcKey, const bool& bFile);
     //! @}
@@ -215,7 +231,7 @@ private:
 
 // ****************************************************************
 // constructor
-template <typename T> constexpr coreResourcePtr<T>::coreResourcePtr()noexcept
+template <typename T> constexpr_func coreResourcePtr<T>::coreResourcePtr()noexcept
 : m_pHandle (NULL)
 , m_bActive (true)
 {
@@ -287,7 +303,7 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 
 // ****************************************************************
-// load resource and retrieve resource handle
+// create and return resource with resource handle
 template <typename T> coreResourceHandle* coreResourceManager::__Load(const char* pcKey, const bool& bFile)
 {
     // check for existing resource handle
@@ -298,13 +314,13 @@ template <typename T> coreResourceHandle* coreResourceManager::__Load(const char
     if(!m_apDefault.count(T::GetDefaultPath()))
     {
         // load new default resource
-        pDefault = new T(this->RetrieveResourceFile(T::GetDefaultPath()));
+        pDefault = new T(this->RetrieveFile(T::GetDefaultPath()));
         m_apDefault[T::GetDefaultPath()] = pDefault;
     }
     else pDefault = m_apDefault[T::GetDefaultPath()];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pDefault, bFile ? this->RetrieveResourceFile(pcKey) : NULL);
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pDefault, bFile ? this->RetrieveFile(pcKey) : NULL);
     m_apHandle[pcKey] = pNewHandle;
 
     return pNewHandle;

@@ -2,8 +2,8 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -17,6 +17,7 @@ coreFile::coreFile(const char* pcPath)noexcept
 , m_iSize       (0)
 , m_pArchive    (NULL)
 , m_iArchivePos (1)
+, m_iLock       (0)
 {
     if(m_sPath.empty()) return;
 
@@ -24,7 +25,7 @@ coreFile::coreFile(const char* pcPath)noexcept
     SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
     if(!pFile)
     {
-        Core::Log->Error(0, coreData::Print("File (%s) could not be opened", pcPath));
+        Core::Log->Error(0, coreData::Print("File (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
         return;
     }
 
@@ -42,6 +43,7 @@ coreFile::coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)no
 , m_iSize       (iSize)
 , m_pArchive    (NULL)
 , m_iArchivePos (0)
+, m_iLock       (0)
 {
 }
 
@@ -70,7 +72,7 @@ coreError coreFile::Save(const char* pcPath)
     SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "wb");
     if(!pFile)
     {
-        Core::Log->Error(0, coreData::Print("File (%s) could not be saved", m_sPath.c_str()));
+        Core::Log->Error(0, coreData::Print("File (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
         return CORE_FILE_ERROR;
     }
 
@@ -124,8 +126,6 @@ coreError coreFile::LoadData()
 coreArchive::coreArchive()noexcept
 : m_sPath ("")
 {
-    // reserve memory for file objects
-    m_apFile.reserve(32);
 }
 
 coreArchive::coreArchive(const char* pcPath)noexcept
@@ -135,16 +135,19 @@ coreArchive::coreArchive(const char* pcPath)noexcept
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "rb");
     if(!pArchive)
     {
-        Core::Log->Error(0, coreData::Print("Archive (%s) could not be opened", m_sPath.c_str()));
+        Core::Log->Error(0, coreData::Print("Archive (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
         return;
     }
+
+    // read magic number and file version (currently not used)
+    coreUint aiHead[2];
+    SDL_RWread(pArchive, &aiHead, sizeof(aiHead[0]), 2);
 
     // read number of files
     coreUint iSize;
     SDL_RWread(pArchive, &iSize, sizeof(coreUint), 1);
 
     // read file headers
-    m_apFile.reserve(iSize);
     for(coreUint i = 0; i < iSize; ++i)
     {
         coreUint iLength;
@@ -159,10 +162,10 @@ coreArchive::coreArchive(const char* pcPath)noexcept
         SDL_RWread(pArchive, &iPos,    sizeof(coreUint), 1);
 
         // add new file object
-        m_apFile.push_back(new coreFile(acPath, NULL, iSize));
-        m_apFile.back()->m_pArchive    = this;
-        m_apFile.back()->m_iArchivePos = iPos;
-        m_apFileMap[acPath] = m_apFile.back();
+        coreFile* pNewFile      = new coreFile(acPath, NULL, iSize);
+        pNewFile->m_pArchive    = this;
+        pNewFile->m_iArchivePos = iPos;
+        m_apFile[acPath]        = pNewFile;
     }
 
     // close archive
@@ -185,10 +188,6 @@ coreError coreArchive::Save(const char* pcPath)
 {
     if(m_apFile.empty()) return CORE_INVALID_CALL;
 
-    // cache missing file data
-    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
-        (*it)->LoadData();
-
     // save path
     m_sPath = pcPath;
 
@@ -196,31 +195,45 @@ coreError coreArchive::Save(const char* pcPath)
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "wb");
     if(!pArchive)
     {
-        Core::Log->Error(0, coreData::Print("Archive (%s) could not be saved", m_sPath.c_str()));
+        Core::Log->Error(0, coreData::Print("Archive (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
         return CORE_FILE_ERROR;
     }
+
+    // save magic number and file version
+    const coreUint aiHead[2] = {CORE_FILE_MAGIC, CORE_FILE_VERSION};
+    SDL_RWwrite(pArchive, aiHead, sizeof(aiHead[0]), 2);
 
     // save number of files
     const coreUint iSize = m_apFile.size();
     SDL_RWwrite(pArchive, &iSize, sizeof(coreUint), 1);
+
+    // cache missing file data
+    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
+    {
+        it->second->Lock();
+        it->second->LoadData();
+    }
 
     // save file headers
     this->__CalculatePositions();
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
     {
         // get path length
-        const coreUint iLength = std::strlen((*it)->GetPath());
+        const coreUint iLength = std::strlen(it->second->GetPath());
 
         // write header
-        SDL_RWwrite(pArchive, &iLength,              sizeof(coreUint), 1);
-        SDL_RWwrite(pArchive, (*it)->GetPath(),      sizeof(char),     iLength);
-        SDL_RWwrite(pArchive, &(*it)->GetSize(),     sizeof(coreUint), 1);
-        SDL_RWwrite(pArchive, &(*it)->m_iArchivePos, sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, &iLength,                   sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, it->second->GetPath(),      sizeof(char),     iLength);
+        SDL_RWwrite(pArchive, &it->second->GetSize(),     sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, &it->second->m_iArchivePos, sizeof(coreUint), 1);
     }
 
     // save file data
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
-        SDL_RWwrite(pArchive, (*it)->GetData(), sizeof(coreByte), (*it)->GetSize());
+    {
+        SDL_RWwrite(pArchive, it->second->GetData(), sizeof(coreByte), it->second->GetSize());
+        it->second->Unlock();
+    }
 
     // close archive
     SDL_RWclose(pArchive);
@@ -234,7 +247,7 @@ coreError coreArchive::Save(const char* pcPath)
 coreError coreArchive::AddFile(const char* pcPath)
 {
     // check already existing file
-    if(m_apFileMap.count(pcPath))
+    if(m_apFile.count(pcPath))
     {
         Core::Log->Error(0, coreData::Print("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str()));
         return CORE_INVALID_INPUT;
@@ -249,7 +262,7 @@ coreError coreArchive::AddFile(coreFile* pFile)
     if(pFile->m_pArchive) return CORE_INVALID_INPUT;
 
     // check already existing file
-    if(m_apFileMap.count(pFile->GetPath()))
+    if(m_apFile.count(pFile->GetPath()))
     {
         Core::Log->Error(0, coreData::Print("File (%s) already exists in Archive (%s)", pFile->GetPath(), m_sPath.c_str()));
         return CORE_INVALID_INPUT;
@@ -259,12 +272,11 @@ coreError coreArchive::AddFile(coreFile* pFile)
     pFile->LoadData();
 
     // add new file object
-    m_apFile.push_back(pFile);
-    m_apFileMap[pFile->GetPath()] = m_apFile.back();
+    m_apFile[pFile->GetPath()] = pFile;
 
     // associate archive
-    m_apFile.back()->m_pArchive    = this;
-    m_apFile.back()->m_iArchivePos = 0;
+    pFile->m_pArchive    = this;
+    pFile->m_iArchivePos = 0;
 
     return CORE_OK;
 }
@@ -276,28 +288,20 @@ coreError coreArchive::DeleteFile(const coreUint& iIndex)
 {
     if(iIndex >= m_apFile.size()) return CORE_INVALID_INPUT;
 
-    coreFile* pFile = m_apFile[iIndex];
-
-    // remove file object
-    m_apFile.erase(m_apFile.begin()+iIndex);
-    m_apFileMap.erase(pFile->GetPath());
-
-    // delete file object
-    SAFE_DELETE(pFile)
+    // remove and delete file object
+    SAFE_DELETE(m_apFile[iIndex])
+    m_apFile.erase(iIndex);
 
     return CORE_OK;
 }
 
 coreError coreArchive::DeleteFile(const char* pcPath)
 {
-    if(!m_apFileMap.count(pcPath)) return CORE_INVALID_INPUT;
+    if(!m_apFile.count(pcPath)) return CORE_INVALID_INPUT;
 
-    // search index and delete file
-    for(coreUint i = 0; i < m_apFile.size(); ++i)
-    {
-        if(m_apFile[i]->GetPath() == pcPath)
-            return this->DeleteFile(i);
-    }
+    // remove and delete file object
+    SAFE_DELETE(m_apFile[pcPath])
+    m_apFile.erase(pcPath);
 
     return CORE_OK;
 }
@@ -315,11 +319,10 @@ void coreArchive::ClearFiles()
 {
     // delete file objects
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
-        SAFE_DELETE(*it)
+        SAFE_DELETE(it->second)
 
     // clear memory
     m_apFile.clear();
-    m_apFileMap.clear();
 }
 
 
@@ -330,13 +333,45 @@ void coreArchive::__CalculatePositions()
     // calculate data start position
     coreUint iCurPosition = sizeof(coreUint);
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
-        iCurPosition += sizeof(coreUint) + std::strlen((*it)->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
+        iCurPosition += sizeof(coreUint) + std::strlen(it->second->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
 
     for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
     {
         // set absolute data position
-        (*it)->m_pArchive    = this;
-        (*it)->m_iArchivePos = iCurPosition;
-        iCurPosition += (*it)->GetSize();
+        it->second->m_pArchive    = this;
+        it->second->m_iArchivePos = iCurPosition;
+        iCurPosition += it->second->GetSize();
+    }
+}
+
+
+// ****************************************************************
+// constructor
+coreFileLock::coreFileLock(coreFile* pFile, const bool& bUnload)noexcept
+: m_pFile   (NULL)
+, m_bUnload (false)
+{
+    if(pFile)
+    {
+        // lock file
+        pFile->Lock();
+
+        // save file data
+        m_pFile   = pFile;
+        m_bUnload = bUnload;
+    }
+}
+
+
+// ****************************************************************
+// release the lock
+void coreFileLock::Release()
+{
+    if(m_pFile)
+    {
+        // unload and unlock file
+        if(m_bUnload) m_pFile->UnloadData();
+        m_pFile->Unlock();
+        m_pFile = NULL;
     }
 }
