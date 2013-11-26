@@ -8,6 +8,10 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+#if defined(_CORE_GLES_)
+    #define glClearDepth glClearDepthf
+#endif
+
 
 // ******************************************************************
 // constructor
@@ -15,9 +19,9 @@ CoreGraphics::CoreGraphics()noexcept
 : m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
 , m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR))
 , m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR))
-, m_vCamPosition    (coreVector3(0.0f,0.0f, 0.0f))
-, m_vCamDirection   (coreVector3(0.0f,0.0f,-1.0f))
-, m_vCamOrientation (coreVector3(0.0f,1.0f, 0.0f))
+, m_vCamPosition    (coreVector3(0.0f,0.0f,0.0f))
+, m_vCamDirection   (coreVector3(0.0f,0.0f,0.0f))
+, m_vCamOrientation (coreVector3(0.0f,0.0f,0.0f))
 , m_vCurResolution  (coreVector2(0.0f,0.0f))
 {
     Core::Log->Header("Graphics Interface");
@@ -71,7 +75,8 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // enable vertical synchronization
-    SDL_GL_SetSwapInterval(1);
+    if(SDL_GL_SetSwapInterval(1)) Core::Log->Error(0, coreData::Print("Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError()));
+    else Core::Log->Info("Vertical Synchronization enabled");
 
     // enable texturing
     glEnable(GL_TEXTURE_2D);
@@ -81,7 +86,7 @@ CoreGraphics::CoreGraphics()noexcept
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glPolygonOffset(1.1f, 4.0f);
-    glClearDepthf(1.0f);
+    glClearDepth(1.0f);
 
     // enable culling
     glEnable(GL_CULL_FACE);
@@ -96,7 +101,7 @@ CoreGraphics::CoreGraphics()noexcept
     if(this->SupportFeature("GL_ARB_uniform_buffer_object"))
     {
         // calculate UBO size (std140)
-        const coreUint iSize = sizeof(coreMatrix)*3 + sizeof(coreVector4)*3;
+        constexpr_var coreUint iSize = sizeof(coreLight)*CORE_GRAPHICS_LIGHTS;
 
         // generate global UBO
         glGenBuffers(1, &m_iUniformBuffer);
@@ -109,8 +114,12 @@ CoreGraphics::CoreGraphics()noexcept
     else m_iUniformBuffer = 0;
 
     // reset camera and view
-    this->SetCamera(NULL, NULL, NULL);
+    this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
     this->ResizeView(coreVector2(0.0f,0.0f));
+
+    // reset ambient
+    for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+        this->SetLight(i, coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), 1.0f, coreVector4(1.0f,1.0f,1.0f,1.0f));
 
     // reset scene
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -146,9 +155,127 @@ CoreGraphics::~CoreGraphics()
 
 
 // ******************************************************************
+// set camera and create camera matrix
+void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
+{
+    bool bNewCamera = false;
+
+    // set attributes of the camera
+    if(m_vCamPosition != vPosition) {m_vCamPosition = vPosition; bNewCamera = true;}
+    const coreVector3 vDirNorm = vDirection.Normalized();   if(m_vCamDirection   != vDirNorm) {m_vCamDirection   = vDirNorm; bNewCamera = true;}
+    const coreVector3 vOriNorm = vOrientation.Normalized(); if(m_vCamOrientation != vOriNorm) {m_vCamOrientation = vOriNorm; bNewCamera = true;}
+
+    // create camera matrix
+    if(bNewCamera) m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
+}
+
+
+// ******************************************************************
+// resize view and create projection matrices
+void CoreGraphics::ResizeView(coreVector2 vResolution)
+{
+    // retrieve window resolution
+    if(!vResolution.x) vResolution.x = Core::System->GetResolution().x;
+    if(!vResolution.y) vResolution.y = Core::System->GetResolution().y;
+
+    if(m_vCurResolution != vResolution)
+    {
+        m_vCurResolution = vResolution;
+
+        // set viewport
+        glViewport(0, 0, (int)vResolution.x, (int)vResolution.y);
+
+        // generate projection matrices
+        m_mPerspective = coreMatrix4::Perspective(vResolution, TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
+        m_mOrtho       = coreMatrix4::Ortho(vResolution);
+    }
+}
+
+
+// ******************************************************************
+// set and update ambient light attributes
+void CoreGraphics::SetLight(const int& iID, const coreVector3& vPosition, const coreVector3& vDirection, const float& fRange, const coreVector4& vValue)
+{
+    SDL_assert(iID < CORE_GRAPHICS_LIGHTS);
+    coreLight& CurLight = m_aLight[iID];
+
+    bool bNewLight = false;
+
+    const coreVector3 vDirNorm = vDirection.Normalized(); 
+
+    // set attributes of the light
+    if(CurLight.vPosition  != vPosition) {CurLight.vPosition  = vPosition; bNewLight = true;}
+    if(CurLight.vDirection != vDirNorm)  {CurLight.vDirection = vDirNorm;  bNewLight = true;}
+    if(CurLight.fRange     != fRange)    {CurLight.fRange     = fRange;    bNewLight = true;}
+    if(CurLight.vValue     != vValue)    {CurLight.vValue     = vValue;    bNewLight = true;}
+
+    if(bNewLight && m_iUniformBuffer)
+    {
+        // map required area of the global UBO
+        coreByte* pRange = r_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreLight)*iID, sizeof(coreLight),
+                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
+
+        // update shader-data
+        std::memcpy(pRange, &CurLight, sizeof(coreLight));
+        glUnmapBuffer(GL_UNIFORM_BUFFER);
+    }
+}
+
+
+// ******************************************************************
+// take screenshot
+void CoreGraphics::Screenshot(const char* pcPath)
+{
+    const coreUint iWidth  = (int)Core::System->GetResolution().x;
+    const coreUint iHeight = (int)Core::System->GetResolution().y;
+    const coreUint iPitch  = iWidth*3;
+    const coreUint iSize   = iHeight*iPitch;
+
+    // create folder hierarchy
+    const char* pcFullPath = coreData::Print("%s.png", pcPath);
+    coreData::FolderCreate(pcFullPath);
+
+    // read pixel data from the frame buffer
+    coreByte* pData = new coreByte[iSize];
+    glReadPixels(0, 0, iWidth, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
+
+    // flip pixel data vertically
+    coreByte* pConvert = new coreByte[iSize];
+    for(coreUint i = 0; i < iHeight; ++i)
+        std::memcpy(pConvert + (iHeight-i-1)*iPitch, pData + i*iPitch, iPitch);
+
+    // create an SDL surface
+    SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidth, iHeight, 24, iPitch, CORE_TEXTURE_MASK);
+    if(pSurface)
+    {
+        // save the surface as PNG image
+        IMG_SavePNG(pSurface, pcFullPath);
+        SDL_FreeSurface(pSurface);
+    }
+
+    SAFE_DELETE_ARRAY(pData)
+    SAFE_DELETE_ARRAY(pConvert)
+}
+
+void CoreGraphics::Screenshot()
+{
+    // get timestamp
+    coreUint awTime[6];
+    coreData::DateTime(&awTime[0], &awTime[1], &awTime[2], &awTime[3], &awTime[4], &awTime[5]);
+
+    // take standard screenshot
+    this->Screenshot(coreData::Print("screenshots/screenshot_%04d%02d%02d_%02d%02d%02d", awTime[5], awTime[4], awTime[3], awTime[2], awTime[1], awTime[0]));
+}
+
+
+// ******************************************************************
 // update the graphics scene
 void CoreGraphics::__UpdateScene()
 {
+    // take screenshot
+    if(Core::Input->GetKeyboardButton(SDL_SCANCODE_PRINTSCREEN, CORE_INPUT_PRESS))
+        Core::Graphics->Screenshot();
+
     // disable last textures and shader-program
     coreTexture::DisableAll();
     coreProgram::Disable();
@@ -162,86 +289,4 @@ void CoreGraphics::__UpdateScene()
 #else
     glClear(GL_DEPTH_BUFFER_BIT);
 #endif
-}
-
-
-// ******************************************************************
-// set camera and create camera matrix
-void CoreGraphics::SetCamera(const coreVector3* pvPosition, const coreVector3* pvDirection, const coreVector3* pvOrientation)
-{
-    bool bNewCamera = false;
-
-    // set attributes of the camera
-    if(pvPosition)    {if(m_vCamPosition != *pvPosition) {m_vCamPosition = *pvPosition; bNewCamera = true;}}
-    if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_vCamDirection   != vDirNorm) {m_vCamDirection   = vDirNorm; bNewCamera = true;}}
-    if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_vCamOrientation != vOriNorm) {m_vCamOrientation = vOriNorm; bNewCamera = true;}}
-
-    if(bNewCamera)
-    {
-        // create camera matrix
-        m_mCamera = coreMatrix::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
-
-        if(m_iUniformBuffer)
-        {
-            // map required area of the global UBO
-            coreByte* pRange = r_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreMatrix)*2, sizeof(coreMatrix)+sizeof(coreVector4),
-                                                                  GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
-
-            // update camera shader-data
-            std::memcpy(pRange,                   &m_mCamera,       sizeof(m_mCamera));
-            std::memcpy(pRange+sizeof(m_mCamera), &m_vCamDirection, sizeof(m_vCamDirection));
-
-            glUnmapBuffer(GL_UNIFORM_BUFFER);
-        }
-        else coreProgram::Disable();
-    }
-}
-
-
-// ******************************************************************
-// resize view and create projection matrices
-void CoreGraphics::ResizeView(coreVector2 vResolution)
-{
-    if(!vResolution.x) vResolution.x = Core::System->GetResolution().x;
-    if(!vResolution.y) vResolution.y = Core::System->GetResolution().y;
-    if(m_vCurResolution == vResolution) return;
-
-    // set viewport
-    glViewport(0, 0, (int)vResolution.x, (int)vResolution.y);
-
-    // generate projection matrices
-    m_mPerspective = coreMatrix::Perspective(vResolution, TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
-    m_mOrtho       = coreMatrix::Ortho(vResolution);
-
-    if(m_iUniformBuffer)
-    {
-        // map required area of the global UBO
-        coreByte* pRange = r_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(coreMatrix)*2,
-                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
-
-        // update view shader-data
-        std::memcpy(pRange,                        &m_mPerspective, sizeof(m_mPerspective));
-        std::memcpy(pRange+sizeof(m_mPerspective), &m_mOrtho,       sizeof(m_mOrtho));
-
-        glUnmapBuffer(GL_UNIFORM_BUFFER);
-    }
-    else coreProgram::Disable();
-
-    m_vCurResolution = vResolution;
-}
-
-
-// ******************************************************************
-// create a screenshot
-void CoreGraphics::Screenshot(const char* pcPath)
-{
-    // TODO: implement function
-    // ? extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
-    // ? extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst);
-}
-
-void CoreGraphics::Screenshot()
-{
-    // TODO: implement function
-    this->Screenshot("");
 }

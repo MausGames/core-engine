@@ -51,16 +51,6 @@ private:
     ~CoreSystem();
     friend class Core;
 
-    //! update the window event system
-    //! @{
-    bool __UpdateEvents();
-    //! @}
-
-    //! update the high precision time calculation
-    //! @{
-    void __UpdateTime();
-    //! @}
-
 
 public:
     //! control window
@@ -96,6 +86,18 @@ public:
     inline const bool& SupportSSE3()const         {return m_abSSE[2];}
     inline const bool& SupportSSE41()const        {return m_abSSE[3];}
     inline const bool& SupportSSE42()const        {return m_abSSE[4];}
+    //! @}
+
+
+private:
+    //! update the window event system
+    //! @{
+    bool __UpdateEvents();
+    //! @}
+
+    //! update the high precision time
+    //! @{
+    void __UpdateTime();
     //! @}
 };
 

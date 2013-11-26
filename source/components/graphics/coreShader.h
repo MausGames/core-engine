@@ -14,34 +14,34 @@
 // ****************************************************************
 // shader definitions
 // TODO: document definitions
-#define CORE_SHADER_BUFFER_GLOBAL           "b_Global"
-#define CORE_SHADER_BUFFER_GLOBAL_NUM       0
+#define CORE_SHADER_BUFFER_GLOBAL              "b_Global"
+#define CORE_SHADER_BUFFER_GLOBAL_NUM          0
 
-#define CORE_SHADER_UNIFORM_PERSPECTIVE     "u_mPerspective"
-#define CORE_SHADER_UNIFORM_ORTHO           "u_mOrtho"
-#define CORE_SHADER_UNIFORM_CAMERA          "u_mCamera"
-#define CORE_SHADER_UNIFORM_CAM_DIRECTION   "u_v3CamDirection"
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION "u_v3LightDirection"
-#define CORE_SHADER_UNIFORM_LIGHT_VALUE     "u_v4LightValue"
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)  coreData::Print("u_asLight[%d].v3Position",  i)
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i) coreData::Print("u_asLight[%d].v3Direction", i)
+#define CORE_SHADER_UNIFORM_LIGHT_RANGE(i)     coreData::Print("u_asLight[%d].fRange",      i)
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE(i)     coreData::Print("u_asLight[%d].v4Value",     i)
 
-#define CORE_SHADER_UNIFORM_TRANSFORM       "u_mTransform"
-#define CORE_SHADER_UNIFORM_COLOR           "u_v4Color"
-#define CORE_SHADER_UNIFORM_TEX_SIZE        "u_v2TexSize"
-#define CORE_SHADER_UNIFORM_TEX_OFFSET      "u_v2TexOffset"
+#define CORE_SHADER_UNIFORM_3D_MODELVIEW       "u_m4ModelView"
+#define CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ   "u_m4ModelViewProj"
+#define CORE_SHADER_UNIFORM_3D_NORMAL          "u_m3Normal"
+#define CORE_SHADER_UNIFORM_2D_SCREENVIEW      "u_m3ScreenView"
+#define CORE_SHADER_UNIFORM_COLOR              "u_v4Color"
+#define CORE_SHADER_UNIFORM_TEXSIZE            "u_v2TexSize"
+#define CORE_SHADER_UNIFORM_TEXOFFSET          "u_v2TexOffset"
+#define CORE_SHADER_UNIFORM_TEXTURE(i)         coreData::Print("u_s2Texture[%d]", i)
+                                               
+#define CORE_SHADER_ATTRIBUTE_POSITION         "a_v3Position"
+#define CORE_SHADER_ATTRIBUTE_TEXTURE          "a_v2Texture"
+#define CORE_SHADER_ATTRIBUTE_NORMAL           "a_v3Normal"
+#define CORE_SHADER_ATTRIBUTE_TANGENT          "a_v4Tangent"
+#define CORE_SHADER_ATTRIBUTE_POSITION_NUM     0
+#define CORE_SHADER_ATTRIBUTE_TEXTURE_NUM      1
+#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM       2
+#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM      3
 
-#define CORE_SHADER_ATTRIBUTE_POSITION      "a_v3Position"
-#define CORE_SHADER_ATTRIBUTE_TEXTURE       "a_v2Texture"
-#define CORE_SHADER_ATTRIBUTE_NORMAL        "a_v3Normal"
-#define CORE_SHADER_ATTRIBUTE_TANGENT       "a_v4Tangent"
-#define CORE_SHADER_ATTRIBUTE_POSITION_NUM  0
-#define CORE_SHADER_ATTRIBUTE_TEXTURE_NUM   1
-#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM    2
-#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM   3
-
-#define CORE_SHADER_OUTPUT_COLOR_0          "o_v4Color0"
-#define CORE_SHADER_OUTPUT_COLOR_1          "o_v4Color1"
-#define CORE_SHADER_OUTPUT_COLOR_2          "o_v4Color2"
-#define CORE_SHADER_OUTPUT_COLOR_3          "o_v4Color3"
+#define CORE_SHADER_OUTPUT_COLOR(i)            coreData::Print("o_v4Color%d", i)
+#define CORE_SHADER_OUTPUT_COLORS              4   
 
 
 // ****************************************************************
@@ -50,7 +50,7 @@ class coreShader final : public coreResource
 {
 private:
     GLuint m_iShader;                   //!< shader identifier/OpenGL name
-    static std::string s_asGlobal[3];   //!< global shader data (0 = version | 1 = vertex | 2 = fragment)
+    static std::string s_asGlobal[3];   //!< global shader data (0 = defines | 1 = vertex | 2 = fragment)
 
 
 public:
@@ -99,7 +99,7 @@ private:
     GLuint m_iProgram;                       //!< shader-program identifier/OpenGL name
 
     std::vector<coreShaderPtr> m_apShader;   //!< attached shader objects
-    int m_iStatus;                           //!< current status (0 = new | 1 = ready for linking | 2 = successfully linked)
+    int m_iStatus;                           //!< current status (0 = new | 1 = ready for linking | 2 = successfully linked | 3 = texture units bound)
 
     coreLookup<int> m_aiUniform;             //!< identifiers for uniform variables
     coreLookup<int> m_aiAttribute;           //!< identifiers for attribute variables
@@ -129,17 +129,18 @@ public:
     coreProgram* AttachShaderFile(const char* pcPath);
     coreProgram* AttachShaderLink(const char* pcName);
     inline void Finish()          {if(m_iStatus) return; m_iStatus = 1; this->Init();}
-    inline bool IsFinished()const {return (m_iStatus == 2) ? true : false;}
+    inline bool IsFinished()const {return (m_iStatus >= 2) ? true : false;}
     //! @}
 
     //! set uniform variables
     //! @{
-    inline void SetUniform(const char* pcName, const int& iInt)                                   {const int iID = this->CheckCache(pcName, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1i (iID, iInt);}
-    inline void SetUniform(const char* pcName, const float& fFloat)                               {const int iID = this->CheckCache(pcName, coreVector4(fFloat,      0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1f (iID, fFloat);}
-    inline void SetUniform(const char* pcName, const coreVector2& vVector)                        {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f, 0.0f));       if(iID >= 0) glUniform2fv(iID, 1, vVector);}
-    inline void SetUniform(const char* pcName, const coreVector3& vVector)                        {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f));             if(iID >= 0) glUniform3fv(iID, 1, vVector);}
-    inline void SetUniform(const char* pcName, const coreVector4& vVector)                        {const int iID = this->CheckCache(pcName, vVector);                                    if(iID >= 0) glUniform4fv(iID, 1, vVector);}
-    inline void SetUniform(const char* pcName, const coreMatrix& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
+    inline void SetUniform(const char* pcName, const int& iInt)                                    {const int iID = this->CheckCache(pcName, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1i (iID, iInt);}
+    inline void SetUniform(const char* pcName, const float& fFloat)                                {const int iID = this->CheckCache(pcName, coreVector4(fFloat,      0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1f (iID, fFloat);}
+    inline void SetUniform(const char* pcName, const coreVector2& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f, 0.0f));       if(iID >= 0) glUniform2fv(iID, 1, vVector);}
+    inline void SetUniform(const char* pcName, const coreVector3& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f));             if(iID >= 0) glUniform3fv(iID, 1, vVector);}
+    inline void SetUniform(const char* pcName, const coreVector4& vVector)                         {const int iID = this->CheckCache(pcName, vVector);                                    if(iID >= 0) glUniform4fv(iID, 1, vVector);}
+    inline void SetUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose) {glUniformMatrix3fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
+    inline void SetUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
     //! @}
 
     //! check for cached uniform variables

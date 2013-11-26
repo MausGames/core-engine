@@ -46,10 +46,9 @@ coreShader::~coreShader()
 // load shader resource data
 coreError coreShader::Load(coreFile* pFile)
 {
-    SDL_assert(!m_iShader);
     coreFileLock Lock(pFile, true);
 
-    if(m_iShader)         return CORE_INVALID_CALL;
+    ASSERT_IF(m_iShader)  return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
@@ -71,7 +70,7 @@ coreError coreShader::Load(coreFile* pFile)
 
     // assemble the shader
     const std::string& sGlobal = s_asGlobal[(iType == GL_VERTEX_SHADER) ? 1 : 2];
-    const char* apcData[3]     = {s_asGlobal[0].c_str(),  sGlobal.c_str(),  r_cast<const char*>(pFile->GetData())};
+    const char* apcData[3]     = {s_asGlobal[0].c_str(),         sGlobal.c_str(),         r_cast<const char*>(pFile->GetData())};
     const GLint aiSize[3]      = {(GLint)s_asGlobal[0].length(), (GLint)sGlobal.length(), (GLint)pFile->GetSize()};
 
     // create and compile the shader
@@ -147,9 +146,11 @@ void coreShader::__InitGlobal()
     coreFile* pGlobalFragment = Core::Manager::Resource->RetrieveFile("data/shaders/global.fs");
 
     // create global shader data
-    s_asGlobal[0] = coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->SupportGLSL()*100.0f : 110.0f);
-    s_asGlobal[1] = r_cast<const char*>(pGlobalVertex->GetData());
-    s_asGlobal[2] = r_cast<const char*>(pGlobalFragment->GetData());
+    s_asGlobal[0].assign(coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->SupportGLSL()*100.0f : 110.0f));
+    s_asGlobal[0].append(coreData::Print("\n#define CORE_TEXTURE_UNITS   (%d)", CORE_TEXTURE_UNITS));
+    s_asGlobal[0].append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS (%d)", CORE_GRAPHICS_LIGHTS));
+    s_asGlobal[1].assign(r_cast<const char*>(pGlobalVertex->GetData()),   pGlobalVertex->GetSize());
+    s_asGlobal[2].assign(r_cast<const char*>(pGlobalFragment->GetData()), pGlobalFragment->GetSize());
 
     pGlobalVertex->UnloadData();
     pGlobalFragment->UnloadData();
@@ -186,8 +187,8 @@ coreError coreProgram::Init()
     if(m_iStatus != 1) return CORE_INVALID_CALL;
 
     // check if all requested shaders are loaded
-    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
-        if(!(*it).IsLoaded()) return CORE_BUSY;
+    FOR_EACH(it, m_apShader)
+        if(!it->IsLoaded()) return CORE_BUSY;
 
 #if defined(_CORE_DEBUG_)
 
@@ -199,11 +200,11 @@ coreError coreProgram::Init()
 #endif
 
     // create shader-program
-    SDL_assert(!m_iProgram);
+    ASSERT_IF(m_iProgram) return CORE_INVALID_CALL;
     m_iProgram = glCreateProgram();
 
     // attach shader objects
-    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
+    FOR_EACH(it, m_apShader)
         glAttachShader(m_iProgram, (*it)->GetShader());
 
     // set attribute and output locations
@@ -213,10 +214,8 @@ coreError coreProgram::Init()
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
     if(Core::Graphics->GetUniformBuffer())
     {
-        glBindFragDataLocation(m_iProgram, 0, CORE_SHADER_OUTPUT_COLOR_0);
-        glBindFragDataLocation(m_iProgram, 1, CORE_SHADER_OUTPUT_COLOR_1);
-        glBindFragDataLocation(m_iProgram, 2, CORE_SHADER_OUTPUT_COLOR_2);
-        glBindFragDataLocation(m_iProgram, 3, CORE_SHADER_OUTPUT_COLOR_3);
+        for(int i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+            glBindFragDataLocation(m_iProgram, i, CORE_SHADER_OUTPUT_COLOR(i));
     }
 
     // link shader-program
@@ -225,7 +224,10 @@ coreError coreProgram::Init()
 
     // bind global uniform buffer object
     if(Core::Graphics->GetUniformBuffer())
-        glUniformBlockBinding(m_iProgram, glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_GLOBAL), CORE_SHADER_BUFFER_GLOBAL_NUM);
+    {
+        const int iBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_GLOBAL);
+        if(iBlock >= 0) glUniformBlockBinding(m_iProgram, iBlock, CORE_SHADER_BUFFER_GLOBAL_NUM);
+    }
 
     // check for errors
     int iLinked;
@@ -243,7 +245,7 @@ coreError coreProgram::Init()
 
 #endif
 
-    if(!iLinked)
+    ASSERT_IF(!iLinked)
     {
         // get length of error-log
         int iLength;
@@ -258,7 +260,7 @@ coreError coreProgram::Init()
             // write error-log
             Core::Log->Error(0, "Shader-Program could not be linked/validated");
             Core::Log->ListStart("Shader-Program Error Log");
-            for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
+            FOR_EACH(it, m_apShader)
                 Core::Log->ListEntry(coreData::Print("(%s)", (*it)->GetPath()));
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
@@ -278,7 +280,7 @@ coreError coreProgram::Exit()
     if(!m_iProgram) return CORE_INVALID_CALL;
 
     // detach shader objects
-    for(auto it = m_apShader.begin(); it != m_apShader.end(); ++it)
+    FOR_EACH(it, m_apShader)
         glDetachShader(m_iProgram, (*it)->GetShader());
 
     // clear identifiers and cache
@@ -316,15 +318,25 @@ bool coreProgram::Enable()
     s_pCurrent = this;
     glUseProgram(m_iProgram);
 
+    // bind all texture units
+    if(m_iStatus == 2)
+    {
+        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+            glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_TEXTURE(i)), i);
+
+        m_iStatus = 3;
+    }
+
     // forward global uniform data without UBO
     if(!Core::Graphics->GetUniformBuffer())
     {
-        this->SetUniform(CORE_SHADER_UNIFORM_PERSPECTIVE,     Core::Graphics->GetPerspective(), false);
-        this->SetUniform(CORE_SHADER_UNIFORM_ORTHO,           Core::Graphics->GetOrtho(),       false);
-        this->SetUniform(CORE_SHADER_UNIFORM_CAMERA,          Core::Graphics->GetCamera(),      false);
-        this->SetUniform(CORE_SHADER_UNIFORM_CAM_DIRECTION,   Core::Graphics->GetCamDirection());
-        this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, coreVector3(0.0f,0.0f,-1.0f));
-        this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_VALUE,     coreVector4(1.0f,1.0f,1.0f,1.0f));
+        for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+        {
+            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_POSITION(i),  Core::Graphics->GetLight(i).vPosition);
+            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i), Core::Graphics->GetLight(i).vDirection);
+            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_RANGE(i),     Core::Graphics->GetLight(i).fRange);
+            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_VALUE(i),     Core::Graphics->GetLight(i).vValue);
+        }
     }
 
     return true;

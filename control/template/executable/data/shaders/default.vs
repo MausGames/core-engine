@@ -2,14 +2,14 @@
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
-//| Released under zlib License                        |//
-//| More Information in the README.md and LICENSE.txt  |//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
-// #version defined by application
+
 
 void main()
 {
-    gl_Position  = u_mPerspective * u_mCamera * u_mTransform * vec4(a_v3Position, 1.0);
-    v_v2TexCoord = a_v2Texture;
+    gl_Position    = u_m4ModelViewProj * vec4(a_v3Position, 1.0);
+    v_v2TexCoord_0 = a_v2Texture * u_v2TexSize + u_v2TexOffset;
 }

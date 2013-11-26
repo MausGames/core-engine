@@ -22,7 +22,7 @@ CoreSystem::CoreSystem()noexcept
 {
     Core::Log->Header("System Interface");
 
-    // get SDL version information
+    // get SDL version
     SDL_version Version;
     SDL_GetVersion(&Version);
 
@@ -44,19 +44,22 @@ CoreSystem::CoreSystem()noexcept
         for(int i = 0; i < iNumModes; ++i)
         {
             SDL_DisplayMode Mode;
+
+            // retrieve resolution
             SDL_GetDisplayMode(0, i, &Mode);
+            const coreVector2 vMode = coreVector2((float)Mode.w, (float)Mode.h);
 
             coreUint j = 0;
             for(; j < m_avAvailable.size(); ++j)
             {
                 // check already added resolutions
-                if(m_avAvailable[j].x == (float)Mode.w && m_avAvailable[j].y == (float)Mode.h)
+                if(m_avAvailable[j] == vMode)
                     break;
             }
             if(j == m_avAvailable.size())
             {
                 // add new resolution
-                m_avAvailable.push_back(coreVector2((float)Mode.w, (float)Mode.h));
+                m_avAvailable.push_back(vMode);
                 Core::Log->ListEntry(coreData::Print("%4d x %4d", Mode.w, Mode.h));
             }
         }
@@ -129,7 +132,7 @@ CoreSystem::CoreSystem()noexcept
         asm volatile("cpuid" : "=a" (m_aaiCPUID[1][0]), "=b" (m_aaiCPUID[1][1]), "=c" (m_aaiCPUID[1][2]), "=d" (m_aaiCPUID[1][3]) : "a" (1), "c" (0));
     #endif
 #else
-    std::memset(m_aaiCPUID, 0, sizeof(int)*2*4);
+    std::memset(m_aaiCPUID, 0, sizeof(m_aaiCPUID));
 #endif
 
     // check for SSE support
@@ -173,16 +176,11 @@ CoreSystem::~CoreSystem()
 // update the window event system
 bool CoreSystem::__UpdateEvents()
 {
-    SDL_Event Event;
-
-    // TODO MAJOR: define, where to reset relative mouse values (+joysticks?)
-    //Core::Input->SetMouseRelative(coreVector2(0.0f,0.0f));
-    //Core::Input->SetMouseWheel(0.0f);
-
     // reset minimize status
     m_bMinimized = false;
 
     // process events
+    SDL_Event Event;
     while(SDL_PollEvent(&Event))
     {
         switch(Event.type)
@@ -193,7 +191,7 @@ bool CoreSystem::__UpdateEvents()
             {
                 // minimize window
                 case SDL_WINDOWEVENT_HIDDEN:
-                case SDL_WINDOW_MINIMIZED:
+                case SDL_WINDOWEVENT_MINIMIZED:
                 case SDL_WINDOWEVENT_MAXIMIZED:
                 case SDL_WINDOWEVENT_RESTORED:
                     m_bMinimized = true;
@@ -207,63 +205,12 @@ bool CoreSystem::__UpdateEvents()
             }
             break;
 
-        // TODO: implement with coreTextBox
-        //case SDL_TEXTINPUT:
-        //    Core::Input->SetKeyboardChar((char)Event.text.text[0]);
-        //    break;
-
-        // press keyboard button
-        case SDL_KEYDOWN:
-            Core::Input->SetKeyboardButton(Event.key.keysym.scancode, true);
-                 if(Event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) Core::Input->SetKeyboardChar((char)8);
-            else if(Event.key.keysym.scancode == SDL_SCANCODE_RETURN)    Core::Input->SetKeyboardChar((char)13);
-            break;
-
-        // release keyboard button
-        case SDL_KEYUP:
-            Core::Input->SetKeyboardButton(Event.key.keysym.scancode, false);
-            break;
-
-        // press mouse button
-        case SDL_MOUSEBUTTONDOWN:
-            Core::Input->SetMouseButton(Event.button.button, true);
-            break;
-
-        // release mouse button
-        case SDL_MOUSEBUTTONUP:
-            Core::Input->SetMouseButton(Event.button.button, false);
-            break;
-
-        // move mouse position
-        case SDL_MOUSEMOTION:
-            Core::Input->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /m_vResolution + coreVector2(-0.5f, 0.5f));
-            Core::Input->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/m_vResolution * m_fLastTime*120.0f);
-            break;
-
-        // move mouse wheel
-        case SDL_MOUSEWHEEL:
-            Core::Input->SetMouseWheel((float)Event.wheel.y);
-            break;
-
-        // press joystick button
-        case SDL_JOYBUTTONDOWN:
-            Core::Input->SetJoystickButton(Event.jbutton.which, Event.jbutton.button, true);
-            break;
-
-        // release joystick button
-        case SDL_JOYBUTTONUP:
-            Core::Input->SetJoystickButton(Event.jbutton.which, Event.jbutton.button, false);
-            break;
-
-        // move joystick axis
-        case SDL_JOYAXISMOTION:
-            if(ABS(Event.jaxis.value) > 8000) Core::Input->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, (float)SIG(Event.jaxis.value));
-                                         else Core::Input->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
-            break;
-
         // quit the application
         case SDL_QUIT:
             return false;
+
+        // forward event to input component
+        default: if(!Core::Input->ProcessEvent(Event)) return true;
         }
     }
 
@@ -272,7 +219,7 @@ bool CoreSystem::__UpdateEvents()
 
 
 // ******************************************************************
-// update the high precision time calculation
+// update the high precision time
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
