@@ -1,7 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreEngine", "CoreEngine\CoreEngine.vcxproj", "{F56224C4-B0AE-434A-90E0-1ABE850851E2}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreEngine", "CoreEngine\CoreEngine.vcxproj", "{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +11,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F56224C4-B0AE-434A-90E0-1ABE850851E2}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F56224C4-B0AE-434A-90E0-1ABE850851E2}.Debug|Win32.Build.0 = Debug|Win32
-		{F56224C4-B0AE-434A-90E0-1ABE850851E2}.Release|Win32.ActiveCfg = Release|Win32
-		{F56224C4-B0AE-434A-90E0-1ABE850851E2}.Release|Win32.Build.0 = Release|Win32
+		{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}.Debug|Win32.Build.0 = Debug|Win32
+		{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}.Release|Win32.ActiveCfg = Release|Win32
+		{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

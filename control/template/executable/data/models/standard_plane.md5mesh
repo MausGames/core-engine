@@ -1,0 +1,27 @@
+MD5Version 10
+commandline ""
+
+numJoints 1
+numMeshes 1
+
+joints {
+  "Bone" -1 ( 0.0 0.0 0.0 ) ( -0.7071068287 0.0 0.0 )
+}
+
+mesh {
+  shader "default"
+  numverts 4
+  vert 0 ( 0.0001 0.0001 ) 3 1
+  vert 1 ( 0.0001 0.9999 ) 1 1
+  vert 2 ( 0.9999 0.0001 ) 2 1
+  vert 3 ( 0.9999 0.9999 ) 0 1
+  numtris 2
+  tri 0 2 3 1
+  tri 1 2 1 0
+  numweights 4
+  weight 0 0 1.0 (  0.5 0.0  0.5 )
+  weight 1 0 1.0 ( -0.5 0.0  0.5 )
+  weight 2 0 1.0 (  0.5 0.0 -0.5 )
+  weight 3 0 1.0 ( -0.5 0.0 -0.5 )
+}
+

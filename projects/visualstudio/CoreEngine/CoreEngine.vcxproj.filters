@@ -46,6 +46,9 @@
     <Filter Include="source\utilities\file">
       <UniqueIdentifier>{56849995-541c-4251-ae5c-287c45a3eb01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\objects\menu">
+      <UniqueIdentifier>{294dfd1e-3ceb-4b9b-ad55-0314d1cadf6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -138,6 +141,12 @@
     <ClCompile Include="..\..\..\source\utilities\data\coreLookup.cpp">
       <Filter>source\utilities\data</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp">
+      <Filter>source\objects\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\components\graphics\coreFont.cpp">
+      <Filter>source\components\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -226,6 +235,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h">
       <Filter>source\utilities\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h">
+      <Filter>source\objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\coreFont.h">
+      <Filter>source\components\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

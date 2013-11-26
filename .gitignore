@@ -2,9 +2,9 @@ docs/index.html
 docs/html/
 projects/visualstudio/CoreEngine/Debug/
 projects/visualstudio/CoreEngine/Release/
-projects/visualstudio/CoreEngine.opensdf
-projects/visualstudio/CoreEngine.sdf
-projects/visualstudio/CoreEngine.suo
+projects/visualstudio/*.opensdf
+projects/visualstudio/*.sdf
+projects/visualstudio/*.suo
 projects/visualstudio/ipch/
 projects/visualstudio/Debug/
 projects/visualstudio/Release/
