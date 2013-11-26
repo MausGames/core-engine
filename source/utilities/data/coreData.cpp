@@ -151,6 +151,32 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
 
 
 // ****************************************************************
+// create folder hierarchy
+void coreData::FolderCreate(const std::string& sPath)
+{
+    int iPos = 0;
+
+    do
+    {
+        // get next subfolder
+        iPos = sPath.find_first_of("/\\", iPos+2);
+        const std::string sSubFolder = sPath.substr(0, iPos);
+
+        // ignore file
+        if((int)sSubFolder.find(".") >= 0) return;
+
+        // create subfolder
+#if defined(_CORE_WINDOWS_)
+        CreateDirectoryA(sSubFolder.c_str(), NULL);
+#else
+        mkdir(sSubFolder.c_str(), S_IRWXU);
+#endif
+    }
+    while(iPos >= 0);
+}
+
+
+// ****************************************************************
 // retrieve current date and time
 void coreData::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea)
 {

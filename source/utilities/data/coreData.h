@@ -49,6 +49,7 @@ public:
     //! @{
     static bool FileExists(const char* pcPath);
     static coreError FolderSearch(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput);
+    static void FolderCreate(const std::string& sPath);
     //! @}
 
     //! retrieve current date and time

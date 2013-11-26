@@ -72,8 +72,8 @@ public:
 
     //! matrix calculation operators
     //! @{
-    coreVector2 operator * (const coreMatrix& m)const noexcept;
-    inline void operator *= (const coreMatrix& m)noexcept {*this = *this * m;}
+    coreVector2 operator * (const coreMatrix4& m)const noexcept;
+    inline void operator *= (const coreMatrix4& m)noexcept {*this = *this * m;}
     //! @}
 
     //! invert vector
@@ -173,8 +173,8 @@ public:
 
     //! matrix calculation operators
     //! @{
-    coreVector3 operator * (const coreMatrix& m)const noexcept;
-    inline void operator *= (const coreMatrix& m)noexcept {*this = *this * m;}
+    coreVector3 operator * (const coreMatrix4& m)const noexcept;
+    inline void operator *= (const coreMatrix4& m)noexcept {*this = *this * m;}
     //! @}
 
     //! invert vector
@@ -216,6 +216,7 @@ public:
     static coreVector3 Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)noexcept;
     static coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)noexcept;
     static coreVector3 Cross(const coreVector3& vInA, const coreVector3& vInB)noexcept;
+    static constexpr_func coreVector3 ColorCode(const coreUint& iCode)noexcept;
     //! @}
 };
 
@@ -280,8 +281,8 @@ public:
 
     //! matrix calculation operators
     //! @{
-    coreVector4 operator * (const coreMatrix& m)const noexcept;
-    inline void operator *= (const coreMatrix& m)noexcept {*this = *this * m;}
+    coreVector4 operator * (const coreMatrix4& m)const noexcept;
+    inline void operator *= (const coreMatrix4& m)noexcept {*this = *this * m;}
     //! @}
 
     //! invert vector
@@ -307,7 +308,12 @@ public:
     inline float Max()const noexcept    {return coreMath::Max(coreMath::Max(coreMath::Max(x, y), z), w);}
     //! @}
 
-    //! work with quaternions
+    //! static functions
+    //! @{
+    static constexpr_func coreVector4 ColorCode(const coreUint& iCode)noexcept;
+    //! @}
+
+    //! quaternion functions
     //! @{
     static coreVector4 QuatMul(const coreVector4& vInA, const coreVector4& vInB)noexcept;
     inline coreVector4 QuatConjugation()const noexcept               {return coreVector4(-x, -y, -z, w);}
@@ -349,6 +355,16 @@ constexpr_func coreVector3::coreVector3(const float& fx, const float& fy, const 
 
 
 // ****************************************************************
+// convert color-code to vector
+constexpr_func coreVector3 coreVector3::ColorCode(const coreUint& iCode)noexcept
+{
+    return coreVector3(float((iCode >> 16) % 256)*0.003921569f, 
+                       float((iCode >>  8) % 256)*0.003921569f, 
+                       float( iCode        % 256)*0.003921569f);
+}
+
+
+// ****************************************************************
 // constructor
 constexpr_func coreVector4::coreVector4()noexcept
 : x (0.0f), y (0.0f), z (0.0f), w (0.0f)
@@ -368,6 +384,17 @@ constexpr_func coreVector4::coreVector4(const coreVector2& c, const float& fz, c
 constexpr_func coreVector4::coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)noexcept
 : x (fx), y (fy), z (fz), w (fw)
 {
+}
+
+
+// ****************************************************************
+// convert color-code to vector
+constexpr_func coreVector4 coreVector4::ColorCode(const coreUint& iCode)noexcept
+{
+    return coreVector4(float((iCode >> 24) % 256)*0.003921569f, 
+                       float((iCode >> 16) % 256)*0.003921569f, 
+                       float((iCode >>  8) % 256)*0.003921569f, 
+                       float( iCode        % 256)*0.003921569f);
 }
 
 

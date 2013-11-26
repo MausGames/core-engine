@@ -32,16 +32,16 @@ public:
 
     //! message functions
     //! @{
-    inline void Header(const std::string& sText) {if(m_iLevel >= 0) this->__Write(false, "<hr /><span class=\"header\">" + sText + "</span><br />");}
-    inline void Info(const std::string& sText)   {if(m_iLevel >= 0) this->__Write(true, sText + "<br />");}
-    void Error(const bool& bShutdown, const std::string& sText);
+    inline void Header(const char* pcText) {if(m_iLevel >= 0) this->__Write(false, "<hr /><span class=\"header\">" + std::string(pcText) + "</span><br />");}
+    inline void Info(const char* pcText)   {if(m_iLevel >= 0) this->__Write(true, std::string(pcText) + "<br />");}
+    void Error(const bool& bShutdown, const char* pcText);
     //! @}
 
     //! list functions
     //! @{
-    inline void ListStart(const std::string& sText) {if(m_iLevel >= 0) this->__Write(true, "<span class=\"list\">" + sText + "</span><ul>");}
-    inline void ListEntry(const std::string& sText) {if(m_iLevel >= 0) this->__Write(false, "<li>" + sText + "</li>");}
-    inline void ListEnd()                           {if(m_iLevel >= 0) this->__Write(false, "</ul>");}
+    inline void ListStart(const char* pcText) {if(m_iLevel >= 0) this->__Write(true, "<span class=\"list\">" + std::string(pcText) + "</span><ul>");}
+    inline void ListEntry(const char* pcText) {if(m_iLevel >= 0) this->__Write(false, "<li>" + std::string(pcText) + "</li>");}
+    inline void ListEnd()                     {if(m_iLevel >= 0) this->__Write(false, "</ul>");}
     //! @}
 
     //! set logging level
@@ -57,7 +57,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreLog)
+    DISABLE_COPY(coreLog)
 
     //! write text to the log file
     //! @{

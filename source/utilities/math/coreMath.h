@@ -27,7 +27,7 @@
 #define MAX(x,y)     coreMath::Max(x,y)
 #define CLAMP(a,x,y) coreMath::Clamp(a,x,y)
 #define ABS(x)       coreMath::Abs(x)
-#define SIG(x)       coreMath::Sig(x)
+#define SIGN(x)      coreMath::Sign(x)
 
 
 // ****************************************************************
@@ -45,8 +45,8 @@ public:
     template <typename T> static constexpr_func T Clamp(const T& a, const T& x, const T& y)noexcept          {return Min(Max(a, x), y);}
     static constexpr_func int Abs(const int& x)noexcept                                                      {return (x < 0) ? -x : x;}
     static constexpr_func float Abs(const float& x)noexcept                                                  {return (x < 0.0f) ? -x : x;}
-    static constexpr_func int Sig(const int& x)noexcept                                                      {return (x < 0) ? -1 : 1;}
-    static constexpr_func float Sig(const float& x)noexcept                                                  {return (x < 0.0f) ? -1.0f : 1.0f;}
+    static constexpr_func int Sign(const int& x)noexcept                                                     {return (x < 0) ? -1 : 1;}
+    static constexpr_func float Sign(const float& x)noexcept                                                 {return (x < 0.0f) ? -1.0f : 1.0f;}
     //! @}
 
     //! calculate square root

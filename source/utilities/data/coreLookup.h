@@ -59,9 +59,11 @@ public:
 
     //! remove existing entries
     //! @{
+    void erase(const T& Entry)noexcept;
     void erase(const char* pcKey)noexcept;
-    inline void erase(const coreUint& iIndex)noexcept {SDL_assert(iIndex < m_aList.size()); m_aList.erase(m_aList.begin()+iIndex);}
-    inline void clear()noexcept                       {m_aList.clear();}
+    inline void erase(const coreUint& iIndex)noexcept            {SDL_assert(iIndex < m_aList.size()); m_aList.erase(m_aList.begin()+iIndex);}
+    inline void erase(const coreConstIterator& Iterator)noexcept {m_aList.erase(Iterator);}
+    inline void clear()noexcept                                  {m_aList.clear();}
     //! @}
 
     //! retrieve internal iterator
@@ -74,10 +76,12 @@ public:
 
 
 private:
-    //! retrieve iterator by specific key
+    //! retrieve iterator
     //! @{
-    inline coreIterator __retrieve(const char* pcKey)noexcept;
-    inline coreConstIterator __retrieve(const char* pcKey)const noexcept;
+    coreIterator __retrieve(const T& Entry)noexcept;
+    coreConstIterator __retrieve(const T& Entry)const noexcept;
+    coreIterator __retrieve(const char* pcKey)noexcept;
+    coreConstIterator __retrieve(const char* pcKey)const noexcept;
     //! @}
 
     //! check for valid iterator
@@ -162,6 +166,18 @@ template <typename T> T& coreLookup<T>::operator [] (const char* pcKey)noexcept
 
 // ****************************************************************
 // remove existing entry
+template <typename T> void coreLookup<T>::erase(const T& Entry)noexcept
+{
+    // retrieve and check iterator by specific value
+    auto it = this->__retrieve(Entry);
+    if(this->__check(it))
+    {
+        // remove existing entry
+        m_aList.erase(it);
+    }
+}
+
+
 template <typename T> void coreLookup<T>::erase(const char* pcKey)noexcept
 {
     // retrieve and check iterator by specific key
@@ -175,11 +191,38 @@ template <typename T> void coreLookup<T>::erase(const char* pcKey)noexcept
 
 
 // ****************************************************************
-// retrieve iterator to specific key
+// retrieve iterator by specific value
+template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retrieve(const T& Entry)noexcept
+{
+    // traverse all entries
+    FOR_EACH(it, m_aList)
+    {
+        // compare values
+        if(it->second == Entry)
+            return it;
+    }
+    return m_aList.end();
+}
+
+template <typename T> typename coreLookup<T>::coreConstIterator coreLookup<T>::__retrieve(const T& Entry)const noexcept
+{
+    // traverse all entries
+    FOR_EACH(it, m_aList)
+    {
+        // compare values
+        if(it->second == Entry)
+            return it;
+    }
+    return m_aList.end();
+}
+
+
+// ****************************************************************
+// retrieve iterator by specific key
 template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retrieve(const char* pcKey)noexcept
 {
     // traverse all entries
-    for(auto it = m_aList.begin(); it != m_aList.end(); ++it)
+    FOR_EACH(it, m_aList)
     {
         // compare string-keys
         if(!std::strcmp(it->first.c_str(), pcKey))
@@ -191,7 +234,7 @@ template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retr
 template <typename T> typename coreLookup<T>::coreConstIterator coreLookup<T>::__retrieve(const char* pcKey)const noexcept
 {
     // traverse all entries
-    for(auto it = m_aList.begin(); it != m_aList.end(); ++it)
+    FOR_EACH(it, m_aList)
     {
         // compare string-keys
         if(!std::strcmp(it->first.c_str(), pcKey))

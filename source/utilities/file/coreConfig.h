@@ -78,7 +78,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreConfig)
+    DISABLE_COPY(coreConfig)
 };
 
 

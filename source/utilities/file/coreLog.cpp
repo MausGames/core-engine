@@ -47,15 +47,15 @@ coreLog::coreLog(const char* pcPath)noexcept
 
 // ****************************************************************
 // write error message and shut down the application
-void coreLog::Error(const bool& bShutdown, const std::string& sText)
+void coreLog::Error(const bool& bShutdown, const char* pcText)
 {
     // write error message
-    if(m_iLevel <= 0) this->__Write(true, "<span class=\"error\">" + sText + "</span><br />");
+    if(m_iLevel <= 0) this->__Write(true, "<span class=\"error\">" + std::string(pcText) + "</span><br />");
 
     if(bShutdown)
     {
         // show critical error message
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", sText.c_str(), Core::System->GetWindow());
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", pcText, Core::System->GetWindow());
 
         // trigger breakpoint or shut down the application
 #if defined(_CORE_DEBUG_)
@@ -76,7 +76,7 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
     Core::Log->ListEntry(coreData::Print("<span class=\"gl\"><b>Source:</b>   0x%04X</span>", iSource));
     Core::Log->ListEntry(coreData::Print("<span class=\"gl\"><b>Type:</b>     0x%04X</span>", iType));
     Core::Log->ListEntry(coreData::Print("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity));
-    Core::Log->ListEntry("<span class=\"gl\">" + std::string(pcMessage) + "</span>");
+    Core::Log->ListEntry(coreData::Print("<span class=\"gl\">                     %s</span>", pcMessage));
     Core::Log->ListEnd();
 }
 
