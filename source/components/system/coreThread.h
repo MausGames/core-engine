@@ -35,7 +35,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreThread)
+    DISABLE_COPY(coreThread)
 
     //! execute the thread
     //! @{

@@ -27,11 +27,14 @@ void coreObject2D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     if(!pProgram) return;
     if(!pProgram->Enable()) return;
 
+    // calculate screen-view matrix
+    const coreMatrix4 mScreenView = m_mTransform * Core::Graphics->GetOrtho();
+
     // update all object uniforms
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM,  m_mTransform, false);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_COLOR,      m_vColor);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEX_SIZE,   m_vTexSize);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEX_OFFSET, m_vTexOffset);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, mScreenView.m124(), false);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXSIZE,       m_vTexSize);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXOFFSET,     m_vTexOffset);
 
     if(bTextured)
     {
@@ -55,7 +58,7 @@ void coreObject2D::Move()
         if(m_iUpdate & 2)
         {
             // update rotation matrix
-            m_mRotation = coreMatrix::RotationZ(m_vDirection);
+            m_mRotation = coreMatrix4::RotationZ(m_vDirection);
         }
 
         // calculate resolution-modified transformation parameters
@@ -64,8 +67,8 @@ void coreObject2D::Move()
         const coreVector2  vScreenSize     = m_vSize*vResolution.x;
 
         // update transformation matrix
-        m_mTransform = coreMatrix::Scaling(coreVector3(vScreenSize, 0.0f)) * m_mRotation *
-                       coreMatrix::Translation(coreVector3(vScreenPosition, 0.0f));
+        m_mTransform = coreMatrix4::Scaling(coreVector3(vScreenSize, 0.0f)) * m_mRotation *
+                       coreMatrix4::Translation(coreVector3(vScreenPosition, 0.0f));
 
         // reset the update status
         m_iUpdate = 0;

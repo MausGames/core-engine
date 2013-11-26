@@ -114,8 +114,8 @@ void Core::__Run()
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())
     {
-        // update the input component
-        Core::Input->__UpdateInput();
+        // update the input button interface
+        Core::Input->__UpdateButtons();
 
         // move and render the application
         pApplication->Move();
@@ -124,7 +124,8 @@ void Core::__Run()
         // update all remaining components
         Core::Graphics->__UpdateScene();
         Core::System->__UpdateTime();
-
+        Core::Input->__ClearButtons();
+    
         // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())
             Core::Manager::Resource->__Run();

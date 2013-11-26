@@ -88,6 +88,21 @@ coreError coreFile::Save(const char* pcPath)
 
 
 // ****************************************************************
+// create explicit copy
+coreFile* coreFile::Copy()
+{
+    // create base copy
+    coreFile* pFile = new coreFile(m_sPath.c_str(), m_pData, m_iSize);
+
+    // forward archive attributes
+    pFile->m_pArchive    = m_pArchive;
+    pFile->m_iArchivePos = m_iArchivePos;
+
+    return pFile;
+}
+
+
+// ****************************************************************
 // load file data
 coreError coreFile::LoadData()
 {
@@ -208,15 +223,12 @@ coreError coreArchive::Save(const char* pcPath)
     SDL_RWwrite(pArchive, &iSize, sizeof(coreUint), 1);
 
     // cache missing file data
-    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
-    {
-        it->second->Lock();
+    FOR_EACH(it, m_apFile)
         it->second->LoadData();
-    }
 
     // save file headers
     this->__CalculatePositions();
-    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
+    FOR_EACH(it, m_apFile)
     {
         // get path length
         const coreUint iLength = std::strlen(it->second->GetPath());
@@ -229,11 +241,8 @@ coreError coreArchive::Save(const char* pcPath)
     }
 
     // save file data
-    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
-    {
+    FOR_EACH(it, m_apFile)
         SDL_RWwrite(pArchive, it->second->GetData(), sizeof(coreByte), it->second->GetSize());
-        it->second->Unlock();
-    }
 
     // close archive
     SDL_RWclose(pArchive);
@@ -318,7 +327,7 @@ coreError coreArchive::DeleteFile(coreFile* pFile)
 void coreArchive::ClearFiles()
 {
     // delete file objects
-    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
+    FOR_EACH(it, m_apFile)
         SAFE_DELETE(it->second)
 
     // clear memory
@@ -332,10 +341,10 @@ void coreArchive::__CalculatePositions()
 {
     // calculate data start position
     coreUint iCurPosition = sizeof(coreUint);
-    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
+    FOR_EACH(it, m_apFile)
         iCurPosition += sizeof(coreUint) + std::strlen(it->second->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
 
-    for(auto it = m_apFile.begin(); it != m_apFile.end(); ++it)
+    FOR_EACH(it, m_apFile)
     {
         // set absolute data position
         it->second->m_pArchive    = this;

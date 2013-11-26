@@ -13,7 +13,7 @@
 // define model through resource file
 const coreModelPtr& coreObject3D::DefineModelFile(const char* pcPath)
 {
-    // set and return the model resource pointer
+    // set and return model object
     m_pModel = Core::Manager::Resource->LoadFile<coreModel>(pcPath);
     return m_pModel;
 }
@@ -23,7 +23,7 @@ const coreModelPtr& coreObject3D::DefineModelFile(const char* pcPath)
 // define model through linked resource
 const coreModelPtr& coreObject3D::DefineModelLink(const char* pcName)
 {
-    // set and return the model resource pointer
+    // set and return model object
     m_pModel = Core::Manager::Resource->LoadLink<coreModel>(pcName);
     return m_pModel;
 }
@@ -48,11 +48,17 @@ void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     if(!pProgram) return;
     if(!pProgram->Enable()) return;
 
+    // calculate model-view matrices
+    const coreMatrix4 mModelView     = m_mTransform * Core::Graphics->GetCamera();
+    const coreMatrix4 mModelViewProj = mModelView   * Core::Graphics->GetPerspective();
+
     // update all object uniforms
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TRANSFORM,  m_mTransform, false);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_COLOR,      m_vColor);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEX_SIZE,   m_vTexSize);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEX_OFFSET, m_vTexOffset);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_3D_MODELVIEW,     mModelView,                    false);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ, mModelViewProj,                false);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_3D_NORMAL,        m_mRotation.Inverted().m123(), true);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_COLOR,            m_vColor);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXSIZE,          m_vTexSize);
+    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXOFFSET,        m_vTexOffset);
 
     if(bTextured)
     {
@@ -76,12 +82,12 @@ void coreObject3D::Move()
         if(m_iUpdate & 2)
         {
             // update rotation matrix
-            m_mRotation = coreMatrix::Orientation(m_vDirection, m_vOrientation);
+            m_mRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation);
         }
 
         // update transformation matrix
-        m_mTransform = coreMatrix::Scaling(m_vSize) * m_mRotation *
-                       coreMatrix::Translation(m_vPosition);
+        m_mTransform = coreMatrix4::Scaling(m_vSize) * m_mRotation *
+                       coreMatrix4::Translation(m_vPosition);
 
         // reset the update status
         m_iUpdate = 0;

@@ -48,6 +48,11 @@ public:
     coreError Save(const char* pcPath);
     //! @}
 
+    //! create explicit copy
+    //! @{
+    coreFile* Copy();
+    //! @}
+
     //! load and unload file data
     //! @{
     coreError LoadData();
@@ -71,7 +76,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreFile)
+    DISABLE_COPY(coreFile)
 };
 
 
@@ -106,8 +111,8 @@ public:
 
     //! access file objects
     //! @{
-    inline coreFile* GetFile(const coreUint& iIndex) {SDL_assert(iIndex < m_apFile.size()); if(iIndex < m_apFile.size()) return m_apFile[iIndex]; return NULL;}
-    inline coreFile* GetFile(const char* pcPath)     {SDL_assert(m_apFile.count(pcPath));   if(m_apFile.count(pcPath))   return m_apFile[pcPath]; return NULL;}
+    inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_apFile.size()) return NULL; return m_apFile[iIndex];}
+    inline coreFile* GetFile(const char* pcPath)     {if(!m_apFile.count(pcPath))   return NULL; return m_apFile[pcPath]; }
     //! @}
 
     //! get object attributes
@@ -119,7 +124,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreArchive)
+    DISABLE_COPY(coreArchive)
 
     //! calculate absolute data positions of all files
     //! @{
@@ -148,8 +153,8 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreFileLock)
-    CORE_DISABLE_HEAP
+    DISABLE_COPY(coreFileLock)
+    DISABLE_HEAP
 };
 
 

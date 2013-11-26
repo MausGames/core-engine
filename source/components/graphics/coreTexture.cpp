@@ -56,10 +56,9 @@ coreError coreTexture::Load(coreFile* pFile)
     const coreError iStatus = m_Sync.Check(0);
     if(iStatus >= 0) return iStatus;
 
-    SDL_assert(!m_iTexture);
     coreFileLock Lock(pFile, true);
 
-    if(m_iTexture)        return CORE_INVALID_CALL;
+    ASSERT_IF(m_iTexture) return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
@@ -88,7 +87,7 @@ coreError coreTexture::Load(coreFile* pFile)
     m_sPath       = pFile->GetPath();
     m_iSize       = (iDataSize * 4) / (bMipMap ? 3 : 4);
 
-    // convert data format
+    // convert the data format
     SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, pData->format->BitsPerPixel, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pData, NULL, pConvert, NULL);
 
@@ -159,7 +158,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_FreeSurface(pData);
     SDL_FreeSurface(pConvert);
 
-    Core::Log->Info(coreData::Print("Texture (%s) loaded%s", pFile->GetPath(), bSync ? " asynchronous" : ""));
+    Core::Log->Info(coreData::Print("Texture (%s) loaded", pFile->GetPath()));
     return bSync ? CORE_BUSY : CORE_OK;
 }
 

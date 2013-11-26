@@ -44,7 +44,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreResource)
+    DISABLE_COPY(coreResource)
 };
 
 
@@ -68,12 +68,6 @@ private:
     ~coreResourceHandle();
     friend class coreResourceManager;
 
-    //! control resource loading
-    //! @{
-    void __Update();
-    inline void __Nullify() {if(!m_bManaged) return; m_pCur = m_pDefault; m_pResource->Unload();}
-    //! @}
-
 
 public:
     //! access active resource object
@@ -91,7 +85,13 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreResourceHandle)
+    DISABLE_COPY(coreResourceHandle)
+
+    //! control resource loading
+    //! @{
+    void __Update();
+    inline void __Nullify() {if(!m_bManaged) return; m_pCur = m_pDefault; m_pResource->Unload();}
+    //! @}
 };
 
 
@@ -110,6 +110,7 @@ public:
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&& m)noexcept;
     ~coreResourcePtr();
+    friend class coreResourceManager;
 
     //! assignment operator
     //! @{
@@ -137,7 +138,7 @@ public:
 
 
 private:
-    CORE_DISABLE_HEAP
+    DISABLE_HEAP
 };
 
 
@@ -152,7 +153,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreReset)
+    DISABLE_COPY(coreReset)
 
     //! reset with the resource manager
     //! @{
@@ -166,6 +167,7 @@ private:
 // TODO: use load-stack
 // TODO: update link-functionality
 // TODO: enable partially archive overriding
+// TODO: rewrite file system integration, standard models, global shaders
 class coreResourceManager final : public coreThread
 {
 private:
@@ -191,6 +193,8 @@ public:
     //! @{
     template <typename T> inline coreResourceHandle* LoadFile(const char* pcPath) {return this->__Load<T>(pcPath, true);}
     template <typename T> inline coreResourceHandle* LoadLink(const char* pcName) {return this->__Load<T>(pcName, false);}
+    template <typename T> inline coreResourceHandle* LoadNew()const               {return new coreResourceHandle(new T(), NULL, NULL);}
+    template <typename T> void Free(T* pResourcePtr);
     //! @}
 
     //! manage archives
@@ -299,6 +303,19 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
         if(m_pHandle) m_pHandle->RefIncrease();
         m_bActive = true;
     }
+}
+
+
+// ****************************************************************
+// delete resource and resource handle
+template <typename T> void coreResourceManager::Free(T* pResourcePtr)
+{
+    // remove resource handle from container
+    m_apHandle.erase(pResourcePtr->m_pHandle);
+
+    // delete resource and resource handle
+    pResourcePtr->SetActive(false);
+    SAFE_DELETE(pResourcePtr->m_pHandle)
 }
 
 

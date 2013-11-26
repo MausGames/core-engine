@@ -15,7 +15,7 @@ const coreTexturePtr& coreObject::DefineTextureFile(const coreByte& iUnit, const
 {
     SDL_assert(iUnit < CORE_TEXTURE_UNITS);
 
-    // set and return the texture resource pointer
+    // set and return texture object
     m_apTexture[iUnit] = Core::Manager::Resource->LoadFile<coreTexture>(pcPath);
     return m_apTexture[iUnit];
 }
@@ -27,7 +27,7 @@ const coreTexturePtr& coreObject::DefineTextureLink(const coreByte& iUnit, const
 {
     SDL_assert(iUnit < CORE_TEXTURE_UNITS);
 
-    // set and return the texture resource pointer
+    // set and return texture object
     m_apTexture[iUnit] = Core::Manager::Resource->LoadLink<coreTexture>(pcName);
     return m_apTexture[iUnit];
 }
@@ -37,7 +37,7 @@ const coreTexturePtr& coreObject::DefineTextureLink(const coreByte& iUnit, const
 // define shader-program through shared memory
 const coreProgramShr& coreObject::DefineProgramShare(const char* pcName)
 {
-    // set and return the shader-program memory pointer
+    // set and return shader-program object
     m_pProgram = Core::Manager::Memory->Share<coreProgram>(pcName);
     return m_pProgram;
 }

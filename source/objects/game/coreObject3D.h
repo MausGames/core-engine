@@ -66,10 +66,10 @@ public:
 // ****************************************************************
 // constructor
 constexpr_obj coreObject3D::coreObject3D()noexcept
-: m_vPosition    (coreVector3(0.0f,0.0f,0.0f))
-, m_vSize        (coreVector3(1.0f,1.0f,1.0f))
-, m_vDirection   (coreVector3(0.0f,1.0f,0.0f))
-, m_vOrientation (coreVector3(0.0f,0.0f,1.0f))
+: m_vPosition    (coreVector3(0.0f,0.0f, 0.0f))
+, m_vSize        (coreVector3(1.0f,1.0f, 1.0f))
+, m_vDirection   (coreVector3(0.0f,0.0f,-1.0f))
+, m_vOrientation (coreVector3(0.0f,1.0f, 0.0f))
 {
 }
 

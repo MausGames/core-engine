@@ -42,7 +42,7 @@ CoreAudio::CoreAudio()noexcept
 
     // reset listener
     const coreVector3 vInit = coreVector3(1.0f,1.0f,1.0f);
-    this->SetListener(&vInit, &vInit, &vInit, &vInit);
+    this->SetListener(vInit, vInit, vInit, vInit);
     this->SetListener(0.0f);
 
     // reset volume
@@ -77,15 +77,15 @@ CoreAudio::~CoreAudio()
 
 // ****************************************************************
 // control the listener
-void CoreAudio::SetListener(const coreVector3* pvPosition, const coreVector3* pvVelocity, const coreVector3* pvDirection, const coreVector3* pvOrientation)
+void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
     bool bNewOrientation = false;
 
     // set and update parameters of the listener
-    if(pvPosition)    {if(m_vPosition != *pvPosition) {m_vPosition = *pvPosition; alListenerfv(AL_POSITION, m_vPosition);}}
-    if(pvVelocity)    {if(m_vVelocity != *pvVelocity) {m_vVelocity = *pvVelocity; alListenerfv(AL_VELOCITY, m_vVelocity);}}
-    if(pvDirection)   {const coreVector3 vDirNorm = pvDirection->Normalized();   if(m_avDirection[0] != vDirNorm) {m_avDirection[0] = vDirNorm; bNewOrientation = true;}}
-    if(pvOrientation) {const coreVector3 vOriNorm = pvOrientation->Normalized(); if(m_avDirection[1] != vOriNorm) {m_avDirection[1] = vOriNorm; bNewOrientation = true;}}
+    if(m_vPosition != vPosition) {m_vPosition = vPosition; alListenerfv(AL_POSITION, m_vPosition);}
+    if(m_vVelocity != vVelocity) {m_vVelocity = vVelocity; alListenerfv(AL_VELOCITY, m_vVelocity);}
+    const coreVector3 vDirNorm = vDirection.Normalized();   if(m_avDirection[0] != vDirNorm) {m_avDirection[0] = vDirNorm; bNewOrientation = true;}
+    const coreVector3 vOriNorm = vOrientation.Normalized(); if(m_avDirection[1] != vOriNorm) {m_avDirection[1] = vOriNorm; bNewOrientation = true;}
 
     if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
 }
@@ -95,10 +95,10 @@ void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
     const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * Core::System->GetTime(iTimeID);
 
     // adjust listener with camera attributes
-    this->SetListener(&Core::Graphics->GetCamPosition(),
-                      &vVelocity,
-                      &Core::Graphics->GetCamDirection(),
-                      &Core::Graphics->GetCamOrientation());
+    this->SetListener(Core::Graphics->GetCamPosition(),
+                      vVelocity,
+                      Core::Graphics->GetCamDirection(),
+                      Core::Graphics->GetCamOrientation());
 }
 
 
@@ -116,9 +116,11 @@ ALuint CoreAudio::NextSource(const void* pRef)
         alGetSourcei(m_pSource[m_CurSource], AL_SOURCE_STATE, &iStatus);
         if(iStatus != AL_PLAYING)
         {
+            const ALuint& pSource = m_pSource[m_CurSource];
+
             // return sound source
-            m_apSourceRef[m_CurSource] = pRef;
-            return m_pSource[m_CurSource];
+             m_apSourceRef[pSource] = pRef;
+            return pSource;
         }
     }
 

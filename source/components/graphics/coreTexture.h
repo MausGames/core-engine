@@ -59,7 +59,7 @@ public:
 
     //! generate empty base texture
     //! @{
-    inline void Generate() {SDL_assert(!m_iTexture); if(!m_iTexture) glGenTextures(1, &m_iTexture);}
+    inline void Generate() {ASSERT_IF(m_iTexture) return; glGenTextures(1, &m_iTexture);}
     //! @}
 
     //! get object attributes
@@ -69,7 +69,7 @@ public:
 
     //! get relative path to default resource
     //! @{
-    static inline const char* GetDefaultPath() {return "data/textures/default.png";}
+    static inline const char* GetDefaultPath() {return "data/textures/black.png";}
     //! @}
 };
 

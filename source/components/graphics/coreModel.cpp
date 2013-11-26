@@ -183,12 +183,11 @@ coreError coreModel::Load(coreFile* pFile)
     const coreError iStatus = m_Sync.Check(0);
     if(iStatus >= 0) return iStatus;
 
-    SDL_assert(!m_iVertexBuffer);
     coreFileLock Lock(pFile, true);
 
-    if(m_iVertexBuffer)   return CORE_INVALID_CALL;
-    if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_FILE_ERROR;
+    ASSERT_IF(m_iVertexBuffer) return CORE_INVALID_CALL;
+    if(!pFile)                 return CORE_INVALID_INPUT;
+    if(!pFile->GetData())      return CORE_FILE_ERROR;
 
     // extract model data
     const char* pcData = r_cast<const char*>(pFile->GetData());
@@ -274,7 +273,7 @@ coreError coreModel::Load(coreFile* pFile)
 
         // finish the Gram-Schmidt process to calculate the tangent vector and binormal sign (w)
         pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalize(),
-                                          SIG(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
+                                          coreMath::Sign(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 
     SDL_AtomicLock(&s_iLock);
@@ -302,7 +301,7 @@ coreError coreModel::Load(coreFile* pFile)
     SAFE_DELETE_ARRAY(pvOrtho1)
     SAFE_DELETE_ARRAY(pvOrtho2)
 
-    Core::Log->Info(coreData::Print("Model (%s) loaded%s", pFile->GetPath(), bSync ? " asynchronous" : ""));
+    Core::Log->Info(coreData::Print("Model (%s) loaded", pFile->GetPath()));
     return bSync ? CORE_BUSY : CORE_OK;
 }
 

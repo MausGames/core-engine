@@ -40,6 +40,14 @@
 #ifndef _CORE_GUARD_H_
 #define _CORE_GUARD_H_
 
+/*
+coreMenu:
+von oben nach unten kollision testen
+eine seite in eine andere einfuegen als subseite
+virtuelle funktion fuer dynamische uebergaenge
+
+*/
+
 // compiler
 #if defined(_MSC_VER)
     #define _CORE_MSVC_ (_MSC_VER)
@@ -62,6 +70,9 @@
 #if defined(__linux__)
     #define _CORE_LINUX_
 #endif
+#if defined(__APPLE__)
+    #define _CORE_OSX_
+#endif
 #if defined(__ANDROID__)
     #define _CORE_ANDROID_
 #endif
@@ -75,7 +86,7 @@
 #endif
 
 // SIMD support
-#if (defined(_M_IX86) || defined(__i386__)) && !defined(_CORE_ANDROID_) && !defined(_CORE_DEBUG_)
+#if (defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)) && !defined(_CORE_ANDROID_) && !defined(_CORE_DEBUG_)
     #define _CORE_SSE_
 #endif
 
@@ -93,17 +104,34 @@
 
 #define _HAS_EXCEPTIONS 0
 #define _CRT_SECURE_NO_WARNINGS
+#define _ALLOW_KEYWORD_MACROS
 #define WIN32_LEAN_AND_MEAN
+
 #define GLEW_MX
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
 #if defined(_CORE_MSVC_)
-    #define __thread __declspec(thread)
-    #define noexcept throw()
+    #if (_CORE_MSVC_) < 1800
+        #define delete_func
+    #else
+        #define delete_func = delete
+    #endif
     #if (_CORE_MSVC_) < 1700
         #define final
     #endif
+    #define noexcept       throw()
+    #define __thread       __declspec(thread)
+    #define align_16(x)    __declspec(align(16)) x
+    #define sse_save(x)    align_16(x)
+    #define constexpr_func inline
+    #define constexpr_var  const
+#else
+    #define delete_func    = delete
+    #define align_16(x)    x __attribute__((aligned(16)))
+    #define sse_save(x)    static __thread align_16(x)
+    #define constexpr_func constexpr
+    #define constexpr_var  constexpr
 #endif
 
 #if defined(_CORE_GCC_)
@@ -111,18 +139,6 @@
         #define override
         #define final
     #endif
-#endif
-
-#if defined(_CORE_MSVC_)
-    #define align_16(x)    __declspec(align(16)) x
-    #define delete_func
-    #define constexpr_func inline
-    #define constexpr_var  const
-#else
-    #define align_16(x)    x __attribute__((aligned(16)))
-    #define delete_func    = delete
-    #define constexpr_func constexpr
-    #define constexpr_var  constexpr
 #endif
 
 #if defined(_CORE_MINGW_)
@@ -138,11 +154,14 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#define CORE_DISABLE_COPY(c) \
+#define FOR_EACH(i,c) for(auto i = c.begin(); i != c.end(); ++i)
+#define ASSERT_IF(c)  SDL_assert(!(c)); if(c)
+
+#define DISABLE_COPY(c)      \
     c(const c&) delete_func; \
     c& operator = (const c&) delete_func;
 
-#define CORE_DISABLE_HEAP                           \
+#define DISABLE_HEAP                                \
     void* operator new (size_t) delete_func;        \
     void* operator new (size_t, void*) delete_func; \
     void* operator new[] (size_t) delete_func;      \
@@ -160,7 +179,8 @@ typedef unsigned int   coreUint;
 class coreVector2;
 class coreVector3;
 class coreVector4;
-class coreMatrix;
+class coreMatrix3;
+class coreMatrix4;
 class coreFile;
 class coreArchive;
 
@@ -252,6 +272,7 @@ enum coreError
 #include "components/graphics/coreModel.h"
 #include "components/graphics/coreTexture.h"
 #include "components/graphics/coreShader.h"
+#include "components/graphics/coreFont.h"
 
 #include "components/audio/CoreAudio.h"
 #include "components/audio/coreSound.h"
@@ -262,6 +283,8 @@ enum coreError
 #include "manager/coreObject.h"
 #include "objects/game/coreObject2D.h"
 #include "objects/game/coreObject3D.h"
+
+#include "objects/menu/coreLabel.h"
 
 
 // ****************************************************************
@@ -291,11 +314,11 @@ public:
 
 // ****************************************************************
 // engine framework
-// TODO: check for boost integrations
 // TODO: don't lose engine attributes after reset
 // TODO: SDL_GetPowerInfo
 // TODO: check GCC function attributes (pure, hot, cold)
 // TODO: improve sort and structure under all class access modifiers
+// TODO: don't forward/return trivial types as reference ? (address > value)
 class Core final
 {
 public:

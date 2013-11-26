@@ -251,12 +251,11 @@ void coreMusic::__Reset(const bool& bInit)
 // init the music object
 coreError coreMusic::__Init(coreFile* pFile)
 {
-    SDL_assert(m_aiBuffer[0]);
     coreFileLock Lock(pFile, false);
 
-    if(m_aiBuffer[0])     return CORE_INVALID_CALL;
-    if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_FILE_ERROR;
+    ASSERT_IF(m_aiBuffer[0]) return CORE_INVALID_CALL;
+    if(!pFile)               return CORE_INVALID_INPUT;
+    if(!pFile->GetData())    return CORE_FILE_ERROR;
 
     // create virtual file as streaming source
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
@@ -461,9 +460,9 @@ coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
     coreData::FolderSearch(pcPath, pcFilter, &asFolder);
 
     // try to add all files to the music-player
-    for(auto it = asFolder.begin(); it != asFolder.end(); ++it)
+    FOR_EACH(it, asFolder)
     {
-        if(this->AddFile((*it).c_str()) == CORE_OK)
+        if(this->AddFile(it->c_str()) == CORE_OK)
             bStatus = true;
     }
 
@@ -475,8 +474,7 @@ coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
 // remove music object
 coreError coreMusicPlayer::DeleteMusic(const coreUint& iIndex)
 {
-    SDL_assert(iIndex < m_apMusic.size());
-    if(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
+    ASSERT_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
 
     coreMusic* pMusic = m_apMusic[iIndex];
 
@@ -500,7 +498,7 @@ coreError coreMusicPlayer::DeleteMusic(const coreUint& iIndex)
 void coreMusicPlayer::ClearMusic()
 {
     // delete music objects
-    for(auto it = m_apMusic.begin(); it != m_apMusic.end(); ++it)
+    FOR_EACH(it, m_apMusic)
         SAFE_DELETE(*it)
 
     // clear memory
@@ -516,8 +514,7 @@ void coreMusicPlayer::ClearMusic()
 // switch to specific music object
 void coreMusicPlayer::Goto(const coreUint& iIndex)
 {
-    SDL_assert(iIndex < m_apMusic.size());
-    if(iIndex >= m_apMusic.size()) return;
+    ASSERT_IF(iIndex >= m_apMusic.size()) return;
     if(m_pCurMusic == m_apSequence[iIndex]) return;
 
     // get playback status

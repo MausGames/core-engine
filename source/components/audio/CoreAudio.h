@@ -42,7 +42,7 @@ private:
 public:
     //! control the listener
     //! @{
-    void SetListener(const coreVector3* pvPosition, const coreVector3* pvVelocity, const coreVector3* pvDirection, const coreVector3* pvOrientation);
+    void SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation);
     void SetListener(const float& fSpeed, const int iTimeID = -1);
     //! @}
 

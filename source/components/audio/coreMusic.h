@@ -174,7 +174,7 @@ public:
 
     //! access music objects
     //! @{
-    inline const coreMusic* GetMusic(const coreUint& iIndex)const {SDL_assert(iIndex < m_apMusic.size()); return (iIndex < m_apMusic.size()) ? m_apMusic[iIndex] : m_pEmptyMusic;}
+    inline const coreMusic* GetMusic(const coreUint& iIndex)const {ASSERT_IF(iIndex >= m_apMusic.size()) return m_pEmptyMusic; return m_apMusic[iIndex];}
     inline coreMusic* Control()const                              {SDL_assert(m_pCurMusic != m_pEmptyMusic); return m_pCurMusic;}
     //! @}
 
@@ -187,7 +187,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreMusicPlayer)
+    DISABLE_COPY(coreMusicPlayer)
 
     //! add music object
     //! @{

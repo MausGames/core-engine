@@ -107,12 +107,12 @@ coreResourceManager::~coreResourceManager()
     this->Reset(false);
 
     // delete resource handles and default resources
-    for(auto it = m_apHandle.begin();  it != m_apHandle.end();  ++it) SAFE_DELETE(it->second)
-    for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it) SAFE_DELETE(it->second)
+    FOR_EACH(it, m_apHandle)  SAFE_DELETE(it->second)
+    FOR_EACH(it, m_apDefault) SAFE_DELETE(it->second)
 
     // delete resource files
-    for(auto it = m_apArchive.begin();    it != m_apArchive.end();    ++it) SAFE_DELETE(it->second)
-    for(auto it = m_apDirectFile.begin(); it != m_apDirectFile.end(); ++it) SAFE_DELETE(it->second)
+    FOR_EACH(it, m_apArchive)    SAFE_DELETE(it->second)
+    FOR_EACH(it, m_apDirectFile) SAFE_DELETE(it->second)
 
     // clear memory
     m_apHandle.clear();
@@ -162,7 +162,7 @@ void coreResourceManager::ClearArchives()
     SDL_assert(!m_bActive);
 
     // delete archives
-    for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
+    FOR_EACH(it, m_apArchive)
         SAFE_DELETE(it->second)
 
     // clear memory
@@ -193,7 +193,7 @@ coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
     if(!coreData::FileExists(pcPath))
     {
         // check archives
-        for(auto it = m_apArchive.begin(); it != m_apArchive.end(); ++it)
+        FOR_EACH(it, m_apArchive)
         {
             coreFile* pFile = it->second->GetFile(pcPath);
             if(pFile) return pFile;
@@ -224,15 +224,18 @@ void coreResourceManager::Reset(const bool& bInit)
     if(bInit)
     {
         // load default resources
-        for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it)
+        FOR_EACH(it, m_apDefault)
             it->second->Load(this->RetrieveFile(it->first.c_str()));
 
         // update resource files
-        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
-            if(it->second->m_bManaged) it->second->m_pFile = this->RetrieveFile(it->first.c_str());
+        FOR_EACH(it, m_apHandle)
+        {
+            if(it->second->m_bManaged)
+                it->second->m_pFile = this->RetrieveFile(it->first.c_str());
+        }
 
         // init reset-objects
-        for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)
+        FOR_EACH(it, m_apReset)
             (*it)->__Reset(true);
 
         // start resource thread
@@ -246,12 +249,12 @@ void coreResourceManager::Reset(const bool& bInit)
             this->KillThread();
 
         // shut down reset-objects
-        for(auto it = m_apReset.begin(); it != m_apReset.end(); ++it)
+        FOR_EACH(it, m_apReset)
             (*it)->__Reset(false);
 
         // unload all resources
-        for(auto it = m_apHandle.begin();  it != m_apHandle.end();  ++it) it->second->__Nullify();
-        for(auto it = m_apDefault.begin(); it != m_apDefault.end(); ++it) it->second->Unload();
+        FOR_EACH(it, m_apHandle)  it->second->__Nullify();
+        FOR_EACH(it, m_apDefault) it->second->Unload();
     }
 }
 
@@ -281,7 +284,7 @@ int coreResourceManager::__Run()
     if(m_bActive)
     {
         // update resource handles
-        for(auto it = m_apHandle.begin(); it != m_apHandle.end(); ++it)
+        FOR_EACH(it, m_apHandle)
             it->second->__Update();
     }
     return 0;

@@ -36,7 +36,7 @@ public:
 
 
 private:
-    CORE_DISABLE_COPY(coreSync)
+    DISABLE_COPY(coreSync)
 };
 
 

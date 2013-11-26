@@ -11,7 +11,7 @@
 #define _CORE_GUARD_OBJECT_H_
 
 #if defined(_CORE_CLANG_)
-    #define constexpr_obj 
+    #define constexpr_obj inline
 #else
     #define constexpr_obj constexpr_func
 #endif
@@ -26,8 +26,8 @@ protected:
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   //!< multiple texture objects
     coreProgramShr m_pProgram;                        //!< shader-program object
 
-    coreMatrix m_mRotation;                           //!< separate rotation matrix
-    coreMatrix m_mTransform;                          //!< transformation matrix
+    coreMatrix4 m_mRotation;                          //!< separate rotation matrix
+    coreMatrix4 m_mTransform;                         //!< transformation matrix
     coreByte m_iUpdate;                               //!< update status (0 = do nothing | 1 = update only transformation | 3 = update rotation and transformation)
 
     coreVector4 m_vColor;                             //!< RGBA color-value
@@ -64,8 +64,8 @@ public:
     //! @{
     inline const coreTexturePtr& GetTexture(const coreByte& iUnit)const {SDL_assert(iUnit < CORE_TEXTURE_UNITS); return m_apTexture[iUnit];}
     inline const coreProgramShr& GetProgram()const                      {return m_pProgram;}
-    inline const coreMatrix& GetRotation()const                         {return m_mRotation;}
-    inline const coreMatrix& GetTransform()const                        {return m_mTransform;}
+    inline const coreMatrix4& GetRotation()const                        {return m_mRotation;}
+    inline const coreMatrix4& GetTransform()const                       {return m_mTransform;}
     inline const coreVector4& GetColor4()const                          {return m_vColor;}
     inline const coreVector3& GetColor3()const                          {return m_vColor.xyz();}
     inline const float& GetAlpha()const                                 {return m_vColor.a;}
@@ -98,8 +98,8 @@ public:
 // ****************************************************************
 // constructor
 constexpr_obj coreObject::coreObject()noexcept
-: m_mRotation  (coreMatrix::Identity())
-, m_mTransform (coreMatrix::Identity())
+: m_mRotation  (coreMatrix4::Identity())
+, m_mTransform (coreMatrix4::Identity())
 , m_iUpdate    (3)
 , m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
 , m_vTexSize   (coreVector2(1.0f,1.0f))

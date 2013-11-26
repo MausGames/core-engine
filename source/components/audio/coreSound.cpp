@@ -52,11 +52,10 @@ coreSound::~coreSound()
 // load sound resource data
 coreError coreSound::Load(coreFile* pFile)
 {
-    SDL_assert(!m_iBuffer);
     coreFileLock Lock(pFile, true);
 
-    if(m_iBuffer) return CORE_INVALID_CALL;
-    if(!pFile)    return CORE_INVALID_INPUT;
+    ASSERT_IF(m_iBuffer) return CORE_INVALID_CALL;
+    if(!pFile)           return CORE_INVALID_INPUT;
 
     // get file data
     const coreByte* pData = pFile->GetData();
@@ -80,14 +79,13 @@ coreError coreSound::Load(coreFile* pFile)
     // read sub-chunks
     const coreByte* pSoundData = NULL;
     coreUint iSoundSize = 0;
-    while(true)
+    while(coreUint(pData - pFile->GetData()) < pFile->GetSize())
     {
         std::memcpy(acID,   pData, 4); pData += 4;
         std::memcpy(&iSize, pData, 4); pData += 4;
 
              if(!std::strncmp(acID, "fmt ", 4)) std::memcpy(&m_Format, pData, sizeof(m_Format));
         else if(!std::strncmp(acID, "data", 4)) {pSoundData = pData; iSoundSize = iSize;}
-        else break;
 
         pData += iSize;
     }
@@ -143,7 +141,7 @@ coreError coreSound::Unload()
     if(!m_iBuffer) return CORE_INVALID_CALL;
 
     // unbind sound buffer from all used sound sources
-    for(auto it = m_aiSource.begin(); it != m_aiSource.end(); ++it)
+    FOR_EACH(it, m_aiSource)
     {
         const ALuint iSource = this->CheckRef(it->first);
         if(iSource)
@@ -278,7 +276,7 @@ bool coreSound::IsPlaying()const
 
 // ****************************************************************
 // change the sound source position and velocity
-void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVelocity)
+void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelocity)
 {
     CORE_SOUND_ASSERT
     if(m_iCurSource)
@@ -292,8 +290,8 @@ void coreSound::SetSource(const coreVector3* pvPosition, const coreVector3* pvVe
 
 #endif
         // set position and velocity
-        if(pvPosition) alSourcefv(m_iCurSource, AL_POSITION, *pvPosition);
-        if(pvVelocity) alSourcefv(m_iCurSource, AL_VELOCITY, *pvVelocity);
+        alSourcefv(m_iCurSource, AL_POSITION, vPosition);
+        alSourcefv(m_iCurSource, AL_VELOCITY, vVelocity);
     }
 }
 
