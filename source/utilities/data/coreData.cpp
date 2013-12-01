@@ -152,14 +152,15 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
 
 // ****************************************************************
 // create folder hierarchy
+// TODO: remove std::string
 void coreData::FolderCreate(const std::string& sPath)
 {
     int iPos = 0;
 
-    do
+    while(true)
     {
         // get next subfolder
-        iPos = sPath.find_first_of("/\\", iPos+2);
+        if((iPos = sPath.find_first_of("/\\", iPos+2)) < 0) return;
         const std::string sSubFolder = sPath.substr(0, iPos);
 
         // ignore file
@@ -172,7 +173,6 @@ void coreData::FolderCreate(const std::string& sPath)
         mkdir(sSubFolder.c_str(), S_IRWXU);
 #endif
     }
-    while(iPos >= 0);
 }
 
 

@@ -26,7 +26,6 @@ public:
 
     //! load and unload resource data
     //! @{
-    coreError Load(const char* pcPath);
     virtual coreError Load(coreFile* pFile) = 0;
     virtual coreError Unload() = 0;
     //! @}
@@ -166,8 +165,6 @@ private:
 // resource manager
 // TODO: use load-stack
 // TODO: update link-functionality
-// TODO: enable partially archive overriding
-// TODO: rewrite file system integration, standard models, global shaders
 class coreResourceManager final : public coreThread
 {
 private:
@@ -195,13 +192,6 @@ public:
     template <typename T> inline coreResourceHandle* LoadLink(const char* pcName) {return this->__Load<T>(pcName, false);}
     template <typename T> inline coreResourceHandle* LoadNew()const               {return new coreResourceHandle(new T(), NULL, NULL);}
     template <typename T> void Free(T* pResourcePtr);
-    //! @}
-
-    //! manage archives
-    //! @{
-    coreError AddArchive(const char* pcPath);
-    coreError DeleteArchive(const char* pcPath);
-    void ClearArchives();
     //! @}
 
     //! retrieve archives and resource files
@@ -311,7 +301,7 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 template <typename T> void coreResourceManager::Free(T* pResourcePtr)
 {
     // remove resource handle from container
-    m_apHandle.erase(pResourcePtr->m_pHandle);
+    if(pResourcePtr->m_pHandle) m_apHandle.erase(pResourcePtr->m_pHandle);
 
     // delete resource and resource handle
     pResourcePtr->SetActive(false);
@@ -331,7 +321,8 @@ template <typename T> coreResourceHandle* coreResourceManager::__Load(const char
     if(!m_apDefault.count(T::GetDefaultPath()))
     {
         // load new default resource
-        pDefault = new T(this->RetrieveFile(T::GetDefaultPath()));
+        pDefault = new T();
+        pDefault->Load(this->RetrieveFile(T::GetDefaultPath()));
         m_apDefault[T::GetDefaultPath()] = pDefault;
     }
     else pDefault = m_apDefault[T::GetDefaultPath()];

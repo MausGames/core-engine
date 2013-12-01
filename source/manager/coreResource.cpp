@@ -10,14 +10,6 @@
 
 
 // ****************************************************************
-// load resource data
-coreError coreResource::Load(const char* pcPath)
-{
-    return this->Load(Core::Manager::Resource->RetrieveFile(pcPath));
-}
-
-
-// ****************************************************************
 // constructor
 coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pDefault, coreFile* pFile)noexcept
 : m_pResource (pResource)
@@ -126,51 +118,6 @@ coreResourceManager::~coreResourceManager()
 
 
 // ****************************************************************
-// add archive
-coreError coreResourceManager::AddArchive(const char* pcPath)
-{
-    if(m_apArchive.count(pcPath)) return CORE_INVALID_INPUT;
-
-    // load new archive
-    coreArchive* pNewArchive = new coreArchive(pcPath);
-    m_apArchive[pcPath] = pNewArchive;
-
-    SDL_assert(pNewArchive->GetSize());
-    return pNewArchive->GetSize() ? CORE_OK : CORE_FILE_ERROR;
-}
-
-
-// ****************************************************************
-// delete archive
-coreError coreResourceManager::DeleteArchive(const char* pcPath)
-{
-    SDL_assert(!m_bActive);
-    if(!m_apArchive.count(pcPath)) return CORE_INVALID_INPUT;
-
-    // remove and delete archive
-    SAFE_DELETE(m_apArchive[pcPath])
-    m_apArchive.erase(pcPath);
-
-    return CORE_OK;
-}
-
-
-// ****************************************************************
-// remove all archives
-void coreResourceManager::ClearArchives()
-{
-    SDL_assert(!m_bActive);
-
-    // delete archives
-    FOR_EACH(it, m_apArchive)
-        SAFE_DELETE(it->second)
-
-    // clear memory
-    m_apArchive.clear();
-}
-
-
-// ****************************************************************
 // retrieve archive
 coreArchive* coreResourceManager::RetrieveArchive(const char* pcPath)
 {
@@ -187,9 +134,10 @@ coreArchive* coreResourceManager::RetrieveArchive(const char* pcPath)
 
 // ****************************************************************
 // retrieve resource file
+// TODO MAJOR: when and how load default archive(s) ?
 coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
 {
-    // check for direct resource file
+     // check for direct resource file
     if(!coreData::FileExists(pcPath))
     {
         // check archives
@@ -226,13 +174,6 @@ void coreResourceManager::Reset(const bool& bInit)
         // load default resources
         FOR_EACH(it, m_apDefault)
             it->second->Load(this->RetrieveFile(it->first.c_str()));
-
-        // update resource files
-        FOR_EACH(it, m_apHandle)
-        {
-            if(it->second->m_bManaged)
-                it->second->m_pFile = this->RetrieveFile(it->first.c_str());
-        }
 
         // init reset-objects
         FOR_EACH(it, m_apReset)
@@ -284,8 +225,8 @@ int coreResourceManager::__Run()
     if(m_bActive)
     {
         // update resource handles
-        FOR_EACH(it, m_apHandle)
-            it->second->__Update();
+        for(coreUint i = 0; i < m_apHandle.size(); ++i)
+            m_apHandle[i]->__Update();
     }
     return 0;
 }

@@ -17,20 +17,20 @@
 class CoreAudio final
 {
 private:
-    ALCdevice* m_pDevice;                            //!< audio device
-    ALCcontext* m_pContext;                          //!< OpenAL context
+    ALCdevice* m_pDevice;                    //!< audio device
+    ALCcontext* m_pContext;                  //!< OpenAL context
 
-    coreVector3 m_vPosition;                         //!< position of the listener
-    coreVector3 m_vVelocity;                         //!< velocity of the listener
-    coreVector3 m_avDirection[2];                    //!< direction and orientation of the listener
+    coreVector3 m_vPosition;                 //!< position of the listener
+    coreVector3 m_vVelocity;                 //!< velocity of the listener
+    coreVector3 m_avDirection[2];            //!< direction and orientation of the listener
 
-    ALuint* m_pSource;                               //!< sound sources
-    coreByte m_NumSource;                            //!< number of sound sources
-    coreByte m_CurSource;                            //!< current sound source
+    ALuint* m_pSource;                       //!< sound sources
+    coreByte m_NumSource;                    //!< number of sound sources
+    coreByte m_CurSource;                    //!< current sound source
 
-    std::u_map<ALuint, const void*> m_apSourceRef;   //!< reference pointer currently using sound sources
+    std::u_map<ALuint, ALuint> m_aiBuffer;   //!< sound buffers currently bound to sound sources <source, buffer>
 
-    float m_fVolume;                                 //!< global volume
+    float m_fVolume;                         //!< global volume
 
 
 private:
@@ -48,8 +48,9 @@ public:
 
     //! distribute sound sources
     //! @{
-    ALuint NextSource(const void* pRef);
-    inline ALuint CheckSource(const void* pRef, const ALuint& iSource)const {if(!m_apSourceRef.count(iSource)) return 0; return (m_apSourceRef.at(iSource) == pRef) ? iSource : 0;}
+    inline bool CheckSource(const ALuint& iBuffer, const ALuint& iSource)const {if(!m_aiBuffer.count(iSource)) return false; return (m_aiBuffer.at(iSource) == iBuffer) ? true : false;}
+    ALuint NextSource(const ALuint& iBuffer);
+    void ClearSources(const ALuint& iBuffer);
     //! @}
 
     //! set global volume

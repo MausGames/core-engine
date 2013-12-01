@@ -16,20 +16,6 @@ coreFont::coreFont()noexcept
 {
 }
 
-coreFont::coreFont(const char* pcPath)noexcept
-: m_pFile (NULL)
-{
-    // load from path
-    this->coreResource::Load(pcPath);
-}
-
-coreFont::coreFont(coreFile* pFile)noexcept
-: m_pFile (NULL)
-{
-    // load from file
-    this->Load(pFile);
-}
-
 
 // ****************************************************************
 // destructor
@@ -43,17 +29,12 @@ coreFont::~coreFont()
 // load font resource data
 coreError coreFont::Load(coreFile* pFile)
 {
-    coreFileLock Lock(pFile, false);
-
     ASSERT_IF(m_pFile)    return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_FILE_ERROR;
 
     // copy the input file for later font creations
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
-    
-    // unlock file
-    Lock.Release();
 
     // create test font
     if(!this->__InitHeight(1)) return CORE_INVALID_DATA;
@@ -124,7 +105,7 @@ bool coreFont::__InitHeight(const int& iHeight)
     TTF_Font* pNewFont = TTF_OpenFontRW(pSource, true, iHeight);
     if(!pNewFont)
     {
-        Core::Log->Error(0, coreData::Print("Font (%s:%d) could not be loaded", m_pFile->GetName(), iHeight));
+        Core::Log->Error(0, coreData::Print("Font (%s:%d) could not be loaded", m_pFile->GetPath(), iHeight));
         return false;
     }
 

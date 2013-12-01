@@ -17,7 +17,6 @@ coreFile::coreFile(const char* pcPath)noexcept
 , m_iSize       (0)
 , m_pArchive    (NULL)
 , m_iArchivePos (1)
-, m_iLock       (0)
 {
     if(m_sPath.empty()) return;
 
@@ -43,7 +42,6 @@ coreFile::coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)no
 , m_iSize       (iSize)
 , m_pArchive    (NULL)
 , m_iArchivePos (0)
-, m_iLock       (0)
 {
 }
 
@@ -88,21 +86,6 @@ coreError coreFile::Save(const char* pcPath)
 
 
 // ****************************************************************
-// create explicit copy
-coreFile* coreFile::Copy()
-{
-    // create base copy
-    coreFile* pFile = new coreFile(m_sPath.c_str(), m_pData, m_iSize);
-
-    // forward archive attributes
-    pFile->m_pArchive    = m_pArchive;
-    pFile->m_iArchivePos = m_iArchivePos;
-
-    return pFile;
-}
-
-
-// ****************************************************************
 // load file data
 coreError coreFile::LoadData()
 {
@@ -137,6 +120,33 @@ coreError coreFile::LoadData()
 
 
 // ****************************************************************
+// return allocated file data copy
+coreByte* coreFile::MoveData()
+{
+    coreByte* pOutput;
+    if(m_iArchivePos) 
+    {
+        // load file data
+        this->LoadData(); 
+
+        // move pointer with file data
+        pOutput = m_pData; 
+        m_pData = NULL; 
+    }
+    else
+    {
+        if(!m_pData || !m_iSize) return NULL;
+
+        // create real file data copy
+        pOutput = new coreByte[m_iSize];
+        std::memcpy(pOutput, m_pData, sizeof(coreByte)*m_iSize);
+    }
+
+    return pOutput;
+}
+
+
+// ****************************************************************
 // constructor
 coreArchive::coreArchive()noexcept
 : m_sPath ("")
@@ -154,9 +164,17 @@ coreArchive::coreArchive(const char* pcPath)noexcept
         return;
     }
 
-    // read magic number and file version (currently not used)
+    // read magic number and file version
     coreUint aiHead[2];
     SDL_RWread(pArchive, &aiHead, sizeof(aiHead[0]), 2);
+
+    // check magic number
+    if(aiHead[0] != CORE_FILE_MAGIC)
+    {
+        SDL_RWclose(pArchive);
+        Core::Log->Error(0, coreData::Print("Archive (%s) is not a valid CFA-file", m_sPath.c_str()));
+        return;
+    }
 
     // read number of files
     coreUint iSize;
@@ -172,7 +190,7 @@ coreArchive::coreArchive(const char* pcPath)noexcept
 
         // read file header data
         SDL_RWread(pArchive, &iLength, sizeof(coreUint), 1);
-        SDL_RWread(pArchive, acPath,   sizeof(char),     MAX(iLength, (unsigned)255));
+        SDL_RWread(pArchive, acPath,   sizeof(char),     MAX(iLength, (coreUint)255));
         SDL_RWread(pArchive, &iSize,   sizeof(coreUint), 1);
         SDL_RWread(pArchive, &iPos,    sizeof(coreUint), 1);
 
@@ -204,7 +222,7 @@ coreError coreArchive::Save(const char* pcPath)
     if(m_apFile.empty()) return CORE_INVALID_CALL;
 
     // save path
-    m_sPath = pcPath;
+    m_sPath = coreData::Print(std::strcmp(coreData::StrRight(pcPath, 4), CORE_FILE_EXTENSION) ? "%s" CORE_FILE_EXTENSION : "%s", pcPath);
 
     // open archive
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "wb");
@@ -242,7 +260,10 @@ coreError coreArchive::Save(const char* pcPath)
 
     // save file data
     FOR_EACH(it, m_apFile)
+    {
         SDL_RWwrite(pArchive, it->second->GetData(), sizeof(coreByte), it->second->GetSize());
+        it->second->UnloadData();
+    }
 
     // close archive
     SDL_RWclose(pArchive);
@@ -350,37 +371,5 @@ void coreArchive::__CalculatePositions()
         it->second->m_pArchive    = this;
         it->second->m_iArchivePos = iCurPosition;
         iCurPosition += it->second->GetSize();
-    }
-}
-
-
-// ****************************************************************
-// constructor
-coreFileLock::coreFileLock(coreFile* pFile, const bool& bUnload)noexcept
-: m_pFile   (NULL)
-, m_bUnload (false)
-{
-    if(pFile)
-    {
-        // lock file
-        pFile->Lock();
-
-        // save file data
-        m_pFile   = pFile;
-        m_bUnload = bUnload;
-    }
-}
-
-
-// ****************************************************************
-// release the lock
-void coreFileLock::Release()
-{
-    if(m_pFile)
-    {
-        // unload and unlock file
-        if(m_bUnload) m_pFile->UnloadData();
-        m_pFile->Unlock();
-        m_pFile = NULL;
     }
 }

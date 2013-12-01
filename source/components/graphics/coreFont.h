@@ -22,8 +22,6 @@ private:
 
 public:
     coreFont()noexcept;
-    explicit coreFont(const char* pcPath)noexcept;
-    explicit coreFont(coreFile* pFile)noexcept;
     ~coreFont();
 
     //! load and unload font resource data

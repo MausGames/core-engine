@@ -92,29 +92,29 @@ private:
 
 
 private:
-    GLuint m_iVertexArray;                        //!< vertex array object
-    static bool s_bSupportArray;                  //!< cached support-value for VAOs
-
-    GLuint m_iVertexBuffer;                       //!< vertex data buffer
-    GLuint m_iIndexBuffer;                        //!< index buffer
-
-    coreUint m_iNumVertices;                      //!< number of vertices
-    coreUint m_iNumTriangles;                     //!< number of triangles
-    coreUint m_iNumIndices;                       //!< number of indices
-    float m_fRadius;                              //!< maximum distance from the model center
-
-    static coreModel* s_pCurrent;                 //!< currently active model object
-
-    coreSync m_Sync;                              //!< sync object for asynchronous model loading
-    static SDL_SpinLock s_iLock;                  //!< spinlock to prevent asynchronous array buffer access
-
-    static coreResourcePtr<coreModel> s_pPlane;   //!< optimized standard rectangle
+    GLuint m_iVertexArray;                           //!< vertex array object
+    static bool s_bSupportArray;                     //!< cached support-value for VAOs
+                                                     
+    GLuint m_iVertexBuffer;                          //!< vertex data buffer
+    GLuint m_iIndexBuffer;                           //!< index buffer
+                                                     
+    coreUint m_iNumVertices;                         //!< number of vertices
+    coreUint m_iNumTriangles;                        //!< number of triangles
+    coreUint m_iNumIndices;                          //!< number of indices
+    float m_fRadius;                                 //!< maximum distance from the model center
+                                                     
+    static coreModel* s_pCurrent;                    //!< currently active model object
+                                                     
+    coreSync m_Sync;                                 //!< sync object for asynchronous model loading
+    static SDL_SpinLock s_iLock;                     //!< spinlock to prevent asynchronous array buffer access
+                                                     
+    static coreResourcePtr<coreModel> s_pPlane;      //!< optimized standard plane
+    static coreResourcePtr<coreModel> s_pCube;       //!< optimized standard cube
+    static coreResourcePtr<coreModel> s_pCylinder;   //!< optimized standard cylinder
 
 
 public:
     coreModel()noexcept;
-    explicit coreModel(const char* pcPath)noexcept;
-    explicit coreModel(coreFile* pFile)noexcept;
     ~coreModel();
 
     //! load and unload model resource data
@@ -150,11 +150,17 @@ public:
     static inline coreModel* GetCurrent() {return s_pCurrent;}
     //! @}
 
-    //! setup and access standard model objects
+    //! access standard model objects
     //! @{
-    static void InitStandard();
-    static void ExitStandard();
-    static inline const coreResourcePtr<coreModel>& StandardPlane() {SDL_assert(s_pPlane); return s_pPlane;}
+    static inline const coreResourcePtr<coreModel>& StandardPlane()    {SDL_assert(s_pPlane);    return s_pPlane;}
+    static inline const coreResourcePtr<coreModel>& StandardCube()     {SDL_assert(s_pCube);     return s_pCube;}
+    static inline const coreResourcePtr<coreModel>& StandardCylinder() {SDL_assert(s_pCylinder); return s_pCylinder;}
+    //! @}
+
+    //! init and exit the model class
+    //! @{
+    static void Init();
+    static void Exit();
     //! @}
 
 
@@ -162,11 +168,6 @@ private:
     //! enable the model
     //! @{
     void __Enable();
-    //! @}
-
-    //! bind all vertex attributes
-    //! @{
-    void __BindAttributes();
     //! @}
 };
 

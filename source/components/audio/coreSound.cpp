@@ -19,26 +19,6 @@ coreSound::coreSound()noexcept
     std::memset(&m_Format, 0, sizeof(m_Format));
 }
 
-coreSound::coreSound(const char* pcPath)noexcept
-: m_iBuffer    (0)
-, m_iCurSource (0)
-, m_pCurRef    (NULL)
-{
-    // load from path
-    std::memset(&m_Format, 0, sizeof(m_Format));
-    this->coreResource::Load(pcPath);
-}
-
-coreSound::coreSound(coreFile* pFile)noexcept
-: m_iBuffer    (0)
-, m_iCurSource (0)
-, m_pCurRef    (NULL)
-{
-    // load from file
-    std::memset(&m_Format, 0, sizeof(m_Format));
-    this->Load(pFile);
-}
-
 
 // ****************************************************************
 // destructor
@@ -52,7 +32,7 @@ coreSound::~coreSound()
 // load sound resource data
 coreError coreSound::Load(coreFile* pFile)
 {
-    coreFileLock Lock(pFile, true);
+    coreFileUnload Unload(pFile);
 
     ASSERT_IF(m_iBuffer) return CORE_INVALID_CALL;
     if(!pFile)           return CORE_INVALID_INPUT;
@@ -114,9 +94,6 @@ coreError coreSound::Load(coreFile* pFile)
     alGenBuffers(1, &m_iBuffer);
     alBufferData(m_iBuffer, iSoundFormat, pSoundData, iSoundSize, m_Format.iSampleRate);
 
-    // unlock file
-    Lock.Release();
-
     // save attributes
     m_sPath = pFile->GetPath();
     m_iSize = iSoundSize;
@@ -140,25 +117,8 @@ coreError coreSound::Unload()
 {
     if(!m_iBuffer) return CORE_INVALID_CALL;
 
-    // unbind sound buffer from all used sound sources
-    FOR_EACH(it, m_aiSource)
-    {
-        const ALuint iSource = this->CheckRef(it->first);
-        if(iSource)
-        {
-#if defined(_CORE_DEBUG_)
-
-            // check for loop property
-            int iPlaying; alGetSourcei(iSource, AL_SOURCE_STATE, &iPlaying);
-            int iLooping; alGetSourcei(iSource, AL_LOOPING,      &iLooping);
-            SDL_assert(!iPlaying || !iLooping);
-
-#endif
-            // stop sound source
-            alSourceStop(iSource);
-            alSourcei(iSource, AL_BUFFER, 0);
-        }
-    }
+    // unbind sound buffer from all sound sources
+    Core::Audio->ClearSources(m_iBuffer);
     m_aiSource.clear();
 
     // delete sound buffer
@@ -186,7 +146,7 @@ void coreSound::PlayPosition(const void* pRef, const float& fVolume, const float
     SDL_assert(m_pCurRef || !bLoop);
 
     // retrieve next free sound source
-    m_iCurSource = Core::Audio->NextSource(m_pCurRef);
+    m_iCurSource = Core::Audio->NextSource(m_iBuffer);
     if(m_iCurSource)
     {
         // save sound source
@@ -221,7 +181,7 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
     SDL_assert(m_pCurRef || !bLoop);
 
     // retrieve next free sound source
-    m_iCurSource = Core::Audio->NextSource(m_pCurRef);
+    m_iCurSource = Core::Audio->NextSource(m_iBuffer);
     if(m_iCurSource)
     {
         // save sound source
@@ -314,8 +274,10 @@ ALuint coreSound::CheckRef(const void* pRef)
     if(!m_aiSource.count(pRef)) return 0;
 
     // check if sound source is still valid
-    const ALuint iSource = Core::Audio->CheckSource(pRef, m_aiSource.at(pRef));
-    if(!iSource) m_aiSource.erase(pRef);
-
-    return iSource;
+    const ALuint& iSource = m_aiSource.at(pRef);
+    if(Core::Audio->CheckSource(m_iBuffer, iSource)) return iSource;
+        
+    // remove invalid sound source
+    m_aiSource.erase(pRef);
+    return 0;
 }

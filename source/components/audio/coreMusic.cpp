@@ -139,7 +139,7 @@ coreError coreMusic::Play()
     m_bStatus = true;
 
     // retrieve next free sound source
-    m_iSource = Core::Audio->NextSource(this);
+    m_iSource = Core::Audio->NextSource(0);
     if(m_iSource)
     {
         // prepare and queue sound buffers
@@ -251,8 +251,6 @@ void coreMusic::__Reset(const bool& bInit)
 // init the music object
 coreError coreMusic::__Init(coreFile* pFile)
 {
-    coreFileLock Lock(pFile, false);
-
     ASSERT_IF(m_aiBuffer[0]) return CORE_INVALID_CALL;
     if(!pFile)               return CORE_INVALID_INPUT;
     if(!pFile->GetData())    return CORE_FILE_ERROR;
@@ -260,9 +258,6 @@ coreError coreMusic::__Init(coreFile* pFile)
     // create virtual file as streaming source
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
     SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
-
-    // unlock file
-    Lock.Release();
 
     // test file format and open music stream
             int iError = ov_test_callbacks(pSource, &m_Stream, NULL, 0, OV_CALLBACKS);

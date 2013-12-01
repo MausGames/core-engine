@@ -17,8 +17,9 @@
 
 // ****************************************************************
 // file definitions
-#define CORE_FILE_MAGIC   0x012F5B66    //!< magic number of core-archives
-#define CORE_FILE_VERSION 0x00000001    //!< current file version of core-archives
+#define CORE_FILE_MAGIC     0x012F5B66    //!< magic number of core-archives
+#define CORE_FILE_VERSION   0x00000001    //!< current file version of core-archives
+#define CORE_FILE_EXTENSION ".cfa"        //!< extension of core-archives
 
 
 // ****************************************************************
@@ -34,8 +35,6 @@ private:
     coreArchive* m_pArchive;       //!< associated archive
     coreUint m_iArchivePos;        //!< absolute data position in the associated archive (0 = file doesn't exist physically)
 
-    SDL_SpinLock m_iLock;          //!< spinlock to prevent asynchronous file data access
-
 
 public:
     explicit coreFile(const char* pcPath)noexcept;
@@ -48,27 +47,15 @@ public:
     coreError Save(const char* pcPath);
     //! @}
 
-    //! create explicit copy
-    //! @{
-    coreFile* Copy();
-    //! @}
-
     //! load and unload file data
     //! @{
     coreError LoadData();
+    coreByte* MoveData();
     inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
-    inline coreByte* MoveData()   {this->LoadData(); coreByte* pOutput = m_pData; m_pData = NULL; return pOutput;}
-    //! @}
-
-    //! control asynchronous file data access
-    //! @{
-    inline void Lock()   {SDL_AtomicLock(&m_iLock);}
-    inline void Unlock() {SDL_AtomicUnlock(&m_iLock);}
     //! @}
 
     //! get object attributes
     //! @{
-    inline const char* GetName()const     {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const     {return m_sPath.c_str();}
     inline const coreByte* GetData()      {this->LoadData(); return m_pData;}
     inline const coreUint& GetSize()const {return m_iSize;}
@@ -117,7 +104,6 @@ public:
 
     //! get object attributes
     //! @{
-    inline const char* GetName()const {return m_sPath.substr(m_sPath.find_last_of("/\\")+1).c_str();}
     inline const char* GetPath()const {return m_sPath.c_str();}
     inline coreUint GetSize()const    {return m_apFile.size();}
     //! @}
@@ -134,26 +120,20 @@ private:
 
 
 // ****************************************************************
-// file-lock helper class
-class coreFileLock final
+// file-unload helper class
+class coreFileUnload final
 {
 private:
     coreFile* m_pFile;   //!< associated file object
-    bool m_bUnload;      //!< unload file data on unlock
 
 
 public:
-    explicit coreFileLock(coreFile* pFile, const bool& bUnload)noexcept;
-    ~coreFileLock() {this->Release();}
-
-    //! release the lock
-    //! @{
-    void Release();
-    //! @}
+    explicit constexpr_func coreFileUnload(coreFile* pFile)noexcept : m_pFile (pFile) {}
+    ~coreFileUnload() {SDL_assert(m_pFile); m_pFile->UnloadData();}
 
 
 private:
-    DISABLE_COPY(coreFileLock)
+    DISABLE_COPY(coreFileUnload)
     DISABLE_HEAP
 };
 

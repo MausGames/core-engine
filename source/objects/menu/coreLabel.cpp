@@ -8,11 +8,13 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+#define CORE_LABEL_DETAIL 0.95f
+
 
 // ****************************************************************    
 // constructor
 coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)
-: m_iHeight     (iHeight)
+: m_iHeight     (int(float(iHeight) * (Core::System->GetResolution().x/800.0f) * CORE_LABEL_DETAIL))
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLength     (0)
 , m_sText       ("")
@@ -70,7 +72,7 @@ void coreLabel::Render()
         if(m_iGenerate & 1)
         {
             // update the object size
-            this->SetSize(m_fScale * m_vTexSize * m_vResolution/Core::System->GetResolution().x);
+            this->SetSize(m_fScale * m_vTexSize * (m_vResolution/Core::System->GetResolution().x) / CORE_LABEL_DETAIL);
             coreObject2D::Move();
         }
         m_iGenerate = 0;
@@ -104,8 +106,7 @@ bool coreLabel::SetText(const char* pcText, int iNum)
     ASSERT_IF(iNum >= m_iLength && m_iLength) iNum = m_iLength;
 
     // check for new text
-    const int iMaxNum = MAX((int)m_sText.length(), iNum);
-    if(std::strncmp(m_sText.c_str(), pcText, iMaxNum) || !iMaxNum)
+    if(std::strcmp(m_sText.c_str(), pcText) || m_sText.length() != iNum)
     {
         m_iGenerate |= 3; 
 

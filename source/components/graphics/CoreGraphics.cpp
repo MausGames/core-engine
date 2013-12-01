@@ -161,9 +161,11 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
     bool bNewCamera = false;
 
     // set attributes of the camera
-    if(m_vCamPosition != vPosition) {m_vCamPosition = vPosition; bNewCamera = true;}
-    const coreVector3 vDirNorm = vDirection.Normalized();   if(m_vCamDirection   != vDirNorm) {m_vCamDirection   = vDirNorm; bNewCamera = true;}
-    const coreVector3 vOriNorm = vOrientation.Normalized(); if(m_vCamOrientation != vOriNorm) {m_vCamOrientation = vOriNorm; bNewCamera = true;}
+    const coreVector3 vDirNorm = vDirection.Normalized();   
+    const coreVector3 vOriNorm = vOrientation.Normalized(); 
+    if(m_vCamPosition    != vPosition) {m_vCamPosition    = vPosition; bNewCamera = true;}
+    if(m_vCamDirection   != vDirNorm)  {m_vCamDirection   = vDirNorm;  bNewCamera = true;}
+    if(m_vCamOrientation != vOriNorm)  {m_vCamOrientation = vOriNorm;  bNewCamera = true;}
 
     // create camera matrix
     if(bNewCamera) m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
@@ -201,9 +203,8 @@ void CoreGraphics::SetLight(const int& iID, const coreVector3& vPosition, const 
 
     bool bNewLight = false;
 
-    const coreVector3 vDirNorm = vDirection.Normalized(); 
-
     // set attributes of the light
+    const coreVector3 vDirNorm = vDirection.Normalized(); 
     if(CurLight.vPosition  != vPosition) {CurLight.vPosition  = vPosition; bNewLight = true;}
     if(CurLight.vDirection != vDirNorm)  {CurLight.vDirection = vDirNorm;  bNewLight = true;}
     if(CurLight.fRange     != fRange)    {CurLight.fRange     = fRange;    bNewLight = true;}
@@ -212,10 +213,10 @@ void CoreGraphics::SetLight(const int& iID, const coreVector3& vPosition, const 
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
-        coreByte* pRange = r_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreLight)*iID, sizeof(coreLight),
+        coreByte* pRange = s_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreLight)*iID, sizeof(coreLight),
                                                               GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
 
-        // update shader-data
+        // update specific light
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
         glUnmapBuffer(GL_UNIFORM_BUFFER);
     }
@@ -232,7 +233,7 @@ void CoreGraphics::Screenshot(const char* pcPath)
     const coreUint iSize   = iHeight*iPitch;
 
     // create folder hierarchy
-    const char* pcFullPath = coreData::Print("%s.png", pcPath);
+    const char* pcFullPath = coreData::Print(std::strcmp(coreData::StrRight(pcPath, 4), ".png") ? "%s.png" : "%s", pcPath);
     coreData::FolderCreate(pcFullPath);
 
     // read pixel data from the frame buffer

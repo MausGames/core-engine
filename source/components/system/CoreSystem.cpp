@@ -34,6 +34,11 @@ CoreSystem::CoreSystem()noexcept
     // get number of logical processor cores
     m_iNumCores = MAX(SDL_GetCPUCount(), 1);
 
+    // retrieve desktop resolution
+    SDL_DisplayMode Desktop;
+    SDL_GetDesktopDisplayMode(0, &Desktop);
+    const coreVector2 vDesktop = coreVector2((float)Desktop.w, (float)Desktop.h);
+
     // load all available screen resolutions
     const int iNumModes = SDL_GetNumDisplayModes(0);
     if(iNumModes)
@@ -60,7 +65,7 @@ CoreSystem::CoreSystem()noexcept
             {
                 // add new resolution
                 m_avAvailable.push_back(vMode);
-                Core::Log->ListEntry(coreData::Print("%4d x %4d", Mode.w, Mode.h));
+                Core::Log->ListEntry(coreData::Print("%4d x %4d", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : ""));
             }
         }
         Core::Log->ListEnd();
@@ -109,7 +114,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
         if(!m_pWindow) Core::Log->Error(1, coreData::Print("Main window could not be created (SDL: %s)", SDL_GetError()));
     }
-    Core::Log->Info(coreData::Print("Main window created (%.0f x %.0f)", m_vResolution.x, m_vResolution.y));
+    Core::Log->Info(coreData::Print("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen));
 
     // init high precision time
     m_dPerfFrequency = 1.0/double(SDL_GetPerformanceFrequency());

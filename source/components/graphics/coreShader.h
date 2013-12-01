@@ -50,13 +50,11 @@ class coreShader final : public coreResource
 {
 private:
     GLuint m_iShader;                   //!< shader identifier/OpenGL name
-    static std::string s_asGlobal[3];   //!< global shader data (0 = defines | 1 = vertex | 2 = fragment)
+    static std::string s_asGlobal[3];   //!< global shader code (0 = defines | 1 = vertex | 2 = fragment)
 
 
 public:
     coreShader()noexcept;
-    explicit coreShader(const char* pcPath)noexcept;
-    explicit coreShader(coreFile* pFile)noexcept;
     ~coreShader();
 
     //! load and unload shader resource data
@@ -75,11 +73,10 @@ public:
     static inline const char* GetDefaultPath() {return "data/shaders/default.fs";}
     //! @}
 
-
-private:
-    //! init global shader data
+    //! init and exit the shader class
     //! @{
-    static void __InitGlobal();
+    static void Init();
+    static void Exit();
     //! @}
 };
 

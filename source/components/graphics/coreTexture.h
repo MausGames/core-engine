@@ -40,8 +40,6 @@ private:
 
 public:
     coreTexture()noexcept;
-    explicit coreTexture(const char* pcPath)noexcept;
-    explicit coreTexture(coreFile* pFile)noexcept;
     ~coreTexture();
 
     //! load and unload texture resource data

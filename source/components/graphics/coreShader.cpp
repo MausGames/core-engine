@@ -19,20 +19,6 @@ coreShader::coreShader()noexcept
 {
 }
 
-coreShader::coreShader(const char* pcPath)noexcept
-: m_iShader (0)
-{
-    // load from path
-    this->coreResource::Load(pcPath);
-}
-
-coreShader::coreShader(coreFile* pFile)noexcept
-: m_iShader (0)
-{
-    // load from file
-    this->Load(pFile);
-}
-
 
 // ****************************************************************
 // destructor
@@ -46,7 +32,7 @@ coreShader::~coreShader()
 // load shader resource data
 coreError coreShader::Load(coreFile* pFile)
 {
-    coreFileLock Lock(pFile, true);
+    coreFileUnload Unload(pFile);
 
     ASSERT_IF(m_iShader)  return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
@@ -61,12 +47,9 @@ coreError coreShader::Load(coreFile* pFile)
     else if(!std::strcmp(pcExtension, "fs") || !std::strcmp(pcExtension, "frag")) iType = GL_FRAGMENT_SHADER;
     else
     {
-        Core::Log->Error(0, coreData::Print("Shader (%s) could not be identified (valid extension: vs, vert, fs, frag)", pFile->GetPath()));
+        Core::Log->Error(0, coreData::Print("Shader (%s) could not be identified (valid extensions: vs, vert, fs, frag)", pFile->GetPath()));
         return CORE_INVALID_DATA;
     }
-
-    // init global shader data
-    __InitGlobal();
 
     // assemble the shader
     const std::string& sGlobal = s_asGlobal[(iType == GL_VERTEX_SHADER) ? 1 : 2];
@@ -78,12 +61,9 @@ coreError coreShader::Load(coreFile* pFile)
     glShaderSource(m_iShader, 3, apcData, aiSize);
     glCompileShader(m_iShader);
 
-    // unlock file
-    Lock.Release();
-
     // save attributes
     m_sPath = pFile->GetPath();
-    m_iSize = pFile->GetSize() + sGlobal.length();
+    m_iSize = aiSize[0] + aiSize[1] + aiSize[2];
 
     // check for errors
     int iStatus;
@@ -136,8 +116,8 @@ coreError coreShader::Unload()
 
 
 // ****************************************************************
-// init global shader data
-void coreShader::__InitGlobal()
+// init the shader class
+void coreShader::Init()
 {
     if(!s_asGlobal[0].empty()) return;
 
@@ -145,7 +125,7 @@ void coreShader::__InitGlobal()
     coreFile* pGlobalVertex   = Core::Manager::Resource->RetrieveFile("data/shaders/global.vs");
     coreFile* pGlobalFragment = Core::Manager::Resource->RetrieveFile("data/shaders/global.fs");
 
-    // create global shader data
+    // set global shader code
     s_asGlobal[0].assign(coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->SupportGLSL()*100.0f : 110.0f));
     s_asGlobal[0].append(coreData::Print("\n#define CORE_TEXTURE_UNITS   (%d)", CORE_TEXTURE_UNITS));
     s_asGlobal[0].append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS (%d)", CORE_GRAPHICS_LIGHTS));
@@ -154,6 +134,13 @@ void coreShader::__InitGlobal()
 
     pGlobalVertex->UnloadData();
     pGlobalFragment->UnloadData();
+}
+
+
+// ****************************************************************
+// exit the shader class
+void coreShader::Exit()
+{
 }
 
 

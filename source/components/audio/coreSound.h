@@ -49,8 +49,6 @@ private:
 
 public:
     coreSound()noexcept;
-    explicit coreSound(const char* pcPath)noexcept;
-    explicit coreSound(coreFile* pFile)noexcept;
     ~coreSound();
 
     //! load and unload sound resource data

@@ -58,6 +58,10 @@ Core::Core()noexcept
     Manager::Memory   = new coreMemoryManager();
     Manager::Resource = new coreResourceManager();
     Manager::Object   = new coreObjectManager();
+
+    // init resource classes
+    coreModel::Init();
+    coreShader::Init();
 }
 
 
@@ -65,6 +69,10 @@ Core::Core()noexcept
 // destructor
 Core::~Core()
 {
+    // exit resource classes
+    coreShader::Exit();
+    coreModel::Exit();
+
     // delete manager
     SAFE_DELETE(Manager::Object)
     SAFE_DELETE(Manager::Resource)
@@ -108,9 +116,6 @@ void Core::__Run()
 
 #endif
 
-    // load standard model objects
-    coreModel::InitStandard();
-
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())
     {
@@ -130,9 +135,6 @@ void Core::__Run()
         if(!Core::Graphics->GetResourceContext())
             Core::Manager::Resource->__Run();
     }
-
-    // unload standard model objects
-    coreModel::ExitStandard();
 
     // reset logging level
     Core::Log->SetLevel(0);
@@ -197,11 +199,8 @@ int main(int argc, char* argv[])
 
 #if !defined(_CORE_ANDROID_)
 
-    // set new working directory (cd ../..)
-    char acPath[256];
-    std::strcpy(acPath, coreData::AppPath());
-    for(int i = 0; i < 3; ++i) (*std::strrchr(acPath, CORE_DATA_SLASH[0])) = '\0';
-    chdir(acPath);
+    // set new working directory
+    chdir("../..");
 
 #endif
 

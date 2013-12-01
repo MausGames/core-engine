@@ -21,22 +21,6 @@ coreTexture::coreTexture()noexcept
 {
 }
 
-coreTexture::coreTexture(const char* pcPath)noexcept
-: m_iTexture    (0)
-, m_vResolution (coreVector2(0.0f,0.0f))
-{
-    // load from path
-    this->coreResource::Load(pcPath);
-}
-
-coreTexture::coreTexture(coreFile* pFile)noexcept
-: m_iTexture    (0)
-, m_vResolution (coreVector2(0.0f,0.0f))
-{
-    // load from file
-    this->Load(pFile);
-}
-
 
 // ****************************************************************
 // destructor
@@ -48,15 +32,15 @@ coreTexture::~coreTexture()
 
 // ****************************************************************
 // load texture resource data
-// TODO: check for proper use of PBO, maybe implement static buffer(s!)
-// TODO: allow 1-channel textures (GLES uses GL_ALPHA, GL uses GL_RED/CL_DEPTH_COMPONENT)
+// TODO: check proper use of PBO, maybe implement static buffer(s!)
+// TODO: allow 1-channel textures (GLES uses GL_ALPHA, GL uses GL_RED/GL_DEPTH_COMPONENT)
 coreError coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
     const coreError iStatus = m_Sync.Check(0);
     if(iStatus >= 0) return iStatus;
 
-    coreFileLock Lock(pFile, true);
+    coreFileUnload Unload(pFile);
 
     ASSERT_IF(m_iTexture) return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
@@ -69,9 +53,6 @@ coreError coreTexture::Load(coreFile* pFile)
         Core::Log->Error(0, coreData::Print("Texture (%s) could not be loaded", pFile->GetPath()));
         return CORE_INVALID_DATA;
     }
-
-    // unlock file
-    Lock.Release();
 
     // check for extensions
     const bool& bPixelBuffer = Core::Graphics->SupportFeature("GL_ARB_pixel_buffer_object");
