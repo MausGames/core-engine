@@ -41,7 +41,15 @@
 #define CORE_SHADER_ATTRIBUTE_TANGENT_NUM      3
 
 #define CORE_SHADER_OUTPUT_COLOR(i)            coreData::Print("o_v4Color%d", i)
-#define CORE_SHADER_OUTPUT_COLORS              4   
+#define CORE_SHADER_OUTPUT_COLORS              4 
+
+enum coreShaderStatus
+{
+    CORE_SHADER_NEW      = 0,
+    CORE_SHADER_DEFINED  = 1,
+    CORE_SHADER_LINKED   = 2,
+    CORE_SHADER_FINISHED = 3
+};
 
 
 // ****************************************************************
@@ -75,8 +83,8 @@ public:
 
     //! init and exit the shader class
     //! @{
-    static void Init();
-    static void Exit();
+    static void InitClass();
+    static void ExitClass();
     //! @}
 };
 
@@ -96,7 +104,7 @@ private:
     GLuint m_iProgram;                       //!< shader-program identifier/OpenGL name
 
     std::vector<coreShaderPtr> m_apShader;   //!< attached shader objects
-    int m_iStatus;                           //!< current status (0 = new | 1 = ready for linking | 2 = successfully linked | 3 = texture units bound)
+    coreShaderStatus m_iStatus;              //!< current status (0 = new | 1 = ready for linking | 2 = successfully linked | 3 = texture units bound)
 
     coreLookup<int> m_aiUniform;             //!< identifiers for uniform variables
     coreLookup<int> m_aiAttribute;           //!< identifiers for attribute variables
@@ -125,8 +133,7 @@ public:
     //! @{
     coreProgram* AttachShaderFile(const char* pcPath);
     coreProgram* AttachShaderLink(const char* pcName);
-    inline void Finish()          {if(m_iStatus) return; m_iStatus = 1; this->Init();}
-    inline bool IsFinished()const {return (m_iStatus >= 2) ? true : false;}
+    inline void Finish() {if(m_iStatus) return; m_iStatus = CORE_SHADER_DEFINED; this->Init();}
     //! @}
 
     //! set uniform variables
@@ -148,8 +155,8 @@ public:
     //! get object attributes
     //! @{
     inline const GLuint& GetProgram()const             {return m_iProgram;}
-    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {SDL_assert(this->IsFinished() && s_pCurrent == this); m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
-    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {SDL_assert(this->IsFinished() && s_pCurrent == this); m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
+    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {SDL_assert(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this); m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
+    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {SDL_assert(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this); m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
     //! @}
 
     //! get currently active shader-program

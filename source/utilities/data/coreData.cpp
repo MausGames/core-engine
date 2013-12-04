@@ -206,7 +206,7 @@ bool coreData::StrCompare(const char* s, const char* t)
 // get last characters of a string
 const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 {
-    if(!pcInput) return NULL;
+    SDL_assert(pcInput);
 
     const coreUint iLen = std::strlen(pcInput);
     return pcInput + (iLen-coreMath::Min(iLen, iNum));
@@ -217,7 +217,7 @@ const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 // safely get file extension
 const char* coreData::StrExtension(const char* pcInput)
 {
-    if(!pcInput) return NULL;
+    SDL_assert(pcInput);
 
     const char* pcDot = std::strrchr(pcInput, '.');
     return pcDot ? pcDot+1 : pcInput;
@@ -228,7 +228,7 @@ const char* coreData::StrExtension(const char* pcInput)
 // safely get version number
 float coreData::StrVersion(const char* pcInput)
 {
-    if(!pcInput) return 0.0f;
+    SDL_assert(pcInput);
 
     const char* pcDot = std::strchr(pcInput, '.');
     return pcDot ? (float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0')) : 0.0f;
@@ -239,7 +239,7 @@ float coreData::StrVersion(const char* pcInput)
 // move string pointer and skip comments
 void coreData::StrSkip(const char** ppcInput, const int &iNum)
 {
-    if(!*ppcInput) return;
+    SDL_assert(*ppcInput);
 
     int  n = iNum;
     char c = '\0';

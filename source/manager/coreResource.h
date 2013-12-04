@@ -59,6 +59,7 @@ private:
     coreResource* m_pCur;        //!< pointer to active resource object
     int m_iRef;                  //!< reference-counter
 
+    bool m_bLoaded;              //!< succesfully loaded
     bool m_bManaged;             //!< actively updated by the resource manager
 
 
@@ -72,7 +73,7 @@ public:
     //! access active resource object
     //! @{
     inline coreResource* GetResource()const {return m_pCur;}
-    inline bool IsLoaded()const             {return (m_pCur == m_pDefault) ? false : true;}
+    inline const bool& IsLoaded()const      {return m_bLoaded;}
     //! @}
 
     //! manipulate the reference-counter
@@ -89,7 +90,7 @@ private:
     //! control resource loading
     //! @{
     void __Update();
-    inline void __Nullify() {if(!m_bManaged) return; m_pCur = m_pDefault; m_pResource->Unload();}
+    inline void __Nullify() {if(!m_bManaged) return; m_bLoaded = false; m_pCur = m_pDefault; m_pResource->Unload();}
     //! @}
 };
 
@@ -121,7 +122,7 @@ public:
     //! @{
     inline T* operator -> ()const noexcept {SDL_assert(m_pHandle != NULL); return   s_cast<T*>(m_pHandle->GetResource());}
     inline T& operator * ()const noexcept  {SDL_assert(m_pHandle != NULL); return *(s_cast<T*>(m_pHandle->GetResource()));}
-    inline bool IsLoaded()const            {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
+    inline const bool& IsLoaded()const     {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
     //! @}
 
     //! dynamically control the reference-counter
@@ -164,7 +165,7 @@ private:
 // ****************************************************************
 // resource manager
 // TODO: use load-stack
-// TODO: update link-functionality
+// TODO: default resources necessary ?
 class coreResourceManager final : public coreThread
 {
 private:
@@ -188,9 +189,9 @@ private:
 public:
     //! create and return resource with resource handle
     //! @{
-    template <typename T> inline coreResourceHandle* LoadFile(const char* pcPath) {return this->__Load<T>(pcPath, true);}
-    template <typename T> inline coreResourceHandle* LoadLink(const char* pcName) {return this->__Load<T>(pcName, false);}
-    template <typename T> inline coreResourceHandle* LoadNew()const               {return new coreResourceHandle(new T(), NULL, NULL);}
+    template <typename T> coreResourceHandle* LoadFile(const char* pcPath);
+    template <typename T> coreResourceHandle* LoadLink(const char* pcName);
+    template <typename T> inline coreResourceHandle* LoadNew()const {return new coreResourceHandle(new T(), NULL, NULL);}
     template <typename T> void Free(T* pResourcePtr);
     //! @}
 
@@ -214,11 +215,6 @@ private:
     int __Init()override;
     int __Run()override;
     void __Exit()override;
-    //! @}
-
-    //! create and return resource with resource handle
-    //! @{
-    template <typename T> coreResourceHandle* __Load(const char* pcKey, const bool& bFile);
     //! @}
 };
 
@@ -297,24 +293,11 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 
 // ****************************************************************
-// delete resource and resource handle
-template <typename T> void coreResourceManager::Free(T* pResourcePtr)
-{
-    // remove resource handle from container
-    if(pResourcePtr->m_pHandle) m_apHandle.erase(pResourcePtr->m_pHandle);
-
-    // delete resource and resource handle
-    pResourcePtr->SetActive(false);
-    SAFE_DELETE(pResourcePtr->m_pHandle)
-}
-
-
-// ****************************************************************
 // create and return resource with resource handle
-template <typename T> coreResourceHandle* coreResourceManager::__Load(const char* pcKey, const bool& bFile)
+template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath)
 {
     // check for existing resource handle
-    if(m_apHandle.count(pcKey)) return m_apHandle[pcKey];
+    if(m_apHandle.count(pcPath)) return m_apHandle[pcPath];
 
     // check for existing default resource
     coreResource* pDefault;
@@ -328,10 +311,35 @@ template <typename T> coreResourceHandle* coreResourceManager::__Load(const char
     else pDefault = m_apDefault[T::GetDefaultPath()];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pDefault, bFile ? this->RetrieveFile(pcKey) : NULL);
-    m_apHandle[pcKey] = pNewHandle;
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pDefault, this->RetrieveFile(pcPath));
+    m_apHandle[pcPath] = pNewHandle;
 
     return pNewHandle;
+}
+
+template <typename T> coreResourceHandle* coreResourceManager::LoadLink(const char* pcName)
+{
+    // check for existing resource handle
+    if(m_apHandle.count(pcName)) return m_apHandle[pcName];
+
+    // create new resource handle
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), NULL, NULL);
+    m_apHandle[pcName] = pNewHandle;
+
+    return pNewHandle;
+}
+
+
+// ****************************************************************
+// delete resource and resource handle
+template <typename T> void coreResourceManager::Free(T* pResourcePtr)
+{
+    // remove resource handle from container
+    if(pResourcePtr->m_pHandle) m_apHandle.erase(pResourcePtr->m_pHandle);
+
+    // delete resource and resource handle
+    pResourcePtr->SetActive(false);
+    SAFE_DELETE(pResourcePtr->m_pHandle)
 }
 
 

@@ -15,9 +15,10 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pD
 : m_pResource (pResource)
 , m_pDefault  (pDefault)
 , m_pFile     (pFile)
-, m_pCur      (pFile ? pDefault : pResource)
+, m_pCur      (pDefault ? pDefault : pResource)
 , m_iRef      (0)
-, m_bManaged  (pFile ? true : false)
+, m_bLoaded   (false)
+, m_bManaged  (pDefault ? true : false)
 {
 }
 
@@ -41,7 +42,7 @@ void coreResourceHandle::__Update()
 {
     if(!m_bManaged) return;
 
-    if(m_iRef != 0 && !this->IsLoaded())
+    if(m_iRef != 0 && !m_bLoaded)
     {
         // load associated resource
         const coreError iStatus = m_pResource->Load(m_pFile);
@@ -49,8 +50,9 @@ void coreResourceHandle::__Update()
         {
             // successfully loaded
             m_pCur = m_pResource;
+            m_bLoaded = true;
         }
-        else if(iStatus < 0)
+        else if(iStatus != CORE_BUSY)
         {
             // stop managing the resource handle
             m_bManaged = false;

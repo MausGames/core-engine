@@ -117,13 +117,14 @@ coreError coreShader::Unload()
 
 // ****************************************************************
 // init the shader class
-void coreShader::Init()
+void coreShader::InitClass()
 {
     if(!s_asGlobal[0].empty()) return;
 
     // retrieve global shader files
     coreFile* pGlobalVertex   = Core::Manager::Resource->RetrieveFile("data/shaders/global.vs");
     coreFile* pGlobalFragment = Core::Manager::Resource->RetrieveFile("data/shaders/global.fs");
+    ASSERT_IF(!pGlobalVertex->GetData() || !pGlobalFragment->GetData()) return;
 
     // set global shader code
     s_asGlobal[0].assign(coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->SupportGLSL()*100.0f : 110.0f));
@@ -132,6 +133,7 @@ void coreShader::Init()
     s_asGlobal[1].assign(r_cast<const char*>(pGlobalVertex->GetData()),   pGlobalVertex->GetSize());
     s_asGlobal[2].assign(r_cast<const char*>(pGlobalFragment->GetData()), pGlobalFragment->GetSize());
 
+    // unload global shader files
     pGlobalVertex->UnloadData();
     pGlobalFragment->UnloadData();
 }
@@ -139,7 +141,7 @@ void coreShader::Init()
 
 // ****************************************************************
 // exit the shader class
-void coreShader::Exit()
+void coreShader::ExitClass()
 {
 }
 
@@ -148,7 +150,7 @@ void coreShader::Exit()
 // constructor
 coreProgram::coreProgram()noexcept
 : m_iProgram (0)
-, m_iStatus  (0)
+, m_iStatus  (CORE_SHADER_NEW)
 {
     // reserve memory for shader objects
     m_apShader.reserve(4);
@@ -171,7 +173,7 @@ coreProgram::~coreProgram()
 // init the shader-program
 coreError coreProgram::Init()
 {
-    if(m_iStatus != 1) return CORE_INVALID_CALL;
+    if(m_iStatus != CORE_SHADER_DEFINED) return CORE_INVALID_CALL;
 
     // check if all requested shaders are loaded
     FOR_EACH(it, m_apShader)
@@ -207,7 +209,7 @@ coreError coreProgram::Init()
 
     // link shader-program
     glLinkProgram(m_iProgram);
-    m_iStatus = 2;
+    m_iStatus = CORE_SHADER_LINKED;
 
     // bind global uniform buffer object
     if(Core::Graphics->GetUniformBuffer())
@@ -260,7 +262,7 @@ coreError coreProgram::Init()
 }
 
 
- // ****************************************************************
+// ****************************************************************
 // exit the shader-program
 coreError coreProgram::Exit()
 {
@@ -270,15 +272,15 @@ coreError coreProgram::Exit()
     FOR_EACH(it, m_apShader)
         glDetachShader(m_iProgram, (*it)->GetShader());
 
+    // delete shader-program
+    glDeleteProgram(m_iProgram);
+    m_iProgram = 0;
+    m_iStatus  = CORE_SHADER_DEFINED;
+    
     // clear identifiers and cache
     m_aiUniform.clear();
     m_aiAttribute.clear();
     m_avCache.clear();
-
-    // delete shader-program
-    glDeleteProgram(m_iProgram);
-    m_iProgram = 0;
-    m_iStatus  = 1;
 
     return CORE_OK;
 }
@@ -295,7 +297,7 @@ bool coreProgram::Enable()
     if(s_pCurrent == this) return true;
 
     // link shader-program
-    if(!this->IsFinished())
+    if(m_iStatus < CORE_SHADER_LINKED)
     {
         if(this->Init() != CORE_OK)
             return false;
@@ -306,12 +308,12 @@ bool coreProgram::Enable()
     glUseProgram(m_iProgram);
 
     // bind all texture units
-    if(m_iStatus == 2)
+    if(m_iStatus == CORE_SHADER_LINKED)
     {
         for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
             glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_TEXTURE(i)), i);
 
-        m_iStatus = 3;
+        m_iStatus = CORE_SHADER_FINISHED;
     }
 
     // forward global uniform data without UBO

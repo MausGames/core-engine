@@ -81,4 +81,4 @@ uniform vec2 u_v2TexSize;
 uniform vec2 u_v2TexOffset;
 
 // texture uniforms
-uniform sampler2D u_s2Texture[CORE_TEXTURE_UNITS];
+uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];

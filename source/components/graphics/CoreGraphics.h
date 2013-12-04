@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // graphics definitions
-#define CORE_GRAPHICS_LIGHTS 8   //!< number of ambient lights
+#define CORE_GRAPHICS_LIGHTS 4   //!< number of ambient lights
 
 
 // ****************************************************************

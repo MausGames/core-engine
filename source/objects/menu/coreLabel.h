@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // menu label class
-class coreLabel : public coreObject2D, public coreReset
+class coreLabel final : public coreObject2D, public coreReset
 {
 private:
     coreFontPtr m_pFont;         //!< font object

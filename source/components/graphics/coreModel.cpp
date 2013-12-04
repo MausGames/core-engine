@@ -341,21 +341,21 @@ void coreModel::RenderStrip()
 // ****************************************************************
 // init the model class
 // TODO: implement missing standard object "files"
-void coreModel::Init()
+void coreModel::InitClass()
 {
     // check for extensions
     s_bSupportArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
 
     // load optimized standard objects
     if(!s_pPlane)    s_pPlane    = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_plane.md5mesh");
-    //if(!s_pCube)     s_pCube     = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_cube.md5mesh");
+    if(!s_pCube)     s_pCube     = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_cube.md5mesh");
     //if(!s_pCylinder) s_pCylinder = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_cylinder.md5mesh");
 }
 
 
 // ****************************************************************
 // exit the model class
-void coreModel::Exit()
+void coreModel::ExitClass()
 {
     // unload optimized standard objects
     s_pPlane    = NULL;

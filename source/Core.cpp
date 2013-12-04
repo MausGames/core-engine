@@ -60,8 +60,8 @@ Core::Core()noexcept
     Manager::Object   = new coreObjectManager();
 
     // init resource classes
-    coreModel::Init();
-    coreShader::Init();
+    coreModel::InitClass();
+    coreShader::InitClass();
 }
 
 
@@ -70,8 +70,8 @@ Core::Core()noexcept
 Core::~Core()
 {
     // exit resource classes
-    coreShader::Exit();
-    coreModel::Exit();
+    coreShader::ExitClass();
+    coreModel::ExitClass();
 
     // delete manager
     SAFE_DELETE(Manager::Object)

@@ -17,8 +17,7 @@
 // TODO: add animation
 // TODO: check for unnecessary calculations to increase loading speed
 // TODO: check normal vector calculations (alignment, outside, etc.)
-// TODO: make default model invisible
-// TODO: add optimized cube and tube model
+// TODO: unify both render functions
 class coreModel final : public coreResource
 {
 private:
@@ -159,8 +158,8 @@ public:
 
     //! init and exit the model class
     //! @{
-    static void Init();
-    static void Exit();
+    static void InitClass();
+    static void ExitClass();
     //! @}
 
 
