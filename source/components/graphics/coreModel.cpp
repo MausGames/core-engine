@@ -224,7 +224,7 @@ coreError coreModel::Load(coreFile* pFile)
         const coreVector2 B2 = pVertex[oTriangle.aiVertex[2]].vTexture  - pVertex[oTriangle.aiVertex[0]].vTexture;
 
         // calculate local normal vector
-        const coreVector3 N = coreVector3::Cross(A1, A2);
+        const coreVector3 N = coreVector3::Cross(A1.Normalized(), A2.Normalized());
 
         // calculate local tangent vector parameters
         const float R = 1.0f / (B1.s*B2.t - B2.s*B1.t);
@@ -249,7 +249,7 @@ coreError coreModel::Load(coreFile* pFile)
                                           coreMath::Sign(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 
-    SDL_AtomicLock(&s_iLock);
+    coreModel::Lock();
     {
         // create vertex buffer
         glGenBuffers(1, &m_iVertexBuffer);
@@ -264,7 +264,7 @@ coreError coreModel::Load(coreFile* pFile)
         // override current model object
         s_pCurrent = NULL;
     }
-    SDL_AtomicUnlock(&s_iLock);
+    coreModel::Unlock();
 
     // create sync object
     const bool bSync = m_Sync.Create();
@@ -286,7 +286,7 @@ coreError coreModel::Unload()
     if(!m_iVertexBuffer) return CORE_INVALID_CALL;
 
     // delete vertex array object and data buffers
-    if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
+    glDeleteVertexArrays(1, &m_iVertexArray);
     glDeleteBuffers(1, &m_iVertexBuffer);
     glDeleteBuffers(1, &m_iIndexBuffer);
     Core::Log->Info(coreData::Print("Model (%s) unloaded", m_sPath.c_str()));
@@ -315,26 +315,26 @@ void coreModel::RenderList()
 {
     SDL_assert(m_iVertexBuffer);
 
-    SDL_AtomicLock(&s_iLock);
+    coreModel::Lock();
     {
         // enable and draw the model
         this->__Enable();
         glDrawElements(GL_TRIANGLES, m_iNumIndices, GL_UNSIGNED_SHORT, 0);
     }
-    SDL_AtomicUnlock(&s_iLock);
+    coreModel::Unlock();
 }
 
 void coreModel::RenderStrip()
 {
     SDL_assert(m_iVertexBuffer);
 
-    SDL_AtomicLock(&s_iLock);
+    coreModel::Lock();
     {
         // enable and draw the model
         this->__Enable();
         glDrawArrays(GL_TRIANGLE_STRIP, 0, m_iNumVertices);
     }
-    SDL_AtomicUnlock(&s_iLock);
+    coreModel::Unlock();
 }
 
 
@@ -343,7 +343,7 @@ void coreModel::RenderStrip()
 // TODO: implement missing standard object "files"
 void coreModel::InitClass()
 {
-    // check for extensions
+    // check for extension
     s_bSupportArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
 
     // load optimized standard objects

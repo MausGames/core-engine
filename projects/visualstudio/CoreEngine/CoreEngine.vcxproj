@@ -116,6 +116,7 @@
     <ClCompile Include="..\..\..\source\components\audio\coreMusic.cpp" />
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreFont.cpp" />
+    <ClCompile Include="..\..\..\source\components\graphics\coreFrameBuffer.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\CoreGraphics.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreModel.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreShader.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\..\..\source\components\audio\coreMusic.h" />
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreFont.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\coreFrameBuffer.h" />
     <ClInclude Include="..\..\..\source\components\graphics\CoreGraphics.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreModel.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreShader.h" />

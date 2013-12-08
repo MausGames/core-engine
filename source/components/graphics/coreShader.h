@@ -18,8 +18,7 @@
 #define CORE_SHADER_BUFFER_GLOBAL_NUM          0
 
 #define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)  coreData::Print("u_asLight[%d].v3Position",  i)
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i) coreData::Print("u_asLight[%d].v3Direction", i)
-#define CORE_SHADER_UNIFORM_LIGHT_RANGE(i)     coreData::Print("u_asLight[%d].fRange",      i)
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i) coreData::Print("u_asLight[%d].v4Direction", i)
 #define CORE_SHADER_UNIFORM_LIGHT_VALUE(i)     coreData::Print("u_asLight[%d].v4Value",     i)
 
 #define CORE_SHADER_UNIFORM_3D_MODELVIEW       "u_m4ModelView"
@@ -29,7 +28,8 @@
 #define CORE_SHADER_UNIFORM_COLOR              "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXSIZE            "u_v2TexSize"
 #define CORE_SHADER_UNIFORM_TEXOFFSET          "u_v2TexOffset"
-#define CORE_SHADER_UNIFORM_TEXTURE(i)         coreData::Print("u_s2Texture[%d]", i)
+#define CORE_SHADER_UNIFORM_TEXTURE(i)         coreData::Print("u_as2Texture[%d]", i)
+#define CORE_SHADER_UNIFORM_SHADOW             "u_s2Shadow"
                                                
 #define CORE_SHADER_ATTRIBUTE_POSITION         "a_v3Position"
 #define CORE_SHADER_ATTRIBUTE_TEXTURE          "a_v2Texture"
@@ -117,12 +117,6 @@ public:
     coreProgram()noexcept;
     ~coreProgram();
 
-    //! init and exit the shader-program
-    //! @{
-    coreError Init();
-    coreError Exit();
-    //! @}
-
     //! enable and disable the shader-program
     //! @{
     bool Enable();
@@ -133,7 +127,7 @@ public:
     //! @{
     coreProgram* AttachShaderFile(const char* pcPath);
     coreProgram* AttachShaderLink(const char* pcName);
-    inline void Finish() {if(m_iStatus) return; m_iStatus = CORE_SHADER_DEFINED; this->Init();}
+    inline void Finish() {if(m_iStatus) return; m_iStatus = CORE_SHADER_DEFINED; this->__Init();}
     //! @}
 
     //! set uniform variables
@@ -169,6 +163,12 @@ private:
     //! reset with the resource manager
     //! @{
     void __Reset(const bool& bInit)override;
+    //! @}
+
+    //! init and exit the shader-program
+    //! @{
+    coreError __Init();
+    coreError __Exit();
     //! @}
 };
 

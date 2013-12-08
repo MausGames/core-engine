@@ -119,7 +119,7 @@ CoreGraphics::CoreGraphics()noexcept
 
     // reset ambient
     for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
-        this->SetLight(i, coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), 1.0f, coreVector4(1.0f,1.0f,1.0f,1.0f));
+        this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
 
     // reset scene
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -196,7 +196,7 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
 
 // ******************************************************************
 // set and update ambient light attributes
-void CoreGraphics::SetLight(const int& iID, const coreVector3& vPosition, const coreVector3& vDirection, const float& fRange, const coreVector4& vValue)
+void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
     SDL_assert(iID < CORE_GRAPHICS_LIGHTS);
     coreLight& CurLight = m_aLight[iID];
@@ -204,10 +204,9 @@ void CoreGraphics::SetLight(const int& iID, const coreVector3& vPosition, const 
     bool bNewLight = false;
 
     // set attributes of the light
-    const coreVector3 vDirNorm = vDirection.Normalized(); 
+    const coreVector4 vDirNorm = coreVector4(vDirection.xyz().Normalized(), vDirection.w); 
     if(CurLight.vPosition  != vPosition) {CurLight.vPosition  = vPosition; bNewLight = true;}
     if(CurLight.vDirection != vDirNorm)  {CurLight.vDirection = vDirNorm;  bNewLight = true;}
-    if(CurLight.fRange     != fRange)    {CurLight.fRange     = fRange;    bNewLight = true;}
     if(CurLight.vValue     != vValue)    {CurLight.vValue     = vValue;    bNewLight = true;}
 
     if(bNewLight && m_iUniformBuffer)

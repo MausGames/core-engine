@@ -21,9 +21,8 @@
 // light structure
 struct coreLight
 {
-    vec3 v3Position;
-    vec3 v3Direction;
-    float fRange;
+    vec4 v4Position;
+    vec4 v4Direction;
 
     vec4 v4Value;
 };
@@ -82,3 +81,4 @@ uniform vec2 u_v2TexOffset;
 
 // texture uniforms
 uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
+uniform sampler2DShadow u_s2Shadow;

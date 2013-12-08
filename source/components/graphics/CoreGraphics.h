@@ -19,15 +19,16 @@
 // ****************************************************************
 // main graphics component
 //! \ingroup component
+// TODO: deferred shading implementation delayed, but kept in mind
+// TODO: FOV and clipping planes should be controlled differently
 class CoreGraphics final
 {
 private:
     //! light structure
     struct coreLight
     {
-        coreVector3 vPosition;    //!< position of the light
-        coreVector3 vDirection;   //!< direction of the light
-        float fRange;             //!< range for attenuation calculations
+        coreVector4 vPosition;    //!< position of the light
+        coreVector4 vDirection;   //!< direction and range of the light
 
         coreVector4 vValue;       //!< color and strength value
     };
@@ -74,7 +75,7 @@ public:
 
     //! control ambient
     //! @{
-    void SetLight(const int& iID, const coreVector3& vPosition, const coreVector3& vDirection, const float& fRange, const coreVector4& vValue);
+    void SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
     //! @}
 
     //! take screenshot

@@ -13,8 +13,8 @@
 
 // ****************************************************************
 // memory definitions
-#define CORE_MEMORY_SHARED coreData::Print("!%s:%d",    coreData::StrRight(__FILE__, 16), __LINE__)
-#define CORE_MEMORY_UNIQUE coreData::Print("!%s:%d:%p", coreData::StrRight(__FILE__, 16), __LINE__, this)
+#define CORE_MEMORY_SHARED coreData::Print("!%s:%d",    coreData::StrRight(__FILE__, 8), __LINE__)
+#define CORE_MEMORY_UNIQUE coreData::Print("!%s:%d:%p", coreData::StrRight(__FILE__, 8), __LINE__, this)
 #define CORE_MEMORY_REPEAT NULL
 
 

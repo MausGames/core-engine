@@ -33,7 +33,7 @@ coreTexture::~coreTexture()
 // ****************************************************************
 // load texture resource data
 // TODO: check proper use of PBO, maybe implement static buffer(s!)
-// TODO: allow 1-channel textures (GLES uses GL_ALPHA, GL uses GL_RED/GL_DEPTH_COMPONENT)
+// TODO: allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT)
 coreError coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
@@ -86,7 +86,7 @@ coreError coreTexture::Load(coreFile* pFile)
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
     }
 
-    SDL_AtomicLock(&s_iLock);
+    coreTexture::Lock();
     {
         // generate texture
         glGenTextures(1, &m_iTexture);
@@ -123,7 +123,7 @@ coreError coreTexture::Load(coreFile* pFile)
         glBindTexture(GL_TEXTURE_2D, 0);
         if(iLoadUnit >= 0) glActiveTexture(GL_TEXTURE0+s_iActiveUnit);
     }
-    SDL_AtomicUnlock(&s_iLock);
+    coreTexture::Unlock();
 
     // create sync object
     const bool bSync = m_Sync.Create();
@@ -177,7 +177,7 @@ void coreTexture::Enable(const coreByte& iUnit)
     if(s_apBound[iUnit] == this) return;
     s_apBound[iUnit] = this;
 
-    SDL_AtomicLock(&s_iLock);
+    coreTexture::Lock();
     {
         // bind texture to texture unit
         if(s_iActiveUnit != iUnit)
@@ -187,7 +187,7 @@ void coreTexture::Enable(const coreByte& iUnit)
         }
         glBindTexture(GL_TEXTURE_2D, m_iTexture);
     }
-    SDL_AtomicUnlock(&s_iLock);
+    coreTexture::Unlock();
 }
 
 
@@ -198,7 +198,7 @@ void coreTexture::Disable(const coreByte& iUnit)
     SDL_assert(iUnit < CORE_TEXTURE_UNITS);
     SDL_assert(s_apBound[iUnit] != NULL);
 
-    SDL_AtomicLock(&s_iLock);
+    coreTexture::Lock();
     {
         // unbind texture from texture unit
         if(s_iActiveUnit != iUnit)
@@ -208,7 +208,7 @@ void coreTexture::Disable(const coreByte& iUnit)
         }
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-    SDL_AtomicUnlock(&s_iLock);
+    coreTexture::Unlock();
 
     // reset texture binding
     s_apBound[iUnit] = NULL;

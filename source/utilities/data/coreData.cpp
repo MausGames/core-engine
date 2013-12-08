@@ -163,9 +163,6 @@ void coreData::FolderCreate(const std::string& sPath)
         if((iPos = sPath.find_first_of("/\\", iPos+2)) < 0) return;
         const std::string sSubFolder = sPath.substr(0, iPos);
 
-        // ignore file
-        if((int)sSubFolder.find(".") >= 0) return;
-
         // create subfolder
 #if defined(_CORE_WINDOWS_)
         CreateDirectoryA(sSubFolder.c_str(), NULL);

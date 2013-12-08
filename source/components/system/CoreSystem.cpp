@@ -27,7 +27,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GetVersion(&Version);
 
     // init SDL libraries
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init())
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init() || !IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG))
         Core::Log->Error(1, coreData::Print("SDL could not be initialized (SDL: %s)", SDL_GetError()));
     else Core::Log->Info(coreData::Print("SDL initialized (%d.%d.%d %s)", Version.major, Version.minor, Version.patch, SDL_GetRevision()));
 
@@ -48,9 +48,8 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->ListStart("Available Screen Resolutions");
         for(int i = 0; i < iNumModes; ++i)
         {
-            SDL_DisplayMode Mode;
-
             // retrieve resolution
+            SDL_DisplayMode Mode;
             SDL_GetDisplayMode(0, i, &Mode);
             const coreVector2 vMode = coreVector2((float)Mode.w, (float)Mode.h);
 
@@ -65,7 +64,7 @@ CoreSystem::CoreSystem()noexcept
             {
                 // add new resolution
                 m_avAvailable.push_back(vMode);
-                Core::Log->ListEntry(coreData::Print("%4d x %4d", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : ""));
+                Core::Log->ListEntry(coreData::Print("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : ""));
             }
         }
         Core::Log->ListEnd();
@@ -84,6 +83,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
     SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 0);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,               8);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
@@ -190,29 +190,28 @@ bool CoreSystem::__UpdateEvents()
     {
         switch(Event.type)
         {
-        // change window
+        // control window
         case SDL_WINDOWEVENT:
             switch(Event.window.event)
             {
-                // minimize window
-                case SDL_WINDOWEVENT_HIDDEN:
-                case SDL_WINDOWEVENT_MINIMIZED:
-                case SDL_WINDOWEVENT_MAXIMIZED:
-                case SDL_WINDOWEVENT_RESTORED:
-                    m_bMinimized = true;
-                    break;
+            // minimize window
+            case SDL_WINDOWEVENT_HIDDEN:
+            case SDL_WINDOWEVENT_MINIMIZED:
+            case SDL_WINDOWEVENT_MAXIMIZED:
+            case SDL_WINDOWEVENT_RESTORED:
+                m_bMinimized = true;
+                break;
 
-                // close window
-                case SDL_WINDOWEVENT_CLOSE:
-                    if(Event.window.windowID == SDL_GetWindowID(m_pWindow)) Core::Quit();
-                    else SDL_DestroyWindow(SDL_GetWindowFromID(Event.window.windowID));
-                    break;
+            // close window
+            case SDL_WINDOWEVENT_CLOSE:
+                if(Event.window.windowID == SDL_GetWindowID(m_pWindow)) Core::Quit();
+                else SDL_DestroyWindow(SDL_GetWindowFromID(Event.window.windowID));
+                break;
             }
             break;
 
         // quit the application
-        case SDL_QUIT:
-            return false;
+        case SDL_QUIT: return false;
 
         // forward event to input component
         default: if(!Core::Input->ProcessEvent(Event)) return true;
@@ -241,7 +240,7 @@ void CoreSystem::__UpdateTime()
     else
     {
         // smooth last frame time and increase total time
-        m_fLastTime   = m_fLastTime ? (0.85f*m_fLastTime + 0.15f*fNewLastTime) : fNewLastTime;
+        m_fLastTime   = m_fLastTime ? (0.9f*m_fLastTime + 0.1f*fNewLastTime) : fNewLastTime;
         m_dTotalTime += (double)m_fLastTime;
     }
 

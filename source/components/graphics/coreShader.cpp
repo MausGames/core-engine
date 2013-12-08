@@ -162,7 +162,7 @@ coreProgram::coreProgram()noexcept
 coreProgram::~coreProgram()
 {
     // exit the shader-program
-    this->Exit();
+    this->__Exit();
 
     // remove all shader objects
     m_apShader.clear();
@@ -170,8 +170,90 @@ coreProgram::~coreProgram()
 
 
 // ****************************************************************
+// enable the shader-program
+// TODO: remove/move linking part somehow
+bool coreProgram::Enable()
+{
+    SDL_assert(m_iStatus);
+
+    // check current shader-program
+    if(s_pCurrent == this) return true;
+
+    // link shader-program
+    if(m_iStatus < CORE_SHADER_LINKED)
+    {
+        if(this->__Init() != CORE_OK)
+            return false;
+    }
+
+    // set current shader-program
+    s_pCurrent = this;
+    glUseProgram(m_iProgram);
+
+    // bind all texture units
+    if(m_iStatus == CORE_SHADER_LINKED)
+    {
+        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+            glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_TEXTURE(i)), i);
+        glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_SHADOW), CORE_TEXTURE_SHADOW);
+
+        m_iStatus = CORE_SHADER_FINISHED;
+    }
+
+    // forward global uniform data without UBO
+    if(!Core::Graphics->GetUniformBuffer())
+    {
+        for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+        {
+            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_POSITION(i),  Core::Graphics->GetLight(i).vPosition);
+            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i), Core::Graphics->GetLight(i).vDirection);
+            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_VALUE(i),     Core::Graphics->GetLight(i).vValue);
+        }
+    }
+
+    return true;
+}
+
+
+// ****************************************************************
+// disable the shader-program
+void coreProgram::Disable()
+{
+    if(!s_pCurrent) return;
+
+    // reset current shader-program
+    s_pCurrent = NULL;
+    glUseProgram(0);
+}
+
+
+// ****************************************************************
+// add shader object for later attachment
+coreProgram* coreProgram::AttachShaderFile(const char* pcPath)
+{
+    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadFile<coreShader>(pcPath));
+    return this;
+}
+
+coreProgram* coreProgram::AttachShaderLink(const char* pcName)
+{
+    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadLink<coreShader>(pcName));
+    return this;
+}
+
+
+// ****************************************************************
+// reset with the resource manager
+void coreProgram::__Reset(const bool& bInit)
+{
+    if(bInit) this->__Init();
+         else this->__Exit();
+}
+
+
+// ****************************************************************
 // init the shader-program
-coreError coreProgram::Init()
+coreError coreProgram::__Init()
 {
     if(m_iStatus != CORE_SHADER_DEFINED) return CORE_INVALID_CALL;
 
@@ -264,7 +346,7 @@ coreError coreProgram::Init()
 
 // ****************************************************************
 // exit the shader-program
-coreError coreProgram::Exit()
+coreError coreProgram::__Exit()
 {
     if(!m_iProgram) return CORE_INVALID_CALL;
 
@@ -283,86 +365,4 @@ coreError coreProgram::Exit()
     m_avCache.clear();
 
     return CORE_OK;
-}
-
-
-// ****************************************************************
-// enable the shader-program
-// TODO: remove/move linking part somehow
-bool coreProgram::Enable()
-{
-    SDL_assert(m_iStatus);
-
-    // check current shader-program
-    if(s_pCurrent == this) return true;
-
-    // link shader-program
-    if(m_iStatus < CORE_SHADER_LINKED)
-    {
-        if(this->Init() != CORE_OK)
-            return false;
-    }
-
-    // set current shader-program
-    s_pCurrent = this;
-    glUseProgram(m_iProgram);
-
-    // bind all texture units
-    if(m_iStatus == CORE_SHADER_LINKED)
-    {
-        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
-            glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_TEXTURE(i)), i);
-
-        m_iStatus = CORE_SHADER_FINISHED;
-    }
-
-    // forward global uniform data without UBO
-    if(!Core::Graphics->GetUniformBuffer())
-    {
-        for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
-        {
-            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_POSITION(i),  Core::Graphics->GetLight(i).vPosition);
-            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i), Core::Graphics->GetLight(i).vDirection);
-            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_RANGE(i),     Core::Graphics->GetLight(i).fRange);
-            this->SetUniform(CORE_SHADER_UNIFORM_LIGHT_VALUE(i),     Core::Graphics->GetLight(i).vValue);
-        }
-    }
-
-    return true;
-}
-
-
-// ****************************************************************
-// disable the shader-program
-void coreProgram::Disable()
-{
-    if(!s_pCurrent) return;
-
-    // reset current shader-program
-    s_pCurrent = NULL;
-    glUseProgram(0);
-}
-
-
-// ****************************************************************
-// add shader object for later attachment
-coreProgram* coreProgram::AttachShaderFile(const char* pcPath)
-{
-    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadFile<coreShader>(pcPath));
-    return this;
-}
-
-coreProgram* coreProgram::AttachShaderLink(const char* pcName)
-{
-    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadLink<coreShader>(pcName));
-    return this;
-}
-
-
-// ****************************************************************
-// reset with the resource manager
-void coreProgram::__Reset(const bool& bInit)
-{
-    if(bInit) this->Init();
-         else this->Exit();
 }

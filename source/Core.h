@@ -45,6 +45,35 @@ coreMenu:
 von oben nach unten kollision testen
 eine seite in eine andere einfuegen als subseite
 virtuelle funktion fuer dynamische uebergaenge
+Framebuffer nutzen
+
+Framebuffer:
+Framebuffer Objekte zum Zeichnen in Texturen,
+Depth Map, Multisample Buffer, Post Processing (Distortion Mapping, Bloom, Glow, HDR, Blur) -> Shader Stages laden als Pfad
+Deferred Shading, Menu Objekte buendeln
+
+
+Kollision:
+Kollisionserkennung in weiterem Thread (Zahl wird in einem Thread erhoeht, im anderen gesenkt, Query),
+Durchfuehrung nach Status im Hauptthread
+
+
+Instancing:
+Selbe Objekte zeichenbar, Sprites
+
+Sprite:
+Daten pro Sprite moeglichst klein halten
+Instancing nutzen, Ueber-Objekte definieren
+Sammelbecken im Manager?
+
+
+coreLanguage:
+Verknuepfung aller Label samt (Text-)ID mit Klasse,
+SetText und erneute Generierung bei Sprachwechsel
+
+
+Performance/Benchmark:
+neues Fenster mit Status-Werten, Log, Speicher, Fehler, FPS
 
 */
 
@@ -190,6 +219,7 @@ enum coreError
     CORE_BUSY          =  10,    //!< currently waiting for an event
 
     CORE_FILE_ERROR    = -10,    //!< error on opening, writing or finding a file
+    CORE_SYSTEM_ERROR  = -20,    //!< invalid application behavior (should never happen)
     CORE_INVALID_CALL  = -110,   //!< object has wrong status
     CORE_INVALID_INPUT = -120,   //!< function parameters are invalid
     CORE_INVALID_DATA  = -130,   //!< depending objects contain wrong data
@@ -273,6 +303,7 @@ enum coreError
 #include "components/graphics/coreTexture.h"
 #include "components/graphics/coreShader.h"
 #include "components/graphics/coreFont.h"
+#include "components/graphics/coreFrameBuffer.h"
 
 #include "components/audio/CoreAudio.h"
 #include "components/audio/coreSound.h"

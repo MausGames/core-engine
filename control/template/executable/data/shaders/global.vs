@@ -21,9 +21,8 @@
 // light structure
 struct coreLight
 {
-    vec3 v3Position;
-    vec3 v3Direction;
-    float fRange;
+    vec4 v4Position;
+    vec4 v4Direction;
 
     vec4 v4Value;
 };

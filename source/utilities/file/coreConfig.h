@@ -59,9 +59,10 @@ public:
 
     //! set configuration values
     //! @{
-    inline void SetBool(const char* pcSection, const char* pcKey, const bool& bReserved, const bool& bValue)    {m_Config.SetBoolValue(pcSection, pcKey, bValue);}
-    inline void SetInt(const char* pcSection, const char* pcKey, const int& iReserved, const int& iValue)       {m_Config.SetLongValue(pcSection, pcKey, iValue);}
-    inline void SetFloat(const char* pcSection, const char* pcKey, const float& fReserved, const float& fValue) {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    inline void SetBool(const char* pcSection, const char* pcKey, const bool& bReserved, const bool& bValue)     {m_Config.SetBoolValue(pcSection, pcKey, bValue);}
+    inline void SetInt(const char* pcSection, const char* pcKey, const int& iReserved, const int& iValue)        {m_Config.SetLongValue(pcSection, pcKey, iValue);}
+    inline void SetFloat(const char* pcSection, const char* pcKey, const float& fReserved, const float& fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    inline void SetString(const char* pcSection, const char* pcKey, const char* pcReserved, const char* pcValue) {m_Config.SetValue(pcSection, pcKey, pcValue);}
     //! @}
 
     //! get configuration values
@@ -69,6 +70,7 @@ public:
     bool GetBool(const char* pcSection, const char* pcKey, const bool& bDefault);
     int GetInt(const char* pcSection, const char* pcKey, const int& iDefault);
     float GetFloat(const char* pcSection, const char* pcKey, const float& fDefault);
+    const char* GetString(const char* pcSection, const char* pcKey, const char* pcDefault);
     //! @}
 
     //! direct access configuration file interface

@@ -1,0 +1,219 @@
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under the zlib License                    |//
+//| More information available in the README.md        |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
+#include "Core.h"
+
+coreFrameBuffer* coreFrameBuffer::s_pCurrent = NULL;
+
+
+// ****************************************************************
+// constructor
+coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const coreFramebufferType& iType, const char* pcLink)
+: m_iFrameBuffer (0)
+, m_iDepthBuffer (0)
+, m_vResolution  (vResolution)
+, m_iType        (iType)
+{
+    // create own texture as render target
+    if(pcLink) m_pTexture = Core::Manager::Resource->LoadLink<coreTexture>(pcLink);
+          else m_pTexture = Core::Manager::Resource->LoadNew<coreTexture>();
+
+    // init the frame buffer
+    this->__Init();
+}
+
+
+// ****************************************************************
+// destructor
+coreFrameBuffer::~coreFrameBuffer()
+{
+    // exit the frame buffer
+    this->__Exit();
+    
+    // free own texture
+    Core::Manager::Resource->Free(&m_pTexture);
+}
+
+
+// ****************************************************************
+// start writing to the frame buffer
+void coreFrameBuffer::StartWrite()
+{
+    SDL_assert(s_pCurrent == NULL && m_pTexture->GetTexture());
+    s_pCurrent = this;
+
+    // set current frame buffer
+    if(m_iFrameBuffer) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+
+    // set view
+    if(m_vResolution != Core::System->GetResolution())
+        Core::Graphics->ResizeView(m_vResolution);
+}
+
+
+// ****************************************************************
+// end writing to the frame buffer
+void coreFrameBuffer::EndWrite()
+{
+    SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
+    s_pCurrent = NULL;
+
+    // reset current frame buffer
+    if(m_iFrameBuffer) glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    else
+    {
+        // copy screen to texture
+        m_pTexture->Enable(0);
+        coreTexture::Lock();
+        {
+            glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, (int)m_vResolution.x, (int)m_vResolution.y);
+        }
+        coreTexture::Unlock();
+
+        // reset the depth buffer
+        glClear(GL_DEPTH_BUFFER_BIT);
+    }
+
+    // reset view
+    if(m_vResolution != Core::System->GetResolution())
+        Core::Graphics->ResizeView(Core::System->GetResolution());
+}
+
+
+// ****************************************************************
+// clear content of the frame buffer
+void coreFrameBuffer::Clear()
+{
+    SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
+
+    // reset the whole frame buffer
+    if(m_iFrameBuffer) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+
+// ****************************************************************
+// reset with the resource manager
+void coreFrameBuffer::__Reset(const bool& bInit)
+{
+    if(bInit) this->__Init();
+         else this->__Exit();
+}
+
+
+// ****************************************************************
+// init the frame buffer
+coreError coreFrameBuffer::__Init()
+{
+    ASSERT_IF(m_pTexture->GetTexture()) return CORE_INVALID_CALL;
+    SDL_assert(m_vResolution.x > 0.0f && m_vResolution.y > 0.0f);
+
+    // check for extension
+    const bool& bFrameBuffer = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
+    if(!bFrameBuffer) m_vResolution *= (Core::System->GetResolution()/m_vResolution).Min();
+
+    // set resolution and texture format
+    const int iWidth       = (int)m_vResolution.x;
+    const int iHeight      = (int)m_vResolution.y;
+    const GLenum iInternal = (m_iType == CORE_FRAMEBUFFER_DEPTH) ? GL_DEPTH_COMPONENT16 : GL_RGB;
+    const GLenum iFormat   = (m_iType == CORE_FRAMEBUFFER_DEPTH) ? GL_DEPTH_COMPONENT   : GL_RGB;
+
+    // generate empty base texture
+    m_pTexture->Generate();
+
+    // specifiy the required texture
+    m_pTexture->Enable(0);
+    coreTexture::Lock();
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+        glTexImage2D(GL_TEXTURE_2D, 0, iInternal, iWidth, iHeight, 0, iFormat, GL_UNSIGNED_BYTE, 0);
+    }
+    coreTexture::Unlock();
+
+    // check for extension
+    if(bFrameBuffer)
+    {
+        // generate frame buffer object
+        glGenFramebuffers(1, &m_iFrameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+
+        switch(m_iType)
+        {
+        case CORE_FRAMEBUFFER_FULL:
+
+            // generate depth buffer
+            glGenRenderbuffers(1, &m_iDepthBuffer);
+            glBindRenderbuffer(GL_RENDERBUFFER, m_iDepthBuffer);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, iWidth, iHeight);
+
+            // attach depth buffer as depth component
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_iDepthBuffer);
+            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        case CORE_FRAMEBUFFER_COLOR:
+
+            // attach texture as first color component
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->GetTexture(), 0);
+            break;
+
+        case CORE_FRAMEBUFFER_DEPTH:
+
+            // ignore color buffer writings
+            glDrawBuffer(GL_NONE);
+            glReadBuffer(GL_NONE);
+
+            // attach texture as depth component
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pTexture->GetTexture(), 0);
+            break;
+        }
+
+        // get frame buffer status
+        const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // check for errors
+        if(iError != GL_FRAMEBUFFER_COMPLETE)
+        {
+            Core::Log->Error(0, coreData::Print("Frame Buffer Object could not be created (GL Error Code: %d)", iError));
+            this->__DeleteBuffers();
+
+            return CORE_SYSTEM_ERROR;
+        }
+    }
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
+// exit the frame buffer
+coreError coreFrameBuffer::__Exit()
+{
+    if(!m_pTexture->GetTexture()) return CORE_INVALID_CALL;
+
+    // delete frame and depth buffer
+    this->__DeleteBuffers();
+
+    // unload own texture
+    m_pTexture->Unload();
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
+// delete frame and depth buffer
+void coreFrameBuffer::__DeleteBuffers()
+{
+    glDeleteFramebuffers(1, &m_iFrameBuffer);
+    glDeleteRenderbuffers(1, &m_iDepthBuffer);
+    m_iFrameBuffer = 0;
+    m_iDepthBuffer = 0;
+}

@@ -13,6 +13,8 @@
 
 // ****************************************************************
 // menu label class
+// TODO: 3d text with link or own class ?
+// TODO: implement multi-line text with automatic newline if row is too long (snippet in p1)
 class coreLabel final : public coreObject2D, public coreReset
 {
 private:
@@ -25,7 +27,7 @@ private:
     std::string m_sText;         //!< current text
     float m_fScale;              //!< scale factor
 
-    coreByte m_iGenerate;        //!< generate status (0 = do nothing | 1 = update only size | 2 = update only texture | 3 = update texture and size)
+    coreByte m_iGenerate;        //!< generate status (0 = do nothing | 1 = update only size | 3 = update texture and size)
 
 
 public:
@@ -56,12 +58,12 @@ public:
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const bool& bInit)override {SDL_assert(false);}
+    void __Reset(const bool& bInit)override;
     //! @}
 
     //! update the texture of the label 
     //! @{
-    void __Generate();
+    void __Generate(const char* pcText, const bool& bSub);
     //! @}
 };
 

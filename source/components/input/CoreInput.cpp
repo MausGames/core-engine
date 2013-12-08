@@ -64,7 +64,6 @@ CoreInput::~CoreInput()
 
 // ****************************************************************
 // set the cursor object
-// TODO: implement with coreObject2D
 void CoreInput::DefineCursor(const char* pcTexture)
 {
     if(m_pCursor) SDL_FreeCursor(m_pCursor);
@@ -165,8 +164,12 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move mouse position
     case SDL_MOUSEMOTION:
-        this->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f, 0.5f));
-        this->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/Core::System->GetResolution() * Core::System->GetTime()*120.0f);
+        if(Event.motion.x != int(0.5f*Core::System->GetResolution().x) || 
+           Event.motion.y != int(0.5f*Core::System->GetResolution().y))
+        {
+            this->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f, 0.5f));
+            this->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative());
+        }
         break;
 
     // move mouse wheel
@@ -189,8 +192,6 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
         if(ABS(Event.jaxis.value) > 8000) this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, (float)coreMath::Sign(Event.jaxis.value));
                                      else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;
-
-    default: return false;
     }
 
     return true;
@@ -224,6 +225,17 @@ void CoreInput::__UpdateButtons()
             else if(!it->aabButton[i][0]) CORE_INPUT_RELEASE(it->aabButton[i])
         }
     }
+
+#if defined(_CORE_LINUX_)
+
+    if(!m_bCursorVisible)
+    {
+        // hold cursor in the window center when not visible
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(0.5f*Core::System->GetResolution().x), 
+                                                         int(0.5f*Core::System->GetResolution().y));
+    }
+
+#endif
 }
 
 

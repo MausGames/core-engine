@@ -18,6 +18,7 @@
 // TODO: check for unnecessary calculations to increase loading speed
 // TODO: check normal vector calculations (alignment, outside, etc.)
 // TODO: unify both render functions
+// TODO: define interface to load own data and own vertex attribute mapping
 class coreModel final : public coreResource
 {
 private:
@@ -147,6 +148,12 @@ public:
     //! get currently active model object
     //! @{
     static inline coreModel* GetCurrent() {return s_pCurrent;}
+    //! @}
+
+    //! lock and unlock array buffer access
+    //! @{
+    static inline void Lock()   {SDL_AtomicLock(&s_iLock);}
+    static inline void Unlock() {SDL_AtomicUnlock(&s_iLock);}
     //! @}
 
     //! access standard model objects

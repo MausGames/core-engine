@@ -19,12 +19,14 @@
     #define CORE_TEXTURE_MASK 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
 #endif
 
-#define CORE_TEXTURE_UNITS 8   //!< number of used texture units
+#define CORE_TEXTURE_UNITS  8                        //!< number of used texture units
+#define CORE_TEXTURE_SHADOW (CORE_TEXTURE_UNITS-1)   //!< texture unit for shadow sampling
 
 
 // ****************************************************************
 // texture class
-// TODO: check for max available texture units
+// TODO: check for max available texture units (only at start?)
+// TODO: implement sampler objects
 class coreTexture final : public coreResource
 {
 private:
@@ -57,10 +59,11 @@ public:
 
     //! generate empty base texture
     //! @{
-    inline void Generate() {ASSERT_IF(m_iTexture) return; glGenTextures(1, &m_iTexture);}
+    inline void Generate() {SDL_assert(!m_iTexture); glGenTextures(1, &m_iTexture);}
     //! @}
 
     //! get object attributes
+    //! @{
     inline const GLuint& GetTexture()const         {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     //! @}
@@ -68,6 +71,12 @@ public:
     //! get relative path to default resource
     //! @{
     static inline const char* GetDefaultPath() {return "data/textures/black.png";}
+    //! @}
+
+    //! lock and unlock texture unit access
+    //! @{
+    static inline void Lock()   {SDL_AtomicLock(&s_iLock);}
+    static inline void Unlock() {SDL_AtomicUnlock(&s_iLock);}
     //! @}
 };
 

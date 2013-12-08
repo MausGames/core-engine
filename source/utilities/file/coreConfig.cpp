@@ -63,3 +63,14 @@ float coreConfig::GetFloat(const char* pcSection, const char* pcKey, const float
 
     return fReturn;
 }
+
+
+// ****************************************************************
+// access string value
+const char* coreConfig::GetString(const char* pcSection, const char* pcKey, const char* pcDefault)
+{
+    const char* pcReturn = m_Config.GetValue(pcSection, pcKey, pcDefault);
+    if(!std::strcmp(pcReturn, pcDefault)) this->SetString(pcSection, pcKey, NULL, pcDefault);
+
+    return pcReturn;
+}
