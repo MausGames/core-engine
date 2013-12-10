@@ -10,6 +10,7 @@ SETLOCAL DISABLEDELAYEDEXPANSION
 ::          File   [in] - file to be parsed
 :$changed 20100115
 :$source http://www.dostips.com
+
 if "%~1"=="" findstr "^::" "%~f0"&GOTO:EOF
 for /f "tokens=1,* delims=]" %%A in ('"type %3|find /n /v """') do (
     set "line=%%B"

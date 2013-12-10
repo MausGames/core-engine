@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Replace org.libsdl.app with the identifier of your game below, e.g.
-     com.gamemaker.game
--->
+
+<!-- Class Details -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="at.mausgames.core"
-      android:versionCode="000100"
-      android:versionName="0.1.0a"
-      android:installLocation="auto">
+          package="at.mausgames.app"
+          android:versionCode="000001"
+          android:versionName="0.0.1a"
+          android:installLocation="auto">
 
-    <!-- Create a Java class extending SDLActivity and place it in a
-         directory under src matching the package, e.g.
-         	src/com/gamemaker/game/MyGame.java
-
-         then replace "SDLActivity" with the name of your class (e.g. "MyGame")
-         in the XML below.
-
-         An example Java class can be found in README-android.txt
-    -->
+    <!-- Application Details -->
     <application android:label="@string/app_name"
                  android:icon="@drawable/ic_launcher"
                  android:allowBackup="true"
                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        <activity android:name="CoreEngine"
+      
+        <activity android:name="CoreApp"
                   android:label="@string/app_name">
+          
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+          
         </activity>
+      
     </application>
 
     <!-- Android 2.3.3 -->
@@ -38,4 +33,5 @@
 
     <!-- Allow writing to external storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  
 </manifest>

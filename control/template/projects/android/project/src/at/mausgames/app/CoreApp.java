@@ -1,9 +1,9 @@
-package at.mausgames.core;
+package at.mausgames.app;
 
 import org.libsdl.app.SDLActivity;
 import android.os.*;
 
-public class CoreEngine extends SDLActivity
+public class CoreApp extends SDLActivity
 {
     protected void onCreate(Bundle savedInstanceState)
     {

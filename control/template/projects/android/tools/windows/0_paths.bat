@@ -3,4 +3,4 @@
 
 SET _PATH_SDK_=C:/Entwicklung/android-sdk
 SET _PATH_NDK_=C:/Entwicklung/android-ndk
-SET _PATH_ANT_=C:/Program Files/NetBeans/java/ant/bin
+SET _PATH_ANT_=C:/Program Files/NetBeans/extide/ant/bin

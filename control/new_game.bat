@@ -55,6 +55,16 @@ CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% %TOOL_NAME%.sln > %PRJ_NAME%.sln
 CALL DEL %TOOL_NAME%.sln
 
 
+cd "%PRJ_TARGET%"
+CALL RENAME .gitignore .gitignore_temp
+CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% .gitignore_temp > .gitignore
+CALL DEL .gitignore_temp
+
+CALL RENAME .hgignore .hgignore_temp
+CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% .hgignore_temp > .hgignore
+CALL DEL .hgignore_temp
+
+
 ECHO ^<%PRJ_TARGET%^> created
 %SystemRoot%\explorer.exe "%PRJ_TARGET%"
 

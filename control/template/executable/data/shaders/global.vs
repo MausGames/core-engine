@@ -12,10 +12,10 @@
 
 
 // global definitions
-#define PI (3.1415926535897932384626433832795)   // Archimedes' constant
-#define EU (2.7182818284590452353602874713527)   // Euler's number
-#define P3 (0.3333333333333333333333333333333)   // periodic value of 1.0/3.0
-#define P6 (0.6666666666666666666666666666667)   // periodic value of 2.0/3.0
+#define PI (3.1415926535897932384626433832795)
+#define EU (2.7182818284590452353602874713527)
+#define P3 (0.3333333333333333333333333333333)
+#define P6 (0.6666666666666666666666666666667)
 
 
 // light structure
@@ -67,8 +67,8 @@ struct coreLight
 
 
 // 3d-object uniforms
-uniform mat4 u_m4ModelView;       // camera * model
-uniform mat4 u_m4ModelViewProj;   // projection * camera * model
+uniform mat4 u_m4ModelView;
+uniform mat4 u_m4ModelViewProj;
 uniform mat3 u_m3Normal;
 
 // 2d-object uniforms

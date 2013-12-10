@@ -12,10 +12,16 @@
 
 
 // global definitions
-#define PI (3.1415926535897932384626433832795)   // Archimedes' constant
-#define EU (2.7182818284590452353602874713527)   // Euler's number
-#define P3 (0.3333333333333333333333333333333)   // periodic value of 1.0/3.0
-#define P6 (0.6666666666666666666666666666667)   // periodic value of 2.0/3.0
+#define PI (3.1415926535897932384626433832795)
+#define EU (2.7182818284590452353602874713527)
+#define P3 (0.3333333333333333333333333333333)
+#define P6 (0.6666666666666666666666666666667)
+
+
+// precision qualifier
+#ifdef GL_ES
+precision mediump float;
+#endif
 
 
 // light structure
@@ -35,6 +41,9 @@ struct coreLight
         // ambient uniforms
         coreLight u_asLight[CORE_GRAPHICS_LIGHTS];
     };
+
+    // shadow uniforms
+    uniform sampler2DShadow u_s2Shadow;
 
     // shader input
     in vec2 v_av2TexCoord[CORE_TEXTURE_UNITS];
@@ -57,18 +66,12 @@ struct coreLight
     varying vec4 v_av4LightDir[CORE_GRAPHICS_LIGHTS];
     varying vec3 v_v3ViewDir;
 
-    // shader output
-    vec4 o_v4Color0;
-    vec4 o_v4Color1;
-    vec4 o_v4Color2;
-    vec4 o_v4Color3;
-
 #endif
 
 
 // 3d-object uniforms
-uniform mat4 u_m4ModelView;       // camera * model
-uniform mat4 u_m4ModelViewProj;   // projection * camera * model
+uniform mat4 u_m4ModelView;
+uniform mat4 u_m4ModelViewProj;
 uniform mat3 u_m3Normal;
 
 // 2d-object uniforms
@@ -81,4 +84,4 @@ uniform vec2 u_v2TexOffset;
 
 // texture uniforms
 uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
-uniform sampler2DShadow u_s2Shadow;
+
