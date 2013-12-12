@@ -13,7 +13,7 @@ coreFrameBuffer* coreFrameBuffer::s_pCurrent = NULL;
 
 // ****************************************************************
 // constructor
-coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const coreFramebufferType& iType, const char* pcLink)
+coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink)
 : m_iFrameBuffer (0)
 , m_iDepthBuffer (0)
 , m_vResolution  (vResolution)
@@ -92,7 +92,7 @@ void coreFrameBuffer::Clear()
     SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
 
     // reset the whole frame buffer
-    if(m_iFrameBuffer) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 
@@ -114,13 +114,15 @@ coreError coreFrameBuffer::__Init()
 
     // check for extension
     const bool& bFrameBuffer = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
-    if(!bFrameBuffer) m_vResolution *= (Core::System->GetResolution()/m_vResolution).Min();
 
-    // set resolution and texture format
-    const int iWidth       = (int)m_vResolution.x;
-    const int iHeight      = (int)m_vResolution.y;
-    const GLenum iInternal = (m_iType == CORE_FRAMEBUFFER_DEPTH) ? GL_DEPTH_COMPONENT16 : GL_RGB;
-    const GLenum iFormat   = (m_iType == CORE_FRAMEBUFFER_DEPTH) ? GL_DEPTH_COMPONENT   : GL_RGB;
+    // set resolution
+    if(!bFrameBuffer) m_vResolution *= MIN((Core::System->GetResolution()/m_vResolution).Min(), 1.0f);
+    const coreUint iWidth  = (coreUint)m_vResolution.x;
+    const coreUint iHeight = (coreUint)m_vResolution.y;
+
+    // set texture format
+    const GLenum iInternal = (m_iType & CORE_FRAMEBUFFER_DEPTH) ? GL_DEPTH_COMPONENT16 : ((m_iType & CORE_FRAMEBUFFER_ALPHA) ? GL_RGBA8 : GL_RGB8);
+    const GLenum iFormat   = (m_iType & CORE_FRAMEBUFFER_DEPTH) ? GL_DEPTH_COMPONENT   : ((m_iType & CORE_FRAMEBUFFER_ALPHA) ? GL_RGBA  : GL_RGB);
 
     // generate empty base texture
     m_pTexture->Generate();
@@ -131,20 +133,20 @@ coreError coreFrameBuffer::__Init()
     {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  0);
         glTexImage2D(GL_TEXTURE_2D, 0, iInternal, iWidth, iHeight, 0, iFormat, GL_UNSIGNED_BYTE, 0);
     }
     coreTexture::Unlock();
 
-    // check for extension
     if(bFrameBuffer)
     {
         // generate frame buffer object
         glGenFramebuffers(1, &m_iFrameBuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
-        switch(m_iType)
+        switch(m_iType % 0x0100)
         {
         case CORE_FRAMEBUFFER_FULL:
 
@@ -165,13 +167,11 @@ coreError coreFrameBuffer::__Init()
 
         case CORE_FRAMEBUFFER_DEPTH:
 
-            // ignore color buffer writings
-            glDrawBuffer(GL_NONE);
-            glReadBuffer(GL_NONE);
-
             // attach texture as depth component
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pTexture->GetTexture(), 0);
             break;
+
+        default: SDL_assert(false);
         }
 
         // get frame buffer status

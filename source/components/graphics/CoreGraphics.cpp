@@ -226,8 +226,8 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
 // take screenshot
 void CoreGraphics::Screenshot(const char* pcPath)
 {
-    const coreUint iWidth  = (int)Core::System->GetResolution().x;
-    const coreUint iHeight = (int)Core::System->GetResolution().y;
+    const coreUint iWidth  = (coreUint)Core::System->GetResolution().x;
+    const coreUint iHeight = (coreUint)Core::System->GetResolution().y;
     const coreUint iPitch  = iWidth*3;
     const coreUint iSize   = iHeight*iPitch;
 

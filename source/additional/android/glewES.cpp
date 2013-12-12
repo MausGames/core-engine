@@ -14,7 +14,7 @@
 GLenum glewInit() {return GLEW_OK;}
 
 const char* glewGetString(GLenum name)       {return "";}
-bool glewIsSupported(const char* pcName)     {return false;}
+bool glewIsSupported(const char* pcName)     {return std::strcmp(pcName, "GL_ARB_framebuffer_object") ? false : true;}
 const char* glewGetErrorString(GLenum error) {return "";}
 
 void glDebugMessageCallback(GLDEBUGPROC callback, const GLvoid *userParam)                                                   {}

@@ -74,3 +74,20 @@ void coreObject2D::Move()
         m_iUpdate = 0;
     }
 }
+
+
+// ****************************************************************
+// interact with the 2d-object
+void coreObject2D::Interact()
+{
+    // get resolution-modified transformation parameters
+    const coreVector2 vScreenPosition = coreVector2(m_mTransform._41, m_mTransform._42);
+    const coreVector2 vScreenSize     = coreVector2(m_mTransform._11, m_mTransform._22)*0.5f;
+
+    // get relative mouse cursor position
+    const coreVector2 vInput = Core::Input->GetMousePosition() * Core::System->GetResolution() - vScreenPosition;
+
+    // test for intersection
+    m_bFocused = (ABS(vInput.x) < vScreenSize.x &&
+                  ABS(vInput.y) < vScreenSize.y);
+}

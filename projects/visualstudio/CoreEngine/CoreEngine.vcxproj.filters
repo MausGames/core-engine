@@ -150,6 +150,9 @@
     <ClCompile Include="..\..\..\source\components\graphics\coreFrameBuffer.cpp">
       <Filter>source\components\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreMenu.cpp">
+      <Filter>source\objects\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -247,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\graphics\coreFrameBuffer.h">
       <Filter>source\components\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreMenu.h">
+      <Filter>source\objects\menu</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

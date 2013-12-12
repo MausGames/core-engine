@@ -166,6 +166,7 @@ private:
 // resource manager
 // TODO: use load-stack
 // TODO: default resources necessary ?
+// TODO: add int-flags with Load() to forward attributes
 class coreResourceManager final : public coreThread
 {
 private:

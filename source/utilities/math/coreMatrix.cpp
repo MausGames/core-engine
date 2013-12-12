@@ -234,14 +234,15 @@ coreMatrix4 coreMatrix4::RotationZ(const float& fAngle)noexcept
 // get orientation matrix
 coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)noexcept
 {
-    const coreVector3 F =  vDirection.Normalized();
-    const coreVector3 O = -vOrientation.Normalized();
+    const coreVector3 F = -vDirection.Normalized();
+    const coreVector3 O =  vOrientation.Normalized();
     const coreVector3 S =  coreVector3::Cross(O, F).Normalize();
-    const coreVector3 U =  coreVector3::Cross(S, F).Normalize();
+    const coreVector3 U = -coreVector3::Cross(S, F).Normalize();
 
-    return coreMatrix4( S.x,  U.x, -F.x, 0.0f,
-                        S.y,  U.y, -F.y, 0.0f,
-                        S.z,  U.z, -F.z, 0.0f,
+    // Matrix erzeugen
+    return coreMatrix4( S.x,  S.y,  S.z, 0.0f,
+                        U.x,  U.y,  U.z, 0.0f,
+                        F.x,  F.y,  F.z, 0.0f,
                        0.0f, 0.0f, 0.0f, 1.0f);
 }
 
@@ -288,7 +289,16 @@ coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)noexcept
 
 // ****************************************************************
 // get camera matrix
+// TODO: you know, what to do
 coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)noexcept
 {
-    return coreMatrix4::Translation(-vPosition) * coreMatrix4::Orientation(vDirection, vOrientation);
+    const coreVector3 F =  vDirection.Normalized();
+    const coreVector3 O = -vOrientation.Normalized();
+    const coreVector3 S =  coreVector3::Cross(O, F).Normalize();
+    const coreVector3 U =  coreVector3::Cross(S, F).Normalize();
+
+    return coreMatrix4::Translation(-vPosition) * coreMatrix4( S.x,  U.x, -F.x, 0.0f,
+                                                               S.y,  U.y, -F.y, 0.0f,
+                                                               S.z,  U.z, -F.z, 0.0f,
+                                                              0.0f, 0.0f, 0.0f, 1.0f);
 }

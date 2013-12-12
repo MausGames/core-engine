@@ -22,6 +22,8 @@ private:
     coreVector2 m_vCenter;      //!< screen space origin (depending)
     coreVector2 m_vAlignment;   //!< offset factor (independent)
 
+    bool m_bFocused;            //!< interaction status
+
 
 public:
     constexpr_obj coreObject2D()noexcept;
@@ -37,6 +39,12 @@ public:
     virtual void Render() {this->coreObject2D::Render(m_pProgram, true);}
     virtual void Render(const coreProgramShr& pProgram, const bool& bTextured);
     virtual void Move();
+    //! @}
+
+    //! interact with the 2d-object
+    //! @{
+    void Interact();
+    inline const bool& IsFocused()const {return m_bFocused;}
     //! @}
 
     //! set object attributes
@@ -67,6 +75,7 @@ constexpr_obj coreObject2D::coreObject2D()noexcept
 , m_vDirection (coreVector2(0.0f,1.0f))
 , m_vCenter    (coreVector2(0.0f,0.0f))
 , m_vAlignment (coreVector2(0.0f,0.0f))
+, m_bFocused   (false)
 {
 }
 

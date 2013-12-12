@@ -33,7 +33,7 @@ public:
 
     //! update the timer
     //! @{
-    bool Update(const float fModifier = 1.0f);
+    bool Update(const float& fModifier);
     //! @}
 
     //! control the timer

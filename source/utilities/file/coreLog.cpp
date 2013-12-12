@@ -100,7 +100,7 @@ void coreLog::__Write(const bool& bTime, std::string sText)
 {
     SDL_AtomicLock(&m_iLock);
     {
-#if defined(_CORE_ANDROID_) && defined(_CORE_DEBUG_)
+#if defined(_CORE_ANDROID_)
 
         // write text also to the standard output
         SDL_Log(sText.c_str());
@@ -126,7 +126,7 @@ void coreLog::__Write(const bool& bTime, std::string sText)
             const SDL_threadID iThread = SDL_ThreadID()%10000;
 
             // write timestamp and thread-ID
-            std::fprintf(pFile, "<span class=\"time\">[%02d:%02d:%02d]</span> <span class=\"%s\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], (m_iMain == iThread) ? "thread" : "thread2", iThread);
+            std::fprintf(pFile, "<span class=\"time\">[%02u:%02u:%02u]</span> <span class=\"%s\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], (m_iMain == iThread) ? "thread" : "thread2", iThread);
         }
 
         // write text

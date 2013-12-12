@@ -15,9 +15,10 @@
 // frame buffer definitions
 enum coreFramebufferType
 {
-    CORE_FRAMEBUFFER_COLOR = 1,
-    CORE_FRAMEBUFFER_DEPTH = 2,
-    CORE_FRAMEBUFFER_FULL  = 3
+    CORE_FRAMEBUFFER_COLOR = 0x0001,   //!< color writing without depth test
+    CORE_FRAMEBUFFER_DEPTH = 0x0002,   //!< depth writing
+    CORE_FRAMEBUFFER_FULL  = 0x0004,   //!< full frame buffer with color and depth writing
+    CORE_FRAMEBUFFER_ALPHA = 0x0100,   //!< add alpha channel (only COLOR and FULL)
 };
 
 
@@ -25,6 +26,8 @@ enum coreFramebufferType
 // frame buffer class
 // TODO: mipmapping ?
 // TODO: implement real multisampling (currently supersampling sufficient)
+// TODO: frame buffer stack to allow nested buffer wrtings ? (GL 2.0 problems)
+// TODO: add stencil support
 class coreFrameBuffer final : public coreReset
 {
 private:
@@ -34,13 +37,13 @@ private:
     GLuint m_iDepthBuffer;                //!< depth component buffer
 
     coreVector2 m_vResolution;            //!< resolution of the frame buffer
-    coreFramebufferType m_iType;          //!< type of the frame buffer
+    int m_iType;                          //!< type of the frame buffer
 
     static coreFrameBuffer* s_pCurrent;   //!< currently active frame buffer object
 
 
 public:
-    coreFrameBuffer(const coreVector2& vResolution, const coreFramebufferType& iType, const char* pcLink);
+    coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink);
     ~coreFrameBuffer();
 
     //! write to the frame buffer
@@ -56,11 +59,11 @@ public:
 
     //! get object attributes
     //! @{
-    inline const GLuint& GetFrameBuffer()const       {return m_iFrameBuffer;}
-    inline const coreTexturePtr& GetTexture()const   {return m_pTexture;}
-    inline const GLuint& GetDepthBuffer()const       {return m_iDepthBuffer;}
-    inline const coreVector2& GetResolution()const   {return m_vResolution;}
-    inline const coreFramebufferType& GetType()const {return m_iType;}
+    inline const GLuint& GetFrameBuffer()const     {return m_iFrameBuffer;}
+    inline const coreTexturePtr& GetTexture()const {return m_pTexture;}
+    inline const GLuint& GetDepthBuffer()const     {return m_iDepthBuffer;}
+    inline const coreVector2& GetResolution()const {return m_vResolution;}
+    inline const int& GetType()const               {return m_iType;}
     //! @}
 
     //! get currently active frame buffer object

@@ -21,6 +21,7 @@
 //! \ingroup component
 // TODO: deferred shading implementation delayed, but kept in mind
 // TODO: FOV and clipping planes should be controlled differently
+// TODO: implement post-processing pipeline (in CoreGraphics or own class?)
 class CoreGraphics final
 {
 private:

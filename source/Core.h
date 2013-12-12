@@ -44,18 +44,13 @@
 coreMenu:
 von oben nach unten kollision testen
 eine seite in eine andere einfuegen als subseite
-virtuelle funktion fuer dynamische uebergaenge
+virtuelle funktion oder funktionszeiger fuer dynamische uebergaenge
 Framebuffer nutzen
 
 Framebuffer:
 Framebuffer Objekte zum Zeichnen in Texturen,
 Depth Map, Multisample Buffer, Post Processing (Distortion Mapping, Bloom, Glow, HDR, Blur) -> Shader Stages laden als Pfad
 Deferred Shading, Menu Objekte buendeln
-
-
-Kollision:
-Kollisionserkennung in weiterem Thread (Zahl wird in einem Thread erhoeht, im anderen gesenkt, Query),
-Durchfuehrung nach Status im Hauptthread
 
 
 Instancing:
@@ -65,6 +60,11 @@ Sprite:
 Daten pro Sprite moeglichst klein halten
 Instancing nutzen, Ueber-Objekte definieren
 Sammelbecken im Manager?
+
+
+Kollision:
+Kollisionserkennung in weiterem Thread (Zahl wird in einem Thread erhoeht, im anderen gesenkt, Query),
+Durchfuehrung nach Status im Hauptthread
 
 
 coreLanguage:
@@ -183,8 +183,9 @@ neues Fenster mit Status-Werten, Log, Speicher, Fehler, FPS
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#define FOR_EACH(i,c) for(auto i = c.begin(); i != c.end(); ++i)
-#define ASSERT_IF(c)  SDL_assert(!(c)); if(c)
+#define FOR_EACH(i,c)     for(auto i = c.begin();  i != c.end();  ++i)
+#define FOR_EACH_REV(i,c) for(auto i = c.rbegin(); i != c.rend(); ++i)
+#define ASSERT_IF(c)      SDL_assert(!(c)); if(c)
 
 #define DISABLE_COPY(c)      \
     c(const c&) delete_func; \
@@ -220,6 +221,7 @@ enum coreError
 
     CORE_FILE_ERROR    = -10,    //!< error on opening, writing or finding a file
     CORE_SYSTEM_ERROR  = -20,    //!< invalid application behavior (should never happen)
+
     CORE_INVALID_CALL  = -110,   //!< object has wrong status
     CORE_INVALID_INPUT = -120,   //!< function parameters are invalid
     CORE_INVALID_DATA  = -130,   //!< depending objects contain wrong data
@@ -316,6 +318,7 @@ enum coreError
 #include "objects/game/coreObject3D.h"
 
 #include "objects/menu/coreLabel.h"
+#include "objects/menu/coreMenu.h"
 
 
 // ****************************************************************

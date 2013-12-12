@@ -211,7 +211,7 @@ const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 
 
 // ****************************************************************
-// safely get file extension
+// get file extension
 const char* coreData::StrExtension(const char* pcInput)
 {
     SDL_assert(pcInput);
@@ -225,7 +225,7 @@ const char* coreData::StrExtension(const char* pcInput)
 // safely get version number
 float coreData::StrVersion(const char* pcInput)
 {
-    SDL_assert(pcInput);
+    ASSERT_IF(!pcInput) return 0.0f;
 
     const char* pcDot = std::strchr(pcInput, '.');
     return pcDot ? (float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0')) : 0.0f;

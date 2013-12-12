@@ -34,6 +34,7 @@ coreTexture::~coreTexture()
 // load texture resource data
 // TODO: check proper use of PBO, maybe implement static buffer(s!)
 // TODO: allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT)
+// TODO: check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
 coreError coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
@@ -61,7 +62,8 @@ coreError coreTexture::Load(coreFile* pFile)
 
     // calculate data size and texture format
     const coreUint iDataSize = pData->w * pData->h * pData->format->BytesPerPixel;
-    const GLenum iFormat     = (pData->format->BytesPerPixel == 4) ? GL_RGBA : GL_RGB;
+    const GLenum iInternal   = (pData->format->BytesPerPixel == 4) ? GL_RGBA8 : GL_RGB8;
+    const GLenum iFormat     = (pData->format->BytesPerPixel == 4) ? GL_RGBA  : GL_RGB;
 
     // save attributes
     m_vResolution = coreVector2(float(pData->w), float(pData->h));
@@ -113,10 +115,11 @@ coreError coreTexture::Load(coreFile* pFile)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+        if(!bMipMap)     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
         if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER));
 
         // load texture data from PBO
-        glTexImage2D(GL_TEXTURE_2D, 0, iFormat, pConvert->w, pConvert->h, 0, iFormat, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
+        glTexImage2D(GL_TEXTURE_2D, 0, iInternal, pConvert->w, pConvert->h, 0, iFormat, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 
         // unbind texture from texture unit

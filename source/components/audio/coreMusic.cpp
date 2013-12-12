@@ -349,7 +349,7 @@ bool coreMusicPlayer::Update()
     // update transition between two music objects
     if(m_FadeTimer.GetStatus())
     {
-        if(m_FadeTimer.Update())
+        if(m_FadeTimer.Update(1.0f))
             m_pFadePrevious->Stop();
 
         // adjust their volume

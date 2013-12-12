@@ -58,8 +58,8 @@ public:
     //! @{
     static float Sin(const float& fInput)noexcept;
     static float Cos(const float& fInput)noexcept;
-    static constexpr_func float Tan(const float& fInput)noexcept  {return std::tan(fInput);}
-    static constexpr_func float Atan(const float& fInput)noexcept {return std::atan(fInput);}
+    static inline float Tan(const float& fInput)noexcept  {return std::tan(fInput);}
+    static inline float Atan(const float& fInput)noexcept {return std::atan(fInput);}
     //! @}
 
     //! check if inside field-of-view
