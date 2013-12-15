@@ -134,7 +134,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 {
     switch(Event.type)
     {
-    // set textinput character
+    // set text-input character
     case SDL_TEXTINPUT:
         Core::Input->SetKeyboardChar((char)Event.text.text[0]);
         break;
@@ -142,8 +142,8 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
     // press keyboard button
     case SDL_KEYDOWN:
         this->SetKeyboardButton(Event.key.keysym.scancode, true);
-             if(Event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE)   this->SetKeyboardChar((char)8);
-        else if(Event.key.keysym.scancode == SDL_SCANCODE_RETURN)      this->SetKeyboardChar((char)13);
+             if(Event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE)   this->SetKeyboardChar(SDLK_BACKSPACE);
+        else if(Event.key.keysym.scancode == SDL_SCANCODE_RETURN)      this->SetKeyboardChar(SDLK_RETURN);
         else if(Event.key.keysym.scancode == SDL_SCANCODE_PRINTSCREEN) return false;   
         break;
 
@@ -230,7 +230,7 @@ void CoreInput::__UpdateButtons()
 
     if(!m_bCursorVisible)
     {
-        // hold cursor in the window center when not visible
+        // hold cursor in window center when not visible
         SDL_WarpMouseInWindow(Core::System->GetWindow(), int(0.5f*Core::System->GetResolution().x), 
                                                          int(0.5f*Core::System->GetResolution().y));
     }
@@ -252,6 +252,6 @@ void CoreInput::__ClearButtons()
     FOR_EACH(it, m_aJoystick)
         it->iLast = -1;
 
-    // clear current textinput character
+    // clear current text-input character
     m_Keyboard.cChar = '\0';
 }

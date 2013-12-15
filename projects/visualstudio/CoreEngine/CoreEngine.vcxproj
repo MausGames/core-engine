@@ -132,8 +132,15 @@
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
+    <ClCompile Include="..\..\..\source\objects\menu\coreButton.cpp" />
+    <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreMenu.cpp" />
+    <ClCompile Include="..\..\..\source\objects\menu\coreSwitchBox.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreTextBox.cpp" />
     <ClCompile Include="..\..\..\source\utilities\data\coreData.cpp" />
     <ClCompile Include="..\..\..\source\utilities\data\coreLookup.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -173,8 +180,12 @@
     <ClInclude Include="..\..\..\source\manager\coreResource.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject2D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h" />
+    <ClInclude Include="..\..\..\source\objects\menu\coreButton.h" />
+    <ClInclude Include="..\..\..\source\objects\menu\coreCheckBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreMenu.h" />
+    <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h" />
+    <ClInclude Include="..\..\..\source\objects\menu\coreTextBox.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreData.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />

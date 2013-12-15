@@ -153,6 +153,18 @@
     <ClCompile Include="..\..\..\source\objects\menu\coreMenu.cpp">
       <Filter>source\objects\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreButton.cpp">
+      <Filter>source\objects\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreTextBox.cpp">
+      <Filter>source\objects\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp">
+      <Filter>source\objects\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreSwitchBox.cpp">
+      <Filter>source\objects\menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -252,6 +264,18 @@
       <Filter>source\components\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\menu\coreMenu.h">
+      <Filter>source\objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreButton.h">
+      <Filter>source\objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreTextBox.h">
+      <Filter>source\objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreCheckBox.h">
+      <Filter>source\objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h">
       <Filter>source\objects\menu</Filter>
     </ClInclude>
   </ItemGroup>

@@ -44,6 +44,7 @@ public:
     //! interact with the 2d-object
     //! @{
     void Interact();
+    bool IsPushed(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
     inline const bool& IsFocused()const {return m_bFocused;}
     //! @}
 

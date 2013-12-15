@@ -318,6 +318,10 @@ enum coreError
 #include "objects/game/coreObject3D.h"
 
 #include "objects/menu/coreLabel.h"
+#include "objects/menu/coreButton.h"
+#include "objects/menu/coreCheckBox.h"
+#include "objects/menu/coreTextBox.h"
+#include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreMenu.h"
 
 

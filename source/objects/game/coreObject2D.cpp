@@ -78,6 +78,7 @@ void coreObject2D::Move()
 
 // ****************************************************************
 // interact with the 2d-object
+// TODO: add interaction for rotated objects
 void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
@@ -90,4 +91,12 @@ void coreObject2D::Interact()
     // test for intersection
     m_bFocused = (ABS(vInput.x) < vScreenSize.x &&
                   ABS(vInput.y) < vScreenSize.y);
+}
+
+
+// ****************************************************************
+// check for mouse button input
+bool coreObject2D::IsPushed(const coreByte iButton, const coreInputType iType)const
+{
+    return (m_bFocused && Core::Input->GetMouseButton(iButton, iType));
 }

@@ -17,6 +17,7 @@
 // TODO: remove wrong order while animating (double-objects)
 // TODO: implement general relative behavior (menu/2d objects)
 // TODO: optimize rendering with the frame buffer
+// TODO: implement tab-switching and keyboard/gamepad control
 class coreMenu : public coreObject2D
 {
 private:

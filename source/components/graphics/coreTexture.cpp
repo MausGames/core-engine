@@ -83,7 +83,7 @@ coreError coreTexture::Load(coreFile* pFile)
         glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
         // copy texture data into PBO
-        void* pRange = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+        void* pRange = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
         std::memcpy(pRange, pConvert->pixels, iDataSize);
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
     }
@@ -115,7 +115,6 @@ coreError coreTexture::Load(coreFile* pFile)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
-        if(!bMipMap)     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
         if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER));
 
         // load texture data from PBO

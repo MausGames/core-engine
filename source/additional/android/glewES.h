@@ -40,6 +40,9 @@ extern "C"
 #define GL_SYNC_GPU_COMMANDS_COMPLETE 0x9117
 #define GL_TIMEOUT_EXPIRED 0x911B
 
+#define GL_RGBA8 GL_RGBA
+#define GL_RGB8  GL_RGB
+
 
 typedef int* GLsync;
 typedef uint64_t GLuint64;

@@ -213,7 +213,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
     {
         // map required area of the global UBO
         coreByte* pRange = s_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreLight)*iID, sizeof(coreLight),
-                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
+                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT));
 
         // update specific light
         std::memcpy(pRange, &CurLight, sizeof(coreLight));

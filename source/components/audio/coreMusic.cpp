@@ -535,7 +535,7 @@ void coreMusicPlayer::Goto(const coreUint& iIndex)
     m_iCurIndex = iIndex;
     m_pCurMusic = m_apSequence[iIndex];
 
-    // adjust the attributes
+    // adjust volume and status
     m_pCurMusic->SetVolume(1.0f);
     if(bStatus) m_pCurMusic->Play();
 }

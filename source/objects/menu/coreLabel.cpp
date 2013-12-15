@@ -31,8 +31,11 @@ coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLe
     // load shaders
     this->DefineProgramShare(CORE_MEMORY_SHARED)
           ->AttachShaderFile("data/shaders/default_2d.vs")
-          ->AttachShaderFile("data/shaders/default.fs")
+          ->AttachShaderFile("data/shaders/default_label.fs")
           ->Finish();
+
+    // reserve memory for text
+    if(iLength) m_sText.reserve(iLength+1);
 }
 
 
@@ -74,7 +77,7 @@ void coreLabel::Render()
 
 // ****************************************************************    
 // move the label
-// TODO: transformation matrix is not always immediately updated
+// TODO: transformation matrix is not always immediately updated, because re-generation must be in Render(), with Move() afterwards
 void coreLabel::Move()
 {
     if(m_sText.empty()) return;
@@ -91,8 +94,8 @@ bool coreLabel::SetText(const char* pcText, int iNum)
     const int iNewLength = std::strlen(pcText);
 
     // adjust the length
-    if(iNum < 0 || iNum > iNewLength)         iNum = iNewLength;
-    ASSERT_IF(iNum >= m_iLength && m_iLength) iNum = m_iLength;
+    if(iNum < 0 || iNum > iNewLength)        iNum = iNewLength;
+    ASSERT_IF(iNum > m_iLength && m_iLength) iNum = m_iLength;
 
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText) || m_sText.length() != iNum)
@@ -174,7 +177,6 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  0);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pConvert->pixels);
         }
         coreTexture::Unlock();

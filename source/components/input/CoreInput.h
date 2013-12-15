@@ -25,6 +25,13 @@ enum coreInputType
     CORE_INPUT_RELEASE = 3
 };
 
+enum coreInputButton
+{
+    CORE_INPUT_LEFT   = 1,
+    CORE_INPUT_MIDDLE = 2,
+    CORE_INPUT_RIGHT  = 3
+};
+
 
 // ****************************************************************
 // main input component
@@ -38,7 +45,7 @@ private:
         bool aabButton[CORE_INPUT_BUTTONS_KEYBOARD][4];   //!< status of the keyboard buttons
         SDL_Scancode iLast;                               //!< last pressed keyboard button
 
-        char cChar;                                       //!< current textinput character
+        char cChar;                                       //!< current text-input character
     };
 
     //! mouse structure

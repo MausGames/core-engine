@@ -21,8 +21,8 @@ template <typename T> class coreLookup final
 {
 public:
     //! internal types
-    typedef std::pair<std::string, T>         corePair;
-    typedef std::vector<corePair>             coreList;
+    typedef std::pair<std::string, T>         coreEntry;
+    typedef std::vector<coreEntry>            coreList;
     typedef typename coreList::iterator       coreIterator;
     typedef typename coreList::const_iterator coreConstIterator;
 
@@ -55,6 +55,12 @@ public:
     inline coreUint count(const char* pcKey)const noexcept {return this->__check(this->__retrieve(pcKey)) ? 1 : 0;}
     inline coreUint size()const noexcept                   {return m_aList.size();}
     inline bool empty()const noexcept                      {return m_aList.empty();}
+    //! @}
+
+    //! control memory consumption
+    //! @{
+    inline void reserve(const coreUint& iReserve)noexcept {m_aList.reserve(iReserve);}
+    inline coreUint capacity()const noexcept              {return m_aList.capacity();}
     //! @}
 
     //! remove existing entries
@@ -156,7 +162,7 @@ template <typename T> T& coreLookup<T>::operator [] (const char* pcKey)noexcept
     if(!this->__check(it))
     {
         // create new entry
-        m_aList.push_back(corePair(pcKey, T()));
+        m_aList.push_back(coreEntry(pcKey, T()));
         it = m_aList.end()-1;
     }
 

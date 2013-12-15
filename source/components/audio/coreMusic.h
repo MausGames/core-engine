@@ -152,7 +152,6 @@ public:
     //! @{
     void Order();
     void Shuffle();
-    inline void SetRepeat(const coreMusicRepeat& iRepeat) {m_iRepeat = iRepeat;}
     //! @}
 
     //! manage music objects
@@ -169,7 +168,6 @@ public:
     void Goto(const coreUint& iIndex);
     bool Next();
     bool Previous();
-    inline void SetFade(const float& fTime) {if(fTime) m_FadeTimer.SetSpeed(1.0f/fTime); else {m_FadeTimer.SetCurrent(1.0f); m_FadeTimer.SetSpeed(0.0f);}}
     //! @}
 
     //! access music objects
@@ -178,9 +176,15 @@ public:
     inline coreMusic* Control()const                              {SDL_assert(m_pCurMusic != m_pEmptyMusic); return m_pCurMusic;}
     //! @}
 
+    //! set object attributes
+    //! @{
+    inline void SetRepeat(const coreMusicRepeat& iRepeat) {m_iRepeat = iRepeat;}
+    inline void SetFade(const float& fTime)               {if(fTime) m_FadeTimer.SetSpeed(1.0f/fTime); else {m_FadeTimer.SetCurrent(1.0f); m_FadeTimer.SetSpeed(0.0f);}}
+    //! @}
+
     //! get object attributes
     //! @{
-    inline coreUint GetSize()const                 {return m_apMusic.size();}
+    inline coreUint GetNumMusic()const             {return m_apMusic.size();}
     inline const coreUint& GetCurIndex()const      {return m_iCurIndex;}
     inline const coreMusicRepeat& GetRepeat()const {return m_iRepeat;}
     //! @}
