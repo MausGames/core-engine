@@ -8,15 +8,16 @@ This project is focused on creating a **supportive framework for fast and simple
 If you have any suggestions or problems, feel free to contact me or simply create an issue on Bitbucket.
 
 > - **System:** Window and Event Handling, Timer, Threads 
-> - **Graphics:** Camera and View Frustum Handling, Models (.md5), Textures, Shaders 
+> - **Graphics:** Camera and View Frustum Control, Ambient and Lighting Control, Frame Buffers, Models (.md5), Textures, Shaders, Fonts
 > - **Audio:** Sound Effects (.wav), Music Files (.ogg), Music Player
 > - **Input:** Mouse, Keyboard, Joysticks/Gamepads 
-> - **Math:** SIMD Implementations, Vectors (2d, 3d, 4d/Quaternions), Matrices, Splines
+> - **Math:** SIMD Implementations, Vectors (2d, 3d, 4d/Quaternions), Matrices (3x3, 4x4), Splines
 > - **Data:** String/Stream Manipulation, Random Numbers, Fast-Lookup Container
 > - Asynchronous Resource Management
 > - Memory Management (currently only Memory Sharing)
 > - Basic Filesystem, HTML Log, Configuration File
 > - Game Objects (2d, 3d)
+> - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes)
 
 
 # Download
@@ -25,8 +26,9 @@ Documentation and separate download **will be available with the first release**
 
 You also need the latest Android [SDK][5] and [NDK][6], the [JDK][7] and [Ant][8] if you want to develop for this platform.
 
-> **Supported compilers:** GCC/MinGW 4.6+, MSVC 10.0+, Clang 3.3+  
+> **Supported compilers:** GCC/MinGW 4.8+, MSVC 10.0+, Clang 3.3+  
 > Documentation for the framework is currently not available
+
 
 # Libraries
 External libraries used by the framework
