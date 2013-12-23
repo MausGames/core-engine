@@ -165,7 +165,7 @@ private:
 // ****************************************************************
 // resource manager
 // TODO: use load-stack
-// TODO: default resources necessary ?
+// TODO: default resources necessary ? (currently problem when playing unloaded looped sounds)
 // TODO: add int-flags with Load() to forward attributes
 class coreResourceManager final : public coreThread
 {
@@ -190,9 +190,9 @@ private:
 public:
     //! create and return resource with resource handle
     //! @{
-    template <typename T> coreResourceHandle* LoadFile(const char* pcPath);
-    template <typename T> coreResourceHandle* LoadLink(const char* pcName);
-    template <typename T> inline coreResourceHandle* LoadNew()const {return new coreResourceHandle(new T(), NULL, NULL);}
+    template <typename T, typename... A> inline coreResourceHandle* LoadNew(const A&... vArgs)const {return new coreResourceHandle(new T(vArgs...), NULL, NULL);}
+    template <typename T, typename... A> coreResourceHandle* LoadFile(const char* pcPath, const A&... vArgs);
+    template <typename T, typename... A> coreResourceHandle* LoadLink(const char* pcName, const A&... vArgs);
     template <typename T> void Free(T* pResourcePtr);
     //! @}
 
@@ -295,7 +295,7 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 // ****************************************************************
 // create and return resource with resource handle
-template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath)
+template <typename T, typename... A> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath, const A&... vArgs)
 {
     // check for existing resource handle
     if(m_apHandle.count(pcPath)) return m_apHandle[pcPath];
@@ -305,26 +305,26 @@ template <typename T> coreResourceHandle* coreResourceManager::LoadFile(const ch
     if(!m_apDefault.count(T::GetDefaultPath()))
     {
         // load new default resource
-        pDefault = new T();
+        pDefault = new T(vArgs...);
         pDefault->Load(this->RetrieveFile(T::GetDefaultPath()));
         m_apDefault[T::GetDefaultPath()] = pDefault;
     }
     else pDefault = m_apDefault[T::GetDefaultPath()];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), pDefault, this->RetrieveFile(pcPath));
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(vArgs...), pDefault, this->RetrieveFile(pcPath));
     m_apHandle[pcPath] = pNewHandle;
 
     return pNewHandle;
 }
 
-template <typename T> coreResourceHandle* coreResourceManager::LoadLink(const char* pcName)
+template <typename T, typename... A> coreResourceHandle* coreResourceManager::LoadLink(const char* pcName, const A&... vArgs)
 {
     // check for existing resource handle
     if(m_apHandle.count(pcName)) return m_apHandle[pcName];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(), NULL, NULL);
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(vArgs...), NULL, NULL);
     m_apHandle[pcName] = pNewHandle;
 
     return pNewHandle;

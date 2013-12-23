@@ -308,9 +308,10 @@ public:
     inline float Max()const noexcept    {return coreMath::Max(coreMath::Max(coreMath::Max(x, y), z), w);}
     //! @}
 
-    //! static functions
+    //! color functions
     //! @{
-    static constexpr_func coreVector4 ColorCode(const coreUint& iCode)noexcept;
+    static constexpr_func coreVector4 ColorUnpack(const coreUint& iNumber)noexcept;
+    constexpr_func coreUint ColorPack()const noexcept;
     //! @}
 
     //! quaternion functions
@@ -388,14 +389,25 @@ constexpr_func coreVector4::coreVector4(const float& fx, const float& fy, const 
 
 
 // ****************************************************************
-// convert color-code to vector
-constexpr_func coreVector4 coreVector4::ColorCode(const coreUint& iCode)noexcept
+// convert color-code to color-vector
+constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)noexcept
 {
-    return coreVector4(float((iCode >> 24) % 256)*0.003921569f, 
-                       float((iCode >> 16) % 256)*0.003921569f, 
-                       float((iCode >>  8) % 256)*0.003921569f, 
-                       float( iCode        % 256)*0.003921569f);
+    return coreVector4(float((iNumber >> 24) % 256)*0.003921569f, 
+                       float((iNumber >> 16) % 256)*0.003921569f, 
+                       float((iNumber >>  8) % 256)*0.003921569f, 
+                       float( iNumber        % 256)*0.003921569f);
 }
+
+
+// ****************************************************************
+// convert color-vector to color-code
+constexpr_func coreUint coreVector4::ColorPack()const noexcept
+{
+    return (coreUint(r * 255.0f) << 24) +
+           (coreUint(g * 255.0f) << 16) +
+           (coreUint(b * 255.0f) <<  8) +
+           (coreUint(a * 255.0f));
+};
 
 
 #endif // _CORE_GUARD_VECTOR_H_

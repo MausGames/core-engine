@@ -87,6 +87,7 @@ void coreMenu::Move()
             {
                 coreObject2D* pObject = (*it);
 
+                // update object
                 pObject->SetAlpha(afAlpha[i]);
                 pObject->Move();
             }
@@ -99,9 +100,6 @@ void coreMenu::Move()
         {
             coreObject2D* pObject = (*it);
 
-            pObject->SetAlpha(this->GetAlpha());
-            pObject->Move();
-
             // find current object with input focus 
             if(!m_pCurObject)
             {
@@ -109,6 +107,11 @@ void coreMenu::Move()
                 pObject->Interact();
                 if(pObject->IsFocused()) m_pCurObject = pObject;
             }
+            else pObject->SetFocus(false);
+
+            // update object
+            pObject->SetAlpha(this->GetAlpha());
+            pObject->Move();
         }
     }
 }

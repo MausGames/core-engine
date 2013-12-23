@@ -28,8 +28,8 @@ CoreSystem::CoreSystem()noexcept
 
     // init SDL libraries
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init() || !IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG))
-        Core::Log->Error(1, coreData::Print("SDL could not be initialized (SDL: %s)", SDL_GetError()));
-    else Core::Log->Info(coreData::Print("SDL initialized (%d.%d.%d %s)", Version.major, Version.minor, Version.patch, SDL_GetRevision()));
+        Core::Log->Error(true, "SDL could not be initialized (SDL: %s)", SDL_GetError());
+    else Core::Log->Info("SDL initialized (%d.%d.%d %s)", Version.major, Version.minor, Version.patch, SDL_GetRevision());
 
     // get number of logical processor cores
     m_iNumCores = MAX(SDL_GetCPUCount(), 1);
@@ -64,7 +64,7 @@ CoreSystem::CoreSystem()noexcept
             {
                 // add new resolution
                 m_avAvailable.push_back(vMode);
-                Core::Log->ListEntry(coreData::Print("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : ""));
+                Core::Log->ListEntry("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : "");
             }
         }
         Core::Log->ListEnd();
@@ -72,7 +72,7 @@ CoreSystem::CoreSystem()noexcept
         // override screen resolution
         if(m_avAvailable.size() == 1) m_vResolution = m_avAvailable.back();
     }
-    else Core::Log->Error(0, coreData::Print("Could not get available screen resolutions (SDL: %s)", SDL_GetError()));
+    else Core::Log->Error(false, "Could not get available screen resolutions (SDL: %s)", SDL_GetError());
 
     // configure the SDL window
     const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
@@ -104,7 +104,7 @@ CoreSystem::CoreSystem()noexcept
     m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
     if(!m_pWindow)
     {
-        Core::Log->Error(0, coreData::Print("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError()));
+        Core::Log->Error(false, "Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
 
         // change configuration
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
@@ -112,9 +112,9 @@ CoreSystem::CoreSystem()noexcept
 
         // create compatible main window object
         m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
-        if(!m_pWindow) Core::Log->Error(1, coreData::Print("Main window could not be created (SDL: %s)", SDL_GetError()));
+        if(!m_pWindow) Core::Log->Error(true, "Main window could not be created (SDL: %s)", SDL_GetError());
     }
-    Core::Log->Info(coreData::Print("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen));
+    Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
     // init high precision time
     m_dPerfFrequency = 1.0/double(SDL_GetPerformanceFrequency());
@@ -149,11 +149,11 @@ CoreSystem::CoreSystem()noexcept
 
     // log processor information
     Core::Log->ListStart("Platform Information");
-    Core::Log->ListEntry(coreData::Print("<b>Processor:</b> %.4s%.4s%.4s (%d Logical Cores)", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2], m_iNumCores));
-    Core::Log->ListEntry(coreData::Print("<b>System Memory:</b> %d MB",          SDL_GetSystemRAM()));
-    Core::Log->ListEntry(coreData::Print("<b>SSE Support:</b> %s%s%s%s%s",       m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : ""));
-    Core::Log->ListEntry(coreData::Print("<b>CPUID[0]:</b> %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]));
-    Core::Log->ListEntry(coreData::Print("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]));
+    Core::Log->ListEntry("<b>Processor:</b> %.4s%.4s%.4s (%d Logical Cores)", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2], m_iNumCores);
+    Core::Log->ListEntry("<b>System Memory:</b> %d MB",          SDL_GetSystemRAM());
+    Core::Log->ListEntry("<b>SSE Support:</b> %s%s%s%s%s",       m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : "");
+    Core::Log->ListEntry("<b>CPUID[0]:</b> %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
+    Core::Log->ListEntry("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
     Core::Log->ListEnd();
 }
 

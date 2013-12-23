@@ -20,22 +20,6 @@ coreUint coreData::m_iIndex                 = 0;
 
 
 // ****************************************************************
-// create formated string
-const char* coreData::Print(const char* pcMessage, ...)
-{
-    char* pcString = __NextString();
-
-    // assemble string
-    va_list pList;
-    va_start(pList, pcMessage);
-    vsnprintf(pcString, 255, pcMessage, pList);
-    va_end(pList);
-
-    return pcString;
-}
-
-
-// ****************************************************************
 // get application name
 const char* coreData::AppName()
 {
@@ -103,7 +87,7 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
     hFolder = FindFirstFile(coreData::Print("%s/%s/%s", coreData::AppPath(), pcPath, pcFilter), &hFile);
     if(hFolder == INVALID_HANDLE_VALUE)
     {
-        Core::Log->Error(0, coreData::Print("Folder (%s) could not be opened", pcPath));
+        Core::Log->Error(false, "Folder (%s) could not be opened", pcPath);
         return CORE_FILE_ERROR;
     }
 
@@ -127,7 +111,7 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
     pDir = opendir(pcPath);
     if(!pDir)
     {
-        Core::Log->Error(0, coreData::Print("Folder (%s) could not be opened", pcPath));
+        Core::Log->Error(false, "Folder (%s) could not be opened", pcPath);
         return CORE_FILE_ERROR;
     }
 

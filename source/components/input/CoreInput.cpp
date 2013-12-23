@@ -14,15 +14,43 @@
 
 // ****************************************************************
 // constructor
+CoreInput::coreKeyboard::coreKeyboard()noexcept
+: iLast (SDL_SCANCODE_UNKNOWN)
+, cChar ('\0')
+{
+    std::memset(aabButton, 0, sizeof(aabButton));
+}
+
+
+// ****************************************************************
+// constructor
+CoreInput::coreMouse::coreMouse()noexcept
+: iLast     (0)
+, vPosition (coreVector2(0.0f,0.0f))
+, vRelative (coreVector3(0.0f,0.0f,0.0f))
+{
+    std::memset(aabButton, 0, sizeof(aabButton));
+}
+
+
+// ****************************************************************
+// constructor
+CoreInput::coreJoystick::coreJoystick()noexcept
+: pHandle   (NULL)
+, iLast     (0)
+, vRelative (coreVector2(0.0f,0.0f))
+{
+    std::memset(aabButton, 0, sizeof(aabButton));
+}
+
+
+// ****************************************************************
+// constructor
 CoreInput::CoreInput()noexcept
 : m_pCursor        (NULL)
 , m_bCursorVisible (true)
 {
     Core::Log->Header("Input Interface");
-
-    // reset memory
-    std::memset(&m_Keyboard, 0, sizeof(coreKeyboard));
-    std::memset(&m_Mouse,    0, sizeof(coreMouse));
 
     // check for joystick devices
     const int iNumJoysticks = SDL_NumJoysticks();
@@ -34,15 +62,17 @@ CoreInput::CoreInput()noexcept
             coreJoystick Joystick;
 
             // open joystick device
-            std::memset(&Joystick, 0, sizeof(coreJoystick));
             Joystick.pHandle = SDL_JoystickOpen(i);
             m_aJoystick.push_back(Joystick);
 
-            Core::Log->ListEntry(coreData::Print("%s", this->GetJoystickName(i)));
+            Core::Log->ListEntry("%s", this->GetJoystickName(i));
         }
         Core::Log->ListEnd();
     }
     else Core::Log->Info("No joysticks/gamepads found");
+
+    // append empty joystick device
+    m_aJoystick.push_back(coreJoystick());
 }
 
 
@@ -54,7 +84,10 @@ CoreInput::~CoreInput()
 
     // close all joystick devices
     FOR_EACH(it, m_aJoystick)
-        SDL_JoystickClose(it->pHandle);
+    {
+        if(it->pHandle)
+            SDL_JoystickClose(it->pHandle);
+    }
     m_aJoystick.clear();
 
     // free the hardware mouse cursor
@@ -144,6 +177,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
         this->SetKeyboardButton(Event.key.keysym.scancode, true);
              if(Event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE)   this->SetKeyboardChar(SDLK_BACKSPACE);
         else if(Event.key.keysym.scancode == SDL_SCANCODE_RETURN)      this->SetKeyboardChar(SDLK_RETURN);
+        else if(Event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER)    this->SetKeyboardChar(SDLK_RETURN);
         else if(Event.key.keysym.scancode == SDL_SCANCODE_PRINTSCREEN) return false;   
         break;
 
@@ -189,7 +223,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(ABS(Event.jaxis.value) > 8000) this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, (float)coreMath::Sign(Event.jaxis.value));
+        if(ABS(Event.jaxis.value) > 8000) this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, float(coreMath::Sign(Event.jaxis.value)) * (Event.jaxis.axis ? -1.0f : 1.0f));
                                      else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;
     }
@@ -243,9 +277,6 @@ void CoreInput::__UpdateButtons()
 // clear the input button interface
 void CoreInput::__ClearButtons()
 {
-    // reset relative movement of the mouse cursor
-    m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);
-
     // clear all last pressed buttons
     m_Keyboard.iLast = SDL_SCANCODE_UNKNOWN;
     m_Mouse.iLast    = -1;
@@ -254,4 +285,7 @@ void CoreInput::__ClearButtons()
 
     // clear current text-input character
     m_Keyboard.cChar = '\0';
+
+    // reset relative movement of the mouse cursor
+    m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);
 }

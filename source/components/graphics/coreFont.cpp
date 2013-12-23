@@ -43,7 +43,7 @@ coreError coreFont::Load(coreFile* pFile)
     m_sPath = pFile->GetPath();
     m_iSize = pFile->GetSize();
 
-    Core::Log->Info(coreData::Print("Font (%s) loaded", pFile->GetPath()));
+    Core::Log->Info("Font (%s) loaded", pFile->GetPath());
     return CORE_OK;
 }
 
@@ -61,7 +61,7 @@ coreError coreFont::Unload()
 
     // delete file
     SAFE_DELETE(m_pFile)
-    Core::Log->Info(coreData::Print("Font (%s) unloaded", m_sPath.c_str()));
+    Core::Log->Info("Font (%s) unloaded", m_sPath.c_str());
 
     // reset attributes
     m_sPath = "";
@@ -105,7 +105,7 @@ bool coreFont::__InitHeight(const int& iHeight)
     TTF_Font* pNewFont = TTF_OpenFontRW(pSource, true, iHeight);
     if(!pNewFont)
     {
-        Core::Log->Error(0, coreData::Print("Font (%s:%d) could not be loaded", m_pFile->GetPath(), iHeight));
+        Core::Log->Error(false, "Font (%s:%d) could not be loaded", m_pFile->GetPath(), iHeight);
         return false;
     }
 

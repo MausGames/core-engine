@@ -34,6 +34,8 @@ public:
         uint32_t iByteRate;        //!< required data transfer rate (iSampleRate * iBlockAlign)
         uint16_t iBlockAlign;      //!< size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))
         uint16_t iBitsPerSample;   //!< sample resolution
+
+        constexpr_func coreWaveFormat()noexcept;
     };
 
 
@@ -90,6 +92,19 @@ public:
     static inline const char* GetDefaultPath() {return "data/sounds/default.wav";}
     //! @}
 };
+
+
+// ****************************************************************
+// constructor
+constexpr_func coreSound::coreWaveFormat::coreWaveFormat()noexcept
+: iAudioFormat   (0)
+, iNumChannels   (0)
+, iSampleRate    (0)
+, iByteRate      (0)
+, iBlockAlign    (0)
+, iBitsPerSample (0)
+{
+}
 
 
 // ****************************************************************

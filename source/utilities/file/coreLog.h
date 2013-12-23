@@ -16,6 +16,11 @@
 
 
 // ****************************************************************
+// log definitions
+#define CORE_LOG_STRING std::string(coreData::Print(pcText, vArgs...))
+
+
+// ****************************************************************
 // log file class
 class coreLog final
 {
@@ -32,16 +37,16 @@ public:
 
     //! message functions
     //! @{
-    inline void Header(const char* pcText) {if(m_iLevel >= 0) this->__Write(false, "<hr /><span class=\"header\">" + std::string(pcText) + "</span><br />");}
-    inline void Info(const char* pcText)   {if(m_iLevel >= 0) this->__Write(true, std::string(pcText) + "<br />");}
-    void Error(const bool& bShutdown, const char* pcText);
+    template <typename... A> inline void Header(const char* pcText, const A&... vArgs) {if(m_iLevel >= 0) this->__Write(false, "<hr /><span class=\"header\">" + CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline void Info(const char* pcText, const A&... vArgs)   {if(m_iLevel >= 0) this->__Write(true,                                    CORE_LOG_STRING + "<br />");}
+    template <typename... A> void Error(const bool& bShutdown, const char* pcText, const A&... vArgs);
     //! @}
 
     //! list functions
     //! @{
-    inline void ListStart(const char* pcText) {if(m_iLevel >= 0) this->__Write(true, "<span class=\"list\">" + std::string(pcText) + "</span><ul>");}
-    inline void ListEntry(const char* pcText) {if(m_iLevel >= 0) this->__Write(false, "<li>" + std::string(pcText) + "</li>");}
-    inline void ListEnd()                     {if(m_iLevel >= 0) this->__Write(false, "</ul>");}
+    template <typename... A> inline void ListStart(const char* pcText, const A&... vArgs) {if(m_iLevel >= 0) this->__Write(true,  "<span class=\"list\">" + CORE_LOG_STRING + "</span><ul>");}
+    template <typename... A> inline void ListEntry(const char* pcText, const A&... vArgs) {if(m_iLevel >= 0) this->__Write(false, "<li>"                  + CORE_LOG_STRING + "</li>");}
+    inline void ListEnd()                                                                 {if(m_iLevel >= 0) this->__Write(false, "</ul>");}
     //! @}
 
     //! set logging level
@@ -64,6 +69,28 @@ private:
     void __Write(const bool& bTime, std::string sText);
     //! @}
 };
+
+
+// ****************************************************************
+// write error message and shut down the application
+template <typename... A> void coreLog::Error(const bool& bShutdown, const char* pcText, const A&... vArgs)
+{
+    // write error message
+    if(m_iLevel <= 0) this->__Write(true, "<span class=\"error\">" + CORE_LOG_STRING + "</span><br />");
+
+    if(bShutdown)
+    {
+        // show critical error message
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", CORE_LOG_STRING.c_str(), Core::System->GetWindow());
+
+        // trigger breakpoint or shut down the application
+#if defined(_CORE_DEBUG_)
+        SDL_TriggerBreakpoint();
+#else
+        _exit(1);
+#endif
+    }
+}
 
 
 #endif // _CORE_GUARD_LOG_H_

@@ -31,7 +31,7 @@ void coreCheckBox::Move()
     coreButton::Move();
 
     // check for interaction
-    if(this->IsPushed()) this->SetCheck(!m_bCheck);
+    if(this->IsClicked()) this->SetCheck(!m_bCheck);
 }
 
 

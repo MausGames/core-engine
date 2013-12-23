@@ -88,6 +88,8 @@ private:
         coreVector2 vTexture;    //!< texture coordinate
         coreVector3 vNormal;     //!< normal vector
         coreVector4 vTangent;    //!< additional tangent vector
+
+        constexpr_func coreVertex()noexcept;
     };
 
 
@@ -176,6 +178,17 @@ private:
     void __Enable();
     //! @}
 };
+
+
+// ****************************************************************
+// constructor
+constexpr_func coreModel::coreVertex::coreVertex()noexcept
+: vPosition (coreVector3(0.0f,0.0f,0.0f))
+, vTexture  (coreVector2(0.0f,0.0f))
+, vNormal   (coreVector3(0.0f,0.0f,0.0f))
+, vTangent  (coreVector4(0.0f,0.0f,0.0f,0.0f))
+{
+}
 
 
 // ****************************************************************

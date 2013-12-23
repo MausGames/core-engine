@@ -10,7 +10,7 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//| Core Engine v0.0.3a (http://www.maus-games.at)                               |//
+//| Core Engine v0.0.4a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
 //| Copyright (c) 2013 Martin Mauersics                                          |//
 //|                                                                              |//
@@ -40,42 +40,6 @@
 #ifndef _CORE_GUARD_H_
 #define _CORE_GUARD_H_
 
-/*
-coreMenu:
-von oben nach unten kollision testen
-eine seite in eine andere einfuegen als subseite
-virtuelle funktion oder funktionszeiger fuer dynamische uebergaenge
-Framebuffer nutzen
-
-Framebuffer:
-Framebuffer Objekte zum Zeichnen in Texturen,
-Depth Map, Multisample Buffer, Post Processing (Distortion Mapping, Bloom, Glow, HDR, Blur) -> Shader Stages laden als Pfad
-Deferred Shading, Menu Objekte buendeln
-
-
-Instancing:
-Selbe Objekte zeichenbar, Sprites
-
-Sprite:
-Daten pro Sprite moeglichst klein halten
-Instancing nutzen, Ueber-Objekte definieren
-Sammelbecken im Manager?
-
-
-Kollision:
-Kollisionserkennung in weiterem Thread (Zahl wird in einem Thread erhoeht, im anderen gesenkt, Query),
-Durchfuehrung nach Status im Hauptthread
-
-
-coreLanguage:
-Verknuepfung aller Label samt (Text-)ID mit Klasse,
-SetText und erneute Generierung bei Sprachwechsel
-
-
-Performance/Benchmark:
-neues Fenster mit Status-Werten, Log, Speicher, Fehler, FPS
-
-*/
 
 // compiler
 #if defined(_MSC_VER)
@@ -197,6 +161,7 @@ neues Fenster mit Status-Werten, Log, Speicher, Fehler, FPS
     void* operator new[] (size_t) delete_func;      \
     void* operator new[] (size_t, void*) delete_func;
 
+#define f_list forward_list
 #define u_map  unordered_map
 #define u_set  unordered_set
 #define s_cast static_cast
@@ -245,6 +210,7 @@ enum coreError
 #include <ctime>
 #include <memory>
 #include <vector>
+#include <forward_list>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -279,6 +245,8 @@ enum coreError
 // ****************************************************************
 // engine header files
 #include "utilities/data/coreLookup.h"
+#include "utilities/data/coreData.h"
+#include "utilities/data/coreRand.h"
 
 #include "utilities/file/coreLog.h"
 #include "utilities/file/coreConfig.h"
@@ -288,9 +256,6 @@ enum coreError
 #include "utilities/math/coreVector.h"
 #include "utilities/math/coreMatrix.h"
 #include "utilities/math/coreSpline.h"
-
-#include "utilities/data/coreData.h"
-#include "utilities/data/coreRand.h"
 
 #include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
@@ -316,6 +281,7 @@ enum coreError
 #include "manager/coreObject.h"
 #include "objects/game/coreObject2D.h"
 #include "objects/game/coreObject3D.h"
+#include "objects/game/coreParticle.h"
 
 #include "objects/menu/coreLabel.h"
 #include "objects/menu/coreButton.h"
@@ -357,6 +323,7 @@ public:
 // TODO: check GCC function attributes (pure, hot, cold)
 // TODO: improve sort and structure under all class access modifiers
 // TODO: don't forward/return trivial types as reference ? (address > value)
+// TODO: use GLEWs extension macros instead of current list ?
 class Core final
 {
 public:

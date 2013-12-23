@@ -70,7 +70,7 @@ void coreLabel::Render()
         m_iGenerate = 0;
     }
 
-    // render the object
+    // render the 2d-object
     coreObject2D::Render();
 }
 
@@ -82,7 +82,7 @@ void coreLabel::Move()
 {
     if(m_sText.empty()) return;
 
-    // move the object
+    // move the 2d-object
     if(!(m_iGenerate & 1)) coreObject2D::Move();
 }
 

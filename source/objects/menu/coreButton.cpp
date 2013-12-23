@@ -12,14 +12,10 @@
 // ****************************************************************    
 // constructor
 coreButton::coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
-: m_bBusy     (false)
-, m_iOverride (0)
+: coreButton (pcIdle, pcBusy)
 {
     // create the caption
     m_pCaption = new coreLabel(pcFont, iHeight, iLength);
-
-    // setup the button
-    this->__Init(pcIdle, pcBusy);
 }
 
 coreButton::coreButton(const char* pcIdle, const char* pcBusy)
@@ -27,8 +23,16 @@ coreButton::coreButton(const char* pcIdle, const char* pcBusy)
 , m_bBusy     (false)
 , m_iOverride (0)
 {
-    // setup the button
-    this->__Init(pcIdle, pcBusy);
+    // load background textures
+    if(pcIdle) m_apBackground[0] = Core::Manager::Resource->LoadFile<coreTexture>(pcIdle);
+    if(pcBusy) m_apBackground[1] = Core::Manager::Resource->LoadFile<coreTexture>(pcBusy);
+    m_apTexture[0] = m_apBackground[0];
+
+    // load shaders
+    this->DefineProgramShare(CORE_MEMORY_SHARED)
+          ->AttachShaderFile("data/shaders/default_2d.vs")
+          ->AttachShaderFile("data/shaders/default.fs")
+          ->Finish();
 }
 
 
@@ -45,7 +49,7 @@ coreButton::~coreButton()
 // render the button
 void coreButton::Render()
 {
-    // render the object
+    // render the 2d-object
     coreObject2D::Render();
 
     // render the caption
@@ -57,9 +61,6 @@ void coreButton::Render()
 // move the button
 void coreButton::Move()
 {
-    // interact with the object
-    this->Interact();
-
     // set current background texture
     const bool bStatus = (m_iOverride > 0) ? true : ((m_iOverride < 0) ? false : this->IsFocused());
     if(m_bBusy != bStatus)
@@ -81,23 +82,6 @@ void coreButton::Move()
         }
     }
 
-    // move the object
+    // move the 2d-object
     coreObject2D::Move();
-}
-
-
-// ****************************************************************    
-// setup the button
-void coreButton::__Init(const char* pcIdle, const char* pcBusy)
-{
-    // load background textures
-    if(pcIdle) m_apBackground[0] = Core::Manager::Resource->LoadFile<coreTexture>(pcIdle);
-    if(pcBusy) m_apBackground[1] = Core::Manager::Resource->LoadFile<coreTexture>(pcBusy);
-    m_apTexture[0] = m_apBackground[0];
-
-    // load shaders
-    this->DefineProgramShare(CORE_MEMORY_SHARED)
-          ->AttachShaderFile("data/shaders/default_2d.vs")
-          ->AttachShaderFile("data/shaders/default.fs")
-          ->Finish();
 }

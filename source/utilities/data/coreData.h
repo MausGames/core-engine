@@ -10,6 +10,10 @@
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
 
+#if defined(_CORE_WINDOWS_)
+    #define snprintf _snprintf
+#endif
+
 
 // ****************************************************************
 // data definitions
@@ -36,7 +40,8 @@ private:
 public:
     //! create formated string
     //! @{
-    static const char* Print(const char* pcMessage, ...);
+    template <typename... A> static const char* Print(const char* pcMessage, const A&... vArgs);
+    static inline const char* Print(const char* pcMessage) {return pcMessage;}
     //! @}
 
     //! get application parameters
@@ -78,6 +83,19 @@ private:
     static inline char* __NextString() {if(++m_iIndex >= CORE_DATA_STRINGS) m_iIndex = 0; return m_aacString[m_iIndex];}
     //! @}
 };
+
+
+// ****************************************************************
+// create formated string
+// TODO: assert on max string length
+template <typename... A> const char* coreData::Print(const char* pcMessage, const A&... vArgs)
+{
+    char* pcString = __NextString();
+
+    // assemble and return string
+    snprintf(pcString, 255, pcMessage, vArgs...);
+    return pcString;
+}
 
 
 #endif // _CORE_GUARD_DATA_H_

@@ -22,48 +22,27 @@ coreLog::coreLog(const char* pcPath)noexcept
     if(!pFile) return;
 
     // write basic style sheet
-    std::fprintf(pFile, "<style type=\"text/css\">                      \n");
-    std::fprintf(pFile, "  body    {font-family: courier new;}          \n");
-    std::fprintf(pFile, " .time    {color: #AAAAAA;}                    \n");
-    std::fprintf(pFile, " .thread  {color: green;}                      \n");
-    std::fprintf(pFile, " .thread2 {color: olive;}                      \n");
-    std::fprintf(pFile, " .data    {color: teal;}                       \n");
-    std::fprintf(pFile, " .header  {font-weight: bold; font-size: 22px;}\n");
-    std::fprintf(pFile, " .list    {font-weight: bold;}                 \n");
-    std::fprintf(pFile, " .error   {font-weight: bold; color: red;}     \n");
-    std::fprintf(pFile, " .gl      {color: purple;}                     \n");
-    std::fprintf(pFile, "</style>                                       \n");
+    std::fputs("<style type=\"text/css\">                      \n", pFile);
+    std::fputs("  body    {font-family: courier new;}          \n", pFile);
+    std::fputs(" .time    {color: #AAAAAA;}                    \n", pFile);
+    std::fputs(" .thread  {color: green;}                      \n", pFile);
+    std::fputs(" .thread2 {color: olive;}                      \n", pFile);
+    std::fputs(" .data    {color: teal;}                       \n", pFile);
+    std::fputs(" .header  {font-weight: bold; font-size: 22px;}\n", pFile);
+    std::fputs(" .list    {font-weight: bold;}                 \n", pFile);
+    std::fputs(" .error   {font-weight: bold; color: red;}     \n", pFile);
+    std::fputs(" .gl      {color: purple;}                     \n", pFile);
+    std::fputs("</style>                                       \n", pFile);
 
     // write application name
-    std::fprintf(pFile, "%s\n", coreData::AppName());
+    std::fputs(coreData::AppName(), pFile);
+    std::fputs("\n",                pFile);
 
     // close log file
     std::fclose(pFile);
 
     // save thread-ID of the creator
-    m_iMain = SDL_ThreadID()%10000;
-}
-
-
-// ****************************************************************
-// write error message and shut down the application
-void coreLog::Error(const bool& bShutdown, const char* pcText)
-{
-    // write error message
-    if(m_iLevel <= 0) this->__Write(true, "<span class=\"error\">" + std::string(pcText) + "</span><br />");
-
-    if(bShutdown)
-    {
-        // show critical error message
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", pcText, Core::System->GetWindow());
-
-        // trigger breakpoint or shut down the application
-#if defined(_CORE_DEBUG_)
-        SDL_TriggerBreakpoint();
-#else
-        _exit(1);
-#endif
-    }
+    m_iMain = SDL_ThreadID() % 10000;
 }
 
 
@@ -74,11 +53,11 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
     coreLog* pLog = s_cast<coreLog*>(pUserParam);
 
     pLog->ListStart("OpenGL Debug Log");
-    pLog->ListEntry(coreData::Print("<span class=\"gl\"><b>ID:</b>           %d</span>", iID));
-    pLog->ListEntry(coreData::Print("<span class=\"gl\"><b>Source:</b>   0x%04X</span>", iSource));
-    pLog->ListEntry(coreData::Print("<span class=\"gl\"><b>Type:</b>     0x%04X</span>", iType));
-    pLog->ListEntry(coreData::Print("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity));
-    pLog->ListEntry(coreData::Print("<span class=\"gl\">                     %s</span>", pcMessage));
+    pLog->ListEntry("<span class=\"gl\"><b>ID:</b>           %d</span>", iID);
+    pLog->ListEntry("<span class=\"gl\"><b>Source:</b>   0x%04X</span>", iSource);
+    pLog->ListEntry("<span class=\"gl\"><b>Type:</b>     0x%04X</span>", iType);
+    pLog->ListEntry("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity);
+    pLog->ListEntry("<span class=\"gl\">                     %s</span>", pcMessage);
     pLog->ListEnd();
 }
 
@@ -123,14 +102,15 @@ void coreLog::__Write(const bool& bTime, std::string sText)
             coreData::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
 
             // get thread-ID
-            const SDL_threadID iThread = SDL_ThreadID()%10000;
+            const SDL_threadID iThread = SDL_ThreadID() % 10000;
 
             // write timestamp and thread-ID
             std::fprintf(pFile, "<span class=\"time\">[%02u:%02u:%02u]</span> <span class=\"%s\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], (m_iMain == iThread) ? "thread" : "thread2", iThread);
         }
 
         // write text
-        std::fprintf(pFile, "%s\n", sText.c_str());
+        std::fputs(sText.c_str(), pFile);
+        std::fputs("\n",          pFile);
 
         // close log file
         std::fclose(pFile);

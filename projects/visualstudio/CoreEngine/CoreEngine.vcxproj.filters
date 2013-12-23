@@ -165,6 +165,9 @@
     <ClCompile Include="..\..\..\source\objects\menu\coreSwitchBox.cpp">
       <Filter>source\objects\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp">
+      <Filter>source\objects\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -277,6 +280,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h">
       <Filter>source\objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\game\coreParticle.h">
+      <Filter>source\objects\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\file\coreLanguage.h">
+      <Filter>source\utilities\file</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

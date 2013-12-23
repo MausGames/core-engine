@@ -132,6 +132,7 @@
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
+    <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreButton.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="..\..\..\source\manager\coreResource.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject2D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h" />
+    <ClInclude Include="..\..\..\source\objects\game\coreParticle.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreButton.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreCheckBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h" />
@@ -191,6 +193,7 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreArchive.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreConfig.h" />
+    <ClInclude Include="..\..\..\source\utilities\file\coreLanguage.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreLog.h" />
     <ClInclude Include="..\..\..\source\utilities\math\coreMath.h" />
     <ClInclude Include="..\..\..\source\utilities\math\coreMatrix.h" />

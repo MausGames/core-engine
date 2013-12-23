@@ -28,20 +28,8 @@ ov_callbacks OV_CALLBACKS =
 // ****************************************************************
 // constructor
 coreMusic::coreMusic(const char* pcPath)noexcept
-: m_iSource  (0)
-, m_pFile    (NULL)
-, m_pInfo    (NULL)
-, m_pComment (NULL)
-, m_dMaxTime (0.0)
-, m_bLoop    (false)
-, m_bStatus  (false)
+: coreMusic (Core::Manager::Resource->RetrieveFile(pcPath))
 {
-    // reset memory
-    std::memset(&m_aiBuffer, 0, sizeof(m_aiBuffer));
-    std::memset(&m_Stream,   0, sizeof(m_Stream));
-
-    // load from path
-    this->__Init(Core::Manager::Resource->RetrieveFile(pcPath));
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
@@ -57,8 +45,34 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     std::memset(&m_aiBuffer, 0, sizeof(m_aiBuffer));
     std::memset(&m_Stream,   0, sizeof(m_Stream));
 
-    // load from file
-    this->__Init(pFile);
+    if(!pFile)            return;
+    if(!pFile->GetData()) return;
+
+    // create virtual file as streaming source
+    m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
+    SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
+
+    // test file format and open music stream
+            int iError = ov_test_callbacks(pSource, &m_Stream, NULL, 0, OV_CALLBACKS);
+    if(!iError) iError = ov_test_open(&m_Stream);
+    if( iError)
+    {
+        Core::Log->Error(false, "Music (%s) is not a valid OGG-file (OV Error Code: %d)", pFile->GetPath(), iError);
+        ov_clear(&m_Stream);
+        SAFE_DELETE(m_pFile)
+
+        return;
+    }
+
+    // create sound buffers
+    alGenBuffers(2, m_aiBuffer);
+
+    // retrieve music file information
+    m_pInfo    = ov_info(&m_Stream, -1);
+    m_pComment = ov_comment(&m_Stream, -1);
+    m_dMaxTime = ov_time_total(&m_Stream, -1);
+
+    Core::Log->Info("Music (%s) loaded", pFile->GetPath());
 }
 
 
@@ -72,7 +86,7 @@ coreMusic::~coreMusic()
 
     // close music stream
     ov_clear(&m_Stream);
-    if(m_pFile) Core::Log->Info(coreData::Print("Music (%s) unloaded", m_pFile->GetPath()));
+    if(m_pFile) Core::Log->Info("Music (%s) unloaded", m_pFile->GetPath());
 
     // delete file object
     SAFE_DELETE(m_pFile)
@@ -244,43 +258,6 @@ void coreMusic::__Reset(const bool& bInit)
             alDeleteBuffers(2, m_aiBuffer);
         }
     }
-}
-
-
-// ****************************************************************
-// init the music object
-coreError coreMusic::__Init(coreFile* pFile)
-{
-    ASSERT_IF(m_aiBuffer[0]) return CORE_INVALID_CALL;
-    if(!pFile)               return CORE_INVALID_INPUT;
-    if(!pFile->GetData())    return CORE_FILE_ERROR;
-
-    // create virtual file as streaming source
-    m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
-    SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
-
-    // test file format and open music stream
-            int iError = ov_test_callbacks(pSource, &m_Stream, NULL, 0, OV_CALLBACKS);
-    if(!iError) iError = ov_test_open(&m_Stream);
-    if( iError)
-    {
-        Core::Log->Error(0, coreData::Print("Music (%s) is not a valid OGG-file (OV Error Code: %d)", pFile->GetPath(), iError));
-        ov_clear(&m_Stream);
-        SAFE_DELETE(m_pFile)
-
-        return CORE_INVALID_DATA;
-    }
-
-    // create sound buffers
-    alGenBuffers(2, m_aiBuffer);
-
-    // retrieve music file information
-    m_pInfo    = ov_info(&m_Stream, -1);
-    m_pComment = ov_comment(&m_Stream, -1);
-    m_dMaxTime = ov_time_total(&m_Stream, -1);
-
-    Core::Log->Info(coreData::Print("Music (%s) loaded", pFile->GetPath()));
-    return CORE_OK;
 }
 
 

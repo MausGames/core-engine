@@ -23,6 +23,8 @@ private:
         coreVector3 vPosition;   //!< position of the node
         coreVector3 vTangent;    //!< tangent of the node
         float fDistance;         //!< distance from this node to the next (0 = last node)
+
+        constexpr_func coreNode()noexcept;
     };
 
 
@@ -69,6 +71,16 @@ public:
     inline float GetDistance(const float& fTime)const {return fTime*m_fMaxDistance;}
     //! @}
 };
+
+
+// ****************************************************************
+// constructor
+constexpr_func coreSpline::coreNode::coreNode()noexcept
+: vPosition (coreVector3(0.0f,0.0f,0.0f))
+, vTangent  (coreVector3(0.0f,0.0f,0.0f))
+, fDistance (0.0f)
+{
+}
 
 
 #endif // _CORE_GUARD_SPLINE_H_

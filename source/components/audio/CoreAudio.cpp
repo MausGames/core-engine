@@ -24,7 +24,7 @@ CoreAudio::CoreAudio()noexcept
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
-        Core::Log->Error(1, coreData::Print("OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice)));
+        Core::Log->Error(true, "OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice));
     else Core::Log->Info("OpenAL context created");
 
     // generate sound sources
@@ -33,10 +33,10 @@ CoreAudio::CoreAudio()noexcept
 
     // log audio device information
     Core::Log->ListStart("Audio Device Information");
-    Core::Log->ListEntry(coreData::Print("<b>Device:</b> %s",   alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER)));
-    Core::Log->ListEntry(coreData::Print("<b>Vendor:</b> %s",   alGetString(AL_VENDOR)));
-    Core::Log->ListEntry(coreData::Print("<b>Renderer:</b> %s", alGetString(AL_RENDERER)));
-    Core::Log->ListEntry(coreData::Print("<b>Version:</b> %s",  alGetString(AL_VERSION)));
+    Core::Log->ListEntry("<b>Device:</b> %s",   alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
+    Core::Log->ListEntry("<b>Vendor:</b> %s",   alGetString(AL_VENDOR));
+    Core::Log->ListEntry("<b>Renderer:</b> %s", alGetString(AL_RENDERER));
+    Core::Log->ListEntry("<b>Version:</b> %s",  alGetString(AL_VERSION));
     Core::Log->ListEntry(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
     Core::Log->ListEnd();
 
@@ -50,7 +50,7 @@ CoreAudio::CoreAudio()noexcept
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR) Core::Log->Error(0, coreData::Print("Error initializing Audio Interface (AL Error Code: %d)", iError));
+    if(iError != AL_NO_ERROR) Core::Log->Error(false, "Error initializing Audio Interface (AL Error Code: %d)", iError);
 }
 
 

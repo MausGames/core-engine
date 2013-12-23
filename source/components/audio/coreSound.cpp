@@ -16,7 +16,6 @@ coreSound::coreSound()noexcept
 , m_iCurSource (0)
 , m_pCurRef    (NULL)
 {
-    std::memset(&m_Format, 0, sizeof(m_Format));
 }
 
 
@@ -52,7 +51,7 @@ coreError coreSound::Load(coreFile* pFile)
     if(!std::strncmp(acID, "RIFF", 4)) {std::memcpy(acID, pData, 4); pData += 4;}
     if( std::strncmp(acID, "WAVE", 4))
     {
-        Core::Log->Error(0, coreData::Print("Sound (%s) is not a valid WAVE-file", pFile->GetPath()));
+        Core::Log->Error(false, "Sound (%s) is not a valid WAVE-file", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -73,7 +72,7 @@ coreError coreSound::Load(coreFile* pFile)
     // check for compression
     if(m_Format.iAudioFormat != 1)
     {
-        Core::Log->Error(0, coreData::Print("Sound (%s) is not PCM encoded, compression is not supported", pFile->GetPath()));
+        Core::Log->Error(false, "Sound (%s) is not PCM encoded, compression is not supported", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -102,11 +101,11 @@ coreError coreSound::Load(coreFile* pFile)
     const ALenum iError = alGetError();
     if(iError != AL_NO_ERROR)
     {
-        Core::Log->Error(0, coreData::Print("Sound (%s) could not be loaded (AL Error Code: %d)", pFile->GetPath(), iError));
+        Core::Log->Error(false, "Sound (%s) could not be loaded (AL Error Code: %d)", pFile->GetPath(), iError);
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info(coreData::Print("Sound (%s) loaded", pFile->GetPath()));
+    Core::Log->Info("Sound (%s) loaded", pFile->GetPath());
     return CORE_OK;
 }
 
@@ -123,7 +122,7 @@ coreError coreSound::Unload()
 
     // delete sound buffer
     alDeleteBuffers(1, &m_iBuffer);
-    Core::Log->Info(coreData::Print("Sound (%s) unloaded", m_sPath.c_str()));
+    Core::Log->Info("Sound (%s) unloaded", m_sPath.c_str());
 
     // reset attributes
     m_sPath      = "";

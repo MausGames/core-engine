@@ -31,8 +31,9 @@ private:
     {
         coreVector4 vPosition;    //!< position of the light
         coreVector4 vDirection;   //!< direction and range of the light
-
         coreVector4 vValue;       //!< color and strength value
+
+        constexpr_func coreLight()noexcept;
     };
 
 
@@ -117,6 +118,16 @@ private:
     void __UpdateScene();
     //! @}
 };
+
+
+// ****************************************************************
+// constructor
+constexpr_func CoreGraphics::coreLight::coreLight()noexcept
+: vPosition  (coreVector4(0.0f,0.0f,0.0f,0.0f))
+, vDirection (coreVector4(0.0f,0.0f,0.0f,0.0f))
+, vValue     (coreVector4(1.0f,1.0f,1.0f,1.0f))
+{
+}
 
 
 #endif // _CORE_GUARD_GRAPHICS_H_

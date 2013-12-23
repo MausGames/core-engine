@@ -172,7 +172,7 @@ coreError coreModel::Load(coreFile* pFile)
     // check for success
     if(oFile.aMesh.empty())
     {
-        Core::Log->Error(0, coreData::Print("Model (%s) is not a valid MD5-file", pFile->GetPath()));
+        Core::Log->Error(false, "Model (%s) is not a valid MD5-file", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -187,9 +187,9 @@ coreError coreModel::Load(coreFile* pFile)
     m_iSize         = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreWord);
 
     // reserve required vertex memory
-    coreVertex*  pVertex  = new coreVertex [m_iNumVertices]; std::memset(pVertex,  0, m_iNumVertices*sizeof(pVertex[0]));
-    coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; std::memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
-    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; std::memset(pvOrtho2, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
+    coreVertex*  pVertex  = new coreVertex [m_iNumVertices]; // std::memset(pVertex,  0, m_iNumVertices*sizeof(pVertex[0]));
+    coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; // std::memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
+    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; // std::memset(pvOrtho2, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
 
     // traverse all vertices
     for(coreUint i = 0; i < m_iNumVertices; ++i)
@@ -274,7 +274,7 @@ coreError coreModel::Load(coreFile* pFile)
     SAFE_DELETE_ARRAY(pvOrtho1)
     SAFE_DELETE_ARRAY(pvOrtho2)
 
-    Core::Log->Info(coreData::Print("Model (%s) loaded", pFile->GetPath()));
+    Core::Log->Info("Model (%s) loaded", pFile->GetPath());
     return bSync ? CORE_BUSY : CORE_OK;
 }
 
@@ -289,7 +289,7 @@ coreError coreModel::Unload()
     glDeleteVertexArrays(1, &m_iVertexArray);
     glDeleteBuffers(1, &m_iVertexBuffer);
     glDeleteBuffers(1, &m_iIndexBuffer);
-    Core::Log->Info(coreData::Print("Model (%s) unloaded", m_sPath.c_str()));
+    Core::Log->Info("Model (%s) unloaded", m_sPath.c_str());
 
     // delete sync object
     m_Sync.Delete();

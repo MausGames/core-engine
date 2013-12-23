@@ -28,34 +28,34 @@ CoreGraphics::CoreGraphics()noexcept
 
     // create primary OpenGL context
     m_RenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
-    if(!m_RenderContext) Core::Log->Error(1, coreData::Print("Primary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
+    if(!m_RenderContext) Core::Log->Error(true, "Primary OpenGL context could not be created (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Primary OpenGL context created");
 
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT) && (Core::System->SupportNumCores() >= 2))
     {
         // create secondary OpenGL context
         m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
-        if(!m_ResourceContext) Core::Log->Error(0, coreData::Print("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError()));
+        if(!m_ResourceContext) Core::Log->Error(false, "Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError());
         else Core::Log->Info("Secondary OpenGL context created");
     }
     else m_ResourceContext = NULL;
 
     // assign primary OpenGL context to main window
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext))
-        Core::Log->Error(1, coreData::Print("Primary OpenGL context could not be assigned to main window (SDL: %s)", SDL_GetError()));
+        Core::Log->Error(true, "Primary OpenGL context could not be assigned to main window (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Primary OpenGL context assigned to main window");
 
     // init GLEW on primary OpenGL context
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error(1, coreData::Print("GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError)));
-    else Core::Log->Info(coreData::Print("GLEW initialized on primary OpenGL context (%s)", glewGetString(GLEW_VERSION)));
+    if(iError != GLEW_OK) Core::Log->Error(true, "GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
+    else Core::Log->Info("GLEW initialized on primary OpenGL context (%s)", glewGetString(GLEW_VERSION));
 
     // log video card information
     Core::Log->ListStart("Video Card Information");
-    Core::Log->ListEntry(coreData::Print("<b>Vendor:</b> %s",         glGetString(GL_VENDOR)));
-    Core::Log->ListEntry(coreData::Print("<b>Renderer:</b> %s",       glGetString(GL_RENDERER)));
-    Core::Log->ListEntry(coreData::Print("<b>OpenGL Version:</b> %s", glGetString(GL_VERSION)));
-    Core::Log->ListEntry(coreData::Print("<b>Shader Version:</b> %s", glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    Core::Log->ListEntry("<b>Vendor:</b> %s",         glGetString(GL_VENDOR));
+    Core::Log->ListEntry("<b>Renderer:</b> %s",       glGetString(GL_RENDERER));
+    Core::Log->ListEntry("<b>OpenGL Version:</b> %s", glGetString(GL_VERSION));
+    Core::Log->ListEntry("<b>Shader Version:</b> %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
     Core::Log->ListEntry(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
     Core::Log->ListEnd();
 
@@ -65,7 +65,7 @@ CoreGraphics::CoreGraphics()noexcept
     m_fGLSL   = coreData::StrVersion(r_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // check OpenGL version
-    if(m_fOpenGL < 2.0f) Core::Log->Error(1, "Minimum system requirements not met, video card supporting at least OpenGL 2.0 required");
+    if(m_fOpenGL < 2.0f) Core::Log->Error(true, "Minimum system requirements not met, video card supporting at least OpenGL 2.0 required");
 
     // enable OpenGL debugging
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
@@ -75,7 +75,7 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // enable vertical synchronization
-    if(SDL_GL_SetSwapInterval(1)) Core::Log->Error(0, coreData::Print("Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError()));
+    if(SDL_GL_SetSwapInterval(1)) Core::Log->Error(false, "Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Vertical Synchronization enabled");
 
     // enable texturing

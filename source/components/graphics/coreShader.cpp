@@ -47,7 +47,7 @@ coreError coreShader::Load(coreFile* pFile)
     else if(!std::strcmp(pcExtension, "fs") || !std::strcmp(pcExtension, "frag")) iType = GL_FRAGMENT_SHADER;
     else
     {
-        Core::Log->Error(0, coreData::Print("Shader (%s) could not be identified (valid extensions: vs, vert, fs, frag)", pFile->GetPath()));
+        Core::Log->Error(false, "Shader (%s) could not be identified (valid extensions: vs, vert, fs, frag)", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -81,7 +81,7 @@ coreError coreShader::Load(coreFile* pFile)
             glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
 
             // write error-log
-            Core::Log->Error(0, coreData::Print("Shader (%s) could not be compiled", pFile->GetPath()));
+            Core::Log->Error(false, "Shader (%s) could not be compiled", pFile->GetPath());
             Core::Log->ListStart("Shader Error Log");
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
@@ -91,7 +91,7 @@ coreError coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info(coreData::Print("Shader (%s) loaded", pFile->GetPath()));
+    Core::Log->Info("Shader (%s) loaded", pFile->GetPath());
     return CORE_OK;
 }
 
@@ -104,7 +104,7 @@ coreError coreShader::Unload()
 
     // delete shader
     glDeleteShader(m_iShader);
-    Core::Log->Info(coreData::Print("Shader (%s) unloaded", m_sPath.c_str()));
+    Core::Log->Info("Shader (%s) unloaded", m_sPath.c_str());
 
     // reset attributes
     m_sPath   = "";
@@ -329,10 +329,10 @@ coreError coreProgram::__Init()
             glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
 
             // write error-log
-            Core::Log->Error(0, "Shader-Program could not be linked/validated");
+            Core::Log->Error(false, "Shader-Program could not be linked/validated");
             Core::Log->ListStart("Shader-Program Error Log");
             FOR_EACH(it, m_apShader)
-                Core::Log->ListEntry(coreData::Print("(%s)", (*it)->GetPath()));
+                Core::Log->ListEntry("(%s)", (*it)->GetPath());
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
 

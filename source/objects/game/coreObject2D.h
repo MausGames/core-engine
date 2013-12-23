@@ -22,7 +22,9 @@ private:
     coreVector2 m_vCenter;      //!< screen space origin (depending)
     coreVector2 m_vAlignment;   //!< offset factor (independent)
 
-    bool m_bFocused;            //!< interaction status
+
+protected:
+    bool m_bFocused;   //!< interaction status
 
 
 public:
@@ -44,7 +46,7 @@ public:
     //! interact with the 2d-object
     //! @{
     void Interact();
-    bool IsPushed(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
+    bool IsClicked(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
     inline const bool& IsFocused()const {return m_bFocused;}
     //! @}
 
@@ -55,6 +57,7 @@ public:
     inline void SetDirection(const coreVector2& vDirection) {const coreVector2 vDirNorm = vDirection.Normalized(); if(m_vDirection != vDirNorm) {m_iUpdate |= 3; m_vDirection = vDirNorm;}}
     inline void SetCenter(const coreVector2& vCenter)       {if(m_vCenter    != vCenter)    {m_iUpdate |= 1; m_vCenter    = vCenter;}}
     inline void SetAlignment(const coreVector2& vAlignment) {if(m_vAlignment != vAlignment) {m_iUpdate |= 1; m_vAlignment = vAlignment;}}
+    inline void SetFocus(const bool& bFocus)                {m_bFocused = bFocus;}
     //! @}
 
     //! get object attributes

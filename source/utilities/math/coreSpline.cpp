@@ -63,7 +63,6 @@ void coreSpline::AddNode(const coreVector3& vPosition, const coreVector3& vTange
     coreNode NewNode;
     NewNode.vPosition = vPosition;
     NewNode.vTangent  = vTangent.Normalized();
-    NewNode.fDistance = 0.0f;
 
     // edit last node and increase max distance
     if(!m_apNode.empty())

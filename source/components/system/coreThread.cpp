@@ -42,7 +42,7 @@ SDL_Thread* coreThread::StartThread(const char* pcName)
 
     // create thread object
     m_pThread = SDL_CreateThread(coreThreadMain, pcName, this);
-    if(!m_pThread) Core::Log->Error(1, coreData::Print("Could not start thread (%s) (SDL: %s)", pcName, SDL_GetError()));
+    if(!m_pThread) Core::Log->Error(true, "Could not start thread (%s) (SDL: %s)", pcName, SDL_GetError());
 
     return m_pThread;
 }
@@ -65,7 +65,7 @@ void coreThread::KillThread()
 int coreThread::__Main()
 {
     // call init implementation
-    Core::Log->Info(coreData::Print("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread)));
+    Core::Log->Info("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
     int iReturn = this->__Init();
 
     m_iCurFrame = 0;
@@ -85,7 +85,7 @@ int coreThread::__Main()
 
     // call exit implementation
     this->__Exit();
-    Core::Log->Info(coreData::Print("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread)));
+    Core::Log->Info("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
 
     m_bEnd = true;
     return iReturn;

@@ -36,7 +36,7 @@ void coreTextBox::Move()
     coreButton::Move();
 
     // check for interaction
-    if(this->IsPushed()) this->SetInput(true);
+    if(this->IsClicked()) this->SetInput(true);
     if(m_bInput)
     {
         if(Core::Input->GetKeyboardButton(SDL_SCANCODE_ESCAPE, CORE_INPUT_PRESS))

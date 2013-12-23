@@ -15,9 +15,10 @@
 // menu aggregation class
 // TODO: allow custom animations
 // TODO: remove wrong order while animating (double-objects)
-// TODO: implement general relative behavior (menu/2d objects)
+// TODO: implement general relative behavior, hierarchy (menu/2d objects)
 // TODO: optimize rendering with the frame buffer
 // TODO: implement tab-switching and keyboard/gamepad control
+// TODO: sized menu class ?
 class coreMenu : public coreObject2D
 {
 private:
@@ -35,7 +36,7 @@ private:
         
 
 public:
-    coreMenu(const coreByte& iNumSurfaces)noexcept;
+    explicit coreMenu(const coreByte& iNumSurfaces)noexcept;
     virtual ~coreMenu();
 
     //! render and move the menu

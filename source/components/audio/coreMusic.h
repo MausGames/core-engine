@@ -108,11 +108,6 @@ private:
     void __Reset(const bool& bInit)override;
     //! @}
 
-    //! setup the music object
-    //! @{
-    coreError __Init(coreFile* pFile);
-    //! @}
-
     //! read from music stream and update sound buffer
     //! @{
     bool __Stream(const ALuint& iBuffer);

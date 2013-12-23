@@ -51,7 +51,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
-        Core::Log->Error(0, coreData::Print("Texture (%s) could not be loaded", pFile->GetPath()));
+        Core::Log->Error(false, "Texture (%s) could not be loaded", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -141,7 +141,7 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_FreeSurface(pData);
     SDL_FreeSurface(pConvert);
 
-    Core::Log->Info(coreData::Print("Texture (%s) loaded", pFile->GetPath()));
+    Core::Log->Info("Texture (%s) loaded", pFile->GetPath());
     return bSync ? CORE_BUSY : CORE_OK;
 }
 
@@ -154,7 +154,7 @@ coreError coreTexture::Unload()
 
     // delete texture
     glDeleteTextures(1, &m_iTexture);
-    if(!m_sPath.empty()) Core::Log->Info(coreData::Print("Texture (%s) unloaded", m_sPath.c_str()));
+    if(!m_sPath.empty()) Core::Log->Info("Texture (%s) unloaded", m_sPath.c_str());
 
     // delete sync object
     m_Sync.Delete();

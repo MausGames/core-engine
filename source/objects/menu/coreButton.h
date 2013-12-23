@@ -48,11 +48,6 @@ public:
 
 private:
     DISABLE_COPY(coreButton)
-
-    //! setup the button
-    //! @{
-    void __Init(const char* pcIdle, const char* pcBusy);
-    //! @}
 };
 
 

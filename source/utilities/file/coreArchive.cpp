@@ -24,7 +24,7 @@ coreFile::coreFile(const char* pcPath)noexcept
     SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
     if(!pFile)
     {
-        Core::Log->Error(0, coreData::Print("File (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
+        Core::Log->Error(false, "File (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return;
     }
 
@@ -33,7 +33,7 @@ coreFile::coreFile(const char* pcPath)noexcept
 
     // close file
     SDL_RWclose(pFile);
-    Core::Log->Info(coreData::Print("File (%s) opened", m_sPath.c_str()));
+    Core::Log->Info("File (%s) opened", m_sPath.c_str());
 }
 
 coreFile::coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)noexcept
@@ -70,7 +70,7 @@ coreError coreFile::Save(const char* pcPath)
     SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "wb");
     if(!pFile)
     {
-        Core::Log->Error(0, coreData::Print("File (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
+        Core::Log->Error(false, "File (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return CORE_FILE_ERROR;
     }
 
@@ -160,7 +160,7 @@ coreArchive::coreArchive(const char* pcPath)noexcept
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "rb");
     if(!pArchive)
     {
-        Core::Log->Error(0, coreData::Print("Archive (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
+        Core::Log->Error(false, "Archive (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return;
     }
 
@@ -172,7 +172,7 @@ coreArchive::coreArchive(const char* pcPath)noexcept
     if(aiHead[0] != CORE_FILE_MAGIC)
     {
         SDL_RWclose(pArchive);
-        Core::Log->Error(0, coreData::Print("Archive (%s) is not a valid CFA-file", m_sPath.c_str()));
+        Core::Log->Error(false, "Archive (%s) is not a valid CFA-file", m_sPath.c_str());
         return;
     }
 
@@ -203,7 +203,7 @@ coreArchive::coreArchive(const char* pcPath)noexcept
 
     // close archive
     SDL_RWclose(pArchive);
-    Core::Log->Info(coreData::Print("Archive (%s) opened", m_sPath.c_str()));
+    Core::Log->Info("Archive (%s) opened", m_sPath.c_str());
 }
 
 
@@ -228,7 +228,7 @@ coreError coreArchive::Save(const char* pcPath)
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "wb");
     if(!pArchive)
     {
-        Core::Log->Error(0, coreData::Print("Archive (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError()));
+        Core::Log->Error(false, "Archive (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return CORE_FILE_ERROR;
     }
 
@@ -279,7 +279,7 @@ coreError coreArchive::AddFile(const char* pcPath)
     // check already existing file
     if(m_apFile.count(pcPath))
     {
-        Core::Log->Error(0, coreData::Print("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str()));
+        Core::Log->Error(false, "File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str());
         return CORE_INVALID_INPUT;
     }
 
@@ -294,7 +294,7 @@ coreError coreArchive::AddFile(coreFile* pFile)
     // check already existing file
     if(m_apFile.count(pFile->GetPath()))
     {
-        Core::Log->Error(0, coreData::Print("File (%s) already exists in Archive (%s)", pFile->GetPath(), m_sPath.c_str()));
+        Core::Log->Error(false, "File (%s) already exists in Archive (%s)", pFile->GetPath(), m_sPath.c_str());
         return CORE_INVALID_INPUT;
     }
 

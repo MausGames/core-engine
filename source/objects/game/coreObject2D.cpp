@@ -79,6 +79,7 @@ void coreObject2D::Move()
 // ****************************************************************
 // interact with the 2d-object
 // TODO: add interaction for rotated objects
+// TODO: Interact depends on Move, and Move of some menu objects depend on Interact
 void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
@@ -96,7 +97,7 @@ void coreObject2D::Interact()
 
 // ****************************************************************
 // check for mouse button input
-bool coreObject2D::IsPushed(const coreByte iButton, const coreInputType iType)const
+bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)const
 {
     return (m_bFocused && Core::Input->GetMouseButton(iButton, iType));
 }

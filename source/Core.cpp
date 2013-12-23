@@ -112,7 +112,7 @@ void Core::__Run()
     // set logging level
     const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG);
     Core::Log->SetLevel(iLevel);
-    if(iLevel < 0) Core::Log->Error(0, "Logging level reduced");
+    if(iLevel < 0) Core::Log->Error(false, "Logging level reduced");
 
 #endif
 
