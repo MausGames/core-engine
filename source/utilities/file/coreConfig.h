@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -71,11 +71,6 @@ public:
     int GetInt(const char* pcSection, const char* pcKey, const int& iDefault);
     float GetFloat(const char* pcSection, const char* pcKey, const float& fDefault);
     const char* GetString(const char* pcSection, const char* pcKey, const char* pcDefault);
-    //! @}
-
-    //! direct access configuration file interface
-    //! @{
-    inline CSimpleIniA* Get() {return &m_Config;}
     //! @}
 
 

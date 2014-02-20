@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -129,7 +129,9 @@ void coreLabel::__Reset(const bool& bInit)
 
 
 // ****************************************************************    
-// update the texture of the label 
+// update the texture of the label
+// TODO: dynamic textures with glTexStorage2D only with delete ?
+// TODO: PBOs ?
 void coreLabel::__Generate(const char* pcText, const bool& bSub)
 {
     // create text surface with the font
@@ -177,7 +179,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pConvert->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pConvert->pixels);
         }
         coreTexture::Unlock();
 

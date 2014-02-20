@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -82,6 +82,7 @@ private:
 
 public:
     constexpr_func coreFlow()noexcept : m_fCurrent(0.0f) {}
+    explicit constexpr_func coreFlow(const float& fValue)noexcept : m_fCurrent(fValue) {}
 
     //! access current value
     //! @{

@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -59,6 +59,8 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
     pLog->ListEntry("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity);
     pLog->ListEntry("<span class=\"gl\">                     %s</span>", pcMessage);
     pLog->ListEnd();
+
+    SDL_assert(false);
 }
 
 
@@ -66,6 +68,8 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
 // enable OpenGL debugging
 void coreLog::EnableOpenGL()
 {
+    if(!GLEW_KHR_debug) return;
+
     // set callback function and filter
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(&WriteOpenGL, this);

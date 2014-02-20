@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -17,6 +17,7 @@
 // TODO: implement quicksort and binary search
 // TODO: implement access cache
 // TODO: measure performance with high amount of entries (>200)
+// TODO: radix-tree, crit-bit-tree, splay-tree ?
 template <typename T> class coreLookup final
 {
 public:

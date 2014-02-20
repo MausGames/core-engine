@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -13,6 +13,7 @@
 
 // ****************************************************************
 // resource interface
+// TODO: ATI_meminfo and NVX_gpu_memory_info instead of size ? or both ?
 class coreResource
 {
 protected:
@@ -74,6 +75,7 @@ public:
     //! @{
     inline coreResource* GetResource()const {return m_pCur;}
     inline const bool& IsLoaded()const      {return m_bLoaded;}
+    inline const bool& IsManaged()const     {return m_bManaged;}
     //! @}
 
     //! manipulate the reference-counter
@@ -90,7 +92,7 @@ private:
     //! control resource loading
     //! @{
     void __Update();
-    inline void __Nullify() {if(!m_bManaged) return; m_bLoaded = false; m_pCur = m_pDefault; m_pResource->Unload();}
+    inline void __Nullify() {if(!m_bManaged || !m_bLoaded) return; m_bLoaded = false; m_pCur = m_pDefault; m_pResource->Unload();}
     //! @}
 };
 
@@ -123,6 +125,7 @@ public:
     inline T* operator -> ()const noexcept {SDL_assert(m_pHandle != NULL); return   s_cast<T*>(m_pHandle->GetResource());}
     inline T& operator * ()const noexcept  {SDL_assert(m_pHandle != NULL); return *(s_cast<T*>(m_pHandle->GetResource()));}
     inline const bool& IsLoaded()const     {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
+    inline const bool& IsManaged()const    {SDL_assert(m_pHandle != NULL); return m_pHandle->IsManaged();}
     //! @}
 
     //! dynamically control the reference-counter
@@ -166,7 +169,6 @@ private:
 // resource manager
 // TODO: use load-stack
 // TODO: default resources necessary ? (currently problem when playing unloaded looped sounds)
-// TODO: add int-flags with Load() to forward attributes
 class coreResourceManager final : public coreThread
 {
 private:

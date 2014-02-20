@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -195,10 +195,10 @@ const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 
 
 // ****************************************************************
-// get file extension
+// safely get file extension
 const char* coreData::StrExtension(const char* pcInput)
 {
-    SDL_assert(pcInput);
+    ASSERT_IF(!pcInput) return "";
 
     const char* pcDot = std::strrchr(pcInput, '.');
     return pcDot ? pcDot+1 : pcInput;

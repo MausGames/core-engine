@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -55,13 +55,12 @@ coreError coreFont::Unload()
     if(!m_pFile) return CORE_INVALID_CALL;
 
     // delete all sub-fonts
-    FOR_EACH(it, m_apFont)
-        TTF_CloseFont(it->second);
+    FOR_EACH(it, m_apFont) TTF_CloseFont(it->second);
     m_apFont.clear();
 
     // delete file
     SAFE_DELETE(m_pFile)
-    Core::Log->Info("Font (%s) unloaded", m_sPath.c_str());
+    if(!m_sPath.empty()) Core::Log->Info("Font (%s) unloaded", m_sPath.c_str());
 
     // reset attributes
     m_sPath = "";

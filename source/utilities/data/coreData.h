@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -17,7 +17,7 @@
 
 // ****************************************************************
 // data definitions
-#define CORE_DATA_STRINGS 16   //!< number of used return-strings
+#define CORE_DATA_STRINGS 16   //!< number of return-strings
 
 #if defined(_CORE_WINDOWS_)
     #define CORE_DATA_SLASH "\\"

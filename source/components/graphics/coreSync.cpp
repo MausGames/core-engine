@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -15,8 +15,7 @@ bool coreSync::Create()
 {
     if(!m_pSync)
     {
-        // check for available extension
-        if(Core::Graphics->SupportFeature("GL_ARB_sync"))
+        if(GLEW_ARB_sync)
         {
             // generate new sync object
             m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
@@ -37,6 +36,7 @@ void coreSync::Delete()
 {
     if(m_pSync)
     {
+        // delete sync object
         glDeleteSync(m_pSync);
         m_pSync = NULL;
     }

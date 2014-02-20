@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -122,7 +122,7 @@ coreError coreSound::Unload()
 
     // delete sound buffer
     alDeleteBuffers(1, &m_iBuffer);
-    Core::Log->Info("Sound (%s) unloaded", m_sPath.c_str());
+    if(!m_sPath.empty()) Core::Log->Info("Sound (%s) unloaded", m_sPath.c_str());
 
     // reset attributes
     m_sPath      = "";
@@ -130,7 +130,7 @@ coreError coreSound::Unload()
     m_iBuffer    = 0;
     m_iCurSource = 0;
     m_pCurRef    = NULL;
-    std::memset(&m_Format, 0, sizeof(m_Format));
+    m_Format     = coreWaveFormat();
 
     return CORE_OK;
 }
