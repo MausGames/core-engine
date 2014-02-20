@@ -3,17 +3,13 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-bool         coreModel::s_bSupportArray = false;
-coreModel*   coreModel::s_pCurrent      = NULL;
-SDL_SpinLock coreModel::s_iLock         = 0;
-coreModelPtr coreModel::s_pPlane;    // = NULL;
-coreModelPtr coreModel::s_pCube;     // = NULL;
-coreModelPtr coreModel::s_pCylinder; // = NULL;
+coreModel*   coreModel::s_pCurrent = NULL;
+SDL_SpinLock coreModel::s_iLock    = 0;
 
 
 // ****************************************************************
@@ -132,14 +128,16 @@ coreModel::md5File::md5File(md5File&& m)noexcept
 // ****************************************************************
 // constructor
 coreModel::coreModel()noexcept
-: m_iVertexArray  (0)
-, m_iVertexBuffer (0)
-, m_iIndexBuffer  (0)
-, m_iNumVertices  (0)
-, m_iNumTriangles (0)
-, m_iNumIndices   (0)
-, m_fRadius       (0.0f)
+: m_iVertexArray   (0)
+, m_iNumVertices   (0)
+, m_iNumTriangles  (0)
+, m_iNumIndices    (0)
+, m_fRadius        (0.0f)
+, m_iPrimitiveType (GL_TRIANGLES)
+, m_iIndexType     (0)
 {
+    // reserve memory for vertex buffers
+    m_apiVertexBuffer.reserve(1);
 }
 
 
@@ -161,9 +159,9 @@ coreError coreModel::Load(coreFile* pFile)
 
     coreFileUnload Unload(pFile);
 
-    ASSERT_IF(m_iVertexBuffer) return CORE_INVALID_CALL;
-    if(!pFile)                 return CORE_INVALID_INPUT;
-    if(!pFile->GetData())      return CORE_FILE_ERROR;
+    ASSERT_IF(!m_apiVertexBuffer.empty()) return CORE_INVALID_CALL;
+    if(!pFile)                            return CORE_INVALID_INPUT;
+    if(!pFile->GetData())                 return CORE_FILE_ERROR;
 
     // extract model data
     const char* pcData = r_cast<const char*>(pFile->GetData());
@@ -199,7 +197,7 @@ coreError coreModel::Load(coreFile* pFile)
         // calculate vertex position
         for(int j = 0; j < oVertex.iWeightCount; ++j)
         {
-            const md5Weight& oWeight = oMesh.aWeight[j+oVertex.iWeightStart];
+            const md5Weight& oWeight = oMesh.aWeight[j + oVertex.iWeightStart];
             const md5Joint&  oJoint  = oFile.aJoint[oWeight.iJoint];
             pVertex[i].vPosition += (oJoint.vPosition + oJoint.vOrientation.QuatApply(oWeight.vPosition)) * oWeight.fBias;
         }
@@ -249,22 +247,15 @@ coreError coreModel::Load(coreFile* pFile)
                                           coreMath::Sign(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 
-    coreModel::Lock();
-    {
-        // create vertex buffer
-        glGenBuffers(1, &m_iVertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, m_iNumVertices*sizeof(coreVertex), pVertex, GL_STATIC_DRAW);
+    // create vertex buffer
+    coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertex), pVertex, GL_STATIC_DRAW);
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, 0);
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, 3*sizeof(float));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, 5*sizeof(float));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, 8*sizeof(float));
 
-        // create index buffer
-        glGenBuffers(1, &m_iIndexBuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_iNumIndices*sizeof(coreWord), oMesh.aTriangle.data(), GL_STATIC_DRAW);
-
-        // override current model object
-        s_pCurrent = NULL;
-    }
-    coreModel::Unlock();
+    // create index buffer
+    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreWord), oMesh.aTriangle.data(), GL_STATIC_DRAW);
 
     // create sync object
     const bool bSync = m_Sync.Create();
@@ -283,122 +274,195 @@ coreError coreModel::Load(coreFile* pFile)
 // unload model resource data
 coreError coreModel::Unload()
 {
-    if(!m_iVertexBuffer) return CORE_INVALID_CALL;
+    if(m_apiVertexBuffer.empty()) return CORE_INVALID_CALL;
 
-    // delete vertex array object and data buffers
-    glDeleteVertexArrays(1, &m_iVertexArray);
-    glDeleteBuffers(1, &m_iVertexBuffer);
-    glDeleteBuffers(1, &m_iIndexBuffer);
-    Core::Log->Info("Model (%s) unloaded", m_sPath.c_str());
+    // disable still active model
+    if(s_pCurrent == this) coreModel::Disable(true);
+
+    // delete all data buffers
+    FOR_EACH(it, m_apiVertexBuffer) SAFE_DELETE(*it)
+    m_apiVertexBuffer.clear();
+    m_iIndexBuffer.Delete();
+
+    // delete vertex array object
+    if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
+    if(!m_sPath.empty()) Core::Log->Info("Model (%s) unloaded", m_sPath.c_str());
 
     // delete sync object
     m_Sync.Delete();
 
     // reset attributes
-    m_sPath         = "";
-    m_iSize         = 0;
-    m_iVertexArray  = 0;
-    m_iVertexBuffer = 0;
-    m_iIndexBuffer  = 0;
-    m_iNumVertices  = 0;
-    m_iNumTriangles = 0;
-    m_iNumIndices   = 0;
-    m_fRadius       = 0.0f;
+    m_sPath          = "";
+    m_iSize          = 0;
+    m_iVertexArray   = 0;
+    m_iNumVertices   = 0;
+    m_iNumTriangles  = 0;
+    m_iNumIndices    = 0;
+    m_fRadius        = 0.0f;
+    m_iPrimitiveType = GL_TRIANGLES;
+    m_iIndexType     = 0;
 
     return CORE_OK;
 }
 
 
 // ****************************************************************
-// draw the model
-void coreModel::RenderList()
+// draw the model with indices
+void coreModel::DrawElements()const
 {
-    SDL_assert(m_iVertexBuffer);
-
     coreModel::Lock();
     {
-        // enable and draw the model
-        this->__Enable();
-        glDrawElements(GL_TRIANGLES, m_iNumIndices, GL_UNSIGNED_SHORT, 0);
+        // check and draw the model
+        SDL_assert(s_pCurrent == this && m_iIndexBuffer);
+        glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
     }
     coreModel::Unlock();
 }
 
-void coreModel::RenderStrip()
+void coreModel::DrawElementsInstanced(const coreUint& iCount)const
 {
-    SDL_assert(m_iVertexBuffer);
-
     coreModel::Lock();
     {
-        // enable and draw the model
-        this->__Enable();
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, m_iNumVertices);
+        // check and draw the model instanced
+        SDL_assert(s_pCurrent == this && m_iIndexBuffer);
+        glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
     }
     coreModel::Unlock();
 }
 
 
 // ****************************************************************
-// init the model class
-// TODO: implement missing standard object "files"
-void coreModel::InitClass()
+// draw the model without indices
+void coreModel::DrawArrays()const
 {
-    // check for extension
-    s_bSupportArray = Core::Graphics->SupportFeature("GL_ARB_vertex_array_object");
-
-    // load optimized standard objects
-    if(!s_pPlane)    s_pPlane    = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_plane.md5mesh");
-    if(!s_pCube)     s_pCube     = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_cube.md5mesh");
-    //if(!s_pCylinder) s_pCylinder = Core::Manager::Resource->LoadFile<coreModel>("data/models/standard_cylinder.md5mesh");
+    // check and draw the model
+    SDL_assert(s_pCurrent == this);
+    glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
 }
 
-
-// ****************************************************************
-// exit the model class
-void coreModel::ExitClass()
+void coreModel::DrawArraysInstanced(const coreUint& iCount)const
 {
-    // unload optimized standard objects
-    s_pPlane    = NULL;
-    s_pCube     = NULL;
-    s_pCylinder = NULL;
+    // check and draw the model instanced
+    SDL_assert(s_pCurrent == this);
+    glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
 
 // ****************************************************************
 // enable the model
-void coreModel::__Enable()
+void coreModel::Enable()
 {
-    // check and save current model object
-    if(s_pCurrent == this) return;
-    s_pCurrent = this;
+    SDL_assert(!m_apiVertexBuffer.empty());
 
-    // set vertex data
-    if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
-    else
+    // check current model object
+    if(s_pCurrent == this) return;
+
+    coreModel::Lock();
     {
-        if(s_bSupportArray)
+        // save current model object
+        s_pCurrent = this;
+
+        // bind vertex array object
+        if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
+        else
         {
-            // create vertex array object
-            glGenVertexArrays(1, &m_iVertexArray);
-            glBindVertexArray(m_iVertexArray);
+            if(GLEW_ARB_vertex_array_object)
+            {
+                // create vertex array object
+                glGenVertexArrays(1, &m_iVertexArray);
+                glBindVertexArray(m_iVertexArray);
+            }
+            
+            // set vertex data
+            for(coreUint i = 0; i < m_apiVertexBuffer.size(); ++i)
+                m_apiVertexBuffer[i]->Activate(i);
+
+            // set index data
+            if(m_iIndexBuffer) m_iIndexBuffer.Bind();
+        }
+    }
+    coreModel::Unlock();
+}
+
+
+// ****************************************************************
+// disable the model
+void coreModel::Disable(const bool& bFull)
+{
+    if(!s_pCurrent) return;
+
+    coreModel::Lock();
+    {
+        if(bFull)
+        {
+            // reset vertex array object and data buffers
+            if(s_pCurrent->GetVertexArray()) glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER,         0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
 
-        // bind vertex buffer
-        glBindBuffer(GL_ARRAY_BUFFER, m_iVertexBuffer);
+        // reset current model object
+        s_pCurrent = NULL;
+    }
+    coreModel::Unlock();
+}
 
-        // enable vertex attributes
-        glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_POSITION_NUM);
-        glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM);
-        glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_NORMAL_NUM);
-        glEnableVertexAttribArray(CORE_SHADER_ATTRIBUTE_TANGENT_NUM);
 
-        // set vertex attribute locations
-        glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, false, sizeof(coreVertex), 0);
-        glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, false, sizeof(coreVertex), r_cast<const GLvoid*>(3*sizeof(float)));
-        glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, false, sizeof(coreVertex), r_cast<const GLvoid*>(5*sizeof(float)));
-        glVertexAttribPointer(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, false, sizeof(coreVertex), r_cast<const GLvoid*>(8*sizeof(float)));
+// ****************************************************************
+// create vertex buffer
+coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage)
+{
+    SDL_assert(!m_iVertexArray);
+
+    // save attributes
+    m_iNumVertices = iNumVertices;
+
+    // allocate vertex buffer
+    coreVertexBuffer* pBuffer = new coreVertexBuffer();
+
+    coreModel::Lock();
+    {
+        // create vertex buffer
+        pBuffer->Create(iNumVertices, iVertexSize, pVertexData, iUsage);
+        m_apiVertexBuffer.push_back(pBuffer);
+    }
+    coreModel::Unlock();
+
+    return pBuffer;
+}
+
+
+// ****************************************************************
+// create index buffer
+coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const coreByte& iIndexSize, const void* pIndexData, const GLenum& iUsage)
+{
+    SDL_assert(!m_iVertexArray && !m_iIndexBuffer);
+
+    // save attributes
+    m_iNumIndices = iNumIndices;
+
+    // detect index type
+    switch(iIndexSize)
+    {
+    case 1:  m_iIndexType = GL_UNSIGNED_BYTE;  break;
+    case 2:  m_iIndexType = GL_UNSIGNED_SHORT; break;
+    case 4:  m_iIndexType = GL_UNSIGNED_INT;   break;
+    default: SDL_assert(false);
     }
 
-    // set index data
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iIndexBuffer);
+    coreModel::Lock();
+    {
+        // create index buffer
+        m_iIndexBuffer.Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iUsage);
+
+        if(s_pCurrent)
+        {
+            // reset current index buffer
+            if(s_pCurrent->GetIndexBuffer()->GetDataBuffer()) 
+                s_pCurrent->GetIndexBuffer()->Bind();
+        }
+    }
+    coreModel::Unlock();
+
+    return &m_iIndexBuffer;
 }

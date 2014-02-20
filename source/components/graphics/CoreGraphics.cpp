@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -69,10 +69,7 @@ CoreGraphics::CoreGraphics()noexcept
 
     // enable OpenGL debugging
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
-    {
-        if(this->SupportFeature("GL_KHR_debug"))
-            Core::Log->EnableOpenGL();
-    }
+        Core::Log->EnableOpenGL();
 
     // enable vertical synchronization
     if(SDL_GL_SetSwapInterval(1)) Core::Log->Error(false, "Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError());
@@ -98,20 +95,15 @@ CoreGraphics::CoreGraphics()noexcept
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // create uniform buffer object for global shader-data
-    if(this->SupportFeature("GL_ARB_uniform_buffer_object"))
+    if(GLEW_ARB_uniform_buffer_object)
     {
         // calculate UBO size (std140)
-        constexpr_var coreUint iSize = sizeof(coreLight)*CORE_GRAPHICS_LIGHTS;
+        constexpr_var coreUint iSize = sizeof(coreMatrix4)*4 + sizeof(coreLight)*CORE_GRAPHICS_LIGHTS;
 
-        // generate global UBO
-        glGenBuffers(1, &m_iUniformBuffer);
-        glBindBuffer(GL_UNIFORM_BUFFER, m_iUniformBuffer);
-        glBufferData(GL_UNIFORM_BUFFER, iSize, NULL, GL_DYNAMIC_DRAW);
-
-        // bind global UBO to a buffer target
+        // generate and bind global UBO to a buffer target
+        m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, iSize, NULL, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_GLOBAL_NUM, m_iUniformBuffer);
     }
-    else m_iUniformBuffer = 0;
 
     // reset camera and view
     this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
@@ -135,15 +127,8 @@ CoreGraphics::~CoreGraphics()
 {
     Core::Log->Info("Graphics Interface shut down");
 
-    // clear memory
-    m_abFeature.clear();
-
     // delete global UBO
-    if(m_iUniformBuffer)
-    {
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
-        glDeleteBuffers(1, &m_iUniformBuffer);
-    }
+    m_iUniformBuffer.Delete();
 
     // dissociate primary OpenGL context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
@@ -167,8 +152,14 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
     if(m_vCamDirection   != vDirNorm)  {m_vCamDirection   = vDirNorm;  bNewCamera = true;}
     if(m_vCamOrientation != vOriNorm)  {m_vCamOrientation = vOriNorm;  bNewCamera = true;}
 
-    // create camera matrix
-    if(bNewCamera) m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
+    if(bNewCamera)
+    {
+        // create camera matrix
+        m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
+
+        // send transformation data to the global UBO
+        this->__SendTransformation();
+    }
 }
 
 
@@ -190,6 +181,9 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
         // generate projection matrices
         m_mPerspective = coreMatrix4::Perspective(vResolution, TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
         m_mOrtho       = coreMatrix4::Ortho(vResolution);
+
+        // send transformation data to the global UBO
+        this->__SendTransformation();
     }
 }
 
@@ -212,12 +206,11 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
-        coreByte* pRange = s_cast<coreByte*>(glMapBufferRange(GL_UNIFORM_BUFFER, sizeof(coreLight)*iID, sizeof(coreLight),
-                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT));
+        coreByte* pRange = m_iUniformBuffer.Map(sizeof(coreMatrix4)*4 + sizeof(coreLight)*iID, sizeof(coreLight));
 
         // update specific light
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
-        glUnmapBuffer(GL_UNIFORM_BUFFER);
+        m_iUniformBuffer.Unmap(pRange);
     }
 }
 
@@ -264,7 +257,8 @@ void CoreGraphics::Screenshot()
     coreData::DateTime(&awTime[0], &awTime[1], &awTime[2], &awTime[3], &awTime[4], &awTime[5]);
 
     // take standard screenshot
-    this->Screenshot(coreData::Print("screenshots/screenshot_%04d%02d%02d_%02d%02d%02d", awTime[5], awTime[4], awTime[3], awTime[2], awTime[1], awTime[0]));
+    this->Screenshot(coreData::Print("screenshots/screenshot_%04d%02d%02d_%02d%02d%02d",
+                                     awTime[5], awTime[4], awTime[3], awTime[2], awTime[1], awTime[0]));
 }
 
 
@@ -274,11 +268,12 @@ void CoreGraphics::__UpdateScene()
 {
     // take screenshot
     if(Core::Input->GetKeyboardButton(SDL_SCANCODE_PRINTSCREEN, CORE_INPUT_PRESS))
-        Core::Graphics->Screenshot();
+        this->Screenshot();
 
-    // disable last textures and shader-program
+    // disable last model, textures and shader-program
+    coreModel::Disable(true);
     coreTexture::DisableAll();
-    coreProgram::Disable();
+    coreProgram::Disable(true);
 
     // swap main frame buffers
     SDL_GL_SwapWindow(Core::System->GetWindow());
@@ -289,4 +284,24 @@ void CoreGraphics::__UpdateScene()
 #else
     glClear(GL_DEPTH_BUFFER_BIT);
 #endif
+}
+
+
+// ******************************************************************
+// send transformation data to the global UBO
+void CoreGraphics::__SendTransformation()
+{
+    if(!m_iUniformBuffer) return;
+
+    const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
+
+    // map required area of the global UBO
+    coreByte* pRange = m_iUniformBuffer.Map(0, sizeof(coreMatrix4)*4);
+
+    // update transformation matrices
+    std::memcpy(pRange,                         &mViewProj,      sizeof(coreMatrix4));
+    std::memcpy(pRange + sizeof(coreMatrix4)*1, &m_mCamera,      sizeof(coreMatrix4));
+    std::memcpy(pRange + sizeof(coreMatrix4)*2, &m_mPerspective, sizeof(coreMatrix4));
+    std::memcpy(pRange + sizeof(coreMatrix4)*3, &m_mOrtho,       sizeof(coreMatrix4));
+    m_iUniformBuffer.Unmap(pRange);
 }

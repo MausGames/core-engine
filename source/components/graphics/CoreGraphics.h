@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -56,9 +56,8 @@ private:
 
     coreLight m_aLight[CORE_GRAPHICS_LIGHTS];   //!< global ambient lights
 
-    GLuint m_iUniformBuffer;                    //!< uniform buffer object for global shader-data
+    coreDataBuffer m_iUniformBuffer;            //!< uniform buffer object for global shader-data
 
-    coreLookup<bool> m_abFeature;               //!< cached features of the video card
     float m_fOpenGL;                            //!< available OpenGL version
     float m_fGLSL;                              //!< available GLSL version
 
@@ -104,11 +103,10 @@ public:
     inline const GLuint& GetUniformBuffer()const          {return m_iUniformBuffer;}
     //! @}
 
-    //! check hardware support
+    //! check OpenGL versions
     //! @{
-    inline const bool& SupportFeature(const char* pcFeature) {if(!m_abFeature.count(pcFeature)) m_abFeature[pcFeature] = (glewIsSupported(pcFeature) ? true : false); return m_abFeature.at(pcFeature);}
-    inline const float& SupportOpenGL()const                 {return m_fOpenGL;}
-    inline const float& SupportGLSL()const                   {return m_fGLSL;}
+    inline const float& VersionOpenGL()const {return m_fOpenGL;}
+    inline const float& VersionGLSL()const   {return m_fGLSL;}
     //! @}
 
 
@@ -116,6 +114,11 @@ private:
     //! update the graphics scene
     //! @{
     void __UpdateScene();
+    //! @}
+
+    //! send transformation data to the global UBO
+    //! @{
+    void __SendTransformation();
     //! @}
 };
 
