@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -40,8 +40,8 @@ public:
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreVector2& v)const noexcept {return ((x == v.x) && (y == v.y));}
-    inline bool operator != (const coreVector2& v)const noexcept {return ((x != v.x) || (y != v.y));}
+    inline bool operator == (const coreVector2& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector2)) ? false :  true;}
+    inline bool operator != (const coreVector2& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector2)) ?  true : false;}
     //! @}
 
     //! vector calculation operators
@@ -141,8 +141,8 @@ public:
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreVector3& v)const noexcept {return ((x == v.x) && (y == v.y) && (z == v.z));}
-    inline bool operator != (const coreVector3& v)const noexcept {return ((x != v.x) || (y != v.y) || (z != v.z));}
+    inline bool operator == (const coreVector3& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector3)) ? false :  true;}
+    inline bool operator != (const coreVector3& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector3)) ?  true : false;}
     //! @}
 
     //! vector calculation operators
@@ -216,7 +216,11 @@ public:
     static coreVector3 Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)noexcept;
     static coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)noexcept;
     static coreVector3 Cross(const coreVector3& vInA, const coreVector3& vInB)noexcept;
-    static constexpr_func coreVector3 ColorCode(const coreUint& iCode)noexcept;
+    //! @}
+
+    //! color functions
+    //! @{
+    static constexpr_func coreVector3 ColorUnpack(const coreUint& iNumber)noexcept;
     //! @}
 };
 
@@ -249,8 +253,8 @@ public:
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreVector4& v)const noexcept {return ((x == v.x) && (y == v.y) && (z == v.z) && (w == v.w));}
-    inline bool operator != (const coreVector4& v)const noexcept {return ((x != v.x) || (y != v.y) || (z != v.z) || (w != v.w));}
+    inline bool operator == (const coreVector4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector4)) ? false :  true;}
+    inline bool operator != (const coreVector4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector4)) ?  true : false;}
     //! @}
 
     //! vector calculation operators
@@ -356,12 +360,12 @@ constexpr_func coreVector3::coreVector3(const float& fx, const float& fy, const 
 
 
 // ****************************************************************
-// convert color-code to vector
-constexpr_func coreVector3 coreVector3::ColorCode(const coreUint& iCode)noexcept
+// convert color-code to color-vector
+constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)noexcept
 {
-    return coreVector3(float((iCode >> 16) % 256)*0.003921569f, 
-                       float((iCode >>  8) % 256)*0.003921569f, 
-                       float( iCode        % 256)*0.003921569f);
+    return coreVector3(float((iNumber >> 16) % 256)*0.003921569f, 
+                       float((iNumber >>  8) % 256)*0.003921569f, 
+                       float( iNumber        % 256)*0.003921569f);
 }
 
 

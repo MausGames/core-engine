@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -45,6 +45,7 @@ public:
 
 // ****************************************************************
 // 4x4-matrix class
+// TODO: do not multiply always the full matrices (e.g. translation is only addition to 3 values)
 class coreMatrix4 final
 {
 public:
@@ -70,8 +71,8 @@ public:
 
     //! compare operators
     //! @{
-    bool operator == (const coreMatrix4& v)const noexcept;
-    bool operator != (const coreMatrix4& v)const noexcept;
+    inline bool operator == (const coreMatrix4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreMatrix4)) ? false :  true;}
+    inline bool operator != (const coreMatrix4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreMatrix4)) ?  true : false;}
     //! @}
 
     //! matrix calculation operators

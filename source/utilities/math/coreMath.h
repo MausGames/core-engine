@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -32,6 +32,7 @@
 
 // ****************************************************************
 // math utility collection
+// TODO: try to make every important math function inline (also vector and matrix) !!!
 class coreMath
 {
 public:
@@ -51,7 +52,8 @@ public:
 
     //! calculate square root
     //! @{
-    static float Sqrt(float fInput)noexcept;
+    static inline float Sqrt(const float& fInput)noexcept {return fInput*Rsqrt(fInput);}
+    static float Rsqrt(float fInput)noexcept;
     //! @}
 
     //! calculate trigonometric values

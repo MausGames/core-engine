@@ -3,45 +3,40 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
 
 // ****************************************************************
-// calculate square root
-float coreMath::Sqrt(float fInput)noexcept
+// calculate inverse square root
+float coreMath::Rsqrt(float fInput)noexcept
 {
-    // check input
-    if(fInput == 0.0f) return fInput;
-    if(fInput  < 0.0f) fInput = -fInput;
+    SDL_assert(fInput >= 0.0f);
 
 #if defined(_CORE_SSE_)
 
     // optimized
     if(Core::System->SupportSSE2())
     {
-        _mm_store_ss(&fInput, _mm_sqrt_ss(_mm_load_ss(&fInput)));
+        _mm_store_ss(&fInput, _mm_rsqrt_ss(_mm_load_ss(&fInput)));
         return fInput;
     }
 
 #endif
 
     // normal
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-    return std::sqrt(fInput);
-#else
-    const float fValue     = fInput;
+    if(!fInput) return 0.0f;
+
     const float fHalfValue = fInput*0.5f;
     coreUint* piPointer    = (coreUint*)&fInput;
-    *piPointer             = (0xbe6f0000-*piPointer)>>1;
+    *piPointer             = 0x5f3759df - (*piPointer >> 1);
 
     fInput *= 1.5f - fInput*fInput*fHalfValue;
     fInput *= 1.5f - fInput*fInput*fHalfValue;
 
-    return fValue*fInput;
-#endif
+    return fInput;
 }
 
 

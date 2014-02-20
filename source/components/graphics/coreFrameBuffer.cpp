@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -13,7 +13,7 @@ coreFrameBuffer* coreFrameBuffer::s_pCurrent = NULL;
 
 // ****************************************************************
 // constructor
-coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink)
+coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink)noexcept
 : m_iFrameBuffer (0)
 , m_iDepthBuffer (0)
 , m_vResolution  (vResolution)
@@ -112,8 +112,9 @@ coreError coreFrameBuffer::__Init()
     ASSERT_IF(m_pTexture->GetTexture()) return CORE_INVALID_CALL;
     SDL_assert(m_vResolution.x > 0.0f && m_vResolution.y > 0.0f);
 
-    // check for extension
-    const bool& bFrameBuffer = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
+    // check for OpenGL extensions
+    const GLboolean& bStorage     = GLEW_ARB_texture_storage;
+    const GLboolean& bFrameBuffer = GLEW_ARB_framebuffer_object;
 
     // set resolution
     if(!bFrameBuffer) m_vResolution *= MIN((Core::System->GetResolution()/m_vResolution).Min(), 1.0f);
@@ -135,7 +136,10 @@ coreError coreFrameBuffer::__Init()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, iInternal, iWidth, iHeight, 0, iFormat, GL_UNSIGNED_BYTE, 0);
+
+        // allocate texture memory
+        if(bStorage) glTexStorage2D(GL_TEXTURE_2D, 1, iInternal, iWidth, iHeight);
+                else glTexImage2D(GL_TEXTURE_2D, 0, iInternal, iWidth, iHeight, 0, iFormat, GL_UNSIGNED_BYTE, 0);
     }
     coreTexture::Unlock();
 
@@ -183,7 +187,7 @@ coreError coreFrameBuffer::__Init()
             Core::Log->Error(false, "Frame Buffer Object could not be created (GL Error Code: %d)", iError);
             this->__DeleteBuffers();
 
-            return CORE_SYSTEM_ERROR;
+            return CORE_SUPPORT_ERROR;
         }
     }
 

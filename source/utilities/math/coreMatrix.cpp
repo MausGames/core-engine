@@ -3,34 +3,10 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
-
-
-// ****************************************************************
-// compare with matrix
-bool coreMatrix4::operator == (const coreMatrix4& v)const noexcept
-{
-    // TODO: add SSE-support
-    return ((_11 == v._11) && (_12 == v._12) && (_13 == v._13) && (_14 == v._14) &&
-            (_21 == v._21) && (_22 == v._22) && (_23 == v._23) && (_24 == v._24) &&
-            (_31 == v._31) && (_32 == v._32) && (_33 == v._33) && (_34 == v._34) &&
-            (_41 == v._41) && (_42 == v._42) && (_43 == v._43) && (_44 == v._44));
-}
-
-
-// ****************************************************************
-// inverse compare with matrix
-bool coreMatrix4::operator != (const coreMatrix4& v)const noexcept
-{
-    // TODO: add SSE-support
-    return ((_11 != v._11) || (_12 != v._12) || (_13 != v._13) || (_14 != v._14) ||
-            (_21 != v._21) || (_22 != v._22) || (_23 != v._23) || (_24 != v._24) ||
-            (_31 != v._31) || (_32 != v._32) || (_33 != v._33) || (_34 != v._34) ||
-            (_41 != v._41) || (_42 != v._42) || (_43 != v._43) || (_44 != v._44));
-}
 
 
 // ****************************************************************
@@ -115,7 +91,7 @@ coreMatrix4 coreMatrix4::operator * (const float& f)const noexcept
 coreMatrix4 coreMatrix4::operator / (const float& f)const noexcept
 {
     // TODO: add SSE-support
-    return (*this)*(1.0f/f);
+    return (*this) * (1.0f/f);
 }
 
 
@@ -177,8 +153,6 @@ float coreMatrix4::Determinant()const noexcept
 // get rotation matrix around X
 coreMatrix4 coreMatrix4::RotationX(const coreVector2& vDirection)noexcept
 {
-    if(!vDirection.x && !vDirection.y) return coreMatrix4::Identity();
-
     const coreVector2 N = vDirection.Normalized();
     return coreMatrix4(1.0f, 0.0f, 0.0f, 0.0f,
                        0.0f,  N.y,  N.x, 0.0f,
@@ -196,8 +170,6 @@ coreMatrix4 coreMatrix4::RotationX(const float& fAngle)noexcept
 // get rotation matrix around Y
 coreMatrix4 coreMatrix4::RotationY(const coreVector2& vDirection)noexcept
 {
-    if(!vDirection.x && !vDirection.y) return coreMatrix4::Identity();
-
     const coreVector2 N = vDirection.Normalized();
     return coreMatrix4( N.y, 0.0f, -N.x, 0.0f,
                        0.0f, 1.0f, 0.0f, 0.0f,
@@ -215,8 +187,6 @@ coreMatrix4 coreMatrix4::RotationY(const float& fAngle)noexcept
 // get rotation matrix around Z
 coreMatrix4 coreMatrix4::RotationZ(const coreVector2& vDirection)noexcept
 {
-    if(!vDirection.x && !vDirection.y) return coreMatrix4::Identity();
-
     const coreVector2 N = vDirection.Normalized();
     return coreMatrix4( N.y,  N.x, 0.0f, 0.0f,
                        -N.x,  N.y, 0.0f, 0.0f,
@@ -269,27 +239,23 @@ coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, const float
 // get ortho matrix
 coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)noexcept
 {
-    const         float L = -vResolution.x*0.5f;
-    const         float R =  vResolution.x*0.5f;
-    const         float B = -vResolution.y*0.5f;
-    const         float T =  vResolution.y*0.5f;
     constexpr_var float N = -32.0f;
     constexpr_var float F = 128.0f;
 
-    const         float IRL = 1.0f / (R-L);
-    const         float ITN = 1.0f / (T-B);
+    const         float IRL = 1.0f / vResolution.x;
+    const         float ITB = 1.0f / vResolution.y;
     constexpr_var float IFN = 1.0f / (F-N);
 
-    return coreMatrix4(  2.0f*IRL,       0.0f,       0.0f, 0.0f,
-                             0.0f,   2.0f*ITN,       0.0f, 0.0f,
-                             0.0f,       0.0f,  -2.0f*IFN, 0.0f,
-                       -(R+L)*IRL, -(T+B)*ITN, -(F+N)*IFN, 1.0f);
+    return coreMatrix4(2.0f*IRL,     0.0f,       0.0f, 0.0f,
+                           0.0f, 2.0f*ITB,       0.0f, 0.0f,
+                           0.0f,     0.0f,  -2.0f*IFN, 0.0f,
+                           0.0f,     0.0f, -(F+N)*IFN, 1.0f);
 }
 
 
 // ****************************************************************
 // get camera matrix
-// TODO: you know, what to do
+// TODO: you know, what to do (fix camera and orientation)
 coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)noexcept
 {
     const coreVector3 F =  vDirection.Normalized();

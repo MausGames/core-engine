@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -18,10 +18,10 @@ coreVector2 coreVector2::operator + (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_add_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
-        return coreVector2(afOutput[0], afOutput[1]);
+        return vOutput.xy();
     }
 
 #endif
@@ -40,10 +40,10 @@ coreVector2 coreVector2::operator - (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_sub_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
-        return coreVector2(afOutput[0], afOutput[1]);
+        return vOutput.xy();
     }
 
 #endif
@@ -62,10 +62,10 @@ coreVector2 coreVector2::operator * (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_mul_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
-        return coreVector2(afOutput[0], afOutput[1]);
+        return vOutput.xy();
     }
 
 #endif
@@ -84,10 +84,10 @@ coreVector2 coreVector2::operator / (const coreVector2& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_div_ps(_mm_setr_ps(x, y, 0.0f, 0.0f), _mm_setr_ps(v.x, v.y, 0.0f, 0.0f)));
 
-        return coreVector2(afOutput[0], afOutput[1]);
+        return vOutput.xy();
     }
 
 #endif
@@ -117,11 +117,11 @@ coreVector2 coreVector2::operator * (const coreMatrix4& m)const noexcept
         const __m128 C = _mm_load_ps(mInput.m[2]);
         const __m128 D = _mm_load_ps(mInput.m[3]);
 
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_add_ps(_mm_mul_ps(_mm_set1_ps(x),    A), _mm_mul_ps(_mm_set1_ps(y), B)),
-                                          _mm_add_ps(_mm_mul_ps(_mm_set1_ps(0.0f), C), _mm_mul_ps(_mm_set1_ps(w), D))));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_add_ps(_mm_add_ps(_mm_mul_ps(_mm_set1_ps(x),    A), _mm_mul_ps(_mm_set1_ps(y), B)),
+                                           _mm_add_ps(_mm_mul_ps(_mm_set1_ps(0.0f), C), _mm_mul_ps(_mm_set1_ps(w), D))));
 
-        return coreVector2(afOutput[0], afOutput[1]);
+        return vOutput.xy();
     }
 
 #endif
@@ -136,22 +136,9 @@ coreVector2 coreVector2::operator * (const coreMatrix4& m)const noexcept
 // normalize vector
 coreVector2& coreVector2::Normalize()noexcept
 {
-    float fLength = this->LengthSq();
-    if(fLength == 1.0f) return *this;
-    if(fLength == 0.0f) return *this;
+    const float fLength = this->LengthSq();
+    if(fLength != 1.0f) *this *= coreMath::Rsqrt(fLength);
 
-#if defined(_CORE_SSE_)
-
-    // optimized
-    if(Core::System->SupportSSE2()) _mm_store_ss(&fLength, _mm_rsqrt_ss(_mm_load_ss(&fLength)));
-    else
-
-#endif
-
-    // normal
-    fLength = 1.0f/coreMath::Sqrt(fLength);
-
-    *this *= fLength;
     return *this;
 }
 
@@ -243,10 +230,10 @@ coreVector3 coreVector3::operator + (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_add_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
-        return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
+        return vOutput.xyz();
     }
 
 #endif
@@ -265,10 +252,10 @@ coreVector3 coreVector3::operator - (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_sub_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
-        return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
+        return vOutput.xyz();
     }
 
 #endif
@@ -287,10 +274,10 @@ coreVector3 coreVector3::operator * (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_mul_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
-        return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
+        return vOutput.xyz();
     }
 
 #endif
@@ -309,10 +296,10 @@ coreVector3 coreVector3::operator / (const coreVector3& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_div_ps(_mm_setr_ps(x, y, z, 0.0f), _mm_setr_ps(v.x, v.y, v.z, 0.0f)));
 
-        return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
+        return vOutput.xyz();
     }
 
 #endif
@@ -342,11 +329,11 @@ coreVector3 coreVector3::operator * (const coreMatrix4& m)const noexcept
         const __m128 C = _mm_load_ps(mInput.m[2]);
         const __m128 D = _mm_load_ps(mInput.m[3]);
 
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_add_ps(_mm_mul_ps(_mm_set1_ps(x), A), _mm_mul_ps(_mm_set1_ps(y), B)),
-                                          _mm_add_ps(_mm_mul_ps(_mm_set1_ps(z), C), _mm_mul_ps(_mm_set1_ps(w), D))));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_add_ps(_mm_add_ps(_mm_mul_ps(_mm_set1_ps(x), A), _mm_mul_ps(_mm_set1_ps(y), B)),
+                                           _mm_add_ps(_mm_mul_ps(_mm_set1_ps(z), C), _mm_mul_ps(_mm_set1_ps(w), D))));
 
-        return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
+        return vOutput.xyz();
     }
 
 #endif
@@ -362,22 +349,9 @@ coreVector3 coreVector3::operator * (const coreMatrix4& m)const noexcept
 // normalize vector
 coreVector3& coreVector3::Normalize()noexcept
 {
-    float fLength = this->LengthSq();
-    if(fLength == 1.0f) return *this;
-    if(fLength == 0.0f) return *this;
+    const float fLength = this->LengthSq();
+    if(fLength != 1.0f) *this *= coreMath::Rsqrt(fLength);
 
-#if defined(_CORE_SSE_)
-
-    // optimized
-    if(Core::System->SupportSSE2()) _mm_store_ss(&fLength, _mm_rsqrt_ss(_mm_load_ss(&fLength)));
-    else
-
-#endif
-
-    // normal
-    fLength = 1.0f/coreMath::Sqrt(fLength);
-
-    *this *= fLength;
     return *this;
 }
 
@@ -475,11 +449,11 @@ coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
         const __m128 A = _mm_setr_ps(vInA.x, vInA.y, vInA.z, 0.0f);
         const __m128 B = _mm_setr_ps(vInB.x, vInB.y, vInB.z, 0.0f);
 
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 1, 0, 2))),
-                                          _mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 0, 2, 1)))));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_sub_ps(_mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 1, 0, 2))),
+                                           _mm_mul_ps(_mm_shuffle_ps(A, A, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(B, B, _MM_SHUFFLE(3, 0, 2, 1)))));
 
-        return coreVector3(afOutput[0], afOutput[1], afOutput[2]);
+        return vOutput.xyz();
     }
 
 #endif
@@ -500,10 +474,10 @@ coreVector4 coreVector4::operator + (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_add_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_add_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
-        return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
+        return vOutput;
     }
 
 #endif
@@ -522,10 +496,10 @@ coreVector4 coreVector4::operator - (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_sub_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_sub_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
-        return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
+        return vOutput;
     }
 
 #endif
@@ -544,10 +518,10 @@ coreVector4 coreVector4::operator * (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_mul_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_mul_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
-        return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
+        return vOutput;
     }
 
 #endif
@@ -566,10 +540,10 @@ coreVector4 coreVector4::operator / (const coreVector4& v)const noexcept
     // optimized
     if(Core::System->SupportSSE2())
     {
-        sse_save(float) afOutput[4];
-        _mm_store_ps(afOutput, _mm_div_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
+        sse_save(coreVector4) vOutput;
+        _mm_store_ps(vOutput.m, _mm_div_ps(_mm_setr_ps(x, y, z, w), _mm_setr_ps(v.x, v.y, v.z, v.w)));
 
-        return coreVector4(afOutput[0], afOutput[1], afOutput[2], afOutput[3]);
+        return vOutput;
     }
 
 #endif

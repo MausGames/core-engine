@@ -1,9 +1,9 @@
-//////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -55,10 +55,11 @@ coreError coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // check for extensions
-    const bool& bPixelBuffer = Core::Graphics->SupportFeature("GL_ARB_pixel_buffer_object");
-    const bool& bAnisotropic = Core::Graphics->SupportFeature("GL_EXT_texture_filter_anisotropic");
-    const bool& bMipMap      = Core::Graphics->SupportFeature("GL_ARB_framebuffer_object");
+    // check for OpenGL extensions
+    const GLboolean& bPixelBuffer = GLEW_ARB_pixel_buffer_object;
+    const GLboolean& bAnisotropic = GLEW_EXT_texture_filter_anisotropic;
+    const GLboolean& bStorage     = GLEW_ARB_texture_storage;
+    const GLboolean& bMipMap      = GLEW_ARB_framebuffer_object;
 
     // calculate data size and texture format
     const coreUint iDataSize = pData->w * pData->h * pData->format->BytesPerPixel;
@@ -74,18 +75,16 @@ coreError coreTexture::Load(coreFile* pFile)
     SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, pData->format->BitsPerPixel, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pData, NULL, pConvert, NULL);
 
-    GLuint iBuffer;
+    coreDataBuffer iBuffer;
     if(bPixelBuffer)
     {
         // generate pixel buffer object for asynchronous texture loading
-        glGenBuffers(1, &iBuffer);
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, iBuffer);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
+        iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
         // copy texture data into PBO
-        void* pRange = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, iDataSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+        coreByte* pRange = iBuffer.Map(0, iDataSize);
         std::memcpy(pRange, pConvert->pixels, iDataSize);
-        glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+        iBuffer.Unmap(pRange);
     }
 
     coreTexture::Lock();
@@ -117,8 +116,16 @@ coreError coreTexture::Load(coreFile* pFile)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
         if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER));
 
-        // load texture data from PBO
-        glTexImage2D(GL_TEXTURE_2D, 0, iInternal, pConvert->w, pConvert->h, 0, iFormat, GL_UNSIGNED_BYTE, bPixelBuffer ? 0 : pConvert->pixels);
+        // allocate texture memory
+        const void* pPixels = bPixelBuffer ? 0 : pConvert->pixels;
+        if(bStorage)
+        {
+            glTexStorage2D(GL_TEXTURE_2D, (int)std::log2(MAX(pConvert->w, pConvert->h)), iInternal, pConvert->w, pConvert->h);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, iFormat, GL_UNSIGNED_BYTE, pPixels);
+        }
+        else glTexImage2D(GL_TEXTURE_2D, 0, iInternal, pConvert->w, pConvert->h, 0, iFormat, GL_UNSIGNED_BYTE, pPixels);
+        
+        // generate mipmaps
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
 
         // unbind texture from texture unit
@@ -130,12 +137,8 @@ coreError coreTexture::Load(coreFile* pFile)
     // create sync object
     const bool bSync = m_Sync.Create();
 
-    if(bPixelBuffer)
-    {
-        // delete PBO
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        glDeleteBuffers(1, &iBuffer);
-    }
+    // delete PBO
+    if(bPixelBuffer) iBuffer.Delete();
 
     // delete file data
     SDL_FreeSurface(pData);
@@ -151,6 +154,10 @@ coreError coreTexture::Load(coreFile* pFile)
 coreError coreTexture::Unload()
 {
     if(!m_iTexture) return CORE_INVALID_CALL;
+
+    // disable still active texture bindings
+    for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i)
+        if(s_apBound[i] == this) coreTexture::Disable(i);
 
     // delete texture
     glDeleteTextures(1, &m_iTexture);
@@ -170,58 +177,26 @@ coreError coreTexture::Unload()
 
 
 // ****************************************************************
-// enable texture
-void coreTexture::Enable(const coreByte& iUnit)
+// bind texture to texture unit
+void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
 {
     SDL_assert(iUnit < CORE_TEXTURE_UNITS);
 
-    // check and save texture binding
-    if(s_apBound[iUnit] == this) return;
-    s_apBound[iUnit] = this;
-
+    // check texture binding
+    if(s_apBound[iUnit] == pTexture) return;
+    
     coreTexture::Lock();
     {
+        // activate texture unit
+        if(s_iActiveUnit != iUnit)
+        {
+            s_iActiveUnit = iUnit;
+            glActiveTexture(GL_TEXTURE0+iUnit);
+        }
+
         // bind texture to texture unit
-        if(s_iActiveUnit != iUnit)
-        {
-            glActiveTexture(GL_TEXTURE0+iUnit);
-            s_iActiveUnit = iUnit;
-        }
-        glBindTexture(GL_TEXTURE_2D, m_iTexture);
+        s_apBound[iUnit] = pTexture;
+        glBindTexture(GL_TEXTURE_2D, pTexture ? pTexture->GetTexture() : 0);
     }
     coreTexture::Unlock();
-}
-
-
-// ****************************************************************
-// disable texture
-void coreTexture::Disable(const coreByte& iUnit)
-{
-    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
-    SDL_assert(s_apBound[iUnit] != NULL);
-
-    coreTexture::Lock();
-    {
-        // unbind texture from texture unit
-        if(s_iActiveUnit != iUnit)
-        {
-            glActiveTexture(GL_TEXTURE0+iUnit);
-            s_iActiveUnit = iUnit;
-        }
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    coreTexture::Unlock();
-
-    // reset texture binding
-    s_apBound[iUnit] = NULL;
-}
-
-
-// ****************************************************************
-// disable all textures
-void coreTexture::DisableAll()
-{
-    // traverse all texture units
-    for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i)
-        if(s_apBound[i]) Disable(i);
 }

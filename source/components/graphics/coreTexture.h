@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -19,8 +19,7 @@
     #define CORE_TEXTURE_MASK 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
 #endif
 
-#define CORE_TEXTURE_UNITS  8                        //!< number of used texture units
-#define CORE_TEXTURE_SHADOW (CORE_TEXTURE_UNITS-1)   //!< texture unit for shadow sampling
+#define CORE_TEXTURE_UNITS 8   //!< number of texture units
 
 
 // ****************************************************************
@@ -30,10 +29,10 @@
 class coreTexture final : public coreResource
 {
 private:
-    GLuint m_iTexture;                                   //!< texture identifier/OpenGL name
+    GLuint m_iTexture;                                   //!< texture identifier
     coreVector2 m_vResolution;                           //!< texture resolution
 
-    static int s_iActiveUnit;                            //!< current active texture unit
+    static int s_iActiveUnit;                            //!< active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
@@ -52,9 +51,9 @@ public:
 
     //! enable and disable the texture
     //! @{
-    void Enable(const coreByte& iUnit);
-    static void Disable(const coreByte& iUnit);
-    static void DisableAll();
+    inline void Enable(const coreByte& iUnit)         {coreTexture::__BindTexture(iUnit, this);}
+    static inline void Disable(const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
+    static inline void DisableAll()                   {for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i) coreTexture::Disable(i);}
     //! @}
 
     //! generate empty base texture
@@ -70,13 +69,20 @@ public:
 
     //! get relative path to default resource
     //! @{
-    static inline const char* GetDefaultPath() {return "data/textures/black.png";}
+    static inline const char* GetDefaultPath() {return "data/textures/standard_black.png";}
     //! @}
 
     //! lock and unlock texture unit access
     //! @{
     static inline void Lock()   {SDL_AtomicLock(&s_iLock);}
     static inline void Unlock() {SDL_AtomicUnlock(&s_iLock);}
+    //! @}
+
+
+private:
+    //! bind texture to texture unit
+    //! @{
+    static void __BindTexture(const coreByte& iUnit, coreTexture* pTexture);
     //! @}
 };
 

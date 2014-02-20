@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // frame buffer definitions
-enum coreFramebufferType
+enum coreFrameBufferType
 {
     CORE_FRAMEBUFFER_COLOR = 0x0001,   //!< color writing without depth test
     CORE_FRAMEBUFFER_DEPTH = 0x0002,   //!< depth writing
@@ -31,7 +31,7 @@ enum coreFramebufferType
 class coreFrameBuffer final : public coreReset
 {
 private:
-    GLuint m_iFrameBuffer;                //!< frame buffer identifier/OpenGL name
+    GLuint m_iFrameBuffer;                //!< frame buffer identifier
 
     coreTexturePtr m_pTexture;            //!< render target texture
     GLuint m_iDepthBuffer;                //!< depth component buffer
@@ -43,7 +43,7 @@ private:
 
 
 public:
-    coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink);
+    coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink)noexcept;
     ~coreFrameBuffer();
 
     //! write to the frame buffer
