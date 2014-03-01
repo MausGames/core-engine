@@ -3,10 +3,12 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
+
+coreModel* coreObject2D::s_pModel = NULL;
 
 
 // ****************************************************************
@@ -31,10 +33,10 @@ void coreObject2D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     const coreMatrix4 mScreenView = m_mTransform * Core::Graphics->GetOrtho();
 
     // update all object uniforms
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, mScreenView.m124(), false);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXSIZE,       m_vTexSize);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXOFFSET,     m_vTexOffset);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, mScreenView.m124(), false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXSIZE,       m_vTexSize);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXOFFSET,     m_vTexOffset);
 
     if(bTextured)
     {
@@ -44,8 +46,9 @@ void coreObject2D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     }
     else coreTexture::DisableAll();
 
-    // render the model
-    coreModel::StandardPlane()->RenderStrip();
+    // draw the model
+    s_pModel->Enable();
+    s_pModel->DrawArrays();
 }
 
 

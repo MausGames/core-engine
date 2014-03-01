@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -15,10 +15,10 @@
 // menu aggregation class
 // TODO: allow custom animations
 // TODO: remove wrong order while animating (double-objects)
-// TODO: implement general relative behavior, hierarchy (menu/2d objects)
-// TODO: optimize rendering with the frame buffer
+// TODO: implement general relative behavior, submenu, hierarchy (menu/2d objects)
+// TODO: optimize rendering with a frame buffer
 // TODO: implement tab-switching and keyboard/gamepad control
-// TODO: sized menu class ?
+// TODO: sized menu class ? (oh god, I forgot what this means)
 class coreMenu : public coreObject2D
 {
 private:

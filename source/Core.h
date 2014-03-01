@@ -12,7 +12,7 @@
 //*------------------------------------------------------------------------------*//
 //| Core Engine v0.0.4a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
-//| Copyright (c) 2013 Martin Mauersics                                          |//
+//| Copyright (c) 2013-2014 Martin Mauersics                                     |//
 //|                                                                              |//
 //| This software is provided 'as-is', without any express or implied            |//
 //| warranty. In no event will the authors be held liable for any damages        |//
@@ -141,6 +141,12 @@
     #define align_func
 #endif
 
+#if defined(_CORE_CLANG_)
+    #define constexpr_obj inline
+#else
+    #define constexpr_obj constexpr_func
+#endif
+
 
 // ****************************************************************
 // general definitions
@@ -185,7 +191,8 @@ enum coreError
     CORE_BUSY          =  10,    //!< currently waiting for an event
 
     CORE_FILE_ERROR    = -10,    //!< error on opening, writing or finding a file
-    CORE_SYSTEM_ERROR  = -20,    //!< invalid application behavior (should never happen)
+    CORE_SUPPORT_ERROR = -20,    //!< requested feature is not supported on the target system
+    CORE_SYSTEM_ERROR  = -30,    //!< invalid application behavior (should never happen)
 
     CORE_INVALID_CALL  = -110,   //!< object has wrong status
     CORE_INVALID_INPUT = -120,   //!< function parameters are invalid
@@ -204,12 +211,14 @@ enum coreError
 #if defined(_CORE_SSE_)
     #include <smmintrin.h>
 #endif
+#include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include <cmath>
 #include <ctime>
 #include <memory>
 #include <vector>
+#include <deque>
 #include <forward_list>
 #include <unordered_set>
 #include <unordered_map>
@@ -263,6 +272,8 @@ enum coreError
 
 #include "manager/coreMemory.h"
 #include "manager/coreResource.h"
+
+#include "components/graphics/coreDataBuffer.h"
 
 #include "components/graphics/CoreGraphics.h"
 #include "components/graphics/coreSync.h"
@@ -324,14 +335,15 @@ public:
 // TODO: improve sort and structure under all class access modifiers
 // TODO: don't forward/return trivial types as reference ? (address > value)
 // TODO: use GLEWs extension macros instead of current list ?
+// TODO: how should write static functions inside of class, with or without "class::"
+// TODO: put everything in a namespace ? split up coreData and coreMath
+// TODO: check for template parameters <42>
 class Core final
 {
 public:
     static coreLog* Log;             //!< log file
     static coreConfig* Config;       //!< configuration file
 
-    static coreMath* Math;           //!< math collection access
-    static coreData* Data;           //!< data collection access
     static coreRand* Rand;           //!< global random number generator
 
     static CoreSystem* System;       //!< main system component
@@ -352,11 +364,6 @@ private:
     Core()noexcept;
     ~Core();
 
-    //! run the engine
-    //! @{
-    static void __Run();
-    //! @}
-
 
 public:
     //! control the engine
@@ -368,6 +375,13 @@ public:
     //! main function
     //! @{
     friend int main(int argc, char* argv[]) align_func;
+    //! @}
+
+
+private:
+    //! run the engine
+    //! @{
+    static int __Run();
     //! @}
 };
 

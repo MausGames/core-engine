@@ -3,18 +3,12 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
 #ifndef _CORE_GUARD_OBJECT_H_
 #define _CORE_GUARD_OBJECT_H_
-
-#if defined(_CORE_CLANG_)
-    #define constexpr_obj inline
-#else
-    #define constexpr_obj constexpr_func
-#endif
 
 
 // ****************************************************************
@@ -90,7 +84,6 @@ private:
 
 
 public:
-
 
 };
 

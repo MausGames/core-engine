@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -42,6 +42,7 @@ void coreObject3D::Undefine()
 
 // ****************************************************************
 // render the 3d-object
+// TODO: integrated matrix transpose isn't possible on OpenGL ES 2.0 (?)
 void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
 {
     // enable the shader-program
@@ -53,12 +54,12 @@ void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     const coreMatrix4 mModelViewProj = mModelView   * Core::Graphics->GetPerspective();
 
     // update all object uniforms
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_3D_MODELVIEW,     mModelView,                    false);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ, mModelViewProj,                false);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_3D_NORMAL,        m_mRotation.Inverted().m123(), true);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_COLOR,            m_vColor);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXSIZE,          m_vTexSize);
-    pProgram->SetUniform(CORE_SHADER_UNIFORM_TEXOFFSET,        m_vTexOffset);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEW,     mModelView,                    false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ, mModelViewProj,                false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL,        m_mRotation.Inverted().m123(), true);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,            m_vColor);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXSIZE,          m_vTexSize);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXOFFSET,        m_vTexOffset);
 
     if(bTextured)
     {
@@ -68,8 +69,12 @@ void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     }
     else coreTexture::DisableAll();
 
-    // render the model
-    m_pModel->RenderList();
+    if(m_pModel.IsLoaded())
+    {
+        // draw the model
+        m_pModel->Enable();
+        m_pModel->DrawElements();
+    }
 }
 
 

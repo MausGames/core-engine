@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -71,6 +71,8 @@ CoreSystem::CoreSystem()noexcept
 
         // override screen resolution
         if(m_avAvailable.size() == 1) m_vResolution = m_avAvailable.back();
+        if(!m_vResolution.x) m_vResolution.x = vDesktop.x;
+        if(!m_vResolution.y) m_vResolution.y = vDesktop.y;
     }
     else Core::Log->Error(false, "Could not get available screen resolutions (SDL: %s)", SDL_GetError());
 
@@ -95,7 +97,7 @@ CoreSystem::CoreSystem()noexcept
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(std::floor(fForceOpenGL)));
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL*10.0f))%10);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     }
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -151,7 +153,7 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->ListStart("Platform Information");
     Core::Log->ListEntry("<b>Processor:</b> %.4s%.4s%.4s (%d Logical Cores)", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2], m_iNumCores);
     Core::Log->ListEntry("<b>System Memory:</b> %d MB",          SDL_GetSystemRAM());
-    Core::Log->ListEntry("<b>SSE Support:</b> %s%s%s%s%s",       m_abSSE[0] ? "1 " : "", m_abSSE[1] ? "2 " : "", m_abSSE[2] ? "3 " : "", m_abSSE[3] ? "4.1 " : "", m_abSSE[4] ? "4.2 " : "");
+    Core::Log->ListEntry("<b>SSE Support:</b> %s%s%s%s%s",       m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
     Core::Log->ListEntry("<b>CPUID[0]:</b> %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
     Core::Log->ListEntry("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
     Core::Log->ListEnd();
@@ -240,7 +242,7 @@ void CoreSystem::__UpdateTime()
     else
     {
         // smooth last frame time and increase total time
-        m_fLastTime   = m_fLastTime ? (0.9f*m_fLastTime + 0.1f*fNewLastTime) : fNewLastTime;
+        m_fLastTime   = 0.85f*m_fLastTime + 0.15f*fNewLastTime;
         m_dTotalTime += (double)m_fLastTime;
     }
 

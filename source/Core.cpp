@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
@@ -15,8 +15,6 @@
 
 coreLog*             Core::Log               = NULL;
 coreConfig*          Core::Config            = NULL;
-coreMath*            Core::Math              = NULL;
-coreData*            Core::Data              = NULL;
 coreRand*            Core::Rand              = NULL;
 CoreSystem*          Core::System            = NULL;
 CoreGraphics*        Core::Graphics          = NULL;
@@ -38,14 +36,10 @@ coreObjectManager*   Core::Manager::Object   = NULL;
 // constructor
 Core::Core()noexcept
 {
-    // init files
+    // init utilities
     Log    = new coreLog("logfile.html");
     Config = new coreConfig("config.ini");
-
-    // init utilities
-    Math = new coreMath();
-    Data = new coreData();
-    Rand = new coreRand(2048);
+    Rand   = new coreRand(2048);
 
     // init main components
     System   = new CoreSystem();
@@ -58,10 +52,6 @@ Core::Core()noexcept
     Manager::Memory   = new coreMemoryManager();
     Manager::Resource = new coreResourceManager();
     Manager::Object   = new coreObjectManager();
-
-    // init resource classes
-    coreModel::InitClass();
-    coreShader::InitClass();
 }
 
 
@@ -69,10 +59,6 @@ Core::Core()noexcept
 // destructor
 Core::~Core()
 {
-    // exit resource classes
-    coreShader::ExitClass();
-    coreModel::ExitClass();
-
     // delete manager
     SAFE_DELETE(Manager::Object)
     SAFE_DELETE(Manager::Resource)
@@ -86,63 +72,8 @@ Core::~Core()
 
     // delete utilities
     SAFE_DELETE(Rand)
-    SAFE_DELETE(Data)
-    SAFE_DELETE(Math)
-
-    // delete files
     SAFE_DELETE(Config)
     SAFE_DELETE(Log)
-}
-
-
-// ****************************************************************
-// run the engine
-void Core::__Run()
-{
-    // init engine
-    Core* pEngine = new Core();
-
-    // init application
-    Core::Log->Header("Application Init");
-    CoreApp* pApplication = new CoreApp();
-    Core::Log->Header("Application Run");
-
-#if !defined(_CORE_DEBUG_)
-
-    // set logging level
-    const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG);
-    Core::Log->SetLevel(iLevel);
-    if(iLevel < 0) Core::Log->Error(false, "Logging level reduced");
-
-#endif
-
-    // update the window event system (main loop)
-    while(Core::System->__UpdateEvents())
-    {
-        // update the input button interface
-        Core::Input->__UpdateButtons();
-
-        // move and render the application
-        pApplication->Move();
-        pApplication->Render();
-
-        // update all remaining components
-        Core::Graphics->__UpdateScene();
-        Core::System->__UpdateTime();
-        Core::Input->__ClearButtons();
-    
-        // update the resource manager with only one context
-        if(!Core::Graphics->GetResourceContext())
-            Core::Manager::Resource->__Run();
-    }
-
-    // reset logging level
-    Core::Log->SetLevel(0);
-
-    // delete application and engine
-    Core::Log->Header("Shut Down");
-    SAFE_DELETE(pApplication)
-    SAFE_DELETE(pEngine)
 }
 
 
@@ -205,6 +136,58 @@ int main(int argc, char* argv[])
 #endif
 
     // run the engine
-    Core::__Run();
+    return Core::__Run();
+}
+
+
+// ****************************************************************
+// run the engine
+int Core::__Run()
+{
+    // init engine
+    Core* pEngine = new Core();
+
+    // init application
+    Core::Log->Header("Application Init");
+    CoreApp* pApplication = new CoreApp();
+    Core::Log->Header("Application Run");
+
+#if !defined(_CORE_DEBUG_)
+
+    // set logging level
+    const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG);
+    Core::Log->SetLevel(iLevel);
+    if(iLevel < 0) Core::Log->Error(false, "Logging level reduced");
+
+#endif
+
+    // update the window event system (main loop)
+    while(Core::System->__UpdateEvents())
+    {
+        // update the input button interface
+        Core::Input->__UpdateButtons();
+
+        // move and render the application
+        pApplication->Move();
+        pApplication->Render();
+
+        // update all remaining components
+        Core::Graphics->__UpdateScene();
+        Core::System->__UpdateTime();
+        Core::Input->__ClearButtons();
+    
+        // update the resource manager with only one context
+        if(!Core::Graphics->GetResourceContext())
+            Core::Manager::Resource->__Run();
+    }
+
+    // reset logging level
+    Core::Log->SetLevel(0);
+
+    // delete application and engine
+    Core::Log->Header("Shut Down");
+    SAFE_DELETE(pApplication)
+    SAFE_DELETE(pEngine)
+
     return 0;
 }

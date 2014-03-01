@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -24,12 +24,14 @@ private:
 
 
 protected:
-    bool m_bFocused;   //!< interaction status
+    static coreModel* s_pModel;   //!< global model object
+    bool m_bFocused;              //!< interaction status
 
 
 public:
     constexpr_obj coreObject2D()noexcept;
     virtual ~coreObject2D() {}
+    friend class coreObjectManager;
 
     //! define the visual appearance
     //! @{

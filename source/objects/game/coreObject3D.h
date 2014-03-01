@@ -3,7 +3,7 @@
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
 //| Released under the zlib License                    |//
-//| More information available in the README.md        |//
+//| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
@@ -29,6 +29,7 @@ protected:
 public:
     constexpr_obj coreObject3D()noexcept;
     virtual ~coreObject3D() {}
+    friend class coreObjectManager;
 
     //! define the visual appearance
     //! @{
