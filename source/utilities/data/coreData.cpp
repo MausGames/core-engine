@@ -141,10 +141,9 @@ void coreData::FolderCreate(const std::string& sPath)
 {
     int iPos = 0;
 
-    while(true)
+    // loop through path
+    while((iPos = sPath.find_first_of("/\\", iPos+2)) >= 0)
     {
-        // get next subfolder
-        if((iPos = sPath.find_first_of("/\\", iPos+2)) < 0) return;
         const std::string sSubFolder = sPath.substr(0, iPos);
 
         // create subfolder

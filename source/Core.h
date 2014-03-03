@@ -153,8 +153,8 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#define FOR_EACH(i,c)     for(auto i = c.begin();  i != c.end();  ++i)
-#define FOR_EACH_REV(i,c) for(auto i = c.rbegin(); i != c.rend(); ++i)
+#define FOR_EACH(i,c)     for(auto i = c.begin(),  e = c.end();  i != e; ++i)
+#define FOR_EACH_REV(i,c) for(auto i = c.rbegin(), e = c.rend(); i != e; ++i)
 #define ASSERT_IF(c)      SDL_assert(!(c)); if(c)
 
 #define DISABLE_COPY(c)      \
