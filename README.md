@@ -16,4 +16,4 @@ This project is focused on creating a **supportive framework for fast and simple
 > - Game Objects (2d, 3d)
 > - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes)
 
-Documentation for the framework is currently not available.
+Documentation for the engine is currently not available.
