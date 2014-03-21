@@ -52,7 +52,7 @@ private:
 
     coreMatrix4 m_mPerspective;                 //!< perspective projection matrix
     coreMatrix4 m_mOrtho;                       //!< orthogonal projection matrix
-    coreVector2 m_vCurResolution;               //!< current viewport resolution
+    coreVector4 m_vCurResolution;               //!< current viewport resolution
 
     coreLight m_aLight[CORE_GRAPHICS_LIGHTS];   //!< global ambient lights
 
@@ -86,7 +86,7 @@ public:
     void Screenshot();
     //! @}
 
-    //! get component attributes
+    //! get component properties
     //! @{
     inline const SDL_GLContext& GetRenderContext()const   {return m_RenderContext;}
     inline const SDL_GLContext& GetResourceContext()const {return m_ResourceContext;}
@@ -99,6 +99,7 @@ public:
     inline const coreMatrix4& GetCamera()const            {return m_mCamera;}
     inline const coreMatrix4& GetPerspective()const       {return m_mPerspective;}
     inline const coreMatrix4& GetOrtho()const             {return m_mOrtho;}
+    inline const coreVector4& GetResolution()const        {return m_vCurResolution;}
     inline const coreLight& GetLight(const int& iID)const {SDL_assert(iID < CORE_GRAPHICS_LIGHTS); return m_aLight[iID];}
     inline const GLuint& GetUniformBuffer()const          {return m_iUniformBuffer;}
     //! @}

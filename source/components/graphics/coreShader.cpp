@@ -71,7 +71,7 @@ coreError coreShader::Load(coreFile* pFile)
     glShaderSource(m_iShader, 3, apcData, aiSize);
     glCompileShader(m_iShader);
 
-    // save attributes
+    // save properties
     m_sPath = pFile->GetPath();
     m_iSize = aiSize[0] + aiSize[1] + aiSize[2];
 
@@ -116,7 +116,7 @@ coreError coreShader::Unload()
     glDeleteShader(m_iShader);
     if(!m_sPath.empty()) Core::Log->Info("Shader (%s) unloaded", m_sPath.c_str());
 
-    // reset attributes
+    // reset properties
     m_sPath   = "";
     m_iSize   = 0;
     m_iShader = 0;
@@ -137,7 +137,7 @@ void coreShader::__LoadGlobal()
     s_asGlobal[0].append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS      (%d)", CORE_GRAPHICS_LIGHTS));
     s_asGlobal[0].append(coreData::Print("\n#define CORE_SHADER_OUTPUT_COLORS (%d)", CORE_SHADER_OUTPUT_COLORS));
 
-    // traverse list with global shader files
+    // loop through list with global shader files
     const char aacPath[][64] = {"data/shaders/global.glsl",
                                 "data/shaders/global_vertex.vs",
                                 "data/shaders/global_control.tcs",
@@ -222,6 +222,7 @@ bool coreProgram::Enable()
         this->SendUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(),      false);
         this->SendUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
         this->SendUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
+        this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetResolution());
 
         // forward ambient data
         for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
@@ -385,7 +386,10 @@ coreError coreProgram::__Exit()
 
     // detach shader objects
     FOR_EACH(it, m_apShader)
-        glDetachShader(m_iProgram, (*it)->GetShader());
+    {
+        if((*it)->GetShader())
+            glDetachShader(m_iProgram, (*it)->GetShader());
+    }
 
     // delete shader-program
     glDeleteProgram(m_iProgram);

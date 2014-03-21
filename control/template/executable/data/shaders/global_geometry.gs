@@ -8,7 +8,11 @@
 //////////////////////////////////////////////////////////
 
 
-void main()
-{
-    gl_FragColor = texture2D(u_as2Texture[0], v_sVertex.v_av2TexCoord[0]) * u_v4Color;
-}
+ // shader input
+in b_Varying {coreVertex v_sVertex;} In[];
+
+// shader output
+out b_Varying {coreVertex v_sVertex;} Out;
+    
+
+#line 1

@@ -22,7 +22,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_vCamPosition    (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamDirection   (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamOrientation (coreVector3(0.0f,0.0f,0.0f))
-, m_vCurResolution  (coreVector2(0.0f,0.0f))
+, m_vCurResolution  (coreVector4(0.0f,0.0f,0.0f,0.0f))
 {
     Core::Log->Header("Graphics Interface");
 
@@ -65,7 +65,7 @@ CoreGraphics::CoreGraphics()noexcept
     m_fGLSL   = coreData::StrVersion(r_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // check OpenGL version
-    if(m_fOpenGL < 2.0f) Core::Log->Error(true, "Minimum system requirements not met, video card supporting at least OpenGL 2.0 required");
+    if(m_fOpenGL < 2.0f) Core::Log->Error(true, "Minimum system requirements not met, video card with at least OpenGL 2.0 required");
 
     // enable OpenGL debugging
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
@@ -78,6 +78,7 @@ CoreGraphics::CoreGraphics()noexcept
     // enable texturing
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_DITHER);
+    glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 
     // enable depth testing
     glEnable(GL_DEPTH_TEST);
@@ -114,7 +115,7 @@ CoreGraphics::CoreGraphics()noexcept
         this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
 
     // reset scene
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -145,7 +146,7 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
 {
     bool bNewCamera = false;
 
-    // set attributes of the camera
+    // set properties of the camera
     const coreVector3 vDirNorm = vDirection.Normalized();   
     const coreVector3 vOriNorm = vOrientation.Normalized(); 
     if(m_vCamPosition    != vPosition) {m_vCamPosition    = vPosition; bNewCamera = true;}
@@ -171,9 +172,11 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
     if(!vResolution.x) vResolution.x = Core::System->GetResolution().x;
     if(!vResolution.y) vResolution.y = Core::System->GetResolution().y;
 
-    if(m_vCurResolution != vResolution)
+    if(m_vCurResolution.xy() != vResolution)
     {
-        m_vCurResolution = vResolution;
+        // save viewport resolution
+        m_vCurResolution.xy(vResolution);
+        m_vCurResolution.zw(coreVector2(1.0f,1.0f) / vResolution);
 
         // set viewport
         glViewport(0, 0, (int)vResolution.x, (int)vResolution.y);
@@ -189,7 +192,7 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
 
 
 // ******************************************************************
-// set and update ambient light attributes
+// set and update ambient light properties
 void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
     SDL_assert(iID < CORE_GRAPHICS_LIGHTS);
@@ -197,7 +200,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
 
     bool bNewLight = false;
 
-    // set attributes of the light
+    // set properties of the light
     const coreVector4 vDirNorm = coreVector4(vDirection.xyz().Normalized(), vDirection.w); 
     if(CurLight.vPosition  != vPosition) {CurLight.vPosition  = vPosition; bNewLight = true;}
     if(CurLight.vDirection != vDirNorm)  {CurLight.vDirection = vDirNorm;  bNewLight = true;}
@@ -275,10 +278,17 @@ void CoreGraphics::__UpdateScene()
     coreTexture::DisableAll();
     coreProgram::Disable(true);
 
-    // swap main frame buffers
+    // explicitly invalidate depth buffer 
+    if(GLEW_ARB_invalidate_subdata)
+    {
+        constexpr_var GLenum aiAttachment[1] = {GL_DEPTH};
+        glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, aiAttachment);
+    }
+
+    // swap color buffers
     SDL_GL_SwapWindow(Core::System->GetWindow());
 
-    // reset the depth buffer
+    // clear depth buffer (and current color buffer on debug-mode)
 #if defined(_CORE_DEBUG_)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #else
@@ -299,9 +309,10 @@ void CoreGraphics::__SendTransformation()
     coreByte* pRange = m_iUniformBuffer.Map(0, sizeof(coreMatrix4)*4);
 
     // update transformation matrices
-    std::memcpy(pRange,                         &mViewProj,      sizeof(coreMatrix4));
-    std::memcpy(pRange + sizeof(coreMatrix4)*1, &m_mCamera,      sizeof(coreMatrix4));
-    std::memcpy(pRange + sizeof(coreMatrix4)*2, &m_mPerspective, sizeof(coreMatrix4));
-    std::memcpy(pRange + sizeof(coreMatrix4)*3, &m_mOrtho,       sizeof(coreMatrix4));
+    std::memcpy(pRange,                         &mViewProj,        sizeof(coreMatrix4));
+    std::memcpy(pRange + sizeof(coreMatrix4)*1, &m_mCamera,        sizeof(coreMatrix4));
+    std::memcpy(pRange + sizeof(coreMatrix4)*2, &m_mPerspective,   sizeof(coreMatrix4));
+    std::memcpy(pRange + sizeof(coreMatrix4)*3, &m_mOrtho,         sizeof(coreMatrix4));
+    std::memcpy(pRange + sizeof(coreMatrix4)*4, &m_vCurResolution, sizeof(coreVector4));
     m_iUniformBuffer.Unmap(pRange);
 }

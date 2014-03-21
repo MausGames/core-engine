@@ -23,6 +23,7 @@
 #define CORE_SHADER_UNIFORM_CAMERA             "u_m4Camera"
 #define CORE_SHADER_UNIFORM_PERSPECTIVE        "u_m4Perspective"
 #define CORE_SHADER_UNIFORM_ORTHO              "u_m4Ortho"
+#define CORE_SHADER_UNIFORM_RESOLUTION         "u_v4Resolution"
 
 #define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)  coreData::Print("u_asLight[%d].v3Position",  i)
 #define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i) coreData::Print("u_asLight[%d].v4Direction", i)
@@ -77,7 +78,7 @@ public:
     coreError Unload()override;
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const GLuint& GetShader()const {return m_iShader;}
     //! @}
@@ -154,7 +155,7 @@ public:
     inline int CheckCache(const char* pcName, const coreVector4& vVector) {if(m_avCache.count(pcName)) {if(m_avCache.at(pcName) == vVector) return -1;} m_avCache[pcName] = vVector; return this->GetUniform(pcName);}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const GLuint& GetProgram()const             {return m_iProgram;}
     inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {SDL_assert(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this); m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
