@@ -32,7 +32,6 @@
 
 // ****************************************************************
 // math utility collection
-// TODO: try to make every important math function inline (also vector and matrix) !!!
 class coreMath
 {
 public:
@@ -53,25 +52,26 @@ public:
     //! calculate square root
     //! @{
     static inline float Sqrt(const float& fInput)noexcept {return fInput*Rsqrt(fInput);}
-    static float Rsqrt(float fInput)noexcept;
+    static inline float Rsqrt(float fInput)noexcept;
     //! @}
 
     //! calculate trigonometric values
     //! @{
-    static float Sin(const float& fInput)noexcept;
-    static float Cos(const float& fInput)noexcept;
+    static inline float Sin(const float& fInput)noexcept  {return std::sin(fInput);}
+    static inline float Cos(const float& fInput)noexcept  {return std::cos(fInput);}
     static inline float Tan(const float& fInput)noexcept  {return std::tan(fInput);}
     static inline float Atan(const float& fInput)noexcept {return std::atan(fInput);}
+    static inline float Cot(const float& fInput)noexcept  {return std::tan(PI*0.5f - fInput);}
+    //! @}
+
+    //! calculate next power-of-two
+    //! @{
+    static inline coreUint NextPOT(const coreUint& iInput)noexcept {coreUint k = 1; while(k < iInput) k = k << 1; return k;}
     //! @}
 
     //! check if inside field-of-view
     //! @{
     static bool CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection)noexcept;
-    //! @}
-
-    //! calculate next power-of-two
-    //! @{
-    static inline coreUint NextPOT(const coreUint& iInput)noexcept {coreUint k = 1; while(k < iInput) k = k<<1; return k;}
     //! @}
 
     //! convert color format
@@ -80,6 +80,35 @@ public:
     static coreVector3 RGBtoHSV(const coreVector3& vRGB)noexcept;
     //! @}
 };
+
+
+// ****************************************************************
+// calculate inverse square root
+inline float coreMath::Rsqrt(float fInput)noexcept
+{
+    SDL_assert(fInput >= 0.0f);
+
+#if defined(_CORE_SSE_)
+
+    // optimized calculation with SSE
+    _mm_store_ss(&fInput, _mm_rsqrt_ss(_mm_load_ss(&fInput)));
+
+#else
+
+    // normal calculation
+    if(!fInput) return 0.0f;
+
+    const float fHalfValue = fInput*0.5f;
+    coreUint* piPointer    = (coreUint*)&fInput;
+    *piPointer             = 0x5f3759df - (*piPointer >> 1);
+
+    fInput *= 1.5f - fInput*fInput*fHalfValue;
+    fInput *= 1.5f - fInput*fInput*fHalfValue;
+
+#endif
+
+    return fInput;
+}
 
 
 #endif // _CORE_GUARD_MATH_H_

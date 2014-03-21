@@ -112,14 +112,7 @@ coreVector3 coreSpline::GetPosition(const float& fTime)const
     const coreVector3 vStartVel = m_apNode[iIndex].vTangent * m_apNode[iIndex].fDistance;
     const coreVector3 vEndVel = m_apNode[iIndex+1].vTangent * m_apNode[iIndex].fDistance;
 
-    return this->GetPosition(fRelative, m_apNode[iIndex].vPosition, m_apNode[iIndex+1].vPosition, vStartVel, vEndVel);
-}
-
-coreVector3 coreSpline::GetPosition(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const
-{
-    // calculate position with cubic function
-    return ((( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2)  * fTime +
-             (-3.0f*vP1 + 3.0f*vP2 - 2.0f*vT1 - vT2)) * fTime + vT1) * fTime + vP1;
+    return coreSpline::GetPosition(fRelative, m_apNode[iIndex].vPosition, m_apNode[iIndex+1].vPosition, vStartVel, vEndVel);
 }
 
 
@@ -137,14 +130,7 @@ coreVector3 coreSpline::GetDirection(const float& fTime)const
     const coreVector3 vStartVel = m_apNode[iIndex].vTangent * m_apNode[iIndex].fDistance;
     const coreVector3 vEndVel = m_apNode[iIndex+1].vTangent * m_apNode[iIndex].fDistance;
 
-    return this->GetDirection(fRelative, m_apNode[iIndex].vPosition, m_apNode[iIndex+1].vPosition, vStartVel, vEndVel).Normalize();
-}
-
-coreVector3 coreSpline::GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)const
-{
-    // calculate direction with cubic function
-    return (( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2)  * fTime * 3.0f +
-            (-3.0f*vP1 + 3.0f*vP2 - 2.0f*vT1 - vT2)) * fTime * 2.0f + vT1;
+    return coreSpline::GetDirection(fRelative, m_apNode[iIndex].vPosition, m_apNode[iIndex+1].vPosition, vStartVel, vEndVel).Normalize();
 }
 
 

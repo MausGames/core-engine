@@ -10,55 +10,6 @@
 
 
 // ****************************************************************
-// calculate inverse square root
-float coreMath::Rsqrt(float fInput)noexcept
-{
-    SDL_assert(fInput >= 0.0f);
-
-#if defined(_CORE_SSE_)
-
-    // optimized
-    if(Core::System->SupportSSE2())
-    {
-        _mm_store_ss(&fInput, _mm_rsqrt_ss(_mm_load_ss(&fInput)));
-        return fInput;
-    }
-
-#endif
-
-    // normal
-    if(!fInput) return 0.0f;
-
-    const float fHalfValue = fInput*0.5f;
-    coreUint* piPointer    = (coreUint*)&fInput;
-    *piPointer             = 0x5f3759df - (*piPointer >> 1);
-
-    fInput *= 1.5f - fInput*fInput*fHalfValue;
-    fInput *= 1.5f - fInput*fInput*fHalfValue;
-
-    return fInput;
-}
-
-
-// ****************************************************************
-// calculate sinus value
-float coreMath::Sin(const float& fInput)noexcept
-{
-    // TODO: add SSE-support
-    return std::sin(fInput);
-}
-
-
-// ****************************************************************
-// calculate cosine value
-float coreMath::Cos(const float& fInput)noexcept
-{
-    // TODO: add SSE-support
-    return std::cos(fInput);
-}
-
-
-// ****************************************************************
 // check if inside field-of-view
 bool coreMath::CheckFOV(const coreVector3& vPosition, const float& fFOV, const coreVector3& vCamPosition, const coreVector3& vCamDirection)noexcept
 {
@@ -67,8 +18,7 @@ bool coreMath::CheckFOV(const coreVector3& vPosition, const float& fFOV, const c
     const float fDot = coreVector3::Dot(vRelative, vCamDirection);
 
     // check result
-    if(fDot < 0.0f) return false;
-    return (fDot > coreMath::Cos(fFOV));
+    return (fDot < 0.0f) ? false : (fDot > coreMath::Cos(fFOV));
 }
 
 
