@@ -48,11 +48,11 @@ public:
     //! interact with the 2d-object
     //! @{
     void Interact();
-    bool IsClicked(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
+    inline bool IsClicked(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const {return (m_bFocused && Core::Input->GetMouseButton(iButton, iType)) ? true : false;}
     inline const bool& IsFocused()const {return m_bFocused;}
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetPosition(const coreVector2& vPosition)   {if(m_vPosition  != vPosition)  {m_iUpdate |= 1; m_vPosition  = vPosition;}}
     inline void SetSize(const coreVector2& vSize)           {if(m_vSize      != vSize)      {m_iUpdate |= 1; m_vSize      = vSize;}}
@@ -62,7 +62,7 @@ public:
     inline void SetFocus(const bool& bFocus)                {m_bFocused = bFocus;}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const coreVector2& GetPosition()const  {return m_vPosition;}
     inline const coreVector2& GetSize()const      {return m_vSize;}

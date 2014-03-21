@@ -54,7 +54,7 @@ public:
     inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const char* GetPath()const     {return m_sPath.c_str();}
     inline const coreByte* GetData()      {this->LoadData(); return m_pData;}
@@ -103,7 +103,7 @@ public:
     inline coreFile* GetFile(const char* pcPath)     {if(!m_apFile.count(pcPath))   return NULL; return m_apFile[pcPath]; }
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const char* GetPath()const {return m_sPath.c_str();}
     inline coreUint GetSize()const    {return m_apFile.size();}

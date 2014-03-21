@@ -201,7 +201,7 @@ template <typename T> void coreLookup<T>::erase(const char* pcKey)noexcept
 // retrieve iterator by specific value
 template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retrieve(const T& Entry)noexcept
 {
-    // traverse all entries
+    // loop through all entries
     FOR_EACH(it, m_aList)
     {
         // compare values
@@ -213,7 +213,7 @@ template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retr
 
 template <typename T> typename coreLookup<T>::coreConstIterator coreLookup<T>::__retrieve(const T& Entry)const noexcept
 {
-    // traverse all entries
+    // loop through all entries
     FOR_EACH(it, m_aList)
     {
         // compare values
@@ -228,7 +228,7 @@ template <typename T> typename coreLookup<T>::coreConstIterator coreLookup<T>::_
 // retrieve iterator by specific key
 template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retrieve(const char* pcKey)noexcept
 {
-    // traverse all entries
+    // loop through all entries
     FOR_EACH(it, m_aList)
     {
         // compare string-keys
@@ -240,7 +240,7 @@ template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retr
 
 template <typename T> typename coreLookup<T>::coreConstIterator coreLookup<T>::__retrieve(const char* pcKey)const noexcept
 {
-    // traverse all entries
+    // loop through all entries
     FOR_EACH(it, m_aList)
     {
         // compare string-keys

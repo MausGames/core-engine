@@ -30,12 +30,12 @@ public:
     void Move()override;
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     void SetCheck(const bool& bCheck);
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const bool& GetCheck()const {return m_bCheck;}
     //! @}

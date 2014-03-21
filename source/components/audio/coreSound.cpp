@@ -93,7 +93,7 @@ coreError coreSound::Load(coreFile* pFile)
     alGenBuffers(1, &m_iBuffer);
     alBufferData(m_iBuffer, iSoundFormat, pSoundData, iSoundSize, m_Format.iSampleRate);
 
-    // save attributes
+    // save properties
     m_sPath = pFile->GetPath();
     m_iSize = iSoundSize;
 
@@ -124,7 +124,7 @@ coreError coreSound::Unload()
     alDeleteBuffers(1, &m_iBuffer);
     if(!m_sPath.empty()) Core::Log->Info("Sound (%s) unloaded", m_sPath.c_str());
 
-    // reset attributes
+    // reset properties
     m_sPath      = "";
     m_iSize      = 0;
     m_iBuffer    = 0;
@@ -252,15 +252,6 @@ void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelo
         alSourcefv(m_iCurSource, AL_POSITION, vPosition);
         alSourcefv(m_iCurSource, AL_VELOCITY, vVelocity);
     }
-}
-
-
-// ****************************************************************
-// change the sound source volume
-void coreSound::SetVolume(const float& fVolume)
-{
-    CORE_SOUND_ASSERT
-    if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN, fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND));
 }
 
 

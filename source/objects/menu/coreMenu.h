@@ -57,7 +57,7 @@ public:
     bool ChangeSurface(const coreByte& iNewSurface, const float& fSpeed);
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline coreObject2D* GetCurObject()const    {return m_pCurObject;}
     inline const coreByte& GetCurSurface()const {return m_iCurSurface;}

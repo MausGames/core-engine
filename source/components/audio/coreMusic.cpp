@@ -205,14 +205,6 @@ void coreMusic::Pause()
 
 
 // ****************************************************************
-// change the sound source volume
-void coreMusic::SetVolume(const float& fVolume)
-{
-    if(m_iSource) alSourcef(m_iSource, AL_GAIN, fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_MUSIC));
-}
-
-
-// ****************************************************************
 // get specific meta-information
 const char* coreMusic::GetComment(const char* pcName)const
 {
@@ -220,7 +212,7 @@ const char* coreMusic::GetComment(const char* pcName)const
     {
         const coreUint iLen = std::strlen(pcName);
 
-        // traverse all comments
+        // loop through all comments
         for(int i = 0; i < m_pComment->comments; ++i)
         {
             // check comment and extract meta-information

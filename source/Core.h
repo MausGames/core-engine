@@ -177,14 +177,6 @@ typedef unsigned char  coreByte;
 typedef unsigned short coreWord;
 typedef unsigned int   coreUint;
 
-class coreVector2;
-class coreVector3;
-class coreVector4;
-class coreMatrix3;
-class coreMatrix4;
-class coreFile;
-class coreArchive;
-
 enum coreError
 {
     CORE_OK            =   0,    //!< everything is fine
@@ -244,11 +236,118 @@ enum coreError
 
 
 // ****************************************************************
-// GLEW multi-context declaration
+// GLEW multi-context declarations
 #if !defined(_CORE_GLES_)
     extern __thread GLEWContext g_GlewContext;
-    #define glewGetContext() (&g_GlewContext)
+    #define glewGetContext() (g_GlewContext)
 #endif
+
+
+// ****************************************************************
+// class forward declarations
+class coreVector2;
+class coreVector3;
+class coreVector4;
+class coreMatrix3;
+class coreMatrix4;
+class coreFile;
+class coreArchive;
+class coreParticleEffect;
+
+class coreLog;
+class coreConfig;
+class coreRand;
+class CoreSystem;
+class CoreGraphics;
+class CoreAudio;
+class CoreInput;
+class coreMemoryManager;
+class coreResourceManager;
+class coreObjectManager;
+
+
+// ****************************************************************
+// application framework
+class CoreApp final
+{
+private:
+    CoreApp()noexcept {this->Init();}
+    ~CoreApp()        {this->Exit();}
+    friend class Core;
+
+
+public:
+    //! undefined init and exit function
+    //! @{
+    void Init();
+    void Exit();
+    //! @}
+
+    //! undefined render and move function
+    //! @{
+    void Render();
+    void Move();
+    //! @}
+};
+
+
+// ****************************************************************
+// engine framework
+// TODO: don't lose engine properties after reset
+// TODO: SDL_GetPowerInfo
+// TODO: check GCC function attributes (pure, hot, cold)
+// TODO: improve sort and structure under all class access modifiers
+// TODO: don't forward/return trivial types as reference ? (address > value)
+// TODO: use GLEWs extension macros instead of current list ?
+// TODO: how should write static functions inside of class, with or without "class::"
+// TODO: put everything in a namespace ? split up coreData and coreMath
+// TODO: check for template parameters <42>
+// TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
+class Core final
+{
+public:
+    static coreLog* Log;             //!< log file
+    static coreConfig* Config;       //!< configuration file
+    static coreRand* Rand;           //!< global random number generator
+
+    static CoreSystem* System;       //!< main system component
+    static CoreGraphics* Graphics;   //!< main graphics component
+    static CoreAudio* Audio;         //!< main audio component
+    static CoreInput* Input;         //!< main input component
+
+    class Manager final
+    {
+    public:
+        static coreMemoryManager* Memory;       //!< memory manager
+        static coreResourceManager* Resource;   //!< resource manager
+        static coreObjectManager* Object;       //!< object manager
+    };
+
+
+private:
+    Core()noexcept;
+    ~Core();
+
+
+public:
+    //! control the engine
+    //! @{
+    static void Reset();
+    static void Quit();
+    //! @}
+
+    //! main function
+    //! @{
+    friend int main(int argc, char* argv[]) align_func;
+    //! @}
+
+
+private:
+    //! run the engine
+    //! @{
+    static int __Run();
+    //! @}
+};
 
 
 // ****************************************************************
@@ -293,97 +392,12 @@ enum coreError
 #include "objects/game/coreObject2D.h"
 #include "objects/game/coreObject3D.h"
 #include "objects/game/coreParticle.h"
-
 #include "objects/menu/coreLabel.h"
 #include "objects/menu/coreButton.h"
 #include "objects/menu/coreCheckBox.h"
 #include "objects/menu/coreTextBox.h"
 #include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreMenu.h"
-
-
-// ****************************************************************
-// application framework
-class CoreApp final
-{
-private:
-    CoreApp()noexcept {this->Init();}
-    ~CoreApp()        {this->Exit();}
-    friend class Core;
-
-
-public:
-    //! undefined init and exit function
-    //! @{
-    void Init();
-    void Exit();
-    //! @}
-
-    //! undefined render and move function
-    //! @{
-    void Render();
-    void Move();
-    //! @}
-};
-
-
-// ****************************************************************
-// engine framework
-// TODO: don't lose engine attributes after reset
-// TODO: SDL_GetPowerInfo
-// TODO: check GCC function attributes (pure, hot, cold)
-// TODO: improve sort and structure under all class access modifiers
-// TODO: don't forward/return trivial types as reference ? (address > value)
-// TODO: use GLEWs extension macros instead of current list ?
-// TODO: how should write static functions inside of class, with or without "class::"
-// TODO: put everything in a namespace ? split up coreData and coreMath
-// TODO: check for template parameters <42>
-class Core final
-{
-public:
-    static coreLog* Log;             //!< log file
-    static coreConfig* Config;       //!< configuration file
-
-    static coreRand* Rand;           //!< global random number generator
-
-    static CoreSystem* System;       //!< main system component
-    static CoreGraphics* Graphics;   //!< main graphics component
-    static CoreAudio* Audio;         //!< main audio component
-    static CoreInput* Input;         //!< main input component
-
-    class Manager final
-    {
-    public:
-        static coreMemoryManager* Memory;       //!< memory manager
-        static coreResourceManager* Resource;   //!< resource manager
-        static coreObjectManager* Object;       //!< object manager
-    };
-
-
-private:
-    Core()noexcept;
-    ~Core();
-
-
-public:
-    //! control the engine
-    //! @{
-    static void Reset();
-    static void Quit();
-    //! @}
-
-    //! main function
-    //! @{
-    friend int main(int argc, char* argv[]) align_func;
-    //! @}
-
-
-private:
-    //! run the engine
-    //! @{
-    static int __Run();
-    //! @}
-};
 
 
 #endif // _CORE_GUARD_H_

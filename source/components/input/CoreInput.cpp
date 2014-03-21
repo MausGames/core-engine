@@ -116,7 +116,7 @@ void CoreInput::DefineCursor(const char* pcTexture)
 
 // ****************************************************************
 // show or hide the mouse cursor
-// TODO: handle unsupported RelativeMouseMode
+// TODO: handle unsupported RelativeMouseMode, SDL_HINT_MOUSE_RELATIVE_MODE_WARP
 void CoreInput::ShowCursor(const bool& bStatus)
 {
     if(m_bCursorVisible == bStatus) return;

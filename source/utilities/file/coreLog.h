@@ -81,7 +81,7 @@ template <typename... A> void coreLog::Error(const bool& bShutdown, const char* 
     if(bShutdown)
     {
         // show critical error message
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", CORE_LOG_STRING.c_str(), Core::System->GetWindow());
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", CORE_LOG_STRING.c_str(), NULL);
 
         // trigger breakpoint or shut down the application
 #if defined(_CORE_DEBUG_)

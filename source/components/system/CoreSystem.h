@@ -64,7 +64,7 @@ public:
     inline void SkipFrame()                                           {m_iSkipFrame = 2;}
     //! @}
 
-    //! get component attributes
+    //! get component properties
     //! @{
     inline SDL_Window* GetWindow()const                        {return m_pWindow;}
     inline const coreVector2& GetResolution()const             {return m_vResolution;}

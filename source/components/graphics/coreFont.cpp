@@ -39,7 +39,7 @@ coreError coreFont::Load(coreFile* pFile)
     // create test font
     if(!this->__InitHeight(1)) return CORE_INVALID_DATA;
 
-    // save attributes
+    // save properties
     m_sPath = pFile->GetPath();
     m_iSize = pFile->GetSize();
 
@@ -62,7 +62,7 @@ coreError coreFont::Unload()
     SAFE_DELETE(m_pFile)
     if(!m_sPath.empty()) Core::Log->Info("Font (%s) unloaded", m_sPath.c_str());
 
-    // reset attributes
+    // reset properties
     m_sPath = "";
     m_iSize = 0;
 

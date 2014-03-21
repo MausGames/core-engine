@@ -40,13 +40,13 @@ public:
     void Move()override;
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     bool SetText(const char* pcText, int iNum = -1);
     inline void SetScale(const float& fScale) {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
     //! @}
     
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const int& GetLength()const             {return m_iLength;}

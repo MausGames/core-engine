@@ -66,13 +66,13 @@ public:
     inline const coreEntry& GetCurEntry()const                    {SDL_assert(m_iCurIndex < m_aEntry.size()); return m_aEntry[m_iCurIndex];}
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetEndless(const bool& bEndless)  {m_bEndless = bEndless;}
     inline void SetAutomatic(const float& fSpeed) {m_pAutomatic.SetSpeed(fSpeed);}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline coreButton* GetArrow(const coreUint& iIndex)const {SDL_assert(iIndex < 2); return m_apArrow[iIndex];}
     inline coreLabel* GetCaption()const                      {return m_pCaption;}

@@ -26,7 +26,7 @@ coreObjectManager*   Core::Manager::Object   = NULL;
 
 
 // ****************************************************************
-// GLEW multi-context definition
+// GLEW multi-context definitions
 #if !defined(_CORE_GLES_)
     __thread GLEWContext g_GlewContext;
 #endif

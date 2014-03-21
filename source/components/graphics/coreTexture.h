@@ -61,7 +61,7 @@ public:
     inline void Generate() {SDL_assert(!m_iTexture); glGenTextures(1, &m_iTexture);}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const GLuint& GetTexture()const         {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}

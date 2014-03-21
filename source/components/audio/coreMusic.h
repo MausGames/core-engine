@@ -65,9 +65,9 @@ public:
 
     //! set various sound source properties
     //! @{
-    void SetVolume(const float& fVolume);
-    inline void SetPitch(const float& fPitch) {if(m_iSource) alSourcef(m_iSource, AL_PITCH, fPitch);}
-    inline void SetLoop(const bool& bLoop)    {m_bLoop = bLoop;}
+    inline void SetVolume(const float& fVolume) {if(m_iSource) alSourcef(m_iSource, AL_GAIN,  fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_MUSIC));}
+    inline void SetPitch(const float& fPitch)   {if(m_iSource) alSourcef(m_iSource, AL_PITCH, fPitch);}
+    inline void SetLoop(const bool& bLoop)      {m_bLoop = bLoop;}
     //! @}
 
     //! change and retrieve current music track position
@@ -89,7 +89,7 @@ public:
     inline const char* GetTitle()const  {return this->GetComment("TITLE");}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const char* GetPath()const        {return m_pFile->GetPath();}
     inline const vorbis_info* GetInfo()const {return m_pInfo;}
@@ -143,7 +143,7 @@ public:
     bool Update();
     //! @}
 
-    //! control the playback behavior
+    //! control playback behavior
     //! @{
     void Order();
     void Shuffle();
@@ -171,13 +171,13 @@ public:
     inline coreMusic* Control()const                              {SDL_assert(m_pCurMusic != m_pEmptyMusic); return m_pCurMusic;}
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetRepeat(const coreMusicRepeat& iRepeat) {m_iRepeat = iRepeat;}
     inline void SetFade(const float& fTime)               {if(fTime) m_FadeTimer.SetSpeed(1.0f/fTime); else {m_FadeTimer.SetCurrent(1.0f); m_FadeTimer.SetSpeed(0.0f);}}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline coreUint GetNumMusic()const             {return m_apMusic.size();}
     inline const coreUint& GetCurIndex()const      {return m_iCurIndex;}

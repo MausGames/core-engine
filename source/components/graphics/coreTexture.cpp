@@ -66,7 +66,7 @@ coreError coreTexture::Load(coreFile* pFile)
     const GLenum iInternal   = (pData->format->BytesPerPixel == 4) ? GL_RGBA8 : GL_RGB8;
     const GLenum iFormat     = (pData->format->BytesPerPixel == 4) ? GL_RGBA  : GL_RGB;
 
-    // save attributes
+    // save properties
     m_vResolution = coreVector2(float(pData->w), float(pData->h));
     m_sPath       = pFile->GetPath();
     m_iSize       = (iDataSize * 4) / (bMipMap ? 3 : 4);
@@ -166,7 +166,7 @@ coreError coreTexture::Unload()
     // delete sync object
     m_Sync.Delete();
 
-    // reset attributes
+    // reset properties
     m_sPath       = "";
     m_iSize       = 0;
     m_iTexture    = 0;

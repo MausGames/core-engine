@@ -34,12 +34,12 @@ public:
     virtual void Move()override;
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetOverride(const int& iOverride) {m_iOverride = iOverride;}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline coreLabel* GetCaption()const  {return m_pCaption;}
     inline const int& GetOverride()const {return m_iOverride;}

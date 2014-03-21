@@ -13,6 +13,7 @@
 
 // ****************************************************************
 // font class
+// TODO: distance fields for sharper text
 class coreFont final : public coreResource
 {
 private:

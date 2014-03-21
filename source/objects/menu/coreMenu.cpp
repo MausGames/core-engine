@@ -138,7 +138,7 @@ void coreMenu::AddObject(const coreByte& iSurface, coreObject2D* pObject)
 // remove menu object
 void coreMenu::RemoveObject(const coreByte& iSurface, coreObject2D* pObject)
 {
-    // traverse all menu objects
+    // loop through all menu objects
     FOR_EACH(it, m_papObject[iSurface])
     {
         if((*it) == pObject)

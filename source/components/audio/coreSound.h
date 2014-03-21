@@ -70,9 +70,9 @@ public:
     //! set various sound source properties
     //! @{
     void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
-    void SetVolume(const float& fVolume);
-    inline void SetPitch(const float& fPitch) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
-    inline void SetLoop(const bool& bLoop)    {CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    inline void SetVolume(const float& fVolume) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND));}
+    inline void SetPitch(const float& fPitch)   {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
+    inline void SetLoop(const bool& bLoop)      {CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
     //! enable active sound source with reference pointer
@@ -81,7 +81,7 @@ public:
     ALuint CheckRef(const void* pRef);
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const ALuint& GetBuffer()const         {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}

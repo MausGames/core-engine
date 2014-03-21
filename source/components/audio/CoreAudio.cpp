@@ -83,7 +83,7 @@ void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVe
 {
     bool bNewOrientation = false;
 
-    // set and update attributes of the listener
+    // set and update properties of the listener
     const coreVector3 vDirNorm = vDirection.Normalized();   
     const coreVector3 vOriNorm = vOrientation.Normalized(); 
     if(m_vPosition      != vPosition) {m_vPosition      = vPosition; alListenerfv(AL_POSITION, m_vPosition);}
@@ -99,7 +99,7 @@ void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
 {
     const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * Core::System->GetTime(iTimeID);
 
-    // adjust listener with camera attributes
+    // adjust listener with camera properties
     this->SetListener(Core::Graphics->GetCamPosition(),
                       vVelocity,
                       Core::Graphics->GetCamDirection(),

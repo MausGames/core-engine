@@ -31,7 +31,7 @@ public:
     virtual coreError Unload() = 0;
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const char* GetPath()const     {return m_sPath.c_str();}
     inline const coreUint& GetSize()const {return m_iSize;}

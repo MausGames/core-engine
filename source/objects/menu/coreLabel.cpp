@@ -98,7 +98,7 @@ bool coreLabel::SetText(const char* pcText, int iNum)
     ASSERT_IF(iNum > m_iLength && m_iLength) iNum = m_iLength;
 
     // check for new text
-    if(std::strcmp(m_sText.c_str(), pcText) || m_sText.length() != iNum)
+    if(std::strcmp(m_sText.c_str(), pcText) || m_sText.length() != (coreUint)iNum)
     {
         m_iGenerate |= 3; 
 
@@ -134,7 +134,7 @@ void coreLabel::__Reset(const bool& bInit)
 // TODO: PBOs ?
 void coreLabel::__Generate(const char* pcText, const bool& bSub)
 {
-    // create text surface with the font
+    // create text surface with the font object
     SDL_Surface* pSurface = m_pFont->Create(pcText, coreVector3(1.0f,1.0f,1.0f), m_iHeight);
     SDL_assert(pSurface->format->BitsPerPixel == 32);
 

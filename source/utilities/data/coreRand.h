@@ -14,6 +14,7 @@
 // ****************************************************************
 // random number generator class
 // TODO: implement Mersenne Twister
+// TODO: https://twitter.com/repi/status/447067525994381312/photo/1
 class coreRand final
 {
 private:

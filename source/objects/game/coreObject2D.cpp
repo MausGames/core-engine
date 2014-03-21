@@ -96,11 +96,3 @@ void coreObject2D::Interact()
     m_bFocused = (ABS(vInput.x) < vScreenSize.x &&
                   ABS(vInput.y) < vScreenSize.y);
 }
-
-
-// ****************************************************************
-// check for mouse button input
-bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)const
-{
-    return (m_bFocused && Core::Input->GetMouseButton(iButton, iType));
-}

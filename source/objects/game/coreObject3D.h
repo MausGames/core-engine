@@ -45,7 +45,7 @@ public:
     virtual void Move();
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetPosition(const coreVector3& vPosition)       {if(m_vPosition != vPosition) {m_iUpdate |= 1; m_vPosition = vPosition;}}
     inline void SetSize(const coreVector3& vSize)               {if(m_vSize     != vSize)     {m_iUpdate |= 1; m_vSize     = vSize;}}
@@ -53,7 +53,7 @@ public:
     inline void SetOrientation(const coreVector3& vOrientation) {const coreVector3 vOriNorm = vOrientation.Normalized(); if(m_vOrientation != vOriNorm) {m_iUpdate |= 3; m_vOrientation = vOriNorm;}}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const coreModelPtr& GetModel()const      {return m_pModel;}
     inline const coreVector3& GetPosition()const    {return m_vPosition;}
