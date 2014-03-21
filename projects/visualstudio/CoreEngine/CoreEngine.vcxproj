@@ -145,9 +145,7 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreConfig.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp" />
     <ClCompile Include="..\..\..\source\utilities\math\coreMath.cpp" />
-    <ClCompile Include="..\..\..\source\utilities\math\coreMatrix.cpp" />
     <ClCompile Include="..\..\..\source\utilities\math\coreSpline.cpp" />
-    <ClCompile Include="..\..\..\source\utilities\math\coreVector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\additional\android\glewES.h">

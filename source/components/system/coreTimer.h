@@ -44,12 +44,12 @@ public:
     inline void Stop()                   {this->Pause(); this->Reset();}
     //! @}
 
-    //! set all basic object attributes
+    //! set all basic object properties
     //! @{
     inline void Set(const float& fEnd, const float& fSpeed, const coreUint& iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoop = iLoops;}
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetCurrent(const float& fCurrent)    {m_fCurrent = fCurrent;}
     inline void SetEnd(const float& fEnd)            {m_fEnd     = fEnd;}
@@ -59,7 +59,7 @@ public:
     inline void SetTimeID(const int& iTimeID)        {m_iTimeID  = iTimeID;}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline float GetCurrent(const bool& bReverse)const {return bReverse ? m_fEnd-m_fCurrent : m_fCurrent;}
     inline const float& GetEnd()const                  {return m_fEnd;}
@@ -87,13 +87,14 @@ public:
     //! access current value
     //! @{
     inline operator float& ()noexcept                 {return m_fCurrent;}
+    inline operator const float& ()const noexcept     {return m_fCurrent;}
     inline float& operator = (const float& f)noexcept {m_fCurrent = f; return m_fCurrent;}
     //! @}
 
     //! update the flowing value
     //! @{
-    float& Update(const float& fSpeed);
-    float& Update(const float& fSpeed, const int& iTimeID);
+    inline void Update(const float& fSpeed)noexcept                     {m_fCurrent += fSpeed * Core::System->GetTime();}
+    inline void Update(const float& fSpeed, const int& iTimeID)noexcept {m_fCurrent += fSpeed * Core::System->GetTime(iTimeID);}
     //! @}
 };
 

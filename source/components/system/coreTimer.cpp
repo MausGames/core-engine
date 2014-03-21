@@ -39,18 +39,3 @@ bool coreTimer::Update(const float& fModifier)
 
     return false;
 }
-
-
-// ****************************************************************
-// update the flowing value
-float& coreFlow::Update(const float& fSpeed)
-{
-    m_fCurrent += fSpeed*Core::System->GetTime();
-    return m_fCurrent;
-}
-
-float& coreFlow::Update(const float& fSpeed, const int& iTimeID)
-{
-    m_fCurrent += fSpeed*Core::System->GetTime(iTimeID);
-    return m_fCurrent;
-}

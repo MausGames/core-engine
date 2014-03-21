@@ -24,6 +24,12 @@
           <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
             <itemPath>../../source/components/graphics/CoreGraphics.cpp</itemPath>
             <itemPath>../../source/components/graphics/CoreGraphics.h</itemPath>
+            <itemPath>../../source/components/graphics/coreDataBuffer.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreDataBuffer.h</itemPath>
+            <itemPath>../../source/components/graphics/coreFont.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreFont.h</itemPath>
+            <itemPath>../../source/components/graphics/coreFrameBuffer.cpp</itemPath>
+            <itemPath>../../source/components/graphics/coreFrameBuffer.h</itemPath>
             <itemPath>../../source/components/graphics/coreModel.cpp</itemPath>
             <itemPath>../../source/components/graphics/coreModel.h</itemPath>
             <itemPath>../../source/components/graphics/coreShader.cpp</itemPath>
@@ -60,13 +66,27 @@
             <itemPath>../../source/objects/game/coreObject2D.h</itemPath>
             <itemPath>../../source/objects/game/coreObject3D.cpp</itemPath>
             <itemPath>../../source/objects/game/coreObject3D.h</itemPath>
+            <itemPath>../../source/objects/game/coreParticle.cpp</itemPath>
+            <itemPath>../../source/objects/game/coreParticle.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="menu" displayName="menu" projectFiles="true">
+            <itemPath>../../source/objects/menu/coreButton.cpp</itemPath>
+            <itemPath>../../source/objects/menu/coreButton.h</itemPath>
+            <itemPath>../../source/objects/menu/coreCheckBox.cpp</itemPath>
+            <itemPath>../../source/objects/menu/coreCheckBox.h</itemPath>
+            <itemPath>../../source/objects/menu/coreLabel.cpp</itemPath>
+            <itemPath>../../source/objects/menu/coreLabel.h</itemPath>
+            <itemPath>../../source/objects/menu/coreMenu.cpp</itemPath>
+            <itemPath>../../source/objects/menu/coreMenu.h</itemPath>
+            <itemPath>../../source/objects/menu/coreSwitchBox.h</itemPath>
+            <itemPath>../../source/objects/menu/coreTextBox.cpp</itemPath>
+            <itemPath>../../source/objects/menu/coreTextBox.h</itemPath>
           </logicalFolder>
         </logicalFolder>
         <logicalFolder name="utilities" displayName="utilities" projectFiles="true">
           <logicalFolder name="data" displayName="data" projectFiles="true">
             <itemPath>../../source/utilities/data/coreData.cpp</itemPath>
             <itemPath>../../source/utilities/data/coreData.h</itemPath>
-            <itemPath>../../source/utilities/data/coreLookup.cpp</itemPath>
             <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
             <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
             <itemPath>../../source/utilities/data/coreRand.h</itemPath>
@@ -76,17 +96,16 @@
             <itemPath>../../source/utilities/file/coreArchive.h</itemPath>
             <itemPath>../../source/utilities/file/coreConfig.cpp</itemPath>
             <itemPath>../../source/utilities/file/coreConfig.h</itemPath>
+            <itemPath>../../source/utilities/file/coreLanguage.h</itemPath>
             <itemPath>../../source/utilities/file/coreLog.cpp</itemPath>
             <itemPath>../../source/utilities/file/coreLog.h</itemPath>
           </logicalFolder>
           <logicalFolder name="math" displayName="math" projectFiles="true">
             <itemPath>../../source/utilities/math/coreMath.cpp</itemPath>
             <itemPath>../../source/utilities/math/coreMath.h</itemPath>
-            <itemPath>../../source/utilities/math/coreMatrix.cpp</itemPath>
             <itemPath>../../source/utilities/math/coreMatrix.h</itemPath>
             <itemPath>../../source/utilities/math/coreSpline.cpp</itemPath>
             <itemPath>../../source/utilities/math/coreSpline.h</itemPath>
-            <itemPath>../../source/utilities/math/coreVector.cpp</itemPath>
             <itemPath>../../source/utilities/math/coreVector.h</itemPath>
           </logicalFolder>
         </logicalFolder>
@@ -179,6 +198,36 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreDataBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreDataBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreModel.cpp"
             ex="false"
             tool="1"
@@ -303,6 +352,71 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreParticle.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreParticle.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreSwitchBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
@@ -311,11 +425,6 @@
       <item path="../../source/utilities/data/coreData.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreLookup.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreLookup.h"
@@ -353,6 +462,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/file/coreLanguage.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreLog.cpp"
             ex="false"
             tool="1"
@@ -373,11 +487,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreMatrix.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreMatrix.h"
             ex="false"
             tool="3"
@@ -391,11 +500,6 @@
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreVector.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreVector.h"
@@ -471,6 +575,36 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreDataBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreDataBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreModel.cpp"
             ex="false"
             tool="1"
@@ -595,6 +729,71 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreParticle.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreParticle.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreSwitchBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
@@ -603,11 +802,6 @@
       <item path="../../source/utilities/data/coreData.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreLookup.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreLookup.h"
@@ -645,6 +839,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/file/coreLanguage.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreLog.cpp"
             ex="false"
             tool="1"
@@ -665,11 +864,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreMatrix.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreMatrix.h"
             ex="false"
             tool="3"
@@ -683,11 +877,6 @@
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreVector.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreVector.h"
@@ -763,6 +952,36 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreDataBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreDataBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreModel.cpp"
             ex="false"
             tool="1"
@@ -887,6 +1106,71 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreParticle.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreParticle.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreSwitchBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
@@ -895,11 +1179,6 @@
       <item path="../../source/utilities/data/coreData.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreLookup.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreLookup.h"
@@ -937,6 +1216,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/file/coreLanguage.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreLog.cpp"
             ex="false"
             tool="1"
@@ -957,11 +1241,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreMatrix.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreMatrix.h"
             ex="false"
             tool="3"
@@ -975,11 +1254,6 @@
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreVector.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreVector.h"
@@ -1063,6 +1337,36 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreDataBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreDataBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreModel.cpp"
             ex="false"
             tool="1"
@@ -1187,6 +1491,71 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreParticle.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreParticle.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreSwitchBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
@@ -1195,11 +1564,6 @@
       <item path="../../source/utilities/data/coreData.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreLookup.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreLookup.h"
@@ -1237,6 +1601,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/file/coreLanguage.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreLog.cpp"
             ex="false"
             tool="1"
@@ -1257,11 +1626,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreMatrix.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreMatrix.h"
             ex="false"
             tool="3"
@@ -1275,11 +1639,6 @@
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreVector.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreVector.h"
@@ -1363,6 +1722,36 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreDataBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreDataBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreModel.cpp"
             ex="false"
             tool="1"
@@ -1487,6 +1876,71 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreParticle.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreParticle.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreSwitchBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
@@ -1495,11 +1949,6 @@
       <item path="../../source/utilities/data/coreData.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreLookup.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreLookup.h"
@@ -1537,6 +1986,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/file/coreLanguage.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreLog.cpp"
             ex="false"
             tool="1"
@@ -1557,11 +2011,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreMatrix.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreMatrix.h"
             ex="false"
             tool="3"
@@ -1575,11 +2024,6 @@
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreVector.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreVector.h"
@@ -1662,6 +2106,36 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/coreDataBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreDataBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/coreFrameBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/graphics/coreModel.cpp"
             ex="false"
             tool="1"
@@ -1786,6 +2260,71 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreParticle.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreParticle.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreButton.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreCheckBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreLabel.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreMenu.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreSwitchBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/menu/coreTextBox.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
@@ -1794,11 +2333,6 @@
       <item path="../../source/utilities/data/coreData.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/data/coreLookup.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreLookup.h"
@@ -1836,6 +2370,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/file/coreLanguage.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreLog.cpp"
             ex="false"
             tool="1"
@@ -1856,11 +2395,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreMatrix.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreMatrix.h"
             ex="false"
             tool="3"
@@ -1874,11 +2408,6 @@
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreVector.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreVector.h"

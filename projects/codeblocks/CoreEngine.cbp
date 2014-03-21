@@ -134,6 +134,12 @@
 		<Unit filename="../../source/components/audio/coreSound.h" />
 		<Unit filename="../../source/components/graphics/CoreGraphics.cpp" />
 		<Unit filename="../../source/components/graphics/CoreGraphics.h" />
+		<Unit filename="../../source/components/graphics/coreDataBuffer.cpp" />
+		<Unit filename="../../source/components/graphics/coreDataBuffer.h" />
+		<Unit filename="../../source/components/graphics/coreFont.cpp" />
+		<Unit filename="../../source/components/graphics/coreFont.h" />
+		<Unit filename="../../source/components/graphics/coreFrameBuffer.cpp" />
+		<Unit filename="../../source/components/graphics/coreFrameBuffer.h" />
 		<Unit filename="../../source/components/graphics/coreModel.cpp" />
 		<Unit filename="../../source/components/graphics/coreModel.h" />
 		<Unit filename="../../source/components/graphics/coreShader.cpp" />
@@ -160,6 +166,19 @@
 		<Unit filename="../../source/objects/game/coreObject2D.h" />
 		<Unit filename="../../source/objects/game/coreObject3D.cpp" />
 		<Unit filename="../../source/objects/game/coreObject3D.h" />
+		<Unit filename="../../source/objects/game/coreParticle.cpp" />
+		<Unit filename="../../source/objects/game/coreParticle.h" />
+		<Unit filename="../../source/objects/menu/coreButton.cpp" />
+		<Unit filename="../../source/objects/menu/coreButton.h" />
+		<Unit filename="../../source/objects/menu/coreCheckBox.cpp" />
+		<Unit filename="../../source/objects/menu/coreCheckBox.h" />
+		<Unit filename="../../source/objects/menu/coreLabel.cpp" />
+		<Unit filename="../../source/objects/menu/coreLabel.h" />
+		<Unit filename="../../source/objects/menu/coreMenu.cpp" />
+		<Unit filename="../../source/objects/menu/coreMenu.h" />
+		<Unit filename="../../source/objects/menu/coreSwitchBox.h" />
+		<Unit filename="../../source/objects/menu/coreTextBox.cpp" />
+		<Unit filename="../../source/objects/menu/coreTextBox.h" />
 		<Unit filename="../../source/utilities/data/coreData.cpp" />
 		<Unit filename="../../source/utilities/data/coreData.h" />
 		<Unit filename="../../source/utilities/data/coreLookup.cpp" />
@@ -170,15 +189,14 @@
 		<Unit filename="../../source/utilities/file/coreArchive.h" />
 		<Unit filename="../../source/utilities/file/coreConfig.cpp" />
 		<Unit filename="../../source/utilities/file/coreConfig.h" />
+		<Unit filename="../../source/utilities/file/coreLanguage.h" />
 		<Unit filename="../../source/utilities/file/coreLog.cpp" />
 		<Unit filename="../../source/utilities/file/coreLog.h" />
 		<Unit filename="../../source/utilities/math/coreMath.cpp" />
 		<Unit filename="../../source/utilities/math/coreMath.h" />
-		<Unit filename="../../source/utilities/math/coreMatrix.cpp" />
 		<Unit filename="../../source/utilities/math/coreMatrix.h" />
 		<Unit filename="../../source/utilities/math/coreSpline.cpp" />
 		<Unit filename="../../source/utilities/math/coreSpline.h" />
-		<Unit filename="../../source/utilities/math/coreVector.cpp" />
 		<Unit filename="../../source/utilities/math/coreVector.h" />
 		<Extensions>
 			<code_completion />

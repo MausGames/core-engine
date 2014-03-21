@@ -44,7 +44,7 @@ public:
     const coreProgramShr& DefineProgramShare(const char* pcName);
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetColor4(const coreVector4& vColor)        {m_vColor     = vColor;}
     inline void SetColor3(const coreVector3& vColor)        {m_vColor.xyz(vColor);}
@@ -54,7 +54,7 @@ public:
     inline void SetStatus(const int& iStatus)               {m_iStatus    = iStatus;}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const coreTexturePtr& GetTexture(const coreByte& iUnit)const {SDL_assert(iUnit < CORE_TEXTURE_UNITS); return m_apTexture[iUnit];}
     inline const coreProgramShr& GetProgram()const                      {return m_pProgram;}
@@ -72,7 +72,7 @@ public:
 
 // ****************************************************************
 // object manager
-class coreObjectManager final
+class coreObjectManager final : public coreReset
 {
 private:
 
@@ -85,6 +85,12 @@ private:
 
 public:
 
+
+private:
+    //! reset with the resource manager
+    //! @{
+    void __Reset(const bool& bInit)override;
+    //! @}
 };
 
 

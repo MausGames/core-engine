@@ -99,16 +99,7 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp">
       <Filter>source\utilities\file</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\utilities\math\coreMath.cpp">
-      <Filter>source\utilities\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\utilities\math\coreMatrix.cpp">
-      <Filter>source\utilities\math</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\utilities\math\coreSpline.cpp">
-      <Filter>source\utilities\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\utilities\math\coreVector.cpp">
       <Filter>source\utilities\math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\manager\coreObject.cpp">
@@ -164,6 +155,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\components\graphics\coreDataBuffer.cpp">
       <Filter>source\components\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\math\coreMath.cpp">
+      <Filter>source\utilities\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

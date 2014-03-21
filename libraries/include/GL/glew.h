@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from http://glew.sourceforge.net/
+
 /*
 ** The OpenGL Extension Wrangler Library
 ** Copyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>
@@ -18008,13 +18011,13 @@ typedef struct GLEWContextStruct GLEWContext;
 GLEWAPI GLenum GLEWAPIENTRY glewContextInit (GLEWContext *ctx);
 GLEWAPI GLboolean GLEWAPIENTRY glewContextIsSupported (const GLEWContext *ctx, const char *name);
 
-#define glewInit() glewContextInit(glewGetContext())
+#define glewInit() glewContextInit(&glewGetContext())
 #define glewIsSupported(x) glewContextIsSupported(glewGetContext(), x)
 #define glewIsExtensionSupported(x) glewIsSupported(x)
 
-#define GLEW_GET_VAR(x) (*(const GLboolean*)&(glewGetContext()->x))
+#define GLEW_GET_VAR(x) glewGetContext().x
 #ifdef _WIN32
-#  define GLEW_GET_FUN(x) glewGetContext()->x
+#  define GLEW_GET_FUN(x) glewGetContext().x
 #else
 #  define GLEW_GET_FUN(x) x
 #endif
