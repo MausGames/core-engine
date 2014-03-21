@@ -20,7 +20,8 @@
 // TODO: check normal vector calculations (alignment, outside, etc.)
 // TODO: (collapse vertices (e.g. same pos) and merge nearly identical vertices in this process (with threshold and std::map)) only adapt normals ?
 // TODO: tune down indices size to byte if max index is below 256 (on load or creatindex ?)
-// TODO: enable shared vertex buffers mixed with unique 
+// TODO: enable shared vertex buffers mixed with unique
+// TODO: check out (Multi)Draw(Array|Elements)Indirect
 class coreModel final : public coreResource
 {
 private:
@@ -147,13 +148,13 @@ public:
     inline coreDataBuffer* GetIndexBuffer()                       {return &m_iIndexBuffer;}
     //! @}
 
-    //! set object attributes
+    //! set object properties
     //! @{
     inline void SetRadius(const float& fRadius)                {m_fRadius        = fRadius;}
     inline void SetPrimitiveType(const GLenum& iPrimitiveType) {m_iPrimitiveType = iPrimitiveType;}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const GLuint& GetVertexArray()const    {return m_iVertexArray;}
     inline const coreUint& GetNumVertices()const  {return m_iNumVertices;}

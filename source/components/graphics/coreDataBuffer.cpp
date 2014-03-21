@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+std::u_map<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
+
 
 // ****************************************************************
 // create buffer storage
@@ -15,14 +17,15 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
 {
     SDL_assert(!m_iDataBuffer);
 
-    // save attributes
+    // save properties
     m_iTarget  = iTarget;
     m_iSize    = iSize;
     m_bDynamic = (iUsage != GL_STATIC_DRAW && iUsage != GL_STATIC_READ && iUsage != GL_STATIC_COPY) ? true : false;
 
     // generate and bind buffer 
     glGenBuffers(1, &m_iDataBuffer);
-    glBindBuffer(m_iTarget, m_iDataBuffer);
+    glBindBuffer(iTarget, m_iDataBuffer);
+    s_aiBound[iTarget] = m_iDataBuffer; 
 
     // allocate buffer memory
     if(GLEW_ARB_buffer_storage) glBufferStorage(m_iTarget, m_iSize, pData, m_bDynamic ? GL_MAP_WRITE_BIT : 0);
@@ -39,11 +42,40 @@ void coreDataBuffer::Delete()
     // delete buffer
     glDeleteBuffers(1, &m_iDataBuffer); 
     
-    // reset attributes
+    // reset properties
     m_iDataBuffer = 0;
     m_iTarget     = 0;
     m_iSize       = 0;
     m_bDynamic    = false;
+}
+
+
+// ****************************************************************
+// clear content of the data buffer object
+void coreDataBuffer::Clear()
+{
+    SDL_assert(m_iDataBuffer && m_bDynamic);
+
+    // clear the whole buffer
+    if(GLEW_ARB_clear_buffer_object)
+    {
+        // TODO: implement this weird function
+        //glClearBufferData
+    }
+}
+
+
+// ****************************************************************
+// invalidate content of the data buffer object
+void coreDataBuffer::Invalidate()
+{
+    SDL_assert(m_iDataBuffer && m_bDynamic);
+
+    // invalidate the whole buffer
+    if(GLEW_ARB_invalidate_subdata)
+    {
+        glInvalidateBufferData(m_iDataBuffer);
+    }
 }
 
 
@@ -59,7 +91,7 @@ coreByte* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength)
     if(GLEW_ARB_map_buffer_range)
     {
         // directly map buffer memory
-        return s_cast<coreByte*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT));
+        return s_cast<coreByte*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
     }
     else
     {
@@ -119,7 +151,7 @@ void coreVertexBuffer::Create(const coreUint& iNumVertices, const coreByte& iVer
     // create buffer storage
     this->coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iUsage);
 
-    // save attributes
+    // save properties
     m_iVertexSize = iVertexSize; 
 }
 
@@ -133,7 +165,7 @@ void coreVertexBuffer::Delete()
     // delete buffer storage
     this->coreDataBuffer::Delete();
 
-    // reset attributes
+    // reset properties
     m_iVertexSize = 0;
     m_aAttribute.clear();      
 }
@@ -178,10 +210,14 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
 
         FOR_EACH(it, m_aAttribute)
         {
-            // enable and specify each defined vertex attribute array
+            // enable each defined vertex attribute array
             glEnableVertexAttribArray(it->iLocation);
-            glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, false, it->iOffset);
             glVertexAttribBinding(it->iLocation, iBinding);
+
+            // specify the vertex format
+            if(it->iType >= GL_BYTE && it->iType <= GL_UNSIGNED_INT)
+                glVertexAttribIFormat(it->iLocation, it->iComponents, it->iType,        it->iOffset);
+            else glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, false, it->iOffset);
         }
     }
     else
@@ -191,9 +227,13 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
 
         FOR_EACH(it, m_aAttribute)
         {
-            // enable and specify each defined vertex attribute array
+            // enable each defined vertex attribute array
             glEnableVertexAttribArray(it->iLocation);
-            glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, false, m_iVertexSize, r_cast<const GLvoid*>((long)it->iOffset));
+
+            // specify the vertex format
+            if(it->iType >= GL_BYTE && it->iType <= GL_UNSIGNED_INT)
+                glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType,        m_iVertexSize, r_cast<const GLvoid*>((long)it->iOffset));
+            else glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, false, m_iVertexSize, r_cast<const GLvoid*>((long)it->iOffset));
         }
     } 
 }

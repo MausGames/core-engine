@@ -177,7 +177,7 @@ coreError coreModel::Load(coreFile* pFile)
     // take data from the first mesh
     const md5Mesh& oMesh = oFile.aMesh[0];
 
-    // save attributes
+    // save properties
     m_iNumVertices  = oMesh.aVertex.size();
     m_iNumTriangles = oMesh.aTriangle.size();
     m_iNumIndices   = oMesh.aTriangle.size()*3;
@@ -189,7 +189,7 @@ coreError coreModel::Load(coreFile* pFile)
     coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; // std::memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
     coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; // std::memset(pvOrtho2, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
 
-    // traverse all vertices
+    // loop through all vertices
     for(coreUint i = 0; i < m_iNumVertices; ++i)
     {
         const md5Vertex& oVertex = oMesh.aVertex[i];
@@ -210,7 +210,7 @@ coreError coreModel::Load(coreFile* pFile)
     }
     m_fRadius = coreMath::Sqrt(m_fRadius);
 
-    // traverse all triangles
+    // loop through all triangles
     for(coreUint i = 0; i < m_iNumTriangles; ++i)
     {
         const md5Triangle& oTriangle = oMesh.aTriangle[i];
@@ -291,7 +291,7 @@ coreError coreModel::Unload()
     // delete sync object
     m_Sync.Delete();
 
-    // reset attributes
+    // reset properties
     m_sPath          = "";
     m_iSize          = 0;
     m_iVertexArray   = 0;
@@ -313,7 +313,7 @@ void coreModel::DrawElements()const
     coreModel::Lock();
     {
         // check and draw the model
-        SDL_assert(s_pCurrent == this && m_iIndexBuffer);
+        SDL_assert((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer);
         glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
     }
     coreModel::Unlock();
@@ -324,7 +324,7 @@ void coreModel::DrawElementsInstanced(const coreUint& iCount)const
     coreModel::Lock();
     {
         // check and draw the model instanced
-        SDL_assert(s_pCurrent == this && m_iIndexBuffer);
+        SDL_assert((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer);
         glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
     }
     coreModel::Unlock();
@@ -336,14 +336,14 @@ void coreModel::DrawElementsInstanced(const coreUint& iCount)const
 void coreModel::DrawArrays()const
 {
     // check and draw the model
-    SDL_assert(s_pCurrent == this);
+    SDL_assert(s_pCurrent == this || !s_pCurrent);
     glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
 }
 
 void coreModel::DrawArraysInstanced(const coreUint& iCount)const
 {
     // check and draw the model instanced
-    SDL_assert(s_pCurrent == this);
+    SDL_assert(s_pCurrent == this || !s_pCurrent);
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
@@ -397,8 +397,8 @@ void coreModel::Disable(const bool& bFull)
         {
             // reset vertex array object and data buffers
             if(s_pCurrent->GetVertexArray()) glBindVertexArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER,         0);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            coreDataBuffer::Unbind(GL_ARRAY_BUFFER);
+            coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
         }
 
         // reset current model object
@@ -414,8 +414,9 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
 {
     SDL_assert(!m_iVertexArray);
 
-    // save attributes
-    m_iNumVertices = iNumVertices;
+    // save properties
+    if(m_apiVertexBuffer.empty()) m_iNumVertices = iNumVertices;
+    SDL_assert(m_iNumVertices == iNumVertices);
 
     // allocate vertex buffer
     coreVertexBuffer* pBuffer = new coreVertexBuffer();
@@ -438,7 +439,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const 
 {
     SDL_assert(!m_iVertexArray && !m_iIndexBuffer);
 
-    // save attributes
+    // save properties
     m_iNumIndices = iNumIndices;
 
     // detect index type

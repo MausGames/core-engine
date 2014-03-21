@@ -13,17 +13,17 @@
 
 // ****************************************************************
 // data buffer class
-// TODO: track currently bound data buffer per target (+ assertions)
 // TODO: enable read operations (currently only static and write/dynamic)
 class coreDataBuffer
 {
 private:
-    GLuint m_iDataBuffer;   //!< data buffer identifier
-
-    GLenum m_iTarget;       //!< buffer target (e.g. GL_ARRAY_BUFFER)
-    coreUint m_iSize;       //!< data size in bytes 
-
-    bool m_bDynamic;        //!< storage type
+    GLuint m_iDataBuffer;                          //!< data buffer identifier
+    bool m_bDynamic;                               //!< storage type
+                                                         
+    GLenum m_iTarget;                              //!< buffer target (e.g. GL_ARRAY_BUFFER)
+    coreUint m_iSize;                              //!< data size in bytes 
+                                                         
+    static std::u_map<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets
 
 
 public:
@@ -34,13 +34,26 @@ public:
     //! @{
     void Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const GLenum& iUsage);
     void Delete();
-    inline void Bind() {SDL_assert(m_iDataBuffer); glBindBuffer(m_iTarget, m_iDataBuffer);}
+    //! @}
+
+    //! bind and unbind the data buffer object
+    //! @{
+    inline void Bind()const                                               {SDL_assert(m_iDataBuffer); coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
+    static inline void Bind(const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
+    static inline void Unbind(const GLenum& iTarget)                      {coreDataBuffer::Bind(iTarget, 0);}
+    //! @}
+
+    //! reset content of the data buffer object
+    //! @{
+    void Clear();
+    void Invalidate();
     //! @}
 
     //! modify buffer memory
     //! @{
     coreByte* Map(const coreUint& iOffset, const coreUint& iLength);
     void Unmap(coreByte* pPointer);
+    inline const bool& IsDynamic()const {return m_bDynamic;}
     //! @}
 
     //! access buffer directly
@@ -48,12 +61,11 @@ public:
     inline operator const GLuint& ()const noexcept {return m_iDataBuffer;}
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const GLuint& GetDataBuffer()const {return m_iDataBuffer;}
     inline const GLenum& GetTarget()const     {return m_iTarget;}
     inline const coreUint& GetSize()const     {return m_iSize;}
-    inline const bool& GetDynamic()const      {return m_bDynamic;}
     //! @}
 
 
@@ -107,9 +119,9 @@ public:
 // constructor
 constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 : m_iDataBuffer (0)
+, m_bDynamic    (false)
 , m_iTarget     (0)
 , m_iSize       (0)
-, m_bDynamic    (false)
 {
 }
 

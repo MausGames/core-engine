@@ -91,8 +91,23 @@ void coreFrameBuffer::Clear()
 {
     SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
 
-    // reset the whole frame buffer
+    // clear the whole frame buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+
+// ****************************************************************
+// invalidate content of the frame buffer
+void coreFrameBuffer::Invalidate()
+{
+    SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
+                 
+    // invalidate the whole frame buffer
+    if(GLEW_ARB_invalidate_subdata)
+    {
+        constexpr_var GLenum aiAttachment[2] = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
+        glInvalidateFramebuffer(GL_FRAMEBUFFER, 2, aiAttachment);
+    }
 }
 
 

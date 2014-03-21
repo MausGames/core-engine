@@ -52,12 +52,13 @@ public:
     void EndWrite();
     //! @}
 
-    //! clear content of the frame buffer
+    //! reset content of the frame buffer
     //! @{
     void Clear();
+    void Invalidate();
     //! @}
 
-    //! get object attributes
+    //! get object properties
     //! @{
     inline const GLuint& GetFrameBuffer()const     {return m_iFrameBuffer;}
     inline const coreTexturePtr& GetTexture()const {return m_pTexture;}
