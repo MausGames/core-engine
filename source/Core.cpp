@@ -15,6 +15,7 @@
 
 coreLog*             Core::Log               = NULL;
 coreConfig*          Core::Config            = NULL;
+coreLanguage*        Core::Language          = NULL;
 coreRand*            Core::Rand              = NULL;
 CoreSystem*          Core::System            = NULL;
 CoreGraphics*        Core::Graphics          = NULL;
@@ -52,6 +53,9 @@ Core::Core()noexcept
     Manager::Memory   = new coreMemoryManager();
     Manager::Resource = new coreResourceManager();
     Manager::Object   = new coreObjectManager();
+
+    // load language file
+    Language = new coreLanguage(Config->GetString(CORE_CONFIG_SYSTEM_LANGUAGE));
 }
 
 
@@ -72,6 +76,7 @@ Core::~Core()
 
     // delete utilities
     SAFE_DELETE(Rand)
+    SAFE_DELETE(Language)
     SAFE_DELETE(Config)
     SAFE_DELETE(Log)
 }
@@ -178,7 +183,7 @@ int Core::__Run()
     
         // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())
-            Core::Manager::Resource->__Run();
+            Core::Manager::Resource->__RunThread();
     }
 
     // reset logging level

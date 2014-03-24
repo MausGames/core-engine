@@ -59,12 +59,12 @@ void coreLabel::Render()
         // check if requested font is loaded
         if(!m_pFont.IsLoaded()) return;
 
-        // update the texture of the label
+        // generate the texture
         if(m_iGenerate & 2) this->__Generate(m_sText.c_str(), m_iLength ? true : false);
         if(m_iGenerate & 1)
         {
             // update the object size
-            this->SetSize(m_fScale * m_vTexSize * (m_vResolution/Core::System->GetResolution().x) / CORE_LABEL_DETAIL);
+            this->SetSize(m_fScale * m_vTexSize * (m_vResolution/Core::System->GetResolution().x) * (1.0f/CORE_LABEL_DETAIL));
             coreObject2D::Move();
         }
         m_iGenerate = 0;
@@ -77,7 +77,7 @@ void coreLabel::Render()
 
 // ****************************************************************    
 // move the label
-// TODO: transformation matrix is not always immediately updated, because re-generation must be in Render(), with Move() afterwards
+// TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
 void coreLabel::Move()
 {
     if(m_sText.empty()) return;
@@ -100,7 +100,7 @@ bool coreLabel::SetText(const char* pcText, int iNum)
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText) || m_sText.length() != (coreUint)iNum)
     {
-        m_iGenerate |= 3; 
+        m_iGenerate |= 3;
 
         // change the current text
         m_sText.assign(pcText, iNum);
@@ -117,10 +117,10 @@ void coreLabel::__Reset(const bool& bInit)
 {
     if(bInit)
     {
-        // regenerate empty base texture
+        // recreate empty base texture
         m_apTexture[0]->Generate();
 
-        // invoke texture update
+        // invoke texture generation
         m_vResolution = coreVector2(0.0f,0.0f);
         m_iGenerate   = 3;
     }
@@ -129,7 +129,7 @@ void coreLabel::__Reset(const bool& bInit)
 
 
 // ****************************************************************    
-// update the texture of the label
+// generate the texture
 // TODO: dynamic textures with glTexStorage2D only with delete ?
 // TODO: PBOs ?
 void coreLabel::__Generate(const char* pcText, const bool& bSub)
@@ -145,7 +145,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
     // get new texture resolution
     const coreVector2 vNewResolution = coreVector2(float(pConvert->w), float(pConvert->h));
 
-    // update the texture
+    // generate the texture
     m_apTexture[0]->Enable(0);
     if(bSub)
     {

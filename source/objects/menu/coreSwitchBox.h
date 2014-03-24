@@ -18,7 +18,7 @@
 
 // ****************************************************************
 // menu switch-box class
-template <typename T> class coreSwitchBox final : public coreObject2D
+template <typename T> class coreSwitchBox final : public coreObject2D, public coreTranslate
 {
 public:
     //! internal type
@@ -49,6 +49,7 @@ public:
     //! manage entries
     //! @{
     void AddEntry(const char* pcEntry, const T& Value);
+    void AddEntryLanguage(const char* pcKey, const T& Value);
     void DeleteEntry(const coreUint& iIndex);
     void ClearEntries();
     //! @}
@@ -85,9 +86,9 @@ public:
 private:
     DISABLE_COPY(coreSwitchBox)
 
-    //! update display of current entry
+    //! update object after modification
     //! @{
-    inline void __Update() {m_pCaption->SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first.c_str());}
+    inline void __Update()override {m_pCaption->SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first.c_str());}
     //! @}
 };
 
@@ -239,8 +240,15 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcEntry, const
     // create new entry
     m_aEntry.push_back(coreEntry(pcEntry, Value));
 
-    // update display of current entry
+    // update text
     if(m_aEntry.size() == 1) this->__Update();
+}
+
+template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const char* pcKey, const T& Value)
+{
+    // create and bind new entry
+    this->AddEntry("", Value);
+    this->_BindString(&m_aEntry.back().first, pcKey);
 }
 
 
@@ -248,13 +256,17 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcEntry, const
 // remove entry
 template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUint& iIndex)
 {
-    SDL_assert(iIndex < m_aEntry.size()); 
+    SDL_assert(iIndex < m_aEntry.size());
+    auto it = m_aEntry.begin()+iIndex;
+
+    // unbind entry
+    this->_UnbindString(&it->first);
 
     // remove entry and update index
-    m_aEntry.erase(m_aEntry.begin()+iIndex); 
+    m_aEntry.erase(it); 
     if(iIndex < m_iCurIndex) --m_iCurIndex;
 
-    // update display of current entry
+    // update text
     this->__Update();
 }
 
@@ -263,11 +275,15 @@ template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUint& iIndex)
 // remove all entries
 template <typename T> void coreSwitchBox<T>::ClearEntries()
 {
+    // unbind all entries
+    FOR_EACH(it, m_aEntry)
+        this->_UnbindString(&it->first);
+
     // remove all entries and reset index
     m_aEntry.clear(); 
     m_iCurIndex = 0;
 
-    // update display of current entry
+    // update text
     this->__Update();
 }
 
@@ -282,7 +298,7 @@ template <typename T> void coreSwitchBox<T>::Select(const coreUint& iIndex)
     if(m_iCurIndex == iIndex) return;
     m_iCurIndex = iIndex; 
     
-    // update display of current entry
+    // update text
     this->__Update();
 }
 
@@ -297,7 +313,7 @@ template <typename T> void coreSwitchBox<T>::Next()
     if(++m_iCurIndex >= m_aEntry.size()) 
         m_iCurIndex = m_bEndless ? 0 : (m_aEntry.size()-1);
 
-    // update display of current entry
+    // update text
     this->__Update();
 }
 
@@ -312,7 +328,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
     if(--m_iCurIndex >= m_aEntry.size())
         m_iCurIndex = m_bEndless ? (m_aEntry.size()-1) : 0;
 
-    // update display of current entry
+    // update text
     this->__Update();
 }
 

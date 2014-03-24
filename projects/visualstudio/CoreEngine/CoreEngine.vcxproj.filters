@@ -159,6 +159,9 @@
     <ClCompile Include="..\..\..\source\utilities\math\coreMath.cpp">
       <Filter>source\utilities\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\file\coreLanguage.cpp">
+      <Filter>source\utilities\file</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">

@@ -15,7 +15,7 @@
 // menu label class
 // TODO: 3d text with link or own class ?
 // TODO: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height)
-class coreLabel final : public coreObject2D, public coreReset
+class coreLabel final : public coreObject2D, public coreReset, public coreTranslate
 {
 private:
     coreFontPtr m_pFont;         //!< font object
@@ -27,7 +27,7 @@ private:
     std::string m_sText;         //!< current text
     float m_fScale;              //!< scale factor
 
-    coreByte m_iGenerate;        //!< generate status (0 = do nothing | 1 = update only size | 3 = update texture and size)
+    coreByte m_iGenerate;        //!< generation status (0 = do nothing | 1 = update only size | 3 = update texture and size)
 
 
 public:
@@ -43,7 +43,8 @@ public:
     //! set object properties
     //! @{
     bool SetText(const char* pcText, int iNum = -1);
-    inline void SetScale(const float& fScale) {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
+    inline void SetTextLanguage(const char* pcKey) {this->_BindString(&m_sText, pcKey);}
+    inline void SetScale(const float& fScale)      {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
     //! @}
     
     //! get object properties
@@ -61,7 +62,12 @@ private:
     void __Reset(const bool& bInit)override;
     //! @}
 
-    //! update the texture of the label 
+    //! update object after modification
+    //! @{
+    inline void __Update()override {m_iGenerate |= 3;}
+    //! @}
+
+    //! generate the texture
     //! @{
     void __Generate(const char* pcText, const bool& bSub);
     //! @}

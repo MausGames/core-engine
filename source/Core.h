@@ -116,13 +116,11 @@
     #define noexcept       throw()
     #define __thread       __declspec(thread)
     #define align_16(x)    __declspec(align(16)) x
-    #define sse_save(x)    align_16(x)
     #define constexpr_func inline
     #define constexpr_var  const
 #else
     #define delete_func    = delete
     #define align_16(x)    x __attribute__((aligned(16)))
-    #define sse_save(x)    static __thread align_16(x)
     #define constexpr_func constexpr
     #define constexpr_var  constexpr
 #endif
@@ -256,6 +254,7 @@ class coreParticleEffect;
 
 class coreLog;
 class coreConfig;
+class coreLanguage;
 class coreRand;
 class CoreSystem;
 class CoreGraphics;
@@ -308,6 +307,7 @@ class Core final
 public:
     static coreLog* Log;             //!< log file
     static coreConfig* Config;       //!< configuration file
+    static coreLanguage* Language;   //!< language file
     static coreRand* Rand;           //!< global random number generator
 
     static CoreSystem* System;       //!< main system component
@@ -358,6 +358,7 @@ private:
 
 #include "utilities/file/coreLog.h"
 #include "utilities/file/coreConfig.h"
+#include "utilities/file/coreLanguage.h"
 #include "utilities/file/coreArchive.h"
 
 #include "utilities/math/coreMath.h"

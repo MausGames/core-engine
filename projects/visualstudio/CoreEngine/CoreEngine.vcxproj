@@ -143,6 +143,7 @@
     <ClCompile Include="..\..\..\source\utilities\data\coreRand.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreArchive.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreConfig.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\file\coreLanguage.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp" />
     <ClCompile Include="..\..\..\source\utilities\math\coreMath.cpp" />
     <ClCompile Include="..\..\..\source\utilities\math\coreSpline.cpp" />
