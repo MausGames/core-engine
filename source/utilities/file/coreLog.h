@@ -25,7 +25,7 @@
 class coreLog final
 {
 private:
-    std::string m_sPath;    //!< relative path of the log file
+    std::string m_sPath;    //!< relative path of the file
     int m_iLevel;           //!< logging level (0 = all | 1 = only non-errors | -1 = only errors)
 
     SDL_threadID m_iMain;   //!< thread-ID of the creator of this log
@@ -49,9 +49,10 @@ public:
     inline void ListEnd()                                                                 {if(m_iLevel >= 0) this->__Write(false, "</ul>");}
     //! @}
 
-    //! set logging level
+    //! control logging level
     //! @{
     inline void SetLevel(const int& iLevel) {m_iLevel = iLevel;}
+    inline const int& GetLevel()const       {return m_iLevel;}
     //! @}
 
     //! control OpenGL debugging

@@ -207,17 +207,17 @@ public:
     //! reset all resources and reset-objects
     //! @{
     void Reset(const bool& bInit);
-    inline void AddReset(coreReset* pObject)    {SDL_assert(!m_apReset.count(pObject)); m_apReset.insert(pObject);}
-    inline void RemoveReset(coreReset* pObject) {SDL_assert( m_apReset.count(pObject)); m_apReset.erase(pObject);}
+    inline void BindReset(coreReset* pObject)   {SDL_assert(!m_apReset.count(pObject)); m_apReset.insert(pObject);}
+    inline void UnbindReset(coreReset* pObject) {SDL_assert( m_apReset.count(pObject)); m_apReset.erase(pObject);}
     //! @}
 
 
 private:
     //! resource thread implementations
     //! @{
-    int __Init()override;
-    int __Run()override;
-    void __Exit()override;
+    int __InitThread()override;
+    int __RunThread()override;
+    void __ExitThread()override;
     //! @}
 };
 

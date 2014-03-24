@@ -23,6 +23,7 @@
 // TODO: FOV and clipping planes should be controlled differently
 // TODO: implement post-processing pipeline (in CoreGraphics or own class?)
 // TODO: implement conditional rendering (e.g. occlusion queries)
+// TODO: persistend mapped buffers, multidrawindirect, array textures
 class CoreGraphics final
 {
 private:
@@ -72,7 +73,7 @@ public:
     //! control camera and view
     //! @{
     void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
-    void ResizeView(coreVector2 vResolution);
+    void ResizeView(coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
     //! @}
 
     //! control ambient

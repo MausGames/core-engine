@@ -134,17 +134,17 @@ void coreParticleSystem::Render()
                     if(pOrigin)
                     {
                         const coreVector3 vPosition = pOrigin->GetPosition() + Current.vPosition;
-                        std::memcpy(pRange, &vPosition, 3*sizeof(float));
+                        std::memcpy(pRange, &vPosition, sizeof(coreVector3));
                     }
-                    else std::memcpy(pRange, &Current.vPosition, 3*sizeof(float));
+                    else std::memcpy(pRange, &Current.vPosition, sizeof(coreVector3));
 
                     // compress remaining data
-                    const coreVector3 vData  = coreVector3(Current.fSize, Current.fAngle, pParticle->GetValue());
+                    const coreVector3 vData  = coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue());
                     const coreUint    iColor = Current.vColor.ColorPack();
 
                     // write remaining data to the buffer
-                    std::memcpy(pRange + 3*sizeof(float), &vData,  3*sizeof(float));
-                    std::memcpy(pRange + 6*sizeof(float), &iColor, 1*sizeof(coreUint));
+                    std::memcpy(pRange + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
+                    std::memcpy(pRange + 2*sizeof(coreVector3), &iColor, sizeof(coreUint));
                     pRange += CORE_PARTICLE_SIZE;
                 }
 
@@ -173,7 +173,7 @@ void coreParticleSystem::Render()
 
             // update all particle uniforms
             m_pProgram->SendUniform(CORE_PARTICLE_UNIFORM_POSITION, pOrigin ? (pOrigin->GetPosition() + Current.vPosition) : Current.vPosition);
-            m_pProgram->SendUniform(CORE_PARTICLE_UNIFORM_DATA,     coreVector3(Current.fSize, Current.fAngle, pParticle->GetValue()));
+            m_pProgram->SendUniform(CORE_PARTICLE_UNIFORM_DATA,     coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue()));
             m_pProgram->SendUniform(CORE_PARTICLE_UNIFORM_COLOR,    Current.vColor);
             
             // draw the model

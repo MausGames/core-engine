@@ -27,7 +27,7 @@
 
 // ****************************************************************
 // particle class
-// TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee)
+// TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee, solve in shader!)
 class coreParticle final
 {
 public:
@@ -35,7 +35,7 @@ public:
     struct coreState
     {
         coreVector3 vPosition;   //!< position of the particle
-        float fSize;             //!< size-factor of the particle
+        float fScale;            //!< scale-factor of the particle
         float fAngle;            //!< orientation-angle of the particle
         coreVector4 vColor;      //!< RGBA color-value
 
@@ -74,7 +74,7 @@ public:
     //! animate the particle relative
     //! @{
     inline void SetPositionRel(const coreVector3& vStart, const coreVector3& vMove)noexcept {m_CurrentState.vPosition = vStart; m_MoveState.vPosition = vMove;}
-    inline void SetSizeRel(const float& fStart, const float& fMove)noexcept                 {m_CurrentState.fSize     = fStart; m_MoveState.fSize     = fMove;}
+    inline void SetScaleRel(const float& fStart, const float& fMove)noexcept                {m_CurrentState.fScale    = fStart; m_MoveState.fScale    = fMove;}
     inline void SetAngleRel(const float& fStart, const float& fMove)noexcept                {m_CurrentState.fAngle    = fStart; m_MoveState.fAngle    = fMove;}
     inline void SetColor4Rel(const coreVector4& vStart, const coreVector4& vMove)noexcept   {m_CurrentState.vColor    = vStart; m_MoveState.vColor    = vMove;}
     //! @}
@@ -82,7 +82,7 @@ public:
     //! animate the particle absolute
     //! @{
     inline void SetPositionAbs(const coreVector3& vStart, const coreVector3& vEnd)noexcept {this->SetPositionRel(vStart, vEnd - vStart);}
-    inline void SetSizeAbs(const float& fStart, const float& fEnd)noexcept                 {this->SetSizeRel    (fStart, fEnd - fStart);}
+    inline void SetScaleAbs(const float& fStart, const float& fEnd)noexcept                {this->SetScaleRel   (fStart, fEnd - fStart);}
     inline void SetAngleAbs(const float& fStart, const float& fEnd)noexcept                {this->SetAngleRel   (fStart, fEnd - fStart);}
     inline void SetColor4Abs(const coreVector4& vStart, const coreVector4& vEnd)noexcept   {this->SetColor4Rel  (vStart, vEnd - vStart);}
     //! @}
@@ -90,7 +90,7 @@ public:
     //! animate the particle static
     //! @{
     inline void SetPositionStc(const coreVector3& vStatic)noexcept {this->SetPositionRel(vStatic, coreVector3(0.0f,0.0f,0.0f));}
-    inline void SetSizeStc(const float& fStatic)noexcept           {this->SetSizeRel    (fStatic, 0.0f);}
+    inline void SetScaleStc(const float& fStatic)noexcept          {this->SetScaleRel   (fStatic, 0.0f);}
     inline void SetAngleStc(const float& fStatic)noexcept          {this->SetAngleRel   (fStatic, 0.0f);}
     inline void SetColor4Stc(const coreVector4& vStatic)noexcept   {this->SetColor4Rel  (vStatic, coreVector4(0.0f,0.0f,0.0f,0.0f));}
     //! @}
@@ -215,21 +215,20 @@ public:
     inline coreParticle* CreateParticle() {return m_pSystem->CreateParticle(m_pThis);}
     //! @}
 
-    //! control dynamic behavior
-    //! @{
-    inline void MakeDynamic()    {m_pThis = this;}
-    inline bool IsDynamic()const {return (m_pThis == this) ? true : false;}
-    //! @}
-
     //! change associated particle system object
     //! @{
     void ChangeSystem(coreParticleSystem* pSystem, const bool& bUnbind);
     //! @}
 
+    //! check dynamic behavior
+    //! @{
+    inline bool IsDynamic()const {return (m_pThis == this) ? true : false;}
+    //! @}
+
     //! set object properties
     //! @{
-    inline void SetTimeID(const int& iTimeID)    {SDL_assert(m_pThis == this); m_iTimeID = iTimeID;}
-    inline void SetOrigin(coreObject3D* pOrigin) {SDL_assert(m_pThis == this); m_pOrigin = pOrigin;}
+    inline void SetTimeID(const int& iTimeID)    {m_pThis = this; m_iTimeID = iTimeID;}
+    inline void SetOrigin(coreObject3D* pOrigin) {m_pThis = this; m_pOrigin = pOrigin;}
     //! @}
 
     //! get object properties
@@ -245,7 +244,7 @@ public:
 // constructor
 constexpr_func coreParticle::coreState::coreState()noexcept
 : vPosition (coreVector3(0.0f,0.0f,0.0f))
-, fSize     (0.0f)
+, fScale    (0.0f)
 , fAngle    (0.0f)
 , vColor    (coreVector4(1.0f,1.0f,1.0f,1.0f))
 {
@@ -274,7 +273,7 @@ inline void coreParticle::Update()noexcept
 
     // update current state
     m_CurrentState.vPosition += m_MoveState.vPosition * fTime;
-    m_CurrentState.fSize     += m_MoveState.fSize     * fTime;
+    m_CurrentState.fScale    += m_MoveState.fScale    * fTime;
     m_CurrentState.fAngle    += m_MoveState.fAngle    * fTime;
     m_CurrentState.vColor    += m_MoveState.vColor    * fTime;
 }

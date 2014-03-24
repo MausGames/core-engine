@@ -69,6 +69,7 @@ public:
     static const char* StrExtension(const char* pcInput);
     static float StrVersion(const char* pcInput);
     static void StrSkip(const char** ppcInput, const int &iNum);
+    static void StrTrim(std::string* psInput);
     //! @}
 
     //! open URL with standard web-browser

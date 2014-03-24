@@ -18,6 +18,9 @@ coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iTyp
 , m_iDepthBuffer (0)
 , m_vResolution  (vResolution)
 , m_iType        (iType)
+, m_fFOV         (Core::Graphics->GetFOV())
+, m_fNearClip    (Core::Graphics->GetNearClip())
+, m_fFarClip     (Core::Graphics->GetFarClip())
 {
     // create own texture as render target
     if(pcLink) m_pTexture = Core::Manager::Resource->LoadLink<coreTexture>(pcLink);
@@ -51,8 +54,13 @@ void coreFrameBuffer::StartWrite()
     if(m_iFrameBuffer) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
     // set view
-    if(m_vResolution != Core::System->GetResolution())
-        Core::Graphics->ResizeView(m_vResolution);
+    if(m_vResolution != Core::System->GetResolution() ||
+       m_fFOV        != Core::Graphics->GetFOV()      ||
+       m_fNearClip   != Core::Graphics->GetNearClip() ||
+       m_fFarClip    != Core::Graphics->GetFarClip())
+    {
+        Core::Graphics->ResizeView(m_vResolution, m_fFOV, m_fNearClip, m_fFarClip);
+    }
 }
 
 
@@ -80,8 +88,14 @@ void coreFrameBuffer::EndWrite()
     }
 
     // reset view
-    if(m_vResolution != Core::System->GetResolution())
-        Core::Graphics->ResizeView(Core::System->GetResolution());
+    if(m_vResolution != Core::System->GetResolution() ||
+       m_fFOV        != Core::Graphics->GetFOV()      ||
+       m_fNearClip   != Core::Graphics->GetNearClip() ||
+       m_fFarClip    != Core::Graphics->GetFarClip())
+    {
+        Core::Graphics->ResizeView(Core::System->GetResolution(), Core::Graphics->GetFOV(), 
+                                   Core::Graphics->GetNearClip(), Core::Graphics->GetFarClip());
+    }
 }
 
 

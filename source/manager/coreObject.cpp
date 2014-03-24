@@ -81,9 +81,9 @@ void coreObjectManager::__Reset(const bool& bInit)
         coreObject2D::s_pModel->SetPrimitiveType(GL_TRIANGLE_STRIP);
 
         // define vertex data
-        coreVertexBuffer* pBuffer = coreObject2D::s_pModel->CreateVertexBuffer(4, sizeof(float)*5, afDataStrip, GL_STATIC_DRAW);
+        coreVertexBuffer* pBuffer = coreObject2D::s_pModel->CreateVertexBuffer(4, 5*sizeof(float), afDataStrip, GL_STATIC_DRAW);
         pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, 0);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, sizeof(float)*3);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, 3*sizeof(float));
 
         // use same model in particle systems
         coreParticleSystem::s_pModel = coreObject2D::s_pModel;

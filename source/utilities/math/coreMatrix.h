@@ -36,9 +36,35 @@ public:
                                const float& f21, const float& f22, const float& f23,
                                const float& f31, const float& f32, const float& f33)noexcept;
 
+    //! scalar calculation operators
+    //! @{
+    constexpr_func coreMatrix3 operator * (const float& f)const noexcept;
+    constexpr_func coreMatrix3 operator / (const float& f)const noexcept                        {return *this * (1.0f/f);}
+    inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
+    inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
+    friend constexpr_func coreMatrix3 operator * (const float& f, const coreMatrix3& v)noexcept {return v * f;}
+    //! @}
+
     //! convert matrix
     //! @{
     constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    //! @}
+
+    //! transpose matrix
+    //! @{
+    inline coreMatrix3& Transpose()noexcept;
+    inline coreMatrix3 Transposed()const noexcept {return coreMatrix3(*this).Transpose();}
+    //! @}
+
+    //! inverse matrix
+    //! @{
+    inline coreMatrix3& Inverse()noexcept;
+    inline coreMatrix3 Inversed()const noexcept {return coreMatrix3(*this).Inverse();}
+    //! @}
+
+    //! direct functions
+    //! @{
+    constexpr_func float Determinant()const noexcept;
     //! @}
 };
 
@@ -109,10 +135,10 @@ public:
     inline coreMatrix4 Transposed()const noexcept {return coreMatrix4(*this).Transpose();}
     //! @}
 
-    //! invert matrix
+    //! inverse matrix
     //! @{
-    inline coreMatrix4& Invert()noexcept;
-    inline coreMatrix4 Inverted()const noexcept {return coreMatrix4(*this).Invert();}
+    inline coreMatrix4& Inverse()noexcept;
+    inline coreMatrix4 Inversed()const noexcept {return coreMatrix4(*this).Inverse();}
     //! @}
 
     //! direct functions
@@ -156,6 +182,49 @@ constexpr_func coreMatrix3::coreMatrix3(const float& f11, const float& f12, cons
 , _21 (f21), _22 (f22), _23 (f23)
 , _31 (f31), _32 (f32), _33 (f33)
 {
+}
+
+
+// ****************************************************************
+// multiplication with scalar
+constexpr_func coreMatrix3 coreMatrix3::operator * (const float& f)const noexcept
+{
+    return coreMatrix3(_11*f, _12*f, _13*f,
+                       _21*f, _22*f, _23*f,
+                       _31*f, _32*f, _33*f);
+}
+
+
+// ****************************************************************
+// transpose matrix
+inline coreMatrix3& coreMatrix3::Transpose()noexcept
+{
+    *this = coreMatrix3(_11, _21, _31,
+                        _12, _22, _32,
+                        _13, _23, _33);
+
+    return *this;
+}
+
+
+// ****************************************************************
+// inverse matrix
+inline coreMatrix3& coreMatrix3::Inverse()noexcept
+{
+    *this = coreMatrix3(_22*_33 - _23*_32, _13*_32 - _12*_33, _12*_23 - _13*_22,
+                        _23*_31 - _21*_33, _11*_33 - _13*_31, _13*_21 - _11*_23,
+                        _21*_32 - _22*_31, _13*_31 - _11*_32, _11*_22 - _12*_21)
+                        / this->Determinant();
+
+    return *this;
+}
+
+
+// ****************************************************************
+// calculate determinant
+constexpr_func float coreMatrix3::Determinant()const noexcept
+{
+    return _11*_22*_33 + _12*_23*_31 + _13*_21*_32 - _13*_22*_31 - _12*_21*_33 - _11*_23*_32;
 }
 
 
@@ -243,8 +312,8 @@ inline coreMatrix4& coreMatrix4::Transpose()noexcept
 
 
 // ****************************************************************
-// invert matrix
-inline coreMatrix4& coreMatrix4::Invert()noexcept
+// inverse matrix
+inline coreMatrix4& coreMatrix4::Inverse()noexcept
 {
     *this = coreMatrix4(_23*_34*_42 - _24*_33*_42 + _24*_32*_43 - _22*_34*_43 - _23*_32*_44 + _22*_33*_44,
                         _14*_33*_42 - _13*_34*_42 - _14*_32*_43 + _12*_34*_43 + _13*_32*_44 - _12*_33*_44,

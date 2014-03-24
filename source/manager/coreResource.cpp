@@ -67,7 +67,7 @@ void coreResourceHandle::__Update()
 coreReset::coreReset()noexcept
 {
     // add object to resource manager
-    Core::Manager::Resource->AddReset(this);
+    Core::Manager::Resource->BindReset(this);
 }
 
 
@@ -76,7 +76,7 @@ coreReset::coreReset()noexcept
 coreReset::~coreReset()
 {
     // remove object from resource manager
-    Core::Manager::Resource->RemoveReset(this);
+    Core::Manager::Resource->UnbindReset(this);
 }
 
 
@@ -205,7 +205,7 @@ void coreResourceManager::Reset(const bool& bInit)
 
 // ****************************************************************
 // init resource thread
-int coreResourceManager::__Init()
+int coreResourceManager::__InitThread()
 {
     // assign secondary OpenGL context to resource thread
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphics->GetResourceContext()))
@@ -223,7 +223,7 @@ int coreResourceManager::__Init()
 
 // ****************************************************************
 // run resource thread
-int coreResourceManager::__Run()
+int coreResourceManager::__RunThread()
 {
     if(m_bActive)
     {
@@ -237,7 +237,7 @@ int coreResourceManager::__Run()
 
 // ****************************************************************
 // exit resource thread
-void coreResourceManager::__Exit()
+void coreResourceManager::__ExitThread()
 {
     // dissociate secondary OpenGL context from resource thread
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);

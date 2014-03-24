@@ -39,6 +39,10 @@ private:
     coreVector2 m_vResolution;            //!< resolution of the frame buffer
     int m_iType;                          //!< type of the frame buffer
 
+    float m_fFOV;                         //!< field-of-view
+    float m_fNearClip;                    //!< near clipping plane
+    float m_fFarClip;                     //!< far clipping plane
+
     static coreFrameBuffer* s_pCurrent;   //!< currently active frame buffer object
 
 
@@ -58,6 +62,13 @@ public:
     void Invalidate();
     //! @}
 
+    //! set object properties
+    //! @{
+    inline void SetFOV(const float& fFOV)           {m_fFOV      = fFOV;}
+    inline void SetNearClip(const float& fNearClip) {m_fNearClip = fNearClip;}
+    inline void SetFarClip(const float& fFarClip)   {m_fFarClip  = fFarClip;}
+    //! @}
+
     //! get object properties
     //! @{
     inline const GLuint& GetFrameBuffer()const     {return m_iFrameBuffer;}
@@ -65,6 +76,9 @@ public:
     inline const GLuint& GetDepthBuffer()const     {return m_iDepthBuffer;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const int& GetType()const               {return m_iType;}
+    inline const float& GetFOV()const              {return m_fFOV;}
+    inline const float& GetNearClip()const         {return m_fNearClip;}
+    inline const float& GetFarClip()const          {return m_fFarClip;}
     //! @}
 
     //! get currently active frame buffer object

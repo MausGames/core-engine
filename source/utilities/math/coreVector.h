@@ -97,8 +97,8 @@ public:
     //! @{
     inline float Length()const noexcept              {return coreMath::Sqrt(this->LengthSq());}
     constexpr_func float LengthSq()const noexcept    {return (x*x + y*y);}
-    constexpr_func float Min()const noexcept         {return coreMath::Min(x, y);}
-    constexpr_func float Max()const noexcept         {return coreMath::Max(x, y);}
+    constexpr_func float Min()const noexcept         {return MIN(x, y);}
+    constexpr_func float Max()const noexcept         {return MAX(x, y);}
     constexpr_func float AspectRatio()const noexcept {return (x/y);}
     inline float Angle()const noexcept               {if(y == 0.0f) return (x < 0.0f) ? TO_RAD(90.0f) : TO_RAD(270.0f); return coreMath::Atan(x/y) + ((y <= 0.0f) ? PI : 0.0f);}
     //! @}
@@ -207,8 +207,8 @@ public:
     //! @{
     inline float Length()const noexcept           {return coreMath::Sqrt(this->LengthSq());}
     constexpr_func float LengthSq()const noexcept {return (x*x + y*y + z*z);}
-    constexpr_func float Min()const noexcept      {return coreMath::Min(coreMath::Min(x, y), z);}
-    constexpr_func float Max()const noexcept      {return coreMath::Max(coreMath::Max(x, y), z);}
+    constexpr_func float Min()const noexcept      {return MIN(MIN(x, y), z);}
+    constexpr_func float Max()const noexcept      {return MAX(MAX(x, y), z);}
     //! @}
 
     //! static functions
@@ -318,8 +318,8 @@ public:
     //! @{
     inline float Length()const noexcept           {return coreMath::Sqrt(this->LengthSq());}
     constexpr_func float LengthSq()const noexcept {return (x*x + y*y + z*z + w*w);}
-    constexpr_func float Min()const noexcept      {return coreMath::Min(coreMath::Min(coreMath::Min(x, y), z), w);}
-    constexpr_func float Max()const noexcept      {return coreMath::Max(coreMath::Max(coreMath::Max(x, y), z), w);}
+    constexpr_func float Min()const noexcept      {return MIN(MIN(MIN(x, y), z), w);}
+    constexpr_func float Max()const noexcept      {return MAX(MAX(MAX(x, y), z), w);}
     //! @}
 
     //! color functions
@@ -436,9 +436,9 @@ inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const core
 // convert RBG color-code to color-vector
 constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)noexcept
 {
-    return coreVector3(float((iNumber >> 16) % 256)*0.003921569f, 
-                       float( iNumber        % 256)*0.003921569f, 
-                       float((iNumber >>  8) % 256)*0.003921569f);
+    return coreVector3(float( iNumber        % 256)*0.003921569f, 
+                       float((iNumber >>  8) % 256)*0.003921569f, 
+                       float((iNumber >> 16) % 256)*0.003921569f);
 }
 
 
@@ -446,9 +446,9 @@ constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)noex
 // convert color-vector to RBG color-code
 constexpr_func coreUint coreVector3::ColorPack()const noexcept
 {
-    return (coreUint(r * 255.0f) << 16) +
-           (coreUint(b * 255.0f) <<  8) +
-           (coreUint(g * 255.0f));
+    return (coreUint(b * 255.0f) << 16) +
+           (coreUint(g * 255.0f) <<  8) +
+           (coreUint(r * 255.0f));
 };
 
 
@@ -467,21 +467,21 @@ constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const c
 // convert RBGA color-code to color-vector
 constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)noexcept
 {
-    return coreVector4(float((iNumber >> 24) % 256)*0.003921569f, 
+    return coreVector4(float( iNumber        % 256)*0.003921569f, 
                        float((iNumber >>  8) % 256)*0.003921569f, 
                        float((iNumber >> 16) % 256)*0.003921569f, 
-                       float( iNumber        % 256)*0.003921569f);
+                       float((iNumber >> 24) % 256)*0.003921569f);
 }
 
 
 // ****************************************************************
-// convert color-vector to RBGA color-code
+// convert color-vector to RGBA color-code
 constexpr_func coreUint coreVector4::ColorPack()const noexcept
 {
-    return (coreUint(r * 255.0f) << 24) +
+    return (coreUint(a * 255.0f) << 24) +
            (coreUint(b * 255.0f) << 16) +
            (coreUint(g * 255.0f) <<  8) +
-           (coreUint(a * 255.0f));
+           (coreUint(r * 255.0f));
 };
 
 

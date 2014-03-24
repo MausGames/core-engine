@@ -42,7 +42,6 @@ void coreObject3D::Undefine()
 
 // ****************************************************************
 // render the 3d-object
-// TODO: integrated matrix transpose isn't possible on OpenGL ES 2.0 (?)
 void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
 {
     // enable the shader-program
@@ -54,12 +53,18 @@ void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     const coreMatrix4 mModelViewProj = mModelView   * Core::Graphics->GetPerspective();
 
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEW,     mModelView,                    false);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ, mModelViewProj,                false);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL,        m_mRotation.Inverted().m123(), true);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEW,     mModelView,     false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ, mModelViewProj, false);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,            m_vColor);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXSIZE,          m_vTexSize);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXOFFSET,        m_vTexOffset);
+
+    // update normal matrix uniform
+#if defined(_CORE_GLES_)
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Inverse().Transpose(), false);
+#else
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Inverse(), true);
+#endif
 
     if(bTextured)
     {

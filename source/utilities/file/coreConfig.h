@@ -16,10 +16,8 @@
 #define CORE_CONFIG_SYSTEM_WIDTH            "System",   "Width",          800
 #define CORE_CONFIG_SYSTEM_HEIGHT           "System",   "Height",         600
 #define CORE_CONFIG_SYSTEM_FULLSCREEN       "System",   "Fullscreen",     0
+#define CORE_CONFIG_SYSTEM_LANGUAGE         "System",   "Language",       "data/languages/english.lng"
 #define CORE_CONFIG_SYSTEM_LOG              "System",   "Log",            -1
-#define CORE_CONFIG_GRAPHICS_FOV            "Graphics", "FOV",            45.0f
-#define CORE_CONFIG_GRAPHICS_CLIP_NEAR      "Graphics", "ClipNear",       0.1f
-#define CORE_CONFIG_GRAPHICS_CLIP_FAR       "Graphics", "ClipFar",        1000.0f
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING   "Graphics", "AntiAliasing",   0
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER  "Graphics", "TextureFilter",  0
 #define CORE_CONFIG_GRAPHICS_POSTPROCESSING "Graphics", "PostProcessing", 0

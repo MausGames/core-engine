@@ -8,6 +8,9 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+#define CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT (4*sizeof(coreMatrix4) + 1*sizeof(coreVector4))
+#define CORE_GRAPHICS_UNIFORM_SIZE         (CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + CORE_GRAPHICS_LIGHTS*sizeof(coreLight))
+
 #if defined(_CORE_GLES_)
     #define glClearDepth glClearDepthf
 #endif
@@ -16,10 +19,7 @@
 // ******************************************************************
 // constructor
 CoreGraphics::CoreGraphics()noexcept
-: m_fFOV            (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FOV))
-, m_fNearClip       (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_NEAR))
-, m_fFarClip        (Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_CLIP_FAR))
-, m_vCamPosition    (coreVector3(0.0f,0.0f,0.0f))
+: m_vCamPosition    (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamDirection   (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamOrientation (coreVector3(0.0f,0.0f,0.0f))
 , m_vCurResolution  (coreVector4(0.0f,0.0f,0.0f,0.0f))
@@ -98,17 +98,14 @@ CoreGraphics::CoreGraphics()noexcept
     // create uniform buffer object for global shader-data
     if(GLEW_ARB_uniform_buffer_object)
     {
-        // calculate UBO size (std140)
-        constexpr_var coreUint iSize = sizeof(coreMatrix4)*4 + sizeof(coreLight)*CORE_GRAPHICS_LIGHTS;
-
         // generate and bind global UBO to a buffer target
-        m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, iSize, NULL, GL_DYNAMIC_DRAW);
+        m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_SIZE, NULL, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_GLOBAL_NUM, m_iUniformBuffer);
     }
 
     // reset camera and view
     this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
-    this->ResizeView(coreVector2(0.0f,0.0f));
+    this->ResizeView(coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
 
     // reset ambient
     for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
@@ -166,12 +163,15 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
 
 // ******************************************************************
 // resize view and create projection matrices
-void CoreGraphics::ResizeView(coreVector2 vResolution)
+void CoreGraphics::ResizeView(coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
 {
+    bool bNewView = false;
+
     // retrieve window resolution
     if(!vResolution.x) vResolution.x = Core::System->GetResolution().x;
     if(!vResolution.y) vResolution.y = Core::System->GetResolution().y;
 
+    // set properties of the view frustum
     if(m_vCurResolution.xy() != vResolution)
     {
         // save viewport resolution
@@ -180,9 +180,16 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
 
         // set viewport
         glViewport(0, 0, (int)vResolution.x, (int)vResolution.y);
+        bNewView = true;
+    }
+    if(m_fFOV      != fFOV)      {m_fFOV      = fFOV;      bNewView = true;}
+    if(m_fNearClip != fNearClip) {m_fNearClip = fNearClip; bNewView = true;}
+    if(m_fFarClip  != fFarClip)  {m_fFarClip  = fFarClip;  bNewView = true;}
 
-        // generate projection matrices
-        m_mPerspective = coreMatrix4::Perspective(vResolution, TO_RAD(m_fFOV), m_fNearClip, m_fFarClip);
+    if(bNewView)
+    {
+        // create projection matrices
+        m_mPerspective = coreMatrix4::Perspective(vResolution, m_fFOV, m_fNearClip, m_fFarClip);
         m_mOrtho       = coreMatrix4::Ortho(vResolution);
 
         // send transformation data to the global UBO
@@ -192,7 +199,7 @@ void CoreGraphics::ResizeView(coreVector2 vResolution)
 
 
 // ******************************************************************
-// set and update ambient light properties
+// set and update ambient light
 void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
     SDL_assert(iID < CORE_GRAPHICS_LIGHTS);
@@ -200,7 +207,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
 
     bool bNewLight = false;
 
-    // set properties of the light
+    // set properties of the ambient light
     const coreVector4 vDirNorm = coreVector4(vDirection.xyz().Normalized(), vDirection.w); 
     if(CurLight.vPosition  != vPosition) {CurLight.vPosition  = vPosition; bNewLight = true;}
     if(CurLight.vDirection != vDirNorm)  {CurLight.vDirection = vDirNorm;  bNewLight = true;}
@@ -209,7 +216,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
-        coreByte* pRange = m_iUniformBuffer.Map(sizeof(coreMatrix4)*4 + sizeof(coreLight)*iID, sizeof(coreLight));
+        coreByte* pRange = m_iUniformBuffer.Map(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight));
 
         // update specific light
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
@@ -306,13 +313,13 @@ void CoreGraphics::__SendTransformation()
     const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
     // map required area of the global UBO
-    coreByte* pRange = m_iUniformBuffer.Map(0, sizeof(coreMatrix4)*4);
+    coreByte* pRange = m_iUniformBuffer.Map(0, 4*sizeof(coreMatrix4));
 
     // update transformation matrices
     std::memcpy(pRange,                         &mViewProj,        sizeof(coreMatrix4));
-    std::memcpy(pRange + sizeof(coreMatrix4)*1, &m_mCamera,        sizeof(coreMatrix4));
-    std::memcpy(pRange + sizeof(coreMatrix4)*2, &m_mPerspective,   sizeof(coreMatrix4));
-    std::memcpy(pRange + sizeof(coreMatrix4)*3, &m_mOrtho,         sizeof(coreMatrix4));
-    std::memcpy(pRange + sizeof(coreMatrix4)*4, &m_vCurResolution, sizeof(coreVector4));
+    std::memcpy(pRange + 1*sizeof(coreMatrix4), &m_mCamera,        sizeof(coreMatrix4));
+    std::memcpy(pRange + 2*sizeof(coreMatrix4), &m_mPerspective,   sizeof(coreMatrix4));
+    std::memcpy(pRange + 3*sizeof(coreMatrix4), &m_mOrtho,         sizeof(coreMatrix4));
+    std::memcpy(pRange + 4*sizeof(coreMatrix4), &m_vCurResolution, sizeof(coreVector4));
     m_iUniformBuffer.Unmap(pRange);
 }

@@ -66,7 +66,7 @@ int coreThread::__Main()
 {
     // call init implementation
     Core::Log->Info("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
-    int iReturn = this->__Init();
+    int iReturn = this->__InitThread();
 
     m_iCurFrame = 0;
     while(iReturn == 0)
@@ -80,11 +80,11 @@ int coreThread::__Main()
         if(m_bEnd) break;
 
         // call run implementation
-        iReturn = this->__Run();
+        iReturn = this->__RunThread();
     }
 
     // call exit implementation
-    this->__Exit();
+    this->__ExitThread();
     Core::Log->Info("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
 
     m_bEnd = true;

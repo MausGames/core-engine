@@ -52,6 +52,11 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
 {
     coreLog* pLog = s_cast<coreLog*>(pUserParam);
 
+    // set logging level
+    const int iLevel = pLog->GetLevel();
+    pLog->SetLevel(0);
+
+    // write message
     pLog->ListStart("OpenGL Debug Log");
     pLog->ListEntry("<span class=\"gl\"><b>ID:</b>           %d</span>", iID);
     pLog->ListEntry("<span class=\"gl\"><b>Source:</b>   0x%04X</span>", iSource);
@@ -59,6 +64,9 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
     pLog->ListEntry("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity);
     pLog->ListEntry("<span class=\"gl\">                     %s</span>", pcMessage);
     pLog->ListEnd();
+
+    // reset logging level
+    pLog->SetLevel(iLevel);
 
     SDL_assert(false);
 }

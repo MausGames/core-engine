@@ -236,6 +236,18 @@ void coreData::StrSkip(const char** ppcInput, const int &iNum)
 }
 
 
+// ****************************************************************
+// trim a standard string on both sides
+void coreData::StrTrim(std::string* psInput)
+{
+    const coreUint iFirst = psInput->find_first_not_of(" \n\r\t");
+    if(iFirst >= 0) psInput->erase(0, iFirst);
+
+    const coreUint iLast = psInput->find_last_not_of(" \n\r\t");
+    if(iLast >= 0) psInput->erase(iLast+1);
+}
+
+
 // ******************************************************************
 // open URL with the web-browser
 void coreData::OpenURL(const char* pcURL)

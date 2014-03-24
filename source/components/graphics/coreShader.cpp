@@ -86,6 +86,10 @@ coreError coreShader::Load(coreFile* pFile)
 
         if(iLength)
         {
+            // set logging level
+            const int iLevel = Core::Log->GetLevel();
+            Core::Log->SetLevel(0);
+
             // get error-log
             char* pcLog = new char[iLength];
             glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
@@ -95,6 +99,9 @@ coreError coreShader::Load(coreFile* pFile)
             Core::Log->ListStart("Shader Error Log");
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
+
+            // reset logging level
+            Core::Log->SetLevel(iLevel);
 
             SAFE_DELETE_ARRAY(pcLog)
         }
@@ -414,6 +421,10 @@ void coreProgram::__WriteLog()const
 
     if(iLength)
     {
+        // set logging level
+        const int iLevel = Core::Log->GetLevel();
+        Core::Log->SetLevel(0);
+
         // get error-log
         char* pcLog = new char[iLength];
         glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
@@ -425,6 +436,9 @@ void coreProgram::__WriteLog()const
             Core::Log->ListEntry("(%s)", (*it)->GetPath());
         Core::Log->ListEntry(pcLog);
         Core::Log->ListEnd();
+
+        // reset logging level
+        Core::Log->SetLevel(iLevel);
 
         SAFE_DELETE_ARRAY(pcLog)
     }
