@@ -51,6 +51,7 @@ private:
 
 // ****************************************************************
 // language file class
+// TODO: save main language file to config
 class coreLanguage final
 {
 private:

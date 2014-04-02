@@ -11,11 +11,11 @@
 
 // ****************************************************************
 // constructor
-coreMenu::coreMenu(const coreByte& iNumSurfaces)
+coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iCurSurface)
 : m_pCurObject   (NULL)                                   
 , m_iNumSurface  (iNumSurfaces)
-, m_iCurSurface  (0)
-, m_iOldSurface  (0)
+, m_iCurSurface  (iCurSurface)
+, m_iOldSurface  (iCurSurface)
 , m_Transition   (coreTimer(1.0f, 1.0f, 1))
 , m_pFrameBuffer (NULL)
 {
@@ -73,7 +73,11 @@ void coreMenu::Move()
     if(m_Transition.GetStatus())
     {
         // update transition timer
-        m_Transition.Update(1.0f);
+        if(m_Transition.Update(1.0f))
+        {
+            // remove focus from old surface
+            FOR_EACH(it, m_aapRender[1]) (*it)->SetFocus(false);
+        }
 
         // set alpha value for each render-list
         const float afAlpha[3] = {this->GetAlpha(), 
@@ -130,6 +134,7 @@ void coreMenu::AddObject(const coreByte& iSurface, coreObject2D* pObject)
 #endif
 
     // add menu object
+    pObject->SetAlpha(0.0f);
     m_papObject[iSurface].push_back(pObject);
 }
 

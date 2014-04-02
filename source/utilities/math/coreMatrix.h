@@ -440,8 +440,8 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 {
     const coreVector3 F = -vDirection.Normalized();
     const coreVector3 O =  vOrientation.Normalized();
-    const coreVector3 S =  coreVector3::Cross(O, F);
-    const coreVector3 U = -coreVector3::Cross(S, F);
+    const coreVector3 S =  coreVector3::Cross(O, F).Normalize();
+    const coreVector3 U = -coreVector3::Cross(S, F).Normalize();
 
     return coreMatrix4( S.x,  S.y,  S.z, 0.0f,
                         U.x,  U.y,  U.z, 0.0f,
@@ -493,8 +493,8 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
 {
     const coreVector3 F =  vDirection.Normalized();
     const coreVector3 O = -vOrientation.Normalized();
-    const coreVector3 S =  coreVector3::Cross(O, F);
-    const coreVector3 U =  coreVector3::Cross(S, F);
+    const coreVector3 S =  coreVector3::Cross(O, F).Normalize();
+    const coreVector3 U =  coreVector3::Cross(S, F).Normalize();
 
     return coreMatrix4::Translation(-vPosition) * coreMatrix4( S.x,  U.x, -F.x, 0.0f,
                                                                S.y,  U.y, -F.y, 0.0f,

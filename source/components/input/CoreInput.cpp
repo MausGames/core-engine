@@ -97,20 +97,23 @@ CoreInput::~CoreInput()
 
 // ****************************************************************
 // set the cursor object
-void CoreInput::DefineCursor(const char* pcTexture)
+void CoreInput::DefineCursor(const char* pcPath)
 {
-    if(m_pCursor) SDL_FreeCursor(m_pCursor);
+    coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
     // load texture from file
-    SDL_Surface* pData = IMG_Load(pcTexture);
-    SDL_assert(pData);
+    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
+    if(pData)
+    {
+        if(m_pCursor) SDL_FreeCursor(m_pCursor);
 
-    // create hardware mouse cursor
-    m_pCursor = SDL_CreateColorCursor(pData, 0, 0);
-    SDL_SetCursor(m_pCursor);
+        // create hardware mouse cursor
+        m_pCursor = SDL_CreateColorCursor(pData, 0, 0);
+        SDL_SetCursor(m_pCursor);
 
-    // free the texture
-    SDL_FreeSurface(pData);
+        // free the texture
+        SDL_FreeSurface(pData);
+    }
 }
 
 
@@ -202,7 +205,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
            Event.motion.y != int(0.5f*Core::System->GetResolution().y))
         {
             this->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f, 0.5f));
-            this->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative());
+            this->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
         }
         break;
 

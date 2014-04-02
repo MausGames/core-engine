@@ -32,7 +32,7 @@
 #define CORE_SHADER_UNIFORM_3D_MODELVIEW       "u_m4ModelView"
 #define CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ   "u_m4ModelViewProj"
 #define CORE_SHADER_UNIFORM_3D_NORMAL          "u_m3Normal"
-#define CORE_SHADER_UNIFORM_2D_SCREENVIEW      "u_m3ScreenView"
+#define CORE_SHADER_UNIFORM_2D_SCREENVIEW      "u_m4ScreenView"
 #define CORE_SHADER_UNIFORM_COLOR              "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXSIZE            "u_v2TexSize"
 #define CORE_SHADER_UNIFORM_TEXOFFSET          "u_v2TexOffset"

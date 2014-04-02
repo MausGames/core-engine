@@ -11,14 +11,14 @@
 
 // ****************************************************************
 // constructor
-// TODO: should linked and new resources have m_bLoaded=true ?
+// TODO: constexpr constructor ?
 coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pDefault, coreFile* pFile)noexcept
 : m_pResource (pResource)
 , m_pDefault  (pDefault)
 , m_pFile     (pFile)
 , m_pCur      (pDefault ? pDefault : pResource)
 , m_iRef      (0)
-, m_bLoaded   (false)
+, m_bLoaded   (pDefault ? false : true)
 , m_bManaged  (pDefault ? true : false)
 {
 }

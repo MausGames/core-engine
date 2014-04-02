@@ -82,7 +82,7 @@ coreError coreTexture::Load(coreFile* pFile)
         iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
         // copy texture data into PBO
-        coreByte* pRange = iBuffer.Map(0, iDataSize);
+        coreByte* pRange = iBuffer.Map<coreByte>(0, iDataSize);
         std::memcpy(pRange, pConvert->pixels, iDataSize);
         iBuffer.Unmap(pRange);
     }
@@ -120,7 +120,7 @@ coreError coreTexture::Load(coreFile* pFile)
         const void* pPixels = bPixelBuffer ? 0 : pConvert->pixels;
         if(bStorage)
         {
-            glTexStorage2D(GL_TEXTURE_2D, (int)std::log2(MAX(pConvert->w, pConvert->h)), iInternal, pConvert->w, pConvert->h);
+            glTexStorage2D(GL_TEXTURE_2D, (int)(std::log(MAX(pConvert->w, pConvert->h)) / std::log(2)), iInternal, pConvert->w, pConvert->h);
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, iFormat, GL_UNSIGNED_BYTE, pPixels);
         }
         else glTexImage2D(GL_TEXTURE_2D, 0, iInternal, pConvert->w, pConvert->h, 0, iFormat, GL_UNSIGNED_BYTE, pPixels);

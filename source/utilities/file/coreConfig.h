@@ -18,14 +18,14 @@
 #define CORE_CONFIG_SYSTEM_FULLSCREEN       "System",   "Fullscreen",     0
 #define CORE_CONFIG_SYSTEM_LANGUAGE         "System",   "Language",       "data/languages/english.lng"
 #define CORE_CONFIG_SYSTEM_LOG              "System",   "Log",            -1
-#define CORE_CONFIG_GRAPHICS_ANTIALIASING   "Graphics", "AntiAliasing",   0
-#define CORE_CONFIG_GRAPHICS_TEXTUREFILTER  "Graphics", "TextureFilter",  0
+#define CORE_CONFIG_GRAPHICS_ANTIALIASING   "Graphics", "AntiAliasing",   2
+#define CORE_CONFIG_GRAPHICS_TEXTUREFILTER  "Graphics", "TextureFilter",  4
 #define CORE_CONFIG_GRAPHICS_POSTPROCESSING "Graphics", "PostProcessing", 0
 #define CORE_CONFIG_GRAPHICS_DEBUGCONTEXT   "Graphics", "DebugContext",   false
-#define CORE_CONFIG_AUDIO_VOLUME_GLOBAL     "Audio",    "VolumeGlobal",   0.5f
-#define CORE_CONFIG_AUDIO_VOLUME_SOUND      "Audio",    "VolumeSound",    0.5f
-#define CORE_CONFIG_AUDIO_VOLUME_MUSIC      "Audio",    "VolumeMusic",    0.5f
 #define CORE_CONFIG_AUDIO_SOURCES           "Audio",    "Sources",        16
+#define CORE_CONFIG_AUDIO_VOLUME_GLOBAL     "Audio",    "VolumeGlobal",   1.0f
+#define CORE_CONFIG_AUDIO_VOLUME_SOUND      "Audio",    "VolumeSound",    1.0f
+#define CORE_CONFIG_AUDIO_VOLUME_MUSIC      "Audio",    "VolumeMusic",    1.0f
 
 #if defined(_CORE_ANDROID_)
     #define CORE_CONFIG_GRAPHICS_FORCEOPENGL "Graphics", "ForceOpenGL", 2.0f

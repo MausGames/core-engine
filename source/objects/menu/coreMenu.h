@@ -36,7 +36,7 @@ private:
         
 
 public:
-    explicit coreMenu(const coreByte& iNumSurfaces)noexcept;
+    coreMenu(const coreByte& iNumSurfaces, const coreByte& iCurSurface)noexcept;
     virtual ~coreMenu();
 
     //! render and move the menu
@@ -59,9 +59,10 @@ public:
 
     //! get object properties
     //! @{
-    inline coreObject2D* GetCurObject()const    {return m_pCurObject;}
-    inline const coreByte& GetCurSurface()const {return m_iCurSurface;}
-    inline const coreByte& GetOldSurface()const {return m_iOldSurface;}
+    inline coreObject2D* GetCurObject()const     {return m_pCurObject;}
+    inline const coreByte& GetCurSurface()const  {return m_iCurSurface;}
+    inline const coreByte& GetOldSurface()const  {return m_iOldSurface;}
+    inline const coreTimer& GetTransition()const {return m_Transition;}
     //! @}
 
 

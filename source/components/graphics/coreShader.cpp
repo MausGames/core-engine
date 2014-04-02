@@ -274,6 +274,7 @@ void coreProgram::Disable(const bool& bFull)
 
 // ****************************************************************
 // add shader object for later attachment
+// TODO: assert-check for new shaders while already finished
 coreProgram* coreProgram::AttachShaderFile(const char* pcPath)
 {
     if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadFile<coreShader>(pcPath));

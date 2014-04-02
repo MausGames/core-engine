@@ -122,7 +122,7 @@ coreError coreLanguage::Load(const char* pcPath)
     pFile->UnloadData();
 
     // update all foreign strings and objects
-    FOR_EACH(it, m_apsPointer) if(!it->second->empty()) *it->first = *it->second;
+    FOR_EACH(it, m_apsPointer) if(!it->second->empty()) *(it->first) = *(it->second);
     FOR_EACH(it, m_apObject) (*it)->__Update();
 
     Core::Log->Info("Language (%s) loaded", pFile->GetPath());

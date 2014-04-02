@@ -61,7 +61,7 @@ public:
     inline const coreMatrix4& GetRotation()const                        {return m_mRotation;}
     inline const coreMatrix4& GetTransform()const                       {return m_mTransform;}
     inline const coreVector4& GetColor4()const                          {return m_vColor;}
-    inline const coreVector3& GetColor3()const                          {return m_vColor.xyz();}
+    inline coreVector3 GetColor3()const                                 {return m_vColor.xyz();}
     inline const float& GetAlpha()const                                 {return m_vColor.a;}
     inline const coreVector2& GetTexSize()const                         {return m_vTexSize;}
     inline const coreVector2& GetTexOffset()const                       {return m_vTexOffset;}

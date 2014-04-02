@@ -73,9 +73,9 @@
 // debug mode
 #if defined(_DEBUG) || defined(DEBUG) || (defined(_CORE_GCC_) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_
-    const bool g_bDebug = true;
+    static const bool g_bCoreDebug = true;
 #else
-    const bool g_bDebug = false;
+    static const bool g_bCoreDebug = false;
 #endif
 
 // SIMD support
@@ -151,9 +151,13 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
-#define FOR_EACH(i,c)     for(auto i = c.begin(),  e = c.end();  i != e; ++i)
-#define FOR_EACH_REV(i,c) for(auto i = c.rbegin(), e = c.rend(); i != e; ++i)
+#define FOR_EACH(i,c)     for(auto i = c.begin(),  __e = c.end();  i != __e; ++i)
+#define FOR_EACH_REV(i,c) for(auto i = c.rbegin(), __e = c.rend(); i != __e; ++i)
 #define ASSERT_IF(c)      SDL_assert(!(c)); if(c)
+
+#define FOR_EACH_DYN(i,c) for(auto i = c.begin(), __e = c.end(); i != __e; )
+#define DYN_KEEP(i)       ++i;
+#define DYN_REMOVE(i,c)   i = c.erase(i); __e = c.end();
 
 #define DISABLE_COPY(c)      \
     c(const c&) delete_func; \

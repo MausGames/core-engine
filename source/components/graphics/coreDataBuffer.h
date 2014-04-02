@@ -51,8 +51,8 @@ public:
 
     //! modify buffer memory
     //! @{
-    coreByte* Map(const coreUint& iOffset, const coreUint& iLength);
-    void Unmap(coreByte* pPointer);
+    template <typename T> T* Map(const coreUint& iOffset, const coreUint& iLength);
+    template <typename T> void Unmap(T* pPointer);
     inline const bool& IsDynamic()const {return m_bDynamic;}
     //! @}
 
@@ -123,6 +123,61 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 , m_iTarget     (0)
 , m_iSize       (0)
 {
+}
+
+
+// ****************************************************************
+// map buffer memory for writing operations
+template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength)
+{
+    SDL_assert(m_iDataBuffer && m_bDynamic && (iOffset+iLength <= m_iSize));
+
+    // bind the data buffer
+    this->Bind();
+    
+    if(GLEW_ARB_map_buffer_range)
+    {
+        // directly map buffer memory
+        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
+    }
+    else
+    {
+        // create temporary memory
+        T* pPointer = new T[iLength + sizeof(coreUint)*2];
+
+        // add mapping attributes
+        std::memcpy(pPointer,                    &iOffset, sizeof(coreUint));
+        std::memcpy(pPointer + sizeof(coreUint), &iLength, sizeof(coreUint));
+
+        return pPointer + sizeof(coreUint)*2;
+    }
+}
+
+
+// ****************************************************************
+// unmap buffer memory
+template <typename T> void coreDataBuffer::Unmap(T* pPointer)
+{
+    SDL_assert(pPointer);
+
+    if(GLEW_ARB_map_buffer_range)
+    {
+        // directly unmap buffer memory
+        glUnmapBuffer(m_iTarget);
+    }
+    else
+    {
+        // extract mapping attributes
+        coreUint iOffset; std::memcpy(&iOffset, pPointer - sizeof(coreUint)*2, sizeof(coreUint));
+        coreUint iLength; std::memcpy(&iLength, pPointer - sizeof(coreUint)*1, sizeof(coreUint));
+
+        // send new data to the data buffer
+        glBufferSubData(m_iTarget, iOffset, iLength, pPointer);
+
+        // delete temporary memory
+        pPointer -= sizeof(coreUint)*2;
+        SAFE_DELETE_ARRAY(pPointer);
+    }
 }
 
 

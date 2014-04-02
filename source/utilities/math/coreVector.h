@@ -186,15 +186,15 @@ public:
     //! convert vector
     //! @{
     constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func const coreVector2& xy()const noexcept  {return *(r_cast<const coreVector2*>(this));}
-    constexpr_func const coreVector2& yz()const noexcept  {return *(r_cast<const coreVector2*>(&y));}
+    constexpr_func coreVector2 xy()const noexcept         {return coreVector2(x, y);}
     constexpr_func coreVector2 xz()const noexcept         {return coreVector2(x, z);}
     constexpr_func coreVector2 yx()const noexcept         {return coreVector2(y, x);}
+    constexpr_func coreVector2 yz()const noexcept         {return coreVector2(y, z);}
     constexpr_func coreVector2 zx()const noexcept         {return coreVector2(z, x);}
     constexpr_func coreVector2 zy()const noexcept         {return coreVector2(z, y);}
     inline void xy(const coreVector2& v)noexcept          {x = v.x; y = v.y;}
-    inline void yz(const coreVector2& v)noexcept          {y = v.x; z = v.y;}
     inline void xz(const coreVector2& v)noexcept          {x = v.x; z = v.y;}
+    inline void yz(const coreVector2& v)noexcept          {y = v.x; z = v.y;}
     //! @}
 
     //! normalize vector
@@ -306,9 +306,9 @@ public:
     //! @{
     constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
     constexpr_func coreVector3 xyzw()const noexcept       {return coreVector3(x, y, z)*w;}
-    constexpr_func const coreVector3& xyz()const noexcept {return *(r_cast<const coreVector3*>(this));}
-    constexpr_func const coreVector2& xy()const noexcept  {return *(r_cast<const coreVector2*>(this));}
-    constexpr_func const coreVector2& zw()const noexcept  {return *(r_cast<const coreVector2*>(&z));}
+    constexpr_func coreVector3 xyz()const noexcept        {return coreVector3(x, y, z);}
+    constexpr_func coreVector2 xy()const noexcept         {return coreVector2(x, y);}
+    constexpr_func coreVector2 zw()const noexcept         {return coreVector2(z, w);}
     inline void xyz(const coreVector3& v)noexcept         {x = v.x; y = v.y; z = v.z;}
     inline void xy(const coreVector2& v)noexcept          {x = v.x; y = v.y;}
     inline void zw(const coreVector2& v)noexcept          {z = v.x; w = v.y;}
@@ -436,9 +436,9 @@ inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const core
 // convert RBG color-code to color-vector
 constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)noexcept
 {
-    return coreVector3(float( iNumber        % 256)*0.003921569f, 
-                       float((iNumber >>  8) % 256)*0.003921569f, 
-                       float((iNumber >> 16) % 256)*0.003921569f);
+    return coreVector3(float( iNumber        & 0xFF), 
+                       float((iNumber >>  8) & 0xFF), 
+                       float((iNumber >> 16) & 0xFF))*0.003921569f;
 }
 
 
@@ -467,10 +467,10 @@ constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const c
 // convert RBGA color-code to color-vector
 constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)noexcept
 {
-    return coreVector4(float( iNumber        % 256)*0.003921569f, 
-                       float((iNumber >>  8) % 256)*0.003921569f, 
-                       float((iNumber >> 16) % 256)*0.003921569f, 
-                       float((iNumber >> 24) % 256)*0.003921569f);
+    return coreVector4(float( iNumber        & 0xFF), 
+                       float((iNumber >>  8) & 0xFF), 
+                       float((iNumber >> 16) & 0xFF), 
+                       float((iNumber >> 24) & 0xFF))*0.003921569f;
 }
 
 

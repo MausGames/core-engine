@@ -178,7 +178,7 @@ coreError coreFrameBuffer::__Init()
         glGenFramebuffers(1, &m_iFrameBuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
-        switch(m_iType % 0x0100)
+        switch(m_iType & 0x00FF)
         {
         case CORE_FRAMEBUFFER_FULL:
 

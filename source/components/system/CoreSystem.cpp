@@ -8,6 +8,12 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+#if defined(_CORE_GLES_)
+    #define CORE_SYSTEM_CONTEXT SDL_GL_CONTEXT_PROFILE_ES
+#else
+    #define CORE_SYSTEM_CONTEXT SDL_GL_CONTEXT_PROFILE_CORE
+#endif
+
 
 // ******************************************************************
 // constructor
@@ -27,7 +33,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GetVersion(&Version);
 
     // init SDL libraries
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init() || !IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG))
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
         Core::Log->Error(true, "SDL could not be initialized (SDL: %s)", SDL_GetError());
     else Core::Log->Info("SDL initialized (%d.%d.%d %s)", Version.major, Version.minor, Version.patch, SDL_GetRevision());
 
@@ -84,7 +90,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
     SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 24);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 16);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
@@ -95,10 +101,10 @@ CoreSystem::CoreSystem()noexcept
     if(fForceOpenGL)
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(std::floor(fForceOpenGL)));
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL*10.0f))%10);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL * 10.0f)) % 10);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  CORE_SYSTEM_CONTEXT);
     }
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bCoreDebug)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     // create main window object
@@ -179,6 +185,23 @@ CoreSystem::~CoreSystem()
 
 
 // ******************************************************************
+// change the icon of the window
+void CoreSystem::SetIcon(const char* pcPath)
+{
+    coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+
+    // load texture from file
+    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
+    if(pData)
+    {
+        // create icon and free the texture
+        SDL_SetWindowIcon(Core::System->GetWindow(), pData);
+        SDL_FreeSurface(pData);
+    }
+}
+
+
+// ******************************************************************
 // update the window event system
 bool CoreSystem::__UpdateEvents()
 {
@@ -241,7 +264,7 @@ void CoreSystem::__UpdateTime()
     else
     {
         // smooth last frame time and increase total time
-        m_fLastTime   = 0.85f*m_fLastTime + 0.15f*fNewLastTime;
+        m_fLastTime   = 0.85f * m_fLastTime + 0.15f * fNewLastTime;
         m_dTotalTime += (double)m_fLastTime;
     }
 

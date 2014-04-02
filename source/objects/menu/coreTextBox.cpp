@@ -15,6 +15,7 @@ coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcF
 : coreButton  (pcIdle, pcBusy, pcFont, iHeight, iLength)
 , m_sText     ("")
 , m_sPrevious ("")
+, m_cCursor   ('|')
 , m_cReplace  ('\0')
 , m_bInput    (false)
 , m_bDisplay  (false)
@@ -66,9 +67,9 @@ void coreTextBox::Move()
         {
             // hide text with replacement character
             const std::string sPassword(m_sText.length(), m_cReplace);
-            m_pCaption->SetText(m_bInput ? coreData::Print("%s|", sPassword.c_str()) : sPassword.c_str());
+            m_pCaption->SetText(m_bInput ? coreData::Print("%s%c", sPassword.c_str(), m_cCursor) : sPassword.c_str());
         }
-        else m_pCaption->SetText(m_bInput ? coreData::Print("%s|", m_sText.c_str()) : m_sText.c_str());
+        else m_pCaption->SetText(m_bInput ? coreData::Print("%s%c", m_sText.c_str(), m_cCursor) : m_sText.c_str());
             
         m_bDisplay = false;
     }

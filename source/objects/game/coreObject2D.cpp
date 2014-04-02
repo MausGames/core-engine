@@ -23,6 +23,7 @@ void coreObject2D::Undefine()
 
 // ****************************************************************
 // render the 2d-object
+// TODO: try to use only a 3x3 matrix (or less? see particles) for the transformation
 void coreObject2D::Render(const coreProgramShr& pProgram, const bool& bTextured)
 {
     // enable the shader-program
@@ -33,7 +34,7 @@ void coreObject2D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     const coreMatrix4 mScreenView = m_mTransform * Core::Graphics->GetOrtho();
 
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, mScreenView.m124(), false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, mScreenView, false);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXSIZE,       m_vTexSize);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXOFFSET,     m_vTexOffset);

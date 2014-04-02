@@ -25,7 +25,7 @@
     #define CORE_DATA_SLASH "/"
 #endif
 
-#define CORE_DATA_SCAN(s,f,...) {int n = 0; std::sscanf(s, f " %n", ##__VA_ARGS__, &n); coreData::StrSkip(&(s), n);}
+#define CORE_DATA_SCAN(s,f,...) {int __n = 0; std::sscanf(s, f " %n", ##__VA_ARGS__, &__n); coreData::StrSkip(&(s), __n);}
 
 
 // ****************************************************************

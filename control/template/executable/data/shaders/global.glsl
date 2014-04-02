@@ -72,7 +72,7 @@ uniform mat4 u_m4ModelViewProj;
 uniform mat3 u_m3Normal;
 
 // 2d-object uniforms
-uniform mat3 u_m3ScreenView;
+uniform mat4 u_m4ScreenView;
 
 // default object uniforms
 uniform vec4 u_v4Color;
@@ -85,12 +85,12 @@ uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
 
 #if (__VERSION__) >= 400   // >= OpenGL 4.0
 
-    // packing function
+    // unpacking function
     #define coreUnpackUnorm4x8(x) unpackUnorm4x8(x)
                                    
 #else
 
-    // packing function (without >> and %, red color with double-mod)
+    // unpacking function (without bit operators, red color with double-mod)
     #define coreUnpackUnorm4x8(x) (vec4(float(mod((x) - 16777216*((x) / 16777216), 256)), \
                                         float(mod((x) / 256,                       256)), \
                                         float(mod((x) / 65536,                     256)), \

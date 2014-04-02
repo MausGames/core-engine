@@ -28,6 +28,7 @@
 // ****************************************************************
 // particle class
 // TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee, solve in shader!)
+// TODO: what about velocity
 class coreParticle final
 {
 public:

@@ -94,7 +94,7 @@ private:
 public:
     //! control the mouse cursor
     //! @{
-    void DefineCursor(const char* pcTexture);
+    void DefineCursor(const char* pcPath);
     void ShowCursor(const bool& bStatus);
     inline const bool& IsCursorVisible()const {return m_bCursorVisible;}
     //! @}
@@ -132,7 +132,7 @@ public:
     inline void SetMouseWheel(const float& fValue)                                              {m_Mouse.vRelative.z = fValue;}
     inline const bool& GetMouseButton(const coreByte& iButton, const coreInputType& iType)const {return m_Mouse.aabButton[iButton][iType];}
     inline const coreVector2& GetMousePosition()const                                           {return m_Mouse.vPosition;}
-    inline const coreVector2& GetMouseRelative()const                                           {return m_Mouse.vRelative.xy();}
+    inline const coreVector3& GetMouseRelative()const                                           {return m_Mouse.vRelative;}
     inline const float& GetMouseWheel()const                                                    {return m_Mouse.vRelative.z;}
     //! @}
 

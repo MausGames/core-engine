@@ -80,61 +80,6 @@ void coreDataBuffer::Invalidate()
 
 
 // ****************************************************************
-// map buffer memory for writing operations
-coreByte* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength)
-{
-    SDL_assert(m_iDataBuffer && m_bDynamic && (iOffset+iLength <= m_iSize));
-
-    // bind the data buffer
-    this->Bind();
-    
-    if(GLEW_ARB_map_buffer_range)
-    {
-        // directly map buffer memory
-        return s_cast<coreByte*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
-    }
-    else
-    {
-        // create temporary memory
-        coreByte* pPointer = new coreByte[iLength + sizeof(coreUint)*2];
-
-        // add mapping attributes
-        std::memcpy(pPointer,                    &iOffset, sizeof(coreUint));
-        std::memcpy(pPointer + sizeof(coreUint), &iLength, sizeof(coreUint));
-
-        return pPointer + sizeof(coreUint)*2;
-    }
-}
-
-
-// ****************************************************************
-// unmap buffer memory
-void coreDataBuffer::Unmap(coreByte* pPointer)
-{
-    SDL_assert(pPointer);
-
-    if(GLEW_ARB_map_buffer_range)
-    {
-        // directly unmap buffer memory
-        glUnmapBuffer(m_iTarget);
-    }
-    else
-    {
-        // extract mapping attributes
-        coreUint iOffset; std::memcpy(&iOffset, pPointer - sizeof(coreUint)*2, sizeof(coreUint));
-        coreUint iLength; std::memcpy(&iLength, pPointer - sizeof(coreUint)*1, sizeof(coreUint));
-
-        // send new data to the data buffer
-        glBufferSubData(m_iTarget, iOffset, iLength, pPointer);
-
-        // delete temporary memory
-        pPointer -= sizeof(coreUint)*2;
-        SAFE_DELETE_ARRAY(pPointer);
-    }
-}
-
-
-// ****************************************************************
 // constructor
 coreVertexBuffer::coreVertexBuffer()noexcept
 : m_iVertexSize (0)

@@ -68,7 +68,7 @@ CoreGraphics::CoreGraphics()noexcept
     if(m_fOpenGL < 2.0f) Core::Log->Error(true, "Minimum system requirements not met, video card with at least OpenGL 2.0 required");
 
     // enable OpenGL debugging
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bDebug)
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bCoreDebug)
         Core::Log->EnableOpenGL();
 
     // enable vertical synchronization
@@ -216,7 +216,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
-        coreByte* pRange = m_iUniformBuffer.Map(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight));
+        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight));
 
         // update specific light
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
@@ -313,7 +313,7 @@ void CoreGraphics::__SendTransformation()
     const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
     // map required area of the global UBO
-    coreByte* pRange = m_iUniformBuffer.Map(0, 4*sizeof(coreMatrix4));
+    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4));
 
     // update transformation matrices
     std::memcpy(pRange,                         &mViewProj,        sizeof(coreMatrix4));

@@ -15,7 +15,7 @@ coreModel* coreParticleSystem::s_pModel = NULL;
 
 // ****************************************************************
 // constructor
-coreParticleSystem::coreParticleSystem(const coreUint& iSize)
+coreParticleSystem::coreParticleSystem(const coreUint& iSize)noexcept
 : m_iNumParticle (iSize)
 , m_iCurParticle (0)
 , m_iVertexArray (0)
@@ -121,7 +121,7 @@ void coreParticleSystem::Render()
             {
                 // map required area of the instance data buffer
                 const coreUint iLength = m_apRenderList.size()*CORE_PARTICLE_SIZE;
-                coreByte*      pRange  = m_iInstanceBuffer.Map(0, iLength);
+                coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength);
 
                 FOR_EACH_REV(it, m_apRenderList)
                 {
@@ -188,8 +188,7 @@ void coreParticleSystem::Render()
 // move the particle system
 void coreParticleSystem::Move()
 {
-    // iterate through the render list
-    for(auto it = m_apRenderList.begin(), end = m_apRenderList.end(); it != end; )
+    FOR_EACH_DYN(it, m_apRenderList)
     {
         coreParticle* pParticle = (*it);
 
@@ -198,10 +197,9 @@ void coreParticleSystem::Move()
         if(!pParticle->IsActive())
         {
             // remove finished particle
-            it  = m_apRenderList.erase(it);
-            end = m_apRenderList.end();
+            DYN_REMOVE(it, m_apRenderList)
         }
-        else ++it;
+        else DYN_KEEP(it)
     }
 
     // set the update status
@@ -232,6 +230,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         }
     }
 
+    SDL_assert(false);
     return NULL;
 }
 
@@ -283,21 +282,20 @@ void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 {
     SDL_assert(pEffect);
 
-    // iterate through the render list
-    for(auto it = m_apRenderList.begin(), end = m_apRenderList.end(); it != end; )
+    FOR_EACH_DYN(it, m_apRenderList)
     {
         coreParticle* pParticle = (*it);
 
         // check particle effect object
         if(pParticle->GetEffect() == pEffect)
         {
+            // reset particle animation
             pParticle->m_fValue = 0.0f;
 
             // remove particle
-            it  = m_apRenderList.erase(it);
-            end = m_apRenderList.end();
+            DYN_REMOVE(it, m_apRenderList)
         }
-        else ++it;
+        else DYN_KEEP(it)
     }
 }
 
@@ -371,7 +369,7 @@ void coreParticleSystem::__Reset(const bool& bInit)
 
 // ****************************************************************
 // constructor
-coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)
+coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 : m_fCreation (0.0f)
 , m_iTimeID   (-1)
 , m_pOrigin   (NULL)
