@@ -18,6 +18,7 @@
 
 // ****************************************************************
 // menu switch-box class
+// TODO: remove heap allocation for arrows and caption
 template <typename T> class coreSwitchBox final : public coreObject2D, public coreTranslate
 {
 public:

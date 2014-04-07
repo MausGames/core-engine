@@ -67,8 +67,8 @@ void coreObject2D::Move()
 
         // calculate resolution-modified transformation parameters
         const coreVector2& vResolution     = Core::System->GetResolution();
-        const coreVector2  vScreenPosition = (m_vPosition + 0.5f*m_vSize*m_vAlignment)*vResolution.x + m_vCenter*vResolution;
-        const coreVector2  vScreenSize     = m_vSize*vResolution.x;
+        const coreVector2  vScreenPosition = (m_vPosition + 0.5f*m_vSize*m_vAlignment)*vResolution.y + m_vCenter*vResolution;
+        const coreVector2  vScreenSize     = m_vSize*vResolution.y;
 
         // update transformation matrix
         m_mTransform = coreMatrix4::Scaling(coreVector3(vScreenSize, 0.0f)) * m_mRotation *

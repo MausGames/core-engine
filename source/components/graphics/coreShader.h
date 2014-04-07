@@ -64,8 +64,8 @@ enum coreShaderStatus
 class coreShader final : public coreResource
 {
 private:
-    GLuint m_iShader;                   //!< shader identifier
-    static std::string s_asGlobal[6];   //!< global shader code (0 = definitions | 1 = vertex | 2 = tes control | 3 = tes evaluation | 4 = geometry | 5 = fragment)
+    GLuint m_iShader;               //!< shader identifier
+    static std::string s_sGlobal;   //!< global shader code
 
 
 public:

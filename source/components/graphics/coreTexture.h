@@ -19,7 +19,7 @@
     #define CORE_TEXTURE_MASK 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
 #endif
 
-#define CORE_TEXTURE_UNITS 8   //!< number of texture units
+#define CORE_TEXTURE_UNITS 4   //!< number of texture units
 
 
 // ****************************************************************

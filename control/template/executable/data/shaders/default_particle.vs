@@ -27,10 +27,10 @@
     
         float fSin   = sin(fDivAngle);
         float fCos   = cos(fDivAngle);
-        vec3 v3Range = inverse(mat3(u_m4Camera)) * vec3(mat2(fCos, fSin, -fSin, fCos) * (a_v3Position.xy * fDivScale), 0.0);
+        vec3 v3Range = u_m3Normal * vec3(mat2(fCos, fSin, -fSin, fCos) * (a_v3Position.xy * fDivScale), 0.0);
         
-        gl_Position = u_m4ViewProj * vec4(v3Range + a_v3DivPosition, 1.0);
-        v_sVertex.v_av2TexCoord[0] = a_v2Texture;
+        gl_Position      = u_m4ViewProj * vec4(v3Range + a_v3DivPosition, 1.0);
+        v_av2TexCoord[0] = a_v2Texture;
 
         v_v4Color    = coreUnpackUnorm4x8(a_iDivColor);
         v_v4Color.a *= fDivValue;
@@ -55,10 +55,10 @@
     
         float fSin   = sin(fDivAngle);
         float fCos   = cos(fDivAngle);
-        vec3 v3Range = inverse(mat3(u_m4Camera)) * vec3(mat2(fCos, fSin, -fSin, fCos) * (a_v3Position.xy * fDivScale), 0.0);
+        vec3 v3Range = u_m3Normal * vec3(mat2(fCos, fSin, -fSin, fCos) * (a_v3Position.xy * fDivScale), 0.0);
         
-        gl_Position = u_m4ViewProj * vec4(v3Range + u_v3DivPosition, 1.0);
-        v_sVertex.v_av2TexCoord[0] = a_v2Texture;
+        gl_Position      = u_m4ViewProj * vec4(v3Range + u_v3DivPosition, 1.0);
+        v_av2TexCoord[0] = a_v2Texture;
 
         v_v4Color    = u_v4DivColor;
         v_v4Color.a *= fDivValue;

@@ -52,6 +52,11 @@ public:
     inline const bool& IsFocused()const {return m_bFocused;}
     //! @}
 
+    //! transform the whole object
+    //! @{
+    inline void FitToScreen() {m_iUpdate |= 3; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = coreVector2(Core::System->GetResolution().AspectRatio(), 1.0f); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}
+    //! @}
+
     //! set object properties
     //! @{
     inline void SetPosition(const coreVector2& vPosition)   {if(m_vPosition  != vPosition)  {m_iUpdate |= 1; m_vPosition  = vPosition;}}

@@ -15,7 +15,6 @@
 // lookup container class
 // NOTE: much faster than map and u_map with only few items
 // TODO: implement quicksort and binary search
-// TODO: implement access cache
 // TODO: measure performance with high amount of entries (>200)
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
 template <typename T> class coreLookup final
@@ -29,7 +28,10 @@ public:
 
 
 private:
-    coreList m_aList;   //!< vector-list with pair-values
+    coreList m_aList;          //!< vector-list with pair-values
+
+    coreEntry* m_pCache;      //!< last requested entry
+    coreEntry m_EmptyEntry;   //!< empty cache entry
 
 
 public:
@@ -68,9 +70,9 @@ public:
     //! @{
     void erase(const T& Entry)noexcept;
     void erase(const char* pcKey)noexcept;
-    inline void erase(const coreUint& iIndex)noexcept            {SDL_assert(iIndex < m_aList.size()); m_aList.erase(m_aList.begin()+iIndex);}
-    inline void erase(const coreConstIterator& Iterator)noexcept {m_aList.erase(Iterator);}
-    inline void clear()noexcept                                  {m_aList.clear();}
+    inline void erase(const coreUint& iIndex)noexcept            {m_pCache = &m_EmptyEntry; SDL_assert(iIndex < m_aList.size()); m_aList.erase(m_aList.begin()+iIndex);}
+    inline void erase(const coreConstIterator& Iterator)noexcept {m_pCache = &m_EmptyEntry; m_aList.erase(Iterator);}
+    inline void clear()noexcept                                  {m_pCache = &m_EmptyEntry; m_aList.clear();}
     //! @}
 
     //! retrieve internal iterator
@@ -96,12 +98,18 @@ private:
     inline bool __check(const coreIterator& it)const noexcept      {return (it != m_aList.end()) ? true : false;}
     inline bool __check(const coreConstIterator& it)const noexcept {return (it != m_aList.end()) ? true : false;}
     //! @}
+
+    //! check for cached entry
+    //! @{
+    inline bool __cache(const char* pcKey)const noexcept {return std::strcmp(m_pCache->first.c_str(), pcKey) ? false : true;}
+    //! @}
 };
 
 
 // ****************************************************************
 // constructor
 template <typename T> coreLookup<T>::coreLookup()noexcept
+: m_pCache (&m_EmptyEntry)
 {
     // reserve variable sized memory
     constexpr_var coreUint iSize = 1 + 64/sizeof(T);
@@ -109,12 +117,14 @@ template <typename T> coreLookup<T>::coreLookup()noexcept
 }
 
 template <typename T> coreLookup<T>::coreLookup(const coreLookup<T>& c)noexcept
-: m_aList (c.m_aList)
+: m_aList  (c.m_aList)
+, m_pCache (&m_EmptyEntry)
 {
 }
 
 template <typename T> coreLookup<T>::coreLookup(coreLookup<T>&& m)noexcept
-: m_aList (std::move(m.m_aList))
+: m_aList  (std::move(m.m_aList))
+, m_pCache (&m_EmptyEntry)
 {
 }
 
@@ -146,6 +156,9 @@ template <typename S> void swap(coreLookup<S>& a, coreLookup<S>& b)noexcept
 // access specific entry
 template <typename T> const T& coreLookup<T>::at(const char* pcKey)const noexcept
 {
+    // check for cached entry
+    if(this->__cache(pcKey)) return m_pCache->second;
+
     // retrieve and check iterator by specific key
     auto it = this->__retrieve(pcKey);
     SDL_assert(this->__check(it));
@@ -158,6 +171,9 @@ template <typename T> const T& coreLookup<T>::at(const char* pcKey)const noexcep
 // access specific entry and create it if necessary
 template <typename T> T& coreLookup<T>::operator [] (const char* pcKey)noexcept
 {
+    // check for cached entry
+    if(this->__cache(pcKey)) return m_pCache->second;
+
     // retrieve and check iterator by specific key
     auto it = this->__retrieve(pcKey);
     if(!this->__check(it))
@@ -165,6 +181,9 @@ template <typename T> T& coreLookup<T>::operator [] (const char* pcKey)noexcept
         // create new entry
         m_aList.push_back(coreEntry(pcKey, T()));
         it = m_aList.end()-1;
+
+        // cache current entry
+        m_pCache = &(*it);
     }
 
     return it->second;
@@ -175,6 +194,9 @@ template <typename T> T& coreLookup<T>::operator [] (const char* pcKey)noexcept
 // remove existing entry
 template <typename T> void coreLookup<T>::erase(const T& Entry)noexcept
 {
+    // reset cache
+    m_pCache = &m_EmptyEntry;
+
     // retrieve and check iterator by specific value
     auto it = this->__retrieve(Entry);
     if(this->__check(it))
@@ -187,6 +209,9 @@ template <typename T> void coreLookup<T>::erase(const T& Entry)noexcept
 
 template <typename T> void coreLookup<T>::erase(const char* pcKey)noexcept
 {
+    // reset cache
+    m_pCache = &m_EmptyEntry;
+
     // retrieve and check iterator by specific key
     auto it = this->__retrieve(pcKey);
     if(this->__check(it))
@@ -233,7 +258,11 @@ template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retr
     {
         // compare string-keys
         if(!std::strcmp(it->first.c_str(), pcKey))
+        {
+            // cache current entry
+            m_pCache = &(*it);
             return it;
+        }
     }
     return m_aList.end();
 }

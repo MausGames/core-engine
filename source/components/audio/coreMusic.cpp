@@ -110,19 +110,13 @@ bool coreMusic::Update()
     int iProcessed;
     alGetSourcei(m_iSource, AL_BUFFERS_PROCESSED, &iProcessed);
 
-    if(iProcessed == 1)
+    if(iProcessed)
     {
         ALuint iBuffer;
 
         // update the processed sound buffer
         alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
-        this->__Stream(iBuffer);
-        alSourceQueueBuffers(m_iSource, 1, &iBuffer);
-    }
-    else if(iProcessed == 2)
-    {
-        // check current track position
-        if(this->TellTime() >= this->GetMaxTime())
+        if(!this->__Stream(iBuffer))
         {
             // music is finished
             this->Stop();
@@ -130,12 +124,12 @@ bool coreMusic::Update()
 
             return true;
         }
-        else
-        {
-            // music was interrupted
-            this->Pause();
-            this->Play();
-        }
+        alSourceQueueBuffers(m_iSource, 1, &iBuffer);
+
+        // check for wrong status
+        int iStatus;
+        alGetSourcei(m_iSource, AL_SOURCE_STATE, &iStatus);
+        if(iStatus != AL_PLAYING) alSourcePlay(m_iSource);
     }
 
     return false;
@@ -156,9 +150,12 @@ coreError coreMusic::Play()
     m_iSource = Core::Audio->NextSource(0);
     if(m_iSource)
     {
-        // prepare and queue sound buffers
+        // prepare sound buffers
         this->__Stream(m_aiBuffer[0]);
         this->__Stream(m_aiBuffer[1]);
+
+        // remove old and queue new sound buffers
+        alSourcei(m_iSource, AL_BUFFER, 0);
         alSourceQueueBuffers(m_iSource, 2, m_aiBuffer);
 
         // set initial sound source properties
@@ -181,7 +178,7 @@ void coreMusic::Stop()
 {
     // pause and rewind the music stream
     this->Pause();
-    this->SeekTime(0.0);
+    ov_time_seek_page_lap(&m_Stream, 0.0);
 }
 
 
@@ -191,11 +188,12 @@ void coreMusic::Pause()
 {
     if(m_iSource)
     {
-        ALuint aiBuffer[2];
+        ALuint iBuffer;
 
         // stop and clear sound source
         alSourceStop(m_iSource);
-        alSourceUnqueueBuffers(m_iSource, 2, aiBuffer);
+        alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
+        alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
         m_iSource = 0;
 
         // reset playback status
@@ -333,7 +331,7 @@ bool coreMusicPlayer::Update()
     if(m_pCurMusic->Update())
     {
         // handle unnecessary loop
-        if((m_iRepeat != CORE_MUSIC_SINGLE_REPEAT) && m_pCurMusic->IsPlaying())
+        if((m_iRepeat != CORE_MUSIC_SINGLE_REPEAT))
             m_pCurMusic->Stop();
 
         // repeat, switch or stop as defined
@@ -373,7 +371,7 @@ void coreMusicPlayer::Shuffle()
     m_apSequence = m_apMusic;
 
     // shuffle the list
-    std::random_shuffle(m_apSequence.begin(), m_apSequence.end());
+    std::random_shuffle(m_apSequence.begin(), m_apSequence.end(), [](int i) {return std::rand() % i;});
 
     // switch to first music object
     this->Goto(0);

@@ -223,6 +223,7 @@ bool CoreSystem::__UpdateEvents()
             case SDL_WINDOWEVENT_MINIMIZED:
             case SDL_WINDOWEVENT_MAXIMIZED:
             case SDL_WINDOWEVENT_RESTORED:
+            case SDL_WINDOWEVENT_FOCUS_LOST:
                 m_bMinimized = true;
                 break;
 

@@ -18,7 +18,7 @@
 // TODO: implement general relative behavior, submenu, hierarchy (menu/2d objects)
 // TODO: optimize rendering with a frame buffer
 // TODO: implement tab-switching and keyboard/gamepad control
-// TODO: sized menu class ? (oh god, I forgot what this means)
+// TODO: sized menu class ? (oh god, I forgot what this was)
 class coreMenu : public coreObject2D
 {
 private:
@@ -52,7 +52,7 @@ public:
     void ClearObjects();
     //! @}
 
-    //! control the current surface
+    //! control surfaces
     //! @{
     bool ChangeSurface(const coreByte& iNewSurface, const float& fSpeed);
     //! @}

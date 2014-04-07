@@ -10,8 +10,6 @@
 
 void main()
 {
-    gl_FragColor = texture2D(u_as2Texture[0], v_sVertex.v_av2TexCoord[0]);
-    
-    float fDetail = gl_FragColor.a;
-    gl_FragColor *= vec4(fDetail, fDetail, fDetail, 1.0) * u_v4Color;
+    float fAlpha = texture2D(u_as2Texture[0], v_av2TexCoord[0]).a;
+    gl_FragColor = vec4(vec3(fAlpha * fAlpha), fAlpha) * u_v4Color;
 }

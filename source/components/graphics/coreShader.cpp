@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::string  coreShader::s_asGlobal[6]; // = "";
-coreProgram* coreProgram::s_pCurrent       = NULL;
+std::string  coreShader::s_sGlobal   = "";
+coreProgram* coreProgram::s_pCurrent = NULL;
 
 
 // ****************************************************************
@@ -43,12 +43,12 @@ coreError coreShader::Load(coreFile* pFile)
 
     // set shader type
     GLenum iType;
-    coreUint iGlobal;
-         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {iType = GL_VERTEX_SHADER;          iGlobal = 1;}
-    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {iType = GL_TESS_CONTROL_SHADER;    iGlobal = 2;}
-    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {iType = GL_TESS_EVALUATION_SHADER; iGlobal = 3;}
-    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {iType = GL_GEOMETRY_SHADER;        iGlobal = 4;}
-    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        iGlobal = 5;}
+    const char* pcDefine;
+         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {iType = GL_VERTEX_SHADER;          pcDefine = "\n#define GL_VERTEX_SHADER          1";}
+    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {iType = GL_TESS_CONTROL_SHADER;    pcDefine = "\n#define GL_TESS_CONTROL_SHADER    1";}
+    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {iType = GL_TESS_EVALUATION_SHADER; pcDefine = "\n#define GL_TESS_EVALUATION_SHADER 1";}
+    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {iType = GL_GEOMETRY_SHADER;        pcDefine = "\n#define GL_GEOMETRY_SHADER        1";}
+    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        pcDefine = "\n#define GL_FRAGMENT_SHADER        1";}
     else
     {
         Core::Log->Error(false, "Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag)", pFile->GetPath());
@@ -63,8 +63,8 @@ coreError coreShader::Load(coreFile* pFile)
     coreShader::__LoadGlobal();
 
     // assemble the shader
-    const char* apcData[3] = {s_asGlobal[0].c_str(),         s_asGlobal[iGlobal].c_str(),         r_cast<const char*>(pFile->GetData())};
-    const GLint aiSize[3]  = {(GLint)s_asGlobal[0].length(), (GLint)s_asGlobal[iGlobal].length(), (GLint)pFile->GetSize()};
+    const char* apcData[3] = {pcDefine,                     s_sGlobal.c_str(),         r_cast<const char*>(pFile->GetData())};
+    const GLint aiSize[3]  = {(GLint)std::strlen(pcDefine), (GLint)s_sGlobal.length(), (GLint)pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
@@ -136,32 +136,21 @@ coreError coreShader::Unload()
 // load global shader data
 void coreShader::__LoadGlobal()
 {
-    if(!s_asGlobal[0].empty()) return;
+    if(!s_sGlobal.empty()) return;
 
     // set global shader definitions
-    s_asGlobal[0].assign(coreData::Print("#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
-    s_asGlobal[0].append(coreData::Print("\n#define CORE_TEXTURE_UNITS        (%d)", CORE_TEXTURE_UNITS));
-    s_asGlobal[0].append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS      (%d)", CORE_GRAPHICS_LIGHTS));
-    s_asGlobal[0].append(coreData::Print("\n#define CORE_SHADER_OUTPUT_COLORS (%d)", CORE_SHADER_OUTPUT_COLORS));
+    s_sGlobal.assign(coreData::Print("\n#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
+    s_sGlobal.append(coreData::Print("\n#define CORE_TEXTURE_UNITS        (%d)", CORE_TEXTURE_UNITS));
+    s_sGlobal.append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS      (%d)", CORE_GRAPHICS_LIGHTS));
+    s_sGlobal.append(coreData::Print("\n#define CORE_SHADER_OUTPUT_COLORS (%d)", CORE_SHADER_OUTPUT_COLORS));
 
-    // loop through list with global shader files
-    const char aacPath[][64] = {"data/shaders/global.glsl",
-                                "data/shaders/global_vertex.vs",
-                                "data/shaders/global_control.tcs",
-                                "data/shaders/global_evaluation.tes",
-                                "data/shaders/global_geometry.gs",
-                                "data/shaders/global_fragment.fs"};
+    // retrieve global shader file
+    coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
+    ASSERT_IF(!pFile->GetData()) return;
 
-    for(int i = 0; i < 6; ++i)
-    {
-        // retrieve file
-        coreFile* pFile = Core::Manager::Resource->RetrieveFile(aacPath[i]);
-        ASSERT_IF(!pFile->GetData()) continue;
-
-        // copy and unload data
-        s_asGlobal[i].append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
-        pFile->UnloadData();
-    }
+    // copy and unload data
+    s_sGlobal.append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
+    pFile->UnloadData();
 }
 
 

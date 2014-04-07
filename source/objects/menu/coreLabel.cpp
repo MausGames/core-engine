@@ -14,7 +14,7 @@
 // ****************************************************************    
 // constructor
 coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)
-: m_iHeight     (int(float(iHeight) * (Core::System->GetResolution().x/800.0f) * CORE_LABEL_DETAIL))
+: m_iHeight     (int(float(iHeight) * (Core::System->GetResolution().y/800.0f) * CORE_LABEL_DETAIL))
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLength     (iLength)
 , m_sText       ("")
@@ -64,7 +64,7 @@ void coreLabel::Render()
         if(m_iGenerate & 1)
         {
             // update the object size
-            this->SetSize(m_fScale * m_vTexSize * (m_vResolution/Core::System->GetResolution().x) * (1.0f/CORE_LABEL_DETAIL));
+            this->SetSize(m_fScale * m_vTexSize * (m_vResolution/Core::System->GetResolution().y) * (1.0f/CORE_LABEL_DETAIL));
             coreObject2D::Move();
         }
         m_iGenerate = 0;

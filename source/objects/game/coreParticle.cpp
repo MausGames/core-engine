@@ -103,6 +103,9 @@ void coreParticleSystem::Render()
     if(!m_pProgram) return;
     if(!m_pProgram->Enable()) return;
 
+    // update normal matrix uniform
+    m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, Core::Graphics->GetCamera().m123().Inverse(), false);
+
     // enable all active textures
     for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsActive()) m_apTexture[i]->Enable(i);
@@ -397,7 +400,7 @@ coreParticle* coreParticleEffect::CreateParticle(const int& iNum, const float& f
         if(m_fCreation >= 1.0f)
         {
             // adjust status value with particle number and create first particle
-            m_fCreation -= float(iNum+1);
+            m_fCreation -= float(iNum+1) * std::floor(m_fCreation);
             return this->CreateParticle();
         }
     }

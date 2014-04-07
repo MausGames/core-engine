@@ -166,7 +166,7 @@ void coreMenu::ClearObjects()
 
 
 // ****************************************************************
-// control the current surface
+// change current surface
 bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
 {
            if(iNewSurface == m_iCurSurface) return false;

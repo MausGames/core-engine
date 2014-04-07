@@ -138,7 +138,7 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
     if(GLEW_ARB_map_buffer_range)
     {
         // directly map buffer memory
-        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT));
+        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT));
     }
     else
     {

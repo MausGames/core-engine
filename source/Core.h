@@ -151,13 +151,14 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define ASSERT_IF(c)  SDL_assert(!(c)); if(c)
+
 #define FOR_EACH(i,c)     for(auto i = c.begin(),  __e = c.end();  i != __e; ++i)
 #define FOR_EACH_REV(i,c) for(auto i = c.rbegin(), __e = c.rend(); i != __e; ++i)
-#define ASSERT_IF(c)      SDL_assert(!(c)); if(c)
-
-#define FOR_EACH_DYN(i,c) for(auto i = c.begin(), __e = c.end(); i != __e; )
-#define DYN_KEEP(i)       ++i;
-#define DYN_REMOVE(i,c)   i = c.erase(i); __e = c.end();
+#define FOR_EACH_DYN(i,c) for(auto i = c.begin(),  __e = c.end();  i != __e; )
+#define DYN_KEEP(i)       {++i;}
+#define DYN_REMOVE(i,c)   {i = c.erase(i); __e = c.end();}
 
 #define DISABLE_COPY(c)      \
     c(const c&) delete_func; \
@@ -406,3 +407,5 @@ private:
 
 
 #endif // _CORE_GUARD_H_
+
+// 0100010001101111001000000111010001101000011010010110111001100111011100110010000001110010011010010110011101101000011101000010110000100000011011110111001000100000011001000110111101101110001001110111010000100000011001000110111100100000011101000110100001100101011011010010000001100001011101000010000001100001011011000110110000101110
