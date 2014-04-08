@@ -83,8 +83,8 @@ public:
 
     //! convert vector
     //! @{
-    constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreVector2 yx()const noexcept         {return coreVector2(y, x);}
+    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    constexpr_func coreVector2 yx()const noexcept        {return coreVector2(y, x);}
     //! @}
 
     //! normalize vector
@@ -185,16 +185,16 @@ public:
 
     //! convert vector
     //! @{
-    constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreVector2 xy()const noexcept         {return coreVector2(x, y);}
-    constexpr_func coreVector2 xz()const noexcept         {return coreVector2(x, z);}
-    constexpr_func coreVector2 yx()const noexcept         {return coreVector2(y, x);}
-    constexpr_func coreVector2 yz()const noexcept         {return coreVector2(y, z);}
-    constexpr_func coreVector2 zx()const noexcept         {return coreVector2(z, x);}
-    constexpr_func coreVector2 zy()const noexcept         {return coreVector2(z, y);}
-    inline void xy(const coreVector2& v)noexcept          {x = v.x; y = v.y;}
-    inline void xz(const coreVector2& v)noexcept          {x = v.x; z = v.y;}
-    inline void yz(const coreVector2& v)noexcept          {y = v.x; z = v.y;}
+    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    constexpr_func coreVector2 xy()const noexcept        {return coreVector2(x, y);}
+    constexpr_func coreVector2 xz()const noexcept        {return coreVector2(x, z);}
+    constexpr_func coreVector2 yx()const noexcept        {return coreVector2(y, x);}
+    constexpr_func coreVector2 yz()const noexcept        {return coreVector2(y, z);}
+    constexpr_func coreVector2 zx()const noexcept        {return coreVector2(z, x);}
+    constexpr_func coreVector2 zy()const noexcept        {return coreVector2(z, y);}
+    inline void xy(const coreVector2& v)noexcept         {x = v.x; y = v.y;}
+    inline void xz(const coreVector2& v)noexcept         {x = v.x; z = v.y;}
+    inline void yz(const coreVector2& v)noexcept         {y = v.x; z = v.y;}
     //! @}
 
     //! normalize vector
@@ -304,14 +304,14 @@ public:
 
     //! convert vector
     //! @{
-    constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreVector3 xyzw()const noexcept       {return coreVector3(x, y, z)*w;}
-    constexpr_func coreVector3 xyz()const noexcept        {return coreVector3(x, y, z);}
-    constexpr_func coreVector2 xy()const noexcept         {return coreVector2(x, y);}
-    constexpr_func coreVector2 zw()const noexcept         {return coreVector2(z, w);}
-    inline void xyz(const coreVector3& v)noexcept         {x = v.x; y = v.y; z = v.z;}
-    inline void xy(const coreVector2& v)noexcept          {x = v.x; y = v.y;}
-    inline void zw(const coreVector2& v)noexcept          {z = v.x; w = v.y;}
+    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    constexpr_func coreVector3 xyzw()const noexcept      {return coreVector3(x, y, z)*w;}
+    constexpr_func coreVector3 xyz()const noexcept       {return coreVector3(x, y, z);}
+    constexpr_func coreVector2 xy()const noexcept        {return coreVector2(x, y);}
+    constexpr_func coreVector2 zw()const noexcept        {return coreVector2(z, w);}
+    inline void xyz(const coreVector3& v)noexcept        {x = v.x; y = v.y; z = v.z;}
+    inline void xy(const coreVector2& v)noexcept         {x = v.x; y = v.y;}
+    inline void zw(const coreVector2& v)noexcept         {z = v.x; w = v.y;}
     //! @}
 
     //! direct functions

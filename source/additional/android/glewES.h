@@ -62,24 +62,25 @@ extern const char* glewGetString(GLenum name);
 extern bool glewIsSupported(const char* pcName);
 extern const char* glewGetErrorString(GLenum error);
 
-#define GLEW_ARB_map_buffer_range      false
-#define GLEW_ARB_buffer_storage        false
-#define GLEW_ARB_clear_buffer_object   false
-#define GLEW_ARB_invalidate_subdata    false
-#define GLEW_ARB_vertex_attrib_binding false
-#define GLEW_ARB_texture_storage       false
-#define GLEW_ARB_framebuffer_object    true
-#define GLEW_ARB_uniform_buffer_object false
-#define GLEW_ARB_vertex_array_object   false
-#define GLEW_ARB_tessellation_shader   false
-#define GLEW_ARB_sync                  false
-#define GLEW_ARB_pixel_buffer_object   false
-#define GLEW_ARB_instanced_arrays      false
+#define GLEW_ARB_map_buffer_range           false
+#define GLEW_ARB_buffer_storage             false
+#define GLEW_ARB_clear_buffer_object        false
+#define GLEW_ARB_invalidate_subdata         false
+#define GLEW_ARB_vertex_attrib_binding      false
+#define GLEW_ARB_texture_storage            false
+#define GLEW_ARB_framebuffer_object         true
+#define GLEW_ARB_uniform_buffer_object      false
+#define GLEW_ARB_vertex_array_object        false
+#define GLEW_ARB_tessellation_shader        false
+#define GLEW_ARB_sync                       false
+#define GLEW_ARB_pixel_buffer_object        false
+#define GLEW_ARB_instanced_arrays           false
 #define GLEW_EXT_texture_filter_anisotropic false
-#define GLEW_KHR_debug                 false
-#define GLEW_VERSION_3_2               false
+#define GLEW_KHR_debug                      false
+#define GLEW_VERSION_3_2                    false
 
 
+#define glClearDepth glClearDepthf
 #define glDrawRangeElements(a, b, c, d, e, f) glDrawElements(a, d, e, f)
 
 

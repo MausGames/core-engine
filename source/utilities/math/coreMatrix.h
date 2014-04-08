@@ -47,7 +47,7 @@ public:
 
     //! convert matrix
     //! @{
-    constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
     //! @}
 
     //! transpose matrix
@@ -122,11 +122,11 @@ public:
 
     //! convert matrix
     //! @{
-    constexpr_func operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreMatrix3 m123()const noexcept       {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
-    constexpr_func coreMatrix3 m124()const noexcept       {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
-    constexpr_func coreMatrix3 m134()const noexcept       {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
-    constexpr_func coreMatrix3 m234()const noexcept       {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
+    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    constexpr_func coreMatrix3 m123()const noexcept      {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
+    constexpr_func coreMatrix3 m124()const noexcept      {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
+    constexpr_func coreMatrix3 m134()const noexcept      {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
+    constexpr_func coreMatrix3 m234()const noexcept      {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
     //! @}
 
     //! transpose matrix

@@ -17,7 +17,7 @@
 #define CORE_INPUT_BUTTONS_MOUSE    16    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK 32    //!< number of regarded joystick buttons
 
-#define CORE_INPUT_ID MAX(iID, m_aJoystick.size()-1)
+#define CORE_INPUT_ID MAX(iID, coreUint(m_aJoystick.size()-1))
 
 enum coreInputButton
 {

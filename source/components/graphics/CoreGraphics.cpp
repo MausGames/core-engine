@@ -11,10 +11,6 @@
 #define CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT (4*sizeof(coreMatrix4) + 1*sizeof(coreVector4))
 #define CORE_GRAPHICS_UNIFORM_SIZE         (CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + CORE_GRAPHICS_LIGHTS*sizeof(coreLight))
 
-#if defined(_CORE_GLES_)
-    #define glClearDepth glClearDepthf
-#endif
-
 
 // ******************************************************************
 // constructor
