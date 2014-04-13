@@ -67,7 +67,7 @@ private:
 
     //! write text to the log file
     //! @{
-    void __Write(const bool& bTime, std::string sText);
+    void __Write(const bool& bTime, std::string sText) cold_func;
     //! @}
 };
 

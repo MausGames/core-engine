@@ -82,13 +82,37 @@ void coreObject2D::Move()
 
 // ****************************************************************
 // interact with the 2d-object
-// TODO: add interaction for rotated objects
+// TODO: add interaction for rotated objects (ABS is for 180 degree)
 // TODO: Interact depends on Move, and Move of some menu objects depend on Interact
 void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
-    const coreVector2 vScreenPosition = coreVector2(m_mTransform._41, m_mTransform._42);
-    const coreVector2 vScreenSize     = coreVector2(m_mTransform._11, m_mTransform._22)*0.5f;
+    const coreVector2 vScreenPosition = coreVector2(    m_mTransform._41,      m_mTransform._42);
+    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22))*0.5f;
+
+#if defined(_CORE_ANDROID_)
+
+    // reset interaction status
+    m_bFocused = false;
+    m_iFinger  = 0;
+
+    for(coreUint i = 0; i < CORE_INPUT_FINGERS; ++i)
+    {
+        if(!Core::Input->GetTouchButton(i, CORE_INPUT_HOLD)) continue;
+
+        // get relative finger position
+        const coreVector2 vInput = Core::Input->GetTouchPosition(i) * Core::System->GetResolution() - vScreenPosition;
+
+        // test for intersection
+        if(ABS(vInput.x) < vScreenSize.x &&
+           ABS(vInput.y) < vScreenSize.y)
+        {
+            m_bFocused = true;
+            m_iFinger |= (1 << i);
+        }
+    }
+
+#else
 
     // get relative mouse cursor position
     const coreVector2 vInput = Core::Input->GetMousePosition() * Core::System->GetResolution() - vScreenPosition;
@@ -96,4 +120,34 @@ void coreObject2D::Interact()
     // test for intersection
     m_bFocused = (ABS(vInput.x) < vScreenSize.x &&
                   ABS(vInput.y) < vScreenSize.y);
+
+#endif
+}
+
+
+// ****************************************************************
+// check for direct input
+// TODO: make right mouse button on Android a longer push
+bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)const
+{
+#if defined(_CORE_ANDROID_)
+
+    // check for general intersection status
+    if(m_bFocused)
+    {
+        for(coreUint i = 0; i < CORE_INPUT_FINGERS; ++i)
+        {
+            // check for every finger on the object
+            if((m_iFinger & (1 << i)) && Core::Input->GetTouchButton(i, iType))
+                return true;
+        }
+    }
+    return false;
+
+#else
+
+    // check for interaction status and mouse button
+    return (m_bFocused && Core::Input->GetMouseButton(iButton, iType)) ? true : false;
+
+#endif
 }

@@ -116,11 +116,15 @@
     #define noexcept       throw()
     #define __thread       __declspec(thread)
     #define align_16(x)    __declspec(align(16)) x
+    #define hot_func
+    #define cold_func
     #define constexpr_func inline
     #define constexpr_var  const
 #else
     #define delete_func    = delete
     #define align_16(x)    x __attribute__((aligned(16)))
+    #define hot_func       __attribute__((hot))
+    #define cold_func      __attribute__((cold))
     #define constexpr_func constexpr
     #define constexpr_var  constexpr
 #endif

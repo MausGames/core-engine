@@ -41,8 +41,8 @@ public:
     //! render and move the 3d-object
     //! @{
     virtual void Render() {this->coreObject3D::Render(m_pProgram, true);}
-    virtual void Render(const coreProgramShr& pProgram, const bool& bTextured);
-    virtual void Move();
+    virtual void Render(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
+    virtual void Move() hot_func;
     //! @}
 
     //! set object properties

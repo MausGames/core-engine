@@ -155,8 +155,8 @@ public:
 
     //! render and move the particle system
     //! @{
-    void Render();
-    void Move();
+    void Render() hot_func;
+    void Move() hot_func;
     //! @}
 
     //! create new particles

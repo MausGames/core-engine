@@ -46,6 +46,17 @@ CoreInput::coreJoystick::coreJoystick()noexcept
 
 // ****************************************************************
 // constructor
+CoreInput::coreTouch::coreTouch()noexcept
+: vPosition (coreVector2(0.0f,0.0f))
+, vRelative (coreVector2(0.0f,0.0f))
+, fPressure (0.0f)
+{
+    std::memset(abButton, 0, sizeof(abButton));
+}
+
+
+// ****************************************************************
+// constructor
 CoreInput::CoreInput()noexcept
 : m_pCursor        (NULL)
 , m_bCursorVisible (true)
@@ -204,7 +215,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
         if(Event.motion.x != int(0.5f*Core::System->GetResolution().x) || 
            Event.motion.y != int(0.5f*Core::System->GetResolution().y))
         {
-            this->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f, 0.5f));
+            this->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
             this->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
         }
         break;
@@ -228,6 +239,24 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
     case SDL_JOYAXISMOTION:
         if(ABS(Event.jaxis.value) > 8000) this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, float(coreMath::Sign(Event.jaxis.value)) * (Event.jaxis.axis ? -1.0f : 1.0f));
                                      else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
+        break;
+
+    // press finger
+    case SDL_FINGERDOWN:
+        this->SetTouchButton((coreUint)Event.tfinger.fingerId, true);
+        this->SetTouchPosition((coreUint)Event.tfinger.fingerId, coreVector2(Event.tfinger.x, -Event.tfinger.y) + coreVector2(-0.5f,0.5f));
+        break;
+
+    // release finger
+    case SDL_FINGERUP:
+        this->SetTouchButton((coreUint)Event.tfinger.fingerId, false);
+        break;
+
+    // move finger
+    case SDL_FINGERMOTION:
+        this->SetTouchPosition((coreUint)Event.tfinger.fingerId, coreVector2(Event.tfinger.x,  -Event.tfinger.y)  + coreVector2(-0.5f,0.5f));
+        this->SetTouchRelative((coreUint)Event.tfinger.fingerId, coreVector2(Event.tfinger.dx, -Event.tfinger.dy) + this->GetTouchRelative((coreUint)Event.tfinger.fingerId));
+        this->SetTouchPressure((coreUint)Event.tfinger.fingerId, Event.tfinger.pressure);
         break;
     }
 
@@ -263,6 +292,13 @@ void CoreInput::__UpdateButtons()
         }
     }
 
+    // process touch inputs
+    for(int i = 0; i < CORE_INPUT_FINGERS; ++i)
+    {
+             if( m_aTouch[i].abButton[0]) CORE_INPUT_PRESS(m_aTouch[i].abButton)
+        else if(!m_aTouch[i].abButton[0]) CORE_INPUT_RELEASE(m_aTouch[i].abButton)
+    }
+
 #if defined(_CORE_LINUX_)
 
     if(!m_bCursorVisible)
@@ -286,9 +322,11 @@ void CoreInput::__ClearButtons()
     FOR_EACH(it, m_aJoystick)
         it->iLast = -1;
 
+    // reset all relative movements
+    m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);
+    for(int i = 0; i < CORE_INPUT_FINGERS; ++i)
+        m_aTouch[i].vRelative = coreVector2(0.0f,0.0f);
+
     // clear current text-input character
     m_Keyboard.cChar = '\0';
-
-    // reset relative movement of the mouse cursor
-    m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);
 }

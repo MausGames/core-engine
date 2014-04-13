@@ -87,10 +87,10 @@ public:
 private:
     //! retrieve iterator
     //! @{
-    coreIterator __retrieve(const T& Entry)noexcept;
-    coreConstIterator __retrieve(const T& Entry)const noexcept;
-    coreIterator __retrieve(const char* pcKey)noexcept;
-    coreConstIterator __retrieve(const char* pcKey)const noexcept;
+    coreIterator __retrieve(const T& Entry)noexcept hot_func;
+    coreConstIterator __retrieve(const T& Entry)const noexcept hot_func;
+    coreIterator __retrieve(const char* pcKey)noexcept hot_func;
+    coreConstIterator __retrieve(const char* pcKey)const noexcept hot_func;
     //! @}
 
     //! check for valid iterator

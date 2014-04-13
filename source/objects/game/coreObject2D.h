@@ -27,6 +27,10 @@ protected:
     static coreModel* s_pModel;   //!< global model object
     bool m_bFocused;              //!< interaction status
 
+#if defined(_CORE_ANDROID_)
+    int m_iFinger;                //!< separate finger interaction status (bitwise)
+#endif
+
 
 public:
     constexpr_obj coreObject2D()noexcept;
@@ -41,14 +45,14 @@ public:
     //! render and move the 2d-object
     //! @{
     virtual void Render() {this->coreObject2D::Render(m_pProgram, true);}
-    virtual void Render(const coreProgramShr& pProgram, const bool& bTextured);
-    virtual void Move();
+    virtual void Render(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
+    virtual void Move() hot_func;
     //! @}
 
     //! interact with the 2d-object
     //! @{
     void Interact();
-    inline bool IsClicked(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const {return (m_bFocused && Core::Input->GetMouseButton(iButton, iType)) ? true : false;}
+    bool IsClicked(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
     inline const bool& IsFocused()const {return m_bFocused;}
     //! @}
 
@@ -87,6 +91,9 @@ constexpr_obj coreObject2D::coreObject2D()noexcept
 , m_vCenter    (coreVector2(0.0f,0.0f))
 , m_vAlignment (coreVector2(0.0f,0.0f))
 , m_bFocused   (false)
+#if defined(_CORE_ANDROID_)
+, m_iFinger    (0)
+#endif
 {
 }
 

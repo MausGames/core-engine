@@ -16,6 +16,7 @@
 #define CORE_INPUT_BUTTONS_KEYBOARD 232   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    16    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK 32    //!< number of regarded joystick buttons
+#define CORE_INPUT_FINGERS          5     //!< maximum number of simultaneous fingers
 
 #define CORE_INPUT_ID MAX(iID, coreUint(m_aJoystick.size()-1))
 
@@ -75,14 +76,27 @@ private:
         coreJoystick()noexcept;
     };
 
+    //! touch structure
+    struct coreTouch
+    {
+        bool abButton[4];        //!< status of the finger
+        coreVector2 vPosition;   //!< absolute position of the finger
+        coreVector2 vRelative;   //!< relative movement of the finger
+        float fPressure;         //!< current quantity of pressure applied
+
+        coreTouch()noexcept;
+    };
+
 
 private:
-    coreKeyboard m_Keyboard;                 //!< main keyboard object
-    coreMouse m_Mouse;                       //!< main mouse object
-    std::vector<coreJoystick> m_aJoystick;   //!< list with joystick objects
+    coreKeyboard m_Keyboard;                  //!< main keyboard object
+    coreMouse m_Mouse;                        //!< main mouse object
+    std::vector<coreJoystick> m_aJoystick;    //!< list with joystick objects
 
-    SDL_Cursor* m_pCursor;                   //!< hardware mouse cursor
-    bool m_bCursorVisible;                   //!< status of the mouse cursor
+    coreTouch m_aTouch[CORE_INPUT_FINGERS];   //!< array with touch objects
+
+    SDL_Cursor* m_pCursor;                    //!< hardware mouse cursor
+    bool m_bCursorVisible;                    //!< status of the mouse cursor
 
 
 private:
@@ -142,6 +156,18 @@ public:
     inline void SetJoystickRelative(const coreUint& iID, const coreByte& iAxis, const float& fValue)               {m_aJoystick[CORE_INPUT_ID].vRelative.m[iAxis] = fValue;}
     inline const bool& GetJoystickButton(const coreUint& iID, const int& iButton, const coreInputType& iType)const {return m_aJoystick[CORE_INPUT_ID].aabButton[iButton][iType];}
     inline const coreVector2& GetJoystickRelative(const coreUint& iID)const                                        {return m_aJoystick[CORE_INPUT_ID].vRelative;}
+    //! @}
+
+    //! access touch input
+    //! @{
+    inline void SetTouchButton(const coreUint& iID, const bool& bStatus)                    {ASSERT_IF(iID >= CORE_INPUT_FINGERS) return; m_aTouch[iID].abButton[0] = bStatus;}
+    inline void SetTouchPosition(const coreUint& iID, const coreVector2& vPosition)         {ASSERT_IF(iID >= CORE_INPUT_FINGERS) return; m_aTouch[iID].vPosition   = vPosition;}
+    inline void SetTouchRelative(const coreUint& iID, const coreVector2& vRelative)         {ASSERT_IF(iID >= CORE_INPUT_FINGERS) return; m_aTouch[iID].vRelative   = vRelative;}
+    inline void SetTouchPressure(const coreUint& iID, const float& fPressure)               {ASSERT_IF(iID >= CORE_INPUT_FINGERS) return; m_aTouch[iID].fPressure   = fPressure;}
+    inline const bool& GetTouchButton(const coreUint& iID, const coreInputType& iType)const {return m_aTouch[iID].abButton[iType];}
+    inline const coreVector2& GetTouchPosition(const coreUint& iID)const                    {return m_aTouch[iID].vPosition;}
+    inline const coreVector2& GetTouchRelative(const coreUint& iID)const                    {return m_aTouch[iID].vRelative;}
+    inline const float& GetTouchPressure(const coreUint& iID)const                          {return m_aTouch[iID].fPressure;}
     //! @}
 
     //! get last pressed input button
