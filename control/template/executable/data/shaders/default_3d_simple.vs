@@ -10,6 +10,6 @@
 
 void main()
 {
-    float fAlpha = texture2D(u_as2Texture[0], v_av2TexCoord[0]).r;
-    gl_FragColor = vec4(vec3(fAlpha * fAlpha), fAlpha) * u_v4Color;
+    gl_Position      = u_m4ModelViewProj * vec4(a_v3Position, 1.0);
+    v_av2TexCoord[0] = a_v2Texture;
 }

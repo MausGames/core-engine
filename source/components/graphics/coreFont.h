@@ -33,7 +33,8 @@ public:
 
     //! create text surface with the font
     //! @{
-    SDL_Surface* Create(const char* pcText, const coreVector3& vColor, const int& iHeight);
+    SDL_Surface* CreateText(const char* pcText, const int& iHeight);
+    SDL_Surface* CreateGlyph(const coreWord& iGlyph, const int& iHeight);
     //! @}
 
     //! get relative path to default resource

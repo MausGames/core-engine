@@ -61,11 +61,12 @@ enum coreShaderStatus
 
 // ****************************************************************
 // shader class
+// TODO: implement simple define-injection interface
 class coreShader final : public coreResource
 {
 private:
-    GLuint m_iShader;               //!< shader identifier
-    static std::string s_sGlobal;   //!< global shader code
+    GLuint m_iShader;                   //!< shader identifier
+    static std::string s_asGlobal[2];   //!< global shader code (0 = version | 1 = global shader file)
 
 
 public:
@@ -152,7 +153,7 @@ public:
 
     //! check for cached uniform values
     //! @{
-    inline int CheckCache(const char* pcName, const coreVector4& vVector) {if(m_avCache.count(pcName)) {if(m_avCache.at(pcName) == vVector) return -1;} m_avCache[pcName] = vVector; return this->GetUniform(pcName);}
+    inline int CheckCache(const char* pcName, const coreVector4& vVector) hot_func {if(m_avCache.count(pcName)) {if(m_avCache.at(pcName) == vVector) return -1;} m_avCache[pcName] = vVector; return this->GetUniform(pcName);}
     //! @}
 
     //! get object properties

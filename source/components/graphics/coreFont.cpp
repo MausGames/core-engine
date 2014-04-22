@@ -72,22 +72,33 @@ coreError coreFont::Unload()
 
 // ****************************************************************   
 // create text surface with the font
-SDL_Surface* coreFont::Create(const char* pcText, const coreVector3& vColor, const int& iHeight)
+SDL_Surface* coreFont::CreateText(const char* pcText, const int& iHeight)
 {
     SDL_assert(pcText);
 
     // check for specific height
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
 
-    // convert color
-    const coreVector3 vConvert = vColor*255.0f;
-    SDL_Color aiColor = {coreByte(vConvert.r),
-                         coreByte(vConvert.g),
-                         coreByte(vConvert.b),
-                         255};
+    // define color
+    constexpr_var SDL_Color aiFont = {0xFF, 0xFF, 0xFF};
+    constexpr_var SDL_Color aiBack = {0x00, 0x00, 0x00};
 
     // render and return the text surface
-    return TTF_RenderText_Blended(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiColor);
+    return TTF_RenderUTF8_Shaded(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiFont, aiBack);
+}
+
+SDL_Surface* coreFont::CreateGlyph(const coreWord& iGlyph,  const int& iHeight)
+{
+    // check for specific height
+    if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
+
+    // define color
+    constexpr_var SDL_Color aiFont = {0xFF, 0xFF, 0xFF};
+    constexpr_var SDL_Color aiBack = {0x00, 0x00, 0x00};
+
+    // render and return the text surface
+    return TTF_RenderGlyph_Shaded(m_apFont.at(iHeight), iGlyph, aiFont, aiBack);
+    
 }
 
 

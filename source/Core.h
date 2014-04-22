@@ -58,21 +58,21 @@
 
 // platform
 #if defined(_WIN32)
-    #define _CORE_WINDOWS_
+    #define _CORE_WINDOWS_ 1
 #endif
 #if defined(__linux__)
-    #define _CORE_LINUX_
+    #define _CORE_LINUX_ 1
 #endif
 #if defined(__APPLE__)
-    #define _CORE_OSX_
+    #define _CORE_OSX_ 1
 #endif
 #if defined(__ANDROID__)
-    #define _CORE_ANDROID_
+    #define _CORE_ANDROID_ 1
 #endif
 
 // debug mode
 #if defined(_DEBUG) || defined(DEBUG) || (defined(_CORE_GCC_) && !defined(__OPTIMIZE__))
-    #define _CORE_DEBUG_
+    #define _CORE_DEBUG_ 1
     static const bool g_bCoreDebug = true;
 #else
     static const bool g_bCoreDebug = false;
@@ -80,12 +80,12 @@
 
 // SIMD support
 #if (defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)) && !defined(_CORE_ANDROID_) && !defined(_CORE_DEBUG_)
-    #define _CORE_SSE_
+    #define _CORE_SSE_ 1
 #endif
 
 // OpenGL ES support
 #if defined(_CORE_ANDROID_)
-    #define _CORE_GLES_
+    #define _CORE_GLES_ 1
 #endif
 
 
@@ -113,18 +113,18 @@
     #if (_CORE_MSVC_) < 1700
         #define final
     #endif
+    #define hot_func
+    #define cold_func
     #define noexcept       throw()
     #define __thread       __declspec(thread)
     #define align_16(x)    __declspec(align(16)) x
-    #define hot_func
-    #define cold_func
     #define constexpr_func inline
     #define constexpr_var  const
 #else
     #define delete_func    = delete
-    #define align_16(x)    x __attribute__((aligned(16)))
     #define hot_func       __attribute__((hot))
     #define cold_func      __attribute__((cold))
+    #define align_16(x)    x __attribute__((aligned(16)))
     #define constexpr_func constexpr
     #define constexpr_var  constexpr
 #endif
@@ -303,10 +303,8 @@ public:
 // engine framework
 // TODO: don't lose engine properties after reset
 // TODO: SDL_GetPowerInfo
-// TODO: check GCC function attributes (pure, hot, cold)
 // TODO: improve sort and structure under all class access modifiers
 // TODO: don't forward/return trivial types as reference ? (address > value)
-// TODO: use GLEWs extension macros instead of current list ?
 // TODO: how should write static functions inside of class, with or without "class::"
 // TODO: put everything in a namespace ? split up coreData and coreMath
 // TODO: check for template parameters <42>

@@ -18,10 +18,12 @@
 #define CORE_CONFIG_SYSTEM_FULLSCREEN       "System",   "Fullscreen",     0
 #define CORE_CONFIG_SYSTEM_LANGUAGE         "System",   "Language",       "data/languages/english.lng"
 #define CORE_CONFIG_SYSTEM_LOG              "System",   "Log",            -1
+
+#define CORE_CONFIG_GRAPHICS_QUALITY        "Graphics", "Quality",        0
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING   "Graphics", "AntiAliasing",   2
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER  "Graphics", "TextureFilter",  4
-#define CORE_CONFIG_GRAPHICS_POSTPROCESSING "Graphics", "PostProcessing", 0
 #define CORE_CONFIG_GRAPHICS_DEBUGCONTEXT   "Graphics", "DebugContext",   false
+
 #define CORE_CONFIG_AUDIO_SOURCES           "Audio",    "Sources",        16
 #define CORE_CONFIG_AUDIO_VOLUME_GLOBAL     "Audio",    "VolumeGlobal",   1.0f
 #define CORE_CONFIG_AUDIO_VOLUME_SOUND      "Audio",    "VolumeSound",    1.0f
@@ -41,12 +43,12 @@
 class coreConfig final
 {
 private:
-    std::string m_sPath;    //!< absolute path of the file
+    std::string m_sPath;    //!< relative path of the file
     CSimpleIniA m_Config;   //!< configuration file interface
 
 
 public:
-    explicit coreConfig(const char* pcName)noexcept;
+    explicit coreConfig(const char* pcPath)noexcept;
     ~coreConfig();
 
     //! load and save configuration

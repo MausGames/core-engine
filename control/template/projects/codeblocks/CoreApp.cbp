@@ -18,6 +18,7 @@
 					<Add option="-D_DEBUG" />
 				</Compiler>
 				<Linker>
+					<Add option="-mwindows" />
 					<Add library="MinGW32" />
 					<Add library="SDL2main" />
 					<Add library="CoreEngine_mingw_debug" />
@@ -75,6 +76,7 @@
 					<Add option="-s" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
+					<Add option="-mwindows" />
 					<Add library="MinGW32" />
 					<Add library="SDL2main" />
 					<Add library="CoreEngine_mingw" />

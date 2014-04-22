@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::string  coreShader::s_sGlobal   = "";
-coreProgram* coreProgram::s_pCurrent = NULL;
+std::string  coreShader::s_asGlobal[2]; // = "";
+coreProgram* coreProgram::s_pCurrent       = NULL;
 
 
 // ****************************************************************
@@ -59,16 +59,17 @@ coreError coreShader::Load(coreFile* pFile)
     if((iType == GL_TESS_CONTROL_SHADER || iType == GL_TESS_EVALUATION_SHADER) && !GLEW_ARB_tessellation_shader) return CORE_OK;
     if((iType == GL_GEOMETRY_SHADER)                                           && !GLEW_VERSION_3_2)             return CORE_OK;
     
-    // load global shader data
+    // load quality level and global shader data
+    const char* pcQuality = coreData::Print("\n#define GL_QUALITY %d", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobal();
 
     // assemble the shader
-    const char* apcData[3] = {pcDefine,                     s_sGlobal.c_str(),         r_cast<const char*>(pFile->GetData())};
-    const GLint aiSize[3]  = {(GLint)std::strlen(pcDefine), (GLint)s_sGlobal.length(), (GLint)pFile->GetSize()};
+    const char* apcData[5] = {s_asGlobal[0].c_str(),         pcDefine,                     pcQuality,                     s_asGlobal[1].c_str(),         r_cast<const char*>(pFile->GetData())};
+    const GLint aiSize[5]  = {(GLint)s_asGlobal[0].length(), (GLint)std::strlen(pcDefine), (GLint)std::strlen(pcQuality), (GLint)s_asGlobal[1].length(), (GLint)pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
-    glShaderSource(m_iShader, 3, apcData, aiSize);
+    glShaderSource(m_iShader, 5, apcData, aiSize);
     glCompileShader(m_iShader);
 
     // save properties
@@ -136,20 +137,20 @@ coreError coreShader::Unload()
 // load global shader data
 void coreShader::__LoadGlobal()
 {
-    if(!s_sGlobal.empty()) return;
+    if(!s_asGlobal[0].empty()) return;
 
     // set global shader definitions
-    s_sGlobal.assign(coreData::Print("\n#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
-    s_sGlobal.append(coreData::Print("\n#define CORE_TEXTURE_UNITS        (%d)", CORE_TEXTURE_UNITS));
-    s_sGlobal.append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS      (%d)", CORE_GRAPHICS_LIGHTS));
-    s_sGlobal.append(coreData::Print("\n#define CORE_SHADER_OUTPUT_COLORS (%d)", CORE_SHADER_OUTPUT_COLORS));
+    s_asGlobal[0].assign(coreData::Print("\n#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
+    s_asGlobal[1].assign(coreData::Print("\n#define CORE_TEXTURE_UNITS        (%d)", CORE_TEXTURE_UNITS));
+    s_asGlobal[1].append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS      (%d)", CORE_GRAPHICS_LIGHTS));
+    s_asGlobal[1].append(coreData::Print("\n#define CORE_SHADER_OUTPUT_COLORS (%d)", CORE_SHADER_OUTPUT_COLORS));
 
     // retrieve global shader file
     coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
     ASSERT_IF(!pFile->GetData()) return;
 
     // copy and unload data
-    s_sGlobal.append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
+    s_asGlobal[1].append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
     pFile->UnloadData();
 }
 

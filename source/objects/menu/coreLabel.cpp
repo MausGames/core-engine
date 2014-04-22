@@ -14,7 +14,7 @@
 // ****************************************************************    
 // constructor
 coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)
-: m_iHeight     (int(float(iHeight) * (Core::System->GetResolution().y/800.0f) * CORE_LABEL_DETAIL))
+: m_iHeight     (int(float(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL))
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLength     (iLength)
 , m_sText       ("")
@@ -30,7 +30,7 @@ coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLe
 
     // load shaders
     this->DefineProgramShare(CORE_MEMORY_SHARED)
-          ->AttachShaderFile("data/shaders/default_2d.vs")
+          ->AttachShaderFile("data/shaders/default_label.vs")
           ->AttachShaderFile("data/shaders/default_label.fs")
           ->Finish();
 
@@ -64,7 +64,7 @@ void coreLabel::Render()
         if(m_iGenerate & 1)
         {
             // update the object size
-            this->SetSize(m_fScale * m_vTexSize * (m_vResolution/Core::System->GetResolution().y) * (1.0f/CORE_LABEL_DETAIL));
+            this->SetSize(m_fScale * m_vTexSize * (m_vResolution / Core::System->GetResolution().y) * (1.0f / CORE_LABEL_DETAIL));
             coreObject2D::Move();
         }
         m_iGenerate = 0;
@@ -135,11 +135,11 @@ void coreLabel::__Reset(const bool& bInit)
 void coreLabel::__Generate(const char* pcText, const bool& bSub)
 {
     // create text surface with the font object
-    SDL_Surface* pSurface = m_pFont->Create(pcText, coreVector3(1.0f,1.0f,1.0f), m_iHeight);
-    SDL_assert(pSurface->format->BitsPerPixel == 32);
+    SDL_Surface* pSurface = m_pFont->CreateText(pcText, m_iHeight);
+    SDL_assert(pSurface->format->BitsPerPixel == 8);
 
     // convert the data format
-    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pSurface->w, pSurface->h, 32, CORE_TEXTURE_MASK);
+    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pSurface->w, pSurface->h, 24, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
 
     // get new texture resolution
@@ -163,12 +163,12 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
         {
             // update only a specific area of the texture
             SDL_assert((vNewResolution.x <= m_vResolution.x) && (vNewResolution.y <= m_vResolution.y));
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, GL_RGBA, GL_UNSIGNED_BYTE, pConvert->pixels);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
         }
         coreTexture::Unlock();
 
         // display only the specific area
-        this->SetTexSize(vNewResolution/m_vResolution);
+        this->SetTexSize(vNewResolution / m_vResolution);
     }
     else
     {
@@ -179,7 +179,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pConvert->w, pConvert->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pConvert->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
         }
         coreTexture::Unlock();
 

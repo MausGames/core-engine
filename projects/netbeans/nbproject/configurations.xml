@@ -8,7 +8,6 @@
         <logicalFolder name="additional" displayName="additional" projectFiles="true">
           <logicalFolder name="android" displayName="android" projectFiles="true">
             <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
-            <itemPath>../../source/additional/android/glewES.cpp</itemPath>
             <itemPath>../../source/additional/android/glewES.h</itemPath>
           </logicalFolder>
         </logicalFolder>

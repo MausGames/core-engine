@@ -9,8 +9,9 @@
 
 
 // ****************************************************************
-// #define GL_*_SHADER               1
 // #version                          #
+// #define GL_*_SHADER               1
+// #define GL_QUALITY                #
 // #define CORE_TEXTURE_UNITS        #
 // #define CORE_GRAPHICS_LIGHTS      #
 // #define CORE_SHADER_OUTPUT_COLORS #

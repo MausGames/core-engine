@@ -11,12 +11,9 @@
 
 // ****************************************************************
 // constructor
-coreConfig::coreConfig(const char* pcName)noexcept
+coreConfig::coreConfig(const char* pcPath)noexcept
+: m_sPath (pcPath)
 {
-    // save absolute path
-    m_sPath = coreData::AppPath();
-    m_sPath.append(pcName);
-
     // load configuration
     m_Config.SetUnicode();
     this->Load();

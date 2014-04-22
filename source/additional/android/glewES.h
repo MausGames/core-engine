@@ -56,11 +56,11 @@ extern "C"
 typedef int* GLsync;
 typedef uint64_t GLuint64;
 
-extern GLenum glewInit();
+static GLenum glewInit() {return GLEW_OK;}
 
-extern const char* glewGetString(GLenum name);
-extern bool glewIsSupported(const char* pcName);
-extern const char* glewGetErrorString(GLenum error);
+static const char* glewGetString(GLenum name)       {return "";}
+static bool glewIsSupported(const char* pcName)     {return std::strcmp(pcName, "GL_ARB_framebuffer_object") ? false : true;}
+static const char* glewGetErrorString(GLenum error) {return "";}
 
 #define GLEW_ARB_map_buffer_range           false
 #define GLEW_ARB_buffer_storage             false
@@ -85,22 +85,22 @@ extern const char* glewGetErrorString(GLenum error);
 
 
 typedef void (*GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam);
-extern void glDebugMessageCallback(GLDEBUGPROC callback, const GLvoid *userParam);
-extern void glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
+static void glDebugMessageCallback(GLDEBUGPROC callback, const GLvoid *userParam)                                                   {}
+static void glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled) {}
 
-extern void glBindVertexArray(GLuint array);
-extern void glDeleteVertexArrays(GLsizei n, const GLuint* arrays);
-extern void glGenVertexArrays(GLsizei n, GLuint* arrays);
+static void glBindVertexArray(GLuint array)                       {}
+static void glDeleteVertexArrays(GLsizei n, const GLuint* arrays) {}
+static void glGenVertexArrays(GLsizei n, GLuint* arrays)          {}
 
-extern void glBindBufferBase(GLenum target, GLuint index, GLuint buffer);
-extern void glBindFragDataLocation(GLuint, GLuint, const GLchar*);
+static void glBindBufferBase(GLenum target, GLuint index, GLuint buffer) {}
+static void glBindFragDataLocation(GLuint, GLuint, const GLchar*)        {}
 
-extern GLuint glGetUniformBlockIndex(GLuint program, const GLchar* uniformBlockName);
-extern void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+static GLuint glGetUniformBlockIndex(GLuint program, const GLchar* uniformBlockName)                    {return -1;}
+static void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding) {}
 
-extern GLvoid* glMapBuffer(GLenum target, GLenum access);
-extern void* glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
-extern bool glUnmapBuffer(GLenum target);
+static GLvoid* glMapBuffer(GLenum target, GLenum access)                                            {return NULL;}
+static void* glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) {return NULL;}
+static bool glUnmapBuffer(GLenum target)                                                            {return true;}
 
 static void glBufferStorage(GLenum target, GLsizeiptr size, const GLvoid* data, GLbitfield flags) {}
 static void glInvalidateBufferData(GLuint buffer) {}
@@ -120,9 +120,9 @@ static void glTexStorage2D(GLenum target, GLsizei levels, GLenum internalformat,
 static void glDrawArraysInstanced(GLenum, GLint, GLsizei, GLsizei) {}
 static void glDrawElementsInstanced(GLenum, GLsizei, GLenum, const GLvoid*, GLsizei) {}
 
-extern GLenum glClientWaitSync(GLsync GLsync,GLbitfield flags,GLuint64 timeout);
-extern void glDeleteSync(GLsync GLsync);
-extern GLsync glFenceSync(GLenum condition,GLbitfield flags);
+static GLenum glClientWaitSync(GLsync GLsync,GLbitfield flags,GLuint64 timeout) {return 0;}
+static void glDeleteSync(GLsync GLsync)                                         {}
+static GLsync glFenceSync(GLenum condition,GLbitfield flags)                    {return NULL;}
 
 
 #ifdef __cplusplus

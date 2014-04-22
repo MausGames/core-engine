@@ -231,7 +231,7 @@ void coreMusic::__Reset(const bool& bInit)
     if(bInit)
     {
         // create sound buffers
-        if(!m_aiBuffer) alGenBuffers(2, m_aiBuffer);
+        if(!m_aiBuffer[0]) alGenBuffers(2, m_aiBuffer);
     }
     else
     {
@@ -246,6 +246,7 @@ void coreMusic::__Reset(const bool& bInit)
 
             // delete sound buffers
             alDeleteBuffers(2, m_aiBuffer);
+            m_aiBuffer[0] = m_aiBuffer[1] = 0;
         }
     }
 }

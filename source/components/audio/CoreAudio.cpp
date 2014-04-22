@@ -60,9 +60,6 @@ CoreAudio::~CoreAudio()
 {
     Core::Log->Info("Audio Interface shut down");
 
-    // save global volume
-    Core::Config->SetFloat(CORE_CONFIG_AUDIO_VOLUME_GLOBAL, m_fVolume);
-
     // clear memory
     m_aiBuffer.clear();
 
