@@ -11,10 +11,21 @@
 
 // ****************************************************************
 // constructor
-coreCheckBox::coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)
-: coreButton (pcIdleUnchecked, pcBusyUnchecked)
-, m_bCheck   (false)
+coreCheckBox::coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)noexcept
+: coreCheckBox ()
 {
+    // construct on creation
+    this->Construct(pcIdleUnchecked, pcBusyUnchecked, pcIdleChecked, pcBusyChecked); 
+}
+
+
+// ****************************************************************
+// construct the check-box
+void coreCheckBox::Construct(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)
+{
+    // construct the button
+    coreButton::Construct(pcIdleUnchecked, pcBusyUnchecked);
+
     // load background textures
     m_apUnchecked[0] = m_apBackground[0];
     m_apUnchecked[1] = m_apBackground[1];

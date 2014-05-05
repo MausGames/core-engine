@@ -11,17 +11,43 @@
 
 // ****************************************************************    
 // constructor
-coreButton::coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
-: coreButton (pcIdle, pcBusy)
+coreButton::coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+: coreButton ()
 {
-    // create the caption
-    m_pCaption = new coreLabel(pcFont, iHeight, iLength);
+    // construct on creation
+    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
 }
 
-coreButton::coreButton(const char* pcIdle, const char* pcBusy)
-: m_pCaption  (NULL)
-, m_bBusy     (false)
-, m_iOverride (0)
+coreButton::coreButton(const char* pcIdle, const char* pcBusy)noexcept
+: coreButton ()
+{
+    // construct on creation
+    this->Construct(pcIdle, pcBusy);
+}
+
+
+// ****************************************************************
+// destructor
+coreButton::~coreButton()
+{
+    // delete the label
+    SAFE_DELETE(m_pCaption)
+}
+
+
+// ****************************************************************
+// construct the button
+void coreButton::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
+{
+    // create the label
+    if(m_pCaption) SAFE_DELETE(m_pCaption)
+    m_pCaption = new coreLabel(pcFont, iHeight, iLength);
+
+    // construct remaining object 
+    this->Construct(pcIdle, pcBusy);
+}
+
+void coreButton::Construct(const char* pcIdle, const char* pcBusy)
 {
     // load background textures
     if(pcIdle) m_apBackground[0] = Core::Manager::Resource->LoadFile<coreTexture>(pcIdle);
@@ -37,23 +63,20 @@ coreButton::coreButton(const char* pcIdle, const char* pcBusy)
 
 
 // ****************************************************************
-// destructor
-coreButton::~coreButton()
-{
-    // delete the caption
-    SAFE_DELETE(m_pCaption)
-}
-
-
-// ****************************************************************
 // render the button
 void coreButton::Render()
 {
+    SDL_assert(m_pProgram);
+
     // render the 2d-object
     coreObject2D::Render();
 
-    // render the caption
-    if(m_pCaption) m_pCaption->Render();
+    // render the label
+    if(m_pCaption)
+    {
+        m_pCaption->SetAlpha(this->GetAlpha());
+        m_pCaption->Render();
+    }
 }
 
 
@@ -61,6 +84,8 @@ void coreButton::Render()
 // move the button
 void coreButton::Move()
 {
+    SDL_assert(m_pProgram);
+
     // set current background texture
     const bool bStatus = (m_iOverride > 0) ? true : ((m_iOverride < 0) ? false : this->IsFocused());
     if(m_bBusy != bStatus)
@@ -69,10 +94,9 @@ void coreButton::Move()
         m_apTexture[0] = m_apBackground[m_bBusy ? 1 : 0];
     }
 
-    // update the caption
+    // update the label
     if(m_pCaption) 
     {
-        m_pCaption->SetAlpha(this->GetAlpha());
         if(m_iUpdate)
         {
             m_pCaption->SetPosition(this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment());

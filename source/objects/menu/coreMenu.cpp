@@ -48,7 +48,7 @@ void coreMenu::Render()
     if(m_Transition.GetStatus())
     {
         // render transition between surfaces
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < 3; ++i)
         {
             FOR_EACH(it, m_aapRender[i])
                 (*it)->Render();
@@ -85,7 +85,7 @@ void coreMenu::Move()
                                   this->GetAlpha()*m_Transition.GetCurrent(false)};
 
         // move transition between surfaces
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < 3; ++i)
         {
             FOR_EACH(it, m_aapRender[i])
             {
@@ -175,16 +175,15 @@ bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
     if(!fSpeed)
     {
         // change surface without transition
-        FOR_EACH(it, m_papObject[m_iCurSurface]) (*it)->SetAlpha(0.0f);
-        FOR_EACH(it, m_papObject[iNewSurface])   (*it)->SetAlpha(1.0f);
+        FOR_EACH(it, m_papObject[m_iCurSurface]) {(*it)->SetAlpha(0.0f); (*it)->SetFocus(false);}
+        FOR_EACH(it, m_papObject[iNewSurface])   {(*it)->SetAlpha(this->GetAlpha()); (*it)->Move();}
     }
     else
     {
         // hide old surface on a fast switch
         if(m_Transition.GetStatus())
         {
-            FOR_EACH(it, m_aapRender[1]) 
-                (*it)->SetAlpha(0.0f);
+            FOR_EACH(it, m_aapRender[1]) {(*it)->SetAlpha(0.0f); (*it)->SetFocus(false);}
         }
 
         // clear and refill all render-lists

@@ -23,7 +23,13 @@ private:
 
 
 public:
+    constexpr_obj coreCheckBox()noexcept;
     coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)noexcept;
+
+    //! construct the check-box
+    //! @{
+    void Construct(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked);
+    //! @}
 
     //! move the check-box
     //! @{
@@ -40,6 +46,14 @@ public:
     inline const bool& GetCheck()const {return m_bCheck;}
     //! @}
 };
+
+
+// ****************************************************************
+// constructor
+constexpr_obj coreCheckBox::coreCheckBox()noexcept
+: m_bCheck (false)
+{
+}
 
 
 #endif // _CORE_GUARD_CHECKBOX_H_

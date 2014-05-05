@@ -24,9 +24,16 @@ protected:
 
 
 public:
+    constexpr_obj coreButton()noexcept;
     coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
     coreButton(const char* pcIdle, const char* pcBusy)noexcept;
     virtual ~coreButton();
+
+    //! construct the button
+    //! @{
+    void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength);
+    void Construct(const char* pcIdle, const char* pcBusy);
+    //! @}
 
     //! render and move the button
     //! @{
@@ -49,6 +56,16 @@ public:
 private:
     DISABLE_COPY(coreButton)
 };
+
+
+// ****************************************************************    
+// constructor
+constexpr_obj coreButton::coreButton()noexcept
+: m_pCaption  (NULL)
+, m_bBusy     (false)
+, m_iOverride (0)
+{
+}
 
 
 #endif // _CORE_GUARD_BUTTON_H_

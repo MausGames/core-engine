@@ -150,6 +150,6 @@ void coreSpline::GetRelative(const float& fTime, coreUint* piIndex, float* pfRel
     if(pfRelative)
     {
         *pfRelative  = fDistance - fCurDistance;
-        *pfRelative /= m_apNode[*piIndex].fDistance;
+        *pfRelative *= RCP(m_apNode[*piIndex].fDistance);
     }
 }

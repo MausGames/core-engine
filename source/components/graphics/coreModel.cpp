@@ -24,7 +24,7 @@ coreModel::md5Joint::md5Joint(const char** ppcData)noexcept
     // calculate w-component of the normalized quaternion
     const coreVector4 V = vOrientation * vOrientation;
     const float       T = 1.0f - V.x - V.y - V.z;
-    vOrientation.w = (T < 0.0f) ? 0.0f : -coreMath::Sqrt(T);
+    vOrientation.w = (T < 0.0f) ? 0.0f : -SQRT(T);
 }
 
 
@@ -208,7 +208,7 @@ coreError coreModel::Load(coreFile* pFile)
         // find maximum distance from the model center
         m_fRadius = MAX(pVertex[i].vPosition.LengthSq(), m_fRadius);
     }
-    m_fRadius = coreMath::Sqrt(m_fRadius);
+    m_fRadius = SQRT(m_fRadius);
 
     // loop through all triangles
     for(coreUint i = 0; i < m_iNumTriangles; ++i)
@@ -225,7 +225,7 @@ coreError coreModel::Load(coreFile* pFile)
         const coreVector3 N = coreVector3::Cross(A1.Normalized(), A2.Normalized());
 
         // calculate local tangent vector parameters
-        const float R = 1.0f / (B1.s*B2.t - B2.s*B1.t);
+        const float R = RCP(B1.s*B2.t - B2.s*B1.t);
         const coreVector3 D1 = (A1*B2.t - A2*B1.t) * R;
         const coreVector3 D2 = (A2*B1.s - A1*B2.s) * R;
 
@@ -244,7 +244,7 @@ coreError coreModel::Load(coreFile* pFile)
 
         // finish the Gram-Schmidt process to calculate the tangent vector and binormal sign (w)
         pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalize(),
-                                          coreMath::Sign(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
+                                          SIGN(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 
     // create vertex buffer
@@ -253,6 +253,30 @@ coreError coreModel::Load(coreFile* pFile)
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, 3*sizeof(float));
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, 5*sizeof(float));
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, 8*sizeof(float));
+
+#if defined(_CORE_GLES_)
+
+    if(m_iNumVertices <= 256)
+    {
+        // reduce index data type size
+        coreByte* pByteData = new coreByte[m_iNumIndices];
+        for(coreUint i = 0; i < m_iNumTriangles; ++i)
+        {
+            for(coreByte j = 0; j < 3; ++j)
+            {
+                // convert all indices
+                SDL_assert(oMesh.aTriangle[i].aiVertex[j] < 256);
+                pByteData[i*3 + j] = (coreByte)oMesh.aTriangle[i].aiVertex[j];
+            }
+        }
+
+        // create small index buffer
+        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, GL_STATIC_DRAW);
+        SAFE_DELETE_ARRAY(pByteData)
+    }
+    else 
+       
+#endif
 
     // create index buffer
     this->CreateIndexBuffer(m_iNumIndices, sizeof(coreWord), oMesh.aTriangle.data(), GL_STATIC_DRAW);

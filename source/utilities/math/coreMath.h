@@ -15,8 +15,6 @@
 // math definitions
 #define PI        (3.1415926535897932384626433832795f)         //!< Archimedes' constant
 #define EU        (2.7182818284590452353602874713527f)         //!< Euler's number
-#define P3        (0.3333333333333333333333333333333f)         //!< periodic value of 1.0f/3.0f
-#define P6        (0.6666666666666666666666666666667f)         //!< periodic value of 2.0f/3.0f
 #define TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degree to radian
 #define TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radian to degree
 
@@ -28,6 +26,14 @@
 #define CLAMP(a,x,y) coreMath::Clamp(a,x,y)
 #define ABS(x)       coreMath::Abs(x)
 #define SIGN(x)      coreMath::Sign(x)
+#define SQRT(x)      coreMath::Sqrt(x)
+#define RSQRT(x)     coreMath::Rsqrt(x)
+#define RCP(x)       coreMath::Rcp(x)
+#define SIN(x)       coreMath::Sin(x)
+#define COS(x)       coreMath::Cos(x)
+#define TAN(x)       coreMath::Tan(x)
+#define ATAN(x)      coreMath::Atan(x)
+#define COT(x)       coreMath::Cot(x)
 
 
 // ****************************************************************
@@ -49,13 +55,14 @@ public:
     static constexpr_func float Sign(const float& x)noexcept                                                 {return (x < 0.0f) ? -1.0f : 1.0f;}
     //! @}
 
-    //! calculate square root
+    //! elementary calculations
     //! @{
     static inline float Sqrt(const float& fInput)noexcept {return fInput*Rsqrt(fInput);}
     static inline float Rsqrt(float fInput)noexcept;
+    static inline float Rcp(float fInput)noexcept;
     //! @}
 
-    //! calculate trigonometric values
+    //! trigonometric calculations
     //! @{
     static inline float Sin(const float& fInput)noexcept  {return std::sin(fInput);}
     static inline float Cos(const float& fInput)noexcept  {return std::cos(fInput);}
@@ -64,7 +71,7 @@ public:
     static inline float Cot(const float& fInput)noexcept  {return std::tan(PI*0.5f - fInput);}
     //! @}
 
-    //! calculate next power-of-two
+    //! determine next power-of-two
     //! @{
     static inline coreUint NextPOT(const coreUint& iInput)noexcept {coreUint k = 1; while(k < iInput) k = k << 1; return k;}
     //! @}
@@ -100,10 +107,38 @@ inline float coreMath::Rsqrt(float fInput)noexcept
 
     const float fHalfValue = fInput*0.5f;
     coreUint* piPointer    = (coreUint*)&fInput;
-    *piPointer             = 0x5f3759df - (*piPointer >> 1);
+    *piPointer             = 0x5F3759DF - (*piPointer >> 1);
 
     fInput *= 1.5f - fInput*fInput*fHalfValue;
     fInput *= 1.5f - fInput*fInput*fHalfValue;
+
+#endif
+
+    return fInput;
+}
+
+
+// ****************************************************************
+// calculate approximate reciprocal
+inline float coreMath::Rcp(float fInput)noexcept
+{
+    SDL_assert(fInput);
+
+#if defined(_CORE_SSE_)
+
+    // optimized calculation with SSE
+    _mm_store_ss(&fInput, _mm_rcp_ss(_mm_load_ss(&fInput)));
+    return fInput;
+
+#else
+
+    // normal calculation
+    const float fValue  = fInput;
+    coreUint* piPointer = (coreUint*)&fInput;
+    *piPointer          = 0x7EEEEEEE - *piPointer;
+
+    fInput *= 2.0f - fInput*fValue;
+    fInput *= 2.0f - fInput*fValue;
 
 #endif
 

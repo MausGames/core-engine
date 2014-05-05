@@ -18,20 +18,28 @@
 class coreTextBox final : public coreButton
 {
 private:
-    std::string m_sText;       //!< current text
-    std::string m_sPrevious;   //!< previous text
+    std::string m_sText;           //!< current text
+    std::string m_sPrevious;       //!< previous text
 
-    char m_cCursor;            //!< cursor character
-    char m_cReplace;           //!< replacement character for hidden text
+    char m_cCursor;                //!< cursor character
+    char m_cReplace;               //!< replacement character for hidden text
 
-    bool m_bInput;             //!< text-input status
-    bool m_bDisplay;           //!< caption update status
+    bool m_bInput;                 //!< text-input status
+    bool m_bDisplay;               //!< caption update status
 
-    bool m_bReturned;          //!< text-input finished with return key
+    bool m_bReturned;              //!< text-input finished with return key
+
+    static int s_iActiveCounter;   //!< number of currently active text-boxes
 
 
 public:
+    coreTextBox()noexcept;
     coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
+
+    //! construct the text-box
+    //! @{
+    void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength);
+    //! @}
 
     //! move the text-box
     //! @{

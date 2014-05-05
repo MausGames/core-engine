@@ -18,7 +18,7 @@ bool coreMath::CheckFOV(const coreVector3& vPosition, const float& fFOV, const c
     const float fDot = coreVector3::Dot(vRelative, vCamDirection);
 
     // check result
-    return (fDot < 0.0f) ? false : (fDot > coreMath::Cos(fFOV));
+    return (fDot < 0.0f) ? false : (fDot > COS(fFOV));
 }
 
 

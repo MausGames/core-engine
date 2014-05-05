@@ -13,14 +13,41 @@
 
 // ****************************************************************    
 // constructor
-coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)
-: m_iHeight     (int(float(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL))
+coreLabel::coreLabel()noexcept
+: m_iHeight     (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
-, m_iLength     (iLength)
+, m_iLength     (0)
 , m_sText       ("")
 , m_fScale      (1.0f)
 , m_iGenerate   (0)
 {
+}
+
+coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+: coreLabel ()
+{
+    // construct on creation
+    this->Construct(pcFont, iHeight, iLength);
+}
+
+
+// ****************************************************************    
+// destructor
+coreLabel::~coreLabel()
+{
+    // free own texture
+    Core::Manager::Resource->Free(&m_apTexture[0]);
+}
+
+
+// ****************************************************************  
+// construct the label
+void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint& iLength)
+{
+    // save properties
+    m_iHeight = int(float(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
+    m_iLength = iLength;
+
     // set font object
     m_pFont = Core::Manager::Resource->LoadFile<coreFont>(pcFont);
     
@@ -40,18 +67,10 @@ coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLe
 
 
 // ****************************************************************    
-// destructor
-coreLabel::~coreLabel()
-{
-    // free own texture
-    Core::Manager::Resource->Free(&m_apTexture[0]);
-}
-
-
-// ****************************************************************    
-// draw the label
+// render the label
 void coreLabel::Render()
 {
+    SDL_assert(m_pProgram);
     if(m_sText.empty()) return;
     
     if(m_iGenerate)
@@ -64,7 +83,7 @@ void coreLabel::Render()
         if(m_iGenerate & 1)
         {
             // update the object size
-            this->SetSize(m_fScale * m_vTexSize * (m_vResolution / Core::System->GetResolution().y) * (1.0f / CORE_LABEL_DETAIL));
+            this->SetSize(m_fScale * m_vTexSize * (m_vResolution * RCP(Core::System->GetResolution().y)) * (1.0f / CORE_LABEL_DETAIL));
             coreObject2D::Move();
         }
         m_iGenerate = 0;
@@ -80,6 +99,7 @@ void coreLabel::Render()
 // TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
 void coreLabel::Move()
 {
+    SDL_assert(m_pProgram);
     if(m_sText.empty()) return;
 
     // move the 2d-object
@@ -98,7 +118,7 @@ bool coreLabel::SetText(const char* pcText, int iNum)
     ASSERT_IF(iNum > m_iLength && m_iLength) iNum = m_iLength;
 
     // check for new text
-    if(std::strcmp(m_sText.c_str(), pcText) || m_sText.length() != (coreUint)iNum)
+    if(m_sText.length() != (coreUint)iNum || std::strcmp(m_sText.c_str(), pcText))
     {
         m_iGenerate |= 3;
 
@@ -115,6 +135,8 @@ bool coreLabel::SetText(const char* pcText, int iNum)
 // reset with the resource manager
 void coreLabel::__Reset(const bool& bInit)
 {
+    if(!m_pFont) return;
+
     if(bInit)
     {
         // recreate empty base texture
@@ -152,8 +174,9 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
         if(!m_vResolution.x)
         {
             // assemble string for maximum size
-            std::string sMaxText(MAX(m_iLength-1, 1), 'W');
+            std::string sMaxText(MAX(m_iLength-2, 1), 'W');
             sMaxText.append(1, 'j');
+            sMaxText.append(1, 'g');
 
             // create static texture
             this->__Generate(sMaxText.c_str(), false);

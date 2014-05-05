@@ -31,8 +31,14 @@ private:
 
 
 public:
+    coreLabel()noexcept;
     coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
     ~coreLabel();
+
+    //! construct the label
+    //! @{
+    void Construct(const char* pcFont, const int& iHeight, const coreUint& iLength);
+    //! @}
 
     //! render and move the label
     //! @{

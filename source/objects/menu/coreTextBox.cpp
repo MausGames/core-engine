@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+int coreTextBox::s_iActiveCounter = 0;
+
 
 // ****************************************************************    
 // constructor
-coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
-: coreButton  (pcIdle, pcBusy, pcFont, iHeight, iLength)
-, m_sText     ("")
+coreTextBox::coreTextBox()noexcept
+: m_sText     ("")
 , m_sPrevious ("")
 , m_cCursor   ('|')
 , m_cReplace  ('\0')
@@ -21,7 +22,24 @@ coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcF
 , m_bDisplay  (false)
 , m_bReturned (false)
 {
+}
+
+coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+: coreTextBox ()
+{
+    // construct on creation
+    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength); 
+}
+
+
+// ****************************************************************   
+// construct the text-box
+void coreTextBox::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
+{
     SDL_assert(iLength);
+
+    // construct the button
+    coreButton::Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
 
     // reserve memory for text
     m_sText.reserve(iLength+1);
@@ -78,7 +96,6 @@ void coreTextBox::Move()
 
 // ****************************************************************
 // set text-input status
-// TODO: test, if problems with concurrent SDL calls (use reference counter?)
 void coreTextBox::SetInput(const bool& bInput)
 {
     if(m_bInput == bInput) return;
@@ -90,14 +107,15 @@ void coreTextBox::SetInput(const bool& bInput)
     if(m_bInput)
     {
         // start text-input
-        SDL_StartTextInput();
+        if(++s_iActiveCounter == 1) SDL_StartTextInput();
         m_sPrevious = m_sText;
     }
     else
     {
         // stop text-input
-        SDL_StopTextInput();
+        if(--s_iActiveCounter == 0) SDL_StopTextInput();
     }
+    SDL_assert(s_iActiveCounter >= 0);
 }
 
 
@@ -106,7 +124,7 @@ void coreTextBox::SetInput(const bool& bInput)
 bool coreTextBox::__Write()
 {
     // get new text-input character
-    const char cChar = Core::Input->GetKeyboardChar();
+    const char& cChar = Core::Input->GetKeyboardChar();
     if(cChar)
     {
         if(cChar == SDLK_RETURN)

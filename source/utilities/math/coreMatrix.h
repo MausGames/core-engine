@@ -39,7 +39,7 @@ public:
     //! scalar calculation operators
     //! @{
     constexpr_func coreMatrix3 operator * (const float& f)const noexcept;
-    constexpr_func coreMatrix3 operator / (const float& f)const noexcept                        {return *this * (1.0f/f);}
+    inline coreMatrix3 operator / (const float& f)const noexcept                                {return  *this * RCP(f);}
     inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
     inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
     friend constexpr_func coreMatrix3 operator * (const float& f, const coreMatrix3& v)noexcept {return v * f;}
@@ -114,7 +114,7 @@ public:
     //! scalar calculation operators
     //! @{
     constexpr_func coreMatrix4 operator * (const float& f)const noexcept;
-    constexpr_func coreMatrix4 operator / (const float& f)const noexcept                        {return *this * (1.0f/f);}
+    inline coreMatrix4 operator / (const float& f)const noexcept                                {return  *this * RCP(f);}
     inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
     inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
     friend constexpr_func coreMatrix4 operator * (const float& f, const coreMatrix4& v)noexcept {return v * f;}
@@ -454,12 +454,12 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 // calculate perspective matrix
 inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)noexcept
 {
-    const float  V = coreMath::Cot(fFOV*0.5f);
+    const float  V = COT(fFOV*0.5f);
     const float  A = vResolution.yx().AspectRatio();
     const float& N = fNearClip;
     const float& F = fFarClip;
 
-    const float INF = 1.0f / (N-F);
+    const float INF = RCP(N-F);
 
     return coreMatrix4( V*A, 0.0f,         0.0f,  0.0f,
                        0.0f,    V,         0.0f,  0.0f,
@@ -475,8 +475,8 @@ inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)noexcept
     constexpr_var float N = -32.0f;
     constexpr_var float F = 128.0f;
 
-    const         float IRL = 1.0f / vResolution.x;
-    const         float ITB = 1.0f / vResolution.y;
+    const         float IRL = RCP(vResolution.x);
+    const         float ITB = RCP(vResolution.y);
     constexpr_var float IFN = 1.0f / (F-N);
 
     return coreMatrix4(2.0f*IRL,     0.0f,       0.0f, 0.0f,
@@ -507,7 +507,7 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
 // multiplication with matrix
 inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const noexcept
 {
-    const float w = 1.0f / (x*m._14 + y*m._24 + m._44);
+    const float w = RCP(x*m._14 + y*m._24 + m._44);
     return coreVector2(x*m._11 + y*m._21 + w*m._41,
                        x*m._12 + y*m._22 + w*m._42);
 }
@@ -517,7 +517,7 @@ inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const noexcept
 // multiplication with matrix
 inline coreVector3 coreVector3::operator * (const coreMatrix4& m)const noexcept
 {
-    const float w = 1.0f / (x*m._14 + y*m._24 + z*m._34 + m._44);
+    const float w = RCP(x*m._14 + y*m._24 + z*m._34 + m._44);
     return coreVector3(x*m._11 + y*m._21 + z*m._31 + w*m._41,
                        x*m._12 + y*m._22 + z*m._32 + w*m._42,
                        x*m._13 + y*m._23 + z*m._33 + w*m._43);

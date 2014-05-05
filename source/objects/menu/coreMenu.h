@@ -19,6 +19,8 @@
 // TODO: optimize rendering with a frame buffer
 // TODO: implement tab-switching and keyboard/gamepad control
 // TODO: sized menu class ? (oh god, I forgot what this was)
+// TODO: template class !
+// TODO: handle individual transparency better
 class coreMenu : public coreObject2D
 {
 private:
