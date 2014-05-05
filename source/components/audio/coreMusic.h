@@ -65,7 +65,7 @@ public:
 
     //! set various sound source properties
     //! @{
-    inline void SetVolume(const float& fVolume) {if(m_iSource) alSourcef(m_iSource, AL_GAIN,  fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_MUSIC));}
+    inline void SetVolume(const float& fVolume) {if(m_iSource) alSourcef(m_iSource, AL_GAIN,  fVolume);}
     inline void SetPitch(const float& fPitch)   {if(m_iSource) alSourcef(m_iSource, AL_PITCH, fPitch);}
     inline void SetLoop(const bool& bLoop)      {m_bLoop = bLoop;}
     //! @}
@@ -118,6 +118,7 @@ private:
 // ****************************************************************
 // music-player class
 // TODO: improve the representation of the current track while shuffled
+// TODO: callback when music track changes
 class coreMusicPlayer final
 {
 private:
@@ -174,7 +175,7 @@ public:
     //! set object properties
     //! @{
     inline void SetRepeat(const coreMusicRepeat& iRepeat) {m_iRepeat = iRepeat;}
-    inline void SetFade(const float& fTime)               {if(fTime) m_FadeTimer.SetSpeed(1.0f/fTime); else {m_FadeTimer.SetCurrent(1.0f); m_FadeTimer.SetSpeed(0.0f);}}
+    inline void SetFade(const float& fTime)               {if(fTime) m_FadeTimer.SetSpeed(RCP(fTime)); else {m_FadeTimer.SetCurrent(1.0f); m_FadeTimer.SetSpeed(0.0f);}}
     //! @}
 
     //! get object properties

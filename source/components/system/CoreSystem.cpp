@@ -124,7 +124,7 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
     // init high precision time
-    m_dPerfFrequency = 1.0/double(SDL_GetPerformanceFrequency());
+    m_dPerfFrequency = 1.0 / double(SDL_GetPerformanceFrequency());
     m_iPerfTime      = SDL_GetPerformanceCounter();
 
     // reset dynamic frame times

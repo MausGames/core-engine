@@ -28,10 +28,10 @@ public:
 
 
 private:
-    coreList m_aList;          //!< vector-list with pair-values
+    coreList m_aList;           //!< vector-list with pair-values
 
-    coreEntry* m_pCache;      //!< last requested entry
-    coreEntry m_EmptyEntry;   //!< empty cache entry
+    coreEntry* m_pCache;        //!< last requested entry
+    const char* m_pcCacheRef;   //!< string pointer to the last requested entry
 
 
 public:
@@ -55,9 +55,9 @@ public:
 
     //! check number of existing entries
     //! @{
-    inline coreUint count(const char* pcKey)const noexcept {return this->__check(this->__retrieve(pcKey)) ? 1 : 0;}
-    inline coreUint size()const noexcept                   {return m_aList.size();}
-    inline bool empty()const noexcept                      {return m_aList.empty();}
+    inline coreUint count(const char* pcKey)noexcept {return this->__check(this->__retrieve(pcKey)) ? 1 : 0;}   // not const
+    inline coreUint size()const noexcept             {return m_aList.size();}
+    inline bool empty()const noexcept                {return m_aList.empty();}
     //! @}
 
     //! control memory consumption
@@ -70,9 +70,9 @@ public:
     //! @{
     void erase(const T& Entry)noexcept;
     void erase(const char* pcKey)noexcept;
-    inline void erase(const coreUint& iIndex)noexcept            {m_pCache = &m_EmptyEntry; SDL_assert(iIndex < m_aList.size()); m_aList.erase(m_aList.begin()+iIndex);}
-    inline void erase(const coreConstIterator& Iterator)noexcept {m_pCache = &m_EmptyEntry; m_aList.erase(Iterator);}
-    inline void clear()noexcept                                  {m_pCache = &m_EmptyEntry; m_aList.clear();}
+    inline void erase(const coreUint& iIndex)noexcept            {this->__clearcache(); SDL_assert(iIndex < m_aList.size()); m_aList.erase(m_aList.begin()+iIndex);}
+    inline void erase(const coreConstIterator& Iterator)noexcept {this->__clearcache(); m_aList.erase(Iterator);}
+    inline void clear()noexcept                                  {this->__clearcache(); m_aList.clear();}
     //! @}
 
     //! retrieve internal iterator
@@ -101,7 +101,8 @@ private:
 
     //! check for cached entry
     //! @{
-    inline bool __cache(const char* pcKey)const noexcept {return std::strcmp(m_pCache->first.c_str(), pcKey) ? false : true;}
+    inline bool __cache(const char* pcKey)const noexcept {return (m_pcCacheRef == pcKey) ? true : false;}
+    inline void __clearcache()noexcept                   {m_pCache = NULL; m_pcCacheRef = NULL;}
     //! @}
 };
 
@@ -109,7 +110,8 @@ private:
 // ****************************************************************
 // constructor
 template <typename T> coreLookup<T>::coreLookup()noexcept
-: m_pCache (&m_EmptyEntry)
+: m_pCache     (NULL)
+, m_pcCacheRef (NULL)
 {
     // reserve variable sized memory
     constexpr_var coreUint iSize = 1 + 64/sizeof(T);
@@ -117,14 +119,16 @@ template <typename T> coreLookup<T>::coreLookup()noexcept
 }
 
 template <typename T> coreLookup<T>::coreLookup(const coreLookup<T>& c)noexcept
-: m_aList  (c.m_aList)
-, m_pCache (&m_EmptyEntry)
+: m_aList      (c.m_aList)
+, m_pCache     (NULL)
+, m_pcCacheRef (NULL)
 {
 }
 
 template <typename T> coreLookup<T>::coreLookup(coreLookup<T>&& m)noexcept
-: m_aList  (std::move(m.m_aList))
-, m_pCache (&m_EmptyEntry)
+: m_aList      (std::move(m.m_aList))
+, m_pCache     (NULL)
+, m_pcCacheRef (NULL)
 {
 }
 
@@ -195,7 +199,7 @@ template <typename T> T& coreLookup<T>::operator [] (const char* pcKey)noexcept
 template <typename T> void coreLookup<T>::erase(const T& Entry)noexcept
 {
     // reset cache
-    m_pCache = &m_EmptyEntry;
+    this->__clearcache();
 
     // retrieve and check iterator by specific value
     auto it = this->__retrieve(Entry);
@@ -206,11 +210,10 @@ template <typename T> void coreLookup<T>::erase(const T& Entry)noexcept
     }
 }
 
-
 template <typename T> void coreLookup<T>::erase(const char* pcKey)noexcept
 {
     // reset cache
-    m_pCache = &m_EmptyEntry;
+    this->__clearcache();
 
     // retrieve and check iterator by specific key
     auto it = this->__retrieve(pcKey);
@@ -260,7 +263,8 @@ template <typename T> typename coreLookup<T>::coreIterator coreLookup<T>::__retr
         if(!std::strcmp(it->first.c_str(), pcKey))
         {
             // cache current entry
-            m_pCache = &(*it);
+            m_pCache     = &(*it);
+            m_pcCacheRef = pcKey;
             return it;
         }
     }

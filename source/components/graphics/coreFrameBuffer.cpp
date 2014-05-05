@@ -146,7 +146,7 @@ coreError coreFrameBuffer::__Init()
     const GLboolean& bFrameBuffer = GLEW_ARB_framebuffer_object;
 
     // set resolution
-    if(!bFrameBuffer) m_vResolution *= MIN((Core::System->GetResolution()/m_vResolution).Min(), 1.0f);
+    if(!bFrameBuffer) m_vResolution *= MIN((Core::System->GetResolution() / m_vResolution).Min(), 1.0f);
     const coreUint iWidth  = (coreUint)m_vResolution.x;
     const coreUint iHeight = (coreUint)m_vResolution.y;
 

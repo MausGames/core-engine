@@ -73,6 +73,7 @@ coreError coreTexture::Load(coreFile* pFile)
 
     // convert the data format
     SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, pData->format->BitsPerPixel, CORE_TEXTURE_MASK);
+    SDL_SetSurfaceBlendMode(pData, SDL_BLENDMODE_NONE);
     SDL_BlitSurface(pData, NULL, pConvert, NULL);
 
     coreDataBuffer iBuffer;
@@ -102,7 +103,7 @@ coreError coreTexture::Load(coreFile* pFile)
                 {
                     // switch active texture unit
                     iLoadUnit = i;
-                    glActiveTexture(GL_TEXTURE0+iLoadUnit);
+                    glActiveTexture(GL_TEXTURE0 + iLoadUnit);
                 }
                 break;
             }
@@ -130,7 +131,7 @@ coreError coreTexture::Load(coreFile* pFile)
 
         // unbind texture from texture unit
         glBindTexture(GL_TEXTURE_2D, 0);
-        if(iLoadUnit >= 0) glActiveTexture(GL_TEXTURE0+s_iActiveUnit);
+        if(iLoadUnit >= 0) glActiveTexture(GL_TEXTURE0 + s_iActiveUnit);
     }
     coreTexture::Unlock();
 
@@ -191,7 +192,7 @@ void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
         if(s_iActiveUnit != iUnit)
         {
             s_iActiveUnit = iUnit;
-            glActiveTexture(GL_TEXTURE0+iUnit);
+            glActiveTexture(GL_TEXTURE0 + iUnit);
         }
 
         // bind texture to texture unit

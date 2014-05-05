@@ -16,7 +16,7 @@ bool coreTimer::Update(const float& fModifier)
     if(m_bStatus)
     {
         // increase and check current value
-        m_fCurrent += m_fSpeed*fModifier*Core::System->GetTime(m_iTimeID);
+        m_fCurrent += m_fSpeed * fModifier * Core::System->GetTime(m_iTimeID);
         if(m_fCurrent >= m_fEnd)
         {
             // target value reached

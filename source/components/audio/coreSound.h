@@ -70,7 +70,7 @@ public:
     //! set various sound source properties
     //! @{
     void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
-    inline void SetVolume(const float& fVolume) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND));}
+    inline void SetVolume(const float& fVolume) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume);}
     inline void SetPitch(const float& fPitch)   {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
     inline void SetLoop(const bool& bLoop)      {CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}

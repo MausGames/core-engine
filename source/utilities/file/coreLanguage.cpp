@@ -36,7 +36,7 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
 
     
 // ****************************************************************
-// bind own string pointers
+// bind own string pointer
 void coreTranslate::_BindString(std::string* psString, const char* pcKey)
 {
     SDL_assert(psString && pcKey);
@@ -58,7 +58,7 @@ void coreTranslate::_BindString(std::string* psString, const char* pcKey)
 
 
 // ****************************************************************
-// unbind own string pointers
+// unbind own string pointer
 void coreTranslate::_UnbindString(std::string* psString)
 {
     SDL_assert(psString);
@@ -92,6 +92,7 @@ coreError coreLanguage::Load(const char* pcPath)
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
         coreData::StrTrim(pString);
+        pString->shrink_to_fit();
         SDL_assert(!pString->empty());
 
         // begin next string
@@ -131,7 +132,7 @@ coreError coreLanguage::Load(const char* pcPath)
 
 
 // ****************************************************************
-// bind foreign string pointers
+// bind foreign string pointer
 void coreLanguage::BindString(std::string* psString, const char* pcKey)
 {
     SDL_assert(psString && pcKey);

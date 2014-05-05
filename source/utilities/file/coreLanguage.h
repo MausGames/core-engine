@@ -32,7 +32,7 @@ public:
 
     
 protected:
-    //! bind and unbind own string pointers
+    //! bind and unbind own string pointer
     //! @{
     void _BindString(std::string* psString, const char* pcKey);
     void _UnbindString(std::string* psString);
@@ -74,7 +74,7 @@ public:
     inline const char* GetString(const char* pcKey)const {return m_asString.at(pcKey).c_str();}
     //! @}
 
-    //! bind and unbind foreign string pointers
+    //! bind and unbind foreign string pointer
     //! @{
     void BindString(std::string* psString, const char* pcKey);
     inline void UnbindString(std::string* psString) {SDL_assert(m_apsPointer.count(psString)); m_apsPointer.erase(psString);}

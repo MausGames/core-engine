@@ -223,6 +223,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
 
 // ******************************************************************
 // take screenshot
+// TODO: improve with pixel-pack-buffer
 void CoreGraphics::Screenshot(const char* pcPath)
 {
     const coreUint iWidth  = (coreUint)Core::System->GetResolution().x;
@@ -291,8 +292,8 @@ void CoreGraphics::__UpdateScene()
     // swap color buffers
     SDL_GL_SwapWindow(Core::System->GetWindow());
 
-    // clear depth buffer (and current color buffer on debug-mode)
-#if defined(_CORE_DEBUG_)
+    // clear color and depth buffer
+#if defined(_CORE_DEBUG_) || defined(_CORE_GLES_)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #else
     glClear(GL_DEPTH_BUFFER_BIT);

@@ -383,50 +383,6 @@ coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 
 
 // ****************************************************************
-// create new particles
-coreParticle* coreParticleEffect::CreateParticle(const int& iNum, const float& fFrequency)
-{
-    SDL_assert(fFrequency <= 60.0f);
-
-    if(m_fCreation < 0.0f)
-    {
-        // create next particle
-        if((m_fCreation += 1.0f) < 0.0f) return this->CreateParticle();
-    }
-    else
-    {
-        // update and check status value
-        m_fCreation.Update(fFrequency, m_iTimeID);
-        if(m_fCreation >= 1.0f)
-        {
-            // adjust status value with particle number and create first particle
-            m_fCreation -= float(iNum+1) * std::floor(m_fCreation);
-            return this->CreateParticle();
-        }
-    }
-
-    return NULL;
-}
-
-coreParticle* coreParticleEffect::CreateParticle(const int& iNum)
-{
-    if(m_fCreation < 0.0f)
-    {
-        // create next particle
-        if((m_fCreation += 1.0f) < 0.0f) return this->CreateParticle();
-    }
-    else
-    {
-        // adjust status value with particle number and create first particle
-        m_fCreation -= float(iNum);
-        return this->CreateParticle();
-    }
-
-    return NULL;
-}
-
-
-// ****************************************************************
 // change associated particle system object
 void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const bool& bUnbind)
 {

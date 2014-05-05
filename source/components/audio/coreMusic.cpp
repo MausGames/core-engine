@@ -401,7 +401,7 @@ coreError coreMusicPlayer::AddArchive(const char* pcPath, const char* pcFilter)
     for(coreUint i = 0; i < pArchive->GetSize(); ++i)
     {
         // check path and use only specific files
-        if(coreData::StrCompare(pArchive->GetFile(i)->GetPath(), pcFilter))
+        if(coreData::StrCompareWild(pArchive->GetFile(i)->GetPath(), pcFilter))
         {
             if(this->__AddMusic(pArchive->GetFile(i)) == CORE_OK)
                 bStatus = true;

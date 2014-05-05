@@ -102,6 +102,7 @@
 
 #define GLEW_MX
 #define GLEW_NO_GLU
+#define GL_GLEXT_PROTOTYPES
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
 #if defined(_CORE_MSVC_)
@@ -217,8 +218,7 @@ enum coreError
 #include <ctime>
 #include <memory>
 #include <vector>
-#include <deque>
-#include <forward_list>
+#include <list>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -230,6 +230,7 @@ enum coreError
 #include <SDL2/SDL_image.h>
 #if defined(_CORE_GLES_)
     #include <GLES2/gl2.h>
+    #include <GLES2/gl2ext.h>
     #include "additional/android/glewES.h"
 #else
     #include <GL/glew.h>
@@ -305,7 +306,7 @@ public:
 // TODO: SDL_GetPowerInfo
 // TODO: improve sort and structure under all class access modifiers
 // TODO: don't forward/return trivial types as reference ? (address > value)
-// TODO: how should write static functions inside of class, with or without "class::"
+// TODO: how to write static functions inside of class, with or without "class::"
 // TODO: put everything in a namespace ? split up coreData and coreMath
 // TODO: check for template parameters <42>
 // TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?

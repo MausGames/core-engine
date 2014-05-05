@@ -137,7 +137,8 @@ public:
     coreProgram* AttachShaderFile(const char* pcPath);
     coreProgram* AttachShaderLink(const char* pcName);
     coreProgram* BindAttribute(const char* pcName, const int& iLocation);
-    inline void Finish() {if(m_iStatus) return; m_iStatus = CORE_SHADER_DEFINED; this->__Init();}
+    inline void Finish()  {if(m_iStatus) return; m_iStatus = CORE_SHADER_DEFINED; this->__Init();}
+    inline void Refresh() {this->__Exit();}
     //! @}
 
     //! send new uniform values

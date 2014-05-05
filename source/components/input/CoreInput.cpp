@@ -237,7 +237,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(ABS(Event.jaxis.value) > 8000) this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, float(coreMath::Sign(Event.jaxis.value)) * (Event.jaxis.axis ? -1.0f : 1.0f));
+        if(ABS(Event.jaxis.value) > 8000) this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, float(SIGN(Event.jaxis.value)) * (Event.jaxis.axis ? -1.0f : 1.0f));
                                      else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;
 

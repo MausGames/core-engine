@@ -168,6 +168,7 @@ public:
     inline const coreVector2& GetTouchPosition(const coreUint& iID)const                    {return m_aTouch[iID].vPosition;}
     inline const coreVector2& GetTouchRelative(const coreUint& iID)const                    {return m_aTouch[iID].vRelative;}
     inline const float& GetTouchPressure(const coreUint& iID)const                          {return m_aTouch[iID].fPressure;}
+    template <typename F> void ForEachFinger(const coreInputType& iType, F&& pFunction);
     //! @}
 
     //! get last pressed input button
@@ -192,6 +193,19 @@ private:
     void __ClearButtons();
     //! @}
 };
+
+
+// ****************************************************************
+// call function for each active finger
+template <typename F> void CoreInput::ForEachFinger(const coreInputType& iType, F&& pFunction)
+{
+    for(coreUint i = 0; i < CORE_INPUT_FINGERS; ++i)
+    {
+        // check finger status and call function
+        if(Core::Input->GetTouchButton(i, iType))
+            pFunction(i);
+    }
+}
 
 
 #endif // _CORE_GUARD_INPUT_H_

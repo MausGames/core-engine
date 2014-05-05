@@ -64,8 +64,10 @@ public:
 
     //! operate with string data
     //! @{
-    static bool StrCompare(const char* s, const char* t);
+    static bool StrCompareWild(const char* pcInput, const char* pcCompare);
     static const char* StrRight(const char* pcInput, const coreUint& iNum);
+    static const char* StrUpper(const char* pcInput);
+    static const char* StrLower(const char* pcInput);
     static const char* StrExtension(const char* pcInput);
     static float StrVersion(const char* pcInput);
     static void StrSkip(const char** ppcInput, const int &iNum);

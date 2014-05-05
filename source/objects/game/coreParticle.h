@@ -99,7 +99,7 @@ public:
     //! set object properties
     //! @{
     inline void SetSpeed(const float& fSpeed)noexcept       {m_fSpeed = fSpeed;}
-    inline void SetLifetime(const float& fLifetime)noexcept {m_fSpeed = 1.0f/fLifetime;}
+    inline void SetLifetime(const float& fLifetime)noexcept {m_fSpeed = RCP(fLifetime);}
     //! @}
 
     //! get object properties
@@ -108,7 +108,7 @@ public:
     inline const coreState& GetMoveState()const noexcept    {return m_MoveState;}
     inline const float& GetValue()const noexcept            {return m_fValue;}
     inline const float& GetSpeed()const noexcept            {return m_fSpeed;}
-    inline float GetLifetime()const noexcept                {return 1.0f/m_fSpeed;}
+    inline float GetLifetime()const noexcept                {return RCP(m_fSpeed);}
     inline coreParticleEffect* GetEffect()const noexcept    {return m_pEffect;}
     //! @}
 };
@@ -211,8 +211,8 @@ public:
 
     //! create new particles
     //! @{
-    coreParticle* CreateParticle(const int& iNum, const float& fFrequency);
-    coreParticle* CreateParticle(const int& iNum);
+    template <typename F> void CreateParticle(const coreUint& iNum, const float& fFrequency, F&& pFunction);
+    template <typename F> void CreateParticle(const coreUint& iNum, F&& pFunction);
     inline coreParticle* CreateParticle() {return m_pSystem->CreateParticle(m_pThis);}
     //! @}
 
@@ -277,6 +277,33 @@ inline void coreParticle::Update()noexcept
     m_CurrentState.fScale    += m_MoveState.fScale    * fTime;
     m_CurrentState.fAngle    += m_MoveState.fAngle    * fTime;
     m_CurrentState.vColor    += m_MoveState.vColor    * fTime;
+}
+
+
+// ****************************************************************
+// create new particles
+template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iNum, const float& fFrequency, F&& pFunction)
+{
+    SDL_assert(fFrequency <= 60.0f);
+
+    // update and check status value
+    m_fCreation.Update(fFrequency, m_iTimeID);
+    if(m_fCreation >= 1.0f)
+    {
+        // adjust status value
+        m_fCreation -= std::floor(m_fCreation);
+
+        // create particles and call function
+        for(coreUint i = 0; i < iNum; ++i)
+            pFunction(this->CreateParticle());
+    }
+}
+
+template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iNum, F&& pFunction)
+{
+    // create particles and call function
+    for(coreUint i = 0; i < iNum; ++i)
+        pFunction(this->CreateParticle());
 }
 
 

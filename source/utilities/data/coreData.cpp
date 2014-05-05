@@ -120,7 +120,7 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
         // check and add file path
         if(pDirent->d_name[0] != '.')
         {
-            if(coreData::StrCompare(pDirent->d_name, pcFilter))
+            if(coreData::StrCompareWild(pDirent->d_name, pcFilter))
                 pasOutput->push_back(coreData::Print("%s/%s", pcPath, pDirent->d_name));
         }
     }
@@ -176,9 +176,9 @@ void coreData::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreU
 
 // ****************************************************************
 // compare strings with wildcards
-bool coreData::StrCompare(const char* s, const char* t)
+bool coreData::StrCompareWild(const char* s, const char* t)
 {
-    return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && StrCompare(s+1,t+1) : !*t : StrCompare(s,t+1) || (*s && StrCompare(s+1,t));
+    return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && StrCompareWild(s+1,t+1) : !*t : StrCompareWild(s,t+1) || (*s && StrCompareWild(s+1,t));
 }
 
 
@@ -189,7 +189,45 @@ const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
     SDL_assert(pcInput);
 
     const coreUint iLen = std::strlen(pcInput);
-    return pcInput + (iLen-coreMath::Min(iLen, iNum));
+    return pcInput + (iLen - MIN(iLen, iNum));
+}
+
+
+// ****************************************************************
+// get upper case version of a string
+const char* coreData::StrUpper(const char* pcInput)
+{
+    char* pcString = __NextString();
+    char* pcCursor = pcString;
+
+    // get length of the input string
+    const coreUint iLen = std::strlen(pcInput)+1;
+    SDL_assert(iLen < 256);
+
+    // convert all characters to upper case
+    for(coreUint i = 0; i < iLen; ++i, ++pcCursor, ++pcInput)
+        *pcCursor = toupper(*pcInput);
+
+    return pcString;
+}
+
+
+// ****************************************************************
+// get lower case version of a string
+const char* coreData::StrLower(const char* pcInput)
+{
+    char* pcString = __NextString();
+    char* pcCursor = pcString;
+
+    // get length of the input string
+    const coreUint iLen = std::strlen(pcInput)+1;
+    SDL_assert(iLen < 256);
+
+    // convert all characters to lower case
+    for(coreUint i = 0; i < iLen; ++i, ++pcCursor, ++pcInput)
+        *pcCursor = tolower(*pcInput);
+
+    return pcString;
 }
 
 

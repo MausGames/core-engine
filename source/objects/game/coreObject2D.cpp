@@ -67,7 +67,7 @@ void coreObject2D::Move()
 
         // calculate resolution-modified transformation parameters
         const coreVector2& vResolution     = Core::System->GetResolution();
-        const coreVector2  vScreenPosition = (m_vPosition + 0.5f*m_vSize*m_vAlignment)*vResolution.y + m_vCenter*vResolution;
+        const coreVector2  vScreenPosition = (m_vPosition + 0.5f*m_vSize*m_vAlignment) * vResolution.y + m_vCenter * vResolution;
         const coreVector2  vScreenSize     = m_vSize*vResolution.y;
 
         // update transformation matrix
@@ -96,10 +96,8 @@ void coreObject2D::Interact()
     m_bFocused = false;
     m_iFinger  = 0;
 
-    for(coreUint i = 0; i < CORE_INPUT_FINGERS; ++i)
+    Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUint& i)
     {
-        if(!Core::Input->GetTouchButton(i, CORE_INPUT_HOLD)) continue;
-
         // get relative finger position
         const coreVector2 vInput = Core::Input->GetTouchPosition(i) * Core::System->GetResolution() - vScreenPosition;
 
@@ -110,7 +108,7 @@ void coreObject2D::Interact()
             m_bFocused = true;
             m_iFinger |= (1 << i);
         }
-    }
+    });
 
 #else
 

@@ -44,7 +44,7 @@ public:
 
     //! render and move the 2d-object
     //! @{
-    virtual void Render() {this->coreObject2D::Render(m_pProgram, true);}
+    virtual void Render() {coreObject2D::Render(m_pProgram, true);}
     virtual void Render(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
     virtual void Move() hot_func;
     //! @}
@@ -86,7 +86,7 @@ public:
 // constructor
 constexpr_obj coreObject2D::coreObject2D()noexcept
 : m_vPosition  (coreVector2(0.0f,0.0f))
-, m_vSize      (coreVector2(1.0f,1.0f))
+, m_vSize      (coreVector2(0.0f,0.0f))
 , m_vDirection (coreVector2(0.0f,1.0f))
 , m_vCenter    (coreVector2(0.0f,0.0f))
 , m_vAlignment (coreVector2(0.0f,0.0f))
