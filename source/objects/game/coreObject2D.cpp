@@ -71,8 +71,10 @@ void coreObject2D::Move()
         const coreVector2  vScreenSize     = m_vSize*vResolution.y;
 
         // update transformation matrix
-        m_mTransform = coreMatrix4::Scaling(coreVector3(vScreenSize, 0.0f)) * m_mRotation *
-                       coreMatrix4::Translation(coreVector3(vScreenPosition, 0.0f));
+        m_mTransform = m_mRotation;
+        m_mTransform._11 *= vScreenSize.x;     m_mTransform._12 *= vScreenSize.x;
+        m_mTransform._21 *= vScreenSize.y;     m_mTransform._22 *= vScreenSize.y;
+        m_mTransform._41  = vScreenPosition.x; m_mTransform._42  = vScreenPosition.y;
 
         // reset the update status
         m_iUpdate = 0;
@@ -88,7 +90,7 @@ void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
     const coreVector2 vScreenPosition = coreVector2(    m_mTransform._41,      m_mTransform._42);
-    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22))*0.5f;
+    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22)) * 0.5f * m_fFocusRange;
 
 #if defined(_CORE_ANDROID_)
 

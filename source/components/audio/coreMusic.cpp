@@ -38,6 +38,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 , m_pInfo    (NULL)
 , m_pComment (NULL)
 , m_dMaxTime (0.0)
+, m_fPitch   (1.0f)
 , m_bLoop    (false)
 , m_bStatus  (false)
 {
@@ -161,7 +162,7 @@ coreError coreMusic::Play()
         // set initial sound source properties
         alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
         alSourcef(m_iSource, AL_GAIN,            1.0f * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_MUSIC));
-        alSourcef(m_iSource, AL_PITCH,           1.0f);
+        alSourcef(m_iSource, AL_PITCH,           m_fPitch);
         alSourcei(m_iSource, AL_LOOPING,         false);
 
         // start playback
@@ -256,24 +257,26 @@ void coreMusic::__Reset(const bool& bInit)
 // read from music stream and update sound buffer
 bool coreMusic::__Stream(const ALuint& iBuffer)
 {
-    char acData[CORE_MUSIC_CHUNK];
-    int iSize = 0;
+    char acData[CORE_MUSIC_CHUNK * 4];
+
+    const int iChunkSize = MIN(int(CORE_MUSIC_CHUNK * m_fPitch), CORE_MUSIC_CHUNK * 4);
+    int iReadSize = 0;
 
     // process the defined music stream chunk size
-    while(iSize < CORE_MUSIC_CHUNK)
+    while(iReadSize < iChunkSize)
     {
         // read and decode data from the music track
-        const int iResult = ov_read(&m_Stream, acData + iSize, CORE_MUSIC_CHUNK - iSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
+        const int iResult = ov_read(&m_Stream, acData + iReadSize, iChunkSize - iReadSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
 
-        if(iResult > 0) iSize += iResult;
+        if(iResult > 0) iReadSize += iResult;
         else break;
     }
 
     // music track finished
-    if(iSize == 0) return false;
+    if(iReadSize == 0) return false;
 
     // write decoded data to sound buffer
-    alBufferData(iBuffer, (m_pInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, acData, iSize, m_pInfo->rate);
+    alBufferData(iBuffer, (m_pInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, acData, iReadSize, m_pInfo->rate);
     return true;
 }
 

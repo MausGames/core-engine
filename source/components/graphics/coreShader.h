@@ -110,16 +110,16 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 class coreProgram final : public coreReset
 {
 private:
-    GLuint m_iProgram;                       //!< shader-program identifier
+    GLuint m_iProgram;                                   //!< shader-program identifier
+                                                         
+    std::vector<coreShaderPtr> m_apShader;               //!< attached shader objects
+    coreShaderStatus m_iStatus;                          //!< current status
 
-    std::vector<coreShaderPtr> m_apShader;   //!< attached shader objects
-    coreShaderStatus m_iStatus;              //!< current status
+    coreLookupGen<const char*, int> m_aiUniform;         //!< uniform locations
+    coreLookupGen<const char*, int> m_aiAttribute;       //!< attribute locations
+    coreLookupGen<const char*, coreVector4> m_avCache;   //!< cached uniform values
 
-    coreLookup<int> m_aiUniform;             //!< uniform locations
-    coreLookup<int> m_aiAttribute;           //!< attribute locations
-    coreLookup<coreVector4> m_avCache;       //!< cached uniform values
-
-    static coreProgram* s_pCurrent;          //!< currently active shader-program
+    static coreProgram* s_pCurrent;                      //!< currently active shader-program
 
 
 public:
@@ -148,7 +148,14 @@ public:
     inline void SendUniform(const char* pcName, const coreVector2& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f, 0.0f));       if(iID >= 0) glUniform2fv(iID, 1, vVector);}
     inline void SendUniform(const char* pcName, const coreVector3& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f));             if(iID >= 0) glUniform3fv(iID, 1, vVector);}
     inline void SendUniform(const char* pcName, const coreVector4& vVector)                         {const int iID = this->CheckCache(pcName, vVector);                                    if(iID >= 0) glUniform4fv(iID, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose) {glUniformMatrix3fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
+    inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose)
+    {
+        const int iID = this->CheckCache(pcName, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13,
+                                                             mMatrix._21 + mMatrix._22 + mMatrix._23,
+                                                             mMatrix._31 + mMatrix._32 + mMatrix._33,
+                                                             0.0f)); 
+        if(iID >= 0) glUniformMatrix3fv(iID, 1, bTranspose, mMatrix);
+    }
     inline void SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
     //! @}
 

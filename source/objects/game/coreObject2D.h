@@ -13,6 +13,7 @@
 
 // ****************************************************************
 // 2d-object class
+// TODO: maybe implement m_fFocusRange as vec2
 class coreObject2D : public coreObject
 {
 private:
@@ -25,7 +26,9 @@ private:
 
 protected:
     static coreModel* s_pModel;   //!< global model object
+
     bool m_bFocused;              //!< interaction status
+    float m_fFocusRange;          //!< interaction range factor
 
 #if defined(_CORE_ANDROID_)
     int m_iFinger;                //!< separate finger interaction status (bitwise)
@@ -68,7 +71,8 @@ public:
     inline void SetDirection(const coreVector2& vDirection) {const coreVector2 vDirNorm = vDirection.Normalized(); if(m_vDirection != vDirNorm) {m_iUpdate |= 3; m_vDirection = vDirNorm;}}
     inline void SetCenter(const coreVector2& vCenter)       {if(m_vCenter    != vCenter)    {m_iUpdate |= 1; m_vCenter    = vCenter;}}
     inline void SetAlignment(const coreVector2& vAlignment) {if(m_vAlignment != vAlignment) {m_iUpdate |= 1; m_vAlignment = vAlignment;}}
-    inline void SetFocus(const bool& bFocus)                {m_bFocused = bFocus;}
+    inline void SetFocus(const bool& bFocus)                {m_bFocused    = bFocus;}
+    inline void SetFocusRange(const float& fFocusRange)     {m_fFocusRange = fFocusRange;}
     //! @}
 
     //! get object properties
@@ -85,14 +89,15 @@ public:
 // ****************************************************************
 // constructor
 constexpr_obj coreObject2D::coreObject2D()noexcept
-: m_vPosition  (coreVector2(0.0f,0.0f))
-, m_vSize      (coreVector2(0.0f,0.0f))
-, m_vDirection (coreVector2(0.0f,1.0f))
-, m_vCenter    (coreVector2(0.0f,0.0f))
-, m_vAlignment (coreVector2(0.0f,0.0f))
-, m_bFocused   (false)
+: m_vPosition   (coreVector2(0.0f,0.0f))
+, m_vSize       (coreVector2(0.0f,0.0f))
+, m_vDirection  (coreVector2(0.0f,1.0f))
+, m_vCenter     (coreVector2(0.0f,0.0f))
+, m_vAlignment  (coreVector2(0.0f,0.0f))
+, m_bFocused    (false)
+, m_fFocusRange (1.0f)
 #if defined(_CORE_ANDROID_)
-, m_iFinger    (0)
+, m_iFinger     (0)
 #endif
 {
 }

@@ -40,6 +40,8 @@ public:
 
     //! render and move the 3d-object
     //! @{
+    bool PrepareRender()  {return coreObject3D::PrepareRender(m_pProgram, true);}
+    bool PrepareRender(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
     virtual void Render() {coreObject3D::Render(m_pProgram, true);}
     virtual void Render(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
     virtual void Move() hot_func;

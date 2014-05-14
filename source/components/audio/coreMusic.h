@@ -41,6 +41,7 @@ private:
     vorbis_comment* m_pComment;   //!< meta-information
     double m_dMaxTime;            //!< length of the music track in seconds
 
+    float m_fPitch;               //!< current playback speed
     bool m_bLoop;                 //!< loop status
     bool m_bStatus;               //!< playback status
 
@@ -65,8 +66,8 @@ public:
 
     //! set various sound source properties
     //! @{
-    inline void SetVolume(const float& fVolume) {if(m_iSource) alSourcef(m_iSource, AL_GAIN,  fVolume);}
-    inline void SetPitch(const float& fPitch)   {if(m_iSource) alSourcef(m_iSource, AL_PITCH, fPitch);}
+    inline void SetVolume(const float& fVolume) {if(m_iSource) alSourcef(m_iSource, AL_GAIN, fVolume);}
+    inline void SetPitch(const float& fPitch)   {if(m_iSource && m_fPitch != fPitch) {m_fPitch = fPitch; alSourcef(m_iSource, AL_PITCH, fPitch);}}
     inline void SetLoop(const bool& bLoop)      {m_bLoop = bLoop;}
     //! @}
 

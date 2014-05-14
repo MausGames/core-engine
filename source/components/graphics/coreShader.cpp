@@ -314,9 +314,9 @@ coreError coreProgram::__Init()
             SDL_assert(std::strcmp(m_apShader[i]->GetPath(), m_apShader[j]->GetPath()));
 
     // check for duplicate attribute locations
-    for(coreUint i = 0; i < m_aiAttribute.size(); ++i)
-        for(coreUint j = i+1; j < m_aiAttribute.size(); ++j)
-            SDL_assert(m_aiAttribute[i] != m_aiAttribute[j] && m_aiAttribute[i] >= 0);
+    FOR_EACH(it, m_aiAttribute)
+        for(auto et = it+1; et != m_aiAttribute.end(); ++et)
+            SDL_assert(it->second != et->second && it->second >= 0);
 
 #endif
 
@@ -339,7 +339,7 @@ coreError coreProgram::__Init()
     FOR_EACH(it, m_aiAttribute)
     {
         if(it->second >= 0) 
-            glBindAttribLocation(m_iProgram, it->second, it->first.c_str());
+            glBindAttribLocation(m_iProgram, it->second, it->first);
     }
 
     // bind output locations

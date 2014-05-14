@@ -109,16 +109,27 @@ void coreLabel::Move()
 
 // ****************************************************************    
 // change the current text
-bool coreLabel::SetText(const char* pcText, int iNum)
+bool coreLabel::SetText(const char* pcText)
 {
-    const int iNewLength = std::strlen(pcText);
+    // check for new text
+    if(std::strcmp(m_sText.c_str(), pcText))
+    {
+        m_iGenerate |= 3;
 
-    // adjust the length
-    if(iNum < 0 || iNum > iNewLength)        iNum = iNewLength;
-    ASSERT_IF(iNum > m_iLength && m_iLength) iNum = m_iLength;
+        // change the current text
+        m_sText.assign(pcText);
+        return true;
+    }
+
+    return false;
+}
+
+bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
+{
+    SDL_assert(iNum <= std::strlen(pcText));
 
     // check for new text
-    if(m_sText.length() != (coreUint)iNum || std::strcmp(m_sText.c_str(), pcText))
+    if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
     {
         m_iGenerate |= 3;
 

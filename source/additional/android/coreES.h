@@ -6,8 +6,8 @@
 //| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
-/* Only required for OpenGL ES 2.0 applications.
- * Implements unavailable definitions and dummy-functions. */
+/* only required for OpenGL ES 2.0 applications,
+ * implements unavailable definitions and dummy-functions */
 #pragma once
 #ifndef _GLEWES_H_
 #define	_GLEWES_H_
@@ -46,7 +46,6 @@ extern "C"
 #define GL_RGBA8 GL_RGBA
 #define GL_RGB8  GL_RGB
 
-#define GL_DEPTH 0x1801
 
 #define GL_GEOMETRY_SHADER 0x8DD9
 #define GL_TESS_EVALUATION_SHADER 0x8E87
@@ -56,16 +55,18 @@ extern "C"
 typedef int* GLsync;
 typedef uint64_t GLuint64;
 
-static GLenum glewInit() {return GLEW_OK;}
+
+extern std::string g_sExtensions;
+extern bool m_bGL_EXT_discard_framebuffer;
+extern GLenum glewInit();
+
 
 static const char* glewGetString(GLenum name)       {return "";}
-static bool glewIsSupported(const char* pcName)     {return std::strcmp(pcName, "GL_ARB_framebuffer_object") ? false : true;}
 static const char* glewGetErrorString(GLenum error) {return "";}
 
 #define GLEW_ARB_map_buffer_range           false
 #define GLEW_ARB_buffer_storage             false
 #define GLEW_ARB_clear_buffer_object        false
-#define GLEW_ARB_invalidate_subdata         false
 #define GLEW_ARB_vertex_attrib_binding      false
 #define GLEW_ARB_texture_storage            false
 #define GLEW_ARB_framebuffer_object         true
@@ -75,18 +76,31 @@ static const char* glewGetErrorString(GLenum error) {return "";}
 #define GLEW_ARB_sync                       false
 #define GLEW_ARB_pixel_buffer_object        false
 #define GLEW_ARB_instanced_arrays           false
+#define GLEW_ARB_debug_output               false
 #define GLEW_EXT_texture_filter_anisotropic false
 #define GLEW_KHR_debug                      false
 #define GLEW_VERSION_3_2                    false
+
+
+// GL_EXT_discard_framebuffer
+#define GLEW_ARB_invalidate_subdata         m_bGL_EXT_discard_framebuffer
+#define GL_DEPTH GL_DEPTH_EXT
+#define glInvalidateBufferData(x)
+#define glInvalidateFramebuffer glDiscardFramebufferEXT
+extern PFNGLDISCARDFRAMEBUFFEREXTPROC glDiscardFramebufferEXT;
 
 
 #define glClearDepth glClearDepthf
 #define glDrawRangeElements(a, b, c, d, e, f) glDrawElements(a, d, e, f)
 
 
+
+
 typedef void (*GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam);
 static void glDebugMessageCallback(GLDEBUGPROC callback, const GLvoid *userParam)                                                   {}
 static void glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled) {}
+static void glDebugMessageCallbackARB(GLDEBUGPROC callback, const GLvoid *userParam)                                                   {}
+static void glDebugMessageControlARB(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled) {}
 
 static void glBindVertexArray(GLuint array)                       {}
 static void glDeleteVertexArrays(GLsizei n, const GLuint* arrays) {}
@@ -103,8 +117,6 @@ static void* glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length,
 static bool glUnmapBuffer(GLenum target)                                                            {return true;}
 
 static void glBufferStorage(GLenum target, GLsizeiptr size, const GLvoid* data, GLbitfield flags) {}
-static void glInvalidateBufferData(GLuint buffer) {}
-static void glInvalidateFramebuffer(GLenum target, GLsizei numAttachments, const GLenum* attachments) {}
 
 static void glBindVertexBuffer(GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride) {}
 static void glVertexAttribBinding(GLuint attribindex, GLuint bindingindex) {}

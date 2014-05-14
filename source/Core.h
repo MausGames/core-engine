@@ -102,7 +102,6 @@
 
 #define GLEW_MX
 #define GLEW_NO_GLU
-#define GL_GLEXT_PROTOTYPES
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
 #if defined(_CORE_MSVC_)
@@ -231,7 +230,7 @@ enum coreError
 #if defined(_CORE_GLES_)
     #include <GLES2/gl2.h>
     #include <GLES2/gl2ext.h>
-    #include "additional/android/glewES.h"
+    #include "additional/android/coreES.h"
 #else
     #include <GL/glew.h>
     #include <GL/gl.h>

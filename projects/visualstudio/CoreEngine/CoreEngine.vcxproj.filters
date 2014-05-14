@@ -159,6 +159,9 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreLanguage.cpp">
       <Filter>source\utilities\file</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\android\coreES.cpp">
+      <Filter>source\additional\android</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -187,9 +190,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\audio\coreMusic.h">
       <Filter>source\components\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\additional\android\glewES.h">
-      <Filter>source\additional\android</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\data\coreData.h">
       <Filter>source\utilities\data</Filter>
@@ -280,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\graphics\coreDataBuffer.h">
       <Filter>source\components\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\android\coreES.h">
+      <Filter>source\additional\android</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

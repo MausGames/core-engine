@@ -76,12 +76,21 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
 // enable OpenGL debugging
 void coreLog::EnableOpenGL()
 {
-    if(!GLEW_KHR_debug) return;
+    if(GLEW_KHR_debug)
+    {
+        // enable debug output
+        glEnable(GL_DEBUG_OUTPUT);
 
-    // set callback function and filter
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(&WriteOpenGL, this);
-    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+        // set callback function and filter
+        glDebugMessageCallback(&WriteOpenGL, this);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+    }
+    else if(GLEW_ARB_debug_output)
+    {
+        // set callback function and filter
+        glDebugMessageCallbackARB(&WriteOpenGL, this);
+        glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+    }
 }
 
 

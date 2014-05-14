@@ -21,6 +21,7 @@
 // TODO: (collapse vertices (e.g. same pos) and merge nearly identical vertices in this process (with threshold and std::map)) only adapt normals ?
 // TODO: enable shared vertex buffers mixed with unique
 // TODO: check out (Multi)Draw(Array|Elements)Indirect
+// TODO: reorder indices/vertices in memory to improve post-transform caching (maybe in model-file, nvTriStrip)
 class coreModel final : public coreResource
 {
 private:

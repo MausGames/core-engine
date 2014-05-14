@@ -16,8 +16,8 @@
 class coreTranslate
 {
 private:
-    coreLanguage* m_pLanguage;                            //!< associated language file
-    std::u_map<std::string*, std::string> m_apsPointer;   //!< own string pointers connected with keys <own, key>
+    coreLanguage* m_pLanguage;                               //!< associated language file
+    coreLookupGen<std::string*, std::string> m_apsPointer;   //!< own string pointers connected with keys <own, key>
 
 
 public:

@@ -41,12 +41,12 @@ void coreObject3D::Undefine()
 
 
 // ****************************************************************
-// render the 3d-object
-void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
+// prepare for rendering
+bool coreObject3D::PrepareRender(const coreProgramShr& pProgram, const bool& bTextured)
 {
     // enable the shader-program
-    if(!pProgram) return;
-    if(!pProgram->Enable()) return;
+    if(!pProgram) return false;
+    if(!pProgram->Enable()) return false;
 
     // calculate model-view matrices
     const coreMatrix4 mModelView     = m_mTransform * Core::Graphics->GetCamera();
@@ -74,10 +74,22 @@ void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     }
     else coreTexture::DisableAll();
 
-    if(m_pModel.IsLoaded())
+    // enable the model
+    if(!m_pModel.IsLoaded()) return false;
+    m_pModel->Enable();
+
+    return true;
+}
+
+
+// ****************************************************************
+// render the 3d-object
+void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
+{
+    // prepare for rendering
+    if(this->PrepareRender(pProgram, bTextured))
     {
         // draw the model
-        m_pModel->Enable();
         m_pModel->DrawElements();
     }
 }
@@ -96,8 +108,11 @@ void coreObject3D::Move()
         }
 
         // update transformation matrix
-        m_mTransform = coreMatrix4::Scaling(m_vSize) * m_mRotation *
-                       coreMatrix4::Translation(m_vPosition);
+        m_mTransform = m_mRotation;
+        m_mTransform._11 *= m_vSize.x;     m_mTransform._12 *= m_vSize.x;     m_mTransform._13 *= m_vSize.x;
+        m_mTransform._21 *= m_vSize.y;     m_mTransform._22 *= m_vSize.y;     m_mTransform._23 *= m_vSize.y;
+        m_mTransform._31 *= m_vSize.z;     m_mTransform._32 *= m_vSize.z;     m_mTransform._33 *= m_vSize.z;
+        m_mTransform._41  = m_vPosition.x; m_mTransform._42  = m_vPosition.y; m_mTransform._43  = m_vPosition.z;
 
         // reset the update status
         m_iUpdate = 0;

@@ -105,7 +105,7 @@ public:
     //! @{
     constexpr_func coreMatrix4 operator + (const coreMatrix4& v)const noexcept;
     constexpr_func coreMatrix4 operator - (const coreMatrix4& v)const noexcept;
-    constexpr_func coreMatrix4 operator * (const coreMatrix4& v)const noexcept;
+    constexpr_func coreMatrix4 operator * (const coreMatrix4& v)const noexcept hot_func;
     inline void operator += (const coreMatrix4& v)noexcept {*this = *this + v;}
     inline void operator -= (const coreMatrix4& v)noexcept {*this = *this - v;}
     inline void operator *= (const coreMatrix4& v)noexcept {*this = *this * v;}
@@ -211,10 +211,14 @@ inline coreMatrix3& coreMatrix3::Transpose()noexcept
 // inverse matrix
 inline coreMatrix3& coreMatrix3::Inverse()noexcept
 {
-    *this = coreMatrix3(_22*_33 - _23*_32, _13*_32 - _12*_33, _12*_23 - _13*_22,
-                        _23*_31 - _21*_33, _11*_33 - _13*_31, _13*_21 - _11*_23,
-                        _21*_32 - _22*_31, _13*_31 - _11*_32, _11*_22 - _12*_21)
-                        / this->Determinant();
+    const float A = _22*_33 - _23*_32;
+    const float B = _23*_31 - _21*_33;
+    const float C = _21*_32 - _22*_31;
+
+    *this = coreMatrix3(A, _13*_32 - _12*_33, _12*_23 - _13*_22,
+                        B, _11*_33 - _13*_31, _13*_21 - _11*_23,
+                        C, _12*_31 - _11*_32, _11*_22 - _12*_21)
+                        / (_11*A + _12*B + _13*C);
 
     return *this;
 }
@@ -224,7 +228,7 @@ inline coreMatrix3& coreMatrix3::Inverse()noexcept
 // calculate determinant
 constexpr_func float coreMatrix3::Determinant()const noexcept
 {
-    return _11*_22*_33 + _12*_23*_31 + _13*_21*_32 - _13*_22*_31 - _12*_21*_33 - _11*_23*_32;
+    return _11*(_22*_33 - _23*_32) + _12*(_23*_31 - _21*_33) + _13*(_21*_32 - _22*_31);
 }
 
 

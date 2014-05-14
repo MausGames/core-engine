@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::u_map<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
+coreLookupGen<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
 
 
 // ****************************************************************

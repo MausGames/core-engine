@@ -48,7 +48,8 @@ public:
 
     //! set object properties
     //! @{
-    bool SetText(const char* pcText, int iNum = -1);
+    bool SetText(const char* pcText);
+    bool SetText(const char* pcText, const coreUint& iNum);
     inline void SetTextLanguage(const char* pcKey) {this->_BindString(&m_sText, pcKey);}
     inline void SetScale(const float& fScale)      {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
     //! @}

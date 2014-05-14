@@ -255,6 +255,7 @@ float coreData::StrVersion(const char* pcInput)
 
 // ****************************************************************
 // move string pointer and skip comments
+// TODO: sscanf calls strlen, which reduces model loading performance (very long strings), always or only because of %n ?
 void coreData::StrSkip(const char** ppcInput, const int &iNum)
 {
     SDL_assert(*ppcInput);
