@@ -34,11 +34,18 @@
 //|   distribution.                                                              |//
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
-//! \file
-//! \defgroup component Components
 #pragma once
 #ifndef _CORE_GUARD_H_
 #define _CORE_GUARD_H_
+
+// TODO: don't lose engine properties after reset
+// TODO: SDL_GetPowerInfo
+// TODO: improve sort and structure under all class access modifiers
+// TODO: don't forward/return trivial types as reference ? (address > value)
+// TODO: how to write static functions inside of class, with or without "class::"
+// TODO: put everything in a namespace ? split up coreData and coreMath
+// TODO: check for template parameters <42>
+// TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
 
 
 // compiler
@@ -54,6 +61,9 @@
 #endif
 #if defined(__clang__)
     #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
+#endif
+#if !defined(_CORE_MSVC_) && !defined(_CORE_GCC_) && !defined(_CORE_MINGW_) && !defined(_CORE_CLANG_)
+    #warning "Compiler not supported!"
 #endif
 
 // platform
@@ -90,20 +100,62 @@
 
 
 // ****************************************************************
-// compiler, platform and library specific definitions
-#if !defined(_CORE_MSVC_) && !defined(_CORE_GCC_) && !defined(_CORE_MINGW_) && !defined(_CORE_CLANG_)
-    #warning "Compiler not supported!"
-#endif
-
+// basic libraries
 #define _HAS_EXCEPTIONS 0
 #define _CRT_SECURE_NO_WARNINGS
 #define _ALLOW_KEYWORD_MACROS
 #define WIN32_LEAN_AND_MEAN
+#if defined(__MINGW32__)
+    #undef __STRICT_ANSI__
+#endif
 
+#if defined(_CORE_WINDOWS_)
+    #include <windows.h>
+#else
+    #include <sys/stat.h>
+    #include <unistd.h>
+#endif
+#if defined(_CORE_SSE_)
+    #include <smmintrin.h>
+#endif
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <ctime>
+#include <memory>
+#include <vector>
+#include <list>
+#include <unordered_set>
+#include <unordered_map>
+
+
+// ****************************************************************
+// specific libraries
 #define GLEW_MX
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#if defined(_CORE_GLES_)
+    #include <GLES2/gl2.h>
+    #include <GLES2/gl2ext.h>
+    #include "additional/android/coreES.h"
+#else
+    #include <GL/glew.h>
+    #include <GL/gl.h>
+#endif
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <ogg/ogg.h>
+#include <vorbis/vorbisfile.h>
+#include <SI/SimpleIni.h>
+
+
+// ****************************************************************
+// compiler definitions
 #if defined(_CORE_MSVC_)
     #if (_CORE_MSVC_) < 1800
         #define delete_func
@@ -138,7 +190,6 @@
 
 #if defined(_CORE_MINGW_)
     #define align_func __attribute__((force_align_arg_pointer))
-    #undef __STRICT_ANSI__
 #else
     #define align_func
 #endif
@@ -147,6 +198,10 @@
     #define constexpr_obj inline
 #else
     #define constexpr_obj constexpr_func
+#endif
+
+#if !defined(APIENTRY)
+    #define APIENTRY
 #endif
 
 
@@ -158,9 +213,9 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define ASSERT_IF(c)  SDL_assert(!(c)); if(c)
 
-#define FOR_EACH(i,c)     for(auto i = c.begin(),  __e = c.end();  i != __e; ++i)
-#define FOR_EACH_REV(i,c) for(auto i = c.rbegin(), __e = c.rend(); i != __e; ++i)
-#define FOR_EACH_DYN(i,c) for(auto i = c.begin(),  __e = c.end();  i != __e; )
+#define FOR_EACH(i,c)     for(auto i = (c).begin(),  __e = (c).end();  i != __e; ++i)
+#define FOR_EACH_REV(i,c) for(auto i = (c).rbegin(), __e = (c).rend(); i != __e; ++i)
+#define FOR_EACH_DYN(i,c) for(auto i = (c).begin(),  __e = (c).end();  i != __e; )
 #define DYN_KEEP(i)       {++i;}
 #define DYN_REMOVE(i,c)   {i = c.erase(i); __e = c.end();}
 
@@ -180,9 +235,9 @@
 #define s_cast static_cast
 #define r_cast reinterpret_cast
 
-typedef unsigned char  coreByte;
-typedef unsigned short coreWord;
-typedef unsigned int   coreUint;
+typedef uint8_t  coreByte;
+typedef uint16_t coreWord;
+typedef uint32_t coreUint;
 
 enum coreError
 {
@@ -197,49 +252,6 @@ enum coreError
     CORE_INVALID_INPUT = -120,   //!< function parameters are invalid
     CORE_INVALID_DATA  = -130,   //!< depending objects contain wrong data
 };
-
-
-// ****************************************************************
-// base libraries
-#if defined(_CORE_WINDOWS_)
-    #include <windows.h>
-#else
-    #include <sys/stat.h>
-    #include <unistd.h>
-#endif
-#if defined(_CORE_SSE_)
-    #include <smmintrin.h>
-#endif
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cmath>
-#include <ctime>
-#include <memory>
-#include <vector>
-#include <list>
-#include <unordered_set>
-#include <unordered_map>
-
-
-// ****************************************************************
-// specific libraries
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
-#if defined(_CORE_GLES_)
-    #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
-    #include "additional/android/coreES.h"
-#else
-    #include <GL/glew.h>
-    #include <GL/gl.h>
-#endif
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <ogg/ogg.h>
-#include <vorbis/vorbisfile.h>
-#include <SI/SimpleIni.h>
 
 
 // ****************************************************************
@@ -301,14 +313,6 @@ public:
 
 // ****************************************************************
 // engine framework
-// TODO: don't lose engine properties after reset
-// TODO: SDL_GetPowerInfo
-// TODO: improve sort and structure under all class access modifiers
-// TODO: don't forward/return trivial types as reference ? (address > value)
-// TODO: how to write static functions inside of class, with or without "class::"
-// TODO: put everything in a namespace ? split up coreData and coreMath
-// TODO: check for template parameters <42>
-// TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
 class Core final
 {
 public:
@@ -410,4 +414,7 @@ private:
 
 #endif // _CORE_GUARD_H_
 
-// 0100010001101111001000000111010001101000011010010110111001100111011100110010000001110010011010010110011101101000011101000010110000100000011011110111001000100000011001000110111101101110001001110111010000100000011001000110111100100000011101000110100001100101011011010010000001100001011101000010000001100001011011000110110000101110
+// 0100010001101111001000000111010001101000011010010110111001100111011100110010000001
+// 1100100110100101100111011010000111010000101100001000000110111101110010001000000110
+// 0100011011110110111000100111011101000010000001100100011011110010000001110100011010
+// 0001100101011011010010000001100001011101000010000001100001011011000110110000101110

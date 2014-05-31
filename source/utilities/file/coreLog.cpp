@@ -13,33 +13,34 @@
 // constructor
 coreLog::coreLog(const char* pcPath)noexcept
 : m_sPath  (pcPath)
-, m_iLevel (0)
+, m_iLevel (CORE_LOG_LEVEL_ALL)
 , m_iMain  (0)
 , m_iLock  (0)
 {
     // open and reset log file
     std::FILE* pFile = std::fopen(m_sPath.c_str(), "w");
-    if(!pFile) return;
+    if(pFile)
+    {
+        // write basic style sheet
+        std::fputs("<style type=\"text/css\">                      \n", pFile);
+        std::fputs("  body    {font-family: courier new;}          \n", pFile);
+        std::fputs(" .time    {color: #AAAAAA;}                    \n", pFile);
+        std::fputs(" .thread  {color: green;}                      \n", pFile);
+        std::fputs(" .thread2 {color: olive;}                      \n", pFile);
+        std::fputs(" .data    {color: teal;}                       \n", pFile);
+        std::fputs(" .header  {font-weight: bold; font-size: 22px;}\n", pFile);
+        std::fputs(" .list    {font-weight: bold;}                 \n", pFile);
+        std::fputs(" .error   {font-weight: bold; color: red;}     \n", pFile);
+        std::fputs(" .gl      {color: purple;}                     \n", pFile);
+        std::fputs("</style>                                       \n", pFile);
 
-    // write basic style sheet
-    std::fputs("<style type=\"text/css\">                      \n", pFile);
-    std::fputs("  body    {font-family: courier new;}          \n", pFile);
-    std::fputs(" .time    {color: #AAAAAA;}                    \n", pFile);
-    std::fputs(" .thread  {color: green;}                      \n", pFile);
-    std::fputs(" .thread2 {color: olive;}                      \n", pFile);
-    std::fputs(" .data    {color: teal;}                       \n", pFile);
-    std::fputs(" .header  {font-weight: bold; font-size: 22px;}\n", pFile);
-    std::fputs(" .list    {font-weight: bold;}                 \n", pFile);
-    std::fputs(" .error   {font-weight: bold; color: red;}     \n", pFile);
-    std::fputs(" .gl      {color: purple;}                     \n", pFile);
-    std::fputs("</style>                                       \n", pFile);
+        // write application name
+        std::fputs(coreData::AppName(), pFile);
+        std::fputs("\n",                pFile);
 
-    // write application name
-    std::fputs(coreData::AppName(), pFile);
-    std::fputs("\n",                pFile);
-
-    // close log file
-    std::fclose(pFile);
+        // close log file
+        std::fclose(pFile);
+    }
 
     // save thread-ID of the creator
     m_iMain = SDL_ThreadID() % 10000;
@@ -52,10 +53,6 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
 {
     coreLog* pLog = s_cast<coreLog*>(pUserParam);
 
-    // set logging level
-    const int iLevel = pLog->GetLevel();
-    pLog->SetLevel(0);
-
     // write message
     pLog->ListStart("OpenGL Debug Log");
     pLog->ListEntry("<span class=\"gl\"><b>ID:</b>           %d</span>", iID);
@@ -64,9 +61,6 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
     pLog->ListEntry("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity);
     pLog->ListEntry("<span class=\"gl\">                     %s</span>", pcMessage);
     pLog->ListEnd();
-
-    // reset logging level
-    pLog->SetLevel(iLevel);
 
     SDL_assert(false);
 }
@@ -108,33 +102,34 @@ void coreLog::__Write(const bool& bTime, std::string sText)
 #endif
         // open log file
         std::FILE* pFile = std::fopen(m_sPath.c_str(), "a");
-        if(!pFile) {SDL_AtomicUnlock(&m_iLock); return;}
-
-        // color brackets and convert new lines
-        int iPos = -1;
-        while((iPos = sText.find("("))  >= 0) sText.replace(iPos, 1, "<span class=\"data\">&#40;");
-        while((iPos = sText.find(")"))  >= 0) sText.replace(iPos, 1, "&#41;</span>");
-        while((iPos = sText.find("\n")) >= 0) sText.replace(iPos, 1, "<br />");
-
-        if(bTime)
+        if(pFile)
         {
-            // get timestamp
-            coreUint awTime[3];
-            coreData::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
+            // color brackets and convert new lines
+            int iPos = -1;
+            while((iPos = sText.find("("))  >= 0) sText.replace(iPos, 1, "<span class=\"data\">&#40;");
+            while((iPos = sText.find(")"))  >= 0) sText.replace(iPos, 1, "&#41;</span>");
+            while((iPos = sText.find("\n")) >= 0) sText.replace(iPos, 1, "<br />");
 
-            // get thread-ID
-            const SDL_threadID iThread = SDL_ThreadID() % 10000;
+            if(bTime)
+            {
+                // get timestamp
+                coreUint awTime[3];
+                coreData::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
 
-            // write timestamp and thread-ID
-            std::fprintf(pFile, "<span class=\"time\">[%02u:%02u:%02u]</span> <span class=\"%s\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], (m_iMain == iThread) ? "thread" : "thread2", iThread);
+                // get thread-ID
+                const SDL_threadID iThread = SDL_ThreadID() % 10000;
+
+                // write timestamp and thread-ID
+                std::fprintf(pFile, "<span class=\"time\">[%02u:%02u:%02u]</span> <span class=\"%s\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], (m_iMain == iThread) ? "thread" : "thread2", iThread);
+            }
+
+            // write text
+            std::fputs(sText.c_str(), pFile);
+            std::fputs("\n",          pFile);
+
+            // close log file
+            std::fclose(pFile);
         }
-
-        // write text
-        std::fputs(sText.c_str(), pFile);
-        std::fputs("\n",          pFile);
-
-        // close log file
-        std::fclose(pFile);
     }
     SDL_AtomicUnlock(&m_iLock);
 }

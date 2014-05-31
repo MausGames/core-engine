@@ -86,9 +86,12 @@ Core::~Core()
 // reset the engine
 void Core::Reset()
 {
-    Log->Header("Engine Reset");
-
+    // set logging level
+    const coreLogLevel iLevel = Core::Log->GetLevel();
+    Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);
+    
     // shut down resource manager
+    Log->Header("Engine Reset");
     Manager::Resource->Reset(false);
 
     // shut down main components
@@ -105,8 +108,10 @@ void Core::Reset()
 
     // re-init resource manager
     Manager::Resource->Reset(true);
-
     Log->Header("Application Run");
+
+    // reset logging level
+    Core::Log->SetLevel(iLevel);
 }
 
 
@@ -160,7 +165,7 @@ int Core::__Run()
 #if !defined(_CORE_DEBUG_)
 
     // set logging level
-    const int iLevel = Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG);
+    const coreLogLevel iLevel = (coreLogLevel)Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG);
     Core::Log->SetLevel(iLevel);
     if(iLevel < 0) Core::Log->Error(false, "Logging level reduced");
 
@@ -187,7 +192,7 @@ int Core::__Run()
     }
 
     // reset logging level
-    Core::Log->SetLevel(0);
+    Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);
 
     // delete application and engine
     Core::Log->Header("Shut Down");
