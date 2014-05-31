@@ -90,7 +90,7 @@ LOCAL_SRC_FILES := $(V_SRC_PATH)/main.cpp                                \
                    $(V_ENG_PATH)/utilities/math/coreSpline.cpp
 
 LOCAL_SHARED_LIBRARIES := SDL2 SDL2_ttf SDL2_image OpenAL Ogg Vorbis VorbisFile
-LOCAL_LDLIBS           := -ldl -llog -landroid -lGLESv1_CM -lGLESv2
-LOCAL_CPPFLAGS         := -std=c++11
+LOCAL_LDLIBS           := -ldl -llog -landroid -lGLESv2 -lEGL
+LOCAL_CPPFLAGS         := -std=c++11 -O3 -funroll-loops -fno-exceptions
 
 include $(BUILD_SHARED_LIBRARY)

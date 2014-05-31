@@ -7,7 +7,7 @@ This project is focused on creating a **supportive framework for fast and simple
 > - **System:** Window and Event Handling, Timer, Threads 
 > - **Graphics:** Camera and View Frustum Control, Ambient and Lighting Control, Frame Buffers, Models (.md5), Textures, Shaders, Fonts
 > - **Audio:** Sound Effects (.wav), Music Files (.ogg), Music Player
-> - **Input:** Mouse, Keyboard, Joysticks/Gamepads 
+> - **Input:** Mouse, Keyboard, Joysticks/Gamepads, Touch
 > - **Math:** Vectors (2d, 3d, 4d/Quaternions), Matrices (3x3, 4x4), Splines
 > - **Data:** String/Stream Manipulation, Random Numbers, Fast-Lookup Container
 > - Asynchronous Resource Management

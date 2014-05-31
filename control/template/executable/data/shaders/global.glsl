@@ -10,8 +10,8 @@
 
 // ****************************************************************
 // #version                          #
-// #define GL_*_SHADER               1
-// #define GL_QUALITY                #
+// #define _CORE_*_SHADER_           1
+// #define _CORE_QUALITY_            #
 // #define CORE_TEXTURE_UNITS        #
 // #define CORE_GRAPHICS_LIGHTS      #
 // #define CORE_SHADER_OUTPUT_COLORS #
@@ -20,13 +20,11 @@
 // global definitions
 #define PI (3.1415926535897932384626433832795)
 #define EU (2.7182818284590452353602874713527)
-#define P3 (0.3333333333333333333333333333333)
-#define P6 (0.6666666666666666666666666666667)
 
 
 // precision qualifier
 #ifdef GL_ES
-    #ifdef GL_FRAGMENT_SHADER
+    #ifdef _CORE_FRAGMENT_SHADER_
         precision mediump float;
     #endif
 #endif
@@ -95,17 +93,17 @@ uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
                                    
 #else
 
-    // unpacking function (without bit operators, red color with double-mod)
-    #define coreUnpackUnorm4x8(x) (vec4(float(mod((x) - 16777216*((x) / 16777216), 256)), \
-                                        float(mod((x) / 256,                       256)), \
-                                        float(mod((x) / 65536,                     256)), \
-                                        float(mod((x) / 16777216,                  256)))*0.003921569);
+    // unpacking function
+    #define coreUnpackUnorm4x8(x) (vec4(float( x        & 0xFF), \
+                                        float((x >>  8) & 0xFF), \
+                                        float((x >> 16) & 0xFF), \
+                                        float((x >> 24) & 0xFF))*0.003921569f);
                                     
 #endif
 
 
 // ****************************************************************
-#ifdef GL_VERTEX_SHADER
+#ifdef _CORE_VERTEX_SHADER_
 
     #if (__VERSION__) >= 140 // >= OpenGL 3.1
 
@@ -138,23 +136,23 @@ uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
 
     #endif
 
-#endif // GL_VERTEX_SHADER
+#endif // _CORE_VERTEX_SHADER_
 
 
 // ****************************************************************
-#ifdef GL_TESS_CONTROL_SHADER
+#ifdef _CORE_TESS_CONTROL_SHADER_
 
-#endif // GL_TESS_CONTROL_SHADER
-
-
-// ****************************************************************
-#ifdef GL_TESS_EVALUATION_SHADER
-
-#endif // GL_TESS_EVALUATION_SHADER
+#endif // _CORE_TESS_CONTROL_SHADER_
 
 
 // ****************************************************************
-#ifdef GL_GEOMETRY_SHADER
+#ifdef _CORE_TESS_EVALUATION_SHADER_
+
+#endif // _CORE_TESS_EVALUATION_SHADER_
+
+
+// ****************************************************************
+#ifdef _CORE_GEOMETRY_SHADER_
 
     // shader input
     in b_Varying
@@ -172,11 +170,11 @@ uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
         vec3 v_v3ViewDir;
     } Out;
 
-#endif // GL_GEOMETRY_SHADER
+#endif // _CORE_GEOMETRY_SHADER_
 
 
 // ****************************************************************
-#ifdef GL_FRAGMENT_SHADER
+#ifdef _CORE_FRAGMENT_SHADER_
 
     #if (__VERSION__) >= 140 // >= OpenGL 3.1
 
@@ -200,7 +198,7 @@ uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
 
     #endif
 
-#endif // GL_FRAGMENT_SHADER
+#endif // _CORE_FRAGMENT_SHADER_
 
 
 #line 1
