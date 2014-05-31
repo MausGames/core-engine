@@ -94,6 +94,16 @@ const coreProgramShr& coreParticleSystem::DefineProgramShare(const char* pcName)
 
 
 // ****************************************************************
+// undefine the visual appearance
+void coreParticleSystem::Undefine()
+{
+    // reset all resource and memory pointer
+    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    m_pProgram = NULL;
+}
+
+
+// ****************************************************************
 // render the particle system
 void coreParticleSystem::Render()
 {
@@ -104,7 +114,7 @@ void coreParticleSystem::Render()
     if(!m_pProgram->Enable()) return;
 
     // update normal matrix uniform
-    m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, Core::Graphics->GetCamera().m123().Inverse(), false);
+    m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, Core::Graphics->GetCamera().m123().Invert(), false);
 
     // enable all active textures
     for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
@@ -124,7 +134,7 @@ void coreParticleSystem::Render()
             {
                 // map required area of the instance data buffer
                 const coreUint iLength = m_apRenderList.size()*CORE_PARTICLE_SIZE;
-                coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength);
+                coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength, true);
 
                 FOR_EACH_REV(it, m_apRenderList)
                 {
@@ -234,7 +244,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
     }
 
     SDL_assert(false);
-    return NULL;
+    return &m_pParticle[m_iCurParticle];
 }
 
 

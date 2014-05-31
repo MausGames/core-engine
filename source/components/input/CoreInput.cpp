@@ -93,6 +93,8 @@ CoreInput::~CoreInput()
 {
     Core::Log->Info("Input Interface shut down");
 
+#if !defined(_CORE_ANDROID_)
+
     // close all joystick devices
     FOR_EACH(it, m_aJoystick)
     {
@@ -101,8 +103,10 @@ CoreInput::~CoreInput()
     }
     m_aJoystick.clear();
 
+#endif
+
     // free the hardware mouse cursor
-    SDL_FreeCursor(m_pCursor);
+    if(m_pCursor) SDL_FreeCursor(m_pCursor);
 }
 
 
@@ -159,12 +163,12 @@ void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, c
     if(iID >= m_aJoystick.size()) return;
 
     // move the mouse cursor
-    const coreVector2 vAcc = m_aJoystick[iID].vRelative.Normalized();
+    const coreVector2 vAcc = m_aJoystick[iID].vRelative;
     if(vAcc.x || vAcc.y)
     {
-        const coreVector2 vPos = this->GetMousePosition()*coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vAcc*coreVector2(1.0f,-Core::System->GetResolution().AspectRatio()) * Core::System->GetTime()*fSpeed + vPos) * Core::System->GetResolution();
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(vNew.x), int(vNew.y));
+        const coreVector2 vPos = this->GetMousePosition() * coreVector2(1.0f,-1.0f) + coreVector2(0.5f,0.5f);
+        const coreVector2 vNew = (vAcc.Normalized() * coreVector2(1.0f, -Core::System->GetResolution().AspectRatio()) * Core::System->GetTime() * fSpeed + vPos) * Core::System->GetResolution();
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(vNew.x + 0.5f), int(vNew.y + 0.5f));
     }
 
     // press mouse buttons

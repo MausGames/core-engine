@@ -44,11 +44,11 @@ coreError coreShader::Load(coreFile* pFile)
     // set shader type
     GLenum iType;
     const char* pcDefine;
-         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {iType = GL_VERTEX_SHADER;          pcDefine = "\n#define GL_VERTEX_SHADER          1";}
-    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {iType = GL_TESS_CONTROL_SHADER;    pcDefine = "\n#define GL_TESS_CONTROL_SHADER    1";}
-    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {iType = GL_TESS_EVALUATION_SHADER; pcDefine = "\n#define GL_TESS_EVALUATION_SHADER 1";}
-    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {iType = GL_GEOMETRY_SHADER;        pcDefine = "\n#define GL_GEOMETRY_SHADER        1";}
-    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        pcDefine = "\n#define GL_FRAGMENT_SHADER        1";}
+         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {iType = GL_VERTEX_SHADER;          pcDefine = "#define _CORE_VERTEX_SHADER_          (1) \n";}
+    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {iType = GL_TESS_CONTROL_SHADER;    pcDefine = "#define _CORE_TESS_CONTROL_SHADER_    (1) \n";}
+    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {iType = GL_TESS_EVALUATION_SHADER; pcDefine = "#define _CORE_TESS_EVALUATION_SHADER_ (1) \n";}
+    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {iType = GL_GEOMETRY_SHADER;        pcDefine = "#define _CORE_GEOMETRY_SHADER_        (1) \n";}
+    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        pcDefine = "#define _CORE_FRAGMENT_SHADER_        (1) \n";}
     else
     {
         Core::Log->Error(false, "Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag)", pFile->GetPath());
@@ -60,7 +60,7 @@ coreError coreShader::Load(coreFile* pFile)
     if((iType == GL_GEOMETRY_SHADER)                                           && !GLEW_VERSION_3_2)             return CORE_OK;
     
     // load quality level and global shader data
-    const char* pcQuality = coreData::Print("\n#define GL_QUALITY %d", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
+    const char* pcQuality = coreData::Print("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobal();
 
     // assemble the shader
@@ -87,10 +87,6 @@ coreError coreShader::Load(coreFile* pFile)
 
         if(iLength)
         {
-            // set logging level
-            const int iLevel = Core::Log->GetLevel();
-            Core::Log->SetLevel(0);
-
             // get error-log
             char* pcLog = new char[iLength];
             glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
@@ -100,9 +96,6 @@ coreError coreShader::Load(coreFile* pFile)
             Core::Log->ListStart("Shader Error Log");
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
-
-            // reset logging level
-            Core::Log->SetLevel(iLevel);
 
             SAFE_DELETE_ARRAY(pcLog)
         }
@@ -140,10 +133,10 @@ void coreShader::__LoadGlobal()
     if(!s_asGlobal[0].empty()) return;
 
     // set global shader definitions
-    s_asGlobal[0].assign(coreData::Print("\n#version %.0f", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
-    s_asGlobal[1].assign(coreData::Print("\n#define CORE_TEXTURE_UNITS        (%d)", CORE_TEXTURE_UNITS));
-    s_asGlobal[1].append(coreData::Print("\n#define CORE_GRAPHICS_LIGHTS      (%d)", CORE_GRAPHICS_LIGHTS));
-    s_asGlobal[1].append(coreData::Print("\n#define CORE_SHADER_OUTPUT_COLORS (%d)", CORE_SHADER_OUTPUT_COLORS));
+    s_asGlobal[0].assign(coreData::Print("#version %.0f \n", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
+    s_asGlobal[1].assign(coreData::Print("#define CORE_TEXTURE_UNITS        (%d) \n", CORE_TEXTURE_UNITS));
+    s_asGlobal[1].append(coreData::Print("#define CORE_GRAPHICS_LIGHTS      (%d) \n", CORE_GRAPHICS_LIGHTS));
+    s_asGlobal[1].append(coreData::Print("#define CORE_SHADER_OUTPUT_COLORS (%d) \n", CORE_SHADER_OUTPUT_COLORS));
 
     // retrieve global shader file
     coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
@@ -412,10 +405,6 @@ void coreProgram::__WriteLog()const
 
     if(iLength)
     {
-        // set logging level
-        const int iLevel = Core::Log->GetLevel();
-        Core::Log->SetLevel(0);
-
         // get error-log
         char* pcLog = new char[iLength];
         glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
@@ -427,9 +416,6 @@ void coreProgram::__WriteLog()const
             Core::Log->ListEntry("(%s)", (*it)->GetPath());
         Core::Log->ListEntry(pcLog);
         Core::Log->ListEnd();
-
-        // reset logging level
-        Core::Log->SetLevel(iLevel);
 
         SAFE_DELETE_ARRAY(pcLog)
     }

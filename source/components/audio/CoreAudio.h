@@ -13,7 +13,6 @@
 
 // ****************************************************************
 // main audio component
-//! \ingroup component
 class CoreAudio final
 {
 private:

@@ -38,6 +38,7 @@
 
 // ****************************************************************
 // math utility collection
+// TODO: sin and cos with precalculated table (1 for both ?)
 class coreMath
 {
 public:
@@ -57,7 +58,7 @@ public:
 
     //! elementary calculations
     //! @{
-    static inline float Sqrt(const float& fInput)noexcept {return fInput*Rsqrt(fInput);}
+    static inline float Sqrt(const float& fInput)noexcept {return fInput * Rsqrt(fInput);}
     static inline float Rsqrt(float fInput)noexcept;
     static inline float Rcp(float fInput)noexcept;
     //! @}
@@ -73,7 +74,7 @@ public:
 
     //! determine next power-of-two
     //! @{
-    static inline coreUint NextPOT(const coreUint& iInput)noexcept {coreUint k = 1; while(k < iInput) k = k << 1; return k;}
+    static inline coreUint NextPOT(const coreUint& iInput)noexcept {coreUint k = 2; while(k < iInput) k = k << 1; return k;}
     //! @}
 
     //! check if inside field-of-view
@@ -93,7 +94,7 @@ public:
 // calculate inverse square root
 inline float coreMath::Rsqrt(float fInput)noexcept
 {
-    SDL_assert(fInput >= 0.0f);
+    SDL_assert(fInput > 0.0f);
 
 #if defined(_CORE_SSE_)
 
@@ -103,8 +104,6 @@ inline float coreMath::Rsqrt(float fInput)noexcept
 #else
 
     // normal calculation
-    if(!fInput) return 0.0f;
-
     const float fHalfValue = fInput*0.5f;
     coreUint* piPointer    = (coreUint*)&fInput;
     *piPointer             = 0x5F3759DF - (*piPointer >> 1);
@@ -128,7 +127,6 @@ inline float coreMath::Rcp(float fInput)noexcept
 
     // optimized calculation with SSE
     _mm_store_ss(&fInput, _mm_rcp_ss(_mm_load_ss(&fInput)));
-    return fInput;
 
 #else
 

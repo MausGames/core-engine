@@ -39,6 +39,8 @@ protected:
 public:
     //! define the visual appearance
     //! @{
+    inline void DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {SDL_assert(iUnit < CORE_TEXTURE_UNITS); m_apTexture[iUnit] = pTexture;}
+    inline void DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
     const coreTexturePtr& DefineTextureFile(const coreByte& iUnit, const char* pcPath);
     const coreTexturePtr& DefineTextureLink(const coreByte& iUnit, const char* pcName);
     const coreProgramShr& DefineProgramShare(const char* pcName);

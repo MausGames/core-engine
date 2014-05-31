@@ -58,8 +58,8 @@ public:
 
     //! inverse matrix
     //! @{
-    inline coreMatrix3& Inverse()noexcept;
-    inline coreMatrix3 Inversed()const noexcept {return coreMatrix3(*this).Inverse();}
+    inline coreMatrix3& Invert()noexcept;
+    inline coreMatrix3 Inverted()const noexcept {return coreMatrix3(*this).Invert();}
     //! @}
 
     //! direct functions
@@ -137,8 +137,8 @@ public:
 
     //! inverse matrix
     //! @{
-    inline coreMatrix4& Inverse()noexcept;
-    inline coreMatrix4 Inversed()const noexcept {return coreMatrix4(*this).Inverse();}
+    inline coreMatrix4& Invert()noexcept;
+    inline coreMatrix4 Inverted()const noexcept {return coreMatrix4(*this).Invert();}
     //! @}
 
     //! direct functions
@@ -209,7 +209,7 @@ inline coreMatrix3& coreMatrix3::Transpose()noexcept
 
 // ****************************************************************
 // inverse matrix
-inline coreMatrix3& coreMatrix3::Inverse()noexcept
+inline coreMatrix3& coreMatrix3::Invert()noexcept
 {
     const float A = _22*_33 - _23*_32;
     const float B = _23*_31 - _21*_33;
@@ -317,7 +317,7 @@ inline coreMatrix4& coreMatrix4::Transpose()noexcept
 
 // ****************************************************************
 // inverse matrix
-inline coreMatrix4& coreMatrix4::Inverse()noexcept
+inline coreMatrix4& coreMatrix4::Invert()noexcept
 {
     *this = coreMatrix4(_23*_34*_42 - _24*_33*_42 + _24*_32*_43 - _22*_34*_43 - _23*_32*_44 + _22*_33*_44,
                         _14*_33*_42 - _13*_34*_42 - _14*_32*_43 + _12*_34*_43 + _13*_32*_44 - _12*_33*_44,

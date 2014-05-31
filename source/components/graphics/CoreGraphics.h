@@ -10,6 +10,12 @@
 #ifndef _CORE_GUARD_GRAPHICS_H_
 #define _CORE_GUARD_GRAPHICS_H_
 
+// TODO: deferred shading implementation delayed, but kept in mind
+// TODO: FOV and clipping planes should be controlled differently
+// TODO: implement post-processing pipeline (in CoreGraphics or own class?)
+// TODO: implement conditional rendering (e.g. occlusion queries)
+// TODO: persistend mapped buffers, multidrawindirect, array textures
+
 
 // ****************************************************************
 // graphics definitions
@@ -18,12 +24,6 @@
 
 // ****************************************************************
 // main graphics component
-//! \ingroup component
-// TODO: deferred shading implementation delayed, but kept in mind
-// TODO: FOV and clipping planes should be controlled differently
-// TODO: implement post-processing pipeline (in CoreGraphics or own class?)
-// TODO: implement conditional rendering (e.g. occlusion queries)
-// TODO: persistend mapped buffers, multidrawindirect, array textures
 class CoreGraphics final
 {
 private:

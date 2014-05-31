@@ -178,7 +178,7 @@ void coreData::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreU
 // compare strings with wildcards
 bool coreData::StrCompareWild(const char* s, const char* t)
 {
-    return *t-'*' ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && StrCompareWild(s+1,t+1) : !*t : StrCompareWild(s,t+1) || (*s && StrCompareWild(s+1,t));
+    return (*t-'*') ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && StrCompareWild(s+1,t+1) : !*t : StrCompareWild(s,t+1) || (*s && StrCompareWild(s+1,t));
 }
 
 

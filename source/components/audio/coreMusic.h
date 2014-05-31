@@ -120,6 +120,7 @@ private:
 // music-player class
 // TODO: improve the representation of the current track while shuffled
 // TODO: callback when music track changes
+// TODO: own thread
 class coreMusicPlayer final
 {
 private:

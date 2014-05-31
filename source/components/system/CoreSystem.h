@@ -18,7 +18,6 @@
 
 // ****************************************************************
 // main system component
-//! \ingroup component
 class CoreSystem final
 {
 private:

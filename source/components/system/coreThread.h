@@ -13,6 +13,7 @@
 
 // ****************************************************************
 // restrained thread interface
+// TODO: add interface for multiple executions per frame
 class coreThread
 {
 private:

@@ -71,10 +71,10 @@ void coreObjectManager::__Reset(const bool& bInit)
 {
     if(bInit)
     {
-        float afDataStrip[] = {-0.5f,  0.5f, 0.0f, 0.001f, 0.001f,
-                               -0.5f, -0.5f, 0.0f, 0.001f, 0.999f,
-                                0.5f,  0.5f, 0.0f, 0.999f, 0.001f,
-                                0.5f, -0.5f, 0.0f, 0.999f, 0.999f};
+        const float afDataStrip[] = {-0.5f,  0.5f, 0.0f, 0.001f, 0.001f,
+                                     -0.5f, -0.5f, 0.0f, 0.001f, 0.999f,
+                                      0.5f,  0.5f, 0.0f, 0.999f, 0.001f,
+                                      0.5f, -0.5f, 0.0f, 0.999f, 0.999f};
 
         // create global model object
         coreObject2D::s_pModel = new coreModel();

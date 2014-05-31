@@ -148,14 +148,7 @@ public:
     inline void SendUniform(const char* pcName, const coreVector2& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f, 0.0f));       if(iID >= 0) glUniform2fv(iID, 1, vVector);}
     inline void SendUniform(const char* pcName, const coreVector3& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f));             if(iID >= 0) glUniform3fv(iID, 1, vVector);}
     inline void SendUniform(const char* pcName, const coreVector4& vVector)                         {const int iID = this->CheckCache(pcName, vVector);                                    if(iID >= 0) glUniform4fv(iID, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose)
-    {
-        const int iID = this->CheckCache(pcName, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13,
-                                                             mMatrix._21 + mMatrix._22 + mMatrix._23,
-                                                             mMatrix._31 + mMatrix._32 + mMatrix._33,
-                                                             0.0f)); 
-        if(iID >= 0) glUniformMatrix3fv(iID, 1, bTranspose, mMatrix);
-    }
+    inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose) {const int iID = this->CheckCache(pcName, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13, mMatrix._21 + mMatrix._22 + mMatrix._23, mMatrix._31 + mMatrix._32 + mMatrix._33, 0.0f)); if(iID >= 0) glUniformMatrix3fv(iID, 1, bTranspose, mMatrix);}
     inline void SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
     //! @}
 

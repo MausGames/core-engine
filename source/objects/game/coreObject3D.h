@@ -23,7 +23,12 @@ private:
 
 
 protected:
-    coreModelPtr m_pModel;   //!< model object
+    coreModelPtr m_pModel;     //!< model object
+
+    float m_fCollisionRange;   //!< range factor used for collision detection
+
+    bool m_bManaged;           //!< currently listed in the object manager
+    int m_iType;               //!< identification of the object type (0 = undefined)
 
 
 public:
@@ -33,18 +38,29 @@ public:
 
     //! define the visual appearance
     //! @{
+    inline void DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;}
     const coreModelPtr& DefineModelFile(const char* pcPath);
     const coreModelPtr& DefineModelLink(const char* pcName);
     void Undefine();
     //! @}
 
+    //! separately enable all resources for rendering
+    //! @{
+    inline bool Enable() {return coreObject3D::Enable(m_pProgram);}
+    bool Enable(const coreProgramShr& pProgram) hot_func;
+    //! @}
+
     //! render and move the 3d-object
     //! @{
-    bool PrepareRender()  {return coreObject3D::PrepareRender(m_pProgram, true);}
-    bool PrepareRender(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
-    virtual void Render() {coreObject3D::Render(m_pProgram, true);}
-    virtual void Render(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
+    inline virtual void Render() {coreObject3D::Render(m_pProgram);}
+    virtual void Render(const coreProgramShr& pProgram) hot_func;
     virtual void Move() hot_func;
+    //! @}
+
+    //! handle collision between different structures
+    //! @{
+    static bool Collision(const coreObject3D& Object1, const coreObject3D& Object2);
+    static float Collision(const coreObject3D& Object, const coreVector3& vLinePos, const coreVector3& vLineDir);
     //! @}
 
     //! set object properties
@@ -53,6 +69,8 @@ public:
     inline void SetSize(const coreVector3& vSize)               {if(m_vSize     != vSize)     {m_iUpdate |= 1; m_vSize     = vSize;}}
     inline void SetDirection(const coreVector3& vDirection)     {const coreVector3 vDirNorm = vDirection.Normalized();   if(m_vDirection   != vDirNorm) {m_iUpdate |= 3; m_vDirection   = vDirNorm;}}
     inline void SetOrientation(const coreVector3& vOrientation) {const coreVector3 vOriNorm = vOrientation.Normalized(); if(m_vOrientation != vOriNorm) {m_iUpdate |= 3; m_vOrientation = vOriNorm;}}
+    inline void SetCollisionRange(const float& fCollisionRange) {m_fCollisionRange = fCollisionRange;}
+    inline void SetType(const int& iType)                       {m_iType           = iType;}
     //! @}
 
     //! get object properties
@@ -62,6 +80,8 @@ public:
     inline const coreVector3& GetSize()const        {return m_vSize;}
     inline const coreVector3& GetDirection()const   {return m_vDirection;}
     inline const coreVector3& GetOrientation()const {return m_vOrientation;}
+    inline const float& GetCollisionRange()const    {return m_fCollisionRange;}
+    inline const int& GetType()const                {return m_iType;}
     //! @}
 };
 
@@ -69,10 +89,13 @@ public:
 // ****************************************************************
 // constructor
 constexpr_obj coreObject3D::coreObject3D()noexcept
-: m_vPosition    (coreVector3(0.0f,0.0f, 0.0f))
-, m_vSize        (coreVector3(1.0f,1.0f, 1.0f))
-, m_vDirection   (coreVector3(0.0f,0.0f,-1.0f))
-, m_vOrientation (coreVector3(0.0f,1.0f, 0.0f))
+: m_vPosition       (coreVector3(0.0f,0.0f, 0.0f))
+, m_vSize           (coreVector3(1.0f,1.0f, 1.0f))
+, m_vDirection      (coreVector3(0.0f,0.0f,-1.0f))
+, m_vOrientation    (coreVector3(0.0f,1.0f, 0.0f))
+, m_fCollisionRange (1.0f)
+, m_bManaged        (false)
+, m_iType           (0)
 {
 }
 

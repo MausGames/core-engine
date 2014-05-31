@@ -18,7 +18,7 @@
 #define CORE_INPUT_BUTTONS_JOYSTICK 32    //!< number of regarded joystick buttons
 #define CORE_INPUT_FINGERS          5     //!< maximum number of simultaneous fingers
 
-#define CORE_INPUT_ID MAX(iID, coreUint(m_aJoystick.size()-1))
+#define CORE_INPUT_ID MIN(iID, coreUint(m_aJoystick.size()-1))
 
 enum coreInputButton
 {
@@ -38,8 +38,6 @@ enum coreInputType
 
 // ****************************************************************
 // main input component
-//! \ingroup component
-// TODO: implement multi-touch input
 // TODO: identify joysticks by ID (maybe switch to gamepad interface)
 class CoreInput final
 {

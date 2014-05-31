@@ -83,7 +83,7 @@ coreError coreTexture::Load(coreFile* pFile)
         iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
 
         // copy texture data into PBO
-        coreByte* pRange = iBuffer.Map<coreByte>(0, iDataSize);
+        coreByte* pRange = iBuffer.Map<coreByte>(0, iDataSize, false);
         std::memcpy(pRange, pConvert->pixels, iDataSize);
         iBuffer.Unmap(pRange);
     }

@@ -212,7 +212,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
-        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight));
+        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight), true);
 
         // update specific light
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
@@ -310,7 +310,7 @@ void CoreGraphics::__SendTransformation()
     const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
     // map required area of the global UBO
-    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4));
+    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4), true);
 
     // update transformation matrices
     std::memcpy(pRange,                         &mViewProj,        sizeof(coreMatrix4));

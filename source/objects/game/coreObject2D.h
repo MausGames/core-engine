@@ -28,7 +28,7 @@ protected:
     static coreModel* s_pModel;   //!< global model object
 
     bool m_bFocused;              //!< interaction status
-    float m_fFocusRange;          //!< interaction range factor
+    float m_fFocusRange;          //!< range factor used for interaction handling
 
 #if defined(_CORE_ANDROID_)
     int m_iFinger;                //!< separate finger interaction status (bitwise)
@@ -47,8 +47,8 @@ public:
 
     //! render and move the 2d-object
     //! @{
-    virtual void Render() {coreObject2D::Render(m_pProgram, true);}
-    virtual void Render(const coreProgramShr& pProgram, const bool& bTextured) hot_func;
+    virtual void Render() {coreObject2D::Render(m_pProgram);}
+    virtual void Render(const coreProgramShr& pProgram) hot_func;
     virtual void Move() hot_func;
     //! @}
 

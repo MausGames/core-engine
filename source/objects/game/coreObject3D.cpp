@@ -41,8 +41,8 @@ void coreObject3D::Undefine()
 
 
 // ****************************************************************
-// prepare for rendering
-bool coreObject3D::PrepareRender(const coreProgramShr& pProgram, const bool& bTextured)
+// separately enable all resources for rendering
+bool coreObject3D::Enable(const coreProgramShr& pProgram)
 {
     // enable the shader-program
     if(!pProgram) return false;
@@ -61,18 +61,14 @@ bool coreObject3D::PrepareRender(const coreProgramShr& pProgram, const bool& bTe
 
     // update normal matrix uniform
 #if defined(_CORE_GLES_)
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Inverse().Transpose(), false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Invert().Transpose(), false);
 #else
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Inverse(), true);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Invert(), true);
 #endif
 
-    if(bTextured)
-    {
-        // enable all active textures
-        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
-            if(m_apTexture[i].IsActive()) m_apTexture[i]->Enable(i);
-    }
-    else coreTexture::DisableAll();
+    // enable all active textures
+    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        if(m_apTexture[i].IsActive()) m_apTexture[i]->Enable(i);
 
     // enable the model
     if(!m_pModel.IsLoaded()) return false;
@@ -84,10 +80,10 @@ bool coreObject3D::PrepareRender(const coreProgramShr& pProgram, const bool& bTe
 
 // ****************************************************************
 // render the 3d-object
-void coreObject3D::Render(const coreProgramShr& pProgram, const bool& bTextured)
+void coreObject3D::Render(const coreProgramShr& pProgram)
 {
-    // prepare for rendering
-    if(this->PrepareRender(pProgram, bTextured))
+    // enable all resources
+    if(this->Enable(pProgram))
     {
         // draw the model
         m_pModel->DrawElements();
@@ -117,4 +113,44 @@ void coreObject3D::Move()
         // reset the update status
         m_iUpdate = 0;
     }
+}
+
+
+// ****************************************************************
+// handle collision between two 3d-objects
+bool coreObject3D::Collision(const coreObject3D& Object1, const coreObject3D& Object2)
+{
+    // get bounding spheres
+    const float fRadius1     = Object1.GetModel()->GetRadius() * Object1.GetCollisionRange() * Object1.GetSize().Max();
+    const float fRadius2     = Object2.GetModel()->GetRadius() * Object2.GetCollisionRange() * Object2.GetSize().Max();
+    const float fMaxDistance = fRadius1 + fRadius2;
+
+    // calculate distance between both objects
+    const coreVector3 vDiff = Object2.GetPosition() - Object1.GetPosition();
+
+    // check for intersection
+    return (vDiff.LengthSq() <= fMaxDistance * fMaxDistance) ? true : false;
+}
+
+
+// ****************************************************************
+// handle collision between 3d-object and line
+// TODO: remove SQRT somehow
+float coreObject3D::Collision(const coreObject3D& Object, const coreVector3& vLinePos, const coreVector3& vLineDir)
+{
+    SDL_assert(vLineDir.LengthSq() == 1.0f);
+
+    // get bounding sphere
+    const float fRadius = Object.GetModel()->GetRadius() * Object.GetCollisionRange() * Object.GetSize().Max();
+
+    // calculate distance between both objects
+    const coreVector3 vDiff = Object.GetPosition() - vLinePos;
+
+    // calculate range parameters
+    const float fAdjacent   = coreVector3::Dot(vDiff, vLineDir);
+    const float fOppositeSq = vDiff.LengthSq() - fAdjacent * fAdjacent;
+    const float fRadiusSq   = fRadius * fRadius;
+
+    // check for intersection (return distance from line position to intersection point on success)
+    return (fOppositeSq <= fRadiusSq) ? (fAdjacent - SQRT(fRadiusSq - fOppositeSq)) : 0.0f;
 }

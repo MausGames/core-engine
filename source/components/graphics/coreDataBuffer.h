@@ -14,6 +14,7 @@
 // ****************************************************************
 // data buffer class
 // TODO: enable read operations (currently only static and write/dynamic)
+// TODO: implement persistent mapping
 class coreDataBuffer
 {
 private:
@@ -51,7 +52,7 @@ public:
 
     //! modify buffer memory
     //! @{
-    template <typename T> T* Map(const coreUint& iOffset, const coreUint& iLength);
+    template <typename T> T* Map(const coreUint& iOffset, const coreUint& iLength, const bool& bSync);
     template <typename T> void Unmap(T* pPointer);
     inline const bool& IsDynamic()const {return m_bDynamic;}
     //! @}
@@ -128,7 +129,7 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 
 // ****************************************************************
 // map buffer memory for writing operations
-template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength)
+template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength, const bool& bSync)
 {
     SDL_assert(m_iDataBuffer && m_bDynamic && (iOffset+iLength <= m_iSize));
 
@@ -138,7 +139,7 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
     if(GLEW_ARB_map_buffer_range)
     {
         // directly map buffer memory
-        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT));
+        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | (bSync ? GL_MAP_INVALIDATE_RANGE_BIT : GL_MAP_UNSYNCHRONIZED_BIT)));
     }
     else
     {

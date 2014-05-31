@@ -24,7 +24,7 @@ void coreObject2D::Undefine()
 // ****************************************************************
 // render the 2d-object
 // TODO: try to use only a 3x3 matrix (or less? see particles) for the transformation
-void coreObject2D::Render(const coreProgramShr& pProgram, const bool& bTextured)
+void coreObject2D::Render(const coreProgramShr& pProgram)
 {
     // enable the shader-program
     if(!pProgram) return;
@@ -39,13 +39,9 @@ void coreObject2D::Render(const coreProgramShr& pProgram, const bool& bTextured)
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXSIZE,       m_vTexSize);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXOFFSET,     m_vTexOffset);
 
-    if(bTextured)
-    {
-        // enable all active textures
-        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
-            if(m_apTexture[i].IsActive()) m_apTexture[i]->Enable(i);
-    }
-    else coreTexture::DisableAll();
+    // enable all active textures
+    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        if(m_apTexture[i].IsActive()) m_apTexture[i]->Enable(i);
 
     // draw the model
     s_pModel->Enable();
