@@ -86,18 +86,25 @@ uniform vec2 u_v2TexOffset;
 uniform sampler2D u_as2Texture[CORE_TEXTURE_UNITS];
 
 
+// square length function
+float coreLengthSq(in vec2 v) {return dot(v, v);}
+float coreLengthSq(in vec3 v) {return dot(v, v);}
+
 #if (__VERSION__) >= 400 // >= OpenGL 4.0
 
     // unpacking function
-    #define coreUnpackUnorm4x8(x) unpackUnorm4x8(x)
+    vec4 coreUnpackUnorm4x8(in uint x) {return unpackUnorm4x8(x);}
                                    
-#else
+#elif (__VERSION__) >= 130 // >= OpenGL 3.0
 
     // unpacking function
-    #define coreUnpackUnorm4x8(x) (vec4(float( x        & 0xFF), \
-                                        float((x >>  8) & 0xFF), \
-                                        float((x >> 16) & 0xFF), \
-                                        float((x >> 24) & 0xFF))*0.003921569f);
+    vec4 coreUnpackUnorm4x8(in uint x)
+    {
+        return vec4(float( x        & 0xFF),
+                    float((x >>  8) & 0xFF),
+                    float((x >> 16) & 0xFF),
+                    float((x >> 24) & 0xFF)) * 0.003921569);
+    }
                                     
 #endif
 

@@ -8,6 +8,7 @@
 #include <jni.h>
 
 
+// ******************************************************************
 /* Own global access objects */
 JavaVM* g_pJNIJavaVM   = NULL;   /* Java Virtual Machine object */
 jclass  g_pJNIClass    = NULL;   /* reference to the activity class (java.lang.class) */
@@ -17,6 +18,7 @@ jobject g_pJNIActivity = NULL;   /* reference to the singleton activity (extends
 extern void SDL_Android_Init(JNIEnv* pEnv, jclass pCls);
 
 
+// ******************************************************************
 /* Start up the SDL app */
 void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* pEnv, jclass pCls, jobject pObj)
 {

@@ -227,13 +227,13 @@
 
     static int __si_t = 0;
 
-    #define FILE              SDL_RWops
-    #define fopen             SDL_RWFromFile
-    #define fclose            SDL_RWclose
-    #define fread(a, b, c, d) SDL_RWread(d, a, b, c)
-    #define fseek(a, b, c)    __si_t = ((SDL_RWseek(a, b, c) == -1) ? 1 : 0)
-    #define ftell             (int)SDL_RWtell
-    #define fputs(a, b)       SDL_RWwrite(b, a, 1, std::strlen(a))
+    #define FILE           SDL_RWops
+    #define fopen          SDL_RWFromFile
+    #define fclose         SDL_RWclose
+    #define fread(a,b,c,d) SDL_RWread(d, a, b, c)
+    #define fseek(a,b,c)   __si_t = ((SDL_RWseek(a, b, c) == -1) ? 1 : 0)
+    #define ftell          (int)SDL_RWtell
+    #define fputs(a,b)     SDL_RWwrite(b, a, 1, std::strlen(a))
 
     #define _WIN32_WCE 1
 
