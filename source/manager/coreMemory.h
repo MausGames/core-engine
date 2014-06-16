@@ -22,7 +22,7 @@
 class coreMemoryManager final
 {
 private:
-    coreLookup<std::weak_ptr<void> > m_apPointer;   //!< list with weak shared memory pointer
+    coreLookupStr<std::weak_ptr<void> > m_apPointer;   //!< list with weak shared memory pointer
 
 
 private:

@@ -46,12 +46,15 @@ CoreGraphics::CoreGraphics()noexcept
     if(iError != GLEW_OK) Core::Log->Error(true, "GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
     else Core::Log->Info("GLEW initialized on primary OpenGL context (%s)", glewGetString(GLEW_VERSION));
 
+    // enable OpenGL debugging
+    Core::Log->DebugOpenGL();
+
     // log video card information
     Core::Log->ListStart("Video Card Information");
-    Core::Log->ListEntry("<b>Vendor:</b> %s",         glGetString(GL_VENDOR));
-    Core::Log->ListEntry("<b>Renderer:</b> %s",       glGetString(GL_RENDERER));
-    Core::Log->ListEntry("<b>OpenGL Version:</b> %s", glGetString(GL_VERSION));
-    Core::Log->ListEntry("<b>Shader Version:</b> %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
+    Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
+    Core::Log->ListEntry(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
+    Core::Log->ListEntry(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
     Core::Log->ListEntry(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
     Core::Log->ListEnd();
 
@@ -63,10 +66,6 @@ CoreGraphics::CoreGraphics()noexcept
     // check OpenGL version
     if(m_fOpenGL < 2.0f) Core::Log->Error(true, "Minimum system requirements not met, video card with at least OpenGL 2.0 required");
 
-    // enable OpenGL debugging
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bCoreDebug)
-        Core::Log->EnableOpenGL();
-
     // enable vertical synchronization
     if(SDL_GL_SetSwapInterval(1)) Core::Log->Error(false, "Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Vertical Synchronization enabled");
@@ -75,6 +74,8 @@ CoreGraphics::CoreGraphics()noexcept
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_DITHER);
     glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    glPixelStorei(GL_PACK_ALIGNMENT,   4);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     // enable depth testing
     glEnable(GL_DEPTH_TEST);

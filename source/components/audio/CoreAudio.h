@@ -16,20 +16,20 @@
 class CoreAudio final
 {
 private:
-    ALCdevice* m_pDevice;                       //!< audio device
-    ALCcontext* m_pContext;                     //!< OpenAL context
+    ALCdevice* m_pDevice;                    //!< audio device
+    ALCcontext* m_pContext;                  //!< OpenAL context
                                                 
-    coreVector3 m_vPosition;                    //!< position of the listener
-    coreVector3 m_vVelocity;                    //!< velocity of the listener
-    coreVector3 m_avDirection[2];               //!< direction and orientation of the listener
+    coreVector3 m_vPosition;                 //!< position of the listener
+    coreVector3 m_vVelocity;                 //!< velocity of the listener
+    coreVector3 m_avDirection[2];            //!< direction and orientation of the listener
                                                 
-    ALuint* m_pSource;                          //!< sound sources
-    coreByte m_NumSource;                       //!< number of sound sources
-    coreByte m_CurSource;                       //!< current sound source
+    ALuint* m_pSource;                       //!< sound sources
+    coreByte m_NumSource;                    //!< number of sound sources
+    coreByte m_CurSource;                    //!< current sound source
 
-    coreLookupGen<ALuint, ALuint> m_aiBuffer;   //!< sound buffers currently bound to sound sources <source, buffer>
+    coreLookup<ALuint, ALuint> m_aiBuffer;   //!< sound buffers currently bound to sound sources <source, buffer>
 
-    float m_fVolume;                            //!< global volume
+    float m_fVolume;                         //!< global volume
 
 
 private:

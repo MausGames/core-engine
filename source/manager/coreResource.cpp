@@ -217,6 +217,9 @@ int coreResourceManager::__InitThread()
     if(iError != GLEW_OK) Core::Log->Error(true, "GLEW could not be initialized on secondary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
     else Core::Log->Info("GLEW initialized on secondary OpenGL context (%s)", glewGetString(GLEW_VERSION));
 
+    // enable OpenGL debugging
+    Core::Log->DebugOpenGL();
+
     return 0;
 }
 

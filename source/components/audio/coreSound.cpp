@@ -155,7 +155,7 @@ void coreSound::PlayPosition(const void* pRef, const float& fVolume, const float
         alSourcei(m_iCurSource,  AL_BUFFER,             m_iBuffer);
         alSourcei(m_iCurSource,  AL_SOURCE_RELATIVE,    false);
 
-        alSourcef(m_iCurSource,  AL_GAIN,               fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND));
+        alSourcef(m_iCurSource,  AL_GAIN,               fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_SOUNDVOLUME));
         alSourcef(m_iCurSource,  AL_PITCH,              fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
         alSourcei(m_iCurSource,  AL_LOOPING,            bLoop);
 
@@ -190,7 +190,7 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
         alSourcei(m_iCurSource, AL_BUFFER,          m_iBuffer);
         alSourcei(m_iCurSource, AL_SOURCE_RELATIVE, true);
 
-        alSourcef(m_iCurSource, AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_SOUND));
+        alSourcef(m_iCurSource, AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_SOUNDVOLUME));
         alSourcef(m_iCurSource, AL_PITCH,           fPitch * (fPitchRnd ? 1.0f+Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
         alSourcei(m_iCurSource, AL_LOOPING,         bLoop);
 

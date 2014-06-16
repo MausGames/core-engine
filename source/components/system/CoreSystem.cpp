@@ -21,6 +21,7 @@ CoreSystem::CoreSystem()noexcept
 : m_vResolution (coreVector2((float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH), (float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT)))
 , m_iFullscreen ((coreByte)Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
 , m_bMinimized  (false)
+, m_bTerminated (false)
 , m_dTotalTime  (0.0f)
 , m_fLastTime   (0.0f)
 , m_iCurFrame   (0)
@@ -104,7 +105,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL * 10.0f)) % 10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  CORE_SYSTEM_CONTEXT);
     }
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DEBUGCONTEXT) || g_bCoreDebug)
+    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) || g_bCoreDebug)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     // create main window object
@@ -148,19 +149,19 @@ CoreSystem::CoreSystem()noexcept
 #endif
 
     // check for SSE support
-    m_abSSE[0] = (m_aaiCPUID[1][3] & 0x2000000) ? true : false;
-    m_abSSE[1] = (m_aaiCPUID[1][3] & 0x4000000) ? true : false;
-    m_abSSE[2] = (m_aaiCPUID[1][2] & 0x01)      ? true : false;
-    m_abSSE[3] = (m_aaiCPUID[1][2] & 0x80000)   ? true : false;
-    m_abSSE[4] = (m_aaiCPUID[1][2] & 0x100000)  ? true : false;
+    m_abSSE[0] = (m_aaiCPUID[1][3] & 0x02000000) ? true : false;
+    m_abSSE[1] = (m_aaiCPUID[1][3] & 0x04000000) ? true : false;
+    m_abSSE[2] = (m_aaiCPUID[1][2] & 0x00000001) ? true : false;
+    m_abSSE[3] = (m_aaiCPUID[1][2] & 0x00080000) ? true : false;
+    m_abSSE[4] = (m_aaiCPUID[1][2] & 0x00100000) ? true : false;
 
     // log processor information
     Core::Log->ListStart("Platform Information");
-    Core::Log->ListEntry("<b>Processor:</b> %.4s%.4s%.4s (%d Logical Cores)", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2], m_iNumCores);
-    Core::Log->ListEntry("<b>System Memory:</b> %d MB",          SDL_GetSystemRAM());
-    Core::Log->ListEntry("<b>SSE Support:</b> %s%s%s%s%s",       m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
-    Core::Log->ListEntry("<b>CPUID[0]:</b> %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
-    Core::Log->ListEntry("<b>CPUID[1]:</b> %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
+    Core::Log->ListEntry(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2], m_iNumCores);
+    Core::Log->ListEntry(CORE_LOG_BOLD("System Memory:") " %d MB",               SDL_GetSystemRAM());
+    Core::Log->ListEntry(CORE_LOG_BOLD("SSE Support:")   " %s%s%s%s%s",          m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
+    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
+    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
     Core::Log->ListEnd();
 }
 
@@ -186,7 +187,7 @@ CoreSystem::~CoreSystem()
 
 // ******************************************************************
 // change the icon of the window
-void CoreSystem::SetIcon(const char* pcPath)
+void CoreSystem::SetWindowIcon(const char* pcPath)
 {
     coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
@@ -229,21 +230,30 @@ bool CoreSystem::__UpdateEvents()
 
             // close window
             case SDL_WINDOWEVENT_CLOSE:
-                if(Event.window.windowID == SDL_GetWindowID(m_pWindow)) Core::Quit();
+                if(Event.window.windowID == SDL_GetWindowID(m_pWindow)) this->Quit();
                 else SDL_DestroyWindow(SDL_GetWindowFromID(Event.window.windowID));
                 break;
             }
             break;
 
-        // quit the application
-        case SDL_QUIT: return false;
+        // minimize application
+        case SDL_APP_WILLENTERBACKGROUND:
+        case SDL_APP_DIDENTERFOREGROUND:
+            m_bMinimized = true;
+            break;
+
+        // quit application
+        case SDL_QUIT:
+        case SDL_APP_TERMINATING:
+            this->Quit();
+            break;
 
         // forward event to input component
         default: if(!Core::Input->ProcessEvent(Event)) return true;
         }
     }
 
-    return true;
+    return !m_bTerminated;
 }
 
 
@@ -273,6 +283,6 @@ void CoreSystem::__UpdateTime()
     for(int i = 0; i < CORE_SYSTEM_TIMES; ++i)
         m_afTime[i] = m_fLastTime*m_afTimeSpeed[i];
 
-    // increate current frame number
+    // increase current frame number
     ++m_iCurFrame;
 }

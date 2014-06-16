@@ -19,6 +19,7 @@
 // ****************************************************************
 // menu switch-box class
 // TODO: check for inheritance of coreLabel to remove separate caption object
+// TODO: separate/remove buttons from switchbox and allow "hooks" to own coreButton/coreObject2D objects
 template <typename T> class coreSwitchBox final : public coreObject2D, public coreTranslate
 {
 public:
@@ -40,11 +41,13 @@ private:
 public:
     coreSwitchBox()noexcept;
     coreSwitchBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve)noexcept;
+    coreSwitchBox(const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve)noexcept;
     ~coreSwitchBox();
 
     //! construct the switch-box
     //! @{
     void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve);
+    void Construct(const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve);
     //! @}
 
     //! render and move the switch-box
@@ -116,6 +119,13 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox(const char* pcIdle, const 
     this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength, iReserve);
 }
 
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve)noexcept
+: coreSwitchBox ()
+{
+    // construct on creation
+    this->Construct(pcFont, iHeight, iLength, iReserve);
+}
+
 
 // ****************************************************************    
 // destructor
@@ -130,13 +140,19 @@ template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 // construct the switch-box
 template <typename T> void coreSwitchBox<T>::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve)
 {
-    SDL_assert(iLength);
-
     // create selection arrows
     m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, 2);
     m_aArrow[1].Construct(pcIdle, pcBusy, pcFont, iHeight, 2);
     m_aArrow[0].GetCaption()->SetText("<");
     m_aArrow[1].GetCaption()->SetText(">");
+
+    // construct remaining object 
+    this->Construct(pcFont, iHeight, iLength, iReserve);
+}
+
+template <typename T> void coreSwitchBox<T>::Construct(const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve)
+{
+    SDL_assert(iLength);
 
     // create the label
     m_Caption.Construct(pcFont, iHeight, iLength);
@@ -154,9 +170,10 @@ template <typename T> void coreSwitchBox<T>::Construct(const char* pcIdle, const
 template <typename T> void coreSwitchBox<T>::Render()
 {
     // forward transparency 
-    m_aArrow[0].SetAlpha(this->GetAlpha());
-    m_aArrow[1].SetAlpha(this->GetAlpha());
-    m_Caption.SetAlpha(this->GetAlpha());
+    // TODO
+    //m_aArrow[0].SetAlpha(this->GetAlpha());
+    //m_aArrow[1].SetAlpha(this->GetAlpha());
+    //m_Caption.SetAlpha(this->GetAlpha());
 
     // render selection arrows
     m_aArrow[0].Render();

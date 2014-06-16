@@ -11,14 +11,19 @@
 #define _CORE_GUARD_LOG_H_
 
 // TODO: define more log capturing spots, not only resource-loading/unloading and (few) errors
+// TODO: implement stack trace, described in OpenGL insights
 
 
 // ****************************************************************
-// log definitions
+/* log definitions */
 #define __CORE_LOG_STRING      (std::string(coreData::Print(pcText, vArgs...)))
 #define __CORE_LOG_ALLOW_INFO  (m_iLevel >=  0)
 #define __CORE_LOG_ALLOW_LIST  (m_iLevel >= -1)
 #define __CORE_LOG_ALLOW_ERROR (m_iLevel ==  0 || m_iLevel == -1)
+
+#define CORE_LOG_BOLD(s)       "<b>" s "</b>"   //!< display text bold
+#define CORE_LOG_ITALIC(s)     "<i>" s "</i>"   //!< display text italic
+#define CORE_LOG_UNDERLINED(s) "<u>" s "</u>"   //!< display text underlined
 
 enum coreLogLevel
 {
@@ -30,7 +35,7 @@ enum coreLogLevel
 
 
 // ****************************************************************
-// log file class
+/* log file class */
 class coreLog final
 {
 private:
@@ -44,45 +49,45 @@ private:
 public:
     explicit coreLog(const char* pcPath)noexcept;
 
-    //! message functions
+    /*! message functions */
     //! @{
     template <typename... A> inline void Header(const char* pcText, const A&... vArgs) {if(__CORE_LOG_ALLOW_INFO) this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> inline void Info(const char* pcText, const A&... vArgs)   {if(__CORE_LOG_ALLOW_INFO) this->__Write(true,                                    __CORE_LOG_STRING + "<br />");}
+    template <typename... A> inline void Info  (const char* pcText, const A&... vArgs) {if(__CORE_LOG_ALLOW_INFO) this->__Write(true,                                    __CORE_LOG_STRING + "<br />");}
     template <typename... A> void Error(const bool& bShutdown, const char* pcText, const A&... vArgs);
     //! @}
 
-    //! list functions
+    /*! list functions */
     //! @{
     template <typename... A> inline void ListStart(const char* pcText, const A&... vArgs) {if(__CORE_LOG_ALLOW_LIST) this->__Write(true,  "<span class=\"list\">" + __CORE_LOG_STRING + "</span><ul>");}
     template <typename... A> inline void ListEntry(const char* pcText, const A&... vArgs) {if(__CORE_LOG_ALLOW_LIST) this->__Write(false, "<li>"                  + __CORE_LOG_STRING + "</li>");}
     inline void ListEnd()                                                                 {if(__CORE_LOG_ALLOW_LIST) this->__Write(false, "</ul>");}
     //! @}
 
-    //! control logging level
+    /*! control logging level */
     //! @{
     inline void SetLevel(const coreLogLevel& iLevel) {m_iLevel = iLevel;}
     inline const coreLogLevel& GetLevel()const       {return m_iLevel;}
     //! @}
 
-    //! control OpenGL debugging
+    /*! control OpenGL debugging */
     //! @{
     friend void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, void* pUserParam);
-    void EnableOpenGL();
+    void DebugOpenGL();
     //! @}
 
 
 private:
     DISABLE_COPY(coreLog)
 
-    //! write text to the log file
+    /*! write text to the log file */
     //! @{
-    void __Write(const bool& bTime, std::string sText) cold_func;
+    void __Write(const bool& bTime, std::string sText)cold_func;
     //! @}
 };
 
 
 // ****************************************************************
-// write error message and shut down the application
+/* write error message and shut down the application */
 template <typename... A> void coreLog::Error(const bool& bShutdown, const char* pcText, const A&... vArgs)
 {
     // write error message
@@ -92,15 +97,12 @@ template <typename... A> void coreLog::Error(const bool& bShutdown, const char* 
     {
         // show critical error message
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", __CORE_LOG_STRING.c_str(), NULL);
+        SDL_assert(false);
 
-        // trigger breakpoint or shut down the application
-#if defined(_CORE_DEBUG_)
-        SDL_TriggerBreakpoint();
-#else
-        _exit(1);
-#endif
+        // shut down the application
+        _exit(-1);
     }
 }
 
 
-#endif // _CORE_GUARD_LOG_H_
+#endif /* _CORE_GUARD_LOG_H_ */

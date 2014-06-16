@@ -119,6 +119,9 @@ bool coreFont::__InitHeight(const int& iHeight)
         return false;
     }
 
+    // enable light font hinting
+    TTF_SetFontHinting(pNewFont, TTF_HINTING_LIGHT);
+
     // save sub-font
     m_apFont[iHeight] = pNewFont;
     return true;

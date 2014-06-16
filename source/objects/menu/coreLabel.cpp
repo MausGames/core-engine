@@ -57,9 +57,9 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
 
     // load shaders
     this->DefineProgramShare(CORE_MEMORY_SHARED)
-          ->AttachShaderFile("data/shaders/default_label.vs")
-          ->AttachShaderFile("data/shaders/default_label.fs")
-          ->Finish();
+        ->AttachShaderFile("data/shaders/default_label.vs")
+        ->AttachShaderFile("data/shaders/default_label.fs")
+        ->Finish();
 
     // reserve memory for text
     if(iLength) m_sText.reserve(iLength+1);
@@ -111,13 +111,16 @@ void coreLabel::Move()
 // change the current text
 bool coreLabel::SetText(const char* pcText)
 {
+    SDL_assert(!m_iLength || std::strlen(pcText) <= m_iLength);
+
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
         m_iGenerate |= 3;
 
         // change the current text
-        m_sText.assign(pcText);
+        if(m_iLength) m_sText.assign(pcText, m_iLength);
+                 else m_sText.assign(pcText);
         return true;
     }
 
@@ -126,7 +129,7 @@ bool coreLabel::SetText(const char* pcText)
 
 bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
 {
-    SDL_assert(iNum <= std::strlen(pcText));
+    SDL_assert(!m_iLength || (MIN(iNum, std::strlen(pcText)) <= m_iLength && iNum <= m_iLength));
 
     // check for new text
     if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
@@ -134,7 +137,8 @@ bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
         m_iGenerate |= 3;
 
         // change the current text
-        m_sText.assign(pcText, iNum);
+        if(m_iLength) m_sText.assign(pcText, MIN(iNum, m_iLength));
+                 else m_sText.assign(pcText, iNum);
         return true;
     }
 
@@ -176,7 +180,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
     SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
 
     // get new texture resolution
-    const coreVector2 vNewResolution = coreVector2(float(pConvert->w), float(pConvert->h));
+    const coreVector2 vNewResolution = coreVector2(float(pConvert->w - 1), float(pConvert->h));
 
     // generate the texture
     m_apTexture[0]->Enable(0);
@@ -184,13 +188,8 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
     {
         if(!m_vResolution.x)
         {
-            // assemble string for maximum size
-            std::string sMaxText(MAX(m_iLength-2, 1), 'W');
-            sMaxText.append(1, 'j');
-            sMaxText.append(1, 'g');
-
             // create static texture
-            this->__Generate(sMaxText.c_str(), false);
+            this->__Generate((std::string(m_iLength, 'W') + "gjy").c_str(), false);
         }
 
         coreTexture::Lock();
@@ -213,7 +212,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB /*8*/, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
         }
         coreTexture::Unlock();
 

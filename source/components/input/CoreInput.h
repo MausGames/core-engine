@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // input definitions
-#define CORE_INPUT_BUTTONS_KEYBOARD 232   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
+#define CORE_INPUT_BUTTONS_KEYBOARD 284   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    16    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK 32    //!< number of regarded joystick buttons
 #define CORE_INPUT_FINGERS          5     //!< maximum number of simultaneous fingers

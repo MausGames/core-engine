@@ -66,7 +66,7 @@
     #warning "Compiler not supported!"
 #endif
 
-// platform
+// operating system
 #if defined(_WIN32)
     #define _CORE_WINDOWS_ 1
 #endif
@@ -78,6 +78,7 @@
 #endif
 #if defined(__ANDROID__)
     #define _CORE_ANDROID_ 1
+    #undef  _CORE_LINUX_
 #endif
 
 // debug mode
@@ -88,14 +89,17 @@
     static const bool g_bCoreDebug = false;
 #endif
 
-// SIMD support
-#if (defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)) && !defined(_CORE_ANDROID_) && !defined(_CORE_DEBUG_)
-    #define _CORE_SSE_ 1
-#endif
-
-// OpenGL ES support
+// OpenGL ES mode
 #if defined(_CORE_ANDROID_)
     #define _CORE_GLES_ 1
+    static const bool g_bCoreGLES = true;
+#else
+    static const bool g_bCoreGLES = false;
+#endif
+
+// SIMD support
+#if (defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)) && !defined(_CORE_ANDROID_)
+    #define _CORE_SSE_ 1
 #endif
 
 
@@ -207,17 +211,17 @@
 
 // ****************************************************************
 // general definitions
-#define SAFE_DELETE(p)       {if(p) {delete   (p); (p)=NULL;}}
-#define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p)=NULL;}}
+#define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
+#define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define ASSERT_IF(c)  SDL_assert(!(c)); if(c)
 
-#define FOR_EACH(i,c)     for(auto i = (c).begin(),  __e = (c).end();  i != __e; ++i)
-#define FOR_EACH_REV(i,c) for(auto i = (c).rbegin(), __e = (c).rend(); i != __e; ++i)
-#define FOR_EACH_DYN(i,c) for(auto i = (c).begin(),  __e = (c).end();  i != __e; )
+#define FOR_EACH(i,c)     for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH_REV(i,c) for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
+#define FOR_EACH_DYN(i,c) for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
 #define DYN_KEEP(i)       {++i;}
-#define DYN_REMOVE(i,c)   {i = c.erase(i); __e = c.end();}
+#define DYN_REMOVE(i,c)   {i = c.erase(i); i ## __e = c.end();}
 
 #define DISABLE_COPY(c)      \
     c(const c&) delete_func; \
@@ -344,7 +348,6 @@ public:
     //! control the engine
     //! @{
     static void Reset();
-    static void Quit();
     //! @}
 
     //! main function

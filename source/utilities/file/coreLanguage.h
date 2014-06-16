@@ -16,8 +16,8 @@
 class coreTranslate
 {
 private:
-    coreLanguage* m_pLanguage;                               //!< associated language file
-    coreLookupGen<std::string*, std::string> m_apsPointer;   //!< own string pointers connected with keys <own, key>
+    coreLanguage* m_pLanguage;                            //!< associated language file
+    coreLookup<std::string*, std::string> m_apsPointer;   //!< own string pointers connected with keys <own, key>
 
 
 public:
@@ -55,7 +55,7 @@ private:
 class coreLanguage final
 {
 private:
-    coreLookup<std::string> m_asString;                    //!< list with language-strings to specific keys
+    coreLookupStr<std::string> m_asString;                 //!< list with language-strings to specific keys
 
     std::u_map<std::string*, std::string*> m_apsPointer;   //!< foreign string pointers connected with language-strings <foreign, language>
     std::u_set<coreTranslate*> m_apObject;                 //!< objects to update after modification

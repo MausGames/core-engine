@@ -12,45 +12,57 @@
 
 
 // ****************************************************************
-// random number generator class
-// TODO: implement Mersenne Twister
-// TODO: https://twitter.com/repi/status/447067525994381312/photo/1
+/* random number definitions */
+#define CORE_RAND_MAX  (0x7FFF)                                         //!< max raw random number (16 bit)
+#define CORE_RAND_TIME (g_bCoreDebug ? 0 : coreUint(std::time(NULL)))   //!< use current time to seed the generator (not on debug mode)
+
+
+// ****************************************************************
+/* random number class */
 class coreRand final
 {
 private:
-    int* m_piRand;         //!< precalculated random numbers
-    coreUint m_iNumRand;   //!< number of random numbers
-    coreUint m_iCurRand;   //!< current random number
+    int* m_piRand;             //!< precalculated random numbers
+    coreUint m_iNumRand;       //!< number of random numbers
+    coreUint m_iCurRand;       //!< current random number
+
+    static coreUint s_iSeed;   //!< global generator seed value
 
 
 public:
-    coreRand(const coreUint& iSize, int iSeed = -1)noexcept;
+    coreRand(const coreUint& iSize, const coreUint iSeed = CORE_RAND_TIME)noexcept;
     coreRand(const coreRand& c)noexcept;
     coreRand(coreRand&& m)noexcept;
     ~coreRand();
 
-    //! assignment operator
+    /*! assignment operator */
     //! @{
     coreRand& operator = (coreRand o)noexcept;
     friend void swap(coreRand& a, coreRand& b)noexcept;
     //! @}
 
-    //! reset the generator
+    /*! reset the generator */
     //! @{
     inline void Reset() {m_iCurRand = 0;}
     //! @}
 
-    //! get raw random number
+    /*! retrieve raw random number */
     //! @{
-    inline const int& GetRaw() {if(++m_iCurRand >= m_iNumRand) m_iCurRand = 0; return m_piRand[m_iCurRand];}
+    inline const int& Raw() {if(++m_iCurRand >= m_iNumRand) m_iCurRand = 0; return m_piRand[m_iCurRand];}
     //! @}
 
-    //! calculate constrained random number
+    /*! calculate constrained random number */
     //! @{
-    inline int Int(const int& iMin, const int& iMax)         {return iMin + (this->GetRaw() % (iMax - iMin + 1));}
-    inline float Float(const float& fMin, const float& fMax) {constexpr_var float fFactor = 1.0f/float(RAND_MAX); return fMin + (fMax - fMin) * float(this->GetRaw()) * fFactor;}
+    inline int   Int  (const int&   iMin, const int&   iMax) {return iMin +      (this->Raw()  % (iMax - iMin  + 1));}
+    inline float Float(const float& fMin, const float& fMax) {return fMin + float(this->Raw()) * (fMax - fMin) * (1.0f / float(CORE_RAND_MAX));}
+    //! @}
+
+    /*! control global random number generation */
+    //! @{
+    static inline void Srand(const coreUint iSeed = CORE_RAND_TIME) {s_iSeed = iSeed;}
+    static inline int  Rand()                                       {s_iSeed = 214013 * s_iSeed + 2531011; return (s_iSeed >> 16) & CORE_RAND_MAX;}
     //! @}
 };
 
 
-#endif // _CORE_GUARD_RAND_H_
+#endif /* _CORE_GUARD_RAND_H_ */

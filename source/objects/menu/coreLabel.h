@@ -22,7 +22,7 @@ private:
     int m_iHeight;               //!< specific height for the font
 
     coreVector2 m_vResolution;   //!< resolution of the generated texture
-    int m_iLength;               //!< max number of characters (0 = dynamic)
+    coreUint m_iLength;          //!< max number of characters (0 = dynamic)
                            
     std::string m_sText;         //!< current text
     float m_fScale;              //!< scale factor
@@ -57,7 +57,7 @@ public:
     //! get object properties
     //! @{
     inline const coreVector2& GetResolution()const {return m_vResolution;}
-    inline const int& GetLength()const             {return m_iLength;}
+    inline const coreUint& GetLength()const        {return m_iLength;}
     inline const char* GetText()const              {return m_sText.c_str();}
     inline const float& GetScale()const            {return m_fScale;}
     //! @}

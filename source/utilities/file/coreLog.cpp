@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreLog::coreLog(const char* pcPath)noexcept
 : m_sPath  (pcPath)
 , m_iLevel (CORE_LOG_LEVEL_ALL)
@@ -28,10 +28,10 @@ coreLog::coreLog(const char* pcPath)noexcept
         std::fputs(" .thread  {color: green;}                      \n", pFile);
         std::fputs(" .thread2 {color: olive;}                      \n", pFile);
         std::fputs(" .data    {color: teal;}                       \n", pFile);
+        std::fputs(" .gl      {color: purple;}                     \n", pFile);
         std::fputs(" .header  {font-weight: bold; font-size: 22px;}\n", pFile);
         std::fputs(" .list    {font-weight: bold;}                 \n", pFile);
         std::fputs(" .error   {font-weight: bold; color: red;}     \n", pFile);
-        std::fputs(" .gl      {color: purple;}                     \n", pFile);
         std::fputs("</style>                                       \n", pFile);
 
         // write application name
@@ -48,18 +48,18 @@ coreLog::coreLog(const char* pcPath)noexcept
 
 
 // ****************************************************************
-// write an OpenGL debug message
+/* write an OpenGL debug message */
 void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, void* pUserParam)
 {
     coreLog* pLog = s_cast<coreLog*>(pUserParam);
 
     // write message
     pLog->ListStart("OpenGL Debug Log");
-    pLog->ListEntry("<span class=\"gl\"><b>ID:</b>           %d</span>", iID);
-    pLog->ListEntry("<span class=\"gl\"><b>Source:</b>   0x%04X</span>", iSource);
-    pLog->ListEntry("<span class=\"gl\"><b>Type:</b>     0x%04X</span>", iType);
-    pLog->ListEntry("<span class=\"gl\"><b>Severity:</b> 0x%04X</span>", iSeverity);
-    pLog->ListEntry("<span class=\"gl\">                     %s</span>", pcMessage);
+    pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("ID:")       "     %d</span>", iID);
+    pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Source:")   " 0x%04X</span>", iSource);
+    pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Type:")     " 0x%04X</span>", iType);
+    pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Severity:") " 0x%04X</span>", iSeverity);
+    pLog->ListEntry("<span class=\"gl\">                                   %s</span>", pcMessage);
     pLog->ListEnd();
 
     SDL_assert(false);
@@ -67,13 +67,16 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
 
 
 // ****************************************************************
-// enable OpenGL debugging
-void coreLog::EnableOpenGL()
+/* enable OpenGL debugging */
+void coreLog::DebugOpenGL()
 {
+    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !g_bCoreDebug) return;
+
     if(GLEW_KHR_debug)
     {
-        // enable debug output
+        // enable synchronous debug output
         glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
         // set callback function and filter
         glDebugMessageCallback(&WriteOpenGL, this);
@@ -81,6 +84,9 @@ void coreLog::EnableOpenGL()
     }
     else if(GLEW_ARB_debug_output)
     {
+        // enable synchronous debug output
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+
         // set callback function and filter
         glDebugMessageCallbackARB(&WriteOpenGL, this);
         glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
@@ -89,12 +95,12 @@ void coreLog::EnableOpenGL()
 
 
 // ****************************************************************
-// write text to the log file
+/* write text to the log file */
 void coreLog::__Write(const bool& bTime, std::string sText)
 {
     SDL_AtomicLock(&m_iLock);
     {
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_ANDROID_) || defined(_CORE_DEBUG_)
 
         // write text also to the standard output
         SDL_Log(sText.c_str());

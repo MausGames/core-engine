@@ -18,13 +18,13 @@
 class coreDataBuffer
 {
 private:
-    GLuint m_iDataBuffer;                             //!< data buffer identifier
-    bool m_bDynamic;                                  //!< storage type
+    GLuint m_iDataBuffer;                          //!< data buffer identifier
+    bool m_bDynamic;                               //!< storage type
                                                          
-    GLenum m_iTarget;                                 //!< buffer target (e.g. GL_ARRAY_BUFFER)
-    coreUint m_iSize;                                 //!< data size in bytes 
+    GLenum m_iTarget;                              //!< buffer target (e.g. GL_ARRAY_BUFFER)
+    coreUint m_iSize;                              //!< data size in bytes 
                                                          
-    static coreLookupGen<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
+    static coreLookup<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
 
 
 public:

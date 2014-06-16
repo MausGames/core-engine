@@ -10,18 +10,23 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreConfig::coreConfig(const char* pcPath)noexcept
 : m_sPath (pcPath)
 {
+    // define interface behavior
+    m_Config.SetUnicode(true);
+    m_Config.SetMultiKey(false);
+    m_Config.SetMultiLine(false);
+    m_Config.SetSpaces(true);
+
     // load configuration
-    m_Config.SetUnicode();
     this->Load();
 }
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreConfig::~coreConfig()
 {
     // save configuration
@@ -30,7 +35,7 @@ coreConfig::~coreConfig()
 
 
 // ****************************************************************
-// access bool value
+/* get bool value */
 bool coreConfig::GetBool(const char* pcSection, const char* pcKey, const bool& bDefault)
 {
     const bool bReturn = m_Config.GetBoolValue(pcSection, pcKey, bDefault);
@@ -41,7 +46,7 @@ bool coreConfig::GetBool(const char* pcSection, const char* pcKey, const bool& b
 
 
 // ****************************************************************
-// access int value
+/* get int value */
 int coreConfig::GetInt(const char* pcSection, const char* pcKey, const int& iDefault)
 {
     const int iReturn = (int)m_Config.GetLongValue(pcSection, pcKey, iDefault);
@@ -52,7 +57,7 @@ int coreConfig::GetInt(const char* pcSection, const char* pcKey, const int& iDef
 
 
 // ****************************************************************
-// access float value
+/* get float value */
 float coreConfig::GetFloat(const char* pcSection, const char* pcKey, const float& fDefault)
 {
     const float fReturn = (float)m_Config.GetDoubleValue(pcSection, pcKey, fDefault);
@@ -63,11 +68,11 @@ float coreConfig::GetFloat(const char* pcSection, const char* pcKey, const float
 
 
 // ****************************************************************
-// access string value
+/* get string value */
 const char* coreConfig::GetString(const char* pcSection, const char* pcKey, const char* pcDefault)
 {
     const char* pcReturn = m_Config.GetValue(pcSection, pcKey, pcDefault);
-    if(!std::strcmp(pcReturn, pcDefault)) this->SetString(pcSection, pcKey, NULL, pcDefault);
+    if(pcReturn == pcDefault) this->SetString(pcSection, pcKey, NULL, pcDefault);
 
     return pcReturn;
 }

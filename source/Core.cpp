@@ -115,17 +115,6 @@ void Core::Reset()
 }
 
 
-// ******************************************************************
-// quit the engine
-void Core::Quit()
-{
-    // send quit event
-    SDL_Event QuitEvent;
-    QuitEvent.type = SDL_QUIT;
-    SDL_PushEvent(&QuitEvent);
-}
-
-
 // ****************************************************************
 // main function
 int main(int argc, char* argv[])
@@ -162,14 +151,12 @@ int Core::__Run()
     CoreApp* pApplication = new CoreApp();
     Core::Log->Header("Application Run");
 
-#if !defined(_CORE_DEBUG_)
-
     // set logging level
-    const coreLogLevel iLevel = (coreLogLevel)Core::Config->GetInt(CORE_CONFIG_SYSTEM_LOG);
-    Core::Log->SetLevel(iLevel);
-    if(iLevel < 0) Core::Log->Error(false, "Logging level reduced");
-
-#endif
+    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !g_bCoreDebug)
+    {
+        Core::Log->SetLevel(CORE_LOG_LEVEL_ONLY_ERROR);
+        Core::Log->Error(false, "Logging level reduced");
+    }
 
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())

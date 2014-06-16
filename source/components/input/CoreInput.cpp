@@ -11,6 +11,9 @@
 #define CORE_INPUT_PRESS(x)   {(x)[3] = false;  (x)[2] = !(x)[1]; (x)[1] = true;}
 #define CORE_INPUT_RELEASE(x) {(x)[3] = (x)[1]; (x)[2] = false;   (x)[1] = false;}
 
+#define CORE_INPUT_JOYSTICK_DEATH 500
+#define CORE_INPUT_JOYSTICK_MAX   8000
+
 
 // ****************************************************************
 // constructor
@@ -241,8 +244,9 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(ABS(Event.jaxis.value) > 8000) this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, float(SIGN(Event.jaxis.value)) * (Event.jaxis.axis ? -1.0f : 1.0f));
-                                     else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
+        if(ABS(Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEATH) 
+            this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, CLAMP(float(Event.jaxis.value) / float(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
+        else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;
 
     // press finger

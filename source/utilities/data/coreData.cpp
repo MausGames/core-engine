@@ -9,7 +9,7 @@
 #include "Core.h"
 
 #if defined(_CORE_WINDOWS_)
-    #include <Shellapi.h>
+    #include <shellapi.h>
 #endif
 #if defined(_CORE_LINUX_)
     #include <dirent.h>
@@ -28,8 +28,12 @@ const char* coreData::AppName()
     // receive name
 #if defined(_CORE_WINDOWS_)
     GetModuleFileName(NULL, pcString, 255);
-#else
+#elif defined(_CORE_LINUX_)
     readlink("/proc/self/exe", pcString, 255);
+#elif defined(_CORE_ANDROID_)
+    return NULL;
+#else
+    return "";
 #endif
 
     return std::strrchr(pcString, CORE_DATA_SLASH[0])+1;
@@ -45,12 +49,15 @@ const char* coreData::AppPath()
     // receive path
 #if defined(_CORE_WINDOWS_)
     GetCurrentDirectory(255, pcString);
-#else
+#elif defined(_CORE_LINUX_)
     getcwd(pcString, 255);
+#elif defined(_CORE_ANDROID_)
+    return NULL;
+#else
+    return CORE_DATA_SLASH;
 #endif
 
-    std::strcat(pcString, CORE_DATA_SLASH);
-    return pcString;
+    return std::strcat(pcString, CORE_DATA_SLASH);
 }
 
 
@@ -102,7 +109,7 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
     // close folder
     FindClose(hFolder);
 
-#else
+#elif defined(_CORE_LINUX_)
 
     DIR* pDir;
     struct dirent* pDirent;
@@ -127,6 +134,8 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
 
     // close folder
     closedir(pDir);
+
+#elif defined(_CORE_ANDROID_)
 
 #endif
 
@@ -293,7 +302,9 @@ void coreData::OpenURL(const char* pcURL)
 {
 #if defined(_CORE_WINDOWS_)
     ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL);
-#else
+#elif defined(_CORE_LINUX_)
     if(system(NULL)) system(coreData::Print("xdg-open %s", pcURL));
+#else
+    if(system(NULL)) system(coreData::Print("open %s", pcURL));
 #endif
 }

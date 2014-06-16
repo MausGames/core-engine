@@ -438,7 +438,7 @@ constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)noex
 {
     return coreVector3(float( iNumber        & 0xFF), 
                        float((iNumber >>  8) & 0xFF), 
-                       float((iNumber >> 16) & 0xFF))*0.003921569f;
+                       float((iNumber >> 16) & 0xFF)) * 0.003921569f;
 }
 
 
@@ -470,7 +470,7 @@ constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)noex
     return coreVector4(float( iNumber        & 0xFF), 
                        float((iNumber >>  8) & 0xFF), 
                        float((iNumber >> 16) & 0xFF), 
-                       float((iNumber >> 24) & 0xFF))*0.003921569f;
+                       float((iNumber >> 24) & 0xFF)) * 0.003921569f;
 }
 
 

@@ -56,9 +56,9 @@ void coreButton::Construct(const char* pcIdle, const char* pcBusy)
 
     // load shaders
     this->DefineProgramShare(CORE_MEMORY_SHARED)
-          ->AttachShaderFile("data/shaders/default_2d.vs")
-          ->AttachShaderFile("data/shaders/default.fs")
-          ->Finish();
+        ->AttachShaderFile("data/shaders/default_2d.vs")
+        ->AttachShaderFile("data/shaders/default.fs")
+        ->Finish();
 }
 
 

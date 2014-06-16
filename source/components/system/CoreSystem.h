@@ -27,7 +27,8 @@ private:
     coreByte m_iFullscreen;                   //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
 
     std::vector<coreVector2> m_avAvailable;   //!< all available screen resolutions
-    bool m_bMinimized;                        //!< window was minimized
+    bool m_bMinimized;                        //!< window/application was minimized
+    bool m_bTerminated;                       //!< application will be terminated
 
     double m_dTotalTime;                      //!< total time since start of the application
     float m_fLastTime;                        //!< smoothed last frame time
@@ -54,14 +55,19 @@ private:
 public:
     //! control window
     //! @{
-    inline void SetTitle(const char* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
-    void SetIcon(const char* pcPath);
+    inline void SetWindowTitle(const char* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
+    void SetWindowIcon(const char* pcPath);
     //! @}
 
     //! control time
     //! @{
     inline void SetTimeSpeed(const int& iID, const float& fTimeSpeed) {SDL_assert(iID < CORE_SYSTEM_TIMES); m_afTimeSpeed[iID] = fTimeSpeed;}
     inline void SkipFrame()                                           {m_iSkipFrame = 2;}
+    //! @}
+
+    //! terminate the application
+    //! @{
+    inline void Quit() {m_bTerminated = true;}
     //! @}
 
     //! get component properties

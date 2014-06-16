@@ -73,8 +73,8 @@ private:
 class coreArchive final
 {
 private:
-    std::string m_sPath;              //!< relative path of the archive
-    coreLookup<coreFile*> m_apFile;   //!< file objects
+    std::string m_sPath;                 //!< relative path of the archive
+    coreLookupStr<coreFile*> m_apFile;   //!< file objects
 
 
 public:
@@ -100,7 +100,7 @@ public:
     //! access file objects
     //! @{
     inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_apFile.size()) return NULL; return m_apFile[iIndex];}
-    inline coreFile* GetFile(const char* pcPath)     {if(!m_apFile.count(pcPath))   return NULL; return m_apFile[pcPath]; }
+    inline coreFile* GetFile(const char* pcPath)     {if(!m_apFile.count(pcPath))   return NULL; return m_apFile[pcPath];}
     //! @}
 
     //! get object properties

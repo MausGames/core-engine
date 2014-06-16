@@ -172,15 +172,15 @@ private:
 class coreResourceManager final : public coreThread
 {
 private:
-    coreLookup<coreResourceHandle*> m_apHandle;   //!< resource handles
-    coreLookup<coreResource*> m_apDefault;        //!< default resource objects
+    coreLookupStr<coreResourceHandle*> m_apHandle;   //!< resource handles
+    coreLookupStr<coreResource*> m_apDefault;        //!< default resource objects
 
-    coreLookup<coreArchive*> m_apArchive;         //!< archives with resource files
-    coreLookup<coreFile*> m_apDirectFile;         //!< direct resource files
+    coreLookupStr<coreArchive*> m_apArchive;         //!< archives with resource files
+    coreLookupStr<coreFile*> m_apDirectFile;         //!< direct resource files
 
-    std::u_set<coreReset*> m_apReset;             //!< objects to reset with the resource manager
+    std::u_set<coreReset*> m_apReset;                //!< objects to reset with the resource manager
 
-    bool m_bActive;                               //!< current management status
+    bool m_bActive;                                  //!< current management status
 
 
 private:

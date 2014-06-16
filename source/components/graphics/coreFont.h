@@ -17,8 +17,8 @@
 class coreFont final : public coreResource
 {
 private:
-    coreLookupGen<int, TTF_Font*> m_apFont;   //!< list with sub-fonts in different heights
-    coreFile* m_pFile;                        //!< file object with resource data
+    coreLookup<int, TTF_Font*> m_apFont;   //!< list with sub-fonts in different heights
+    coreFile* m_pFile;                     //!< file object with resource data
 
 
 public:

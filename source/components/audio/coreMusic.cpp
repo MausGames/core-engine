@@ -161,7 +161,7 @@ coreError coreMusic::Play()
 
         // set initial sound source properties
         alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
-        alSourcef(m_iSource, AL_GAIN,            1.0f * Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_MUSIC));
+        alSourcef(m_iSource, AL_GAIN,            1.0f * Core::Config->GetFloat(CORE_CONFIG_AUDIO_MUSICVOLUME));
         alSourcef(m_iSource, AL_PITCH,           m_fPitch);
         alSourcei(m_iSource, AL_LOOPING,         false);
 

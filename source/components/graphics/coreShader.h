@@ -110,16 +110,16 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 class coreProgram final : public coreReset
 {
 private:
-    GLuint m_iProgram;                                   //!< shader-program identifier
+    GLuint m_iProgram;                                //!< shader-program identifier
                                                          
-    std::vector<coreShaderPtr> m_apShader;               //!< attached shader objects
-    coreShaderStatus m_iStatus;                          //!< current status
+    std::vector<coreShaderPtr> m_apShader;            //!< attached shader objects
+    coreShaderStatus m_iStatus;                       //!< current status
 
-    coreLookupGen<const char*, int> m_aiUniform;         //!< uniform locations
-    coreLookupGen<const char*, int> m_aiAttribute;       //!< attribute locations
-    coreLookupGen<const char*, coreVector4> m_avCache;   //!< cached uniform values
+    coreLookup<const char*, int> m_aiUniform;         //!< uniform locations
+    coreLookup<const char*, int> m_aiAttribute;       //!< attribute locations
+    coreLookup<const char*, coreVector4> m_avCache;   //!< cached uniform values
 
-    static coreProgram* s_pCurrent;                      //!< currently active shader-program
+    static coreProgram* s_pCurrent;                   //!< currently active shader-program
 
 
 public:

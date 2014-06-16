@@ -33,10 +33,10 @@ CoreAudio::CoreAudio()noexcept
 
     // log audio device information
     Core::Log->ListStart("Audio Device Information");
-    Core::Log->ListEntry("<b>Device:</b> %s",   alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
-    Core::Log->ListEntry("<b>Vendor:</b> %s",   alGetString(AL_VENDOR));
-    Core::Log->ListEntry("<b>Renderer:</b> %s", alGetString(AL_RENDERER));
-    Core::Log->ListEntry("<b>Version:</b> %s",  alGetString(AL_VERSION));
+    Core::Log->ListEntry(CORE_LOG_BOLD("Device:")   " %s", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
+    Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
+    Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
+    Core::Log->ListEntry(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
     Core::Log->ListEntry(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
     Core::Log->ListEnd();
 
@@ -46,7 +46,7 @@ CoreAudio::CoreAudio()noexcept
     this->SetListener(0.0f);
 
     // reset volume
-    this->SetVolume(Core::Config->GetFloat(CORE_CONFIG_AUDIO_VOLUME_GLOBAL));
+    this->SetVolume(Core::Config->GetFloat(CORE_CONFIG_AUDIO_GLOBALVOLUME));
 
     // check for errors
     const ALenum iError = alGetError();
