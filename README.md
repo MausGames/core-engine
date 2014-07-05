@@ -15,5 +15,3 @@ This project is focused on creating a **supportive framework for fast and simple
 > - Basic Filesystem, HTML Log, Configuration File
 > - Game Objects (2d, 3d), Particle System
 > - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes)
-
-Documentation for the engine is currently not available.

@@ -147,20 +147,20 @@
     <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp">
       <Filter>source\objects\menu</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp">
-      <Filter>source\objects\game</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\components\graphics\coreDataBuffer.cpp">
       <Filter>source\components\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\utilities\math\coreMath.cpp">
-      <Filter>source\utilities\math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\utilities\file\coreLanguage.cpp">
       <Filter>source\utilities\file</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\android\coreES.cpp">
       <Filter>source\additional\android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp">
+      <Filter>source\objects\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\game\coreScene.cpp">
+      <Filter>source\objects\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,9 +272,6 @@
     <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h">
       <Filter>source\objects\menu</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\objects\game\coreParticle.h">
-      <Filter>source\objects\game</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\file\coreLanguage.h">
       <Filter>source\utilities\file</Filter>
     </ClInclude>
@@ -283,6 +280,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\android\coreES.h">
       <Filter>source\additional\android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\game\coreParticle.h">
+      <Filter>source\objects\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\game\coreScene.h">
+      <Filter>source\objects\game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

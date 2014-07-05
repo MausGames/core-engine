@@ -123,7 +123,11 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../../source/additional/android/glewES.h" />
+		<Unit filename="../../source/additional/android/coreES.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../../source/additional/android/coreES.h" />
 		<Unit filename="../../source/components/audio/CoreAudio.cpp" />
 		<Unit filename="../../source/components/audio/CoreAudio.h" />
 		<Unit filename="../../source/components/audio/coreMusic.cpp" />
@@ -179,7 +183,6 @@
 		<Unit filename="../../source/objects/menu/coreTextBox.h" />
 		<Unit filename="../../source/utilities/data/coreData.cpp" />
 		<Unit filename="../../source/utilities/data/coreData.h" />
-		<Unit filename="../../source/utilities/data/coreLookup.cpp" />
 		<Unit filename="../../source/utilities/data/coreLookup.h" />
 		<Unit filename="../../source/utilities/data/coreRand.cpp" />
 		<Unit filename="../../source/utilities/data/coreRand.h" />
@@ -187,6 +190,7 @@
 		<Unit filename="../../source/utilities/file/coreArchive.h" />
 		<Unit filename="../../source/utilities/file/coreConfig.cpp" />
 		<Unit filename="../../source/utilities/file/coreConfig.h" />
+		<Unit filename="../../source/utilities/file/coreLanguage.cpp" />
 		<Unit filename="../../source/utilities/file/coreLanguage.h" />
 		<Unit filename="../../source/utilities/file/coreLog.cpp" />
 		<Unit filename="../../source/utilities/file/coreLog.h" />

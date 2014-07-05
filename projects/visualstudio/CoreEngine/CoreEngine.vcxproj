@@ -134,6 +134,7 @@
     <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp" />
+    <ClCompile Include="..\..\..\source\objects\game\coreScene.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreButton.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp" />
@@ -145,7 +146,6 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreConfig.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreLanguage.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp" />
-    <ClCompile Include="..\..\..\source\utilities\math\coreMath.cpp" />
     <ClCompile Include="..\..\..\source\utilities\math\coreSpline.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +175,7 @@
     <ClInclude Include="..\..\..\source\objects\game\coreObject2D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreParticle.h" />
+    <ClInclude Include="..\..\..\source\objects\game\coreScene.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreButton.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreCheckBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h" />
