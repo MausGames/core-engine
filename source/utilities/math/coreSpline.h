@@ -10,10 +10,11 @@
 #ifndef _CORE_GUARD_SPLINE_H_
 #define _CORE_GUARD_SPLINE_H_
 
+// TODO: extend to NURBS
+
 
 // ****************************************************************
 // spline class
-// TODO: extend to NURBS
 class coreSpline final
 {
 private:

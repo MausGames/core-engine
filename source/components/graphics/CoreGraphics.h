@@ -83,8 +83,8 @@ public:
 
     //! take screenshot
     //! @{
-    void Screenshot(const char* pcPath);
-    void Screenshot();
+    void Screenshot(const char* pcPath)const;
+    inline void Screenshot()const {this->Screenshot(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S"));}
     //! @}
 
     //! get component properties

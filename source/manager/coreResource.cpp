@@ -209,15 +209,15 @@ int coreResourceManager::__InitThread()
 {
     // assign secondary OpenGL context to resource thread
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphics->GetResourceContext()))
-        Core::Log->Error(true, "Secondary OpenGL context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
+        Core::Log->Error("Secondary OpenGL context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Secondary OpenGL context assigned to resource thread");
 
     // init GLEW on secondary OpenGL context
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error(true, "GLEW could not be initialized on secondary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
+    if(iError != GLEW_OK) Core::Log->Error("GLEW could not be initialized on secondary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
     else Core::Log->Info("GLEW initialized on secondary OpenGL context (%s)", glewGetString(GLEW_VERSION));
 
-    // enable OpenGL debugging
+    // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
     return 0;

@@ -35,7 +35,7 @@ CoreSystem::CoreSystem()noexcept
 
     // init SDL libraries
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
-        Core::Log->Error(true, "SDL could not be initialized (SDL: %s)", SDL_GetError());
+        Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
     else Core::Log->Info("SDL initialized (%d.%d.%d %s)", Version.major, Version.minor, Version.patch, SDL_GetRevision());
 
     // get number of logical processor cores
@@ -81,7 +81,7 @@ CoreSystem::CoreSystem()noexcept
         if(!m_vResolution.x) m_vResolution.x = vDesktop.x;
         if(!m_vResolution.y) m_vResolution.y = vDesktop.y;
     }
-    else Core::Log->Error(false, "Could not get available screen resolutions (SDL: %s)", SDL_GetError());
+    else Core::Log->Warning("Could not get available screen resolutions (SDL: %s)", SDL_GetError());
 
     // configure the SDL window
     const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
@@ -112,7 +112,7 @@ CoreSystem::CoreSystem()noexcept
     m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
     if(!m_pWindow)
     {
-        Core::Log->Error(false, "Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
+        Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
 
         // change configuration
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
@@ -120,7 +120,7 @@ CoreSystem::CoreSystem()noexcept
 
         // create compatible main window object
         m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
-        if(!m_pWindow) Core::Log->Error(true, "Main window could not be created (SDL: %s)", SDL_GetError());
+        if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
@@ -157,11 +157,11 @@ CoreSystem::CoreSystem()noexcept
 
     // log processor information
     Core::Log->ListStart("Platform Information");
-    Core::Log->ListEntry(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", (char*)&m_aaiCPUID[0][1], (char*)&m_aaiCPUID[0][3], (char*)&m_aaiCPUID[0][2], m_iNumCores);
-    Core::Log->ListEntry(CORE_LOG_BOLD("System Memory:") " %d MB",               SDL_GetSystemRAM());
-    Core::Log->ListEntry(CORE_LOG_BOLD("SSE Support:")   " %s%s%s%s%s",          m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
-    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X", m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
-    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X", m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
+    Core::Log->ListEntry(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
+    Core::Log->ListEntry(CORE_LOG_BOLD("System Memory:") " %d MB",                           SDL_GetSystemRAM());
+    Core::Log->ListEntry(CORE_LOG_BOLD("SSE Support:")   " %s%s%s%s%s",                      m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
+    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
+    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
     Core::Log->ListEnd();
 }
 

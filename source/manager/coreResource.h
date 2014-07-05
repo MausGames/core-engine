@@ -192,9 +192,9 @@ private:
 public:
     //! create and return resource with resource handle
     //! @{
-    template <typename T, typename... A> inline coreResourceHandle* LoadNew(const A&... vArgs)const {return new coreResourceHandle(new T(vArgs...), NULL, NULL);}
-    template <typename T, typename... A> coreResourceHandle* LoadFile(const char* pcPath, const A&... vArgs);
-    template <typename T, typename... A> coreResourceHandle* LoadLink(const char* pcName, const A&... vArgs);
+    template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, NULL);}
+    template <typename T, typename... A> coreResourceHandle* LoadFile(const char* pcPath, A&&... vArgs);
+    template <typename T, typename... A> coreResourceHandle* LoadLink(const char* pcName, A&&... vArgs);
     template <typename T> void Free(T* pResourcePtr);
     //! @}
 
@@ -297,7 +297,7 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 // ****************************************************************
 // create and return resource with resource handle
-template <typename T, typename... A> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath, const A&... vArgs)
+template <typename T, typename... A> coreResourceHandle* coreResourceManager::LoadFile(const char* pcPath, A&&... vArgs)
 {
     // check for existing resource handle
     if(m_apHandle.count(pcPath)) return m_apHandle[pcPath];
@@ -307,26 +307,26 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     if(!m_apDefault.count(T::GetDefaultPath()))
     {
         // load new default resource
-        pDefault = new T(vArgs...);
+        pDefault = new T(std::forward<A>(vArgs)...);
         pDefault->Load(this->RetrieveFile(T::GetDefaultPath()));
         m_apDefault[T::GetDefaultPath()] = pDefault;
     }
     else pDefault = m_apDefault[T::GetDefaultPath()];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(vArgs...), pDefault, this->RetrieveFile(pcPath));
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), pDefault, this->RetrieveFile(pcPath));
     m_apHandle[pcPath] = pNewHandle;
 
     return pNewHandle;
 }
 
-template <typename T, typename... A> coreResourceHandle* coreResourceManager::LoadLink(const char* pcName, const A&... vArgs)
+template <typename T, typename... A> coreResourceHandle* coreResourceManager::LoadLink(const char* pcName, A&&... vArgs)
 {
     // check for existing resource handle
     if(m_apHandle.count(pcName)) return m_apHandle[pcName];
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(vArgs...), NULL, NULL);
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, NULL);
     m_apHandle[pcName] = pNewHandle;
 
     return pNewHandle;

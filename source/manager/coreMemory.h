@@ -13,8 +13,8 @@
 
 // ****************************************************************
 // memory definitions
-#define CORE_MEMORY_SHARED coreData::Print("!%s:%d",    coreData::StrRight(__FILE__, 8), __LINE__)
-#define CORE_MEMORY_UNIQUE coreData::Print("!%s:%d:%p", coreData::StrRight(__FILE__, 8), __LINE__, this)
+#define CORE_MEMORY_SHARED PRINT("!%s:%d",    coreData::StrRight(__FILE__, 8), __LINE__)
+#define CORE_MEMORY_UNIQUE PRINT("!%s:%d:%p", coreData::StrRight(__FILE__, 8), __LINE__, this)
 
 
 // ****************************************************************
@@ -34,7 +34,7 @@ private:
 public:
     //! share memory pointer through specific identifier
     //! @{
-    template <typename T, typename... A> std::shared_ptr<T> Share(const char* pcName, const A&... vArgs);
+    template <typename T, typename... A> std::shared_ptr<T> Share(const char* pcName, A&&... vArgs);
     //! @}
 };
 
@@ -42,7 +42,7 @@ public:
 // ****************************************************************
 // share memory pointer through specific identifier
 // TODO: check if return is optimized
-template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share(const char* pcName, const A&... vArgs)
+template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share(const char* pcName, A&&... vArgs)
 {
     // check for existing pointer
     if(m_apPointer.count(pcName))
@@ -55,7 +55,7 @@ template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share
     }
 
     // create new pointer
-    std::shared_ptr<T> pNewPointer = std::shared_ptr<T>(new T(vArgs...));
+    std::shared_ptr<T> pNewPointer = std::shared_ptr<T>(new T(std::forward<A>(vArgs)...));
     m_apPointer[pcName] = pNewPointer;
 
     return pNewPointer;

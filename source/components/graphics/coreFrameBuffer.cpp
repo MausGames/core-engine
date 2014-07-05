@@ -213,10 +213,10 @@ coreError coreFrameBuffer::__Init()
         // check for errors
         if(iError != GL_FRAMEBUFFER_COMPLETE)
         {
-            Core::Log->Error(false, "Frame Buffer Object could not be created (GL Error Code: %d)", iError);
+            Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: %d)", iError);
             this->__DeleteBuffers();
 
-            return CORE_SUPPORT_ERROR;
+            return CORE_ERROR_SUPPORT;
         }
     }
 

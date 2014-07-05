@@ -12,6 +12,12 @@
 
 
 // ****************************************************************
+// object definitions
+#define __CORE_OBJECT_ACTIVE_RENDER (m_iActive & 2)
+#define __CORE_OBJECT_ACTIVE_MOVE   (m_iActive & 1)
+
+
+// ****************************************************************
 // base-object extension
 // TODO: re-implement relative behavior (additional classes?)
 class coreObject
@@ -29,6 +35,7 @@ protected:
     coreVector2 m_vTexOffset;                         //!< offset of the texture
 
     int m_iStatus;                                    //!< numeric status-value for individual use
+    coreByte m_iActive;                               //!< execution behavior (0 = nothing | 1 = move | 2 = render | 3 = everything)
 
 
 protected:
@@ -106,6 +113,7 @@ constexpr_obj coreObject::coreObject()noexcept
 , m_vTexSize   (coreVector2(1.0f,1.0f))
 , m_vTexOffset (coreVector2(0.0f,0.0f))
 , m_iStatus    (0)
+, m_iActive    (3)
 {
 }
 

@@ -100,7 +100,7 @@ public:
     constexpr_func float Min()const noexcept      {return MIN(x, y);}
     constexpr_func float Max()const noexcept      {return MAX(x, y);}
     inline float AspectRatio()const noexcept      {return (x * RCP(y));}
-    inline float Angle()const noexcept            {if(y == 0.0f) return (x < 0.0f) ? TO_RAD(90.0f) : TO_RAD(270.0f); return ATAN(this->AspectRatio()) + ((y <= 0.0f) ? PI : 0.0f);}
+    inline float Angle()const noexcept            {if(y == 0.0f) return (x < 0.0f) ? DEG_TO_RAD(90.0f) : DEG_TO_RAD(270.0f); return ATAN(this->AspectRatio()) + ((y <= 0.0f) ? PI : 0.0f);}
     //! @}
 
     //! static functions
@@ -207,8 +207,8 @@ public:
     //! @{
     inline float Length()const noexcept           {return SQRT(this->LengthSq());}
     constexpr_func float LengthSq()const noexcept {return (x*x + y*y + z*z);}
-    constexpr_func float Min()const noexcept      {return MIN(MIN(x, y), z);}
-    constexpr_func float Max()const noexcept      {return MAX(MAX(x, y), z);}
+    constexpr_func float Min()const noexcept      {return MIN(x, y, z);}
+    constexpr_func float Max()const noexcept      {return MAX(x, y, z);}
     //! @}
 
     //! static functions
@@ -219,12 +219,15 @@ public:
     static inline coreVector3 Rand(const float& fMin, const float& fMax)noexcept;
     static inline coreVector3 Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)noexcept;
     static inline coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)noexcept;
+    static inline bool Visible(const coreVector3& vPosition, const float& fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection);
     //! @}
 
     //! color functions
     //! @{
-    static constexpr_func coreVector3 ColorUnpack(const coreUint& iNumber)noexcept;
-    constexpr_func coreUint ColorPack()const noexcept;
+    static constexpr_func coreVector3 ColorUnpack(const coreUint& iNumber);
+    constexpr_func coreUint ColorPack()const;
+    inline coreVector3 HSVtoRGB()const;
+    inline coreVector3 RGBtoHSV()const;
     //! @}
 };
 
@@ -318,8 +321,8 @@ public:
     //! @{
     inline float Length()const noexcept           {return SQRT(this->LengthSq());}
     constexpr_func float LengthSq()const noexcept {return (x*x + y*y + z*z + w*w);}
-    constexpr_func float Min()const noexcept      {return MIN(MIN(MIN(x, y), z), w);}
-    constexpr_func float Max()const noexcept      {return MAX(MAX(MAX(x, y), z), w);}
+    constexpr_func float Min()const noexcept      {return MIN(x, y, z, w);}
+    constexpr_func float Max()const noexcept      {return MAX(x, y, z, w);}
     //! @}
 
     //! color functions
@@ -433,8 +436,21 @@ inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const core
 
 
 // ****************************************************************
+/* check if inside field-of-view */
+bool coreVector3::Visible(const coreVector3& vPosition, const float& fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection)
+{
+    // calculate relative position and angle
+    const coreVector3 vRelative = (vPosition - vViewPosition).Normalize();
+    const float fDot = coreVector3::Dot(vRelative, vViewDirection);
+
+    // check result
+    return (fDot < 0.0f) ? false : (fDot > COS(fFOV));
+}
+
+
+// ****************************************************************
 // convert RBG color-code to color-vector
-constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)noexcept
+constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)
 {
     return coreVector3(float( iNumber        & 0xFF), 
                        float((iNumber >>  8) & 0xFF), 
@@ -444,12 +460,61 @@ constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)noex
 
 // ****************************************************************
 // convert color-vector to RBG color-code
-constexpr_func coreUint coreVector3::ColorPack()const noexcept
+constexpr_func coreUint coreVector3::ColorPack()const
 {
     return (coreUint(b * 255.0f) << 16) +
            (coreUint(g * 255.0f) <<  8) +
            (coreUint(r * 255.0f));
 };
+
+
+// ****************************************************************
+// convert HSV-color to RGB-color
+inline coreVector3 coreVector3::HSVtoRGB()const
+{
+    const float  H = r * 6.0f;
+    const float& S = g;
+    const float& V = b;
+
+    const float h = std::floor(H);
+    const float f = H - h;
+
+    const float VS = V  * S;
+    const float VR = VS * f;
+
+    const float p = V - VS;
+    const float q = V - VR;
+    const float t = p + VR;
+
+    switch((int)h)
+    {
+    case 1:  return coreVector3(q, V, p);
+    case 2:  return coreVector3(p, V, t);
+    case 3:  return coreVector3(p, q, V);
+    case 4:  return coreVector3(t, p, V);
+    case 5:  return coreVector3(V, p, q);
+    default: return coreVector3(V, t, p);
+    }
+}
+
+
+// ****************************************************************
+// convert RGB-color to HSV-color
+inline coreVector3 coreVector3::RGBtoHSV()const
+{
+    const float& R = r;
+    const float& G = g;
+    const float& B = b;
+
+    const float v = this->Max();
+    const float d = v - this->Min();
+
+    if(!d) return coreVector3(0.0f, 0.0f, v);
+
+         if(R == v) return coreVector3((0.0f + (G - B) * RCP(d)) / 6.0f, d * RCP(v), v);
+    else if(G == v) return coreVector3((2.0f + (B - R) * RCP(d)) / 6.0f, d * RCP(v), v);
+               else return coreVector3((4.0f + (R - G) * RCP(d)) / 6.0f, d * RCP(v), v);
+}
 
 
 // ****************************************************************

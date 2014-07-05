@@ -8,11 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#if defined(_CORE_WINDOWS_)
-    #include <direct.h>
-    #define chdir _chdir
-#endif
-
 coreLog*             Core::Log               = NULL;
 coreConfig*          Core::Config            = NULL;
 coreLanguage*        Core::Language          = NULL;
@@ -127,12 +122,8 @@ int main(int argc, char* argv[])
 
 #endif
 
-#if !defined(_CORE_ANDROID_)
-
     // set new working directory
-    chdir("../..");
-
-#endif
+    coreData::SetCurDir("../..");
 
     // run the engine
     return Core::__Run();
@@ -155,7 +146,7 @@ int Core::__Run()
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !g_bCoreDebug)
     {
         Core::Log->SetLevel(CORE_LOG_LEVEL_ONLY_ERROR);
-        Core::Log->Error(false, "Logging level reduced");
+        Core::Log->Warning("Logging level reduced");
     }
 
     // update the window event system (main loop)

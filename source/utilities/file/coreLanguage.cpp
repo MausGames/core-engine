@@ -80,7 +80,7 @@ coreError coreLanguage::Load(const char* pcPath)
 
     // get file data
     const char* pcData = r_cast<const char*>(pFile->GetData());
-    if(!pcData) return CORE_FILE_ERROR;
+    if(!pcData) return CORE_ERROR_FILE;
 
     // prepare range pointers (from, to) and end pointer (out of bound) 
     const char* pcFrom = pcData+1;
@@ -92,7 +92,6 @@ coreError coreLanguage::Load(const char* pcPath)
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
         coreData::StrTrim(pString);
-        pString->shrink_to_fit();
         SDL_assert(!pString->empty());
 
         // begin next string
@@ -121,6 +120,10 @@ coreError coreLanguage::Load(const char* pcPath)
     // save relative path and unload data
     m_sPath = pcPath;
     pFile->UnloadData();
+
+    // reduce memory consumption
+    FOR_EACH(it, m_asString) it->second.shrink_to_fit();
+    m_asString.shrink_to_fit();
 
     // update all foreign strings and objects
     FOR_EACH(it, m_apsPointer) if(!it->second->empty()) *(it->first) = *(it->second);

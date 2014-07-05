@@ -129,7 +129,7 @@ bool coreLabel::SetText(const char* pcText)
 
 bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
 {
-    SDL_assert(!m_iLength || (MIN(iNum, std::strlen(pcText)) <= m_iLength && iNum <= m_iLength));
+    SDL_assert(!m_iLength || (MIN(iNum, (coreUint)std::strlen(pcText)) <= m_iLength && iNum <= m_iLength));
 
     // check for new text
     if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
@@ -176,11 +176,11 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
     SDL_assert(pSurface->format->BitsPerPixel == 8);
 
     // convert the data format
-    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pSurface->w, pSurface->h, 24, CORE_TEXTURE_MASK);
+    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, coreMath::NextAlign<4>(pSurface->w), pSurface->h, 24, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
 
     // get new texture resolution
-    const coreVector2 vNewResolution = coreVector2(float(pConvert->w - 1), float(pConvert->h));
+    const coreVector2 vNewResolution = coreVector2(float(pSurface->w - 1), float(pSurface->h));
 
     // generate the texture
     m_apTexture[0]->Enable(0);

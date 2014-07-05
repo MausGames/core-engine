@@ -25,9 +25,9 @@
 #define CORE_SHADER_UNIFORM_ORTHO              "u_m4Ortho"
 #define CORE_SHADER_UNIFORM_RESOLUTION         "u_v4Resolution"
 
-#define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)  coreData::Print("u_asLight[%d].v3Position",  i)
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i) coreData::Print("u_asLight[%d].v4Direction", i)
-#define CORE_SHADER_UNIFORM_LIGHT_VALUE(i)     coreData::Print("u_asLight[%d].v4Value",     i)
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)  PRINT("u_asLight[%d].v3Position",  i)
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i) PRINT("u_asLight[%d].v4Direction", i)
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE(i)     PRINT("u_asLight[%d].v4Value",     i)
 
 #define CORE_SHADER_UNIFORM_3D_MODELVIEW       "u_m4ModelView"
 #define CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ   "u_m4ModelViewProj"
@@ -36,7 +36,7 @@
 #define CORE_SHADER_UNIFORM_COLOR              "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXSIZE            "u_v2TexSize"
 #define CORE_SHADER_UNIFORM_TEXOFFSET          "u_v2TexOffset"
-#define CORE_SHADER_UNIFORM_TEXTURE(i)         coreData::Print("u_as2Texture[%d]", i)
+#define CORE_SHADER_UNIFORM_TEXTURE(i)         PRINT("u_as2Texture[%d]", i)
                                                
 #define CORE_SHADER_ATTRIBUTE_POSITION         "a_v3Position"
 #define CORE_SHADER_ATTRIBUTE_TEXTURE          "a_v2Texture"
@@ -47,7 +47,7 @@
 #define CORE_SHADER_ATTRIBUTE_NORMAL_NUM       2
 #define CORE_SHADER_ATTRIBUTE_TANGENT_NUM      3
 
-#define CORE_SHADER_OUTPUT_COLOR(i)            coreData::Print("o_av4Color[%d]", i)
+#define CORE_SHADER_OUTPUT_COLOR(i)            PRINT("o_av4Color[%d]", i)
 #define CORE_SHADER_OUTPUT_COLORS              4 
 
 enum coreShaderStatus

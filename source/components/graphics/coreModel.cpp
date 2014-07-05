@@ -13,13 +13,31 @@ SDL_SpinLock coreModel::s_iLock    = 0;
 
 
 // ****************************************************************
+/* move string pointer and skip comments */
+template <char cDelimiter> static void SkipComments(const char** ppcInput)
+{
+    ASSERT(*ppcInput)
+
+    // check for line-comments
+    while(**ppcInput == cDelimiter)
+    {
+        // skip them
+        int n = 0; 
+        std::sscanf(*ppcInput, "%*[^\n] %n", &n);
+        *ppcInput += n;
+    }
+}
+#define MD5_SCAN(s,f,...) {int __n = 0; std::sscanf(s, f " %n", ##__VA_ARGS__, &__n); s += __n; SkipComments<'/'>(&(s));}
+
+
+// ****************************************************************
 // constructor
 coreModel::md5Joint::md5Joint(const char** ppcData)noexcept
 {
-    CORE_DATA_SCAN(*ppcData, "%*s %d %*s %f %f %f %*s %*s %f %f %f %*s",
-                   &iParent,
-                   &vPosition.x,    &vPosition.y,    &vPosition.z,
-                   &vOrientation.x, &vOrientation.y, &vOrientation.z)
+    MD5_SCAN(*ppcData, "%*s %d %*s %f %f %f %*s %*s %f %f %f %*s",
+             &iParent,
+             &vPosition.x,    &vPosition.y,    &vPosition.z,
+             &vOrientation.x, &vOrientation.y, &vOrientation.z)
 
     // calculate w-component of the normalized quaternion
     const coreVector4 V = vOrientation * vOrientation;
@@ -32,9 +50,9 @@ coreModel::md5Joint::md5Joint(const char** ppcData)noexcept
 // constructor
 coreModel::md5Vertex::md5Vertex(const char** ppcData)noexcept
 {
-    CORE_DATA_SCAN(*ppcData, "%*s %*d %*s %f %f %*s %d %d",
-                   &vTexture.x,   &vTexture.y,
-                   &iWeightStart, &iWeightCount)
+    MD5_SCAN(*ppcData, "%*s %*d %*s %f %f %*s %d %d",
+             &vTexture.x,   &vTexture.y,
+             &iWeightStart, &iWeightCount)
 }
 
 
@@ -42,8 +60,8 @@ coreModel::md5Vertex::md5Vertex(const char** ppcData)noexcept
 // constructor
 coreModel::md5Triangle::md5Triangle(const char** ppcData)noexcept
 {
-    CORE_DATA_SCAN(*ppcData, "%*s %*d %hu %hu %hu",
-                   &aiVertex[0], &aiVertex[2], &aiVertex[1])
+    MD5_SCAN(*ppcData, "%*s %*d %hu %hu %hu",
+             &aiVertex[0], &aiVertex[2], &aiVertex[1])
 }
 
 
@@ -51,9 +69,9 @@ coreModel::md5Triangle::md5Triangle(const char** ppcData)noexcept
 // constructor
 coreModel::md5Weight::md5Weight(const char** ppcData)noexcept
 {
-    CORE_DATA_SCAN(*ppcData, "%*s %*d %d %f %*s %f %f %f %*s",
-                   &iJoint,      &fBias,
-                   &vPosition.x, &vPosition.y, &vPosition.z)
+    MD5_SCAN(*ppcData, "%*s %*d %d %f %*s %f %f %f %*s",
+             &iJoint,      &fBias,
+             &vPosition.x, &vPosition.y, &vPosition.z)
 }
 
 
@@ -63,15 +81,15 @@ coreModel::md5Mesh::md5Mesh(const char** ppcData)noexcept
 {
     int iNum = 0;
 
-    CORE_DATA_SCAN(*ppcData, "%*s %*s %*s %d", &iNum)
+    MD5_SCAN(*ppcData, "%*s %*s %*s %d", &iNum)
     aVertex.reserve(iNum);
     for(int i = 0; i < iNum; ++i) aVertex.push_back(md5Vertex(ppcData));
 
-    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNum)
+    MD5_SCAN(*ppcData, "%*s %d", &iNum)
     aTriangle.reserve(iNum);
     for(int i = 0; i < iNum; ++i) aTriangle.push_back(md5Triangle(ppcData));
 
-    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNum)
+    MD5_SCAN(*ppcData, "%*s %d", &iNum)
     aWeight.reserve(iNum);
     for(int i = 0; i < iNum; ++i) aWeight.push_back(md5Weight(ppcData));
 }
@@ -94,27 +112,27 @@ coreModel::md5File::md5File(const char** ppcData)noexcept
     int iNumMeshes        = 0;
 
     // check for correct file type
-    CORE_DATA_SCAN(*ppcData, "")
-    CORE_DATA_SCAN(*ppcData, "%15s %d", (char*)&acIdentifier, &iVersion)
+    MD5_SCAN(*ppcData, "")
+    MD5_SCAN(*ppcData, "%15s %d", r_cast<char*>(&acIdentifier), &iVersion)
     if(std::strcmp(acIdentifier, "MD5Version") || iVersion != 10) return;
 
     // read number of objects
-    CORE_DATA_SCAN(*ppcData, "%*s %*s")
-    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNumJoints)
-    CORE_DATA_SCAN(*ppcData, "%*s %d", &iNumMeshes)
+    MD5_SCAN(*ppcData, "%*s %*s")
+    MD5_SCAN(*ppcData, "%*s %d", &iNumJoints)
+    MD5_SCAN(*ppcData, "%*s %d", &iNumMeshes)
     aJoint.reserve(iNumJoints);
     aMesh.reserve(iNumMeshes);
 
     // read joint and mesh data
     for(int i = 0; i < iNumMeshes+1; ++i)
     {
-        CORE_DATA_SCAN(*ppcData, "%*s")
-        CORE_DATA_SCAN(*ppcData, "%*s")
+        MD5_SCAN(*ppcData, "%*s")
+        MD5_SCAN(*ppcData, "%*s")
 
         if(i) aMesh.push_back(std::move(md5Mesh(ppcData)));
         else for(int i = 0; i < iNumJoints; ++i) aJoint.push_back(md5Joint(ppcData));
 
-        CORE_DATA_SCAN(*ppcData, "%*s")
+        MD5_SCAN(*ppcData, "%*s")
     }
 }
 
@@ -161,7 +179,7 @@ coreError coreModel::Load(coreFile* pFile)
 
     ASSERT_IF(!m_apiVertexBuffer.empty()) return CORE_INVALID_CALL;
     if(!pFile)                            return CORE_INVALID_INPUT;
-    if(!pFile->GetData())                 return CORE_FILE_ERROR;
+    if(!pFile->GetData())                 return CORE_ERROR_FILE;
 
     // extract model data
     const char* pcData = r_cast<const char*>(pFile->GetData());
@@ -170,7 +188,7 @@ coreError coreModel::Load(coreFile* pFile)
     // check for success
     if(oFile.aMesh.empty())
     {
-        Core::Log->Error(false, "Model (%s) is not a valid MD5-file", pFile->GetPath());
+        Core::Log->Warning("Model (%s) is not a valid MD5-file", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -486,6 +504,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const 
             if(s_pCurrent->GetIndexBuffer()->GetDataBuffer()) 
                 s_pCurrent->GetIndexBuffer()->Bind();
         }
+        else coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
     }
     coreModel::Unlock();
 

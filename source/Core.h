@@ -46,6 +46,7 @@
 // TODO: put everything in a namespace ? split up coreData and coreMath
 // TODO: check for template parameters <42>
 // TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
+// TODO: define standard-path (data/) were everything is loaded from
 
 
 // compiler
@@ -78,7 +79,6 @@
 #endif
 #if defined(__ANDROID__)
     #define _CORE_ANDROID_ 1
-    #undef  _CORE_LINUX_
 #endif
 
 // debug mode
@@ -108,8 +108,8 @@
 #define _HAS_EXCEPTIONS 0
 #define _CRT_SECURE_NO_WARNINGS
 #define _ALLOW_KEYWORD_MACROS
-#define WIN32_LEAN_AND_MEAN
-#if defined(__MINGW32__)
+#define  WIN32_LEAN_AND_MEAN
+#if defined(_CORE_MINGW_)
     #undef __STRICT_ANSI__
 #endif
 
@@ -214,30 +214,41 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
 
+#define ASSERT(c)     {SDL_assert(c);}
+#define ASSERT_IF(c)  {SDL_assert(!(c));} if(c)
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-#define ASSERT_IF(c)  SDL_assert(!(c)); if(c)
 
-#define FOR_EACH(i,c)     for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
-#define FOR_EACH_REV(i,c) for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
-#define FOR_EACH_DYN(i,c) for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
-#define DYN_KEEP(i)       {++i;}
-#define DYN_REMOVE(i,c)   {i = c.erase(i); i ## __e = c.end();}
+#define BIT(n)         (1 << (n))
+#define BIT_SET(o,n)   {(o) |=  BIT(n);}
+#define BIT_RESET(o,n) {(o) &= ~BIT(n);}
 
-#define DISABLE_COPY(c)      \
-    c(const c&) delete_func; \
-    c& operator = (const c&) delete_func;
+#define FOR_EACH(i,c)       for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH_REV(i,c)   for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
+#define FOR_EACH_SET(i,s,c) for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH_DYN(i,c)   for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
+#define DYN_KEEP(i)         {++i;}
+#define DYN_REMOVE(i,c)     {i = (c).erase(i); i ## __e = (c).end();}
 
-#define DISABLE_HEAP                                \
-    void* operator new (size_t) delete_func;        \
-    void* operator new (size_t, void*) delete_func; \
-    void* operator new[] (size_t) delete_func;      \
-    void* operator new[] (size_t, void*) delete_func;
+#define DISABLE_INST(c) \
+    c()delete_func;     \
+    ~c()delete_func;
+
+#define DISABLE_COPY(c)     \
+    c(const c&)delete_func; \
+    c& operator = (const c&)delete_func;
+
+#define DISABLE_HEAP                               \
+    void* operator new (size_t)delete_func;        \
+    void* operator new (size_t, void*)delete_func; \
+    void* operator new[] (size_t)delete_func;      \
+    void* operator new[] (size_t, void*)delete_func;
 
 #define f_list forward_list
 #define u_map  unordered_map
 #define u_set  unordered_set
 #define s_cast static_cast
 #define r_cast reinterpret_cast
+#define c_cast const_cast
 
 typedef uint8_t  coreByte;
 typedef uint16_t coreWord;
@@ -248,9 +259,9 @@ enum coreError
     CORE_OK            =   0,    //!< everything is fine
     CORE_BUSY          =  10,    //!< currently waiting for an event
 
-    CORE_FILE_ERROR    = -10,    //!< error on opening, writing or finding a file
-    CORE_SUPPORT_ERROR = -20,    //!< requested feature is not supported on the target system
-    CORE_SYSTEM_ERROR  = -30,    //!< invalid application behavior (should never happen)
+    CORE_ERROR_FILE    = -10,    //!< error on reading, writing or finding a file or folder
+    CORE_ERROR_SUPPORT = -20,    //!< requested feature is not supported on the target system
+    CORE_ERROR_SYSTEM  = -30,    //!< invalid system or application behavior
 
     CORE_INVALID_CALL  = -110,   //!< object has wrong status
     CORE_INVALID_INPUT = -120,   //!< function parameters are invalid
@@ -366,8 +377,10 @@ private:
 
 // ****************************************************************
 // engine header files
-#include "utilities/data/coreLookup.h"
+#include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
+
+#include "utilities/data/coreLookup.h"
 #include "utilities/data/coreRand.h"
 
 #include "utilities/file/coreLog.h"
@@ -375,7 +388,6 @@ private:
 #include "utilities/file/coreLanguage.h"
 #include "utilities/file/coreArchive.h"
 
-#include "utilities/math/coreMath.h"
 #include "utilities/math/coreVector.h"
 #include "utilities/math/coreMatrix.h"
 #include "utilities/math/coreSpline.h"
@@ -406,6 +418,7 @@ private:
 #include "manager/coreObject.h"
 #include "objects/game/coreObject2D.h"
 #include "objects/game/coreObject3D.h"
+#include "objects/game/coreScene.h"
 #include "objects/game/coreParticle.h"
 #include "objects/menu/coreLabel.h"
 #include "objects/menu/coreButton.h"

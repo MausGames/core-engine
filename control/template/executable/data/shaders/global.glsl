@@ -23,8 +23,8 @@
 
 
 // precision qualifier
-#ifdef (GL_ES)
-    #ifdef (_CORE_FRAGMENT_SHADER_)
+#ifdef GL_ES
+    #ifdef _CORE_FRAGMENT_SHADER_
         precision mediump float;
     #endif
 #endif
@@ -114,30 +114,6 @@ vec3 coreHSVtoRGB(in vec3 v3HSV)
                  return vec3(V, t, p);
 }
 
-vec3 coreHSVtoRGB(in vec3 v3HSV)
-{
-    float H = v3HSV.x * 6.0;
-    float S = v3HSV.y;
-    float V = v3HSV.z;
-
-    float h = floor(H);
-    float f = H - h;
-
-    float VS = V  * S;
-    float VR = VS * f;
-
-    float p = V - VS;
-    float q = V - VR;
-    float t = p + VR;
-
-    if(h == 1.0) return vec3(q, V, p);
-    if(h == 2.0) return vec3(p, V, t);
-    if(h == 3.0) return vec3(p, q, V);
-    if(h == 4.0) return vec3(t, p, V);
-    if(h == 5.0) return vec3(V, p, q);
-                 return vec3(V, t, p);
-}
-
 #if (__VERSION__) >= 400 // >= OpenGL 4.0
 
     // unpacking function
@@ -158,7 +134,7 @@ vec3 coreHSVtoRGB(in vec3 v3HSV)
 
 
 // ****************************************************************
-#ifdef (_CORE_VERTEX_SHADER_)
+#ifdef _CORE_VERTEX_SHADER_
 
     #if (__VERSION__) >= 140 // >= OpenGL 3.1
 
@@ -195,19 +171,19 @@ vec3 coreHSVtoRGB(in vec3 v3HSV)
 
 
 // ****************************************************************
-#ifdef (_CORE_TESS_CONTROL_SHADER_)
+#ifdef _CORE_TESS_CONTROL_SHADER_
 
 #endif // _CORE_TESS_CONTROL_SHADER_
 
 
 // ****************************************************************
-#ifdef (_CORE_TESS_EVALUATION_SHADER_)
+#ifdef _CORE_TESS_EVALUATION_SHADER_
 
 #endif // _CORE_TESS_EVALUATION_SHADER_
 
 
 // ****************************************************************
-#ifdef (_CORE_GEOMETRY_SHADER_)
+#ifdef _CORE_GEOMETRY_SHADER_
 
     // shader input
     in b_Varying
@@ -229,7 +205,7 @@ vec3 coreHSVtoRGB(in vec3 v3HSV)
 
 
 // ****************************************************************
-#ifdef (_CORE_FRAGMENT_SHADER_)
+#ifdef _CORE_FRAGMENT_SHADER_
 
     #if (__VERSION__) >= 140 // >= OpenGL 3.1
 

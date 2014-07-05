@@ -77,7 +77,7 @@ private:
 
 // ****************************************************************
 // vertex buffer class
-// TODO: improve vertex attribute array enable/disable for OGL 2.0 without vertex array objects
+// TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
 class coreVertexBuffer final : public coreDataBuffer
 {
 private:

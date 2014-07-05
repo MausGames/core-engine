@@ -20,6 +20,8 @@
 
 #define CORE_INPUT_ID MIN(iID, coreUint(m_aJoystick.size()-1))
 
+#define KEY(k) (SDL_SCANCODE_ ## k)
+
 enum coreInputButton
 {
     CORE_INPUT_LEFT   = 1,

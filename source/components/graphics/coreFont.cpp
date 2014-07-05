@@ -31,7 +31,7 @@ coreError coreFont::Load(coreFile* pFile)
 {
     ASSERT_IF(m_pFile)    return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_FILE_ERROR;
+    if(!pFile->GetData()) return CORE_ERROR_FILE;
 
     // copy the input file for later font creations
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
@@ -115,7 +115,7 @@ bool coreFont::__InitHeight(const int& iHeight)
     TTF_Font* pNewFont = TTF_OpenFontRW(pSource, true, iHeight);
     if(!pNewFont)
     {
-        Core::Log->Error(false, "Font (%s:%d) could not be loaded", m_pFile->GetPath(), iHeight);
+        Core::Log->Warning("Font (%s:%d) could not be loaded", m_pFile->GetPath(), iHeight);
         return false;
     }
 

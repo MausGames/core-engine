@@ -46,13 +46,13 @@ coreError coreTexture::Load(coreFile* pFile)
 
     ASSERT_IF(m_iTexture) return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_FILE_ERROR;
+    if(!pFile->GetData()) return CORE_ERROR_FILE;
 
     // decompress file data
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
-        Core::Log->Error(false, "Texture (%s) could not be loaded", pFile->GetPath());
+        Core::Log->Warning("Texture (%s) could not be loaded", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -122,7 +122,7 @@ coreError coreTexture::Load(coreFile* pFile)
         const void* pPixels = bPixelBuffer ? 0 : pConvert->pixels;
         if(bStorage)
         {
-            glTexStorage2D(GL_TEXTURE_2D, (int)(std::log(MAX(pConvert->w, pConvert->h)) / std::log(2)), iInternal, pConvert->w, pConvert->h);
+            glTexStorage2D(GL_TEXTURE_2D, (int)coreMath::Log<2>((float)MAX(pConvert->w, pConvert->h)), iInternal, pConvert->w, pConvert->h);
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, iFormat, GL_UNSIGNED_BYTE, pPixels);
         }
         else glTexImage2D(GL_TEXTURE_2D, 0, iInternal, pConvert->w, pConvert->h, 0, iFormat, GL_UNSIGNED_BYTE, pPixels);

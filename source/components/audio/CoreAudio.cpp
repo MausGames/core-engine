@@ -24,7 +24,7 @@ CoreAudio::CoreAudio()noexcept
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
-        Core::Log->Error(true, "OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice));
+        Core::Log->Error("OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice));
     else Core::Log->Info("OpenAL context created");
 
     // generate sound sources
@@ -50,7 +50,7 @@ CoreAudio::CoreAudio()noexcept
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR) Core::Log->Error(false, "Error initializing Audio Interface (AL Error Code: %d)", iError);
+    if(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: %d)", iError);
 }
 
 

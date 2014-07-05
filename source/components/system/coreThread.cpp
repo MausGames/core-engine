@@ -42,7 +42,7 @@ SDL_Thread* coreThread::StartThread(const char* pcName)
 
     // create thread object
     m_pThread = SDL_CreateThread(coreThreadMain, pcName, this);
-    if(!m_pThread) Core::Log->Error(true, "Could not start thread (%s) (SDL: %s)", pcName, SDL_GetError());
+    if(!m_pThread) Core::Log->Error("Could not start thread (%s) (SDL: %s)", pcName, SDL_GetError());
 
     return m_pThread;
 }

@@ -44,6 +44,8 @@ void coreObject3D::Undefine()
 // separately enable all resources for rendering
 bool coreObject3D::Enable(const coreProgramShr& pProgram)
 {
+    if(!__CORE_OBJECT_ACTIVE_RENDER) return false;
+
     // enable the shader-program
     if(!pProgram) return false;
     if(!pProgram->Enable()) return false;
@@ -95,6 +97,8 @@ void coreObject3D::Render(const coreProgramShr& pProgram)
 // move the 3d-object
 void coreObject3D::Move()
 {
+    if(!__CORE_OBJECT_ACTIVE_MOVE) return;
+
     if(m_iUpdate & 1)
     {
         if(m_iUpdate & 2)

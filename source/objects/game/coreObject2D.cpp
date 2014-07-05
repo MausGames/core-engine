@@ -26,6 +26,8 @@ void coreObject2D::Undefine()
 // TODO: try to use only a 3x3 matrix (or less? see particles) for the transformation
 void coreObject2D::Render(const coreProgramShr& pProgram)
 {
+    if(!__CORE_OBJECT_ACTIVE_RENDER) return;
+
     // enable the shader-program
     if(!pProgram) return;
     if(!pProgram->Enable()) return;
@@ -53,6 +55,8 @@ void coreObject2D::Render(const coreProgramShr& pProgram)
 // move the 2d-object
 void coreObject2D::Move()
 {
+    if(!__CORE_OBJECT_ACTIVE_MOVE) return;
+
     if(m_iUpdate & 1)
     {
         if(m_iUpdate & 2)
@@ -104,7 +108,7 @@ void coreObject2D::Interact()
            ABS(vInput.y) < vScreenSize.y)
         {
             m_bFocused = true;
-            m_iFinger |= (1 << i);
+            BIT_SET(m_iFinger, i)
         }
     });
 
@@ -134,7 +138,7 @@ bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)c
         for(coreUint i = 0; i < CORE_INPUT_FINGERS; ++i)
         {
             // check for every finger on the object
-            if((m_iFinger & (1 << i)) && Core::Input->GetTouchButton(i, iType))
+            if((m_iFinger & BIT(i)) && Core::Input->GetTouchButton(i, iType))
                 return true;
         }
     }

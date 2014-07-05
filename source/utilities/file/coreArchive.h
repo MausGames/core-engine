@@ -10,10 +10,6 @@
 #ifndef _CORE_GUARD_ARCHIVE_H_
 #define _CORE_GUARD_ARCHIVE_H_
 
-#if defined(_CORE_WINDOWS_)
-    #undef DeleteFile
-#endif
-
 
 // ****************************************************************
 // file definitions

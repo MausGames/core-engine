@@ -58,7 +58,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     if(!iError) iError = ov_test_open(&m_Stream);
     if( iError)
     {
-        Core::Log->Error(false, "Music (%s) is not a valid OGG-file (OV Error Code: %d)", pFile->GetPath(), iError);
+        Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: %d)", pFile->GetPath(), iError);
         ov_clear(&m_Stream);
         SAFE_DELETE(m_pFile)
 
@@ -375,7 +375,7 @@ void coreMusicPlayer::Shuffle()
     m_apSequence = m_apMusic;
 
     // shuffle the list
-    std::random_shuffle(m_apSequence.begin(), m_apSequence.end(), [](int i) {return std::rand() % i;});
+    std::random_shuffle(m_apSequence.begin(), m_apSequence.end(), [](int i) {return coreRand::Rand() % i;});
 
     // switch to first music object
     this->Goto(0);
@@ -404,7 +404,7 @@ coreError coreMusicPlayer::AddArchive(const char* pcPath, const char* pcFilter)
     for(coreUint i = 0; i < pArchive->GetSize(); ++i)
     {
         // check path and use only specific files
-        if(coreData::StrCompareWild(pArchive->GetFile(i)->GetPath(), pcFilter))
+        if(coreData::StrLike(pArchive->GetFile(i)->GetPath(), pcFilter))
         {
             if(this->__AddMusic(pArchive->GetFile(i)) == CORE_OK)
                 bStatus = true;
@@ -423,7 +423,7 @@ coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
 
     // get specific files from the folder
     std::vector<std::string> asFolder;
-    coreData::FolderSearch(pcPath, pcFilter, &asFolder);
+    coreData::ScanFolder(pcPath, pcFilter, &asFolder);
 
     // try to add all files to the music-player
     FOR_EACH(it, asFolder)

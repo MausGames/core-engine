@@ -36,7 +36,7 @@ coreError coreShader::Load(coreFile* pFile)
 
     ASSERT_IF(m_iShader)  return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_FILE_ERROR;
+    if(!pFile->GetData()) return CORE_ERROR_FILE;
 
     // extract file extension
     const char* pcExtension = coreData::StrExtension(pFile->GetPath());
@@ -51,7 +51,7 @@ coreError coreShader::Load(coreFile* pFile)
     else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        pcDefine = "#define _CORE_FRAGMENT_SHADER_        (1) \n";}
     else
     {
-        Core::Log->Error(false, "Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag)", pFile->GetPath());
+        Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag)", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
@@ -60,7 +60,7 @@ coreError coreShader::Load(coreFile* pFile)
     if((iType == GL_GEOMETRY_SHADER)                                           && !GLEW_VERSION_3_2)             return CORE_OK;
     
     // load quality level and global shader data
-    const char* pcQuality = coreData::Print("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
+    const char* pcQuality = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobal();
 
     // assemble the shader
@@ -92,7 +92,7 @@ coreError coreShader::Load(coreFile* pFile)
             glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
 
             // write error-log
-            Core::Log->Error(false, "Shader (%s) could not be compiled", pFile->GetPath());
+            Core::Log->Warning("Shader (%s) could not be compiled", pFile->GetPath());
             Core::Log->ListStart("Shader Error Log");
             Core::Log->ListEntry(pcLog);
             Core::Log->ListEnd();
@@ -133,10 +133,10 @@ void coreShader::__LoadGlobal()
     if(!s_asGlobal[0].empty()) return;
 
     // set global shader definitions
-    s_asGlobal[0].assign(coreData::Print("#version %.0f \n", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
-    s_asGlobal[1].assign(coreData::Print("#define CORE_TEXTURE_UNITS        (%d) \n", CORE_TEXTURE_UNITS));
-    s_asGlobal[1].append(coreData::Print("#define CORE_GRAPHICS_LIGHTS      (%d) \n", CORE_GRAPHICS_LIGHTS));
-    s_asGlobal[1].append(coreData::Print("#define CORE_SHADER_OUTPUT_COLORS (%d) \n", CORE_SHADER_OUTPUT_COLORS));
+    s_asGlobal[0].assign(PRINT("#version %.0f \n", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
+    s_asGlobal[1].assign(PRINT("#define CORE_TEXTURE_UNITS        (%d) \n", CORE_TEXTURE_UNITS));
+    s_asGlobal[1].append(PRINT("#define CORE_GRAPHICS_LIGHTS      (%d) \n", CORE_GRAPHICS_LIGHTS));
+    s_asGlobal[1].append(PRINT("#define CORE_SHADER_OUTPUT_COLORS (%d) \n", CORE_SHADER_OUTPUT_COLORS));
 
     // retrieve global shader file
     coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
@@ -237,6 +237,11 @@ bool coreProgram::Enable()
         return false;
     }
 
+    // check for duplicate cache entries (because keys are pointers, not strings)
+    FOR_EACH(it, m_avCache)
+        FOR_EACH_SET(et, it+1, m_avCache)
+            ASSERT(std::strcmp(it->first, et->first))
+
 #endif
 
     return true;
@@ -302,14 +307,14 @@ coreError coreProgram::__Init()
 #if defined(_CORE_DEBUG_)
 
     // check for duplicate shader objects
-    for(coreUint i = 0; i < m_apShader.size(); ++i)
-        for(coreUint j = i+1; j < m_apShader.size(); ++j)
-            SDL_assert(std::strcmp(m_apShader[i]->GetPath(), m_apShader[j]->GetPath()));
+    FOR_EACH(it, m_apShader)
+        FOR_EACH_SET(et, it+1, m_apShader)
+            ASSERT(std::strcmp((*it)->GetPath(), (*et)->GetPath()))
 
     // check for duplicate attribute locations
     FOR_EACH(it, m_aiAttribute)
-        for(auto et = it+1; et != m_aiAttribute.end(); ++et)
-            SDL_assert(it->second != et->second && it->second >= 0);
+        FOR_EACH_SET(et, it+1, m_aiAttribute)
+            ASSERT(it->second != et->second && it->second >= 0)
 
 #endif
 
@@ -410,7 +415,7 @@ void coreProgram::__WriteLog()const
         glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
 
         // write error-log
-        Core::Log->Error(false, "Shader-Program could not be linked/validated");
+        Core::Log->Warning("Shader-Program could not be linked/validated");
         Core::Log->ListStart("Shader-Program Error Log");
         FOR_EACH(it, m_apShader)
             Core::Log->ListEntry("(%s)", (*it)->GetPath());

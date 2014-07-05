@@ -24,29 +24,29 @@ CoreGraphics::CoreGraphics()noexcept
 
     // create primary OpenGL context
     m_RenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
-    if(!m_RenderContext) Core::Log->Error(true, "Primary OpenGL context could not be created (SDL: %s)", SDL_GetError());
+    if(!m_RenderContext) Core::Log->Error("Primary OpenGL context could not be created (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Primary OpenGL context created");
 
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT) && (Core::System->SupportNumCores() >= 2))
     {
         // create secondary OpenGL context
         m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
-        if(!m_ResourceContext) Core::Log->Error(false, "Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError());
+        if(!m_ResourceContext) Core::Log->Warning("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError());
         else Core::Log->Info("Secondary OpenGL context created");
     }
     else m_ResourceContext = NULL;
 
     // assign primary OpenGL context to main window
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext))
-        Core::Log->Error(true, "Primary OpenGL context could not be assigned to main window (SDL: %s)", SDL_GetError());
+        Core::Log->Error("Primary OpenGL context could not be assigned to main window (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Primary OpenGL context assigned to main window");
 
     // init GLEW on primary OpenGL context
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error(true, "GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
+    if(iError != GLEW_OK) Core::Log->Error("GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
     else Core::Log->Info("GLEW initialized on primary OpenGL context (%s)", glewGetString(GLEW_VERSION));
 
-    // enable OpenGL debugging
+    // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
     // log video card information
@@ -64,10 +64,10 @@ CoreGraphics::CoreGraphics()noexcept
     m_fGLSL   = coreData::StrVersion(r_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // check OpenGL version
-    if(m_fOpenGL < 2.0f) Core::Log->Error(true, "Minimum system requirements not met, video card with at least OpenGL 2.0 required");
+    if(m_fOpenGL < 2.0f) Core::Log->Error("Minimum system requirements not met, video card with at least OpenGL 2.0 required");
 
     // enable vertical synchronization
-    if(SDL_GL_SetSwapInterval(1)) Core::Log->Error(false, "Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError());
+    if(SDL_GL_SetSwapInterval(1)) Core::Log->Warning("Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Vertical Synchronization enabled");
 
     // enable texturing
@@ -225,7 +225,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
 // ******************************************************************
 // take screenshot
 // TODO: improve with pixel-pack-buffer
-void CoreGraphics::Screenshot(const char* pcPath)
+void CoreGraphics::Screenshot(const char* pcPath)const
 {
     const coreUint iWidth  = (coreUint)Core::System->GetResolution().x;
     const coreUint iHeight = (coreUint)Core::System->GetResolution().y;
@@ -233,8 +233,8 @@ void CoreGraphics::Screenshot(const char* pcPath)
     const coreUint iSize   = iHeight*iPitch;
 
     // create folder hierarchy
-    const char* pcFullPath = coreData::Print(std::strcmp(coreData::StrRight(pcPath, 4), ".png") ? "%s.png" : "%s", pcPath);
-    coreData::FolderCreate(pcFullPath);
+    const char* pcFullPath = PRINT(std::strcmp(coreData::StrRight(pcPath, 4), ".png") ? "%s.png" : "%s", pcPath);
+    coreData::CreateFolder(pcFullPath);
 
     // read pixel data from the frame buffer
     coreByte* pData = new coreByte[iSize];
@@ -256,17 +256,6 @@ void CoreGraphics::Screenshot(const char* pcPath)
 
     SAFE_DELETE_ARRAY(pData)
     SAFE_DELETE_ARRAY(pConvert)
-}
-
-void CoreGraphics::Screenshot()
-{
-    // get timestamp
-    coreUint awTime[6];
-    coreData::DateTime(&awTime[0], &awTime[1], &awTime[2], &awTime[3], &awTime[4], &awTime[5]);
-
-    // take standard screenshot
-    this->Screenshot(coreData::Print("screenshots/screenshot_%04d%02d%02d_%02d%02d%02d",
-                                     awTime[5], awTime[4], awTime[3], awTime[2], awTime[1], awTime[0]));
 }
 
 

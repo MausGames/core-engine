@@ -119,8 +119,9 @@ private:
 // ****************************************************************
 // music-player class
 // TODO: improve the representation of the current track while shuffled
-// TODO: callback when music track changes
+// TODO: callback when music track changes (or return true is enough porbably)
 // TODO: own thread
+// TODO: own (cached) parameters like volume, pitch - forwarded to music files
 class coreMusicPlayer final
 {
 private:
