@@ -18,12 +18,14 @@ coreRand::coreRand(const coreUint& iSize, const coreUint iSeed)noexcept
 , m_iCurRand (0)
 {
     // init random number generator
-    coreRand::Srand(iSeed);
+    coreRand::Seed(iSeed);
 
-    // pre-calculate random numbers
+    // pre-generate random numbers
     m_piRand = new int[m_iNumRand];
     for(coreUint i = 0; i < m_iNumRand; ++i)
         m_piRand[i] = coreRand::Rand();
+
+    Core::Log->Info("Random Numbers (%u:%u) generated", iSize, iSeed);
 }
 
 coreRand::coreRand(const coreRand& c)noexcept
@@ -32,7 +34,7 @@ coreRand::coreRand(const coreRand& c)noexcept
 {
     // copy random numbers
     m_piRand = new int[m_iNumRand];
-    std::memcpy(m_piRand, c.m_piRand, m_iNumRand * sizeof(m_piRand[0]));
+    std::memcpy(m_piRand, c.m_piRand, m_iNumRand * sizeof(coreUint));
 }
 
 coreRand::coreRand(coreRand&& m)noexcept

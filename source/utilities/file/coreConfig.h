@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_CONFIG_H_
 #define _CORE_GUARD_CONFIG_H_
 
+// TODO: don't set an already defined value or default value (use map ?)
+
 
 // ****************************************************************
 /* configuration definitions */
@@ -46,24 +48,28 @@ public:
 
     /*! load and save configuration file */
     //! @{
-    inline void Load()      {m_Config.LoadFile(m_sPath.c_str());}
-    inline void Save()const {m_Config.SaveFile(m_sPath.c_str());}
+    coreError Load();
+    coreError Save()const;
     //! @}
 
     /*! set configuration values */
     //! @{
-    inline void SetBool  (const char* pcSection, const char* pcKey, const bool&  bReserved,  const bool&  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
-    inline void SetInt   (const char* pcSection, const char* pcKey, const int&   iReserved,  const int&   iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
-    inline void SetFloat (const char* pcSection, const char* pcKey, const float& fReserved,  const float& fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
-    inline void SetString(const char* pcSection, const char* pcKey, const char*  pcReserved, const char*  pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue);}
+    inline void SetBool  (const char* pcSection, const char* pcKey, const bool&  bEmpty,  const bool&  bValue)  {this->SetBool          (pcSection, pcKey, bValue);}
+    inline void SetBool  (const char* pcSection, const char* pcKey, const bool&  bValue)                        {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
+    inline void SetInt   (const char* pcSection, const char* pcKey, const int&   iEmpty,  const int&   iValue)  {this->SetInt           (pcSection, pcKey, iValue);}
+    inline void SetInt   (const char* pcSection, const char* pcKey, const int&   iValue)                        {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
+    inline void SetFloat (const char* pcSection, const char* pcKey, const float& fEmpty,  const float& fValue)  {this->SetFloat         (pcSection, pcKey, fValue);}
+    inline void SetFloat (const char* pcSection, const char* pcKey, const float& fValue)                        {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    inline void SetString(const char* pcSection, const char* pcKey, const char*  pcEmpty, const char*  pcValue) {this->SetString        (pcSection, pcKey, pcValue);}
+    inline void SetString(const char* pcSection, const char* pcKey, const char*  pcValue)                       {m_Config.SetValue      (pcSection, pcKey, pcValue);}
     //! @}
 
     /*! get configuration values */
     //! @{
-    bool        GetBool  (const char* pcSection, const char* pcKey, const bool&  bDefault);
-    int         GetInt   (const char* pcSection, const char* pcKey, const int&   iDefault);
-    float       GetFloat (const char* pcSection, const char* pcKey, const float& fDefault);
-    const char* GetString(const char* pcSection, const char* pcKey, const char*  pcDefault);
+    inline bool        GetBool  (const char* pcSection, const char* pcKey, const bool&  bDefault)  {const bool  bReturn  =        m_Config.GetBoolValue  (pcSection, pcKey, bDefault);  if(bReturn  == bDefault)  this->SetBool  (pcSection, pcKey, bDefault);  return bReturn;}
+    inline int         GetInt   (const char* pcSection, const char* pcKey, const int&   iDefault)  {const int   iReturn  = (int)  m_Config.GetLongValue  (pcSection, pcKey, iDefault);  if(iReturn  == iDefault)  this->SetInt   (pcSection, pcKey, iDefault);  return iReturn;}
+    inline float       GetFloat (const char* pcSection, const char* pcKey, const float& fDefault)  {const float fReturn  = (float)m_Config.GetDoubleValue(pcSection, pcKey, fDefault);  if(fReturn  == fDefault)  this->SetFloat (pcSection, pcKey, fDefault);  return fReturn;}
+    inline const char* GetString(const char* pcSection, const char* pcKey, const char*  pcDefault) {const char* pcReturn =        m_Config.GetValue      (pcSection, pcKey, pcDefault); if(pcReturn == pcDefault) this->SetString(pcSection, pcKey, pcDefault); return pcReturn;}
     //! @}
 
 

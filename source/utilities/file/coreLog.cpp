@@ -22,9 +22,10 @@ coreLog::coreLog(const char* pcPath)noexcept
     if(pFile)
     {
         // write basic style sheet
+        std::fputs("<!DOCTYPE html>                                \n", pFile);
         std::fputs("<style type=\"text/css\">                      \n", pFile);
         std::fputs("  body    {font-family: courier new;}          \n", pFile);
-        std::fputs(" .time    {color: #AAAAAA;}                    \n", pFile);
+        std::fputs(" .time    {color: #AAA;}                       \n", pFile);
         std::fputs(" .thread  {color: green;}                      \n", pFile);
         std::fputs(" .thread2 {color: olive;}                      \n", pFile);
         std::fputs(" .data    {color: teal;}                       \n", pFile);
@@ -34,16 +35,16 @@ coreLog::coreLog(const char* pcPath)noexcept
         std::fputs(" .error   {font-weight: bold; color: red;}     \n", pFile);
         std::fputs("</style>                                       \n", pFile);
 
-        // write application name
-        std::fputs(coreData::AppName(), pFile);
-        std::fputs("\n",                pFile);
+        // write application data and timestamp
+        std::fprintf(pFile, CORE_LOG_BOLD("Executable:") " %s %s %s    <br />\n", coreData::AppName(), __DATE__, __TIME__);
+        std::fprintf(pFile, CORE_LOG_BOLD("Started on:") " %s %s <br /><br />\n", coreData::DateString(), coreData::TimeString());
 
         // close log file
         std::fclose(pFile);
-    }
 
-    // save thread-ID of the creator
-    m_iMain = SDL_ThreadID() % 10000;
+        // save thread-ID from the creator
+        m_iMain = SDL_ThreadID() % 10000;
+    }
 }
 
 
@@ -54,7 +55,7 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
     coreLog* pLog = s_cast<coreLog*>(pUserParam);
 
     // write message
-    pLog->ListStart("OpenGL Debug Log");
+    pLog->ListStart("OpenGL Debug Message");
     pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("ID:")       "     %d</span>", iID);
     pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Source:")   " 0x%04X</span>", iSource);
     pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Type:")     " 0x%04X</span>", iType);
@@ -62,12 +63,12 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
     pLog->ListEntry("<span class=\"gl\">                                   %s</span>", pcMessage);
     pLog->ListEnd();
 
-    SDL_assert(false);
+    ASSERT(false)
 }
 
 
 // ****************************************************************
-/* enable OpenGL debugging */
+/* enable OpenGL debug output */
 void coreLog::DebugOpenGL()
 {
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !g_bCoreDebug) return;
@@ -102,7 +103,7 @@ void coreLog::__Write(const bool& bTime, std::string sText)
     {
 #if defined(_CORE_ANDROID_) || defined(_CORE_DEBUG_)
 
-        // write text also to the standard output
+        // also write text to the standard output
         SDL_Log(sText.c_str());
 
 #endif
@@ -118,15 +119,12 @@ void coreLog::__Write(const bool& bTime, std::string sText)
 
             if(bTime)
             {
-                // get timestamp
-                coreUint awTime[3];
-                coreData::DateTime(&awTime[0], &awTime[1], &awTime[2], NULL, NULL, NULL);
-
                 // get thread-ID
                 const SDL_threadID iThread = SDL_ThreadID() % 10000;
 
                 // write timestamp and thread-ID
-                std::fprintf(pFile, "<span class=\"time\">[%02u:%02u:%02u]</span> <span class=\"%s\">[%04lu]</span> ", awTime[2], awTime[1], awTime[0], (m_iMain == iThread) ? "thread" : "thread2", iThread);
+                std::fprintf(pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
+                             coreData::TimeString(), (m_iMain == iThread) ? "thread" : "thread2", iThread);
             }
 
             // write text

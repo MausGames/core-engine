@@ -11,8 +11,9 @@
 #define _CORE_GUARD_LOOKUP_H_
 
 // TODO: implement quicksort and binary search
-// TODO: measure performance with high amount of entries (>200)
+// TODO: measure performance with high amount of entries (>200), but should not be as good as (unordered_)map
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
+// TODO: caching system may still cause problems (e.g. coreLookupStr in combination with PRINT, coreLookup<const char*, #> in coreShader)
 
 
 // ****************************************************************
@@ -31,7 +32,7 @@ protected:
     coreList m_aList;      //!< vector-list with pair-values
 
     coreEntry* m_pCache;   //!< last requested entry
-    I m_CacheRef;          //!< key to the last requested entry
+    I m_CacheKey;          //!< key to the last requested entry
 
 
 public:
@@ -62,14 +63,15 @@ public:
     /*! control memory consumption */
     //! @{
     inline void     reserve(const coreUint& iReserve) {m_aList.reserve(iReserve);}
+    inline void     shrink_to_fit()                   {m_aList.shrink_to_fit();}
     inline coreUint capacity()const                   {return m_aList.capacity();}
     //! @}
 
     /*! remove existing entries */
     //! @{
     bool                erase(const I& Key);
-    inline coreIterator erase(const coreConstIterator& Iterator) {this->__clearcache(); return m_aList.erase(Iterator);}
-    inline void         clear()                                  {this->__clearcache(); m_aList.clear();}
+    inline coreIterator erase(const coreConstIterator& Iterator) {this->__cache_clear(); return m_aList.erase(Iterator);}
+    inline void         clear()                                  {this->__cache_clear(); m_aList.clear();}
     //! @}
 
     /*! retrieve internal iterator */
@@ -88,10 +90,11 @@ protected:
     inline bool __check(const coreConstIterator& it)const {return (it != m_aList.end()) ? true : false;}
     //! @}
 
-    /*! check for cached entry */
+    /*! cache last requested entry */
     //! @{
-    inline bool __cache(const I& Key)const {return (m_CacheRef == Key) ? true : false;}
-    inline void __clearcache()             {m_pCache = NULL; m_CacheRef = (I)NULL;}
+    inline void __cache_set(coreEntry* pEntry, const I& Key) {m_pCache = pEntry; m_CacheKey = Key;}
+    inline void __cache_clear()                              {m_pCache = NULL;   m_CacheKey = (I)NULL;}
+    inline bool __cache_try(const I& Key)const               {ASSERT(!m_pCache || ((m_CacheKey == Key) == (m_pCache->first == Key))) return (m_CacheKey == Key) ? true : false;}
     //! @}
 
     /*! retrieve iterator */
@@ -124,7 +127,7 @@ public:
     /*! remove existing entries */
     //! @{
     bool erase(const T& Entry);
-    inline typename coreLookupStr<T>::coreIterator erase(const coreUint& iIndex) {this->__clearcache(); SDL_assert(iIndex < this->m_aList.size()); return this->m_aList.erase(this->m_aList.begin()+iIndex);}
+    inline typename coreLookupStr<T>::coreIterator erase(const coreUint& iIndex) {this->__cache_clear(); ASSERT(iIndex < this->m_aList.size()) return this->m_aList.erase(this->m_aList.begin()+iIndex);}
     //! @}
 
 
@@ -143,24 +146,22 @@ private:
 /* constructor */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen()noexcept
 : m_pCache   (NULL)
-, m_CacheRef ((I)NULL)
+, m_CacheKey ((I)NULL)
 {
-    // reserve variable sized memory
-    constexpr_var coreUint iSize = 1 + 64/sizeof(T);
-    m_aList.reserve(iSize);
+    m_aList.reserve(1 + 64/sizeof(T));
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept
 : m_aList    (c.m_aList)
 , m_pCache   (NULL)
-, m_CacheRef ((I)NULL)
+, m_CacheKey ((I)NULL)
 {
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(coreLookupGen<K, I, T>&& m)noexcept
 : m_aList    (std::move(m.m_aList))
 , m_pCache   (NULL)
-, m_CacheRef ((I)NULL)
+, m_CacheKey ((I)NULL)
 {
 }
 
@@ -185,11 +186,11 @@ template <typename R, typename O, typename S> void swap(coreLookupGen<R, O, S>& 
 template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& Key)const
 {
     // check for cached entry
-    if(this->__cache(Key)) return m_pCache->second;
+    if(this->__cache_try(Key)) return m_pCache->second;
 
     // retrieve and check iterator by specific key
     auto it = this->__retrieve(Key);
-    SDL_assert(this->__check(it));
+    ASSERT(this->__check(it))
 
     return it->second;
 }
@@ -200,7 +201,7 @@ template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::a
 template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operator [] (const I& Key)
 {
     // check for cached entry
-    if(this->__cache(Key)) return m_pCache->second;
+    if(this->__cache_try(Key)) return m_pCache->second;
 
     // retrieve and check iterator by specific key
     auto it = this->__retrieve(Key);
@@ -211,8 +212,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
         it = m_aList.end()-1;
 
         // cache current entry
-        m_pCache   = &(*it);
-        m_CacheRef = Key;
+        this->__cache_set(&(*it), Key);
     }
 
     return it->second;
@@ -224,7 +224,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
 template <typename K, typename I, typename T> bool coreLookupGen<K, I, T>::erase(const I& Key)
 {
     // reset cache
-    this->__clearcache();
+    this->__cache_clear();
 
     // retrieve and check iterator by specific key
     auto it = this->__retrieve(Key);
@@ -250,8 +250,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
         if(it->first == Key)
         {
             // cache current entry
-            m_pCache   = &(*it);
-            m_CacheRef = Key;
+            this->__cache_set(&(*it), Key);
             return it;
         }
     }
@@ -276,7 +275,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
 template <typename T> bool coreLookupStr<T>::erase(const T& Entry)
 {
     // reset cache
-    this->__clearcache();
+    this->__cache_clear();
 
     // retrieve and check iterator by specific value
     auto it = this->__retrieve(Entry);
@@ -329,8 +328,7 @@ template <typename T> typename coreLookupStr<T>::coreIterator coreLookupStr<T>::
         if(!std::strcmp(it->first.c_str(), pcKey))
         {
             // cache current entry
-            this->m_pCache     = &(*it);
-            this->m_pcCacheRef = pcKey;
+            this->__cache_set(&(*it), pcKey);
             return it;
         }
     }

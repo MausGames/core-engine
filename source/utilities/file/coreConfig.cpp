@@ -20,7 +20,7 @@ coreConfig::coreConfig(const char* pcPath)noexcept
     m_Config.SetMultiLine(false);
     m_Config.SetSpaces(true);
 
-    // load configuration
+    // load configuration file
     this->Load();
 }
 
@@ -29,50 +29,60 @@ coreConfig::coreConfig(const char* pcPath)noexcept
 /* destructor */
 coreConfig::~coreConfig()
 {
-    // save configuration
+    // save configuration file
     this->Save();
 }
 
 
 // ****************************************************************
-/* get bool value */
-bool coreConfig::GetBool(const char* pcSection, const char* pcKey, const bool& bDefault)
+/* load configuration file */
+coreError coreConfig::Load()
 {
-    const bool bReturn = m_Config.GetBoolValue(pcSection, pcKey, bDefault);
-    if(bReturn == bDefault) this->SetBool(pcSection, pcKey, false, bDefault);
+    // load configuration file
+    if(m_Config.LoadFile(m_sPath.c_str()) < 0)
+    {
+        Core::Log->Warning("Configuration (%s) could not be loaded", m_sPath.c_str());
+        return CORE_ERROR_FILE;
+    }
+    
+    // write all loaded configuration values to the log file
+    Core::Log->ListStart("Configuration Values"); 
+    {
+        // retrieve all sections
+        CSimpleIni::TNamesDepend apSection;
+        m_Config.GetAllSections(apSection);
 
-    return bReturn;
+        FOR_EACH(pSection, apSection)
+        {
+            // retrieve all keys per section
+            CSimpleIni::TNamesDepend apKey;
+            m_Config.GetAllKeys(pSection->pItem, apKey);
+
+            FOR_EACH(pKey, apKey)
+            {
+                // write specific configuration value
+                Core::Log->ListEntry(CORE_LOG_BOLD("%s.%s:") " %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
+            }
+        }
+    }
+    Core::Log->ListEnd();
+
+    Core::Log->Info("Configuration (%s) loaded", m_sPath.c_str()); 
+    return CORE_OK;
 }
 
 
 // ****************************************************************
-/* get int value */
-int coreConfig::GetInt(const char* pcSection, const char* pcKey, const int& iDefault)
+/* save configuration file */
+coreError coreConfig::Save()const
 {
-    const int iReturn = (int)m_Config.GetLongValue(pcSection, pcKey, iDefault);
-    if(iReturn == iDefault) this->SetInt(pcSection, pcKey, 0, iDefault);
+    // save configuration file
+    if(m_Config.SaveFile(m_sPath.c_str()) < 0)
+    {
+        Core::Log->Warning("Configuration (%s) could not be saved", m_sPath.c_str());
+        return CORE_ERROR_FILE;
+    }
 
-    return iReturn;
-}
-
-
-// ****************************************************************
-/* get float value */
-float coreConfig::GetFloat(const char* pcSection, const char* pcKey, const float& fDefault)
-{
-    const float fReturn = (float)m_Config.GetDoubleValue(pcSection, pcKey, fDefault);
-    if(fReturn == fDefault) this->SetFloat(pcSection, pcKey, 0.0f, fDefault);
-
-    return fReturn;
-}
-
-
-// ****************************************************************
-/* get string value */
-const char* coreConfig::GetString(const char* pcSection, const char* pcKey, const char* pcDefault)
-{
-    const char* pcReturn = m_Config.GetValue(pcSection, pcKey, pcDefault);
-    if(pcReturn == pcDefault) this->SetString(pcSection, pcKey, NULL, pcDefault);
-
-    return pcReturn;
+    Core::Log->Info("Configuration (%s) saved", m_sPath.c_str());
+    return CORE_OK;
 }

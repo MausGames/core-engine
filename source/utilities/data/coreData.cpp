@@ -10,59 +10,87 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <shellapi.h>
-#endif
-#if defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_)
     #include <dirent.h>
+#elif defined(_CORE_OSX_)
+    #include <mach-o/dyld.h>
 #endif
 
-char     coreData::m_aacString[16][256]; // = "";
-coreUint coreData::m_iIndex                 = 0;
+char     coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
+coreUint coreData::m_iCurString                                                = 0;
 
 
 // ****************************************************************
-// get application name
-const char* coreData::AppName()
+/* get full application path */
+const char* coreData::AppPath()
 {
-    char* pcString = __NextString();
+    char* pcString = coreData::__NextString();
 
-    // receive name
 #if defined(_CORE_WINDOWS_)
-    GetModuleFileName(NULL, pcString, 255);
-#elif defined(_CORE_LINUX_)
-    readlink("/proc/self/exe", pcString, 255);
-#elif defined(_CORE_ANDROID_)
-    return NULL;
+    GetModuleFileName(NULL, pcString, CORE_DATA_STRING_LEN);
+#elif defined(_CORE_LINUX_) && !defined(_CORE_ANDROID_)
+    readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN);
+#elif defined(_CORE_OSX_)
+    coreUint iLen = CORE_DATA_STRING_LEN;
+    _NSGetExecutablePath(pcString, &iLen);
 #else
     return "";
 #endif
 
-    return std::strrchr(pcString, CORE_DATA_SLASH[0])+1;
+    return pcString;
 }
 
 
 // ****************************************************************
-// get application path
-const char* coreData::AppPath()
+/* set current working directory */
+coreError coreData::SetCurDir(const char* pcPath)
 {
-    char* pcString = __NextString();
-
-    // receive path
 #if defined(_CORE_WINDOWS_)
-    GetCurrentDirectory(255, pcString);
-#elif defined(_CORE_LINUX_)
-    getcwd(pcString, 255);
-#elif defined(_CORE_ANDROID_)
-    return NULL;
+    if(SetCurrentDirectory(pcPath)) return CORE_OK;
+#elif !defined(_CORE_ANDROID_)
+    if(!chdir(pcString)) return CORE_OK;
+#endif
+
+    return CORE_ERROR_SYSTEM;
+}
+
+
+// ****************************************************************
+/* get current working directory */
+const char* coreData::GetCurDir()
+{
+    char* pcString = coreData::__NextString();
+
+#if defined(_CORE_WINDOWS_)
+    GetCurrentDirectory(CORE_DATA_STRING_LEN - 1, pcString);
+#elif !defined(_CORE_ANDROID_)
+    getcwd(pcString, CORE_DATA_STRING_LEN - 1);
 #else
-    return CORE_DATA_SLASH;
+    return "";
 #endif
 
     return std::strcat(pcString, CORE_DATA_SLASH);
 }
 
 
+// ******************************************************************
+/* open URL with default web-browser */
+coreError coreData::OpenURL(const char* pcURL)
+{
+#if defined(_CORE_WINDOWS_)
+    if(int(ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
+#elif defined(_CORE_LINUX_)
+    if(system(NULL)) if(!system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
+#else
+    if(system(NULL)) if(!system(PRINT("open %s", pcURL))) return CORE_OK;
+#endif
+
+    return CORE_ERROR_SYSTEM;
+}
+
+
 // ****************************************************************
-// check if file exists
+/* check if file exists */
 bool coreData::FileExists(const char* pcPath)
 {
     // open file
@@ -79,11 +107,10 @@ bool coreData::FileExists(const char* pcPath)
 
 
 // ****************************************************************
-// retrieve relative paths of all files from a folder
-// TODO: implement for Android
-coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput)
+/* retrieve relative paths of all files from a folder */
+coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput)
 {
-    if(!pcPath || !pasOutput) return CORE_INVALID_INPUT;
+    ASSERT_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
 #if defined(_CORE_WINDOWS_)
 
@@ -91,51 +118,53 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
     WIN32_FIND_DATA hFile;
 
     // open folder
-    hFolder = FindFirstFile(coreData::Print("%s/%s/%s", coreData::AppPath(), pcPath, pcFilter), &hFile);
+    hFolder = FindFirstFile(PRINT("%s/%s/%s", coreData::GetCurDir(), pcPath, pcFilter), &hFile);
     if(hFolder == INVALID_HANDLE_VALUE)
     {
-        Core::Log->Error(false, "Folder (%s) could not be opened", pcPath);
-        return CORE_FILE_ERROR;
+        Core::Log->Warning("Folder (%s) could not be opened", pcPath);
+        return CORE_ERROR_FILE;
     }
 
     do
     {
         // check and add file path
         if(hFile.cFileName[0] != '.')
-            pasOutput->push_back(coreData::Print("%s/%s", pcPath, hFile.cFileName));
+            pasOutput->push_back(PRINT("%s/%s", pcPath, hFile.cFileName));
     }
     while(FindNextFile(hFolder, &hFile));
 
     // close folder
     FindClose(hFolder);
 
-#elif defined(_CORE_LINUX_)
+#else
 
     DIR* pDir;
-    struct dirent* pDirent;
+    dirent* pDirent;
 
     // open folder
-    pDir = opendir(pcPath);
+    #if defined(_CORE_ANDROID_)
+        pDir = opendir(PRINT("%s/%s", SDL_AndroidGetInternalStoragePath(), pcPath));
+    #else
+        pDir = opendir(pcPath);
+    #endif
     if(!pDir)
     {
-        Core::Log->Error(false, "Folder (%s) could not be opened", pcPath);
-        return CORE_FILE_ERROR;
+        Core::Log->Warning("Folder (%s) could not be opened", pcPath);
+        return CORE_ERROR_FILE;
     }
 
-    while((pDirent = readdir(pDir)) != NULL)
+    while((pDirent = readdir(pDir)))
     {
         // check and add file path
         if(pDirent->d_name[0] != '.')
         {
-            if(coreData::StrCompareWild(pDirent->d_name, pcFilter))
-                pasOutput->push_back(coreData::Print("%s/%s", pcPath, pDirent->d_name));
+            if(coreData::StrLike(pDirent->d_name, pcFilter))
+                pasOutput->push_back(PRINT("%s/%s", pcPath, pDirent->d_name));
         }
     }
 
     // close folder
     closedir(pDir);
-
-#elif defined(_CORE_ANDROID_)
 
 #endif
 
@@ -144,9 +173,8 @@ coreError coreData::FolderSearch(const char* pcPath, const char* pcFilter, std::
 
 
 // ****************************************************************
-// create folder hierarchy
-// TODO: remove std::string
-void coreData::FolderCreate(const std::string& sPath)
+/* create folder hierarchy */
+void coreData::CreateFolder(const std::string& sPath)
 {
     int iPos = 0;
 
@@ -157,7 +185,7 @@ void coreData::FolderCreate(const std::string& sPath)
 
         // create subfolder
 #if defined(_CORE_WINDOWS_)
-        CreateDirectoryA(sSubFolder.c_str(), NULL);
+        CreateDirectory(sSubFolder.c_str(), NULL);
 #else
         mkdir(sSubFolder.c_str(), S_IRWXU);
 #endif
@@ -166,36 +194,54 @@ void coreData::FolderCreate(const std::string& sPath)
 
 
 // ****************************************************************
-// retrieve current date and time
-void coreData::DateTime(coreUint* piSec, coreUint* piMin, coreUint* piHou, coreUint* piDay, coreUint* piMon, coreUint* piYea)
+/* retrieve current date and time as values */
+void coreData::DateTimeValue(coreUint* piYea, coreUint* piMon, coreUint* piDay, coreUint* piHou, coreUint* piMin, coreUint* piSec)
 {
-    // format the current time
+    // format current time
     const time_t iTime = std::time(NULL);
-    tm* pFormat = std::localtime(&iTime);
+    tm* pLocal = std::localtime(&iTime);
 
-    // forward data
-    if(piSec) *piSec = pFormat->tm_sec;
-    if(piMin) *piMin = pFormat->tm_min;
-    if(piHou) *piHou = pFormat->tm_hour;
-    if(piDay) *piDay = pFormat->tm_mday;
-    if(piMon) *piMon = pFormat->tm_mon+1;
-    if(piYea) *piYea = pFormat->tm_year+1900;
+    // forward values
+    if(piYea) *piYea = pLocal->tm_year + 1900;
+    if(piMon) *piMon = pLocal->tm_mon  + 1;
+    if(piDay) *piDay = pLocal->tm_mday;
+    if(piHou) *piHou = pLocal->tm_hour;
+    if(piMin) *piMin = pLocal->tm_min;
+    if(piSec) *piSec = pLocal->tm_sec;
 }
 
 
 // ****************************************************************
-// compare strings with wildcards
-bool coreData::StrCompareWild(const char* s, const char* t)
+/* retrieve current date and time as formatted string */
+const char* coreData::DateTimePrint(const char* pcFormat)
 {
-    return (*t-'*') ? *s ? (*t=='?') | (toupper(*s)==toupper(*t)) && StrCompareWild(s+1,t+1) : !*t : StrCompareWild(s,t+1) || (*s && StrCompareWild(s+1,t));
+    char* pcString = coreData::__NextString();
+
+    // format current time
+    const time_t iTime = std::time(NULL);
+    tm* pLocal = std::localtime(&iTime);
+    
+    // assemble string
+    const coreUint iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
+
+    ASSERT(iReturn)
+    return iReturn ? pcString : pcFormat;
 }
 
 
 // ****************************************************************
-// get last characters of a string
+/* compare strings with wildcards */
+bool coreData::StrLike(const char* s, const char* t)
+{
+    return (*t - '*') ? *s ? (*t == '?') | (toupper(*s) == toupper(*t)) && StrLike(s+1, t+1) : !*t : StrLike(s, t+1) || (*s && StrLike(s+1, t));
+}
+
+
+// ****************************************************************
+/* safely get last characters of a string */
 const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 {
-    SDL_assert(pcInput);
+    ASSERT_IF(!pcInput) return "";
 
     const coreUint iLen = std::strlen(pcInput);
     return pcInput + (iLen - MIN(iLen, iNum));
@@ -203,45 +249,7 @@ const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 
 
 // ****************************************************************
-// get upper case version of a string
-const char* coreData::StrUpper(const char* pcInput)
-{
-    char* pcString = __NextString();
-    char* pcCursor = pcString;
-
-    // get length of the input string
-    const coreUint iLen = std::strlen(pcInput)+1;
-    SDL_assert(iLen < 256);
-
-    // convert all characters to upper case
-    for(coreUint i = 0; i < iLen; ++i, ++pcCursor, ++pcInput)
-        *pcCursor = toupper(*pcInput);
-
-    return pcString;
-}
-
-
-// ****************************************************************
-// get lower case version of a string
-const char* coreData::StrLower(const char* pcInput)
-{
-    char* pcString = __NextString();
-    char* pcCursor = pcString;
-
-    // get length of the input string
-    const coreUint iLen = std::strlen(pcInput)+1;
-    SDL_assert(iLen < 256);
-
-    // convert all characters to lower case
-    for(coreUint i = 0; i < iLen; ++i, ++pcCursor, ++pcInput)
-        *pcCursor = tolower(*pcInput);
-
-    return pcString;
-}
-
-
-// ****************************************************************
-// safely get file extension
+/* safely get file extension */
 const char* coreData::StrExtension(const char* pcInput)
 {
     ASSERT_IF(!pcInput) return "";
@@ -252,7 +260,7 @@ const char* coreData::StrExtension(const char* pcInput)
 
 
 // ****************************************************************
-// safely get version number
+/* safely get version number */
 float coreData::StrVersion(const char* pcInput)
 {
     ASSERT_IF(!pcInput) return 0.0f;
@@ -263,48 +271,14 @@ float coreData::StrVersion(const char* pcInput)
 
 
 // ****************************************************************
-// move string pointer and skip comments
-// TODO: sscanf calls strlen, which reduces model loading performance (very long strings), always or only because of %n ?
-void coreData::StrSkip(const char** ppcInput, const int &iNum)
-{
-    SDL_assert(*ppcInput);
-
-    int  n = iNum;
-    char c = '\0';
-
-    do
-    {
-        // move string pointer
-        *ppcInput += n;
-
-        // check for comments and skip them
-         std::sscanf(*ppcInput, "%c %*[^\n] %n", &c, &n);
-    }
-    while(c == '/' || c == '#');
-}
-
-
-// ****************************************************************
-// trim a standard string on both sides
+/* trim a standard string on both sides */
 void coreData::StrTrim(std::string* psInput)
 {
+    // trim left
     const int iFirst = psInput->find_first_not_of(" \n\r\t");
     if(iFirst >= 0) psInput->erase(0, iFirst);
 
+    // trim right
     const int iLast = psInput->find_last_not_of(" \n\r\t");
     if(iLast >= 0) psInput->erase(iLast+1);
-}
-
-
-// ******************************************************************
-// open URL with the web-browser
-void coreData::OpenURL(const char* pcURL)
-{
-#if defined(_CORE_WINDOWS_)
-    ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL);
-#elif defined(_CORE_LINUX_)
-    if(system(NULL)) system(coreData::Print("xdg-open %s", pcURL));
-#else
-    if(system(NULL)) system(coreData::Print("open %s", pcURL));
-#endif
 }
