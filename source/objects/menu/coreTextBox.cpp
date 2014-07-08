@@ -36,7 +36,7 @@ coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcF
 // construct the text-box
 void coreTextBox::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
 {
-    SDL_assert(iLength);
+    ASSERT(iLength)
 
     // construct the button
     coreButton::Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
@@ -115,7 +115,7 @@ void coreTextBox::SetInput(const bool& bInput)
         // stop text-input
         if(--s_iActiveCounter == 0) SDL_StopTextInput();
     }
-    SDL_assert(s_iActiveCounter >= 0);
+    ASSERT(s_iActiveCounter >= 0)
 }
 
 

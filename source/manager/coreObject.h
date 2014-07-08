@@ -46,7 +46,7 @@ protected:
 public:
     //! define the visual appearance
     //! @{
-    inline void DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {SDL_assert(iUnit < CORE_TEXTURE_UNITS); m_apTexture[iUnit] = pTexture;}
+    inline void DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
     inline void DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
     const coreTexturePtr& DefineTextureFile(const coreByte& iUnit, const char* pcPath);
     const coreTexturePtr& DefineTextureLink(const coreByte& iUnit, const char* pcName);
@@ -65,7 +65,7 @@ public:
 
     //! get object properties
     //! @{
-    inline const coreTexturePtr& GetTexture(const coreByte& iUnit)const {SDL_assert(iUnit < CORE_TEXTURE_UNITS); return m_apTexture[iUnit];}
+    inline const coreTexturePtr& GetTexture(const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
     inline const coreProgramShr& GetProgram()const                      {return m_pProgram;}
     inline const coreMatrix4& GetRotation()const                        {return m_mRotation;}
     inline const coreMatrix4& GetTransform()const                       {return m_mTransform;}

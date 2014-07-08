@@ -160,8 +160,8 @@ public:
     //! get object properties
     //! @{
     inline const GLuint& GetProgram()const             {return m_iProgram;}
-    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {SDL_assert(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this); m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
-    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {SDL_assert(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this); m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
+    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {ASSERT(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this) m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
+    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this) m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
     //! @}
 
     //! get currently active shader-program

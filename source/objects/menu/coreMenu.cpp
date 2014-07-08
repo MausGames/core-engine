@@ -129,7 +129,7 @@ void coreMenu::AddObject(const coreByte& iSurface, coreObject2D* pObject)
 
     // check for duplicate menu objects
     FOR_EACH(it, m_papObject[iSurface])
-        SDL_assert((*it) != pObject);
+        ASSERT((*it) != pObject)
 
 #endif
 

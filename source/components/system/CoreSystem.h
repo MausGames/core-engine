@@ -61,7 +61,7 @@ public:
 
     //! control time
     //! @{
-    inline void SetTimeSpeed(const int& iID, const float& fTimeSpeed) {SDL_assert(iID < CORE_SYSTEM_TIMES); m_afTimeSpeed[iID] = fTimeSpeed;}
+    inline void SetTimeSpeed(const int& iID, const float& fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
     inline void SkipFrame()                                           {m_iSkipFrame = 2;}
     //! @}
 
@@ -79,8 +79,8 @@ public:
     inline const bool& GetMinimized()const                     {return m_bMinimized;}
     inline const double& GetTotalTime()const                   {return m_dTotalTime;}
     inline const float& GetTime()const                         {return m_fLastTime;}
-    inline const float& GetTime(const int& iID)const           {SDL_assert(iID < CORE_SYSTEM_TIMES); return (m_fLastTime >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const float& GetTimeSpeed(const int& iID)const      {SDL_assert(iID < CORE_SYSTEM_TIMES); return m_afTimeSpeed[iID];}
+    inline const float& GetTime(const int& iID)const           {ASSERT(iID < CORE_SYSTEM_TIMES) return (m_fLastTime >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const float& GetTimeSpeed(const int& iID)const      {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
     inline const coreUint& GetCurFrame()const                  {return m_iCurFrame;}
     //! @}
 

@@ -13,8 +13,8 @@
 
 // ****************************************************************
 /* random number definitions */
-#define CORE_RAND_MAX  (0x7FFF)                                         //!< max raw random number (16 bit)
-#define CORE_RAND_TIME (g_bCoreDebug ? 0 : coreUint(std::time(NULL)))   //!< use current time to seed the generator (not on debug mode)
+#define CORE_RAND_MAX  (0x7FFF)                                                  //!< max raw random number (16 bit)
+#define CORE_RAND_TIME (DEFINED(_CORE_DEBUG_) ? 0 : coreUint(std::time(NULL)))   //!< use current time to seed the generator (not on debug mode)
 
 
 // ****************************************************************

@@ -70,7 +70,7 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
 // render the label
 void coreLabel::Render()
 {
-    SDL_assert(m_pProgram);
+    ASSERT(m_pProgram)
     if(m_sText.empty()) return;
     
     if(m_iGenerate)
@@ -99,7 +99,7 @@ void coreLabel::Render()
 // TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
 void coreLabel::Move()
 {
-    SDL_assert(m_pProgram);
+    ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
     // move the 2d-object
@@ -111,7 +111,7 @@ void coreLabel::Move()
 // change the current text
 bool coreLabel::SetText(const char* pcText)
 {
-    SDL_assert(!m_iLength || std::strlen(pcText) <= m_iLength);
+    ASSERT(!m_iLength || std::strlen(pcText) <= m_iLength)
 
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
@@ -129,7 +129,7 @@ bool coreLabel::SetText(const char* pcText)
 
 bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
 {
-    SDL_assert(!m_iLength || (MIN(iNum, (coreUint)std::strlen(pcText)) <= m_iLength && iNum <= m_iLength));
+    ASSERT(!m_iLength || (MIN(iNum, (coreUint)std::strlen(pcText)) <= m_iLength && iNum <= m_iLength))
 
     // check for new text
     if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
@@ -173,7 +173,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
 {
     // create text surface with the font object
     SDL_Surface* pSurface = m_pFont->CreateText(pcText, m_iHeight);
-    SDL_assert(pSurface->format->BitsPerPixel == 8);
+    ASSERT(pSurface->format->BitsPerPixel == 8)
 
     // convert the data format
     SDL_Surface* pConvert = SDL_CreateRGBSurface(0, coreMath::NextAlign<4>(pSurface->w), pSurface->h, 24, CORE_TEXTURE_MASK);
@@ -195,7 +195,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
         coreTexture::Lock();
         {
             // update only a specific area of the texture
-            SDL_assert((vNewResolution.x <= m_vResolution.x) && (vNewResolution.y <= m_vResolution.y));
+            ASSERT((vNewResolution.x <= m_vResolution.x) && (vNewResolution.y <= m_vResolution.y))
             glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
         }
         coreTexture::Unlock();

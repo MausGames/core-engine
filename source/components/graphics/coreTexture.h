@@ -58,7 +58,7 @@ public:
 
     //! generate empty base texture
     //! @{
-    inline void Generate() {SDL_assert(!m_iTexture); glGenTextures(1, &m_iTexture);}
+    inline void Generate() {ASSERT(!m_iTexture) glGenTextures(1, &m_iTexture);}
     //! @}
 
     //! get object properties

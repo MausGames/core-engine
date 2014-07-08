@@ -126,7 +126,7 @@ private:
 
 public:
     explicit constexpr_func coreFileUnload(coreFile* pFile)noexcept : m_pFile (pFile) {}
-    ~coreFileUnload() {SDL_assert(m_pFile); m_pFile->UnloadData();}
+    ~coreFileUnload() {ASSERT(m_pFile) m_pFile->UnloadData();}
 
 
 private:

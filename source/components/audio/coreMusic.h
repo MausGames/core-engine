@@ -99,7 +99,7 @@ public:
 
     //! lap streams between two different music objects
     //! @{
-    static bool CrossLap(coreMusic* pFirst, coreMusic* pSecond) {SDL_assert(pFirst != pSecond); return ov_crosslap(&pFirst->m_Stream, &pSecond->m_Stream) ? false : true;}
+    static bool CrossLap(coreMusic* pFirst, coreMusic* pSecond) {ASSERT(pFirst != pSecond) return ov_crosslap(&pFirst->m_Stream, &pSecond->m_Stream) ? false : true;}
     //! @}
 
 
@@ -172,7 +172,7 @@ public:
     //! access music objects
     //! @{
     inline const coreMusic* GetMusic(const coreUint& iIndex)const {ASSERT_IF(iIndex >= m_apMusic.size()) return m_pEmptyMusic; return m_apMusic[iIndex];}
-    inline coreMusic* Control()const                              {SDL_assert(m_pCurMusic != m_pEmptyMusic); return m_pCurMusic;}
+    inline coreMusic* Control()const                              {ASSERT(m_pCurMusic != m_pEmptyMusic) return m_pCurMusic;}
     //! @}
 
     //! set object properties

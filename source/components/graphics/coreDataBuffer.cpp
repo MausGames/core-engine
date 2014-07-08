@@ -15,7 +15,7 @@ coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
 // create buffer storage
 void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const GLenum& iUsage)
 {
-    SDL_assert(!m_iDataBuffer);
+    ASSERT(!m_iDataBuffer)
 
     // save properties
     m_iTarget  = iTarget;
@@ -54,7 +54,7 @@ void coreDataBuffer::Delete()
 // clear content of the data buffer object
 void coreDataBuffer::Clear()
 {
-    SDL_assert(m_iDataBuffer && m_bDynamic);
+    ASSERT(m_iDataBuffer && m_bDynamic)
 
     // clear the whole buffer
     if(GLEW_ARB_clear_buffer_object)
@@ -69,7 +69,7 @@ void coreDataBuffer::Clear()
 // invalidate content of the data buffer object
 void coreDataBuffer::Invalidate()
 {
-    SDL_assert(m_iDataBuffer && m_bDynamic);
+    ASSERT(m_iDataBuffer && m_bDynamic)
 
     // invalidate the whole buffer
     if(GLEW_ARB_invalidate_subdata)
@@ -120,13 +120,13 @@ void coreVertexBuffer::Delete()
 // define vertex attribute array
 void coreVertexBuffer::DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const coreByte& iOffset)
 {
-    SDL_assert(this->GetDataBuffer());
+    ASSERT(this->GetDataBuffer())
 
 #if defined(_CORE_DEBUG_)
 
     // check for duplicate vertex attribute arrays
     FOR_EACH(it, m_aAttribute)
-        SDL_assert(it->iLocation != iLocation);
+        ASSERT(it->iLocation != iLocation)
 
 #endif
 
@@ -146,7 +146,7 @@ void coreVertexBuffer::DefineAttribute(const int& iLocation, const coreByte& iCo
 // activate the vertex structure
 void coreVertexBuffer::Activate(const coreByte& iBinding)
 {
-    SDL_assert(this->GetDataBuffer() && !m_aAttribute.empty());
+    ASSERT(this->GetDataBuffer() && !m_aAttribute.empty())
 
     if(GLEW_ARB_vertex_attrib_binding)
     {

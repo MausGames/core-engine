@@ -22,9 +22,9 @@ coreObjectManager*   Core::Manager::Object   = NULL;
 
 
 // ****************************************************************
-// GLEW multi-context definitions
+// context definition
 #if !defined(_CORE_GLES_)
-    __thread GLEWContext g_GlewContext;
+    thread_local GLEWContext g_GlewContext;
 #endif
 
 
@@ -143,7 +143,7 @@ int Core::__Run()
     Core::Log->Header("Application Run");
 
     // set logging level
-    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !g_bCoreDebug)
+    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !DEFINED(_CORE_DEBUG_))
     {
         Core::Log->SetLevel(CORE_LOG_LEVEL_ONLY_ERROR);
         Core::Log->Warning("Logging level reduced");

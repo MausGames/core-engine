@@ -21,7 +21,7 @@ coreParticleSystem::coreParticleSystem(const coreUint& iSize)noexcept
 , m_iVertexArray (0)
 , m_bUpdate      (false)
 {
-    SDL_assert(iSize);
+    ASSERT(iSize)
 
     // pre-allocate particles
     m_pParticle = new coreParticle[iSize];
@@ -54,7 +54,7 @@ coreParticleSystem::~coreParticleSystem()
 // define texture through resource file
 const coreTexturePtr& coreParticleSystem::DefineTextureFile(const coreByte& iUnit, const char* pcPath)
 {
-    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
+    ASSERT(iUnit < CORE_TEXTURE_UNITS)
 
     // set and return texture object
     m_apTexture[iUnit] = Core::Manager::Resource->LoadFile<coreTexture>(pcPath);
@@ -66,7 +66,7 @@ const coreTexturePtr& coreParticleSystem::DefineTextureFile(const coreByte& iUni
 // define texture through linked resource
 const coreTexturePtr& coreParticleSystem::DefineTextureLink(const coreByte& iUnit, const char* pcName)
 {
-    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
+    ASSERT(iUnit < CORE_TEXTURE_UNITS)
 
     // set and return texture object
     m_apTexture[iUnit] = Core::Manager::Resource->LoadLink<coreTexture>(pcName);
@@ -224,7 +224,7 @@ void coreParticleSystem::Move()
 // create new particle
 coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
 {
-    SDL_assert(pEffect);
+    ASSERT(pEffect)
 
     // loop through all particles
     for(coreUint i = 0; i < m_iNumParticle; ++i)
@@ -243,7 +243,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         }
     }
 
-    SDL_assert(false);
+    ASSERT(false)
     return &m_pParticle[m_iCurParticle];
 }
 
@@ -252,7 +252,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
 // remove particle effect objects
 void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
 {
-    SDL_assert(pEffect);
+    ASSERT(pEffect)
 
     FOR_EACH(it, m_apRenderList)
     {
@@ -293,7 +293,7 @@ void coreParticleSystem::UnbindAll()
 // remove particles
 void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 {
-    SDL_assert(pEffect);
+    ASSERT(pEffect)
 
     FOR_EACH_DYN(it, m_apRenderList)
     {
@@ -396,7 +396,7 @@ coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 // change associated particle system object
 void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const bool& bUnbind)
 {
-    SDL_assert(pSystem);
+    ASSERT(pSystem)
 
     // check for dynamic behavior
     if(this->IsDynamic())

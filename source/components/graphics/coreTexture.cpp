@@ -182,7 +182,7 @@ coreError coreTexture::Unload()
 // bind texture to texture unit
 void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
 {
-    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
+    ASSERT(iUnit < CORE_TEXTURE_UNITS)
 
     // check texture binding
     if(s_apBound[iUnit] == pTexture) return;

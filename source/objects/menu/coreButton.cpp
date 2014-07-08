@@ -66,7 +66,7 @@ void coreButton::Construct(const char* pcIdle, const char* pcBusy)
 // render the button
 void coreButton::Render()
 {
-    SDL_assert(m_pProgram);
+    ASSERT(m_pProgram)
 
     // render the 2d-object
     coreObject2D::Render();
@@ -84,7 +84,7 @@ void coreButton::Render()
 // move the button
 void coreButton::Move()
 {
-    SDL_assert(m_pProgram);
+    ASSERT(m_pProgram)
 
     // set current background texture
     const bool bStatus = (m_iOverride > 0) ? true : ((m_iOverride < 0) ? false : this->IsFocused());

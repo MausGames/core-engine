@@ -105,7 +105,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL * 10.0f)) % 10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  CORE_SYSTEM_CONTEXT);
     }
-    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) || g_bCoreDebug)
+    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) || DEFINED(_CORE_DEBUG_))
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     // create main window object

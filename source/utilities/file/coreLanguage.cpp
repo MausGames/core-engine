@@ -10,24 +10,24 @@
 
 
 // ****************************************************************
-// change associated language file
+/* change associated language file */
 void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
 {
     if(m_pLanguage)
     {
         // unbind everything from current language
-        FOR_EACH(it, m_apsPointer) m_pLanguage->UnbindString(it->first);
+        FOR_EACH(it, m_apsPointer) m_pLanguage->UnbindForeign(it->first);
         m_pLanguage->__UnbindObject(this);
     }
 
-    // save language file object
+    // set new language file
     m_pLanguage = pLanguage;
 
     if(m_pLanguage)
     {
         // bind everything to new language
         m_pLanguage->__BindObject(this);
-        FOR_EACH(it, m_apsPointer) m_pLanguage->BindString(it->first, it->second.c_str());
+        FOR_EACH(it, m_apsPointer) m_pLanguage->BindForeign(it->first, it->second.c_str());
 
         // invoke object update
         this->__Update();
@@ -36,20 +36,19 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
 
     
 // ****************************************************************
-// bind own string pointer
+/* bind own string pointer */
 void coreTranslate::_BindString(std::string* psString, const char* pcKey)
 {
-    SDL_assert(psString && pcKey);
+    ASSERT(psString && pcKey)
 
     if(!m_pLanguage)
     {
-        // bind object to default language
-        m_pLanguage = Core::Language;
-        m_pLanguage->__BindObject(this);
+        // associate object with default language
+        this->ChangeLanguage(Core::Language);
     }
 
     // bind string to language and save it internally
-    m_pLanguage->BindString(psString, pcKey);
+    m_pLanguage->BindForeign(psString, pcKey);
     m_apsPointer[psString] = pcKey;
 
     // invoke object update
@@ -58,22 +57,47 @@ void coreTranslate::_BindString(std::string* psString, const char* pcKey)
 
 
 // ****************************************************************
-// unbind own string pointer
+/* unbind own string pointer */
 void coreTranslate::_UnbindString(std::string* psString)
 {
-    SDL_assert(psString);
+    ASSERT(psString)
 
     // remove string internally
     if(m_apsPointer.erase(psString))
     {
         // unbind from language
-        if(m_pLanguage) m_pLanguage->UnbindString(psString);
+        if(m_pLanguage) m_pLanguage->UnbindForeign(psString);
     }
 }
 
 
 // ****************************************************************
-// load language file
+/* constructor */
+coreLanguage::coreLanguage(const char* pcPath)noexcept
+: m_sPath ("") 
+{
+    // load language file
+    this->Load(pcPath);
+}
+
+
+// ****************************************************************
+/* destructor */
+coreLanguage::~coreLanguage()
+{
+    ASSERT(m_apsForeign.empty() && m_apObject.empty())
+
+    // unbind missing translation objects
+    FOR_EACH(it, m_apObject)
+        (*it)->ChangeLanguage(NULL);
+
+    // clear memory
+    m_asString.clear();
+}
+
+
+// ****************************************************************
+/* load language file */
 coreError coreLanguage::Load(const char* pcPath)
 {
     coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
@@ -83,31 +107,33 @@ coreError coreLanguage::Load(const char* pcPath)
     if(!pcData) return CORE_ERROR_FILE;
 
     // prepare range pointers (from, to) and end pointer (out of bound) 
-    const char* pcFrom = pcData+1;
+    const char* pcFrom = pcData + 1;
     const char* pcTo   = pcFrom;
     const char* pcEnd  = pcFrom + pFile->GetSize();
 
-    auto AssignLambda = [&](std::string* pString)
+    auto AssignLambda = [&pcFrom, &pcTo](std::string* pString)
     {
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
         coreData::StrTrim(pString);
-        SDL_assert(!pString->empty());
 
         // begin next string
-        pcFrom = pcTo+1;
+        pcFrom = pcTo + 1;
     };
 
-    std::string sKey;
+    // clear all existing language strings
+    FOR_EACH(it, m_asString) it->second.clear();
+
+    std::string sKey = "";
     while(pcTo != pcEnd)
     {
-        if(*pcTo == '=' && sKey.empty())
+        if(*pcTo == CORE_LANGUAGE_ASSIGN[0] && sKey.empty())
         {
             // extract key
             AssignLambda(&sKey);
-            if(sKey.empty()) sKey.append(1, ' ');
+            ASSERT_IF(sKey.empty()) sKey.assign(1, ' ');
         }
-        else if((*pcTo == '$' || pcTo == pcEnd-1) && !sKey.empty())
+        else if(*pcTo == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {
             // extract language-string
             AssignLambda(&m_asString[sKey.c_str()]);
@@ -116,18 +142,26 @@ coreError coreLanguage::Load(const char* pcPath)
 
         ++pcTo;
     }
+    if(!sKey.empty()) AssignLambda(&m_asString[sKey.c_str()]);
 
     // save relative path and unload data
     m_sPath = pcPath;
     pFile->UnloadData();
 
     // reduce memory consumption
-    FOR_EACH(it, m_asString) it->second.shrink_to_fit();
+    FOR_EACH(it, m_asString)
+    {
+        std::string& sString = it->second;
+
+        // assign key to empty language strings
+        if(sString.empty()) sString = it->first;
+        sString.shrink_to_fit();
+    }
     m_asString.shrink_to_fit();
 
     // update all foreign strings and objects
-    FOR_EACH(it, m_apsPointer) if(!it->second->empty()) *(it->first) = *(it->second);
-    FOR_EACH(it, m_apObject) (*it)->__Update();
+    FOR_EACH(it, m_apsForeign) (*it->first) = (*it->second);
+    FOR_EACH(it, m_apObject)   (*it)->__Update();
 
     Core::Log->Info("Language (%s) loaded", pFile->GetPath());
     return CORE_OK;
@@ -135,15 +169,18 @@ coreError coreLanguage::Load(const char* pcPath)
 
 
 // ****************************************************************
-// bind foreign string pointer
-void coreLanguage::BindString(std::string* psString, const char* pcKey)
+/* bind foreign string pointer */
+void coreLanguage::BindForeign(std::string* psForeign, const char* pcKey)
 {
-    SDL_assert(psString && pcKey);
+    ASSERT(psForeign && pcKey)
+
+    // assign key to new language strings
+    if(!m_asString.count(pcKey)) m_asString[pcKey].assign(pcKey);
 
     // retrieve language-string and save both pointers
-    std::string& sString = m_asString[pcKey];
-    m_apsPointer[psString] = &sString;
+    std::string& sString    = m_asString[pcKey];
+    m_apsForeign[psForeign] = &sString;
 
     // initially update foreign string
-    *psString = sString.empty() ? pcKey : sString;
+    *psForeign = sString;
 }

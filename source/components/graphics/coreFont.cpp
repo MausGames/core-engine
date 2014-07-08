@@ -74,7 +74,7 @@ coreError coreFont::Unload()
 // create text surface with the font
 SDL_Surface* coreFont::CreateText(const char* pcText, const int& iHeight)
 {
-    SDL_assert(pcText);
+    ASSERT(pcText)
 
     // check for specific height
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
@@ -106,7 +106,7 @@ SDL_Surface* coreFont::CreateGlyph(const coreWord& iGlyph,  const int& iHeight)
 // init font in a specific height
 bool coreFont::__InitHeight(const int& iHeight)
 {
-    SDL_assert(!m_apFont.count(iHeight));
+    ASSERT(!m_apFont.count(iHeight))
 
     // create virtual file as rendering source
     SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());

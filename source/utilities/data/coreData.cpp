@@ -158,7 +158,7 @@ coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::ve
         // check and add file path
         if(pDirent->d_name[0] != '.')
         {
-            if(coreData::StrLike(pDirent->d_name, pcFilter))
+            if(coreData::StrCmpLike(pDirent->d_name, pcFilter))
                 pasOutput->push_back(PRINT("%s/%s", pcPath, pDirent->d_name));
         }
     }
@@ -226,14 +226,6 @@ const char* coreData::DateTimePrint(const char* pcFormat)
 
     ASSERT(iReturn)
     return iReturn ? pcString : pcFormat;
-}
-
-
-// ****************************************************************
-/* compare strings with wildcards */
-bool coreData::StrLike(const char* s, const char* t)
-{
-    return (*t - '*') ? *s ? (*t == '?') | (toupper(*s) == toupper(*t)) && StrLike(s+1, t+1) : !*t : StrLike(s, t+1) || (*s && StrLike(s+1, t));
 }
 
 

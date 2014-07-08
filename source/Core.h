@@ -51,10 +51,10 @@
 
 // compiler
 #if defined(_MSC_VER)
-    #define _CORE_MSVC_ (_MSC_VER)
+    #define _CORE_MSVC_  (_MSC_VER)
 #endif
 #if defined(__GNUC__)
-    #define _CORE_GCC_ (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
+    #define _CORE_GCC_   (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
 #endif
 #if defined(__MINGW32__)
     #include <_mingw.h>
@@ -63,49 +63,49 @@
 #if defined(__clang__)
     #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
 #endif
-#if !defined(_CORE_MSVC_) && !defined(_CORE_GCC_) && !defined(_CORE_MINGW_) && !defined(_CORE_CLANG_)
+#if (!defined(_CORE_MSVC_)  || (_CORE_MSVC_)  <  1800) && \
+    (!defined(_CORE_GCC_)   || (_CORE_GCC_)   < 40800) && \
+    (!defined(_CORE_MINGW_) || (_CORE_MINGW_) < 40800) && \
+    (!defined(_CORE_CLANG_) || (_CORE_CLANG_) < 30300)
     #warning "Compiler not supported!"
 #endif
 
 // operating system
 #if defined(_WIN32)
-    #define _CORE_WINDOWS_ 1
+    #define _CORE_WINDOWS_ (1)
 #endif
 #if defined(__linux__)
-    #define _CORE_LINUX_ 1
+    #define _CORE_LINUX_   (1)
 #endif
 #if defined(__APPLE__)
-    #define _CORE_OSX_ 1
+    #define _CORE_OSX_     (1)
 #endif
 #if defined(__ANDROID__)
-    #define _CORE_ANDROID_ 1
+    #define _CORE_ANDROID_ (1)
+#endif
+#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) /*&& !defined(_CORE_OSX_)*/ && !defined(_CORE_ANDROID_)
+    #warning "Operating System not supported!"
 #endif
 
 // debug mode
 #if defined(_DEBUG) || defined(DEBUG) || (defined(_CORE_GCC_) && !defined(__OPTIMIZE__))
-    #define _CORE_DEBUG_ 1
-    static const bool g_bCoreDebug = true;
-#else
-    static const bool g_bCoreDebug = false;
+    #define _CORE_DEBUG_ (1)
 #endif
 
-// OpenGL ES mode
+// OpenGL ES
 #if defined(_CORE_ANDROID_)
-    #define _CORE_GLES_ 1
-    static const bool g_bCoreGLES = true;
-#else
-    static const bool g_bCoreGLES = false;
+    #define _CORE_GLES_  (1)
 #endif
 
-// SIMD support
+// x86 SIMD
 #if (defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)) && !defined(_CORE_ANDROID_)
-    #define _CORE_SSE_ 1
+    #define _CORE_SSE_   (1)
 #endif
 
 
 // ****************************************************************
 // basic libraries
-#define _HAS_EXCEPTIONS 0
+#define _HAS_EXCEPTIONS (0)
 #define _CRT_SECURE_NO_WARNINGS
 #define _ALLOW_KEYWORD_MACROS
 #define  WIN32_LEAN_AND_MEAN
@@ -161,35 +161,17 @@
 // ****************************************************************
 // compiler definitions
 #if defined(_CORE_MSVC_)
-    #if (_CORE_MSVC_) < 1800
-        #define delete_func
-    #else
-        #define delete_func = delete
-    #endif
-    #if (_CORE_MSVC_) < 1700
-        #define final
-    #endif
     #define hot_func
     #define cold_func
-    #define noexcept       throw()
-    #define __thread       __declspec(thread)
-    #define align_16(x)    __declspec(align(16)) x
     #define constexpr_func inline
     #define constexpr_var  const
+    #define noexcept       throw()               // keyword
+    #define thread_local   __declspec(thread)    // keyword
 #else
-    #define delete_func    = delete
     #define hot_func       __attribute__((hot))
     #define cold_func      __attribute__((cold))
-    #define align_16(x)    x __attribute__((aligned(16)))
     #define constexpr_func constexpr
     #define constexpr_var  constexpr
-#endif
-
-#if defined(_CORE_GCC_)
-    #if (_CORE_GCC_) < 40700
-        #define override
-        #define final
-    #endif
 #endif
 
 #if defined(_CORE_MINGW_)
@@ -213,35 +195,39 @@
 // general definitions
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
+#define ARRAY_SIZE(a)        (sizeof(a) / sizeof((a)[0]))
 
-#define ASSERT(c)     {SDL_assert(c);}
-#define ASSERT_IF(c)  {SDL_assert(!(c));} if(c)
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#define ASSERT(c)            {SDL_assert( (c));}
+#define ASSERT_IF(c)         {SDL_assert(!(c));} if(c)
+#define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
 
-#define BIT(n)         (1 << (n))
-#define BIT_SET(o,n)   {(o) |=  BIT(n);}
-#define BIT_RESET(o,n) {(o) &= ~BIT(n);}
-
-#define FOR_EACH(i,c)       for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
-#define FOR_EACH_REV(i,c)   for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
-#define FOR_EACH_SET(i,s,c) for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; ++i)
-#define FOR_EACH_DYN(i,c)   for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
-#define DYN_KEEP(i)         {++i;}
-#define DYN_REMOVE(i,c)     {i = (c).erase(i); i ## __e = (c).end();}
+#define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
+#define DEFINED(a)           (__DEFINED(a, #a))
+                             
+#define BIT(n)               (1 << (n))
+#define BIT_SET(o,n)         {(o) |=  BIT(n);}
+#define BIT_RESET(o,n)       {(o) &= ~BIT(n);}
+                             
+#define FOR_EACH(i,c)        for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH_REV(i,c)    for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
+#define FOR_EACH_SET(i,s,c)  for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH_DYN(i,c)    for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
+#define DYN_KEEP(i)          {++i;}
+#define DYN_REMOVE(i,c)      {i = (c).erase(i); i ## __e = (c).end();}
 
 #define DISABLE_INST(c) \
-    c()delete_func;     \
-    ~c()delete_func;
+    c()  = delete;      \
+    ~c() = delete;
 
-#define DISABLE_COPY(c)     \
-    c(const c&)delete_func; \
-    c& operator = (const c&)delete_func;
+#define DISABLE_COPY(c)                \
+    c(const c&)              = delete; \
+    c& operator = (const c&) = delete;
 
 #define DISABLE_HEAP                               \
-    void* operator new (size_t)delete_func;        \
-    void* operator new (size_t, void*)delete_func; \
-    void* operator new[] (size_t)delete_func;      \
-    void* operator new[] (size_t, void*)delete_func;
+    void* operator new   (size_t)        = delete; \
+    void* operator new   (size_t, void*) = delete; \
+    void* operator new[] (size_t)        = delete; \
+    void* operator new[] (size_t, void*) = delete;
 
 #define f_list forward_list
 #define u_map  unordered_map
@@ -270,15 +256,12 @@ enum coreError
 
 
 // ****************************************************************
-// GLEW multi-context declarations
+// context and forward declarations
 #if !defined(_CORE_GLES_)
-    extern __thread GLEWContext g_GlewContext;
+    extern thread_local GLEWContext g_GlewContext;
     #define glewGetContext() (g_GlewContext)
 #endif
 
-
-// ****************************************************************
-// class forward declarations
 class coreVector2;
 class coreVector3;
 class coreVector4;
@@ -363,7 +346,7 @@ public:
 
     //! main function
     //! @{
-    friend int main(int argc, char* argv[]) align_func;
+    friend int main(int argc, char* argv[])align_func;
     //! @}
 
 

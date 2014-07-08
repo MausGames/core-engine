@@ -18,8 +18,8 @@
 #define PI (3.1415926535897932384626433832795f)    //!< Archimedes' constant
 #define EU (2.7182818284590452353602874713527f)    //!< Euler's number
 
-#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degree to radian
-#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radian to degree
+#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)    //!< convert degree to radian
+#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)    //!< convert radian to degree
 
 #define MIN(x,y,...) coreMath::Min(x, y, ##__VA_ARGS__)
 #define MAX(x,y,...) coreMath::Max(x, y, ##__VA_ARGS__)
@@ -82,7 +82,7 @@ public:
     /*! rounding operations */
     //! @{
     template <int iByte> static inline coreUint NextAlign(const int& iInput) {return coreMath::PrevAlign<iByte>(iInput) + iByte;}
-    template <int iByte> static inline coreUint PrevAlign(const int& iInput) {const int k = iInput-1; return k - (k % iByte);}
+    template <int iByte> static inline coreUint PrevAlign(const int& iInput) {const int k = iInput - 1; return k - (k % iByte);}
     static inline coreUint NextPOT(const coreUint& iInput)                   {coreUint k = 2; while(k < iInput) k <<= 1; return k;}
     static inline coreUint PrevPOT(const coreUint& iInput)                   {return coreMath::NextPOT(iInput) >> 1;}
     static inline float    Ceil   (const float&    fInput)                   {return std::ceil (fInput);}

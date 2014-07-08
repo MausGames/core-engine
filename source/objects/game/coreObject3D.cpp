@@ -142,7 +142,7 @@ bool coreObject3D::Collision(const coreObject3D& Object1, const coreObject3D& Ob
 // TODO: remove SQRT somehow
 float coreObject3D::Collision(const coreObject3D& Object, const coreVector3& vLinePos, const coreVector3& vLineDir)
 {
-    SDL_assert(vLineDir.LengthSq() == 1.0f);
+    ASSERT(vLineDir.LengthSq() == 1.0f)
 
     // get bounding sphere
     const float fRadius = Object.GetModel()->GetRadius() * Object.GetCollisionRange() * Object.GetSize().Max();

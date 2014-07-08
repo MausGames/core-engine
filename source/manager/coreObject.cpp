@@ -13,7 +13,7 @@
 // define texture through resource file
 const coreTexturePtr& coreObject::DefineTextureFile(const coreByte& iUnit, const char* pcPath)
 {
-    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
+    ASSERT(iUnit < CORE_TEXTURE_UNITS)
 
     // set and return texture object
     m_apTexture[iUnit] = Core::Manager::Resource->LoadFile<coreTexture>(pcPath);
@@ -25,7 +25,7 @@ const coreTexturePtr& coreObject::DefineTextureFile(const coreByte& iUnit, const
 // define texture through linked resource
 const coreTexturePtr& coreObject::DefineTextureLink(const coreByte& iUnit, const char* pcName)
 {
-    SDL_assert(iUnit < CORE_TEXTURE_UNITS);
+    ASSERT(iUnit < CORE_TEXTURE_UNITS)
 
     // set and return texture object
     m_apTexture[iUnit] = Core::Manager::Resource->LoadLink<coreTexture>(pcName);

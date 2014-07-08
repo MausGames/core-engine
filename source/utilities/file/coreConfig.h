@@ -25,7 +25,7 @@
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING  "Graphics", "AntiAliasing",  (2)
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER "Graphics", "TextureFilter", (4)
 #define CORE_CONFIG_GRAPHICS_DUALCONTEXT   "Graphics", "DualContext",   (false)
-#define CORE_CONFIG_GRAPHICS_FORCEOPENGL   "Graphics", "ForceOpenGL",   (g_bCoreGLES ? 2.0f : 0.0f)
+#define CORE_CONFIG_GRAPHICS_FORCEOPENGL   "Graphics", "ForceOpenGL",   (DEFINED(_CORE_GLES_) ? 2.0f : 0.0f)
                                                                           
 #define CORE_CONFIG_AUDIO_SOURCES          "Audio",    "Sources",       (16)
 #define CORE_CONFIG_AUDIO_GLOBALVOLUME     "Audio",    "GlobalVolume",  (1.0f)

@@ -199,7 +199,7 @@ void CoreGraphics::ResizeView(coreVector2 vResolution, const float& fFOV, const 
 // set and update ambient light
 void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
-    SDL_assert(iID < CORE_GRAPHICS_LIGHTS);
+    ASSERT(iID < CORE_GRAPHICS_LIGHTS)
     coreLight& CurLight = m_aLight[iID];
 
     bool bNewLight = false;

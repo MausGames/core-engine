@@ -30,7 +30,7 @@ coreResourceHandle::~coreResourceHandle()
 {
     // forgot to delete a resource access, a resource-using object,
     // a shared memory object or used global variables
-    SDL_assert(!m_iRef);
+    ASSERT(!m_iRef)
 
     // delete associated resource object
     SAFE_DELETE(m_pResource)
@@ -96,7 +96,7 @@ coreResourceManager::coreResourceManager()noexcept
 // destructor
 coreResourceManager::~coreResourceManager()
 {
-    SDL_assert(!m_apReset.size());
+    ASSERT(!m_apReset.size())
 
     // shut down the resource manager
     this->Reset(false);
@@ -130,7 +130,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const char* pcPath)
     coreArchive* pNewArchive = new coreArchive(pcPath);
     m_apArchive[pcPath] = pNewArchive;
 
-    SDL_assert(pNewArchive->GetSize());
+    ASSERT(pNewArchive->GetSize())
     return pNewArchive;
 }
 
@@ -151,7 +151,7 @@ coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
         }
 
         // resource file not found
-        SDL_assert(false);
+        ASSERT(false)
     }
 
     if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];

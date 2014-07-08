@@ -148,7 +148,7 @@ public:
 
     //! define the visual appearance
     //! @{
-    inline void DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {SDL_assert(iUnit < CORE_TEXTURE_UNITS); m_apTexture[iUnit] = pTexture;}
+    inline void DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
     inline void DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
     const coreTexturePtr& DefineTextureFile(const coreByte& iUnit, const char* pcPath);
     const coreTexturePtr& DefineTextureLink(const coreByte& iUnit, const char* pcName);
@@ -269,7 +269,7 @@ constexpr_func coreParticle::coreParticle()noexcept
 // update the particle
 inline void coreParticle::Update()noexcept
 {
-    SDL_assert(m_pEffect);
+    ASSERT(m_pEffect)
 
     // update current animation value
     const float fTime = m_fSpeed * Core::System->GetTime(m_pEffect->GetTimeID());
@@ -287,7 +287,7 @@ inline void coreParticle::Update()noexcept
 // create new particles
 template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iNum, const float& fFrequency, F&& pFunction)
 {
-    SDL_assert(fFrequency <= 60.0f);
+    ASSERT(fFrequency <= 60.0f)
 
     // update and check status value
     m_fCreation.Update(fFrequency, m_iTimeID);

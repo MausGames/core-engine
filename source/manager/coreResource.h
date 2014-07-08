@@ -39,7 +39,7 @@ public:
 
     //! get relative path to default resource
     //! @{
-    static inline const char* GetDefaultPath() {SDL_assert(false); return NULL;}
+    static inline const char* GetDefaultPath() {ASSERT(false) return NULL;}
     //! @}
 
 
@@ -81,7 +81,7 @@ public:
     //! manipulate the reference-counter
     //! @{
     inline void RefIncrease()       {++m_iRef;}
-    inline void RefDecrease()       {--m_iRef; SDL_assert(m_iRef >= 0); if(!m_iRef) this->__Nullify();}
+    inline void RefDecrease()       {--m_iRef; ASSERT(m_iRef >= 0) if(!m_iRef) this->__Nullify();}
     inline const int& GetRef()const {return m_iRef;}
     //! @}
 
@@ -122,10 +122,10 @@ public:
 
     //! access active resource object
     //! @{
-    inline T* operator -> ()const noexcept {SDL_assert(m_pHandle != NULL); return   s_cast<T*>(m_pHandle->GetResource());}
-    inline T& operator * ()const noexcept  {SDL_assert(m_pHandle != NULL); return *(s_cast<T*>(m_pHandle->GetResource()));}
-    inline const bool& IsLoaded()const     {SDL_assert(m_pHandle != NULL); return m_pHandle->IsLoaded();}
-    inline const bool& IsManaged()const    {SDL_assert(m_pHandle != NULL); return m_pHandle->IsManaged();}
+    inline T* operator -> ()const noexcept {ASSERT(m_pHandle != NULL) return   s_cast<T*>(m_pHandle->GetResource());}
+    inline T& operator * ()const noexcept  {ASSERT(m_pHandle != NULL) return *(s_cast<T*>(m_pHandle->GetResource()));}
+    inline const bool& IsLoaded()const     {ASSERT(m_pHandle != NULL) return m_pHandle->IsLoaded();}
+    inline const bool& IsManaged()const    {ASSERT(m_pHandle != NULL) return m_pHandle->IsManaged();}
     //! @}
 
     //! dynamically control the reference-counter
@@ -207,8 +207,8 @@ public:
     //! reset all resources and reset-objects
     //! @{
     void Reset(const bool& bInit);
-    inline void BindReset(coreReset* pObject)   {SDL_assert(!m_apReset.count(pObject)); m_apReset.insert(pObject);}
-    inline void UnbindReset(coreReset* pObject) {SDL_assert( m_apReset.count(pObject)); m_apReset.erase(pObject);}
+    inline void BindReset(coreReset* pObject)   {ASSERT(!m_apReset.count(pObject)) m_apReset.insert(pObject);}
+    inline void UnbindReset(coreReset* pObject) {ASSERT( m_apReset.count(pObject)) m_apReset.erase(pObject);}
     //! @}
 
 

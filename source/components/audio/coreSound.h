@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // sound definitions
-#define CORE_SOUND_ASSERT {SDL_assert(this->CheckRef(m_pCurRef) == m_iCurSource);}   //!< may check for missing reference pointer update
+#define __CORE_SOUND_ASSERT {ASSERT(this->CheckRef(m_pCurRef) == m_iCurSource)}   //!< may check for missing reference pointer update
 
 
 // ****************************************************************
@@ -70,9 +70,9 @@ public:
     //! set various sound source properties
     //! @{
     void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
-    inline void SetVolume(const float& fVolume) {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume);}
-    inline void SetPitch(const float& fPitch)   {CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
-    inline void SetLoop(const bool& bLoop)      {CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    inline void SetVolume(const float& fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume);}
+    inline void SetPitch(const float& fPitch)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
+    inline void SetLoop(const bool& bLoop)      {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
     //! enable active sound source with reference pointer

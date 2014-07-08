@@ -11,6 +11,7 @@
 #define _CORE_GUARD_DATA_H_
 
 // TODO: convert return-strings into one single big memory-buffer ?
+// TODO: check if FindFirstFile really needs full path
 
 
 // ****************************************************************
@@ -19,7 +20,7 @@
 #define CORE_DATA_STRING_LEN (256u)    //!< length of each return-string
 
 #if defined(_CORE_WINDOWS_)
-    #define CORE_DATA_SLASH "\\"    //!< default path-delimiter of the operating system
+    #define CORE_DATA_SLASH "\\"       //!< default path-delimiter of the operating system
 #else
     #define CORE_DATA_SLASH "/"
 #endif
@@ -79,15 +80,15 @@ public:
     /*! operate with string data */
     //! @{
     template <typename F> static const char* StrProcess(const char* pcInput, F&& pFunction);
-    static inline const char* StrUpper    (const char*  pcInput) {return coreData::StrProcess(pcInput, toupper);}
-    static inline const char* StrLower    (const char*  pcInput) {return coreData::StrProcess(pcInput, tolower);}
-    static bool               StrLike     (const char*  pcInput, const char* pcCompare);
-    static const char*        StrRight    (const char*  pcInput, const coreUint& iNum);
-    static const char*        StrExtension(const char*  pcInput);
-    static float              StrVersion  (const char*  pcInput);
-    static void               StrTrim     (std::string* psInput);
+    static constexpr_func bool StrCmpConst (const char*  s, const char* t) {return *s ? (*s == *t) && StrCmpConst(s+1, t+1) : !*t;}
+    static inline bool         StrCmpLike  (const char*  s, const char* t) {return (*t - '*') ? *s ? (*t == '?') | (toupper(*s) == toupper(*t)) && StrCmpLike(s+1, t+1) : !*t : StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t));}
+    static inline const char*  StrUpper    (const char*  pcInput)          {return coreData::StrProcess(pcInput, toupper);}
+    static inline const char*  StrLower    (const char*  pcInput)          {return coreData::StrProcess(pcInput, tolower);}
+    static const char*         StrRight    (const char*  pcInput, const coreUint& iNum);
+    static const char*         StrExtension(const char*  pcInput);
+    static float               StrVersion  (const char*  pcInput);
+    static void                StrTrim     (std::string* psInput);
     //! @}
-
 
 private:
     DISABLE_INST(coreData)
@@ -125,7 +126,7 @@ template <typename... A> const char* coreData::Print(const char* pcFormat, A&&..
 
 // ****************************************************************
 /* process string with custom sub-function */
-template <typename F> static const char* coreData::StrProcess(const char* pcInput, F&& pFunction)
+template <typename F> const char* coreData::StrProcess(const char* pcInput, F&& pFunction)
 {
     char* pcString = coreData::__NextString();
     char* pcCursor = pcString;

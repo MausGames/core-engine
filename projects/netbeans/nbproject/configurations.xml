@@ -67,6 +67,8 @@
             <itemPath>../../source/objects/game/coreObject3D.h</itemPath>
             <itemPath>../../source/objects/game/coreParticle.cpp</itemPath>
             <itemPath>../../source/objects/game/coreParticle.h</itemPath>
+            <itemPath>../../source/objects/game/coreScene.cpp</itemPath>
+            <itemPath>../../source/objects/game/coreScene.h</itemPath>
           </logicalFolder>
           <logicalFolder name="menu" displayName="menu" projectFiles="true">
             <itemPath>../../source/objects/menu/coreButton.cpp</itemPath>
@@ -101,7 +103,6 @@
             <itemPath>../../source/utilities/file/coreLog.h</itemPath>
           </logicalFolder>
           <logicalFolder name="math" displayName="math" projectFiles="true">
-            <itemPath>../../source/utilities/math/coreMath.cpp</itemPath>
             <itemPath>../../source/utilities/math/coreMath.h</itemPath>
             <itemPath>../../source/utilities/math/coreMatrix.h</itemPath>
             <itemPath>../../source/utilities/math/coreSpline.cpp</itemPath>
@@ -362,6 +363,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreScene.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreScene.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -480,11 +491,6 @@
       <item path="../../source/utilities/file/coreLog.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreMath.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreMath.h"
@@ -744,6 +750,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreScene.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreScene.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -862,11 +878,6 @@
       <item path="../../source/utilities/file/coreLog.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreMath.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreMath.h"
@@ -1126,6 +1137,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreScene.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreScene.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -1244,11 +1265,6 @@
       <item path="../../source/utilities/file/coreLog.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreMath.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreMath.h"
@@ -1516,6 +1532,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreScene.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreScene.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -1634,11 +1660,6 @@
       <item path="../../source/utilities/file/coreLog.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreMath.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreMath.h"
@@ -1906,6 +1927,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreScene.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreScene.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -2024,11 +2055,6 @@
       <item path="../../source/utilities/file/coreLog.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreMath.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreMath.h"
@@ -2295,6 +2321,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/objects/game/coreScene.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/objects/game/coreScene.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -2413,11 +2449,6 @@
       <item path="../../source/utilities/file/coreLog.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreMath.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreMath.h"

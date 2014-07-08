@@ -22,6 +22,7 @@
 // TODO: enable shared vertex buffers mixed with unique
 // TODO: check out (Multi)Draw(Array|Elements)Indirect
 // TODO: reorder indices/vertices in memory to improve post-transform caching (maybe in model-file, nvTriStrip)
+// TODO: separate model format from model class, implement old MD3 code for compatibility
 class coreModel final : public coreResource
 {
 private:

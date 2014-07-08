@@ -73,8 +73,8 @@ public:
 
     //! access entries
     //! @{
-    inline const coreEntry& GetEntry(const coreUint& iIndex)const {SDL_assert(iIndex      < m_aEntry.size()); return m_aEntry[iIndex];}
-    inline const coreEntry& GetCurEntry()const                    {SDL_assert(m_iCurIndex < m_aEntry.size()); return m_aEntry[m_iCurIndex];}
+    inline const coreEntry& GetEntry(const coreUint& iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex];}
+    inline const coreEntry& GetCurEntry()const                    {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex];}
     //! @}
 
     //! set object properties
@@ -85,7 +85,7 @@ public:
 
     //! get object properties
     //! @{
-    inline coreButton* GetArrow(const coreUint& iIndex) {SDL_assert(iIndex < 2); return &m_aArrow[iIndex];}
+    inline coreButton* GetArrow(const coreUint& iIndex) {ASSERT(iIndex < 2) return &m_aArrow[iIndex];}
     inline coreLabel* GetCaption()                      {return &m_Caption;}
     inline coreUint GetNumEntries()const                {return m_aEntry.size();}
     inline const coreUint& GetCurIndex()const           {return m_iCurIndex;}
@@ -152,7 +152,7 @@ template <typename T> void coreSwitchBox<T>::Construct(const char* pcIdle, const
 
 template <typename T> void coreSwitchBox<T>::Construct(const char* pcFont, const int& iHeight, const coreUint& iLength, const coreUint& iReserve)
 {
-    SDL_assert(iLength);
+    ASSERT(iLength)
 
     // create the label
     m_Caption.Construct(pcFont, iHeight, iLength);
@@ -231,7 +231,7 @@ template <typename T> void coreSwitchBox<T>::Move()
 
     if(m_iUpdate)
     {
-        SDL_assert(this->GetSize().x > 2.0f*this->GetSize().y);
+        ASSERT(this->GetSize().x > 2.0f*this->GetSize().y)
 
         const coreVector2 vPosition = this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment();
         const coreVector2 vSize     = coreVector2(this->GetSize().y, this->GetSize().y);
@@ -266,7 +266,7 @@ template <typename T> void coreSwitchBox<T>::Move()
 // add entry
 template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcEntry, const T& Value)
 {
-    SDL_assert(m_aEntry.size() < m_aEntry.capacity());
+    ASSERT(m_aEntry.size() < m_aEntry.capacity())
 
     // create new entry
     m_aEntry.push_back(coreEntry(pcEntry, Value));
@@ -287,7 +287,7 @@ template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const char* pcKey,
 // remove entry
 template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUint& iIndex)
 {
-    SDL_assert(iIndex < m_aEntry.size());
+    ASSERT(iIndex < m_aEntry.size())
     auto it = m_aEntry.begin()+iIndex;
 
     // unbind entry
@@ -323,7 +323,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
 // switch to specific entry
 template <typename T> void coreSwitchBox<T>::Select(const coreUint& iIndex)
 {
-    SDL_assert(iIndex < m_aEntry.size()); 
+    ASSERT(iIndex < m_aEntry.size())
 
     // save new index
     if(m_iCurIndex == iIndex) return;

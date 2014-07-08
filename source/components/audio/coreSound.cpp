@@ -142,7 +142,7 @@ void coreSound::PlayPosition(const void* pRef, const float& fVolume, const float
 {
     // set active reference pointer
     m_pCurRef = pRef;
-    SDL_assert(m_pCurRef || !bLoop);
+    ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free sound source
     m_iCurSource = Core::Audio->NextSource(m_iBuffer);
@@ -177,7 +177,7 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
 {
     // set active reference pointer
     m_pCurRef = pRef;
-    SDL_assert(m_pCurRef || !bLoop);
+    ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free sound source
     m_iCurSource = Core::Audio->NextSource(m_iBuffer);
@@ -204,7 +204,7 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
 // stop the sound
 void coreSound::Stop()
 {
-    CORE_SOUND_ASSERT
+    __CORE_SOUND_ASSERT
     if(m_iCurSource)
     {
         // stop sound source
@@ -237,7 +237,7 @@ bool coreSound::IsPlaying()const
 // change the sound source position and velocity
 void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelocity)
 {
-    CORE_SOUND_ASSERT
+    __CORE_SOUND_ASSERT
     if(m_iCurSource)
     {
 #if defined(_CORE_DEBUG_)
@@ -245,7 +245,7 @@ void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelo
         // check for relative property
         int iStatus;
         alGetSourcei(m_iCurSource, AL_SOURCE_RELATIVE, &iStatus);
-        SDL_assert(!iStatus);
+        ASSERT(!iStatus)
 
 #endif
         // set position and velocity

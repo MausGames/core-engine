@@ -283,7 +283,7 @@ coreError coreModel::Load(coreFile* pFile)
             for(coreByte j = 0; j < 3; ++j)
             {
                 // convert all indices
-                SDL_assert(oMesh.aTriangle[i].aiVertex[j] < 256);
+                ASSERT(oMesh.aTriangle[i].aiVertex[j] < 256)
                 pByteData[i*3 + j] = (coreByte)oMesh.aTriangle[i].aiVertex[j];
             }
         }
@@ -355,7 +355,7 @@ void coreModel::DrawElements()const
     coreModel::Lock();
     {
         // check and draw the model
-        SDL_assert((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer);
+        ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
         glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
     }
     coreModel::Unlock();
@@ -366,7 +366,7 @@ void coreModel::DrawElementsInstanced(const coreUint& iCount)const
     coreModel::Lock();
     {
         // check and draw the model instanced
-        SDL_assert((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer);
+        ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
         glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
     }
     coreModel::Unlock();
@@ -378,14 +378,14 @@ void coreModel::DrawElementsInstanced(const coreUint& iCount)const
 void coreModel::DrawArrays()const
 {
     // check and draw the model
-    SDL_assert(s_pCurrent == this || !s_pCurrent);
+    ASSERT(s_pCurrent == this || !s_pCurrent)
     glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
 }
 
 void coreModel::DrawArraysInstanced(const coreUint& iCount)const
 {
     // check and draw the model instanced
-    SDL_assert(s_pCurrent == this || !s_pCurrent);
+    ASSERT(s_pCurrent == this || !s_pCurrent)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
@@ -394,7 +394,7 @@ void coreModel::DrawArraysInstanced(const coreUint& iCount)const
 // enable the model
 void coreModel::Enable()
 {
-    SDL_assert(!m_apiVertexBuffer.empty());
+    ASSERT(!m_apiVertexBuffer.empty())
 
     // check current model object
     if(s_pCurrent == this) return;
@@ -454,11 +454,11 @@ void coreModel::Disable(const bool& bFull)
 // create vertex buffer
 coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage)
 {
-    SDL_assert(!m_iVertexArray);
+    ASSERT(!m_iVertexArray)
 
     // save properties
     if(m_apiVertexBuffer.empty()) m_iNumVertices = iNumVertices;
-    SDL_assert(m_iNumVertices == iNumVertices);
+    ASSERT(m_iNumVertices == iNumVertices)
 
     // allocate vertex buffer
     coreVertexBuffer* pBuffer = new coreVertexBuffer();
@@ -479,7 +479,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
 // create index buffer
 coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const coreByte& iIndexSize, const void* pIndexData, const GLenum& iUsage)
 {
-    SDL_assert(!m_iVertexArray && !m_iIndexBuffer);
+    ASSERT(!m_iVertexArray && !m_iIndexBuffer)
 
     // save properties
     m_iNumIndices = iNumIndices;
@@ -490,7 +490,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const 
     case 1:  m_iIndexType = GL_UNSIGNED_BYTE;  break;
     case 2:  m_iIndexType = GL_UNSIGNED_SHORT; break;
     case 4:  m_iIndexType = GL_UNSIGNED_INT;   break;
-    default: SDL_assert(false);
+    default: ASSERT(false)
     }
 
     coreModel::Lock();

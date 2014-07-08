@@ -177,7 +177,7 @@ coreProgram::~coreProgram()
 // TODO: remove/move linking part somehow
 bool coreProgram::Enable()
 {
-    SDL_assert(m_iStatus);
+    ASSERT(m_iStatus)
 
     // check current shader-program
     if(s_pCurrent == this) return true;

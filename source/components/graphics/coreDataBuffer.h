@@ -39,7 +39,7 @@ public:
 
     //! bind and unbind the data buffer object
     //! @{
-    inline void Bind()const                                               {SDL_assert(m_iDataBuffer); coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
+    inline void Bind()const                                               {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
     static inline void Bind(const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
     static inline void Unbind(const GLenum& iTarget)                      {coreDataBuffer::Bind(iTarget, 0);}
     //! @}
@@ -131,7 +131,7 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 // map buffer memory for writing operations
 template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength, const bool& bSync)
 {
-    SDL_assert(m_iDataBuffer && m_bDynamic && (iOffset+iLength <= m_iSize));
+    ASSERT(m_iDataBuffer && m_bDynamic && (iOffset+iLength <= m_iSize))
 
     // bind the data buffer
     this->Bind();
@@ -159,7 +159,7 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
 // unmap buffer memory
 template <typename T> void coreDataBuffer::Unmap(T* pPointer)
 {
-    SDL_assert(pPointer);
+    ASSERT(pPointer)
 
     if(GLEW_ARB_map_buffer_range)
     {

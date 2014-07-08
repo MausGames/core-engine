@@ -101,7 +101,7 @@ public:
     inline const coreMatrix4& GetPerspective()const       {return m_mPerspective;}
     inline const coreMatrix4& GetOrtho()const             {return m_mOrtho;}
     inline const coreVector4& GetResolution()const        {return m_vCurResolution;}
-    inline const coreLight& GetLight(const int& iID)const {SDL_assert(iID < CORE_GRAPHICS_LIGHTS); return m_aLight[iID];}
+    inline const coreLight& GetLight(const int& iID)const {ASSERT(iID < CORE_GRAPHICS_LIGHTS) return m_aLight[iID];}
     inline const GLuint& GetUniformBuffer()const          {return m_iUniformBuffer;}
     //! @}
 

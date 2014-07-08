@@ -47,7 +47,7 @@ coreFrameBuffer::~coreFrameBuffer()
 // start writing to the frame buffer
 void coreFrameBuffer::StartWrite()
 {
-    SDL_assert(s_pCurrent == NULL && m_pTexture->GetTexture());
+    ASSERT(s_pCurrent == NULL && m_pTexture->GetTexture())
     s_pCurrent = this;
 
     // set current frame buffer
@@ -68,7 +68,7 @@ void coreFrameBuffer::StartWrite()
 // end writing to the frame buffer
 void coreFrameBuffer::EndWrite()
 {
-    SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
+    ASSERT(s_pCurrent == this && m_pTexture->GetTexture())
     s_pCurrent = NULL;
 
     // reset current frame buffer
@@ -103,7 +103,7 @@ void coreFrameBuffer::EndWrite()
 // clear content of the frame buffer
 void coreFrameBuffer::Clear()
 {
-    SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
+    ASSERT(s_pCurrent == this && m_pTexture->GetTexture())
 
     // clear the whole frame buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -114,7 +114,7 @@ void coreFrameBuffer::Clear()
 // invalidate content of the frame buffer
 void coreFrameBuffer::Invalidate()
 {
-    SDL_assert(s_pCurrent == this && m_pTexture->GetTexture());
+    ASSERT(s_pCurrent == this && m_pTexture->GetTexture())
                  
     // invalidate the whole frame buffer
     if(GLEW_ARB_invalidate_subdata)
@@ -139,7 +139,7 @@ void coreFrameBuffer::__Reset(const bool& bInit)
 coreError coreFrameBuffer::__Init()
 {
     ASSERT_IF(m_pTexture->GetTexture()) return CORE_INVALID_CALL;
-    SDL_assert(m_vResolution.x > 0.0f && m_vResolution.y > 0.0f);
+    ASSERT(m_vResolution.x > 0.0f && m_vResolution.y > 0.0f)
 
     // check for OpenGL extensions
     const GLboolean& bStorage     = GLEW_ARB_texture_storage;
@@ -203,7 +203,7 @@ coreError coreFrameBuffer::__Init()
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pTexture->GetTexture(), 0);
             break;
 
-        default: SDL_assert(false);
+        default: ASSERT(false)
         }
 
         // get frame buffer status
