@@ -63,7 +63,7 @@ coreError coreSound::Load(coreFile* pFile)
         std::memcpy(acID,   pData, 4); pData += 4;
         std::memcpy(&iSize, pData, 4); pData += 4;
 
-             if(!std::strncmp(acID, "fmt ", 4)) std::memcpy(&m_Format, pData, sizeof(m_Format));
+             if(!std::strncmp(acID, "fmt ", 4)) {std::memcpy(&m_Format, pData, sizeof(m_Format));}
         else if(!std::strncmp(acID, "data", 4)) {pSoundData = pData; iSoundSize = iSize;}
 
         pData += iSize;

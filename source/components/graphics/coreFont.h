@@ -37,11 +37,6 @@ public:
     SDL_Surface* CreateGlyph(const coreWord& iGlyph, const int& iHeight);
     //! @}
 
-    //! get relative path to default resource
-    //! @{
-    static inline const char* GetDefaultPath() {return "data/fonts/default.ttf";}
-    //! @}
-
 
 private:
     //! init the font in a specific height

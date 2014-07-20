@@ -19,6 +19,12 @@ coreShader::coreShader()noexcept
 {
 }
 
+coreShader::coreShader(const char* pcInjection)noexcept
+: m_iShader    (0)
+, m_sInjection (pcInjection)
+{
+}
+
 
 // ****************************************************************
 // destructor
@@ -64,8 +70,8 @@ coreError coreShader::Load(coreFile* pFile)
     coreShader::__LoadGlobal();
 
     // assemble the shader
-    const char* apcData[5] = {s_asGlobal[0].c_str(),         pcDefine,                     pcQuality,                     s_asGlobal[1].c_str(),         r_cast<const char*>(pFile->GetData())};
-    const GLint aiSize[5]  = {(GLint)s_asGlobal[0].length(), (GLint)std::strlen(pcDefine), (GLint)std::strlen(pcQuality), (GLint)s_asGlobal[1].length(), (GLint)pFile->GetSize()};
+    const char* apcData[5] = {s_asGlobal[0].c_str(),       pcDefine,                   pcQuality,                   s_asGlobal[1].c_str(),       r_cast<const char*>(pFile->GetData())};
+    const int   aiSize[5]  = {(int)s_asGlobal[0].length(), (int)std::strlen(pcDefine), (int)std::strlen(pcQuality), (int)s_asGlobal[1].length(), (int)pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
@@ -237,11 +243,6 @@ bool coreProgram::Enable()
         return false;
     }
 
-    // check for duplicate cache entries (because keys are pointers, not strings)
-    FOR_EACH(it, m_avCache)
-        FOR_EACH_SET(et, it+1, m_avCache)
-            ASSERT(std::strcmp(it->first, et->first))
-
 #endif
 
     return true;
@@ -261,33 +262,8 @@ void coreProgram::Disable(const bool& bFull)
 
 
 // ****************************************************************
-// add shader object for later attachment
-// TODO: assert-check for new shaders while already finished
-coreProgram* coreProgram::AttachShaderFile(const char* pcPath)
-{
-    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadFile<coreShader>(pcPath));
-    return this;
-}
-
-coreProgram* coreProgram::AttachShaderLink(const char* pcName)
-{
-    if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->LoadLink<coreShader>(pcName));
-    return this;
-}
-
-
-// ****************************************************************
-// add attribute location for later binding
-coreProgram* coreProgram::BindAttribute(const char* pcName, const int& iLocation)
-{
-    if(!m_iStatus) m_aiAttribute[pcName] = iLocation;
-    return this;
-}
-
-
-// ****************************************************************
 // reset with the resource manager
-void coreProgram::__Reset(const bool& bInit)
+void coreProgram::__Reset(const coreResourceReset& bInit)
 {
     if(bInit) this->__Init();
          else this->__Exit();
@@ -302,7 +278,7 @@ coreError coreProgram::__Init()
 
     // check if all requested shaders are loaded
     FOR_EACH(it, m_apShader)
-        if(!it->IsLoaded() && it->IsManaged()) return CORE_BUSY;
+        if(!it->GetHandle()->IsLoaded() && it->GetHandle()->IsManaged()) return CORE_BUSY;
 
 #if defined(_CORE_DEBUG_)
 
@@ -417,9 +393,11 @@ void coreProgram::__WriteLog()const
         // write error-log
         Core::Log->Warning("Shader-Program could not be linked/validated");
         Core::Log->ListStart("Shader-Program Error Log");
-        FOR_EACH(it, m_apShader)
-            Core::Log->ListEntry("(%s)", (*it)->GetPath());
-        Core::Log->ListEntry(pcLog);
+        {
+            FOR_EACH(it, m_apShader)
+                Core::Log->ListEntry("(%s)", (*it)->GetPath());
+            Core::Log->ListEntry(pcLog);
+        }
         Core::Log->ListEnd();
 
         SAFE_DELETE_ARRAY(pcLog)

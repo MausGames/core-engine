@@ -67,11 +67,6 @@ public:
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     //! @}
 
-    //! get relative path to default resource
-    //! @{
-    static inline const char* GetDefaultPath() {return "data/textures/standard_black.png";}
-    //! @}
-
     //! lock and unlock texture unit access
     //! @{
     static inline void Lock()   {SDL_AtomicLock(&s_iLock);}

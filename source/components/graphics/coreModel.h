@@ -23,6 +23,7 @@
 // TODO: check out (Multi)Draw(Array|Elements)Indirect
 // TODO: reorder indices/vertices in memory to improve post-transform caching (maybe in model-file, nvTriStrip)
 // TODO: separate model format from model class, implement old MD3 code for compatibility
+// TODO: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
 class coreModel final : public coreResource
 {
 private:
@@ -164,11 +165,6 @@ public:
     inline const float& GetRadius()const          {return m_fRadius;}
     inline const GLenum& GetPrimitiveType()const  {return m_iPrimitiveType;}
     inline const GLenum& GetIndexType()const      {return m_iIndexType;}
-    //! @}
-
-    //! get relative path to default resource
-    //! @{
-    static inline const char* GetDefaultPath() {return "data/models/default.md5mesh";}
     //! @}
 
     //! get currently active model object

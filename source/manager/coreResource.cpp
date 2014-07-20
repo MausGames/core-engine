@@ -10,100 +10,47 @@
 
 
 // ****************************************************************
-// constructor
-// TODO: constexpr constructor ?
-coreResourceHandle::coreResourceHandle(coreResource* pResource, coreResource* pDefault, coreFile* pFile)noexcept
-: m_pResource (pResource)
-, m_pDefault  (pDefault)
-, m_pFile     (pFile)
-, m_pCur      (pDefault ? pDefault : pResource)
-, m_iRef      (0)
-, m_bLoaded   (pDefault ? false : true)
-, m_bManaged  (pDefault ? true : false)
-{
-}
-
-
-// ****************************************************************
-// destructor
-coreResourceHandle::~coreResourceHandle()
-{
-    // forgot to delete a resource access, a resource-using object,
-    // a shared memory object or used global variables
-    ASSERT(!m_iRef)
-
-    // delete associated resource object
-    SAFE_DELETE(m_pResource)
-}
-
-
-// ****************************************************************
-// control resource loading
-void coreResourceHandle::__Update()
-{
-    if(!m_bManaged) return;
-
-    if(m_iRef != 0 && !m_bLoaded)
-    {
-        // load associated resource
-        const coreError iStatus = m_pResource->Load(m_pFile);
-        if(iStatus == CORE_OK)
-        {
-            // successfully loaded
-            m_pCur = m_pResource;
-            m_bLoaded = true;
-        }
-        else if(iStatus != CORE_BUSY)
-        {
-            // stop managing the resource handle
-            m_bManaged = false;
-        }
-    }
-}
-
-
-// ****************************************************************
-// constructor
-coreReset::coreReset()noexcept
+/* constructor */
+coreResourceRelation::coreResourceRelation()noexcept
 {
     // add object to resource manager
-    Core::Manager::Resource->BindReset(this);
+    Core::Manager::Resource->BindRelation(this);
 }
 
 
 // ****************************************************************
-// destructor
-coreReset::~coreReset()
+/* destructor */
+coreResourceRelation::~coreResourceRelation()
 {
     // remove object from resource manager
-    Core::Manager::Resource->UnbindReset(this);
+    Core::Manager::Resource->UnbindRelation(this);
 }
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreResourceManager::coreResourceManager()noexcept
-: m_bActive (false)
+: m_iLock   (0)
+, m_bActive (false)
 {
     // start up the resource manager
-    this->Reset(true);
+    this->Reset(CORE_RESOURCE_RESET_INIT);
 
     Core::Log->Info("Resource Manager created");
 }
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreResourceManager::~coreResourceManager()
 {
-    ASSERT(!m_apReset.size())
+    ASSERT(!m_apRelation.size())
 
     // shut down the resource manager
-    this->Reset(false);
+    this->Reset(CORE_RESOURCE_RESET_EXIT);
 
-    // delete resource handles and default resources
-    FOR_EACH(it, m_apHandle)  SAFE_DELETE(it->second)
-    FOR_EACH(it, m_apDefault) SAFE_DELETE(it->second)
+    // delete resource handles
+    FOR_EACH(it, m_apHandle) SAFE_DELETE(it->second)
 
     // delete resource files
     FOR_EACH(it, m_apArchive)    SAFE_DELETE(it->second)
@@ -111,36 +58,35 @@ coreResourceManager::~coreResourceManager()
 
     // clear memory
     m_apHandle.clear();
-    m_apDefault.clear();
     m_apArchive.clear();
     m_apDirectFile.clear();
-    m_apReset.clear();
+    m_apRelation.clear();
 
     Core::Log->Info("Resource Manager destroyed");
 }
 
 
 // ****************************************************************
-// retrieve archive
+/* retrieve archive */
 coreArchive* coreResourceManager::RetrieveArchive(const char* pcPath)
 {
+    // check for existing archive
     if(m_apArchive.count(pcPath)) return m_apArchive[pcPath];
 
     // load new archive
     coreArchive* pNewArchive = new coreArchive(pcPath);
     m_apArchive[pcPath] = pNewArchive;
 
-    ASSERT(pNewArchive->GetSize())
+    ASSERT(pNewArchive->GetNumFiles())
     return pNewArchive;
 }
 
 
 // ****************************************************************
-// retrieve resource file
-// TODO MAJOR: when and how load default archive(s) ?
+/* retrieve resource file */
 coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
 {
-     // check for direct resource file
+    // try to open direct resource file first
     if(!coreData::FileExists(pcPath))
     {
         // check archives
@@ -154,6 +100,7 @@ coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
         ASSERT(false)
     }
 
+    // check for existing direct resource file
     if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];
 
     // load new direct resource file
@@ -165,22 +112,20 @@ coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
 
 
 // ****************************************************************
-// reset all resources and reset-objects
-void coreResourceManager::Reset(const bool& bInit)
+/* reset all resources and relation-objects */
+void coreResourceManager::Reset(const coreResourceReset& bInit)
 {
+    const bool bActive = bInit ? true : false;
+
     // check and set current status
-    if(m_bActive == bInit) return;
-    m_bActive = bInit;
+    if(m_bActive == bActive) return;
+    m_bActive = bActive;
 
-    if(bInit)
+    if(m_bActive)
     {
-        // load default resources
-        FOR_EACH(it, m_apDefault)
-            it->second->Load(this->RetrieveFile(it->first.c_str()));
-
-        // init reset-objects
-        FOR_EACH(it, m_apReset)
-            (*it)->__Reset(true);
+        // start up relation-objects
+        FOR_EACH(it, m_apRelation)
+            (*it)->__Reset(CORE_RESOURCE_RESET_INIT);
 
         // start resource thread
         if(Core::Graphics->GetResourceContext())
@@ -192,30 +137,31 @@ void coreResourceManager::Reset(const bool& bInit)
         if(Core::Graphics->GetResourceContext())
             this->KillThread();
 
-        // shut down reset-objects
-        FOR_EACH(it, m_apReset)
-            (*it)->__Reset(false);
+        // shut down relation-objects
+        FOR_EACH(it, m_apRelation)
+            (*it)->__Reset(CORE_RESOURCE_RESET_EXIT);
 
         // unload all resources
-        FOR_EACH(it, m_apHandle)  it->second->__Nullify();
-        FOR_EACH(it, m_apDefault) it->second->Unload();
+        FOR_EACH(it, m_apHandle)
+            it->second->Nullify();
     }
 }
 
 
 // ****************************************************************
-// init resource thread
+/* init resource thread */
 int coreResourceManager::__InitThread()
 {
-    // assign secondary OpenGL context to resource thread
+    // assign resource context to resource thread
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphics->GetResourceContext()))
-        Core::Log->Error("Secondary OpenGL context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("Secondary OpenGL context assigned to resource thread");
+        Core::Log->Error("Resource context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
+    else Core::Log->Info("Resource context assigned to resource thread");
 
-    // init GLEW on secondary OpenGL context
+    // init GLEW on resource context
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error("GLEW could not be initialized on secondary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
-    else Core::Log->Info("GLEW initialized on secondary OpenGL context (%s)", glewGetString(GLEW_VERSION));
+    if(iError != GLEW_OK)
+        Core::Log->Error("GLEW could not be initialized on resource context (GLEW: %s)", glewGetErrorString(iError));
+    else Core::Log->Info("GLEW initialized on resource context (%s)", glewGetString(GLEW_VERSION));
 
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
@@ -225,23 +171,35 @@ int coreResourceManager::__InitThread()
 
 
 // ****************************************************************
-// run resource thread
+/* run resource thread */
 int coreResourceManager::__RunThread()
 {
+    // check for current status
     if(m_bActive)
     {
-        // update resource handles
-        for(coreUint i = 0; i < m_apHandle.size(); ++i)
-            m_apHandle[i]->__Update();
+        SDL_AtomicLock(&m_iLock);
+        {
+            for(coreUint i = 0; i < m_apHandle.size(); ++i)
+            {
+                // update resource handle
+                if(m_apHandle[i]->Update())
+                {
+                    // allow changes during iteration
+                    SDL_AtomicUnlock(&m_iLock);
+                    SDL_AtomicLock(&m_iLock);
+                }
+            }
+        }
+        SDL_AtomicUnlock(&m_iLock);
     }
     return 0;
 }
 
 
 // ****************************************************************
-// exit resource thread
+/* exit resource thread */
 void coreResourceManager::__ExitThread()
 {
-    // dissociate secondary OpenGL context from resource thread
+    // dissociate resource context from resource thread
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
 }

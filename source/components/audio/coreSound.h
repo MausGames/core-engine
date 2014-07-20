@@ -22,6 +22,7 @@
 // TODO: implement sound pause
 // TODO: implement global sound volume change
 // TODO: cache and check sound source properties
+// TODO: problem with loop on unloaded sound
 class coreSound final : public coreResource
 {
 public:
@@ -85,11 +86,6 @@ public:
     //! @{
     inline const ALuint& GetBuffer()const         {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
-    //! @}
-
-    //! get relative path to default resource
-    //! @{
-    static inline const char* GetDefaultPath() {return "data/sounds/default.wav";}
     //! @}
 };
 

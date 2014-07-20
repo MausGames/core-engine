@@ -119,7 +119,7 @@ coreError coreTexture::Load(coreFile* pFile)
         if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER));
 
         // allocate texture memory
-        const void* pPixels = bPixelBuffer ? 0 : pConvert->pixels;
+        const void* pPixels = bPixelBuffer ? NULL : pConvert->pixels;
         if(bStorage)
         {
             glTexStorage2D(GL_TEXTURE_2D, (int)coreMath::Log<2>((float)MAX(pConvert->w, pConvert->h)), iInternal, pConvert->w, pConvert->h);

@@ -61,16 +61,19 @@ enum coreShaderStatus
 
 // ****************************************************************
 // shader class
-// TODO: implement simple define-injection interface
+// TODO: implement simple code-injection interface
 class coreShader final : public coreResource
 {
 private:
     GLuint m_iShader;                   //!< shader identifier
+    std::string m_sInjection;           //!< custom code-string appended at the beginning of the shader
+                                        
     static std::string s_asGlobal[2];   //!< global shader code (0 = version | 1 = global shader file)
 
 
 public:
     coreShader()noexcept;
+    coreShader(const char* pcInjection)noexcept;
     ~coreShader();
 
     //! load and unload shader resource data
@@ -82,11 +85,6 @@ public:
     //! get object properties
     //! @{
     inline const GLuint& GetShader()const {return m_iShader;}
-    //! @}
-
-    //! get relative path to default resource
-    //! @{
-    static inline const char* GetDefaultPath() {return "data/shaders/default.fs";}
     //! @}
 
 
@@ -107,19 +105,20 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 // shader-program class
 // TODO: material data in UBO
 // TODO: use variable template with uniform cache (C++14)
-class coreProgram final : public coreReset
+// TODO: assert-check for new shaders while already finished
+class coreProgram final : public coreResourceRelation
 {
 private:
-    GLuint m_iProgram;                                //!< shader-program identifier
+    GLuint m_iProgram;                            //!< shader-program identifier
                                                          
-    std::vector<coreShaderPtr> m_apShader;            //!< attached shader objects
-    coreShaderStatus m_iStatus;                       //!< current status
+    std::vector<coreShaderPtr> m_apShader;        //!< attached shader objects
+    coreShaderStatus m_iStatus;                   //!< current status
 
-    coreLookup<const char*, int> m_aiUniform;         //!< uniform locations
-    coreLookup<const char*, int> m_aiAttribute;       //!< attribute locations
-    coreLookup<const char*, coreVector4> m_avCache;   //!< cached uniform values
+    coreLookup<const char*, int> m_aiUniform;     //!< uniform locations
+    coreLookup<const char*, int> m_aiAttribute;   //!< attribute locations
+    coreLookup<int, coreVector4> m_avCache;       //!< cached uniform values
 
-    static coreProgram* s_pCurrent;                   //!< currently active shader-program
+    static coreProgram* s_pCurrent;               //!< currently active shader-program
 
 
 public:
@@ -134,27 +133,27 @@ public:
 
     //! define shader objects and attribute locations
     //! @{
-    coreProgram* AttachShaderFile(const char* pcPath);
-    coreProgram* AttachShaderLink(const char* pcName);
-    coreProgram* BindAttribute(const char* pcName, const int& iLocation);
-    inline void Finish()  {if(m_iStatus) return; m_iStatus = CORE_SHADER_DEFINED; this->__Init();}
-    inline void Refresh() {this->__Exit();}
+    inline coreProgram* AttachShader (const coreShaderPtr pShader)                      {if(!m_iStatus) m_apShader.push_back(pShader);                                          return this;}
+    inline coreProgram* AttachShader (const char*         pcName)                       {if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->Get<coreShader>(pcName)); return this;}
+    inline coreProgram* BindAttribute(const char*         pcName, const int& iLocation) {if(!m_iStatus) m_aiAttribute[pcName] = iLocation;                                      return this;}
+    inline void Finish()                                                                {if(!m_iStatus) {m_iStatus = CORE_SHADER_DEFINED; this->__Init();}}
+    inline void Refresh()                                                               {this->__Exit();}
     //! @}
 
     //! send new uniform values
     //! @{
-    inline void SendUniform(const char* pcName, const int& iInt)                                    {const int iID = this->CheckCache(pcName, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1i (iID, iInt);}
-    inline void SendUniform(const char* pcName, const float& fFloat)                                {const int iID = this->CheckCache(pcName, coreVector4(fFloat,      0.0f, 0.0f, 0.0f)); if(iID >= 0) glUniform1f (iID, fFloat);}
-    inline void SendUniform(const char* pcName, const coreVector2& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f, 0.0f));       if(iID >= 0) glUniform2fv(iID, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreVector3& vVector)                         {const int iID = this->CheckCache(pcName, coreVector4(vVector,     0.0f));             if(iID >= 0) glUniform3fv(iID, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreVector4& vVector)                         {const int iID = this->CheckCache(pcName, vVector);                                    if(iID >= 0) glUniform4fv(iID, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose) {const int iID = this->CheckCache(pcName, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13, mMatrix._21 + mMatrix._22 + mMatrix._23, mMatrix._31 + mMatrix._32 + mMatrix._33, 0.0f)); if(iID >= 0) glUniformMatrix3fv(iID, 1, bTranspose, mMatrix);}
+    inline void SendUniform(const char* pcName, const int& iInt)                                    {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation, iInt);}
+    inline void SendUniform(const char* pcName, const float& fFloat)                                {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,      0.0f, 0.0f, 0.0f))) glUniform1f (iLocation, fFloat);}
+    inline void SendUniform(const char* pcName, const coreVector2& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const coreVector3& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f)))             glUniform3fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const coreVector4& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, vVector))                                    glUniform4fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13, mMatrix._21 + mMatrix._22 + mMatrix._23, mMatrix._31 + mMatrix._32 + mMatrix._33, 0.0f))) glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix);}
     inline void SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
     //! @}
 
     //! check for cached uniform values
     //! @{
-    inline int CheckCache(const char* pcName, const coreVector4& vVector) hot_func {if(m_avCache.count(pcName)) {if(m_avCache.at(pcName) == vVector) return -1;} m_avCache[pcName] = vVector; return this->GetUniform(pcName);}
+    inline bool CheckCache(const int& iLocation, const coreVector4& vVector)hot_func {if(iLocation < 0) return false; if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
     //! @}
 
     //! get object properties
@@ -173,7 +172,7 @@ public:
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const bool& bInit)override;
+    void __Reset(const coreResourceReset& bInit)override;
     //! @}
 
     //! init and exit the shader-program
