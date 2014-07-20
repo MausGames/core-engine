@@ -61,55 +61,55 @@ private:
 
     //! control the particle
     //! @{
-    inline void Prepare(coreParticleEffect* pEffect)noexcept {m_pEffect = pEffect; m_fValue = 1.0f;}
-    inline void Update()noexcept;
+    inline void Prepare(coreParticleEffect* pEffect) {m_pEffect = pEffect; m_fValue = 1.0f;}
+    inline void Update();
     //! @}
 
 
 public:
     //! check current status
     //! @{
-    inline bool IsActive()const noexcept {return (m_fValue > 0.0f) ? true : false;}
+    inline bool IsActive()const {return (m_fValue > 0.0f) ? true : false;}
     //! @}
 
     //! animate the particle relative
     //! @{
-    inline void SetPositionRel(const coreVector3& vStart, const coreVector3& vMove)noexcept {m_CurrentState.vPosition = vStart; m_MoveState.vPosition = vMove;}
-    inline void SetScaleRel(const float& fStart, const float& fMove)noexcept                {m_CurrentState.fScale    = fStart; m_MoveState.fScale    = fMove;}
-    inline void SetAngleRel(const float& fStart, const float& fMove)noexcept                {m_CurrentState.fAngle    = fStart; m_MoveState.fAngle    = fMove;}
-    inline void SetColor4Rel(const coreVector4& vStart, const coreVector4& vMove)noexcept   {m_CurrentState.vColor    = vStart; m_MoveState.vColor    = vMove;}
+    inline void SetPositionRel(const coreVector3& vStart, const coreVector3& vMove) {m_CurrentState.vPosition = vStart; m_MoveState.vPosition = vMove;}
+    inline void SetScaleRel   (const float&       fStart, const float&       fMove) {m_CurrentState.fScale    = fStart; m_MoveState.fScale    = fMove;}
+    inline void SetAngleRel   (const float&       fStart, const float&       fMove) {m_CurrentState.fAngle    = fStart; m_MoveState.fAngle    = fMove;}
+    inline void SetColor4Rel  (const coreVector4& vStart, const coreVector4& vMove) {m_CurrentState.vColor    = vStart; m_MoveState.vColor    = vMove;}
     //! @}
 
     //! animate the particle absolute
     //! @{
-    inline void SetPositionAbs(const coreVector3& vStart, const coreVector3& vEnd)noexcept {this->SetPositionRel(vStart, vEnd - vStart);}
-    inline void SetScaleAbs(const float& fStart, const float& fEnd)noexcept                {this->SetScaleRel   (fStart, fEnd - fStart);}
-    inline void SetAngleAbs(const float& fStart, const float& fEnd)noexcept                {this->SetAngleRel   (fStart, fEnd - fStart);}
-    inline void SetColor4Abs(const coreVector4& vStart, const coreVector4& vEnd)noexcept   {this->SetColor4Rel  (vStart, vEnd - vStart);}
+    inline void SetPositionAbs(const coreVector3& vStart, const coreVector3& vEnd) {this->SetPositionRel(vStart, vEnd - vStart);}
+    inline void SetScaleAbs   (const float&       fStart, const float&       fEnd) {this->SetScaleRel   (fStart, fEnd - fStart);}
+    inline void SetAngleAbs   (const float&       fStart, const float&       fEnd) {this->SetAngleRel   (fStart, fEnd - fStart);}
+    inline void SetColor4Abs  (const coreVector4& vStart, const coreVector4& vEnd) {this->SetColor4Rel  (vStart, vEnd - vStart);}
     //! @}
 
     //! animate the particle static
     //! @{
-    inline void SetPositionStc(const coreVector3& vStatic)noexcept {this->SetPositionRel(vStatic, coreVector3(0.0f,0.0f,0.0f));}
-    inline void SetScaleStc(const float& fStatic)noexcept          {this->SetScaleRel   (fStatic, 0.0f);}
-    inline void SetAngleStc(const float& fStatic)noexcept          {this->SetAngleRel   (fStatic, 0.0f);}
-    inline void SetColor4Stc(const coreVector4& vStatic)noexcept   {this->SetColor4Rel  (vStatic, coreVector4(0.0f,0.0f,0.0f,0.0f));}
+    inline void SetPositionStc(const coreVector3& vStatic) {this->SetPositionRel(vStatic, coreVector3(0.0f,0.0f,0.0f));}
+    inline void SetScaleStc   (const float&       fStatic) {this->SetScaleRel   (fStatic, 0.0f);}
+    inline void SetAngleStc   (const float&       fStatic) {this->SetAngleRel   (fStatic, 0.0f);}
+    inline void SetColor4Stc  (const coreVector4& vStatic) {this->SetColor4Rel  (vStatic, coreVector4(0.0f,0.0f,0.0f,0.0f));}
     //! @}
 
     //! set object properties
     //! @{
-    inline void SetSpeed(const float& fSpeed)noexcept       {m_fSpeed = fSpeed;}
-    inline void SetLifetime(const float& fLifetime)noexcept {m_fSpeed = RCP(fLifetime);}
+    inline void SetSpeed   (const float& fSpeed)    {m_fSpeed = fSpeed;}
+    inline void SetLifetime(const float& fLifetime) {m_fSpeed = RCP(fLifetime);}
     //! @}
 
     //! get object properties
     //! @{
-    inline const coreState& GetCurrentState()const noexcept {return m_CurrentState;}
-    inline const coreState& GetMoveState()const noexcept    {return m_MoveState;}
-    inline const float& GetValue()const noexcept            {return m_fValue;}
-    inline const float& GetSpeed()const noexcept            {return m_fSpeed;}
-    inline float GetLifetime()const noexcept                {return RCP(m_fSpeed);}
-    inline coreParticleEffect* GetEffect()const noexcept    {return m_pEffect;}
+    inline const coreState&    GetCurrentState()const {return m_CurrentState;}
+    inline const coreState&    GetMoveState   ()const {return m_MoveState;}
+    inline const float&        GetValue       ()const {return m_fValue;}
+    inline const float&        GetSpeed       ()const {return m_fSpeed;}
+    inline float               GetLifetime    ()const {return RCP(m_fSpeed);}
+    inline coreParticleEffect* GetEffect      ()const {return m_pEffect;}
     //! @}
 };
 
@@ -121,11 +121,15 @@ public:
 // TODO: discard every X particle (create min 1) on lower systems ?
 // TODO: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
 // TODO: low systems: merge geometry to reduce draw calls
-class coreParticleSystem final : public coreReset
+// TODO: try same sort-algorithm proposed for instance list, no time-sort, but position-sort
+// TODO: automatic resizing function (preserve old values)
+// TODO: DefineProgram should define attributes, *Link loads and calls DefineProgram
+// TODO: __init and __exit like in the frame buffer
+class coreParticleSystem final : public coreResourceRelation
 {
 private:
     coreParticle* m_pParticle;                        //!< pre-allocated particles
-    coreUint m_iNumParticle;                          //!< number of particles
+    coreUint m_iNumParticles;                         //!< number of particles
     coreUint m_iCurParticle;                          //!< current particle
 
     static coreModel* s_pModel;                       //!< global model object
@@ -142,45 +146,46 @@ private:
 
 
 public:
-    explicit coreParticleSystem(const coreUint& iSize)noexcept;
+    explicit coreParticleSystem(const coreUint& iNumParticles)noexcept;
     ~coreParticleSystem();
     friend class coreObjectManager;
 
     //! define the visual appearance
     //! @{
-    inline void DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
-    inline void DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
-    const coreTexturePtr& DefineTextureFile(const coreByte& iUnit, const char* pcPath);
-    const coreTexturePtr& DefineTextureLink(const coreByte& iUnit, const char* pcName);
-    const coreProgramShr& DefineProgramShare(const char* pcName);
+    inline void                  DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
+    inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const char*           pcName)   {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(pcName); return m_apTexture[iUnit];}
+    inline void                  DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
+    const coreProgramShr&        DefineProgram(const char*           pcName);
     void Undefine();
     //! @}
 
     //! render and move the particle system
     //! @{
-    void Render() hot_func;
-    void Move() hot_func;
+    void Render()hot_func;
+    void Move  ()hot_func;
     //! @}
 
     //! create new particles
     //! @{
-    coreParticle* CreateParticle(coreParticleEffect* pEffect);
+    coreParticle*        CreateParticle(coreParticleEffect* pEffect);
     inline coreParticle* CreateParticle() {return this->CreateParticle(m_pEmptyEffect);}
     //! @}
 
     //! remove particle effect objects and particles
     //! @{
     void Unbind(coreParticleEffect* pEffect);
+    void Clear (coreParticleEffect* pEffect);
     void UnbindAll();
-    void Clear(coreParticleEffect* pEffect);
-    void ClearAll();
+    void ClearAll ();
     //! @}
 
     //! get object properties
     //! @{
-    inline const coreUint& GetNumParticle()const     {return m_iNumParticle;}
-    inline const coreUint& GetCurParticle()const     {return m_iCurParticle;}
-    inline coreParticleEffect* GetEmptyEffect()const {return m_pEmptyEffect;}
+    inline const coreTexturePtr& GetTexture           (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
+    inline const coreProgramShr& GetProgram           ()const                      {return m_pProgram;}
+    inline const coreUint&       GetNumParticles      ()const                      {return m_iNumParticles;}
+    inline coreUint              GetNumActiveParticles()const                      {return m_apRenderList.size();}
+    inline coreParticleEffect*   GetEmptyEffect       ()const                      {return m_pEmptyEffect;}
     //! @}
 
 
@@ -189,7 +194,7 @@ private:
 
     //! reset with the resource manager
     //! @{
-    void __Reset(const bool& bInit)override;
+    void __Reset(const coreResourceReset& bInit)override;
     //! @}
 };
 
@@ -267,7 +272,7 @@ constexpr_func coreParticle::coreParticle()noexcept
 
 // ****************************************************************
 // update the particle
-inline void coreParticle::Update()noexcept
+inline void coreParticle::Update()
 {
     ASSERT(m_pEffect)
 
@@ -294,7 +299,7 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iN
     if(m_fCreation >= 1.0f)
     {
         // adjust status value
-        m_fCreation -= std::floor(m_fCreation);
+        m_fCreation -= FLOOR(m_fCreation);
 
         // create particles and call function
         for(coreUint i = 0; i < iNum; ++i)

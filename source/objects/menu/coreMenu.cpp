@@ -11,20 +11,20 @@
 
 // ****************************************************************
 // constructor
-coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iCurSurface)
+coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)
 : m_pCurObject   (NULL)                                   
-, m_iNumSurface  (iNumSurfaces)
-, m_iCurSurface  (iCurSurface)
-, m_iOldSurface  (iCurSurface)
+, m_iNumSurfaces (iNumSurfaces)
+, m_iCurSurface  (iStartSurface)
+, m_iOldSurface  (iStartSurface)
 , m_Transition   (coreTimer(1.0f, 1.0f, 1))
 , m_pFrameBuffer (NULL)
 {
     // create surfaces
-    m_papObject = new std::vector<coreObject2D*>[m_iNumSurface];
+    m_papObject = new std::vector<coreObject2D*>[m_iNumSurfaces];
 
     // reserve memory for objects
-    for(int i = 0; i < m_iNumSurface; ++i) m_papObject[i].reserve(32);
-    for(int i = 0; i < 3;             ++i) m_aapRender[i].reserve(32);
+    for(int i = 0; i < m_iNumSurfaces; ++i) m_papObject[i].reserve(32);
+    for(int i = 0; i < 3;              ++i) m_aapRender[i].reserve(32);
 }
 
 
@@ -33,7 +33,8 @@ coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iCurSurface)
 coreMenu::~coreMenu()
 {
     // remove all menu objects
-    this->ClearObjects();
+    for(int i = 0; i < m_iNumSurfaces; ++i) m_papObject[i].clear();
+    for(int i = 0; i < 3;              ++i) m_aapRender[i].clear();
 
     // delete surfaces and frame buffer
     SAFE_DELETE_ARRAY(m_papObject)
@@ -81,8 +82,8 @@ void coreMenu::Move()
 
         // set alpha value for each render-list
         const float afAlpha[3] = {this->GetAlpha(), 
-                                  this->GetAlpha()*m_Transition.GetCurrent(true),
-                                  this->GetAlpha()*m_Transition.GetCurrent(false)};
+                                  this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_REVERSED),
+                                  this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_NORMAL)};
 
         // move transition between surfaces
         for(int i = 0; i < 3; ++i)
@@ -122,8 +123,8 @@ void coreMenu::Move()
 
 
 // ****************************************************************
-// add menu object
-void coreMenu::AddObject(const coreByte& iSurface, coreObject2D* pObject)
+// bind menu object
+void coreMenu::BindObject(const coreByte& iSurface, coreObject2D* pObject)
 {
 #if defined(_CORE_DEBUG_)
 
@@ -140,8 +141,8 @@ void coreMenu::AddObject(const coreByte& iSurface, coreObject2D* pObject)
 
 
 // ****************************************************************
-// remove menu object
-void coreMenu::RemoveObject(const coreByte& iSurface, coreObject2D* pObject)
+// unbind menu object
+void coreMenu::UnbindObject(const coreByte& iSurface, coreObject2D* pObject)
 {
     // loop through all menu objects
     FOR_EACH(it, m_papObject[iSurface])
@@ -157,20 +158,11 @@ void coreMenu::RemoveObject(const coreByte& iSurface, coreObject2D* pObject)
 
 
 // ****************************************************************
-// remove all menu objects
-void coreMenu::ClearObjects()
-{
-    for(int i = 0; i < m_iNumSurface; ++i) m_papObject[i].clear();
-    for(int i = 0; i < 3;             ++i) m_aapRender[i].clear();
-}
-
-
-// ****************************************************************
 // change current surface
 bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
 {
-           if(iNewSurface == m_iCurSurface) return false;
-    ASSERT_IF(iNewSurface >= m_iNumSurface) return false;
+           if(iNewSurface == m_iCurSurface)  return false;
+    ASSERT_IF(iNewSurface >= m_iNumSurfaces) return false;
 
     if(!fSpeed)
     {
@@ -211,7 +203,7 @@ bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
 
         // set and start the transition
         m_Transition.SetSpeed(fSpeed);
-        m_Transition.Play(true);
+        m_Transition.Play(CORE_TIMER_PLAY_RESET);
     }
 
     // save new surface numbers

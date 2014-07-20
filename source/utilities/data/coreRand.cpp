@@ -13,36 +13,36 @@ coreUint coreRand::s_iSeed = 0;
 
 // ****************************************************************
 /* constructor */
-coreRand::coreRand(const coreUint& iSize, const coreUint iSeed)noexcept
-: m_iNumRand (iSize)
-, m_iCurRand (0)
+coreRand::coreRand(const coreUint& iNumRandoms, const coreUint iSeed)noexcept
+: m_iNumRandoms (iNumRandoms)
+, m_iCurRandom  (0)
 {
     // init random number generator
     coreRand::Seed(iSeed);
 
     // pre-generate random numbers
-    m_piRand = new int[m_iNumRand];
-    for(coreUint i = 0; i < m_iNumRand; ++i)
-        m_piRand[i] = coreRand::Rand();
+    m_piRandom = new int[m_iNumRandoms];
+    for(coreUint i = 0; i < m_iNumRandoms; ++i)
+        m_piRandom[i] = coreRand::Rand();
 
-    Core::Log->Info("Random Numbers (%u:%u) generated", iSize, iSeed);
+    Core::Log->Info("Random Numbers (%u:%u) generated", iNumRandoms, iSeed);
 }
 
 coreRand::coreRand(const coreRand& c)noexcept
-: m_iNumRand (c.m_iNumRand)
-, m_iCurRand (c.m_iCurRand)
+: m_iNumRandoms (c.m_iNumRandoms)
+, m_iCurRandom  (c.m_iCurRandom)
 {
     // copy random numbers
-    m_piRand = new int[m_iNumRand];
-    std::memcpy(m_piRand, c.m_piRand, m_iNumRand * sizeof(coreUint));
+    m_piRandom = new int[m_iNumRandoms];
+    std::memcpy(m_piRandom, c.m_piRandom, m_iNumRandoms * sizeof(coreUint));
 }
 
 coreRand::coreRand(coreRand&& m)noexcept
-: m_piRand   (m.m_piRand)
-, m_iNumRand (m.m_iNumRand)
-, m_iCurRand (m.m_iCurRand)
+: m_piRandom    (m.m_piRandom)
+, m_iNumRandoms (m.m_iNumRandoms)
+, m_iCurRandom  (m.m_iCurRandom)
 {
-    m.m_piRand = NULL;
+    m.m_piRandom = NULL;
 }
 
 
@@ -51,7 +51,7 @@ coreRand::coreRand(coreRand&& m)noexcept
 coreRand::~coreRand()
 {
     // delete random numbers
-    SAFE_DELETE_ARRAY(m_piRand)
+    SAFE_DELETE_ARRAY(m_piRandom)
 }
 
 
@@ -66,7 +66,7 @@ coreRand& coreRand::operator = (coreRand o)noexcept
 void swap(coreRand& a, coreRand& b)noexcept
 {
     using std::swap;
-    swap(a.m_piRand,   b.m_piRand);
-    swap(a.m_iNumRand, b.m_iNumRand);
-    swap(a.m_iCurRand, b.m_iCurRand);
+    swap(a.m_piRandom,    b.m_piRandom);
+    swap(a.m_iNumRandoms, b.m_iNumRandoms);
+    swap(a.m_iCurRandom,  b.m_iCurRandom);
 }

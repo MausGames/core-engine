@@ -51,7 +51,7 @@ public:
 
     //! enable and disable the texture
     //! @{
-    inline void Enable(const coreByte& iUnit)         {coreTexture::__BindTexture(iUnit, this);}
+    inline        void Enable (const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, this);}
     static inline void Disable(const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
     static inline void DisableAll()                   {for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i) coreTexture::Disable(i);}
     //! @}
@@ -63,13 +63,13 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint& GetTexture()const         {return m_iTexture;}
+    inline const GLuint&      GetTexture   ()const {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     //! @}
 
     //! lock and unlock texture unit access
     //! @{
-    static inline void Lock()   {SDL_AtomicLock(&s_iLock);}
+    static inline void Lock()   {SDL_AtomicLock  (&s_iLock);}
     static inline void Unlock() {SDL_AtomicUnlock(&s_iLock);}
     //! @}
 

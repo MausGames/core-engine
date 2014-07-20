@@ -28,7 +28,7 @@ enum coreFrameBufferType
 // TODO: implement real multisampling (currently supersampling sufficient)
 // TODO: frame buffer stack to allow nested buffer wrtings ? (GL 2.0 problems)
 // TODO: add stencil support
-class coreFrameBuffer final : public coreReset
+class coreFrameBuffer final : public coreResourceRelation
 {
 private:
     GLuint m_iFrameBuffer;                //!< frame buffer identifier
@@ -47,7 +47,7 @@ private:
 
 
 public:
-    coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink)noexcept;
+    coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcTextureName)noexcept;
     ~coreFrameBuffer();
 
     //! write to the frame buffer
@@ -64,21 +64,21 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetFOV(const float& fFOV)           {m_fFOV      = fFOV;}
+    inline void SetFOV     (const float& fFOV)      {m_fFOV      = fFOV;}
     inline void SetNearClip(const float& fNearClip) {m_fNearClip = fNearClip;}
-    inline void SetFarClip(const float& fFarClip)   {m_fFarClip  = fFarClip;}
+    inline void SetFarClip (const float& fFarClip)  {m_fFarClip  = fFarClip;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint& GetFrameBuffer()const     {return m_iFrameBuffer;}
-    inline const coreTexturePtr& GetTexture()const {return m_pTexture;}
-    inline const GLuint& GetDepthBuffer()const     {return m_iDepthBuffer;}
-    inline const coreVector2& GetResolution()const {return m_vResolution;}
-    inline const int& GetType()const               {return m_iType;}
-    inline const float& GetFOV()const              {return m_fFOV;}
-    inline const float& GetNearClip()const         {return m_fNearClip;}
-    inline const float& GetFarClip()const          {return m_fFarClip;}
+    inline const GLuint&         GetFrameBuffer()const {return m_iFrameBuffer;}
+    inline const coreTexturePtr& GetTexture    ()const {return m_pTexture;}
+    inline const GLuint&         GetDepthBuffer()const {return m_iDepthBuffer;}
+    inline const coreVector2&    GetResolution ()const {return m_vResolution;}
+    inline const int&            GetType       ()const {return m_iType;}
+    inline const float&          GetFOV        ()const {return m_fFOV;}
+    inline const float&          GetNearClip   ()const {return m_fNearClip;}
+    inline const float&          GetFarClip    ()const {return m_fFarClip;}
     //! @}
 
     //! get currently active frame buffer object
@@ -92,7 +92,7 @@ private:
 
     //! reset with the resource manager
     //! @{
-    void __Reset(const bool& bInit)override;
+    void __Reset(const coreResourceReset& bInit)override;
     //! @}
 
     //! init and exit the frame buffer

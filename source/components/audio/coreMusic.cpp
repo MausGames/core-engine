@@ -227,7 +227,7 @@ const char* coreMusic::GetComment(const char* pcName)const
 
 // ****************************************************************
 // reset with the resource manager
-void coreMusic::__Reset(const bool& bInit)
+void coreMusic::__Reset(const coreResourceReset& bInit)
 {
     if(bInit)
     {
@@ -290,11 +290,11 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 , m_pFadePrevious (NULL)
 {
     // reserve memory for music objects
-    m_apMusic.reserve(16);
-    m_apSequence.reserve(16);
+    m_apMusic.reserve(CORE_MUSIC_RESERVE);
+    m_apSequence.reserve(CORE_MUSIC_RESERVE);
 
     // create empty music object
-    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(NULL));
+    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0));
     m_pCurMusic   = m_pEmptyMusic;
 }
 
@@ -324,8 +324,8 @@ bool coreMusicPlayer::Update()
             m_pFadePrevious->Stop();
 
         // adjust their volume
-        m_pFadePrevious->SetVolume(m_FadeTimer.GetCurrent(true));
-        m_pCurMusic->SetVolume(m_FadeTimer.GetCurrent(false));
+        m_pFadePrevious->SetVolume(m_FadeTimer.GetValue(CORE_TIMER_GET_REVERSED));
+        m_pCurMusic->SetVolume(m_FadeTimer.GetValue(CORE_TIMER_GET_NORMAL));
 
         // update the previous music object
         m_pFadePrevious->Update();
@@ -362,7 +362,7 @@ void coreMusicPlayer::Order()
     m_apSequence = m_apMusic;
 
     // switch to first music object
-    this->Goto(0);
+    this->Select(0);
 }
 
 
@@ -378,13 +378,13 @@ void coreMusicPlayer::Shuffle()
     std::random_shuffle(m_apSequence.begin(), m_apSequence.end(), [](int i) {return coreRand::Rand() % i;});
 
     // switch to first music object
-    this->Goto(0);
+    this->Select(0);
 }
 
 
 // ****************************************************************
 // add music object from file
-coreError coreMusicPlayer::AddFile(const char* pcPath)
+coreError coreMusicPlayer::AddMusicFile(const char* pcPath)
 {
     // load from path
     return this->__AddMusic(Core::Manager::Resource->RetrieveFile(pcPath));
@@ -393,7 +393,7 @@ coreError coreMusicPlayer::AddFile(const char* pcPath)
 
 // ****************************************************************
 // add music object from archive
-coreError coreMusicPlayer::AddArchive(const char* pcPath, const char* pcFilter)
+coreError coreMusicPlayer::AddMusicArchive(const char* pcPath, const char* pcFilter)
 {
     bool bStatus = false;
 
@@ -401,7 +401,7 @@ coreError coreMusicPlayer::AddArchive(const char* pcPath, const char* pcFilter)
     coreArchive* pArchive = Core::Manager::Resource->RetrieveArchive(pcPath);
 
     // try to add all files to the music-player
-    for(coreUint i = 0; i < pArchive->GetSize(); ++i)
+    for(coreUint i = 0; i < pArchive->GetNumFiles(); ++i)
     {
         // check path and use only specific files
         if(coreData::StrCmpLike(pArchive->GetFile(i)->GetPath(), pcFilter))
@@ -417,7 +417,7 @@ coreError coreMusicPlayer::AddArchive(const char* pcPath, const char* pcFilter)
 
 // ****************************************************************
 // add music object from folder
-coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
+coreError coreMusicPlayer::AddMusicFolder(const char* pcPath, const char* pcFilter)
 {
     bool bStatus = false;
 
@@ -428,7 +428,7 @@ coreError coreMusicPlayer::AddFolder(const char* pcPath, const char* pcFilter)
     // try to add all files to the music-player
     FOR_EACH(it, asFolder)
     {
-        if(this->AddFile(it->c_str()) == CORE_OK)
+        if(this->AddMusicFile(it->c_str()) == CORE_OK)
             bStatus = true;
     }
 
@@ -453,7 +453,7 @@ coreError coreMusicPlayer::DeleteMusic(const coreUint& iIndex)
 
     // check and switch the current music object
     if(m_apMusic.empty()) m_pCurMusic = m_pEmptyMusic;
-    else this->Goto(0);
+    else this->Select(0);
 
     return CORE_OK;
 }
@@ -478,7 +478,7 @@ void coreMusicPlayer::ClearMusic()
 
 // ****************************************************************
 // switch to specific music object
-void coreMusicPlayer::Goto(const coreUint& iIndex)
+void coreMusicPlayer::Select(const coreUint& iIndex)
 {
     ASSERT_IF(iIndex >= m_apMusic.size()) return;
     if(m_pCurMusic == m_apSequence[iIndex]) return;
@@ -491,7 +491,7 @@ void coreMusicPlayer::Goto(const coreUint& iIndex)
         if(m_FadeTimer.GetSpeed())
         {
             // start transition to new music object
-            m_FadeTimer.Play(true);
+            m_FadeTimer.Play(CORE_TIMER_PLAY_RESET);
             m_pFadePrevious = m_pCurMusic;
         }
         else
@@ -519,12 +519,12 @@ bool coreMusicPlayer::Next()
     if(m_iCurIndex+1 >= m_apMusic.size())
     {
         // back to the beginning
-        this->Goto(0);
+        this->Select(0);
         return true;
     }
 
     // go to next music object
-    this->Goto(m_iCurIndex+1);
+    this->Select(m_iCurIndex+1);
     return false;
 }
 
@@ -536,12 +536,12 @@ bool coreMusicPlayer::Previous()
     if(m_iCurIndex == 0)
     {
         // back to the end
-        this->Goto(m_apMusic.size()-1);
+        this->Select(m_apMusic.size()-1);
         return true;
     }
 
     // go to previous music object
-    this->Goto(m_iCurIndex-1);
+    this->Select(m_iCurIndex-1);
     return false;
 }
 

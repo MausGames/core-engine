@@ -53,18 +53,18 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetText(const char* pcText)      {if(m_sText    != pcText)   {m_sText    = pcText;   m_bDisplay = true;}}
-    inline void SetCursor(const char& cCursor)   {if(m_cCursor  != cCursor)  {m_cCursor  = cCursor;  m_bDisplay = true;}}
+    inline void SetText   (const char* pcText)   {if(m_sText    != pcText)   {m_sText    = pcText;   m_bDisplay = true;}}
+    inline void SetCursor (const char& cCursor)  {if(m_cCursor  != cCursor)  {m_cCursor  = cCursor;  m_bDisplay = true;}}
     inline void SetReplace(const char& cReplace) {if(m_cReplace != cReplace) {m_cReplace = cReplace; m_bDisplay = true;}}
     void SetInput(const bool& bInput);
     //! @}
 
     //! get object properties
     //! @{
-    inline const char* GetText()const    {return m_sText.c_str();}
-    inline const char& GetCursor()const  {return m_cCursor;}
+    inline const char* GetText   ()const {return m_sText.c_str();}
+    inline const char& GetCursor ()const {return m_cCursor;}
     inline const char& GetReplace()const {return m_cReplace;}
-    inline const bool& GetInput()const   {return m_bInput;}
+    inline const bool& GetInput  ()const {return m_bInput;}
     //! @}
 
 

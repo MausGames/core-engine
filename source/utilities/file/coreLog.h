@@ -11,27 +11,29 @@
 #define _CORE_GUARD_LOG_H_
 
 // TODO: define more log capturing spots, not only resource-loading/unloading and (few) errors
-// TODO: implement stack trace, described in OpenGL insights
+// TODO: implement stack trace, described in OpenGL Insights (tested on MSVC, works only with available debug symbols)
+// TODO: reorganize different log message types, look at other libs
 
 
 // ****************************************************************
 /* log definitions */
-#define __CORE_LOG_STRING      (std::string(PRINT(pcText, std::forward<A>(vArgs)...)))
-#define __CORE_LOG_ALLOW_INFO  (m_iLevel >=  0)
-#define __CORE_LOG_ALLOW_LIST  (m_iLevel >= -1)
-#define __CORE_LOG_ALLOW_ERROR (m_iLevel ==  0 || m_iLevel == -1)
+#define __CORE_LOG_STRING (std::string(PRINT(pcText, std::forward<A>(vArgs)...)))
 
 #define CORE_LOG_BOLD(s)       "<b>" s "</b>"   //!< display text bold
 #define CORE_LOG_ITALIC(s)     "<i>" s "</i>"   //!< display text italic
 #define CORE_LOG_UNDERLINED(s) "<u>" s "</u>"   //!< display text underlined
 
-enum coreLogLevel
+enum coreLogLevel : coreByte
 {
-    CORE_LOG_LEVEL_ALL        =  0,   //!< log all messages
-    CORE_LOG_LEVEL_ONLY_INFO  =  1,   //!< log only headers, infos and lists
-    CORE_LOG_LEVEL_ONLY_ERROR = -1,   //!< log only warnings, errors and lists
-    CORE_LOG_LEVEL_NOTHING    = -2    //!< log nothing
+    CORE_LOG_LEVEL_NOTHING = 0x00,   //!< log nothing
+    CORE_LOG_LEVEL_INFO    = 0x01,   //!< log info messages
+    CORE_LOG_LEVEL_WARNING = 0x02,   //!< log warning messages
+    CORE_LOG_LEVEL_ERROR   = 0x04,   //!< log error messages
+    CORE_LOG_LEVEL_HEADER  = 0x08,   //!< log big headers
+    CORE_LOG_LEVEL_LIST    = 0x10,   //!< log generic lists
+    CORE_LOG_LEVEL_ALL     = 0xFF    //!< log everything
 };
+EXTEND_ENUM(coreLogLevel)
 
 
 // ****************************************************************
@@ -39,11 +41,11 @@ enum coreLogLevel
 class coreLog final
 {
 private:
-    std::string m_sPath;     //!< relative path of the file
-    coreLogLevel m_iLevel;   //!< logging level
+    std::string m_sPath;          //!< relative path of the file
+    coreLogLevel m_iLevel;        //!< logging level
 
-    SDL_threadID m_iMain;    //!< thread-ID from the creator of this log
-    SDL_SpinLock m_iLock;    //!< spinlock to prevent asynchronous log access
+    SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
+    SDL_SpinLock m_iLock;         //!< spinlock to prevent asynchronous log access
 
 
 public:
@@ -51,17 +53,17 @@ public:
 
     /*! message functions */
     //! @{
-    template <typename... A> inline void Header (const char* pcText, A&&... vArgs) {if(__CORE_LOG_ALLOW_INFO)  this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> inline void Info   (const char* pcText, A&&... vArgs) {if(__CORE_LOG_ALLOW_INFO)  this->__Write(true,                                    __CORE_LOG_STRING + "<br />");}
-    template <typename... A> inline void Warning(const char* pcText, A&&... vArgs) {if(__CORE_LOG_ALLOW_ERROR) this->__Write(true,  "<span class=\"error\">"        + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline void Info   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
+    template <typename... A> inline void Warning(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_WARNING) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
     template <typename... A>        void Error  (const char* pcText, A&&... vArgs);
     //! @}
 
-    /*! list functions */
+    /*! special functions */
     //! @{
-    template <typename... A> inline void ListStart(const char* pcText, A&&... vArgs) {if(__CORE_LOG_ALLOW_LIST) this->__Write(true,  "<span class=\"list\">" + __CORE_LOG_STRING + "</span><ul>");}
-    template <typename... A> inline void ListEntry(const char* pcText, A&&... vArgs) {if(__CORE_LOG_ALLOW_LIST) this->__Write(false, "<li>"                  + __CORE_LOG_STRING + "</li>");}
-    inline void ListEnd()                                                            {if(__CORE_LOG_ALLOW_LIST) this->__Write(false, "</ul>");}
+    template <typename... A> inline void Header   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_HEADER) this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline void ListStart(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_LIST)   this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>");}
+    template <typename... A> inline void ListEntry(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_LIST)   this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
+    inline void ListEnd()                                                            {if(m_iLevel & CORE_LOG_LEVEL_LIST)   this->__Write(false, "</ul>");}
     //! @}
 
     /*! control logging level */
@@ -92,7 +94,7 @@ private:
 template <typename... A> void coreLog::Error(const char* pcText, A&&... vArgs)
 {
     // write error message
-    if(__CORE_LOG_ALLOW_ERROR) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
+    if(m_iLevel & CORE_LOG_LEVEL_ERROR) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
 
     // show critical error message
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", __CORE_LOG_STRING.c_str(), NULL);

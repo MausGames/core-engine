@@ -50,28 +50,29 @@ CoreSystem::CoreSystem()noexcept
     const int iNumModes = SDL_GetNumDisplayModes(0);
     if(iNumModes)
     {
-        m_avAvailable.reserve(32);
-
         Core::Log->ListStart("Available Screen Resolutions");
-        for(int i = 0; i < iNumModes; ++i)
         {
-            // retrieve resolution
-            SDL_DisplayMode Mode;
-            SDL_GetDisplayMode(0, i, &Mode);
-            const coreVector2 vMode = coreVector2((float)Mode.w, (float)Mode.h);
+            m_avAvailable.reserve(16);
+            for(int i = 0; i < iNumModes; ++i)
+            {
+                // retrieve resolution
+                SDL_DisplayMode Mode;
+                SDL_GetDisplayMode(0, i, &Mode);
+                const coreVector2 vMode = coreVector2((float)Mode.w, (float)Mode.h);
 
-            coreUint j = 0;
-            for(; j < m_avAvailable.size(); ++j)
-            {
-                // check already added resolutions
-                if(m_avAvailable[j] == vMode)
-                    break;
-            }
-            if(j == m_avAvailable.size())
-            {
-                // add new resolution
-                m_avAvailable.push_back(vMode);
-                Core::Log->ListEntry("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : "");
+                coreUint j = 0;
+                for(; j < m_avAvailable.size(); ++j)
+                {
+                    // check for already added resolutions
+                    if(m_avAvailable[j] == vMode)
+                        break;
+                }
+                if(j == m_avAvailable.size())
+                {
+                    // add new resolution
+                    m_avAvailable.push_back(vMode);
+                    Core::Log->ListEntry("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : "");
+                }
             }
         }
         Core::Log->ListEnd();
@@ -101,8 +102,8 @@ CoreSystem::CoreSystem()noexcept
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
     if(fForceOpenGL)
     {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(std::floor(fForceOpenGL)));
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(std::floor(fForceOpenGL * 10.0f)) % 10);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(FLOOR(fForceOpenGL)));
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(FLOOR(fForceOpenGL * 10.0f)) % 10);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  CORE_SYSTEM_CONTEXT);
     }
     if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) || DEFINED(_CORE_DEBUG_))
@@ -157,11 +158,13 @@ CoreSystem::CoreSystem()noexcept
 
     // log processor information
     Core::Log->ListStart("Platform Information");
-    Core::Log->ListEntry(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
-    Core::Log->ListEntry(CORE_LOG_BOLD("System Memory:") " %d MB",                           SDL_GetSystemRAM());
-    Core::Log->ListEntry(CORE_LOG_BOLD("SSE Support:")   " %s%s%s%s%s",                      m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
-    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
-    Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
+    {
+        Core::Log->ListEntry(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
+        Core::Log->ListEntry(CORE_LOG_BOLD("System Memory:") " %d MB",                           SDL_GetSystemRAM());
+        Core::Log->ListEntry(CORE_LOG_BOLD("SSE Support:")   " %s%s%s%s%s",                      m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
+        Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
+        Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
+    }
     Core::Log->ListEnd();
 }
 
@@ -170,8 +173,6 @@ CoreSystem::CoreSystem()noexcept
 // destructor
 CoreSystem::~CoreSystem()
 {
-    Core::Log->Info("System Interface shut down");
-
     // clear memory
     m_avAvailable.clear();
 
@@ -182,6 +183,8 @@ CoreSystem::~CoreSystem()
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
+
+    Core::Log->Info("System Interface shut down");
 }
 
 
@@ -268,6 +271,8 @@ void CoreSystem::__UpdateTime()
 
     if(m_iSkipFrame || fNewLastTime >= 0.25f)
     {
+        Core::Log->Warning("Skipped Frame (%u:%f:%f)", m_iCurFrame, m_dTotalTime, fNewLastTime);
+
         // skip frames
         m_fLastTime = 0.0f;
         if(m_iSkipFrame) --m_iSkipFrame;

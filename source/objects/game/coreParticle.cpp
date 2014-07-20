@@ -15,22 +15,22 @@ coreModel* coreParticleSystem::s_pModel = NULL;
 
 // ****************************************************************
 // constructor
-coreParticleSystem::coreParticleSystem(const coreUint& iSize)noexcept
-: m_iNumParticle (iSize)
-, m_iCurParticle (0)
-, m_iVertexArray (0)
-, m_bUpdate      (false)
+coreParticleSystem::coreParticleSystem(const coreUint& iNumParticles)noexcept
+: m_iNumParticles (iNumParticles)
+, m_iCurParticle  (0)
+, m_iVertexArray  (0)
+, m_bUpdate       (false)
 {
-    ASSERT(iSize)
+    ASSERT(iNumParticles)
 
     // pre-allocate particles
-    m_pParticle = new coreParticle[iSize];
+    m_pParticle = new coreParticle[m_iNumParticles];
 
     // create empty particle effect object
     m_pEmptyEffect = new coreParticleEffect(this);
 
     // create vertex array object and instance data buffer
-    this->__Reset(true);
+    this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
 
@@ -46,37 +46,14 @@ coreParticleSystem::~coreParticleSystem()
     SAFE_DELETE(m_pEmptyEffect)
 
     // delete vertex array object and instance data buffer
-    this->__Reset(false);
+    this->__Reset(CORE_RESOURCE_RESET_EXIT);
 }
 
-
-// ****************************************************************
-// define texture through resource file
-const coreTexturePtr& coreParticleSystem::DefineTextureFile(const coreByte& iUnit, const char* pcPath)
-{
-    ASSERT(iUnit < CORE_TEXTURE_UNITS)
-
-    // set and return texture object
-    m_apTexture[iUnit] = Core::Manager::Resource->LoadFile<coreTexture>(pcPath);
-    return m_apTexture[iUnit];
-}
-
-
-// ****************************************************************
-// define texture through linked resource
-const coreTexturePtr& coreParticleSystem::DefineTextureLink(const coreByte& iUnit, const char* pcName)
-{
-    ASSERT(iUnit < CORE_TEXTURE_UNITS)
-
-    // set and return texture object
-    m_apTexture[iUnit] = Core::Manager::Resource->LoadLink<coreTexture>(pcName);
-    return m_apTexture[iUnit];
-}
 
 
 // ****************************************************************
 // define shader-program through shared memory
-const coreProgramShr& coreParticleSystem::DefineProgramShare(const char* pcName)
+const coreProgramShr& coreParticleSystem::DefineProgram(const char* pcName)
 {
     // set shader-program object
     m_pProgram = Core::Manager::Memory->Share<coreProgram>(pcName);
@@ -97,7 +74,7 @@ const coreProgramShr& coreParticleSystem::DefineProgramShare(const char* pcName)
 // undefine the visual appearance
 void coreParticleSystem::Undefine()
 {
-    // reset all resource and memory pointer
+    // reset all resource and memory pointers
     for(int i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
 }
@@ -227,9 +204,9 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
     ASSERT(pEffect)
 
     // loop through all particles
-    for(coreUint i = 0; i < m_iNumParticle; ++i)
+    for(coreUint i = 0; i < m_iNumParticles; ++i)
     {
-        if(++m_iCurParticle >= m_iNumParticle) m_iCurParticle = 0;
+        if(++m_iCurParticle >= m_iNumParticles) m_iCurParticle = 0;
 
         // check current particle status
         coreParticle* pParticle = &m_pParticle[m_iCurParticle];
@@ -272,24 +249,6 @@ void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
-// remove all particle effect objects
-void coreParticleSystem::UnbindAll()
-{
-    FOR_EACH(it, m_apRenderList)
-    {
-        coreParticle* pParticle = (*it);
-        coreParticleEffect* pEffect = pParticle->GetEffect();
-
-        // check origin object and transform position
-        if(pEffect->GetOrigin()) pParticle->m_CurrentState.vPosition += pEffect->GetOrigin()->GetPosition();
-
-        // reset associated particle effect object
-        pParticle->m_pEffect = m_pEmptyEffect;
-    }
-}
-
-
-// ****************************************************************
 // remove particles
 void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 {
@@ -314,6 +273,24 @@ void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
+// remove all particle effect objects
+void coreParticleSystem::UnbindAll()
+{
+    FOR_EACH(it, m_apRenderList)
+    {
+        coreParticle* pParticle = (*it);
+        coreParticleEffect* pEffect = pParticle->GetEffect();
+
+        // check origin object and transform position
+        if(pEffect->GetOrigin()) pParticle->m_CurrentState.vPosition += pEffect->GetOrigin()->GetPosition();
+
+        // reset associated particle effect object
+        pParticle->m_pEffect = m_pEmptyEffect;
+    }
+}
+
+
+// ****************************************************************
 // remove all particles
 void coreParticleSystem::ClearAll()
 {
@@ -328,7 +305,7 @@ void coreParticleSystem::ClearAll()
 
 // ****************************************************************
 // reset with the resource manager
-void coreParticleSystem::__Reset(const bool& bInit)
+void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 {
     // check for OpenGL extensions
     if(!GLEW_ARB_instanced_arrays || !GLEW_ARB_vertex_array_object) return;
@@ -345,7 +322,7 @@ void coreParticleSystem::__Reset(const bool& bInit)
         coreModel::Lock();
         {
             // create instance data buffer
-            m_iInstanceBuffer.Create(m_iNumParticle, CORE_PARTICLE_SIZE, NULL, GL_DYNAMIC_DRAW);
+            m_iInstanceBuffer.Create(m_iNumParticles, CORE_PARTICLE_SIZE, NULL, GL_DYNAMIC_DRAW);
             m_iInstanceBuffer.DefineAttribute(CORE_PARTICLE_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,        0);
             m_iInstanceBuffer.DefineAttribute(CORE_PARTICLE_ATTRIBUTE_DATA_NUM,     3, GL_FLOAT,        3*sizeof(float));
             m_iInstanceBuffer.DefineAttribute(CORE_PARTICLE_ATTRIBUTE_COLOR_NUM,    1, GL_UNSIGNED_INT, 6*sizeof(float));

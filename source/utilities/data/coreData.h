@@ -16,11 +16,11 @@
 
 // ****************************************************************
 /* data definitions */
-#define CORE_DATA_STRING_NUM (32u)     //!< number of return-strings
-#define CORE_DATA_STRING_LEN (256u)    //!< length of each return-string
+#define CORE_DATA_STRING_NUM (32u)    //!< number of return-strings
+#define CORE_DATA_STRING_LEN (256u)   //!< length of each return-string
 
 #if defined(_CORE_WINDOWS_)
-    #define CORE_DATA_SLASH "\\"       //!< default path-delimiter of the operating system
+    #define CORE_DATA_SLASH "\\"      //!< default path-delimiter of the operating system
 #else
     #define CORE_DATA_SLASH "/"
 #endif
@@ -41,14 +41,14 @@ public:
     /*! create formatted string */
     //! @{
     template <typename... A> static const char* Print(const char* pcFormat, A&&... vArgs);
-    static inline const char* Print(const char* pcFormat) {return pcFormat;}
+    static inline                   const char* Print(const char* pcFormat) {return pcFormat;}
     //! @}
 
     /*! get application properties */
     //! @{
     static        const char* AppPath();
     static inline const char* AppName() {const char* pcString = coreData::AppPath(); const char* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? pcSlash+1 : pcString;}
-    static inline const char* AppDir()  {const char* pcString = coreData::AppPath(); const char* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<char*>(pcSlash+1)) = '\0'; return pcString;}
+    static inline const char* AppDir () {const char* pcString = coreData::AppPath(); const char* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<char*>(pcSlash+1)) = '\0'; return pcString;}
     //! @}
 
     /*! control current working directory */
@@ -81,7 +81,7 @@ public:
     //! @{
     template <typename F> static const char* StrProcess(const char* pcInput, F&& pFunction);
     static constexpr_func bool StrCmpConst (const char*  s, const char* t) {return *s ? (*s == *t) && StrCmpConst(s+1, t+1) : !*t;}
-    static inline bool         StrCmpLike  (const char*  s, const char* t) {return (*t - '*') ? *s ? (*t == '?') | (toupper(*s) == toupper(*t)) && StrCmpLike(s+1, t+1) : !*t : StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t));}
+    static inline         bool StrCmpLike  (const char*  s, const char* t) {return (*t == '*') ? StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1, t+1) : !*t;}
     static inline const char*  StrUpper    (const char*  pcInput)          {return coreData::StrProcess(pcInput, toupper);}
     static inline const char*  StrLower    (const char*  pcInput)          {return coreData::StrProcess(pcInput, tolower);}
     static const char*         StrRight    (const char*  pcInput, const coreUint& iNum);
@@ -91,7 +91,7 @@ public:
     //! @}
 
 private:
-    DISABLE_INST(coreData)
+    DISABLE_TORS(coreData)
 
     /*! access next return-string */
     //! @{

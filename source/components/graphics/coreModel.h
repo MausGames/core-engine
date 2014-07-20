@@ -131,40 +131,40 @@ public:
     //! draw the model
     //! @{
     void DrawElements()const;
+    void DrawArrays  ()const;
     void DrawElementsInstanced(const coreUint& iCount)const;
-    void DrawArrays()const;
-    void DrawArraysInstanced(const coreUint& iCount)const;
+    void DrawArraysInstanced  (const coreUint& iCount)const;
     //! @}
 
     //! enable and disable the model
     //! @{
-    void Enable();
+    void        Enable();
     static void Disable(const bool& bFull);
     //! @}
 
     //! generate custom model resource data
     //! @{
     coreVertexBuffer* CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage);
-    coreDataBuffer* CreateIndexBuffer(const coreUint& iNumIndices, const coreByte& iIndexSize, const void* pIndexData, const GLenum& iUsage);
+    coreDataBuffer*   CreateIndexBuffer (const coreUint& iNumIndices,  const coreByte& iIndexSize,  const void* pIndexData,  const GLenum& iUsage);
     inline coreVertexBuffer* GetVertexBuffer(const coreUint& iID) {return m_apiVertexBuffer[iID];}
-    inline coreDataBuffer* GetIndexBuffer()                       {return &m_iIndexBuffer;}
+    inline coreDataBuffer*   GetIndexBuffer()                     {return &m_iIndexBuffer;}
     //! @}
 
     //! set object properties
     //! @{
-    inline void SetRadius(const float& fRadius)                {m_fRadius        = fRadius;}
+    inline void SetRadius       (const float&  fRadius)        {m_fRadius        = fRadius;}
     inline void SetPrimitiveType(const GLenum& iPrimitiveType) {m_iPrimitiveType = iPrimitiveType;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint& GetVertexArray()const    {return m_iVertexArray;}
-    inline const coreUint& GetNumVertices()const  {return m_iNumVertices;}
-    inline const coreUint& GetNumTriangles()const {return m_iNumTriangles;}
-    inline const coreUint& GetNumIndices()const   {return m_iNumIndices;}
-    inline const float& GetRadius()const          {return m_fRadius;}
-    inline const GLenum& GetPrimitiveType()const  {return m_iPrimitiveType;}
-    inline const GLenum& GetIndexType()const      {return m_iIndexType;}
+    inline const GLuint&   GetVertexArray  ()const {return m_iVertexArray;}
+    inline const coreUint& GetNumVertices  ()const {return m_iNumVertices;}
+    inline const coreUint& GetNumTriangles ()const {return m_iNumTriangles;}
+    inline const coreUint& GetNumIndices   ()const {return m_iNumIndices;}
+    inline const float&    GetRadius       ()const {return m_fRadius;}
+    inline const GLenum&   GetPrimitiveType()const {return m_iPrimitiveType;}
+    inline const GLenum&   GetIndexType    ()const {return m_iIndexType;}
     //! @}
 
     //! get currently active model object
@@ -174,7 +174,7 @@ public:
 
     //! lock and unlock array buffer access
     //! @{
-    static inline void Lock()   {SDL_AtomicLock(&s_iLock);}
+    static inline void Lock()   {SDL_AtomicLock  (&s_iLock);}
     static inline void Unlock() {SDL_AtomicUnlock(&s_iLock);}
     //! @}
 };

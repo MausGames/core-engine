@@ -15,7 +15,7 @@
 // menu label class
 // TODO: 3d text with link or own class ?
 // TODO: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
-class coreLabel final : public coreObject2D, public coreReset, public coreTranslate
+class coreLabel final : public coreObject2D, public coreResourceRelation, public coreTranslate
 {
 private:
     coreFontPtr m_pFont;         //!< font object
@@ -43,30 +43,30 @@ public:
     //! render and move the label
     //! @{
     void Render()override;
-    void Move()override;
+    void Move  ()override;
     //! @}
 
     //! set object properties
     //! @{
-    bool SetText(const char* pcText);
-    bool SetText(const char* pcText, const coreUint& iNum);
-    inline void SetTextLanguage(const char* pcKey) {this->_BindString(&m_sText, pcKey);}
-    inline void SetScale(const float& fScale)      {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
+    bool        SetText        (const char*  pcText);
+    bool        SetText        (const char*  pcText, const coreUint& iNum);
+    inline void SetTextLanguage(const char*  pcKey)  {this->_BindString(&m_sText, pcKey);}
+    inline void SetScale       (const float& fScale) {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
     //! @}
     
     //! get object properties
     //! @{
     inline const coreVector2& GetResolution()const {return m_vResolution;}
-    inline const coreUint& GetLength()const        {return m_iLength;}
-    inline const char* GetText()const              {return m_sText.c_str();}
-    inline const float& GetScale()const            {return m_fScale;}
+    inline const coreUint&    GetLength    ()const {return m_iLength;}
+    inline const char*        GetText      ()const {return m_sText.c_str();}
+    inline const float&       GetScale     ()const {return m_fScale;}
     //! @}
 
 
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const bool& bInit)override;
+    void __Reset(const coreResourceReset& bInit)override;
     //! @}
 
     //! update object after modification

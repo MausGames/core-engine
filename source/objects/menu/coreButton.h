@@ -38,7 +38,7 @@ public:
     //! render and move the button
     //! @{
     virtual void Render()override;
-    virtual void Move()override;
+    virtual void Move  ()override;
     //! @}
 
     //! set object properties
@@ -48,7 +48,7 @@ public:
 
     //! get object properties
     //! @{
-    inline coreLabel* GetCaption()const  {return m_pCaption;}
+    inline coreLabel* GetCaption ()const {return m_pCaption;}
     inline const int& GetOverride()const {return m_iOverride;}
     //! @}
 

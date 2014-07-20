@@ -52,7 +52,7 @@ public:
 
     //! get object properties
     //! @{
-    inline const char* GetPath()const     {return m_sPath.c_str();}
+    inline const char*     GetPath()const {return m_sPath.c_str();}
     inline const coreByte* GetData()      {this->LoadData(); return m_pData;}
     inline const coreUint& GetSize()const {return m_iSize;}
     //! @}
@@ -85,24 +85,24 @@ public:
 
     //! manage file objects
     //! @{
-    coreError AddFile(const char* pcPath);
-    coreError AddFile(coreFile* pFile);
+    coreError AddFile   (const char* pcPath);
+    coreError AddFile   (coreFile*   pFile);
     coreError DeleteFile(const coreUint& iIndex);
-    coreError DeleteFile(const char* pcPath);
-    coreError DeleteFile(coreFile* pFile);
+    coreError DeleteFile(const char*     pcPath);
+    coreError DeleteFile(coreFile*       pFile);
     void ClearFiles();
     //! @}
 
     //! access file objects
     //! @{
-    inline coreFile* GetFile(const coreUint& iIndex) {if(iIndex >= m_apFile.size()) return NULL; return m_apFile[iIndex];}
-    inline coreFile* GetFile(const char* pcPath)     {if(!m_apFile.count(pcPath))   return NULL; return m_apFile[pcPath];}
+    inline coreFile* GetFile(const coreUint& iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex] : NULL;}
+    inline coreFile* GetFile(const char*     pcPath) {return (m_apFile.count(pcPath))   ? m_apFile[pcPath] : NULL;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const char* GetPath()const {return m_sPath.c_str();}
-    inline coreUint GetSize()const    {return m_apFile.size();}
+    inline const char* GetPath    ()const {return m_sPath.c_str();}
+    inline coreUint    GetNumFiles()const {return m_apFile.size();}
     //! @}
 
 
@@ -118,6 +118,7 @@ private:
 
 // ****************************************************************
 // file-unload helper class
+// TODO: implement this into coreFile, so the unload is better
 class coreFileUnload final
 {
 private:

@@ -87,7 +87,7 @@ void Core::Reset()
     
     // shut down resource manager
     Log->Header("Engine Reset");
-    Manager::Resource->Reset(false);
+    Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
 
     // shut down main components
     SAFE_DELETE(Input)
@@ -102,7 +102,7 @@ void Core::Reset()
     Input    = new CoreInput();
 
     // re-init resource manager
-    Manager::Resource->Reset(true);
+    Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
     Log->Header("Application Run");
 
     // reset logging level
@@ -140,12 +140,13 @@ int Core::__Run()
     // init application
     Core::Log->Header("Application Init");
     CoreApp* pApplication = new CoreApp();
+    Core::Manager::Resource->__RunThread();
     Core::Log->Header("Application Run");
 
     // set logging level
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !DEFINED(_CORE_DEBUG_))
     {
-        Core::Log->SetLevel(CORE_LOG_LEVEL_ONLY_ERROR);
+        Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR | CORE_LOG_LEVEL_LIST);
         Core::Log->Warning("Logging level reduced");
     }
 

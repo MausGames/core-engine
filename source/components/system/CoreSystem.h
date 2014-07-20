@@ -56,7 +56,7 @@ public:
     //! control window
     //! @{
     inline void SetWindowTitle(const char* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
-    void SetWindowIcon(const char* pcPath);
+    void        SetWindowIcon (const char* pcPath);
     //! @}
 
     //! control time
@@ -72,26 +72,26 @@ public:
 
     //! get component properties
     //! @{
-    inline SDL_Window* GetWindow()const                        {return m_pWindow;}
-    inline const coreVector2& GetResolution()const             {return m_vResolution;}
-    inline const coreByte& GetFullscreen()const                {return m_iFullscreen;}
-    inline const std::vector<coreVector2>& GetAvailable()const {return m_avAvailable;}
-    inline const bool& GetMinimized()const                     {return m_bMinimized;}
-    inline const double& GetTotalTime()const                   {return m_dTotalTime;}
-    inline const float& GetTime()const                         {return m_fLastTime;}
-    inline const float& GetTime(const int& iID)const           {ASSERT(iID < CORE_SYSTEM_TIMES) return (m_fLastTime >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const float& GetTimeSpeed(const int& iID)const      {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
-    inline const coreUint& GetCurFrame()const                  {return m_iCurFrame;}
+    inline SDL_Window*                     GetWindow    ()const               {return m_pWindow;}
+    inline const coreVector2&              GetResolution()const               {return m_vResolution;}
+    inline const coreByte&                 GetFullscreen()const               {return m_iFullscreen;}
+    inline const std::vector<coreVector2>& GetAvailable ()const               {return m_avAvailable;}
+    inline const bool&                     GetMinimized ()const               {return m_bMinimized;}
+    inline const double&                   GetTotalTime ()const               {return m_dTotalTime;}
+    inline const float&                    GetTime      ()const               {return m_fLastTime;}
+    inline const float&                    GetTime      (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return (m_fLastTime >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const float&                    GetTimeSpeed (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
+    inline const coreUint&                 GetCurFrame  ()const               {return m_iCurFrame;}
     //! @}
 
     //! check hardware support
     //! @{
     inline const coreByte& SupportNumCores()const {return m_iNumCores;}
-    inline const bool& SupportSSE()const          {return m_abSSE[0];}
-    inline const bool& SupportSSE2()const         {return m_abSSE[1];}
-    inline const bool& SupportSSE3()const         {return m_abSSE[2];}
-    inline const bool& SupportSSE41()const        {return m_abSSE[3];}
-    inline const bool& SupportSSE42()const        {return m_abSSE[4];}
+    inline const bool&     SupportSSE     ()const {return m_abSSE[0];}
+    inline const bool&     SupportSSE2    ()const {return m_abSSE[1];}
+    inline const bool&     SupportSSE3    ()const {return m_abSSE[2];}
+    inline const bool&     SupportSSE41   ()const {return m_abSSE[3];}
+    inline const bool&     SupportSSE42   ()const {return m_abSSE[4];}
     //! @}
 
 

@@ -49,16 +49,16 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
     m_iLength = iLength;
 
     // set font object
-    m_pFont = Core::Manager::Resource->LoadFile<coreFont>(pcFont);
+    m_pFont = Core::Manager::Resource->Get<coreFont>(pcFont);
     
     // create own texture to display text
     m_apTexture[0] = Core::Manager::Resource->LoadNew<coreTexture>();
     m_apTexture[0]->Generate();
 
     // load shaders
-    this->DefineProgramShare(CORE_MEMORY_SHARED)
-        ->AttachShaderFile("data/shaders/default_label.vs")
-        ->AttachShaderFile("data/shaders/default_label.fs")
+    this->DefineProgram(CORE_MEMORY_SHARED)
+        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default_label.vs", "data/shaders/default_label.vs"))
+        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default_label.fs", "data/shaders/default_label.fs"))
         ->Finish();
 
     // reserve memory for text
@@ -76,7 +76,7 @@ void coreLabel::Render()
     if(m_iGenerate)
     {
         // check if requested font is loaded
-        if(!m_pFont.IsLoaded()) return;
+        if(!m_pFont.GetHandle()->IsLoaded()) return;
 
         // generate the texture
         if(m_iGenerate & 2) this->__Generate(m_sText.c_str(), m_iLength ? true : false);
@@ -148,7 +148,7 @@ bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
 
 // ****************************************************************
 // reset with the resource manager
-void coreLabel::__Reset(const bool& bInit)
+void coreLabel::__Reset(const coreResourceReset& bInit)
 {
     if(!m_pFont) return;
 

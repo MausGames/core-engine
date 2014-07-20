@@ -13,7 +13,7 @@ coreFrameBuffer* coreFrameBuffer::s_pCurrent = NULL;
 
 // ****************************************************************
 // constructor
-coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcLink)noexcept
+coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iType, const char* pcTextureName)noexcept
 : m_iFrameBuffer (0)
 , m_iDepthBuffer (0)
 , m_vResolution  (vResolution)
@@ -23,8 +23,8 @@ coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iTyp
 , m_fFarClip     (Core::Graphics->GetFarClip())
 {
     // create own texture as render target
-    if(pcLink) m_pTexture = Core::Manager::Resource->LoadLink<coreTexture>(pcLink);
-          else m_pTexture = Core::Manager::Resource->LoadNew<coreTexture>();
+    if(pcTextureName) m_pTexture = Core::Manager::Resource->LoadLink<coreTexture>(pcTextureName);
+                 else m_pTexture = Core::Manager::Resource->LoadNew<coreTexture>();
 
     // init the frame buffer
     this->__Init();
@@ -127,7 +127,7 @@ void coreFrameBuffer::Invalidate()
 
 // ****************************************************************
 // reset with the resource manager
-void coreFrameBuffer::__Reset(const bool& bInit)
+void coreFrameBuffer::__Reset(const coreResourceReset& bInit)
 {
     if(bInit) this->__Init();
          else this->__Exit();

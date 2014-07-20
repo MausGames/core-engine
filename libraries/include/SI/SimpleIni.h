@@ -222,6 +222,8 @@
 #include <algorithm>
 #include <stdio.h>
 
+
+// ****************************************************************
 // use SDL to support Android and iOS
 #if defined(_SDL_rwops_h)
 
@@ -238,6 +240,8 @@
     #define _WIN32_WCE 1
 
 #endif
+// ****************************************************************
+
 
 #ifdef SI_SUPPORT_IOSTREAMS
 # include <iostream>
@@ -3401,6 +3405,8 @@ typedef CSimpleIniTempl<wchar_t,
 # pragma warning (pop)
 #endif
 
+
+// ****************************************************************
 // use SDL to support Android and iOS
 #if defined(_SDL_rwops_h)
 
@@ -3415,5 +3421,7 @@ typedef CSimpleIniTempl<wchar_t,
     #undef _WIN32_WCE
 
 #endif
+// ****************************************************************
+
 
 #endif // INCLUDED_SimpleIni_h

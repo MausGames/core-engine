@@ -33,7 +33,7 @@ public:
 
     //! create text surface with the font
     //! @{
-    SDL_Surface* CreateText(const char* pcText, const int& iHeight);
+    SDL_Surface* CreateText (const char*     pcText, const int& iHeight);
     SDL_Surface* CreateGlyph(const coreWord& iGlyph, const int& iHeight);
     //! @}
 

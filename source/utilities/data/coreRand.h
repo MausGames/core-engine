@@ -10,11 +10,14 @@
 #ifndef _CORE_GUARD_RAND_H_
 #define _CORE_GUARD_RAND_H_
 
+// TODO: move global random number object here ?
+// TODO: make size a template parameter ?
+
 
 // ****************************************************************
 /* random number definitions */
-#define CORE_RAND_MAX  (0x7FFF)                                                  //!< max raw random number (16 bit)
-#define CORE_RAND_TIME (DEFINED(_CORE_DEBUG_) ? 0 : coreUint(std::time(NULL)))   //!< use current time to seed the generator (not on debug mode)
+#define CORE_RAND_MAX  (0x7FFF)                                                   //!< max raw random number (16 bit)
+#define CORE_RAND_TIME (DEFINED(_CORE_DEBUG_) ? 0u : coreUint(std::time(NULL)))   //!< use current time to seed the generator (not on debug mode)
 
 
 // ****************************************************************
@@ -22,17 +25,17 @@
 class coreRand final
 {
 private:
-    int* m_piRand;             //!< precalculated random numbers
-    coreUint m_iNumRand;       //!< number of random numbers
-    coreUint m_iCurRand;       //!< current random number
+    int* m_piRandom;           //!< precalculated random numbers
+    coreUint m_iNumRandoms;    //!< number of random numbers
+    coreUint m_iCurRandom;     //!< current random number
 
     static coreUint s_iSeed;   //!< global generator seed value
 
 
 public:
-    coreRand(const coreUint& iSize, const coreUint iSeed = CORE_RAND_TIME)noexcept;
+    coreRand(const coreUint& iNumRandoms, const coreUint iSeed = CORE_RAND_TIME)noexcept;
     coreRand(const coreRand& c)noexcept;
-    coreRand(coreRand&& m)noexcept;
+    coreRand(coreRand&&      m)noexcept;
     ~coreRand();
 
     /*! assignment operator */
@@ -41,18 +44,23 @@ public:
     friend void swap(coreRand& a, coreRand& b)noexcept;
     //! @}
 
-    /*! reset the generator */
+    /*! reset current random number */
     //! @{
-    inline void Reset() {m_iCurRand = 0;}
+    inline void Reset() {m_iCurRandom = 0;}
     //! @}
 
     /*! retrieve precalculated random number */
     //! @{
-    inline const int& Raw()                                  {if(++m_iCurRand >= m_iNumRand) m_iCurRand = 0; return m_piRand[m_iCurRand];}
+    inline const int& Raw()                                  {if(++m_iCurRandom >= m_iNumRandoms) m_iCurRandom = 0; return m_piRandom[m_iCurRandom];}
     inline int   Int  (const int&   iMax)                    {return             (this->Raw()  % (iMax         +  1));}
     inline int   Int  (const int&   iMin, const int&   iMax) {return iMin +      (this->Raw()  % (iMax - iMin  +  1));}
     inline float Float(const float& fMax)                    {return        float(this->Raw()) *  fMax         * (1.0f / float(CORE_RAND_MAX));}
     inline float Float(const float& fMin, const float& fMax) {return fMin + float(this->Raw()) * (fMax - fMin) * (1.0f / float(CORE_RAND_MAX));}
+    //! @}
+
+    /*! get object properties */
+    //! @{
+    inline const coreUint& GetNumRandoms()const {return m_iNumRandoms;}
     //! @}
 
     /*! control global random number generation */

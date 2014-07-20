@@ -16,8 +16,8 @@
 
 // ****************************************************************
 /* language definitions */
-#define CORE_LANGUAGE_KEY    "$"    //!< prefix used to identify keys in the language file
-#define CORE_LANGUAGE_ASSIGN "="    //!< delimiter used to separate keys and their assigned strings
+#define CORE_LANGUAGE_KEY    "$"   //!< prefix used to identify keys in the language file
+#define CORE_LANGUAGE_ASSIGN "="   //!< delimiter used to separate keys and their assigned strings
 
 
 // ****************************************************************
@@ -63,7 +63,7 @@ private:
 class coreLanguage final
 {
 private:
-    coreLookupStr<std::string> m_asString;                 //!< list with language-strings to specific keys
+    coreLookupStr<std::string> m_asStringList;             //!< list with language-strings to specific keys
 
     coreLookup<std::string*, std::string*> m_apsForeign;   //!< foreign string pointers connected with language-strings <foreign, language>
     std::u_set<coreTranslate*> m_apObject;                 //!< objects to update after modification
@@ -79,7 +79,7 @@ public:
     /*! load and access the language file */
     //! @{
     coreError Load(const char* pcPath);
-    inline const char* GetString(const char* pcKey)const {return m_asString.count(pcKey) ? m_asString.at(pcKey).c_str() : pcKey;}
+    inline const char* GetString(const char* pcKey)const {return m_asStringList.count(pcKey) ? m_asStringList.at(pcKey).c_str() : pcKey;}
     //! @}
 
     /*! bind and unbind foreign string pointers */
@@ -95,7 +95,7 @@ private:
     /*! bind and unbind translation objects */
     //! @{
     void __BindObject  (coreTranslate* pObject) {ASSERT(!m_apObject.count(pObject)) m_apObject.insert(pObject);}
-    void __UnbindObject(coreTranslate* pObject) {ASSERT( m_apObject.count(pObject)) m_apObject.erase(pObject);}
+    void __UnbindObject(coreTranslate* pObject) {ASSERT( m_apObject.count(pObject)) m_apObject.erase (pObject);}
     //! @}
 };
 

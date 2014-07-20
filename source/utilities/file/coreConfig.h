@@ -11,6 +11,7 @@
 #define _CORE_GUARD_CONFIG_H_
 
 // TODO: don't set an already defined value or default value (use map ?)
+// TODO: check out templated Get and Set
 
 
 // ****************************************************************
@@ -25,7 +26,7 @@
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING  "Graphics", "AntiAliasing",  (2)
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER "Graphics", "TextureFilter", (4)
 #define CORE_CONFIG_GRAPHICS_DUALCONTEXT   "Graphics", "DualContext",   (false)
-#define CORE_CONFIG_GRAPHICS_FORCEOPENGL   "Graphics", "ForceOpenGL",   (DEFINED(_CORE_GLES_) ? 2.0f : 0.0f)
+#define CORE_CONFIG_GRAPHICS_FORCEOPENGL   "Graphics", "ForceOpenGL",   (0.0f)
                                                                           
 #define CORE_CONFIG_AUDIO_SOURCES          "Audio",    "Sources",       (16)
 #define CORE_CONFIG_AUDIO_GLOBALVOLUME     "Audio",    "GlobalVolume",  (1.0f)
@@ -54,14 +55,14 @@ public:
 
     /*! set configuration values */
     //! @{
-    inline void SetBool  (const char* pcSection, const char* pcKey, const bool&  bEmpty,  const bool&  bValue)  {this->SetBool          (pcSection, pcKey, bValue);}
-    inline void SetBool  (const char* pcSection, const char* pcKey, const bool&  bValue)                        {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
-    inline void SetInt   (const char* pcSection, const char* pcKey, const int&   iEmpty,  const int&   iValue)  {this->SetInt           (pcSection, pcKey, iValue);}
-    inline void SetInt   (const char* pcSection, const char* pcKey, const int&   iValue)                        {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
-    inline void SetFloat (const char* pcSection, const char* pcKey, const float& fEmpty,  const float& fValue)  {this->SetFloat         (pcSection, pcKey, fValue);}
-    inline void SetFloat (const char* pcSection, const char* pcKey, const float& fValue)                        {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
-    inline void SetString(const char* pcSection, const char* pcKey, const char*  pcEmpty, const char*  pcValue) {this->SetString        (pcSection, pcKey, pcValue);}
-    inline void SetString(const char* pcSection, const char* pcKey, const char*  pcValue)                       {m_Config.SetValue      (pcSection, pcKey, pcValue);}
+    inline void SetBool  (const char* pcSection, const char* pcKey, const bool&  bEmpty,  const bool&  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
+    inline void SetBool  (const char* pcSection, const char* pcKey,                       const bool&  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
+    inline void SetInt   (const char* pcSection, const char* pcKey, const int&   iEmpty,  const int&   iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
+    inline void SetInt   (const char* pcSection, const char* pcKey,                       const int&   iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
+    inline void SetFloat (const char* pcSection, const char* pcKey, const float& fEmpty,  const float& fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    inline void SetFloat (const char* pcSection, const char* pcKey,                       const float& fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    inline void SetString(const char* pcSection, const char* pcKey, const char*  pcEmpty, const char*  pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue);}
+    inline void SetString(const char* pcSection, const char* pcKey,                       const char*  pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue);}
     //! @}
 
     /*! get configuration values */

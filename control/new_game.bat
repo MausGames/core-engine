@@ -64,6 +64,10 @@ CALL RENAME .hgignore .hgignore_temp
 CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% .hgignore_temp > .hgignore
 CALL DEL .hgignore_temp
 
+cd "executable"
+CALL RENAME %TOOL_NAME%_linux.sh %PRJ_NAME%_linux.sh
+CALL RENAME %TOOL_NAME%_windows.exe %PRJ_NAME%_windows.exe
+
 
 ECHO ^<%PRJ_TARGET%^> created
 %SystemRoot%\explorer.exe "%PRJ_TARGET%"

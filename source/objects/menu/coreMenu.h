@@ -27,7 +27,7 @@ private:
     std::vector<coreObject2D*>* m_papObject;     //!< surfaces with pointers to menu objects
     coreObject2D* m_pCurObject;                  //!< current object with input focus
                                                         
-    coreByte m_iNumSurface;                      //!< number of surfaces
+    coreByte m_iNumSurfaces;                     //!< number of surfaces
     coreByte m_iCurSurface;                      //!< current surface
     coreByte m_iOldSurface;                      //!< previous surface
 
@@ -38,20 +38,19 @@ private:
         
 
 public:
-    coreMenu(const coreByte& iNumSurfaces, const coreByte& iCurSurface)noexcept;
+    coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)noexcept;
     virtual ~coreMenu();
 
     //! render and move the menu
     //! @{
     virtual void Render()override;
-    virtual void Move()override;
+    virtual void Move  ()override;
     //! @}
 
-    //! manage menu objects
+    //! bind and unbind menu objects
     //! @{
-    void AddObject(const coreByte& iSurface, coreObject2D* pObject);
-    void RemoveObject(const coreByte& iSurface, coreObject2D* pObject);
-    void ClearObjects();
+    void BindObject  (const coreByte& iSurface, coreObject2D* pObject);
+    void UnbindObject(const coreByte& iSurface, coreObject2D* pObject);
     //! @}
 
     //! control surfaces
@@ -61,10 +60,11 @@ public:
 
     //! get object properties
     //! @{
-    inline coreObject2D* GetCurObject()const     {return m_pCurObject;}
-    inline const coreByte& GetCurSurface()const  {return m_iCurSurface;}
-    inline const coreByte& GetOldSurface()const  {return m_iOldSurface;}
-    inline const coreTimer& GetTransition()const {return m_Transition;}
+    inline coreObject2D*    GetCurObject  ()const {return m_pCurObject;}
+    inline const coreByte&  GetNumSurfaces()const {return m_iNumSurfaces;}
+    inline const coreByte&  GetCurSurface ()const {return m_iCurSurface;}
+    inline const coreByte&  GetOldSurface ()const {return m_iOldSurface;}
+    inline const coreTimer& GetTransition ()const {return m_Transition;}
     //! @}
 
 

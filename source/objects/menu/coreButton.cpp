@@ -50,14 +50,14 @@ void coreButton::Construct(const char* pcIdle, const char* pcBusy, const char* p
 void coreButton::Construct(const char* pcIdle, const char* pcBusy)
 {
     // load background textures
-    if(pcIdle) m_apBackground[0] = Core::Manager::Resource->LoadFile<coreTexture>(pcIdle);
-    if(pcBusy) m_apBackground[1] = Core::Manager::Resource->LoadFile<coreTexture>(pcBusy);
+    if(pcIdle) m_apBackground[0] = Core::Manager::Resource->Get<coreTexture>(pcIdle);
+    if(pcBusy) m_apBackground[1] = Core::Manager::Resource->Get<coreTexture>(pcBusy);
     m_apTexture[0] = m_apBackground[0];
 
     // load shaders
-    this->DefineProgramShare(CORE_MEMORY_SHARED)
-        ->AttachShaderFile("data/shaders/default_2d.vs")
-        ->AttachShaderFile("data/shaders/default.fs")
+    this->DefineProgram(CORE_MEMORY_SHARED)
+        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default_2d.vs", "data/shaders/default_2d.vs"))
+        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default.fs",    "data/shaders/default.fs"))
         ->Finish();
 }
 

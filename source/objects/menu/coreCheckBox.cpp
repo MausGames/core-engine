@@ -29,8 +29,8 @@ void coreCheckBox::Construct(const char* pcIdleUnchecked, const char* pcBusyUnch
     // load background textures
     m_apUnchecked[0] = m_apBackground[0];
     m_apUnchecked[1] = m_apBackground[1];
-    if(pcIdleChecked) m_apChecked[0] = Core::Manager::Resource->LoadFile<coreTexture>(pcIdleChecked);
-    if(pcBusyChecked) m_apChecked[1] = Core::Manager::Resource->LoadFile<coreTexture>(pcBusyChecked);
+    if(pcIdleChecked) m_apChecked[0] = Core::Manager::Resource->Get<coreTexture>(pcIdleChecked);
+    if(pcBusyChecked) m_apChecked[1] = Core::Manager::Resource->Get<coreTexture>(pcBusyChecked);
 }
 
 

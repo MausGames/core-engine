@@ -72,19 +72,19 @@ public:
     //! @{
     void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
     inline void SetVolume(const float& fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume);}
-    inline void SetPitch(const float& fPitch)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
-    inline void SetLoop(const bool& bLoop)      {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    inline void SetPitch (const float& fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);}
+    inline void SetLoop  (const bool&  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
     //! enable active sound source with reference pointer
     //! @{
     inline bool EnableRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
-    ALuint CheckRef(const void* pRef);
+    ALuint      CheckRef (const void* pRef);
     //! @}
 
     //! get object properties
     //! @{
-    inline const ALuint& GetBuffer()const         {return m_iBuffer;}
+    inline const ALuint&         GetBuffer()const {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
     //! @}
 };

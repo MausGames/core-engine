@@ -13,7 +13,7 @@
 // TODO: implement quicksort and binary search
 // TODO: measure performance with high amount of entries (>200), but should not be as good as (unordered_)map
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
-// TODO: caching system may still cause problems (e.g. coreLookupStr in combination with PRINT, coreLookup<const char*, #> in coreShader)
+// TODO: caching system may still cause problems (e.g. coreLookupStr in combination with PRINT)
 
 
 // ****************************************************************
@@ -38,7 +38,7 @@ protected:
 public:
     coreLookupGen()noexcept;
     coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept;
-    coreLookupGen(coreLookupGen<K, I, T>&& m)noexcept;
+    coreLookupGen(coreLookupGen<K, I, T>&&      m)noexcept;
 
     /*! assignment operator */
     //! @{
@@ -48,7 +48,7 @@ public:
 
     /*! access specific entry */
     //! @{
-    const T& at(const I& Key)const;
+    const T&    at (const I& Key)const;
     T& operator [] (const I& Key);
     //! @}
 
@@ -56,7 +56,7 @@ public:
     //! @{
     inline coreUint count(const I& Key)      {return this->__check(this->__retrieve(Key)) ? 1 : 0;}
     inline coreUint count(const I& Key)const {return this->__check(this->__retrieve(Key)) ? 1 : 0;}
-    inline coreUint size()const              {return m_aList.size();}
+    inline coreUint size ()const             {return m_aList.size();}
     inline bool     empty()const             {return m_aList.empty();}
     //! @}
 
@@ -78,15 +78,15 @@ public:
     //! @{
     inline coreIterator      begin()      {return m_aList.begin();}
     inline coreConstIterator begin()const {return m_aList.begin();}
-    inline coreIterator      end()        {return m_aList.end();}
-    inline coreConstIterator end()const   {return m_aList.end();}
+    inline coreIterator      end  ()      {return m_aList.end();}
+    inline coreConstIterator end  ()const {return m_aList.end();}
     //! @}
 
 
 protected:
     /*! check for valid iterator */
     //! @{
-    inline bool __check(const coreIterator& it)const      {return (it != m_aList.end()) ? true : false;}
+    inline bool __check(const coreIterator&      it)const {return (it != m_aList.end()) ? true : false;}
     inline bool __check(const coreConstIterator& it)const {return (it != m_aList.end()) ? true : false;}
     //! @}
 
@@ -94,7 +94,7 @@ protected:
     //! @{
     inline void __cache_set(coreEntry* pEntry, const I& Key) {m_pCache = pEntry; m_CacheKey = Key;}
     inline void __cache_clear()                              {m_pCache = NULL;   m_CacheKey = (I)NULL;}
-    inline bool __cache_try(const I& Key)const               {ASSERT(!m_pCache || ((m_CacheKey == Key) == (m_pCache->first == Key))) return (m_CacheKey == Key) ? true : false;}
+    inline bool __cache_try(const I& Key)const               {ASSERT(!m_pCache || ((m_CacheKey == Key) == (m_pCache->first == Key))) return (m_pCache && m_CacheKey == Key) ? true : false;}
     //! @}
 
     /*! retrieve iterator */
@@ -134,8 +134,8 @@ public:
 private:
     /*! retrieve iterator */
     //! @{
-    typename coreLookupStr<T>::coreIterator      __retrieve(const T& Entry)hot_func;
-    typename coreLookupStr<T>::coreConstIterator __retrieve(const T& Entry)const hot_func;
+    typename coreLookupStr<T>::coreIterator      __retrieve(const T&    Entry)hot_func;
+    typename coreLookupStr<T>::coreConstIterator __retrieve(const T&    Entry)const hot_func;
     typename coreLookupStr<T>::coreIterator      __retrieve(const char* pcKey)hot_func;
     typename coreLookupStr<T>::coreConstIterator __retrieve(const char* pcKey)const hot_func;
     //! @}
@@ -148,7 +148,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 : m_pCache   (NULL)
 , m_CacheKey ((I)NULL)
 {
-    m_aList.reserve(1 + 64/sizeof(T));
+    m_aList.reserve(MAX(64u / sizeof(T), 2u));
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept

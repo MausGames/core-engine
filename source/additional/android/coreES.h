@@ -10,8 +10,12 @@
 #ifndef _CORE_ES_H_
 #define	_CORE_ES_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
     extern "C" {
+#endif
+
+#if !defined(APIENTRY)
+    #define APIENTRY
 #endif
 
 
@@ -116,8 +120,8 @@ extern PFNGLGENVERTEXARRAYSOESPROC    glGenVertexArraysOES;
 /* unused definitions and functions */
 #define GLEW_OK      0
 #define GLEW_VERSION 1          
-static const char* glewGetString(GLenum name)       {return "";}
-static const char* glewGetErrorString(GLenum error) {return "";}
+inline const char* glewGetString     (GLenum name)  {return "";}
+inline const char* glewGetErrorString(GLenum error) {return "";}
 
 typedef int*     GLsync;
 typedef uint64_t GLuint64;
@@ -136,31 +140,31 @@ typedef uint64_t GLuint64;
 #define GL_TESS_CONTROL_SHADER          0x8E88
 
 typedef void (*GLDEBUGPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam);
-static void    glDebugMessageCallback(GLDEBUGPROC callback, const GLvoid *userParam)                                                      {}
-static void    glDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled)    {}
-static void    glDebugMessageCallbackARB(GLDEBUGPROC callback, const GLvoid *userParam)                                                   {}
-static void    glDebugMessageControlARB(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled) {}
-static void    glBindBufferBase(GLenum target, GLuint index, GLuint buffer)                                                               {}
-static void    glBindFragDataLocation(GLuint program, GLuint colorNumber, const GLchar* name)                                             {}
-static GLuint  glGetUniformBlockIndex(GLuint program, const GLchar* uniformBlockName)                                                     {return -1;}
-static void    glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding)                                {}
-static GLvoid* glMapBuffer(GLenum target, GLenum access)                                                                                  {return NULL;}
-static void    glBufferStorage(GLenum target, GLsizeiptr size, const GLvoid* data, GLbitfield flags)                                      {}
-static void    glBindVertexBuffer(GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride)                                    {}
-static void    glVertexAttribBinding(GLuint attribindex, GLuint bindingindex)                                                             {}
-static void    glVertexAttribFormat(GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset)             {}
-static void    glVertexAttribIFormat(GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset)                                  {}
-static void    glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)                       {}
-static void    glVertexBindingDivisor(GLuint bindingindex, GLuint divisor)                                                                {}
-static void    glVertexAttribDivisorARB(GLuint index, GLuint divisor)                                                                     {}
-static void    glDrawArraysInstanced(GLenum, GLint, GLsizei, GLsizei)                                                                     {}
-static void    glDrawElementsInstanced(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, GLsizei primcount)                 {}
-static GLenum  glClientWaitSync(GLsync GLsync, GLbitfield flags, GLuint64 timeout)                                                        {return 0;}
-static void    glDeleteSync(GLsync GLsync)                                                                                                {}
-static GLsync  glFenceSync(GLenum condition, GLbitfield flags)                                                                            {return NULL;}
+inline void    glDebugMessageCallback   (GLDEBUGPROC callback, const GLvoid *userParam)                                                    {}
+inline void    glDebugMessageControl    (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled) {}
+inline void    glDebugMessageCallbackARB(GLDEBUGPROC callback, const GLvoid *userParam)                                                    {}
+inline void    glDebugMessageControlARB (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled) {}
+inline void    glBindBufferBase         (GLenum target, GLuint index, GLuint buffer)                                                       {}
+inline void    glBindFragDataLocation   (GLuint program, GLuint colorNumber, const GLchar* name)                                           {}
+inline GLuint  glGetUniformBlockIndex   (GLuint program, const GLchar* uniformBlockName)                                                   {return -1;}
+inline void    glUniformBlockBinding    (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding)                             {}
+inline GLvoid* glMapBuffer              (GLenum target, GLenum access)                                                                     {return NULL;}
+inline void    glBufferStorage          (GLenum target, GLsizeiptr size, const GLvoid* data, GLbitfield flags)                             {}
+inline void    glBindVertexBuffer       (GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride)                              {}
+inline void    glVertexAttribBinding    (GLuint attribindex, GLuint bindingindex)                                                          {}
+inline void    glVertexAttribFormat     (GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset)         {}
+inline void    glVertexAttribIFormat    (GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset)                               {}
+inline void    glVertexAttribIPointer   (GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* pointer)                     {}
+inline void    glVertexBindingDivisor   (GLuint bindingindex, GLuint divisor)                                                              {}
+inline void    glVertexAttribDivisorARB (GLuint index, GLuint divisor)                                                                     {}
+inline void    glDrawArraysInstanced    (GLenum, GLint, GLsizei, GLsizei)                                                                  {}
+inline void    glDrawElementsInstanced  (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices, GLsizei primcount)                {}
+inline GLenum  glClientWaitSync         (GLsync GLsync, GLbitfield flags, GLuint64 timeout)                                                {return 0;}
+inline void    glDeleteSync             (GLsync GLsync)                                                                                    {}
+inline GLsync  glFenceSync              (GLenum condition, GLbitfield flags)                                                               {return NULL;}
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
     }
 #endif
 

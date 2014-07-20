@@ -39,9 +39,9 @@ public:
 
     //! bind and unbind the data buffer object
     //! @{
-    inline void Bind()const                                               {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
-    static inline void Bind(const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
-    static inline void Unbind(const GLenum& iTarget)                      {coreDataBuffer::Bind(iTarget, 0);}
+    inline void Bind()const                                                 {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
+    static inline void Bind  (const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
+    static inline void Unbind(const GLenum& iTarget)                        {coreDataBuffer::Bind(iTarget, 0);}
     //! @}
 
     //! reset content of the data buffer object
@@ -52,7 +52,7 @@ public:
 
     //! modify buffer memory
     //! @{
-    template <typename T> T* Map(const coreUint& iOffset, const coreUint& iLength, const bool& bSync);
+    template <typename T> T*   Map  (const coreUint& iOffset, const coreUint& iLength, const bool& bSync);
     template <typename T> void Unmap(T* pPointer);
     inline const bool& IsDynamic()const {return m_bDynamic;}
     //! @}
@@ -64,9 +64,9 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint& GetDataBuffer()const {return m_iDataBuffer;}
-    inline const GLenum& GetTarget()const     {return m_iTarget;}
-    inline const coreUint& GetSize()const     {return m_iSize;}
+    inline const GLuint&   GetDataBuffer()const {return m_iDataBuffer;}
+    inline const GLenum&   GetTarget    ()const {return m_iTarget;}
+    inline const coreUint& GetSize      ()const {return m_iSize;}
     //! @}
 
 

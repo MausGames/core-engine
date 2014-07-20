@@ -15,7 +15,7 @@ coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
 // create buffer storage
 void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const GLenum& iUsage)
 {
-    ASSERT(!m_iDataBuffer)
+    ASSERT_IF(m_iDataBuffer) this->Delete();
 
     // save properties
     m_iTarget  = iTarget;

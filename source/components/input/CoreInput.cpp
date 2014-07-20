@@ -18,7 +18,7 @@
 // ****************************************************************
 // constructor
 CoreInput::coreKeyboard::coreKeyboard()noexcept
-: iLast (SDL_SCANCODE_UNKNOWN)
+: iLast (KEY(UNKNOWN))
 , cChar ('\0')
 {
     std::memset(aabButton, 0, sizeof(aabButton));
@@ -60,32 +60,36 @@ CoreInput::coreTouch::coreTouch()noexcept
 
 // ****************************************************************
 // constructor
+// TODO: save GUID ?, format Name and GUID get functions
 CoreInput::CoreInput()noexcept
 : m_pCursor        (NULL)
 , m_bCursorVisible (true)
 {
     Core::Log->Header("Input Interface");
 
-    // check for joystick devices
+    // check for available joystick devices
     const int iNumJoysticks = SDL_NumJoysticks();
     if(iNumJoysticks)
     {
         Core::Log->ListStart("Joysticks/Gamepads found");
-        for(int i = 0; i < iNumJoysticks; ++i)
         {
-            coreJoystick Joystick;
+            m_aJoystick.reserve(iNumJoysticks);
+            for(int i = 0; i < iNumJoysticks; ++i)
+            {
+                coreJoystick Joystick;
 
-            // open joystick device
-            Joystick.pHandle = SDL_JoystickOpen(i);
-            m_aJoystick.push_back(Joystick);
+                // open and save joystick device
+                Joystick.pHandle = SDL_JoystickOpen(i);
+                m_aJoystick.push_back(Joystick);
 
-            Core::Log->ListEntry("%s", this->GetJoystickName(i));
+                Core::Log->ListEntry("%s (%s)", this->GetJoystickName(i), this->GetJoystickGUID(i));
+            }
         }
         Core::Log->ListEnd();
     }
-    else Core::Log->Info("No joysticks/gamepads found");
+    else Core::Log->Info("No Joysticks/Gamepads found");
 
-    // append empty joystick device
+    // append empty joystick device to prevent problems
     m_aJoystick.push_back(coreJoystick());
 }
 
@@ -94,8 +98,6 @@ CoreInput::CoreInput()noexcept
 // destructor
 CoreInput::~CoreInput()
 {
-    Core::Log->Info("Input Interface shut down");
-
 #if !defined(_CORE_ANDROID_)
 
     // close all joystick devices
@@ -110,6 +112,8 @@ CoreInput::~CoreInput()
 
     // free the hardware mouse cursor
     if(m_pCursor) SDL_FreeCursor(m_pCursor);
+
+    Core::Log->Info("Input Interface shut down");
 }
 
 
@@ -196,10 +200,10 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
     // press keyboard button
     case SDL_KEYDOWN:
         this->SetKeyboardButton(Event.key.keysym.scancode, true);
-             if(Event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE)   this->SetKeyboardChar(SDLK_BACKSPACE);
-        else if(Event.key.keysym.scancode == SDL_SCANCODE_RETURN)      this->SetKeyboardChar(SDLK_RETURN);
-        else if(Event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER)    this->SetKeyboardChar(SDLK_RETURN);
-        else if(Event.key.keysym.scancode == SDL_SCANCODE_PRINTSCREEN) return false;   
+             if(Event.key.keysym.scancode == KEY(BACKSPACE))   this->SetKeyboardChar(SDLK_BACKSPACE);
+        else if(Event.key.keysym.scancode == KEY(RETURN))      this->SetKeyboardChar(SDLK_RETURN);
+        else if(Event.key.keysym.scancode == KEY(KP_ENTER))    this->SetKeyboardChar(SDLK_RETURN);
+        else if(Event.key.keysym.scancode == KEY(PRINTSCREEN)) return false;   
         break;
 
     // release keyboard button
@@ -325,7 +329,7 @@ void CoreInput::__UpdateButtons()
 void CoreInput::__ClearButtons()
 {
     // clear all last pressed buttons
-    m_Keyboard.iLast = SDL_SCANCODE_UNKNOWN;
+    m_Keyboard.iLast = KEY(UNKNOWN);
     m_Mouse.iLast    = -1;
     FOR_EACH(it, m_aJoystick)
         it->iLast = -1;

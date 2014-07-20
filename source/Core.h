@@ -124,6 +124,7 @@
 #endif
 #include <cstdlib>
 #include <cstdio>
+#include <cstdint>
 #include <cstring>
 #include <cmath>
 #include <ctime>
@@ -165,8 +166,8 @@
     #define cold_func
     #define constexpr_func inline
     #define constexpr_var  const
-    #define noexcept       throw()               // keyword
-    #define thread_local   __declspec(thread)    // keyword
+    #define noexcept       throw()              // keyword
+    #define thread_local   __declspec(thread)   // keyword
 #else
     #define hot_func       __attribute__((hot))
     #define cold_func      __attribute__((cold))
@@ -186,13 +187,12 @@
     #define constexpr_obj constexpr_func
 #endif
 
-#if !defined(APIENTRY)
-    #define APIENTRY
-#endif
-
 
 // ****************************************************************
 // general definitions
+#undef  NULL
+#define NULL nullptr
+
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
 #define ARRAY_SIZE(a)        (sizeof(a) / sizeof((a)[0]))
@@ -203,6 +203,7 @@
 
 #define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
 #define DEFINED(a)           (__DEFINED(a, #a))
+#define STRING(a)            (#a)
                              
 #define BIT(n)               (1 << (n))
 #define BIT_SET(o,n)         {(o) |=  BIT(n);}
@@ -215,32 +216,54 @@
 #define DYN_KEEP(i)          {++i;}
 #define DYN_REMOVE(i,c)      {i = (c).erase(i); i ## __e = (c).end();}
 
-#define DISABLE_INST(c) \
+// enable additional information about the defined class
+#define ENABLE_INFO(c)                                    \
+    static inline const char* GetTypeName()  {return #c;} \
+    static inline const char* GetClassPath() {return __FILE__;}
+
+// disable constructor and destructor of the defined class
+#define DISABLE_TORS(c) \
     c()  = delete;      \
     ~c() = delete;
 
+// disable copy and move operations with the defined class
 #define DISABLE_COPY(c)                \
     c(const c&)              = delete; \
     c& operator = (const c&) = delete;
 
+// disable heap operations with the defined class
 #define DISABLE_HEAP                               \
     void* operator new   (size_t)        = delete; \
     void* operator new   (size_t, void*) = delete; \
     void* operator new[] (size_t)        = delete; \
     void* operator new[] (size_t, void*) = delete;
 
+// enable bit-operations with the defined enumeration
+#define EXTEND_ENUM(e)                                                                                                                                               \
+    constexpr_func e  operator ~  (const e& a)             {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
+    constexpr_func e  operator |  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr_func e  operator &  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr_func e  operator ^  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
+    inline         e& operator |= (e&       a, const e& b) {return (a = a | b);}                                                                                     \
+    inline         e& operator &= (e&       a, const e& b) {return (a = a & b);}                                                                                     \
+    inline         e& operator ^= (e&       a, const e& b) {return (a = a ^ b);}
+
+// shorter common types and keywords
 #define f_list forward_list
 #define u_map  unordered_map
 #define u_set  unordered_set
 #define s_cast static_cast
+#define d_cast dynamic_cast
 #define r_cast reinterpret_cast
 #define c_cast const_cast
 
-typedef uint8_t  coreByte;
-typedef uint16_t coreWord;
-typedef uint32_t coreUint;
+// basic sized unsigned integer types
+typedef std::uint8_t  coreByte;
+typedef std::uint16_t coreWord;
+typedef std::uint32_t coreUint;
+typedef std::uint64_t coreUint64;
 
-enum coreError
+enum coreError : int
 {
     CORE_OK            =   0,    //!< everything is fine
     CORE_BUSY          =  10,    //!< currently waiting for an event

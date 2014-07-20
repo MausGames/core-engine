@@ -92,7 +92,7 @@ coreLanguage::~coreLanguage()
         (*it)->ChangeLanguage(NULL);
 
     // clear memory
-    m_asString.clear();
+    m_asStringList.clear();
 }
 
 
@@ -122,7 +122,7 @@ coreError coreLanguage::Load(const char* pcPath)
     };
 
     // clear all existing language strings
-    FOR_EACH(it, m_asString) it->second.clear();
+    FOR_EACH(it, m_asStringList) it->second.clear();
 
     std::string sKey = "";
     while(pcTo != pcEnd)
@@ -136,20 +136,20 @@ coreError coreLanguage::Load(const char* pcPath)
         else if(*pcTo == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {
             // extract language-string
-            AssignLambda(&m_asString[sKey.c_str()]);
+            AssignLambda(&m_asStringList[sKey.c_str()]);
             sKey.clear();
         }
 
         ++pcTo;
     }
-    if(!sKey.empty()) AssignLambda(&m_asString[sKey.c_str()]);
+    if(!sKey.empty()) AssignLambda(&m_asStringList[sKey.c_str()]);
 
     // save relative path and unload data
     m_sPath = pcPath;
     pFile->UnloadData();
 
     // reduce memory consumption
-    FOR_EACH(it, m_asString)
+    FOR_EACH(it, m_asStringList)
     {
         std::string& sString = it->second;
 
@@ -157,7 +157,7 @@ coreError coreLanguage::Load(const char* pcPath)
         if(sString.empty()) sString = it->first;
         sString.shrink_to_fit();
     }
-    m_asString.shrink_to_fit();
+    m_asStringList.shrink_to_fit();
 
     // update all foreign strings and objects
     FOR_EACH(it, m_apsForeign) (*it->first) = (*it->second);
@@ -174,11 +174,11 @@ void coreLanguage::BindForeign(std::string* psForeign, const char* pcKey)
 {
     ASSERT(psForeign && pcKey)
 
-    // assign key to new language strings
-    if(!m_asString.count(pcKey)) m_asString[pcKey].assign(pcKey);
+    // assign key as value to new language strings
+    if(!m_asStringList.count(pcKey)) m_asStringList[pcKey].assign(pcKey);
 
     // retrieve language-string and save both pointers
-    std::string& sString    = m_asString[pcKey];
+    std::string& sString    = m_asStringList[pcKey];
     m_apsForeign[psForeign] = &sString;
 
     // initially update foreign string

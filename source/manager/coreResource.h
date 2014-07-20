@@ -191,7 +191,7 @@ public:
     //! @{
     template <typename T, typename... A> inline coreResourceHandle* LoadNew (A&&... vArgs)const                {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL);}
     template <typename T, typename... A> inline coreResourceHandle* LoadLink(const char* pcName, A&&... vArgs) {return this->LoadFile<T, A...>(pcName, NULL, std::forward<A>(vArgs)...);}
-    template <typename T, typename... A> coreResourceHandle*        LoadFile(const char* pcName, const char* pcPath, A&&... vArgs);
+    template <typename T, typename... A>        coreResourceHandle* LoadFile(const char* pcName, const char* pcPath, A&&... vArgs);
     template <typename T> void Free(coreResourcePtr<T>* pResourcePtr);
     //! @}
 

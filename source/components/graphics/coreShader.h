@@ -127,7 +127,7 @@ public:
 
     //! enable and disable the shader-program
     //! @{
-    bool Enable();
+    bool        Enable();
     static void Disable(const bool& bFull);
     //! @}
 
@@ -136,7 +136,7 @@ public:
     inline coreProgram* AttachShader (const coreShaderPtr pShader)                      {if(!m_iStatus) m_apShader.push_back(pShader);                                          return this;}
     inline coreProgram* AttachShader (const char*         pcName)                       {if(!m_iStatus) m_apShader.push_back(Core::Manager::Resource->Get<coreShader>(pcName)); return this;}
     inline coreProgram* BindAttribute(const char*         pcName, const int& iLocation) {if(!m_iStatus) m_aiAttribute[pcName] = iLocation;                                      return this;}
-    inline void Finish()                                                                {if(!m_iStatus) {m_iStatus = CORE_SHADER_DEFINED; this->__Init();}}
+    inline void Finish ()                                                               {if(!m_iStatus) {m_iStatus = CORE_SHADER_DEFINED; this->__Init();}}
     inline void Refresh()                                                               {this->__Exit();}
     //! @}
 
@@ -158,9 +158,9 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint& GetProgram()const             {return m_iProgram;}
-    inline const int& GetUniform(const char* pcName)   {if(!m_aiUniform.count(pcName))   {ASSERT(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this) m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
-    inline const int& GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this) m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
+    inline const GLuint& GetProgram  ()const              {return m_iProgram;}
+    inline const int&    GetUniform  (const char* pcName) {if(!m_aiUniform.count(pcName))   {ASSERT(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this) m_aiUniform[pcName]   = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at(pcName);}
+    inline const int&    GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_LINKED && s_pCurrent == this) m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
     //! @}
 
     //! get currently active shader-program
