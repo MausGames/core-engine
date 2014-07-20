@@ -15,11 +15,11 @@
 
 // ****************************************************************
 /* math definitions */
-#define PI (3.1415926535897932384626433832795f)    //!< Archimedes' constant
-#define EU (2.7182818284590452353602874713527f)    //!< Euler's number
+#define PI (3.1415926535897932384626433832795f)                    //!< Archimedes' constant
+#define EU (2.7182818284590452353602874713527f)                    //!< Euler's number
 
-#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)    //!< convert degree to radian
-#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)    //!< convert radian to degree
+#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degree to radian
+#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radian to degree
 
 #define MIN(x,y,...) coreMath::Min(x, y, ##__VA_ARGS__)
 #define MAX(x,y,...) coreMath::Max(x, y, ##__VA_ARGS__)
@@ -51,14 +51,15 @@ public:
     //! @{
     template <typename T, typename... A> static constexpr_func T Min(const T& x, const T& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
     template <typename T, typename... A> static constexpr_func T Max(const T& x, const T& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T> static constexpr_func T Min       (const T& x, const T& y)                       {return (x <   y)  ?    x  :   y;}
-    template <typename T> static constexpr_func T Max       (const T& x, const T& y)                       {return (x >   y)  ?    x  :   y;}
-    template <typename T> static constexpr_func T Abs       (const T& x)                                   {return (x < T(0)) ?   -x  :   x;}
-    template <typename T> static constexpr_func T Sign      (const T& x)                                   {return (x < T(0)) ? T(-1) : T(1);}
-    template <typename T> static constexpr_func T Clamp     (const T& a, const T& x, const T&     y)       {return MIN(MAX(a, x), y);}
-    template <typename T> static constexpr_func T Lerp      (const T& x, const T& y, const float& s)       {return x + (y - x) * s;}
-    template <typename T> static inline T         LerpSmooth(const T& x, const T& y, const float& s)       {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline T         LerpBreak (const T& x, const T& y, const float& s)       {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr_func T    Min       (const T& x, const T& y)                    {return (x <   y)  ?    x  :   y;}
+    template <typename T> static constexpr_func T    Max       (const T& x, const T& y)                    {return (x >   y)  ?    x  :   y;}
+    template <typename T> static constexpr_func T    Abs       (const T& x)                                {return (x < T(0)) ?   -x  :   x;}
+    template <typename T> static constexpr_func T    Sign      (const T& x)                                {return (x < T(0)) ? T(-1) : T(1);}
+    template <typename T> static constexpr_func T    Clamp     (const T& a, const T& x, const T&     y)    {return MIN(MAX(a, x), y);}
+    template <typename T> static constexpr_func T    Lerp      (const T& x, const T& y, const float& s)    {return x + (y - x) * s;}
+    template <typename T> static inline         T    LerpSmooth(const T& x, const T& y, const float& s)    {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline         T    LerpBreak (const T& x, const T& y, const float& s)    {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr_func bool InRange   (const T& x, const T& c, const T&     r)    {return ((c-r) <= x && x <= (c+r));}
     //! @}
 
     /*! elementary operations */
@@ -91,7 +92,7 @@ public:
 
 
 private:
-    DISABLE_INST(coreMath)
+    DISABLE_TORS(coreMath)
 };
 
 
@@ -109,12 +110,14 @@ inline float coreMath::Rsqrt(float fInput)
 #else
 
     // normal calculation
-    const float fHalfValue = fInput*0.5f;
-    coreUint* piPointer    = r_cast<coreUint*>(&fInput);
-    *piPointer             = 0x5F3759DF - (*piPointer >> 1);
+    fInput = 1.0f / std::sqrt(fInput);
 
-    fInput *= 1.5f - fInput*fInput*fHalfValue;
-    fInput *= 1.5f - fInput*fInput*fHalfValue;
+    //const float fHalfValue = fInput*0.5f;
+    //coreUint* piPointer    = r_cast<coreUint*>(&fInput);
+    //*piPointer             = 0x5F3759DF - (*piPointer >> 1);
+
+    //fInput *= 1.5f - fInput*fInput*fHalfValue;
+    //fInput *= 1.5f - fInput*fInput*fHalfValue;
 
 #endif
 
@@ -136,12 +139,14 @@ inline float coreMath::Rcp(float fInput)
 #else
 
     // normal calculation
-    const float fValue  = fInput;
-    coreUint* piPointer = r_cast<coreUint*>(&fInput);
-    *piPointer          = 0x7EEEEEEE - *piPointer;
+    fInput = 1.0f / fInput;
 
-    fInput *= 2.0f - fInput*fValue;
-    fInput *= 2.0f - fInput*fValue;
+    //const float fValue  = fInput;
+    //coreUint* piPointer = r_cast<coreUint*>(&fInput);
+    //*piPointer          = 0x7EEEEEEE - *piPointer;
+
+    //fInput *= 2.0f - fInput*fValue;
+    //fInput *= 2.0f - fInput*fValue;
 
 #endif
 

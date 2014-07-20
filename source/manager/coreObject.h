@@ -10,16 +10,31 @@
 #ifndef _CORE_GUARD_OBJECT_H_
 #define _CORE_GUARD_OBJECT_H_
 
+// TODO: re-implement relative object behavior (additional classes?)
+
 
 // ****************************************************************
 // object definitions
-#define __CORE_OBJECT_ACTIVE_RENDER (m_iActive & 2)
-#define __CORE_OBJECT_ACTIVE_MOVE   (m_iActive & 1)
+enum coreObjectUpdate : coreByte
+{
+    CORE_OBJECT_UPDATE_NOTHING   = 0x00,   //!< update nothing
+    CORE_OBJECT_UPDATE_TRANSFORM = 0x01,   //!< update transformation
+    CORE_OBJECT_UPDATE_ALL       = 0xFF    //!< update rotation and transformation
+};
+EXTEND_ENUM(coreObjectUpdate)
+
+enum coreObjectEnable : coreByte
+{
+    CORE_OBJECT_ENABLE_NOTHING = 0x00,   //!< do nothing
+    CORE_OBJECT_ENABLE_RENDER  = 0x01,   //!< enable render routine
+    CORE_OBJECT_ENABLE_MOVE    = 0x02,   //!< enable move routine
+    CORE_OBJECT_ENABLE_ALL     = 0xFF    //!< enable all routines
+};
+EXTEND_ENUM(coreObjectEnable)
 
 
 // ****************************************************************
-// base-object extension
-// TODO: re-implement relative behavior (additional classes?)
+// object interface
 class coreObject
 {
 protected:
@@ -28,14 +43,14 @@ protected:
 
     coreMatrix4 m_mRotation;                          //!< separate rotation matrix
     coreMatrix4 m_mTransform;                         //!< transformation matrix
-    coreByte m_iUpdate;                               //!< update status (0 = do nothing | 1 = update only transformation | 3 = update rotation and transformation)
+    coreObjectUpdate m_iUpdate;                       //!< update status
 
     coreVector4 m_vColor;                             //!< RGBA color-value
     coreVector2 m_vTexSize;                           //!< size-factor of the texture
     coreVector2 m_vTexOffset;                         //!< offset of the texture
 
+    coreObjectEnable m_iEnable;                       //!< enabled object routines
     int m_iStatus;                                    //!< numeric status-value for individual use
-    coreByte m_iActive;                               //!< execution behavior (0 = nothing | 1 = move | 2 = render | 3 = everything)
 
 
 protected:
@@ -46,42 +61,43 @@ protected:
 public:
     //! define the visual appearance
     //! @{
-    inline void DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
-    inline void DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
-    const coreTexturePtr& DefineTextureFile(const coreByte& iUnit, const char* pcPath);
-    const coreTexturePtr& DefineTextureLink(const coreByte& iUnit, const char* pcName);
-    const coreProgramShr& DefineProgramShare(const char* pcName);
+    inline void                  DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
+    inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const char*           pcName)   {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(pcName); return m_apTexture[iUnit];}
+    inline void                  DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
+    inline const coreProgramShr& DefineProgram(const char*           pcName)                          {m_pProgram = Core::Manager::Memory->Share<coreProgram>(pcName); return m_pProgram;}
     //! @}
 
     //! set object properties
     //! @{
-    inline void SetColor4(const coreVector4& vColor)        {m_vColor     = vColor;}
-    inline void SetColor3(const coreVector3& vColor)        {m_vColor.xyz(vColor);}
-    inline void SetAlpha(const float& fAlpha)               {m_vColor.a   = fAlpha;}
-    inline void SetTexSize(const coreVector2& vTexSize)     {m_vTexSize   = vTexSize;}
-    inline void SetTexOffset(const coreVector2& vTexOffset) {m_vTexOffset = vTexOffset;}
-    inline void SetStatus(const int& iStatus)               {m_iStatus    = iStatus;}
+    inline void SetColor4   (const coreVector4&      vColor)     {m_vColor     = vColor;}
+    inline void SetColor3   (const coreVector3&      vColor)     {m_vColor.xyz(vColor);}
+    inline void SetAlpha    (const float&            fAlpha)     {m_vColor.a   = fAlpha;}
+    inline void SetTexSize  (const coreVector2&      vTexSize)   {m_vTexSize   = vTexSize;}
+    inline void SetTexOffset(const coreVector2&      vTexOffset) {m_vTexOffset = vTexOffset;}
+    inline void SetEnable   (const coreObjectEnable& iEnable)    {m_iEnable    = iEnable;}
+    inline void SetStatus   (const int&              iStatus)    {m_iStatus    = iStatus;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const coreTexturePtr& GetTexture(const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
-    inline const coreProgramShr& GetProgram()const                      {return m_pProgram;}
-    inline const coreMatrix4& GetRotation()const                        {return m_mRotation;}
-    inline const coreMatrix4& GetTransform()const                       {return m_mTransform;}
-    inline const coreVector4& GetColor4()const                          {return m_vColor;}
-    inline coreVector3 GetColor3()const                                 {return m_vColor.xyz();}
-    inline const float& GetAlpha()const                                 {return m_vColor.a;}
-    inline const coreVector2& GetTexSize()const                         {return m_vTexSize;}
-    inline const coreVector2& GetTexOffset()const                       {return m_vTexOffset;}
-    inline const int& GetStatus()const                                  {return m_iStatus;}
+    inline const coreTexturePtr&   GetTexture  (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
+    inline const coreProgramShr&   GetProgram  ()const                      {return m_pProgram;}
+    inline const coreMatrix4&      GetRotation ()const                      {return m_mRotation;}
+    inline const coreMatrix4&      GetTransform()const                      {return m_mTransform;}
+    inline const coreVector4&      GetColor4   ()const                      {return m_vColor;}
+    inline coreVector3             GetColor3   ()const                      {return m_vColor.xyz();}
+    inline const float&            GetAlpha    ()const                      {return m_vColor.a;}
+    inline const coreVector2&      GetTexSize  ()const                      {return m_vTexSize;}
+    inline const coreVector2&      GetTexOffset()const                      {return m_vTexOffset;}
+    inline const coreObjectEnable& GetEnable   ()const                      {return m_iEnable;}
+    inline const int&              GetStatus   ()const                      {return m_iStatus;}
     //! @}
 };
 
 
 // ****************************************************************
 // object manager
-class coreObjectManager final : public coreReset
+class coreObjectManager final : public coreResourceRelation
 {
 private:
 
@@ -98,7 +114,7 @@ public:
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const bool& bInit)override;
+    void __Reset(const coreResourceReset& bInit)override;
     //! @}
 };
 
@@ -108,12 +124,12 @@ private:
 constexpr_obj coreObject::coreObject()noexcept
 : m_mRotation  (coreMatrix4::Identity())
 , m_mTransform (coreMatrix4::Identity())
-, m_iUpdate    (3)
+, m_iUpdate    (CORE_OBJECT_UPDATE_ALL)
 , m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
 , m_vTexSize   (coreVector2(1.0f,1.0f))
 , m_vTexOffset (coreVector2(0.0f,0.0f))
+, m_iEnable    (CORE_OBJECT_ENABLE_ALL)
 , m_iStatus    (0)
-, m_iActive    (3)
 {
 }
 

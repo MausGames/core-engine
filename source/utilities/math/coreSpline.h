@@ -11,6 +11,7 @@
 #define _CORE_GUARD_SPLINE_H_
 
 // TODO: extend to NURBS
+// TODO: add GetNumNodes
 
 
 // ****************************************************************
@@ -37,7 +38,7 @@ private:
 public:
     coreSpline()noexcept;
     coreSpline(const coreSpline& c)noexcept;
-    coreSpline(coreSpline&& m)noexcept;
+    coreSpline(coreSpline&&      m)noexcept;
     ~coreSpline();
 
     //! assignment operator
@@ -48,17 +49,17 @@ public:
 
     //! manage nodes
     //! @{
-    void AddNode(const coreVector3& vPosition, const coreVector3& vTangent);
+    void AddNode   (const coreVector3& vPosition, const coreVector3& vTangent);
     void DeleteNode(const coreUint& iIndex);
     void ClearNodes();
     //! @}
 
     //! get position and direction
     //! @{
-    coreVector3 GetPosition(const float& fTime)const;
+    coreVector3 GetPosition (const float& fTime)const;
     coreVector3 GetDirection(const float& fTime)const;
-    static constexpr_func coreVector3 GetPosition(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)noexcept;
-    static constexpr_func coreVector3 GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)noexcept;
+    static constexpr_func coreVector3 GetPosition (const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2);
+    static constexpr_func coreVector3 GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2);
     //! @}
 
     //! get relative node and time
@@ -68,8 +69,8 @@ public:
 
     //! get distance
     //! @{
-    inline const float& GetDistance()const            {return m_fMaxDistance;}
-    inline float GetDistance(const float& fTime)const {return fTime*m_fMaxDistance;}
+    inline const float& GetDistance()const                   {return m_fMaxDistance;}
+    inline float        GetDistance(const float& fTime)const {return m_fMaxDistance * fTime;}
     //! @}
 };
 
@@ -86,7 +87,7 @@ constexpr_func coreSpline::coreNode::coreNode()noexcept
 
 // ****************************************************************
 // get position in spline
-constexpr_func coreVector3 coreSpline::GetPosition(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)noexcept
+constexpr_func coreVector3 coreSpline::GetPosition(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)
 {
     // calculate position with cubic function
     return ((( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2)  * fTime +
@@ -96,7 +97,7 @@ constexpr_func coreVector3 coreSpline::GetPosition(const float& fTime, const cor
 
 // ****************************************************************
 // get direction in spline
-constexpr_func coreVector3 coreSpline::GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)noexcept
+constexpr_func coreVector3 coreSpline::GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2)
 {
     // calculate direction with quadratic function
     return (( 2.0f*vP1 - 2.0f*vP2 +      vT1 + vT2)  * fTime * 1.5f +

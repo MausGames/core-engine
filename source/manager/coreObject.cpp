@@ -10,45 +10,11 @@
 
 
 // ****************************************************************
-// define texture through resource file
-const coreTexturePtr& coreObject::DefineTextureFile(const coreByte& iUnit, const char* pcPath)
-{
-    ASSERT(iUnit < CORE_TEXTURE_UNITS)
-
-    // set and return texture object
-    m_apTexture[iUnit] = Core::Manager::Resource->LoadFile<coreTexture>(pcPath);
-    return m_apTexture[iUnit];
-}
-
-
-// ****************************************************************
-// define texture through linked resource
-const coreTexturePtr& coreObject::DefineTextureLink(const coreByte& iUnit, const char* pcName)
-{
-    ASSERT(iUnit < CORE_TEXTURE_UNITS)
-
-    // set and return texture object
-    m_apTexture[iUnit] = Core::Manager::Resource->LoadLink<coreTexture>(pcName);
-    return m_apTexture[iUnit];
-}
-
-
-// ****************************************************************
-// define shader-program through shared memory
-const coreProgramShr& coreObject::DefineProgramShare(const char* pcName)
-{
-    // set and return shader-program object
-    m_pProgram = Core::Manager::Memory->Share<coreProgram>(pcName);
-    return m_pProgram;
-}
-
-
-// ****************************************************************
 // constructor
 coreObjectManager::coreObjectManager()noexcept
 {
-    // create global model objeczs
-    this->__Reset(true);
+    // create global model objects
+    this->__Reset(CORE_RESOURCE_RESET_INIT);
 
     Core::Log->Info("Object Manager created");
 }
@@ -59,7 +25,7 @@ coreObjectManager::coreObjectManager()noexcept
 coreObjectManager::~coreObjectManager()
 {
     // delete global model objects
-    this->__Reset(false);
+    this->__Reset(CORE_RESOURCE_RESET_EXIT);
     
     Core::Log->Info("Object Manager destroyed");
 }
@@ -67,7 +33,7 @@ coreObjectManager::~coreObjectManager()
 
 // ****************************************************************
 // reset with the resource manager
-void coreObjectManager::__Reset(const bool& bInit)
+void coreObjectManager::__Reset(const coreResourceReset& bInit)
 {
     if(bInit)
     {

@@ -59,10 +59,12 @@ void swap(coreSpline& a, coreSpline& b)noexcept
 // add node to spline
 void coreSpline::AddNode(const coreVector3& vPosition, const coreVector3& vTangent)
 {
+    ASSERT(vTangent.IsNormalized())
+
     // create new node
     coreNode NewNode;
     NewNode.vPosition = vPosition;
-    NewNode.vTangent  = vTangent.Normalized();
+    NewNode.vTangent  = vTangent;
 
     // edit last node and increase max distance
     if(!m_apNode.empty())

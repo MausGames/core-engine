@@ -12,9 +12,9 @@
 // ****************************************************************
 // constructor
 CoreAudio::CoreAudio()noexcept
-: m_NumSource (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
-, m_CurSource (0)
-, m_fVolume   (-1.0f)
+: m_iNumSources (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
+, m_iCurSource  (0)
+, m_fVolume     (-1.0f)
 {
     Core::Log->Header("Audio Interface");
 
@@ -28,20 +28,22 @@ CoreAudio::CoreAudio()noexcept
     else Core::Log->Info("OpenAL context created");
 
     // generate sound sources
-    m_pSource = new ALuint[m_NumSource];
-    alGenSources(m_NumSource, m_pSource);
+    m_pSource = new ALuint[m_iNumSources];
+    alGenSources(m_iNumSources, m_pSource);
 
     // log audio device information
     Core::Log->ListStart("Audio Device Information");
-    Core::Log->ListEntry(CORE_LOG_BOLD("Device:")   " %s", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
-    Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
-    Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
-    Core::Log->ListEntry(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
-    Core::Log->ListEntry(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
+    {
+        Core::Log->ListEntry(CORE_LOG_BOLD("Device:")   " %s", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
+        Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
+        Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
+        Core::Log->ListEntry(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
+        Core::Log->ListEntry(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
+    }
     Core::Log->ListEnd();
 
     // reset listener
-    const coreVector3 vInit = coreVector3(1.0f,1.0f,1.0f);
+    const coreVector3 vInit = coreVector3(1.0f,0.0f,0.0f);
     this->SetListener(vInit, vInit, vInit, vInit);
     this->SetListener(0.0f);
 
@@ -58,19 +60,19 @@ CoreAudio::CoreAudio()noexcept
 // destructor
 CoreAudio::~CoreAudio()
 {
-    Core::Log->Info("Audio Interface shut down");
-
     // clear memory
     m_aiBuffer.clear();
 
     // delete sound sources
-    alDeleteSources(m_NumSource, m_pSource);
+    alDeleteSources(m_iNumSources, m_pSource);
     SAFE_DELETE_ARRAY(m_pSource)
 
     // delete OpenAL context and close audio device
     alcMakeContextCurrent(NULL);
     alcDestroyContext(m_pContext);
     alcCloseDevice(m_pDevice);
+
+    Core::Log->Info("Audio Interface shut down");
 }
 
 
@@ -81,12 +83,11 @@ void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVe
     bool bNewOrientation = false;
 
     // set and update properties of the listener
-    const coreVector3 vDirNorm = vDirection.Normalized();   
-    const coreVector3 vOriNorm = vOrientation.Normalized(); 
-    if(m_vPosition      != vPosition) {m_vPosition      = vPosition; alListenerfv(AL_POSITION, m_vPosition);}
-    if(m_vVelocity      != vVelocity) {m_vVelocity      = vVelocity; alListenerfv(AL_VELOCITY, m_vVelocity);}
-    if(m_avDirection[0] != vDirNorm)  {m_avDirection[0] = vDirNorm;  bNewOrientation = true;}
-    if(m_avDirection[1] != vOriNorm)  {m_avDirection[1] = vOriNorm;  bNewOrientation = true;}
+    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
+    if(m_vPosition      != vPosition)    {m_vPosition      = vPosition;    alListenerfv(AL_POSITION, m_vPosition);}
+    if(m_vVelocity      != vVelocity)    {m_vVelocity      = vVelocity;    alListenerfv(AL_VELOCITY, m_vVelocity);}
+    if(m_avDirection[0] != vDirection)   {m_avDirection[0] = vDirection;   bNewOrientation = true;}
+    if(m_avDirection[1] != vOrientation) {m_avDirection[1] = vOrientation; bNewOrientation = true;}
 
     // update direction and orientation
     if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
@@ -94,7 +95,9 @@ void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVe
 
 void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
 {
-    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * Core::System->GetTime(iTimeID);
+    // calculate velocity as relative camera movement
+    const float fTime = Core::System->GetTime(iTimeID);
+    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * (fTime ? RCP(fTime) : 0.0f);
 
     // adjust listener with camera properties
     this->SetListener(Core::Graphics->GetCamPosition(),
@@ -109,16 +112,16 @@ void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
 ALuint CoreAudio::NextSource(const ALuint& iBuffer)
 {
     // search for next free sound source
-    for(int i = 0; i < m_NumSource; ++i)
+    for(int i = 0; i < m_iNumSources; ++i)
     {
-        if(++m_CurSource >= m_NumSource) m_CurSource = 0;
+        if(++m_iCurSource >= m_iNumSources) m_iCurSource = 0;
 
         // check status
         int iStatus;
-        alGetSourcei(m_pSource[m_CurSource], AL_SOURCE_STATE, &iStatus);
+        alGetSourcei(m_pSource[m_iCurSource], AL_SOURCE_STATE, &iStatus);
         if(iStatus != AL_PLAYING)
         {
-            const ALuint& pSource = m_pSource[m_CurSource];
+            const ALuint& pSource = m_pSource[m_iCurSource];
 
             // return sound source
             m_aiBuffer[pSource] = iBuffer;

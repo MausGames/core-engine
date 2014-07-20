@@ -15,7 +15,7 @@ coreModel* coreObject2D::s_pModel = NULL;
 // undefine the visual appearance
 void coreObject2D::Undefine()
 {
-    // reset all resource and memory pointer
+    // reset all resource and memory pointers
     for(int i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
 }
@@ -26,7 +26,7 @@ void coreObject2D::Undefine()
 // TODO: try to use only a 3x3 matrix (or less? see particles) for the transformation
 void coreObject2D::Render(const coreProgramShr& pProgram)
 {
-    if(!__CORE_OBJECT_ACTIVE_RENDER) return;
+    if(!(m_iEnable & CORE_OBJECT_ENABLE_RENDER)) return;
 
     // enable the shader-program
     if(!pProgram) return;
@@ -55,11 +55,12 @@ void coreObject2D::Render(const coreProgramShr& pProgram)
 // move the 2d-object
 void coreObject2D::Move()
 {
-    if(!__CORE_OBJECT_ACTIVE_MOVE) return;
+    if(!(m_iEnable & CORE_OBJECT_ENABLE_MOVE)) return;
 
-    if(m_iUpdate & 1)
+    // check current update status
+    if(m_iUpdate & CORE_OBJECT_UPDATE_TRANSFORM)
     {
-        if(m_iUpdate & 2)
+        if(m_iUpdate & CORE_OBJECT_UPDATE_ALL)
         {
             // update rotation matrix
             m_mRotation = coreMatrix4::RotationZ(m_vDirection);
@@ -77,14 +78,14 @@ void coreObject2D::Move()
         m_mTransform._41  = vScreenPosition.x; m_mTransform._42  = vScreenPosition.y;
 
         // reset the update status
-        m_iUpdate = 0;
+        m_iUpdate = CORE_OBJECT_UPDATE_NOTHING;
     }
 }
 
 
 // ****************************************************************
 // interact with the 2d-object
-// TODO: add interaction for rotated objects (ABS is for 180 degree)
+// TODO: add interaction for rotated objects (ABS is for 180 degrees)
 // TODO: Interact depends on Move, and Move of some menu objects depend on Interact
 void coreObject2D::Interact()
 {
@@ -127,7 +128,8 @@ void coreObject2D::Interact()
 
 // ****************************************************************
 // check for direct input
-// TODO: make right mouse button on Android a longer push
+// TODO: make right mouse button on Android a longer push ?
+// TODO: consider finger number
 bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)const
 {
 #if defined(_CORE_ANDROID_)

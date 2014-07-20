@@ -10,6 +10,13 @@
 #ifndef _CORE_GUARD_VECTOR_H_
 #define _CORE_GUARD_VECTOR_H_
 
+// TODO: check and update Angle()
+
+
+// ****************************************************************
+// vector definitions
+#define CORE_VECTOR_NORM_PRECISION 0.0001f
+
 
 // ****************************************************************
 // 2d-vector class
@@ -40,77 +47,78 @@ public:
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreVector2& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector2)) ? false :  true;}
-    inline bool operator != (const coreVector2& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector2)) ?  true : false;}
+    inline bool operator == (const coreVector2& v)const {return std::memcmp(this, &v, sizeof(coreVector2)) ? false :  true;}
+    inline bool operator != (const coreVector2& v)const {return std::memcmp(this, &v, sizeof(coreVector2)) ?  true : false;}
     //! @}
 
     //! vector calculation operators
     //! @{
-    constexpr_func coreVector2 operator + (const coreVector2& v)const noexcept {return coreVector2(x+v.x, y+v.y);}
-    constexpr_func coreVector2 operator - (const coreVector2& v)const noexcept {return coreVector2(x-v.x, y-v.y);}
-    constexpr_func coreVector2 operator * (const coreVector2& v)const noexcept {return coreVector2(x*v.x, y*v.y);}
-    inline coreVector2 operator / (const coreVector2& v)const noexcept         {return coreVector2(x*RCP(v.x), y*RCP(v.y));}
-    inline void operator += (const coreVector2& v)noexcept                     {*this = *this + v;}
-    inline void operator -= (const coreVector2& v)noexcept                     {*this = *this - v;}
-    inline void operator *= (const coreVector2& v)noexcept                     {*this = *this * v;}
-    inline void operator /= (const coreVector2& v)noexcept                     {*this = *this / v;}
+    constexpr_func coreVector2 operator +  (const coreVector2& v)const {return coreVector2(x+v.x, y+v.y);}
+    constexpr_func coreVector2 operator -  (const coreVector2& v)const {return coreVector2(x-v.x, y-v.y);}
+    constexpr_func coreVector2 operator *  (const coreVector2& v)const {return coreVector2(x*v.x, y*v.y);}
+    inline         coreVector2 operator /  (const coreVector2& v)const {return coreVector2(x*RCP(v.x), y*RCP(v.y));}
+    inline         void        operator += (const coreVector2& v)      {*this = *this + v;}
+    inline         void        operator -= (const coreVector2& v)      {*this = *this - v;}
+    inline         void        operator *= (const coreVector2& v)      {*this = *this * v;}
+    inline         void        operator /= (const coreVector2& v)      {*this = *this / v;}
     //! @}
 
     //! scalar calculation operators
     //! @{
-    constexpr_func coreVector2 operator + (const float& f)const noexcept                        {return coreVector2(x+f, y+f);}
-    constexpr_func coreVector2 operator - (const float& f)const noexcept                        {return coreVector2(x-f, y-f);}
-    constexpr_func coreVector2 operator * (const float& f)const noexcept                        {return coreVector2(x*f, y*f);}
-    inline coreVector2 operator / (const float& f)const noexcept                                {return  *this * RCP(f);}
-    inline void operator += (const float& f)noexcept                                            {*this = *this + f;}
-    inline void operator -= (const float& f)noexcept                                            {*this = *this - f;}
-    inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
-    inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
-    friend constexpr_func coreVector2 operator + (const float& f, const coreVector2& v)noexcept {return v + f;}
-    friend constexpr_func coreVector2 operator * (const float& f, const coreVector2& v)noexcept {return v * f;}
+    constexpr_func        coreVector2 operator +  (const float& f)const                  {return coreVector2(x+f, y+f);}
+    constexpr_func        coreVector2 operator -  (const float& f)const                  {return coreVector2(x-f, y-f);}
+    constexpr_func        coreVector2 operator *  (const float& f)const                  {return coreVector2(x*f, y*f);}
+    inline                coreVector2 operator /  (const float& f)const                  {return  *this * RCP(f);}
+    inline                void        operator += (const float& f)                       {*this = *this + f;}
+    inline                void        operator -= (const float& f)                       {*this = *this - f;}
+    inline                void        operator *= (const float& f)                       {*this = *this * f;}
+    inline                void        operator /= (const float& f)                       {*this = *this / f;}
+    friend constexpr_func coreVector2 operator +  (const float& f, const coreVector2& v) {return v + f;}
+    friend constexpr_func coreVector2 operator *  (const float& f, const coreVector2& v) {return v * f;}
     //! @}
 
     //! matrix calculation operators
     //! @{
-    inline coreVector2 operator * (const coreMatrix4& m)const noexcept;
-    inline void operator *= (const coreMatrix4& m)noexcept {*this = *this * m;}
+    inline coreVector2 operator * (const coreMatrix4& m)const;
+    inline void operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     //! invert vector
     //! @{
-    constexpr_func coreVector2 operator - ()const noexcept {return coreVector2(-x, -y);}
+    constexpr_func coreVector2 operator - ()const {return coreVector2(-x, -y);}
     //! @}
 
     //! convert vector
     //! @{
-    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreVector2 yx()const noexcept        {return coreVector2(y, x);}
+    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreVector2 yx()const        {return coreVector2(y, x);}
     //! @}
 
     //! normalize vector
     //! @{
-    inline coreVector2& Normalize()noexcept;
-    inline coreVector2 Normalized()const noexcept {return coreVector2(*this).Normalize();}
+    inline coreVector2& Normalize   ();
+    inline coreVector2  Normalized  ()const {return coreVector2(*this).Normalize();}
+    inline bool         IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_VECTOR_NORM_PRECISION);}
     //! @}
 
     //! direct functions
     //! @{
-    inline float Length()const noexcept           {return SQRT(this->LengthSq());}
-    constexpr_func float LengthSq()const noexcept {return (x*x + y*y);}
-    constexpr_func float Min()const noexcept      {return MIN(x, y);}
-    constexpr_func float Max()const noexcept      {return MAX(x, y);}
-    inline float AspectRatio()const noexcept      {return (x * RCP(y));}
-    inline float Angle()const noexcept            {if(y == 0.0f) return (x < 0.0f) ? DEG_TO_RAD(90.0f) : DEG_TO_RAD(270.0f); return ATAN(this->AspectRatio()) + ((y <= 0.0f) ? PI : 0.0f);}
+    inline         float Length     ()const {return SQRT(this->LengthSq());}
+    constexpr_func float LengthSq   ()const {return (x*x + y*y);}
+    constexpr_func float Min        ()const {return MIN(x, y);}
+    constexpr_func float Max        ()const {return MAX(x, y);}
+    inline         float AspectRatio()const {return (x * RCP(y));}
+    inline         float Angle      ()const {if(y == 0.0f) return ((x < 0.0f) ? 0.5f : 1.5f) * PI; return ATAN(this->AspectRatio()) + ((y < 0.0f) ? PI : 0.0f);}
     //! @}
 
     //! static functions
     //! @{
-    static constexpr_func float Dot(const coreVector2& vInA, const coreVector2& vInB)noexcept {return (vInA.x*vInB.x + vInA.y*vInB.y);}
-    static inline coreVector2 Rand()noexcept;
-    static inline coreVector2 Rand(const float& fMin, const float& fMax)noexcept;
-    static inline coreVector2 Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY)noexcept;
-    static inline coreVector2 Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)noexcept;
-    static inline coreVector2 Direction(const float& fAngle)noexcept {return coreVector2(-SIN(fAngle), COS(fAngle));}
+    static constexpr_func float       Dot      (const coreVector2& vInA, const coreVector2& vInB) {return (vInA.x*vInB.x + vInA.y*vInB.y);}
+    static inline         coreVector2 Direction(const float& fAngle)                              {return coreVector2(-SIN(fAngle), COS(fAngle));}
+    static inline         coreVector2 Rand     ();
+    static inline         coreVector2 Rand     (const float& fMin,  const float& fMax);
+    static inline         coreVector2 Rand     (const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY);
+    static inline         coreVector2 Reflect  (const coreVector2& vVelocity, const coreVector2& vNormal);
     //! @}
 };
 
@@ -142,90 +150,91 @@ public:
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreVector3& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector3)) ? false :  true;}
-    inline bool operator != (const coreVector3& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector3)) ?  true : false;}
+    inline bool operator == (const coreVector3& v)const {return std::memcmp(this, &v, sizeof(coreVector3)) ? false :  true;}
+    inline bool operator != (const coreVector3& v)const {return std::memcmp(this, &v, sizeof(coreVector3)) ?  true : false;}
     //! @}
 
     //! vector calculation operators
     //! @{
-    constexpr_func coreVector3 operator + (const coreVector3& v)const noexcept {return coreVector3(x+v.x, y+v.y, z+v.z);}
-    constexpr_func coreVector3 operator - (const coreVector3& v)const noexcept {return coreVector3(x-v.x, y-v.y, z-v.z);}
-    constexpr_func coreVector3 operator * (const coreVector3& v)const noexcept {return coreVector3(x*v.x, y*v.y, z*v.z);}
-    inline coreVector3 operator / (const coreVector3& v)const noexcept         {return coreVector3(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z));}
-    inline void operator += (const coreVector3& v)noexcept                     {*this = *this + v;}
-    inline void operator -= (const coreVector3& v)noexcept                     {*this = *this - v;}
-    inline void operator *= (const coreVector3& v)noexcept                     {*this = *this * v;}
-    inline void operator /= (const coreVector3& v)noexcept                     {*this = *this / v;}
+    constexpr_func coreVector3 operator +  (const coreVector3& v)const {return coreVector3(x+v.x, y+v.y, z+v.z);}
+    constexpr_func coreVector3 operator -  (const coreVector3& v)const {return coreVector3(x-v.x, y-v.y, z-v.z);}
+    constexpr_func coreVector3 operator *  (const coreVector3& v)const {return coreVector3(x*v.x, y*v.y, z*v.z);}
+    inline         coreVector3 operator /  (const coreVector3& v)const {return coreVector3(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z));}
+    inline         void        operator += (const coreVector3& v)      {*this = *this + v;}
+    inline         void        operator -= (const coreVector3& v)      {*this = *this - v;}
+    inline         void        operator *= (const coreVector3& v)      {*this = *this * v;}
+    inline         void        operator /= (const coreVector3& v)      {*this = *this / v;}
     //! @}
 
     //! scalar calculation operators
     //! @{
-    constexpr_func coreVector3 operator + (const float& f)const noexcept                        {return coreVector3(x+f, y+f, z+f);}
-    constexpr_func coreVector3 operator - (const float& f)const noexcept                        {return coreVector3(x-f, y-f, z-f);}
-    constexpr_func coreVector3 operator * (const float& f)const noexcept                        {return coreVector3(x*f, y*f, z*f);}
-    inline coreVector3 operator / (const float& f)const noexcept                                {return  *this * RCP(f);}
-    inline void operator += (const float& f)noexcept                                            {*this = *this + f;}
-    inline void operator -= (const float& f)noexcept                                            {*this = *this - f;}
-    inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
-    inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
-    friend constexpr_func coreVector3 operator + (const float& f, const coreVector3& v)noexcept {return v + f;}
-    friend constexpr_func coreVector3 operator * (const float& f, const coreVector3& v)noexcept {return v * f;}
+    constexpr_func        coreVector3 operator +  (const float& f)const                  {return coreVector3(x+f, y+f, z+f);}
+    constexpr_func        coreVector3 operator -  (const float& f)const                  {return coreVector3(x-f, y-f, z-f);}
+    constexpr_func        coreVector3 operator *  (const float& f)const                  {return coreVector3(x*f, y*f, z*f);}
+    inline                coreVector3 operator /  (const float& f)const                  {return  *this * RCP(f);}
+    inline                void        operator += (const float& f)                       {*this = *this + f;}
+    inline                void        operator -= (const float& f)                       {*this = *this - f;}
+    inline                void        operator *= (const float& f)                       {*this = *this * f;}
+    inline                void        operator /= (const float& f)                       {*this = *this / f;}
+    friend constexpr_func coreVector3 operator +  (const float& f, const coreVector3& v) {return v + f;}
+    friend constexpr_func coreVector3 operator *  (const float& f, const coreVector3& v) {return v * f;}
     //! @}
 
     //! matrix calculation operators
     //! @{
-    inline coreVector3 operator * (const coreMatrix4& m)const noexcept;
-    inline void operator *= (const coreMatrix4& m)noexcept {*this = *this * m;}
+    inline coreVector3 operator * (const coreMatrix4& m)const;
+    inline void operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     //! invert vector
     //! @{
-    constexpr_func coreVector3 operator - ()const noexcept {return coreVector3(-x, -y, -z);}
+    constexpr_func coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
     //! @}
 
     //! convert vector
     //! @{
-    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreVector2 xy()const noexcept        {return coreVector2(x, y);}
-    constexpr_func coreVector2 xz()const noexcept        {return coreVector2(x, z);}
-    constexpr_func coreVector2 yx()const noexcept        {return coreVector2(y, x);}
-    constexpr_func coreVector2 yz()const noexcept        {return coreVector2(y, z);}
-    constexpr_func coreVector2 zx()const noexcept        {return coreVector2(z, x);}
-    constexpr_func coreVector2 zy()const noexcept        {return coreVector2(z, y);}
-    inline void xy(const coreVector2& v)noexcept         {x = v.x; y = v.y;}
-    inline void xz(const coreVector2& v)noexcept         {x = v.x; z = v.y;}
-    inline void yz(const coreVector2& v)noexcept         {y = v.x; z = v.y;}
+    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreVector2 xy()const        {return coreVector2(x, y);}
+    constexpr_func coreVector2 xz()const        {return coreVector2(x, z);}
+    constexpr_func coreVector2 yx()const        {return coreVector2(y, x);}
+    constexpr_func coreVector2 yz()const        {return coreVector2(y, z);}
+    constexpr_func coreVector2 zx()const        {return coreVector2(z, x);}
+    constexpr_func coreVector2 zy()const        {return coreVector2(z, y);}
+    inline void xy(const coreVector2& v)        {x = v.x; y = v.y;}
+    inline void xz(const coreVector2& v)        {x = v.x; z = v.y;}
+    inline void yz(const coreVector2& v)        {y = v.x; z = v.y;}
     //! @}
 
     //! normalize vector
     //! @{
-    inline coreVector3& Normalize()noexcept;
-    inline coreVector3 Normalized()const noexcept {return coreVector3(*this).Normalize();}
+    inline coreVector3& Normalize   ();
+    inline coreVector3  Normalized  ()const {return coreVector3(*this).Normalize();}
+    inline bool         IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_VECTOR_NORM_PRECISION);}
     //! @}
 
     //! direct functions
     //! @{
-    inline float Length()const noexcept           {return SQRT(this->LengthSq());}
-    constexpr_func float LengthSq()const noexcept {return (x*x + y*y + z*z);}
-    constexpr_func float Min()const noexcept      {return MIN(x, y, z);}
-    constexpr_func float Max()const noexcept      {return MAX(x, y, z);}
+    inline         float Length  ()const {return SQRT(this->LengthSq());}
+    constexpr_func float LengthSq()const {return (x*x + y*y + z*z);}
+    constexpr_func float Min     ()const {return MIN(x, y, z);}
+    constexpr_func float Max     ()const {return MAX(x, y, z);}
     //! @}
 
     //! static functions
     //! @{
-    static constexpr_func float Dot(const coreVector3& vInA, const coreVector3& vInB)noexcept {return (vInA.x*vInB.x + vInA.y*vInB.y + vInA.z*vInB.z);}
-    static constexpr_func coreVector3 Cross(const coreVector3& vInA, const coreVector3& vInB)noexcept;
-    static inline coreVector3 Rand()noexcept;
-    static inline coreVector3 Rand(const float& fMin, const float& fMax)noexcept;
-    static inline coreVector3 Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)noexcept;
-    static inline coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)noexcept;
-    static inline bool Visible(const coreVector3& vPosition, const float& fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection);
+    static constexpr_func float       Dot    (const coreVector3& vInA, const coreVector3& vInB) {return (vInA.x*vInB.x + vInA.y*vInB.y + vInA.z*vInB.z);}
+    static constexpr_func coreVector3 Cross  (const coreVector3& vInA, const coreVector3& vInB);
+    static inline         coreVector3 Rand   ();
+    static inline         coreVector3 Rand   (const float& fMin,  const float& fMax);
+    static inline         coreVector3 Rand   (const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ);
+    static inline         coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal);
+    static inline         bool        Visible(const coreVector3& vPosition, const float& fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection);
     //! @}
 
     //! color functions
     //! @{
     static constexpr_func coreVector3 ColorUnpack(const coreUint& iNumber);
-    constexpr_func coreUint ColorPack()const;
+    constexpr_func        coreUint    ColorPack  ()const;
     inline coreVector3 HSVtoRGB()const;
     inline coreVector3 RGBtoHSV()const;
     //! @}
@@ -264,89 +273,90 @@ public:
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreVector4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector4)) ? false :  true;}
-    inline bool operator != (const coreVector4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreVector4)) ?  true : false;}
+    inline bool operator == (const coreVector4& v)const {return std::memcmp(this, &v, sizeof(coreVector4)) ? false :  true;}
+    inline bool operator != (const coreVector4& v)const {return std::memcmp(this, &v, sizeof(coreVector4)) ?  true : false;}
     //! @}
 
     //! vector calculation operators
     //! @{
-    constexpr_func coreVector4 operator + (const coreVector4& v)const noexcept {return coreVector4(x+v.x, y+v.y, z+v.z, w+v.w);}
-    constexpr_func coreVector4 operator - (const coreVector4& v)const noexcept {return coreVector4(x-v.x, y-v.y, z-v.z, w-v.w);}
-    constexpr_func coreVector4 operator * (const coreVector4& v)const noexcept {return coreVector4(x*v.x, y*v.y, z*v.z, w*v.w);}
-    inline coreVector4 operator / (const coreVector4& v)const noexcept         {return coreVector4(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z), w*RCP(v.w));}
-    inline void operator += (const coreVector4& v)noexcept                     {*this = *this + v;}
-    inline void operator -= (const coreVector4& v)noexcept                     {*this = *this - v;}
-    inline void operator *= (const coreVector4& v)noexcept                     {*this = *this * v;}
-    inline void operator /= (const coreVector4& v)noexcept                     {*this = *this / v;}
+    constexpr_func coreVector4 operator +  (const coreVector4& v)const {return coreVector4(x+v.x, y+v.y, z+v.z, w+v.w);}
+    constexpr_func coreVector4 operator -  (const coreVector4& v)const {return coreVector4(x-v.x, y-v.y, z-v.z, w-v.w);}
+    constexpr_func coreVector4 operator *  (const coreVector4& v)const {return coreVector4(x*v.x, y*v.y, z*v.z, w*v.w);}
+    inline         coreVector4 operator /  (const coreVector4& v)const {return coreVector4(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z), w*RCP(v.w));}
+    inline         void        operator += (const coreVector4& v)      {*this = *this + v;}
+    inline         void        operator -= (const coreVector4& v)      {*this = *this - v;}
+    inline         void        operator *= (const coreVector4& v)      {*this = *this * v;}
+    inline         void        operator /= (const coreVector4& v)      {*this = *this / v;}
     //! @}
 
     //! scalar calculation operators
     //! @{
-    constexpr_func coreVector4 operator + (const float& f)const noexcept                        {return coreVector4(x+f, y+f, z+f, w+f);}
-    constexpr_func coreVector4 operator - (const float& f)const noexcept                        {return coreVector4(x-f, y-f, z-f, w-f);}
-    constexpr_func coreVector4 operator * (const float& f)const noexcept                        {return coreVector4(x*f, y*f, z*f, w*f);}
-    inline coreVector4 operator / (const float& f)const noexcept                                {return  *this * RCP(f);}
-    inline void operator += (const float& f)noexcept                                            {*this = *this + f;}
-    inline void operator -= (const float& f)noexcept                                            {*this = *this - f;}
-    inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
-    inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
-    friend constexpr_func coreVector4 operator + (const float& f, const coreVector4& v)noexcept {return v + f;}
-    friend constexpr_func coreVector4 operator * (const float& f, const coreVector4& v)noexcept {return v * f;}
+    constexpr_func        coreVector4 operator +  (const float& f)const                  {return coreVector4(x+f, y+f, z+f, w+f);}
+    constexpr_func        coreVector4 operator -  (const float& f)const                  {return coreVector4(x-f, y-f, z-f, w-f);}
+    constexpr_func        coreVector4 operator *  (const float& f)const                  {return coreVector4(x*f, y*f, z*f, w*f);}
+    inline                coreVector4 operator /  (const float& f)const                  {return  *this * RCP(f);}
+    inline                void        operator += (const float& f)                       {*this = *this + f;}
+    inline                void        operator -= (const float& f)                       {*this = *this - f;}
+    inline                void        operator *= (const float& f)                       {*this = *this * f;}
+    inline                void        operator /= (const float& f)                       {*this = *this / f;}
+    friend constexpr_func coreVector4 operator +  (const float& f, const coreVector4& v) {return v + f;}
+    friend constexpr_func coreVector4 operator *  (const float& f, const coreVector4& v) {return v * f;}
     //! @}
 
     //! matrix calculation operators
     //! @{
-    constexpr_func coreVector4 operator * (const coreMatrix4& m)const noexcept;
-    inline void operator *= (const coreMatrix4& m)noexcept {*this = *this * m;}
+    constexpr_func coreVector4 operator * (const coreMatrix4& m)const;
+    inline void operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     //! invert vector
     //! @{
-    constexpr_func coreVector4 operator - ()const noexcept {return coreVector4(-x, -y, -z, -w);}
+    constexpr_func coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
     //! @}
 
     //! convert vector
     //! @{
-    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreVector3 xyzw()const noexcept      {return coreVector3(x, y, z)*w;}
-    constexpr_func coreVector3 xyz()const noexcept       {return coreVector3(x, y, z);}
-    constexpr_func coreVector2 xy()const noexcept        {return coreVector2(x, y);}
-    constexpr_func coreVector2 zw()const noexcept        {return coreVector2(z, w);}
-    inline void xyz(const coreVector3& v)noexcept        {x = v.x; y = v.y; z = v.z;}
-    inline void xy(const coreVector2& v)noexcept         {x = v.x; y = v.y;}
-    inline void zw(const coreVector2& v)noexcept         {z = v.x; w = v.y;}
+    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreVector3 xyzw()const      {return coreVector3(x, y, z)*w;}
+    constexpr_func coreVector3 xyz ()const      {return coreVector3(x, y, z);}
+    constexpr_func coreVector2 xy  ()const      {return coreVector2(x, y);}
+    constexpr_func coreVector2 zw  ()const      {return coreVector2(z, w);}
+    inline void xyz(const coreVector3& v)       {x = v.x; y = v.y; z = v.z;}
+    inline void xy (const coreVector2& v)       {x = v.x; y = v.y;}
+    inline void zw (const coreVector2& v)       {z = v.x; w = v.y;}
     //! @}
 
     //! direct functions
     //! @{
-    inline float Length()const noexcept           {return SQRT(this->LengthSq());}
-    constexpr_func float LengthSq()const noexcept {return (x*x + y*y + z*z + w*w);}
-    constexpr_func float Min()const noexcept      {return MIN(x, y, z, w);}
-    constexpr_func float Max()const noexcept      {return MAX(x, y, z, w);}
+    inline         float Length  ()const {return SQRT(this->LengthSq());}
+    constexpr_func float LengthSq()const {return (x*x + y*y + z*z + w*w);}
+    constexpr_func float Min     ()const {return MIN(x, y, z, w);}
+    constexpr_func float Max     ()const {return MAX(x, y, z, w);}
     //! @}
 
     //! color functions
     //! @{
-    static constexpr_func coreVector4 ColorUnpack(const coreUint& iNumber)noexcept;
-    constexpr_func coreUint ColorPack()const noexcept;
+    static constexpr_func coreVector4 ColorUnpack(const coreUint& iNumber);
+    constexpr_func        coreUint    ColorPack  ()const;
     //! @}
 
     //! quaternion functions
     //! @{
-    static constexpr_func coreVector4 QuatMul(const coreVector4& vInA, const coreVector4& vInB)noexcept;
-    constexpr_func coreVector4 QuatConjugation()const noexcept               {return coreVector4(-x, -y, -z, w);}
-    inline coreVector4 QuatInverse()const noexcept                           {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
-    constexpr_func coreVector3 QuatApply(const coreVector3& v)const noexcept {return QuatMul(QuatMul((*this), coreVector4(v,0.0f)), this->QuatConjugation()).xyz();}
+    static constexpr_func coreVector4 QuatMul        (const coreVector4& vInA, const coreVector4& vInB);
+    constexpr_func        coreVector4 QuatConjugation()const                     {return coreVector4(-x, -y, -z, w);}
+    inline                coreVector4 QuatInverse    ()const                     {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
+    constexpr_func        coreVector3 QuatApply      (const coreVector3& v)const {return QuatMul(QuatMul((*this), coreVector4(v, 0.0f)), this->QuatConjugation()).xyz();}
     //! @}
 };
 
 
 // ****************************************************************
 // normalize vector
-inline coreVector2& coreVector2::Normalize()noexcept
+inline coreVector2& coreVector2::Normalize()
 {
     const float fLength = this->LengthSq();
-    if(fLength != 1.0f) *this *= RSQRT(fLength);
+    if(!coreMath::InRange(fLength, 1.0f, CORE_VECTOR_NORM_PRECISION))
+        *this *= RSQRT(fLength);
 
     return *this;
 }
@@ -354,19 +364,19 @@ inline coreVector2& coreVector2::Normalize()noexcept
 
 // ****************************************************************
 // generate random vector
-inline coreVector2 coreVector2::Rand()noexcept
+inline coreVector2 coreVector2::Rand()
 {
     return coreVector2(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize();
 }
 
-inline coreVector2 coreVector2::Rand(const float& fMin, const float& fMax)noexcept
+inline coreVector2 coreVector2::Rand(const float& fMin, const float& fMax)
 {
     return coreVector2(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
-inline coreVector2 coreVector2::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY)noexcept
+inline coreVector2 coreVector2::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY)
 {
     return coreVector2(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY));
@@ -375,7 +385,7 @@ inline coreVector2 coreVector2::Rand(const float& fMinX, const float& fMaxX, con
 
 // ****************************************************************
 // calculate reflected vector
-inline coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)noexcept
+inline coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
 {
     const float fDot = coreVector2::Dot(vVelocity, vNormal);
     return (fDot > 0.0f) ? vVelocity : (vVelocity - 2.0f*vNormal*fDot);
@@ -384,7 +394,7 @@ inline coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const core
 
 // ****************************************************************
 // calculate cross product
-constexpr_func coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)noexcept
+constexpr_func coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
 {
     return coreVector3(vInA.y*vInB.z - vInA.z*vInB.y,
                        vInA.z*vInB.x - vInA.x*vInB.z,
@@ -393,10 +403,11 @@ constexpr_func coreVector3 coreVector3::Cross(const coreVector3& vInA, const cor
 
 // ****************************************************************
 // normalize vector
-inline coreVector3& coreVector3::Normalize()noexcept
+inline coreVector3& coreVector3::Normalize()
 {
     const float fLength = this->LengthSq();
-    if(fLength != 1.0f) *this *= RSQRT(fLength);
+    if(!coreMath::InRange(fLength, 1.0f, CORE_VECTOR_NORM_PRECISION))
+        *this *= RSQRT(fLength);
 
     return *this;
 }
@@ -404,21 +415,21 @@ inline coreVector3& coreVector3::Normalize()noexcept
 
 // ****************************************************************
 // generate random vector
-inline coreVector3 coreVector3::Rand()noexcept
+inline coreVector3 coreVector3::Rand()
 {
     return coreVector3(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize();
 }
 
-inline coreVector3 coreVector3::Rand(const float& fMin, const float& fMax)noexcept
+inline coreVector3 coreVector3::Rand(const float& fMin, const float& fMax)
 {
     return coreVector3(Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f),
                        Core::Rand->Float(-1.0f, 1.0f)).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
-inline coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)noexcept
+inline coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, const float& fMinY, const float& fMaxY, const float& fMinZ, const float& fMaxZ)
 {
     return coreVector3(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY),
@@ -428,7 +439,7 @@ inline coreVector3 coreVector3::Rand(const float& fMinX, const float& fMaxX, con
 
 // ****************************************************************
 // calculate reflected vector
-inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)noexcept
+inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
 {
     const float fDot = coreVector3::Dot(vVelocity, vNormal);
     return (fDot > 0.0f) ? vVelocity : (vVelocity - 2.0f*vNormal*fDot);
@@ -476,7 +487,7 @@ inline coreVector3 coreVector3::HSVtoRGB()const
     const float& S = g;
     const float& V = b;
 
-    const float h = std::floor(H);
+    const float h = FLOOR(H);
     const float f = H - h;
 
     const float VS = V  * S;
@@ -519,7 +530,7 @@ inline coreVector3 coreVector3::RGBtoHSV()const
 
 // ****************************************************************
 // multiplicate two quaternions
-constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)noexcept
+constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)
 {
     return coreVector4(vInA.x*vInB.w + vInA.w*vInB.x + vInA.y*vInB.z - vInA.z*vInB.y,
                        vInA.y*vInB.w + vInA.w*vInB.y + vInA.z*vInB.x - vInA.x*vInB.z,
@@ -530,7 +541,7 @@ constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const c
 
 // ****************************************************************
 // convert RBGA color-code to color-vector
-constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)noexcept
+constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)
 {
     return coreVector4(float( iNumber        & 0xFF), 
                        float((iNumber >>  8) & 0xFF), 
@@ -541,7 +552,7 @@ constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)noex
 
 // ****************************************************************
 // convert color-vector to RGBA color-code
-constexpr_func coreUint coreVector4::ColorPack()const noexcept
+constexpr_func coreUint coreVector4::ColorPack()const 
 {
     return (coreUint(a * 255.0f) << 24) +
            (coreUint(b * 255.0f) << 16) +

@@ -10,32 +10,29 @@
 
 
 // ****************************************************************
-// update the timer
-bool coreTimer::Update(const float& fModifier)
+/* update the timer */
+bool coreTimer::Update(const float& fSpeedModifier)
 {
     if(m_bStatus)
     {
         // increase and check current value
-        m_fCurrent += m_fSpeed * fModifier * Core::System->GetTime(m_iTimeID);
-        if(m_fCurrent >= m_fEnd)
+        m_fValue += m_fSpeed * fSpeedModifier * Core::System->GetTime(m_iTimeID);
+        if(m_fValue >= m_fEnd)
         {
             // target value reached
-            if((m_iMaxLoop-1 > m_iCurLoop) || !m_iMaxLoop)
+            if(++m_iCurLoops >= m_iMaxLoops)
             {
-                // invoke next loop
-                m_fCurrent -= m_fEnd;
-                ++m_iCurLoop;
+                // halt the timer
+                m_fValue = m_fEnd;
+                this->Pause();
             }
             else
             {
-                // stop the timer
-                m_fCurrent = m_fEnd;
-                m_bStatus  = false;
+                // invoke next loop
+                m_fValue -= m_fEnd;
             }
-
             return true;
         }
     }
-
     return false;
 }

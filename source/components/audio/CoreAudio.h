@@ -24,8 +24,8 @@ private:
     coreVector3 m_avDirection[2];            //!< direction and orientation of the listener
                                                 
     ALuint* m_pSource;                       //!< sound sources
-    coreByte m_NumSource;                    //!< number of sound sources
-    coreByte m_CurSource;                    //!< current sound source
+    coreByte m_iNumSources;                  //!< number of sound sources
+    coreByte m_iCurSource;                   //!< current sound source
 
     coreLookup<ALuint, ALuint> m_aiBuffer;   //!< sound buffers currently bound to sound sources <source, buffer>
 
@@ -47,9 +47,9 @@ public:
 
     //! distribute sound sources
     //! @{
-    inline bool CheckSource(const ALuint& iBuffer, const ALuint& iSource)const {if(!m_aiBuffer.count(iSource)) return false; return (m_aiBuffer.at(iSource) == iBuffer) ? true : false;}
-    ALuint NextSource(const ALuint& iBuffer);
-    void ClearSources(const ALuint& iBuffer);
+    inline bool CheckSource (const ALuint& iBuffer, const ALuint& iSource)const {if(!m_aiBuffer.count(iSource)) return false; return (m_aiBuffer.at(iSource) == iBuffer) ? true : false;}
+    ALuint      NextSource  (const ALuint& iBuffer);
+    void        ClearSources(const ALuint& iBuffer);
     //! @}
 
     //! set global volume

@@ -22,40 +22,45 @@ CoreGraphics::CoreGraphics()noexcept
 {
     Core::Log->Header("Graphics Interface");
 
-    // create primary OpenGL context
+    // create render context
     m_RenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
-    if(!m_RenderContext) Core::Log->Error("Primary OpenGL context could not be created (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("Primary OpenGL context created");
+    if(!m_RenderContext)
+        Core::Log->Error("Render context could not be created (SDL: %s)", SDL_GetError());
+    else Core::Log->Info("Render context created");
 
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT) && (Core::System->SupportNumCores() >= 2))
     {
-        // create secondary OpenGL context
+        // create resource context
         m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
-        if(!m_ResourceContext) Core::Log->Warning("Secondary OpenGL context could not be created (SDL: %s)", SDL_GetError());
-        else Core::Log->Info("Secondary OpenGL context created");
+        if(!m_ResourceContext)
+            Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
+        else Core::Log->Info("Resource context created");
     }
     else m_ResourceContext = NULL;
 
-    // assign primary OpenGL context to main window
+    // assign render context to main window
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext))
-        Core::Log->Error("Primary OpenGL context could not be assigned to main window (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("Primary OpenGL context assigned to main window");
+        Core::Log->Error("Render context could not be assigned to main window (SDL: %s)", SDL_GetError());
+    else Core::Log->Info("Render context assigned to main window");
 
-    // init GLEW on primary OpenGL context
+    // init GLEW on render context
     const GLenum iError = glewInit();
-    if(iError != GLEW_OK) Core::Log->Error("GLEW could not be initialized on primary OpenGL context (GLEW: %s)", glewGetErrorString(iError));
-    else Core::Log->Info("GLEW initialized on primary OpenGL context (%s)", glewGetString(GLEW_VERSION));
+    if(iError != GLEW_OK)
+        Core::Log->Error("GLEW could not be initialized on render context (GLEW: %s)", glewGetErrorString(iError));
+    else Core::Log->Info("GLEW initialized on render context (%s)", glewGetString(GLEW_VERSION));
 
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
     // log video card information
     Core::Log->ListStart("Video Card Information");
-    Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
-    Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
-    Core::Log->ListEntry(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
-    Core::Log->ListEntry(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-    Core::Log->ListEntry(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
+    {
+        Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
+        Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
+        Core::Log->ListEntry(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
+        Core::Log->ListEntry(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+        Core::Log->ListEntry(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
+    }
     Core::Log->ListEnd();
 
     // set numerical OpenGL version
@@ -120,17 +125,17 @@ CoreGraphics::CoreGraphics()noexcept
 // destructor
 CoreGraphics::~CoreGraphics()
 {
-    Core::Log->Info("Graphics Interface shut down");
-
     // delete global UBO
     m_iUniformBuffer.Delete();
 
-    // dissociate primary OpenGL context from main window
+    // dissociate render context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
 
     // delete OpenGL contexts
     SDL_GL_DeleteContext(m_ResourceContext);
     SDL_GL_DeleteContext(m_RenderContext);
+
+    Core::Log->Info("Graphics Interface shut down");
 }
 
 
@@ -141,11 +146,10 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
     bool bNewCamera = false;
 
     // set properties of the camera
-    const coreVector3 vDirNorm = vDirection.Normalized();   
-    const coreVector3 vOriNorm = vOrientation.Normalized(); 
-    if(m_vCamPosition    != vPosition) {m_vCamPosition    = vPosition; bNewCamera = true;}
-    if(m_vCamDirection   != vDirNorm)  {m_vCamDirection   = vDirNorm;  bNewCamera = true;}
-    if(m_vCamOrientation != vOriNorm)  {m_vCamOrientation = vOriNorm;  bNewCamera = true;}
+    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
+    if(m_vCamPosition    != vPosition)    {m_vCamPosition    = vPosition;    bNewCamera = true;}
+    if(m_vCamDirection   != vDirection)   {m_vCamDirection   = vDirection;   bNewCamera = true;}
+    if(m_vCamOrientation != vOrientation) {m_vCamOrientation = vOrientation; bNewCamera = true;}
 
     if(bNewCamera)
     {
@@ -199,23 +203,24 @@ void CoreGraphics::ResizeView(coreVector2 vResolution, const float& fFOV, const 
 // set and update ambient light
 void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
+    bool bNewLight = false;
+
+    // get requested ambient light
     ASSERT(iID < CORE_GRAPHICS_LIGHTS)
     coreLight& CurLight = m_aLight[iID];
 
-    bool bNewLight = false;
-
     // set properties of the ambient light
-    const coreVector4 vDirNorm = coreVector4(vDirection.xyz().Normalized(), vDirection.w); 
-    if(CurLight.vPosition  != vPosition) {CurLight.vPosition  = vPosition; bNewLight = true;}
-    if(CurLight.vDirection != vDirNorm)  {CurLight.vDirection = vDirNorm;  bNewLight = true;}
-    if(CurLight.vValue     != vValue)    {CurLight.vValue     = vValue;    bNewLight = true;}
+    ASSERT(vDirection.xyz().IsNormalized())
+    if(CurLight.vPosition  != vPosition)  {CurLight.vPosition  = vPosition;  bNewLight = true;}
+    if(CurLight.vDirection != vDirection) {CurLight.vDirection = vDirection; bNewLight = true;}
+    if(CurLight.vValue     != vValue)     {CurLight.vValue     = vValue;     bNewLight = true;}
 
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
         coreByte* pRange = m_iUniformBuffer.Map<coreByte>(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight), true);
 
-        // update specific light
+        // update specific light data
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
         m_iUniformBuffer.Unmap(pRange);
     }
@@ -264,7 +269,7 @@ void CoreGraphics::Screenshot(const char* pcPath)const
 void CoreGraphics::__UpdateScene()
 {
     // take screenshot
-    if(Core::Input->GetKeyboardButton(SDL_SCANCODE_PRINTSCREEN, CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(KEY(PRINTSCREEN), CORE_INPUT_PRESS))
         this->Screenshot();
 
     // disable last model, textures and shader-program
@@ -297,10 +302,11 @@ void CoreGraphics::__SendTransformation()
 {
     if(!m_iUniformBuffer) return;
 
+    // calculate view-projection matrix
     const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
     // map required area of the global UBO
-    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4), true);
+    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4) + sizeof(coreVector4), true);
 
     // update transformation matrices
     std::memcpy(pRange,                         &mViewProj,        sizeof(coreMatrix4));

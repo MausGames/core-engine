@@ -38,33 +38,33 @@ public:
 
     //! scalar calculation operators
     //! @{
-    constexpr_func coreMatrix3 operator * (const float& f)const noexcept;
-    inline coreMatrix3 operator / (const float& f)const noexcept                                {return  *this * RCP(f);}
-    inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
-    inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
-    friend constexpr_func coreMatrix3 operator * (const float& f, const coreMatrix3& v)noexcept {return v * f;}
+    constexpr_func        coreMatrix3 operator *  (const float& f)const;
+    inline                coreMatrix3 operator /  (const float& f)const                  {return  *this * RCP(f);}
+    inline                void        operator *= (const float& f)                       {*this = *this * f;}
+    inline                void        operator /= (const float& f)                       {*this = *this / f;}
+    friend constexpr_func coreMatrix3 operator *  (const float& f, const coreMatrix3& v) {return v * f;}
     //! @}
 
     //! convert matrix
     //! @{
-    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
+    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
     //! @}
 
     //! transpose matrix
     //! @{
-    inline coreMatrix3& Transpose()noexcept;
-    inline coreMatrix3 Transposed()const noexcept {return coreMatrix3(*this).Transpose();}
+    inline coreMatrix3& Transpose ();
+    inline coreMatrix3  Transposed()const {return coreMatrix3(*this).Transpose();}
     //! @}
 
     //! inverse matrix
     //! @{
-    inline coreMatrix3& Invert()noexcept;
-    inline coreMatrix3 Inverted()const noexcept {return coreMatrix3(*this).Invert();}
+    inline coreMatrix3& Invert  ();
+    inline coreMatrix3  Inverted()const {return coreMatrix3(*this).Invert();}
     //! @}
 
     //! direct functions
     //! @{
-    constexpr_func float Determinant()const noexcept;
+    constexpr_func float Determinant()const;
     //! @}
 };
 
@@ -97,70 +97,70 @@ public:
 
     //! compare operators
     //! @{
-    inline bool operator == (const coreMatrix4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreMatrix4)) ? false :  true;}
-    inline bool operator != (const coreMatrix4& v)const noexcept {return std::memcmp(this, &v, sizeof(coreMatrix4)) ?  true : false;}
+    inline bool operator == (const coreMatrix4& v)const {return std::memcmp(this, &v, sizeof(coreMatrix4)) ? false :  true;}
+    inline bool operator != (const coreMatrix4& v)const {return std::memcmp(this, &v, sizeof(coreMatrix4)) ?  true : false;}
     //! @}
 
     //! matrix calculation operators
     //! @{
-    constexpr_func coreMatrix4 operator + (const coreMatrix4& v)const noexcept;
-    constexpr_func coreMatrix4 operator - (const coreMatrix4& v)const noexcept;
-    constexpr_func coreMatrix4 operator * (const coreMatrix4& v)const noexcept hot_func;
-    inline void operator += (const coreMatrix4& v)noexcept {*this = *this + v;}
-    inline void operator -= (const coreMatrix4& v)noexcept {*this = *this - v;}
-    inline void operator *= (const coreMatrix4& v)noexcept {*this = *this * v;}
+    constexpr_func coreMatrix4 operator +  (const coreMatrix4& v)const;
+    constexpr_func coreMatrix4 operator -  (const coreMatrix4& v)const;
+    constexpr_func coreMatrix4 operator *  (const coreMatrix4& v)const hot_func;
+    inline         void        operator += (const coreMatrix4& v) {*this = *this + v;}
+    inline         void        operator -= (const coreMatrix4& v) {*this = *this - v;}
+    inline         void        operator *= (const coreMatrix4& v) {*this = *this * v;}
     //! @}
 
     //! scalar calculation operators
     //! @{
-    constexpr_func coreMatrix4 operator * (const float& f)const noexcept;
-    inline coreMatrix4 operator / (const float& f)const noexcept                                {return  *this * RCP(f);}
-    inline void operator *= (const float& f)noexcept                                            {*this = *this * f;}
-    inline void operator /= (const float& f)noexcept                                            {*this = *this / f;}
-    friend constexpr_func coreMatrix4 operator * (const float& f, const coreMatrix4& v)noexcept {return v * f;}
+    constexpr_func        coreMatrix4 operator *  (const float& f)const;
+    inline                coreMatrix4 operator /  (const float& f)const                  {return  *this * RCP(f);}
+    inline                void        operator *= (const float& f)                       {*this = *this * f;}
+    inline                void        operator /= (const float& f)                       {*this = *this / f;}
+    friend constexpr_func coreMatrix4 operator *  (const float& f, const coreMatrix4& v) {return v * f;}
     //! @}
 
     //! convert matrix
     //! @{
-    constexpr_obj operator const float* ()const noexcept {return r_cast<const float*>(this);}
-    constexpr_func coreMatrix3 m123()const noexcept      {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
-    constexpr_func coreMatrix3 m124()const noexcept      {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
-    constexpr_func coreMatrix3 m134()const noexcept      {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
-    constexpr_func coreMatrix3 m234()const noexcept      {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
+    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreMatrix3 m123()const      {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
+    constexpr_func coreMatrix3 m124()const      {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
+    constexpr_func coreMatrix3 m134()const      {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
+    constexpr_func coreMatrix3 m234()const      {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
     //! @}
 
     //! transpose matrix
     //! @{
-    inline coreMatrix4& Transpose()noexcept;
-    inline coreMatrix4 Transposed()const noexcept {return coreMatrix4(*this).Transpose();}
+    inline coreMatrix4& Transpose ();
+    inline coreMatrix4  Transposed()const {return coreMatrix4(*this).Transpose();}
     //! @}
 
     //! inverse matrix
     //! @{
-    inline coreMatrix4& Invert()noexcept;
-    inline coreMatrix4 Inverted()const noexcept {return coreMatrix4(*this).Invert();}
+    inline coreMatrix4& Invert  ();
+    inline coreMatrix4  Inverted()const {return coreMatrix4(*this).Invert();}
     //! @}
 
     //! direct functions
     //! @{
-    constexpr_func float Determinant()const noexcept;
+    constexpr_func float Determinant()const;
     //! @}
 
     //! static functions
     //! @{
-    static constexpr_func coreMatrix4 Identity()noexcept;
-    static constexpr_func coreMatrix4 Translation(const coreVector3& vPosition)noexcept;
-    static constexpr_func coreMatrix4 Scaling(const coreVector3& vSize)noexcept;
-    static inline coreMatrix4 RotationX(const coreVector2& vDirection)noexcept;
-    static inline coreMatrix4 RotationX(const float& fAngle)noexcept;
-    static inline coreMatrix4 RotationY(const coreVector2& vDirection)noexcept;
-    static inline coreMatrix4 RotationY(const float& fAngle)noexcept;
-    static inline coreMatrix4 RotationZ(const coreVector2& vDirection)noexcept;
-    static inline coreMatrix4 RotationZ(const float& fAngle)noexcept;
-    static inline coreMatrix4 Orientation(const coreVector3& vDirection, const coreVector3& vOrintation)noexcept;
-    static inline coreMatrix4 Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)noexcept;
-    static inline coreMatrix4 Ortho(const coreVector2& vResolution)noexcept;
-    static inline coreMatrix4 Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrintation)noexcept;
+    static constexpr_func coreMatrix4 Identity();
+    static constexpr_func coreMatrix4 Translation(const coreVector3& vPosition);
+    static constexpr_func coreMatrix4 Scaling    (const coreVector3& vSize);
+    static inline         coreMatrix4 RotationX  (const coreVector2& vDirection);
+    static inline         coreMatrix4 RotationX  (const float&       fAngle);
+    static inline         coreMatrix4 RotationY  (const coreVector2& vDirection);
+    static inline         coreMatrix4 RotationY  (const float&       fAngle);
+    static inline         coreMatrix4 RotationZ  (const coreVector2& vDirection);
+    static inline         coreMatrix4 RotationZ  (const float&       fAngle);
+    static inline         coreMatrix4 Orientation(const coreVector3& vDirection,  const coreVector3& vOrintation);
+    static inline         coreMatrix4 Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
+    static inline         coreMatrix4 Ortho      (const coreVector2& vResolution);
+    static inline         coreMatrix4 Camera     (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrintation);
     //! @}
 };
 
@@ -187,7 +187,7 @@ constexpr_func coreMatrix3::coreMatrix3(const float& f11, const float& f12, cons
 
 // ****************************************************************
 // multiplication with scalar
-constexpr_func coreMatrix3 coreMatrix3::operator * (const float& f)const noexcept
+constexpr_func coreMatrix3 coreMatrix3::operator * (const float& f)const
 {
     return coreMatrix3(_11*f, _12*f, _13*f,
                        _21*f, _22*f, _23*f,
@@ -197,7 +197,7 @@ constexpr_func coreMatrix3 coreMatrix3::operator * (const float& f)const noexcep
 
 // ****************************************************************
 // transpose matrix
-inline coreMatrix3& coreMatrix3::Transpose()noexcept
+inline coreMatrix3& coreMatrix3::Transpose()
 {
     *this = coreMatrix3(_11, _21, _31,
                         _12, _22, _32,
@@ -209,7 +209,7 @@ inline coreMatrix3& coreMatrix3::Transpose()noexcept
 
 // ****************************************************************
 // inverse matrix
-inline coreMatrix3& coreMatrix3::Invert()noexcept
+inline coreMatrix3& coreMatrix3::Invert()
 {
     const float A = _22*_33 - _23*_32;
     const float B = _23*_31 - _21*_33;
@@ -226,7 +226,7 @@ inline coreMatrix3& coreMatrix3::Invert()noexcept
 
 // ****************************************************************
 // calculate determinant
-constexpr_func float coreMatrix3::Determinant()const noexcept
+constexpr_func float coreMatrix3::Determinant()const
 {
     return _11*(_22*_33 - _23*_32) + _12*(_23*_31 - _21*_33) + _13*(_21*_32 - _22*_31);
 }
@@ -256,7 +256,7 @@ constexpr_func coreMatrix4::coreMatrix4(const float& f11, const float& f12, cons
 
 // ****************************************************************
 // addition with matrix
-constexpr_func coreMatrix4 coreMatrix4::operator + (const coreMatrix4& v)const noexcept
+constexpr_func coreMatrix4 coreMatrix4::operator + (const coreMatrix4& v)const
 {
     return coreMatrix4(_11+v._11, _12+v._12, _13+v._13, _14+v._14,
                        _21+v._21, _22+v._22, _23+v._23, _24+v._24,
@@ -267,7 +267,7 @@ constexpr_func coreMatrix4 coreMatrix4::operator + (const coreMatrix4& v)const n
 
 // ****************************************************************
 // subtraction with matrix
-constexpr_func coreMatrix4 coreMatrix4::operator - (const coreMatrix4& v)const noexcept
+constexpr_func coreMatrix4 coreMatrix4::operator - (const coreMatrix4& v)const
 {
     return coreMatrix4(_11-v._11, _12-v._12, _13-v._13, _14-v._14,
                        _21-v._21, _22-v._22, _23-v._23, _24-v._24,
@@ -278,7 +278,7 @@ constexpr_func coreMatrix4 coreMatrix4::operator - (const coreMatrix4& v)const n
 
 // ****************************************************************
 // multiplication with matrix
-constexpr_func coreMatrix4 coreMatrix4::operator * (const coreMatrix4& v)const noexcept
+constexpr_func coreMatrix4 coreMatrix4::operator * (const coreMatrix4& v)const
 {
     return coreMatrix4(_11*v._11 + _12*v._21 + _13*v._31 + _14*v._41, _11*v._12 + _12*v._22 + _13*v._32 + _14*v._42,
                        _11*v._13 + _12*v._23 + _13*v._33 + _14*v._43, _11*v._14 + _12*v._24 + _13*v._34 + _14*v._44,
@@ -293,7 +293,7 @@ constexpr_func coreMatrix4 coreMatrix4::operator * (const coreMatrix4& v)const n
 
 // ****************************************************************
 // multiplication with scalar
-constexpr_func coreMatrix4 coreMatrix4::operator * (const float& f)const noexcept
+constexpr_func coreMatrix4 coreMatrix4::operator * (const float& f)const
 {
     return coreMatrix4(_11*f, _12*f, _13*f, _14*f,
                        _21*f, _22*f, _23*f, _24*f,
@@ -304,7 +304,7 @@ constexpr_func coreMatrix4 coreMatrix4::operator * (const float& f)const noexcep
 
 // ****************************************************************
 // transpose matrix
-inline coreMatrix4& coreMatrix4::Transpose()noexcept
+inline coreMatrix4& coreMatrix4::Transpose()
 {
     *this = coreMatrix4(_11, _21, _31, _41,
                         _12, _22, _32, _42,
@@ -317,7 +317,7 @@ inline coreMatrix4& coreMatrix4::Transpose()noexcept
 
 // ****************************************************************
 // inverse matrix
-inline coreMatrix4& coreMatrix4::Invert()noexcept
+inline coreMatrix4& coreMatrix4::Invert()
 {
     *this = coreMatrix4(_23*_34*_42 - _24*_33*_42 + _24*_32*_43 - _22*_34*_43 - _23*_32*_44 + _22*_33*_44,
                         _14*_33*_42 - _13*_34*_42 - _14*_32*_43 + _12*_34*_43 + _13*_32*_44 - _12*_33*_44,
@@ -343,7 +343,7 @@ inline coreMatrix4& coreMatrix4::Invert()noexcept
 
 // ****************************************************************
 // calculate determinant
-constexpr_func float coreMatrix4::Determinant()const noexcept
+constexpr_func float coreMatrix4::Determinant()const
 {
     return _14*_23*_32*_41 - _13*_24*_32*_41 - _14*_22*_33*_41 + _12*_24*_33*_41 +
            _13*_22*_34*_41 - _12*_23*_34*_41 - _14*_23*_31*_42 + _13*_24*_31*_42 +
@@ -356,7 +356,7 @@ constexpr_func float coreMatrix4::Determinant()const noexcept
 
 // ****************************************************************
 // get identity matrix
-constexpr_func coreMatrix4 coreMatrix4::Identity()noexcept
+constexpr_func coreMatrix4 coreMatrix4::Identity()
 {
     return coreMatrix4(1.0f, 0.0f, 0.0f, 0.0f,
                        0.0f, 1.0f, 0.0f, 0.0f,
@@ -367,7 +367,7 @@ constexpr_func coreMatrix4 coreMatrix4::Identity()noexcept
 
 // ****************************************************************
 // get translation matrix
-constexpr_func coreMatrix4 coreMatrix4::Translation(const coreVector3& vPosition)noexcept
+constexpr_func coreMatrix4 coreMatrix4::Translation(const coreVector3& vPosition)
 {
     return coreMatrix4(       1.0f,        0.0f,        0.0f, 0.0f,
                               0.0f,        1.0f,        0.0f, 0.0f,
@@ -378,7 +378,7 @@ constexpr_func coreMatrix4 coreMatrix4::Translation(const coreVector3& vPosition
 
 // ****************************************************************
 // get scale matrix
-constexpr_func coreMatrix4 coreMatrix4::Scaling(const coreVector3& vSize)noexcept
+constexpr_func coreMatrix4 coreMatrix4::Scaling(const coreVector3& vSize)
 {
     return coreMatrix4(vSize.x,    0.0f,    0.0f, 0.0f,
                           0.0f, vSize.y,    0.0f, 0.0f,
@@ -389,16 +389,16 @@ constexpr_func coreMatrix4 coreMatrix4::Scaling(const coreVector3& vSize)noexcep
 
 // ****************************************************************
 // get rotation matrix around X
-inline coreMatrix4 coreMatrix4::RotationX(const coreVector2& vDirection)noexcept
+inline coreMatrix4 coreMatrix4::RotationX(const coreVector2& vDirection)
 {
-    const coreVector2 N = vDirection.Normalized();
-    return coreMatrix4(1.0f, 0.0f, 0.0f, 0.0f,
-                       0.0f,  N.y,  N.x, 0.0f,
-                       0.0f, -N.x,  N.y, 0.0f,
-                       0.0f, 0.0f, 0.0f, 1.0f);
+    ASSERT(vDirection.IsNormalized())
+    return coreMatrix4(1.0f,          0.0f,          0.0f, 0.0f,
+                       0.0f,  vDirection.y,  vDirection.x, 0.0f,
+                       0.0f, -vDirection.x,  vDirection.y, 0.0f,
+                       0.0f,          0.0f,          0.0f, 1.0f);
 }
 
-inline coreMatrix4 coreMatrix4::RotationX(const float& fAngle)noexcept
+inline coreMatrix4 coreMatrix4::RotationX(const float& fAngle)
 {
     return coreMatrix4::RotationX(coreVector2::Direction(fAngle));
 }
@@ -406,13 +406,13 @@ inline coreMatrix4 coreMatrix4::RotationX(const float& fAngle)noexcept
 
 // ****************************************************************
 // get rotation matrix around Y
-inline coreMatrix4 coreMatrix4::RotationY(const coreVector2& vDirection)noexcept
+inline coreMatrix4 coreMatrix4::RotationY(const coreVector2& vDirection)
 {
-    const coreVector2 N = vDirection.Normalized();
-    return coreMatrix4( N.y, 0.0f, -N.x, 0.0f,
-                       0.0f, 1.0f, 0.0f, 0.0f,
-                        N.x, 0.0f,  N.y, 0.0f,
-                       0.0f, 0.0f, 0.0f, 1.0f);
+    ASSERT(vDirection.IsNormalized())
+    return coreMatrix4(vDirection.y, 0.0f, -vDirection.x, 0.0f,
+                               0.0f, 1.0f,          0.0f, 0.0f,
+                       vDirection.x, 0.0f,  vDirection.y, 0.0f,
+                               0.0f, 0.0f,          0.0f, 1.0f);
 }
 
 inline coreMatrix4 coreMatrix4::RotationY(const float& fAngle)noexcept
@@ -423,16 +423,16 @@ inline coreMatrix4 coreMatrix4::RotationY(const float& fAngle)noexcept
 
 // ****************************************************************
 // get rotation matrix around Z
-inline coreMatrix4 coreMatrix4::RotationZ(const coreVector2& vDirection)noexcept
+inline coreMatrix4 coreMatrix4::RotationZ(const coreVector2& vDirection)
 {
-    const coreVector2 N = vDirection.Normalized();
-    return coreMatrix4( N.y,  N.x, 0.0f, 0.0f,
-                       -N.x,  N.y, 0.0f, 0.0f,
-                       0.0f, 0.0f, 1.0f, 0.0f,
-                       0.0f, 0.0f, 0.0f, 1.0f);
+    ASSERT(vDirection.IsNormalized())
+    return coreMatrix4( vDirection.y, vDirection.x, 0.0f, 0.0f,
+                       -vDirection.x, vDirection.y, 0.0f, 0.0f,
+                                0.0f,         0.0f, 1.0f, 0.0f,
+                                0.0f,         0.0f, 0.0f, 1.0f);
 }
 
-inline coreMatrix4 coreMatrix4::RotationZ(const float& fAngle)noexcept
+inline coreMatrix4 coreMatrix4::RotationZ(const float& fAngle)
 {
     return coreMatrix4::RotationZ(coreVector2::Direction(fAngle));
 }
@@ -440,12 +440,14 @@ inline coreMatrix4 coreMatrix4::RotationZ(const float& fAngle)noexcept
 
 // ****************************************************************
 // calculate orientation matrix
-inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)noexcept
+inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)
 {
-    const coreVector3 F = -vDirection.Normalized();
-    const coreVector3 O =  vOrientation.Normalized();
-    const coreVector3 S =  coreVector3::Cross(O, F).Normalize();
-    const coreVector3 U = -coreVector3::Cross(S, F).Normalize();
+    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
+
+    const coreVector3  F = -vDirection;
+    const coreVector3& O =  vOrientation;
+    const coreVector3  S =  coreVector3::Cross(O, F).Normalize();
+    const coreVector3  U = -coreVector3::Cross(S, F).Normalize();
 
     return coreMatrix4( S.x,  S.y,  S.z, 0.0f,
                         U.x,  U.y,  U.z, 0.0f,
@@ -456,7 +458,7 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 
 // ****************************************************************
 // calculate perspective matrix
-inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)noexcept
+inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
 {
     const float  V = COT(fFOV*0.5f);
     const float  A = vResolution.yx().AspectRatio();
@@ -474,7 +476,7 @@ inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, cons
 
 // ****************************************************************
 // calculate ortho matrix
-inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)noexcept
+inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
 {
     constexpr_var float N = -32.0f;
     constexpr_var float F = 128.0f;
@@ -493,12 +495,14 @@ inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)noexcept
 // ****************************************************************
 // calculate camera matrix
 // TODO: you know, what to do (fix camera and orientation)
-inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)noexcept
+inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
-    const coreVector3 F =  vDirection.Normalized();
-    const coreVector3 O = -vOrientation.Normalized();
-    const coreVector3 S =  coreVector3::Cross(O, F).Normalize();
-    const coreVector3 U =  coreVector3::Cross(S, F).Normalize();
+    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
+
+    const coreVector3& F =  vDirection;
+    const coreVector3  O = -vOrientation;
+    const coreVector3  S =  coreVector3::Cross(O, F).Normalize();
+    const coreVector3  U =  coreVector3::Cross(S, F).Normalize();
 
     return coreMatrix4::Translation(-vPosition) * coreMatrix4( S.x,  U.x, -F.x, 0.0f,
                                                                S.y,  U.y, -F.y, 0.0f,
@@ -509,28 +513,28 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
 
 // ****************************************************************
 // multiplication with matrix
-inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const noexcept
+inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const
 {
-    const float w = RCP(x*m._14 + y*m._24 + m._44);
-    return coreVector2(x*m._11 + y*m._21 + w*m._41,
-                       x*m._12 + y*m._22 + w*m._42);
+    const float w = RCP(x*m._14 + y*m._24 +   m._44);
+    return  coreVector2(x*m._11 + y*m._21 + w*m._41,
+                        x*m._12 + y*m._22 + w*m._42);
 }
 
 
 // ****************************************************************
 // multiplication with matrix
-inline coreVector3 coreVector3::operator * (const coreMatrix4& m)const noexcept
+inline coreVector3 coreVector3::operator * (const coreMatrix4& m)const
 {
-    const float w = RCP(x*m._14 + y*m._24 + z*m._34 + m._44);
-    return coreVector3(x*m._11 + y*m._21 + z*m._31 + w*m._41,
-                       x*m._12 + y*m._22 + z*m._32 + w*m._42,
-                       x*m._13 + y*m._23 + z*m._33 + w*m._43);
+    const float w = RCP(x*m._14 + y*m._24 + z*m._34 +   m._44);
+    return  coreVector3(x*m._11 + y*m._21 + z*m._31 + w*m._41,
+                        x*m._12 + y*m._22 + z*m._32 + w*m._42,
+                        x*m._13 + y*m._23 + z*m._33 + w*m._43);
 }
 
 
 // ****************************************************************
 // multiplication with matrix
-constexpr_func coreVector4 coreVector4::operator * (const coreMatrix4& m)const noexcept
+constexpr_func coreVector4 coreVector4::operator * (const coreMatrix4& m)const
 {
     return coreVector4(x*m._11 + y*m._21 + z*m._31 + w*m._41,
                        x*m._12 + y*m._22 + z*m._32 + w*m._42,
