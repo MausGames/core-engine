@@ -1311,7 +1311,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-funroll-loops -fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1706,7 +1706,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-funroll-loops -fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -2100,7 +2100,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-funroll-loops -fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>

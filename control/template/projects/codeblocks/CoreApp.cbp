@@ -71,7 +71,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-funroll-loops" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -104,7 +103,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-funroll-loops" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

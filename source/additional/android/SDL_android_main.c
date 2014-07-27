@@ -9,20 +9,20 @@
 
 
 // ******************************************************************
-/* own global access objects */
+/* JNI access objects */
 JavaVM* g_pJNIJavaVM   = NULL;   // Java Virtual Machine object
 jclass  g_pJNIClass    = NULL;   // reference to the activity class (java.lang.class)
-jobject g_pJNIActivity = NULL;   // reference to the singleton activity (extends android.app.activity)
+jobject g_pJNIActivity = NULL;   // reference to the activity (extends android.app.activity)
 
-/* called before SDL_main() to initialize JNI bindings in SDL library */
+/* called before the application to initialize JNI bindings in the SDL library */
 extern void SDL_Android_Init(JNIEnv* pEnv, jclass pCls);
 
 
 // ******************************************************************
-/* start up the SDL app */
+/* start up the application */
 void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* pEnv, jclass pCls, jobject pObj)
 {
-    // fetch global access objects
+    // fetch JNI access objects
     (*pEnv)->GetJavaVM(pEnv, &g_pJNIJavaVM);
     g_pJNIClass    = (jclass)((*pEnv)->NewGlobalRef(pEnv, pCls));
     g_pJNIActivity = (*pEnv)->NewGlobalRef(pEnv, (*pEnv)->GetStaticObjectField(pEnv, g_pJNIClass, (*pEnv)->GetStaticFieldID(pEnv, g_pJNIClass, "mSingleton", "Lorg/libsdl/app/SDLActivity;")));
@@ -31,7 +31,7 @@ void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* pEnv, jclass pCls, jobje
     SDL_Android_Init(pEnv, pCls);
     SDL_SetMainReady();
 
-    // run the application code
+    // run the application
     char* argv[2] = {SDL_strdup("SDL_app"), NULL};
     SDL_main(1, argv);
 }
