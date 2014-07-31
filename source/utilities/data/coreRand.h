@@ -12,6 +12,7 @@
 
 // TODO: move global random number object here ?
 // TODO: make size a template parameter ?
+// https://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/
 
 
 // ****************************************************************

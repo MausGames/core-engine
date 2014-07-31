@@ -16,14 +16,14 @@
 class CoreAudio final
 {
 private:
-    ALCdevice* m_pDevice;                    //!< audio device
+    ALCdevice*  m_pDevice;                   //!< audio device
     ALCcontext* m_pContext;                  //!< OpenAL context
                                                 
     coreVector3 m_vPosition;                 //!< position of the listener
     coreVector3 m_vVelocity;                 //!< velocity of the listener
     coreVector3 m_avDirection[2];            //!< direction and orientation of the listener
                                                 
-    ALuint* m_pSource;                       //!< sound sources
+    ALuint*  m_pSource;                      //!< sound sources
     coreByte m_iNumSources;                  //!< number of sound sources
     coreByte m_iCurSource;                   //!< current sound source
 

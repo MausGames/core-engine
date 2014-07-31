@@ -24,7 +24,7 @@ private:
     {
         coreVector3 vPosition;   //!< position of the node
         coreVector3 vTangent;    //!< tangent of the node
-        float fDistance;         //!< distance from this node to the next (0 = last node)
+        float       fDistance;   //!< distance from this node to the next (0 = last node)
 
         constexpr_func coreNode()noexcept;
     };
@@ -56,8 +56,8 @@ public:
 
     //! get position and direction
     //! @{
-    coreVector3 GetPosition (const float& fTime)const;
-    coreVector3 GetDirection(const float& fTime)const;
+    coreVector3                       GetPosition (const float& fTime)const;
+    coreVector3                       GetDirection(const float& fTime)const;
     static constexpr_func coreVector3 GetPosition (const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2);
     static constexpr_func coreVector3 GetDirection(const float& fTime, const coreVector3& vP1, const coreVector3& vP2, const coreVector3& vT1, const coreVector3& vT2);
     //! @}

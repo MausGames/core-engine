@@ -31,12 +31,12 @@ public:
 
 private:
     coreButton m_aArrow[2];            //!< selection arrows (0 = left | 1 = right)
-    coreLabel m_Caption;               //!< label displaying the current entry
+    coreLabel  m_Caption;              //!< label displaying the current entry
                                   
     std::vector<coreEntry> m_aEntry;   //!< list with entries and associated values
     coreUint m_iCurIndex;              //!< index of the current entry
 
-    bool m_bEndless;                   //!< endless repeat behavior
+    bool      m_bEndless;              //!< endless repeat behavior
     coreTimer m_Automatic;             //!< automatic forward behavior
 
 
@@ -69,7 +69,7 @@ public:
     //! switch current entry
     //! @{
     void Select(const coreUint& iIndex);
-    void Next();
+    void Next    ();
     void Previous();
     //! @}
 

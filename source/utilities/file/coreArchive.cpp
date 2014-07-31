@@ -33,7 +33,7 @@ coreFile::coreFile(const char* pcPath)noexcept
 
     // close file
     SDL_RWclose(pFile);
-    Core::Log->Info("File (%s) opened", m_sPath.c_str());
+    Core::Log->Info("File (%s:%u) opened", m_sPath.c_str(), m_iSize);
 }
 
 coreFile::coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)noexcept
@@ -203,7 +203,7 @@ coreArchive::coreArchive(const char* pcPath)noexcept
 
     // close archive
     SDL_RWclose(pArchive);
-    Core::Log->Info("Archive (%s) opened", m_sPath.c_str());
+    Core::Log->Info("Archive (%s:%u) opened", m_sPath.c_str(), iSize);
 }
 
 

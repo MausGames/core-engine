@@ -23,27 +23,25 @@ void coreObject2D::Undefine()
 
 // ****************************************************************
 // render the 2d-object
-// TODO: try to use only a 3x3 matrix (or less? see particles) for the transformation
-void coreObject2D::Render(const coreProgramShr& pProgram)
+void coreObject2D::Render(const coreProgramPtr& pProgram)
 {
     if(!(m_iEnable & CORE_OBJECT_ENABLE_RENDER)) return;
 
     // enable the shader-program
-    if(!pProgram) return;
-    if(!pProgram->Enable()) return;
+    if(!pProgram.IsUsable()) return;
+    if(!pProgram->Enable())  return;
 
     // calculate screen-view matrix
-    const coreMatrix4 mScreenView = m_mTransform * Core::Graphics->GetOrtho();
+    const coreMatrix3 mScreenView = m_mTransform.m124() * Core::Graphics->GetOrtho().m124();
 
     // update all object uniforms
     pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, mScreenView, false);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXSIZE,       m_vTexSize);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXOFFSET,     m_vTexOffset);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
     for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
-        if(m_apTexture[i].IsActive()) m_apTexture[i]->Enable(i);
+        if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     // draw the model
     s_pModel->Enable();

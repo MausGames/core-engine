@@ -105,7 +105,7 @@ coreError coreSound::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Sound (%s) loaded", pFile->GetPath());
+    Core::Log->Info("Sound (%s:%u) loaded", pFile->GetPath(), m_iBuffer);
     return CORE_OK;
 }
 

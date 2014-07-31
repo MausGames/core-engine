@@ -35,21 +35,21 @@ private:
     ALuint m_aiBuffer[2];         //!< sound buffers for streaming
     ALuint m_iSource;             //!< currently used sound source
 
-    coreFile* m_pFile;            //!< file object with streaming data
+    coreFile*      m_pFile;       //!< file object with streaming data
     OggVorbis_File m_Stream;      //!< music stream object
 
-    vorbis_info* m_pInfo;         //!< format of the music file
+    vorbis_info*    m_pInfo;      //!< format of the music file
     vorbis_comment* m_pComment;   //!< meta-information
     double m_dMaxTime;            //!< length of the music track in seconds
 
     float m_fPitch;               //!< current playback speed
-    bool m_bLoop;                 //!< loop status
-    bool m_bStatus;               //!< playback status
+    bool  m_bLoop;                //!< loop status
+    bool  m_bStatus;              //!< playback status
 
 
 public:
     explicit coreMusic(const char* pcPath)noexcept;
-    explicit coreMusic(coreFile* pFile)noexcept;
+    explicit coreMusic(coreFile*   pFile)noexcept;
     ~coreMusic();
 
     //! update the music object
@@ -74,14 +74,14 @@ public:
 
     //! change and retrieve current music track position
     //! @{
-    inline void        SeekRaw   (const ogg_int64_t& iBytes)   {ov_raw_seek_lap (&m_Stream, iBytes);}
-    inline void        SeekPcm   (const ogg_int64_t& iSamples) {ov_pcm_seek_lap (&m_Stream, iSamples);}
-    inline void        SeekTime  (const double&      dSeconds) {ov_time_seek_lap(&m_Stream, dSeconds);}
-    inline void        SeekFactor(const double&      dFactor)  {ov_time_seek_lap(&m_Stream, dFactor * m_dMaxTime);}
-    inline ogg_int64_t TellRaw   ()                            {return ov_raw_tell (&m_Stream);}
-    inline ogg_int64_t TellPcm   ()                            {return ov_pcm_tell (&m_Stream);}
-    inline double      TellTime  ()                            {return ov_time_tell(&m_Stream);}
-    inline double      TellFactor()                            {return ov_time_tell(&m_Stream) / m_dMaxTime;}
+    inline void SeekRaw   (const ogg_int64_t& iBytes)   {ov_raw_seek_lap (&m_Stream, iBytes);}
+    inline void SeekPcm   (const ogg_int64_t& iSamples) {ov_pcm_seek_lap (&m_Stream, iSamples);}
+    inline void SeekTime  (const double&      dSeconds) {ov_time_seek_lap(&m_Stream, dSeconds);}
+    inline void SeekFactor(const double&      dFactor)  {ov_time_seek_lap(&m_Stream, dFactor * m_dMaxTime);}
+    inline ogg_int64_t TellRaw   ()                     {return ov_raw_tell (&m_Stream);}
+    inline ogg_int64_t TellPcm   ()                     {return ov_pcm_tell (&m_Stream);}
+    inline double      TellTime  ()                     {return ov_time_tell(&m_Stream);}
+    inline double      TellFactor()                     {return ov_time_tell(&m_Stream) / m_dMaxTime;}
     //! @}
 
     //! get meta-information
@@ -134,9 +134,9 @@ private:
     coreMusicRepeat m_iRepeat;              //!< repeat behavior
 
     coreMusic* m_pCurMusic;                 //!< current music object
-    coreUint m_iCurIndex;                   //!< sequence-index of the current music object
+    coreUint   m_iCurIndex;                 //!< sequence-index of the current music object
 
-    coreTimer m_FadeTimer;                  //!< timer for a transition between two music objects
+    coreTimer  m_FadeTimer;                 //!< timer for a transition between two music objects
     coreMusic* m_pFadePrevious;             //!< previous music object during a transition
 
 
@@ -167,7 +167,7 @@ public:
     //! switch current music object
     //! @{
     void Select(const coreUint& iIndex);
-    bool Next();
+    bool Next    ();
     bool Previous();
     //! @}
 

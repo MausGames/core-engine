@@ -33,8 +33,8 @@
 class coreData final
 {
 private:
-    static char m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings
-    static coreUint m_iCurString;                                          //!< current return-string
+    static thread_local char     m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings
+    static thread_local coreUint m_iCurString;                                              //!< current return-string
 
 
 public:

@@ -15,11 +15,12 @@
 // TODO: implement post-processing pipeline (in CoreGraphics or own class?)
 // TODO: implement conditional rendering (e.g. occlusion queries)
 // TODO: persistend mapped buffers, multidrawindirect, array textures
+// TODO: wrap glDisable, glDepthMask, glCullFace, etc. within the class
 
 
 // ****************************************************************
 // graphics definitions
-#define CORE_GRAPHICS_LIGHTS 4   //!< number of ambient lights
+#define CORE_GRAPHICS_LIGHTS (4u)   //!< number of ambient lights
 
 
 // ****************************************************************

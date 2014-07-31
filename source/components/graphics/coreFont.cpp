@@ -87,7 +87,7 @@ SDL_Surface* coreFont::CreateText(const char* pcText, const int& iHeight)
     return TTF_RenderUTF8_Shaded(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiFont, aiBack);
 }
 
-SDL_Surface* coreFont::CreateGlyph(const coreWord& iGlyph,  const int& iHeight)
+SDL_Surface* coreFont::CreateGlyph(const coreUshort& iGlyph,  const int& iHeight)
 {
     // check for specific height
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
@@ -98,7 +98,6 @@ SDL_Surface* coreFont::CreateGlyph(const coreWord& iGlyph,  const int& iHeight)
 
     // render and return the text surface
     return TTF_RenderGlyph_Shaded(m_apFont.at(iHeight), iGlyph, aiFont, aiBack);
-    
 }
 
 

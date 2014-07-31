@@ -19,9 +19,9 @@ class coreDataBuffer
 {
 private:
     GLuint m_iDataBuffer;                          //!< data buffer identifier
-    bool m_bDynamic;                               //!< storage type
+    bool   m_bDynamic;                             //!< storage type
                                                          
-    GLenum m_iTarget;                              //!< buffer target (e.g. GL_ARRAY_BUFFER)
+    GLenum   m_iTarget;                            //!< buffer target (e.g. GL_ARRAY_BUFFER)
     coreUint m_iSize;                              //!< data size in bytes 
                                                          
     static coreLookup<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
@@ -59,7 +59,7 @@ public:
 
     //! access buffer directly
     //! @{
-    inline operator const GLuint& ()const noexcept {return m_iDataBuffer;}
+    inline operator const GLuint& ()const {return m_iDataBuffer;}
     //! @}
 
     //! get object properties
@@ -84,9 +84,9 @@ private:
     //! vertex attribute array structure
     struct coreAttribute
     {
-        int iLocation;          //!< attribute location
+        int      iLocation;     //!< attribute location
         coreByte iComponents;   //!< number of components
-        GLenum iType;           //!< component type (e.g. GL_FLOAT)
+        GLenum   iType;         //!< component type (e.g. GL_FLOAT)
         coreByte iOffset;       //!< offset within the vertex
 
         constexpr_func coreAttribute()noexcept;

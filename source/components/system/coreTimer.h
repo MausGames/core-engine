@@ -38,7 +38,7 @@ private:
     coreUint m_iMaxLoops;   //!< max number of loops (0 = infinite)
     coreUint m_iCurLoops;   //!< current number of loops
 
-    int m_iTimeID;          //!< ID of the used frame time
+    int  m_iTimeID;         //!< ID of the used frame time
     bool m_bStatus;         //!< current play status
 
 

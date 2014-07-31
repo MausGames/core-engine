@@ -12,6 +12,7 @@
 
 // TODO: don't set an already defined value or default value (use map ?)
 // TODO: check out templated Get and Set
+// TODO: remove simpleIni, need more specialized functionality
 
 
 // ****************************************************************
@@ -39,8 +40,8 @@
 class coreConfig final
 {
 private:
-    std::string m_sPath;   //!< relative path of the file
-    CSimpleIni m_Config;   //!< configuration file interface
+    std::string m_sPath;    //!< relative path of the file
+    CSimpleIni  m_Config;   //!< configuration file interface
 
 
 public:

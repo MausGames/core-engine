@@ -41,7 +41,7 @@ EXTEND_ENUM(coreLogLevel)
 class coreLog final
 {
 private:
-    std::string m_sPath;          //!< relative path of the file
+    std::string  m_sPath;         //!< relative path of the file
     coreLogLevel m_iLevel;        //!< logging level
 
     SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log

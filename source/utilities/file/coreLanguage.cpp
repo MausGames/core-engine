@@ -109,7 +109,7 @@ coreError coreLanguage::Load(const char* pcPath)
     // prepare range pointers (from, to) and end pointer (out of bound) 
     const char* pcFrom = pcData + 1;
     const char* pcTo   = pcFrom;
-    const char* pcEnd  = pcFrom + pFile->GetSize();
+    const char* pcEnd  = pcFrom + pFile->GetSize() - 1;
 
     auto AssignLambda = [&pcFrom, &pcTo](std::string* pString)
     {

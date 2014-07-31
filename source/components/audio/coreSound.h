@@ -29,12 +29,12 @@ public:
     //! WAVE-format structure
     struct coreWaveFormat
     {
-        coreWord iAudioFormat;     //!< internal audio format (1 = PCM)
-        coreWord iNumChannels;     //!< number of sound channels (1 = mono | 2 = stereo)
-        coreUint iSampleRate;      //!< playback frequency (e.g. 44100 Hz)
-        coreUint iByteRate;        //!< required data transfer rate (iSampleRate * iBlockAlign)
-        coreWord iBlockAlign;      //!< size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))
-        coreWord iBitsPerSample;   //!< sample resolution
+        coreUshort iAudioFormat;     //!< internal audio format (1 = PCM)
+        coreUshort iNumChannels;     //!< number of sound channels (1 = mono | 2 = stereo)
+        coreUint   iSampleRate;      //!< playback frequency (e.g. 44100 Hz)
+        coreUint   iByteRate;        //!< required data transfer rate (iSampleRate * iBlockAlign)
+        coreUshort iBlockAlign;      //!< size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))
+        coreUshort iBitsPerSample;   //!< sample resolution
 
         constexpr_func coreWaveFormat()noexcept;
     };

@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_SYNC_H_
 #define _CORE_GUARD_SYNC_H_
 
+// TODO: wrap glFlush and glFinish
+
 
 // ****************************************************************
 // sync class

@@ -14,7 +14,6 @@
 // ****************************************************************
 // restrained thread interface
 // TODO: add interface for multiple executions per frame (+ unshackled)
-// TODO: name on contructor ?
 class coreThread
 {
 private:
@@ -26,12 +25,12 @@ private:
 
 
 public:
-    coreThread()noexcept;
+    explicit coreThread(const char* pcName)noexcept;
     virtual ~coreThread();
 
     //! start and kill the thread
     //! @{
-    SDL_Thread* StartThread(const char* pcName);
+    SDL_Thread* StartThread();
     void        KillThread ();
     //! @}
 
@@ -49,7 +48,7 @@ private:
 
     //! wrapper for thread creation
     //! @{
-    friend int coreThreadMain(void* pData) align_func;
+    friend int coreThreadMain(void* pData)align_func;
     //! @}
 };
 

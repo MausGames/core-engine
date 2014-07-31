@@ -27,7 +27,7 @@ private:
 protected:
     static coreModel* s_pModel;   //!< global model object
 
-    bool m_bFocused;              //!< interaction status
+    bool  m_bFocused;             //!< interaction status
     float m_fFocusRange;          //!< range factor used for interaction handling
 
 #if defined(_CORE_ANDROID_)
@@ -48,7 +48,7 @@ public:
     //! render and move the 2d-object
     //! @{
     virtual inline void Render() {coreObject2D::Render(m_pProgram);}
-    virtual void Render(const coreProgramShr& pProgram)hot_func;
+    virtual void Render(const coreProgramPtr& pProgram)hot_func;
     virtual void Move  ()hot_func;
     //! @}
 

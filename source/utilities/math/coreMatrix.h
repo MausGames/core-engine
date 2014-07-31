@@ -36,7 +36,17 @@ public:
                                const float& f21, const float& f22, const float& f23,
                                const float& f31, const float& f32, const float& f33)noexcept;
 
-    //! scalar calculation operators
+    //! matrix calculation operators
+    //! @{
+    constexpr_func coreMatrix3 operator +  (const coreMatrix3& v)const;
+    constexpr_func coreMatrix3 operator -  (const coreMatrix3& v)const;
+    constexpr_func coreMatrix3 operator *  (const coreMatrix3& v)const;
+    inline         void        operator += (const coreMatrix3& v) {*this = *this + v;}
+    inline         void        operator -= (const coreMatrix3& v) {*this = *this - v;}
+    inline         void        operator *= (const coreMatrix3& v) {*this = *this * v;}
+    //! @}
+
+    //! scalar calculation operatorss
     //! @{
     constexpr_func        coreMatrix3 operator *  (const float& f)const;
     inline                coreMatrix3 operator /  (const float& f)const                  {return  *this * RCP(f);}
@@ -52,13 +62,13 @@ public:
 
     //! transpose matrix
     //! @{
-    inline coreMatrix3& Transpose ();
+    inline coreMatrix3& Transpose();
     inline coreMatrix3  Transposed()const {return coreMatrix3(*this).Transpose();}
     //! @}
 
     //! inverse matrix
     //! @{
-    inline coreMatrix3& Invert  ();
+    inline coreMatrix3& Invert();
     inline coreMatrix3  Inverted()const {return coreMatrix3(*this).Invert();}
     //! @}
 
@@ -131,13 +141,13 @@ public:
 
     //! transpose matrix
     //! @{
-    inline coreMatrix4& Transpose ();
+    inline coreMatrix4& Transpose();
     inline coreMatrix4  Transposed()const {return coreMatrix4(*this).Transpose();}
     //! @}
 
     //! inverse matrix
     //! @{
-    inline coreMatrix4& Invert  ();
+    inline coreMatrix4& Invert();
     inline coreMatrix4  Inverted()const {return coreMatrix4(*this).Invert();}
     //! @}
 
@@ -148,7 +158,7 @@ public:
 
     //! static functions
     //! @{
-    static constexpr_func coreMatrix4 Identity();
+    static constexpr_func coreMatrix4 Identity   ();
     static constexpr_func coreMatrix4 Translation(const coreVector3& vPosition);
     static constexpr_func coreMatrix4 Scaling    (const coreVector3& vSize);
     static inline         coreMatrix4 RotationX  (const coreVector2& vDirection);
@@ -157,7 +167,7 @@ public:
     static inline         coreMatrix4 RotationY  (const float&       fAngle);
     static inline         coreMatrix4 RotationZ  (const coreVector2& vDirection);
     static inline         coreMatrix4 RotationZ  (const float&       fAngle);
-    static inline         coreMatrix4 Orientation(const coreVector3& vDirection,  const coreVector3& vOrintation);
+    static inline         coreMatrix4 Orientation(const coreVector3& vDirection, const coreVector3& vOrintation);
     static inline         coreMatrix4 Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
     static inline         coreMatrix4 Ortho      (const coreVector2& vResolution);
     static inline         coreMatrix4 Camera     (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrintation);
@@ -182,6 +192,36 @@ constexpr_func coreMatrix3::coreMatrix3(const float& f11, const float& f12, cons
 , _21 (f21), _22 (f22), _23 (f23)
 , _31 (f31), _32 (f32), _33 (f33)
 {
+}
+
+
+// ****************************************************************
+// addition with matrix
+constexpr_func coreMatrix3 coreMatrix3::operator + (const coreMatrix3& v)const
+{
+    return coreMatrix3(_11+v._11, _12+v._12, _13+v._13,
+                       _21+v._21, _22+v._22, _23+v._23,
+                       _31+v._31, _32+v._32, _33+v._33);
+}
+
+
+// ****************************************************************
+// subtraction with matrix
+constexpr_func coreMatrix3 coreMatrix3::operator - (const coreMatrix3& v)const
+{
+    return coreMatrix3(_11-v._11, _12-v._12, _13-v._13,
+                       _21-v._21, _22-v._22, _23-v._23,
+                       _31-v._31, _32-v._32, _33-v._33);
+}
+
+
+// ****************************************************************
+// multiplication with matrix
+constexpr_func coreMatrix3 coreMatrix3::operator * (const coreMatrix3& v)const
+{
+    return coreMatrix3(_11*v._11 + _12*v._21 + _13*v._31, _11*v._12 + _12*v._22 + _13*v._32, _11*v._13 + _12*v._23 + _13*v._33,
+                       _21*v._11 + _22*v._21 + _23*v._31, _21*v._12 + _22*v._22 + _23*v._32, _21*v._13 + _22*v._23 + _23*v._33,
+                       _31*v._11 + _32*v._21 + _33*v._31, _31*v._12 + _32*v._22 + _33*v._32, _31*v._13 + _32*v._23 + _33*v._33);
 }
 
 

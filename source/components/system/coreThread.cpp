@@ -13,9 +13,9 @@ int coreThreadMain(void* pData);
 
 // ****************************************************************
 // constructor
-coreThread::coreThread()noexcept
+coreThread::coreThread(const char* pcName)noexcept
 : m_pThread   (NULL)
-, m_sName     ("")
+, m_sName     (pcName)
 , m_iCurFrame (0)
 , m_bEnd      (true)
 {
@@ -32,17 +32,14 @@ coreThread::~coreThread()
 
 // ****************************************************************
 // start the thread
-SDL_Thread* coreThread::StartThread(const char* pcName)
+SDL_Thread* coreThread::StartThread()
 {
     if(!m_bEnd) return NULL;
     m_bEnd = false;
 
-    // save name of the thread
-    m_sName = pcName;
-
     // create thread object
-    m_pThread = SDL_CreateThread(coreThreadMain, pcName, this);
-    if(!m_pThread) Core::Log->Error("Could not start thread (%s) (SDL: %s)", pcName, SDL_GetError());
+    m_pThread = SDL_CreateThread(coreThreadMain, m_sName.c_str(), this);
+    if(!m_pThread) Core::Log->Error("Could not start thread (%s) (SDL: %s)", m_sName.c_str(), SDL_GetError());
 
     return m_pThread;
 }
@@ -64,7 +61,7 @@ void coreThread::KillThread()
 // execute the thread
 int coreThread::__Main()
 {
-    // call init implementation
+    // call init-implementation
     Core::Log->Info("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
     int iReturn = this->__InitThread();
 
@@ -79,11 +76,11 @@ int coreThread::__Main()
         // check for kill
         if(m_bEnd) break;
 
-        // call run implementation
+        // call run-implementation
         iReturn = this->__RunThread();
     }
 
-    // call exit implementation
+    // call exit-implementation
     this->__ExitThread();
     Core::Log->Info("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
 
@@ -99,6 +96,6 @@ int coreThreadMain(void* pData)
     // retrieve thread object
     coreThread* pThread = s_cast<coreThread*>(pData);
 
-    // execute thread
+    // execute the thread
     return pThread->__Main();
 }

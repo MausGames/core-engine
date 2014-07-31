@@ -16,8 +16,8 @@
     #include <mach-o/dyld.h>
 #endif
 
-char     coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
-coreUint coreData::m_iCurString                                                = 0;
+thread_local char     coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
+thread_local coreUint coreData::m_iCurString                                                = 0;
 
 
 // ****************************************************************
@@ -82,7 +82,7 @@ coreError coreData::OpenURL(const char* pcURL)
 #elif defined(_CORE_LINUX_)
     if(system(NULL)) if(!system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
 #else
-    if(system(NULL)) if(!system(PRINT("open %s", pcURL))) return CORE_OK;
+    if(system(NULL)) if(!system(PRINT("open %s",     pcURL))) return CORE_OK;
 #endif
 
     return CORE_ERROR_SYSTEM;
@@ -258,7 +258,7 @@ float coreData::StrVersion(const char* pcInput)
     ASSERT_IF(!pcInput) return 0.0f;
 
     const char* pcDot = std::strchr(pcInput, '.');
-    return pcDot ? (float((pcDot-1)[0]-'0') + 0.1f*float((pcDot+1)[0]-'0')) : 0.0f;
+    return pcDot ? (float((pcDot-1)[0] - '0') + 0.1f * float((pcDot+1)[0] - '0')) : 0.0f;
 }
 
 

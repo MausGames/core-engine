@@ -157,7 +157,7 @@ void CoreInput::ShowCursor(const bool& bStatus)
 
 // ****************************************************************
 // control mouse with keyboard
-void CoreInput::UseMouseWithKeyboard(const SDL_Scancode& iLeft, const SDL_Scancode& iRight, const SDL_Scancode& iUp, const SDL_Scancode& iDown, const SDL_Scancode& iButton1, const SDL_Scancode& iButton2, const float& fSpeed)
+void CoreInput::UseMouseWithKeyboard(const coreKey& iLeft, const coreKey& iRight, const coreKey& iUp, const coreKey& iDown, const coreKey& iButton1, const coreKey& iButton2, const float& fSpeed)
 {
     // TODO: implement function
 }

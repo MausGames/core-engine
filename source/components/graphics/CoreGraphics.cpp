@@ -75,25 +75,24 @@ CoreGraphics::CoreGraphics()noexcept
     if(SDL_GL_SetSwapInterval(1)) Core::Log->Warning("Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Vertical Synchronization enabled");
 
-    // enable texturing
-    glEnable(GL_TEXTURE_2D);
+    // setup texturing
     glDisable(GL_DITHER);
     glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-    // enable depth testing
+    // setup depth testing
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glPolygonOffset(1.1f, 4.0f);
     glClearDepth(1.0f);
 
-    // enable culling
+    // setup culling
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    // enable alpha blending
+    // setup alpha blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

@@ -23,13 +23,13 @@
 class coreFile final
 {
 private:
-    std::string m_sPath;           //!< relative path of the file
+    std::string m_sPath;          //!< relative path of the file
 
-    coreByte* m_pData;             //!< file data
-    coreUint m_iSize;              //!< size of the file
+    coreByte* m_pData;            //!< file data
+    coreUint  m_iSize;            //!< size of the file
 
-    coreArchive* m_pArchive;       //!< associated archive
-    coreUint m_iArchivePos;        //!< absolute data position in the associated archive (0 = file doesn't exist physically)
+    coreArchive* m_pArchive;      //!< associated archive
+    coreUint     m_iArchivePos;   //!< absolute data position in the associated archive (0 = file doesn't exist physically)
 
 
 public:

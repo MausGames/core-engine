@@ -25,18 +25,9 @@ class coreVector2 final
 public:
     union
     {
-        struct
-        {
-            float x, y;
-        };
-        struct
-        {
-            float u, v;
-        };
-        struct
-        {
-            float s, t;
-        };
+        struct {float x, y;};
+        struct {float u, v;};
+        struct {float s, t;};
         float m[2];
     };
 
@@ -79,8 +70,8 @@ public:
 
     //! matrix calculation operators
     //! @{
-    inline coreVector2 operator * (const coreMatrix4& m)const;
-    inline void operator *= (const coreMatrix4& m) {*this = *this * m;}
+    inline coreVector2 operator *  (const coreMatrix4& m)const;
+    inline void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     //! invert vector
@@ -130,14 +121,8 @@ class coreVector3 final
 public:
     union
     {
-        struct
-        {
-            float x, y, z;
-        };
-        struct
-        {
-            float r, g, b;
-        };
+        struct {float x, y, z;};
+        struct {float r, g, b;};
         float m[3];
     };
 
@@ -182,8 +167,8 @@ public:
 
     //! matrix calculation operators
     //! @{
-    inline coreVector3 operator * (const coreMatrix4& m)const;
-    inline void operator *= (const coreMatrix4& m) {*this = *this * m;}
+    inline coreVector3 operator *  (const coreMatrix4& m)const;
+    inline void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     //! invert vector
@@ -235,8 +220,8 @@ public:
     //! @{
     static constexpr_func coreVector3 ColorUnpack(const coreUint& iNumber);
     constexpr_func        coreUint    ColorPack  ()const;
-    inline coreVector3 HSVtoRGB()const;
-    inline coreVector3 RGBtoHSV()const;
+    inline                coreVector3 HSVtoRGB   ()const;
+    inline                coreVector3 RGBtoHSV   ()const;
     //! @}
 };
 
@@ -249,14 +234,8 @@ class coreVector4 final
 public:
     union
     {
-        struct
-        {
-            float x, y, z, w;
-        };
-        struct
-        {
-            float r, g, b, a;
-        };
+        struct {float x, y, z, w;};
+        struct {float r, g, b, a;};
         float m[4];
     };
 
@@ -305,8 +284,8 @@ public:
 
     //! matrix calculation operators
     //! @{
-    constexpr_func coreVector4 operator * (const coreMatrix4& m)const;
-    inline void operator *= (const coreMatrix4& m) {*this = *this * m;}
+    constexpr_func coreVector4 operator *  (const coreMatrix4& m)const;
+    inline         void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     //! invert vector

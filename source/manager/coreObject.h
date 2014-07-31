@@ -39,7 +39,7 @@ class coreObject
 {
 protected:
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   //!< multiple texture objects
-    coreProgramShr m_pProgram;                        //!< shader-program object
+    coreProgramPtr m_pProgram;                        //!< shader-program object
 
     coreMatrix4 m_mRotation;                          //!< separate rotation matrix
     coreMatrix4 m_mTransform;                         //!< transformation matrix
@@ -61,10 +61,10 @@ protected:
 public:
     //! define the visual appearance
     //! @{
-    inline void                  DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
+    inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;                                          return m_apTexture[iUnit];}
     inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const char*           pcName)   {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(pcName); return m_apTexture[iUnit];}
-    inline void                  DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
-    inline const coreProgramShr& DefineProgram(const char*           pcName)                          {m_pProgram = Core::Manager::Memory->Share<coreProgram>(pcName); return m_pProgram;}
+    inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram)                        {m_pProgram = pProgram;                                          return m_pProgram;}
+    inline const coreProgramPtr& DefineProgram(const char*           pcName)                          {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
     //! @}
 
     //! set object properties
@@ -81,7 +81,7 @@ public:
     //! get object properties
     //! @{
     inline const coreTexturePtr&   GetTexture  (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
-    inline const coreProgramShr&   GetProgram  ()const                      {return m_pProgram;}
+    inline const coreProgramPtr&   GetProgram  ()const                      {return m_pProgram;}
     inline const coreMatrix4&      GetRotation ()const                      {return m_mRotation;}
     inline const coreMatrix4&      GetTransform()const                      {return m_mTransform;}
     inline const coreVector4&      GetColor4   ()const                      {return m_vColor;}

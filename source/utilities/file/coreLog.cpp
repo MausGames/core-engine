@@ -62,7 +62,7 @@ void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeve
         pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Source:")   " 0x%04X</span>", iSource);
         pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Type:")     " 0x%04X</span>", iType);
         pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Severity:") " 0x%04X</span>", iSeverity);
-        pLog->ListEntry("<span class=\"gl\">                                   %s</span>", pcMessage);
+        pLog->ListEntry(pcMessage);
     }
     pLog->ListEnd();
 

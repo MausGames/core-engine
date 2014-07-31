@@ -20,7 +20,7 @@
 
 #define CORE_INPUT_ID MIN(iID, coreUint(m_aJoystick.size()-1))
 
-#define KEY(k) (SDL_SCANCODE_ ## k)   // TODO: +scancode-wrapper type
+#define KEY(k) (SDL_SCANCODE_ ## k)
 typedef SDL_Scancode coreKey;
 
 enum coreInputButton
@@ -49,8 +49,8 @@ private:
     struct coreKeyboard
     {
         bool aabButton[CORE_INPUT_BUTTONS_KEYBOARD][4];   //!< status of the keyboard buttons
-        SDL_Scancode iLast;                               //!< last pressed keyboard button
-        char cChar;                                       //!< current text-input character
+        coreKey iLast;                                    //!< last pressed keyboard button
+        char    cChar;                                    //!< current text-input character
 
         coreKeyboard()noexcept;
     };
@@ -59,7 +59,7 @@ private:
     struct coreMouse
     {
         bool aabButton[CORE_INPUT_BUTTONS_MOUSE][4];   //!< status of the mouse buttons
-        int iLast;                                     //!< last pressed mouse button
+        int  iLast;                                    //!< last pressed mouse button
         coreVector2 vPosition;                         //!< absolute position of the mouse cursor
         coreVector3 vRelative;                         //!< relative movement of the mouse cursor
 
@@ -71,7 +71,7 @@ private:
     {
         SDL_Joystick* pHandle;                            //!< joystick object handle
         bool aabButton[CORE_INPUT_BUTTONS_JOYSTICK][4];   //!< status of the joystick buttons
-        int iLast;                                        //!< last pressed joystick button
+        int  iLast;                                       //!< last pressed joystick button
         coreVector2 vRelative;                            //!< relative movement of the control axis
 
         coreJoystick()noexcept;
@@ -80,18 +80,18 @@ private:
     //! touch structure
     struct coreTouch
     {
-        bool abButton[4];        //!< status of the finger
-        coreVector2 vPosition;   //!< absolute position of the finger
-        coreVector2 vRelative;   //!< relative movement of the finger
-        float fPressure;         //!< current quantity of pressure applied
+        bool        abButton[4];   //!< status of the finger
+        coreVector2 vPosition;     //!< absolute position of the finger
+        coreVector2 vRelative;     //!< relative movement of the finger
+        float       fPressure;     //!< current quantity of pressure applied
 
         coreTouch()noexcept;
     };
 
 
 private:
-    coreKeyboard m_Keyboard;                  //!< main keyboard object
-    coreMouse m_Mouse;                        //!< main mouse object
+    coreKeyboard              m_Keyboard;     //!< main keyboard object
+    coreMouse                 m_Mouse;        //!< main mouse object
     std::vector<coreJoystick> m_aJoystick;    //!< list with joystick objects
 
     coreTouch m_aTouch[CORE_INPUT_FINGERS];   //!< array with touch objects
@@ -116,7 +116,7 @@ public:
 
     //! use mouse with other devices
     //! @{
-    void UseMouseWithKeyboard(const SDL_Scancode& iLeft, const SDL_Scancode& iRight, const SDL_Scancode& iUp, const SDL_Scancode& iDown, const SDL_Scancode& iButton1, const SDL_Scancode& iButton2, const float& fSpeed);
+    void UseMouseWithKeyboard(const coreKey& iLeft, const coreKey& iRight, const coreKey& iUp, const coreKey& iDown, const coreKey& iButton1, const coreKey& iButton2, const float& fSpeed);
     void UseMouseWithJoystick(const coreUint& iID, const int& iButton1, const int& iButton2, const float& fSpeed);
     //! @}
 
@@ -124,7 +124,7 @@ public:
     //! @{
     inline const char* GetJoystickName(const coreUint& iID)const {return m_aJoystick[CORE_INPUT_ID].pHandle ? (SDL_JoystickName(m_aJoystick[CORE_INPUT_ID].pHandle)) : "";}
     inline const char* GetJoystickGUID(const coreUint& iID)const {if(m_aJoystick[CORE_INPUT_ID].pHandle) {char acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(m_aJoystick[CORE_INPUT_ID].pHandle), acGUID, ARRAY_SIZE(acGUID)); return coreData::Print("%s", acGUID);} return "";}
-    inline coreUint    GetJoystickNum()const                     {return m_aJoystick.size()-1;}
+    inline coreUint    GetJoystickNum ()const                    {return m_aJoystick.size()-1;}
     //! @}
 
     //! process input events
@@ -134,10 +134,10 @@ public:
 
     //! access keyboard input
     //! @{
-    inline void        SetKeyboardButton(const SDL_Scancode& iButton, const bool& bStatus)             {ASSERT_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; m_Keyboard.aabButton[iButton][0] = bStatus; if(bStatus) m_Keyboard.iLast = iButton;}
-    inline void        SetKeyboardChar  (const char& cChar)                                            {m_Keyboard.cChar = cChar;}
-    inline const bool& GetKeyboardButton(const SDL_Scancode& iButton, const coreInputType& iType)const {return m_Keyboard.aabButton[iButton][iType];}
-    inline const char& GetKeyboardChar  ()const                                                        {return m_Keyboard.cChar;}
+    inline void        SetKeyboardButton(const coreKey& iButton, const bool& bStatus)             {ASSERT_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; m_Keyboard.aabButton[iButton][0] = bStatus; if(bStatus) m_Keyboard.iLast = iButton;}
+    inline void        SetKeyboardChar  (const char& cChar)                                       {m_Keyboard.cChar = cChar;}
+    inline const bool& GetKeyboardButton(const coreKey& iButton, const coreInputType& iType)const {return m_Keyboard.aabButton[iButton][iType];}
+    inline const char& GetKeyboardChar  ()const                                                   {return m_Keyboard.cChar;}
     //! @}
 
     //! access mouse input
@@ -175,15 +175,15 @@ public:
 
     //! get last pressed input button
     //! @{
-    inline const SDL_Scancode& GetCurKeyboard()const                    {return m_Keyboard.iLast;}
-    inline const int&          GetCurMouse   ()const                    {return m_Mouse.iLast;}
-    inline const int&          GetCurJoystick(const coreUint& iID)const {return m_aJoystick[CORE_INPUT_ID].iLast;}
+    inline const coreKey& GetCurKeyboard()const                    {return m_Keyboard.iLast;}
+    inline const int&     GetCurMouse   ()const                    {return m_Mouse.iLast;}
+    inline const int&     GetCurJoystick(const coreUint& iID)const {return m_aJoystick[CORE_INPUT_ID].iLast;}
     //! @}
 
     //! clear status of specific input button
     //! @{
-    inline void ClearKeyboardButton(const SDL_Scancode& iButton)             {ASSERT_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; for(int i = 0; i < 4; ++i) m_Keyboard.aabButton[iButton][i]                 = false;}
-    inline void ClearMouseButton   (const int& iButton)                      {ASSERT_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE)    return; for(int i = 0; i < 4; ++i) m_Mouse.aabButton[iButton][i]                    = false;}
+    inline void ClearKeyboardButton(const coreKey& iButton)                  {ASSERT_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; for(int i = 0; i < 4; ++i) m_Keyboard.aabButton[iButton][i]                 = false;}
+    inline void ClearMouseButton   (const int&     iButton)                  {ASSERT_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE)    return; for(int i = 0; i < 4; ++i) m_Mouse.aabButton[iButton][i]                    = false;}
     inline void ClearJoystickButton(const coreUint& iID, const int& iButton) {ASSERT_IF(iButton >= CORE_INPUT_BUTTONS_JOYSTICK) return; for(int i = 0; i < 4; ++i) m_aJoystick[CORE_INPUT_ID].aabButton[iButton][i] = false;}
     //! @}
 

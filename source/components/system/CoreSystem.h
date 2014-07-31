@@ -21,29 +21,29 @@
 class CoreSystem final
 {
 private:
-    SDL_Window* m_pWindow;                    //!< SDL main window object
+    SDL_Window* m_pWindow;                     //!< SDL main window object
 
-    coreVector2 m_vResolution;                //!< width and height of the window
-    coreByte m_iFullscreen;                   //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
+    coreVector2 m_vResolution;                 //!< width and height of the window
+    coreByte    m_iFullscreen;                 //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
 
-    std::vector<coreVector2> m_avAvailable;   //!< all available screen resolutions
-    bool m_bMinimized;                        //!< window/application was minimized
-    bool m_bTerminated;                       //!< application will be terminated
+    std::vector<coreVector2> m_avAvailable;    //!< all available screen resolutions
+    bool m_bMinimized;                         //!< window/application was minimized
+    bool m_bTerminated;                        //!< application will be terminated
 
-    double m_dTotalTime;                      //!< total time since start of the application
-    float m_fLastTime;                        //!< smoothed last frame time
-    float m_afTime[CORE_SYSTEM_TIMES];        //!< dynamic frame times
-    float m_afTimeSpeed[CORE_SYSTEM_TIMES];   //!< speed factor for the dynamic frame times
+    double m_dTotalTime;                       //!< total time since start of the application
+    float  m_fLastTime;                        //!< smoothed last frame time
+    float  m_afTime[CORE_SYSTEM_TIMES];        //!< dynamic frame times
+    float  m_afTimeSpeed[CORE_SYSTEM_TIMES];   //!< speed factor for the dynamic frame times
 
-    coreUint m_iCurFrame;                     //!< current frame number since start of the application
-    coreByte m_iSkipFrame;                    //!< skip frame status
+    coreUint m_iCurFrame;                      //!< current frame number since start of the application
+    coreByte m_iSkipFrame;                     //!< skip frame status
 
-    double m_dPerfFrequency;                  //!< high precision time coefficient
-    uint64_t m_iPerfTime;                     //!< high precision time value
+    double   m_dPerfFrequency;                 //!< high precision time coefficient
+    uint64_t m_iPerfTime;                      //!< high precision time value
 
-    coreByte m_iNumCores;                     //!< number of logical processor cores
-    int m_aaiCPUID[2][4];                     //!< features of the processor
-    bool m_abSSE[5];                          //!< available SSE versions (1, 2, 3, 4.1, 4.2)
+    coreByte m_iNumCores;                      //!< number of logical processor cores
+    int  m_aaiCPUID[2][4];                     //!< features of the processor
+    bool m_abSSE[5];                           //!< available SSE versions (1, 2, 3, 4.1, 4.2)
 
 
 private:
