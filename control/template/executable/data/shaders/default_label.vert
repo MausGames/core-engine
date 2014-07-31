@@ -8,20 +8,10 @@
 //////////////////////////////////////////////////////////
 
 
-#if (__VERSION__) >= 300   // >= OpenGL 3.3 and OpenGL ES 3.0
-
-    // shader input
-    in vec4 v_v4Color;
-
-#else
-
-    // shader input
-    varying vec4 v_v4Color;
-
-#endif
-
-
 void main()
 {
-    gl_FragColor = texture2D(u_as2Texture[0], v_av2TexCoord[0]) * v_v4Color;
+    vec3 v3Position = u_m3ScreenView * vec3(a_v3Position.xy, 1.0);
+    gl_Position     = vec4(v3Position.xy, 0.0, v3Position.z);
+    
+    v_av2TexCoord[0] = a_v2Texture * u_v2TexSize;
 }

@@ -8,8 +8,18 @@
 //////////////////////////////////////////////////////////
 
 
-void main()
-{
-    gl_Position      = u_m4ModelViewProj * vec4(a_v3Position, 1.0);
-    v_av2TexCoord[0] = a_v2Texture * u_v2TexSize + u_v2TexOffset;
-}
+#ifdef _CORE_OPTION_INSTANCING_
+
+    void main()
+    {
+        gl_FragColor = texture2D(u_as2Texture[0], v_av2TexCoord[0]) * v_v4VarColor;
+    }
+
+#else
+
+    void main()
+    {
+        gl_FragColor = texture2D(u_as2Texture[0], v_av2TexCoord[0]) * u_v4Color;
+    }
+
+#endif

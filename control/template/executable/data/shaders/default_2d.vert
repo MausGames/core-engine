@@ -10,6 +10,12 @@
 
 void main()
 {
-    gl_Position      = u_m4ScreenView * vec4(a_v3Position.xy, 1.0, 1.0);
+    vec3 v3Position = u_m3ScreenView * vec3(a_v3Position.xy, 1.0);
+    gl_Position     = vec4(v3Position.xy, 0.0, v3Position.z);
+
+#ifdef _CORE_OPTION_NO_TEXTURE_TRANSFORM_
     v_av2TexCoord[0] = a_v2Texture;
+#else
+    v_av2TexCoord[0] = a_v2Texture * u_v2TexSize + u_v2TexOffset;
+#endif
 }
