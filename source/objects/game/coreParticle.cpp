@@ -50,26 +50,6 @@ coreParticleSystem::~coreParticleSystem()
 }
 
 
-
-// ****************************************************************
-// define shader-program through shared memory
-const coreProgramShr& coreParticleSystem::DefineProgram(const char* pcName)
-{
-    // set shader-program object
-    m_pProgram = Core::Manager::Memory->Share<coreProgram>(pcName);
-
-    if(m_iInstanceBuffer)
-    {
-        // bind particle-specific attributes
-        m_pProgram->BindAttribute(CORE_PARTICLE_ATTRIBUTE_POSITION, CORE_PARTICLE_ATTRIBUTE_POSITION_NUM);
-        m_pProgram->BindAttribute(CORE_PARTICLE_ATTRIBUTE_DATA,     CORE_PARTICLE_ATTRIBUTE_DATA_NUM);
-        m_pProgram->BindAttribute(CORE_PARTICLE_ATTRIBUTE_COLOR,    CORE_PARTICLE_ATTRIBUTE_COLOR_NUM);
-    }
-
-    return m_pProgram;
-}
-
-
 // ****************************************************************
 // undefine the visual appearance
 void coreParticleSystem::Undefine()
@@ -87,65 +67,61 @@ void coreParticleSystem::Render()
     if(m_apRenderList.empty()) return;
 
     // enable the shader-program
-    if(!m_pProgram) return;
-    if(!m_pProgram->Enable()) return;
+    if(!m_pProgram.IsUsable()) return;
+    if(!m_pProgram->Enable())  return;
 
     // update normal matrix uniform
     m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, Core::Graphics->GetCamera().m123().Invert(), false);
 
     // enable all active textures
     for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
-        if(m_apTexture[i].IsActive()) m_apTexture[i]->Enable(i);
+        if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     if(m_iInstanceBuffer)
     {
-        // reset current model object
-        coreModel::Disable(false);
-
         if(m_bUpdate)
         {
             // invalidate the instance data buffer
             m_iInstanceBuffer.Invalidate();
 
-            coreModel::Lock();
+            // map required area of the instance data buffer
+            const coreUint iLength = m_apRenderList.size()*CORE_PARTICLE_SIZE;
+            coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength, true);
+
+            FOR_EACH_REV(it, m_apRenderList)
             {
-                // map required area of the instance data buffer
-                const coreUint iLength = m_apRenderList.size()*CORE_PARTICLE_SIZE;
-                coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength, true);
+                // get current particle state
+                const coreParticle*            pParticle = (*it);
+                const coreObject3D*            pOrigin   = pParticle->GetEffect()->GetOrigin();
+                const coreParticle::coreState& Current   = pParticle->GetCurrentState();
 
-                FOR_EACH_REV(it, m_apRenderList)
+                // write position data to the buffer
+                if(pOrigin)
                 {
-                    // get current particle state
-                    const coreParticle*            pParticle = (*it);
-                    const coreObject3D*            pOrigin   = pParticle->GetEffect()->GetOrigin();
-                    const coreParticle::coreState& Current   = pParticle->GetCurrentState();
-
-                    // write position data to the buffer
-                    if(pOrigin)
-                    {
-                        const coreVector3 vPosition = pOrigin->GetPosition() + Current.vPosition;
-                        std::memcpy(pRange, &vPosition, sizeof(coreVector3));
-                    }
-                    else std::memcpy(pRange, &Current.vPosition, sizeof(coreVector3));
-
-                    // compress remaining data
-                    const coreVector3 vData  = coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue());
-                    const coreUint    iColor = Current.vColor.ColorPack();
-
-                    // write remaining data to the buffer
-                    std::memcpy(pRange + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
-                    std::memcpy(pRange + 2*sizeof(coreVector3), &iColor, sizeof(coreUint));
-                    pRange += CORE_PARTICLE_SIZE;
+                    const coreVector3 vPosition = pOrigin->GetPosition() + Current.vPosition;
+                    std::memcpy(pRange, &vPosition, sizeof(coreVector3));
                 }
+                else std::memcpy(pRange, &Current.vPosition, sizeof(coreVector3));
 
-                // unmap buffer
-                m_iInstanceBuffer.Unmap(pRange - iLength);
+                // compress remaining data
+                const coreVector3 vData  = coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue());
+                const coreUint    iColor = Current.vColor.ColorPack();
+
+                // write remaining data to the buffer
+                std::memcpy(pRange + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
+                std::memcpy(pRange + 2*sizeof(coreVector3), &iColor, sizeof(coreUint));
+                pRange += CORE_PARTICLE_SIZE;
             }
-            coreModel::Unlock();
+
+            // unmap buffer
+            m_iInstanceBuffer.Unmap(pRange - iLength);
 
             // reset the update status
             m_bUpdate = false;
         }
+
+        // reset current model object (because of direct VAO use)
+        coreModel::Disable(false);
 
         // draw the model instanced
         glBindVertexArray(m_iVertexArray);
@@ -162,9 +138,9 @@ void coreParticleSystem::Render()
             const coreParticle::coreState& Current   = pParticle->GetCurrentState();
 
             // update all particle uniforms
-            m_pProgram->SendUniform(CORE_PARTICLE_UNIFORM_POSITION, pOrigin ? (pOrigin->GetPosition() + Current.vPosition) : Current.vPosition);
-            m_pProgram->SendUniform(CORE_PARTICLE_UNIFORM_DATA,     coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue()));
-            m_pProgram->SendUniform(CORE_PARTICLE_UNIFORM_COLOR,    Current.vColor);
+            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + Current.vPosition) : Current.vPosition);
+            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue()));
+            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_COLOR,    Current.vColor);
             
             // draw the model
             s_pModel->Enable();
@@ -319,27 +295,23 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
         glGenVertexArrays(1, &m_iVertexArray);
         glBindVertexArray(m_iVertexArray);
 
-        coreModel::Lock();
-        {
-            // create instance data buffer
-            m_iInstanceBuffer.Create(m_iNumParticles, CORE_PARTICLE_SIZE, NULL, GL_DYNAMIC_DRAW);
-            m_iInstanceBuffer.DefineAttribute(CORE_PARTICLE_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,        0);
-            m_iInstanceBuffer.DefineAttribute(CORE_PARTICLE_ATTRIBUTE_DATA_NUM,     3, GL_FLOAT,        3*sizeof(float));
-            m_iInstanceBuffer.DefineAttribute(CORE_PARTICLE_ATTRIBUTE_COLOR_NUM,    1, GL_UNSIGNED_INT, 6*sizeof(float));
+        // create instance data buffer
+        m_iInstanceBuffer.Create(m_iNumParticles, CORE_PARTICLE_SIZE, NULL, GL_DYNAMIC_DRAW);
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,        0);
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,        3*sizeof(float));
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1, GL_UNSIGNED_INT, 6*sizeof(float));
 
-            // set vertex data
-            s_pModel->GetVertexBuffer(0)->Activate(0);
-            m_iInstanceBuffer.Activate(1);
-        }
-        coreModel::Unlock();
+        // set vertex data
+        s_pModel->GetVertexBuffer(0)->Activate(0);
+        m_iInstanceBuffer.Activate(1);
 
         // enable vertex attribute array division
         if(GLEW_ARB_vertex_attrib_binding) glVertexBindingDivisor(1, 1);
         else
         {
-            glVertexAttribDivisorARB(CORE_PARTICLE_ATTRIBUTE_POSITION_NUM, 1);
-            glVertexAttribDivisorARB(CORE_PARTICLE_ATTRIBUTE_DATA_NUM,     1);
-            glVertexAttribDivisorARB(CORE_PARTICLE_ATTRIBUTE_COLOR_NUM,    1);
+            glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1);
+            glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     1);
+            glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1);
         }
 
         // invoke buffer update

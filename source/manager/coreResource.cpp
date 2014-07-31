@@ -11,6 +11,19 @@
 
 // ****************************************************************
 /* constructor */
+coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const char* pcName, const bool& bAutomatic)noexcept
+: m_pResource  (pResource)
+, m_pFile      (pFile)
+, m_sName      (pcName)
+, m_bAutomatic (bAutomatic)
+, m_iRefCount  (0)
+, m_iStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
+{
+}
+
+
+// ****************************************************************
+/* constructor */
 coreResourceRelation::coreResourceRelation()noexcept
 {
     // add object to resource manager
@@ -30,8 +43,9 @@ coreResourceRelation::~coreResourceRelation()
 // ****************************************************************
 /* constructor */
 coreResourceManager::coreResourceManager()noexcept
-: m_iLock   (0)
-, m_bActive (false)
+: coreThread ("resource_thread")
+, m_iLock    (0)
+, m_bActive  (false)
 {
     // start up the resource manager
     this->Reset(CORE_RESOURCE_RESET_INIT);
@@ -63,6 +77,31 @@ coreResourceManager::~coreResourceManager()
     m_apRelation.clear();
 
     Core::Log->Info("Resource Manager destroyed");
+}
+
+
+// ****************************************************************
+/* update the resource manager */
+void coreResourceManager::Update()
+{
+    // check for current status
+    if(m_bActive)
+    {
+        SDL_AtomicLock(&m_iLock);
+        {
+            for(coreUint i = 0; i < m_apHandle.size(); ++i)
+            {
+                // update resource handle
+                if(m_apHandle[i]->__AutoUpdate())
+                {
+                    // allow changes during iteration
+                    SDL_AtomicUnlock(&m_iLock);
+                    SDL_AtomicLock(&m_iLock);
+                }
+            }
+        }
+        SDL_AtomicUnlock(&m_iLock);
+    }
 }
 
 
@@ -129,7 +168,7 @@ void coreResourceManager::Reset(const coreResourceReset& bInit)
 
         // start resource thread
         if(Core::Graphics->GetResourceContext())
-            this->StartThread("resource_thread");
+            this->StartThread();
     }
     else
     {
@@ -166,6 +205,12 @@ int coreResourceManager::__InitThread()
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
+    // setup texturing
+    glDisable(GL_DITHER);
+    glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    glPixelStorei(GL_PACK_ALIGNMENT,   4);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
     return 0;
 }
 
@@ -174,24 +219,9 @@ int coreResourceManager::__InitThread()
 /* run resource thread */
 int coreResourceManager::__RunThread()
 {
-    // check for current status
-    if(m_bActive)
-    {
-        SDL_AtomicLock(&m_iLock);
-        {
-            for(coreUint i = 0; i < m_apHandle.size(); ++i)
-            {
-                // update resource handle
-                if(m_apHandle[i]->Update())
-                {
-                    // allow changes during iteration
-                    SDL_AtomicUnlock(&m_iLock);
-                    SDL_AtomicLock(&m_iLock);
-                }
-            }
-        }
-        SDL_AtomicUnlock(&m_iLock);
-    }
+    // update the resource manager
+    this->Update();
+
     return 0;
 }
 

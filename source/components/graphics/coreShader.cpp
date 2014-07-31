@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::string  coreShader::s_asGlobal[2]; // = "";
-coreProgram* coreProgram::s_pCurrent       = NULL;
+std::string  coreShader::s_asGlobalCode[2]; // = "";
+coreProgram* coreProgram::s_pCurrent           = NULL;
 
 
 // ****************************************************************
@@ -19,9 +19,9 @@ coreShader::coreShader()noexcept
 {
 }
 
-coreShader::coreShader(const char* pcInjection)noexcept
-: m_iShader    (0)
-, m_sInjection (pcInjection)
+coreShader::coreShader(const char* pcCustomCode)noexcept
+: m_iShader     (0)
+, m_sCustomCode (pcCustomCode)
 {
 }
 
@@ -49,12 +49,12 @@ coreError coreShader::Load(coreFile* pFile)
 
     // set shader type
     GLenum iType;
-    const char* pcDefine;
-         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {iType = GL_VERTEX_SHADER;          pcDefine = "#define _CORE_VERTEX_SHADER_          (1) \n";}
-    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {iType = GL_TESS_CONTROL_SHADER;    pcDefine = "#define _CORE_TESS_CONTROL_SHADER_    (1) \n";}
-    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {iType = GL_TESS_EVALUATION_SHADER; pcDefine = "#define _CORE_TESS_EVALUATION_SHADER_ (1) \n";}
-    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {iType = GL_GEOMETRY_SHADER;        pcDefine = "#define _CORE_GEOMETRY_SHADER_        (1) \n";}
-    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        pcDefine = "#define _CORE_FRAGMENT_SHADER_        (1) \n";}
+    const char* pcTypeDef;
+         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_          (1) \n";}
+    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_    (1) \n";}
+    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_ (1) \n";}
+    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_        (1) \n";}
+    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_        (1) \n";}
     else
     {
         Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag)", pFile->GetPath());
@@ -66,16 +66,16 @@ coreError coreShader::Load(coreFile* pFile)
     if((iType == GL_GEOMETRY_SHADER)                                           && !GLEW_VERSION_3_2)             return CORE_OK;
     
     // load quality level and global shader data
-    const char* pcQuality = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
-    coreShader::__LoadGlobal();
+    const char* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
+    coreShader::__LoadGlobalCode();
 
     // assemble the shader
-    const char* apcData[5] = {s_asGlobal[0].c_str(),       pcDefine,                   pcQuality,                   s_asGlobal[1].c_str(),       r_cast<const char*>(pFile->GetData())};
-    const int   aiSize[5]  = {(int)s_asGlobal[0].length(), (int)std::strlen(pcDefine), (int)std::strlen(pcQuality), (int)s_asGlobal[1].length(), (int)pFile->GetSize()};
+    const char* apcData[6] = {s_asGlobalCode[0].c_str(),       pcTypeDef,                   pcQualityDef,                   s_asGlobalCode[1].c_str(),       m_sCustomCode.c_str(),       r_cast<const char*>(pFile->GetData())};
+    const int   aiSize[6]  = {(int)s_asGlobalCode[0].length(), (int)std::strlen(pcTypeDef), (int)std::strlen(pcQualityDef), (int)s_asGlobalCode[1].length(), (int)m_sCustomCode.length(), (int)pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(iType);
-    glShaderSource(m_iShader, 5, apcData, aiSize);
+    glShaderSource(m_iShader, 6, apcData, aiSize);
     glCompileShader(m_iShader);
 
     // save properties
@@ -108,7 +108,7 @@ coreError coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Shader (%s) loaded", pFile->GetPath());
+    Core::Log->Info("Shader (%s:%u) loaded", pFile->GetPath(), m_iShader);
     return CORE_OK;
 }
 
@@ -133,24 +133,30 @@ coreError coreShader::Unload()
 
 
 // ****************************************************************
-// load global shader data
-void coreShader::__LoadGlobal()
+// load global shader code
+// TODO: GLES 3.0 uses "300 es", also version >= 140 is wrong for GLES 3.0
+void coreShader::__LoadGlobalCode()
 {
-    if(!s_asGlobal[0].empty()) return;
+    if(!s_asGlobalCode[0].empty()) return;
 
     // set global shader definitions
-    s_asGlobal[0].assign(PRINT("#version %.0f \n", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : 110.0f));
-    s_asGlobal[1].assign(PRINT("#define CORE_TEXTURE_UNITS        (%d) \n", CORE_TEXTURE_UNITS));
-    s_asGlobal[1].append(PRINT("#define CORE_GRAPHICS_LIGHTS      (%d) \n", CORE_GRAPHICS_LIGHTS));
-    s_asGlobal[1].append(PRINT("#define CORE_SHADER_OUTPUT_COLORS (%d) \n", CORE_SHADER_OUTPUT_COLORS));
+    s_asGlobalCode[0].assign(PRINT("#version %.0f \n", Core::Graphics->GetUniformBuffer() ? Core::Graphics->VersionGLSL()*100.0f : (DEFINED(_CORE_GLES_) ? 100.0f : 110.0f)));
+    s_asGlobalCode[1].assign(PRINT("#define CORE_NUM_TEXTURES (%d) \n", CORE_TEXTURE_UNITS));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS   (%d) \n", CORE_GRAPHICS_LIGHTS));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS  (%d) \n", CORE_SHADER_OUTPUT_COLORS));
 
     // retrieve global shader file
     coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
     ASSERT_IF(!pFile->GetData()) return;
 
     // copy and unload data
-    s_asGlobal[1].append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
+    s_asGlobalCode[1].append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
+    s_asGlobalCode[1].append(1, '\n');
     pFile->UnloadData();
+
+    // reduce memory consumption
+    s_asGlobalCode[0].shrink_to_fit();
+    s_asGlobalCode[1].shrink_to_fit();
 }
 
 
@@ -169,8 +175,8 @@ coreProgram::coreProgram()noexcept
 // destructor
 coreProgram::~coreProgram()
 {
-    // exit the shader-program
-    this->__Exit();
+    // unload shader-program
+    this->Unload();
 
     // remove all shader objects and attribute locations
     m_apShader.clear();
@@ -179,34 +185,173 @@ coreProgram::~coreProgram()
 
 
 // ****************************************************************
+// load shader-program
+coreError coreProgram::Load(coreFile* pFile)
+{
+    // check for sync object status
+    const coreError iCheck = m_Sync.Check(0);
+    if(iCheck == CORE_OK) m_iStatus = CORE_SHADER_FINISHED;
+    if(iCheck >= CORE_OK) return iCheck;
+
+    // check for shader-program status
+    if(m_iStatus < CORE_SHADER_DEFINED) return CORE_BUSY;
+    if(m_iStatus > CORE_SHADER_DEFINED) return CORE_INVALID_CALL;
+    ASSERT_IF(m_iProgram)               return CORE_INVALID_CALL;
+
+    // load all required shader objects
+    FOR_EACH(it, m_apShader)
+    {
+        it->SetActive(true);
+        it->GetHandle()->Update();
+    }
+    FOR_EACH(it, m_apShader)
+    {
+        if(!it->IsUsable()) 
+            return CORE_BUSY;
+    }
+
+#if defined(_CORE_DEBUG_)
+
+    // check for duplicate shader objects
+    FOR_EACH(it, m_apShader)
+        FOR_EACH_SET(et, it+1, m_apShader)
+            ASSERT(std::strcmp((*it)->GetPath(), (*et)->GetPath()))
+
+    // check for duplicate attribute locations
+    FOR_EACH(it, m_aiAttribute)
+        FOR_EACH_SET(et, it+1, m_aiAttribute)
+            ASSERT(it->second != et->second && it->second >= 0)
+
+#endif
+
+    // create shader-program
+    m_iProgram = glCreateProgram();
+
+    // attach shader objects
+    FOR_EACH(it, m_apShader)
+    {
+        if((*it)->GetShader())
+            glAttachShader(m_iProgram, (*it)->GetShader());
+    }
+
+    // bind default attribute locations
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  CORE_SHADER_ATTRIBUTE_TEXTURE);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
+
+    // bind instancing attribute locations
+    if(GLEW_ARB_instanced_arrays && GLEW_ARB_vertex_array_object) 
+    {
+        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM, CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_POSITION);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,      CORE_SHADER_ATTRIBUTE_DIV_DATA);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,     CORE_SHADER_ATTRIBUTE_DIV_COLOR);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,  CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
+    }
+
+    // bind custom attribute locations
+    FOR_EACH(it, m_aiAttribute)
+    {
+        if(it->second >= 0) 
+            glBindAttribLocation(m_iProgram, it->second, it->first);
+    }
+
+    // bind output locations
+    if(Core::Graphics->GetUniformBuffer())
+    {
+        for(int i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+            glBindFragDataLocation(m_iProgram, i, CORE_SHADER_OUTPUT_COLOR(i));
+    }
+
+    // link shader-program
+    glLinkProgram(m_iProgram);
+    glUseProgram(m_iProgram);
+
+    // bind texture units
+    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_TEXTURE(i)), i);
+
+    // bind global uniform buffer object
+    if(Core::Graphics->GetUniformBuffer())
+    {
+        const int iBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_GLOBAL);
+        if(iBlock >= 0) glUniformBlockBinding(m_iProgram, iBlock, CORE_SHADER_BUFFER_GLOBAL_NUM);
+    }
+
+    // save properties
+    FOR_EACH(it, m_apShader)
+    {
+        m_sPath += (*it).GetHandle()->GetName();
+        m_sPath += ":";
+        m_iSize += (*it)->GetSize();
+    }
+    m_sPath.pop_back();
+
+    // check for errors
+    int iStatus;
+    glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
+    if(!iStatus)
+    {
+        this->__WriteLog();
+        return CORE_INVALID_DATA;
+    }
+
+    // create sync object
+    const bool bSync = m_Sync.Create();
+    if(!bSync) m_iStatus = CORE_SHADER_FINISHED;
+
+    Core::Log->Info("Program (%s:%u) loaded", m_sPath.c_str(), m_iProgram);
+    return bSync ? CORE_BUSY : CORE_OK;
+}
+
+
+// ****************************************************************
+// unload shader-program
+coreError coreProgram::Unload()
+{
+    if(!m_iProgram) return CORE_INVALID_CALL;
+
+    // disable still active shader-program
+    if(s_pCurrent == this) coreProgram::Disable(true);
+
+    // disable shader objects
+    FOR_EACH(it, m_apShader) it->SetActive(false);
+
+    // delete shader-program (with implicit shader object detachment)
+    glDeleteProgram(m_iProgram);
+    if(!m_sPath.empty()) Core::Log->Info("Program (%s) unloaded", m_sPath.c_str());
+
+    // delete sync object
+    m_Sync.Delete();
+
+    // reset properties
+    m_sPath    = "";
+    m_iSize    = 0;
+    m_iProgram = 0;
+    m_iStatus  = CORE_SHADER_DEFINED;
+
+    // clear uniform locations and cache
+    m_aiUniform.clear();
+    m_avCache.clear();
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
 // enable the shader-program
-// TODO: remove/move linking part somehow
 bool coreProgram::Enable()
 {
     ASSERT(m_iStatus)
 
     // check current shader-program
-    if(s_pCurrent == this) return true;
-
-    // link shader-program
-    if(m_iStatus < CORE_SHADER_LINKED)
-    {
-        if(this->__Init() != CORE_OK)
-            return false;
-    }
+    if(s_pCurrent == this)                 return true;
+    if(m_iStatus  != CORE_SHADER_FINISHED) return false;
 
     // set current shader-program
     s_pCurrent = this;
     glUseProgram(m_iProgram);
-
-    // bind all texture units
-    if(m_iStatus == CORE_SHADER_LINKED)
-    {
-        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
-            glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_TEXTURE(i)), i);
-
-        m_iStatus = CORE_SHADER_FINISHED;
-    }
 
     // forward global uniform data without UBO
     if(!Core::Graphics->GetUniformBuffer())
@@ -237,7 +382,7 @@ bool coreProgram::Enable()
     // check for errors
     int iStatus;
     glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatus);
-    ASSERT_IF(!iStatus)
+    if(!iStatus)
     {
         this->__WriteLog();
         return false;
@@ -262,121 +407,6 @@ void coreProgram::Disable(const bool& bFull)
 
 
 // ****************************************************************
-// reset with the resource manager
-void coreProgram::__Reset(const coreResourceReset& bInit)
-{
-    if(bInit) this->__Init();
-         else this->__Exit();
-}
-
-
-// ****************************************************************
-// init the shader-program
-coreError coreProgram::__Init()
-{
-    if(m_iStatus != CORE_SHADER_DEFINED) return CORE_INVALID_CALL;
-
-    // check if all requested shaders are loaded
-    FOR_EACH(it, m_apShader)
-        if(!it->GetHandle()->IsLoaded() && it->GetHandle()->IsManaged()) return CORE_BUSY;
-
-#if defined(_CORE_DEBUG_)
-
-    // check for duplicate shader objects
-    FOR_EACH(it, m_apShader)
-        FOR_EACH_SET(et, it+1, m_apShader)
-            ASSERT(std::strcmp((*it)->GetPath(), (*et)->GetPath()))
-
-    // check for duplicate attribute locations
-    FOR_EACH(it, m_aiAttribute)
-        FOR_EACH_SET(et, it+1, m_aiAttribute)
-            ASSERT(it->second != et->second && it->second >= 0)
-
-#endif
-
-    // create shader-program
-    ASSERT_IF(m_iProgram) return CORE_INVALID_CALL;
-    m_iProgram = glCreateProgram();
-
-    // attach shader objects
-    FOR_EACH(it, m_apShader)
-    {
-        if((*it)->GetShader())
-            glAttachShader(m_iProgram, (*it)->GetShader());
-    }
-
-    // bind attribute locations
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  CORE_SHADER_ATTRIBUTE_TEXTURE);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
-    FOR_EACH(it, m_aiAttribute)
-    {
-        if(it->second >= 0) 
-            glBindAttribLocation(m_iProgram, it->second, it->first);
-    }
-
-    // bind output locations
-    if(Core::Graphics->GetUniformBuffer())
-    {
-        for(int i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
-            glBindFragDataLocation(m_iProgram, i, CORE_SHADER_OUTPUT_COLOR(i));
-    }
-
-    // link shader-program
-    glLinkProgram(m_iProgram);
-    m_iStatus = CORE_SHADER_LINKED;
-
-    // bind global uniform buffer object
-    if(Core::Graphics->GetUniformBuffer())
-    {
-        const int iBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_GLOBAL);
-        if(iBlock >= 0) glUniformBlockBinding(m_iProgram, iBlock, CORE_SHADER_BUFFER_GLOBAL_NUM);
-    }
-
-    // check for errors
-    int iStatus;
-    glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
-    ASSERT_IF(!iStatus)
-    {
-        this->__WriteLog();
-        return CORE_INVALID_DATA;
-    }
-
-    return CORE_OK;
-}
-
-
-// ****************************************************************
-// exit the shader-program
-coreError coreProgram::__Exit()
-{
-    if(!m_iProgram) return CORE_INVALID_CALL;
-
-    // disable still active shader-program
-    if(s_pCurrent == this) coreProgram::Disable(true);
-
-    // detach shader objects
-    FOR_EACH(it, m_apShader)
-    {
-        if((*it)->GetShader())
-            glDetachShader(m_iProgram, (*it)->GetShader());
-    }
-
-    // delete shader-program
-    glDeleteProgram(m_iProgram);
-    m_iProgram = 0;
-    m_iStatus  = CORE_SHADER_DEFINED;
-    
-    // clear uniform locations and cache
-    m_aiUniform.clear();
-    m_avCache.clear();
-
-    return CORE_OK;
-}
-
-
-// ****************************************************************
 // write error-log
 void coreProgram::__WriteLog()const
 {
@@ -391,11 +421,11 @@ void coreProgram::__WriteLog()const
         glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
 
         // write error-log
-        Core::Log->Warning("Shader-Program could not be linked/validated");
-        Core::Log->ListStart("Shader-Program Error Log");
+        Core::Log->Warning("Program (%s) could not be linked or validated", m_sPath.c_str());
+        Core::Log->ListStart("Program Error Log");
         {
             FOR_EACH(it, m_apShader)
-                Core::Log->ListEntry("(%s)", (*it)->GetPath());
+                Core::Log->ListEntry("%s (%s)", it->GetHandle()->GetName(), (*it)->GetPath());
             Core::Log->ListEntry(pcLog);
         }
         Core::Log->ListEnd();

@@ -24,6 +24,7 @@
 // TODO: reorder indices/vertices in memory to improve post-transform caching (maybe in model-file, nvTriStrip)
 // TODO: separate model format from model class, implement old MD3 code for compatibility
 // TODO: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
+// TODO: merge texture-coords with other attributes to save location
 class coreModel final : public coreResource
 {
 private:
@@ -50,7 +51,7 @@ private:
     //! MD5-triangle structure
     struct md5Triangle
     {
-        coreWord aiVertex[3];   //!< indexes of the defining vertices
+        coreUshort aiVertex[3];   //!< indexes of the defining vertices
 
         explicit md5Triangle(const char** ppcData)noexcept;
     };
@@ -58,7 +59,7 @@ private:
     //! MD5-weight structure
     struct md5Weight
     {
-        int iJoint;              //!< index of the associated joint
+        int   iJoint;            //!< index of the associated joint
         float fBias;             //!< contribution factor
         coreVector3 vPosition;   //!< position of the weight
 
@@ -68,9 +69,9 @@ private:
     //! MD5-mesh structure
     struct md5Mesh
     {
-        std::vector<md5Vertex> aVertex;       //!< vertex list
+        std::vector<md5Vertex>   aVertex;     //!< vertex list
         std::vector<md5Triangle> aTriangle;   //!< triangle list
-        std::vector<md5Weight> aWeight;       //!< weight list
+        std::vector<md5Weight>   aWeight;     //!< weight list
 
         explicit md5Mesh(const char** ppcData)noexcept;
         md5Mesh(md5Mesh&& m)noexcept;
@@ -80,7 +81,7 @@ private:
     struct md5File
     {
         std::vector<md5Joint> aJoint;   //!< joint list
-        std::vector<md5Mesh> aMesh;     //!< mesh list
+        std::vector<md5Mesh>  aMesh;    //!< mesh list
 
         explicit md5File(const char** ppcData)noexcept;
         md5File(md5File&& m)noexcept;
@@ -102,20 +103,19 @@ private:
     GLuint m_iVertexArray;                              //!< vertex array object
 
     std::vector<coreVertexBuffer*> m_apiVertexBuffer;   //!< vertex buffers
-    coreDataBuffer m_iIndexBuffer;                      //!< index buffer
+    coreDataBuffer                 m_iIndexBuffer;      //!< index buffer
 
     coreUint m_iNumVertices;                            //!< number of vertices
     coreUint m_iNumTriangles;                           //!< number of triangles
     coreUint m_iNumIndices;                             //!< number of indices
-    float m_fRadius;                                    //!< maximum distance from the model center
+    float    m_fRadius;                                 //!< maximum distance from the model center
 
     GLenum m_iPrimitiveType;                            //!< primitive type for draw calls (e.g. GL_TRIANGLES)
     GLenum m_iIndexType;                                //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
 
-    static coreModel* s_pCurrent;                       //!< currently active model object
-
     coreSync m_Sync;                                    //!< sync object for asynchronous model loading
-    static SDL_SpinLock s_iLock;                        //!< spinlock to prevent asynchronous array buffer access
+
+    static coreModel* s_pCurrent;                       //!< currently active model object
 
 
 public:
@@ -138,16 +138,16 @@ public:
 
     //! enable and disable the model
     //! @{
-    void        Enable();
+    void Enable();
     static void Disable(const bool& bFull);
     //! @}
 
     //! generate custom model resource data
     //! @{
-    coreVertexBuffer* CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage);
-    coreDataBuffer*   CreateIndexBuffer (const coreUint& iNumIndices,  const coreByte& iIndexSize,  const void* pIndexData,  const GLenum& iUsage);
-    inline coreVertexBuffer* GetVertexBuffer(const coreUint& iID) {return m_apiVertexBuffer[iID];}
-    inline coreDataBuffer*   GetIndexBuffer()                     {return &m_iIndexBuffer;}
+    coreVertexBuffer*        CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage);
+    coreDataBuffer*          CreateIndexBuffer (const coreUint& iNumIndices,  const coreByte& iIndexSize,  const void* pIndexData,  const GLenum& iUsage);
+    inline coreVertexBuffer* GetVertexBuffer   (const coreUint& iID) {return m_apiVertexBuffer[iID];}
+    inline coreDataBuffer*   GetIndexBuffer    ()                    {return &m_iIndexBuffer;}
     //! @}
 
     //! set object properties
@@ -170,12 +170,6 @@ public:
     //! get currently active model object
     //! @{
     static inline coreModel* GetCurrent() {return s_pCurrent;}
-    //! @}
-
-    //! lock and unlock array buffer access
-    //! @{
-    static inline void Lock()   {SDL_AtomicLock  (&s_iLock);}
-    static inline void Unlock() {SDL_AtomicUnlock(&s_iLock);}
     //! @}
 };
 

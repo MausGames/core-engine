@@ -56,9 +56,9 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
     m_apTexture[0]->Generate();
 
     // load shaders
-    this->DefineProgram(CORE_MEMORY_SHARED)
-        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default_label.vs", "data/shaders/default_label.vs"))
-        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default_label.fs", "data/shaders/default_label.fs"))
+    this->DefineProgram(Core::Manager::Resource->Load<coreProgram>("default_label_program", CORE_RESOURCE_UPDATE_AUTO,   NULL))
+        ->AttachShader (Core::Manager::Resource->Load<coreShader> ("default_label.vert",    CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.vert"))
+        ->AttachShader (Core::Manager::Resource->Load<coreShader> ("default_label.frag",    CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.frag"))
         ->Finish();
 
     // reserve memory for text
@@ -167,8 +167,8 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 
 // ****************************************************************    
 // generate the texture
-// TODO: dynamic textures with glTexStorage2D only with delete ?
-// TODO: PBOs ?
+// TODO: dynamic textures with glTexStorage2D only with delete ? (+benchmark)
+// TODO: PBOs ? (+benchmark)
 void coreLabel::__Generate(const char* pcText, const bool& bSub)
 {
     // create text surface with the font object
@@ -192,29 +192,21 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
             this->__Generate((std::string(m_iLength, 'W') + "gjy").c_str(), false);
         }
 
-        coreTexture::Lock();
-        {
-            // update only a specific area of the texture
-            ASSERT((vNewResolution.x <= m_vResolution.x) && (vNewResolution.y <= m_vResolution.y))
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
-        }
-        coreTexture::Unlock();
+        // update only a specific area of the texture
+        ASSERT((vNewResolution.x <= m_vResolution.x) && (vNewResolution.y <= m_vResolution.y))
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
 
         // display only the specific area
         this->SetTexSize(vNewResolution / m_vResolution);
     }
     else
     {
-        coreTexture::Lock();
-        {
-            // completely create the texture
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB /*8*/, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
-        }
-        coreTexture::Unlock();
+        // completely create the texture
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB /*8*/, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
 
         // save the new texture resolution
         m_vResolution = vNewResolution;

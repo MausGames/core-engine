@@ -12,20 +12,6 @@
 
 
 // ****************************************************************
-// particle definitions
-#define CORE_PARTICLE_ATTRIBUTE_POSITION     "a_v3DivPosition"
-#define CORE_PARTICLE_ATTRIBUTE_DATA         "a_v3DivData"
-#define CORE_PARTICLE_ATTRIBUTE_COLOR        "a_iDivColor"
-#define CORE_PARTICLE_ATTRIBUTE_POSITION_NUM 4
-#define CORE_PARTICLE_ATTRIBUTE_DATA_NUM     5
-#define CORE_PARTICLE_ATTRIBUTE_COLOR_NUM    6
-
-#define CORE_PARTICLE_UNIFORM_POSITION       "u_v3DivPosition"
-#define CORE_PARTICLE_UNIFORM_DATA           "u_v3DivData"
-#define CORE_PARTICLE_UNIFORM_COLOR          "u_v4DivColor"
-
-
-// ****************************************************************
 // particle class
 // TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee, solve in shader!)
 // TODO: what about velocity
@@ -36,8 +22,8 @@ public:
     struct coreState
     {
         coreVector3 vPosition;   //!< position of the particle
-        float fScale;            //!< scale-factor of the particle
-        float fAngle;            //!< orientation-angle of the particle
+        float       fScale;      //!< scale-factor of the particle
+        float       fAngle;      //!< orientation-angle of the particle
         coreVector4 vColor;      //!< RGBA color-value
 
         constexpr_func coreState()noexcept;
@@ -125,6 +111,7 @@ public:
 // TODO: automatic resizing function (preserve old values)
 // TODO: DefineProgram should define attributes, *Link loads and calls DefineProgram
 // TODO: __init and __exit like in the frame buffer
+// TODO: culling (also on instancing)
 class coreParticleSystem final : public coreResourceRelation
 {
 private:
@@ -134,7 +121,7 @@ private:
 
     static coreModel* s_pModel;                       //!< global model object
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   //!< multiple texture objects
-    coreProgramShr m_pProgram;                        //!< shader-program object
+    coreProgramPtr m_pProgram;                        //!< shader-program object
 
     std::list<coreParticle*> m_apRenderList;          //!< sorted render list with active particles
     coreParticleEffect* m_pEmptyEffect;               //!< empty particle effect object
@@ -152,10 +139,10 @@ public:
 
     //! define the visual appearance
     //! @{
-    inline void                  DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
+    inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;                                          return m_apTexture[iUnit];}
     inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const char*           pcName)   {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(pcName); return m_apTexture[iUnit];}
-    inline void                  DefineProgram(const coreProgramShr& pProgram)                        {m_pProgram = pProgram;}
-    const coreProgramShr&        DefineProgram(const char*           pcName);
+    inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram)                        {m_pProgram = pProgram;                                          return m_pProgram;}
+    inline const coreProgramPtr& DefineProgram(const char*           pcName)                          {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
     void Undefine();
     //! @}
 
@@ -182,7 +169,7 @@ public:
     //! get object properties
     //! @{
     inline const coreTexturePtr& GetTexture           (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
-    inline const coreProgramShr& GetProgram           ()const                      {return m_pProgram;}
+    inline const coreProgramPtr& GetProgram           ()const                      {return m_pProgram;}
     inline const coreUint&       GetNumParticles      ()const                      {return m_iNumParticles;}
     inline coreUint              GetNumActiveParticles()const                      {return m_apRenderList.size();}
     inline coreParticleEffect*   GetEmptyEffect       ()const                      {return m_pEmptyEffect;}
@@ -220,7 +207,7 @@ public:
     //! create new particles
     //! @{
     template <typename F> void CreateParticle(const coreUint& iNum, const float& fFrequency, F&& pFunction);
-    template <typename F> void CreateParticle(const coreUint& iNum, F&& pFunction);
+    template <typename F> void CreateParticle(const coreUint& iNum,                          F&& pFunction);
     inline coreParticle* CreateParticle() {return m_pSystem->CreateParticle(m_pThis);}
     //! @}
 
@@ -236,14 +223,14 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetTimeID(const int& iTimeID)    {m_pThis = this; m_iTimeID = iTimeID;}
+    inline void SetTimeID(const int&    iTimeID) {m_pThis = this; m_iTimeID = iTimeID;}
     inline void SetOrigin(coreObject3D* pOrigin) {m_pThis = this; m_pOrigin = pOrigin;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const int& GetTimeID()const          {return m_iTimeID;}
-    inline coreObject3D* GetOrigin()const       {return m_pOrigin;}
+    inline const int&          GetTimeID()const {return m_iTimeID;}
+    inline coreObject3D*       GetOrigin()const {return m_pOrigin;}
     inline coreParticleSystem* GetSystem()const {return m_pSystem;}
     //! @}
 };

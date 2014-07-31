@@ -19,13 +19,13 @@ class coreLabel final : public coreObject2D, public coreResourceRelation, public
 {
 private:
     coreFontPtr m_pFont;         //!< font object
-    int m_iHeight;               //!< specific height for the font
+    int         m_iHeight;       //!< specific height for the font
 
     coreVector2 m_vResolution;   //!< resolution of the generated texture
-    coreUint m_iLength;          //!< max number of characters (0 = dynamic)
+    coreUint    m_iLength;       //!< max number of characters (0 = dynamic)
                            
     std::string m_sText;         //!< current text
-    float m_fScale;              //!< scale factor
+    float       m_fScale;        //!< scale factor
 
     coreByte m_iGenerate;        //!< generation status (0 = do nothing | 1 = update only size | 3 = update texture and size)
 

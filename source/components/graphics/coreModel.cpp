@@ -8,8 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreModel*   coreModel::s_pCurrent = NULL;
-SDL_SpinLock coreModel::s_iLock    = 0;
+coreModel* coreModel::s_pCurrent = NULL;
 
 
 // ****************************************************************
@@ -172,8 +171,8 @@ coreModel::~coreModel()
 coreError coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iStatus = m_Sync.Check(0);
-    if(iStatus >= 0) return iStatus;
+    const coreError iCheck = m_Sync.Check(0);
+    if(iCheck >= CORE_OK) return iCheck;
 
     coreFileUnload Unload(pFile);
 
@@ -200,12 +199,12 @@ coreError coreModel::Load(coreFile* pFile)
     m_iNumTriangles = oMesh.aTriangle.size();
     m_iNumIndices   = oMesh.aTriangle.size()*3;
     m_sPath         = pFile->GetPath();
-    m_iSize         = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreWord);
+    m_iSize         = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUshort);
 
     // reserve required vertex memory
-    coreVertex*  pVertex  = new coreVertex [m_iNumVertices]; // std::memset(pVertex,  0, m_iNumVertices*sizeof(pVertex[0]));
-    coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices]; // std::memset(pvOrtho1, 0, m_iNumVertices*sizeof(pvOrtho1[0]));
-    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices]; // std::memset(pvOrtho2, 0, m_iNumVertices*sizeof(pvOrtho2[0]));
+    coreVertex*  pVertex  = new coreVertex [m_iNumVertices];
+    coreVector3* pvOrtho1 = new coreVector3[m_iNumVertices];
+    coreVector3* pvOrtho2 = new coreVector3[m_iNumVertices];
 
     // loop through all vertices
     for(coreUint i = 0; i < m_iNumVertices; ++i)
@@ -276,7 +275,7 @@ coreError coreModel::Load(coreFile* pFile)
 
     if(m_iNumVertices <= 256)
     {
-        // reduce index data type size
+        // reduce default index data type size
         coreByte* pByteData = new coreByte[m_iNumIndices];
         for(coreUint i = 0; i < m_iNumTriangles; ++i)
         {
@@ -297,10 +296,7 @@ coreError coreModel::Load(coreFile* pFile)
 #endif
 
     // create index buffer
-    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreWord), oMesh.aTriangle.data(), GL_STATIC_DRAW);
-
-    // create sync object
-    const bool bSync = m_Sync.Create();
+    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oMesh.aTriangle.data(), GL_STATIC_DRAW);
 
     // free required vertex memory
     SAFE_DELETE_ARRAY(pVertex)
@@ -308,7 +304,7 @@ coreError coreModel::Load(coreFile* pFile)
     SAFE_DELETE_ARRAY(pvOrtho2)
 
     Core::Log->Info("Model (%s) loaded", pFile->GetPath());
-    return bSync ? CORE_BUSY : CORE_OK;
+    return m_Sync.Create() ? CORE_BUSY : CORE_OK;
 }
 
 
@@ -349,37 +345,29 @@ coreError coreModel::Unload()
 
 
 // ****************************************************************
-// draw the model with indices
+// draw the model normal
 void coreModel::DrawElements()const
 {
-    coreModel::Lock();
-    {
-        // check and draw the model
-        ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
-        glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
-    }
-    coreModel::Unlock();
+    // check and draw the model normal
+    ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
+    glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
 }
 
-void coreModel::DrawElementsInstanced(const coreUint& iCount)const
+void coreModel::DrawArrays()const
 {
-    coreModel::Lock();
-    {
-        // check and draw the model instanced
-        ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
-        glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
-    }
-    coreModel::Unlock();
+    // check and draw the model normal
+    ASSERT(s_pCurrent == this || !s_pCurrent)
+    glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
 }
 
 
 // ****************************************************************
-// draw the model without indices
-void coreModel::DrawArrays()const
+// draw the model instanced
+void coreModel::DrawElementsInstanced(const coreUint& iCount)const
 {
-    // check and draw the model
-    ASSERT(s_pCurrent == this || !s_pCurrent)
-    glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
+    // check and draw the model instanced
+    ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
+    glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
 }
 
 void coreModel::DrawArraysInstanced(const coreUint& iCount)const
@@ -396,34 +384,28 @@ void coreModel::Enable()
 {
     ASSERT(!m_apiVertexBuffer.empty())
 
-    // check current model object
+    // check and save current model object
     if(s_pCurrent == this) return;
+    s_pCurrent = this;
 
-    coreModel::Lock();
+    // bind vertex array object
+    if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
+    else
     {
-        // save current model object
-        s_pCurrent = this;
-
-        // bind vertex array object
-        if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
-        else
+        if(GLEW_ARB_vertex_array_object)
         {
-            if(GLEW_ARB_vertex_array_object)
-            {
-                // create vertex array object
-                glGenVertexArrays(1, &m_iVertexArray);
-                glBindVertexArray(m_iVertexArray);
-            }
-            
-            // set vertex data
-            for(coreUint i = 0; i < m_apiVertexBuffer.size(); ++i)
-                m_apiVertexBuffer[i]->Activate(i);
-
-            // set index data
-            if(m_iIndexBuffer) m_iIndexBuffer.Bind();
+            // create vertex array object
+            glGenVertexArrays(1, &m_iVertexArray);
+            glBindVertexArray(m_iVertexArray);
         }
+            
+        // set vertex data
+        for(coreByte i = 0; i < m_apiVertexBuffer.size(); ++i)
+            m_apiVertexBuffer[i]->Activate(i);
+
+        // set index data
+        if(m_iIndexBuffer) m_iIndexBuffer.Bind();
     }
-    coreModel::Unlock();
 }
 
 
@@ -433,20 +415,16 @@ void coreModel::Disable(const bool& bFull)
 {
     if(!s_pCurrent) return;
 
-    coreModel::Lock();
+    if(bFull)
     {
-        if(bFull)
-        {
-            // reset vertex array object and data buffers
-            if(s_pCurrent->GetVertexArray()) glBindVertexArray(0);
-            coreDataBuffer::Unbind(GL_ARRAY_BUFFER);
-            coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
-        }
-
-        // reset current model object
-        s_pCurrent = NULL;
+        // reset vertex array object and data buffers
+        if(s_pCurrent->GetVertexArray()) glBindVertexArray(0);
+        coreDataBuffer::Unbind(GL_ARRAY_BUFFER);
+        coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
     }
-    coreModel::Unlock();
+
+    // reset current model object
+    s_pCurrent = NULL;
 }
 
 
@@ -463,13 +441,12 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
     // allocate vertex buffer
     coreVertexBuffer* pBuffer = new coreVertexBuffer();
 
-    coreModel::Lock();
-    {
-        // create vertex buffer
-        pBuffer->Create(iNumVertices, iVertexSize, pVertexData, iUsage);
-        m_apiVertexBuffer.push_back(pBuffer);
-    }
-    coreModel::Unlock();
+    // create vertex buffer
+    pBuffer->Create(iNumVertices, iVertexSize, pVertexData, iUsage);
+    m_apiVertexBuffer.push_back(pBuffer);
+
+    // reset current vertex buffer
+    coreDataBuffer::Unbind(GL_ARRAY_BUFFER);
 
     return pBuffer;
 }
@@ -487,26 +464,17 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const 
     // detect index type
     switch(iIndexSize)
     {
-    case 1:  m_iIndexType = GL_UNSIGNED_BYTE;  break;
-    case 2:  m_iIndexType = GL_UNSIGNED_SHORT; break;
-    case 4:  m_iIndexType = GL_UNSIGNED_INT;   break;
     default: ASSERT(false)
+    case 4:  m_iIndexType = GL_UNSIGNED_INT;   break;
+    case 2:  m_iIndexType = GL_UNSIGNED_SHORT; break;
+    case 1:  m_iIndexType = GL_UNSIGNED_BYTE;  break;
     }
 
-    coreModel::Lock();
-    {
-        // create index buffer
-        m_iIndexBuffer.Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iUsage);
+    // create index buffer
+    m_iIndexBuffer.Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iUsage);
 
-        if(s_pCurrent)
-        {
-            // reset current index buffer
-            if(s_pCurrent->GetIndexBuffer()->GetDataBuffer()) 
-                s_pCurrent->GetIndexBuffer()->Bind();
-        }
-        else coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
-    }
-    coreModel::Unlock();
+    // reset current index buffer
+    coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
 
     return &m_iIndexBuffer;
 }

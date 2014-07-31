@@ -55,9 +55,9 @@ void coreButton::Construct(const char* pcIdle, const char* pcBusy)
     m_apTexture[0] = m_apBackground[0];
 
     // load shaders
-    this->DefineProgram(CORE_MEMORY_SHARED)
-        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default_2d.vs", "data/shaders/default_2d.vs"))
-        ->AttachShader(Core::Manager::Resource->LoadFile<coreShader>("default.fs",    "data/shaders/default.fs"))
+    this->DefineProgram(Core::Manager::Resource->Load<coreProgram>("default_2d",      CORE_RESOURCE_UPDATE_AUTO,   NULL))
+        ->AttachShader (Core::Manager::Resource->Load<coreShader> ("default_2d.vert", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert"))
+        ->AttachShader (Core::Manager::Resource->Load<coreShader> ("default_2d.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag"))
         ->Finish();
 }
 

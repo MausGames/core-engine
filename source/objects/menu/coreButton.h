@@ -20,7 +20,7 @@ protected:
     coreLabel* m_pCaption;              //!< label displayed inside of the button
 
     bool m_bBusy;                       //!< current background status
-    int m_iOverride;                    //!< override current background status (0 = normal | 1 = always busy | -1 = always idle)
+    int  m_iOverride;                   //!< override current background status (0 = normal | 1 = always busy | -1 = always idle)
 
 
 public:

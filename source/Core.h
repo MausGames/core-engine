@@ -47,6 +47,7 @@
 // TODO: check for template parameters <42>
 // TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
 // TODO: define standard-path (data/) were everything is loaded from
+// TODO: implement GL_ARB_robustness
 
 
 // compiler
@@ -137,6 +138,7 @@
 
 // ****************************************************************
 // specific libraries
+#define HAVE_LIBC
 #define GLEW_MX
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
@@ -259,7 +261,7 @@
 
 // basic sized unsigned integer types
 typedef std::uint8_t  coreByte;
-typedef std::uint16_t coreWord;
+typedef std::uint16_t coreUshort;
 typedef std::uint32_t coreUint;
 typedef std::uint64_t coreUint64;
 
@@ -337,22 +339,22 @@ public:
 class Core final
 {
 public:
-    static coreLog* Log;             //!< log file
-    static coreConfig* Config;       //!< configuration file
+    static coreLog*      Log;        //!< log file
+    static coreConfig*   Config;     //!< configuration file
     static coreLanguage* Language;   //!< language file
-    static coreRand* Rand;           //!< global random number generator
+    static coreRand*     Rand;       //!< global random number generator
 
-    static CoreSystem* System;       //!< main system component
+    static CoreSystem*   System;     //!< main system component
     static CoreGraphics* Graphics;   //!< main graphics component
-    static CoreAudio* Audio;         //!< main audio component
-    static CoreInput* Input;         //!< main input component
+    static CoreAudio*    Audio;      //!< main audio component
+    static CoreInput*    Input;      //!< main input component
 
     class Manager final
     {
     public:
-        static coreMemoryManager* Memory;       //!< memory manager
+        static coreMemoryManager*   Memory;     //!< memory manager
         static coreResourceManager* Resource;   //!< resource manager
-        static coreObjectManager* Object;       //!< object manager
+        static coreObjectManager*   Object;     //!< object manager
     };
 
 

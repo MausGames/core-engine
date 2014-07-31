@@ -14,12 +14,12 @@
 // ****************************************************************
 // texture definitions
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    #define CORE_TEXTURE_MASK 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
+    #define CORE_TEXTURE_MASK 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF
 #else
-    #define CORE_TEXTURE_MASK 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
+    #define CORE_TEXTURE_MASK 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
 #endif
 
-#define CORE_TEXTURE_UNITS 4   //!< number of texture units
+#define CORE_TEXTURE_UNITS (4u)   //!< number of texture units
 
 
 // ****************************************************************
@@ -32,11 +32,10 @@ private:
     GLuint m_iTexture;                                   //!< texture identifier
     coreVector2 m_vResolution;                           //!< texture resolution
 
+    coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
+
     static int s_iActiveUnit;                            //!< active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
-
-    coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
-    static SDL_SpinLock s_iLock;                         //!< spinlock to prevent asynchronous texture unit access
 
 
 public:
@@ -65,12 +64,6 @@ public:
     //! @{
     inline const GLuint&      GetTexture   ()const {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
-    //! @}
-
-    //! lock and unlock texture unit access
-    //! @{
-    static inline void Lock()   {SDL_AtomicLock  (&s_iLock);}
-    static inline void Unlock() {SDL_AtomicUnlock(&s_iLock);}
     //! @}
 
 

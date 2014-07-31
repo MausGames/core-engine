@@ -23,7 +23,7 @@ coreFrameBuffer::coreFrameBuffer(const coreVector2& vResolution, const int& iTyp
 , m_fFarClip     (Core::Graphics->GetFarClip())
 {
     // create own texture as render target
-    if(pcTextureName) m_pTexture = Core::Manager::Resource->LoadLink<coreTexture>(pcTextureName);
+    if(pcTextureName) m_pTexture = Core::Manager::Resource->Load   <coreTexture>(pcTextureName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
                  else m_pTexture = Core::Manager::Resource->LoadNew<coreTexture>();
 
     // init the frame buffer
@@ -77,11 +77,7 @@ void coreFrameBuffer::EndWrite()
     {
         // copy screen to texture
         m_pTexture->Enable(0);
-        coreTexture::Lock();
-        {
-            glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, (int)m_vResolution.x, (int)m_vResolution.y);
-        }
-        coreTexture::Unlock();
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, (int)m_vResolution.x, (int)m_vResolution.y);
 
         // reset the depth buffer
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -156,21 +152,17 @@ coreError coreFrameBuffer::__Init()
 
     // generate empty base texture
     m_pTexture->Generate();
-
-    // specifiy the required texture
     m_pTexture->Enable(0);
-    coreTexture::Lock();
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
 
-        // allocate texture memory
-        if(bStorage) glTexStorage2D(GL_TEXTURE_2D, 1, iInternal, iWidth, iHeight);
-                else glTexImage2D(GL_TEXTURE_2D, 0, iInternal, iWidth, iHeight, 0, iFormat, GL_UNSIGNED_BYTE, 0);
-    }
-    coreTexture::Unlock();
+    // set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
+
+    // allocate texture memory
+    if(bStorage) glTexStorage2D(GL_TEXTURE_2D, 1, iInternal, iWidth, iHeight);
+            else glTexImage2D  (GL_TEXTURE_2D, 0, iInternal, iWidth, iHeight, 0, iFormat, GL_UNSIGNED_BYTE, 0);
 
     if(bFrameBuffer)
     {
