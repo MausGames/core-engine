@@ -25,6 +25,7 @@
 // TODO: separate model format from model class, implement old MD3 code for compatibility
 // TODO: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
 // TODO: merge texture-coords with other attributes to save location
+// TODO: index buffer ignore as constructor parameter ? (ressource manager load)
 class coreModel final : public coreResource
 {
 private:
@@ -130,10 +131,16 @@ public:
 
     //! draw the model
     //! @{
-    void DrawElements()const;
-    void DrawArrays  ()const;
-    void DrawElementsInstanced(const coreUint& iCount)const;
-    void DrawArraysInstanced  (const coreUint& iCount)const;
+    inline void Draw        ()const {if(m_iIndexBuffer) this->DrawElements(); else this->DrawArrays();}
+    void        DrawArrays  ()const;
+    void        DrawElements()const;
+    //! @}
+
+    //! draw the model instanced
+    //! @{
+    inline void DrawInstanced        (const coreUint& iCount)const {if(m_iIndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
+    void        DrawArraysInstanced  (const coreUint& iCount)const;
+    void        DrawElementsInstanced(const coreUint& iCount)const;
     //! @}
 
     //! enable and disable the model
@@ -144,8 +151,8 @@ public:
 
     //! generate custom model resource data
     //! @{
-    coreVertexBuffer*        CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage);
-    coreDataBuffer*          CreateIndexBuffer (const coreUint& iNumIndices,  const coreByte& iIndexSize,  const void* pIndexData,  const GLenum& iUsage);
+    coreVertexBuffer*        CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
+    coreDataBuffer*          CreateIndexBuffer (const coreUint& iNumIndices,  const coreByte& iIndexSize,  const void* pIndexData,  const coreDataBufferStorage& iStorageType);
     inline coreVertexBuffer* GetVertexBuffer   (const coreUint& iID) {return m_apiVertexBuffer[iID];}
     inline coreDataBuffer*   GetIndexBuffer    ()                    {return &m_iIndexBuffer;}
     //! @}

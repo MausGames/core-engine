@@ -14,11 +14,6 @@
 
 
 // ****************************************************************
-// vector definitions
-#define CORE_VECTOR_NORM_PRECISION 0.0001f
-
-
-// ****************************************************************
 // 2d-vector class
 class coreVector2 final
 {
@@ -89,7 +84,7 @@ public:
     //! @{
     inline coreVector2& Normalize   ();
     inline coreVector2  Normalized  ()const {return coreVector2(*this).Normalize();}
-    inline bool         IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_VECTOR_NORM_PRECISION);}
+    inline bool         IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     //! @}
 
     //! direct functions
@@ -194,7 +189,7 @@ public:
     //! @{
     inline coreVector3& Normalize   ();
     inline coreVector3  Normalized  ()const {return coreVector3(*this).Normalize();}
-    inline bool         IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_VECTOR_NORM_PRECISION);}
+    inline bool         IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     //! @}
 
     //! direct functions
@@ -334,7 +329,7 @@ public:
 inline coreVector2& coreVector2::Normalize()
 {
     const float fLength = this->LengthSq();
-    if(!coreMath::InRange(fLength, 1.0f, CORE_VECTOR_NORM_PRECISION))
+    if(!coreMath::InRange(fLength, 1.0f, CORE_MATH_PRECISION))
         *this *= RSQRT(fLength);
 
     return *this;
@@ -385,7 +380,7 @@ constexpr_func coreVector3 coreVector3::Cross(const coreVector3& vInA, const cor
 inline coreVector3& coreVector3::Normalize()
 {
     const float fLength = this->LengthSq();
-    if(!coreMath::InRange(fLength, 1.0f, CORE_VECTOR_NORM_PRECISION))
+    if(!coreMath::InRange(fLength, 1.0f, CORE_MATH_PRECISION))
         *this *= RSQRT(fLength);
 
     return *this;

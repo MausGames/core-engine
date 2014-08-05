@@ -14,8 +14,6 @@
 coreSpline::coreSpline()noexcept
 : m_fMaxDistance (0.0f)
 {
-    // reserve memory for nodes
-    m_apNode.reserve(32);
 }
 
 coreSpline::coreSpline(const coreSpline& c)noexcept

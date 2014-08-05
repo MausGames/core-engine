@@ -10,7 +10,7 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//| Core Engine v0.0.5a (http://www.maus-games.at)                               |//
+//| Core Engine v0.0.6a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
 //| Copyright (c) 2013-2014 Martin Mauersics                                     |//
 //|                                                                              |//
@@ -48,6 +48,8 @@
 // TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
 // TODO: define standard-path (data/) were everything is loaded from
 // TODO: implement GL_ARB_robustness
+// TODO: check for performance penalties and alternatives for thread_local
+// TODO: setup 64-bit Windows build (libraries!)
 
 
 // compiler
@@ -130,6 +132,7 @@
 #include <cmath>
 #include <ctime>
 #include <memory>
+#include <functional>
 #include <vector>
 #include <list>
 #include <unordered_set>

@@ -13,8 +13,7 @@
 
 // ****************************************************************
 // menu switch-box definitions
-#define CORE_SWITCHBOX_RESERVE 16u
-#define CORE_SWITCHBOX_DELAY   -2.0f
+#define CORE_SWITCHBOX_DELAY (-2.0f)
 
 
 // ****************************************************************
@@ -159,9 +158,6 @@ template <typename T> void coreSwitchBox<T>::Construct(const char* pcFont, const
     // create the label
     m_Caption.Construct(pcFont, iHeight, iLength);
 
-    // reserve memory for entries
-    m_aEntry.reserve(CORE_SWITCHBOX_RESERVE);
-
     // init automatic forward behavior
     m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
 }
@@ -268,8 +264,6 @@ template <typename T> void coreSwitchBox<T>::Move()
 // add entry
 template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcText, const T& Value)
 {
-    ASSERT(m_aEntry.size() < m_aEntry.capacity())
-
     // create new entry
     m_aEntry.push_back(coreEntry(pcText, Value));
 

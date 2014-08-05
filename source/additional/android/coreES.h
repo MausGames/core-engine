@@ -79,9 +79,10 @@ extern PFNGLTEXSTORAGE2DEXTPROC glTexStorage2DEXT;
 /* implemented GL_EXT_map_buffer_range (mapped on GL_ARB_map_buffer_range) */
 #define GLEW_ARB_map_buffer_range m_bGL_EXT_map_buffer_range
 
-#define GL_MAP_WRITE_BIT            0x0002
-#define GL_MAP_INVALIDATE_RANGE_BIT 0x0004
-#define GL_MAP_UNSYNCHRONIZED_BIT   0x0020
+#define GL_MAP_WRITE_BIT             0x0002
+#define GL_MAP_INVALIDATE_RANGE_BIT  0x0004
+#define GL_MAP_INVALIDATE_BUFFER_BIT 0x0008
+#define GL_MAP_UNSYNCHRONIZED_BIT    0x0020
 
 #define glUnmapBuffer    glUnmapBufferOES
 #define glMapBufferRange glMapBufferRangeEXT
@@ -132,6 +133,8 @@ typedef uint64_t GLuint64;
 #define GL_PIXEL_UNPACK_BUFFER          0x88EC
 #define GL_STATIC_READ                  0x88E5
 #define GL_STATIC_COPY                  0x88E6
+#define GL_MAP_PERSISTENT_BIT           0x00000040
+#define GL_MAP_COHERENT_BIT             0x00000080
 #define GL_SYNC_FLUSH_COMMANDS_BIT      0x00000001
 #define GL_SYNC_GPU_COMMANDS_COMPLETE   0x9117
 #define GL_TIMEOUT_EXPIRED              0x911B

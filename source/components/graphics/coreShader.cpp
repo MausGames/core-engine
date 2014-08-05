@@ -166,8 +166,6 @@ coreProgram::coreProgram()noexcept
 : m_iProgram (0)
 , m_iStatus  (CORE_SHADER_NEW)
 {
-    // reserve memory for shader objects
-    m_apShader.reserve(4);
 }
 
 
@@ -398,8 +396,6 @@ bool coreProgram::Enable()
 // disable the shader-program
 void coreProgram::Disable(const bool& bFull)
 {
-    if(!s_pCurrent) return;
-
     // reset current shader-program
     s_pCurrent = NULL;
     if(bFull) glUseProgram(0);

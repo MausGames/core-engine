@@ -52,7 +52,6 @@ CoreSystem::CoreSystem()noexcept
     {
         Core::Log->ListStart("Available Screen Resolutions");
         {
-            m_avAvailable.reserve(16);
             for(int i = 0; i < iNumModes; ++i)
             {
                 // retrieve resolution
@@ -96,7 +95,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
-    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT) && (m_iNumCores >= 2));
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT));
 
     // try to force a different OpenGL context
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);

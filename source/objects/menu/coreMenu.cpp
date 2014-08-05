@@ -21,10 +21,6 @@ coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)
 {
     // create surfaces
     m_papObject = new std::vector<coreObject2D*>[m_iNumSurfaces];
-
-    // reserve memory for objects
-    for(int i = 0; i < m_iNumSurfaces; ++i) m_papObject[i].reserve(32);
-    for(int i = 0; i < 3;              ++i) m_aapRender[i].reserve(32);
 }
 
 

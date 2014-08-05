@@ -82,7 +82,7 @@ coreResourceManager::~coreResourceManager()
 
 // ****************************************************************
 /* update the resource manager */
-void coreResourceManager::Update()
+void coreResourceManager::UpdateResources()
 {
     // check for current status
     if(m_bActive)
@@ -220,7 +220,7 @@ int coreResourceManager::__InitThread()
 int coreResourceManager::__RunThread()
 {
     // update the resource manager
-    this->Update();
+    this->UpdateResources();
 
     return 0;
 }

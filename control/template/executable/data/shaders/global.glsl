@@ -25,6 +25,11 @@
     #ifdef _CORE_FRAGMENT_SHADER_
         precision mediump float;
     #endif
+    #define MEDIUMP mediump
+    #define LOWP    lowp
+#else
+    #define MEDIUMP
+    #define LOWP
 #endif
 
 // light structure
@@ -75,8 +80,8 @@ uniform mat3 u_m3Normal;
 uniform mat3 u_m3ScreenView;
 
 // default object uniforms
-uniform vec4 u_v4Color;
-uniform vec4 u_v4TexParam;
+uniform LOWP    vec4 u_v4Color;
+uniform MEDIUMP vec4 u_v4TexParam;
 
 // texture uniforms
 uniform sampler2D u_as2Texture[CORE_NUM_TEXTURES];

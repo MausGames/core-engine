@@ -140,7 +140,7 @@ int Core::__Run()
     // init application
     Core::Log->Header("Application Init");
     CoreApp* pApplication = new CoreApp();
-    Core::Manager::Resource->Update();
+    Core::Manager::Resource->UpdateResources();
     Core::Log->Header("Application Run");
 
     // set logging level
@@ -167,7 +167,10 @@ int Core::__Run()
     
         // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())
-            Core::Manager::Resource->Update();
+        {
+            Core::Manager::Resource->UpdateFunctions();
+            Core::Manager::Resource->UpdateResources();
+        }
     }
 
     // reset logging level

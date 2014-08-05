@@ -212,7 +212,7 @@ private:
 public:
     /*! update the resource manager */
     //! @{
-    void Update();
+    void UpdateResources();
     //! @}
 
     /*! create and delete resource and resource handle */

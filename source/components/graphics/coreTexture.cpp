@@ -80,10 +80,10 @@ coreError coreTexture::Load(coreFile* pFile)
     if(bPixelBuffer)
     {
         // generate pixel buffer object for asynchronous texture loading
-        iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, GL_STREAM_DRAW);
+        iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
 
         // copy texture data into PBO
-        coreByte* pRange = iBuffer.Map<coreByte>(0, iDataSize, false);
+        coreByte* pRange = iBuffer.Map<coreByte>(0, iDataSize, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
         std::memcpy(pRange, pConvert->pixels, iDataSize);
         iBuffer.Unmap(pRange);
     }
@@ -103,6 +103,7 @@ coreError coreTexture::Load(coreFile* pFile)
     const void* pPixels = bPixelBuffer ? NULL : pConvert->pixels;
     if(bStorage)
     {
+        // create immutable texture
         glTexStorage2D(GL_TEXTURE_2D, (int)coreMath::Log<2>((float)MAX(pConvert->w, pConvert->h)), iInternal, pConvert->w, pConvert->h);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, iFormat, GL_UNSIGNED_BYTE, pPixels);
     }

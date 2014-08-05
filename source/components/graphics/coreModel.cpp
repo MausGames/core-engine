@@ -153,8 +153,6 @@ coreModel::coreModel()noexcept
 , m_iPrimitiveType (GL_TRIANGLES)
 , m_iIndexType     (0)
 {
-    // reserve memory for vertex buffers
-    m_apiVertexBuffer.reserve(1);
 }
 
 
@@ -265,7 +263,7 @@ coreError coreModel::Load(coreFile* pFile)
     }
 
     // create vertex buffer
-    coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertex), pVertex, GL_STATIC_DRAW);
+    coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertex), pVertex, CORE_DATABUFFER_STORAGE_STATIC);
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, 0);
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, 3*sizeof(float));
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, 5*sizeof(float));
@@ -288,7 +286,7 @@ coreError coreModel::Load(coreFile* pFile)
         }
 
         // create small index buffer
-        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, GL_STATIC_DRAW);
+        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, CORE_DATABUFFER_STORAGE_STATIC);
         SAFE_DELETE_ARRAY(pByteData)
     }
     else 
@@ -296,7 +294,7 @@ coreError coreModel::Load(coreFile* pFile)
 #endif
 
     // create index buffer
-    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oMesh.aTriangle.data(), GL_STATIC_DRAW);
+    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oMesh.aTriangle.data(), CORE_DATABUFFER_STORAGE_STATIC);
 
     // free required vertex memory
     SAFE_DELETE_ARRAY(pVertex)
@@ -345,36 +343,36 @@ coreError coreModel::Unload()
 
 
 // ****************************************************************
-// draw the model normal
-void coreModel::DrawElements()const
-{
-    // check and draw the model normal
-    ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
-    glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
-}
-
+// draw the model
 void coreModel::DrawArrays()const
 {
-    // check and draw the model normal
+    // check and draw the model
     ASSERT(s_pCurrent == this || !s_pCurrent)
     glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
+}
+
+void coreModel::DrawElements()const
+{
+    // check and draw the model
+    ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
+    glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
 }
 
 
 // ****************************************************************
 // draw the model instanced
-void coreModel::DrawElementsInstanced(const coreUint& iCount)const
-{
-    // check and draw the model instanced
-    ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
-    glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
-}
-
 void coreModel::DrawArraysInstanced(const coreUint& iCount)const
 {
     // check and draw the model instanced
     ASSERT(s_pCurrent == this || !s_pCurrent)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
+}
+
+void coreModel::DrawElementsInstanced(const coreUint& iCount)const
+{
+    // check and draw the model instanced
+    ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
+    glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
 }
 
 
@@ -413,24 +411,26 @@ void coreModel::Enable()
 // disable the model
 void coreModel::Disable(const bool& bFull)
 {
-    if(!s_pCurrent) return;
-
-    if(bFull)
-    {
-        // reset vertex array object and data buffers
-        if(s_pCurrent->GetVertexArray()) glBindVertexArray(0);
-        coreDataBuffer::Unbind(GL_ARRAY_BUFFER);
-        coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
-    }
-
     // reset current model object
     s_pCurrent = NULL;
+
+    bool bFullUnbind = false;
+    if(bFull)
+    {
+        // unbind vertex array object
+        if(GLEW_ARB_vertex_array_object) glBindVertexArray(0);
+        else bFullUnbind = true;
+    }
+
+    // unbind data buffers
+    coreDataBuffer::Unbind(GL_ARRAY_BUFFER,         bFullUnbind);
+    coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, bFullUnbind);
 }
 
 
 // ****************************************************************
 // create vertex buffer
-coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage)
+coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
 {
     ASSERT(!m_iVertexArray)
 
@@ -442,11 +442,11 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
     coreVertexBuffer* pBuffer = new coreVertexBuffer();
 
     // create vertex buffer
-    pBuffer->Create(iNumVertices, iVertexSize, pVertexData, iUsage);
+    pBuffer->Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
     m_apiVertexBuffer.push_back(pBuffer);
 
-    // reset current vertex buffer
-    coreDataBuffer::Unbind(GL_ARRAY_BUFFER);
+    // disable current model object (to fully enable the next model) 
+    coreModel::Disable(false);
 
     return pBuffer;
 }
@@ -454,7 +454,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
 
 // ****************************************************************
 // create index buffer
-coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const coreByte& iIndexSize, const void* pIndexData, const GLenum& iUsage)
+coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const coreByte& iIndexSize, const void* pIndexData, const coreDataBufferStorage& iStorageType)
 {
     ASSERT(!m_iVertexArray && !m_iIndexBuffer)
 
@@ -470,11 +470,12 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const 
     case 1:  m_iIndexType = GL_UNSIGNED_BYTE;  break;
     }
 
-    // create index buffer
-    m_iIndexBuffer.Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iUsage);
+    // disable current model object (to unbind current VAO)
+    coreModel::Disable(true);
 
-    // reset current index buffer
-    coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER);
+    // create index buffer silently
+    m_iIndexBuffer.Create (GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iStorageType);
+    coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
 
     return &m_iIndexBuffer;
 }

@@ -60,7 +60,7 @@ public:
     inline bool     empty()const             {return m_aList.empty();}
     //! @}
 
-    /*! control memory consumption */
+    /*! control memory allocation */
     //! @{
     inline void     reserve(const coreUint& iReserve) {m_aList.reserve(iReserve);}
     inline void     shrink_to_fit()                   {m_aList.shrink_to_fit();}

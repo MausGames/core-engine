@@ -12,85 +12,135 @@ int coreThreadMain(void* pData);
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreThread::coreThread(const char* pcName)noexcept
-: m_pThread   (NULL)
-, m_sName     (pcName)
-, m_iCurFrame (0)
-, m_bEnd      (true)
+: m_pThread     (NULL)
+, m_sName       (pcName)
+, m_iExecutions (1)
+, m_bActive     (false)
+, m_iLock       (0)
 {
 }
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreThread::~coreThread()
 {
+    // kill the thread
     this->KillThread();
+
+    // clear memory
+    m_apFunction.clear();
 }
 
 
 // ****************************************************************
-// start the thread
+/* start the thread */
 SDL_Thread* coreThread::StartThread()
 {
-    if(!m_bEnd) return NULL;
-    m_bEnd = false;
+    if(!m_pThread)
+    {
+        // reset thread status
+        m_bActive = true;
 
-    // create thread object
-    m_pThread = SDL_CreateThread(coreThreadMain, m_sName.c_str(), this);
-    if(!m_pThread) Core::Log->Error("Could not start thread (%s) (SDL: %s)", m_sName.c_str(), SDL_GetError());
+        // create thread object
+        m_pThread = SDL_CreateThread(coreThreadMain, m_sName.c_str(), this);
+        if(!m_pThread)
+        {
+            Core::Log->Error("Could not start thread (%s) (SDL: %s)", m_sName.c_str(), SDL_GetError());
+            m_bActive = false;
+        }
+    }
 
     return m_pThread;
 }
 
 
 // ****************************************************************
-// kill the thread
+/* kill the thread */
 void coreThread::KillThread()
 {
-    if(m_bEnd) return;
-    m_bEnd = true;
+    // signal thread to shut down
+    m_bActive = false;
 
-    // set end status and wait
+    // wait for thread to finish
     SDL_WaitThread(m_pThread, NULL);
+    m_pThread = NULL;
 }
 
 
 // ****************************************************************
-// execute the thread
+/* call and manage custom functions */
+void coreThread::UpdateFunctions()
+{
+    if(m_apFunction.empty()) return;
+
+    SDL_AtomicLock(&m_iLock);
+    {
+        // loop trough all functions
+        FOR_EACH_DYN(it, m_apFunction)
+        {
+            // call function and remove when successful
+            if((*it)()) DYN_KEEP  (it)
+                   else DYN_REMOVE(it, m_apFunction)
+        }
+    }
+    SDL_AtomicUnlock(&m_iLock);
+}
+
+
+// ****************************************************************
+/* execute the thread */
 int coreThread::__Main()
 {
-    // call init-implementation
+    coreUint iCurFrame     = 0;
+    coreByte iCurExecution = 0;
+
+    // call init-routine
     Core::Log->Info("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
     int iReturn = this->__InitThread();
 
-    m_iCurFrame = 0;
+    // begin main-loop
     while(iReturn == 0)
     {
-        // wait for next frame
-        while(m_iCurFrame >= Core::System->GetCurFrame() && !m_bEnd)
+        do
+        {
+            // wait for next frame or execution
             SDL_Delay(1);
-        m_iCurFrame = Core::System->GetCurFrame();
+        }
+        while((iCurFrame >= Core::System->GetCurFrame()) && (iCurExecution == m_iExecutions) && m_bActive);
+            
+        // check for external shut down
+        if(!m_bActive) break;
 
-        // check for kill
-        if(m_bEnd) break;
+        // process execution number
+        if(iCurExecution >= m_iExecutions)
+        {
+            // save latest frame number
+            iCurFrame     = Core::System->GetCurFrame();
+            iCurExecution = 0;
+        }
+        ++iCurExecution;
 
-        // call run-implementation
+        // call and manage custom functions
+        this->UpdateFunctions();
+
+        // call run-routine
         iReturn = this->__RunThread();
     }
 
-    // call exit-implementation
+    // call exit-routine
     this->__ExitThread();
     Core::Log->Info("Thread (%s:%04lu) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
 
-    m_bEnd = true;
+    m_bActive = false;
     return iReturn;
 }
 
 
 // ****************************************************************
-// wrapper for thread creation
+/* entry-point function */
 int coreThreadMain(void* pData)
 {
     // retrieve thread object

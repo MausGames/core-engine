@@ -13,8 +13,7 @@
 
 // ****************************************************************
 // music definitions
-#define CORE_MUSIC_CHUNK   0x4000   //!< size of a music stream chunk in bytes
-#define CORE_MUSIC_RESERVE 16u
+#define CORE_MUSIC_CHUNK   (0x4000)   //!< size of a music stream chunk in bytes
 
 enum coreMusicRepeat
 {
@@ -112,7 +111,7 @@ private:
 
     //! read from music stream and update sound buffer
     //! @{
-    bool __Stream(const ALuint& iBuffer);
+    bool __Stream(const ALuint& iBuffer)hot_func;
     //! @}
 };
 

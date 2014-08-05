@@ -28,7 +28,7 @@ CoreGraphics::CoreGraphics()noexcept
         Core::Log->Error("Render context could not be created (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Render context created");
 
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT) && (Core::System->SupportNumCores() >= 2))
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT))
     {
         // create resource context
         m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
@@ -100,7 +100,7 @@ CoreGraphics::CoreGraphics()noexcept
     if(GLEW_ARB_uniform_buffer_object)
     {
         // generate and bind global UBO to a buffer target
-        m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_SIZE, NULL, GL_DYNAMIC_DRAW);
+        m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
         glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_GLOBAL_NUM, m_iUniformBuffer);
     }
 
@@ -217,7 +217,7 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
-        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight), true);
+        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight), CORE_DATABUFFER_MAP_INVALIDATE_RANGE);
 
         // update specific light data
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
@@ -305,7 +305,7 @@ void CoreGraphics::__SendTransformation()
     const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
     // map required area of the global UBO
-    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4) + sizeof(coreVector4), true);
+    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4) + sizeof(coreVector4), CORE_DATABUFFER_MAP_INVALIDATE_RANGE);
 
     // update transformation matrices
     std::memcpy(pRange,                         &mViewProj,        sizeof(coreMatrix4));

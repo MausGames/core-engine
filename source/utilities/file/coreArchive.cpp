@@ -139,7 +139,7 @@ coreByte* coreFile::MoveData()
 
         // create real file data copy
         pOutput = new coreByte[m_iSize];
-        std::memcpy(pOutput, m_pData, sizeof(coreByte)*m_iSize);
+        std::memcpy(pOutput, m_pData, m_iSize);
     }
 
     return pOutput;

@@ -11,6 +11,7 @@
 #define _CORE_GUARD_SYNC_H_
 
 // TODO: wrap glFlush and glFinish
+// TODO: CheckAsync which uses the function-attachment interface (which thread?)
 
 
 // ****************************************************************

@@ -26,7 +26,7 @@
 #define CORE_CONFIG_GRAPHICS_QUALITY       "Graphics", "Quality",       (0)
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING  "Graphics", "AntiAliasing",  (2)
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER "Graphics", "TextureFilter", (4)
-#define CORE_CONFIG_GRAPHICS_DUALCONTEXT   "Graphics", "DualContext",   (false)
+#define CORE_CONFIG_GRAPHICS_DUALCONTEXT   "Graphics", "DualContext",   (DEFINED(_CORE_ANDROID_) ? false : true)
 #define CORE_CONFIG_GRAPHICS_FORCEOPENGL   "Graphics", "ForceOpenGL",   (0.0f)
                                                                           
 #define CORE_CONFIG_AUDIO_SOURCES          "Audio",    "Sources",       (16)

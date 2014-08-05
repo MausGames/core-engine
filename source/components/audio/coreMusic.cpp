@@ -289,10 +289,6 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 , m_FadeTimer     (coreTimer(1.0f, 0.0f, 1))
 , m_pFadePrevious (NULL)
 {
-    // reserve memory for music objects
-    m_apMusic.reserve(CORE_MUSIC_RESERVE);
-    m_apSequence.reserve(CORE_MUSIC_RESERVE);
-
     // create empty music object
     m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0));
     m_pCurMusic   = m_pEmptyMusic;
