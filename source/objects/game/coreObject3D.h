@@ -10,9 +10,20 @@
 #ifndef _CORE_GUARD_OBJECT3D_H_
 #define _CORE_GUARD_OBJECT3D_H_
 
+// TODO: remove SQRT in object-line collision
+// TODO: in the list, sort in the normal iteration by checking for current and next object and swap them if necessary
+// TODO: instancing with more than one vertex array in the model ? (binding location)
+// TODO: implement efficient batch list sort function
+
 
 // ****************************************************************
-// 3d-object class
+// 3d-object definitions
+#define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreMatrix4) + 1*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< model-view, color, tex-params
+#define CORE_OBJECT3D_INSTANCE_THRESHOLD (10u)                                                                  //!< minimum number of objects to draw instanced
+
+
+// ****************************************************************
+/* 3d-object class */
 class coreObject3D : public coreObject
 {
 private:
@@ -28,7 +39,7 @@ protected:
     float m_fCollisionRange;   //!< range factor used for collision detection
 
     bool m_bManaged;           //!< currently listed in the object manager
-    int m_iType;               //!< identification of the object type (0 = undefined)
+    int  m_iType;              //!< identifier for the object type (0 = undefined)
 
 
 public:
@@ -36,58 +47,123 @@ public:
     virtual ~coreObject3D() {}
     friend class coreObjectManager;
 
-    //! define the visual appearance
+    /*! define the visual appearance */
     //! @{
-    inline void DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;}
-    const coreModelPtr& DefineModelFile(const char* pcPath);
-    const coreModelPtr& DefineModelLink(const char* pcName);
+    inline const coreModelPtr& DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;                                          return m_pModel;}
+    inline const coreModelPtr& DefineModel(const char*         pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); return m_pModel;}
     void Undefine();
     //! @}
 
-    //! separately enable all resources for rendering
+    /*! render and move the 3d-object */
     //! @{
-    inline bool Enable() {return coreObject3D::Enable(m_pProgram);}
-    bool Enable(const coreProgramShr& pProgram) hot_func;
+    inline bool         Enable() {return coreObject3D::Enable(m_pProgram);}
+    virtual inline void Render() {coreObject3D::Render(m_pProgram);}
+    bool         Enable(const coreProgramPtr& pProgram)hot_func;
+    virtual void Render(const coreProgramPtr& pProgram)hot_func;
+    virtual void Move  ()hot_func;
     //! @}
 
-    //! render and move the 3d-object
+    /*! handle collision between different structures */
     //! @{
-    inline virtual void Render() {coreObject3D::Render(m_pProgram);}
-    virtual void Render(const coreProgramShr& pProgram) hot_func;
-    virtual void Move() hot_func;
+    static bool  Collision(const coreObject3D& Object1, const coreObject3D& Object2);
+    static float Collision(const coreObject3D& Object,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
     //! @}
 
-    //! handle collision between different structures
+    /*! set object properties */
     //! @{
-    static bool Collision(const coreObject3D& Object1, const coreObject3D& Object2);
-    static float Collision(const coreObject3D& Object, const coreVector3& vLinePos, const coreVector3& vLineDir);
+    inline void SetPosition      (const coreVector3& vPosition)       {if(m_vPosition    != vPosition)    {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vPosition    = vPosition;}}
+    inline void SetSize          (const coreVector3& vSize)           {if(m_vSize        != vSize)        {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vSize        = vSize;}}
+    inline void SetDirection     (const coreVector3& vDirection)      {if(m_vDirection   != vDirection)   {m_iUpdate  = CORE_OBJECT_UPDATE_ALL;       m_vDirection   = vDirection;}   ASSERT(vDirection.IsNormalized())}
+    inline void SetOrientation   (const coreVector3& vOrientation)    {if(m_vOrientation != vOrientation) {m_iUpdate  = CORE_OBJECT_UPDATE_ALL;       m_vOrientation = vOrientation;} ASSERT(vOrientation.IsNormalized())}
+    inline void SetCollisionRange(const float&       fCollisionRange) {m_fCollisionRange = fCollisionRange;}
+    inline void SetType          (const int&         iType)           {m_iType           = iType;}
     //! @}
 
-    //! set object properties
+    /*! get object properties */
     //! @{
-    inline void SetPosition(const coreVector3& vPosition)       {if(m_vPosition != vPosition) {m_iUpdate |= 1; m_vPosition = vPosition;}}
-    inline void SetSize(const coreVector3& vSize)               {if(m_vSize     != vSize)     {m_iUpdate |= 1; m_vSize     = vSize;}}
-    inline void SetDirection(const coreVector3& vDirection)     {const coreVector3 vDirNorm = vDirection.Normalized();   if(m_vDirection   != vDirNorm) {m_iUpdate |= 3; m_vDirection   = vDirNorm;}}
-    inline void SetOrientation(const coreVector3& vOrientation) {const coreVector3 vOriNorm = vOrientation.Normalized(); if(m_vOrientation != vOriNorm) {m_iUpdate |= 3; m_vOrientation = vOriNorm;}}
-    inline void SetCollisionRange(const float& fCollisionRange) {m_fCollisionRange = fCollisionRange;}
-    inline void SetType(const int& iType)                       {m_iType           = iType;}
-    //! @}
-
-    //! get object properties
-    //! @{
-    inline const coreModelPtr& GetModel()const      {return m_pModel;}
-    inline const coreVector3& GetPosition()const    {return m_vPosition;}
-    inline const coreVector3& GetSize()const        {return m_vSize;}
-    inline const coreVector3& GetDirection()const   {return m_vDirection;}
-    inline const coreVector3& GetOrientation()const {return m_vOrientation;}
-    inline const float& GetCollisionRange()const    {return m_fCollisionRange;}
-    inline const int& GetType()const                {return m_iType;}
+    inline const coreModelPtr& GetModel         ()const {return m_pModel;}
+    inline const coreVector3&  GetPosition      ()const {return m_vPosition;}
+    inline const coreVector3&  GetSize          ()const {return m_vSize;}
+    inline const coreVector3&  GetDirection     ()const {return m_vDirection;}
+    inline const coreVector3&  GetOrientation   ()const {return m_vOrientation;}
+    inline const float&        GetCollisionRange()const {return m_fCollisionRange;}
+    inline const int&          GetType          ()const {return m_iType;}
     //! @}
 };
 
 
 // ****************************************************************
-// constructor
+/* batch list class */
+class coreBatchList final : public coreResourceRelation
+{
+private:
+    std::vector<coreObject3D*> m_apObjectList;   //!< list with pointers to similar 3d-objects
+    coreUint m_iCurCapacity;                     //!< current instance-capacity of all related resources
+    coreUint m_iCurEnabled;                      //!< current number of enabled 3d-objects
+                                                 
+    coreProgramPtr m_pProgram;                   //!< shader-program object
+                                                 
+    GLuint m_iVertexArray;                       //!< vertex array object
+                                                 
+    coreVertexBuffer m_iInstanceBuffer;          //!< instance data buffer
+    bool m_bUpdate;                              //!< buffer update status
+
+
+public:
+    explicit coreBatchList(const coreUint& iStartCapacity)noexcept;
+    ~coreBatchList();
+
+    /*! define the visual appearance */
+    //! @{
+    inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram) {m_pProgram = pProgram;                                          return m_pProgram;}
+    inline const coreProgramPtr& DefineProgram(const char*           pcName)   {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
+    void Undefine();
+    //! @}
+
+    /*! render and move the batch list */
+    //! @{
+    inline void Render() {if(!m_apObjectList.empty()) coreBatchList::Render(m_pProgram, m_apObjectList.front()->GetProgram());}
+    void Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramNormal)hot_func;
+    void Move  ()hot_func;
+    //! @}
+
+    /*! bind and unbind 3d-objects */
+    //! @{
+    void BindObject  (coreObject3D* pObject);
+    void UnbindObject(coreObject3D* pObject);
+    //! @}
+
+    /*! control memory allocation */
+    //! @{
+    void Reallocate(const coreUint& iNewCapacity);
+    inline void Clear() {m_apObjectList.clear();}
+    //! @}
+
+    /*! access 3d-object list directly */
+    //! @{
+    inline std::vector<coreObject3D*>* List() {return &m_apObjectList;}
+    //! @}
+
+    /*! get object properties */
+    //! @{
+    inline const coreProgramPtr& GetProgram    ()const {return m_pProgram;}  
+    inline const coreUint&       GetCurCapacity()const {return m_iCurCapacity;}
+    inline const coreUint&       GetCurEnabled ()const {return m_iCurEnabled;}
+    //! @}
+
+
+private:
+    DISABLE_COPY(coreBatchList)
+
+    /*! reset with the resource manager */
+    //! @{
+    void __Reset(const coreResourceReset& bInit)override;
+    //! @}
+};
+
+
+// ****************************************************************
+/* constructor */
 constexpr_obj coreObject3D::coreObject3D()noexcept
 : m_vPosition       (coreVector3(0.0f,0.0f, 0.0f))
 , m_vSize           (coreVector3(1.0f,1.0f, 1.0f))
@@ -100,4 +176,4 @@ constexpr_obj coreObject3D::coreObject3D()noexcept
 }
 
 
-#endif // _CORE_GUARD_OBJECT3D_H_
+#endif /* _CORE_GUARD_OBJECT3D_H_ */

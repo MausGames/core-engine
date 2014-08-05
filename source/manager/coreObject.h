@@ -49,7 +49,7 @@ protected:
     coreVector2 m_vTexSize;                           //!< size-factor of the texture
     coreVector2 m_vTexOffset;                         //!< offset of the texture
 
-    coreObjectEnable m_iEnable;                       //!< enabled object routines
+    coreObjectEnable m_iEnabled;                      //!< enabled object routines
     int m_iStatus;                                    //!< numeric status-value for individual use
 
 
@@ -67,6 +67,11 @@ public:
     inline const coreProgramPtr& DefineProgram(const char*           pcName)                          {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
     //! @}
 
+    //! check for enabled object routines
+    //! @{
+    inline bool IsEnabled(const coreObjectEnable& iEnabled)const {return (m_iEnabled & iEnabled) ? true : false;}
+    //! @}
+
     //! set object properties
     //! @{
     inline void SetColor4   (const coreVector4&      vColor)     {m_vColor     = vColor;}
@@ -74,7 +79,7 @@ public:
     inline void SetAlpha    (const float&            fAlpha)     {m_vColor.a   = fAlpha;}
     inline void SetTexSize  (const coreVector2&      vTexSize)   {m_vTexSize   = vTexSize;}
     inline void SetTexOffset(const coreVector2&      vTexOffset) {m_vTexOffset = vTexOffset;}
-    inline void SetEnable   (const coreObjectEnable& iEnable)    {m_iEnable    = iEnable;}
+    inline void SetEnabled  (const coreObjectEnable& iEnabled)   {m_iEnabled   = iEnabled;}
     inline void SetStatus   (const int&              iStatus)    {m_iStatus    = iStatus;}
     //! @}
 
@@ -89,7 +94,6 @@ public:
     inline const float&            GetAlpha    ()const                      {return m_vColor.a;}
     inline const coreVector2&      GetTexSize  ()const                      {return m_vTexSize;}
     inline const coreVector2&      GetTexOffset()const                      {return m_vTexOffset;}
-    inline const coreObjectEnable& GetEnable   ()const                      {return m_iEnable;}
     inline const int&              GetStatus   ()const                      {return m_iStatus;}
     //! @}
 };
@@ -128,7 +132,7 @@ constexpr_obj coreObject::coreObject()noexcept
 , m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
 , m_vTexSize   (coreVector2(1.0f,1.0f))
 , m_vTexOffset (coreVector2(0.0f,0.0f))
-, m_iEnable    (CORE_OBJECT_ENABLE_ALL)
+, m_iEnabled   (CORE_OBJECT_ENABLE_ALL)
 , m_iStatus    (0)
 {
 }

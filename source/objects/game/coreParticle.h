@@ -12,6 +12,11 @@
 
 
 // ****************************************************************
+// particle definitions
+#define CORE_PARTICLE_INSTANCE_SIZE (2*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< position, data, color
+
+
+// ****************************************************************
 // particle class
 // TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee, solve in shader!)
 // TODO: what about velocity

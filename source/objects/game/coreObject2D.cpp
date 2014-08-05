@@ -25,7 +25,7 @@ void coreObject2D::Undefine()
 // render the 2d-object
 void coreObject2D::Render(const coreProgramPtr& pProgram)
 {
-    if(!(m_iEnable & CORE_OBJECT_ENABLE_RENDER)) return;
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
 
     // enable the shader-program
     if(!pProgram.IsUsable()) return;
@@ -53,7 +53,7 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
 // move the 2d-object
 void coreObject2D::Move()
 {
-    if(!(m_iEnable & CORE_OBJECT_ENABLE_MOVE)) return;
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
     if(m_iUpdate & CORE_OBJECT_UPDATE_TRANSFORM)

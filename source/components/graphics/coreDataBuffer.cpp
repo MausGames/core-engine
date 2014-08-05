@@ -13,14 +13,14 @@ coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
 
 // ****************************************************************
 // create buffer storage
-void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const GLenum& iUsage)
+void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const coreDataBufferStorage& iStorageType)
 {
     ASSERT_IF(m_iDataBuffer) this->Delete();
 
     // save properties
-    m_iTarget  = iTarget;
-    m_iSize    = iSize;
-    m_bDynamic = (iUsage != GL_STATIC_DRAW && iUsage != GL_STATIC_READ && iUsage != GL_STATIC_COPY) ? true : false;
+    m_iTarget      = iTarget;
+    m_iSize        = iSize;
+    m_iStorageType = iStorageType;
 
     // generate and bind buffer 
     glGenBuffers(1, &m_iDataBuffer);
@@ -28,8 +28,24 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
     s_aiBound[iTarget] = m_iDataBuffer; 
 
     // allocate buffer memory
-    if(GLEW_ARB_buffer_storage) glBufferStorage(m_iTarget, m_iSize, pData, m_bDynamic ? GL_MAP_WRITE_BIT : 0);
-                           else glBufferData(m_iTarget, m_iSize, pData, iUsage);
+    if(GLEW_ARB_buffer_storage)
+    {
+        // set storage properties
+        GLenum iFlags = 0;
+        switch(m_iStorageType)
+        {
+        case CORE_DATABUFFER_STORAGE_PERSISTENT: iFlags  = GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+        case CORE_DATABUFFER_STORAGE_DYNAMIC:    iFlags |= GL_MAP_WRITE_BIT;
+        }
+
+        // create immutable buffer
+        glBufferStorage(m_iTarget, m_iSize, pData, iFlags);
+
+        // map persistent mapped buffer
+        if(m_iStorageType == CORE_DATABUFFER_STORAGE_PERSISTENT)
+            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags));
+    }
+    else glBufferData(m_iTarget, m_iSize, pData, this->IsWritable() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 }
 
 
@@ -38,15 +54,23 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
 void coreDataBuffer::Delete()
 {
     if(!m_iDataBuffer) return;
+
+    // unmap persistent mapped buffer
+    if(m_pPersistentBuffer)
+    {
+        this->Bind();
+        glUnmapBuffer(m_iTarget);
+    }
     
     // delete buffer
     glDeleteBuffers(1, &m_iDataBuffer); 
     
     // reset properties
-    m_iDataBuffer = 0;
-    m_iTarget     = 0;
-    m_iSize       = 0;
-    m_bDynamic    = false;
+    m_iDataBuffer       = 0;
+    m_iTarget           = 0;
+    m_iSize             = 0;
+    m_iStorageType      = CORE_DATABUFFER_STORAGE_STATIC;
+    m_pPersistentBuffer = NULL;
 }
 
 
@@ -54,7 +78,7 @@ void coreDataBuffer::Delete()
 // clear content of the data buffer object
 void coreDataBuffer::Clear()
 {
-    ASSERT(m_iDataBuffer && m_bDynamic)
+    ASSERT(m_iDataBuffer && this->IsWritable())
 
     // clear the whole buffer
     if(GLEW_ARB_clear_buffer_object)
@@ -69,7 +93,7 @@ void coreDataBuffer::Clear()
 // invalidate content of the data buffer object
 void coreDataBuffer::Invalidate()
 {
-    ASSERT(m_iDataBuffer && m_bDynamic)
+    ASSERT(m_iDataBuffer && this->IsWritable())
 
     // invalidate the whole buffer
     if(GLEW_ARB_invalidate_subdata)
@@ -84,17 +108,15 @@ void coreDataBuffer::Invalidate()
 coreVertexBuffer::coreVertexBuffer()noexcept
 : m_iVertexSize (0)
 {
-    // reserve memory for vertex attribute arrays
-    m_aAttribute.reserve(4);
 }
 
 
 // ****************************************************************
 // create buffer storage
-void coreVertexBuffer::Create(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage)
+void coreVertexBuffer::Create(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
 {
     // create buffer storage
-    coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iUsage);
+    coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iStorageType);
 
     // save properties
     m_iVertexSize = iVertexSize; 

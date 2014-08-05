@@ -8,8 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#define CORE_PARTICLE_SIZE (2*sizeof(coreVector3) + 1*sizeof(coreUint))
-
 coreModel* coreParticleSystem::s_pModel = NULL;
 
 
@@ -70,7 +68,7 @@ void coreParticleSystem::Render()
     if(!m_pProgram.IsUsable()) return;
     if(!m_pProgram->Enable())  return;
 
-    // update normal matrix uniform
+    // update normal matrix uniform with camera
     m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, Core::Graphics->GetCamera().m123().Invert(), false);
 
     // enable all active textures
@@ -81,12 +79,9 @@ void coreParticleSystem::Render()
     {
         if(m_bUpdate)
         {
-            // invalidate the instance data buffer
-            m_iInstanceBuffer.Invalidate();
-
             // map required area of the instance data buffer
-            const coreUint iLength = m_apRenderList.size()*CORE_PARTICLE_SIZE;
-            coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength, true);
+            const coreUint iLength = m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE;
+            coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
 
             FOR_EACH_REV(it, m_apRenderList)
             {
@@ -110,7 +105,7 @@ void coreParticleSystem::Render()
                 // write remaining data to the buffer
                 std::memcpy(pRange + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
                 std::memcpy(pRange + 2*sizeof(coreVector3), &iColor, sizeof(coreUint));
-                pRange += CORE_PARTICLE_SIZE;
+                pRange += CORE_PARTICLE_INSTANCE_SIZE;
             }
 
             // unmap buffer
@@ -120,7 +115,7 @@ void coreParticleSystem::Render()
             m_bUpdate = false;
         }
 
-        // reset current model object (because of direct VAO use)
+        // disable current model object (because of direct VAO use)
         coreModel::Disable(false);
 
         // draw the model instanced
@@ -196,6 +191,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         }
     }
 
+    // no free particle available
     ASSERT(false)
     return &m_pParticle[m_iCurParticle];
 }
@@ -288,15 +284,12 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
-        // reset current model object
-        coreModel::Disable(false);
-
         // create vertex array object
         glGenVertexArrays(1, &m_iVertexArray);
         glBindVertexArray(m_iVertexArray);
 
         // create instance data buffer
-        m_iInstanceBuffer.Create(m_iNumParticles, CORE_PARTICLE_SIZE, NULL, GL_DYNAMIC_DRAW);
+        m_iInstanceBuffer.Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
         m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,        0);
         m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,        3*sizeof(float));
         m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1, GL_UNSIGNED_INT, 6*sizeof(float));
@@ -313,6 +306,9 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
             glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     1);
             glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1);
         }
+
+        // disable current model object (to fully enable the next model) 
+        coreModel::Disable(false);
 
         // invoke buffer update
         m_bUpdate = true;

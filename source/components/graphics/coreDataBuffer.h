@@ -10,19 +10,39 @@
 #ifndef _CORE_GUARD_DATABUFFER_H_
 #define _CORE_GUARD_DATABUFFER_H_
 
+// TODO: enable read and copy operations (currently only static and write/dynamic)
+// TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
+
+
+// ****************************************************************
+// data buffer definitions
+enum coreDataBufferStorage : coreByte
+{
+    CORE_DATABUFFER_STORAGE_STATIC     = 0,   //!< store fast static buffer (STATIC_DRAW)
+    CORE_DATABUFFER_STORAGE_DYNAMIC    = 1,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
+    CORE_DATABUFFER_STORAGE_PERSISTENT = 2    //!< store persistent mapped buffer when supported (fallback to dynamic)
+};
+
+enum coreDataBufferMap : coreByte
+{
+    CORE_DATABUFFER_MAP_INVALIDATE_ALL   = GL_MAP_INVALIDATE_BUFFER_BIT,   //!< invalidate complete buffer for max performance
+    CORE_DATABUFFER_MAP_INVALIDATE_RANGE = GL_MAP_INVALIDATE_RANGE_BIT,    //!< invalidate only required range
+    CORE_DATABUFFER_MAP_UNSYNCHRONIZED   = GL_MAP_UNSYNCHRONIZED_BIT       //!< map and unmap unsynchronized
+};
+
 
 // ****************************************************************
 // data buffer class
-// TODO: enable read operations (currently only static and write/dynamic)
-// TODO: implement persistent mapping
 class coreDataBuffer
 {
 private:
     GLuint m_iDataBuffer;                          //!< data buffer identifier
-    bool   m_bDynamic;                             //!< storage type
+    coreDataBufferStorage m_iStorageType;          //!< storage type
                                                          
     GLenum   m_iTarget;                            //!< buffer target (e.g. GL_ARRAY_BUFFER)
     coreUint m_iSize;                              //!< data size in bytes 
+
+    coreByte* m_pPersistentBuffer;                 //!< pointer to persistent mapped buffer
                                                          
     static coreLookup<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
 
@@ -33,7 +53,7 @@ public:
 
     //! control the data buffer object
     //! @{
-    void Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const GLenum& iUsage);
+    void Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const coreDataBufferStorage& iStorageType);
     void Delete();
     //! @}
 
@@ -41,7 +61,7 @@ public:
     //! @{
     inline void Bind()const                                                 {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
     static inline void Bind  (const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
-    static inline void Unbind(const GLenum& iTarget)                        {coreDataBuffer::Bind(iTarget, 0);}
+    static inline void Unbind(const GLenum& iTarget, const bool& bFull)     {if(bFull) coreDataBuffer::Bind(iTarget, 0); else s_aiBound[iTarget] = 0;}
     //! @}
 
     //! reset content of the data buffer object
@@ -52,9 +72,9 @@ public:
 
     //! modify buffer memory
     //! @{
-    template <typename T> T*   Map  (const coreUint& iOffset, const coreUint& iLength, const bool& bSync);
+    template <typename T> T*   Map  (const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType);
     template <typename T> void Unmap(T* pPointer);
-    inline const bool& IsDynamic()const {return m_bDynamic;}
+    inline bool IsWritable()const {return (m_iStorageType != CORE_DATABUFFER_STORAGE_STATIC) ? true : false;}
     //! @}
 
     //! access buffer directly
@@ -64,9 +84,10 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint&   GetDataBuffer()const {return m_iDataBuffer;}
-    inline const GLenum&   GetTarget    ()const {return m_iTarget;}
-    inline const coreUint& GetSize      ()const {return m_iSize;}
+    inline const GLuint&                GetDataBuffer ()const {return m_iDataBuffer;}
+    inline const coreDataBufferStorage& GetStorageType()const {return m_iStorageType;}
+    inline const GLenum&                GetTarget     ()const {return m_iTarget;}
+    inline const coreUint&              GetSize       ()const {return m_iSize;}
     //! @}
 
 
@@ -77,7 +98,6 @@ private:
 
 // ****************************************************************
 // vertex buffer class
-// TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
 class coreVertexBuffer final : public coreDataBuffer
 {
 private:
@@ -104,7 +124,7 @@ public:
 
     //! control the vertex buffer object
     //! @{
-    void Create(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const GLenum& iUsage);
+    void Create(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
     void Delete();
     //! @}
 
@@ -119,32 +139,37 @@ public:
 // ****************************************************************
 // constructor
 constexpr_func coreDataBuffer::coreDataBuffer()noexcept
-: m_iDataBuffer (0)
-, m_bDynamic    (false)
-, m_iTarget     (0)
-, m_iSize       (0)
+: m_iDataBuffer       (0)
+, m_iStorageType      (CORE_DATABUFFER_STORAGE_STATIC)
+, m_iTarget           (0)
+, m_iSize             (0)
+, m_pPersistentBuffer (NULL)
 {
 }
 
 
 // ****************************************************************
 // map buffer memory for writing operations
-template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength, const bool& bSync)
+template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType)
 {
-    ASSERT(m_iDataBuffer && m_bDynamic && (iOffset+iLength <= m_iSize))
+    ASSERT(m_iDataBuffer && this->IsWritable() && (iOffset+iLength <= m_iSize))
 
-    // bind the data buffer
-    this->Bind();
-    
+    // return persistent mapped buffer
+    if(m_pPersistentBuffer)
+        return r_cast<T*>(m_pPersistentBuffer + iOffset);
+
     if(GLEW_ARB_map_buffer_range)
     {
+        // bind the data buffer
+        this->Bind();
+
         // directly map buffer memory
-        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | (bSync ? GL_MAP_INVALIDATE_RANGE_BIT : GL_MAP_UNSYNCHRONIZED_BIT)));
+        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
     }
     else
     {
-        // create temporary memory
-        T* pPointer = new T[iLength + sizeof(coreUint)*2];
+        // create temporary memory (attribute memory may not be tight)
+        T* pPointer = new T[iLength / sizeof(T) + sizeof(coreUint)*2];
 
         // add mapping attributes
         std::memcpy(pPointer,                    &iOffset, sizeof(coreUint));
@@ -160,6 +185,12 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
 template <typename T> void coreDataBuffer::Unmap(T* pPointer)
 {
     ASSERT(pPointer)
+
+    // keep persistent mapped buffer
+    if(m_pPersistentBuffer) return;
+
+    // bind the data buffer
+    this->Bind();
 
     if(GLEW_ARB_map_buffer_range)
     {
