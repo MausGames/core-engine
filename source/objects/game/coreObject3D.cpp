@@ -215,7 +215,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             {
                 const coreObject3D* pObject = (*it);
 
-                // draw only enabled 3d-objects
+                // render only enabled 3d-objects
                 if(!pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) continue;
                 ++m_iCurEnabled;
 
@@ -297,6 +297,9 @@ void coreBatchList::Move()
         FOR_EACH(it, m_apObjectList)
         {
             coreObject3D* pObject = (*it);
+
+            // move only enabled 3d-objects
+            if(!pObject->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) continue;
 
             // move object
             pObject->Move();
