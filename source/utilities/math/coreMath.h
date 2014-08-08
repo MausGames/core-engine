@@ -114,12 +114,15 @@ inline float coreMath::Rsqrt(float fInput)
     // normal calculation
     fInput = 1.0f / std::sqrt(fInput);
 
-    //const float fHalfValue = fInput*0.5f;
-    //coreUint* piPointer    = r_cast<coreUint*>(&fInput);
-    //*piPointer             = 0x5F3759DF - (*piPointer >> 1);
+    // old approximation
+    /*
+        const float fHalfValue = fInput*0.5f;
+        coreUint* piPointer    = r_cast<coreUint*>(&fInput);
+        *piPointer             = 0x5F3759DF - (*piPointer >> 1);
 
-    //fInput *= 1.5f - fInput*fInput*fHalfValue;
-    //fInput *= 1.5f - fInput*fInput*fHalfValue;
+        fInput *= 1.5f - fInput*fInput*fHalfValue;
+        fInput *= 1.5f - fInput*fInput*fHalfValue;
+    */
 
 #endif
 
@@ -143,12 +146,15 @@ inline float coreMath::Rcp(float fInput)
     // normal calculation
     fInput = 1.0f / fInput;
 
-    //const float fValue  = fInput;
-    //coreUint* piPointer = r_cast<coreUint*>(&fInput);
-    //*piPointer          = 0x7EEEEEEE - *piPointer;
+    // old approximation
+    /*
+        const float fValue  = fInput;
+        coreUint* piPointer = r_cast<coreUint*>(&fInput);
+        *piPointer          = 0x7EEEEEEE - *piPointer;
 
-    //fInput *= 2.0f - fInput*fValue;
-    //fInput *= 2.0f - fInput*fValue;
+        fInput *= 2.0f - fInput*fValue;
+        fInput *= 2.0f - fInput*fValue;
+    */
 
 #endif
 

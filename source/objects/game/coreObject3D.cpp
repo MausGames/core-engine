@@ -286,44 +286,41 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 /* move the batch list */
 void coreBatchList::Move()
 {
-    if(!m_apObjectList.empty())
+    auto et = m_apObjectList.begin();
+
+    // compare first object with nothing (never true)
+    float fOldDistance    = 0.0f;
+    bool  bOldTransparent = false;
+
+    FOR_EACH(it, m_apObjectList)
     {
-        auto et = m_apObjectList.begin();
+        coreObject3D* pObject = (*it);
 
-        // calculate properties of first object
-        float fOldDistance    = ((*et)->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
-        bool  bOldTransparent =  (*et)->GetAlpha() < 1.0f;
+        // move only enabled 3d-objects
+        if(!pObject->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) continue;
 
-        FOR_EACH(it, m_apObjectList)
-        {
-            coreObject3D* pObject = (*it);
+        // move object
+        pObject->Move();
 
-            // move only enabled 3d-objects
-            if(!pObject->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) continue;
-
-            // move object
-            pObject->Move();
-
-            // calculate properties of current object
-            const float fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
-            const bool  bCurTransparent =  pObject->GetAlpha() < 1.0f;
+        // calculate properties of current object
+        const float fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
+        const bool  bCurTransparent =  pObject->GetAlpha() < 1.0f;
         
-            // sort objects (opaque first and from front to back, transparent later and from back to front)
-            if(( bCurTransparent && (bOldTransparent && fCurDistance > fOldDistance)) ||
-               (!bCurTransparent && (bOldTransparent || fCurDistance < fOldDistance)))
-            {
-                std::swap(*it, *et);
-            }
-            else
-            {
-                // forward properties to next object
-                fOldDistance    = fCurDistance;
-                bOldTransparent = bCurTransparent;
-            }
-
-            // compare current object with next object
-            et = it;
+        // sort objects (opaque first and from front to back, transparent later and from back to front)
+        if(( bCurTransparent && (bOldTransparent && fCurDistance > fOldDistance)) ||
+           (!bCurTransparent && (bOldTransparent || fCurDistance < fOldDistance)))
+        {
+            std::swap(*it, *et);
         }
+        else
+        {
+            // forward properties to next object
+            fOldDistance    = fCurDistance;
+            bOldTransparent = bCurTransparent;
+        }
+
+        // compare current object with next object
+        et = it;
     }
 
     // set the update status

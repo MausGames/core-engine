@@ -28,6 +28,7 @@ enum coreMusicRepeat
 // music class
 // TODO: consider threaded music update (->coreMusicPlayer)
 // TODO: implement global music volume change (music-player changes volume already)
+// TODO: music which is inactive should not be in memory (maybe MusicPlayer?), too heavy with many files
 class coreMusic final : public coreResourceRelation
 {
 private:

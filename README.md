@@ -2,9 +2,9 @@
 
 The Core Engine is an extensive C++ framework based on the SDL library for **Windows, Linux and Android games** and compatible with **OpenGL (ES) 2.x, 3.x and 4.x capable hardware**.
 
-This project is still in early development, but already provides a wide range of tools and features, solid performance, good stability, easy setup and well-written code with regular updates. It is **designed to be supportive and versatile**, and to always use available hardware features while being dynamically backward compatible where required.
+This project is still in early development, but it already provides a wide range of tools and features, solid performance, high stability, easy setup and well-written code with regular updates. It is **designed to be supportive, versatile and powerful**, and to dynamically use efficient fallback methods where specific system features are not available.
 
-My personal intention for this framework is still to learn, to share and to have a structured coding base (core) for other projects. Though I'm not very good in writing articles or in maintaining a blog, **the whole engine is (and will stay) open source** and is structured and commented as good as possible - docs will be available in the future.
+My personal intention for this framework is to learn, to share and to have a structured coding base (core) for other projects. **It is (and will stay) open source** and is constructed and commented as good as possible - docs will be available in the future.
 
 > - **System:** Window and Event Handling, Timer, Threads 
 > - **Graphics:** Camera, View Frustum and Lighting Control, Frame Buffers, Models (.md5), Textures, Shaders, Fonts
