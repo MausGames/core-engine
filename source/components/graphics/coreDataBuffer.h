@@ -12,6 +12,9 @@
 
 // TODO: enable read and copy operations (currently only static and write/dynamic)
 // TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
+// TODO: STREAM_*
+
+// NOTE: superior object have to handle resource-resets
 
 
 // ****************************************************************
@@ -64,17 +67,17 @@ public:
     static inline void Unbind(const GLenum& iTarget, const bool& bFull)     {if(bFull) coreDataBuffer::Bind(iTarget, 0); else s_aiBound[iTarget] = 0;}
     //! @}
 
-    //! reset content of the data buffer object
-    //! @{
-    void Clear();
-    void Invalidate();
-    //! @}
-
     //! modify buffer memory
     //! @{
     template <typename T> T*   Map  (const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType);
     template <typename T> void Unmap(T* pPointer);
     inline bool IsWritable()const {return (m_iStorageType != CORE_DATABUFFER_STORAGE_STATIC) ? true : false;}
+    //! @}
+
+    //! reset content of the data buffer object
+    //! @{
+    void Clear(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const void* pData);
+    void Invalidate();
     //! @}
 
     //! access buffer directly
@@ -160,11 +163,17 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
 
     if(GLEW_ARB_map_buffer_range)
     {
-        // bind the data buffer
-        this->Bind();
-
-        // directly map buffer memory
-        return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+        if(GLEW_ARB_direct_state_access)
+        {
+            // map buffer memory directly
+            return s_cast<T*>(glMapNamedBufferRange(m_iDataBuffer, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+        }
+        else
+        {
+            // bind and map buffer memory
+            this->Bind();
+            return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+        }
     }
     else
     {
@@ -189,13 +198,19 @@ template <typename T> void coreDataBuffer::Unmap(T* pPointer)
     // keep persistent mapped buffer
     if(m_pPersistentBuffer) return;
 
-    // bind the data buffer
-    this->Bind();
-
     if(GLEW_ARB_map_buffer_range)
     {
-        // directly unmap buffer memory
-        glUnmapBuffer(m_iTarget);
+        if(GLEW_ARB_direct_state_access)
+        {
+            // unmap buffer memory directly
+            glUnmapNamedBuffer(m_iDataBuffer);
+        }
+        else
+        {
+            // bind and unmap buffer memory
+            this->Bind();
+            glUnmapBuffer(m_iTarget);
+        }
     }
     else
     {
@@ -204,6 +219,7 @@ template <typename T> void coreDataBuffer::Unmap(T* pPointer)
         coreUint iLength; std::memcpy(&iLength, pPointer - sizeof(coreUint)*1, sizeof(coreUint));
 
         // send new data to the data buffer
+        this->Bind();
         glBufferSubData(m_iTarget, iOffset, iLength, pPointer);
 
         // delete temporary memory

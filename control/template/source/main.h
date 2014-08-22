@@ -1,34 +1,24 @@
 
-#include "main.h"
+#pragma once
+#ifndef _000_GUARD_MAIN_H_
+#define _000_GUARD_MAIN_H_
 
 
 // ****************************************************************
-// init the application
-void CoreApp::Init()
-{
-
-}
+// engine header files
+#include "Core.h"
 
 
 // ****************************************************************
-// exit the application
-void CoreApp::Exit()
-{
-
-}
+// global definitions
 
 
 // ****************************************************************
-// render the application
-void CoreApp::Render()
-{
-
-}
+// game header files
 
 
 // ****************************************************************
-// move the application
-void CoreApp::Move()
-{
+// global variables
 
-}
+
+#endif // _000_GUARD_MAIN_H_

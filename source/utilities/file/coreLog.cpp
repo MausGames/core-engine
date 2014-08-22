@@ -51,9 +51,9 @@ coreLog::coreLog(const char* pcPath)noexcept
 
 // ****************************************************************
 /* write an OpenGL debug message */
-void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, void* pUserParam)
+void GLAPIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam)
 {
-    coreLog* pLog = s_cast<coreLog*>(pUserParam);
+    coreLog* pLog = s_cast<coreLog*>(c_cast<void*>(pUserParam));
 
     // write message
     pLog->ListStart("OpenGL Debug Message");
@@ -85,15 +85,6 @@ void coreLog::DebugOpenGL()
         // set callback function and filter
         glDebugMessageCallback(&WriteOpenGL, this);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-    }
-    else if(GLEW_ARB_debug_output)
-    {
-        // enable synchronous debug output
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-
-        // set callback function and filter
-        glDebugMessageCallbackARB(&WriteOpenGL, this);
-        glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
     }
 }
 

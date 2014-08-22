@@ -230,6 +230,18 @@ vec2 u_v2TexOffset = u_v4TexParam.zw;
     #define coreMax3(a,b,c) (max(a, max(b, c)))
 #endif
 
+// dot-3 transformation functions
+#define coreDot3Init()                                \
+    vec3 n = normalize(u_m3Normal * a_v3Normal);      \
+    vec3 t = normalize(u_m3Normal * a_v4Tangent.xyz); \
+    vec3 b = cross(n, t) * a_v4Tangent.w;
+    
+#define coreDot3Transform(i,o) \
+    o.x = dot(i, t);           \
+	o.y = dot(i, b);           \
+	o.z = dot(i, n);           \
+	o   = normalize(o);
+
 // square length functions
 float coreLengthSq(in vec2 v) {return dot(v, v);}
 float coreLengthSq(in vec3 v) {return dot(v, v);}

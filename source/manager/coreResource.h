@@ -16,6 +16,7 @@
 // TODO: when and how to load default archive(s) ?
 // TODO: update privat in handle and public in manager ?
 // TODO: assert for path and update-type in load-function
+// TODO: check for resource context, with OGL spec 5.1.3: [gets not deleted when] the object is bound to a context bind point in any context
 
 
 // ****************************************************************
@@ -218,7 +219,7 @@ public:
     /*! create and delete resource and resource handle */
     //! @{
     template <typename T, typename... A>        coreResourceHandle* Load   (const char* pcName, const coreResourceUpdate& bUpdate, const char* pcPath, A&&... vArgs);
-    template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "new", false);}
+    template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);}
     template <typename T> void Free(coreResourcePtr<T>* ppResourcePtr);
     //! @}
 

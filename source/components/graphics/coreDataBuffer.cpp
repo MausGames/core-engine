@@ -16,6 +16,7 @@ coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
 void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const coreDataBufferStorage& iStorageType)
 {
     ASSERT_IF(m_iDataBuffer) this->Delete();
+    ASSERT(iSize)
 
     // save properties
     m_iTarget      = iTarget;
@@ -36,6 +37,7 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
         {
         case CORE_DATABUFFER_STORAGE_PERSISTENT: iFlags  = GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
         case CORE_DATABUFFER_STORAGE_DYNAMIC:    iFlags |= GL_MAP_WRITE_BIT;
+        case CORE_DATABUFFER_STORAGE_STATIC:     break;
         }
 
         // create immutable buffer
@@ -76,15 +78,24 @@ void coreDataBuffer::Delete()
 
 // ****************************************************************
 // clear content of the data buffer object
-void coreDataBuffer::Clear()
+void coreDataBuffer::Clear(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const void* pData)
 {
     ASSERT(m_iDataBuffer && this->IsWritable())
 
     // clear the whole buffer
     if(GLEW_ARB_clear_buffer_object)
     {
-        // TODO: implement this weird function
-        //glClearBufferData
+        if(GLEW_ARB_direct_state_access)
+        {
+            // clear content directly
+            glClearNamedBufferData(m_iDataBuffer, iInternal, iFormat, iType, pData);
+        }
+        else
+        {
+            // bind and clear content
+            this->Bind();
+            glClearBufferData(m_iTarget, iInternal, iFormat, iType, pData);
+        }
     }
 }
 
@@ -97,9 +108,7 @@ void coreDataBuffer::Invalidate()
 
     // invalidate the whole buffer
     if(GLEW_ARB_invalidate_subdata)
-    {
         glInvalidateBufferData(m_iDataBuffer);
-    }
 }
 
 

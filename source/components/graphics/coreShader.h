@@ -127,6 +127,7 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 // TODO: use variable template with uniform cache (C++14)
 // TODO: assert-check for new shaders while already finished
 // TODO: allow additional shaders and attributes in between
+// TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs
 class coreProgram final : public coreResource
 {
 private:

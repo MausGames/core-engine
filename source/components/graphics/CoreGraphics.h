@@ -79,7 +79,7 @@ public:
 
     //! control ambient
     //! @{
-    void SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
+    void SetLight(const coreByte& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
     //! @}
 
     //! take screenshot
@@ -90,20 +90,20 @@ public:
 
     //! get component properties
     //! @{
-    inline const SDL_GLContext& GetRenderContext  ()const               {return m_RenderContext;}
-    inline const SDL_GLContext& GetResourceContext()const               {return m_ResourceContext;}
-    inline const float&         GetFOV            ()const               {return m_fFOV;}
-    inline const float&         GetNearClip       ()const               {return m_fNearClip;}
-    inline const float&         GetFarClip        ()const               {return m_fFarClip;}
-    inline const coreVector3&   GetCamPosition    ()const               {return m_vCamPosition;}
-    inline const coreVector3&   GetCamDirection   ()const               {return m_vCamDirection;}
-    inline const coreVector3&   GetCamOrientation ()const               {return m_vCamOrientation;}
-    inline const coreMatrix4&   GetCamera         ()const               {return m_mCamera;}
-    inline const coreMatrix4&   GetPerspective    ()const               {return m_mPerspective;}
-    inline const coreMatrix4&   GetOrtho          ()const               {return m_mOrtho;}
-    inline const coreVector4&   GetResolution     ()const               {return m_vCurResolution;}
-    inline const coreLight&     GetLight          (const int& iID)const {ASSERT(iID < CORE_GRAPHICS_LIGHTS) return m_aLight[iID];}
-    inline const GLuint&        GetUniformBuffer  ()const               {return m_iUniformBuffer;}
+    inline const SDL_GLContext& GetRenderContext  ()const                    {return m_RenderContext;}
+    inline const SDL_GLContext& GetResourceContext()const                    {return m_ResourceContext;}
+    inline const float&         GetFOV            ()const                    {return m_fFOV;}
+    inline const float&         GetNearClip       ()const                    {return m_fNearClip;}
+    inline const float&         GetFarClip        ()const                    {return m_fFarClip;}
+    inline const coreVector3&   GetCamPosition    ()const                    {return m_vCamPosition;}
+    inline const coreVector3&   GetCamDirection   ()const                    {return m_vCamDirection;}
+    inline const coreVector3&   GetCamOrientation ()const                    {return m_vCamOrientation;}
+    inline const coreMatrix4&   GetCamera         ()const                    {return m_mCamera;}
+    inline const coreMatrix4&   GetPerspective    ()const                    {return m_mPerspective;}
+    inline const coreMatrix4&   GetOrtho          ()const                    {return m_mOrtho;}
+    inline const coreVector4&   GetResolution     ()const                    {return m_vCurResolution;}
+    inline const coreLight&     GetLight          (const coreByte& iID)const {ASSERT(iID < CORE_GRAPHICS_LIGHTS) return m_aLight[iID];}
+    inline const GLuint&        GetUniformBuffer  ()const                    {return m_iUniformBuffer;}
     //! @}
 
     //! check OpenGL versions

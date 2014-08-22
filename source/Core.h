@@ -47,7 +47,9 @@
 // TODO: check for template parameters <42>
 // TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
 // TODO: define standard-path (data/) were everything is loaded from
-// TODO: implement GL_ARB_robustness
+// TODO: implement GL_KHR_robustness(<-newest) (GL_ARB_robustness ?)
+// TODO: how to implement GL_ARB_direct_state_access(<-newest) (GL_EXT_direct_state_access ?)
+// TODO: explicit flush control for context change
 // TODO: check for performance penalties and alternatives for thread_local
 // TODO: setup 64-bit Windows build (libraries!)
 
@@ -317,12 +319,13 @@ class coreObjectManager;
 class CoreApp final
 {
 private:
-    CoreApp()noexcept {this->Init();}
+    CoreApp()noexcept {this->Setup(); this->Init();}
     ~CoreApp()        {this->Exit();}
     friend class Core;
 
+    //! auto-generated setup function
+    void Setup();
 
-public:
     //! undefined init and exit function
     //! @{
     void Init();

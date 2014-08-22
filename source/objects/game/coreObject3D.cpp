@@ -14,7 +14,7 @@
 void coreObject3D::Undefine()
 {
     // reset all resource and memory pointers
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
     m_pModel   = NULL;
 }
@@ -51,7 +51,7 @@ bool coreObject3D::Enable(const coreProgramPtr& pProgram)
 #endif
 
     // enable all active textures
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     // enable the model
@@ -199,7 +199,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         if(!pModel.IsUsable()) return;
 
         // enable all active textures
-        for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
             if(pFirst->GetTexture(i).IsUsable()) pFirst->GetTexture(i)->Enable(i);
 
         if(m_bUpdate)

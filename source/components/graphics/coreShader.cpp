@@ -258,7 +258,7 @@ coreError coreProgram::Load(coreFile* pFile)
     // bind output locations
     if(Core::Graphics->GetUniformBuffer())
     {
-        for(int i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+        for(coreByte i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             glBindFragDataLocation(m_iProgram, i, CORE_SHADER_OUTPUT_COLOR(i));
     }
 
@@ -267,7 +267,7 @@ coreError coreProgram::Load(coreFile* pFile)
     glUseProgram(m_iProgram);
 
     // bind texture units
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
         glUniform1i(glGetUniformLocation(m_iProgram, CORE_SHADER_UNIFORM_TEXTURE(i)), i);
 
     // bind global uniform buffer object
@@ -364,7 +364,7 @@ bool coreProgram::Enable()
         this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetResolution());
 
         // forward ambient data
-        for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+        for(coreByte i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
         {
             this->SendUniform(CORE_SHADER_UNIFORM_LIGHT_POSITION(i),  Core::Graphics->GetLight(i).vPosition);
             this->SendUniform(CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i), Core::Graphics->GetLight(i).vDirection);

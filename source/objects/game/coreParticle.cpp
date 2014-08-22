@@ -53,7 +53,7 @@ coreParticleSystem::~coreParticleSystem()
 void coreParticleSystem::Undefine()
 {
     // reset all resource and memory pointers
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
 }
 
@@ -72,7 +72,7 @@ void coreParticleSystem::Render()
     m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, Core::Graphics->GetCamera().m123().Invert(), false);
 
     // enable all active textures
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     if(m_iInstanceBuffer)

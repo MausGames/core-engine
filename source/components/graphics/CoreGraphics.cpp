@@ -28,21 +28,6 @@ CoreGraphics::CoreGraphics()noexcept
         Core::Log->Error("Render context could not be created (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Render context created");
 
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT))
-    {
-        // create resource context
-        m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
-        if(!m_ResourceContext)
-            Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
-        else Core::Log->Info("Resource context created");
-    }
-    else m_ResourceContext = NULL;
-
-    // assign render context to main window
-    if(SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext))
-        Core::Log->Error("Render context could not be assigned to main window (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("Render context assigned to main window");
-
     // init GLEW on render context
     const GLenum iError = glewInit();
     if(iError != GLEW_OK)
@@ -99,7 +84,7 @@ CoreGraphics::CoreGraphics()noexcept
     // create uniform buffer object for global shader-data
     if(GLEW_ARB_uniform_buffer_object)
     {
-        // generate and bind global UBO to a buffer target
+        // generate and bind global UBO to buffer target
         m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
         glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_GLOBAL_NUM, m_iUniformBuffer);
     }
@@ -109,7 +94,7 @@ CoreGraphics::CoreGraphics()noexcept
     this->ResizeView(coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
 
     // reset ambient
-    for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+    for(coreByte i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
         this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
 
     // reset scene
@@ -117,6 +102,19 @@ CoreGraphics::CoreGraphics()noexcept
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT))
+    {
+        // create resource context (after reset, because of flickering on Windows and fullscreen)
+        m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
+        if(!m_ResourceContext)
+            Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
+        else Core::Log->Info("Resource context created");
+
+        // re-assign render context to main window
+        SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext);
+    }
+    else m_ResourceContext = NULL;
 }
 
 
@@ -200,7 +198,7 @@ void CoreGraphics::ResizeView(coreVector2 vResolution, const float& fFOV, const 
 
 // ******************************************************************
 // set and update ambient light
-void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
+void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
     bool bNewLight = false;
 
@@ -231,10 +229,10 @@ void CoreGraphics::SetLight(const int& iID, const coreVector4& vPosition, const 
 // TODO: improve with pixel-pack-buffer
 void CoreGraphics::Screenshot(const char* pcPath)const
 {
-    const coreUint iWidth  = (coreUint)Core::System->GetResolution().x;
-    const coreUint iHeight = (coreUint)Core::System->GetResolution().y;
-    const coreUint iPitch  = iWidth*3;
-    const coreUint iSize   = iHeight*iPitch;
+    const int iWidth  = (int)Core::System->GetResolution().x;
+    const int iHeight = (int)Core::System->GetResolution().y;
+    const int iPitch  = iWidth*3;
+    const int iSize   = iHeight*iPitch;
 
     // create folder hierarchy
     const char* pcFullPath = PRINT(std::strcmp(coreData::StrRight(pcPath, 4), ".png") ? "%s.png" : "%s", pcPath);
@@ -246,10 +244,10 @@ void CoreGraphics::Screenshot(const char* pcPath)const
 
     // flip pixel data vertically
     coreByte* pConvert = new coreByte[iSize];
-    for(coreUint i = 0; i < iHeight; ++i)
+    for(int i = 0; i < iHeight; ++i)
         std::memcpy(pConvert + (iHeight-i-1)*iPitch, pData + i*iPitch, iPitch);
 
-    // create an SDL surface
+    // create SDL surface
     SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidth, iHeight, 24, iPitch, CORE_TEXTURE_MASK);
     if(pSurface)
     {

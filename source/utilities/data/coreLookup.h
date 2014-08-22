@@ -93,7 +93,7 @@ protected:
     /*! cache last requested entry */
     //! @{
     inline void __cache_set(coreEntry* pEntry, const I& Key) {m_pCache = pEntry; m_CacheKey = Key;}
-    inline void __cache_clear()                              {m_pCache = NULL;   m_CacheKey = (I)NULL;}
+    inline void __cache_clear()                              {m_pCache = NULL;   m_CacheKey = (I)0;}
     inline bool __cache_try(const I& Key)const               {ASSERT(!m_pCache || ((m_CacheKey == Key) == (m_pCache->first == Key))) return (m_pCache && m_CacheKey == Key) ? true : false;}
     //! @}
 
@@ -146,22 +146,22 @@ private:
 /* constructor */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen()noexcept
 : m_pCache   (NULL)
-, m_CacheKey ((I)NULL)
+, m_CacheKey ((I)0)
 {
-    m_aList.reserve(MAX(64u / sizeof(T), 2u));
+    m_aList.reserve(MAX(64ul / sizeof(T), 2ul));
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept
 : m_aList    (c.m_aList)
 , m_pCache   (NULL)
-, m_CacheKey ((I)NULL)
+, m_CacheKey ((I)0)
 {
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(coreLookupGen<K, I, T>&& m)noexcept
 : m_aList    (std::move(m.m_aList))
 , m_pCache   (NULL)
-, m_CacheKey ((I)NULL)
+, m_CacheKey ((I)0)
 {
 }
 

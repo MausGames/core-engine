@@ -48,7 +48,7 @@ coreError coreData::SetCurDir(const char* pcPath)
 #if defined(_CORE_WINDOWS_)
     if(SetCurrentDirectory(pcPath)) return CORE_OK;
 #elif !defined(_CORE_ANDROID_)
-    if(!chdir(pcString)) return CORE_OK;
+    if(!chdir(pcPath)) return CORE_OK;
 #endif
 
     return CORE_ERROR_SYSTEM;

@@ -22,8 +22,8 @@ bool coreSync::Create()
             return true;
         }
 
-        // flush all commands
-        glFlush();
+        // finish all commands
+        glFinish();
     }
 
     return false;

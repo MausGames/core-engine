@@ -26,11 +26,16 @@
 // texture class
 // TODO: check for max available texture units (only at start?)
 // TODO: implement sampler objects
+// TODO: implement light unbind (like in model and program)
 class coreTexture final : public coreResource
 {
 private:
     GLuint m_iTexture;                                   //!< texture identifier
-    coreVector2 m_vResolution;                           //!< texture resolution
+
+    coreVector2 m_vResolution;                           //!< resolution of the base level
+    coreByte    m_iLevels;                               //!< number of texture levels
+    GLenum      m_iFormat;                               //!< pixel data format (e.g. GL_RGBA)
+    GLenum      m_iType;                                 //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
 
@@ -48,6 +53,12 @@ public:
     coreError Unload()override;
     //! @}
 
+    //! handle texture memory
+    //! @{
+    void Create(const coreUint& iWidth, const coreUint& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const bool& bFilter);
+    void Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, const coreUint& iWidth, const coreUint& iHeight, const coreUint& iDataSize, const void* pData);
+    //! @}
+
     //! enable and disable the texture
     //! @{
     inline        void Enable (const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, this);}
@@ -55,17 +66,15 @@ public:
     static inline void DisableAll()                   {for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i) coreTexture::Disable(i);}
     //! @}
 
-    //! generate empty base texture
-    //! @{
-    inline void Generate() {ASSERT(!m_iTexture) glGenTextures(1, &m_iTexture);}
-    //! @}
-
     //! get object properties
     //! @{
     inline const GLuint&      GetTexture   ()const {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
+    inline const coreByte&    GetLevels    ()const {return m_iLevels;}
+    inline const GLenum&      GetFormat    ()const {return m_iFormat;}
+    inline const GLenum&      GetType      ()const {return m_iType;}
     //! @}
-
+    
 
 private:
     //! bind texture to texture unit

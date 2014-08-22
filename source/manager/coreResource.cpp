@@ -26,7 +26,7 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 /* constructor */
 coreResourceRelation::coreResourceRelation()noexcept
 {
-    // add object to resource manager
+    // bind object to resource manager
     Core::Manager::Resource->BindRelation(this);
 }
 
@@ -35,7 +35,7 @@ coreResourceRelation::coreResourceRelation()noexcept
 /* destructor */
 coreResourceRelation::~coreResourceRelation()
 {
-    // remove object from resource manager
+    // unbind object from resource manager
     Core::Manager::Resource->UnbindRelation(this);
 }
 

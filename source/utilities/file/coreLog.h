@@ -74,7 +74,7 @@ public:
 
     /*! handle OpenGL debug output */
     //! @{
-    friend void APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, void* pUserParam);
+    friend void GLAPIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
     void DebugOpenGL();
     //! @}
 

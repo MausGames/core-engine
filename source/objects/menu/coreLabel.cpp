@@ -51,9 +51,8 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
     // set font object
     m_pFont = Core::Manager::Resource->Get<coreFont>(pcFont);
     
-    // create own texture to display text
+    // allocate own texture to display text
     m_apTexture[0] = Core::Manager::Resource->LoadNew<coreTexture>();
-    m_apTexture[0]->Generate();
 
     // load shaders
     this->DefineProgram(Core::Manager::Resource->Load<coreProgram>("default_label_program", CORE_RESOURCE_UPDATE_AUTO,   NULL))
@@ -154,9 +153,6 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
-        // recreate empty base texture
-        m_apTexture[0]->Generate();
-
         // invoke texture generation
         m_vResolution = coreVector2(0.0f,0.0f);
         m_iGenerate   = 3;
@@ -167,23 +163,20 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 
 // ****************************************************************    
 // generate the texture
-// TODO: dynamic textures with glTexStorage2D only with delete ? (+benchmark)
-// TODO: PBOs ? (+benchmark)
+// TODO: use font-size calculation interface to check for font-size and pre-allocations
 void coreLabel::__Generate(const char* pcText, const bool& bSub)
 {
-    // create text surface with the font object
+    // create text surface data
     SDL_Surface* pSurface = m_pFont->CreateText(pcText, m_iHeight);
     ASSERT(pSurface->format->BitsPerPixel == 8)
 
-    // convert the data format
+    // convert text surface data
     SDL_Surface* pConvert = SDL_CreateRGBSurface(0, coreMath::NextAlign<4>(pSurface->w), pSurface->h, 24, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
 
     // get new texture resolution
     const coreVector2 vNewResolution = coreVector2(float(pSurface->w - 1), float(pSurface->h));
 
-    // generate the texture
-    m_apTexture[0]->Enable(0);
     if(bSub)
     {
         if(!m_vResolution.x)
@@ -194,21 +187,21 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
 
         // update only a specific area of the texture
         ASSERT((vNewResolution.x <= m_vResolution.x) && (vNewResolution.y <= m_vResolution.y))
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pConvert->w, pConvert->h, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
+        m_apTexture[0]->Modify(0, 0, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3, pConvert->pixels);
 
         // display only the specific area
         this->SetTexSize(vNewResolution / m_vResolution);
     }
     else
     {
-        // completely create the texture
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB /*8*/, pConvert->w, pConvert->h, 0, GL_RGB, GL_UNSIGNED_BYTE, pConvert->pixels);
+        // delete old texture
+        m_apTexture[0]->Unload();
 
-        // save the new texture resolution
+        // create new texture
+        m_apTexture[0]->Create(pConvert->w, pConvert->h, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, false);
+        m_apTexture[0]->Modify(0, 0, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3, pConvert->pixels);
+
+        // save new texture resolution
         m_vResolution = vNewResolution;
     }
 

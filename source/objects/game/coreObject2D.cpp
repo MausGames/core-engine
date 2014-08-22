@@ -16,7 +16,7 @@ coreModel* coreObject2D::s_pModel = NULL;
 void coreObject2D::Undefine()
 {
     // reset all resource and memory pointers
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
 }
 
@@ -40,7 +40,7 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
-    for(int i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     // draw the model
