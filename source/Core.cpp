@@ -19,13 +19,7 @@ CoreInput*           Core::Input             = NULL;
 coreMemoryManager*   Core::Manager::Memory   = NULL;
 coreResourceManager* Core::Manager::Resource = NULL;
 coreObjectManager*   Core::Manager::Object   = NULL;
-
-
-// ****************************************************************
-// context definition
-#if !defined(_CORE_GLES_)
-    thread_local GLEWContext g_GlewContext;
-#endif
+CoreApp*             Core::Application       = NULL;
 
 
 // ****************************************************************
@@ -34,23 +28,30 @@ Core::Core()noexcept
 {
     // init utilities
     Log    = new coreLog("logfile.html");
+    Log->Header("Utilities");
     Config = new coreConfig("config.ini");
     Rand   = new coreRand(2048);
-
+    
     // init main components
     System   = new CoreSystem();
     Graphics = new CoreGraphics();
     Audio    = new CoreAudio();
     Input    = new CoreInput();
 
-    // init manager
-    Log->Header("Manager");
+    // init managers
+    Log->Header("Managers");
     Manager::Memory   = new coreMemoryManager();
     Manager::Resource = new coreResourceManager();
     Manager::Object   = new coreObjectManager();
 
     // load language file
     Language = new coreLanguage(Config->GetString(CORE_CONFIG_SYSTEM_LANGUAGE));
+
+    // init application
+    Log->Header("Application Init");
+    Application = new CoreApp();
+    Manager::Resource->UpdateResources();
+    Log->Header("Application Run");
 }
 
 
@@ -58,7 +59,12 @@ Core::Core()noexcept
 // destructor
 Core::~Core()
 {
-    // delete manager
+    Core::Log->Header("Shut Down");
+
+    // delete application
+    SAFE_DELETE(Application)
+
+    // delete managers
     SAFE_DELETE(Manager::Object)
     SAFE_DELETE(Manager::Resource)
     SAFE_DELETE(Manager::Memory)
@@ -78,35 +84,51 @@ Core::~Core()
 
 
 // ****************************************************************
-// reset the engine
+// reset engine
 void Core::Reset()
 {
-    // set logging level
-    const coreLogLevel iLevel = Core::Log->GetLevel();
-    Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);
-    
+    Log->Warning("Reset started");
+
+    // save current state
+    const double      dTotalTime      = System->m_dTotalTime;
+    const coreUint    iCurFrame       = System->m_iCurFrame;
+    const float       fFOV            = Graphics->m_fFOV;
+    const float       fNearClip       = Graphics->m_fNearClip;
+    const float       fFarClip        = Graphics->m_fFarClip;
+    const coreVector3 vCamPosition    = Graphics->m_vCamPosition;
+    const coreVector3 vCamDirection   = Graphics->m_vCamDirection;
+    const coreVector3 vCamOrientation = Graphics->m_vCamOrientation;
+    float                   afTimeSpeed[CORE_SYSTEM_TIMES];    std::memcpy(afTimeSpeed, System->m_afTimeSpeed, sizeof(afTimeSpeed));
+    CoreGraphics::coreLight aLight     [CORE_GRAPHICS_LIGHTS]; std::memcpy(aLight,      Graphics->m_aLight,    sizeof(aLight));
+
     // shut down resource manager
-    Log->Header("Engine Reset");
     Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
 
     // shut down main components
     SAFE_DELETE(Input)
-    SAFE_DELETE(Audio)
     SAFE_DELETE(Graphics)
     SAFE_DELETE(System)
 
-    // re-init main components
+    // start up main components
     System   = new CoreSystem();
     Graphics = new CoreGraphics();
-    Audio    = new CoreAudio();
     Input    = new CoreInput();
 
-    // re-init resource manager
-    Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
-    Log->Header("Application Run");
+    // setup the application
+    Application->Setup();
 
-    // reset logging level
-    Core::Log->SetLevel(iLevel);
+    // start up resource manager
+    Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
+
+    // load former state
+    System->m_dTotalTime = dTotalTime;
+    System->m_iCurFrame  = iCurFrame;
+    Graphics->ResizeView(System->GetResolution(), fFOV, fNearClip, fFarClip);
+    Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
+    for(int i = 0; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
+    for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
+
+    Log->Warning("Reset finished");
 }
 
 
@@ -125,28 +147,22 @@ int main(int argc, char* argv[])
     // set new working directory
     coreData::SetCurDir("../..");
 
-    // run the engine
-    return Core::__Run();
+    // run engine
+    return Core::Run();
 }
 
 
 // ****************************************************************
-// run the engine
-int Core::__Run()
+// run engine
+int Core::Run()
 {
-    // init engine
-    Core* pEngine = new Core();
-
-    // init application
-    Core::Log->Header("Application Init");
-    CoreApp* pApplication = new CoreApp();
-    Core::Manager::Resource->UpdateResources();
-    Core::Log->Header("Application Run");
+    // create engine instance
+    Core Engine;
 
     // set logging level
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !DEFINED(_CORE_DEBUG_))
     {
-        Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR | CORE_LOG_LEVEL_LIST);
+        Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR);
         Core::Log->Warning("Logging level reduced");
     }
 
@@ -157,8 +173,8 @@ int Core::__Run()
         Core::Input->__UpdateButtons();
 
         // move and render the application
-        pApplication->Move();
-        pApplication->Render();
+        Core::Application->Move();
+        Core::Application->Render();
 
         // update all remaining components
         Core::Graphics->__UpdateScene();
@@ -175,11 +191,6 @@ int Core::__Run()
 
     // reset logging level
     Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);
-
-    // delete application and engine
-    Core::Log->Header("Shut Down");
-    SAFE_DELETE(pApplication)
-    SAFE_DELETE(pEngine)
-
+   
     return 0;
 }

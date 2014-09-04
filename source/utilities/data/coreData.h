@@ -11,7 +11,6 @@
 #define _CORE_GUARD_DATA_H_
 
 // TODO: convert return-strings into one single big memory-buffer ?
-// TODO: check if FindFirstFile really needs full path
 
 
 // ****************************************************************

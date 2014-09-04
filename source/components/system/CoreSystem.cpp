@@ -8,12 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#if defined(_CORE_GLES_)
-    #define CORE_SYSTEM_CONTEXT SDL_GL_CONTEXT_PROFILE_ES
-#else
-    #define CORE_SYSTEM_CONTEXT SDL_GL_CONTEXT_PROFILE_CORE
-#endif
-
 
 // ******************************************************************
 // constructor
@@ -50,7 +44,7 @@ CoreSystem::CoreSystem()noexcept
     const int iNumModes = SDL_GetNumDisplayModes(0);
     if(iNumModes)
     {
-        Core::Log->ListStart("Available Screen Resolutions");
+        Core::Log->ListStartInfo("Available Screen Resolutions");
         {
             for(int i = 0; i < iNumModes; ++i)
             {
@@ -70,7 +64,7 @@ CoreSystem::CoreSystem()noexcept
                 {
                     // add new resolution
                     m_avAvailable.push_back(vMode);
-                    Core::Log->ListEntry("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : "");
+                    Core::Log->ListAdd("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : "");
                 }
             }
         }
@@ -103,7 +97,7 @@ CoreSystem::CoreSystem()noexcept
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(FLOOR(fForceOpenGL)));
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(FLOOR(fForceOpenGL * 10.0f)) % 10);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  CORE_SYSTEM_CONTEXT);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_CORE);
     }
     if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) || DEFINED(_CORE_DEBUG_))
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -147,22 +141,26 @@ CoreSystem::CoreSystem()noexcept
 #else
     std::memset(m_aaiCPUID, 0, sizeof(m_aaiCPUID));
 #endif
-
-    // check for SSE support
-    m_abSSE[0] = (m_aaiCPUID[1][3] & 0x02000000) ? true : false;
-    m_abSSE[1] = (m_aaiCPUID[1][3] & 0x04000000) ? true : false;
-    m_abSSE[2] = (m_aaiCPUID[1][2] & 0x00000001) ? true : false;
-    m_abSSE[3] = (m_aaiCPUID[1][2] & 0x00080000) ? true : false;
-    m_abSSE[4] = (m_aaiCPUID[1][2] & 0x00100000) ? true : false;
+    
+    // check for SIMD support
+         if(m_aaiCPUID[1][2] & BIT(20)) m_fSSE = 4.2f;
+    else if(m_aaiCPUID[1][2] & BIT(19)) m_fSSE = 4.1f;
+    else if(m_aaiCPUID[1][2] & BIT( 0)) m_fSSE = 3.0f;
+    else if(m_aaiCPUID[1][3] & BIT(26)) m_fSSE = 2.0f;
+    else if(m_aaiCPUID[1][3] & BIT(25)) m_fSSE = 1.0f;
+                                   else m_fSSE = 0.0f;
+         if(m_aaiCPUID[1][1] & BIT( 5)) m_fAVX = 2.0f;
+    else if(m_aaiCPUID[1][2] & BIT(28)) m_fAVX = 1.0f;
+                                   else m_fAVX = 0.0f;
 
     // log processor information
-    Core::Log->ListStart("Platform Information");
+    Core::Log->ListStartInfo("Platform Information");
     {
-        Core::Log->ListEntry(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
-        Core::Log->ListEntry(CORE_LOG_BOLD("System Memory:") " %d MB",                           SDL_GetSystemRAM());
-        Core::Log->ListEntry(CORE_LOG_BOLD("SSE Support:")   " %s%s%s%s%s",                      m_abSSE[0] ? "1" : "", m_abSSE[1] ? " 2" : "", m_abSSE[2] ? " 3" : "", m_abSSE[3] ? " 4.1" : "", m_abSSE[4] ? " 4.2" : "");
-        Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
-        Core::Log->ListEntry(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:") " %d MB",                           SDL_GetSystemRAM());
+        Core::Log->ListAdd(CORE_LOG_BOLD("SIMD Support:")  " %s, %s",                          m_fSSE ? PRINT("SSE %.1f", m_fSSE) : "-", m_fAVX ? PRINT("AVX %.1f", m_fAVX) : "-");
+        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
+        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
     }
     Core::Log->ListEnd();
 }

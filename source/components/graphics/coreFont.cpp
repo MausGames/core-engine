@@ -29,7 +29,7 @@ coreFont::~coreFont()
 // load font resource data
 coreError coreFont::Load(coreFile* pFile)
 {
-    ASSERT_IF(m_pFile)    return CORE_INVALID_CALL;
+    WARN_IF(m_pFile)      return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_ERROR_FILE;
 

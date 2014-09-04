@@ -14,8 +14,9 @@
 // TODO: FOV and clipping planes should be controlled differently
 // TODO: implement post-processing pipeline (in CoreGraphics or own class?)
 // TODO: implement conditional rendering (e.g. occlusion queries)
-// TODO: persistend mapped buffers, multidrawindirect, array textures
+// TODO: multidrawindirect, array textures
 // TODO: wrap glDisable, glDepthMask, glCullFace, etc. within the class
+// TODO: different names for camera, view, lights
 
 
 // ****************************************************************
@@ -40,8 +41,8 @@ private:
 
 
 private:
-    SDL_GLContext m_RenderContext;              //!< primary OpenGL context for render operations
-    SDL_GLContext m_ResourceContext;            //!< secondary OpenGL context for resource loading
+    SDL_GLContext m_pRenderContext;             //!< primary OpenGL context for render operations
+    SDL_GLContext m_pResourceContext;           //!< secondary OpenGL context for resource loading
 
     float m_fFOV;                               //!< field-of-view
     float m_fNearClip;                          //!< near clipping plane
@@ -54,7 +55,7 @@ private:
 
     coreMatrix4 m_mPerspective;                 //!< perspective projection matrix
     coreMatrix4 m_mOrtho;                       //!< orthogonal projection matrix
-    coreVector4 m_vCurResolution;               //!< current viewport resolution
+    coreVector4 m_vViewResolution;              //!< current viewport resolution
 
     coreLight m_aLight[CORE_GRAPHICS_LIGHTS];   //!< global ambient lights
 
@@ -90,8 +91,8 @@ public:
 
     //! get component properties
     //! @{
-    inline const SDL_GLContext& GetRenderContext  ()const                    {return m_RenderContext;}
-    inline const SDL_GLContext& GetResourceContext()const                    {return m_ResourceContext;}
+    inline const SDL_GLContext& GetRenderContext  ()const                    {return m_pRenderContext;}
+    inline const SDL_GLContext& GetResourceContext()const                    {return m_pResourceContext;}
     inline const float&         GetFOV            ()const                    {return m_fFOV;}
     inline const float&         GetNearClip       ()const                    {return m_fNearClip;}
     inline const float&         GetFarClip        ()const                    {return m_fFarClip;}
@@ -101,7 +102,7 @@ public:
     inline const coreMatrix4&   GetCamera         ()const                    {return m_mCamera;}
     inline const coreMatrix4&   GetPerspective    ()const                    {return m_mPerspective;}
     inline const coreMatrix4&   GetOrtho          ()const                    {return m_mOrtho;}
-    inline const coreVector4&   GetResolution     ()const                    {return m_vCurResolution;}
+    inline const coreVector4&   GetViewResolution ()const                    {return m_vViewResolution;}
     inline const coreLight&     GetLight          (const coreByte& iID)const {ASSERT(iID < CORE_GRAPHICS_LIGHTS) return m_aLight[iID];}
     inline const GLuint&        GetUniformBuffer  ()const                    {return m_iUniformBuffer;}
     //! @}

@@ -29,7 +29,7 @@ enum coreMusicRepeat
 // TODO: consider threaded music update (->coreMusicPlayer)
 // TODO: implement global music volume change (music-player changes volume already)
 // TODO: music which is inactive should not be in memory (maybe MusicPlayer?), too heavy with many files
-class coreMusic final : public coreResourceRelation
+class coreMusic final
 {
 private:
     ALuint m_aiBuffer[2];         //!< sound buffers for streaming
@@ -105,11 +105,6 @@ public:
 
 
 private:
-    //! reset with the resource manager
-    //! @{
-    void __Reset(const coreResourceReset& bInit)override;
-    //! @}
-
     //! read from music stream and update sound buffer
     //! @{
     bool __Stream(const ALuint& iBuffer)hot_func;
@@ -173,7 +168,7 @@ public:
 
     //! access music objects
     //! @{
-    inline const coreMusic* GetMusic(const coreUint& iIndex)const {ASSERT_IF(iIndex >= m_apMusic.size()) return m_pEmptyMusic; return m_apMusic[iIndex];}
+    inline const coreMusic* GetMusic(const coreUint& iIndex)const {WARN_IF(iIndex >= m_apMusic.size()) return m_pEmptyMusic; return m_apMusic[iIndex];}
     inline coreMusic*       Control()const                        {ASSERT(m_pCurMusic != m_pEmptyMusic) return m_pCurMusic;}
     //! @}
 

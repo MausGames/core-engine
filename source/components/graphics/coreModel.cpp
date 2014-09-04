@@ -174,9 +174,9 @@ coreError coreModel::Load(coreFile* pFile)
 
     coreFileUnload Unload(pFile);
 
-    ASSERT_IF(!m_apiVertexBuffer.empty()) return CORE_INVALID_CALL;
-    if(!pFile)                            return CORE_INVALID_INPUT;
-    if(!pFile->GetData())                 return CORE_ERROR_FILE;
+    WARN_IF(!m_apiVertexBuffer.empty()) return CORE_INVALID_CALL;
+    if(!pFile)                          return CORE_INVALID_INPUT;
+    if(!pFile->GetData())               return CORE_ERROR_FILE;
 
     // extract model data
     const char* pcData = r_cast<const char*>(pFile->GetData());
@@ -390,7 +390,7 @@ void coreModel::Enable()
     if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
     else
     {
-        if(GLEW_ARB_vertex_array_object)
+        if(CORE_GL_SUPPORT(ARB_vertex_array_object))
         {
             // create vertex array object
             glGenVertexArrays(1, &m_iVertexArray);
@@ -418,7 +418,7 @@ void coreModel::Disable(const bool& bFull)
     if(bFull)
     {
         // unbind vertex array object
-        if(GLEW_ARB_vertex_array_object) glBindVertexArray(0);
+        if(CORE_GL_SUPPORT(ARB_vertex_array_object)) glBindVertexArray(0);
         else bFullUnbind = true;
     }
 
@@ -438,17 +438,14 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
     if(m_apiVertexBuffer.empty()) m_iNumVertices = iNumVertices;
     ASSERT(m_iNumVertices == iNumVertices)
 
-    // allocate vertex buffer
-    coreVertexBuffer* pBuffer = new coreVertexBuffer();
-
     // create vertex buffer
-    pBuffer->Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
-    m_apiVertexBuffer.push_back(pBuffer);
+    m_apiVertexBuffer.push_back(new coreVertexBuffer());
+    m_apiVertexBuffer.back()->Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
 
     // disable current model object (to fully enable the next model) 
     coreModel::Disable(false);
 
-    return pBuffer;
+    return m_apiVertexBuffer.back();
 }
 
 
@@ -473,7 +470,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const 
     // disable current model object (to unbind current VAO)
     coreModel::Disable(true);
 
-    // create index buffer silently
+    // create index buffer
     m_iIndexBuffer.Create (GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iStorageType);
     coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
 

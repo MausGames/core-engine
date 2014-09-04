@@ -40,7 +40,7 @@ coreError coreShader::Load(coreFile* pFile)
 {
     coreFileUnload Unload(pFile);
 
-    ASSERT_IF(m_iShader)  return CORE_INVALID_CALL;
+    WARN_IF(m_iShader)    return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_ERROR_FILE;
 
@@ -61,9 +61,9 @@ coreError coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // check for OpenGL extension and version
-    if((iType == GL_TESS_CONTROL_SHADER || iType == GL_TESS_EVALUATION_SHADER) && !GLEW_ARB_tessellation_shader) return CORE_OK;
-    if((iType == GL_GEOMETRY_SHADER)                                           && !GLEW_VERSION_3_2)             return CORE_OK;
+    // check for OpenGL extensions
+    if((iType == GL_TESS_CONTROL_SHADER || iType == GL_TESS_EVALUATION_SHADER) && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
+    if((iType == GL_GEOMETRY_SHADER)                                           && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
     
     // load quality level and global shader data
     const char* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
@@ -99,8 +99,8 @@ coreError coreShader::Load(coreFile* pFile)
 
             // write error-log
             Core::Log->Warning("Shader (%s) could not be compiled", pFile->GetPath());
-            Core::Log->ListStart("Shader Error Log");
-            Core::Log->ListEntry(pcLog);
+            Core::Log->ListStartWarning("Shader Error Log");
+            Core::Log->ListAdd(pcLog);
             Core::Log->ListEnd();
 
             SAFE_DELETE_ARRAY(pcLog)
@@ -147,7 +147,7 @@ void coreShader::__LoadGlobalCode()
 
     // retrieve global shader file
     coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
-    ASSERT_IF(!pFile->GetData()) return;
+    WARN_IF(!pFile->GetData()) return;
 
     // copy and unload data
     s_asGlobalCode[1].append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
@@ -194,7 +194,7 @@ coreError coreProgram::Load(coreFile* pFile)
     // check for shader-program status
     if(m_iStatus < CORE_SHADER_DEFINED) return CORE_BUSY;
     if(m_iStatus > CORE_SHADER_DEFINED) return CORE_INVALID_CALL;
-    ASSERT_IF(m_iProgram)               return CORE_INVALID_CALL;
+    WARN_IF(m_iProgram)                 return CORE_INVALID_CALL;
 
     // load all required shader objects
     FOR_EACH(it, m_apShader)
@@ -239,7 +239,7 @@ coreError coreProgram::Load(coreFile* pFile)
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
 
     // bind instancing attribute locations
-    if(GLEW_ARB_instanced_arrays && GLEW_ARB_vertex_array_object) 
+    if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_vertex_array_object))
     {
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM, CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW);
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_POSITION);
@@ -361,7 +361,7 @@ bool coreProgram::Enable()
         this->SendUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(),      false);
         this->SendUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
         this->SendUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
-        this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetResolution());
+        this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetViewResolution());
 
         // forward ambient data
         for(coreByte i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
@@ -418,11 +418,11 @@ void coreProgram::__WriteLog()const
 
         // write error-log
         Core::Log->Warning("Program (%s) could not be linked or validated", m_sPath.c_str());
-        Core::Log->ListStart("Program Error Log");
+        Core::Log->ListStartWarning("Program Error Log");
         {
             FOR_EACH(it, m_apShader)
-                Core::Log->ListEntry("%s (%s)", it->GetHandle()->GetName(), (*it)->GetPath());
-            Core::Log->ListEntry(pcLog);
+                Core::Log->ListAdd("%s (%s)", it->GetHandle()->GetName(), (*it)->GetPath());
+            Core::Log->ListAdd(pcLog);
         }
         Core::Log->ListEnd();
 

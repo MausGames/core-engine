@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // system definitions
-#define CORE_SYSTEM_TIMES 4   //!< number of dynamic frame times
+#define CORE_SYSTEM_TIMES (4)   //!< number of dynamic frame times (signed)
 
 
 // ****************************************************************
@@ -38,12 +38,13 @@ private:
     coreUint m_iCurFrame;                      //!< current frame number since start of the application
     coreByte m_iSkipFrame;                     //!< skip frame status
 
-    double   m_dPerfFrequency;                 //!< high precision time coefficient
-    uint64_t m_iPerfTime;                      //!< high precision time value
+    double     m_dPerfFrequency;               //!< high precision time coefficient
+    coreUint64 m_iPerfTime;                    //!< high precision time value
 
     coreByte m_iNumCores;                      //!< number of logical processor cores
-    int  m_aaiCPUID[2][4];                     //!< features of the processor
-    bool m_abSSE[5];                           //!< available SSE versions (1, 2, 3, 4.1, 4.2)
+    float m_fSSE;                              //!< available SSE version
+    float m_fAVX;                              //!< available AVX version
+    int   m_aaiCPUID[2][4];                    //!< features of the processor
 
 
 private:
@@ -87,11 +88,8 @@ public:
     //! check hardware support
     //! @{
     inline const coreByte& SupportNumCores()const {return m_iNumCores;}
-    inline const bool&     SupportSSE     ()const {return m_abSSE[0];}
-    inline const bool&     SupportSSE2    ()const {return m_abSSE[1];}
-    inline const bool&     SupportSSE3    ()const {return m_abSSE[2];}
-    inline const bool&     SupportSSE41   ()const {return m_abSSE[3];}
-    inline const bool&     SupportSSE42   ()const {return m_abSSE[4];}
+    inline const float&    SupportSSE     ()const {return m_fSSE;}
+    inline const float&    SupportAVX     ()const {return m_fAVX;}
     //! @}
 
 

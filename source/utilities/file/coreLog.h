@@ -12,7 +12,7 @@
 
 // TODO: define more log capturing spots, not only resource-loading/unloading and (few) errors
 // TODO: implement stack trace, described in OpenGL Insights (tested on MSVC, works only with available debug symbols)
-// TODO: reorganize different log message types, look at other libs
+// TODO: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts, bacon
 
 
 // ****************************************************************
@@ -26,11 +26,9 @@
 enum coreLogLevel : coreByte
 {
     CORE_LOG_LEVEL_NOTHING = 0x00,   //!< log nothing
-    CORE_LOG_LEVEL_INFO    = 0x01,   //!< log info messages
+    CORE_LOG_LEVEL_INFO    = 0x01,   //!< log info messages and headers
     CORE_LOG_LEVEL_WARNING = 0x02,   //!< log warning messages
     CORE_LOG_LEVEL_ERROR   = 0x04,   //!< log error messages
-    CORE_LOG_LEVEL_HEADER  = 0x08,   //!< log big headers
-    CORE_LOG_LEVEL_LIST    = 0x10,   //!< log generic lists
     CORE_LOG_LEVEL_ALL     = 0xFF    //!< log everything
 };
 EXTEND_ENUM(coreLogLevel)
@@ -47,6 +45,8 @@ private:
     SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
     SDL_SpinLock m_iLock;         //!< spinlock to prevent asynchronous log access
 
+    bool m_bListStatus;           //!< currently writing a list
+
 
 public:
     explicit coreLog(const char* pcPath)noexcept;
@@ -60,10 +60,11 @@ public:
 
     /*! special functions */
     //! @{
-    template <typename... A> inline void Header   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_HEADER) this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> inline void ListStart(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_LIST)   this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>");}
-    template <typename... A> inline void ListEntry(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_LIST)   this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
-    inline void ListEnd()                                                            {if(m_iLevel & CORE_LOG_LEVEL_LIST)   this->__Write(false, "</ul>");}
+    template <typename... A> inline void Header          (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline void ListStartInfo   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
+    template <typename... A> inline void ListStartWarning(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_WARNING) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
+    template <typename... A> inline void ListAdd         (const char* pcText, A&&... vArgs) {if(m_bListStatus)                      this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
+    inline                          void ListEnd         ()                                 {if(m_bListStatus)                     {this->__Write(false, "</ul>"); m_bListStatus = false;}}
     //! @}
 
     /*! control logging level */

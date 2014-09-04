@@ -46,7 +46,7 @@ coreError coreConfig::Load()
     }
     
     // write all loaded configuration values to the log file
-    Core::Log->ListStart("Configuration Values"); 
+    Core::Log->ListStartInfo("Configuration Values"); 
     {
         // retrieve all sections
         CSimpleIni::TNamesDepend apSection;
@@ -61,7 +61,7 @@ coreError coreConfig::Load()
             FOR_EACH(pKey, apKey)
             {
                 // write specific configuration value
-                Core::Log->ListEntry(CORE_LOG_BOLD("%s.%s:") " %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s.%s:") " %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
             }
         }
     }

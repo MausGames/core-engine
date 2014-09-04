@@ -58,7 +58,7 @@ void coreTextBox::Move()
     if(this->IsClicked()) this->SetInput(true);
     if(m_bInput)
     {
-        if(Core::Input->GetKeyboardButton(KEY(ESCAPE), CORE_INPUT_PRESS))
+        if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(ESCAPE), CORE_INPUT_PRESS))
         {
             // cancel and reset text-input
             m_sText = m_sPrevious;

@@ -16,6 +16,7 @@ coreLog::coreLog(const char* pcPath)noexcept
 , m_iLevel      (CORE_LOG_LEVEL_ALL)
 , m_iMainThread (0)
 , m_iLock       (0)
+, m_bListStatus (false)
 {
     // open and reset log file
     std::FILE* pFile = std::fopen(m_sPath.c_str(), "w");
@@ -37,8 +38,8 @@ coreLog::coreLog(const char* pcPath)noexcept
         std::fputs("</style>                                        \n", pFile);
 
         // write application data and timestamp
-        std::fprintf(pFile, CORE_LOG_BOLD("Executable:") " %s %s %s    <br />\n", coreData::AppName(), __DATE__, __TIME__);
-        std::fprintf(pFile, CORE_LOG_BOLD("Started on:") " %s %s <br /><br />\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(pFile, CORE_LOG_BOLD("Executable:") " %s %s %s <br />\n", coreData::AppName(), __DATE__, __TIME__);
+        std::fprintf(pFile, CORE_LOG_BOLD("Started on:") " %s %s    <br />\n", coreData::DateString(), coreData::TimeString());
 
         // close log file
         std::fclose(pFile);
@@ -56,13 +57,13 @@ void GLAPIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSe
     coreLog* pLog = s_cast<coreLog*>(c_cast<void*>(pUserParam));
 
     // write message
-    pLog->ListStart("OpenGL Debug Message");
+    pLog->ListStartWarning("OpenGL Debug Message");
     {
-        pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("ID:")       "     %d</span>", iID);
-        pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Source:")   " 0x%04X</span>", iSource);
-        pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Type:")     " 0x%04X</span>", iType);
-        pLog->ListEntry("<span class=\"gl\">" CORE_LOG_BOLD("Severity:") " 0x%04X</span>", iSeverity);
-        pLog->ListEntry(pcMessage);
+        pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("ID:")       "     %d</span>", iID);
+        pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("Source:")   " 0x%04X</span>", iSource);
+        pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("Type:")     " 0x%04X</span>", iType);
+        pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("Severity:") " 0x%04X</span>", iSeverity);
+        pLog->ListAdd(pcMessage);
     }
     pLog->ListEnd();
 
@@ -76,7 +77,7 @@ void coreLog::DebugOpenGL()
 {
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !DEFINED(_CORE_DEBUG_)) return;
 
-    if(GLEW_KHR_debug)
+    if(CORE_GL_SUPPORT(KHR_debug))
     {
         // enable synchronous debug output
         glEnable(GL_DEBUG_OUTPUT);

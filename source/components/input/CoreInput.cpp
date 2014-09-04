@@ -18,7 +18,7 @@
 // ****************************************************************
 // constructor
 CoreInput::coreKeyboard::coreKeyboard()noexcept
-: iLast (KEY(UNKNOWN))
+: iLast (CORE_INPUT_KEY(UNKNOWN))
 , cChar ('\0')
 {
     std::memset(aabButton, 0, sizeof(aabButton));
@@ -71,7 +71,7 @@ CoreInput::CoreInput()noexcept
     const int iNumJoysticks = SDL_NumJoysticks();
     if(iNumJoysticks)
     {
-        Core::Log->ListStart("Joysticks/Gamepads found");
+        Core::Log->ListStartInfo("Joysticks and Gamepads found");
         {
             m_aJoystick.reserve(iNumJoysticks);
             for(int i = 0; i < iNumJoysticks; ++i)
@@ -82,12 +82,12 @@ CoreInput::CoreInput()noexcept
                 Joystick.pHandle = SDL_JoystickOpen(i);
                 m_aJoystick.push_back(Joystick);
 
-                Core::Log->ListEntry("%s (%s)", this->GetJoystickName(i), this->GetJoystickGUID(i));
+                Core::Log->ListAdd("%s (%s)", this->GetJoystickName(i), this->GetJoystickGUID(i));
             }
         }
         Core::Log->ListEnd();
     }
-    else Core::Log->Info("No Joysticks/Gamepads found");
+    else Core::Log->Info("No Joysticks or Gamepads found");
 
     // append empty joystick device to prevent problems
     m_aJoystick.push_back(coreJoystick());
@@ -157,7 +157,7 @@ void CoreInput::ShowCursor(const bool& bStatus)
 
 // ****************************************************************
 // control mouse with keyboard
-void CoreInput::UseMouseWithKeyboard(const coreKey& iLeft, const coreKey& iRight, const coreKey& iUp, const coreKey& iDown, const coreKey& iButton1, const coreKey& iButton2, const float& fSpeed)
+void CoreInput::UseMouseWithKeyboard(const coreInputKey& iLeft, const coreInputKey& iRight, const coreInputKey& iUp, const coreInputKey& iDown, const coreInputKey& iButton1, const coreInputKey& iButton2, const float& fSpeed)
 {
     // TODO: implement function
 }
@@ -200,10 +200,10 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
     // press keyboard button
     case SDL_KEYDOWN:
         this->SetKeyboardButton(Event.key.keysym.scancode, true);
-             if(Event.key.keysym.scancode == KEY(BACKSPACE))   this->SetKeyboardChar(SDLK_BACKSPACE);
-        else if(Event.key.keysym.scancode == KEY(RETURN))      this->SetKeyboardChar(SDLK_RETURN);
-        else if(Event.key.keysym.scancode == KEY(KP_ENTER))    this->SetKeyboardChar(SDLK_RETURN);
-        else if(Event.key.keysym.scancode == KEY(PRINTSCREEN)) return false;   
+             if(Event.key.keysym.scancode == CORE_INPUT_KEY(BACKSPACE))   this->SetKeyboardChar(SDLK_BACKSPACE);
+        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(RETURN))      this->SetKeyboardChar(SDLK_RETURN);
+        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(KP_ENTER))    this->SetKeyboardChar(SDLK_RETURN);
+        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;   
         break;
 
     // release keyboard button
@@ -255,7 +255,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // press finger
     case SDL_FINGERDOWN:
-        this->SetTouchButton((coreUint)Event.tfinger.fingerId, true);
+        this->SetTouchButton  ((coreUint)Event.tfinger.fingerId, true);
         this->SetTouchPosition((coreUint)Event.tfinger.fingerId, coreVector2(Event.tfinger.x, -Event.tfinger.y) + coreVector2(-0.5f,0.5f));
         break;
 
@@ -283,14 +283,14 @@ void CoreInput::__UpdateButtons()
     // process keyboard inputs
     for(int i = 0; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
-             if( m_Keyboard.aabButton[i][0]) CORE_INPUT_PRESS(m_Keyboard.aabButton[i])
+             if( m_Keyboard.aabButton[i][0]) CORE_INPUT_PRESS  (m_Keyboard.aabButton[i])
         else if(!m_Keyboard.aabButton[i][0]) CORE_INPUT_RELEASE(m_Keyboard.aabButton[i])
     }
 
     // process mouse inputs
     for(int i = 0; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
-             if( m_Mouse.aabButton[i][0]) CORE_INPUT_PRESS(m_Mouse.aabButton[i])
+             if( m_Mouse.aabButton[i][0]) CORE_INPUT_PRESS  (m_Mouse.aabButton[i])
         else if(!m_Mouse.aabButton[i][0]) CORE_INPUT_RELEASE(m_Mouse.aabButton[i])
     }
 
@@ -299,7 +299,7 @@ void CoreInput::__UpdateButtons()
     {
         for(int i = 0; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
-                 if( it->aabButton[i][0]) CORE_INPUT_PRESS(it->aabButton[i])
+                 if( it->aabButton[i][0]) CORE_INPUT_PRESS  (it->aabButton[i])
             else if(!it->aabButton[i][0]) CORE_INPUT_RELEASE(it->aabButton[i])
         }
     }
@@ -307,7 +307,7 @@ void CoreInput::__UpdateButtons()
     // process touch inputs
     for(int i = 0; i < CORE_INPUT_FINGERS; ++i)
     {
-             if( m_aTouch[i].abButton[0]) CORE_INPUT_PRESS(m_aTouch[i].abButton)
+             if( m_aTouch[i].abButton[0]) CORE_INPUT_PRESS  (m_aTouch[i].abButton)
         else if(!m_aTouch[i].abButton[0]) CORE_INPUT_RELEASE(m_aTouch[i].abButton)
     }
 
@@ -329,7 +329,7 @@ void CoreInput::__UpdateButtons()
 void CoreInput::__ClearButtons()
 {
     // clear all last pressed buttons
-    m_Keyboard.iLast = KEY(UNKNOWN);
+    m_Keyboard.iLast = CORE_INPUT_KEY(UNKNOWN);
     m_Mouse.iLast    = -1;
     FOR_EACH(it, m_aJoystick)
         it->iLast = -1;

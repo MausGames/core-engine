@@ -24,7 +24,7 @@ CoreAudio::CoreAudio()noexcept
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
-        Core::Log->Error("OpenAL context could not be created (ALC Error Code: %d)", alcGetError(m_pDevice));
+        Core::Log->Error("OpenAL context could not be created (ALC Error Code: 0x%04X)", alcGetError(m_pDevice));
     else Core::Log->Info("OpenAL context created");
 
     // generate sound sources
@@ -32,18 +32,18 @@ CoreAudio::CoreAudio()noexcept
     alGenSources(m_iNumSources, m_pSource);
 
     // log audio device information
-    Core::Log->ListStart("Audio Device Information");
+    Core::Log->ListStartInfo("Audio Device Information");
     {
-        Core::Log->ListEntry(CORE_LOG_BOLD("Device:")   " %s", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
-        Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
-        Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
-        Core::Log->ListEntry(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
-        Core::Log->ListEntry(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
+        Core::Log->ListAdd(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
     }
     Core::Log->ListEnd();
 
     // reset listener
-    const coreVector3 vInit = coreVector3(1.0f,0.0f,0.0f);
+    constexpr_var coreVector3 vInit = coreVector3(1.0f,0.0f,0.0f);
     this->SetListener(vInit, vInit, vInit, vInit);
     this->SetListener(0.0f);
 
@@ -52,7 +52,7 @@ CoreAudio::CoreAudio()noexcept
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: %d)", iError);
+    if(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: 0x%04X)", iError);
 }
 
 

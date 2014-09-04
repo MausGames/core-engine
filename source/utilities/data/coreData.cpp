@@ -110,7 +110,7 @@ bool coreData::FileExists(const char* pcPath)
 /* retrieve relative paths of all files from a folder */
 coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput)
 {
-    ASSERT_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
+    WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
 #if defined(_CORE_WINDOWS_)
 
@@ -118,7 +118,7 @@ coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::ve
     WIN32_FIND_DATA hFile;
 
     // open folder
-    hFolder = FindFirstFile(PRINT("%s/%s/%s", coreData::GetCurDir(), pcPath, pcFilter), &hFile);
+    hFolder = FindFirstFile(PRINT("%s/%s", pcPath, pcFilter), &hFile);
     if(hFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s) could not be opened", pcPath);
@@ -233,7 +233,7 @@ const char* coreData::DateTimePrint(const char* pcFormat)
 /* safely get last characters of a string */
 const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 {
-    ASSERT_IF(!pcInput) return "";
+    WARN_IF(!pcInput) return "";
 
     const coreUint iLen = std::strlen(pcInput);
     return pcInput + (iLen - MIN(iLen, iNum));
@@ -244,7 +244,7 @@ const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 /* safely get file extension */
 const char* coreData::StrExtension(const char* pcInput)
 {
-    ASSERT_IF(!pcInput) return "";
+    WARN_IF(!pcInput) return "";
 
     const char* pcDot = std::strrchr(pcInput, '.');
     return pcDot ? pcDot+1 : pcInput;
@@ -255,7 +255,7 @@ const char* coreData::StrExtension(const char* pcInput)
 /* safely get version number */
 float coreData::StrVersion(const char* pcInput)
 {
-    ASSERT_IF(!pcInput) return 0.0f;
+    WARN_IF(!pcInput) return 0.0f;
 
     const char* pcDot = std::strchr(pcInput, '.');
     return pcDot ? (float((pcDot-1)[0] - '0') + 0.1f * float((pcDot+1)[0] - '0')) : 0.0f;

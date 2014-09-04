@@ -131,7 +131,7 @@ coreError coreLanguage::Load(const char* pcPath)
         {
             // extract key
             AssignLambda(&sKey);
-            ASSERT_IF(sKey.empty()) sKey.assign(1, ' ');
+            WARN_IF(sKey.empty()) sKey.assign(1, ' ');
         }
         else if(*pcTo == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {

@@ -196,17 +196,13 @@ int coreResourceManager::__InitThread()
         Core::Log->Error("Resource context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Resource context assigned to resource thread");
 
-    // init GLEW on resource context
-    const GLenum iError = glewInit();
-    if(iError != GLEW_OK)
-        Core::Log->Error("GLEW could not be initialized on resource context (GLEW: %s)", glewGetErrorString(iError));
-    else Core::Log->Info("GLEW initialized on resource context (%s)", glewGetString(GLEW_VERSION));
+    // init OpenGL
+    coreInitOpenGL();
 
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
     // setup texturing
-    glDisable(GL_DITHER);
     glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);

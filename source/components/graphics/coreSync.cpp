@@ -15,7 +15,7 @@ bool coreSync::Create()
 {
     if(!m_pSync)
     {
-        if(GLEW_ARB_sync)
+        if(CORE_GL_SUPPORT(ARB_sync))
         {
             // generate new sync object
             m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);

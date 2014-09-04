@@ -18,50 +18,43 @@ CoreGraphics::CoreGraphics()noexcept
 : m_vCamPosition    (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamDirection   (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamOrientation (coreVector3(0.0f,0.0f,0.0f))
-, m_vCurResolution  (coreVector4(0.0f,0.0f,0.0f,0.0f))
+, m_vViewResolution (coreVector4(0.0f,0.0f,0.0f,0.0f))
 {
     Core::Log->Header("Graphics Interface");
 
     // create render context
-    m_RenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
-    if(!m_RenderContext)
-        Core::Log->Error("Render context could not be created (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("Render context created");
+    m_pRenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
+    if(!m_pRenderContext) Core::Log->Error("Render context could not be created (SDL: %s)", SDL_GetError());
+                     else Core::Log->Info ("Render context created");
 
-    // init GLEW on render context
-    const GLenum iError = glewInit();
-    if(iError != GLEW_OK)
-        Core::Log->Error("GLEW could not be initialized on render context (GLEW: %s)", glewGetErrorString(iError));
-    else Core::Log->Info("GLEW initialized on render context (%s)", glewGetString(GLEW_VERSION));
+    // init OpenGL
+    coreInitOpenGL();
 
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
-    // log video card information
-    Core::Log->ListStart("Video Card Information");
-    {
-        Core::Log->ListEntry(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
-        Core::Log->ListEntry(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
-        Core::Log->ListEntry(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
-        Core::Log->ListEntry(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Core::Log->ListEntry(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
-    }
-    Core::Log->ListEnd();
-
-    // set numerical OpenGL version
+    // get OpenGL version
     const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
     m_fOpenGL = fForceOpenGL ? fForceOpenGL : coreData::StrVersion(r_cast<const char*>(glGetString(GL_VERSION)));
     m_fGLSL   = coreData::StrVersion(r_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
-    // check OpenGL version
-    if(m_fOpenGL < 2.0f) Core::Log->Error("Minimum system requirements not met, video card with at least OpenGL 2.0 required");
+    // log video card information
+    Core::Log->ListStartInfo("Video Card Information");
+    {
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+        Core::Log->ListAdd(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
+    }
+    Core::Log->ListEnd();
 
     // enable vertical synchronization
-    if(SDL_GL_SetSwapInterval(1)) Core::Log->Warning("Vertical Synchronization not directly supported (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("Vertical Synchronization enabled");
+         if(!SDL_GL_SetSwapInterval(-1)) Core::Log->Info("Vertical synchronization enabled (extended)");
+    else if(!SDL_GL_SetSwapInterval( 1)) Core::Log->Info("Vertical synchronization enabled (normal)");
+    else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
 
     // setup texturing
-    glDisable(GL_DITHER);
     glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -69,8 +62,9 @@ CoreGraphics::CoreGraphics()noexcept
     // setup depth testing
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glPolygonOffset(1.1f, 4.0f);
+    glDepthMask(true);
     glClearDepth(1.0f);
+    glPolygonOffset(1.1f, 4.0f);
 
     // setup culling
     glEnable(GL_CULL_FACE);
@@ -81,8 +75,14 @@ CoreGraphics::CoreGraphics()noexcept
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // setup rasterization
+    glEnable(GL_MULTISAMPLE);
+    glDisable(GL_DITHER);
+    glColorMask(true, true, true, true);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
     // create uniform buffer object for global shader-data
-    if(GLEW_ARB_uniform_buffer_object)
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         // generate and bind global UBO to buffer target
         m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
@@ -98,7 +98,6 @@ CoreGraphics::CoreGraphics()noexcept
         this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
 
     // reset scene
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -106,15 +105,14 @@ CoreGraphics::CoreGraphics()noexcept
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT))
     {
         // create resource context (after reset, because of flickering on Windows and fullscreen)
-        m_ResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
-        if(!m_ResourceContext)
-            Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
-        else Core::Log->Info("Resource context created");
+        m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
+        if(!m_pResourceContext) Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
+                           else Core::Log->Info   ("Resource context created");
 
         // re-assign render context to main window
-        SDL_GL_MakeCurrent(Core::System->GetWindow(), m_RenderContext);
+        SDL_GL_MakeCurrent(Core::System->GetWindow(), m_pRenderContext);
     }
-    else m_ResourceContext = NULL;
+    else m_pResourceContext = NULL;
 }
 
 
@@ -129,8 +127,8 @@ CoreGraphics::~CoreGraphics()
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
 
     // delete OpenGL contexts
-    SDL_GL_DeleteContext(m_ResourceContext);
-    SDL_GL_DeleteContext(m_RenderContext);
+    SDL_GL_DeleteContext(m_pResourceContext);
+    SDL_GL_DeleteContext(m_pRenderContext);
 
     Core::Log->Info("Graphics Interface shut down");
 }
@@ -170,11 +168,11 @@ void CoreGraphics::ResizeView(coreVector2 vResolution, const float& fFOV, const 
     if(!vResolution.y) vResolution.y = Core::System->GetResolution().y;
 
     // set properties of the view frustum
-    if(m_vCurResolution.xy() != vResolution)
+    if(m_vViewResolution.xy() != vResolution)
     {
         // save viewport resolution
-        m_vCurResolution.xy(vResolution);
-        m_vCurResolution.zw(coreVector2(1.0f,1.0f) / vResolution);
+        m_vViewResolution.xy(vResolution);
+        m_vViewResolution.zw(coreVector2(1.0f,1.0f) / vResolution);
 
         // set viewport
         glViewport(0, 0, (int)vResolution.x, (int)vResolution.y);
@@ -266,7 +264,7 @@ void CoreGraphics::Screenshot(const char* pcPath)const
 void CoreGraphics::__UpdateScene()
 {
     // take screenshot
-    if(Core::Input->GetKeyboardButton(KEY(PRINTSCREEN), CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(PRINTSCREEN), CORE_INPUT_PRESS))
         this->Screenshot();
 
     // disable last model, textures and shader-program
@@ -275,7 +273,7 @@ void CoreGraphics::__UpdateScene()
     coreProgram::Disable(true);
 
     // explicitly invalidate depth buffer 
-    if(GLEW_ARB_invalidate_subdata)
+    if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
         constexpr_var GLenum aiAttachment[1] = {GL_DEPTH};
         glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, aiAttachment);
@@ -306,10 +304,10 @@ void CoreGraphics::__SendTransformation()
     coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4) + sizeof(coreVector4), CORE_DATABUFFER_MAP_INVALIDATE_RANGE);
 
     // update transformation matrices
-    std::memcpy(pRange,                         &mViewProj,        sizeof(coreMatrix4));
-    std::memcpy(pRange + 1*sizeof(coreMatrix4), &m_mCamera,        sizeof(coreMatrix4));
-    std::memcpy(pRange + 2*sizeof(coreMatrix4), &m_mPerspective,   sizeof(coreMatrix4));
-    std::memcpy(pRange + 3*sizeof(coreMatrix4), &m_mOrtho,         sizeof(coreMatrix4));
-    std::memcpy(pRange + 4*sizeof(coreMatrix4), &m_vCurResolution, sizeof(coreVector4));
+    std::memcpy(pRange,                         &mViewProj,         sizeof(coreMatrix4));
+    std::memcpy(pRange + 1*sizeof(coreMatrix4), &m_mCamera,         sizeof(coreMatrix4));
+    std::memcpy(pRange + 2*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
+    std::memcpy(pRange + 3*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
+    std::memcpy(pRange + 4*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
     m_iUniformBuffer.Unmap(pRange);
 }

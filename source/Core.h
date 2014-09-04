@@ -38,20 +38,18 @@
 #ifndef _CORE_GUARD_H_
 #define _CORE_GUARD_H_
 
-// TODO: don't lose engine properties after reset
-// TODO: SDL_GetPowerInfo
 // TODO: improve sort and structure under all class access modifiers
 // TODO: don't forward/return trivial types as reference ? (address > value)
-// TODO: how to write static functions inside of class, with or without "class::"
-// TODO: put everything in a namespace ? split up coreData and coreMath
 // TODO: check for template parameters <42>
-// TODO: remove this whole static pointer bullshit, namespace for main-classes together with math and data ?
+// TODO: put everything in a namespace ? split up coreData and coreMath
+// TODO: remove this whole static pointer stuff, namespace for main-classes together with math and data ?
 // TODO: define standard-path (data/) were everything is loaded from
-// TODO: implement GL_KHR_robustness(<-newest) (GL_ARB_robustness ?)
-// TODO: how to implement GL_ARB_direct_state_access(<-newest) (GL_EXT_direct_state_access ?)
-// TODO: explicit flush control for context change
+// TODO: implement GL_KHR_robustness (performance penalties ?)
+// TODO: explicit flush control for context change (SDL?)
 // TODO: check for performance penalties and alternatives for thread_local
 // TODO: setup 64-bit Windows build (libraries!)
+
+// NOTE: write static functions inside of class with "class::"
 
 
 // compiler
@@ -153,8 +151,6 @@
 #include <SDL2/SDL_image.h>
 #if defined(_CORE_GLES_)
     #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
-    #include "additional/android/coreES.h"
 #else
     #include <GL/glew.h>
     #include <GL/gl.h>
@@ -205,7 +201,7 @@
 #define ARRAY_SIZE(a)        (sizeof(a) / sizeof((a)[0]))
 
 #define ASSERT(c)            {SDL_assert( (c));}
-#define ASSERT_IF(c)         {SDL_assert(!(c));} if(c)
+#define WARN_IF(c)           {SDL_assert(!(c));} if(c)
 #define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
 
 #define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
@@ -286,12 +282,7 @@ enum coreError : int
 
 
 // ****************************************************************
-// context and forward declarations
-#if !defined(_CORE_GLES_)
-    extern thread_local GLEWContext g_GlewContext;
-    #define glewGetContext() (g_GlewContext)
-#endif
-
+// forward declarations
 class coreVector2;
 class coreVector3;
 class coreVector4;
@@ -299,6 +290,8 @@ class coreMatrix3;
 class coreMatrix4;
 class coreFile;
 class coreArchive;
+class coreObject2D;
+class coreObject3D;
 class coreParticleEffect;
 
 class coreLog;
@@ -324,7 +317,9 @@ private:
     friend class Core;
 
     //! auto-generated setup function
+    //! @{
     void Setup();
+    //! @}
 
     //! undefined init and exit function
     //! @{
@@ -348,20 +343,21 @@ public:
     static coreLog*      Log;        //!< log file
     static coreConfig*   Config;     //!< configuration file
     static coreLanguage* Language;   //!< language file
-    static coreRand*     Rand;       //!< global random number generator
+    static coreRand*     Rand;       //!< random number generator
 
     static CoreSystem*   System;     //!< main system component
     static CoreGraphics* Graphics;   //!< main graphics component
     static CoreAudio*    Audio;      //!< main audio component
     static CoreInput*    Input;      //!< main input component
 
-    class Manager final
+    struct Manager
     {
-    public:
         static coreMemoryManager*   Memory;     //!< memory manager
         static coreResourceManager* Resource;   //!< resource manager
         static coreObjectManager*   Object;     //!< object manager
     };
+
+    static CoreApp* Application;     //!< application object
 
 
 private:
@@ -370,27 +366,29 @@ private:
 
 
 public:
-    //! control the engine
+    //! reset engine
     //! @{
     static void Reset();
     //! @}
 
-    //! main function
-    //! @{
-    friend int main(int argc, char* argv[])align_func;
-    //! @}
-
 
 private:
-    //! run the engine
+    //! run engine
     //! @{
-    static int __Run();
+    friend int main(int argc, char* argv[])align_func;
+    static int Run();
     //! @}
 };
 
 
 // ****************************************************************
 // engine header files
+#if defined(_CORE_GLES_)
+    #include "additional/coreGLES.h"
+#else
+    #include "additional/coreGL.h"
+#endif
+
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
 

@@ -58,7 +58,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     if(!iError) iError = ov_test_open(&m_Stream);
     if( iError)
     {
-        Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: %d)", pFile->GetPath(), iError);
+        Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: 0x%04X)", pFile->GetPath(), iError);
         ov_clear(&m_Stream);
         SAFE_DELETE(m_pFile)
 
@@ -222,34 +222,6 @@ const char* coreMusic::GetComment(const char* pcName)const
 
     // specific meta-information not found
     return "";
-}
-
-
-// ****************************************************************
-// reset with the resource manager
-void coreMusic::__Reset(const coreResourceReset& bInit)
-{
-    if(bInit)
-    {
-        // create sound buffers
-        if(!m_aiBuffer[0]) alGenBuffers(2, m_aiBuffer);
-    }
-    else
-    {
-        if(m_aiBuffer)
-        {
-            if(m_bStatus)
-            {
-                // clear sound source
-                this->Pause();
-                m_bStatus = true;
-            }
-
-            // delete sound buffers
-            alDeleteBuffers(2, m_aiBuffer);
-            m_aiBuffer[0] = m_aiBuffer[1] = 0;
-        }
-    }
 }
 
 
@@ -436,7 +408,7 @@ coreError coreMusicPlayer::AddMusicFolder(const char* pcPath, const char* pcFilt
 // remove music object
 coreError coreMusicPlayer::DeleteMusic(const coreUint& iIndex)
 {
-    ASSERT_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
+    WARN_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
 
     coreMusic* pMusic = m_apMusic[iIndex];
 
@@ -476,7 +448,7 @@ void coreMusicPlayer::ClearMusic()
 // switch to specific music object
 void coreMusicPlayer::Select(const coreUint& iIndex)
 {
-    ASSERT_IF(iIndex >= m_apMusic.size()) return;
+    WARN_IF(iIndex >= m_apMusic.size())     return;
     if(m_pCurMusic == m_apSequence[iIndex]) return;
 
     // get playback status

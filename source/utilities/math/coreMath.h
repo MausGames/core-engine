@@ -106,7 +106,7 @@ inline float coreMath::Rsqrt(float fInput)
 
 #if defined(_CORE_SSE_)
 
-    // optimized calculation with SSE
+    // optimized calculation with SSE2
     _mm_store_ss(&fInput, _mm_rsqrt_ss(_mm_load_ss(&fInput)));
 
 #else
@@ -138,7 +138,7 @@ inline float coreMath::Rcp(float fInput)
 
 #if defined(_CORE_SSE_)
 
-    // optimized calculation with SSE
+    // optimized calculation with SSE2
     _mm_store_ss(&fInput, _mm_rcp_ss(_mm_load_ss(&fInput)));
 
 #else

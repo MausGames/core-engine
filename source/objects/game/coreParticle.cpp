@@ -280,7 +280,7 @@ void coreParticleSystem::ClearAll()
 void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 {
     // check for OpenGL extensions
-    if(!GLEW_ARB_instanced_arrays || !GLEW_ARB_vertex_array_object) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
 
     if(bInit)
     {
@@ -299,12 +299,12 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
         m_iInstanceBuffer.Activate(1);
 
         // enable vertex attribute array division
-        if(GLEW_ARB_vertex_attrib_binding) glVertexBindingDivisor(1, 1);
+        if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1, 1);
         else
         {
-            glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1);
-            glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     1);
-            glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1);
+            glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1);
+            glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     1);
+            glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1);
         }
 
         // disable current model object (to fully enable the next model) 

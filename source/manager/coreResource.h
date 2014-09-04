@@ -91,6 +91,7 @@ public:
     //! @{
     inline coreResource* GetResource()const {return m_pResource;}
     inline const bool&   IsAutomatic()const {return m_bAutomatic;}
+    inline bool          IsManaged  ()const {return m_sName.empty()          ? false : true;}
     inline bool          IsLoaded   ()const {return (m_iStatus != CORE_BUSY) ? true : false;}
     //! @}
 
@@ -225,7 +226,7 @@ public:
 
     /*! get existing resource handle */
     //! @{
-    template <typename T> inline coreResourceHandle* Get(const char* pcName) {ASSERT(m_apHandle.count(pcName)) return this->Load<T>(pcName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
+    template <typename T> inline coreResourceHandle* Get(const char* pcName) {if(!pcName) return NULL; ASSERT(m_apHandle.count(pcName)) return this->Load<T>(pcName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
     //! @}
 
     /*! retrieve archives and resource files */

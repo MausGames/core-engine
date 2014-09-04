@@ -334,7 +334,7 @@ template <typename T> void coreSwitchBox<T>::Select(const coreUint& iIndex)
 // switch to next entry
 template <typename T> void coreSwitchBox<T>::Next()
 {
-    ASSERT_IF(m_aEntry.empty()) return;
+    WARN_IF(m_aEntry.empty()) return;
 
     // increase current index
     if(++m_iCurIndex >= m_aEntry.size()) 
@@ -349,7 +349,7 @@ template <typename T> void coreSwitchBox<T>::Next()
 // switch to previous entry
 template <typename T> void coreSwitchBox<T>::Previous()
 {
-    ASSERT_IF(m_aEntry.empty()) return;
+    WARN_IF(m_aEntry.empty()) return;
 
     // decrease current index
     if(--m_iCurIndex >= m_aEntry.size())

@@ -33,8 +33,8 @@ coreError coreSound::Load(coreFile* pFile)
 {
     coreFileUnload Unload(pFile);
 
-    ASSERT_IF(m_iBuffer) return CORE_INVALID_CALL;
-    if(!pFile)           return CORE_INVALID_INPUT;
+    WARN_IF(m_iBuffer) return CORE_INVALID_CALL;
+    if(!pFile)         return CORE_INVALID_INPUT;
 
     // get file data
     const coreByte* pData = pFile->GetData();
@@ -101,7 +101,7 @@ coreError coreSound::Load(coreFile* pFile)
     const ALenum iError = alGetError();
     if(iError != AL_NO_ERROR)
     {
-        Core::Log->Warning("Sound (%s) could not be loaded (AL Error Code: %d)", pFile->GetPath(), iError);
+        Core::Log->Warning("Sound (%s) could not be loaded (AL Error Code: 0x%04X)", pFile->GetPath(), iError);
         return CORE_INVALID_DATA;
     }
 
