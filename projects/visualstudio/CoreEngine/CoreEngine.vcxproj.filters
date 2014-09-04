@@ -153,14 +153,17 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreLanguage.cpp">
       <Filter>source\utilities\file</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\additional\android\coreES.cpp">
-      <Filter>source\additional\android</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp">
       <Filter>source\objects\game</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\objects\game\coreScene.cpp">
       <Filter>source\objects\game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreGL.cpp">
+      <Filter>source\additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreGLES.cpp">
+      <Filter>source\additional</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -278,14 +281,17 @@
     <ClInclude Include="..\..\..\source\components\graphics\coreDataBuffer.h">
       <Filter>source\components\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\additional\android\coreES.h">
-      <Filter>source\additional\android</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\objects\game\coreParticle.h">
       <Filter>source\objects\game</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\game\coreScene.h">
       <Filter>source\objects\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\coreGL.h">
+      <Filter>source\additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\coreGLES.h">
+      <Filter>source\additional</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

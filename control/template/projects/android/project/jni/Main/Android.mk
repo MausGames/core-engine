@@ -51,9 +51,10 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(V_ENG_LIB_PATH)/include \
                     $(LOCAL_PATH)/$(V_SRC_PATH)
 
 LOCAL_SRC_FILES := $(V_SRC_PATH)/main.cpp                                \
-                   $(V_SRC_PATH)/cLayer.cpp                              \
+                   $(V_SRC_PATH)/application.cpp                         \
                    $(V_ENG_PATH)/Core.cpp                                \
                    $(V_ENG_PATH)/additional/android/SDL_android_main.c   \
+                   $(V_ENG_PATH)/additional/coreGLES.cpp                 \
                    $(V_ENG_PATH)/components/audio/CoreAudio.cpp          \
                    $(V_ENG_PATH)/components/audio/coreMusic.cpp          \
                    $(V_ENG_PATH)/components/audio/coreSound.cpp          \
@@ -86,7 +87,6 @@ LOCAL_SRC_FILES := $(V_SRC_PATH)/main.cpp                                \
                    $(V_ENG_PATH)/utilities/file/coreConfig.cpp           \
                    $(V_ENG_PATH)/utilities/file/coreLanguage.cpp         \
                    $(V_ENG_PATH)/utilities/file/coreLog.cpp              \
-                   $(V_ENG_PATH)/utilities/math/coreMath.cpp             \
                    $(V_ENG_PATH)/utilities/math/coreSpline.cpp
 
 LOCAL_SHARED_LIBRARIES := SDL2 SDL2_ttf SDL2_image OpenAL Ogg Vorbis VorbisFile

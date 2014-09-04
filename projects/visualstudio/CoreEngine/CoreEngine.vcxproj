@@ -77,6 +77,10 @@
       </AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -102,16 +106,20 @@
       <AdditionalOptions>SDL2main.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
+    <PreBuildEvent>
+      <Command>del $(IntDir)coreLog.obj</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\additional\android\coreES.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\additional\android\SDL_android_main.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreGLES.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreGL.cpp" />
     <ClCompile Include="..\..\..\source\components\audio\CoreAudio.cpp" />
     <ClCompile Include="..\..\..\source\components\audio\coreMusic.cpp" />
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp" />
@@ -134,7 +142,10 @@
     <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp" />
-    <ClCompile Include="..\..\..\source\objects\game\coreScene.cpp" />
+    <ClCompile Include="..\..\..\source\objects\game\coreScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\objects\menu\coreButton.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp" />
@@ -149,10 +160,11 @@
     <ClCompile Include="..\..\..\source\utilities\math\coreSpline.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\additional\android\coreES.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    <ClInclude Include="..\..\..\source\additional\coreGLES.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\coreGL.h" />
     <ClInclude Include="..\..\..\source\components\audio\CoreAudio.h" />
     <ClInclude Include="..\..\..\source\components\audio\coreMusic.h" />
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h" />

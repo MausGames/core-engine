@@ -11,10 +11,10 @@ joints {
 mesh {
   shader "default"
   numverts 4
-  vert 0 ( 0.0001 0.0001 ) 3 1
-  vert 1 ( 0.0001 0.9999 ) 1 1
-  vert 2 ( 0.9999 0.0001 ) 2 1
-  vert 3 ( 0.9999 0.9999 ) 0 1
+  vert 0 ( 0.0 0.0 ) 3 1
+  vert 1 ( 0.0 1.0 ) 1 1
+  vert 2 ( 1.0 0.0 ) 2 1
+  vert 3 ( 1.0 1.0 ) 0 1
   numtris 2
   tri 0 2 3 1
   tri 1 2 1 0

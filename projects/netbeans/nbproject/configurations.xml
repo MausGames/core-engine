@@ -8,8 +8,11 @@
         <logicalFolder name="additional" displayName="additional" projectFiles="true">
           <logicalFolder name="android" displayName="android" projectFiles="true">
             <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
-            <itemPath>../../source/additional/android/glewES.h</itemPath>
           </logicalFolder>
+          <itemPath>../../source/additional/coreGL.cpp</itemPath>
+          <itemPath>../../source/additional/coreGL.h</itemPath>
+          <itemPath>../../source/additional/coreGLES.cpp</itemPath>
+          <itemPath>../../source/additional/coreGLES.h</itemPath>
         </logicalFolder>
         <logicalFolder name="components" displayName="components" projectFiles="true">
           <logicalFolder name="audio" displayName="audio" projectFiles="true">
@@ -158,6 +161,10 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -546,6 +553,10 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
             tool="1"
@@ -932,6 +943,10 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -1328,6 +1343,10 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
             tool="1"
@@ -1723,6 +1742,10 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
             tool="1"
@@ -2116,6 +2139,10 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"

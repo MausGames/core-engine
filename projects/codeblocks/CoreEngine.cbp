@@ -121,11 +121,13 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../../source/additional/android/coreES.cpp">
+		<Unit filename="../../source/additional/coreGL.cpp" />
+		<Unit filename="../../source/additional/coreGL.h" />
+		<Unit filename="../../source/additional/coreGLES.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../../source/additional/android/coreES.h" />
+		<Unit filename="../../source/additional/coreGLES.h" />
 		<Unit filename="../../source/components/audio/CoreAudio.cpp" />
 		<Unit filename="../../source/components/audio/CoreAudio.h" />
 		<Unit filename="../../source/components/audio/coreMusic.cpp" />

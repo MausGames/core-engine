@@ -238,9 +238,9 @@ vec2 u_v2TexOffset = u_v4TexParam.zw;
     
 #define coreDot3Transform(i,o) \
     o.x = dot(i, t);           \
-	o.y = dot(i, b);           \
-	o.z = dot(i, n);           \
-	o   = normalize(o);
+    o.y = dot(i, b);           \
+    o.z = dot(i, n);           \
+    o   = normalize(o);
 
 // square length functions
 float coreLengthSq(in vec2 v) {return dot(v, v);}
