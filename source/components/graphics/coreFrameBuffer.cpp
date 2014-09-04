@@ -8,95 +8,109 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreFrameBuffer* coreFrameBuffer::s_pCurrent = NULL;
+coreFrameBuffer* coreFrameBuffer::s_pCurrent          = NULL;
+coreObject2D*    coreFrameBuffer::s_pBlitFallback     = NULL;
+float            coreFrameBuffer::s_afViewData[5]; // = 0.0f;
 
 
 // ****************************************************************
 // constructor
 coreFrameBuffer::coreFrameBuffer()noexcept
 : m_iFrameBuffer (0)
-, m_iDepthBuffer (0)
 , m_vResolution  (coreVector2(0.0f,0.0f))
-, m_iType        (CORE_FRAMEBUFFER_TYPE_FULL)
 , m_fFOV         (Core::Graphics->GetFOV())
 , m_fNearClip    (Core::Graphics->GetNearClip())
 , m_fFarClip     (Core::Graphics->GetFarClip())
+{ 
+}
+
+
+// ****************************************************************
+// destructor
+coreFrameBuffer::~coreFrameBuffer()
 {
+    // delete frame buffer object
+    this->Delete();
+
+    // detach all render targets
+    this->DetachTargets();
 }
 
 
 // ****************************************************************
 // create frame buffer object
-void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferType& iType, const char* pcTextureName)
+void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate& bType)
 {
-    ASSERT_IF(m_pTexture) this->Delete();
+    WARN_IF(m_iFrameBuffer) this->Delete();
     ASSERT(vResolution.x > 0.0f && vResolution.y > 0.0f)
 
     // check for OpenGL extensions
-    const GLboolean& bFrameBuffer = GLEW_ARB_framebuffer_object;
+    if(!CORE_GL_SUPPORT(EXT_framebuffer_object)) return;
+
+    // generate frame buffer object
+    glGenFramebuffers(1, &m_iFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
     // set resolution
-    m_vResolution = bFrameBuffer ? vResolution : (vResolution * MIN((Core::System->GetResolution() / vResolution).Min(), 1.0f));
-    m_vResolution = coreVector2(FLOOR(m_vResolution.x), FLOOR(m_vResolution.y));
+    m_vResolution = coreVector2(FLOOR(vResolution.x), FLOOR(vResolution.y));
     const int iWidth  = (int)m_vResolution.x;
     const int iHeight = (int)m_vResolution.y;
 
-    // set type and texture format
-    m_iType = iType;
-    const GLenum iInternal = (m_iType & CORE_FRAMEBUFFER_TYPE_COLOR) ? ((m_iType & CORE_FRAMEBUFFER_TYPE_ALPHA) ? GL_RGBA8 : GL_RGB8) : GL_DEPTH_COMPONENT16;
-    const GLenum iFormat   = (m_iType & CORE_FRAMEBUFFER_TYPE_COLOR) ? ((m_iType & CORE_FRAMEBUFFER_TYPE_ALPHA) ? GL_RGBA  : GL_RGB)  : GL_DEPTH_COMPONENT;
+    // set number of samples
+    const int iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ? 
+                         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0;
 
-    // allocate own texture as render target
-    if(pcTextureName) m_pTexture = Core::Manager::Resource->Load   <coreTexture>(pcTextureName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
-                 else m_pTexture = Core::Manager::Resource->LoadNew<coreTexture>();
-
-    // create base texture
-    m_pTexture->Create(iWidth, iHeight, iInternal, iFormat, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, false);
-
-    if(bFrameBuffer)
+    // loop through all render targets
+    __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
+    for(coreByte i = 0; i < ARRAY_SIZE(apTarget); ++i)
     {
-        // generate frame buffer object
-        glGenFramebuffers(1, &m_iFrameBuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+        coreRenderTarget* pTarget = apTarget[i];
+        if(!pTarget->iInternal) continue;
 
-        switch(m_iType & 0x00FF)
+        // set attachment point (depending on target order)
+        int iAttachment;
+        switch(i)
         {
-        case CORE_FRAMEBUFFER_TYPE_FULL:
+        default: iAttachment = GL_COLOR_ATTACHMENT0 + (i-2); break;
+        case 0:  iAttachment = GL_DEPTH_ATTACHMENT;          break;
+        case 1:  iAttachment = GL_STENCIL_ATTACHMENT;        break;
+        }
 
-            // generate depth buffer
-            glGenRenderbuffers(1, &m_iDepthBuffer);
-            glBindRenderbuffer(GL_RENDERBUFFER, m_iDepthBuffer);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, iWidth, iHeight);
+        if(pTarget->pTexture)
+        {
+            // create render target texture
+            pTarget->pTexture->Create(iWidth, iHeight, pTarget->iInternal, pTarget->iFormat, pTarget->iType, GL_CLAMP_TO_EDGE, false);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-            // attach depth buffer as depth component
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_iDepthBuffer);
+            // attach render target texture to frame buffer
+            glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetTexture(), 0);
+        }
+        else
+        {
+            // generate render target buffer
+            glGenRenderbuffers(1, &pTarget->iBuffer);
+            glBindRenderbuffer(GL_RENDERBUFFER, pTarget->iBuffer);
+
+            // allocate buffer memory
+            if(iSamples) glRenderbufferStorageMultisample(GL_RENDERBUFFER, iSamples, pTarget->iInternal, iWidth, iHeight);
+                    else glRenderbufferStorage           (GL_RENDERBUFFER,           pTarget->iInternal, iWidth, iHeight);
+
+            // attach render target buffer to frame buffer
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, iAttachment, GL_RENDERBUFFER, pTarget->iBuffer);
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-        case CORE_FRAMEBUFFER_TYPE_COLOR:
-
-            // attach texture as first color component
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->GetTexture(), 0);
-            break;
-
-        case CORE_FRAMEBUFFER_TYPE_DEPTH:
-
-            // attach texture as depth component
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pTexture->GetTexture(), 0);
-            break;
-
-        default: ASSERT(false)
         }
+    }
 
-        // get frame buffer status
-        const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // retrieve frame buffer status
+    const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
 
-        // check for errors
-        if(iError != GL_FRAMEBUFFER_COMPLETE)
-        {
-            Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: %d)", iError);
-            this->__DeleteBuffers();
-        }
+    // check for errors
+    if(iError != GL_FRAMEBUFFER_COMPLETE)
+    {
+        Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: 0x%04X)", iError);
+        this->Delete();
     }
 }
 
@@ -105,128 +119,85 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 // delete frame buffer object
 void coreFrameBuffer::Delete()
 {
-    if(!m_pTexture) return;
+    if(!m_iFrameBuffer) return;
 
-    // delete frame and depth buffer
-    this->__DeleteBuffers();
+    // end rendering to still active frame buffer
+    WARN_IF(s_pCurrent == this) coreFrameBuffer::EndDraw();
 
-    // free own texture
-    Core::Manager::Resource->Free(&m_pTexture);
+    // delete frame buffer (with implicit render target detachment)
+    glDeleteFramebuffers(1, &m_iFrameBuffer);
+
+    // loop through all render targets
+    __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
+    for(coreByte i = 0; i < ARRAY_SIZE(apTarget); ++i)
+    {
+        // unload render target texture
+        if(apTarget[i]->pTexture) apTarget[i]->pTexture->Unload();
+
+        // delete render target buffer
+        if(apTarget[i]->iBuffer)
+        {
+            glDeleteRenderbuffers(1, &apTarget[i]->iBuffer);
+            apTarget[i]->iBuffer = 0;
+        }
+    }
 
     // reset properties
-    m_vResolution = coreVector2(0.0f,0.0f);
-    m_iType       = CORE_FRAMEBUFFER_TYPE_FULL;
+    m_iFrameBuffer = 0;
+    m_vResolution  = coreVector2(0.0f,0.0f);
 }
 
 
 // ****************************************************************
-// clear content of the frame buffer
-void coreFrameBuffer::Clear(const coreFrameBufferUse& iBuffer)
+// attach render target texture
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const char* pcName)
 {
-    ASSERT(m_pTexture)
-    
-    // switch to target frame buffer
-    const bool bToggle = (this != s_pCurrent) && m_iFrameBuffer;
-    if(bToggle) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_iFrameBuffer);
+    // get requested render target structure
+    coreRenderTarget* pTarget = this->__AttachTarget(iTarget, iColorIndex, iInternal, iFormat, iType);
+    if(pTarget)
+    {
+        // check for OpenGL extensions
+        if((!(iTarget & CORE_FRAMEBUFFER_TARGET_DEPTH)   || CORE_GL_SUPPORT(ARB_depth_texture)) &&
+           (!(iTarget & CORE_FRAMEBUFFER_TARGET_STENCIL) || CORE_GL_SUPPORT(ARB_texture_stencil8)))
+        {
+            // allocate render target texture
+            if(pcName) pTarget->pTexture = Core::Manager::Resource->Load   <coreTexture>(pcName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
+                  else pTarget->pTexture = Core::Manager::Resource->LoadNew<coreTexture>();
+        }
+    }
 
-    // clear the whole frame buffer
-    glClear(((iBuffer & CORE_FRAMEBUFFER_USE_COLOR)   ? GL_COLOR_BUFFER_BIT   : 0) | 
-            ((iBuffer & CORE_FRAMEBUFFER_USE_DEPTH)   ? GL_DEPTH_BUFFER_BIT   : 0) |
-            ((iBuffer & CORE_FRAMEBUFFER_USE_STENCIL) ? GL_STENCIL_BUFFER_BIT : 0));
-
-    // switch back to old frame buffer
-    if(bToggle) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+    return pTarget;
 }
 
 
 // ****************************************************************
-// invalidate content of the frame buffer
-void coreFrameBuffer::Invalidate(const coreFrameBufferUse& iBuffer)
+// attach render target buffer
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
 {
-    ASSERT(m_pTexture)
-
-    // invalidate the whole frame buffer
-    if(GLEW_ARB_invalidate_subdata)
-    {
-        GLenum aiAttachment[3];
-        coreByte iNum = 0;
-
-        // assemble required attachments
-        if(iBuffer & CORE_FRAMEBUFFER_USE_COLOR)   aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0;
-        if(iBuffer & CORE_FRAMEBUFFER_USE_DEPTH)   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
-        if(iBuffer & CORE_FRAMEBUFFER_USE_STENCIL) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
-        ASSERT_IF(!iNum) return;
-
-        if(GLEW_ARB_direct_state_access)
-        {
-            // invalidate content directly
-            glInvalidateNamedFramebufferData(m_iFrameBuffer, iNum, aiAttachment);
-        }
-        else
-        {
-            // switch to target frame buffer
-            const bool bToggle = (this != s_pCurrent) && m_iFrameBuffer;
-            if(bToggle) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_iFrameBuffer);
-
-            // invalidate content
-            glInvalidateFramebuffer(GL_DRAW_FRAMEBUFFER, iNum, aiAttachment);
-
-            // switch back to old frame buffer
-            if(bToggle) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
-        }
-    }
+    // get requested render target structure
+    if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (iTarget, iColorIndex, iInternal, iFormat, iType);
+                                         else return this->AttachTargetTexture(iTarget, iColorIndex, iInternal, iFormat, iType);
 }
 
 
 // ****************************************************************
-// copy content to another frame buffer
-void coreFrameBuffer::Blit(coreFrameBuffer* pTarget, const coreFrameBufferUse& iBuffer, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)
+// detach all render targets
+void coreFrameBuffer::DetachTargets()
 {
-    ASSERT(m_pTexture)
-    ASSERT((iSrcX + iWidth) <= coreUint(m_vResolution.x)            && (iSrcY + iHeight) <= coreUint(m_vResolution.y) &&
-           (iDstX + iWidth) <= coreUint(pTarget->GetResolution().x) && (iDstY + iHeight) <= coreUint(pTarget->GetResolution().y))
+    ASSERT(!m_iFrameBuffer)
 
-    if(m_iFrameBuffer)
+    // loop through all render targets
+    __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
+    for(coreByte i = 0; i < ARRAY_SIZE(apTarget); ++i)
     {
-        // assemble required buffer-bits
-        const GLenum iBits = ((iBuffer & CORE_FRAMEBUFFER_USE_COLOR)   ? GL_COLOR_BUFFER_BIT   : 0) | 
-                             ((iBuffer & CORE_FRAMEBUFFER_USE_DEPTH)   ? GL_DEPTH_BUFFER_BIT   : 0) |
-                             ((iBuffer & CORE_FRAMEBUFFER_USE_STENCIL) ? GL_STENCIL_BUFFER_BIT : 0);
+        // free render target texture
+        if(apTarget[i]->pTexture) Core::Manager::Resource->Free(&apTarget[i]->pTexture);
 
-        if(GLEW_ARB_direct_state_access)
-        {
-            // copy content directly
-            glBlitNamedFramebuffer(m_iFrameBuffer, pTarget ? pTarget->GetFrameBuffer() : 0,
-                                   iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight, 
-                                   iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
-                                   iBits, GL_NEAREST);
-        }
-        else
-        {
-            // switch to source and target frame buffer
-            if(this    != s_pCurrent) glBindFramebuffer(GL_READ_FRAMEBUFFER, m_iFrameBuffer);
-            if(pTarget != s_pCurrent) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pTarget ? pTarget->GetFrameBuffer() : 0);
-                 
-            // copy content
-            glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight, 
-                              iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
-                              iBits, GL_NEAREST);
-
-            // switch back to old frame buffer
-            glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
-        }
+        // reset properties
+        apTarget[i]->iInternal = 0;
+        apTarget[i]->iFormat   = 0;
+        apTarget[i]->iType     = 0;
     }
-    else if(m_pTexture)
-    {
-        // copy screen to texture
-        pTarget->GetTexture()->Enable(0);
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iDstX, iDstY, iWidth, iHeight);
-    }
-}
-
-void coreFrameBuffer::Blit(coreFrameBuffer* pTarget, const coreFrameBufferUse& iBuffer)
-{
-    this->Blit(pTarget, iBuffer, 0, 0, 0, 0, (coreUint)m_vResolution.x, (coreUint)m_vResolution.y);
 }
 
 
@@ -234,13 +205,23 @@ void coreFrameBuffer::Blit(coreFrameBuffer* pTarget, const coreFrameBufferUse& i
 // start rendering to the frame buffer
 void coreFrameBuffer::StartDraw()
 {
-    ASSERT(s_pCurrent == NULL && m_pTexture)
+    ASSERT(m_iFrameBuffer && (s_pCurrent != this))
+   
+    // save view properties of the default frame buffer
+    if(!s_afViewData[0])
+    {
+        s_afViewData[0] = Core::Graphics->GetViewResolution().x;
+        s_afViewData[1] = Core::Graphics->GetViewResolution().y;
+        s_afViewData[2] = Core::Graphics->GetFOV();
+        s_afViewData[3] = Core::Graphics->GetNearClip();
+        s_afViewData[4] = Core::Graphics->GetFarClip();
+    }
+
+    // set frame buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
     s_pCurrent = this;
 
-    // set current frame buffer
-    if(m_iFrameBuffer) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
-
-    // set view
+    // set view frustum
     Core::Graphics->ResizeView(m_vResolution, m_fFOV, m_fNearClip, m_fFarClip);
 }
 
@@ -249,75 +230,220 @@ void coreFrameBuffer::StartDraw()
 // end rendering to the frame buffer
 void coreFrameBuffer::EndDraw()
 {
-    ASSERT(s_pCurrent == this && m_pTexture)
+    ASSERT(s_pCurrent)
+    
+    // reset frame buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     s_pCurrent = NULL;
 
-    // reset current frame buffer
-    if(m_iFrameBuffer) glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    else this->EndDrawBound();
-
-    // reset view
-    Core::Graphics->ResizeView(Core::System->GetResolution(), Core::Graphics->GetFOV(), 
-                               Core::Graphics->GetNearClip(), Core::Graphics->GetFarClip());
+    // reset view frustum
+    Core::Graphics->ResizeView(coreVector2(s_afViewData[0], s_afViewData[1]), s_afViewData[2], s_afViewData[3], s_afViewData[4]);
+    std::memset(s_afViewData, 0, sizeof(s_afViewData));
 }
 
 
 // ****************************************************************
-// end rendering without resetting frame buffer and view
-void coreFrameBuffer::EndDrawBound()
+// copy content to another frame buffer
+void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)
 {
-    ASSERT(m_pTexture)
-    s_pCurrent = NULL;
+    ASSERT(m_iFrameBuffer)
+    ASSERT((!pDestination || ((iDstX + iWidth) <= coreUint(pDestination->GetResolution().x) && (iDstY + iHeight) <= coreUint(pDestination->GetResolution().y))) && 
+                             ((iSrcX + iWidth) <= coreUint(m_vResolution.x)                 && (iSrcY + iHeight) <= coreUint(m_vResolution.y)))
 
-    if(!m_iFrameBuffer && m_pTexture)
+    if(CORE_GL_SUPPORT(EXT_framebuffer_blit))
     {
-        // copy screen to texture
-        m_pTexture->Enable(0);
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, (coreUint)m_vResolution.x, (coreUint)m_vResolution.y);
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // copy content directly
+            glBlitNamedFramebuffer(m_iFrameBuffer, pDestination ? pDestination->GetFrameBuffer() : 0,
+                                   iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight, 
+                                   iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
+                                   iTargets, GL_NEAREST);
+        }
+        else
+        {
+            // switch to source and destination frame buffer
+            if(s_pCurrent != this)         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_iFrameBuffer);
+            if(s_pCurrent != pDestination) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pDestination ? pDestination->GetFrameBuffer() : 0);
+                 
+            // copy content
+            glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight, 
+                              iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
+                              iTargets, GL_NEAREST);
 
-        // clear depth buffer
-        glClear(GL_DEPTH_BUFFER_BIT);
-    }
-}
-
-
-// ****************************************************************
-// reset with the resource manager
-void coreFrameBuffer::__Reset(const coreResourceReset& bInit)
-{
-    if(!m_pTexture) return;
-
-    if(bInit) 
-    {
-        // save texture name and free own texture
-        const char* pcTextureName = PRINT("%s", m_pTexture.GetHandle()->GetName());
-        Core::Manager::Resource->Free(&m_pTexture);
-
-        // re-create the frame buffer object
-        this->Create(m_vResolution, m_iType, *pcTextureName ? pcTextureName : NULL);
+            // switch back to old frame buffer
+            glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+        }
     }
     else
     {
-        // delete frame and depth buffer
-        this->__DeleteBuffers();
+        // blit without extension support
+        if(pDestination)
+        {
+            // switch to source frame buffer
+            const bool bToggle = (s_pCurrent != this);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
-        // unload own texture
-        m_pTexture->Unload();
+            // handle color target blitting
+            if(iTargets & CORE_FRAMEBUFFER_TARGET_COLOR)
+            {
+                if(pDestination->m_aColorTarget[0].pTexture)
+                {
+                    // copy screen to destination texture
+                    pDestination->m_aColorTarget[0].pTexture->Enable(0);
+                    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iDstX, iDstY, iWidth, iHeight);
+                }
+            }
+
+            // handle depth target blitting
+            if(iTargets & CORE_FRAMEBUFFER_TARGET_DEPTH)
+            {
+                if(pDestination->m_DepthTarget.pTexture)
+                {
+                    // attach source depth texture as color target
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DepthTarget.pTexture->GetTexture(), 0);
+
+                    // copy screen to destination texture
+                    pDestination->m_DepthTarget.pTexture->Enable(0);
+                    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iDstX, iDstY, iWidth, iHeight);
+
+                    // re-attach old color target
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_aColorTarget[0].pTexture ? m_aColorTarget[0].pTexture->GetTexture() : 0, 0);
+                }
+            }
+
+            // switch back to old frame buffer
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+        }
+        else
+        {
+            // completely switch to default frame buffer
+            coreFrameBuffer* pHoldCurrent = s_pCurrent;
+            if(pHoldCurrent) coreFrameBuffer::EndDraw();
+
+            // handle color target blitting onto the default frame buffer
+            if(m_aColorTarget[0].pTexture)
+            {
+                glDisable(GL_DEPTH_TEST);
+                glDisable(GL_CULL_FACE);
+                glDisable(GL_BLEND);
+                {
+                    const float&      fDstInvWid = Core::Graphics->GetViewResolution().w;
+                    const coreVector2 vDstInvRes = Core::Graphics->GetViewResolution().zw();
+                    const coreVector2 vSrcInvRes = coreVector2(1.0f,1.0f) / m_vResolution;
+
+                    // forward transformation data and move
+                    s_pBlitFallback->SetSize     (coreVector2(float(iWidth), -float(iHeight)) * fDstInvWid);
+                    s_pBlitFallback->SetCenter   (coreVector2(float(iDstX),   float(iDstY))   * fDstInvWid + coreVector2(float(iWidth), float(iHeight)) * vDstInvRes * 0.5f - 0.5f);
+                    s_pBlitFallback->SetTexSize  (coreVector2(float(iWidth),  float(iHeight)) * vSrcInvRes);
+                    s_pBlitFallback->SetTexOffset(coreVector2(float(iSrcX),   float(iSrcY))   * vSrcInvRes);
+                    s_pBlitFallback->Move();
+
+                    // forward source color texture and render
+                    s_pBlitFallback->DefineTexture(0, m_aColorTarget[0].pTexture);
+                    s_pBlitFallback->Render();
+                    s_pBlitFallback->DefineTexture(0, NULL);
+                }
+                glEnable(GL_DEPTH_TEST);
+                glEnable(GL_CULL_FACE);
+                glEnable(GL_BLEND);
+            }
+
+            // completely switch back to old frame buffer
+            if(pHoldCurrent) pHoldCurrent->StartDraw();
+        }
+    }
+}
+
+void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)
+{
+    this->Blit(iTargets, pDestination, 0, 0, 0, 0, (coreUint)m_vResolution.x, (coreUint)m_vResolution.y);
+}
+
+
+// ****************************************************************
+// clear content of the frame buffer
+void coreFrameBuffer::Clear(const coreFrameBufferTarget& iTargets)
+{
+    ASSERT(m_iFrameBuffer)
+    
+    // switch to destination frame buffer
+    const bool bToggle = (s_pCurrent != this);
+    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+
+    // clear content
+    glClear(iTargets);
+
+    // switch back to old frame buffer
+    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+}
+
+
+// ****************************************************************
+// invalidate content of the frame buffer
+void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
+{
+    ASSERT(m_iFrameBuffer)
+
+    if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
+    {
+        GLenum aiAttachment[3];
+        coreByte iNum = 0;
+
+        // assemble required attachments
+        if(iTargets & CORE_FRAMEBUFFER_TARGET_COLOR)   aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0;
+        if(iTargets & CORE_FRAMEBUFFER_TARGET_DEPTH)   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
+        if(iTargets & CORE_FRAMEBUFFER_TARGET_STENCIL) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
+        WARN_IF(!iNum) return;
+
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // invalidate content directly
+            glInvalidateNamedFramebufferData(m_iFrameBuffer, iNum, aiAttachment);
+        }
+        else
+        {
+            // switch to destination frame buffer
+            const bool bToggle = (s_pCurrent != this);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+
+            // invalidate content
+            glInvalidateFramebuffer(GL_FRAMEBUFFER, iNum, aiAttachment);
+
+            // switch back to old frame buffer
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+        }
     }
 }
 
 
 // ****************************************************************
-// delete frame and depth buffer
-void coreFrameBuffer::__DeleteBuffers()
+// attach default render target
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
 {
-    // end rendering to still active frame buffer
-    ASSERT_IF(this == s_pCurrent)
-        this->EndDraw();
+    ASSERT(!m_iFrameBuffer && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
-    // delete frame and depth buffer
-    if(m_iFrameBuffer) glDeleteFramebuffers (1, &m_iFrameBuffer);
-    if(m_iDepthBuffer) glDeleteRenderbuffers(1, &m_iDepthBuffer);
-    m_iFrameBuffer = 0;
-    m_iDepthBuffer = 0;
+#if defined(_CORE_GLES_)
+
+    // currently only one color attachment supported
+    if(iColorIndex > 0) return NULL;
+
+#endif
+
+    // get requested render target structure
+    coreRenderTarget* pTarget = NULL;
+         if(iTarget & CORE_FRAMEBUFFER_TARGET_COLOR)   pTarget = &m_aColorTarget[iColorIndex];
+    else if(iTarget & CORE_FRAMEBUFFER_TARGET_DEPTH)   pTarget = &m_DepthTarget;
+    else if(iTarget & CORE_FRAMEBUFFER_TARGET_STENCIL) pTarget = &m_StencilTarget;
+    else {ASSERT(false) return NULL;}
+
+    // free possible old texture
+    if(pTarget->pTexture) Core::Manager::Resource->Free(&pTarget->pTexture);
+
+    // set properties
+    pTarget->iInternal = iInternal;
+    pTarget->iFormat   = iFormat;
+    pTarget->iType     = iType;
+
+    return pTarget;
 }

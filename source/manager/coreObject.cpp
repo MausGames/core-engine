@@ -37,10 +37,10 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
 {
     if(bInit)
     {
-        const float afDataStrip[] = {-0.5f,  0.5f, 0.0f, 0.001f, 0.001f,
-                                     -0.5f, -0.5f, 0.0f, 0.001f, 0.999f,
-                                      0.5f,  0.5f, 0.0f, 0.999f, 0.001f,
-                                      0.5f, -0.5f, 0.0f, 0.999f, 0.999f};
+        const float afDataStrip[] = {-0.5f,  0.5f, 0.0f, 0.0f, 0.0f,
+                                     -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+                                      0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
+                                      0.5f, -0.5f, 0.0f, 1.0f, 1.0f};
 
         // create global model object
         coreObject2D::s_pModel = new coreModel();
@@ -55,11 +55,28 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
         coreParticleSystem::s_pModel = coreObject2D::s_pModel;
 
         Core::Log->Info("Global Model Object created");
+
+        if(!CORE_GL_SUPPORT(EXT_framebuffer_blit))
+        {
+            // create frame buffer fallback
+            coreFrameBuffer::s_pBlitFallback = new coreObject2D();
+
+            // load required shaders
+            coreFrameBuffer::s_pBlitFallback->DefineProgram(Core::Manager::Resource->Load<coreProgram>("default_2d", CORE_RESOURCE_UPDATE_AUTO, NULL))
+                ->AttachShader(Core::Manager::Resource->Load<coreShader>("default_2d.vert", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert"))
+                ->AttachShader(Core::Manager::Resource->Load<coreShader>("default_2d.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag"))
+                ->Finish();
+
+            Core::Log->Warning("Frame Buffer Fallback created");
+        }
     }
     else
     {
         // delete global model object
         SAFE_DELETE(coreObject2D::s_pModel);
         coreParticleSystem::s_pModel = NULL;
+
+        // delete frame buffer fallback
+        SAFE_DELETE(coreFrameBuffer::s_pBlitFallback)
     }
 }

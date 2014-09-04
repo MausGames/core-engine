@@ -18,8 +18,9 @@ coreTexture::coreTexture()noexcept
 : m_iTexture    (0)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0)
-, m_iFormat     (GL_RGBA)
-, m_iType       (GL_UNSIGNED_BYTE)
+, m_iInternal   (0)
+, m_iFormat     (0)
+, m_iType       (0)
 {
 }
 
@@ -46,7 +47,7 @@ coreError coreTexture::Load(coreFile* pFile)
 
     coreFileUnload Unload(pFile);
 
-    ASSERT_IF(m_iTexture) return CORE_INVALID_CALL;
+    WARN_IF(m_iTexture)   return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_ERROR_FILE;
 
@@ -74,7 +75,7 @@ coreError coreTexture::Load(coreFile* pFile)
 
     // save properties
     m_sPath = pFile->GetPath();
-    m_iSize = (iDataSize * 4) / (GLEW_ARB_framebuffer_object ? 3 : 4);
+    m_iSize = (iDataSize * 4) / ((m_iLevels > 1) ? 3 : 4);
 
     // delete file data
     SDL_FreeSurface(pData);
@@ -108,8 +109,9 @@ coreError coreTexture::Unload()
     m_iTexture    = 0;
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0;
-    m_iFormat     = GL_RGBA;
-    m_iType       = GL_UNSIGNED_BYTE;
+    m_iInternal   = 0;
+    m_iFormat     = 0;
+    m_iType       = 0;
 
     return CORE_OK;
 }
@@ -119,39 +121,40 @@ coreError coreTexture::Unload()
 // create texture memory
 void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const bool& bFilter)
 {
-    ASSERT_IF(m_iTexture) this->Unload();
+    WARN_IF(m_iTexture) this->Unload();
 
     // check for OpenGL extensions
-    const GLboolean& bStorage     = GLEW_ARB_texture_storage;
-    const GLboolean  bAnisotropic = GLEW_EXT_texture_filter_anisotropic && bFilter;
-    const GLboolean  bMipMap      = GLEW_ARB_framebuffer_object         && bFilter;
+    const bool& bStorage     = CORE_GL_SUPPORT(ARB_texture_storage);
+    const bool  bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic) && bFilter;
+    const bool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && bFilter && (iWidth == iHeight);
+
+    // save properties
+    m_vResolution = coreVector2(float(iWidth), float(iHeight));
+    m_iLevels     = bMipMap ? coreByte(CEIL(coreMath::Log<2>(float(iWidth)))) : 1;
+    m_iInternal   = iInternal;
+    m_iFormat     = iFormat;
+    m_iType       = iType;
 
     // generate texture
     glGenTextures(1, &m_iTexture);
     glBindTexture(GL_TEXTURE_2D, m_iTexture);
 
-    // set texture parameters
+    // set sampling parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
     if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER));
 
-    // set texture properties
-    m_vResolution = coreVector2(float(iWidth), float(iHeight));
-    m_iLevels     = bMipMap ? coreByte(CEIL(coreMath::Log<2>(float(MAX(iWidth, iHeight))))) : 1;
-    m_iFormat     = iFormat;
-    m_iType       = iType;
-
     if(bStorage)
     {
         // allocate immutable texture memory
-        glTexStorage2D(GL_TEXTURE_2D, m_iLevels, iInternal, iWidth, iHeight);
+        glTexStorage2D(GL_TEXTURE_2D, m_iLevels, m_iInternal, iWidth, iHeight);
     }
     else
     {
-        // allocate default texture memory
-        glTexImage2D(GL_TEXTURE_2D, 0, iInternal, iWidth, iHeight, 0, iFormat, iType, 0);
+        // allocate normal texture memory
+        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_iFormat : m_iInternal, iWidth, iHeight, 0, m_iFormat, m_iType, 0);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
     }
 }
@@ -161,19 +164,19 @@ void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const 
 // modify texture memory
 void coreTexture::Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, const coreUint& iWidth, const coreUint& iHeight, const coreUint& iDataSize, const void* pData)
 {
-    ASSERT_IF(!m_iTexture) return;
+    WARN_IF(!m_iTexture) return;
     ASSERT(((iOffsetX + iWidth) <= coreUint(m_vResolution.x)) && ((iOffsetY + iHeight) <= coreUint(m_vResolution.y)))
 
     // check for OpenGL extensions
-    const GLboolean& bDirectState = GLEW_ARB_direct_state_access;
-    const GLboolean  bPixelBuffer = GLEW_ARB_pixel_buffer_object && iDataSize && pData;
-    const GLboolean  bMipMap      = GLEW_ARB_framebuffer_object  && (m_iLevels > 1);
+    const bool& bDirectState = CORE_GL_SUPPORT(ARB_direct_state_access);
+    const bool  bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
+    const bool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1);
 
     coreDataBuffer iBuffer;
     if(bPixelBuffer)
     {
-        // generate pixel buffer object for asynchronous texture loading
-        iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, pData, CORE_DATABUFFER_STORAGE_DYNAMIC);
+        // create pixel buffer object for asynchronous texture loading
+        iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, pData, CORE_DATABUFFER_STORAGE_STREAM);
 
         // use PBO instead of client memory
         pData = NULL;
@@ -205,7 +208,7 @@ void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
     if(s_apBound[iUnit] == pTexture) return;
     s_apBound[iUnit] = pTexture;
     
-    if(GLEW_ARB_direct_state_access)
+    if(CORE_GL_SUPPORT(ARB_direct_state_access))
     {
         // bind texture directly
         glBindTextureUnit(GL_TEXTURE0 + iUnit, pTexture ? pTexture->GetTexture() : 0);

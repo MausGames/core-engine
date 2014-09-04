@@ -34,7 +34,7 @@ private:
     std::vector<coreObject2D*> m_aapRender[3];   //!< render-lists during a transition (0 = both | 1 = old surface | 2 = new surface)
     coreTimer m_Transition;                      //!< timer for a transition between two surfaces
 
-    //coreFrameBuffer m_iFrameBuffer;            //!< frame buffer for optimized rendering
+    //coreFrameBuffer m_iFrameBuffer;            //!< frame buffer for optimized rendering # TODO, ResourceRelation
         
 
 public:

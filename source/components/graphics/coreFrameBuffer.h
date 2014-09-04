@@ -10,81 +10,111 @@
 #ifndef _CORE_GUARD_FRAMEBUFFER_H_
 #define _CORE_GUARD_FRAMEBUFFER_H_
 
-// TODO: mipmapping ? (pre-allocation: storage and normal+generation)
-// TODO: implement real multisampling (currently supersampling sufficient)
-// TODO: frame buffer stack to allow nested buffer wrtings ? (GL 2.0 problems)
-// TODO: add stencil support (type-enum already added)
-// TODO: multiple color buffers, also check for multiple viewports and mega-shaders
+// TODO: mipmapping ? (explicit function, how to reserve levels ? -> new create-enum-value, don't forget to move nearest-filter)
+// TODO: check for multiple viewports and mega-shaders
+// TODO: a frame buffer with a STENCIL_INDEX8 stencil attachment and a DEPTH_COMPONENT24 depth attachment may be treated as unsupported (FRAMEBUFFER_UNSUPPORTED)
+// TODO: fully implement multiple color attachment handling (esp. in blit, clear, invalidate)
+// TODO: handle multiple color attachments for ES2 with extension and ES3 in general
+// TODO: handle depth-blitting to default frame buffer without blit-function (impossible without over-engineering?)
+// TODO: save states and reset on fallback blitting
+
+// NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 
 
 // ****************************************************************
 // frame buffer definitions
-enum coreFrameBufferType : coreUshort
-{
-    CORE_FRAMEBUFFER_TYPE_COLOR   = 0x0001,   //!< create color buffer without depth test
-    CORE_FRAMEBUFFER_TYPE_DEPTH   = 0x0002,   //!< create depth buffer only
-    CORE_FRAMEBUFFER_TYPE_FULL    = 0x0003,   //!< create full frame buffer with color and depth writing
-    CORE_FRAMEBUFFER_TYPE_ALPHA   = 0x0100,   //!< add alpha channel (only COLOR and FULL)
-    CORE_FRAMEBUFFER_TYPE_STENCIL = 0x0200    //!< add stencil buffer
-};
-EXTEND_ENUM(coreFrameBufferType)
+#define __CORE_FRAMEBUFFER_ALL_TARGETS(a)                                                    \
+    coreRenderTarget* a[CORE_SHADER_OUTPUT_COLORS + 2] = {&m_DepthTarget, &m_StencilTarget}; \
+    for(coreByte i = 2; i < ARRAY_SIZE(a); ++i) a[i] = &m_aColorTarget[i - 2];
 
-enum coreFrameBufferUse : coreByte
+enum coreFrameBufferCreate : bool
 {
-    CORE_FRAMEBUFFER_USE_COLOR   = 0x01,   //!< use the color buffer for this operation
-    CORE_FRAMEBUFFER_USE_DEPTH   = 0x02,   //!< use the depth buffer
-    CORE_FRAMEBUFFER_USE_STENCIL = 0x04    //!< use the stencil buffer
+    CORE_FRAMEBUFFER_CREATE_NORMAL       = false,   //!< create normal frame buffer
+    CORE_FRAMEBUFFER_CREATE_MULTISAMPLED = true     //!< create multisampled frame buffer
 };
-EXTEND_ENUM(coreFrameBufferUse)
+
+enum coreFrameBufferTarget : coreUshort
+{
+    CORE_FRAMEBUFFER_TARGET_COLOR   = GL_COLOR_BUFFER_BIT,    //!< use color buffer
+    CORE_FRAMEBUFFER_TARGET_DEPTH   = GL_DEPTH_BUFFER_BIT,    //!< use depth buffer
+    CORE_FRAMEBUFFER_TARGET_STENCIL = GL_STENCIL_BUFFER_BIT   //!< use stencil buffer
+};
+EXTEND_ENUM(coreFrameBufferTarget)
 
 
 // ****************************************************************
 // frame buffer class
-class coreFrameBuffer final : public coreResourceRelation
+class coreFrameBuffer final
 {
 private:
-    GLuint m_iFrameBuffer;                //!< frame buffer identifier
+    //! render target structure
+    struct coreRenderTarget
+    {
+        coreTexturePtr pTexture;    //!< render target texture (readable)
+        GLuint iBuffer;             //!< render target buffer (fast, multisampled)
+        GLenum iInternal;           //!< internal memory format (e.g. GL_RGBA8)
+        GLenum iFormat;             //!< pixel data format (e.g. GL_RGBA)
+        GLenum iType;               //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
 
-    coreTexturePtr m_pTexture;            //!< render target texture
-    GLuint m_iDepthBuffer;                //!< depth component buffer
- 
-    coreVector2 m_vResolution;            //!< resolution of the frame buffer
-    coreFrameBufferType m_iType;          //!< type of the frame buffer
+        constexpr_func coreRenderTarget()noexcept;
+        inline bool IsTexture()const {return pTexture ? true : false;}
+        inline bool IsBuffer ()const {return !this->IsTexture();}
+    };
 
-    float m_fFOV;                         //!< field-of-view
-    float m_fNearClip;                    //!< near clipping plane
-    float m_fFarClip;                     //!< far clipping plane
 
-    static coreFrameBuffer* s_pCurrent;   //!< currently active frame buffer object
+private:
+    GLuint m_iFrameBuffer;                                        //!< frame buffer identifier
+
+    coreRenderTarget m_aColorTarget[CORE_SHADER_OUTPUT_COLORS];   //!< attached color targets
+    coreRenderTarget m_DepthTarget;                               //!< attached depth target
+    coreRenderTarget m_StencilTarget;                             //!< attached stencil target
+
+    coreVector2 m_vResolution;                                    //!< resolution of the frame buffer
+                                                                   
+    float m_fFOV;                                                 //!< field-of-view
+    float m_fNearClip;                                            //!< near clipping plane
+    float m_fFarClip;                                             //!< far clipping plane
+
+    static coreFrameBuffer* s_pCurrent;                           //!< currently active frame buffer object
+
+    static coreObject2D* s_pBlitFallback;                         //!< 2d-object used for fallback-blitting onto the default frame buffer
+    static float s_afViewData[5];                                 //!< view properties of the default frame buffer
 
 
 public:
     coreFrameBuffer()noexcept;
-    ~coreFrameBuffer() {this->Delete();}
+    ~coreFrameBuffer();
+    friend class coreObjectManager;
 
     //! control the frame buffer
     //! @{
-    void Create(const coreVector2& vResolution, const coreFrameBufferType& iType, const char* pcTextureName);
+    void Create(const coreVector2& vResolution, const coreFrameBufferCreate& bType);
     void Delete();
+    //! @}
+
+    //! attach render targets
+    //! @{
+    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const char* pcName = NULL);
+    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
+    void DetachTargets();
     //! @}
 
     //! enable rendering to the frame buffer
     //! @{
     void StartDraw();
-    void EndDraw();
-    void EndDrawBound();
+    static void EndDraw();
     //! @}
 
     //! copy content to another frame buffer
     //! @{
-    void Blit(coreFrameBuffer* pTarget, const coreFrameBufferUse& iBuffer, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight);
-    void Blit(coreFrameBuffer* pTarget, const coreFrameBufferUse& iBuffer);
+    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight);
+    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination);
     //! @}
 
     //! reset content of the frame buffer
     //! @{
-    void Clear     (const coreFrameBufferUse& iBuffer);
-    void Invalidate(const coreFrameBufferUse& iBuffer);
+    void Clear     (const coreFrameBufferTarget& iTargets);
+    void Invalidate(const coreFrameBufferTarget& iTargets);
     //! @}
 
     //! access buffer directly
@@ -101,30 +131,36 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint&              GetFrameBuffer()const {return m_iFrameBuffer;}
-    inline const coreTexturePtr&      GetTexture    ()const {return m_pTexture;}
-    inline const GLuint&              GetDepthBuffer()const {return m_iDepthBuffer;}
-    inline const coreVector2&         GetResolution ()const {return m_vResolution;}
-    inline const coreFrameBufferType& GetType       ()const {return m_iType;}
-    inline const float&               GetFOV        ()const {return m_fFOV;}
-    inline const float&               GetNearClip   ()const {return m_fNearClip;}
-    inline const float&               GetFarClip    ()const {return m_fFarClip;}
+    inline const GLuint&           GetFrameBuffer  ()const                            {return m_iFrameBuffer;}
+    inline const coreRenderTarget& GetColorTarget  (const coreByte& iColorIndex)const {ASSERT(iColorIndex < CORE_SHADER_OUTPUT_COLORS) return m_aColorTarget[iColorIndex];}
+    inline const coreRenderTarget& GetDepthTarget  ()const                            {return m_DepthTarget;}
+    inline const coreRenderTarget& GetStencilTarget()const                            {return m_StencilTarget;}
+    inline const coreVector2&      GetResolution   ()const                            {return m_vResolution;}
+    inline const float&            GetFOV          ()const                            {return m_fFOV;}
+    inline const float&            GetNearClip     ()const                            {return m_fNearClip;}
+    inline const float&            GetFarClip      ()const                            {return m_fFarClip;}
     //! @}
 
 
 private:
     DISABLE_COPY(coreFrameBuffer)
 
-    //! reset with the resource manager
+    //! attach render targets
     //! @{
-    void __Reset(const coreResourceReset& bInit)override;
-    //! @}
-
-    //! delete frame and depth buffer
-    //! @{
-    void __DeleteBuffers();
+    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
     //! @}
 };
+
+
+// ****************************************************************
+// constructor
+constexpr_func coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
+: iBuffer   (0)
+, iInternal (0)
+, iFormat   (0)
+, iType     (0)
+{
+}
 
 
 #endif // _CORE_GUARD_FRAMEBUFFER_H_

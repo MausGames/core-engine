@@ -17,7 +17,7 @@
 
 
 // ****************************************************************
-// 3d-object definitions
+/* 3d-object definitions */
 #define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreMatrix4) + 1*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< model-view, color, tex-params
 #define CORE_OBJECT3D_INSTANCE_THRESHOLD (10u)                                                                  //!< minimum number of objects to draw instanced
 
@@ -136,7 +136,7 @@ public:
     /*! control memory allocation */
     //! @{
     void Reallocate(const coreUint& iNewCapacity);
-    inline void Clear() {m_apObjectList.clear();}
+    void Clear();
     //! @}
 
     /*! access 3d-object list directly */

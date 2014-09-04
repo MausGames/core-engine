@@ -255,15 +255,15 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 pModel->GetIndexBuffer()->Bind();
 
             // enable vertex attribute array division
-            if(GLEW_ARB_vertex_attrib_binding) glVertexBindingDivisor(1, 1);
+            if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1, 1);
             else
             {
-                glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+0, 1);
-                glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+1, 1);
-                glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+2, 1);
-                glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+3, 1);
-                glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,       1);
-                glVertexAttribDivisorARB(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,    1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 0, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 1, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 2, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 3, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      1);
             }
         }
 
@@ -355,6 +355,13 @@ void coreBatchList::BindObject(coreObject3D* pObject)
 /* unbind 3d-objects */
 void coreBatchList::UnbindObject(coreObject3D* pObject)
 {
+    // clear on the last entry
+    if(m_apObjectList.size() == 1)
+    {
+        this->Clear();
+        return;
+    }
+
     // find object in list
     FOR_EACH(it, m_apObjectList)
     {
@@ -375,8 +382,8 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
 /* change current capacity */
 void coreBatchList::Reallocate(const coreUint& iNewCapacity)
 {
-           if(iNewCapacity == m_iCurCapacity)        return;
-    ASSERT_IF(iNewCapacity <  m_apObjectList.size()) return;
+         if(iNewCapacity == m_iCurCapacity)        return;
+    WARN_IF(iNewCapacity <  m_apObjectList.size()) return;
 
     // change current capacity
     m_iCurCapacity = iNewCapacity;
@@ -389,22 +396,35 @@ void coreBatchList::Reallocate(const coreUint& iNewCapacity)
 
 
 // ****************************************************************
+/* remove all 3d-objects */
+void coreBatchList::Clear()
+{
+    // clear memory
+    m_apObjectList.clear();
+
+    // delete vertex array object
+    if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
+    m_iVertexArray = 0;
+}
+
+
+// ****************************************************************
 /* reset with the resource manager */
 void coreBatchList::__Reset(const coreResourceReset& bInit)
 {
     // check for OpenGL extensions
-    if(!GLEW_ARB_instanced_arrays || !GLEW_ARB_vertex_array_object) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
 
     if(bInit)
     {
         // create instance data buffer
         m_iInstanceBuffer.Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+0, 4, GL_FLOAT,         0);
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+1, 4, GL_FLOAT,         4*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+2, 4, GL_FLOAT,         8*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM+3, 4, GL_FLOAT,        12*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,       1, GL_UNSIGNED_INT, 16*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,    4, GL_FLOAT,        16*sizeof(float) + 1*sizeof(int));
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 0, 4, GL_FLOAT,         0);
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 1, 4, GL_FLOAT,         4*sizeof(float));
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 2, 4, GL_FLOAT,         8*sizeof(float));
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 3, 4, GL_FLOAT,        12*sizeof(float));
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1, GL_UNSIGNED_INT, 16*sizeof(float));
+        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      4, GL_FLOAT,        16*sizeof(float) + 1*sizeof(int));
 
         // invoke buffer update
         m_bUpdate = true;

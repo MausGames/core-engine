@@ -15,7 +15,7 @@ coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
 // create buffer storage
 void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const coreDataBufferStorage& iStorageType)
 {
-    ASSERT_IF(m_iDataBuffer) this->Delete();
+    WARN_IF(m_iDataBuffer) this->Delete();
     ASSERT(iSize)
 
     // save properties
@@ -23,15 +23,19 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
     m_iSize        = iSize;
     m_iStorageType = iStorageType;
 
-    // generate and bind buffer 
+    // generate buffer 
     glGenBuffers(1, &m_iDataBuffer);
-    glBindBuffer(iTarget, m_iDataBuffer);
-    s_aiBound[iTarget] = m_iDataBuffer; 
+    glBindBuffer(m_iTarget, m_iDataBuffer);
+    s_aiBound[m_iTarget] = m_iDataBuffer; 
 
-    // allocate buffer memory
-    if(GLEW_ARB_buffer_storage)
+    if(m_iStorageType == CORE_DATABUFFER_STORAGE_STREAM)
     {
-        // set storage properties
+        // always allocate normal when streaming
+        glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
+    }
+    else if(CORE_GL_SUPPORT(ARB_buffer_storage))
+    {
+        // set storage flags
         GLenum iFlags = 0;
         switch(m_iStorageType)
         {
@@ -40,14 +44,18 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
         case CORE_DATABUFFER_STORAGE_STATIC:     break;
         }
 
-        // create immutable buffer
+        // allocate immutable buffer memory
         glBufferStorage(m_iTarget, m_iSize, pData, iFlags);
 
         // map persistent mapped buffer
         if(m_iStorageType == CORE_DATABUFFER_STORAGE_PERSISTENT)
             m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags));
     }
-    else glBufferData(m_iTarget, m_iSize, pData, this->IsWritable() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+    else
+    {
+        // allocate normal buffer memory
+        glBufferData(m_iTarget, m_iSize, pData, this->IsWritable() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+    }
 }
 
 
@@ -83,9 +91,9 @@ void coreDataBuffer::Clear(const GLenum& iInternal, const GLenum& iFormat, const
     ASSERT(m_iDataBuffer && this->IsWritable())
 
     // clear the whole buffer
-    if(GLEW_ARB_clear_buffer_object)
+    if(CORE_GL_SUPPORT(ARB_clear_buffer_object))
     {
-        if(GLEW_ARB_direct_state_access)
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // clear content directly
             glClearNamedBufferData(m_iDataBuffer, iInternal, iFormat, iType, pData);
@@ -107,7 +115,7 @@ void coreDataBuffer::Invalidate()
     ASSERT(m_iDataBuffer && this->IsWritable())
 
     // invalidate the whole buffer
-    if(GLEW_ARB_invalidate_subdata)
+    if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
         glInvalidateBufferData(m_iDataBuffer);
 }
 
@@ -179,7 +187,7 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
 {
     ASSERT(this->GetDataBuffer() && !m_aAttribute.empty())
 
-    if(GLEW_ARB_vertex_attrib_binding)
+    if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding))
     {
         // bind the vertex buffer
         glBindVertexBuffer(iBinding, this->GetDataBuffer(), 0, m_iVertexSize);

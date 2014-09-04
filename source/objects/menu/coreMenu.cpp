@@ -17,7 +17,6 @@ coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)
 , m_iCurSurface  (iStartSurface)
 , m_iOldSurface  (iStartSurface)
 , m_Transition   (coreTimer(1.0f, 1.0f, 1))
-, m_pFrameBuffer (NULL)
 {
     // create surfaces
     m_papObject = new std::vector<coreObject2D*>[m_iNumSurfaces];
@@ -32,9 +31,8 @@ coreMenu::~coreMenu()
     for(int i = 0; i < m_iNumSurfaces; ++i) m_papObject[i].clear();
     for(int i = 0; i < 3;              ++i) m_aapRender[i].clear();
 
-    // delete surfaces and frame buffer
+    // delete surfaces
     SAFE_DELETE_ARRAY(m_papObject)
-    SAFE_DELETE(m_pFrameBuffer)
 }
 
 
@@ -157,8 +155,8 @@ void coreMenu::UnbindObject(const coreByte& iSurface, coreObject2D* pObject)
 // change current surface
 bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
 {
-           if(iNewSurface == m_iCurSurface)  return false;
-    ASSERT_IF(iNewSurface >= m_iNumSurfaces) return false;
+         if(iNewSurface == m_iCurSurface)  return false;
+    WARN_IF(iNewSurface >= m_iNumSurfaces) return false;
 
     if(!fSpeed)
     {

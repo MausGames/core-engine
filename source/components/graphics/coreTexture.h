@@ -19,6 +19,11 @@
     #define CORE_TEXTURE_MASK 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
 #endif
 
+#define CORE_TEXTURE_SPEC_RGB     GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE
+#define CORE_TEXTURE_SPEC_RGBA    GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE
+#define CORE_TEXTURE_SPEC_DEPTH   GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT
+#define CORE_TEXTURE_SPEC_STENCIL GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE
+
 #define CORE_TEXTURE_UNITS (4u)   //!< number of texture units
 
 
@@ -27,6 +32,7 @@
 // TODO: check for max available texture units (only at start?)
 // TODO: implement sampler objects
 // TODO: implement light unbind (like in model and program)
+// TODO: implement invalidate and clear function like in FrameBuffer and DataBuffer
 class coreTexture final : public coreResource
 {
 private:
@@ -34,8 +40,10 @@ private:
 
     coreVector2 m_vResolution;                           //!< resolution of the base level
     coreByte    m_iLevels;                               //!< number of texture levels
-    GLenum      m_iFormat;                               //!< pixel data format (e.g. GL_RGBA)
-    GLenum      m_iType;                                 //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
+
+    GLenum m_iInternal;                                  //!< internal memory format (e.g. GL_RGBA8)
+    GLenum m_iFormat;                                    //!< pixel data format (e.g. GL_RGBA)
+    GLenum m_iType;                                      //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
 
@@ -71,6 +79,7 @@ public:
     inline const GLuint&      GetTexture   ()const {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreByte&    GetLevels    ()const {return m_iLevels;}
+    inline const GLenum&      GetInternal  ()const {return m_iInternal;}
     inline const GLenum&      GetFormat    ()const {return m_iFormat;}
     inline const GLenum&      GetType      ()const {return m_iType;}
     //! @}

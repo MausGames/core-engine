@@ -12,9 +12,8 @@
 
 // TODO: enable read and copy operations (currently only static and write/dynamic)
 // TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
-// TODO: STREAM_*
 
-// NOTE: superior object have to handle resource-resets
+// NOTE: superior objects have to handle resource-resets, to refill the buffers
 
 
 // ****************************************************************
@@ -23,7 +22,8 @@ enum coreDataBufferStorage : coreByte
 {
     CORE_DATABUFFER_STORAGE_STATIC     = 0,   //!< store fast static buffer (STATIC_DRAW)
     CORE_DATABUFFER_STORAGE_DYNAMIC    = 1,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
-    CORE_DATABUFFER_STORAGE_PERSISTENT = 2    //!< store persistent mapped buffer when supported (fallback to dynamic)
+    CORE_DATABUFFER_STORAGE_STREAM     = 2,   //!< store writable temporary buffer (STREAM_DRAW)
+    CORE_DATABUFFER_STORAGE_PERSISTENT = 3    //!< store persistent mapped buffer when supported (fallback to dynamic)
 };
 
 enum coreDataBufferMap : coreByte
@@ -161,9 +161,9 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
     if(m_pPersistentBuffer)
         return r_cast<T*>(m_pPersistentBuffer + iOffset);
 
-    if(GLEW_ARB_map_buffer_range)
+    if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
-        if(GLEW_ARB_direct_state_access)
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // map buffer memory directly
             return s_cast<T*>(glMapNamedBufferRange(m_iDataBuffer, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
@@ -198,9 +198,9 @@ template <typename T> void coreDataBuffer::Unmap(T* pPointer)
     // keep persistent mapped buffer
     if(m_pPersistentBuffer) return;
 
-    if(GLEW_ARB_map_buffer_range)
+    if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
-        if(GLEW_ARB_direct_state_access)
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // unmap buffer memory directly
             glUnmapNamedBuffer(m_iDataBuffer);
