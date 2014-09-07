@@ -8,8 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#define CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT (4*sizeof(coreMatrix4) + 1*sizeof(coreVector4))
-#define CORE_GRAPHICS_UNIFORM_SIZE         (CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + CORE_GRAPHICS_LIGHTS*sizeof(coreLight))
+#define CORE_GRAPHICS_UNIFORM_SIZE (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))
 
 
 // ******************************************************************
@@ -91,7 +90,7 @@ CoreGraphics::CoreGraphics()noexcept
 
     // reset camera and view
     this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
-    this->ResizeView(coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
+    this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
 
     // reset ambient
     for(coreByte i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
@@ -151,15 +150,15 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
         // create camera matrix
         m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
 
-        // send transformation data to the global UBO
-        this->__SendTransformation();
+        // invoke transformation data forwarding
+        coreProgram::Disable(false);
     }
 }
 
 
 // ******************************************************************
-// resize view and create projection matrices
-void CoreGraphics::ResizeView(coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
+// set view and create projection matrices
+void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
 {
     bool bNewView = false;
 
@@ -188,8 +187,8 @@ void CoreGraphics::ResizeView(coreVector2 vResolution, const float& fFOV, const 
         m_mPerspective = coreMatrix4::Perspective(vResolution, m_fFOV, m_fNearClip, m_fFarClip);
         m_mOrtho       = coreMatrix4::Ortho(vResolution);
 
-        // send transformation data to the global UBO
-        this->__SendTransformation();
+        // invoke transformation data forwarding
+        coreProgram::Disable(false);
     }
 }
 
@@ -213,7 +212,7 @@ void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, c
     if(bNewLight && m_iUniformBuffer)
     {
         // map required area of the global UBO
-        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(CORE_GRAPHICS_UNIFORM_OFFSET_LIGHT + iID*sizeof(coreLight), sizeof(coreLight), CORE_DATABUFFER_MAP_INVALIDATE_RANGE);
+        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(iID * sizeof(coreLight), sizeof(coreLight), CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update specific light data
         std::memcpy(pRange, &CurLight, sizeof(coreLight));
@@ -288,26 +287,4 @@ void CoreGraphics::__UpdateScene()
 #else
     glClear(GL_DEPTH_BUFFER_BIT);
 #endif
-}
-
-
-// ******************************************************************
-// send transformation data to the global UBO
-void CoreGraphics::__SendTransformation()
-{
-    if(!m_iUniformBuffer) return;
-
-    // calculate view-projection matrix
-    const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
-
-    // map required area of the global UBO
-    coreByte* pRange = m_iUniformBuffer.Map<coreByte>(0, 4*sizeof(coreMatrix4) + sizeof(coreVector4), CORE_DATABUFFER_MAP_INVALIDATE_RANGE);
-
-    // update transformation matrices
-    std::memcpy(pRange,                         &mViewProj,         sizeof(coreMatrix4));
-    std::memcpy(pRange + 1*sizeof(coreMatrix4), &m_mCamera,         sizeof(coreMatrix4));
-    std::memcpy(pRange + 2*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
-    std::memcpy(pRange + 3*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
-    std::memcpy(pRange + 4*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
-    m_iUniformBuffer.Unmap(pRange);
 }

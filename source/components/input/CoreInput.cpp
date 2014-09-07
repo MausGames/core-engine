@@ -11,8 +11,8 @@
 #define CORE_INPUT_PRESS(x)   {(x)[3] = false;  (x)[2] = !(x)[1]; (x)[1] = true;}
 #define CORE_INPUT_RELEASE(x) {(x)[3] = (x)[1]; (x)[2] = false;   (x)[1] = false;}
 
-#define CORE_INPUT_JOYSTICK_DEATH 500
-#define CORE_INPUT_JOYSTICK_MAX   8000
+#define CORE_INPUT_JOYSTICK_DEAD 2000
+#define CORE_INPUT_JOYSTICK_MAX  8000
 
 
 // ****************************************************************
@@ -170,12 +170,12 @@ void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, c
     if(iID >= m_aJoystick.size()) return;
 
     // move the mouse cursor
-    const coreVector2 vAcc = m_aJoystick[iID].vRelative;
+    const coreVector2& vAcc = m_aJoystick[iID].vRelative;
     if(vAcc.x || vAcc.y)
     {
-        const coreVector2 vPos = this->GetMousePosition() * coreVector2(1.0f,-1.0f) + coreVector2(0.5f,0.5f);
-        const coreVector2 vNew = (vAcc.Normalized() * coreVector2(1.0f, -Core::System->GetResolution().AspectRatio()) * Core::System->GetTime() * fSpeed + vPos) * Core::System->GetResolution();
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(vNew.x + 0.5f), int(vNew.y + 0.5f));
+        const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
+        const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx() / Core::System->GetResolution().Min() * Core::System->GetTime() * fSpeed + vPos) * Core::System->GetResolution();
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(vNew.x + 0.5f), int(-vNew.y + 0.5f));
     }
 
     // press mouse buttons
@@ -248,7 +248,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(ABS(Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEATH) 
+        if(ABS((int)Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEAD) 
             this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, CLAMP(float(Event.jaxis.value) / float(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
         else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;

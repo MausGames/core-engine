@@ -123,7 +123,7 @@ void Core::Reset()
     // load former state
     System->m_dTotalTime = dTotalTime;
     System->m_iCurFrame  = iCurFrame;
-    Graphics->ResizeView(System->GetResolution(), fFOV, fNearClip, fFarClip);
+    Graphics->SetView  (System->GetResolution(), fFOV, fNearClip, fFarClip);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
     for(int i = 0; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
     for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);

@@ -26,7 +26,7 @@
 #define CORE_SHADER_UNIFORM_ORTHO               "u_m4Ortho"
 #define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
                                                 
-#define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)   PRINT("u_asLight[%d].v3Position",  i)
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)   PRINT("u_asLight[%d].v4Position",  i)
 #define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i)  PRINT("u_asLight[%d].v4Direction", i)
 #define CORE_SHADER_UNIFORM_LIGHT_VALUE(i)      PRINT("u_asLight[%d].v4Value",     i)
                                                 
@@ -128,21 +128,22 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 // TODO: assert-check for new shaders while already finished
 // TODO: allow additional shaders and attributes in between
 // TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs
+// TODO: UBO-fallback caching-problem (data will not be re-send after change, soft-reset program on set-functions?)
 class coreProgram final : public coreResource
 {
 private:
-    GLuint m_iProgram;                            //!< shader-program identifier
-                                                         
-    std::vector<coreShaderPtr> m_apShader;        //!< attached shader objects
-    coreShaderStatus m_iStatus;                   //!< current status
-
-    coreLookup<const char*, int> m_aiUniform;     //!< uniform locations
-    coreLookup<const char*, int> m_aiAttribute;   //!< attribute locations
-    coreLookup<int, coreVector4> m_avCache;       //!< cached uniform values
-
-    coreSync m_Sync;                              //!< sync object for asynchronous shader-program loading
-
-    static coreProgram* s_pCurrent;               //!< currently active shader-program
+    GLuint m_iProgram;                        //!< shader-program identifier
+                                                     
+    std::vector<coreShaderPtr> m_apShader;    //!< attached shader objects
+    coreShaderStatus m_iStatus;               //!< current status
+                                              
+    coreLookupStr<int> m_aiUniform;           //!< uniform locations ##MAJOR TODO##
+    coreLookupStr<int> m_aiAttribute;         //!< attribute locations
+    coreLookup<int, coreVector4> m_avCache;   //!< cached uniform values
+                                              
+    coreSync m_Sync;                          //!< sync object for asynchronous shader-program loading
+                                              
+    static coreProgram* s_pCurrent;           //!< currently active shader-program
 
     
 public:

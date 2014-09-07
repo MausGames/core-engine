@@ -20,7 +20,7 @@ bool coreTimer::Update(const float& fSpeedModifier)
         if(m_fValue >= m_fEnd)
         {
             // target value reached
-            if(++m_iCurLoops >= m_iMaxLoops)
+            if(++m_iCurLoops == m_iMaxLoops)
             {
                 // halt the timer
                 m_fValue = m_fEnd;

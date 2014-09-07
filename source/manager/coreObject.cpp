@@ -62,7 +62,7 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
             coreFrameBuffer::s_pBlitFallback = new coreObject2D();
 
             // load required shaders
-            coreFrameBuffer::s_pBlitFallback->DefineProgram(Core::Manager::Resource->Load<coreProgram>("default_2d", CORE_RESOURCE_UPDATE_AUTO, NULL))
+            coreFrameBuffer::s_pBlitFallback->DefineProgram(Core::Manager::Resource->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL))
                 ->AttachShader(Core::Manager::Resource->Load<coreShader>("default_2d.vert", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert"))
                 ->AttachShader(Core::Manager::Resource->Load<coreShader>("default_2d.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag"))
                 ->Finish();

@@ -252,7 +252,7 @@ coreError coreProgram::Load(coreFile* pFile)
     FOR_EACH(it, m_aiAttribute)
     {
         if(it->second >= 0) 
-            glBindAttribLocation(m_iProgram, it->second, it->first);
+            glBindAttribLocation(m_iProgram, it->second, it->first.c_str());
     }
 
     // bind output locations
@@ -351,18 +351,21 @@ bool coreProgram::Enable()
     s_pCurrent = this;
     glUseProgram(m_iProgram);
 
+    // forward transformation data
+    if(this->GetUniform(CORE_SHADER_UNIFORM_VIEWPROJ) >= 0)
+    {
+        // send view-projection matrix
+        const coreMatrix4 mViewProj = Core::Graphics->GetCamera() * Core::Graphics->GetPerspective();
+        this->SendUniform(CORE_SHADER_UNIFORM_VIEWPROJ, mViewProj, false);
+    }
+    this->SendUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(),      false);
+    this->SendUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
+    this->SendUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
+    this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetViewResolution());
+
     // forward global uniform data without UBO
     if(!Core::Graphics->GetUniformBuffer())
     {
-        const coreMatrix4 mViewProj = Core::Graphics->GetCamera() * Core::Graphics->GetPerspective();
-
-        // forward transformation data
-        this->SendUniform(CORE_SHADER_UNIFORM_VIEWPROJ,    mViewProj,                        false);
-        this->SendUniform(CORE_SHADER_UNIFORM_CAMERA,      Core::Graphics->GetCamera(),      false);
-        this->SendUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
-        this->SendUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
-        this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetViewResolution());
-
         // forward ambient data
         for(coreByte i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
         {

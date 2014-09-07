@@ -222,7 +222,7 @@ void coreFrameBuffer::StartDraw()
     s_pCurrent = this;
 
     // set view frustum
-    Core::Graphics->ResizeView(m_vResolution, m_fFOV, m_fNearClip, m_fFarClip);
+    Core::Graphics->SetView(m_vResolution, m_fFOV, m_fNearClip, m_fFarClip);
 }
 
 
@@ -237,7 +237,7 @@ void coreFrameBuffer::EndDraw()
     s_pCurrent = NULL;
 
     // reset view frustum
-    Core::Graphics->ResizeView(coreVector2(s_afViewData[0], s_afViewData[1]), s_afViewData[2], s_afViewData[3], s_afViewData[4]);
+    Core::Graphics->SetView(coreVector2(s_afViewData[0], s_afViewData[1]), s_afViewData[2], s_afViewData[3], s_afViewData[4]);
     std::memset(s_afViewData, 0, sizeof(s_afViewData));
 }
 

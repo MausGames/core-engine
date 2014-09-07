@@ -172,10 +172,10 @@ public:
     static inline         coreMatrix4 RotationY  (const float&       fAngle);
     static inline         coreMatrix4 RotationZ  (const coreVector2& vDirection);
     static inline         coreMatrix4 RotationZ  (const float&       fAngle);
-    static inline         coreMatrix4 Orientation(const coreVector3& vDirection, const coreVector3& vOrintation);
+    static inline         coreMatrix4 Orientation(const coreVector3& vDirection, const coreVector3& vOrientation);
     static inline         coreMatrix4 Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
     static inline         coreMatrix4 Ortho      (const coreVector2& vResolution);
-    static inline         coreMatrix4 Camera     (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrintation);
+    static inline         coreMatrix4 Camera     (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
     //! @}
 };
 

@@ -10,6 +10,9 @@
 #ifndef _CORE_GUARD_INPUT_H_
 #define _CORE_GUARD_INPUT_H_
 
+// TODO: touch-related functions empty on non-mobile
+// TODO: death-zone and max joystick value into config file
+
 
 // ****************************************************************
 // input definitions

@@ -19,6 +19,7 @@
 // TODO: save states and reset on fallback blitting
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
+// NOTE: notated as integer
 
 
 // ****************************************************************

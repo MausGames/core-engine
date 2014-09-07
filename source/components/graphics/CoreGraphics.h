@@ -74,8 +74,8 @@ private:
 public:
     //! control camera and view
     //! @{
-    void SetCamera (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
-    void ResizeView(coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
+    void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
+    void SetView  (coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
     //! @}
 
     //! control ambient
@@ -118,11 +118,6 @@ private:
     //! update the graphics scene
     //! @{
     void __UpdateScene();
-    //! @}
-
-    //! send transformation data to the global UBO
-    //! @{
-    void __SendTransformation();
     //! @}
 };
 

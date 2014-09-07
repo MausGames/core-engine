@@ -34,7 +34,7 @@ public:
 
     //! check for sync object status
     //! @{
-    coreError Check(const coreUint& iWait);
+    coreError Check(const coreUint64& iNanoWait);
     //! @}
 
 
