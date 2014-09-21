@@ -47,11 +47,11 @@ public:
 
     //! render and move the 2d-object
     //! @{
-    virtual inline void Render() {coreObject2D::Render(m_pProgram);}
     virtual void Render(const coreProgramPtr& pProgram)hot_func;
+    virtual void Render()hot_func;
     virtual void Move  ()hot_func;
     //! @}
-
+    
     //! interact with the 2d-object
     //! @{
     void Interact();

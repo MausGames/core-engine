@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
@@ -59,6 +59,12 @@ bool coreObject3D::Enable(const coreProgramPtr& pProgram)
     return true;
 }
 
+bool coreObject3D::Enable()
+{
+    // enable default shader-program
+    return coreObject3D::Enable(m_pProgram);
+}
+
 
 // ****************************************************************
 /* render the 3d-object */
@@ -70,6 +76,12 @@ void coreObject3D::Render(const coreProgramPtr& pProgram)
         // draw the model
         m_pModel->Draw();
     }
+}
+
+void coreObject3D::Render()
+{
+    // render with default shader-program
+    coreObject3D::Render(m_pProgram);
 }
 
 
@@ -143,17 +155,17 @@ float coreObject3D::Collision(const coreObject3D& Object, const coreVector3& vLi
 // ****************************************************************
 /* constructor */
 coreBatchList::coreBatchList(const coreUint& iStartCapacity)noexcept
-: m_iCurCapacity (iStartCapacity)
-, m_iCurEnabled  (0)
-, m_iVertexArray (0)
-, m_bUpdate      (false)
+: m_iCurCapacity  (iStartCapacity)
+, m_iCurEnabled   (0)
+, m_aiVertexArray (0)
+, m_bUpdate       (false)
 {
     ASSERT(iStartCapacity)
 
     // reserve memory for objects
     m_apObjectList.reserve(iStartCapacity);
 
-    // create vertex array object and instance data buffer
+    // create vertex array objects and instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
@@ -165,7 +177,7 @@ coreBatchList::~coreBatchList()
     // clear memory
     m_apObjectList.clear();
 
-    // delete vertex array object and instance data buffer
+    // delete vertex array objects and instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
 }
 
@@ -185,7 +197,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 {
     if(m_apObjectList.empty()) return;
 
-    if(m_iInstanceBuffer && m_apObjectList.size() >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
+    if(m_aiInstanceBuffer[0] && m_apObjectList.size() >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
     {
         // enable the shader-program
         if(!pProgramInstanced.IsUsable()) return;
@@ -207,9 +219,13 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             // reset current number of enabled 3d-objects
             m_iCurEnabled = 0;
 
+            // switch to next available array and buffer
+            m_aiVertexArray.Next();
+            m_aiInstanceBuffer.Next();
+
             // map required area of the instance data buffer
-            const coreUint iLength = m_apObjectList.size() * CORE_OBJECT3D_INSTANCE_SIZE;
-            coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, m_apObjectList.size() * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)
             {
@@ -219,49 +235,49 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 if(!pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) continue;
                 ++m_iCurEnabled;
 
-                // calculate and compress data
-                const coreMatrix4 mModelView = pObject->GetTransform() * Core::Graphics->GetCamera();
+                // compress data
                 const coreUint    iColor     = pObject->GetColor4().ColorPack();
                 const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
+                ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                 // write data to the buffer
-                std::memcpy(pRange,                                          &mModelView, sizeof(coreMatrix4));
-                std::memcpy(pRange + sizeof(coreMatrix4),                    &iColor,     sizeof(coreUint));
-                std::memcpy(pRange + sizeof(coreMatrix4) + sizeof(coreUint), &vTexParams, sizeof(coreVector4));
-                pRange += CORE_OBJECT3D_INSTANCE_SIZE;
+                std::memcpy(pCursor,                                          &pObject->GetTransform(), sizeof(coreMatrix4));
+                std::memcpy(pCursor + sizeof(coreMatrix4),                    &iColor,                  sizeof(coreUint));
+                std::memcpy(pCursor + sizeof(coreMatrix4) + sizeof(coreUint), &vTexParams,              sizeof(coreVector4));
+                pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
             }
 
             // unmap buffer
-            m_iInstanceBuffer.Unmap(pRange - m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE);
+            m_aiInstanceBuffer.GetCur().Unmap(pRange);
 
             // reset the update status
             m_bUpdate = false;
         }
 
         // bind vertex array object
-        if(m_iVertexArray) glBindVertexArray(m_iVertexArray);
+        if(m_aiVertexArray.GetCur()) glBindVertexArray(m_aiVertexArray.GetCur());
         else
         {
             // create vertex array object
-            glGenVertexArrays(1, &m_iVertexArray);
-            glBindVertexArray(m_iVertexArray);
+            glGenVertexArrays(1, &m_aiVertexArray.GetCur());
+            glBindVertexArray(m_aiVertexArray.GetCur());
 
             // set vertex data
             pModel->GetVertexBuffer(0)->Activate(0);
-            m_iInstanceBuffer.Activate(1);
+            m_aiInstanceBuffer.GetCur().Activate(1);
 
             // set index data
-            if(pModel->GetIndexBuffer())
+            if(*pModel->GetIndexBuffer())
                 pModel->GetIndexBuffer()->Bind();
 
             // enable vertex attribute array division
             if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1, 1);
             else
             {
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 0, 1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 1, 1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 2, 1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 3, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 0, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 1, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 2, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 3, 1);
                 glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1);
                 glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      1);
             }
@@ -281,10 +297,29 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
     }
 }
 
+void coreBatchList::Render()
+{
+    // render with default shader-programs
+    if(!m_apObjectList.empty()) coreBatchList::Render(m_pProgram, m_apObjectList.front()->GetProgram());
+}
+
 
 // ****************************************************************
-/* move the batch list */
-void coreBatchList::Move()
+/* move the batch list normally */
+void coreBatchList::MoveNormal()
+{
+    // move all objects
+    FOR_EACH(it, m_apObjectList)
+        (*it)->Move();
+
+    // set the update status
+    m_bUpdate = true;
+}
+
+
+// ****************************************************************
+/* move the batch list with automatic temporal sort */
+void coreBatchList::MoveSort()
 {
     auto et = m_apObjectList.begin();
 
@@ -304,11 +339,11 @@ void coreBatchList::Move()
 
         // calculate properties of current object
         const float fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
-        const bool  bCurTransparent =  pObject->GetAlpha() < 1.0f;
+        const bool  bCurTransparent = (pObject->GetAlpha() < 1.0f) ? true : false;
         
         // sort objects (opaque first and from front to back, transparent later and from back to front)
-        if(( bCurTransparent && (bOldTransparent && fCurDistance > fOldDistance)) ||
-           (!bCurTransparent && (bOldTransparent || fCurDistance < fOldDistance)))
+        if(( bCurTransparent && (bOldTransparent && (fCurDistance > fOldDistance))) ||
+           (!bCurTransparent && (bOldTransparent || (fCurDistance < fOldDistance))))
         {
             std::swap(*it, *et);
         }
@@ -355,13 +390,6 @@ void coreBatchList::BindObject(coreObject3D* pObject)
 /* unbind 3d-objects */
 void coreBatchList::UnbindObject(coreObject3D* pObject)
 {
-    // clear on the last entry
-    if(m_apObjectList.size() == 1)
-    {
-        this->Clear();
-        return;
-    }
-
     // find object in list
     FOR_EACH(it, m_apObjectList)
     {
@@ -369,6 +397,10 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
         {
             // remove object from list
             m_apObjectList.erase(it);
+
+            // clear on the last entry
+            if(m_apObjectList.empty()) this->Clear();
+
             return;
         }
     }
@@ -389,7 +421,7 @@ void coreBatchList::Reallocate(const coreUint& iNewCapacity)
     m_iCurCapacity = iNewCapacity;
     m_apObjectList.reserve(iNewCapacity);
 
-    // reallocate the instance data buffer
+    // reallocate the instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
     this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
@@ -402,9 +434,9 @@ void coreBatchList::Clear()
     // clear memory
     m_apObjectList.clear();
 
-    // delete vertex array object
-    if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
-    m_iVertexArray = 0;
+    // delete vertex array objects
+    if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray);
+    m_aiVertexArray.List()->fill(0);
 }
 
 
@@ -417,25 +449,29 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
-        // create instance data buffer
-        m_iInstanceBuffer.Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 0, 4, GL_FLOAT,         0);
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 1, 4, GL_FLOAT,         4*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 2, 4, GL_FLOAT,         8*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM + 3, 4, GL_FLOAT,        12*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1, GL_UNSIGNED_INT, 16*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      4, GL_FLOAT,        16*sizeof(float) + 1*sizeof(int));
+        FOR_EACH(it, *m_aiInstanceBuffer.List())
+        {
+            // create instance data buffers
+            it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 0, 4, GL_FLOAT,         0);
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 1, 4, GL_FLOAT,         4*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 2, 4, GL_FLOAT,         8*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 3, 4, GL_FLOAT,        12*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1, GL_UNSIGNED_INT, 16*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      4, GL_FLOAT,        16*sizeof(float) + 1*sizeof(int));
+        }
 
         // invoke buffer update
         m_bUpdate = true;
     }
     else
     {
-        // delete vertex array object
-        if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
-        m_iVertexArray = 0;
+        // delete vertex array objects
+        if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray);
+        m_aiVertexArray.List()->fill(0);
 
-        // delete instance data buffer
-        m_iInstanceBuffer.Delete();
+        // delete instance data buffers
+        FOR_EACH(it, *m_aiInstanceBuffer.List())
+            it->Delete();
     }
 }

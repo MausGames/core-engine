@@ -44,7 +44,17 @@ struct coreLight
 // ****************************************************************
 #if (__VERSION__) >= 140 // >= OpenGL 3.1
 
-    layout(std140) uniform b_Global
+    layout(std140) uniform b_Transform
+    {
+        // transformation uniforms
+        mat4 u_m4ViewProj;
+        mat4 u_m4Camera;
+        mat4 u_m4Perspective;
+        mat4 u_m4Ortho;
+        vec4 u_v4Resolution;
+    };
+
+    layout(std140) uniform b_Ambient
     {
         // ambient uniforms
         coreLight u_asLight[CORE_NUM_LIGHTS];
@@ -52,17 +62,17 @@ struct coreLight
 
 #else
 
+    // transformation uniforms
+    uniform mat4 u_m4ViewProj;
+    uniform mat4 u_m4Camera;
+    uniform mat4 u_m4Perspective;
+    uniform mat4 u_m4Ortho;
+    uniform vec4 u_v4Resolution;
+
     // ambient uniforms
     uniform coreLight u_asLight[CORE_NUM_LIGHTS];
 
 #endif
-
-// transformation uniforms
-uniform mat4 u_m4ViewProj;
-uniform mat4 u_m4Camera;
-uniform mat4 u_m4Perspective;
-uniform mat4 u_m4Ortho;
-uniform vec4 u_v4Resolution;
 
 // 3d-object uniforms
 uniform mat4 u_m4ModelView;
@@ -96,7 +106,7 @@ vec2 u_v2TexOffset = u_v4TexParam.zw;
         in vec4 a_v4Tangent;
         
         // instancing attributes
-        in mat4 a_m4DivModelView;
+        in mat4 a_m4DivTransform;
         in vec3 a_v3DivPosition;
         in vec3 a_v3DivData;
         in uint a_iDivColor;
@@ -120,7 +130,7 @@ vec2 u_v2TexOffset = u_v4TexParam.zw;
         attribute vec4 a_v4Tangent;
         
         // instancing uniforms (used like attributes)
-        uniform mat4 a_m4DivModelView;
+        uniform mat4 a_m4DivTransform;
         uniform vec3 a_v3DivPosition;
         uniform vec3 a_v3DivData;
         uniform vec4 a_iDivColor;
@@ -224,16 +234,20 @@ vec2 u_v2TexOffset = u_v4TexParam.zw;
 #endif
 
 // dot-3 transformation functions
-#define coreDot3Init()                                \
-    vec3 n = normalize(u_m3Normal * a_v3Normal);      \
-    vec3 t = normalize(u_m3Normal * a_v4Tangent.xyz); \
-    vec3 b = cross(n, t) * a_v4Tangent.w;
-    
-#define coreDot3Transform(i,o) \
-    o.x = dot(i, t);           \
-    o.y = dot(i, b);           \
-    o.z = dot(i, n);           \
-    o   = normalize(o);
+vec3 g_n, g_t, g_b;
+void coreDot3VertInit(in mat3 m3Matrix, in vec3 v3Normal, in vec4 v4Tangent)
+{
+    g_n = normalize(m3Matrix * v3Normal);
+    g_t = normalize(m3Matrix * v4Tangent.xyz);
+    g_b = cross(g_n, g_t)    * v4Tangent.w;
+}
+void coreDot3VertTransform(in vec3 v3Input, out vec3 v3Output)
+{
+    v3Output.x = dot(v3Input, g_t);
+    v3Output.y = dot(v3Input, g_b);
+    v3Output.z = dot(v3Input, g_n);
+    v3Output   = normalize(v3Output);
+}
 
 // square length functions
 float coreLengthSq(in vec2 v) {return dot(v, v);}

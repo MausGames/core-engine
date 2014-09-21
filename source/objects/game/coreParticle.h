@@ -13,7 +13,8 @@
 
 // ****************************************************************
 // particle definitions
-#define CORE_PARTICLE_INSTANCE_SIZE (2*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< position, data, color
+#define CORE_PARTICLE_INSTANCE_SIZE    (2*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< instancing per-particle size (position, data, color)
+#define CORE_PARTICLE_INSTANCE_BUFFERS (3u)                                           //!< number of concurrent instance data buffer
 
 
 // ****************************************************************
@@ -120,21 +121,21 @@ public:
 class coreParticleSystem final : public coreResourceRelation
 {
 private:
-    coreParticle* m_pParticle;                        //!< pre-allocated particles
-    coreUint m_iNumParticles;                         //!< number of particles
-    coreUint m_iCurParticle;                          //!< current particle
+    coreParticle* m_pParticle;                                                         //!< pre-allocated particles
+    coreUint m_iNumParticles;                                                          //!< number of particles
+    coreUint m_iCurParticle;                                                           //!< current particle
 
-    static coreModel* s_pModel;                       //!< global model object
-    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   //!< multiple texture objects
-    coreProgramPtr m_pProgram;                        //!< shader-program object
+    static coreModel* s_pModel;                                                        //!< global model object
+    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                    //!< multiple texture objects
+    coreProgramPtr m_pProgram;                                                         //!< shader-program object
 
-    std::list<coreParticle*> m_apRenderList;          //!< sorted render list with active particles
-    coreParticleEffect* m_pEmptyEffect;               //!< empty particle effect object
+    std::list<coreParticle*> m_apRenderList;                                           //!< sorted render list with active particles
+    coreParticleEffect* m_pEmptyEffect;                                                //!< empty particle effect object
 
-    GLuint m_iVertexArray;                            //!< vertex array object
+    coreSelect<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
+    coreSelect<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
 
-    coreVertexBuffer m_iInstanceBuffer;               //!< instance data buffer
-    bool m_bUpdate;                                   //!< buffer update status
+    bool m_bUpdate;                                                                    //!< buffer update status
 
 
 public:

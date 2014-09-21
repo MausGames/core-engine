@@ -97,6 +97,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
       <EnablePREfast>false</EnablePREfast>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -194,6 +195,7 @@
     <ClInclude Include="..\..\..\source\objects\menu\coreMenu.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreTextBox.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreSelect.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreData.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />

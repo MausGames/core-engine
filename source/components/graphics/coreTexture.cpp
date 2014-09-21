@@ -126,11 +126,11 @@ void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const 
     // check for OpenGL extensions
     const bool& bStorage     = CORE_GL_SUPPORT(ARB_texture_storage);
     const bool  bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic) && bFilter;
-    const bool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && bFilter && (iWidth == iHeight);
+    const bool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && bFilter;
 
     // save properties
     m_vResolution = coreVector2(float(iWidth), float(iHeight));
-    m_iLevels     = bMipMap ? coreByte(CEIL(coreMath::Log<2>(float(iWidth)))) : 1;
+    m_iLevels     = bMipMap ? coreByte(CEIL(coreMath::Log<2>(float(MAX(iWidth, iHeight))))) : 1;
     m_iInternal   = iInternal;
     m_iFormat     = iFormat;
     m_iType       = iType;
@@ -211,7 +211,7 @@ void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
     if(CORE_GL_SUPPORT(ARB_direct_state_access))
     {
         // bind texture directly
-        glBindTextureUnit(GL_TEXTURE0 + iUnit, pTexture ? pTexture->GetTexture() : 0);
+        glBindTextureUnit(iUnit, pTexture ? pTexture->GetTexture() : 0);
     }
     else
     {

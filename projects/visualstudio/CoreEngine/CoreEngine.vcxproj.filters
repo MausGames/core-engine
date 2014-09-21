@@ -293,5 +293,8 @@
     <ClInclude Include="..\..\..\source\additional\coreGLES.h">
       <Filter>source\additional</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreSelect.h">
+      <Filter>source\utilities\data</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

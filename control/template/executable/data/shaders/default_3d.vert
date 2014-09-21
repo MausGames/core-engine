@@ -12,7 +12,7 @@
 
     void main()
     {
-        gl_Position  = u_m4Perspective * a_m4DivModelView * vec4(a_v3Position, 1.0);
+        gl_Position  = u_m4ViewProj * a_m4DivTransform * vec4(a_v3Position, 1.0);
         v_v4VarColor = coreUnpackUnorm4x8(a_iDivColor);
         
     #ifdef _CORE_OPTION_NO_TEXTURE_TRANSFORM_

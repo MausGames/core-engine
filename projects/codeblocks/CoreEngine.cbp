@@ -186,6 +186,7 @@
 		<Unit filename="../../source/utilities/data/coreLookup.h" />
 		<Unit filename="../../source/utilities/data/coreRand.cpp" />
 		<Unit filename="../../source/utilities/data/coreRand.h" />
+		<Unit filename="../../source/utilities/data/coreSelect.h" />
 		<Unit filename="../../source/utilities/file/coreArchive.cpp" />
 		<Unit filename="../../source/utilities/file/coreArchive.h" />
 		<Unit filename="../../source/utilities/file/coreConfig.cpp" />

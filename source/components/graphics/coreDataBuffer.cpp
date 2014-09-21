@@ -19,16 +19,16 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
     ASSERT(iSize)
 
     // save properties
+    m_iStorageType = iStorageType;
     m_iTarget      = iTarget;
     m_iSize        = iSize;
-    m_iStorageType = iStorageType;
 
     // generate buffer 
     glGenBuffers(1, &m_iDataBuffer);
     glBindBuffer(m_iTarget, m_iDataBuffer);
     s_aiBound[m_iTarget] = m_iDataBuffer; 
 
-    if(m_iStorageType == CORE_DATABUFFER_STORAGE_STREAM)
+    if(m_iStorageType & CORE_DATABUFFER_STORAGE_STREAM)
     {
         // always allocate normal when streaming
         glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
@@ -37,25 +37,29 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
     {
         // set storage flags
         GLenum iFlags = 0;
-        switch(m_iStorageType)
+        switch(m_iStorageType & 0xFF)
         {
-        case CORE_DATABUFFER_STORAGE_PERSISTENT: iFlags  = GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+        case CORE_DATABUFFER_STORAGE_PERSISTENT: iFlags  = GL_MAP_PERSISTENT_BIT;
         case CORE_DATABUFFER_STORAGE_DYNAMIC:    iFlags |= GL_MAP_WRITE_BIT;
-        case CORE_DATABUFFER_STORAGE_STATIC:     break;
+        default: break;
         }
 
         // allocate immutable buffer memory
         glBufferStorage(m_iTarget, m_iSize, pData, iFlags);
 
         // map persistent mapped buffer
-        if(m_iStorageType == CORE_DATABUFFER_STORAGE_PERSISTENT)
-            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags));
+        if(m_iStorageType & CORE_DATABUFFER_STORAGE_PERSISTENT)
+            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
     }
     else
     {
         // allocate normal buffer memory
         glBufferData(m_iTarget, m_iSize, pData, this->IsWritable() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     }
+
+    // create sync object
+    if(m_iStorageType & CORE_DATABUFFER_STORAGE_FENCED)
+        m_pSync = new coreSync();
 }
 
 
@@ -68,19 +72,21 @@ void coreDataBuffer::Delete()
     // unmap persistent mapped buffer
     if(m_pPersistentBuffer)
     {
-        this->Bind();
-        glUnmapBuffer(m_iTarget);
+        m_pPersistentBuffer = NULL;
+        this->Unmap(r_cast<coreByte*>(~0ul));
     }
     
     // delete buffer
     glDeleteBuffers(1, &m_iDataBuffer); 
+
+    // delete sync object
+    SAFE_DELETE(m_pSync)
     
     // reset properties
-    m_iDataBuffer       = 0;
-    m_iTarget           = 0;
-    m_iSize             = 0;
-    m_iStorageType      = CORE_DATABUFFER_STORAGE_STATIC;
-    m_pPersistentBuffer = NULL;
+    m_iDataBuffer  = 0;
+    m_iStorageType = CORE_DATABUFFER_STORAGE_STATIC;
+    m_iTarget      = 0;
+    m_iSize        = 0;
 }
 
 

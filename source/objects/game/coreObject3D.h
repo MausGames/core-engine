@@ -18,7 +18,8 @@
 
 // ****************************************************************
 /* 3d-object definitions */
-#define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreMatrix4) + 1*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< model-view, color, tex-params
+#define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreMatrix4) + 1*sizeof(coreVector4) + 1*sizeof(coreUint))   //!< instancing per-object size (transformation, color, texture-parameters)
+#define CORE_OBJECT3D_INSTANCE_BUFFERS   (3u)                                                                   //!< number of concurrent instance data buffer
 #define CORE_OBJECT3D_INSTANCE_THRESHOLD (10u)                                                                  //!< minimum number of objects to draw instanced
 
 
@@ -56,13 +57,13 @@ public:
 
     /*! render and move the 3d-object */
     //! @{
-    inline bool         Enable() {return coreObject3D::Enable(m_pProgram);}
-    virtual inline void Render() {coreObject3D::Render(m_pProgram);}
     bool         Enable(const coreProgramPtr& pProgram)hot_func;
+    bool         Enable()hot_func;
     virtual void Render(const coreProgramPtr& pProgram)hot_func;
+    virtual void Render()hot_func;
     virtual void Move  ()hot_func;
     //! @}
-
+    
     /*! handle collision between different structures */
     //! @{
     static bool  Collision(const coreObject3D& Object1, const coreObject3D& Object2);
@@ -97,16 +98,16 @@ public:
 class coreBatchList final : public coreResourceRelation
 {
 private:
-    std::vector<coreObject3D*> m_apObjectList;   //!< list with pointers to similar 3d-objects
-    coreUint m_iCurCapacity;                     //!< current instance-capacity of all related resources
-    coreUint m_iCurEnabled;                      //!< current number of enabled 3d-objects
-                                                 
-    coreProgramPtr m_pProgram;                   //!< shader-program object
-                                                 
-    GLuint m_iVertexArray;                       //!< vertex array object
-                                                 
-    coreVertexBuffer m_iInstanceBuffer;          //!< instance data buffer
-    bool m_bUpdate;                              //!< buffer update status
+    std::vector<coreObject3D*> m_apObjectList;                                         //!< list with pointers to similar 3d-objects
+    coreUint m_iCurCapacity;                                                           //!< current instance-capacity of all related resources
+    coreUint m_iCurEnabled;                                                            //!< current number of enabled 3d-objects
+
+    coreProgramPtr m_pProgram;                                                         //!< shader-program object
+
+    coreSelect<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
+    coreSelect<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
+
+    bool m_bUpdate;                                                                    //!< buffer update status
 
 
 public:
@@ -122,11 +123,12 @@ public:
 
     /*! render and move the batch list */
     //! @{
-    inline void Render() {if(!m_apObjectList.empty()) coreBatchList::Render(m_pProgram, m_apObjectList.front()->GetProgram());}
     void Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramNormal)hot_func;
-    void Move  ()hot_func;
+    void Render    ()hot_func;
+    void MoveNormal()hot_func;
+    void MoveSort  ()hot_func;
     //! @}
-
+    
     /*! bind and unbind 3d-objects */
     //! @{
     void BindObject  (coreObject3D* pObject);
@@ -135,8 +137,9 @@ public:
 
     /*! control memory allocation */
     //! @{
-    void Reallocate(const coreUint& iNewCapacity);
-    void Clear();
+    void        Reallocate(const coreUint& iNewCapacity);
+    void        Clear();
+    inline void ShrinkToFit() {this->Reallocate(m_apObjectList.size());}
     //! @}
 
     /*! access 3d-object list directly */

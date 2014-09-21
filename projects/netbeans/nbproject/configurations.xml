@@ -94,6 +94,7 @@
             <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
             <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
             <itemPath>../../source/utilities/data/coreRand.h</itemPath>
+            <itemPath>../../source/utilities/data/coreSelect.h</itemPath>
           </logicalFolder>
           <logicalFolder name="file" displayName="file" projectFiles="true">
             <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
@@ -456,6 +457,11 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreSelect.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -851,6 +857,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreSelect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreArchive.cpp"
             ex="false"
             tool="1"
@@ -1238,6 +1249,11 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreSelect.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1641,6 +1657,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreSelect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreArchive.cpp"
             ex="false"
             tool="1"
@@ -2040,6 +2061,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreSelect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/file/coreArchive.cpp"
             ex="false"
             tool="1"
@@ -2434,6 +2460,11 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreRand.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreSelect.h"
             ex="false"
             tool="3"
             flavor2="0">

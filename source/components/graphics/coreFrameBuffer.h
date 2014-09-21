@@ -11,7 +11,7 @@
 #define _CORE_GUARD_FRAMEBUFFER_H_
 
 // TODO: mipmapping ? (explicit function, how to reserve levels ? -> new create-enum-value, don't forget to move nearest-filter)
-// TODO: check for multiple viewports and mega-shaders
+// TODO: check for multiple viewports and uber-shaders
 // TODO: a frame buffer with a STENCIL_INDEX8 stencil attachment and a DEPTH_COMPONENT24 depth attachment may be treated as unsupported (FRAMEBUFFER_UNSUPPORTED)
 // TODO: fully implement multiple color attachment handling (esp. in blit, clear, invalidate)
 // TODO: handle multiple color attachments for ES2 with extension and ES3 in general
@@ -108,8 +108,8 @@ public:
 
     //! copy content to another frame buffer
     //! @{
-    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight);
-    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination);
+    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)const;
+    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)const;
     //! @}
 
     //! reset content of the frame buffer

@@ -15,22 +15,24 @@
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 // NOTE: notated as integer
-// NOTE: uniform buffers should change only once per frame, otherwise it either stalls or is unsynchronized
 
 
 // ****************************************************************
 // data buffer definitions
-enum coreDataBufferStorage : coreByte
+enum coreDataBufferStorage : coreUshort
 {
-    CORE_DATABUFFER_STORAGE_STATIC     = 0,   //!< store fast static buffer (STATIC_DRAW)
-    CORE_DATABUFFER_STORAGE_DYNAMIC    = 1,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
-    CORE_DATABUFFER_STORAGE_STREAM     = 2,   //!< store writable temporary buffer (STREAM_DRAW)
-    CORE_DATABUFFER_STORAGE_PERSISTENT = 3    //!< store persistent mapped buffer when supported (fallback to dynamic)
+    CORE_DATABUFFER_STORAGE_STATIC     = 0x0001,   //!< store fast static buffer (STATIC_DRAW)
+    CORE_DATABUFFER_STORAGE_DYNAMIC    = 0x0002,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
+    CORE_DATABUFFER_STORAGE_STREAM     = 0x0004,   //!< store writable temporary buffer (STREAM_DRAW)
+    CORE_DATABUFFER_STORAGE_PERSISTENT = 0x0008,   //!< store persistent mapped buffer when supported (fallback to dynamic)
+    CORE_DATABUFFER_STORAGE_FENCED     = 0x0100    //!< use sync object for reliable asynchronous processing
 };
+EXTEND_ENUM(coreDataBufferStorage)
+
 
 enum coreDataBufferMap : coreByte
 {
-    CORE_DATABUFFER_MAP_INVALIDATE_ALL   = GL_MAP_INVALIDATE_BUFFER_BIT,   //!< invalidate complete buffer for max performance
+    CORE_DATABUFFER_MAP_INVALIDATE_ALL   = GL_MAP_INVALIDATE_BUFFER_BIT,   //!< invalidate complete buffer
     CORE_DATABUFFER_MAP_INVALIDATE_RANGE = GL_MAP_INVALIDATE_RANGE_BIT,    //!< invalidate only required range
     CORE_DATABUFFER_MAP_UNSYNCHRONIZED   = GL_MAP_UNSYNCHRONIZED_BIT       //!< map and unmap unsynchronized
 };
@@ -48,6 +50,10 @@ private:
     coreUint m_iSize;                              //!< data size in bytes 
 
     coreByte* m_pPersistentBuffer;                 //!< pointer to persistent mapped buffer
+    coreUint  m_iMapOffset;                        //!< current mapping offset
+    coreUint  m_iMapLength;                        //!< current mapping length
+
+    coreSync* m_pSync;                             //!< optional sync object for reliable asynchronous processing
                                                          
     static coreLookup<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
 
@@ -73,13 +79,19 @@ public:
     //! @{
     template <typename T> T*   Map  (const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType);
     template <typename T> void Unmap(T* pPointer);
-    inline bool IsWritable()const {return (m_iStorageType != CORE_DATABUFFER_STORAGE_STATIC) ? true : false;}
     //! @}
 
     //! reset content of the data buffer object
     //! @{
     void Clear(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const void* pData);
     void Invalidate();
+    //! @}
+
+    //! check for current buffer status
+    //! @{
+    inline bool IsWritable  ()const {return (m_iStorageType & CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
+    inline bool IsPersistent()const {return m_pPersistentBuffer                               ?  true : false;}
+    inline bool IsMapped    ()const {return m_iMapLength                                      ?  true : false;}
     //! @}
 
     //! access buffer directly
@@ -149,6 +161,9 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 , m_iTarget           (0)
 , m_iSize             (0)
 , m_pPersistentBuffer (NULL)
+, m_iMapOffset        (0)
+, m_iMapLength        (0)
+, m_pSync             (NULL)
 {
 }
 
@@ -159,9 +174,15 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
 {
     ASSERT(m_iDataBuffer && this->IsWritable() && (iOffset+iLength <= m_iSize))
 
+    // save mapping attributes
+    m_iMapOffset = iOffset;
+    m_iMapLength = iLength;
+
+    // check for sync object status
+    if(m_pSync) m_pSync->Check(GL_TIMEOUT_IGNORED);
+
     // return persistent mapped buffer
-    if(m_pPersistentBuffer)
-        return r_cast<T*>(m_pPersistentBuffer + iOffset);
+    if(m_pPersistentBuffer) return r_cast<T*>(m_pPersistentBuffer + iOffset);
 
     if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
@@ -179,14 +200,9 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
     }
     else
     {
-        // create temporary memory (attribute memory may not be tight)
-        T* pPointer = new T[iLength / sizeof(T) + sizeof(coreUint)*2];
-
-        // add mapping attributes
-        std::memcpy(pPointer,                    &iOffset, sizeof(coreUint));
-        std::memcpy(pPointer + sizeof(coreUint), &iLength, sizeof(coreUint));
-
-        return pPointer + sizeof(coreUint)*2;
+        // create temporary memory
+        T* pPointer = new T[iLength / sizeof(T) + 1];
+        return pPointer;
     }
 }
 
@@ -197,10 +213,21 @@ template <typename T> void coreDataBuffer::Unmap(T* pPointer)
 {
     ASSERT(pPointer)
 
-    // keep persistent mapped buffer
-    if(m_pPersistentBuffer) return;
-
-    if(CORE_GL_SUPPORT(ARB_map_buffer_range))
+    if(m_pPersistentBuffer)
+    {
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // flush persistent mapped buffer directly
+            glFlushMappedNamedBufferRange(m_iDataBuffer, m_iMapOffset, m_iMapLength);
+        }
+        else
+        {
+            // bind and flush persistent mapped buffer
+            this->Bind();
+            glFlushMappedBufferRange(m_iTarget, m_iMapOffset, m_iMapLength);
+        }
+    }
+    else if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
@@ -216,18 +243,20 @@ template <typename T> void coreDataBuffer::Unmap(T* pPointer)
     }
     else
     {
-        // extract mapping attributes
-        coreUint iOffset; std::memcpy(&iOffset, pPointer - sizeof(coreUint)*2, sizeof(coreUint));
-        coreUint iLength; std::memcpy(&iLength, pPointer - sizeof(coreUint)*1, sizeof(coreUint));
-
         // send new data to the data buffer
         this->Bind();
-        glBufferSubData(m_iTarget, iOffset, iLength, pPointer);
+        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, pPointer);
 
         // delete temporary memory
-        pPointer -= sizeof(coreUint)*2;
         SAFE_DELETE_ARRAY(pPointer);
     }
+
+    // create sync object
+    if(m_pSync) m_pSync->Create();
+
+    // reset mapping attributes
+    m_iMapOffset = 0;
+    m_iMapLength = 0;
 }
 
 

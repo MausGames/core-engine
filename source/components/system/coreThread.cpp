@@ -48,7 +48,7 @@ SDL_Thread* coreThread::StartThread()
         m_pThread = SDL_CreateThread(coreThreadMain, m_sName.c_str(), this);
         if(!m_pThread)
         {
-            Core::Log->Error("Could not start thread (%s) (SDL: %s)", m_sName.c_str(), SDL_GetError());
+            Core::Log->Warning("Could not start thread (%s) (SDL: %s)", m_sName.c_str(), SDL_GetError());
             m_bActive = false;
         }
     }

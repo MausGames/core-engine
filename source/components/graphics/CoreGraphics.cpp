@@ -8,8 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#define CORE_GRAPHICS_UNIFORM_SIZE (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))
-
 
 // ******************************************************************
 // constructor
@@ -18,6 +16,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_vCamDirection   (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamOrientation (coreVector3(0.0f,0.0f,0.0f))
 , m_vViewResolution (coreVector4(0.0f,0.0f,0.0f,0.0f))
+, m_iUniformUpdate  (0)
 {
     Core::Log->Header("Graphics Interface");
 
@@ -80,12 +79,11 @@ CoreGraphics::CoreGraphics()noexcept
     glColorMask(true, true, true, true);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    // create uniform buffer object for global shader-data
+    // create uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        // generate and bind global UBO to buffer target
-        m_iUniformBuffer.Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_GLOBAL_NUM, m_iUniformBuffer);
+        FOR_EACH(it, *m_aiTransformBuffer.List()) it->Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+        FOR_EACH(it, *m_aiAmbientBuffer.List())   it->Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE,   NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
     }
 
     // reset camera and view
@@ -119,8 +117,9 @@ CoreGraphics::CoreGraphics()noexcept
 // destructor
 CoreGraphics::~CoreGraphics()
 {
-    // delete global UBO
-    m_iUniformBuffer.Delete();
+    // delete uniform buffer objects
+    FOR_EACH(it, *m_aiTransformBuffer.List()) it->Delete();
+    FOR_EACH(it, *m_aiAmbientBuffer.List())   it->Delete();
 
     // dissociate render context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
@@ -150,8 +149,8 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
         // create camera matrix
         m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
 
-        // invoke transformation data forwarding
-        coreProgram::Disable(false);
+        // invoke transformation data update
+        BIT_SET(m_iUniformUpdate, 1)
     }
 }
 
@@ -187,8 +186,8 @@ void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const flo
         m_mPerspective = coreMatrix4::Perspective(vResolution, m_fFOV, m_fNearClip, m_fFarClip);
         m_mOrtho       = coreMatrix4::Ortho(vResolution);
 
-        // invoke transformation data forwarding
-        coreProgram::Disable(false);
+        // invoke transformation data update
+        BIT_SET(m_iUniformUpdate, 1)
     }
 }
 
@@ -209,21 +208,80 @@ void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, c
     if(CurLight.vDirection != vDirection) {CurLight.vDirection = vDirection; bNewLight = true;}
     if(CurLight.vValue     != vValue)     {CurLight.vValue     = vValue;     bNewLight = true;}
 
-    if(bNewLight && m_iUniformBuffer)
+    if(bNewLight)
     {
-        // map required area of the global UBO
-        coreByte* pRange = m_iUniformBuffer.Map<coreByte>(iID * sizeof(coreLight), sizeof(coreLight), CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        // invoke ambient data update
+        BIT_SET(m_iUniformUpdate, 2)
+    }
+}
 
-        // update specific light data
-        std::memcpy(pRange, &CurLight, sizeof(coreLight));
-        m_iUniformBuffer.Unmap(pRange);
+
+// ******************************************************************
+// send transformation data to the uniform buffer objects
+void CoreGraphics::SendTransformation()
+{
+    // check update status
+    if(!(m_iUniformUpdate & BIT(1))) return;
+    BIT_RESET(m_iUniformUpdate, 1)
+
+    if(m_aiTransformBuffer[0])
+    {
+        const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
+
+        // switch to next available buffer
+        m_aiTransformBuffer.Next();
+        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_aiTransformBuffer.GetCur());
+
+        // map required area of the UBO
+        coreByte* pRange = m_aiTransformBuffer.GetCur().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+    
+        // update transformation data
+        std::memcpy(pRange,                         &mViewProj,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 1*sizeof(coreMatrix4), &m_mCamera,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 2*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
+        std::memcpy(pRange + 3*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
+        std::memcpy(pRange + 4*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
+        m_aiTransformBuffer.GetCur().Unmap(pRange);
+    }
+    else
+    {
+        // invoke manual data forwarding
+        coreProgram::Disable(false);
+    }
+}
+
+
+// ******************************************************************
+// send ambient data to the uniform buffer objects
+void CoreGraphics::SendAmbient()
+{
+    // check update status
+    if(!(m_iUniformUpdate & BIT(2))) return;
+    BIT_RESET(m_iUniformUpdate, 2)
+
+    if(m_aiAmbientBuffer[0])
+    {
+        // switch to next available buffer
+        m_aiAmbientBuffer.Next();
+        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_aiAmbientBuffer.GetCur());
+
+        // map required area of the UBO
+        coreByte* pRange = m_aiAmbientBuffer.GetCur().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+
+        // update ambient data
+        std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+        m_aiAmbientBuffer.GetCur().Unmap(pRange);
+    }
+    else
+    {
+        // invoke manual data forwarding
+        coreProgram::Disable(false);
     }
 }
 
 
 // ******************************************************************
 // take screenshot
-// TODO: improve with pixel-pack-buffer
 void CoreGraphics::Screenshot(const char* pcPath)const
 {
     const int iWidth  = (int)Core::System->GetResolution().x;

@@ -48,6 +48,12 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     s_pModel->DrawArrays();
 }
 
+void coreObject2D::Render()
+{
+    // render with default shader-program
+    coreObject2D::Render(m_pProgram);
+}
+
 
 // ****************************************************************
 // move the 2d-object

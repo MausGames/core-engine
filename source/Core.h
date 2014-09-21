@@ -133,6 +133,7 @@
 #include <ctime>
 #include <memory>
 #include <functional>
+#include <array>
 #include <vector>
 #include <list>
 #include <unordered_set>
@@ -392,6 +393,7 @@ private:
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
 
+#include "utilities/data/coreSelect.h"
 #include "utilities/data/coreLookup.h"
 #include "utilities/data/coreRand.h"
 
@@ -411,10 +413,10 @@ private:
 #include "manager/coreMemory.h"
 #include "manager/coreResource.h"
 
+#include "components/graphics/coreSync.h"
 #include "components/graphics/coreDataBuffer.h"
 
 #include "components/graphics/CoreGraphics.h"
-#include "components/graphics/coreSync.h"
 #include "components/graphics/coreModel.h"
 #include "components/graphics/coreTexture.h"
 #include "components/graphics/coreShader.h"

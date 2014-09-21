@@ -80,8 +80,11 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
         {
             // create render target texture
             pTarget->pTexture->Create(iWidth, iHeight, pTarget->iInternal, pTarget->iFormat, pTarget->iType, GL_CLAMP_TO_EDGE, false);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            if(bType != CORE_FRAMEBUFFER_CREATE_MULTISAMPLED)
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            }
 
             // attach render target texture to frame buffer
             glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetTexture(), 0);
@@ -244,7 +247,7 @@ void coreFrameBuffer::EndDraw()
 
 // ****************************************************************
 // copy content to another frame buffer
-void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)
+void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)const
 {
     ASSERT(m_iFrameBuffer)
     ASSERT((!pDestination || ((iDstX + iWidth) <= coreUint(pDestination->GetResolution().x) && (iDstY + iHeight) <= coreUint(pDestination->GetResolution().y))) && 
@@ -325,7 +328,6 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
             if(m_aColorTarget[0].pTexture)
             {
                 glDisable(GL_DEPTH_TEST);
-                glDisable(GL_CULL_FACE);
                 glDisable(GL_BLEND);
                 {
                     const float&      fDstInvWid = Core::Graphics->GetViewResolution().w;
@@ -345,7 +347,6 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
                     s_pBlitFallback->DefineTexture(0, NULL);
                 }
                 glEnable(GL_DEPTH_TEST);
-                glEnable(GL_CULL_FACE);
                 glEnable(GL_BLEND);
             }
 
@@ -355,7 +356,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
     }
 }
 
-void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)
+void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)const
 {
     this->Blit(iTargets, pDestination, 0, 0, 0, 0, (coreUint)m_vResolution.x, (coreUint)m_vResolution.y);
 }

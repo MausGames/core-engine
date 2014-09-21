@@ -247,7 +247,7 @@ coreError coreModel::Load(coreFile* pFile)
         for(int j = 0; j < 3; ++j)
         {
             // add local values to each point of the triangle
-            pVertex[oTriangle.aiVertex[j]].vNormal += N;
+            pVertex [oTriangle.aiVertex[j]].vNormal += N;
             pvOrtho1[oTriangle.aiVertex[j]] += D1;
             pvOrtho2[oTriangle.aiVertex[j]] += D2;
         }
@@ -269,32 +269,35 @@ coreError coreModel::Load(coreFile* pFile)
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, 5*sizeof(float));
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, 8*sizeof(float));
 
+    if(m_iNumVertices > 4)
+    {
 #if defined(_CORE_GLES_)
 
-    if(m_iNumVertices <= 256)
-    {
-        // reduce default index data type size
-        coreByte* pByteData = new coreByte[m_iNumIndices];
-        for(coreUint i = 0; i < m_iNumTriangles; ++i)
+        if(m_iNumVertices <= 256)
         {
-            for(coreByte j = 0; j < 3; ++j)
+            // reduce default index data type size
+            coreByte* pByteData = new coreByte[m_iNumIndices];
+            for(coreUint i = 0; i < m_iNumTriangles; ++i)
             {
-                // convert all indices
-                ASSERT(oMesh.aTriangle[i].aiVertex[j] < 256)
-                pByteData[i*3 + j] = (coreByte)oMesh.aTriangle[i].aiVertex[j];
+                for(coreByte j = 0; j < 3; ++j)
+                {
+                    // convert all indices
+                    ASSERT(oMesh.aTriangle[i].aiVertex[j] < 256)
+                    pByteData[i*3 + j] = (coreByte)oMesh.aTriangle[i].aiVertex[j];
+                }
             }
-        }
 
-        // create small index buffer
-        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, CORE_DATABUFFER_STORAGE_STATIC);
-        SAFE_DELETE_ARRAY(pByteData)
-    }
-    else 
+            // create small index buffer
+            this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, CORE_DATABUFFER_STORAGE_STATIC);
+            SAFE_DELETE_ARRAY(pByteData)
+        }
+        else 
        
 #endif
-
-    // create index buffer
-    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oMesh.aTriangle.data(), CORE_DATABUFFER_STORAGE_STATIC);
+        // create index buffer
+        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oMesh.aTriangle.data(), CORE_DATABUFFER_STORAGE_STATIC);
+    }
+    else m_iPrimitiveType = GL_TRIANGLE_STRIP;
 
     // free required vertex memory
     SAFE_DELETE_ARRAY(pVertex)

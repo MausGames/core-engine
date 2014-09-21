@@ -14,7 +14,6 @@
 // TODO: variable templates for handle-list!
 // TODO: replace reference-counter with atomic variable ?
 // TODO: when and how to load default archive(s) ?
-// TODO: update privat in handle and public in manager ?
 // TODO: assert for path and update-type in load-function
 // TODO: check for resource context, with OGL spec 5.1.3: [gets not deleted when] the object is bound to a context bind point in any context
 
@@ -71,7 +70,7 @@ class coreResourceHandle final
 {
 private:
     coreResource* m_pResource;   //!< holding resource object
-    coreFile*     m_pFile;       //!< pointer to resource file
+    coreFile* m_pFile;           //!< pointer to resource file
 
     std::string m_sName;         //!< identifier of this resource handle
     bool m_bAutomatic;           //!< updated automatically by the resource manager
@@ -91,7 +90,6 @@ public:
     //! @{
     inline coreResource* GetResource()const {return m_pResource;}
     inline const bool&   IsAutomatic()const {return m_bAutomatic;}
-    inline bool          IsManaged  ()const {return m_sName.empty()          ? false : true;}
     inline bool          IsLoaded   ()const {return (m_iStatus != CORE_BUSY) ? true : false;}
     //! @}
 
@@ -197,7 +195,7 @@ private:
     coreLookupStr<coreResourceHandle*> m_apHandle;    //!< resource handles
 
     coreLookupStr<coreArchive*> m_apArchive;          //!< archives with resource files
-    coreLookupStr<coreFile*>    m_apDirectFile;       //!< direct resource files
+    coreLookupStr<coreFile*> m_apDirectFile;          //!< direct resource files
 
     std::u_set<coreResourceRelation*> m_apRelation;   //!< objects to reset with the resource manager
 

@@ -40,7 +40,7 @@ public:
     /*! run custom functions within the thread */
     //! @{
     void UpdateFunctions();
-    template <typename F> inline void AttachFunction(F&& pFunction) {ASSERT(this->IsActive()) SDL_AtomicLock(&m_iLock); m_apFunction.push_back(pFunction); SDL_AtomicUnlock(&m_iLock);}
+    template <typename F> inline void AttachFunction(F&& pFunction) {ASSERT(m_bActive) SDL_AtomicLock(&m_iLock); m_apFunction.push_back(pFunction); SDL_AtomicUnlock(&m_iLock);}
     //! @}
 
     /*! set object properties */

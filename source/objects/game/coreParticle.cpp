@@ -16,7 +16,7 @@ coreModel* coreParticleSystem::s_pModel = NULL;
 coreParticleSystem::coreParticleSystem(const coreUint& iNumParticles)noexcept
 : m_iNumParticles (iNumParticles)
 , m_iCurParticle  (0)
-, m_iVertexArray  (0)
+, m_aiVertexArray (0)
 , m_bUpdate       (false)
 {
     ASSERT(iNumParticles)
@@ -75,13 +75,17 @@ void coreParticleSystem::Render()
     for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
-    if(m_iInstanceBuffer)
+    if(m_aiInstanceBuffer[0])
     {
         if(m_bUpdate)
         {
+            // switch to next available array and buffer
+            m_aiVertexArray.Next();
+            m_aiInstanceBuffer.Next();
+
             // map required area of the instance data buffer
-            const coreUint iLength = m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE;
-            coreByte*      pRange  = m_iInstanceBuffer.Map<coreByte>(0, iLength, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)
             {
@@ -94,22 +98,23 @@ void coreParticleSystem::Render()
                 if(pOrigin)
                 {
                     const coreVector3 vPosition = pOrigin->GetPosition() + Current.vPosition;
-                    std::memcpy(pRange, &vPosition, sizeof(coreVector3));
+                    std::memcpy(pCursor, &vPosition, sizeof(coreVector3));
                 }
-                else std::memcpy(pRange, &Current.vPosition, sizeof(coreVector3));
+                else std::memcpy(pCursor, &Current.vPosition, sizeof(coreVector3));
 
                 // compress remaining data
                 const coreVector3 vData  = coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue());
                 const coreUint    iColor = Current.vColor.ColorPack();
+                ASSERT(Current.vColor.Min() >= 0.0f && Current.vColor.Max() <= 1.0f)
 
                 // write remaining data to the buffer
-                std::memcpy(pRange + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
-                std::memcpy(pRange + 2*sizeof(coreVector3), &iColor, sizeof(coreUint));
-                pRange += CORE_PARTICLE_INSTANCE_SIZE;
+                std::memcpy(pCursor + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
+                std::memcpy(pCursor + 2*sizeof(coreVector3), &iColor, sizeof(coreUint));
+                pCursor += CORE_PARTICLE_INSTANCE_SIZE;
             }
 
             // unmap buffer
-            m_iInstanceBuffer.Unmap(pRange - iLength);
+            m_aiInstanceBuffer.GetCur().Unmap(pRange);
 
             // reset the update status
             m_bUpdate = false;
@@ -119,7 +124,7 @@ void coreParticleSystem::Render()
         coreModel::Disable(false);
 
         // draw the model instanced
-        glBindVertexArray(m_iVertexArray);
+        glBindVertexArray(m_aiVertexArray.GetCur());
         s_pModel->DrawArraysInstanced(m_apRenderList.size());
     }
     else
@@ -284,27 +289,31 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
-        // create vertex array object
-        glGenVertexArrays(1, &m_iVertexArray);
-        glBindVertexArray(m_iVertexArray);
-
-        // create instance data buffer
-        m_iInstanceBuffer.Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,        0);
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,        3*sizeof(float));
-        m_iInstanceBuffer.DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1, GL_UNSIGNED_INT, 6*sizeof(float));
-
-        // set vertex data
-        s_pModel->GetVertexBuffer(0)->Activate(0);
-        m_iInstanceBuffer.Activate(1);
-
-        // enable vertex attribute array division
-        if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1, 1);
-        else
+        FOR_EACH(it, *m_aiInstanceBuffer.List())
         {
-            glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1);
-            glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     1);
-            glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1);
+            // create vertex array objects
+            glGenVertexArrays(1, &m_aiVertexArray.GetCur());
+            glBindVertexArray(m_aiVertexArray.GetCur());
+            m_aiVertexArray.Next();
+
+            // create instance data buffers
+            it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,        0);
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,        3*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1, GL_UNSIGNED_INT, 6*sizeof(float));
+
+            // set vertex data
+            s_pModel->GetVertexBuffer(0)->Activate(0);
+            it->Activate(1);
+
+            // enable vertex attribute array division
+            if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1, 1);
+            else
+            {
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1);
+            }
         }
 
         // disable current model object (to fully enable the next model) 
@@ -315,12 +324,13 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
     }
     else
     {
-        // delete vertex array object
-        glDeleteVertexArrays(1, &m_iVertexArray);
-        m_iVertexArray = 0;
+        // delete vertex array objects
+        glDeleteVertexArrays(3, m_aiVertexArray);
+        m_aiVertexArray.List()->fill(0);
 
-        // delete instance data buffer
-        m_iInstanceBuffer.Delete();
+        // delete instance data buffers
+        FOR_EACH(it, *m_aiInstanceBuffer.List())
+            it->Delete();
     }
 }
 

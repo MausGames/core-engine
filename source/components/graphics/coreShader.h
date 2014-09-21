@@ -17,8 +17,10 @@
 // TODO: implement standard time uniform (ID?)
 // TODO: increase number-performance with constexpr-array int-to-char or char+# (everywhere)
 // TODO: _STATUS_
-#define CORE_SHADER_BUFFER_GLOBAL               "b_Global"
-#define CORE_SHADER_BUFFER_GLOBAL_NUM           (0)
+#define CORE_SHADER_BUFFER_TRANSFORM            "b_Transform"
+#define CORE_SHADER_BUFFER_AMBIENT              "b_Ambient"
+#define CORE_SHADER_BUFFER_TRANSFORM_NUM        (0)
+#define CORE_SHADER_BUFFER_AMBIENT_NUM          (1)
                                                 
 #define CORE_SHADER_UNIFORM_VIEWPROJ            "u_m4ViewProj"
 #define CORE_SHADER_UNIFORM_CAMERA              "u_m4Camera"
@@ -26,9 +28,9 @@
 #define CORE_SHADER_UNIFORM_ORTHO               "u_m4Ortho"
 #define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
                                                 
-#define CORE_SHADER_UNIFORM_LIGHT_POSITION(i)   PRINT("u_asLight[%d].v4Position",  i)
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION(i)  PRINT("u_asLight[%d].v4Direction", i)
-#define CORE_SHADER_UNIFORM_LIGHT_VALUE(i)      PRINT("u_asLight[%d].v4Value",     i)
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_asLight[%d].v4Position"
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_asLight[%d].v4Direction"
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_asLight[%d].v4Value"
                                                 
 #define CORE_SHADER_UNIFORM_3D_MODELVIEW        "u_m4ModelView"
 #define CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ    "u_m4ModelViewProj"
@@ -36,7 +38,7 @@
 #define CORE_SHADER_UNIFORM_2D_SCREENVIEW       "u_m3ScreenView"
 #define CORE_SHADER_UNIFORM_COLOR               "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXPARAM            "u_v4TexParam"
-#define CORE_SHADER_UNIFORM_TEXTURE(i)          PRINT("u_as2Texture[%d]", i)
+#define CORE_SHADER_UNIFORM_TEXTURE             "u_as2Texture[%d]"
 
 #define CORE_SHADER_ATTRIBUTE_POSITION          "a_v3Position"
 #define CORE_SHADER_ATTRIBUTE_TEXTURE           "a_v2Texture"
@@ -47,18 +49,18 @@
 #define CORE_SHADER_ATTRIBUTE_NORMAL_NUM        (2)
 #define CORE_SHADER_ATTRIBUTE_TANGENT_NUM       (3)
 
-#define CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW     "a_m4DivModelView"
+#define CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM     "a_m4DivTransform"
 #define CORE_SHADER_ATTRIBUTE_DIV_POSITION      "a_v3DivPosition"
 #define CORE_SHADER_ATTRIBUTE_DIV_DATA          "a_v3DivData"
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR         "a_iDivColor"
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM      "a_v4DivTexParam"
-#define CORE_SHADER_ATTRIBUTE_DIV_MODELVIEW_NUM (4)
+#define CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM (4)
 #define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM  (4)
 #define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (5)
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (8)
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (9)
                                                 
-#define CORE_SHADER_OUTPUT_COLOR(i)             PRINT("o_av4OutColor[%d]", i)
+#define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%d]"
 #define CORE_SHADER_OUTPUT_COLORS               (4u) 
 
 #define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_           (1) \n"
@@ -127,23 +129,24 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 // TODO: use variable template with uniform cache (C++14)
 // TODO: assert-check for new shaders while already finished
 // TODO: allow additional shaders and attributes in between
-// TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs
-// TODO: UBO-fallback caching-problem (data will not be re-send after change, soft-reset program on set-functions?)
+// TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs ?
+// TODO: check for low-precision sends (colors as byte-array (normalized to 1.0f) instead of float-vector)
+// TODO: uber-shaders
 class coreProgram final : public coreResource
 {
 private:
-    GLuint m_iProgram;                        //!< shader-program identifier
+    GLuint m_iProgram;                            //!< shader-program identifier
                                                      
-    std::vector<coreShaderPtr> m_apShader;    //!< attached shader objects
-    coreShaderStatus m_iStatus;               //!< current status
+    std::vector<coreShaderPtr> m_apShader;        //!< attached shader objects
+    coreShaderStatus m_iStatus;                   //!< current status
                                               
-    coreLookupStr<int> m_aiUniform;           //!< uniform locations ##MAJOR TODO##
-    coreLookupStr<int> m_aiAttribute;         //!< attribute locations
-    coreLookup<int, coreVector4> m_avCache;   //!< cached uniform values
+    coreLookup<const char*, int> m_aiUniform;     //!< uniform locations
+    coreLookup<const char*, int> m_aiAttribute;   //!< attribute locations
+    coreLookup<int, coreVector4> m_avCache;       //!< cached uniform values
                                               
-    coreSync m_Sync;                          //!< sync object for asynchronous shader-program loading
+    coreSync m_Sync;                              //!< sync object for asynchronous shader-program loading
                                               
-    static coreProgram* s_pCurrent;           //!< currently active shader-program
+    static coreProgram* s_pCurrent;               //!< currently active shader-program
 
     
 public:
@@ -179,7 +182,7 @@ public:
     inline void SendUniform(const char* pcName, const coreVector3& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f)))             glUniform3fv(iLocation, 1, vVector);}
     inline void SendUniform(const char* pcName, const coreVector4& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, vVector))                                    glUniform4fv(iLocation, 1, vVector);}
     inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13, mMatrix._21 + mMatrix._22 + mMatrix._23, mMatrix._31 + mMatrix._32 + mMatrix._33, 0.0f))) glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix);}
-    inline void SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose) {glUniformMatrix4fv(this->GetUniform(pcName), 1, bTranspose, mMatrix);}
+    inline void SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose) {const int iLocation = this->GetUniform(pcName); if(iLocation >= 0) glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix);}
     //! @}
 
     //! check for cached uniform values
