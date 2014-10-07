@@ -115,8 +115,6 @@ public:
 // TODO: low systems: merge geometry to reduce draw calls
 // TODO: try same sort-algorithm proposed for instance list, no time-sort, but position-sort
 // TODO: automatic resizing function (preserve old values)
-// TODO: DefineProgram should define attributes, *Link loads and calls DefineProgram
-// TODO: __init and __exit like in the frame buffer
 // TODO: culling (also on instancing)
 class coreParticleSystem final : public coreResourceRelation
 {

@@ -123,7 +123,7 @@ public:
 
     /*! render and move the batch list */
     //! @{
-    void Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramNormal)hot_func;
+    void Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle)hot_func;
     void Render    ()hot_func;
     void MoveNormal()hot_func;
     void MoveSort  ()hot_func;

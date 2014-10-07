@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////
 
 
-void main()
+void FragmentMain()
 {
-    float fAlpha = texture2D(u_as2Texture[0], v_av2TexCoord[0]).r;
+    float fAlpha = coreTexture2D(0, v_av2TexCoord[0]).r;
     gl_FragColor = u_v4Color * fAlpha;
 }

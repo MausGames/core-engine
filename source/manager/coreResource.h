@@ -16,6 +16,7 @@
 // TODO: when and how to load default archive(s) ?
 // TODO: assert for path and update-type in load-function
 // TODO: check for resource context, with OGL spec 5.1.3: [gets not deleted when] the object is bound to a context bind point in any context
+// TODO: extend OnLoad interface with new functions, call directly after load instead of threaded ?
 
 
 // ****************************************************************
@@ -104,6 +105,11 @@ public:
     inline bool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic)       {m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}     
     inline bool Reload () {if( this->IsLoaded() && m_iRefCount) {m_pResource->Unload(); m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
     inline bool Nullify() {if( this->IsLoaded())                {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
+    //! @}
+
+    /*! inject asynchronous functions */
+    //! @{
+    template <typename F> inline void OnLoadOnce(F&& pFunction)const {Core::Manager::Resource->AttachFunction([=]() {if(this->IsLoaded()) {pFunction(); return CORE_OK;} return CORE_BUSY;});}
     //! @}
 
     /*! get object properties */

@@ -8,10 +8,8 @@
 //////////////////////////////////////////////////////////
 
 
-void main()
+void VertexMain()
 {
-    vec3 v3Position = u_m3ScreenView * vec3(a_v3Position.xy, 1.0);
-    gl_Position     = vec4(v3Position.xy, 0.0, v3Position.z);
-    
+    gl_Position      = coreObject2DPosition();
     v_av2TexCoord[0] = a_v2Texture * u_v2TexSize;
 }

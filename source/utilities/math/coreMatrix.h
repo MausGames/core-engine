@@ -518,7 +518,7 @@ inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, cons
 
 
 // ****************************************************************
-/* calculate orthogonal projection matrix (simplified) */
+/* calculate orthographic projection matrix (simplified) */
 inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
 {
     const float X = 2.0f * RCP(vResolution.x);

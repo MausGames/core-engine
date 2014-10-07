@@ -59,7 +59,7 @@ private:
     coreMatrix4 m_mCamera;                                                           //!< camera matrix
                                                                                      
     coreMatrix4 m_mPerspective;                                                      //!< perspective projection matrix
-    coreMatrix4 m_mOrtho;                                                            //!< orthogonal projection matrix
+    coreMatrix4 m_mOrtho;                                                            //!< orthographic projection matrix
     coreVector4 m_vViewResolution;                                                   //!< current viewport resolution (xy = normal, zw = reciprocal)
                                                                                      
     coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                                        //!< global ambient lights

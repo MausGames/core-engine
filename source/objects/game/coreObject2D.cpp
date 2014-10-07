@@ -31,11 +31,8 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     if(!pProgram.IsUsable()) return;
     if(!pProgram->Enable())  return;
 
-    // calculate screen-view matrix
-    const coreMatrix3 mScreenView = m_mTransform.m124() * Core::Graphics->GetOrtho().m124();
-
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, mScreenView, false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, m_mTransform.m124() * Core::Graphics->GetOrtho().m124(), false);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 

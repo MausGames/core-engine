@@ -85,10 +85,11 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
     SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 16);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,               0);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING));
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT));
 
     // try to force a different OpenGL context
@@ -108,11 +109,12 @@ CoreSystem::CoreSystem()noexcept
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
 
-        // change configuration
+        // reduce configuration
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         16);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
-        // create compatible main window object
+        // create another main window object
         m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }

@@ -448,9 +448,9 @@ bool coreVector3::Visible(const coreVector3& vPosition, const float& fFOV, const
 /* convert RBG color-code to color-vector */
 constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)
 {
-    return coreVector3(float( iNumber        & 0xFF), 
-                       float((iNumber >>  8) & 0xFF), 
-                       float((iNumber >> 16) & 0xFF)) * 0.003921569f;
+    return coreVector3(float( iNumber        & 0xFFu), 
+                       float((iNumber >>  8) & 0xFFu), 
+                       float((iNumber >> 16) & 0xFFu)) * 0.003921569f;
 }
 
 
@@ -529,10 +529,10 @@ constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const c
 /* convert RBGA color-code to color-vector */
 constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)
 {
-    return coreVector4(float( iNumber        & 0xFF), 
-                       float((iNumber >>  8) & 0xFF), 
-                       float((iNumber >> 16) & 0xFF), 
-                       float((iNumber >> 24) & 0xFF)) * 0.003921569f;
+    return coreVector4(float( iNumber        & 0xFFu), 
+                       float((iNumber >>  8) & 0xFFu), 
+                       float((iNumber >> 16) & 0xFFu), 
+                       float((iNumber >> 24) & 0xFFu)) * 0.003921569f;
 }
 
 

@@ -10,13 +10,25 @@
 #ifndef _CORE_GUARD_SHADER_H_
 #define _CORE_GUARD_SHADER_H_
 
+// TODO: document shader-name definitions
+// TODO: increase number-performance with constexpr-array int-to-char or char+# (everywhere)
+// TODO: CORE_SHADER_STATUS_* enum
+// TODO: global custom code (as additional file) or even include interface
+// TODO: split shaders/progams more into Object3D, Object2D and Particle
+// TODO: harder integration of instancing
+// TODO: (material data in UBO)
+// TODO: use variable template with uniform cache (C++14)
+// TODO: assert-check for new shaders while already finished
+// TODO: allow additional shaders and attributes in between
+// TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs ?
+// TODO: check for low-precision sends (colors as byte-array (normalized to 1.0f) instead of float-vector)
+// TODO: uber-shaders
+
+// NOTE: GL below 3.0/130 or without UBO support has always GLSL version 110, GLES is currently always version 100
+
 
 // ****************************************************************
 // shader definitions
-// TODO: document definitions
-// TODO: implement standard time uniform (ID?)
-// TODO: increase number-performance with constexpr-array int-to-char or char+# (everywhere)
-// TODO: _STATUS_
 #define CORE_SHADER_BUFFER_TRANSFORM            "b_Transform"
 #define CORE_SHADER_BUFFER_AMBIENT              "b_Ambient"
 #define CORE_SHADER_BUFFER_TRANSFORM_NUM        (0)
@@ -32,13 +44,13 @@
 #define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_asLight[%d].v4Direction"
 #define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_asLight[%d].v4Value"
                                                 
-#define CORE_SHADER_UNIFORM_3D_MODELVIEW        "u_m4ModelView"
-#define CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ    "u_m4ModelViewProj"
-#define CORE_SHADER_UNIFORM_3D_NORMAL           "u_m3Normal"
+#define CORE_SHADER_UNIFORM_3D_TRANSFORM        "u_m4Transform"
+#define CORE_SHADER_UNIFORM_3D_NORMALMATRIX     "u_m3NormalMatrix"
 #define CORE_SHADER_UNIFORM_2D_SCREENVIEW       "u_m3ScreenView"
 #define CORE_SHADER_UNIFORM_COLOR               "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXPARAM            "u_v4TexParam"
-#define CORE_SHADER_UNIFORM_TEXTURE             "u_as2Texture[%d]"
+#define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_asTexture2D[%d]"
+#define CORE_SHADER_UNIFORM_TEXTURE_SHADOW      "u_asTextureShadow[%d]"
 
 #define CORE_SHADER_ATTRIBUTE_POSITION          "a_v3Position"
 #define CORE_SHADER_ATTRIBUTE_TEXTURE           "a_v2Texture"
@@ -77,11 +89,11 @@ enum coreShaderStatus : coreByte
 
 // ****************************************************************
 // shader class
-// TODO: check out include-replace
 class coreShader final : public coreResource
 {
 private:
     GLuint m_iShader;                       //!< shader identifier
+    GLenum m_iType;                         //!< shader type (e.g. GL_VERTEX_SHADER)
 
     std::string m_sCustomCode;              //!< custom shader code added to the beginning of the shader                     
     static std::string s_asGlobalCode[2];   //!< global shader code (0 = version | 1 = global shader file)
@@ -106,6 +118,7 @@ public:
     //! get object properties
     //! @{
     inline const GLuint& GetShader    ()const {return m_iShader;}
+    inline const GLenum& GetType      ()const {return m_iType;}
     inline const char*   GetCustomCode()const {return m_sCustomCode.c_str();}
     //! @}
 
@@ -125,13 +138,6 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 
 // ****************************************************************
 // shader-program class
-// TODO: material data in UBO
-// TODO: use variable template with uniform cache (C++14)
-// TODO: assert-check for new shaders while already finished
-// TODO: allow additional shaders and attributes in between
-// TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs ?
-// TODO: check for low-precision sends (colors as byte-array (normalized to 1.0f) instead of float-vector)
-// TODO: uber-shaders
 class coreProgram final : public coreResource
 {
 private:
@@ -176,13 +182,13 @@ public:
 
     //! send new uniform values
     //! @{
-    inline void SendUniform(const char* pcName, const int&         iInt)                            {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
-    inline void SendUniform(const char* pcName, const float&       fFloat)                          {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,      0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
-    inline void SendUniform(const char* pcName, const coreVector2& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreVector3& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f)))             glUniform3fv(iLocation, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreVector4& vVector)                         {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, vVector))                                    glUniform4fv(iLocation, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13, mMatrix._21 + mMatrix._22 + mMatrix._23, mMatrix._31 + mMatrix._32 + mMatrix._33, 0.0f))) glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix);}
-    inline void SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose) {const int iLocation = this->GetUniform(pcName); if(iLocation >= 0) glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix);}
+    inline void SendUniform(const char* pcName, const int&         iInt)    {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
+    inline void SendUniform(const char* pcName, const float&       fFloat)  {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,      0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
+    inline void SendUniform(const char* pcName, const coreVector2& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const coreVector3& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f)))             glUniform3fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const coreVector4& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, vVector))                                    glUniform4fv(iLocation, 1, vVector);}
+    void        SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose);
+    void        SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose);
     //! @}
 
     //! check for cached uniform values
@@ -192,9 +198,10 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint& GetProgram  ()const              {return m_iProgram;}
-    inline const int&    GetUniform  (const char* pcName) {if(!m_aiUniform.count  (pcName)) {ASSERT(m_iStatus >= CORE_SHADER_FINISHED && s_pCurrent == this) m_aiUniform  [pcName] = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform.at  (pcName);}
-    inline const int&    GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_FINISHED && s_pCurrent == this) m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
+    inline const GLuint&                     GetProgram  ()const              {return m_iProgram;}
+    inline const std::vector<coreShaderPtr>& GetShader   ()const              {return m_apShader;}
+    inline const int&                        GetUniform  (const char* pcName) {if(!m_aiUniform  .count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_FINISHED && s_pCurrent == this) m_aiUniform  [pcName] = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform  .at(pcName);}
+    inline const int&                        GetAttribute(const char* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_FINISHED && s_pCurrent == this) m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
     //! @}
 
     //! get currently active shader-program

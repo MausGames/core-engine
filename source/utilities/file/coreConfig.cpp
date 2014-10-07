@@ -22,6 +22,28 @@ coreConfig::coreConfig(const char* pcPath)noexcept
 
     // load configuration file
     this->Load();
+
+    // write all loaded configuration values to the log file
+    Core::Log->ListStartInfo("Configuration Values"); 
+    {
+        // retrieve all sections
+        CSimpleIni::TNamesDepend apSection;
+        m_Config.GetAllSections(apSection);
+
+        FOR_EACH(pSection, apSection)
+        {
+            // retrieve all keys per section
+            CSimpleIni::TNamesDepend apKey;
+            m_Config.GetAllKeys(pSection->pItem, apKey);
+
+            FOR_EACH(pKey, apKey)
+            {
+                // write specific configuration value
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s.%s:") " %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
+            }
+        }
+    }
+    Core::Log->ListEnd();
 }
 
 
@@ -45,28 +67,6 @@ coreError coreConfig::Load()
         return CORE_ERROR_FILE;
     }
     
-    // write all loaded configuration values to the log file
-    Core::Log->ListStartInfo("Configuration Values"); 
-    {
-        // retrieve all sections
-        CSimpleIni::TNamesDepend apSection;
-        m_Config.GetAllSections(apSection);
-
-        FOR_EACH(pSection, apSection)
-        {
-            // retrieve all keys per section
-            CSimpleIni::TNamesDepend apKey;
-            m_Config.GetAllKeys(pSection->pItem, apKey);
-
-            FOR_EACH(pKey, apKey)
-            {
-                // write specific configuration value
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s.%s:") " %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
-            }
-        }
-    }
-    Core::Log->ListEnd();
-
     Core::Log->Info("Configuration (%s) loaded", m_sPath.c_str()); 
     return CORE_OK;
 }

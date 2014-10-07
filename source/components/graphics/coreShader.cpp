@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////
 //*----------------------------------------------------*//
 //| Part of the Core Engine (http://www.maus-games.at) |//
 //*----------------------------------------------------*//
@@ -29,7 +29,8 @@ template <const char* pcString, coreUint iLength, coreUint iNum> struct sStringL
 STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
 STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      avLightDirection)
 STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_VALUE,     CORE_GRAPHICS_LIGHTS,      avLightValue)
-STRING_ARRAY(CORE_SHADER_UNIFORM_TEXTURE,         CORE_TEXTURE_UNITS,        avTexture)
+STRING_ARRAY(CORE_SHADER_UNIFORM_TEXTURE_2D,      CORE_TEXTURE_UNITS_2D,     avTexture2D)
+STRING_ARRAY(CORE_SHADER_UNIFORM_TEXTURE_SHADOW,  CORE_TEXTURE_UNITS_SHADOW, avTextureShadow)
 STRING_ARRAY(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avOutColor)
 
 
@@ -37,11 +38,13 @@ STRING_ARRAY(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avO
 // constructor
 coreShader::coreShader()noexcept
 : m_iShader (0)
+, m_iType   (0)
 {
 }
 
 coreShader::coreShader(const char* pcCustomCode)noexcept
 : m_iShader     (0)
+, m_iType       (0)
 , m_sCustomCode (pcCustomCode)
 {
 }
@@ -69,13 +72,12 @@ coreError coreShader::Load(coreFile* pFile)
     const char* pcExtension = coreData::StrExtension(pFile->GetPath());
 
     // set shader type
-    GLenum iType;
     const char* pcTypeDef;
-         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_          (1) \n";}
-    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_    (1) \n";}
-    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_ (1) \n";}
-    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_        (1) \n";}
-    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_        (1) \n";}
+         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {m_iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_          (1) \n";}
+    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {m_iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_    (1) \n";}
+    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {m_iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_ (1) \n";}
+    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {m_iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_        (1) \n";}
+    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {m_iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_        (1) \n";}
     else
     {
         Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag)", pFile->GetPath());
@@ -83,19 +85,19 @@ coreError coreShader::Load(coreFile* pFile)
     }
 
     // check for OpenGL extensions
-    if((iType == GL_TESS_CONTROL_SHADER || iType == GL_TESS_EVALUATION_SHADER) && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
-    if((iType == GL_GEOMETRY_SHADER)                                           && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
+    if((m_iType == GL_TESS_CONTROL_SHADER || m_iType == GL_TESS_EVALUATION_SHADER) && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
+    if((m_iType == GL_GEOMETRY_SHADER)                                             && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
     
     // load quality level and global shader data
     const char* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobalCode();
 
     // assemble the shader
-    const char* apcData[6] = {s_asGlobalCode[0].c_str(),       pcTypeDef,                   pcQualityDef,                   s_asGlobalCode[1].c_str(),       m_sCustomCode.c_str(),       r_cast<const char*>(pFile->GetData())};
-    const int   aiSize[6]  = {(int)s_asGlobalCode[0].length(), (int)std::strlen(pcTypeDef), (int)std::strlen(pcQualityDef), (int)s_asGlobalCode[1].length(), (int)m_sCustomCode.length(), (int)pFile->GetSize()};
+    const char* apcData[6] = {s_asGlobalCode[0].c_str(),       pcTypeDef,                   pcQualityDef,                   m_sCustomCode.c_str(),       s_asGlobalCode[1].c_str(),       r_cast<const char*>(pFile->GetData())};
+    const int   aiSize[6]  = {(int)s_asGlobalCode[0].length(), (int)std::strlen(pcTypeDef), (int)std::strlen(pcQualityDef), (int)m_sCustomCode.length(), (int)s_asGlobalCode[1].length(), (int)pFile->GetSize()};
 
     // create and compile the shader
-    m_iShader = glCreateShader(iType);
+    m_iShader = glCreateShader(m_iType);
     glShaderSource(m_iShader, 6, apcData, aiSize);
     glCompileShader(m_iShader);
 
@@ -148,6 +150,7 @@ coreError coreShader::Unload()
     m_sPath   = "";
     m_iSize   = 0;
     m_iShader = 0;
+    m_iType   = 0;
 
     return CORE_OK;
 }
@@ -161,10 +164,11 @@ void coreShader::__LoadGlobalCode()
     if(!s_asGlobalCode[0].empty()) return;
 
     // set global shader definitions
-    s_asGlobalCode[0].assign(PRINT("#version %.0f \n", Core::Graphics->GetTransformBuffer()[0] ? Core::Graphics->VersionGLSL()*100.0f : (DEFINED(_CORE_GLES_) ? 100.0f : 110.0f)));
-    s_asGlobalCode[1].assign(PRINT("#define CORE_NUM_TEXTURES (%d) \n", CORE_TEXTURE_UNITS));
-    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS   (%d) \n", CORE_GRAPHICS_LIGHTS));
-    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS  (%d) \n", CORE_SHADER_OUTPUT_COLORS));
+    s_asGlobalCode[0].assign(PRINT("#version %.0f \n", CORE_GL_SUPPORT(ARB_uniform_buffer_object) ? Core::Graphics->VersionGLSL()*100.0f : (DEFINED(_CORE_GLES_) ? 100.0f : 110.0f)));
+    s_asGlobalCode[1].assign(PRINT("#define CORE_NUM_TEXTURES_2D     (%d) \n", CORE_TEXTURE_UNITS_2D));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_TEXTURES_SHADOW (%d) \n", CORE_TEXTURE_UNITS_SHADOW));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS          (%d) \n", CORE_GRAPHICS_LIGHTS));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS         (%d) \n", CORE_SHADER_OUTPUT_COLORS));
 
     // retrieve global shader file
     coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
@@ -260,7 +264,7 @@ coreError coreProgram::Load(coreFile* pFile)
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
 
     // bind instancing attribute locations
-    if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_vertex_array_object))
+    if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object))
     {
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM, CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM);
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_POSITION);
@@ -277,7 +281,7 @@ coreError coreProgram::Load(coreFile* pFile)
     }
 
     // bind output locations
-    if(Core::Graphics->GetTransformBuffer()[0])
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         for(coreByte i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             glBindFragDataLocation(m_iProgram, i, avOutColor[i]);
@@ -285,14 +289,14 @@ coreError coreProgram::Load(coreFile* pFile)
 
     // link shader-program
     glLinkProgram(m_iProgram);
-    glUseProgram(m_iProgram);
+    glUseProgram (m_iProgram);
 
     // bind texture units
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
-        glUniform1i(glGetUniformLocation(m_iProgram, avTexture[i]), i);
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS_2D; ++i)     glUniform1i(glGetUniformLocation(m_iProgram, avTexture2D    [i]), i);
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
 
     // bind uniform buffer objects
-    if(Core::Graphics->GetTransformBuffer()[0])
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         const int iTransformBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_TRANSFORM);
         const int iAmbientBlock   = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_AMBIENT);
@@ -379,7 +383,7 @@ bool coreProgram::Enable()
     glUseProgram(m_iProgram);
 
     // forward global uniform data without UBOs
-    if(!Core::Graphics->GetTransformBuffer()[0])
+    if(!CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         const coreMatrix4 mViewProj = Core::Graphics->GetCamera() * Core::Graphics->GetPerspective();
 
@@ -426,6 +430,48 @@ void coreProgram::Disable(const bool& bFull)
     // reset current shader-program
     s_pCurrent = NULL;
     if(bFull) glUseProgram(0);
+}
+
+
+// ****************************************************************
+// send new uniform 3x3-matrix
+void coreProgram::SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose)
+{
+    // get uniform location
+    const int iLocation = this->GetUniform(pcName);
+
+    // check for cached uniform value
+    if(this->CheckCache(iLocation, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13,
+                                               mMatrix._21 + mMatrix._22 + mMatrix._23, 
+                                               mMatrix._31 + mMatrix._32 + mMatrix._33, 0.0f)))
+    {
+        // send new value
+#if defined(_CORE_GLES_)
+        if(bTranspose) glUniformMatrix3fv(iLocation, 1, false, mMatrix);
+                  else glUniformMatrix3fv(iLocation, 1, false, mMatrix.Transposed());
+#else
+        glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix);
+#endif
+    }
+}
+
+
+// ****************************************************************
+// send new uniform 4x4-matrix
+void coreProgram::SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose)
+{
+    // get uniform location
+    const int iLocation = this->GetUniform(pcName);
+    if(iLocation >= 0)
+    {
+        // send new value
+#if defined(_CORE_GLES_)
+        if(bTranspose) glUniformMatrix4fv(iLocation, 1, false, mMatrix);
+                  else glUniformMatrix4fv(iLocation, 1, false, mMatrix.Transposed());
+#else
+        glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix);
+#endif
+    }
 }
 
 

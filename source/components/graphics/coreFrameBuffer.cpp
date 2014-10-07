@@ -233,7 +233,7 @@ void coreFrameBuffer::StartDraw()
 // end rendering to the frame buffer
 void coreFrameBuffer::EndDraw()
 {
-    ASSERT(s_pCurrent)
+    if(!s_pCurrent) return;
     
     // reset frame buffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

@@ -69,7 +69,7 @@ void coreParticleSystem::Render()
     if(!m_pProgram->Enable())  return;
 
     // update normal matrix uniform with camera
-    m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, Core::Graphics->GetCamera().m123().Invert(), false);
+    m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMALMATRIX, Core::Graphics->GetCamera().m123().Invert(), false);
 
     // enable all active textures
     for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
@@ -140,7 +140,7 @@ void coreParticleSystem::Render()
             // update all particle uniforms
             m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + Current.vPosition) : Current.vPosition);
             m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue()));
-            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_COLOR,    Current.vColor);
+            m_pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          Current.vColor);
             
             // draw the model
             s_pModel->Enable();
@@ -285,7 +285,7 @@ void coreParticleSystem::ClearAll()
 void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 {
     // check for OpenGL extensions
-    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
 
     if(bInit)
     {

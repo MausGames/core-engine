@@ -26,29 +26,18 @@ bool coreObject3D::Enable(const coreProgramPtr& pProgram)
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return false;
 
+    // check for model status
+    if(!m_pModel.IsUsable()) return false;
+
     // enable the shader-program
     if(!pProgram.IsUsable()) return false;
     if(!pProgram->Enable())  return false;
 
-    // check for model status
-    if(!m_pModel.IsUsable()) return false;
-
-    // calculate model-view matrices
-    const coreMatrix4 mModelView     = m_mTransform * Core::Graphics->GetCamera();
-    const coreMatrix4 mModelViewProj = mModelView   * Core::Graphics->GetPerspective();
-
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEW,     mModelView,     false);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_MODELVIEWPROJ, mModelViewProj, false);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,            m_vColor);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,         coreVector4(m_vTexSize, m_vTexOffset));
-
-    // update normal matrix uniform
-#if defined(_CORE_GLES_)
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Invert().Transpose(), false);
-#else
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMAL, m_mRotation.m123().Invert(), true);
-#endif
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_TRANSFORM,    m_mTransform,                false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMALMATRIX, m_mRotation.m123().Invert(), true);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,           m_vColor);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,        coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
     for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
@@ -193,22 +182,22 @@ void coreBatchList::Undefine()
 
 // ****************************************************************
 /* render the batch list */
-void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramNormal)
+void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle)
 {
     if(m_apObjectList.empty()) return;
 
     if(m_aiInstanceBuffer[0] && m_apObjectList.size() >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
     {
-        // enable the shader-program
-        if(!pProgramInstanced.IsUsable()) return;
-        if(!pProgramInstanced->Enable())  return;
-
         // get first object from list
         const coreObject3D* pFirst = m_apObjectList.front();
         const coreModelPtr& pModel = pFirst->GetModel();
 
         // check for model status
         if(!pModel.IsUsable()) return;
+
+        // enable the shader-program
+        if(!pProgramInstanced.IsUsable()) return;
+        if(!pProgramInstanced->Enable())  return;
 
         // enable all active textures
         for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
@@ -293,7 +282,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
     {
         // draw without instancing
         FOR_EACH(it, m_apObjectList)
-            (*it)->Render(pProgramNormal);
+            (*it)->Render(pProgramSingle);
     }
 }
 
@@ -445,7 +434,7 @@ void coreBatchList::Clear()
 void coreBatchList::__Reset(const coreResourceReset& bInit)
 {
     // check for OpenGL extensions
-    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
 
     if(bInit)
     {
@@ -458,7 +447,7 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 2, 4, GL_FLOAT,         8*sizeof(float));
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 3, 4, GL_FLOAT,        12*sizeof(float));
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1, GL_UNSIGNED_INT, 16*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      4, GL_FLOAT,        16*sizeof(float) + 1*sizeof(int));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      4, GL_FLOAT,        16*sizeof(float) + 1*sizeof(coreUint));
         }
 
         // invoke buffer update

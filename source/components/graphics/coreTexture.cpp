@@ -199,6 +199,25 @@ void coreTexture::Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, con
 
 
 // ****************************************************************
+// configure shadow sampling
+void coreTexture::ShadowSampling(const bool& bStatus)
+{
+    ASSERT(m_iFormat == GL_DEPTH_COMPONENT)
+
+    // enable the texture
+    this->Enable(0);
+
+    if(bStatus)
+    {
+        // enable depth value comparison (with sampler2DShadow)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_GEQUAL);
+    }
+    else glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+}
+
+
+// ****************************************************************
 // bind texture to texture unit
 void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
 {

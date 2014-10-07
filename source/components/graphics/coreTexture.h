@@ -10,6 +10,11 @@
 #ifndef _CORE_GUARD_TEXTURE_H_
 #define _CORE_GUARD_TEXTURE_H_
 
+// TODO: check for max available texture units (only at start?)
+// TODO: implement sampler objects
+// TODO: implement light unbind (like in model and program)
+// TODO: implement invalidate and clear function like in FrameBuffer and DataBuffer
+
 
 // ****************************************************************
 // texture definitions
@@ -24,15 +29,14 @@
 #define CORE_TEXTURE_SPEC_DEPTH   GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT
 #define CORE_TEXTURE_SPEC_STENCIL GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE
 
-#define CORE_TEXTURE_UNITS (4u)   //!< number of texture units
+#define CORE_TEXTURE_UNITS_2D     (4u)                                                //!< number of 2d texture units (sampler2D)
+#define CORE_TEXTURE_UNITS_SHADOW (1u)                                                //!< number of shadow texture units (sampler2DShadow)
+#define CORE_TEXTURE_UNITS        (CORE_TEXTURE_UNITS_2D+CORE_TEXTURE_UNITS_SHADOW)   //!< total number of texture units
+#define CORE_TEXTURE_SHADOW       (CORE_TEXTURE_UNITS_2D)                             //!< first shadow texture unit
 
 
 // ****************************************************************
 // texture class
-// TODO: check for max available texture units (only at start?)
-// TODO: implement sampler objects
-// TODO: implement light unbind (like in model and program)
-// TODO: implement invalidate and clear function like in FrameBuffer and DataBuffer
 class coreTexture final : public coreResource
 {
 private:
@@ -65,6 +69,11 @@ public:
     //! @{
     void Create(const coreUint& iWidth, const coreUint& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const bool& bFilter);
     void Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, const coreUint& iWidth, const coreUint& iHeight, const coreUint& iDataSize, const void* pData);
+    //! @}
+
+    //! configure shadow sampling
+    //! @{
+    void ShadowSampling(const bool& bStatus);
     //! @}
 
     //! enable and disable the texture

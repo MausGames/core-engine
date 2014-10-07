@@ -147,7 +147,7 @@ void CoreAudio::ClearSources(const ALuint& iBuffer)
             // check for loop property
             int iPlaying; alGetSourcei(it->first, AL_SOURCE_STATE, &iPlaying);
             int iLooping; alGetSourcei(it->first, AL_LOOPING,      &iLooping);
-            ASSERT(!iPlaying || !iLooping)
+            ASSERT((iPlaying != AL_PLAYING) || !iLooping)
 
 #endif
             // stop sound source

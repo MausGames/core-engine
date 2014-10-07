@@ -75,8 +75,9 @@ void __coreInitOpenGL()
     }
 
     // force additional extension status
-    if(GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object) GLEW_ARB_pixel_buffer_object = true;
-    if(GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)    GLEW_ARB_geometry_shader4    = true;
+    if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object) GLEW_ARB_pixel_buffer_object   = true;
+    if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)    GLEW_ARB_geometry_shader4      = true;
+    if(!GLEW_VERSION_3_0)                                 GLEW_ARB_uniform_buffer_object = false;
 
     // try to support old OpenGL versions 
     if(!GLEW_VERSION_2_0)

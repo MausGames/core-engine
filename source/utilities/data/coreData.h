@@ -79,6 +79,7 @@ public:
     /*! operate with string data */
     //! @{
     template <typename F> static const char* StrProcess(const char* pcInput, F&& pFunction);
+    static constexpr_func int  StrLenConst (const char*  s)                {return *s ? 1 + StrLenConst(s+1) : 0;}
     static constexpr_func bool StrCmpConst (const char*  s, const char* t) {return *s ? (*s == *t) && StrCmpConst(s+1, t+1) : !*t;}
     static inline         bool StrCmpLike  (const char*  s, const char* t) {return (*t == '*') ? StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1, t+1) : !*t;}
     static inline const char*  StrUpper    (const char*  pcInput)          {return coreData::StrProcess(pcInput, toupper);}

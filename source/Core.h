@@ -48,6 +48,7 @@
 // TODO: explicit flush control for context change (SDL?)
 // TODO: check for performance penalties and alternatives for thread_local
 // TODO: setup 64-bit Windows build (libraries!)
+// TODO: WinXP requires MSVC redist 12 (MinGW) or XP compiler
 
 // NOTE: write static functions inside of class with "class::"
 

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 
 
-void main()
+void FragmentMain()
 {
-    gl_FragColor = texture2D(u_as2Texture[0], v_av2TexCoord[0]) * u_v4Color;
+    gl_FragColor = coreTexture2D(0, v_av2TexCoord[0]) * u_v4Color;
 }
