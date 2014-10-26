@@ -17,22 +17,26 @@
 
 // ****************************************************************
 /* configuration definitions */
-#define CORE_CONFIG_SYSTEM_WIDTH           "System",   "Width",         (800)
-#define CORE_CONFIG_SYSTEM_HEIGHT          "System",   "Height",        (600)
-#define CORE_CONFIG_SYSTEM_FULLSCREEN      "System",   "Fullscreen",    (0)
-#define CORE_CONFIG_SYSTEM_LANGUAGE        "System",   "Language",      ("data/languages/english.lng")
-#define CORE_CONFIG_SYSTEM_DEBUG           "System",   "Debug",         (false)
-                                                                        
-#define CORE_CONFIG_GRAPHICS_QUALITY       "Graphics", "Quality",       (0)
-#define CORE_CONFIG_GRAPHICS_ANTIALIASING  "Graphics", "AntiAliasing",  (2)
-#define CORE_CONFIG_GRAPHICS_TEXTUREFILTER "Graphics", "TextureFilter", (4)
-#define CORE_CONFIG_GRAPHICS_DUALCONTEXT   "Graphics", "DualContext",   (DEFINED(_CORE_ANDROID_) ? false : true)
-#define CORE_CONFIG_GRAPHICS_FORCEOPENGL   "Graphics", "ForceOpenGL",   (0.0f)
-                                                                          
-#define CORE_CONFIG_AUDIO_SOURCES          "Audio",    "Sources",       (16)
-#define CORE_CONFIG_AUDIO_GLOBALVOLUME     "Audio",    "GlobalVolume",  (1.0f)
-#define CORE_CONFIG_AUDIO_SOUNDVOLUME      "Audio",    "SoundVolume",   (1.0f)
-#define CORE_CONFIG_AUDIO_MUSICVOLUME      "Audio",    "MusicVolume",   (1.0f)
+#define CORE_CONFIG_SYSTEM_WIDTH             "System",   "Width",           (800)
+#define CORE_CONFIG_SYSTEM_HEIGHT            "System",   "Height",          (600)
+#define CORE_CONFIG_SYSTEM_FULLSCREEN        "System",   "Fullscreen",      (0)
+#define CORE_CONFIG_SYSTEM_LANGUAGE          "System",   "Language",        ("data/languages/english.lng")
+#define CORE_CONFIG_SYSTEM_DEBUGMODE         "System",   "DebugMode",       (false)
+                                                                            
+#define CORE_CONFIG_GRAPHICS_QUALITY         "Graphics", "Quality",         (0)
+#define CORE_CONFIG_GRAPHICS_ANTIALIASING    "Graphics", "AntiAliasing",    (2)
+#define CORE_CONFIG_GRAPHICS_TEXTUREFILTER   "Graphics", "TextureFilter",   (4)
+#define CORE_CONFIG_GRAPHICS_DEPTHSIZE       "Graphics", "DepthSize",       (24)
+#define CORE_CONFIG_GRAPHICS_STENCILSIZE     "Graphics", "StencilSize",     (8)
+#define CORE_CONFIG_GRAPHICS_ALPHACHANNEL    "Graphics", "AlphaChannel",    (true)
+#define CORE_CONFIG_GRAPHICS_DOUBLEBUFFER    "Graphics", "DoubleBuffer",    (true)
+#define CORE_CONFIG_GRAPHICS_RESOURCECONTEXT "Graphics", "ResourceContext", (DEFINED(_CORE_ANDROID_) ? false : true)
+#define CORE_CONFIG_GRAPHICS_FALLBACKMODE    "Graphics", "FallbackMode",    (false)
+                                                                            
+#define CORE_CONFIG_AUDIO_SOURCES            "Audio",    "Sources",         (16)
+#define CORE_CONFIG_AUDIO_GLOBALVOLUME       "Audio",    "GlobalVolume",    (1.0f)
+#define CORE_CONFIG_AUDIO_SOUNDVOLUME        "Audio",    "SoundVolume",     (1.0f)
+#define CORE_CONFIG_AUDIO_MUSICVOLUME        "Audio",    "MusicVolume",     (1.0f)
 
 
 // ****************************************************************

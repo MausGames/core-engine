@@ -10,15 +10,13 @@
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
 
-// TODO: convert return-strings into one single big memory-buffer ?
-
 
 // ****************************************************************
 /* data definitions */
 #define CORE_DATA_STRING_NUM (32u)    //!< number of return-strings
 #define CORE_DATA_STRING_LEN (256u)   //!< length of each return-string
-
-#if defined(_CORE_WINDOWS_)
+                                      
+#if defined(_CORE_WINDOWS_)           
     #define CORE_DATA_SLASH "\\"      //!< default path-delimiter of the operating system
 #else
     #define CORE_DATA_SLASH "/"

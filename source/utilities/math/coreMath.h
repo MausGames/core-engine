@@ -10,7 +10,8 @@
 #ifndef _CORE_GUARD_MATH_H_
 #define _CORE_GUARD_MATH_H_
 
-// TODO: SIN and COS with precalculated table ? (1 for both, precision == memory) or SSE
+// TODO: SIN and COS with precalculated table ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?)
+// TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4)
 
 
 // ****************************************************************
@@ -66,7 +67,7 @@ public:
 
     /*! elementary operations */
     //! @{
-    template <int iBase> static inline float Log(const float& fInput) {return std::log(fInput) / std::log((float)iBase);}
+    template <int iBase> static inline float Log(const float& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
     static inline float Fract(const float& fInput)                    {return fInput - FLOOR(fInput);}
     static inline float Sqrt (const float& fInput)                    {return fInput * RSQRT(fInput);}
     static inline float Rsqrt(float fInput);

@@ -258,7 +258,7 @@ float coreData::StrVersion(const char* pcInput)
     WARN_IF(!pcInput) return 0.0f;
 
     const char* pcDot = std::strchr(pcInput, '.');
-    return pcDot ? (float((pcDot-1)[0] - '0') + 0.1f * float((pcDot+1)[0] - '0')) : 0.0f;
+    return pcDot ? (I_TO_F((pcDot-1)[0] - '0') + 0.1f * I_TO_F((pcDot+1)[0] - '0')) : 0.0f;
 }
 
 

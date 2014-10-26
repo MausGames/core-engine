@@ -50,8 +50,6 @@
 // TODO: setup 64-bit Windows build (libraries!)
 // TODO: WinXP requires MSVC redist 12 (MinGW) or XP compiler
 
-// NOTE: write static functions inside of class with "class::"
-
 
 // compiler
 #if defined(_MSC_VER)
@@ -134,6 +132,7 @@
 #include <ctime>
 #include <memory>
 #include <functional>
+#include <random>
 #include <array>
 #include <vector>
 #include <list>
@@ -208,7 +207,8 @@
 
 #define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
 #define DEFINED(a)           (__DEFINED(a, #a))
-#define STRING(a)            (#a)
+#define __STRING(a)          (#a)
+#define STRING(a)            (__STRING(a))
                              
 #define BIT(n)               (1 << (n))
 #define BIT_SET(o,n)         {(o) |=  BIT(n);}
@@ -267,6 +267,13 @@ typedef std::uint8_t  coreByte;
 typedef std::uint16_t coreUshort;
 typedef std::uint32_t coreUint;
 typedef std::uint64_t coreUint64;
+
+// type conversion macros
+#define F_TO_SI(x) ((int)          (x))   //!< float to signed int
+#define F_TO_UI(x) ((unsigned)(int)(x))   //!< float to unsigned int (force [_mm_cvtt_ss2si] instead of [_ftoui])
+#define I_TO_F(x)  ((float)(int)   (x))   //!< int to float (force [_mm_cvtepi32_ps] instead of [_mm_cvtepi32_pd] with [_mm_cvtpd_ps])
+#define P_TO_I(x)  ((int)(long)    (x))   //!< pointer to int
+#define I_TO_P(x)  ((void*)(long)  (x))   //!< int to pointer
 
 enum coreError : int
 {

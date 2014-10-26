@@ -42,7 +42,7 @@ coreTexture::~coreTexture()
 coreError coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iCheck = m_Sync.Check(0);
+    const coreError iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck >= CORE_OK) return iCheck;
 
     coreFileUnload Unload(pFile);
@@ -129,8 +129,8 @@ void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const 
     const bool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && bFilter;
 
     // save properties
-    m_vResolution = coreVector2(float(iWidth), float(iHeight));
-    m_iLevels     = bMipMap ? coreByte(CEIL(coreMath::Log<2>(float(MAX(iWidth, iHeight))))) : 1;
+    m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
+    m_iLevels     = bMipMap ? F_TO_SI(coreMath::Log<2>(m_vResolution.Max())) + 1 : 1;
     m_iInternal   = iInternal;
     m_iFormat     = iFormat;
     m_iType       = iType;
@@ -144,7 +144,7 @@ void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
-    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER));
+    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER)));
 
     if(bStorage)
     {
@@ -165,7 +165,7 @@ void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const 
 void coreTexture::Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, const coreUint& iWidth, const coreUint& iHeight, const coreUint& iDataSize, const void* pData)
 {
     WARN_IF(!m_iTexture) return;
-    ASSERT(((iOffsetX + iWidth) <= coreUint(m_vResolution.x)) && ((iOffsetY + iHeight) <= coreUint(m_vResolution.y)))
+    ASSERT(((iOffsetX + iWidth) <= F_TO_UI(m_vResolution.x)) && ((iOffsetY + iHeight) <= F_TO_UI(m_vResolution.y)))
 
     // check for OpenGL extensions
     const bool& bDirectState = CORE_GL_SUPPORT(ARB_direct_state_access);

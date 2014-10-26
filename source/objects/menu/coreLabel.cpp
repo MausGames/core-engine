@@ -45,7 +45,7 @@ coreLabel::~coreLabel()
 void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint& iLength)
 {
     // save properties
-    m_iHeight = int(float(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
+    m_iHeight = F_TO_SI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
     m_iLength = iLength;
 
     // set font object
@@ -115,14 +115,13 @@ bool coreLabel::SetText(const char* pcText)
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
-        m_iGenerate |= 3;
+        m_iGenerate = 3;
 
         // change the current text
         if(m_iLength) m_sText.assign(pcText, m_iLength);
                  else m_sText.assign(pcText);
         return true;
     }
-
     return false;
 }
 
@@ -133,14 +132,13 @@ bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
     // check for new text
     if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
     {
-        m_iGenerate |= 3;
+        m_iGenerate = 3;
 
         // change the current text
         if(m_iLength) m_sText.assign(pcText, MIN(iNum, m_iLength));
                  else m_sText.assign(pcText, iNum);
         return true;
     }
-
     return false;
 }
 
@@ -175,7 +173,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
     SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
 
     // get new texture resolution
-    const coreVector2 vNewResolution = coreVector2(float(pSurface->w - 1), float(pSurface->h));
+    const coreVector2 vNewResolution = coreVector2(I_TO_F(pSurface->w - 1), I_TO_F(pSurface->h));
 
     if(bSub)
     {

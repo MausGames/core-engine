@@ -12,8 +12,8 @@
 // ******************************************************************
 // constructor
 CoreSystem::CoreSystem()noexcept
-: m_vResolution (coreVector2((float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH), (float)Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT)))
-, m_iFullscreen ((coreByte)Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
+: m_vResolution (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
+, m_iFullscreen (Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
 , m_bMinimized  (false)
 , m_bTerminated (false)
 , m_dTotalTime  (0.0f)
@@ -38,7 +38,7 @@ CoreSystem::CoreSystem()noexcept
     // retrieve desktop resolution
     SDL_DisplayMode Desktop;
     SDL_GetDesktopDisplayMode(0, &Desktop);
-    const coreVector2 vDesktop = coreVector2((float)Desktop.w, (float)Desktop.h);
+    const coreVector2 vDesktop = coreVector2(I_TO_F(Desktop.w), I_TO_F(Desktop.h));
 
     // load all available screen resolutions
     const int iNumModes = SDL_GetNumDisplayModes(0);
@@ -51,7 +51,7 @@ CoreSystem::CoreSystem()noexcept
                 // retrieve resolution
                 SDL_DisplayMode Mode;
                 SDL_GetDisplayMode(0, i, &Mode);
-                const coreVector2 vMode = coreVector2((float)Mode.w, (float)Mode.h);
+                const coreVector2 vMode = coreVector2(I_TO_F(Mode.w), I_TO_F(Mode.h));
 
                 coreUint j = 0;
                 for(; j < m_avAvailable.size(); ++j)
@@ -84,38 +84,31 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,               0);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               1);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         1);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 Core::Config->GetBool(CORE_CONFIG_GRAPHICS_ALPHACHANNEL)    ? 8 : 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 Core::Config->GetInt (CORE_CONFIG_GRAPHICS_DEPTHSIZE));
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,               Core::Config->GetInt (CORE_CONFIG_GRAPHICS_STENCILSIZE));
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DOUBLEBUFFER)    ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING)    ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING));
-    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT));
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) ? 1 : 0);
 
-    // try to force a different OpenGL context
-    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
-    if(fForceOpenGL)
-    {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, int(FLOOR(fForceOpenGL)));
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, int(FLOOR(fForceOpenGL * 10.0f)) % 10);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_CORE);
-    }
-    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) || DEFINED(_CORE_DEBUG_))
+    // create optional debug context
+    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     // create main window object
-    m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
+    m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
     if(!m_pWindow)
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
 
-        // reduce configuration
+        // override configuration
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         16);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
         // create another main window object
-        m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)m_vResolution.x, (int)m_vResolution.y, iFlags);
+        m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
@@ -160,7 +153,7 @@ CoreSystem::CoreSystem()noexcept
     {
         Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:") " %d MB",                           SDL_GetSystemRAM());
-        Core::Log->ListAdd(CORE_LOG_BOLD("SIMD Support:")  " %s, %s",                          m_fSSE ? PRINT("SSE %.1f", m_fSSE) : "-", m_fAVX ? PRINT("AVX %.1f", m_fAVX) : "-");
+        Core::Log->ListAdd(CORE_LOG_BOLD("SIMD Support:")  " SSE %s, AVX %s",                  m_fSSE ? PRINT("%.1f", m_fSSE) : "-", m_fAVX ? PRINT("%.1f", m_fAVX) : "-");
         Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
         Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
     }
@@ -265,7 +258,7 @@ void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
     const uint64_t iNewPerfTime = SDL_GetPerformanceCounter();
-    const float fNewLastTime    = float(double(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
+    const float    fNewLastTime = float(double(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
     m_iPerfTime                 = iNewPerfTime;
 
     if(m_iSkipFrame || fNewLastTime >= 0.25f)

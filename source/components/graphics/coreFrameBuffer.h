@@ -17,6 +17,7 @@
 // TODO: handle multiple color attachments for ES2 with extension and ES3 in general
 // TODO: handle depth-blitting to default frame buffer without blit-function (impossible without over-engineering?)
 // TODO: save states and reset on fallback blitting
+// TODO: check if rendering quad is faster than blitting (only on default frame buffer? what about depth-stencil? still needs blit for MSAA)
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 // NOTE: notated as integer

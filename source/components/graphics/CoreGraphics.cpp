@@ -31,9 +31,8 @@ CoreGraphics::CoreGraphics()noexcept
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
-    // get OpenGL version
-    const float fForceOpenGL = Core::Config->GetFloat(CORE_CONFIG_GRAPHICS_FORCEOPENGL);
-    m_fOpenGL = fForceOpenGL ? fForceOpenGL : coreData::StrVersion(r_cast<const char*>(glGetString(GL_VERSION)));
+    // save version numbers
+    m_fOpenGL = coreData::StrVersion(r_cast<const char*>(glGetString(GL_VERSION)));
     m_fGLSL   = coreData::StrVersion(r_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // log video card information
@@ -62,7 +61,6 @@ CoreGraphics::CoreGraphics()noexcept
     glDepthFunc(GL_LEQUAL);
     glDepthMask(true);
     glClearDepth(1.0f);
-    glPolygonOffset(1.1f, 4.0f);
 
     // setup culling
     glEnable(GL_CULL_FACE);
@@ -71,7 +69,8 @@ CoreGraphics::CoreGraphics()noexcept
 
     // setup alpha blending
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);   // slightly slower
+    glBlendEquation(GL_FUNC_ADD);
 
     // setup rasterization
     glEnable(GL_MULTISAMPLE);
@@ -99,7 +98,7 @@ CoreGraphics::CoreGraphics()noexcept
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DUALCONTEXT))
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT))
     {
         // create resource context (after reset, because of flickering on Windows and fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
@@ -173,7 +172,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const flo
         m_vViewResolution.zw(coreVector2(1.0f,1.0f) / vResolution);
 
         // set viewport
-        glViewport(0, 0, (int)vResolution.x, (int)vResolution.y);
+        glViewport(0, 0, F_TO_SI(vResolution.x), F_TO_SI(vResolution.y));
         bNewView = true;
     }
     if(m_fFOV      != fFOV)      {m_fFOV      = fFOV;      bNewView = true;}
@@ -284,35 +283,40 @@ void CoreGraphics::SendAmbient()
 // take screenshot
 void CoreGraphics::Screenshot(const char* pcPath)const
 {
-    const int iWidth  = (int)Core::System->GetResolution().x;
-    const int iHeight = (int)Core::System->GetResolution().y;
+    const int iWidth  = F_TO_SI(Core::System->GetResolution().x);
+    const int iHeight = F_TO_SI(Core::System->GetResolution().y);
     const int iPitch  = iWidth*3;
     const int iSize   = iHeight*iPitch;
-
-    // create folder hierarchy
-    const char* pcFullPath = PRINT(std::strcmp(coreData::StrRight(pcPath, 4), ".png") ? "%s.png" : "%s", pcPath);
-    coreData::CreateFolder(pcFullPath);
 
     // read pixel data from the frame buffer
     coreByte* pData = new coreByte[iSize];
     glReadPixels(0, 0, iWidth, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
-
-    // flip pixel data vertically
-    coreByte* pConvert = new coreByte[iSize];
-    for(int i = 0; i < iHeight; ++i)
-        std::memcpy(pConvert + (iHeight-i-1)*iPitch, pData + i*iPitch, iPitch);
-
-    // create SDL surface
-    SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidth, iHeight, 24, iPitch, CORE_TEXTURE_MASK);
-    if(pSurface)
+    
+    Core::Manager::Resource->AttachFunction([=]()
     {
-        // save the surface as PNG image
-        IMG_SavePNG(pSurface, pcFullPath);
-        SDL_FreeSurface(pSurface);
-    }
+        // flip pixel data vertically
+        coreByte* pConvert = new coreByte[iSize];
+        for(int i = 0; i < iHeight; ++i)
+            std::memcpy(pConvert + (iHeight-i-1)*iPitch, pData + i*iPitch, iPitch);
 
-    SAFE_DELETE_ARRAY(pData)
-    SAFE_DELETE_ARRAY(pConvert)
+        // create SDL surface
+        SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidth, iHeight, 24, iPitch, CORE_TEXTURE_MASK);
+        if(pSurface)
+        {
+            // create folder hierarchy
+            const char* pcFullPath = PRINT(std::strcmp(coreData::StrExtension(pcPath), "png") ? "%s.png" : "%s", pcPath);
+            coreData::CreateFolder(pcFullPath);
+
+            // save the surface as PNG image
+            IMG_SavePNG(pSurface, pcFullPath);
+            SDL_FreeSurface(pSurface);
+        }
+
+        // delete pixel data
+        delete pData;
+        delete pConvert;
+        return CORE_OK;
+    });
 }
 
 

@@ -75,7 +75,7 @@ void GLAPIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSe
 /* enable OpenGL debug output */
 void coreLog::DebugOpenGL()
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !DEFINED(_CORE_DEBUG_)) return;
+    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
     if(CORE_GL_SUPPORT(KHR_debug))
     {

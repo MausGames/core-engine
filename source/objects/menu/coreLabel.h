@@ -10,11 +10,12 @@
 #ifndef _CORE_GUARD_LABEL_H_
 #define _CORE_GUARD_LABEL_H_
 
+// TODO: 3d text with link or own class ?
+// TODO: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
+
 
 // ****************************************************************
 // menu label class
-// TODO: 3d text with link or own class ?
-// TODO: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
 class coreLabel final : public coreObject2D, public coreResourceRelation, public coreTranslate
 {
 private:
@@ -71,7 +72,7 @@ private:
 
     //! update object after modification
     //! @{
-    inline void __Update()override {m_iGenerate |= 3;}
+    inline void __Update()override {m_iGenerate = 3;}
     //! @}
 
     //! generate the texture

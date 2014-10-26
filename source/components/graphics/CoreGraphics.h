@@ -26,7 +26,7 @@
 #define CORE_GRAPHICS_LIGHTS                 (4u)                                              //!< number of ambient lights
 #define CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE (4*sizeof(coreMatrix4) + 1*sizeof(coreVector4))   //!< transformation uniform data size (view-projection, camera, perspective, ortho, resolution)
 #define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE   (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))        //!< ambient uniform data size (light-positions, light-directions, light-values)
-#define CORE_GRAPHICS_UNIFORM_BUFFERS        (6u)                                              //!< number of concurrent uniform buffer objects
+#define CORE_GRAPHICS_UNIFORM_BUFFERS        (12u)                                              //!< number of concurrent uniform buffer objects
 
 
 // ****************************************************************

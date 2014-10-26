@@ -53,10 +53,10 @@ public:
     /*! retrieve precalculated random number */
     //! @{
     inline const int& Raw()                                  {if(++m_iCurRandom >= m_iNumRandoms) m_iCurRandom = 0; return m_piRandom[m_iCurRandom];}
-    inline int   Int  (const int&   iMax)                    {return             (this->Raw()  % (iMax         +  1));}
-    inline int   Int  (const int&   iMin, const int&   iMax) {return iMin +      (this->Raw()  % (iMax - iMin  +  1));}
-    inline float Float(const float& fMax)                    {return        float(this->Raw()) *  fMax         * (1.0f / float(CORE_RAND_MAX));}
-    inline float Float(const float& fMin, const float& fMax) {return fMin + float(this->Raw()) * (fMax - fMin) * (1.0f / float(CORE_RAND_MAX));}
+    inline int   Int  (const int&   iMax)                    {return              (this->Raw()  % (iMax         +  1));}
+    inline int   Int  (const int&   iMin, const int&   iMax) {return iMin +       (this->Raw()  % (iMax - iMin  +  1));}
+    inline float Float(const float& fMax)                    {return        I_TO_F(this->Raw()) *  fMax         * (1.0f / I_TO_F(CORE_RAND_MAX));}
+    inline float Float(const float& fMin, const float& fMax) {return fMin + I_TO_F(this->Raw()) * (fMax - fMin) * (1.0f / I_TO_F(CORE_RAND_MAX));}
     //! @}
 
     /*! get object properties */

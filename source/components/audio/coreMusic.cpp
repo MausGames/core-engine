@@ -11,10 +11,10 @@
 
 // ****************************************************************
 // callback functions for the music stream object
-size_t WrapFread(void* pData, size_t iSize, size_t iCount, SDL_RWops* pFile) {return       SDL_RWread(pFile, pData, iSize, iCount);}
-int    WrapFseek(SDL_RWops* pFile, ogg_int64_t iOffset, int iWhence)         {return (int) SDL_RWseek(pFile, iOffset, iWhence);}
-int    WrapFclose(SDL_RWops* pFile)                                          {return       SDL_RWclose(pFile);}
-long   WrapFtell(SDL_RWops* pFile)                                           {return (long)SDL_RWtell(pFile);}
+size_t WrapFread (void* pData, size_t iSize, size_t iCount, SDL_RWops* pFile) {return       SDL_RWread(pFile, pData, iSize, iCount);}
+int    WrapFseek (SDL_RWops* pFile, ogg_int64_t iOffset, int iWhence)         {return (int) SDL_RWseek(pFile, iOffset, iWhence);}
+int    WrapFclose(SDL_RWops* pFile)                                           {return       SDL_RWclose(pFile);}
+long   WrapFtell (SDL_RWops* pFile)                                           {return (long)SDL_RWtell(pFile);}
 
 ov_callbacks OV_CALLBACKS =
 {
@@ -69,8 +69,8 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     alGenBuffers(2, m_aiBuffer);
 
     // retrieve music file information
-    m_pInfo    = ov_info(&m_Stream, -1);
-    m_pComment = ov_comment(&m_Stream, -1);
+    m_pInfo    = ov_info      (&m_Stream, -1);
+    m_pComment = ov_comment   (&m_Stream, -1);
     m_dMaxTime = ov_time_total(&m_Stream, -1);
 
     Core::Log->Info("Music (%s) loaded", pFile->GetPath());
@@ -103,8 +103,8 @@ bool coreMusic::Update()
     // check for valid sound source
     if(!m_iSource)
     {
-        this->Play();
-        if(!m_iSource) return false;
+        if(this->Play() != CORE_OK)
+            return false;
     }
 
     // get number of processed sound buffers
@@ -144,9 +144,6 @@ coreError coreMusic::Play()
     if(m_iSource) return CORE_INVALID_CALL;
     if(!m_pFile)  return CORE_INVALID_DATA;
 
-    // set playback status
-    m_bStatus = true;
-
     // retrieve next free sound source
     m_iSource = Core::Audio->NextSource(0);
     if(m_iSource)
@@ -161,15 +158,18 @@ coreError coreMusic::Play()
 
         // set initial sound source properties
         alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
-        alSourcef(m_iSource, AL_GAIN,            1.0f * Core::Config->GetFloat(CORE_CONFIG_AUDIO_MUSICVOLUME));
+        alSourcef(m_iSource, AL_GAIN,            Core::Config->GetFloat(CORE_CONFIG_AUDIO_MUSICVOLUME));
         alSourcef(m_iSource, AL_PITCH,           m_fPitch);
         alSourcei(m_iSource, AL_LOOPING,         false);
 
         // start playback
         alSourcePlay(m_iSource);
-        return CORE_OK;
     }
-    return CORE_BUSY;
+
+    // set playback status (after init)
+    m_bStatus = true;
+
+    return m_iSource ? CORE_OK : CORE_BUSY;
 }
 
 
@@ -216,7 +216,7 @@ const char* coreMusic::GetComment(const char* pcName)const
         {
             // check comment and extract meta-information
             if(!std::strncmp(pcName, m_pComment->user_comments[i], iLen))
-                return m_pComment->user_comments[i] + iLen+1;
+                return m_pComment->user_comments[i] + iLen + 1;
         }
     }
 
@@ -231,7 +231,7 @@ bool coreMusic::__Stream(const ALuint& iBuffer)
 {
     char acData[CORE_MUSIC_CHUNK * 4];
 
-    const int iChunkSize = MIN(int(CORE_MUSIC_CHUNK * m_fPitch), CORE_MUSIC_CHUNK * 4);
+    const int iChunkSize = MIN(F_TO_SI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4 * CORE_MUSIC_CHUNK);
     int iReadSize = 0;
 
     // process the defined music stream chunk size
@@ -343,7 +343,7 @@ void coreMusicPlayer::Shuffle()
     m_apSequence = m_apMusic;
 
     // shuffle the list
-    std::random_shuffle(m_apSequence.begin(), m_apSequence.end(), [](int i) {return coreRand::Rand() % i;});
+    std::shuffle(m_apSequence.begin(), m_apSequence.end(), std::default_random_engine((int)std::time(NULL)));
 
     // switch to first music object
     this->Select(0);

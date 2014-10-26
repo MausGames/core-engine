@@ -10,13 +10,14 @@
 #ifndef _CORE_GUARD_RESOURCE_H_
 #define _CORE_GUARD_RESOURCE_H_
 
-// TODO: ATI_meminfo and NVX_gpu_memory_info to check for memory usage ?
+// TODO: ATI_meminfo and NVX_gpu_memory_info to check for memory usage ? (old, not wide supported)
 // TODO: variable templates for handle-list!
 // TODO: replace reference-counter with atomic variable ?
 // TODO: when and how to load default archive(s) ?
 // TODO: assert for path and update-type in load-function
 // TODO: check for resource context, with OGL spec 5.1.3: [gets not deleted when] the object is bound to a context bind point in any context
 // TODO: extend OnLoad interface with new functions, call directly after load instead of threaded ?
+// TODO: resources exist only within handles, redefine all interfaces
 
 
 // ****************************************************************
@@ -109,7 +110,7 @@ public:
 
     /*! inject asynchronous functions */
     //! @{
-    template <typename F> inline void OnLoadOnce(F&& pFunction)const {Core::Manager::Resource->AttachFunction([=]() {if(this->IsLoaded()) {pFunction(); return CORE_OK;} return CORE_BUSY;});}
+    template <typename F> inline void OnLoadOnce(F&& pFunction)const {if(this->IsLoaded()) pFunction(); else Core::Manager::Resource->AttachFunction([=]() {if(this->IsLoaded()) {pFunction(); return CORE_OK;} return CORE_BUSY;});}
     //! @}
 
     /*! get object properties */

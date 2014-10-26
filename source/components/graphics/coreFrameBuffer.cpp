@@ -52,10 +52,10 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
     // set resolution
-    m_vResolution = coreVector2(FLOOR(vResolution.x), FLOOR(vResolution.y));
-    const int iWidth  = (int)m_vResolution.x;
-    const int iHeight = (int)m_vResolution.y;
-
+    const int iWidth  = F_TO_SI(vResolution.x);
+    const int iHeight = F_TO_SI(vResolution.y);
+    m_vResolution     = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
+    
     // set number of samples
     const int iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ? 
                          Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0;
@@ -80,11 +80,6 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
         {
             // create render target texture
             pTarget->pTexture->Create(iWidth, iHeight, pTarget->iInternal, pTarget->iFormat, pTarget->iType, GL_CLAMP_TO_EDGE, false);
-            if(bType != CORE_FRAMEBUFFER_CREATE_MULTISAMPLED)
-            {
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            }
 
             // attach render target texture to frame buffer
             glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetTexture(), 0);
@@ -250,8 +245,8 @@ void coreFrameBuffer::EndDraw()
 void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)const
 {
     ASSERT(m_iFrameBuffer)
-    ASSERT((!pDestination || ((iDstX + iWidth) <= coreUint(pDestination->GetResolution().x) && (iDstY + iHeight) <= coreUint(pDestination->GetResolution().y))) && 
-                             ((iSrcX + iWidth) <= coreUint(m_vResolution.x)                 && (iSrcY + iHeight) <= coreUint(m_vResolution.y)))
+    ASSERT((!pDestination || ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x) && (iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y))) && 
+                             ((iSrcX + iWidth) <= F_TO_UI(m_vResolution.x)                 && (iSrcY + iHeight) <= F_TO_UI(m_vResolution.y)))
 
     if(CORE_GL_SUPPORT(EXT_framebuffer_blit))
     {
@@ -335,10 +330,10 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
                     const coreVector2 vSrcInvRes = coreVector2(1.0f,1.0f) / m_vResolution;
 
                     // forward transformation data and move
-                    s_pBlitFallback->SetSize     (coreVector2(float(iWidth), -float(iHeight)) * fDstInvWid);
-                    s_pBlitFallback->SetCenter   (coreVector2(float(iDstX),   float(iDstY))   * fDstInvWid + coreVector2(float(iWidth), float(iHeight)) * vDstInvRes * 0.5f - 0.5f);
-                    s_pBlitFallback->SetTexSize  (coreVector2(float(iWidth),  float(iHeight)) * vSrcInvRes);
-                    s_pBlitFallback->SetTexOffset(coreVector2(float(iSrcX),   float(iSrcY))   * vSrcInvRes);
+                    s_pBlitFallback->SetSize     (coreVector2(I_TO_F(iWidth), -I_TO_F(iHeight)) * fDstInvWid);
+                    s_pBlitFallback->SetCenter   (coreVector2(I_TO_F(iDstX),   I_TO_F(iDstY))   * fDstInvWid + coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) * vDstInvRes * 0.5f - 0.5f);
+                    s_pBlitFallback->SetTexSize  (coreVector2(I_TO_F(iWidth),  I_TO_F(iHeight)) * vSrcInvRes);
+                    s_pBlitFallback->SetTexOffset(coreVector2(I_TO_F(iSrcX),   I_TO_F(iSrcY))   * vSrcInvRes);
                     s_pBlitFallback->Move();
 
                     // forward source color texture and render
@@ -358,7 +353,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
 
 void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)const
 {
-    this->Blit(iTargets, pDestination, 0, 0, 0, 0, (coreUint)m_vResolution.x, (coreUint)m_vResolution.y);
+    this->Blit(iTargets, pDestination, 0, 0, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
 }
 
 

@@ -14,6 +14,8 @@
     extern "C" {
 #endif
 
+// TODO: functionality to ignore and force arbitrary extensions through the config file
+
 
 // ****************************************************************   
 /* GLEW context structure */

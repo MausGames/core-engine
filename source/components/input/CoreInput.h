@@ -16,10 +16,10 @@
 
 // ****************************************************************
 // input definitions
-#define CORE_INPUT_BUTTONS_KEYBOARD 284   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
-#define CORE_INPUT_BUTTONS_MOUSE    16    //!< number of regarded mouse buttons
-#define CORE_INPUT_BUTTONS_JOYSTICK 32    //!< number of regarded joystick buttons
-#define CORE_INPUT_FINGERS          5     //!< maximum number of simultaneous fingers
+#define CORE_INPUT_BUTTONS_KEYBOARD (284)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
+#define CORE_INPUT_BUTTONS_MOUSE    (16)    //!< number of regarded mouse buttons
+#define CORE_INPUT_BUTTONS_JOYSTICK (32)    //!< number of regarded joystick buttons
+#define CORE_INPUT_FINGERS          (5)     //!< maximum number of simultaneous fingers
 
 #define CORE_INPUT_ID MIN(iID, coreUint(m_aJoystick.size()-1))
 
@@ -126,7 +126,7 @@ public:
     //! get joystick data
     //! @{
     inline const char* GetJoystickName(const coreUint& iID)const {return m_aJoystick[CORE_INPUT_ID].pHandle ? (SDL_JoystickName(m_aJoystick[CORE_INPUT_ID].pHandle)) : "";}
-    inline const char* GetJoystickGUID(const coreUint& iID)const {if(m_aJoystick[CORE_INPUT_ID].pHandle) {char acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(m_aJoystick[CORE_INPUT_ID].pHandle), acGUID, ARRAY_SIZE(acGUID)); return coreData::Print("%s", acGUID);} return "";}
+    inline const char* GetJoystickGUID(const coreUint& iID)const {if(m_aJoystick[CORE_INPUT_ID].pHandle) {char acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(m_aJoystick[CORE_INPUT_ID].pHandle), acGUID, ARRAY_SIZE(acGUID)); return PRINT("%s", acGUID);} return "";}
     inline coreUint    GetJoystickNum ()const                    {return m_aJoystick.size()-1;}
     //! @}
 

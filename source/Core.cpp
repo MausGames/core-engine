@@ -160,7 +160,7 @@ int Core::Run()
     Core Engine;
 
     // set logging level
-    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUG) && !DEFINED(_CORE_DEBUG_))
+    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
     {
         Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR);
         Core::Log->Warning("Logging level reduced");

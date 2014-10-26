@@ -11,8 +11,8 @@
 #define CORE_INPUT_PRESS(x)   {(x)[3] = false;  (x)[2] = !(x)[1]; (x)[1] = true;}
 #define CORE_INPUT_RELEASE(x) {(x)[3] = (x)[1]; (x)[2] = false;   (x)[1] = false;}
 
-#define CORE_INPUT_JOYSTICK_DEAD 2000
-#define CORE_INPUT_JOYSTICK_MAX  8000
+#define CORE_INPUT_JOYSTICK_DEAD (2000)
+#define CORE_INPUT_JOYSTICK_MAX  (8000)
 
 
 // ****************************************************************
@@ -175,7 +175,7 @@ void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, c
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
         const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx() / Core::System->GetResolution().Min() * Core::System->GetTime() * fSpeed + vPos) * Core::System->GetResolution();
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(vNew.x + 0.5f), int(-vNew.y + 0.5f));
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(vNew.x + 0.5f), F_TO_SI(-vNew.y + 0.5f));
     }
 
     // press mouse buttons
@@ -194,7 +194,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
     {
     // set text-input character
     case SDL_TEXTINPUT:
-        Core::Input->SetKeyboardChar((char)Event.text.text[0]);
+        Core::Input->SetKeyboardChar(Event.text.text[0]);
         break;
 
     // press keyboard button
@@ -223,17 +223,17 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move mouse position
     case SDL_MOUSEMOTION:
-        if(Event.motion.x != int(0.5f*Core::System->GetResolution().x) || 
-           Event.motion.y != int(0.5f*Core::System->GetResolution().y))
+        if(Event.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x) || 
+           Event.motion.y != F_TO_SI(0.5f*Core::System->GetResolution().y))
         {
-            this->SetMousePosition(coreVector2(float(Event.motion.x),    -float(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
-            this->SetMouseRelative(coreVector2(float(Event.motion.xrel), -float(Event.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
+            this->SetMousePosition(coreVector2(I_TO_F(Event.motion.x),    -I_TO_F(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
+            this->SetMouseRelative(coreVector2(I_TO_F(Event.motion.xrel), -I_TO_F(Event.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
         }
         break;
 
     // move mouse wheel
     case SDL_MOUSEWHEEL:
-        this->SetMouseWheel((float)Event.wheel.y);
+        this->SetMouseWheel(I_TO_F(Event.wheel.y));
         break;
 
     // press joystick button
@@ -249,7 +249,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
     // move joystick axis
     case SDL_JOYAXISMOTION:
         if(ABS((int)Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEAD) 
-            this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, CLAMP(float(Event.jaxis.value) / float(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
+            this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, CLAMP(I_TO_F(Event.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
         else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;
 
@@ -316,8 +316,8 @@ void CoreInput::__UpdateButtons()
     if(!m_bCursorVisible)
     {
         // hold cursor in window center when not visible
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), int(0.5f*Core::System->GetResolution().x), 
-                                                         int(0.5f*Core::System->GetResolution().y));
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(0.5f*Core::System->GetResolution().x), 
+                                                         F_TO_SI(0.5f*Core::System->GetResolution().y));
     }
 
 #endif
