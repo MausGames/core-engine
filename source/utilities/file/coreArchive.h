@@ -15,7 +15,7 @@
 // file definitions
 #define CORE_FILE_MAGIC     0x012F5B66    //!< magic number of core-archives
 #define CORE_FILE_VERSION   0x00000001    //!< current file version of core-archives
-#define CORE_FILE_EXTENSION ".cfa"        //!< extension of core-archives
+#define CORE_FILE_EXTENSION "cfa"         //!< extension of core-archives
 
 
 // ****************************************************************

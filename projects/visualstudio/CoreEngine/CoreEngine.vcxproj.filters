@@ -49,6 +49,9 @@
     <Filter Include="source\objects\menu">
       <UniqueIdentifier>{294dfd1e-3ceb-4b9b-ad55-0314d1cadf6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\components\graphics\models">
+      <UniqueIdentifier>{2a998441-9cb4-429d-99c4-5df62697ddf2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -290,11 +293,17 @@
     <ClInclude Include="..\..\..\source\additional\coreGL.h">
       <Filter>source\additional</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\additional\coreGLES.h">
-      <Filter>source\additional</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\data\coreSelect.h">
       <Filter>source\utilities\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\models\MD3.h">
+      <Filter>source\components\graphics\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\models\MD5.h">
+      <Filter>source\components\graphics\models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\coreGLES.h">
+      <Filter>source\additional</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -69,7 +69,7 @@ coreError coreShader::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_ERROR_FILE;
 
     // extract file extension
-    const char* pcExtension = coreData::StrExtension(pFile->GetPath());
+    const char* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
 
     // set shader type
     const char* pcTypeDef;
@@ -212,7 +212,7 @@ coreProgram::~coreProgram()
 coreError coreProgram::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iCheck = m_Sync.Check(0);
+    const coreError iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck == CORE_OK) m_iStatus = CORE_SHADER_FINISHED;
     if(iCheck >= CORE_OK) return iCheck;
 
@@ -259,15 +259,16 @@ coreError coreProgram::Load(coreFile* pFile)
 
     // bind default attribute locations
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  CORE_SHADER_ATTRIBUTE_TEXTURE);
+    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, CORE_SHADER_ATTRIBUTE_TEXCOORD);
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
     glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
 
     // bind instancing attribute locations
     if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object))
     {
-        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM, CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM);
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_POSITION);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,      CORE_SHADER_ATTRIBUTE_DIV_SIZE);
+        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_ROTATION);
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,      CORE_SHADER_ATTRIBUTE_DIV_DATA);
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,     CORE_SHADER_ATTRIBUTE_DIV_COLOR);
         glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,  CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
@@ -439,16 +440,11 @@ void coreProgram::SendUniform(const char* pcName, const coreMatrix3& mMatrix, co
 {
     // get uniform location
     const int iLocation = this->GetUniform(pcName);
-
-    // check for cached uniform value
-    if(this->CheckCache(iLocation, coreVector4(mMatrix._11 + mMatrix._12 + mMatrix._13,
-                                               mMatrix._21 + mMatrix._22 + mMatrix._23, 
-                                               mMatrix._31 + mMatrix._32 + mMatrix._33, 0.0f)))
+    if(iLocation >= 0)
     {
         // send new value
 #if defined(_CORE_GLES_)
-        if(bTranspose) glUniformMatrix3fv(iLocation, 1, false, mMatrix);
-                  else glUniformMatrix3fv(iLocation, 1, false, mMatrix.Transposed());
+        glUniformMatrix3fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
 #else
         glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix);
 #endif
@@ -466,8 +462,7 @@ void coreProgram::SendUniform(const char* pcName, const coreMatrix4& mMatrix, co
     {
         // send new value
 #if defined(_CORE_GLES_)
-        if(bTranspose) glUniformMatrix4fv(iLocation, 1, false, mMatrix);
-                  else glUniformMatrix4fv(iLocation, 1, false, mMatrix.Transposed());
+        glUniformMatrix4fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
 #else
         glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix);
 #endif

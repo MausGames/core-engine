@@ -68,9 +68,6 @@ void coreParticleSystem::Render()
     if(!m_pProgram.IsUsable()) return;
     if(!m_pProgram->Enable())  return;
 
-    // update normal matrix uniform with camera
-    m_pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMALMATRIX, Core::Graphics->GetCamera().m123().Invert(), false);
-
     // enable all active textures
     for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
@@ -92,20 +89,20 @@ void coreParticleSystem::Render()
                 // get current particle state
                 const coreParticle*            pParticle = (*it);
                 const coreObject3D*            pOrigin   = pParticle->GetEffect()->GetOrigin();
-                const coreParticle::coreState& Current   = pParticle->GetCurrentState();
+                const coreParticle::coreState& oCurrent  = pParticle->GetCurrentState();
 
                 // write position data to the buffer
                 if(pOrigin)
                 {
-                    const coreVector3 vPosition = pOrigin->GetPosition() + Current.vPosition;
+                    const coreVector3 vPosition = pOrigin->GetPosition() + oCurrent.vPosition;
                     std::memcpy(pCursor, &vPosition, sizeof(coreVector3));
                 }
-                else std::memcpy(pCursor, &Current.vPosition, sizeof(coreVector3));
+                else std::memcpy(pCursor, &oCurrent.vPosition, sizeof(coreVector3));
 
                 // compress remaining data
-                const coreVector3 vData  = coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue());
-                const coreUint    iColor = Current.vColor.ColorPack();
-                ASSERT(Current.vColor.Min() >= 0.0f && Current.vColor.Max() <= 1.0f)
+                const coreVector3 vData  = coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue());
+                const coreUint    iColor = oCurrent.vColor.PackUnorm4x8();
+                ASSERT(oCurrent.vColor.Min() >= 0.0f && oCurrent.vColor.Max() <= 1.0f)
 
                 // write remaining data to the buffer
                 std::memcpy(pCursor + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
@@ -135,12 +132,12 @@ void coreParticleSystem::Render()
             // get current particle state
             const coreParticle*            pParticle = (*it);
             const coreObject3D*            pOrigin   = pParticle->GetEffect()->GetOrigin();
-            const coreParticle::coreState& Current   = pParticle->GetCurrentState();
+            const coreParticle::coreState& oCurrent  = pParticle->GetCurrentState();
 
             // update all particle uniforms
-            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + Current.vPosition) : Current.vPosition);
-            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(Current.fScale, Current.fAngle, pParticle->GetValue()));
-            m_pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          Current.vColor);
+            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oCurrent.vPosition) : oCurrent.vPosition);
+            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue()));
+            m_pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          oCurrent.vColor);
             
             // draw the model
             s_pModel->Enable();
@@ -298,9 +295,9 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 
             // create instance data buffers
             it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,        0);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,        3*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1, GL_UNSIGNED_INT, 6*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         0);
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,         3*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 6*sizeof(float));
 
             // set vertex data
             s_pModel->GetVertexBuffer(0)->Activate(0);

@@ -11,16 +11,18 @@
 #define _CORE_GUARD_OBJECT3D_H_
 
 // TODO: remove SQRT in object-line collision
-// TODO: in the list, sort in the normal iteration by checking for current and next object and swap them if necessary
 // TODO: instancing with more than one vertex array in the model ? (binding location)
 // TODO: implement efficient batch list sort function
+// TODO: check instancing treshold with active objects, not all objects
+// TODO: maybe create buffer only when total number of objects exceeds threshold
+// TODO: compress rotation and texture parameters (2x16 ?)
 
 
 // ****************************************************************
 /* 3d-object definitions */
-#define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreMatrix4) + 1*sizeof(coreVector4) + 1*sizeof(coreUint))   //!< instancing per-object size (transformation, color, texture-parameters)
+#define CORE_OBJECT3D_INSTANCE_SIZE      (2*sizeof(coreVector4) + 2*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
 #define CORE_OBJECT3D_INSTANCE_BUFFERS   (3u)                                                                   //!< number of concurrent instance data buffer
-#define CORE_OBJECT3D_INSTANCE_THRESHOLD (10u)                                                                  //!< minimum number of objects to draw instanced
+#define CORE_OBJECT3D_INSTANCE_THRESHOLD (20u)                                                                  //!< minimum number of objects to draw instanced
 
 
 // ****************************************************************
@@ -37,6 +39,7 @@ private:
 protected:
     coreModelPtr m_pModel;     //!< model object
 
+    coreVector4 m_vRotation;   //!< separate rotation quaternion
     float m_fCollisionRange;   //!< range factor used for collision detection
 
     bool m_bManaged;           //!< currently listed in the object manager
@@ -72,10 +75,10 @@ public:
 
     /*! set object properties */
     //! @{
-    inline void SetPosition      (const coreVector3& vPosition)       {if(m_vPosition    != vPosition)    {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vPosition    = vPosition;}}
-    inline void SetSize          (const coreVector3& vSize)           {if(m_vSize        != vSize)        {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vSize        = vSize;}}
-    inline void SetDirection     (const coreVector3& vDirection)      {if(m_vDirection   != vDirection)   {m_iUpdate  = CORE_OBJECT_UPDATE_ALL;       m_vDirection   = vDirection;}   ASSERT(vDirection.IsNormalized())}
-    inline void SetOrientation   (const coreVector3& vOrientation)    {if(m_vOrientation != vOrientation) {m_iUpdate  = CORE_OBJECT_UPDATE_ALL;       m_vOrientation = vOrientation;} ASSERT(vOrientation.IsNormalized())}
+    inline void SetPosition      (const coreVector3& vPosition)       {m_vPosition       = vPosition;}
+    inline void SetSize          (const coreVector3& vSize)           {m_vSize           = vSize;}
+    inline void SetDirection     (const coreVector3& vDirection)      {if(m_vDirection   != vDirection)   {m_iUpdate = CORE_OBJECT_UPDATE_ALL; m_vDirection   = vDirection;}   ASSERT(vDirection  .IsNormalized())}
+    inline void SetOrientation   (const coreVector3& vOrientation)    {if(m_vOrientation != vOrientation) {m_iUpdate = CORE_OBJECT_UPDATE_ALL; m_vOrientation = vOrientation;} ASSERT(vOrientation.IsNormalized())}
     inline void SetCollisionRange(const float&       fCollisionRange) {m_fCollisionRange = fCollisionRange;}
     inline void SetType          (const int&         iType)           {m_iType           = iType;}
     //! @}
@@ -87,6 +90,7 @@ public:
     inline const coreVector3&  GetSize          ()const {return m_vSize;}
     inline const coreVector3&  GetDirection     ()const {return m_vDirection;}
     inline const coreVector3&  GetOrientation   ()const {return m_vOrientation;}
+    inline const coreVector4&  GetRotation      ()const {return m_vRotation;}
     inline const float&        GetCollisionRange()const {return m_fCollisionRange;}
     inline const int&          GetType          ()const {return m_iType;}
     //! @}
@@ -145,6 +149,7 @@ public:
     /*! access 3d-object list directly */
     //! @{
     inline std::vector<coreObject3D*>* List() {return &m_apObjectList;}
+    inline bool IsInstanced()const            {return (m_aiInstanceBuffer[0] && m_apObjectList.size() >= CORE_OBJECT3D_INSTANCE_THRESHOLD) ? true : false;}
     //! @}
 
     /*! get object properties */
@@ -172,6 +177,7 @@ constexpr_obj coreObject3D::coreObject3D()noexcept
 , m_vSize           (coreVector3(1.0f,1.0f, 1.0f))
 , m_vDirection      (coreVector3(0.0f,0.0f,-1.0f))
 , m_vOrientation    (coreVector3(0.0f,1.0f, 0.0f))
+, m_vRotation       (coreVector4::QuatIdentity())
 , m_fCollisionRange (1.0f)
 , m_bManaged        (false)
 , m_iType           (0)

@@ -49,7 +49,7 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
         // define vertex data
         coreVertexBuffer* pBuffer = coreObject2D::s_pModel->CreateVertexBuffer(4, 5*sizeof(float), afDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
         pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, 0);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXTURE_NUM,  2, GL_FLOAT, 3*sizeof(float));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_FLOAT, 3*sizeof(float));
 
         // use same model in particle systems
         coreParticleSystem::s_pModel = coreObject2D::s_pModel;

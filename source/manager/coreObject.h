@@ -41,14 +41,11 @@ protected:
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   //!< multiple texture objects
     coreProgramPtr m_pProgram;                        //!< shader-program object
 
-    coreMatrix4 m_mRotation;                          //!< separate rotation matrix
-    coreMatrix4 m_mTransform;                         //!< transformation matrix
-    coreObjectUpdate m_iUpdate;                       //!< update status
-
     coreVector4 m_vColor;                             //!< RGBA color-value
     coreVector2 m_vTexSize;                           //!< size-factor of the texture
     coreVector2 m_vTexOffset;                         //!< offset of the texture
 
+    coreObjectUpdate m_iUpdate;                       //!< update status
     coreObjectEnable m_iEnabled;                      //!< enabled object routines
     int m_iStatus;                                    //!< numeric status-value for individual use
 
@@ -87,8 +84,6 @@ public:
     //! @{
     inline const coreTexturePtr&   GetTexture  (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
     inline const coreProgramPtr&   GetProgram  ()const                      {return m_pProgram;}
-    inline const coreMatrix4&      GetRotation ()const                      {return m_mRotation;}
-    inline const coreMatrix4&      GetTransform()const                      {return m_mTransform;}
     inline const coreVector4&      GetColor4   ()const                      {return m_vColor;}
     inline coreVector3             GetColor3   ()const                      {return m_vColor.xyz();}
     inline const float&            GetAlpha    ()const                      {return m_vColor.a;}
@@ -126,12 +121,10 @@ private:
 // ****************************************************************
 // constructor
 constexpr_obj coreObject::coreObject()noexcept
-: m_mRotation  (coreMatrix4::Identity())
-, m_mTransform (coreMatrix4::Identity())
-, m_iUpdate    (CORE_OBJECT_UPDATE_ALL)
-, m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
+: m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
 , m_vTexSize   (coreVector2(1.0f,1.0f))
 , m_vTexOffset (coreVector2(0.0f,0.0f))
+, m_iUpdate    (CORE_OBJECT_UPDATE_ALL)
 , m_iEnabled   (CORE_OBJECT_ENABLE_ALL)
 , m_iStatus    (0)
 {

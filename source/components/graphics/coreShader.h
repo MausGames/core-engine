@@ -40,44 +40,47 @@
 #define CORE_SHADER_UNIFORM_ORTHO               "u_m4Ortho"
 #define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
                                                 
-#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_asLight[%d].v4Position"
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_asLight[%d].v4Direction"
-#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_asLight[%d].v4Value"
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_aLight[%d].v4Position"
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_aLight[%d].v4Direction"
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_aLight[%d].v4Value"
                                                 
-#define CORE_SHADER_UNIFORM_3D_TRANSFORM        "u_m4Transform"
-#define CORE_SHADER_UNIFORM_3D_NORMALMATRIX     "u_m3NormalMatrix"
+#define CORE_SHADER_UNIFORM_3D_POSITION         "u_v3Position"
+#define CORE_SHADER_UNIFORM_3D_SIZE             "u_v3Size"
+#define CORE_SHADER_UNIFORM_3D_ROTATION         "u_v4Rotation"
 #define CORE_SHADER_UNIFORM_2D_SCREENVIEW       "u_m3ScreenView"
 #define CORE_SHADER_UNIFORM_COLOR               "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXPARAM            "u_v4TexParam"
-#define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_asTexture2D[%d]"
-#define CORE_SHADER_UNIFORM_TEXTURE_SHADOW      "u_asTextureShadow[%d]"
+#define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_as2Texture2D[%d]"
+#define CORE_SHADER_UNIFORM_TEXTURE_SHADOW      "u_as2TextureShadow[%d]"
 
-#define CORE_SHADER_ATTRIBUTE_POSITION          "a_v3Position"
-#define CORE_SHADER_ATTRIBUTE_TEXTURE           "a_v2Texture"
-#define CORE_SHADER_ATTRIBUTE_NORMAL            "a_v3Normal"
-#define CORE_SHADER_ATTRIBUTE_TANGENT           "a_v4Tangent"
+#define CORE_SHADER_ATTRIBUTE_POSITION          "a_v3RawPosition"
+#define CORE_SHADER_ATTRIBUTE_TEXCOORD          "a_v2RawTexCoord"
+#define CORE_SHADER_ATTRIBUTE_NORMAL            "a_v3RawNormal"
+#define CORE_SHADER_ATTRIBUTE_TANGENT           "a_v4RawTangent"
 #define CORE_SHADER_ATTRIBUTE_POSITION_NUM      (0)
-#define CORE_SHADER_ATTRIBUTE_TEXTURE_NUM       (1)
+#define CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM      (1)
 #define CORE_SHADER_ATTRIBUTE_NORMAL_NUM        (2)
 #define CORE_SHADER_ATTRIBUTE_TANGENT_NUM       (3)
 
-#define CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM     "a_m4DivTransform"
 #define CORE_SHADER_ATTRIBUTE_DIV_POSITION      "a_v3DivPosition"
+#define CORE_SHADER_ATTRIBUTE_DIV_SIZE          "a_v3DivSize"
+#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION      "a_v4DivRotation"
 #define CORE_SHADER_ATTRIBUTE_DIV_DATA          "a_v3DivData"
-#define CORE_SHADER_ATTRIBUTE_DIV_COLOR         "a_iDivColor"
+#define CORE_SHADER_ATTRIBUTE_DIV_COLOR         "a_v4DivColor"
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM      "a_v4DivTexParam"
-#define CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM (4)
 #define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM  (4)
+#define CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM      (5)
+#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM  (6)
 #define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (5)
-#define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (8)
-#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (9)
+#define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7)
+#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8)
                                                 
 #define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%d]"
 #define CORE_SHADER_OUTPUT_COLORS               (4u) 
 
-#define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_           (1) \n"
-#define CORE_SHADER_OPTION_NO_TEXTURE_TRANSFORM "#define _CORE_OPTION_NO_TEXTURE_TRANSFORM_ (1) \n"
-#define CORE_SHADER_OPTION_NO_PARTICLE_ROTATION "#define _CORE_OPTION_NO_PARTICLE_ROTATION_ (1) \n"
+#define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_  (1) \n"
+#define CORE_SHADER_OPTION_NO_ROTATION          "#define _CORE_OPTION_NO_ROTATION_ (1) \n"
+#define CORE_SHADER_OPTION_NO_TEXPARAM          "#define _CORE_OPTION_NO_TEXPARAM_ (1) \n"
 
 enum coreShaderStatus : coreByte
 {
@@ -182,11 +185,11 @@ public:
 
     //! send new uniform values
     //! @{
-    inline void SendUniform(const char* pcName, const int&         iInt)    {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(float(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
-    inline void SendUniform(const char* pcName, const float&       fFloat)  {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,      0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
-    inline void SendUniform(const char* pcName, const coreVector2& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreVector3& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,     0.0f)))             glUniform3fv(iLocation, 1, vVector);}
-    inline void SendUniform(const char* pcName, const coreVector4& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, vVector))                                    glUniform4fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const int&         iInt)    {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(I_TO_F(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
+    inline void SendUniform(const char* pcName, const float&       fFloat)  {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,       0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
+    inline void SendUniform(const char* pcName, const coreVector2& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const coreVector3& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f)))             glUniform3fv(iLocation, 1, vVector);}
+    inline void SendUniform(const char* pcName, const coreVector4& vVector) {const int iLocation = this->GetUniform(pcName); if(this->CheckCache(iLocation, vVector))                                     glUniform4fv(iLocation, 1, vVector);}
     void        SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose);
     void        SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose);
     //! @}

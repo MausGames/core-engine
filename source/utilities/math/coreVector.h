@@ -10,8 +10,6 @@
 #ifndef _CORE_GUARD_VECTOR_H_
 #define _CORE_GUARD_VECTOR_H_
 
-// TODO: maybe implement real quaternion class later with animations
-
 
 // ****************************************************************
 /* 2d-vector class */
@@ -218,10 +216,8 @@ public:
 
     /*! color functions */
     //! @{
-    static constexpr_func coreVector3 ColorUnpack(const coreUint& iNumber);
-    constexpr_func        coreUint    ColorPack  ()const;
-    inline                coreVector3 HSVtoRGB   ()const;
-    inline                coreVector3 RGBtoHSV   ()const;
+    inline coreVector3 HSVtoRGB()const;
+    inline coreVector3 RGBtoHSV()const;
     //! @}
 };
 
@@ -312,18 +308,21 @@ public:
     constexpr_func float Max     ()const {return MAX(x, y, z, w);}
     //! @}
 
-    /*! color functions */
+    /*! packing functions */
     //! @{
-    static constexpr_func coreVector4 ColorUnpack(const coreUint& iNumber);
-    constexpr_func        coreUint    ColorPack  ()const;
+    constexpr_func        coreUint    PackUnorm4x8  ()const;
+    constexpr_func        coreUint    PackSnorm210  ()const;
+    static constexpr_func coreVector4 UnpackUnorm4x8(const coreUint& iNumber);
+    static inline         coreVector4 UnpackSnorm210(const coreUint& iNumber);
     //! @}
 
     /*! quaternion functions */
     //! @{
-    static constexpr_func coreVector4 QuatMul        (const coreVector4& vInA, const coreVector4& vInB);
-    constexpr_func        coreVector4 QuatConjugation()const                     {return coreVector4(-x, -y, -z, w);}
-    inline                coreVector4 QuatInverse    ()const                     {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
-    constexpr_func        coreVector3 QuatApply      (const coreVector3& v)const {return QuatMul(QuatMul((*this), coreVector4(v, 0.0f)), this->QuatConjugation()).xyz();}
+    static constexpr_func coreVector4 QuatMul      (const coreVector4& vInA, const coreVector4& vInB);
+    static constexpr_func coreVector4 QuatIdentity ()                          {return coreVector4(0.0f,0.0f,0.0f,1.0f);}
+    constexpr_func        coreVector4 QuatConjugate()const                     {return coreVector4(-x, -y, -z, w);}
+    inline                coreVector4 QuatInvert   ()const                     {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
+    constexpr_func        coreVector3 QuatApply    (const coreVector3& v)const {return v + 2.0f * coreVector3::Cross(this->xyz(), coreVector3::Cross(this->xyz(), v) + w * v);}
     //! @}
 };
 
@@ -445,26 +444,6 @@ bool coreVector3::Visible(const coreVector3& vPosition, const float& fFOV, const
 
 
 // ****************************************************************
-/* convert RBG color-code to color-vector */
-constexpr_func coreVector3 coreVector3::ColorUnpack(const coreUint& iNumber)
-{
-    return coreVector3(float( iNumber        & 0xFFu), 
-                       float((iNumber >>  8) & 0xFFu), 
-                       float((iNumber >> 16) & 0xFFu)) * 0.003921569f;
-}
-
-
-// ****************************************************************
-/* convert color-vector to RBG color-code */
-constexpr_func coreUint coreVector3::ColorPack()const
-{
-    return (coreUint(b * 255.0f) << 16) +
-           (coreUint(g * 255.0f) <<  8) +
-           (coreUint(r * 255.0f));
-};
-
-
-// ****************************************************************
 /* convert HSV-color to RGB-color */
 inline coreVector3 coreVector3::HSVtoRGB()const
 {
@@ -481,7 +460,7 @@ inline coreVector3 coreVector3::HSVtoRGB()const
     const float q = V - t;
     const float o = p + t;
 
-    switch((int)h)
+    switch(F_TO_SI(h))
     {
     case 1:  return coreVector3(q, V, p);
     case 2:  return coreVector3(p, V, o);
@@ -515,6 +494,55 @@ inline coreVector3 coreVector3::RGBtoHSV()const
 
 
 // ****************************************************************
+/* compress 0.0 to 1.0 vector into WZYX packed uint */
+constexpr_func coreUint coreVector4::PackUnorm4x8()const 
+{
+    return (F_TO_UI(a * 255.0f) << 24) +
+           (F_TO_UI(b * 255.0f) << 16) +
+           (F_TO_UI(g * 255.0f) <<  8) +
+           (F_TO_UI(r * 255.0f));
+};
+
+
+// ****************************************************************
+/* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint */
+constexpr_func coreUint coreVector4::PackSnorm210()const 
+{
+    return (F_TO_UI((a < 0.0f) ? (   4.0f + a*  2.0f) : a*  1.0f) << 30) +
+           (F_TO_UI((b < 0.0f) ? (1024.0f + b*512.0f) : b*511.0f) << 20) +
+           (F_TO_UI((g < 0.0f) ? (1024.0f + g*512.0f) : g*511.0f) << 10) +
+           (F_TO_UI((r < 0.0f) ? (1024.0f + r*512.0f) : r*511.0f));
+};
+
+
+// ****************************************************************
+/* uncompress WZYX packed uint into 0.0 to 1.0 vector */
+constexpr_func coreVector4 coreVector4::UnpackUnorm4x8(const coreUint& iNumber)
+{
+    return coreVector4(I_TO_F( iNumber        & 0xFFu), 
+                       I_TO_F((iNumber >>  8) & 0xFFu), 
+                       I_TO_F((iNumber >> 16) & 0xFFu), 
+                       I_TO_F((iNumber >> 24) & 0xFFu)) * 0.003921569f;
+}
+
+
+// ****************************************************************
+/* uncompress 2_10_10_10_rev packed uint into -1.0 to 1.0 vector */
+inline coreVector4 coreVector4::UnpackSnorm210(const coreUint& iNumber)
+{
+    const coreVector4 A = coreVector4(I_TO_F( iNumber        & 0x3FFu), 
+                                      I_TO_F((iNumber >> 10) & 0x3FFu), 
+                                      I_TO_F((iNumber >> 20) & 0x3FFu), 
+                                      I_TO_F((iNumber >> 30) & 0x003u));
+
+    return coreVector4((A.x >= 512.0f) ? ((A.x - 1024.0f)/512.0f) : (A.x/511.0f),
+                       (A.y >= 512.0f) ? ((A.y - 1024.0f)/512.0f) : (A.y/511.0f), 
+                       (A.z >= 512.0f) ? ((A.z - 1024.0f)/512.0f) : (A.z/511.0f), 
+                       (A.w >=   2.0f) ? ((A.w -    4.0f)/  2.0f) : (A.w/  1.0f));
+}
+
+
+// ****************************************************************
 /* multiplicate two quaternions */
 constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)
 {
@@ -523,28 +551,6 @@ constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const c
                        vInA.z*vInB.w + vInA.w*vInB.z + vInA.x*vInB.y - vInA.y*vInB.x,
                        vInA.w*vInB.w - vInA.x*vInB.x - vInA.y*vInB.y - vInA.z*vInB.z);
 }
-
-
-// ****************************************************************
-/* convert RBGA color-code to color-vector */
-constexpr_func coreVector4 coreVector4::ColorUnpack(const coreUint& iNumber)
-{
-    return coreVector4(float( iNumber        & 0xFFu), 
-                       float((iNumber >>  8) & 0xFFu), 
-                       float((iNumber >> 16) & 0xFFu), 
-                       float((iNumber >> 24) & 0xFFu)) * 0.003921569f;
-}
-
-
-// ****************************************************************
-/* convert color-vector to RGBA color-code */
-constexpr_func coreUint coreVector4::ColorPack()const 
-{
-    return (coreUint(a * 255.0f) << 24) +
-           (coreUint(b * 255.0f) << 16) +
-           (coreUint(g * 255.0f) <<  8) +
-           (coreUint(r * 255.0f));
-};
 
 
 #endif /* _CORE_GUARD_VECTOR_H_ */

@@ -64,23 +64,34 @@ public:
     /*! convert matrix */
     //! @{
     constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
+    inline coreVector4 Quat()const;
+    inline void Quat(const coreVector4& v);
     //! @}
 
     /*! transpose matrix */
     //! @{
-    inline coreMatrix3& Transpose();
+    inline coreMatrix3& Transpose ();
     inline coreMatrix3  Transposed()const {return coreMatrix3(*this).Transpose();}
     //! @}
 
     /*! invert matrix */
     //! @{
-    inline coreMatrix3& Invert();
+    inline coreMatrix3& Invert  ();
     inline coreMatrix3  Inverted()const {return coreMatrix3(*this).Invert();}
     //! @}
 
     /*! direct functions */
     //! @{
     constexpr_func float Determinant()const;
+    //! @}
+
+    /*! static functions */
+    //! @{
+    static constexpr_func coreMatrix3 Identity   ();
+    static constexpr_func coreMatrix3 Translation(const coreVector2& vPosition);
+    static constexpr_func coreMatrix3 Scaling    (const coreVector2& vSize);
+    static inline         coreMatrix3 Rotation   (const coreVector2& vDirection);
+    static inline         coreMatrix3 Rotation   (const float&       fAngle);
     //! @}
 };
 
@@ -146,13 +157,13 @@ public:
 
     /*! transpose matrix */
     //! @{
-    inline coreMatrix4& Transpose();
+    inline coreMatrix4& Transpose ();
     inline coreMatrix4  Transposed()const {return coreMatrix4(*this).Transpose();}
     //! @}
 
     /*! invert matrix */
     //! @{
-    inline coreMatrix4& Invert();
+    inline coreMatrix4& Invert  ();
     inline coreMatrix4  Inverted()const {return coreMatrix4(*this).Invert();}
     //! @}
 
@@ -241,6 +252,70 @@ constexpr_func coreMatrix3 coreMatrix3::operator * (const float& f)const
 
 
 // ****************************************************************
+/* convert matrix to quaternion */
+inline coreVector4 coreMatrix3::Quat()const
+{
+    const float fTrace = _11 + _22 + _33;
+
+    if(fTrace > 0.0f)
+    {
+        const float s = 0.5f * RSQRT(fTrace + 1.0f);
+        return coreVector4((_23 - _32) *     s,
+                           (_31 - _13) *     s,
+                           (_12 - _21) *     s,
+                                 0.25f * RCP(s));
+    }
+    else
+    {
+        if((_11 > _22) && (_11 > _33))
+        {
+            const float s = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
+            return coreVector4(      0.25f * RCP(s),
+                               (_21 + _12) *     s,
+                               (_31 + _13) *     s,
+                               (_23 - _12) *     s);
+        }
+        else if(_22 > _33)
+        {
+            const float s = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
+            return coreVector4((_21 + _12) *     s,
+                                     0.25f * RCP(s),
+                               (_32 + _23) *     s,
+                               (_31 - _13) *     s);
+        }
+        else
+        {
+            const float s = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
+            return coreVector4((_31 + _13) *     s,
+                               (_32 + _23) *     s,
+                                     0.25f * RCP(s),
+                               (_12 - _21) *     s);
+        }
+    }
+}
+
+
+// ****************************************************************
+/* convert quaternion to matrix */
+inline void coreMatrix3::Quat(const coreVector4& v)
+{
+    const float XX = v.x*v.x;
+    const float XY = v.x*v.y;
+    const float XZ = v.x*v.z;
+    const float XW = v.x*v.w;
+    const float YY = v.y*v.y;
+    const float YZ = v.y*v.z;
+    const float YW = v.y*v.w;
+    const float ZZ = v.z*v.z;
+    const float ZW = v.z*v.w;
+
+    *this = coreMatrix3(1.0f - 2.0f * (YY + ZZ),        2.0f * (XY + ZW),        2.0f * (XZ - YW),
+                               2.0f * (XY - ZW), 1.0f - 2.0f * (XX + ZZ),        2.0f * (YZ + XW),
+                               2.0f * (XZ + YW),        2.0f * (YZ - XW), 1.0f - 2.0f * (XX + YY));
+}
+
+
+// ****************************************************************
 /* transpose matrix */
 inline coreMatrix3& coreMatrix3::Transpose()
 {
@@ -274,6 +349,52 @@ inline coreMatrix3& coreMatrix3::Invert()
 constexpr_func float coreMatrix3::Determinant()const
 {
     return _11*(_22*_33 - _23*_32) + _12*(_23*_31 - _21*_33) + _13*(_21*_32 - _22*_31);
+}
+
+
+// ****************************************************************
+/* get identity matrix */
+constexpr_func coreMatrix3 coreMatrix3::Identity()
+{
+    return coreMatrix3(1.0f, 0.0f, 0.0f,
+                       0.0f, 1.0f, 0.0f,
+                       0.0f, 0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get translation matrix */
+constexpr_func coreMatrix3 coreMatrix3::Translation(const coreVector2& vPosition)
+{
+    return coreMatrix3(       1.0f,        0.0f, 0.0f,
+                              0.0f,        1.0f, 0.0f,
+                       vPosition.x, vPosition.y, 1.0f);
+}
+
+
+// ****************************************************************
+/* get scale matrix */
+constexpr_func coreMatrix3 coreMatrix3::Scaling(const coreVector2& vSize)
+{
+    return coreMatrix3(vSize.x,    0.0f, 0.0f,
+                          0.0f, vSize.y, 0.0f,
+                          0.0f,    0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get rotation matrix */
+inline coreMatrix3 coreMatrix3::Rotation(const coreVector2& vDirection)
+{
+    ASSERT(vDirection.IsNormalized())
+    return coreMatrix3( vDirection.y, vDirection.x, 0.0f,
+                       -vDirection.x, vDirection.y, 0.0f,
+                                0.0f,         0.0f, 1.0f);
+}
+
+inline coreMatrix3 coreMatrix3::Rotation(const float& fAngle)
+{
+    return coreMatrix3::Rotation(coreVector2::Direction(fAngle));
 }
 
 
@@ -536,6 +657,7 @@ inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
 inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
     coreMatrix4 mCamera = coreMatrix4::Orientation(vDirection, vOrientation);
+
     mCamera._14 = -mCamera._11*vPosition.x - mCamera._12*vPosition.y - mCamera._13*vPosition.z;
     mCamera._24 = -mCamera._21*vPosition.x - mCamera._22*vPosition.y - mCamera._23*vPosition.z;
     mCamera._34 = -mCamera._31*vPosition.x - mCamera._32*vPosition.y - mCamera._33*vPosition.z;

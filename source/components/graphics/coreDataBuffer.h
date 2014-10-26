@@ -179,7 +179,7 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
     m_iMapLength = iLength;
 
     // check for sync object status
-    if(m_pSync) m_pSync->Check(GL_TIMEOUT_IGNORED);
+    if(m_pSync) m_pSync->Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_ONLY);
 
     // return persistent mapped buffer
     if(m_pPersistentBuffer) return r_cast<T*>(m_pPersistentBuffer + iOffset);

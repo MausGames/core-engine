@@ -177,6 +177,8 @@
     <ClInclude Include="..\..\..\source\components\graphics\coreShader.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreSync.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreTexture.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\models\MD3.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\models\MD5.h" />
     <ClInclude Include="..\..\..\source\components\input\CoreInput.h" />
     <ClInclude Include="..\..\..\source\components\system\CoreSystem.h" />
     <ClInclude Include="..\..\..\source\components\system\coreThread.h" />

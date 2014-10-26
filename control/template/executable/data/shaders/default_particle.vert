@@ -14,5 +14,5 @@ void VertexMain()
     v_av2TexCoord[0] = coreParticleTexCoord();
 
     v_v4VarColor    = coreParticleColor();
-    v_v4VarColor.a *= a_fDivValue;
+    v_v4VarColor.a *= a_v1DivValue;
 }

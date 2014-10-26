@@ -32,7 +32,7 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     if(!pProgram->Enable())  return;
 
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, m_mTransform.m124() * Core::Graphics->GetOrtho().m124(), false);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, m_mTransform * Core::Graphics->GetOrtho().m124(), false);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 
@@ -64,7 +64,7 @@ void coreObject2D::Move()
         if(m_iUpdate & CORE_OBJECT_UPDATE_ALL)
         {
             // update rotation matrix
-            m_mRotation = coreMatrix4::RotationZ(m_vDirection);
+            m_mRotation = coreMatrix3::Rotation(m_vDirection);
         }
 
         // calculate resolution-modified transformation parameters
@@ -76,7 +76,7 @@ void coreObject2D::Move()
         m_mTransform = m_mRotation;
         m_mTransform._11 *= vScreenSize.x;     m_mTransform._12 *= vScreenSize.x;
         m_mTransform._21 *= vScreenSize.y;     m_mTransform._22 *= vScreenSize.y;
-        m_mTransform._41  = vScreenPosition.x; m_mTransform._42  = vScreenPosition.y;
+        m_mTransform._31  = vScreenPosition.x; m_mTransform._32  = vScreenPosition.y;
 
         // reset the update status
         m_iUpdate = CORE_OBJECT_UPDATE_NOTHING;
@@ -91,7 +91,7 @@ void coreObject2D::Move()
 void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
-    const coreVector2 vScreenPosition = coreVector2(    m_mTransform._41,      m_mTransform._42);
+    const coreVector2 vScreenPosition = coreVector2(    m_mTransform._31,      m_mTransform._32);
     const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22)) * 0.5f * m_fFocusRange;
 
 #if defined(_CORE_ANDROID_)

@@ -190,7 +190,7 @@ coreArchive::coreArchive(const char* pcPath)noexcept
 
         // read file header data
         SDL_RWread(pArchive, &iLength, sizeof(coreUint), 1);
-        SDL_RWread(pArchive, acPath,   sizeof(char),     MAX(iLength, (coreUint)255));
+        SDL_RWread(pArchive, acPath,   sizeof(char),     MIN(iLength, 255u));
         SDL_RWread(pArchive, &iSize,   sizeof(coreUint), 1);
         SDL_RWread(pArchive, &iPos,    sizeof(coreUint), 1);
 
@@ -222,7 +222,7 @@ coreError coreArchive::Save(const char* pcPath)
     if(m_apFile.empty()) return CORE_INVALID_CALL;
 
     // save path
-    m_sPath = PRINT(std::strcmp(coreData::StrRight(pcPath, 4), CORE_FILE_EXTENSION) ? "%s" CORE_FILE_EXTENSION : "%s", pcPath);
+    m_sPath = PRINT(std::strcmp(coreData::StrExtension(pcPath), CORE_FILE_EXTENSION) ? "%s." CORE_FILE_EXTENSION : "%s", pcPath);
 
     // open archive
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "wb");
@@ -249,7 +249,7 @@ coreError coreArchive::Save(const char* pcPath)
     FOR_EACH(it, m_apFile)
     {
         // get path length
-        const coreUint iLength = std::strlen(it->second->GetPath());
+        const coreUint iLength = MIN(std::strlen(it->second->GetPath()), 255u);
 
         // write header
         SDL_RWwrite(pArchive, &iLength,                   sizeof(coreUint), 1);

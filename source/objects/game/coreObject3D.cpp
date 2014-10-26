@@ -34,10 +34,11 @@ bool coreObject3D::Enable(const coreProgramPtr& pProgram)
     if(!pProgram->Enable())  return false;
 
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_TRANSFORM,    m_mTransform,                false);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_NORMALMATRIX, m_mRotation.m123().Invert(), true);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,           m_vColor);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,        coreVector4(m_vTexSize, m_vTexOffset));
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_POSITION, m_vPosition);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_SIZE,     m_vSize);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_ROTATION, m_vRotation);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,       m_vColor);
+    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,    coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
     for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
@@ -81,20 +82,10 @@ void coreObject3D::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
-    if(m_iUpdate & CORE_OBJECT_UPDATE_TRANSFORM)
+    if(m_iUpdate & CORE_OBJECT_UPDATE_ALL)
     {
-        if(m_iUpdate & CORE_OBJECT_UPDATE_ALL)
-        {
-            // update rotation matrix
-            m_mRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation);
-        }
-
-        // update transformation matrix
-        m_mTransform = m_mRotation;
-        m_mTransform._11 *= m_vSize.x;     m_mTransform._12 *= m_vSize.x;     m_mTransform._13 *= m_vSize.x;
-        m_mTransform._21 *= m_vSize.y;     m_mTransform._22 *= m_vSize.y;     m_mTransform._23 *= m_vSize.y;
-        m_mTransform._31 *= m_vSize.z;     m_mTransform._32 *= m_vSize.z;     m_mTransform._33 *= m_vSize.z;
-        m_mTransform._41  = m_vPosition.x; m_mTransform._42  = m_vPosition.y; m_mTransform._43  = m_vPosition.z;
+        // update rotation quaternion
+        m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().Quat();
 
         // reset the update status
         m_iUpdate = CORE_OBJECT_UPDATE_NOTHING;
@@ -186,7 +177,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 {
     if(m_apObjectList.empty()) return;
 
-    if(m_aiInstanceBuffer[0] && m_apObjectList.size() >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
+    if(this->IsInstanced())
     {
         // get first object from list
         const coreObject3D* pFirst = m_apObjectList.front();
@@ -225,14 +216,16 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 ++m_iCurEnabled;
 
                 // compress data
-                const coreUint    iColor     = pObject->GetColor4().ColorPack();
+                const coreUint    iColor     = pObject->GetColor4().PackUnorm4x8();
                 const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
                 ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                 // write data to the buffer
-                std::memcpy(pCursor,                                          &pObject->GetTransform(), sizeof(coreMatrix4));
-                std::memcpy(pCursor + sizeof(coreMatrix4),                    &iColor,                  sizeof(coreUint));
-                std::memcpy(pCursor + sizeof(coreMatrix4) + sizeof(coreUint), &vTexParams,              sizeof(coreVector4));
+                std::memcpy(pCursor,                                       &pObject->GetPosition(), sizeof(coreVector3));
+                std::memcpy(pCursor +  3*sizeof(float),                    &pObject->GetSize(),     sizeof(coreVector3));
+                std::memcpy(pCursor +  6*sizeof(float),                    &pObject->GetRotation(), sizeof(coreVector4));
+                std::memcpy(pCursor + 10*sizeof(float),                    &iColor,                 sizeof(coreUint));
+                std::memcpy(pCursor + 10*sizeof(float) + sizeof(coreUint), &vTexParams,             sizeof(coreVector4));
                 pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
             }
 
@@ -257,18 +250,20 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 
             // set index data
             if(*pModel->GetIndexBuffer())
+            {
+                coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
                 pModel->GetIndexBuffer()->Bind();
+            }
 
             // enable vertex attribute array division
             if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1, 1);
             else
             {
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 0, 1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 1, 1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 2, 1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 3, 1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1);
+                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 1);
             }
         }
 
@@ -367,7 +362,7 @@ void coreBatchList::BindObject(coreObject3D* pObject)
     if(m_apObjectList.size() >= m_iCurCapacity)
     {
         // increase current capacity by 50%
-        this->Reallocate(m_iCurCapacity + m_iCurCapacity / 2);
+        this->Reallocate(m_iCurCapacity + m_iCurCapacity / 2 + 1);
     }
 
     // add object to list
@@ -442,12 +437,11 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
         {
             // create instance data buffers
             it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 0, 4, GL_FLOAT,         0);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 1, 4, GL_FLOAT,         4*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 2, 4, GL_FLOAT,         8*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TRANSFORM_NUM + 3, 4, GL_FLOAT,        12*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,         1, GL_UNSIGNED_INT, 16*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,      4, GL_FLOAT,        16*sizeof(float) + 1*sizeof(coreUint));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,          0);
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,          3*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_FLOAT,          6*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 10*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         10*sizeof(float) + 1*sizeof(coreUint));
         }
 
         // invoke buffer update

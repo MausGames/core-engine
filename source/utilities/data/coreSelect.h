@@ -47,6 +47,10 @@ public:
     inline       std::array<T, iSize>* List()      {return &m_aItem;}
     inline const std::array<T, iSize>* List()const {return &m_aItem;}
     //! @}
+
+
+private:
+    DISABLE_COPY(coreSelect)
 };
 
 

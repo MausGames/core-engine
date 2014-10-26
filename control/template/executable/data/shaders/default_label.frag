@@ -10,6 +10,6 @@
 
 void FragmentMain()
 {
-    float fAlpha = coreTexture2D(0, v_av2TexCoord[0]).r;
-    gl_FragColor = u_v4Color * fAlpha;
+    float v1Alpha = coreTexture2D(0, v_av2TexCoord[0]).r;
+    gl_FragColor  = u_v4Color * v1Alpha;
 }

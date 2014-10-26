@@ -205,9 +205,8 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
             glVertexAttribBinding(it->iLocation, iBinding);
 
             // specify the vertex format
-            if(it->iType >= GL_BYTE && it->iType <= GL_UNSIGNED_INT)
-                glVertexAttribIFormat(it->iLocation, it->iComponents, it->iType,        it->iOffset);
-            else glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, false, it->iOffset);
+            const bool bInteger = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
+            glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, bInteger, it->iOffset);
         }
     }
     else
@@ -221,9 +220,8 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
             glEnableVertexAttribArray(it->iLocation);
 
             // specify the vertex format
-            if(it->iType >= GL_BYTE && it->iType <= GL_UNSIGNED_INT)
-                glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType,        m_iVertexSize, r_cast<const GLvoid*>((long)it->iOffset));
-            else glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, false, m_iVertexSize, r_cast<const GLvoid*>((long)it->iOffset));
+            const bool bInteger = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
+            glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bInteger, m_iVertexSize, I_TO_P(it->iOffset));
         }
     } 
 }
