@@ -196,37 +196,34 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 
         if(m_bUpdate)
         {
-            // reset current number of enabled 3d-objects
-            m_iCurEnabled = 0;
-
             // switch to next available array and buffer
             m_aiVertexArray.Next();
             m_aiInstanceBuffer.Next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, m_apObjectList.size() * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)
             {
                 const coreObject3D* pObject = (*it);
 
-                // render only enabled 3d-objects
-                if(!pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) continue;
-                ++m_iCurEnabled;
+                // render only enabled objects
+                if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+                {
+                    // compress data
+                    const coreUint    iColor     = pObject->GetColor4().PackUnorm4x8();
+                    const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
+                    ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
-                // compress data
-                const coreUint    iColor     = pObject->GetColor4().PackUnorm4x8();
-                const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
-                ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
-
-                // write data to the buffer
-                std::memcpy(pCursor,                                       &pObject->GetPosition(), sizeof(coreVector3));
-                std::memcpy(pCursor +  3*sizeof(float),                    &pObject->GetSize(),     sizeof(coreVector3));
-                std::memcpy(pCursor +  6*sizeof(float),                    &pObject->GetRotation(), sizeof(coreVector4));
-                std::memcpy(pCursor + 10*sizeof(float),                    &iColor,                 sizeof(coreUint));
-                std::memcpy(pCursor + 10*sizeof(float) + sizeof(coreUint), &vTexParams,             sizeof(coreVector4));
-                pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
+                    // write data to the buffer
+                    std::memcpy(pCursor,                                       &pObject->GetPosition(), sizeof(coreVector3));
+                    std::memcpy(pCursor +  3*sizeof(float),                    &pObject->GetSize(),     sizeof(coreVector3));
+                    std::memcpy(pCursor +  6*sizeof(float),                    &pObject->GetRotation(), sizeof(coreVector4));
+                    std::memcpy(pCursor + 10*sizeof(float),                    &iColor,                 sizeof(coreUint));
+                    std::memcpy(pCursor + 10*sizeof(float) + sizeof(coreUint), &vTexParams,             sizeof(coreVector4));
+                    pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
+                }
             }
 
             // unmap buffer
@@ -292,9 +289,20 @@ void coreBatchList::Render()
 /* move the batch list normally */
 void coreBatchList::MoveNormal()
 {
-    // move all objects
+    // reset render-count
+    m_iCurEnabled = 0;
+
     FOR_EACH(it, m_apObjectList)
-        (*it)->Move();
+    {
+        coreObject3D* pObject = (*it);
+        
+        // increase render-count
+        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            ++m_iCurEnabled;
+
+        // move object
+        pObject->Move();
+    }
 
     // set the update status
     m_bUpdate = true;
@@ -307,6 +315,9 @@ void coreBatchList::MoveSort()
 {
     auto et = m_apObjectList.begin();
 
+    // reset render-count
+    m_iCurEnabled = 0;
+
     // compare first object with nothing (never true)
     float fOldDistance    = 0.0f;
     bool  bOldTransparent = false;
@@ -315,31 +326,36 @@ void coreBatchList::MoveSort()
     {
         coreObject3D* pObject = (*it);
 
-        // move only enabled 3d-objects
-        if(!pObject->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) continue;
+        // increase render-count
+        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            ++m_iCurEnabled;
 
-        // move object
-        pObject->Move();
+        // move only enabled objects
+        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_MOVE))
+        {
+            // move object
+            pObject->Move();
 
-        // calculate properties of current object
-        const float fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
-        const bool  bCurTransparent = (pObject->GetAlpha() < 1.0f) ? true : false;
+            // calculate properties of current object
+            const float fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
+            const bool  bCurTransparent = (pObject->GetAlpha() < 1.0f) ? true : false;
         
-        // sort objects (opaque first and from front to back, transparent later and from back to front)
-        if(( bCurTransparent && (bOldTransparent && (fCurDistance > fOldDistance))) ||
-           (!bCurTransparent && (bOldTransparent || (fCurDistance < fOldDistance))))
-        {
-            std::swap(*it, *et);
-        }
-        else
-        {
-            // forward properties to next object
-            fOldDistance    = fCurDistance;
-            bOldTransparent = bCurTransparent;
-        }
+            // sort objects (opaque first and from front to back, transparent later and from back to front)
+            if(( bCurTransparent && (bOldTransparent && (fCurDistance > fOldDistance))) ||
+               (!bCurTransparent && (bOldTransparent || (fCurDistance < fOldDistance))))
+            {
+                std::swap(*it, *et);
+            }
+            else
+            {
+                // forward properties to next object
+                fOldDistance    = fCurDistance;
+                bOldTransparent = bCurTransparent;
+            }
 
-        // compare current object with next object
-        et = it;
+            // compare current object with next object
+            et = it;
+        }
     }
 
     // set the update status
@@ -348,7 +364,7 @@ void coreBatchList::MoveSort()
 
 
 // ****************************************************************
-/* bind 3d-objects */
+/* bind 3d-object */
 void coreBatchList::BindObject(coreObject3D* pObject)
 {
 #if defined(_CORE_DEBUG_)
@@ -371,7 +387,7 @@ void coreBatchList::BindObject(coreObject3D* pObject)
   
 
 // ****************************************************************
-/* unbind 3d-objects */
+/* unbind 3d-object */
 void coreBatchList::UnbindObject(coreObject3D* pObject)
 {
     // find object in list
@@ -433,19 +449,23 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
-        FOR_EACH(it, *m_aiInstanceBuffer.List())
+        // only allocate with enough capacity
+        if(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
         {
-            // create instance data buffers
-            it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,          0);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,          3*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_FLOAT,          6*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 10*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         10*sizeof(float) + 1*sizeof(coreUint));
-        }
+            FOR_EACH(it, *m_aiInstanceBuffer.List())
+            {
+                // create instance data buffers
+                it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,          0);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,          3*sizeof(float));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_FLOAT,          6*sizeof(float));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 10*sizeof(float));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         10*sizeof(float) + 1*sizeof(coreUint));
+            }
 
-        // invoke buffer update
-        m_bUpdate = true;
+            // invoke buffer update
+            m_bUpdate = true;
+        }
     }
     else
     {

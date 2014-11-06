@@ -17,16 +17,17 @@
 
 // ****************************************************************   
 /* default extensions */
-#define CORE_GL_ARB_buffer_storage        false
-#define CORE_GL_ARB_clear_buffer_object   false
-#define CORE_GL_ARB_vertex_attrib_binding false
-#define CORE_GL_ARB_uniform_buffer_object false   // controls shader-handling
-#define CORE_GL_ARB_tessellation_shader   false
-#define CORE_GL_ARB_geometry_shader4      false
-#define CORE_GL_ARB_sync                  false
-#define CORE_GL_ARB_direct_state_access   false
-#define CORE_GL_KHR_debug                 false
-#define CORE_GL_EXT_framebuffer_object    true
+#define CORE_GL_ARB_buffer_storage             false
+#define CORE_GL_ARB_clear_buffer_object        false
+#define CORE_GL_ARB_vertex_attrib_binding      false
+#define CORE_GL_ARB_uniform_buffer_object      false   // controls shader-handling
+#define CORE_GL_ARB_tessellation_shader        false
+#define CORE_GL_ARB_geometry_shader4           false
+#define CORE_GL_ARB_sync                       false
+#define CORE_GL_ARB_direct_state_access        false
+#define CORE_GL_ARB_vertex_type_2_10_10_10_rev false
+#define CORE_GL_KHR_debug                      false
+#define CORE_GL_EXT_framebuffer_object         true
 
 
 // ****************************************************************   
@@ -151,19 +152,29 @@ typedef void (GL_APIENTRY * PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint *
 /* unused definitions and functions */
 typedef int*     GLsync;
 typedef uint64_t GLuint64;
-#define GL_DEBUG_OUTPUT               0x92E0
-#define GL_DEBUG_OUTPUT_SYNCHRONOUS   0x8242
-#define GL_UNIFORM_BUFFER             0x8A11
-#define GL_MAP_PERSISTENT_BIT         0x00000040
-#define GL_MAP_COHERENT_BIT           0x00000080
-#define GL_SYNC_FLUSH_COMMANDS_BIT    0x00000001
-#define GL_SYNC_GPU_COMMANDS_COMPLETE 0x9117
-#define GL_TIMEOUT_EXPIRED            0x911B
-#define GL_TESS_EVALUATION_SHADER     0x8E87
-#define GL_TESS_CONTROL_SHADER        0x8E88
-#define GL_GEOMETRY_SHADER            0x8DD9
+#define GL_NONE                        0
+#define GL_MULTISAMPLE                 0x809D
+#define GL_TEXTURE_COMPARE_MODE        0x884C
+#define GL_TEXTURE_COMPARE_FUNC        0x884D
+#define GL_COMPARE_REF_TO_TEXTURE      0x884E
+#define GL_DEBUG_OUTPUT                0x92E0
+#define GL_DEBUG_OUTPUT_SYNCHRONOUS    0x8242
+#define GL_UNIFORM_BUFFER              0x8A11
+#define GL_MAP_PERSISTENT_BIT          0x00000040
+#define GL_MAP_COHERENT_BIT            0x00000080
+#define GL_MAP_FLUSH_EXPLICIT_BIT      0x0010
+#define GL_SYNC_FLUSH_COMMANDS_BIT     0x00000001
+#define GL_SYNC_GPU_COMMANDS_COMPLETE  0x9117
+#define GL_TIMEOUT_EXPIRED             0x911B
+#define GL_TIMEOUT_IGNORED             0xFFFFFFFFFFFFFFFF
+#define GL_TESS_EVALUATION_SHADER      0x8E87
+#define GL_TESS_CONTROL_SHADER         0x8E88
+#define GL_GEOMETRY_SHADER             0x8DD9
+#define GL_UNSIGNED_INT_2_10_10_10_REV 0x8368
+#define GL_INT_2_10_10_10_REV          0x8D9F
 
 typedef void (GL_APIENTRY * GLDEBUGPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+inline void      glDrawBuffer                    (GLenum mode)                                                                                                                                                                            {}
 inline void      glDebugMessageCallback          (GLDEBUGPROC callback, const GLvoid *userParam)                                                                                                                                          {}
 inline void      glDebugMessageControl           (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled)                                                                                       {}
 inline void      glBindBufferBase                (GLenum target, GLuint index, GLuint buffer)                                                                                                                                             {}
@@ -176,6 +187,7 @@ inline void      glBindVertexBuffer              (GLuint bindingindex, GLuint bu
 inline void      glVertexAttribBinding           (GLuint attribindex, GLuint bindingindex)                                                                                                                                                {}
 inline void      glVertexAttribFormat            (GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset)                                                                                               {}
 inline void      glVertexBindingDivisor          (GLuint bindingindex, GLuint divisor)                                                                                                                                                    {}
+inline void      glFlushMappedBufferRange        (GLenum target, GLintptr offset, GLsizeiptr length)                                                                                                                                      {}
 inline GLenum    glClientWaitSync                (GLsync GLsync, GLbitfield flags, GLuint64 timeout)                                                                                                                                      {return 0;}
 inline void      glDeleteSync                    (GLsync GLsync)                                                                                                                                                                          {}
 inline GLsync    glFenceSync                     (GLenum condition, GLbitfield flags)                                                                                                                                                     {return NULL;}
@@ -184,6 +196,7 @@ inline void      glTextureSubImage2D             (GLuint texture, GLint level, G
 inline void      glGenerateTextureMipmap         (GLuint texture)                                                                                                                                                                         {}
 inline GLvoid*   glMapNamedBufferRange           (GLuint buffer, GLintptr offset, GLsizeiptr length, GLbitfield access)                                                                                                                   {return NULL;}
 inline GLboolean glUnmapNamedBuffer              (GLuint buffer)                                                                                                                                                                          {return false;}
+inline void      glFlushMappedNamedBufferRange   (GLuint buffer, GLintptr offset, GLsizeiptr length)                                                                                                                                      {}
 inline void      glClearNamedBufferData          (GLuint buffer, GLenum internalformat, GLenum format, GLenum type, const void* data)                                                                                                     {}
 inline void      glBlitNamedFramebuffer          (GLuint readFramebuffer, GLuint drawFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter) {}
 inline void      glInvalidateNamedFramebufferData(GLuint framebuffer, GLsizei numAttachments, const GLenum* attachments)                                                                                                                  {}

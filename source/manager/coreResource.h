@@ -108,9 +108,9 @@ public:
     inline bool Nullify() {if( this->IsLoaded())                {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
     //! @}
 
-    /*! inject asynchronous functions */
+    /*! insert asynchronous functions */
     //! @{
-    template <typename F> inline void OnLoadOnce(F&& pFunction)const {if(this->IsLoaded()) pFunction(); else Core::Manager::Resource->AttachFunction([=]() {if(this->IsLoaded()) {pFunction(); return CORE_OK;} return CORE_BUSY;});}
+    template <typename F> void OnLoadOnce(F&& pFunction)const;
     //! @}
 
     /*! get object properties */
@@ -256,6 +256,29 @@ private:
     void __ExitThread()override;
     //! @}
 };
+
+
+// ****************************************************************
+/* insert asynchronous functions */   
+template <typename F> void coreResourceHandle::OnLoadOnce(F&& pFunction)const
+{
+    // call function immediately
+    if(this->IsLoaded()) pFunction();
+    else
+    {
+        // attach wrapper to the resource thread
+        Core::Manager::Resource->AttachFunction([=]()
+        {
+            if(this->IsLoaded()) 
+            {
+                // call and remove function when loaded
+                pFunction();
+                return CORE_OK;
+            } 
+            return CORE_BUSY;
+        });
+    }
+}
 
 
 // ****************************************************************

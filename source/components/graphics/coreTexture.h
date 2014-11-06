@@ -14,6 +14,7 @@
 // TODO: implement sampler objects
 // TODO: implement light unbind (like in model and program)
 // TODO: implement invalidate and clear function like in FrameBuffer and DataBuffer
+// TODO: add option/config for trilinear filtering
 
 
 // ****************************************************************

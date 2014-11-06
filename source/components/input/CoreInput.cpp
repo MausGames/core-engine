@@ -171,7 +171,7 @@ void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, c
 
     // move the mouse cursor
     const coreVector2& vAcc = m_aJoystick[iID].vRelative;
-    if(vAcc.x || vAcc.y)
+    if(!vAcc.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
         const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx() / Core::System->GetResolution().Min() * Core::System->GetTime() * fSpeed + vPos) * Core::System->GetResolution();

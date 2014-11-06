@@ -13,8 +13,6 @@
 // TODO: remove SQRT in object-line collision
 // TODO: instancing with more than one vertex array in the model ? (binding location)
 // TODO: implement efficient batch list sort function
-// TODO: check instancing treshold with active objects, not all objects
-// TODO: maybe create buffer only when total number of objects exceeds threshold
 // TODO: compress rotation and texture parameters (2x16 ?)
 
 
@@ -22,7 +20,7 @@
 /* 3d-object definitions */
 #define CORE_OBJECT3D_INSTANCE_SIZE      (2*sizeof(coreVector4) + 2*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
 #define CORE_OBJECT3D_INSTANCE_BUFFERS   (3u)                                                                   //!< number of concurrent instance data buffer
-#define CORE_OBJECT3D_INSTANCE_THRESHOLD (20u)                                                                  //!< minimum number of objects to draw instanced
+#define CORE_OBJECT3D_INSTANCE_THRESHOLD (100u)                                                                 //!< minimum number of objects to draw instanced
 
 
 // ****************************************************************
@@ -104,7 +102,7 @@ class coreBatchList final : public coreResourceRelation
 private:
     std::vector<coreObject3D*> m_apObjectList;                                         //!< list with pointers to similar 3d-objects
     coreUint m_iCurCapacity;                                                           //!< current instance-capacity of all related resources
-    coreUint m_iCurEnabled;                                                            //!< current number of enabled 3d-objects
+    coreUint m_iCurEnabled;                                                            //!< current number of render-enabled 3d-objects (render-count)
 
     coreProgramPtr m_pProgram;                                                         //!< shader-program object
 
@@ -143,13 +141,13 @@ public:
     //! @{
     void        Reallocate(const coreUint& iNewCapacity);
     void        Clear();
-    inline void ShrinkToFit() {this->Reallocate(m_apObjectList.size());}
+    inline void ShrinkToFit() {this->Reallocate(m_apObjectList.size()); m_apObjectList.shrink_to_fit();}
     //! @}
 
     /*! access 3d-object list directly */
     //! @{
     inline std::vector<coreObject3D*>* List() {return &m_apObjectList;}
-    inline bool IsInstanced()const            {return (m_aiInstanceBuffer[0] && m_apObjectList.size() >= CORE_OBJECT3D_INSTANCE_THRESHOLD) ? true : false;}
+    inline bool IsInstanced()const            {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
     //! @}
 
     /*! get object properties */

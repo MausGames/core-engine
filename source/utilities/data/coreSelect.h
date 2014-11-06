@@ -29,7 +29,7 @@ public:
 
     /*! switch current item */
     //! @{
-    inline void Select(const coreUint& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = CLAMP(iIndex, 0, iSize - 1);}
+    inline void Select(const coreUint& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = CLAMP(iIndex, 0u, iSize - 1);}
     inline void Next    ()                     {if(++m_iCurIndex >= iSize) m_iCurIndex = 0;}
     inline void Previous()                     {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1;}
     //! @}

@@ -45,7 +45,6 @@ CALL DEL project_temp.xml
 
 
 cd "%PATH_VISUAL%\%TOOL_NAME%"
-CALL RENAME %TOOL_NAME%.filters %PRJ_NAME%.filters
 CALL RENAME %TOOL_NAME%.vcxproj %PRJ_NAME%.vcxproj
 CALL RENAME %TOOL_NAME%.vcxproj.user %PRJ_NAME%.vcxproj.user
 

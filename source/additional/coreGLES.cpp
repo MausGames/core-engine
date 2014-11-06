@@ -35,7 +35,8 @@ void __coreInitOpenGLES()
     }
     else if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, bES3))
     {
-        __CORE_GLES_FUNC_FETCH(glInvalidateFramebuffer, , bES3)
+        // override function
+        g_CoreContext.__glDiscardFramebufferEXT = (decltype(g_CoreContext.__glDiscardFramebufferEXT))eglGetProcAddress("glInvalidateFramebuffer");
     }
 
     // implement GL_EXT_texture_storage

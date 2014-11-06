@@ -197,6 +197,12 @@
 #undef  NULL
 #define NULL nullptr
 
+#undef  __STRING
+#define __STRING(a)          #a
+#define STRING(a)            __STRING(a)
+#define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
+#define DEFINED(a)           (__DEFINED(a, #a))
+
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
 #define ARRAY_SIZE(a)        (sizeof(a) / sizeof((a)[0]))
@@ -204,12 +210,7 @@
 #define ASSERT(c)            {SDL_assert( (c));}
 #define WARN_IF(c)           {SDL_assert(!(c));} if(c)
 #define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
-
-#define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
-#define DEFINED(a)           (__DEFINED(a, #a))
-#define __STRING(a)          (#a)
-#define STRING(a)            (__STRING(a))
-                             
+                      
 #define BIT(n)               (1 << (n))
 #define BIT_SET(o,n)         {(o) |=  BIT(n);}
 #define BIT_RESET(o,n)       {(o) &= ~BIT(n);}

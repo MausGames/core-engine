@@ -125,8 +125,8 @@ void Core::Reset()
     System->m_iCurFrame  = iCurFrame;
     Graphics->SetView  (System->GetResolution(), fFOV, fNearClip, fFarClip);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
-    for(int i = 0; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
-    for(int i = 0; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
+    for(coreUint i = 0; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
+    for(coreUint i = 0; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
 
     Log->Warning("Reset finished");
 }

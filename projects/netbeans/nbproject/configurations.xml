@@ -24,6 +24,10 @@
             <itemPath>../../source/components/audio/coreSound.h</itemPath>
           </logicalFolder>
           <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
+            <logicalFolder name="models" displayName="models" projectFiles="true">
+              <itemPath>../../source/components/graphics/models/MD3.h</itemPath>
+              <itemPath>../../source/components/graphics/models/MD5.h</itemPath>
+            </logicalFolder>
             <itemPath>../../source/components/graphics/CoreGraphics.cpp</itemPath>
             <itemPath>../../source/components/graphics/CoreGraphics.h</itemPath>
             <itemPath>../../source/components/graphics/coreDataBuffer.cpp</itemPath>
@@ -273,6 +277,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD3.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD5.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -673,6 +687,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/models/MD3.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD5.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/input/CoreInput.cpp"
             ex="false"
             tool="1"
@@ -1065,6 +1089,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD3.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD5.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1473,6 +1507,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/models/MD3.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD5.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/input/CoreInput.cpp"
             ex="false"
             tool="1"
@@ -1877,6 +1921,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/components/graphics/models/MD3.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD5.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/components/input/CoreInput.cpp"
             ex="false"
             tool="1"
@@ -2276,6 +2330,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/graphics/coreTexture.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD3.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/graphics/models/MD5.h"
             ex="false"
             tool="3"
             flavor2="0">

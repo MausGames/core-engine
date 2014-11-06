@@ -93,6 +93,7 @@ public:
     constexpr_func float Max        ()const {return MAX(x, y);}
     inline         float AspectRatio()const {return (x * RCP(y));}
     inline         float Angle      ()const {return y ? (ATAN(this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);}
+    constexpr_func bool  IsNull     ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -200,6 +201,7 @@ public:
     constexpr_func float LengthSq()const {return (x*x + y*y + z*z);}
     constexpr_func float Min     ()const {return MIN(x, y, z);}
     constexpr_func float Max     ()const {return MAX(x, y, z);}
+    constexpr_func bool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -306,6 +308,7 @@ public:
     constexpr_func float LengthSq()const {return (x*x + y*y + z*z + w*w);}
     constexpr_func float Min     ()const {return MIN(x, y, z, w);}
     constexpr_func float Max     ()const {return MAX(x, y, z, w);}
+    constexpr_func bool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! packing functions */

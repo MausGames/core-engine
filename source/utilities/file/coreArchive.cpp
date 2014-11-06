@@ -249,7 +249,7 @@ coreError coreArchive::Save(const char* pcPath)
     FOR_EACH(it, m_apFile)
     {
         // get path length
-        const coreUint iLength = MIN(std::strlen(it->second->GetPath()), 255u);
+        const coreUint iLength = MIN(std::strlen(it->second->GetPath()), size_t(255));
 
         // write header
         SDL_RWwrite(pArchive, &iLength,                   sizeof(coreUint), 1);

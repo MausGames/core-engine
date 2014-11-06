@@ -150,6 +150,8 @@
 		<Unit filename="../../source/components/graphics/coreSync.h" />
 		<Unit filename="../../source/components/graphics/coreTexture.cpp" />
 		<Unit filename="../../source/components/graphics/coreTexture.h" />
+		<Unit filename="../../source/components/graphics/models/MD3.h" />
+		<Unit filename="../../source/components/graphics/models/MD5.h" />
 		<Unit filename="../../source/components/input/CoreInput.cpp" />
 		<Unit filename="../../source/components/input/CoreInput.h" />
 		<Unit filename="../../source/components/system/CoreSystem.cpp" />

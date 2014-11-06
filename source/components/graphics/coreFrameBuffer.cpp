@@ -99,6 +99,9 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
         }
     }
+    
+    // ignore color drawings without color attachment
+    if(!m_aColorTarget[0].iInternal) glDrawBuffer(GL_NONE);
 
     // retrieve frame buffer status
     const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);

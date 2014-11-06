@@ -185,7 +185,7 @@ struct md5File
 
 // ****************************************************************
 /* import MD5 model file (simplified) */
-inline coreError coreImportMD5(const coreByte* pData, coreModel::coreImport* pOutput)
+inline coreError coreImportMD5(const coreByte* __restrict pData, coreModel::coreImport* __restrict pOutput)
 {
     WARN_IF(!pData || !pOutput) return CORE_INVALID_INPUT;
 
