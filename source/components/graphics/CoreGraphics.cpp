@@ -233,7 +233,7 @@ void CoreGraphics::SendTransformation()
 
         // map required area of the UBO
         coreByte* pRange = m_aiTransformBuffer.GetCur().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
-    
+
         // update transformation data
         std::memcpy(pRange,                         &mViewProj,         sizeof(coreMatrix4));
         std::memcpy(pRange + 1*sizeof(coreMatrix4), &m_mCamera,         sizeof(coreMatrix4));
@@ -291,7 +291,7 @@ void CoreGraphics::Screenshot(const char* pcPath)const
     // read pixel data from the frame buffer
     coreByte* pData = new coreByte[iSize];
     glReadPixels(0, 0, iWidth, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
-    
+
     Core::Manager::Resource->AttachFunction([=]()
     {
         // flip pixel data vertically
@@ -333,7 +333,7 @@ void CoreGraphics::__UpdateScene()
     coreTexture::DisableAll();
     coreProgram::Disable(true);
 
-    // explicitly invalidate depth buffer 
+    // explicitly invalidate depth buffer
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
         constexpr_var GLenum aiAttachment[1] = {GL_DEPTH};

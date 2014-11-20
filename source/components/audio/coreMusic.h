@@ -115,7 +115,7 @@ private:
 // ****************************************************************
 // music-player class
 // TODO: improve the representation of the current track while shuffled
-// TODO: callback when music track changes (or return true is enough porbably)
+// TODO: callback when music track changes (or return true is enough probably)
 // TODO: own thread
 // TODO: own (cached) parameters like volume, pitch - forwarded to music files
 // TODO: reorder properties, SwitchBox is similar

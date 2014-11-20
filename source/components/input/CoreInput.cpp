@@ -203,7 +203,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
              if(Event.key.keysym.scancode == CORE_INPUT_KEY(BACKSPACE))   this->SetKeyboardChar(SDLK_BACKSPACE);
         else if(Event.key.keysym.scancode == CORE_INPUT_KEY(RETURN))      this->SetKeyboardChar(SDLK_RETURN);
         else if(Event.key.keysym.scancode == CORE_INPUT_KEY(KP_ENTER))    this->SetKeyboardChar(SDLK_RETURN);
-        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;   
+        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;
         break;
 
     // release keyboard button
@@ -223,7 +223,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move mouse position
     case SDL_MOUSEMOTION:
-        if(Event.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x) || 
+        if(Event.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x) ||
            Event.motion.y != F_TO_SI(0.5f*Core::System->GetResolution().y))
         {
             this->SetMousePosition(coreVector2(I_TO_F(Event.motion.x),    -I_TO_F(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
@@ -248,7 +248,7 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(ABS((int)Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEAD) 
+        if(ABS((int)Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEAD)
             this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, CLAMP(I_TO_F(Event.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
         else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;
@@ -316,7 +316,7 @@ void CoreInput::__UpdateButtons()
     if(!m_bCursorVisible)
     {
         // hold cursor in window center when not visible
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(0.5f*Core::System->GetResolution().x), 
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(0.5f*Core::System->GetResolution().x),
                                                          F_TO_SI(0.5f*Core::System->GetResolution().y));
     }
 

@@ -64,7 +64,7 @@ public:
     virtual void Render()hot_func;
     virtual void Move  ()hot_func;
     //! @}
-    
+
     /*! handle collision between different structures */
     //! @{
     static bool  Collision(const coreObject3D& Object1, const coreObject3D& Object2);
@@ -130,7 +130,7 @@ public:
     void MoveNormal()hot_func;
     void MoveSort  ()hot_func;
     //! @}
-    
+
     /*! bind and unbind 3d-objects */
     //! @{
     void BindObject  (coreObject3D* pObject);
@@ -152,7 +152,7 @@ public:
 
     /*! get object properties */
     //! @{
-    inline const coreProgramPtr& GetProgram    ()const {return m_pProgram;}  
+    inline const coreProgramPtr& GetProgram    ()const {return m_pProgram;}
     inline const coreUint&       GetCurCapacity()const {return m_iCurCapacity;}
     inline const coreUint&       GetCurEnabled ()const {return m_iCurEnabled;}
     //! @}

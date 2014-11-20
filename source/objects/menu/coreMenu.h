@@ -26,7 +26,7 @@ class coreMenu : public coreObject2D
 private:
     std::vector<coreObject2D*>* m_papObject;     //!< surfaces with pointers to menu objects
     coreObject2D* m_pCurObject;                  //!< current object with input focus
-                                                        
+
     coreByte m_iNumSurfaces;                     //!< number of surfaces
     coreByte m_iCurSurface;                      //!< current surface
     coreByte m_iOldSurface;                      //!< previous surface
@@ -35,7 +35,7 @@ private:
     coreTimer m_Transition;                      //!< timer for a transition between two surfaces
 
     //coreFrameBuffer m_iFrameBuffer;            //!< frame buffer for optimized rendering # TODO, ResourceRelation
-        
+
 
 public:
     coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)noexcept;

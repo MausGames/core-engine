@@ -11,7 +11,7 @@
 thread_local GLEWContext g_GlewContext; // = 0;
 
 
-// ****************************************************************  
+// ****************************************************************
 /* init OpenGL */
 void __coreInitOpenGL()
 {
@@ -80,7 +80,7 @@ void __coreInitOpenGL()
     if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE))
         GLEW_ARB_uniform_buffer_object = false;
 
-    // try to support old OpenGL versions 
+    // try to support old OpenGL versions
     if(!GLEW_VERSION_2_0)
     {
         // remap GL_ARB_vertex_program

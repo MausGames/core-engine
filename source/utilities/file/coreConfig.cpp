@@ -24,7 +24,7 @@ coreConfig::coreConfig(const char* pcPath)noexcept
     this->Load();
 
     // write all loaded configuration values to the log file
-    Core::Log->ListStartInfo("Configuration Values"); 
+    Core::Log->ListStartInfo("Configuration Values");
     {
         // retrieve all sections
         CSimpleIni::TNamesDepend apSection;
@@ -66,8 +66,8 @@ coreError coreConfig::Load()
         Core::Log->Warning("Configuration (%s) could not be loaded", m_sPath.c_str());
         return CORE_ERROR_FILE;
     }
-    
-    Core::Log->Info("Configuration (%s) loaded", m_sPath.c_str()); 
+
+    Core::Log->Info("Configuration (%s) loaded", m_sPath.c_str());
     return CORE_OK;
 }
 

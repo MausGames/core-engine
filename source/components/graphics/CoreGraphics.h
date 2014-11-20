@@ -48,20 +48,20 @@ private:
 private:
     SDL_GLContext m_pRenderContext;                                                  //!< primary OpenGL context for render operations
     SDL_GLContext m_pResourceContext;                                                //!< secondary OpenGL context for resource loading
-                                                                                     
+
     float m_fFOV;                                                                    //!< field-of-view
     float m_fNearClip;                                                               //!< near clipping plane
     float m_fFarClip;                                                                //!< far clipping plane
-                                                                                     
+
     coreVector3 m_vCamPosition;                                                      //!< position of the camera
     coreVector3 m_vCamDirection;                                                     //!< direction of the camera
     coreVector3 m_vCamOrientation;                                                   //!< orientation of the camera
     coreMatrix4 m_mCamera;                                                           //!< camera matrix
-                                                                                     
+
     coreMatrix4 m_mPerspective;                                                      //!< perspective projection matrix
     coreMatrix4 m_mOrtho;                                                            //!< orthographic projection matrix
     coreVector4 m_vViewResolution;                                                   //!< current viewport resolution (xy = normal, zw = reciprocal)
-                                                                                     
+
     coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                                        //!< global ambient lights
 
     coreSelect<coreDataBuffer, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aiTransformBuffer;   //!< uniform buffer objects for transformation data

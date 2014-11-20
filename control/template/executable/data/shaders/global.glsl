@@ -502,14 +502,16 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     // texture coordinate transformation functions
     vec2 coreObject3DTexCoord()
     {
-    #if defined(_CORE_OPTION_NO_TEXPARAM_)
-        return a_v2RawTexCoord;
-    #else
         return a_v2RawTexCoord * u_v2TexSize + u_v2TexOffset;
-    #endif
     }
-    #define coreObject2DTexCoord() (coreObject3DTexCoord())
-    #define coreParticleTexCoord() (a_v2RawTexCoord)
+    vec2 coreObject2DTexCoord()
+    {
+        return vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y) * u_v2TexSize + u_v2TexOffset;
+    }
+    vec2 coreParticleTexCoord()
+    {
+        return a_v2RawTexCoord;
+    }
 
     // color value retrieval functions
     vec4 coreObject3DColor()

@@ -14,7 +14,7 @@
 // ****************************************************************
 /* MD3-header structure */
 struct md3Header
-{ 
+{
     char acIdentity[4];    //!< magic number (IDP3)
     int  iVersion;         //!< version number (15)
 
@@ -181,7 +181,7 @@ inline coreError coreImportMD3(const coreByte* __restrict pData, coreModel::core
         std::memcpy(oSurface.pTexture,  pCursor + oMesh.iOffsetTexture,   sizeof(md3Texture)  * oMesh.iNumVertices);
         std::memcpy(oSurface.pVertex,   pCursor + oMesh.iOffsetVertices,  sizeof(md3Vertex)   * oMesh.iNumVertices);
 
-        pCursor += oMesh.iOffsetEnd; 
+        pCursor += oMesh.iOffsetEnd;
     }
 
     // use data from the first surface

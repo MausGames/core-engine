@@ -226,7 +226,7 @@ void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
     // check texture binding
     if(s_apBound[iUnit] == pTexture) return;
     s_apBound[iUnit] = pTexture;
-    
+
     if(CORE_GL_SUPPORT(ARB_direct_state_access))
     {
         // bind texture directly

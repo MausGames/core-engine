@@ -109,7 +109,7 @@ public:
 // ****************************************************************
 // particle system class
 // TODO: texture arrays and texture index parameter to allow different objects to be rendered
-// TODO: SSBO[index] really faster than a divisior ? check also for their use instead of VAO in general
+// TODO: SSBO[index] really faster than a divisor ? check also for their use instead of VAO in general
 // TODO: discard every X particle (create min 1) on lower systems ?
 // TODO: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
 // TODO: low systems: merge geometry to reduce draw calls

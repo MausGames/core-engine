@@ -15,7 +15,7 @@ coreCheckBox::coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchec
 : coreCheckBox ()
 {
     // construct on creation
-    this->Construct(pcIdleUnchecked, pcBusyUnchecked, pcIdleChecked, pcBusyChecked); 
+    this->Construct(pcIdleUnchecked, pcBusyUnchecked, pcIdleChecked, pcBusyChecked);
 }
 
 
@@ -35,7 +35,7 @@ void coreCheckBox::Construct(const char* pcIdleUnchecked, const char* pcBusyUnch
 
 
 // ****************************************************************
-// Auswahlkasten berechnen
+// move the check-box
 void coreCheckBox::Move()
 {
     // move the button

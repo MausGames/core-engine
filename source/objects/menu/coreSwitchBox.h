@@ -31,7 +31,7 @@ public:
 private:
     coreButton m_aArrow[2];            //!< selection arrows (0 = left | 1 = right)
     coreLabel  m_Caption;              //!< label displaying the current entry
-                                  
+
     std::vector<coreEntry> m_aEntry;   //!< list with entries and associated values
     coreUint m_iCurIndex;              //!< index of the current entry
 
@@ -104,7 +104,7 @@ private:
 };
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 : m_iCurIndex (0)
@@ -128,7 +128,7 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox(const char* pcFont, const 
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // destructor
 template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 {
@@ -137,7 +137,7 @@ template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 }
 
 
-// ****************************************************************  
+// ****************************************************************
 // construct the switch-box
 template <typename T> void coreSwitchBox<T>::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
 {
@@ -147,7 +147,7 @@ template <typename T> void coreSwitchBox<T>::Construct(const char* pcIdle, const
     m_aArrow[0].GetCaption()->SetText("<");
     m_aArrow[1].GetCaption()->SetText(">");
 
-    // construct remaining object 
+    // construct remaining object
     this->Construct(pcFont, iHeight, iLength);
 }
 
@@ -163,11 +163,11 @@ template <typename T> void coreSwitchBox<T>::Construct(const char* pcFont, const
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // render the switch-box
 template <typename T> void coreSwitchBox<T>::Render()
 {
-    // forward transparency 
+    // forward transparency
     // TODO
     //m_aArrow[0].SetAlpha(this->GetAlpha());
     //m_aArrow[1].SetAlpha(this->GetAlpha());
@@ -179,10 +179,10 @@ template <typename T> void coreSwitchBox<T>::Render()
 
     // render the label
     m_Caption.Render();
-}    
+}
 
 
-// ****************************************************************    
+// ****************************************************************
 // move the switch-box
 // TODO: handle rotation (+ all menu objects)
 template <typename T> void coreSwitchBox<T>::Move()
@@ -222,7 +222,7 @@ template <typename T> void coreSwitchBox<T>::Move()
         // reset the automatic timer
         if(m_Automatic.GetStatus())
         {
-            m_Automatic.Pause(); 
+            m_Automatic.Pause();
             m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
         }
     }
@@ -239,12 +239,12 @@ template <typename T> void coreSwitchBox<T>::Move()
         m_aArrow[0].SetPosition(vPosition - vOffset);
         m_aArrow[0].SetSize(vSize);
         m_aArrow[0].SetCenter(this->GetCenter());
-        
+
         // update right selection arrow
         m_aArrow[1].SetPosition(vPosition + vOffset);
         m_aArrow[1].SetSize(vSize);
         m_aArrow[1].SetCenter(this->GetCenter());
-        
+
         // update the label
         m_Caption.SetPosition(vPosition);
         m_Caption.SetCenter(this->GetCenter());
@@ -260,7 +260,7 @@ template <typename T> void coreSwitchBox<T>::Move()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // add entry
 template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcText, const T& Value)
 {
@@ -279,7 +279,7 @@ template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const char* pcKey,
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // remove entry
 template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUint& iIndex)
 {
@@ -290,7 +290,7 @@ template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUint& iIndex)
     this->_UnbindString(&it->first);
 
     // remove entry and update index
-    m_aEntry.erase(it); 
+    m_aEntry.erase(it);
     if(iIndex < m_iCurIndex) --m_iCurIndex;
 
     // update text
@@ -298,7 +298,7 @@ template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUint& iIndex)
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // remove all entries
 template <typename T> void coreSwitchBox<T>::ClearEntries()
 {
@@ -307,7 +307,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
         this->_UnbindString(&it->first);
 
     // remove all entries and reset index
-    m_aEntry.clear(); 
+    m_aEntry.clear();
     m_iCurIndex = 0;
 
     // update text
@@ -323,21 +323,21 @@ template <typename T> void coreSwitchBox<T>::Select(const coreUint& iIndex)
 
     // save new index
     if(m_iCurIndex == iIndex) return;
-    m_iCurIndex = iIndex; 
-    
+    m_iCurIndex = iIndex;
+
     // update text
     this->__Update();
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // switch to next entry
 template <typename T> void coreSwitchBox<T>::Next()
 {
     WARN_IF(m_aEntry.empty()) return;
 
     // increase current index
-    if(++m_iCurIndex >= m_aEntry.size()) 
+    if(++m_iCurIndex >= m_aEntry.size())
         m_iCurIndex = m_bEndless ? 0 : (m_aEntry.size()-1);
 
     // update text

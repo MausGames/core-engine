@@ -13,7 +13,7 @@ std::string              g_sExtensions     = "";
 thread_local coreContext g_CoreContext; // = 0;
 
 
-// ****************************************************************  
+// ****************************************************************
 /* init OpenGL ES */
 void __coreInitOpenGLES()
 {

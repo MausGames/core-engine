@@ -93,7 +93,7 @@ public:
     inline const GLenum&      GetFormat    ()const {return m_iFormat;}
     inline const GLenum&      GetType      ()const {return m_iType;}
     //! @}
-    
+
 
 private:
     //! bind texture to texture unit

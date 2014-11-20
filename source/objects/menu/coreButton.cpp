@@ -9,7 +9,7 @@
 #include "Core.h"
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 coreButton::coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
 : coreButton ()
@@ -43,7 +43,7 @@ void coreButton::Construct(const char* pcIdle, const char* pcBusy, const char* p
     if(m_pCaption) SAFE_DELETE(m_pCaption)
     m_pCaption = new coreLabel(pcFont, iHeight, iLength);
 
-    // construct remaining object 
+    // construct remaining object
     this->Construct(pcIdle, pcBusy);
 }
 
@@ -80,7 +80,7 @@ void coreButton::Render()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // move the button
 void coreButton::Move()
 {
@@ -95,7 +95,7 @@ void coreButton::Move()
     }
 
     // update the label
-    if(m_pCaption) 
+    if(m_pCaption)
     {
         if(m_iUpdate)
         {

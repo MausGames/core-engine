@@ -23,7 +23,7 @@ template <char cDelimiter> static void SkipComments(const char** ppcInput)
     while(**ppcInput == cDelimiter)
     {
         // skip them
-        int n = 0; 
+        int n = 0;
         std::sscanf(*ppcInput, "%*[^\n] %n", &n);
         *ppcInput += n;
     }

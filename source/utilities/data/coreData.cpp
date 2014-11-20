@@ -220,7 +220,7 @@ const char* coreData::DateTimePrint(const char* pcFormat)
     // format current time
     const time_t iTime = std::time(NULL);
     tm* pLocal = std::localtime(&iTime);
-    
+
     // assemble string
     const coreUint iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
 

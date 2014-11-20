@@ -31,7 +31,7 @@ Core::Core()noexcept
     Log->Header("Utilities");
     Config = new coreConfig("config.ini");
     Rand   = new coreRand(2048);
-    
+
     // init main components
     System   = new CoreSystem();
     Graphics = new CoreGraphics();
@@ -180,7 +180,7 @@ int Core::Run()
         Core::Graphics->__UpdateScene();
         Core::System->__UpdateTime();
         Core::Input->__ClearButtons();
-    
+
         // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())
         {
@@ -191,6 +191,6 @@ int Core::Run()
 
     // reset logging level
     Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);
-   
+
     return 0;
 }

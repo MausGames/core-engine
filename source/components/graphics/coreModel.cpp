@@ -20,6 +20,7 @@ coreModel::coreModel()noexcept
 , m_iNumVertices   (0)
 , m_iNumIndices    (0)
 , m_fRadius        (0.0f)
+, m_vRange         (coreVector3(0.0f,0.0f,0.0f))
 , m_iPrimitiveType (GL_TRIANGLES)
 , m_iIndexType     (0)
 {
@@ -74,8 +75,14 @@ coreError coreModel::Load(coreFile* pFile)
     m_sPath        = pFile->GetPath();
     m_iSize        = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUshort);
 
-    // find maximum distance from the model center
-    FOR_EACH(it, oImport.aVertexData) m_fRadius = MAX(it->vPosition.LengthSq(), m_fRadius);
+    // find maximum distance and range from the model center
+    FOR_EACH(it, oImport.aVertexData)
+    {
+        m_fRadius  = MAX(it->vPosition.LengthSq(), m_fRadius);
+        m_vRange.x = MAX(m_vRange.x, it->vPosition.x);
+        m_vRange.y = MAX(m_vRange.y, it->vPosition.y);
+        m_vRange.z = MAX(m_vRange.z, it->vPosition.z);
+    }
     m_fRadius = SQRT(m_fRadius);
 
     if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev))
@@ -84,9 +91,12 @@ coreError coreModel::Load(coreFile* pFile)
         coreVertexPacked* pPackedData = new coreVertexPacked[m_iNumVertices];
         for(coreUint i = 0; i < m_iNumVertices; ++i)
         {
+            ASSERT(0.0f <= oImport.aVertexData[i].vTexCoord.x && oImport.aVertexData[i].vTexCoord.x <= 1.0f &&
+                   0.0f <= oImport.aVertexData[i].vTexCoord.y && oImport.aVertexData[i].vTexCoord.y <= 1.0f)
+
             // convert specific vertex attributes
             pPackedData[i].vPosition = oImport.aVertexData[i].vPosition;
-            pPackedData[i].vTexCoord = oImport.aVertexData[i].vTexCoord;
+            pPackedData[i].iTexCoord = oImport.aVertexData[i].vTexCoord.PackUnorm2x16();
             pPackedData[i].iNormal   = coreVector4(oImport.aVertexData[i].vNormal, 0.0f).PackSnorm210();
             pPackedData[i].iTangent  = oImport.aVertexData[i].vTangent.PackSnorm210();
         }
@@ -94,9 +104,9 @@ coreError coreModel::Load(coreFile* pFile)
         // create compressed vertex buffer
         coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
         pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,              0);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_FLOAT,              3*sizeof(float));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, GL_INT_2_10_10_10_REV, 5*sizeof(float));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_INT_2_10_10_10_REV, 5*sizeof(float) + 1*sizeof(coreUint));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT,     3*sizeof(float));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, GL_INT_2_10_10_10_REV, 3*sizeof(float) + 1*sizeof(coreUint));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_INT_2_10_10_10_REV, 3*sizeof(float) + 2*sizeof(coreUint));
         SAFE_DELETE_ARRAY(pPackedData)
     }
     else
@@ -128,8 +138,8 @@ coreError coreModel::Load(coreFile* pFile)
             this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, CORE_DATABUFFER_STORAGE_STATIC);
             SAFE_DELETE_ARRAY(pByteData)
         }
-        else 
-       
+        else
+
 #endif
         // create index buffer
         this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oImport.aiIndexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
@@ -230,7 +240,7 @@ void coreModel::Enable()
             glGenVertexArrays(1, &m_iVertexArray);
             glBindVertexArray(m_iVertexArray);
         }
-            
+
         // set vertex data
         for(coreByte i = 0; i < m_apiVertexBuffer.size(); ++i)
             m_apiVertexBuffer[i]->Activate(i);
@@ -276,7 +286,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
     m_apiVertexBuffer.push_back(new coreVertexBuffer());
     m_apiVertexBuffer.back()->Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
 
-    // disable current model object (to fully enable the next model) 
+    // disable current model object (to fully enable the next model)
     coreModel::Disable(false);
 
     return m_apiVertexBuffer.back();

@@ -136,7 +136,7 @@ CoreSystem::CoreSystem()noexcept
 #else
     std::memset(m_aaiCPUID, 0, sizeof(m_aaiCPUID));
 #endif
-    
+
     // check for SIMD support
          if(m_aaiCPUID[1][2] & BIT(20)) m_fSSE = 4.2f;
     else if(m_aaiCPUID[1][2] & BIT(19)) m_fSSE = 4.1f;

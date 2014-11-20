@@ -10,11 +10,12 @@
 #ifndef _CORE_GUARD_TEXTBOX_H_
 #define _CORE_GUARD_TEXTBOX_H_
 
+// TODO: enable text selection and clipboard copy/cut
+// TODO: enable clipboard paste
+
 
 // ****************************************************************
 // menu text-box class
-// TODO: enable text selection and clipboard copy/cut
-// TODO: enable clipboard paste
 class coreTextBox final : public coreButton
 {
 private:

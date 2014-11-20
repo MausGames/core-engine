@@ -123,7 +123,7 @@ public:
 
 private:
     DISABLE_COPY(coreResourceHandle)
-       
+
     /*! handle automatic resource loading */
     //! @{
     inline bool __AutoUpdate() {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) {m_iStatus = m_pResource->Load(m_pFile); return true;} return false;}
@@ -259,7 +259,7 @@ private:
 
 
 // ****************************************************************
-/* insert asynchronous functions */   
+/* insert asynchronous functions */
 template <typename F> void coreResourceHandle::OnLoadOnce(F&& pFunction)const
 {
     // call function immediately
@@ -269,12 +269,12 @@ template <typename F> void coreResourceHandle::OnLoadOnce(F&& pFunction)const
         // attach wrapper to the resource thread
         Core::Manager::Resource->AttachFunction([=]()
         {
-            if(this->IsLoaded()) 
+            if(this->IsLoaded())
             {
                 // call and remove function when loaded
                 pFunction();
                 return CORE_OK;
-            } 
+            }
             return CORE_BUSY;
         });
     }

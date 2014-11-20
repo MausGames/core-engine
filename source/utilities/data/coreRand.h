@@ -26,7 +26,7 @@
 class coreRand final
 {
 private:
-    int* m_piRandom;           //!< precalculated random numbers
+    int* m_piRandom;           //!< pre-calculated random numbers
     coreUint m_iNumRandoms;    //!< number of random numbers
     coreUint m_iCurRandom;     //!< current random number
 
@@ -50,7 +50,7 @@ public:
     inline void Reset() {m_iCurRandom = 0;}
     //! @}
 
-    /*! retrieve precalculated random number */
+    /*! retrieve pre-calculated random number */
     //! @{
     inline const int& Raw()                                  {if(++m_iCurRandom >= m_iNumRandoms) m_iCurRandom = 0; return m_piRandom[m_iCurRandom];}
     inline int   Int  (const int&   iMax)                    {return              (this->Raw()  % (iMax         +  1));}

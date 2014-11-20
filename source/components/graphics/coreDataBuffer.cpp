@@ -23,10 +23,10 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
     m_iTarget      = iTarget;
     m_iSize        = iSize;
 
-    // generate buffer 
+    // generate buffer
     glGenBuffers(1, &m_iDataBuffer);
     glBindBuffer(m_iTarget, m_iDataBuffer);
-    s_aiBound[m_iTarget] = m_iDataBuffer; 
+    s_aiBound[m_iTarget] = m_iDataBuffer;
 
     if(m_iStorageType & CORE_DATABUFFER_STORAGE_STREAM)
     {
@@ -75,13 +75,13 @@ void coreDataBuffer::Delete()
         m_pPersistentBuffer = NULL;
         this->Unmap(r_cast<coreByte*>(~0ul));
     }
-    
+
     // delete buffer
-    glDeleteBuffers(1, &m_iDataBuffer); 
+    glDeleteBuffers(1, &m_iDataBuffer);
 
     // delete sync object
     SAFE_DELETE(m_pSync)
-    
+
     // reset properties
     m_iDataBuffer  = 0;
     m_iStorageType = CORE_DATABUFFER_STORAGE_STATIC;
@@ -142,7 +142,7 @@ void coreVertexBuffer::Create(const coreUint& iNumVertices, const coreByte& iVer
     coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iStorageType);
 
     // save properties
-    m_iVertexSize = iVertexSize; 
+    m_iVertexSize = iVertexSize;
 }
 
 
@@ -157,7 +157,7 @@ void coreVertexBuffer::Delete()
 
     // reset properties
     m_iVertexSize = 0;
-    m_aAttribute.clear();      
+    m_aAttribute.clear();
 }
 
 
@@ -223,5 +223,5 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
             const bool bInteger = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
             glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bInteger, m_iVertexSize, I_TO_P(it->iOffset));
         }
-    } 
+    }
 }

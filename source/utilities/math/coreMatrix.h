@@ -273,7 +273,7 @@ inline coreVector4 coreMatrix3::Quat()const
             return coreVector4(      0.25f * RCP(s),
                                (_21 + _12) *     s,
                                (_31 + _13) *     s,
-                               (_23 - _12) *     s);
+                               (_23 - _32) *     s);
         }
         else if(_22 > _33)
         {

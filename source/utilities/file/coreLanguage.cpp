@@ -34,7 +34,7 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
     }
 }
 
-    
+
 // ****************************************************************
 /* bind own string pointer */
 void coreTranslate::_BindString(std::string* psString, const char* pcKey)
@@ -74,7 +74,7 @@ void coreTranslate::_UnbindString(std::string* psString)
 // ****************************************************************
 /* constructor */
 coreLanguage::coreLanguage(const char* pcPath)noexcept
-: m_sPath ("") 
+: m_sPath ("")
 {
     // load language file
     this->Load(pcPath);
@@ -106,7 +106,7 @@ coreError coreLanguage::Load(const char* pcPath)
     const char* pcData = r_cast<const char*>(pFile->GetData());
     if(!pcData) return CORE_ERROR_FILE;
 
-    // prepare range pointers (from, to) and end pointer (out of bound) 
+    // prepare range pointers (from, to) and end pointer (out of bound)
     const char* pcFrom = pcData + 1;
     const char* pcTo   = pcFrom;
     const char* pcEnd  = pcFrom + pFile->GetSize() - 1;

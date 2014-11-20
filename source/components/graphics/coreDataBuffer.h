@@ -45,16 +45,16 @@ class coreDataBuffer
 private:
     GLuint m_iDataBuffer;                          //!< data buffer identifier
     coreDataBufferStorage m_iStorageType;          //!< storage type
-                                                         
+
     GLenum   m_iTarget;                            //!< buffer target (e.g. GL_ARRAY_BUFFER)
-    coreUint m_iSize;                              //!< data size in bytes 
+    coreUint m_iSize;                              //!< data size in bytes
 
     coreByte* m_pPersistentBuffer;                 //!< pointer to persistent mapped buffer
     coreUint  m_iMapOffset;                        //!< current mapping offset
     coreUint  m_iMapLength;                        //!< current mapping length
 
     coreSync* m_pSync;                             //!< optional sync object for reliable asynchronous processing
-                                                         
+
     static coreLookup<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
 
 
@@ -268,7 +268,7 @@ constexpr_func coreVertexBuffer::coreAttribute::coreAttribute()noexcept
 , iType       (0)
 , iOffset     (0)
 {
-}        
+}
 
 
 #endif // _CORE_GUARD_DATABUFFER_H_

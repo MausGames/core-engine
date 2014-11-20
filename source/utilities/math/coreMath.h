@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_MATH_H_
 #define _CORE_GUARD_MATH_H_
 
-// TODO: SIN and COS with precalculated table ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?)
+// TODO: SIN and COS with pre-calculated table ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?)
 // TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4)
 
 

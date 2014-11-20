@@ -12,7 +12,7 @@
 // ****************************************************************
 // constructor
 coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)
-: m_pCurObject   (NULL)                                   
+: m_pCurObject   (NULL)
 , m_iNumSurfaces (iNumSurfaces)
 , m_iCurSurface  (iStartSurface)
 , m_iOldSurface  (iStartSurface)
@@ -36,7 +36,7 @@ coreMenu::~coreMenu()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // render the menu
 void coreMenu::Render()
 {
@@ -75,7 +75,7 @@ void coreMenu::Move()
         }
 
         // set alpha value for each render-list
-        const float afAlpha[3] = {this->GetAlpha(), 
+        const float afAlpha[3] = {this->GetAlpha(),
                                   this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_REVERSED),
                                   this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_NORMAL)};
 
@@ -90,7 +90,7 @@ void coreMenu::Move()
                 pObject->SetAlpha(afAlpha[i]);
                 pObject->Move();
             }
-        }    
+        }
     }
     else
     {
@@ -99,7 +99,7 @@ void coreMenu::Move()
         {
             coreObject2D* pObject = (*it);
 
-            // find current object with input focus 
+            // find current object with input focus
             if(!m_pCurObject)
             {
                 // interact and check status
@@ -203,6 +203,6 @@ bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
     // save new surface numbers
     m_iOldSurface = m_iCurSurface;
     m_iCurSurface = iNewSurface;
-    
+
     return true;
 }

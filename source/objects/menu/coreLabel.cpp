@@ -11,7 +11,7 @@
 #define CORE_LABEL_DETAIL 0.95f
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 coreLabel::coreLabel()noexcept
 : m_iHeight     (0)
@@ -31,7 +31,7 @@ coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLe
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // destructor
 coreLabel::~coreLabel()
 {
@@ -40,7 +40,7 @@ coreLabel::~coreLabel()
 }
 
 
-// ****************************************************************  
+// ****************************************************************
 // construct the label
 void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint& iLength)
 {
@@ -50,7 +50,7 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
 
     // set font object
     m_pFont = Core::Manager::Resource->Get<coreFont>(pcFont);
-    
+
     // allocate own texture to display text
     m_apTexture[0] = Core::Manager::Resource->LoadNew<coreTexture>();
 
@@ -65,13 +65,13 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // render the label
 void coreLabel::Render()
 {
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
-    
+
     if(m_iGenerate)
     {
         // check if requested font is loaded
@@ -93,7 +93,7 @@ void coreLabel::Render()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // move the label
 // TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
 void coreLabel::Move()
@@ -106,7 +106,7 @@ void coreLabel::Move()
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // change the current text
 bool coreLabel::SetText(const char* pcText)
 {
@@ -159,7 +159,7 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // generate the texture
 // TODO: use font-size calculation interface to check for font-size and pre-allocations
 void coreLabel::__Generate(const char* pcText, const bool& bSub)

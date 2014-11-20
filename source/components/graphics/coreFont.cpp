@@ -48,7 +48,7 @@ coreError coreFont::Load(coreFile* pFile)
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // unload font resource data
 coreError coreFont::Unload()
 {
@@ -70,7 +70,7 @@ coreError coreFont::Unload()
 }
 
 
-// ****************************************************************   
+// ****************************************************************
 // create text surface with the font
 SDL_Surface* coreFont::CreateText(const char* pcText, const int& iHeight)
 {
@@ -101,7 +101,7 @@ SDL_Surface* coreFont::CreateGlyph(const coreUshort& iGlyph,  const int& iHeight
 }
 
 
-// ****************************************************************   
+// ****************************************************************
 // init font in a specific height
 bool coreFont::__InitHeight(const int& iHeight)
 {

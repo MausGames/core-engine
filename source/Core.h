@@ -49,6 +49,7 @@
 // TODO: check for performance penalties and alternatives for thread_local
 // TODO: setup 64-bit Windows build (libraries!)
 // TODO: WinXP requires MSVC redist 12 (MinGW) or XP compiler
+// TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 
 
 // compiler
@@ -210,11 +211,11 @@
 #define ASSERT(c)            {SDL_assert( (c));}
 #define WARN_IF(c)           {SDL_assert(!(c));} if(c)
 #define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
-                      
+
 #define BIT(n)               (1 << (n))
 #define BIT_SET(o,n)         {(o) |=  BIT(n);}
 #define BIT_RESET(o,n)       {(o) &= ~BIT(n);}
-                             
+
 #define FOR_EACH(i,c)        for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
 #define FOR_EACH_REV(i,c)    for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
 #define FOR_EACH_SET(i,s,c)  for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; ++i)

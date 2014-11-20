@@ -124,14 +124,14 @@ coreError coreFile::LoadData()
 coreByte* coreFile::MoveData()
 {
     coreByte* pOutput;
-    if(m_iArchivePos) 
+    if(m_iArchivePos)
     {
         // load file data
-        this->LoadData(); 
+        this->LoadData();
 
         // move pointer with file data
-        pOutput = m_pData; 
-        m_pData = NULL; 
+        pOutput = m_pData;
+        m_pData = NULL;
     }
     else
     {

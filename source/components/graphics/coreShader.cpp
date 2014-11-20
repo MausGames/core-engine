@@ -87,7 +87,7 @@ coreError coreShader::Load(coreFile* pFile)
     // check for OpenGL extensions
     if((m_iType == GL_TESS_CONTROL_SHADER || m_iType == GL_TESS_EVALUATION_SHADER) && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
     if((m_iType == GL_GEOMETRY_SHADER)                                             && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
-    
+
     // load quality level and global shader data
     const char* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobalCode();
@@ -229,7 +229,7 @@ coreError coreProgram::Load(coreFile* pFile)
     }
     FOR_EACH(it, m_apShader)
     {
-        if(!it->IsUsable()) 
+        if(!it->IsUsable())
             return CORE_BUSY;
     }
 
@@ -277,7 +277,7 @@ coreError coreProgram::Load(coreFile* pFile)
     // bind custom attribute locations
     FOR_EACH(it, m_aiAttribute)
     {
-        if(it->second >= 0) 
+        if(it->second >= 0)
             glBindAttribLocation(m_iProgram, it->second, it->first);
     }
 

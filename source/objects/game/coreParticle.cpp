@@ -138,7 +138,7 @@ void coreParticleSystem::Render()
             m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oCurrent.vPosition) : oCurrent.vPosition);
             m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue()));
             m_pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          oCurrent.vColor);
-            
+
             // draw the model
             s_pModel->Enable();
             s_pModel->DrawArrays();
@@ -313,7 +313,7 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
             }
         }
 
-        // disable current model object (to fully enable the next model) 
+        // disable current model object (to fully enable the next model)
         coreModel::Disable(false);
 
         // invoke buffer update

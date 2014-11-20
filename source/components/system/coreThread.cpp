@@ -110,7 +110,7 @@ int coreThread::__Main()
             SDL_Delay(1);
         }
         while((iCurFrame >= Core::System->GetCurFrame()) && (iCurExecution == m_iExecutions) && m_bActive);
-            
+
         // check for external shut down
         if(!m_bActive) break;
 

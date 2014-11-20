@@ -191,7 +191,7 @@ public:
     //! @}
 
 
-private:  
+private:
     //! update and clear the input button interface
     //! @{
     void __UpdateButtons();

@@ -54,7 +54,7 @@ public:
     virtual void Render()hot_func;
     virtual void Move  ()hot_func;
     //! @}
-    
+
     //! interact with the 2d-object
     //! @{
     void Interact();

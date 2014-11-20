@@ -22,7 +22,7 @@
 #define CORE_CONFIG_SYSTEM_FULLSCREEN        "System",   "Fullscreen",      (0)
 #define CORE_CONFIG_SYSTEM_LANGUAGE          "System",   "Language",        ("data/languages/english.lng")
 #define CORE_CONFIG_SYSTEM_DEBUGMODE         "System",   "DebugMode",       (false)
-                                                                            
+
 #define CORE_CONFIG_GRAPHICS_QUALITY         "Graphics", "Quality",         (0)
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING    "Graphics", "AntiAliasing",    (2)
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER   "Graphics", "TextureFilter",   (4)
@@ -32,7 +32,7 @@
 #define CORE_CONFIG_GRAPHICS_DOUBLEBUFFER    "Graphics", "DoubleBuffer",    (true)
 #define CORE_CONFIG_GRAPHICS_RESOURCECONTEXT "Graphics", "ResourceContext", (DEFINED(_CORE_ANDROID_) ? false : true)
 #define CORE_CONFIG_GRAPHICS_FALLBACKMODE    "Graphics", "FallbackMode",    (false)
-                                                                            
+
 #define CORE_CONFIG_AUDIO_SOURCES            "Audio",    "Sources",         (16)
 #define CORE_CONFIG_AUDIO_GLOBALVOLUME       "Audio",    "GlobalVolume",    (1.0f)
 #define CORE_CONFIG_AUDIO_SOUNDVOLUME        "Audio",    "SoundVolume",     (1.0f)

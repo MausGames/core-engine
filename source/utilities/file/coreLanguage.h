@@ -39,7 +39,7 @@ public:
     void ChangeLanguage(coreLanguage* pLanguage);
     //! @}
 
-    
+
 protected:
     /*! bind and unbind own string pointer */
     //! @{

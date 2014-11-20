@@ -26,7 +26,7 @@ coreObjectManager::~coreObjectManager()
 {
     // delete global model objects
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
-    
+
     Core::Log->Info("Object Manager destroyed");
 }
 
@@ -37,19 +37,18 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
 {
     if(bInit)
     {
-        const float afDataStrip[] = {-0.5f,  0.5f, 0.0f, 0.0f, 0.0f,
-                                     -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
-                                      0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
-                                      0.5f, -0.5f, 0.0f, 1.0f, 1.0f};
+        const float afDataStrip[] = {-0.5f,  0.5f, 0.0f,
+                                     -0.5f, -0.5f, 0.0f,
+                                      0.5f,  0.5f, 0.0f,
+                                      0.5f, -0.5f, 0.0f};
 
         // create global model object
         coreObject2D::s_pModel = new coreModel();
         coreObject2D::s_pModel->SetPrimitiveType(GL_TRIANGLE_STRIP);
 
         // define vertex data
-        coreVertexBuffer* pBuffer = coreObject2D::s_pModel->CreateVertexBuffer(4, 5*sizeof(float), afDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
+        coreVertexBuffer* pBuffer = coreObject2D::s_pModel->CreateVertexBuffer(4, 3*sizeof(float), afDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
         pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, 0);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_FLOAT, 3*sizeof(float));
 
         // use same model in particle systems
         coreParticleSystem::s_pModel = coreObject2D::s_pModel;

@@ -18,7 +18,7 @@ class coreThread
 private:
     SDL_Thread* m_pThread;                             //!< pointer to thread structure
     std::string m_sName;                               //!< name of the thread
-                                                       
+
     coreByte m_iExecutions;                            //!< max number of executions per frame (0 = unshackled)
     bool     m_bActive;                                //!< active and currently not forced to shut down
 

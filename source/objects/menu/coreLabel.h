@@ -24,7 +24,7 @@ private:
 
     coreVector2 m_vResolution;   //!< resolution of the generated texture
     coreUint    m_iLength;       //!< max number of characters (0 = dynamic)
-                           
+
     std::string m_sText;         //!< current text
     float       m_fScale;        //!< scale factor
 
@@ -54,7 +54,7 @@ public:
     inline void SetTextLanguage(const char*  pcKey)  {this->_BindString(&m_sText, pcKey);}
     inline void SetScale       (const float& fScale) {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
     //! @}
-    
+
     //! get object properties
     //! @{
     inline const coreVector2& GetResolution()const {return m_vResolution;}

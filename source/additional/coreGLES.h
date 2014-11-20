@@ -10,12 +10,8 @@
 #ifndef _CORE_GLES_H_
 #define	_CORE_GLES_H_
 
-#if defined(__cplusplus)
-    extern "C" {
-#endif
 
-
-// ****************************************************************   
+// ****************************************************************
 /* default extensions */
 #define CORE_GL_ARB_buffer_storage             false
 #define CORE_GL_ARB_clear_buffer_object        false
@@ -30,7 +26,7 @@
 #define CORE_GL_EXT_framebuffer_object         true
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_EXT_discard_framebuffer (mapped on GL_ARB_invalidate_subdata) */
 #define CORE_GL_ARB_invalidate_subdata __CORE_GLES_VAR(GL_EXT_discard_framebuffer)
 
@@ -44,7 +40,7 @@ typedef void (GL_APIENTRY * PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsi
 #define glInvalidateTexImage(x,y)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage) */
 #define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
 
@@ -52,7 +48,7 @@ typedef void (GL_APIENTRY * PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei le
 #define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2DEXT)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_EXT_map_buffer_range (mapped on GL_ARB_map_buffer_range) */
 #define CORE_GL_ARB_map_buffer_range __CORE_GLES_VAR(GL_EXT_map_buffer_range)
 
@@ -67,7 +63,7 @@ typedef GLboolean (GL_APIENTRY * PFNGLUNMAPBUFFEROESPROC)    (GLenum target);
 #define glUnmapBuffer    __CORE_GLES_FUNC(glUnmapBufferOES)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_EXT_instanced_arrays (mapped on GL_ARB_instanced_arrays) */
 #define CORE_GL_ARB_instanced_arrays __CORE_GLES_VAR(GL_EXT_instanced_arrays)
 
@@ -79,14 +75,14 @@ typedef void (GL_APIENTRY * PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GL
 #define glVertexAttribDivisor   __CORE_GLES_FUNC(glVertexAttribDivisorEXT)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_EXT_texture_filter_anisotropic */
 #define CORE_GL_EXT_texture_filter_anisotropic __CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic)
 
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_NV_pixel_buffer_object (mapped on GL_ARB_pixel_buffer_object) */
 #define CORE_GL_ARB_pixel_buffer_object __CORE_GLES_VAR(GL_NV_pixel_buffer_object)
 
@@ -94,7 +90,7 @@ typedef void (GL_APIENTRY * PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GL
 #define GL_PIXEL_UNPACK_BUFFER 0x88EC
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_NV_framebuffer_blit (mapped on GL_EXT_framebuffer_blit) */
 #define CORE_GL_EXT_framebuffer_blit __CORE_GLES_VAR(GL_NV_framebuffer_blit)
 
@@ -105,7 +101,7 @@ typedef void (GL_APIENTRY * PFNGLBLITFRAMEBUFFERNVPROC) (GLint srcX0, GLint srcY
 #define glBlitFramebuffer __CORE_GLES_FUNC(glBlitFramebufferNV)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_NV_framebuffer_multisample (mapped on GL_EXT_framebuffer_multisample) */
 #define CORE_GL_EXT_framebuffer_multisample __CORE_GLES_VAR(GL_NV_framebuffer_multisample)
 
@@ -113,7 +109,7 @@ typedef void (GL_APIENTRY * PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC) (GLenum t
 #define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisampleNV)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_OES_vertex_array_object (mapped on GL_ARB_vertex_array_object) */
 #define CORE_GL_ARB_vertex_array_object __CORE_GLES_VAR(GL_OES_vertex_array_object)
 
@@ -125,30 +121,30 @@ typedef void (GL_APIENTRY * PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint *
 #define glGenVertexArrays    __CORE_GLES_FUNC(glGenVertexArraysOES)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_OES_depth_texture (mapped on GL_ARB_depth_texture) */
 #define CORE_GL_ARB_depth_texture __CORE_GLES_VAR(GL_OES_depth_texture)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_OES_texture_stencil8 (mapped on GL_ARB_texture_stencil8) */
 #define CORE_GL_ARB_texture_stencil8 __CORE_GLES_VAR(GL_OES_texture_stencil8)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* GL_OES_rgb8_rgba8 (silent) */
 #define GL_RGB8  __CORE_GLES_VAR(GL_RGB8)
 #define GL_RGBA8 __CORE_GLES_VAR(GL_RGBA8)
 
 
-// ****************************************************************   
+// ****************************************************************
 /* other remapped identifiers */
 #define GLAPIENTRY                       GL_APIENTRY
 #define glClearDepth                     glClearDepthf
 #define glDrawRangeElements(a,b,c,d,e,f) glDrawElements(a, d, e, f)
 
 
-// ****************************************************************  
+// ****************************************************************
 /* unused definitions and functions */
 typedef int*     GLsync;
 typedef uint64_t GLuint64;
@@ -202,7 +198,7 @@ inline void      glBlitNamedFramebuffer          (GLuint readFramebuffer, GLuint
 inline void      glInvalidateNamedFramebufferData(GLuint framebuffer, GLsizei numAttachments, const GLenum* attachments)                                                                                                                  {}
 
 
-// ****************************************************************   
+// ****************************************************************
 /* context structure */
 struct coreContext
 {
@@ -252,19 +248,15 @@ extern thread_local coreContext g_CoreContext;   //!< thread local context struc
 #define __CORE_GLES_VAR_SET(v,a)      {g_CoreContext.__ ## v = (a);}
 
 
-// ****************************************************************   
+// ****************************************************************
 /* init OpenGL ES */
 extern void __coreInitOpenGLES();
 #define coreInitOpenGL __coreInitOpenGLES
 
 
-// ****************************************************************   
+// ****************************************************************
 /* check for extensions */
 #define CORE_GL_SUPPORT(e) (CORE_GL_ ## e)
 
-
-#if defined(__cplusplus)
-    }
-#endif
 
 #endif /* _CORE_GLES_H_ */

@@ -33,17 +33,17 @@
 #define CORE_SHADER_BUFFER_AMBIENT              "b_Ambient"
 #define CORE_SHADER_BUFFER_TRANSFORM_NUM        (0)
 #define CORE_SHADER_BUFFER_AMBIENT_NUM          (1)
-                                                
+
 #define CORE_SHADER_UNIFORM_VIEWPROJ            "u_m4ViewProj"
 #define CORE_SHADER_UNIFORM_CAMERA              "u_m4Camera"
 #define CORE_SHADER_UNIFORM_PERSPECTIVE         "u_m4Perspective"
 #define CORE_SHADER_UNIFORM_ORTHO               "u_m4Ortho"
 #define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
-                                                
+
 #define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_aLight[%d].v4Position"
 #define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_aLight[%d].v4Direction"
 #define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_aLight[%d].v4Value"
-                                                
+
 #define CORE_SHADER_UNIFORM_3D_POSITION         "u_v3Position"
 #define CORE_SHADER_UNIFORM_3D_SIZE             "u_v3Size"
 #define CORE_SHADER_UNIFORM_3D_ROTATION         "u_v4Rotation"
@@ -74,13 +74,12 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (5)
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7)
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8)
-                                                
+
 #define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%d]"
-#define CORE_SHADER_OUTPUT_COLORS               (4u) 
+#define CORE_SHADER_OUTPUT_COLORS               (4u)
 
 #define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_  (1) \n"
 #define CORE_SHADER_OPTION_NO_ROTATION          "#define _CORE_OPTION_NO_ROTATION_ (1) \n"
-#define CORE_SHADER_OPTION_NO_TEXPARAM          "#define _CORE_OPTION_NO_TEXPARAM_ (1) \n"
 
 enum coreShaderStatus : coreByte
 {
@@ -98,7 +97,7 @@ private:
     GLuint m_iShader;                       //!< shader identifier
     GLenum m_iType;                         //!< shader type (e.g. GL_VERTEX_SHADER)
 
-    std::string m_sCustomCode;              //!< custom shader code added to the beginning of the shader                     
+    std::string m_sCustomCode;              //!< custom shader code added to the beginning of the shader
     static std::string s_asGlobalCode[2];   //!< global shader code (0 = version | 1 = global shader file)
 
 
@@ -145,19 +144,19 @@ class coreProgram final : public coreResource
 {
 private:
     GLuint m_iProgram;                            //!< shader-program identifier
-                                                     
+
     std::vector<coreShaderPtr> m_apShader;        //!< attached shader objects
     coreShaderStatus m_iStatus;                   //!< current status
-                                              
+
     coreLookup<const char*, int> m_aiUniform;     //!< uniform locations
     coreLookup<const char*, int> m_aiAttribute;   //!< attribute locations
     coreLookup<int, coreVector4> m_avCache;       //!< cached uniform values
-                                              
+
     coreSync m_Sync;                              //!< sync object for asynchronous shader-program loading
-                                              
+
     static coreProgram* s_pCurrent;               //!< currently active shader-program
 
-    
+
 public:
     coreProgram()noexcept;
     ~coreProgram();

@@ -72,7 +72,7 @@ private:
     coreRenderTarget m_StencilTarget;                             //!< attached stencil target
 
     coreVector2 m_vResolution;                                    //!< resolution of the frame buffer
-                                                                   
+
     float m_fFOV;                                                 //!< field-of-view
     float m_fNearClip;                                            //!< near clipping plane
     float m_fFarClip;                                             //!< far clipping plane

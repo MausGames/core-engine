@@ -11,7 +11,7 @@
 int coreTextBox::s_iActiveCounter = 0;
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 coreTextBox::coreTextBox()noexcept
 : m_sText     ("")
@@ -28,11 +28,11 @@ coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcF
 : coreTextBox ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength); 
+    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
 }
 
 
-// ****************************************************************   
+// ****************************************************************
 // construct the text-box
 void coreTextBox::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
 {
@@ -47,7 +47,7 @@ void coreTextBox::Construct(const char* pcIdle, const char* pcBusy, const char* 
 }
 
 
-// ****************************************************************    
+// ****************************************************************
 // move the text-box
 void coreTextBox::Move()
 {
@@ -69,7 +69,7 @@ void coreTextBox::Move()
             // cancel text-input
             this->SetInput(false);
         }
-        else if(this->__Write()) 
+        else if(this->__Write())
         {
             // finish text-input
             m_bReturned = true;
@@ -88,7 +88,7 @@ void coreTextBox::Move()
             m_pCaption->SetText(m_bInput ? PRINT("%s%c", sPassword.c_str(), m_cCursor) : sPassword.c_str());
         }
         else m_pCaption->SetText(m_bInput ? PRINT("%s%c", m_sText.c_str(), m_cCursor) : m_sText.c_str());
-            
+
         m_bDisplay = false;
     }
 }
@@ -101,7 +101,7 @@ void coreTextBox::SetInput(const bool& bInput)
     if(m_bInput == bInput) return;
 
     // save new text-input status
-    m_bInput   = bInput;  
+    m_bInput   = bInput;
     m_bDisplay = true;
 
     if(m_bInput)

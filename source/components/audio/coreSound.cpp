@@ -266,7 +266,7 @@ ALuint coreSound::CheckRef(const void* pRef)
     // check if sound source is still valid
     const ALuint& iSource = m_aiSource.at(pRef);
     if(Core::Audio->CheckSource(m_iBuffer, iSource)) return iSource;
-        
+
     // remove invalid sound source
     m_aiSource.erase(pRef);
     return 0;

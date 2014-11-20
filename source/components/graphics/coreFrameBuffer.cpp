@@ -21,7 +21,7 @@ coreFrameBuffer::coreFrameBuffer()noexcept
 , m_fFOV         (Core::Graphics->GetFOV())
 , m_fNearClip    (Core::Graphics->GetNearClip())
 , m_fFarClip     (Core::Graphics->GetFarClip())
-{ 
+{
 }
 
 
@@ -55,9 +55,9 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     const int iWidth  = F_TO_SI(vResolution.x);
     const int iHeight = F_TO_SI(vResolution.y);
     m_vResolution     = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
-    
+
     // set number of samples
-    const int iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ? 
+    const int iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ?
                          Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0;
 
     // loop through all render targets
@@ -99,7 +99,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
             glBindRenderbuffer(GL_RENDERBUFFER, 0);
         }
     }
-    
+
     // ignore color drawings without color attachment
     if(!m_aColorTarget[0].iInternal) glDrawBuffer(GL_NONE);
 
@@ -207,7 +207,7 @@ void coreFrameBuffer::DetachTargets()
 void coreFrameBuffer::StartDraw()
 {
     ASSERT(m_iFrameBuffer && (s_pCurrent != this))
-   
+
     // save view properties of the default frame buffer
     if(!s_afViewData[0])
     {
@@ -232,7 +232,7 @@ void coreFrameBuffer::StartDraw()
 void coreFrameBuffer::EndDraw()
 {
     if(!s_pCurrent) return;
-    
+
     // reset frame buffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     s_pCurrent = NULL;
@@ -257,7 +257,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
         {
             // copy content directly
             glBlitNamedFramebuffer(m_iFrameBuffer, pDestination ? pDestination->GetFrameBuffer() : 0,
-                                   iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight, 
+                                   iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                                    iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
                                    iTargets, GL_NEAREST);
         }
@@ -266,9 +266,9 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
             // switch to source and destination frame buffer
             if(s_pCurrent != this)         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_iFrameBuffer);
             if(s_pCurrent != pDestination) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pDestination ? pDestination->GetFrameBuffer() : 0);
-                 
+
             // copy content
-            glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight, 
+            glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                               iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
                               iTargets, GL_NEAREST);
 
@@ -365,7 +365,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
 void coreFrameBuffer::Clear(const coreFrameBufferTarget& iTargets)
 {
     ASSERT(m_iFrameBuffer)
-    
+
     // switch to destination frame buffer
     const bool bToggle = (s_pCurrent != this);
     if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);

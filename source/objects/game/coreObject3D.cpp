@@ -295,7 +295,7 @@ void coreBatchList::MoveNormal()
     FOR_EACH(it, m_apObjectList)
     {
         coreObject3D* pObject = (*it);
-        
+
         // increase render-count
         if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
             ++m_iCurEnabled;
@@ -339,7 +339,7 @@ void coreBatchList::MoveSort()
             // calculate properties of current object
             const float fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
             const bool  bCurTransparent = (pObject->GetAlpha() < 1.0f) ? true : false;
-        
+
             // sort objects (opaque first and from front to back, transparent later and from back to front)
             if(( bCurTransparent && (bOldTransparent && (fCurDistance > fOldDistance))) ||
                (!bCurTransparent && (bOldTransparent || (fCurDistance < fOldDistance))))
@@ -383,8 +383,8 @@ void coreBatchList::BindObject(coreObject3D* pObject)
 
     // add object to list
     m_apObjectList.push_back(pObject);
-} 
-  
+}
+
 
 // ****************************************************************
 /* unbind 3d-object */

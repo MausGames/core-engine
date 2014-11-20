@@ -58,7 +58,7 @@ private:
 };
 
 
-// ****************************************************************    
+// ****************************************************************
 // constructor
 constexpr_obj coreButton::coreButton()noexcept
 : m_pCaption  (NULL)
