@@ -31,7 +31,7 @@ coreThread::~coreThread()
     this->KillThread();
 
     // clear memory
-    m_apFunction.clear();
+    m_anFunction.clear();
 }
 
 
@@ -74,16 +74,16 @@ void coreThread::KillThread()
 /* call and manage custom functions */
 void coreThread::UpdateFunctions()
 {
-    if(m_apFunction.empty()) return;
+    if(m_anFunction.empty()) return;
 
     SDL_AtomicLock(&m_iLock);
     {
         // loop trough all functions
-        FOR_EACH_DYN(it, m_apFunction)
+        FOR_EACH_DYN(it, m_anFunction)
         {
             // call function and remove when successful
             if((*it)()) DYN_KEEP  (it)
-                   else DYN_REMOVE(it, m_apFunction)
+                   else DYN_REMOVE(it, m_anFunction)
         }
     }
     SDL_AtomicUnlock(&m_iLock);

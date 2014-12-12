@@ -85,39 +85,46 @@ coreError coreModel::Load(coreFile* pFile)
     }
     m_fRadius = SQRT(m_fRadius);
 
+    GLuint iNormFormat;
+    std::function<coreUint(const coreVector4&)> nPackFunc;
     if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev))
     {
-        // reduce total vertex size
-        coreVertexPacked* pPackedData = new coreVertexPacked[m_iNumVertices];
-        for(coreUint i = 0; i < m_iNumVertices; ++i)
-        {
-            ASSERT(0.0f <= oImport.aVertexData[i].vTexCoord.x && oImport.aVertexData[i].vTexCoord.x <= 1.0f &&
-                   0.0f <= oImport.aVertexData[i].vTexCoord.y && oImport.aVertexData[i].vTexCoord.y <= 1.0f)
-
-            // convert specific vertex attributes
-            pPackedData[i].vPosition = oImport.aVertexData[i].vPosition;
-            pPackedData[i].iTexCoord = oImport.aVertexData[i].vTexCoord.PackUnorm2x16();
-            pPackedData[i].iNormal   = coreVector4(oImport.aVertexData[i].vNormal, 0.0f).PackSnorm210();
-            pPackedData[i].iTangent  = oImport.aVertexData[i].vTangent.PackSnorm210();
-        }
-
-        // create compressed vertex buffer
-        coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,              0);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT,     3*sizeof(float));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, GL_INT_2_10_10_10_REV, 3*sizeof(float) + 1*sizeof(coreUint));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_INT_2_10_10_10_REV, 3*sizeof(float) + 2*sizeof(coreUint));
-        SAFE_DELETE_ARRAY(pPackedData)
+        // use high-precision packed format
+        iNormFormat = GL_INT_2_10_10_10_REV;
+        nPackFunc   = [](const coreVector4& vVector) {return vVector.PackSnorm210();};
     }
     else
     {
-        // create vertex buffer
-        coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertex), oImport.aVertexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT, 0);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_FLOAT, 3*sizeof(float));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   3, GL_FLOAT, 5*sizeof(float));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, GL_FLOAT, 8*sizeof(float));
+        // use low-precision byte format
+        iNormFormat = GL_BYTE;
+        nPackFunc   = [](const coreVector4& vVector) {return vVector.PackSnorm4x8();};
     }
+
+    // reduce total vertex size
+    coreVertexPacked* pPackedData = new coreVertexPacked[m_iNumVertices];
+    for(coreUint i = 0; i < m_iNumVertices; ++i)
+    {
+        const coreVertex& oVertex = oImport.aVertexData[i];
+
+        // check for valid attribute values
+        ASSERT((0.0f <= oVertex.vTexCoord.x)    && (oVertex.vTexCoord.x <= 1.0f) &&
+               (0.0f <= oVertex.vTexCoord.y)    && (oVertex.vTexCoord.y <= 1.0f) &&
+               (oVertex.vNormal.IsNormalized()) && (oVertex.vTangent.xyz().IsNormalized()))
+
+        // convert vertex attributes
+        pPackedData[i].vPosition = oVertex.vPosition;
+        pPackedData[i].iTexCoord = oVertex.vTexCoord.PackUnorm2x16();
+        pPackedData[i].iNormal   = nPackFunc(coreVector4(oVertex.vNormal, 0.0f));
+        pPackedData[i].iTangent  = nPackFunc(oVertex.vTangent);
+    }
+
+    // create vertex buffer
+    coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,          0);
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT, 3*sizeof(float));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, iNormFormat,       3*sizeof(float) + 1*sizeof(coreUint));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, iNormFormat,       3*sizeof(float) + 2*sizeof(coreUint));
+    SAFE_DELETE_ARRAY(pPackedData)
 
     if(m_iNumVertices > 4)
     {

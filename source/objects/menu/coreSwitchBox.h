@@ -59,8 +59,8 @@ public:
 
     //! manage entries
     //! @{
-    void AddEntry        (const char* pcText, const T& Value);
-    void AddEntryLanguage(const char* pcKey,  const T& Value);
+    void AddEntry        (const char* pcText, const T& tValue);
+    void AddEntryLanguage(const char* pcKey,  const T& tValue);
     void DeleteEntry     (const coreUint& iIndex);
     void ClearEntries();
     //! @}
@@ -262,19 +262,19 @@ template <typename T> void coreSwitchBox<T>::Move()
 
 // ****************************************************************
 // add entry
-template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcText, const T& Value)
+template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcText, const T& tValue)
 {
     // create new entry
-    m_aEntry.push_back(coreEntry(pcText, Value));
+    m_aEntry.push_back(coreEntry(pcText, tValue));
 
     // update text
     if(m_aEntry.size() == 1) this->__Update();
 }
 
-template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const char* pcKey, const T& Value)
+template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const char* pcKey, const T& tValue)
 {
     // create and bind new entry
-    this->AddEntry("", Value);
+    this->AddEntry("", tValue);
     this->_BindString(&m_aEntry.back().first, pcKey);
 }
 

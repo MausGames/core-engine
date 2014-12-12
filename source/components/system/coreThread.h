@@ -22,7 +22,7 @@ private:
     coreByte m_iExecutions;                            //!< max number of executions per frame (0 = unshackled)
     bool     m_bActive;                                //!< active and currently not forced to shut down
 
-    std::vector<std::function<int()> > m_apFunction;   //!< custom functions being executed by the thread
+    std::vector<std::function<int()> > m_anFunction;   //!< custom functions being executed by the thread
     SDL_SpinLock m_iLock;                              //!< spinlock to prevent invalid function access
 
 
@@ -40,7 +40,7 @@ public:
     /*! run custom functions within the thread */
     //! @{
     void UpdateFunctions();
-    template <typename F> inline void AttachFunction(F&& pFunction) {ASSERT(m_bActive) SDL_AtomicLock(&m_iLock); m_apFunction.push_back(pFunction); SDL_AtomicUnlock(&m_iLock);}
+    template <typename F> inline void AttachFunction(F&& nFunction) {ASSERT(m_bActive) SDL_AtomicLock(&m_iLock); m_anFunction.push_back(nFunction); SDL_AtomicUnlock(&m_iLock);}
     //! @}
 
     /*! set object properties */

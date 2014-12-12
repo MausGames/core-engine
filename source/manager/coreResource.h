@@ -110,7 +110,7 @@ public:
 
     /*! insert asynchronous functions */
     //! @{
-    template <typename F> void OnLoadOnce(F&& pFunction)const;
+    template <typename F> void OnLoadOnce(F&& nFunction)const;
     //! @}
 
     /*! get object properties */
@@ -226,7 +226,7 @@ public:
     //! @{
     template <typename T, typename... A>        coreResourceHandle* Load   (const char* pcName, const coreResourceUpdate& bUpdate, const char* pcPath, A&&... vArgs);
     template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);}
-    template <typename T> void Free(coreResourcePtr<T>* ppResourcePtr);
+    template <typename T> void Free(coreResourcePtr<T>* pptResourcePtr);
     //! @}
 
     /*! get existing resource handle */
@@ -260,10 +260,10 @@ private:
 
 // ****************************************************************
 /* insert asynchronous functions */
-template <typename F> void coreResourceHandle::OnLoadOnce(F&& pFunction)const
+template <typename F> void coreResourceHandle::OnLoadOnce(F&& nFunction)const
 {
     // call function immediately
-    if(this->IsLoaded()) pFunction();
+    if(this->IsLoaded()) nFunction();
     else
     {
         // attach wrapper to the resource thread
@@ -272,7 +272,7 @@ template <typename F> void coreResourceHandle::OnLoadOnce(F&& pFunction)const
             if(this->IsLoaded())
             {
                 // call and remove function when loaded
-                pFunction();
+                nFunction();
                 return CORE_OK;
             }
             return CORE_BUSY;
@@ -371,9 +371,9 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
 
 // ****************************************************************
 /* delete resource and resource handle */
-template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* ppResourcePtr)
+template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* pptResourcePtr)
 {
-    coreResourceHandle* pHandle = ppResourcePtr->GetHandle();
+    coreResourceHandle* pHandle = pptResourcePtr->GetHandle();
 
     // remove resource handle from manager
     if(pHandle)
@@ -384,7 +384,7 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* ppResou
     }
 
     // delete resource and resource handle
-    *ppResourcePtr = NULL;
+    *pptResourcePtr = NULL;
     SAFE_DELETE(pHandle)
 }
 

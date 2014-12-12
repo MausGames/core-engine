@@ -23,6 +23,7 @@
 // TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs ?
 // TODO: check for low-precision sends (colors as byte-array (normalized to 1.0f) instead of float-vector)
 // TODO: uber-shaders
+// TODO: GLES 3.0 uses "300 es", also version >= 140 is wrong for GLES 3.0
 
 // NOTE: GL below 3.0/130 or without UBO support has always GLSL version 110, GLES is currently always version 100
 

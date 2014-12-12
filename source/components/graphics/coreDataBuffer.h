@@ -78,7 +78,7 @@ public:
     //! modify buffer memory
     //! @{
     template <typename T> T*   Map  (const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType);
-    template <typename T> void Unmap(T* pPointer);
+    template <typename T> void Unmap(T* ptPointer);
     //! @}
 
     //! reset content of the data buffer object
@@ -201,17 +201,17 @@ template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const core
     else
     {
         // create temporary memory
-        T* pPointer = new T[iLength / sizeof(T) + 1];
-        return pPointer;
+        T* ptPointer = new T[iLength / sizeof(T) + 1];
+        return ptPointer;
     }
 }
 
 
 // ****************************************************************
 // unmap buffer memory
-template <typename T> void coreDataBuffer::Unmap(T* pPointer)
+template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
 {
-    ASSERT(pPointer)
+    ASSERT(ptPointer)
 
     if(m_pPersistentBuffer)
     {
@@ -245,10 +245,10 @@ template <typename T> void coreDataBuffer::Unmap(T* pPointer)
     {
         // send new data to the data buffer
         this->Bind();
-        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, pPointer);
+        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, ptPointer);
 
         // delete temporary memory
-        SAFE_DELETE_ARRAY(pPointer);
+        SAFE_DELETE_ARRAY(ptPointer);
     }
 
     // create sync object

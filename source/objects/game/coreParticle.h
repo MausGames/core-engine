@@ -210,8 +210,8 @@ public:
 
     //! create new particles
     //! @{
-    template <typename F> void CreateParticle(const coreUint& iNum, const float& fFrequency, F&& pFunction);
-    template <typename F> void CreateParticle(const coreUint& iNum,                          F&& pFunction);
+    template <typename F> void CreateParticle(const coreUint& iNum, const float& fFrequency, F&& nFunction);
+    template <typename F> void CreateParticle(const coreUint& iNum,                          F&& nFunction);
     inline coreParticle* CreateParticle() {return m_pSystem->CreateParticle(m_pThis);}
     //! @}
 
@@ -281,7 +281,7 @@ inline void coreParticle::Update()
 
 // ****************************************************************
 // create new particles
-template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iNum, const float& fFrequency, F&& pFunction)
+template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iNum, const float& fFrequency, F&& nFunction)
 {
     ASSERT(fFrequency <= 60.0f)
 
@@ -294,15 +294,15 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iN
 
         // create particles and call function
         for(coreUint i = 0; i < iNum; ++i)
-            pFunction(this->CreateParticle());
+            nFunction(this->CreateParticle());
     }
 }
 
-template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iNum, F&& pFunction)
+template <typename F> void coreParticleEffect::CreateParticle(const coreUint& iNum, F&& nFunction)
 {
     // create particles and call function
     for(coreUint i = 0; i < iNum; ++i)
-        pFunction(this->CreateParticle());
+        nFunction(this->CreateParticle());
 }
 
 

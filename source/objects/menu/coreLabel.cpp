@@ -173,7 +173,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
     SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
 
     // get new texture resolution
-    const coreVector2 vNewResolution = coreVector2(I_TO_F(pSurface->w - 1), I_TO_F(pSurface->h));
+    const coreVector2 vNewResolution = coreVector2(I_TO_F(pSurface->w - 2), I_TO_F(pSurface->h));
 
     if(bSub)
     {

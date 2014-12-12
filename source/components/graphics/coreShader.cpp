@@ -158,7 +158,6 @@ coreError coreShader::Unload()
 
 // ****************************************************************
 // load global shader code
-// TODO: GLES 3.0 uses "300 es", also version >= 140 is wrong for GLES 3.0
 void coreShader::__LoadGlobalCode()
 {
     if(!s_asGlobalCode[0].empty()) return;

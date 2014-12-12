@@ -68,7 +68,7 @@ public:
     /*! elementary operations */
     //! @{
     template <int iBase> static inline float Log(const float& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
-    static inline float Fract(const float& fInput)                    {return fInput - FLOOR(fInput);}
+    static inline float Fract(const float& fInput)                    {return fInput - I_TO_F(F_TO_SI(fInput));}
     static inline float Sqrt (const float& fInput)                    {return fInput * RSQRT(fInput);}
     static inline float Rsqrt(float fInput);
     static inline float Rcp  (float fInput);

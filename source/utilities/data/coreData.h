@@ -76,7 +76,7 @@ public:
 
     /*! operate with string data */
     //! @{
-    template <typename F> static const char* StrProcess(const char* pcInput, F&& pFunction);
+    template <typename F> static const char* StrProcess(const char* pcInput, F&& nFunction);
     static constexpr_func int  StrLenConst (const char*  s)                {return *s ? 1 + StrLenConst(s+1) : 0;}
     static constexpr_func bool StrCmpConst (const char*  s, const char* t) {return *s ? (*s == *t) && StrCmpConst(s+1, t+1) : !*t;}
     static inline         bool StrCmpLike  (const char*  s, const char* t) {return (*t == '*') ? StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1, t+1) : !*t;}
@@ -124,7 +124,7 @@ template <typename... A> const char* coreData::Print(const char* pcFormat, A&&..
 
 // ****************************************************************
 /* process string with custom sub-function */
-template <typename F> const char* coreData::StrProcess(const char* pcInput, F&& pFunction)
+template <typename F> const char* coreData::StrProcess(const char* pcInput, F&& nFunction)
 {
     char* pcString = coreData::__NextString();
     char* pcCursor = pcString;
@@ -135,7 +135,7 @@ template <typename F> const char* coreData::StrProcess(const char* pcInput, F&& 
 
     // process all characters individually
     for(; (*pcInput != '\0') && (pcInput != pcEnd); ++pcCursor, ++pcInput)
-        *pcCursor = pFunction(*pcInput);
+        *pcCursor = nFunction(*pcInput);
     *pcCursor = '\0';
 
     return pcString;

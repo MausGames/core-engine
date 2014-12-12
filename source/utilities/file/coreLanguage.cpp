@@ -111,7 +111,7 @@ coreError coreLanguage::Load(const char* pcPath)
     const char* pcTo   = pcFrom;
     const char* pcEnd  = pcFrom + pFile->GetSize() - 1;
 
-    auto AssignLambda = [&pcFrom, &pcTo](std::string* pString)
+    auto nAssignFunc = [&pcFrom, &pcTo](std::string* pString)
     {
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
@@ -130,19 +130,19 @@ coreError coreLanguage::Load(const char* pcPath)
         if(*pcTo == CORE_LANGUAGE_ASSIGN[0] && sKey.empty())
         {
             // extract key
-            AssignLambda(&sKey);
+            nAssignFunc(&sKey);
             WARN_IF(sKey.empty()) sKey.assign(1, ' ');
         }
         else if(*pcTo == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {
             // extract language-string
-            AssignLambda(&m_asStringList[sKey.c_str()]);
+            nAssignFunc(&m_asStringList[sKey.c_str()]);
             sKey.clear();
         }
 
         ++pcTo;
     }
-    if(!sKey.empty()) AssignLambda(&m_asStringList[sKey.c_str()]);
+    if(!sKey.empty()) nAssignFunc(&m_asStringList[sKey.c_str()]);
 
     // save relative path and unload data
     m_sPath = pcPath;

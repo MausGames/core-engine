@@ -32,7 +32,7 @@ protected:
     coreList m_aList;      //!< vector-list with pair-values
 
     coreEntry* m_pCache;   //!< last requested entry
-    I m_CacheKey;          //!< key to the last requested entry
+    I m_tCacheKey;         //!< key to the last requested entry
 
 
 public:
@@ -48,16 +48,16 @@ public:
 
     /*! access specific entry */
     //! @{
-    const T&    at (const I& Key)const;
-    T& operator [] (const I& Key);
+    const T&    at (const I& tKey)const;
+    T& operator [] (const I& tKey);
     //! @}
 
     /*! check number of existing entries */
     //! @{
-    inline coreUint count(const I& Key)      {return this->__check(this->__retrieve(Key)) ? 1 : 0;}
-    inline coreUint count(const I& Key)const {return this->__check(this->__retrieve(Key)) ? 1 : 0;}
-    inline coreUint size ()const             {return m_aList.size();}
-    inline bool     empty()const             {return m_aList.empty();}
+    inline bool     count(const I& tKey)      {return this->__check(this->__retrieve(tKey));}
+    inline bool     count(const I& tKey)const {return this->__check(this->__retrieve(tKey));}
+    inline coreUint size ()const              {return m_aList.size();}
+    inline bool     empty()const              {return m_aList.empty();}
     //! @}
 
     /*! control memory allocation */
@@ -69,7 +69,7 @@ public:
 
     /*! remove existing entries */
     //! @{
-    bool                erase(const I& Key);
+    bool                erase(const I& tKey);
     inline coreIterator erase(const coreConstIterator& Iterator) {this->__cache_clear(); return m_aList.erase(Iterator);}
     inline void         clear()                                  {this->__cache_clear(); m_aList.clear();}
     //! @}
@@ -92,15 +92,15 @@ protected:
 
     /*! cache last requested entry */
     //! @{
-    inline void __cache_set(coreEntry* pEntry, const I& Key) {m_pCache = pEntry; m_CacheKey = Key;}
-    inline void __cache_clear()                              {m_pCache = NULL;   m_CacheKey = I(0);}
-    inline bool __cache_try(const I& Key)const               {ASSERT(!m_pCache || ((m_CacheKey == Key) == (m_pCache->first == Key))) return (m_pCache && m_CacheKey == Key) ? true : false;}
+    inline void __cache_set(coreEntry* pEntry, const I& tKey) {m_pCache = pEntry; m_tCacheKey = tKey;}
+    inline void __cache_clear()                               {m_pCache = NULL;   m_tCacheKey = I(0);}
+    inline bool __cache_try(const I& tKey)const               {ASSERT(!m_pCache || ((m_tCacheKey == tKey) == (m_pCache->first == tKey))) return (m_pCache && m_tCacheKey == tKey) ? true : false;}
     //! @}
 
     /*! retrieve iterator */
     //! @{
-    coreIterator      __retrieve(const I& Key)hot_func;
-    coreConstIterator __retrieve(const I& Key)const hot_func;
+    coreIterator      __retrieve(const I& tKey)hot_func;
+    coreConstIterator __retrieve(const I& tKey)const hot_func;
     //! @}
 };
 
@@ -126,7 +126,7 @@ public:
 
     /*! remove existing entries */
     //! @{
-    bool erase(const T& Entry);
+    bool erase(const T& tEntry);
     inline typename coreLookupStr<T>::coreIterator erase(const coreUint& iIndex) {this->__cache_clear(); ASSERT(iIndex < this->m_aList.size()) return this->m_aList.erase(this->m_aList.begin()+iIndex);}
     //! @}
 
@@ -134,8 +134,8 @@ public:
 private:
     /*! retrieve iterator */
     //! @{
-    typename coreLookupStr<T>::coreIterator      __retrieve(const T&    Entry)hot_func;
-    typename coreLookupStr<T>::coreConstIterator __retrieve(const T&    Entry)const hot_func;
+    typename coreLookupStr<T>::coreIterator      __retrieve(const T&    tEntry)hot_func;
+    typename coreLookupStr<T>::coreConstIterator __retrieve(const T&    tEntry)const hot_func;
     typename coreLookupStr<T>::coreIterator      __retrieve(const char* pcKey)hot_func;
     typename coreLookupStr<T>::coreConstIterator __retrieve(const char* pcKey)const hot_func;
     //! @}
@@ -145,23 +145,23 @@ private:
 // ****************************************************************
 /* constructor */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen()noexcept
-: m_pCache   (NULL)
-, m_CacheKey (I(0))
+: m_pCache    (NULL)
+, m_tCacheKey (I(0))
 {
     m_aList.reserve(MAX(64ul / sizeof(T), 2ul));
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept
-: m_aList    (c.m_aList)
-, m_pCache   (NULL)
-, m_CacheKey (I(0))
+: m_aList     (c.m_aList)
+, m_pCache    (NULL)
+, m_tCacheKey (I(0))
 {
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(coreLookupGen<K, I, T>&& m)noexcept
-: m_aList    (std::move(m.m_aList))
-, m_pCache   (NULL)
-, m_CacheKey (I(0))
+: m_aList     (std::move(m.m_aList))
+, m_pCache    (NULL)
+, m_tCacheKey (I(0))
 {
 }
 
@@ -183,13 +183,13 @@ template <typename R, typename O, typename S> void swap(coreLookupGen<R, O, S>& 
 
 // ****************************************************************
 /* access specific entry */
-template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& Key)const
+template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& tKey)const
 {
     // check for cached entry
-    if(this->__cache_try(Key)) return m_pCache->second;
+    if(this->__cache_try(tKey)) return m_pCache->second;
 
     // retrieve and check iterator by specific key
-    auto it = this->__retrieve(Key);
+    auto it = this->__retrieve(tKey);
     ASSERT(this->__check(it))
 
     return it->second;
@@ -198,21 +198,21 @@ template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::a
 
 // ****************************************************************
 /* access specific entry and create it if necessary */
-template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operator [] (const I& Key)
+template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operator [] (const I& tKey)
 {
     // check for cached entry
-    if(this->__cache_try(Key)) return m_pCache->second;
+    if(this->__cache_try(tKey)) return m_pCache->second;
 
     // retrieve and check iterator by specific key
-    auto it = this->__retrieve(Key);
+    auto it = this->__retrieve(tKey);
     if(!this->__check(it))
     {
         // create new entry
-        m_aList.push_back(coreEntry(Key, T()));
+        m_aList.push_back(coreEntry(tKey, T()));
         it = m_aList.end()-1;
 
         // cache current entry
-        this->__cache_set(&(*it), Key);
+        this->__cache_set(&(*it), tKey);
     }
 
     return it->second;
@@ -221,10 +221,10 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
 
 // ****************************************************************
 /* remove existing entry */
-template <typename K, typename I, typename T> bool coreLookupGen<K, I, T>::erase(const I& Key)
+template <typename K, typename I, typename T> bool coreLookupGen<K, I, T>::erase(const I& tKey)
 {
     // retrieve and check iterator by specific key
-    auto it = this->__retrieve(Key);
+    auto it = this->__retrieve(tKey);
     if(this->__check(it))
     {
         // reset cache
@@ -241,29 +241,29 @@ template <typename K, typename I, typename T> bool coreLookupGen<K, I, T>::erase
 
 // ****************************************************************
 /* retrieve iterator by specific key */
-template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreIterator coreLookupGen<K, I, T>::__retrieve(const I& Key)
+template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreIterator coreLookupGen<K, I, T>::__retrieve(const I& tKey)
 {
     // loop through all entries
     FOR_EACH(it, m_aList)
     {
         // compare keys
-        if(it->first == Key)
+        if(it->first == tKey)
         {
             // cache current entry
-            this->__cache_set(&(*it), Key);
+            this->__cache_set(&(*it), tKey);
             return it;
         }
     }
     return m_aList.end();
 }
 
-template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreConstIterator coreLookupGen<K, I, T>::__retrieve(const I& Key)const
+template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreConstIterator coreLookupGen<K, I, T>::__retrieve(const I& tKey)const
 {
     // loop through all entries
     FOR_EACH(it, m_aList)
     {
         // compare keys
-        if(it->first == Key)
+        if(it->first == tKey)
             return it;
     }
     return m_aList.end();
@@ -272,13 +272,13 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
 
 // ****************************************************************
 /* remove existing entry */
-template <typename T> bool coreLookupStr<T>::erase(const T& Entry)
+template <typename T> bool coreLookupStr<T>::erase(const T& tEntry)
 {
     // reset cache
     this->__cache_clear();
 
     // retrieve and check iterator by specific value
-    auto it = this->__retrieve(Entry);
+    auto it = this->__retrieve(tEntry);
     if(this->__check(it))
     {
         // remove existing entry
@@ -292,25 +292,25 @@ template <typename T> bool coreLookupStr<T>::erase(const T& Entry)
 
 // ****************************************************************
 /* retrieve iterator by specific value */
-template <typename T> typename coreLookupStr<T>::coreIterator coreLookupStr<T>::__retrieve(const T& Entry)
+template <typename T> typename coreLookupStr<T>::coreIterator coreLookupStr<T>::__retrieve(const T& tEntry)
 {
     // loop through all entries
     FOR_EACH(it, this->m_aList)
     {
         // compare values
-        if(it->second == Entry)
+        if(it->second == tEntry)
             return it;
     }
     return this->m_aList.end();
 }
 
-template <typename T> typename coreLookupStr<T>::coreConstIterator coreLookupStr<T>::__retrieve(const T& Entry)const
+template <typename T> typename coreLookupStr<T>::coreConstIterator coreLookupStr<T>::__retrieve(const T& tEntry)const
 {
     // loop through all entries
     FOR_EACH(it, this->m_aList)
     {
         // compare values
-        if(it->second == Entry)
+        if(it->second == tEntry)
             return it;
     }
     return this->m_aList.end();

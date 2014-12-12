@@ -19,13 +19,13 @@
 template <typename T, coreUint iSize> class coreSelect final
 {
 private:
-    std::array<T, iSize> m_aItem;   //!< static item container
-    coreUint m_iCurIndex;           //!< index of the current item
+    std::array<T, iSize> m_atItem;   //!< static item container
+    coreUint m_iCurIndex;            //!< index of the current item
 
 
 public:
-    coreSelect()noexcept                        : m_iCurIndex (0) {}
-    explicit coreSelect(const T& Value)noexcept : m_iCurIndex (0) {m_aItem.fill(Value);}
+    coreSelect()noexcept                         : m_iCurIndex (0) {}
+    explicit coreSelect(const T& tValue)noexcept : m_iCurIndex (0) {m_atItem.fill(tValue);}
 
     /*! switch current item */
     //! @{
@@ -36,16 +36,16 @@ public:
 
     /*! access reference to current item */
     //! @{
-    inline       T& GetCur()      {return m_aItem[m_iCurIndex];}
-    inline const T& GetCur()const {return m_aItem[m_iCurIndex];}
+    inline       T& GetCur()      {return m_atItem[m_iCurIndex];}
+    inline const T& GetCur()const {return m_atItem[m_iCurIndex];}
     //! @}
 
     /*! access item container directly */
     //! @{
-    inline operator       T* ()                    {return &m_aItem.front();}
-    inline operator const T* ()const               {return &m_aItem.front();}
-    inline       std::array<T, iSize>* List()      {return &m_aItem;}
-    inline const std::array<T, iSize>* List()const {return &m_aItem;}
+    inline operator       T* ()                    {return &m_atItem.front();}
+    inline operator const T* ()const               {return &m_atItem.front();}
+    inline       std::array<T, iSize>* List()      {return &m_atItem;}
+    inline const std::array<T, iSize>* List()const {return &m_atItem;}
     //! @}
 
 
