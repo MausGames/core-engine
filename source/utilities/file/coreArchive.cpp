@@ -234,7 +234,7 @@ coreError coreArchive::Save(const char* pcPath)
 
     // save magic number and file version
     const coreUint aiHead[2] = {CORE_FILE_MAGIC, CORE_FILE_VERSION};
-    SDL_RWwrite(pArchive, aiHead, sizeof(aiHead[0]), 2);
+    SDL_RWwrite(pArchive, aiHead, sizeof(coreUint), 2);
 
     // save number of files
     const coreUint iSize = m_apFile.size();
@@ -249,11 +249,11 @@ coreError coreArchive::Save(const char* pcPath)
     FOR_EACH(it, m_apFile)
     {
         // get path length
-        const coreUint iLength = MIN(std::strlen(it->second->GetPath()), size_t(255));
+        const coreUint iLen = MIN(coreUint(std::strlen(it->second->GetPath())), 255u);
 
         // write header
-        SDL_RWwrite(pArchive, &iLength,                   sizeof(coreUint), 1);
-        SDL_RWwrite(pArchive, it->second->GetPath(),      sizeof(char),     iLength);
+        SDL_RWwrite(pArchive, &iLen,                      sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, it->second->GetPath(),      sizeof(char),     iLen);
         SDL_RWwrite(pArchive, &it->second->GetSize(),     sizeof(coreUint), 1);
         SDL_RWwrite(pArchive, &it->second->m_iArchivePos, sizeof(coreUint), 1);
     }
@@ -363,7 +363,7 @@ void coreArchive::__CalculatePositions()
     // calculate data start position
     coreUint iCurPosition = sizeof(coreUint);
     FOR_EACH(it, m_apFile)
-        iCurPosition += sizeof(coreUint) + std::strlen(it->second->GetPath()) + sizeof(coreUint) + sizeof(coreUint);
+        iCurPosition += coreUint(std::strlen(it->second->GetPath())) + 3*sizeof(coreUint);
 
     FOR_EACH(it, m_apFile)
     {

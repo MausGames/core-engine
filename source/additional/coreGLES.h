@@ -22,6 +22,7 @@
 #define CORE_GL_ARB_sync                       false
 #define CORE_GL_ARB_direct_state_access        false
 #define CORE_GL_ARB_vertex_type_2_10_10_10_rev false
+#define CORE_GL_ARB_timer_query                false
 #define CORE_GL_KHR_debug                      false
 #define CORE_GL_EXT_framebuffer_object         true
 
@@ -139,7 +140,6 @@ typedef void (GL_APIENTRY * PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint *
 
 // ****************************************************************
 /* other remapped identifiers */
-#define GLAPIENTRY                       GL_APIENTRY
 #define glClearDepth                     glClearDepthf
 #define glDrawRangeElements(a,b,c,d,e,f) glDrawElements(a, d, e, f)
 
@@ -168,6 +168,8 @@ typedef uint64_t GLuint64;
 #define GL_GEOMETRY_SHADER             0x8DD9
 #define GL_UNSIGNED_INT_2_10_10_10_REV 0x8368
 #define GL_INT_2_10_10_10_REV          0x8D9F
+#define GL_TIMESTAMP                   0x8E28
+#define GL_QUERY_RESULT                0x8866
 
 typedef void (GL_APIENTRY * GLDEBUGPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 inline void      glDrawBuffer                    (GLenum mode)                                                                                                                                                                            {}
@@ -196,6 +198,9 @@ inline void      glFlushMappedNamedBufferRange   (GLuint buffer, GLintptr offset
 inline void      glClearNamedBufferData          (GLuint buffer, GLenum internalformat, GLenum format, GLenum type, const void* data)                                                                                                     {}
 inline void      glBlitNamedFramebuffer          (GLuint readFramebuffer, GLuint drawFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter) {}
 inline void      glInvalidateNamedFramebufferData(GLuint framebuffer, GLsizei numAttachments, const GLenum* attachments)                                                                                                                  {}
+inline void      glGenQueries                    (GLsizei n, GLuint* ids)                                                                                                                                                                 {}
+inline void      glGetQueryObjectui64v           (GLuint id, GLenum pname, GLuint64* params)                                                                                                                                              {}
+inline void      glQueryCounter                  (GLuint id, GLenum target)                                                                                                                                                               {}
 
 
 // ****************************************************************

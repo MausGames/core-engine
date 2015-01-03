@@ -10,9 +10,9 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//| Core Engine v0.0.6a (http://www.maus-games.at)                               |//
+//| Core Engine v0.0.7a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
-//| Copyright (c) 2013-2014 Martin Mauersics                                     |//
+//| Copyright (c) 2013-2015 Martin Mauersics                                     |//
 //|                                                                              |//
 //| This software is provided 'as-is', without any express or implied            |//
 //| warranty. In no event will the authors be held liable for any damages        |//
@@ -47,9 +47,10 @@
 // TODO: implement GL_KHR_robustness (performance penalties ?)
 // TODO: explicit flush control for context change (SDL?)
 // TODO: check for performance penalties and alternatives for thread_local
-// TODO: setup 64-bit Windows build (libraries!)
 // TODO: WinXP requires MSVC redist 12 (MinGW) or XP compiler
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
+// TODO: check pointer-int conversions
+// TODO: remember hot, cold, nonnull
 
 
 // compiler
@@ -62,13 +63,14 @@
 #if defined(__MINGW32__)
     #include <_mingw.h>
     #define _CORE_MINGW_ (__MINGW_MAJOR_VERSION*10000 + __MINGW_MINOR_VERSION*100 + __MINGW_PATCHLEVEL*1)
+    #undef  _CORE_GCC_
 #endif
 #if defined(__clang__)
     #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
 #endif
 #if (!defined(_CORE_MSVC_)  || (_CORE_MSVC_)  <  1800) && \
     (!defined(_CORE_GCC_)   || (_CORE_GCC_)   < 40800) && \
-    (!defined(_CORE_MINGW_) || (_CORE_MINGW_) < 40800) && \
+    (!defined(_CORE_MINGW_) || (_CORE_MINGW_) < 40000) && \
     (!defined(_CORE_CLANG_) || (_CORE_CLANG_) < 30300)
     #warning "Compiler not supported!"
 #endif
@@ -85,24 +87,30 @@
 #endif
 #if defined(__ANDROID__)
     #define _CORE_ANDROID_ (1)
+    #undef  _CORE_LINUX_
 #endif
 #if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) /*&& !defined(_CORE_OSX_)*/ && !defined(_CORE_ANDROID_)
     #warning "Operating System not supported!"
 #endif
 
 // debug mode
-#if defined(_DEBUG) || defined(DEBUG) || (defined(_CORE_GCC_) && !defined(__OPTIMIZE__))
+#if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_MINGW_)) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_ (1)
+#endif
+
+// x64 instruction set
+#if defined(_M_X64) || defined(__x86_64__)
+    #define _CORE_X64_   (1)
+#endif
+
+// SSE2 instruction set
+#if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_ANDROID_)
+    #define _CORE_SSE_   (1)
 #endif
 
 // OpenGL ES
 #if defined(_CORE_ANDROID_)
     #define _CORE_GLES_  (1)
-#endif
-
-// x86 SIMD
-#if (defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__)) && !defined(_CORE_ANDROID_)
-    #define _CORE_SSE_   (1)
 #endif
 
 
@@ -143,7 +151,6 @@
 
 // ****************************************************************
 // specific libraries
-#define HAVE_LIBC
 #define GLEW_MX
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
@@ -167,29 +174,45 @@
 // ****************************************************************
 // compiler definitions
 #if defined(_CORE_MSVC_)
-    #define hot_func
-    #define cold_func
-    #define constexpr_func inline
-    #define constexpr_var  const
-    #define noexcept       throw()              // keyword
-    #define thread_local   __declspec(thread)   // keyword
+    #define OUTPUT          __restrict             //!< output parameter without aliasing (never)
+    #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
+    #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
+    #define RETURN_NONNULL                         //!< returned pointer will not be null
+    #define FUNC_PURE                              //!< function does not modify anything and returns a single value
+    #define FUNC_CONST      __declspec(noalias)    //!< function reads only parameters without indirections and returns a single value
+    #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use first-level indirections
+    #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates with exit(3) or abort(3)
 #else
-    #define hot_func       __attribute__((hot))
-    #define cold_func      __attribute__((cold))
-    #define constexpr_func constexpr
-    #define constexpr_var  constexpr
+    #define OUTPUT          __restrict__
+    #define INTERFACE
+    #define RETURN_RESTRICT __attribute__((malloc))
+    #define RETURN_NONNULL  __attribute__((returns_nonnull))
+    #define FUNC_PURE       __attribute__((pure))
+    #define FUNC_CONST      __attribute__((const))
+    #define FUNC_NOALIAS
+    #define FUNC_NORETURN   __attribute__((noreturn, cold))
 #endif
 
 #if defined(_CORE_MINGW_)
-    #define align_func __attribute__((force_align_arg_pointer))
+    #define ENTRY_POINT     __attribute__((force_align_arg_pointer))   //!< realign run-time stack (and fix SSE)
 #else
-    #define align_func
+    #define ENTRY_POINT
+#endif
+
+#if defined(_CORE_MSVC_)
+    #define thread_local   __declspec(thread)   // # keyword
+    #define noexcept       throw()              // # keyword
+    #define constexpr_var  const
+    #define constexpr_func inline
+#else
+    #define constexpr_var  constexpr
+    #define constexpr_func constexpr
 #endif
 
 #if defined(_CORE_CLANG_)
-    #define constexpr_obj inline
+    #define constexpr_weak inline   //!< currently for typecasts and constructors with non-trivial arrays
 #else
-    #define constexpr_obj constexpr_func
+    #define constexpr_weak constexpr_func
 #endif
 
 
@@ -208,10 +231,6 @@
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
 #define ARRAY_SIZE(a)        (sizeof(a) / sizeof((a)[0]))
 
-#define ASSERT(c)            {SDL_assert( (c));}
-#define WARN_IF(c)           {SDL_assert(!(c));} if(c)
-#define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
-
 #define BIT(n)               (1 << (n))
 #define BIT_SET(o,n)         {(o) |=  BIT(n);}
 #define BIT_RESET(o,n)       {(o) &= ~BIT(n);}
@@ -223,6 +242,18 @@
 #define DYN_KEEP(i)          {++i;}
 #define DYN_REMOVE(i,c)      {i = (c).erase(i); i ## __e = (c).end();}
 
+#if defined(_CORE_DEBUG_)
+    #define ASSERT(c)        {SDL_assert((c));}
+#else
+    #if defined(_CORE_MSVC_)
+        #define ASSERT(c)    {__assume(!!(c));}
+    #else
+        #define ASSERT(c)    {if(!(c)) __builtin_unreachable();}
+    #endif
+#endif
+#define WARN_IF(c)           {SDL_assert(!(c));} if(c)
+#define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
+
 // enable additional information about the defined class
 #define ENABLE_INFO(c)                                    \
     static inline const char* GetTypeName()  {return #c;} \
@@ -230,20 +261,20 @@
 
 // disable constructor and destructor of the defined class
 #define DISABLE_TORS(c) \
-    c()  = delete;      \
+     c() = delete;      \
     ~c() = delete;
 
 // disable copy and move operations with the defined class
 #define DISABLE_COPY(c)                \
-    c(const c&)              = delete; \
+    c             (const c&) = delete; \
     c& operator = (const c&) = delete;
 
 // disable heap operations with the defined class
-#define DISABLE_HEAP                               \
-    void* operator new   (size_t)        = delete; \
-    void* operator new   (size_t, void*) = delete; \
-    void* operator new[] (size_t)        = delete; \
-    void* operator new[] (size_t, void*) = delete;
+#define DISABLE_HEAP                                    \
+    void* operator new   (std::size_t)        = delete; \
+    void* operator new   (std::size_t, void*) = delete; \
+    void* operator new[] (std::size_t)        = delete; \
+    void* operator new[] (std::size_t, void*) = delete;
 
 // enable bit-operations with the defined enumeration
 #define EXTEND_ENUM(e)                                                                                                                                               \
@@ -272,10 +303,22 @@ typedef std::uint64_t coreUint64;
 
 // type conversion macros
 #define F_TO_SI(x) ((int)          (x))   //!< float to signed int
-#define F_TO_UI(x) ((unsigned)(int)(x))   //!< float to unsigned int (force [_mm_cvtt_ss2si] instead of [_ftoui])
-#define I_TO_F(x)  ((float)(int)   (x))   //!< int to float (force [_mm_cvtepi32_ps] instead of [_mm_cvtepi32_pd] with [_mm_cvtpd_ps])
+#define F_TO_UI(x) ((unsigned)(int)(x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
+#define I_TO_F(x)  ((float)(int)   (x))   //!< int to float (force [_mm_cvtepi32_ps])
 #define P_TO_I(x)  ((int)(long)    (x))   //!< pointer to int
 #define I_TO_P(x)  ((void*)(long)  (x))   //!< int to pointer
+
+// default color values
+#define COLOR_WHITE  coreVector3(1.000f, 1.000f, 1.000f)
+#define COLOR_YELLOW coreVector3(1.000f, 0.824f, 0.392f)
+#define COLOR_ORANGE coreVector3(1.000f, 0.443f, 0.227f)
+#define COLOR_RED    coreVector3(1.000f, 0.275f, 0.275f)
+#define COLOR_PURPLE coreVector3(0.710f, 0.333f, 1.000f)
+#define COLOR_BLUE   coreVector3(0.102f, 0.702f, 1.000f)
+#define COLOR_GREEN  coreVector3(0.118f, 0.745f, 0.353f)
+#define COLOR_BRONZE coreVector3(0.925f, 0.663f, 0.259f)
+#define COLOR_SILVER coreVector3(0.855f, 0.855f, 0.878f)
+#define COLOR_GOLD   coreVector3(1.000f, 0.859f, 0.000f)
 
 enum coreError : int
 {
@@ -313,6 +356,7 @@ class CoreSystem;
 class CoreGraphics;
 class CoreAudio;
 class CoreInput;
+class CoreDebug;
 class coreMemoryManager;
 class coreResourceManager;
 class coreObjectManager;
@@ -360,6 +404,7 @@ public:
     static CoreGraphics* Graphics;   //!< main graphics component
     static CoreAudio*    Audio;      //!< main audio component
     static CoreInput*    Input;      //!< main input component
+    static CoreDebug*    Debug;      //!< main debug component
 
     struct Manager
     {
@@ -386,7 +431,7 @@ public:
 private:
     //! run engine
     //! @{
-    friend int main(int argc, char* argv[])align_func;
+    friend ENTRY_POINT int main(int argc, char* argv[]);
     static int Run();
     //! @}
 };
@@ -450,6 +495,8 @@ private:
 #include "objects/menu/coreTextBox.h"
 #include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreMenu.h"
+
+#include "components/debug/CoreDebug.h"
 
 
 #endif // _CORE_GUARD_H_

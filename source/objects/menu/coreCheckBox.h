@@ -23,7 +23,7 @@ private:
 
 
 public:
-    constexpr_obj coreCheckBox()noexcept;
+    constexpr_weak coreCheckBox()noexcept;
     coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)noexcept;
 
     //! construct the check-box
@@ -50,7 +50,7 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr_obj coreCheckBox::coreCheckBox()noexcept
+constexpr_weak coreCheckBox::coreCheckBox()noexcept
 : m_bCheck (false)
 {
 }

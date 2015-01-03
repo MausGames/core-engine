@@ -338,7 +338,7 @@ template <typename T> void coreSwitchBox<T>::Next()
 
     // increase current index
     if(++m_iCurIndex >= m_aEntry.size())
-        m_iCurIndex = m_bEndless ? 0 : (m_aEntry.size()-1);
+        m_iCurIndex = m_bEndless ? 0 : (coreUint(m_aEntry.size())-1);
 
     // update text
     this->__Update();
@@ -353,7 +353,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
 
     // decrease current index
     if(--m_iCurIndex >= m_aEntry.size())
-        m_iCurIndex = m_bEndless ? (m_aEntry.size()-1) : 0;
+        m_iCurIndex = m_bEndless ? (coreUint(m_aEntry.size())-1) : 0;
 
     // update text
     this->__Update();

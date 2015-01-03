@@ -107,7 +107,7 @@ public:
 private:
     //! read from music stream and update sound buffer
     //! @{
-    bool __Stream(const ALuint& iBuffer)hot_func;
+    bool __Stream(const ALuint& iBuffer);
     //! @}
 };
 
@@ -180,7 +180,7 @@ public:
 
     //! get object properties
     //! @{
-    inline coreUint               GetNumMusic()const {return m_apMusic.size();}
+    inline coreUint               GetNumMusic()const {return coreUint(m_apMusic.size());}
     inline const coreUint&        GetCurIndex()const {return m_iCurIndex;}
     inline const coreMusicRepeat& GetRepeat  ()const {return m_iRepeat;}
     //! @}

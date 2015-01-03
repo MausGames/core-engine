@@ -11,17 +11,17 @@
 
 // ****************************************************************
 // callback functions for the music stream object
-size_t WrapFread (void* pData, size_t iSize, size_t iCount, SDL_RWops* pFile) {return       SDL_RWread(pFile, pData, iSize, iCount);}
-int    WrapFseek (SDL_RWops* pFile, ogg_int64_t iOffset, int iWhence)         {return (int) SDL_RWseek(pFile, iOffset, iWhence);}
-int    WrapFclose(SDL_RWops* pFile)                                           {return       SDL_RWclose(pFile);}
-long   WrapFtell (SDL_RWops* pFile)                                           {return (long)SDL_RWtell(pFile);}
+std::size_t WrapFread (void* pData, std::size_t iSize, std::size_t iCount, SDL_RWops* pFile) {return       SDL_RWread (pFile, pData, iSize, iCount);}
+int         WrapFseek (SDL_RWops* pFile, ogg_int64_t iOffset, int iWhence)                   {return (int) SDL_RWseek (pFile, iOffset, iWhence);}
+int         WrapFclose(SDL_RWops* pFile)                                                     {return       SDL_RWclose(pFile);}
+long        WrapFtell (SDL_RWops* pFile)                                                     {return (long)SDL_RWtell (pFile);}
 
 ov_callbacks OV_CALLBACKS =
 {
-    (size_t (*)(void*, size_t, size_t, void*)) WrapFread,
-    (int    (*)(void*, ogg_int64_t, int))      WrapFseek,
-    (int    (*)(void*))                        WrapFclose,
-    (long   (*)(void*))                        WrapFtell
+    (std::size_t (*)(void*, std::size_t, std::size_t, void*)) WrapFread,
+    (int         (*)(void*, ogg_int64_t, int))                WrapFseek,
+    (int         (*)(void*))                                  WrapFclose,
+    (long        (*)(void*))                                  WrapFtell
 };
 
 
@@ -209,7 +209,7 @@ const char* coreMusic::GetComment(const char* pcName)const
 {
     if(m_pComment)
     {
-        const coreUint iLen = std::strlen(pcName);
+        const std::size_t iLen = std::strlen(pcName);
 
         // loop through all comments
         for(int i = 0; i < m_pComment->comments; ++i)
@@ -504,7 +504,7 @@ bool coreMusicPlayer::Previous()
     if(m_iCurIndex == 0)
     {
         // back to the end
-        this->Select(m_apMusic.size()-1);
+        this->Select(coreUint(m_apMusic.size())-1);
         return true;
     }
 

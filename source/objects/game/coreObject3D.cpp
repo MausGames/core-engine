@@ -406,7 +406,7 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
     }
 
     // object not found
-    ASSERT(false)
+    WARN_IF(true) {}
 }
 
 

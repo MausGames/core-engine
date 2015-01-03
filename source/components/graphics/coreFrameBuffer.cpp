@@ -434,7 +434,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
          if(iTarget & CORE_FRAMEBUFFER_TARGET_COLOR)   pTarget = &m_aColorTarget[iColorIndex];
     else if(iTarget & CORE_FRAMEBUFFER_TARGET_DEPTH)   pTarget = &m_DepthTarget;
     else if(iTarget & CORE_FRAMEBUFFER_TARGET_STENCIL) pTarget = &m_StencilTarget;
-    else {ASSERT(false) return NULL;}
+    else {WARN_IF(true) {} return NULL;}
 
     // free possible old texture
     if(pTarget->pTexture) Core::Manager::Resource->Free(&pTarget->pTexture);

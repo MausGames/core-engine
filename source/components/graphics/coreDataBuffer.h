@@ -77,8 +77,8 @@ public:
 
     //! modify buffer memory
     //! @{
-    template <typename T> T*   Map  (const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType);
-    template <typename T> void Unmap(T* ptPointer);
+    template <typename T> RETURN_RESTRICT T* Map  (const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType);
+    template <typename T> void               Unmap(T* ptPointer);
     //! @}
 
     //! reset content of the data buffer object
@@ -170,7 +170,7 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 
 // ****************************************************************
 // map buffer memory for writing operations
-template <typename T> T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType)
+template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType)
 {
     ASSERT(m_iDataBuffer && this->IsWritable() && (iOffset+iLength <= m_iSize))
 

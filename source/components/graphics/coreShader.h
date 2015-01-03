@@ -19,7 +19,7 @@
 // TODO: (material data in UBO)
 // TODO: use variable template with uniform cache (C++14)
 // TODO: assert-check for new shaders while already finished
-// TODO: allow additional shaders and attributes in between
+// TODO: allow additional shaders and attributes in-between
 // TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs ?
 // TODO: check for low-precision sends (colors as byte-array (normalized to 1.0f) instead of float-vector)
 // TODO: uber-shaders
@@ -196,7 +196,7 @@ public:
 
     //! check for cached uniform values
     //! @{
-    inline bool CheckCache(const int& iLocation, const coreVector4& vVector)hot_func {if(iLocation < 0) return false; if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
+    inline bool CheckCache(const int& iLocation, const coreVector4& vVector) {if(iLocation < 0) return false; if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
     //! @}
 
     //! get object properties

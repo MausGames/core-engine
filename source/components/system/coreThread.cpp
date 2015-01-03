@@ -141,7 +141,7 @@ int coreThread::__Main()
 
 // ****************************************************************
 /* entry-point function */
-int coreThreadMain(void* pData)
+ENTRY_POINT int coreThreadMain(void* pData)
 {
     // retrieve thread object
     coreThread* pThread = s_cast<coreThread*>(pData);

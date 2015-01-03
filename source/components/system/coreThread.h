@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* thread interface */
-class coreThread
+class INTERFACE coreThread
 {
 private:
     SDL_Thread* m_pThread;                             //!< pointer to thread structure
@@ -40,7 +40,7 @@ public:
     /*! run custom functions within the thread */
     //! @{
     void UpdateFunctions();
-    template <typename F> inline void AttachFunction(F&& nFunction) {ASSERT(m_bActive) SDL_AtomicLock(&m_iLock); m_anFunction.push_back(nFunction); SDL_AtomicUnlock(&m_iLock);}
+    template <typename F> inline void AttachFunction(F&& nFunction) {ASSERT(m_anFunction.size() < 60) SDL_AtomicLock(&m_iLock); m_anFunction.push_back(nFunction); SDL_AtomicUnlock(&m_iLock);}
     //! @}
 
     /*! set object properties */
@@ -68,7 +68,7 @@ private:
 
     /*! entry-point function */
     //! @{
-    friend int coreThreadMain(void* pData)align_func;
+    friend ENTRY_POINT int coreThreadMain(void* pData);
     //! @}
 };
 

@@ -185,7 +185,7 @@ struct md5File
 
 // ****************************************************************
 /* import MD5 model file (simplified) */
-inline coreError coreImportMD5(const coreByte* __restrict pData, coreModel::coreImport* __restrict pOutput)
+inline coreError coreImportMD5(const coreByte* pData, coreModel::coreImport* OUTPUT pOutput)
 {
     WARN_IF(!pData || !pOutput) return CORE_INVALID_INPUT;
 
@@ -204,9 +204,9 @@ inline coreError coreImportMD5(const coreByte* __restrict pData, coreModel::core
     const md5Mesh& oMesh = oFile.aMesh[0];
 
     // cache size values
-    const coreUint iNumVertices  = oMesh.aVertex.size();
-    const coreUint iNumIndices   = oMesh.aTriangle.size()*3;
-    const coreUint iNumTriangles = oMesh.aTriangle.size();
+    const coreUint iNumVertices  = coreUint(oMesh.aVertex.size());
+    const coreUint iNumIndices   = coreUint(oMesh.aTriangle.size())*3;
+    const coreUint iNumTriangles = coreUint(oMesh.aTriangle.size());
 
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);

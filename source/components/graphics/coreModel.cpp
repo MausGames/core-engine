@@ -70,8 +70,8 @@ coreError coreModel::Load(coreFile* pFile)
     }
 
     // save properties
-    m_iNumVertices = oImport.aVertexData.size();
-    m_iNumIndices  = oImport.aiIndexData.size();
+    m_iNumVertices = coreUint(oImport.aVertexData.size());
+    m_iNumIndices  = coreUint(oImport.aiIndexData.size());
     m_sPath        = pFile->GetPath();
     m_iSize        = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUshort);
 
@@ -312,7 +312,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const 
     // detect index type
     switch(iIndexSize)
     {
-    default: ASSERT(false)
+    default: WARN_IF(true) {}
     case 4:  m_iIndexType = GL_UNSIGNED_INT;   break;
     case 2:  m_iIndexType = GL_UNSIGNED_SHORT; break;
     case 1:  m_iIndexType = GL_UNSIGNED_BYTE;  break;

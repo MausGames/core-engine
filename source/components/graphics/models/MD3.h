@@ -138,7 +138,7 @@ struct md3File
 
 // ****************************************************************
 /* import MD3 model file (simplified) */
-inline coreError coreImportMD3(const coreByte* __restrict pData, coreModel::coreImport* __restrict pOutput)
+inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUTPUT pOutput)
 {
     WARN_IF(!pData || !pOutput) return CORE_INVALID_INPUT;
 

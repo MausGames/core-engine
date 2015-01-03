@@ -37,7 +37,7 @@ enum coreResourceReset : bool
 
 // ****************************************************************
 /* resource interface */
-class coreResource
+class INTERFACE coreResource
 {
 protected:
     std::string m_sPath;   //!< relative path of the resource file
@@ -176,7 +176,7 @@ private:
 
 // ****************************************************************
 /* relation interface */
-class coreResourceRelation
+class INTERFACE coreResourceRelation
 {
 public:
     coreResourceRelation()noexcept;

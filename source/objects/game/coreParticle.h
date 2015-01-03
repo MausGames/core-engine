@@ -152,8 +152,8 @@ public:
 
     //! render and move the particle system
     //! @{
-    void Render()hot_func;
-    void Move  ()hot_func;
+    void Render();
+    void Move  ();
     //! @}
 
     //! create new particles
@@ -175,7 +175,7 @@ public:
     inline const coreTexturePtr& GetTexture           (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
     inline const coreProgramPtr& GetProgram           ()const                      {return m_pProgram;}
     inline const coreUint&       GetNumParticles      ()const                      {return m_iNumParticles;}
-    inline coreUint              GetNumActiveParticles()const                      {return m_apRenderList.size();}
+    inline coreUint              GetNumActiveParticles()const                      {return coreUint(m_apRenderList.size());}
     inline coreParticleEffect*   GetEmptyEffect       ()const                      {return m_pEmptyEffect;}
     //! @}
 

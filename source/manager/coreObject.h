@@ -35,7 +35,7 @@ EXTEND_ENUM(coreObjectEnable)
 
 // ****************************************************************
 // object interface
-class coreObject
+class INTERFACE coreObject
 {
 protected:
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   //!< multiple texture objects
@@ -51,7 +51,7 @@ protected:
 
 
 protected:
-    constexpr_obj coreObject()noexcept;
+    constexpr_weak coreObject()noexcept;
     ~coreObject() {}
 
 
@@ -120,7 +120,7 @@ private:
 
 // ****************************************************************
 // constructor
-constexpr_obj coreObject::coreObject()noexcept
+constexpr_weak coreObject::coreObject()noexcept
 : m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
 , m_vTexSize   (coreVector2(1.0f,1.0f))
 , m_vTexOffset (coreVector2(0.0f,0.0f))

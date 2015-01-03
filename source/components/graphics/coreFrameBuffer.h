@@ -58,7 +58,7 @@ private:
         GLenum iFormat;             //!< pixel data format (e.g. GL_RGBA)
         GLenum iType;               //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
 
-        constexpr_obj coreRenderTarget()noexcept;
+        constexpr_weak coreRenderTarget()noexcept;
         inline bool IsTexture()const {return pTexture ? true : false;}
         inline bool IsBuffer ()const {return !this->IsTexture();}
     };
@@ -156,7 +156,7 @@ private:
 
 // ****************************************************************
 // constructor
-constexpr_obj coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
+constexpr_weak coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
 : iBuffer   (0)
 , iInternal (0)
 , iFormat   (0)

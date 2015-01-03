@@ -81,7 +81,7 @@ void coreParticleSystem::Render()
             m_aiInstanceBuffer.Next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, coreUint(m_apRenderList.size()) * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)
@@ -122,7 +122,7 @@ void coreParticleSystem::Render()
 
         // draw the model instanced
         glBindVertexArray(m_aiVertexArray.GetCur());
-        s_pModel->DrawArraysInstanced(m_apRenderList.size());
+        s_pModel->DrawArraysInstanced(coreUint(m_apRenderList.size()));
     }
     else
     {
@@ -194,7 +194,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
     }
 
     // no free particle available
-    ASSERT(false)
+    WARN_IF(true) {}
     return &m_pParticle[m_iCurParticle];
 }
 

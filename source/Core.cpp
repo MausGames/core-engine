@@ -16,6 +16,7 @@ CoreSystem*          Core::System            = NULL;
 CoreGraphics*        Core::Graphics          = NULL;
 CoreAudio*           Core::Audio             = NULL;
 CoreInput*           Core::Input             = NULL;
+CoreDebug*           Core::Debug             = NULL;
 coreMemoryManager*   Core::Manager::Memory   = NULL;
 coreResourceManager* Core::Manager::Resource = NULL;
 coreObjectManager*   Core::Manager::Object   = NULL;
@@ -44,6 +45,9 @@ Core::Core()noexcept
     Manager::Resource = new coreResourceManager();
     Manager::Object   = new coreObjectManager();
 
+    // init debug component
+    Debug = new CoreDebug();
+
     // load language file
     Language = new coreLanguage(Config->GetString(CORE_CONFIG_SYSTEM_LANGUAGE));
 
@@ -63,6 +67,9 @@ Core::~Core()
 
     // delete application
     SAFE_DELETE(Application)
+
+    // delete debug component
+    SAFE_DELETE(Debug)
 
     // delete managers
     SAFE_DELETE(Manager::Object)
@@ -134,7 +141,7 @@ void Core::Reset()
 
 // ****************************************************************
 // main function
-int main(int argc, char* argv[])
+ENTRY_POINT int main(int argc, char* argv[])
 {
 #if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
 
@@ -144,8 +151,8 @@ int main(int argc, char* argv[])
 
 #endif
 
-    // set new working directory
-    coreData::SetCurDir("../..");
+    // set new working directory (bin/<OS>/<ARCH>)
+    coreData::SetCurDir("../../..");
 
     // run engine
     return Core::Run();
@@ -163,7 +170,7 @@ int Core::Run()
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
     {
         Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR);
-        Core::Log->Warning("Logging level reduced");
+        Core::Log->Warning ("Logging level reduced");
     }
 
     // update the window event system (main loop)
@@ -177,9 +184,10 @@ int Core::Run()
         Core::Application->Render();
 
         // update all remaining components
+        Core::Debug   ->__UpdateOutput();
         Core::Graphics->__UpdateScene();
-        Core::System->__UpdateTime();
-        Core::Input->__ClearButtons();
+        Core::System  ->__UpdateTime();
+        Core::Input   ->__ClearButtons();
 
         // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())

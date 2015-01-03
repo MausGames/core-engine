@@ -39,7 +39,7 @@ protected:
 
 
 public:
-    constexpr_obj coreObject2D()noexcept;
+    constexpr_weak coreObject2D()noexcept;
     virtual ~coreObject2D() {}
     friend class coreObjectManager;
 
@@ -50,9 +50,9 @@ public:
 
     //! render and move the 2d-object
     //! @{
-    virtual void Render(const coreProgramPtr& pProgram)hot_func;
-    virtual void Render()hot_func;
-    virtual void Move  ()hot_func;
+    virtual void Render(const coreProgramPtr& pProgram);
+    virtual void Render();
+    virtual void Move  ();
     //! @}
 
     //! interact with the 2d-object
@@ -93,7 +93,7 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr_obj coreObject2D::coreObject2D()noexcept
+constexpr_weak coreObject2D::coreObject2D()noexcept
 : m_vPosition   (coreVector2(0.0f,0.0f))
 , m_vSize       (coreVector2(0.0f,0.0f))
 , m_vDirection  (coreVector2(0.0f,1.0f))

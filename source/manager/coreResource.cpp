@@ -136,7 +136,7 @@ coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
         }
 
         // resource file not found
-        ASSERT(false)
+        WARN_IF(true) {}
     }
 
     // check for existing direct resource file

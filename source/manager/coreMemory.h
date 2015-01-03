@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_MEMORY_H_
 #define _CORE_GUARD_MEMORY_H_
 
+// TODO: implement memory management, duh'
+
 
 // ****************************************************************
 // memory definitions

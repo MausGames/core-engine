@@ -16,6 +16,7 @@
 // TODO: caching system may still cause problems (e.g. coreLookupStr in combination with PRINT)
 
 
+// TODO: erklaerungen fuer template parameter
 // ****************************************************************
 /* generic lookup container class */
 template <typename K, typename I, typename T> class coreLookupGen
@@ -56,7 +57,7 @@ public:
     //! @{
     inline bool     count(const I& tKey)      {return this->__check(this->__retrieve(tKey));}
     inline bool     count(const I& tKey)const {return this->__check(this->__retrieve(tKey));}
-    inline coreUint size ()const              {return m_aList.size();}
+    inline coreUint size ()const              {return coreUint(m_aList.size());}
     inline bool     empty()const              {return m_aList.empty();}
     //! @}
 
@@ -99,8 +100,8 @@ protected:
 
     /*! retrieve iterator */
     //! @{
-    coreIterator      __retrieve(const I& tKey)hot_func;
-    coreConstIterator __retrieve(const I& tKey)const hot_func;
+    coreIterator      __retrieve(const I& tKey);
+    coreConstIterator __retrieve(const I& tKey)const;
     //! @}
 };
 
@@ -134,10 +135,10 @@ public:
 private:
     /*! retrieve iterator */
     //! @{
-    typename coreLookupStr<T>::coreIterator      __retrieve(const T&    tEntry)hot_func;
-    typename coreLookupStr<T>::coreConstIterator __retrieve(const T&    tEntry)const hot_func;
-    typename coreLookupStr<T>::coreIterator      __retrieve(const char* pcKey)hot_func;
-    typename coreLookupStr<T>::coreConstIterator __retrieve(const char* pcKey)const hot_func;
+    typename coreLookupStr<T>::coreIterator      __retrieve(const T&    tEntry);
+    typename coreLookupStr<T>::coreConstIterator __retrieve(const T&    tEntry)const;
+    typename coreLookupStr<T>::coreIterator      __retrieve(const char* pcKey);
+    typename coreLookupStr<T>::coreConstIterator __retrieve(const char* pcKey)const;
     //! @}
 };
 
@@ -148,7 +149,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 : m_pCache    (NULL)
 , m_tCacheKey (I(0))
 {
-    m_aList.reserve(MAX(64ul / sizeof(T), 2ul));
+    m_aList.reserve(MAX<std::size_t>(64u / sizeof(T), 2u));
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept

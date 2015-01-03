@@ -8,7 +8,7 @@
 #include <jni.h>
 
 
-// ******************************************************************
+// ****************************************************************
 /* JNI access objects */
 JavaVM* g_pJNIJavaVM   = NULL;   // Java Virtual Machine object
 jclass  g_pJNIClass    = NULL;   // reference to the activity class (java.lang.class)
@@ -18,7 +18,7 @@ jobject g_pJNIActivity = NULL;   // reference to the activity (extends android.a
 extern void SDL_Android_Init(JNIEnv* pEnv, jclass pCls);
 
 
-// ******************************************************************
+// ****************************************************************
 /* start up the application */
 void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* pEnv, jclass pCls, jobject pObj)
 {

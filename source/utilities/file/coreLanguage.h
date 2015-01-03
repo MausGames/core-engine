@@ -22,7 +22,7 @@
 
 // ****************************************************************
 /* translation interface */
-class coreTranslate
+class INTERFACE coreTranslate
 {
 private:
     coreLanguage* m_pLanguage;                            //!< associated language file

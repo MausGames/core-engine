@@ -45,7 +45,7 @@ protected:
 
 
 public:
-    constexpr_obj coreObject3D()noexcept;
+    constexpr_weak coreObject3D()noexcept;
     virtual ~coreObject3D() {}
     friend class coreObjectManager;
 
@@ -58,11 +58,11 @@ public:
 
     /*! render and move the 3d-object */
     //! @{
-    bool         Enable(const coreProgramPtr& pProgram)hot_func;
-    bool         Enable()hot_func;
-    virtual void Render(const coreProgramPtr& pProgram)hot_func;
-    virtual void Render()hot_func;
-    virtual void Move  ()hot_func;
+    bool         Enable(const coreProgramPtr& pProgram);
+    bool         Enable();
+    virtual void Render(const coreProgramPtr& pProgram);
+    virtual void Render();
+    virtual void Move  ();
     //! @}
 
     /*! handle collision between different structures */
@@ -125,10 +125,10 @@ public:
 
     /*! render and move the batch list */
     //! @{
-    void Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle)hot_func;
-    void Render    ()hot_func;
-    void MoveNormal()hot_func;
-    void MoveSort  ()hot_func;
+    void Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle);
+    void Render    ();
+    void MoveNormal();
+    void MoveSort  ();
     //! @}
 
     /*! bind and unbind 3d-objects */
@@ -141,13 +141,14 @@ public:
     //! @{
     void        Reallocate(const coreUint& iNewCapacity);
     void        Clear();
-    inline void ShrinkToFit() {this->Reallocate(m_apObjectList.size()); m_apObjectList.shrink_to_fit();}
+    inline void ShrinkToFit() {this->Reallocate(coreUint(m_apObjectList.size())); m_apObjectList.shrink_to_fit();}
     //! @}
 
     /*! access 3d-object list directly */
     //! @{
-    inline std::vector<coreObject3D*>* List() {return &m_apObjectList;}
-    inline bool IsInstanced()const            {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
+    inline       std::vector<coreObject3D*>* List()      {return &m_apObjectList;}
+    inline const std::vector<coreObject3D*>* List()const {return &m_apObjectList;}
+    inline bool IsInstanced()const                       {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
     //! @}
 
     /*! get object properties */
@@ -170,7 +171,7 @@ private:
 
 // ****************************************************************
 /* constructor */
-constexpr_obj coreObject3D::coreObject3D()noexcept
+constexpr_weak coreObject3D::coreObject3D()noexcept
 : m_vPosition       (coreVector3(0.0f,0.0f, 0.0f))
 , m_vSize           (coreVector3(1.0f,1.0f, 1.0f))
 , m_vDirection      (coreVector3(0.0f,0.0f,-1.0f))

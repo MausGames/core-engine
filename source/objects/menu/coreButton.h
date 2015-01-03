@@ -24,7 +24,7 @@ protected:
 
 
 public:
-    constexpr_obj coreButton()noexcept;
+    constexpr_weak coreButton()noexcept;
     coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
     coreButton(const char* pcIdle, const char* pcBusy)noexcept;
     virtual ~coreButton();
@@ -60,7 +60,7 @@ private:
 
 // ****************************************************************
 // constructor
-constexpr_obj coreButton::coreButton()noexcept
+constexpr_weak coreButton::coreButton()noexcept
 : m_pCaption  (NULL)
 , m_bBusy     (false)
 , m_iOverride (0)
