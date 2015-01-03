@@ -7,7 +7,7 @@ This project is still in early development, but it already provides a wide range
 My personal intention for this framework is to learn, to share and to have a structured coding base (core) for other projects. **It is (and will stay) open source** and is constructed and commented as good as possible - docs will be available in the future.
 
 > - **System:** Window and Event Handling, Timer, Threads 
-> - **Graphics:** Camera, View Frustum and Lighting Control, Frame Buffers, Models (.md5), Textures, Shaders, Fonts
+> - **Graphics:** Camera, View Frustum and Lighting Control, Frame Buffers, Models, Textures, Shaders, Fonts
 > - **Audio:** Sound Effects (.wav), Music Files (.ogg), Music Player
 > - **Input:** Mouse, Keyboard, Joysticks/Gamepads, Touch
 > - Asynchronous Resource Management, Memory Sharing
@@ -16,3 +16,4 @@ My personal intention for this framework is to learn, to share and to have a str
 > - Basic Filesystem, HTML Log, Configuration File
 > - Game Objects (2d, 3d), Particle System
 > - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes)
+> - Debug Monitor (Performance, Run-Time Inspection)

@@ -52,6 +52,9 @@
     <Filter Include="source\components\graphics\models">
       <UniqueIdentifier>{2a998441-9cb4-429d-99c4-5df62697ddf2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\components\debug">
+      <UniqueIdentifier>{68a5ae1a-9672-4c10-b6a0-6f3a58979ae5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -98,9 +101,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp">
       <Filter>source\utilities\file</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\utilities\math\coreSpline.cpp">
-      <Filter>source\utilities\math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\manager\coreObject.cpp">
       <Filter>source\manager</Filter>
@@ -167,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGLES.cpp">
       <Filter>source\additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\components\debug\CoreDebug.cpp">
+      <Filter>source\components\debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreGLES.h">
       <Filter>source\additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\debug\CoreDebug.h">
+      <Filter>source\components\debug</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

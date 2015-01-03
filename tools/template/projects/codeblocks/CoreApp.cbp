@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="CoreApp" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug_Windows_x86_mingw">
+				<Option output="../../executable/bin/windows/x86/CoreApp_mingw_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/bin/windows/x86" />
+				<Option object_output="obj/Debug/" />
+				<Option external_deps="../../../CoreEngine/output/windows/x86/libCoreEngine_mingw_debug.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-mwindows" />
+					<Add library="MinGW32" />
+					<Add library="SDL2main" />
+					<Add library="CoreEngine_mingw_debug" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="OpenGL32" />
+					<Add library="glew32mx" />
+					<Add library="OpenAL32" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../../CoreEngine/libraries/bin/windows/x86" />
+					<Add directory="../../../CoreEngine/libraries/bin/windows/x86/mingw" />
+					<Add directory="../../../CoreEngine/output/windows/x86" />
+				</Linker>
+			</Target>
+			<Target title="Debug_Linux_x64_gcc">
+				<Option output="../../executable/bin/linux/x64/CoreApp_gcc_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/bin/linux/x64" />
+				<Option object_output="obj/Debug/" />
+				<Option external_deps="../../../CoreEngine/output/linux/x64/libCoreEngine_gcc_debug.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add library="GL" />
+					<Add library="CoreEngine_gcc_debug" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="GLEWmx" />
+					<Add library="openal" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../../CoreEngine/libraries/bin/linux/x64" />
+					<Add directory="../../../CoreEngine/output/linux/x64" />
+				</Linker>
+			</Target>
+			<Target title="Release_Windows_x86_mingw">
+				<Option output="../../executable/bin/windows/x86/CoreApp_mingw" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/bin/windows/x86" />
+				<Option object_output="obj/Release/" />
+				<Option external_deps="../../../CoreEngine/output/windows/x86/libCoreEngine_mingw.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-static-libgcc" />
+					<Add option="-static-libstdc++" />
+					<Add option="-mwindows" />
+					<Add library="MinGW32" />
+					<Add library="SDL2main" />
+					<Add library="CoreEngine_mingw" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="OpenGL32" />
+					<Add library="glew32mx" />
+					<Add library="OpenAL32" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../../CoreEngine/libraries/bin/windows/x86" />
+					<Add directory="../../../CoreEngine/libraries/bin/windows/x86/mingw" />
+					<Add directory="../../../CoreEngine/output/windows/x86" />
+				</Linker>
+			</Target>
+			<Target title="Release_Linux_x64_gcc">
+				<Option output="../../executable/bin/linux/x64/CoreApp_gcc" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../executable/bin/linux/x64" />
+				<Option object_output="obj/Release/" />
+				<Option external_deps="../../../CoreEngine/output/linux/x64/libCoreEngine_gcc.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="GL" />
+					<Add library="CoreEngine_gcc" />
+					<Add library="SDL2" />
+					<Add library="SDL2_ttf" />
+					<Add library="SDL2_image" />
+					<Add library="GLEWmx" />
+					<Add library="openal" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add directory="../../../CoreEngine/libraries/bin/linux/x64" />
+					<Add directory="../../../CoreEngine/output/linux/x64" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-Wall" />
+			<Add option="-fno-exceptions -msse4.1" />
+			<Add directory="../../../CoreEngine/source" />
+			<Add directory="../../../CoreEngine/libraries/include" />
+			<Add directory="../../source" />
+		</Compiler>
+		<Unit filename="../../source/application.cpp" />
+		<Unit filename="../../source/main.cpp" />
+		<Unit filename="../../source/main.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="3" line="3" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -14,27 +14,27 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>Debug_Windows_mingw</name>
+                    <name>Debug_Windows_x86_mingw</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>Debug_Linux_gcc</name>
+                    <name>Debug_Linux_x64_gcc</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>Debug_Linux_clang</name>
+                    <name>Debug_Linux_x64_clang</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>Release_Windows_mingw</name>
+                    <name>Release_Windows_x86_mingw</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>Release_Linux_gcc</name>
+                    <name>Release_Linux_x64_gcc</name>
                     <type>3</type>
                 </confElem>
                 <confElem>
-                    <name>Release_Linux_clang</name>
+                    <name>Release_Linux_x64_clang</name>
                     <type>3</type>
                 </confElem>
             </confList>

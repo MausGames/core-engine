@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="94">
+<configurationDescriptor version="95">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -22,6 +22,10 @@
             <itemPath>../../source/components/audio/coreMusic.h</itemPath>
             <itemPath>../../source/components/audio/coreSound.cpp</itemPath>
             <itemPath>../../source/components/audio/coreSound.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="debug" displayName="debug" projectFiles="true">
+            <itemPath>../../source/components/debug/CoreDebug.cpp</itemPath>
+            <itemPath>../../source/components/debug/CoreDebug.h</itemPath>
           </logicalFolder>
           <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
             <logicalFolder name="models" displayName="models" projectFiles="true">
@@ -113,7 +117,6 @@
           <logicalFolder name="math" displayName="math" projectFiles="true">
             <itemPath>../../source/utilities/math/coreMath.h</itemPath>
             <itemPath>../../source/utilities/math/coreMatrix.h</itemPath>
-            <itemPath>../../source/utilities/math/coreSpline.cpp</itemPath>
             <itemPath>../../source/utilities/math/coreSpline.h</itemPath>
             <itemPath>../../source/utilities/math/coreVector.h</itemPath>
           </logicalFolder>
@@ -139,7 +142,7 @@
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug_Windows_mingw" type="3">
+    <conf name="Debug_Windows_x86_mingw" type="3">
       <toolsSet>
         <compilerSet>MinGW|MinGW</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -160,7 +163,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
-          <output>../libCoreEngine_mingw_debug.a</output>
+          <output>../../output/windows/x86/libCoreEngine_mingw_debug.a</output>
         </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
@@ -197,6 +200,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -530,11 +543,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreSpline.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
@@ -546,7 +554,7 @@
             flavor2="0">
       </item>
     </conf>
-    <conf name="Debug_Linux_gcc" type="3">
+    <conf name="Debug_Linux_x64_gcc" type="3">
       <toolsSet>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -566,7 +574,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
-          <output>../libCoreEngine_gcc_debug.a</output>
+          <output>../../output/linux/x64/libCoreEngine_gcc_debug.a</output>
         </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
@@ -603,6 +611,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -936,11 +954,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreSpline.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
@@ -952,7 +965,7 @@
             flavor2="0">
       </item>
     </conf>
-    <conf name="Debug_Linux_clang" type="3">
+    <conf name="Debug_Linux_x64_clang" type="3">
       <toolsSet>
         <compilerSet>CLang|CLang</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -972,7 +985,7 @@
           <warningLevel>2</warningLevel>
         </ccTool>
         <archiverTool>
-          <output>../libCoreEngine_clang_debug.a</output>
+          <output>../../output/linux/x64/libCoreEngine_clang_debug.a</output>
         </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
@@ -1009,6 +1022,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1342,11 +1365,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreSpline.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
@@ -1358,7 +1376,7 @@
             flavor2="0">
       </item>
     </conf>
-    <conf name="Release_Windows_mingw" type="3">
+    <conf name="Release_Windows_x86_mingw" type="3">
       <toolsSet>
         <compilerSet>MinGW|MinGW</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -1386,7 +1404,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <archiverTool>
-          <output>../libCoreEngine_mingw.a</output>
+          <output>../../output/windows/x86/libCoreEngine_mingw.a</output>
         </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
@@ -1423,6 +1441,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1756,11 +1784,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreSpline.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
@@ -1772,7 +1795,7 @@
             flavor2="0">
       </item>
     </conf>
-    <conf name="Release_Linux_gcc" type="3">
+    <conf name="Release_Linux_x64_gcc" type="3">
       <toolsSet>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -1800,7 +1823,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <archiverTool>
-          <output>../libCoreEngine_gcc.a</output>
+          <output>../../output/linux/x64/libCoreEngine_gcc.a</output>
         </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
@@ -1837,6 +1860,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2170,11 +2203,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/math/coreSpline.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/math/coreSpline.h"
             ex="false"
             tool="3"
@@ -2186,7 +2214,7 @@
             flavor2="0">
       </item>
     </conf>
-    <conf name="Release_Linux_clang" type="3">
+    <conf name="Release_Linux_x64_clang" type="3">
       <toolsSet>
         <compilerSet>CLang|CLang</compilerSet>
         <dependencyChecking>true</dependencyChecking>
@@ -2213,7 +2241,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <archiverTool>
-          <output>../libCoreEngine_clang.a</output>
+          <output>../../output/linux/x64/libCoreEngine_clang.a</output>
         </archiverTool>
       </compileType>
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
@@ -2250,6 +2278,16 @@
             flavor2="0">
       </item>
       <item path="../../source/components/audio/coreSound.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/components/debug/CoreDebug.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2581,11 +2619,6 @@
       <item path="../../source/utilities/math/coreMatrix.h"
             ex="false"
             tool="3"
-            flavor2="0">
-      </item>
-      <item path="../../source/utilities/math/coreSpline.cpp"
-            ex="false"
-            tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/math/coreSpline.h"

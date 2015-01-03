@@ -227,17 +227,15 @@
 // use SDL to support Android and iOS
 #if defined(_SDL_rwops_h)
 
-    static int __si = 0;
-
     #define FILE           SDL_RWops
     #define fopen          SDL_RWFromFile
     #define fclose         SDL_RWclose
     #define fread(a,b,c,d) SDL_RWread(d, a, b, c)
-    #define fseek(a,b,c)   __si = ((SDL_RWseek(a, b, c) == -1) ? 1 : 0)
-    #define ftell          (int)SDL_RWtell
+    #define fseek(a,b,c)   (int)(SDL_RWseek(a, b, c) == -1)
+    #define ftell(a)       (int)(SDL_RWtell(a))
     #define fputs(a,b)     SDL_RWwrite(b, a, 1, std::strlen(a))
 
-    #define _WIN32_WCE 1
+    #define _WIN32_WCE (1)
 
 #endif
 // ****************************************************************

@@ -1,8 +1,10 @@
 backup/
+output/
 docs/index.html
 docs/html/
 projects/visualstudio/CoreEngine/Debug/
 projects/visualstudio/CoreEngine/Release/
+projects/visualstudio/CoreEngine/x64/
 projects/visualstudio/*.opensdf
 projects/visualstudio/*.sdf
 projects/visualstudio/*.suo
@@ -19,6 +21,3 @@ projects/netbeans/nbproject/private/launcher.properties
 projects/netbeans/nbproject/private/private.xml
 projects/netbeans/.dep.inc
 projects/netbeans/build/
-projects/android/
-projects/CoreEngine_*.lib
-projects/libCoreEngine_*.a

@@ -265,6 +265,10 @@ typedef _W64 int ptrdiff_t;
 #define GLEWAPIENTRY
 #endif
 
+#ifndef GL_APIENTRY
+#define GL_APIENTRY GLAPIENTRY
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
