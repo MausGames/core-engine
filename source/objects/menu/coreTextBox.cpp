@@ -42,8 +42,8 @@ void coreTextBox::Construct(const char* pcIdle, const char* pcBusy, const char* 
     coreButton::Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
 
     // reserve memory for text
-    m_sText.reserve(iLength+1);
-    m_sPrevious.reserve(iLength+1);
+    m_sText    .reserve(iLength);
+    m_sPrevious.reserve(iLength);
 }
 
 
@@ -124,23 +124,36 @@ void coreTextBox::SetInput(const bool& bInput)
 bool coreTextBox::__Write()
 {
     // get new text-input character
-    const char& cChar = Core::Input->GetKeyboardChar();
-    if(cChar)
+    const coreInputChar& iChar = Core::Input->GetKeyboardChar();
+    if(iChar)
     {
-        if(cChar == SDLK_RETURN)
+        if(iChar == CORE_INPUT_CHAR(RETURN))
         {
             // finish the text-input
             return true;
         }
-        else if(cChar == SDLK_BACKSPACE)
+        else if(iChar == CORE_INPUT_CHAR(BACKSPACE))
         {
             // remove last character
             if(!m_sText.empty()) m_sText.pop_back();
         }
-        else if(m_sText.length() < coreUint(m_pCaption->GetLength()-1))
+        else if(iChar == CORE_INPUT_CHAR(PASTE))
+        {
+            // paste text from clipboard
+            char* pcPaste = SDL_GetClipboardText();
+            if(pcPaste)
+            {
+                const size_t iLen = MIN<size_t>(std::strlen(pcPaste), (m_pCaption->GetLength()-1) - m_sText.length());
+
+                // append and clamp to remaining string space
+                m_sText.append(pcPaste, iLen);
+                SDL_free(pcPaste);
+            }
+        }
+        else if(m_sText.length() < m_pCaption->GetLength()-1)
         {
             // append new character
-            m_sText.append(1, cChar);
+            m_sText.append(1, char(iChar));
         }
 
         m_bDisplay = true;

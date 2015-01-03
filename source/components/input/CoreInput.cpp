@@ -11,15 +11,15 @@
 #define CORE_INPUT_PRESS(x)   {(x)[3] = false;  (x)[2] = !(x)[1]; (x)[1] = true;}
 #define CORE_INPUT_RELEASE(x) {(x)[3] = (x)[1]; (x)[2] = false;   (x)[1] = false;}
 
-#define CORE_INPUT_JOYSTICK_DEAD (2000)
+#define CORE_INPUT_JOYSTICK_DEAD (1000)
 #define CORE_INPUT_JOYSTICK_MAX  (8000)
 
 
 // ****************************************************************
 // constructor
 CoreInput::coreKeyboard::coreKeyboard()noexcept
-: iLast (CORE_INPUT_KEY(UNKNOWN))
-, cChar ('\0')
+: iLast (CORE_INPUT_KEY (UNKNOWN))
+, iChar (CORE_INPUT_CHAR(UNKNOWN))
 {
     std::memset(aabButton, 0, sizeof(aabButton));
 }
@@ -200,9 +200,15 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
     // press keyboard button
     case SDL_KEYDOWN:
         this->SetKeyboardButton(Event.key.keysym.scancode, true);
-             if(Event.key.keysym.scancode == CORE_INPUT_KEY(BACKSPACE))   this->SetKeyboardChar(SDLK_BACKSPACE);
-        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(RETURN))      this->SetKeyboardChar(SDLK_RETURN);
-        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(KP_ENTER))    this->SetKeyboardChar(SDLK_RETURN);
+             if(Event.key.keysym.scancode == CORE_INPUT_KEY(BACKSPACE)) this->SetKeyboardChar(CORE_INPUT_CHAR(BACKSPACE));
+        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(RETURN))    this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
+        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(KP_ENTER))  this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
+        else if(Event.key.keysym.mod & KMOD_CTRL)
+        {
+                 if(Event.key.keysym.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
+            else if(Event.key.keysym.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
+            else if(Event.key.keysym.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
+        }
         else if(Event.key.keysym.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;
         break;
 
@@ -340,5 +346,5 @@ void CoreInput::__ClearButtons()
         m_aTouch[i].vRelative = coreVector2(0.0f,0.0f);
 
     // clear current text-input character
-    m_Keyboard.cChar = '\0';
+    m_Keyboard.iChar = CORE_INPUT_CHAR(UNKNOWN);
 }

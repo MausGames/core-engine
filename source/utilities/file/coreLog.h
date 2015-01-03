@@ -50,12 +50,13 @@ private:
 
 public:
     explicit coreLog(const char* pcPath)noexcept;
+    ~coreLog() {this->__Write(false, "<hr />");}
 
     /*! message functions */
     //! @{
-    template <typename... A> inline void Info   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
-    template <typename... A> inline void Warning(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_WARNING) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A>        void Error  (const char* pcText, A&&... vArgs);
+    template <typename... A> inline        void Info   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
+    template <typename... A> inline        void Warning(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_WARNING) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> FUNC_NORETURN void Error  (const char* pcText, A&&... vArgs);
     //! @}
 
     /*! special functions */
@@ -75,7 +76,7 @@ public:
 
     /*! handle OpenGL debug output */
     //! @{
-    friend void GLAPIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
+    friend void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
     void DebugOpenGL();
     //! @}
 
@@ -85,24 +86,24 @@ private:
 
     /*! write text to the log file */
     //! @{
-    void __Write(const bool& bTime, std::string sText)cold_func;
+    void __Write(const bool& bTime, std::string sText);
     //! @}
 };
 
 
 // ****************************************************************
 /* write error message and shut down the application */
-template <typename... A> void coreLog::Error(const char* pcText, A&&... vArgs)
+template <typename... A> FUNC_NORETURN void coreLog::Error(const char* pcText, A&&... vArgs)
 {
     // write error message
     if(m_iLevel & CORE_LOG_LEVEL_ERROR) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
 
     // show critical error message
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", __CORE_LOG_STRING.c_str(), NULL);
-    ASSERT(false)
+    WARN_IF(true) {}
 
     // shut down the application
-    std::exit(-1);
+    std::exit(EXIT_FAILURE);
 }
 
 

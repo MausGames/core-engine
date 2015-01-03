@@ -21,7 +21,7 @@ public:
         struct {float x, y;};
         struct {float u, v;};
         struct {float s, t;};
-        float m[2];
+        float arr[2];
     };
 
 
@@ -74,13 +74,13 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
-    constexpr_func coreVector2 yx()const        {return coreVector2(y, x);}
+    constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreVector2 yx()const         {return coreVector2(y, x);}
     //! @}
 
     /*! normalize vector */
     //! @{
-    inline coreVector2& Normalize   ();
+    inline coreVector2& Normalize   ()      {*this *= RSQRT(this->LengthSq()); return *this;}
     inline coreVector2  Normalized  ()const {return coreVector2(*this).Normalize();}
     constexpr_func bool IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     //! @}
@@ -98,8 +98,8 @@ public:
 
     /*! static functions */
     //! @{
-    static constexpr_func float       Dot      (const coreVector2& vInA, const coreVector2& vInB) {return (vInA.x*vInB.x + vInA.y*vInB.y);}
-    static inline         coreVector2 Direction(const float& fAngle)                              {return coreVector2(-SIN(fAngle), COS(fAngle));}
+    static constexpr_func float       Dot      (const coreVector2& v1, const coreVector2& v2) {return (v1.x*v2.x + v1.y*v2.y);}
+    static inline         coreVector2 Direction(const float& fAngle)                          {return coreVector2(-SIN(fAngle), COS(fAngle));}
     static inline         coreVector2 Rand     ();
     static inline         coreVector2 Rand     (const float& fMax);
     static inline         coreVector2 Rand     (const float& fMin,  const float& fMax);
@@ -110,7 +110,9 @@ public:
     /*! packing functions */
     //! @{
     constexpr_func        coreUint    PackUnorm2x16  ()const;
+    constexpr_func        coreUint    PackSnorm2x16  ()const;
     static constexpr_func coreVector2 UnpackUnorm2x16(const coreUint& iNumber);
+    static inline         coreVector2 UnpackSnorm2x16(const coreUint& iNumber);
     //! @}
 };
 
@@ -124,14 +126,14 @@ public:
     {
         struct {float x, y, z;};
         struct {float r, g, b;};
-        float m[3];
+        float arr[3];
     };
 
 
 public:
     constexpr_func coreVector3()noexcept                                                  : x (0.0f), y (0.0f), z (0.0f) {}
-    constexpr_func coreVector3(const coreVector2& c, const float& fz)noexcept             : x (c.x),  y (c.y),  z (fz)   {}
-    constexpr_func coreVector3(const float& fx, const coreVector2& c)noexcept             : x (fx),   y (c.x),  z (c.y)  {}
+    constexpr_func coreVector3(const coreVector2& v, const float& fz)noexcept             : x (v.x),  y (v.y),  z (fz)   {}
+    constexpr_func coreVector3(const float& fx, const coreVector2& v)noexcept             : x (fx),   y (v.x),  z (v.y)  {}
     constexpr_func coreVector3(const float& fx, const float& fy, const float& fz)noexcept : x (fx),   y (fy),   z (fz)   {}
 
     /*! compare operations */
@@ -179,24 +181,24 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
-    constexpr_func coreVector2 xy()const        {return coreVector2(x, y);}
-    constexpr_func coreVector2 xz()const        {return coreVector2(x, z);}
-    constexpr_func coreVector2 yx()const        {return coreVector2(y, x);}
-    constexpr_func coreVector2 yz()const        {return coreVector2(y, z);}
-    constexpr_func coreVector2 zx()const        {return coreVector2(z, x);}
-    constexpr_func coreVector2 zy()const        {return coreVector2(z, y);}
-    inline void xy(const coreVector2& v)        {x = v.x; y = v.y;}
-    inline void xz(const coreVector2& v)        {x = v.x; z = v.y;}
-    inline void yx(const coreVector2& v)        {y = v.x; x = v.y;}
-    inline void yz(const coreVector2& v)        {y = v.x; z = v.y;}
-    inline void zx(const coreVector2& v)        {z = v.x; x = v.y;}
-    inline void zy(const coreVector2& v)        {z = v.x; y = v.y;}
+    constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreVector2 xy()const         {return coreVector2(x, y);}
+    constexpr_func coreVector2 xz()const         {return coreVector2(x, z);}
+    constexpr_func coreVector2 yx()const         {return coreVector2(y, x);}
+    constexpr_func coreVector2 yz()const         {return coreVector2(y, z);}
+    constexpr_func coreVector2 zx()const         {return coreVector2(z, x);}
+    constexpr_func coreVector2 zy()const         {return coreVector2(z, y);}
+    inline void xy(const coreVector2& v)         {x = v.x; y = v.y;}
+    inline void xz(const coreVector2& v)         {x = v.x; z = v.y;}
+    inline void yx(const coreVector2& v)         {y = v.x; x = v.y;}
+    inline void yz(const coreVector2& v)         {y = v.x; z = v.y;}
+    inline void zx(const coreVector2& v)         {z = v.x; x = v.y;}
+    inline void zy(const coreVector2& v)         {z = v.x; y = v.y;}
     //! @}
 
     /*! normalize vector */
     //! @{
-    inline coreVector3& Normalize   ();
+    inline coreVector3& Normalize   ()      {*this *= RSQRT(this->LengthSq()); return *this;}
     inline coreVector3  Normalized  ()const {return coreVector3(*this).Normalize();}
     constexpr_func bool IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     //! @}
@@ -212,8 +214,8 @@ public:
 
     /*! static functions */
     //! @{
-    static constexpr_func float       Dot    (const coreVector3& vInA, const coreVector3& vInB) {return (vInA.x*vInB.x + vInA.y*vInB.y + vInA.z*vInB.z);}
-    static constexpr_func coreVector3 Cross  (const coreVector3& vInA, const coreVector3& vInB);
+    static constexpr_func float       Dot    (const coreVector3& v1, const coreVector3& v2) {return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);}
+    static constexpr_func coreVector3 Cross  (const coreVector3& v1, const coreVector3& v2);
     static inline         coreVector3 Rand   ();
     static inline         coreVector3 Rand   (const float& fMax);
     static inline         coreVector3 Rand   (const float& fMin,  const float& fMax);
@@ -231,7 +233,7 @@ public:
 
 
 // ****************************************************************
-/* 4d-vector class */
+/* 4d-vector and quaternion class */
 class coreVector4 final
 {
 public:
@@ -239,18 +241,18 @@ public:
     {
         struct {float x, y, z, w;};
         struct {float r, g, b, a;};
-        float m[4];
+        float arr[4];
     };
 
 
 public:
     constexpr_func coreVector4()noexcept                                                                   : x (0.0f), y (0.0f), z (0.0f), w (0.0f) {}
-    constexpr_func coreVector4(const coreVector3& c, const float& fw)noexcept                              : x (c.x),  y (c.y),  z (c.z),  w (fw)   {}
-    constexpr_func coreVector4(const float& fx, const coreVector3& c)noexcept                              : x (fx),   y (c.x),  z (c.y),  w (c.z)  {}
-    constexpr_func coreVector4(const coreVector2& c, const float& fz, const float& fw)noexcept             : x (c.x),  y (c.y),  z (fz),   w (fw)   {}
-    constexpr_func coreVector4(const float& fx, const coreVector2& c, const float& fw)noexcept             : x (fx),   y (c.x),  z (c.y),  w (fw)   {}
-    constexpr_func coreVector4(const float& fx, const float& fy, const coreVector2& c)noexcept             : x (fx),   y (fy),   z (c.x),  w (c.y)  {}
-    constexpr_func coreVector4(const coreVector2& c1, const coreVector2& c2)noexcept                       : x (c1.x), y (c1.y), z (c2.x), w (c2.y) {}
+    constexpr_func coreVector4(const coreVector3& v, const float& fw)noexcept                              : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
+    constexpr_func coreVector4(const float& fx, const coreVector3& v)noexcept                              : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
+    constexpr_func coreVector4(const coreVector2& v, const float& fz, const float& fw)noexcept             : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
+    constexpr_func coreVector4(const float& fx, const coreVector2& v, const float& fw)noexcept             : x (fx),   y (v.x),  z (v.y),  w (fw)   {}
+    constexpr_func coreVector4(const float& fx, const float& fy, const coreVector2& v)noexcept             : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
+    constexpr_func coreVector4(const coreVector2& v1, const coreVector2& v2)noexcept                       : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
     constexpr_func coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)noexcept : x (fx),   y (fy),   z (fz),   w (fw)   {}
 
     /*! compare operations */
@@ -298,14 +300,14 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
-    constexpr_func coreVector3 xyzw()const      {return coreVector3(x, y, z)*w;}
-    constexpr_func coreVector3 xyz ()const      {return coreVector3(x, y, z);}
-    constexpr_func coreVector2 xy  ()const      {return coreVector2(x, y);}
-    constexpr_func coreVector2 zw  ()const      {return coreVector2(z, w);}
-    inline void xyz(const coreVector3& v)       {x = v.x; y = v.y; z = v.z;}
-    inline void xy (const coreVector2& v)       {x = v.x; y = v.y;}
-    inline void zw (const coreVector2& v)       {z = v.x; w = v.y;}
+    constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreVector3 xyzw()const       {return coreVector3(x, y, z)*w;}
+    constexpr_func coreVector3 xyz ()const       {return coreVector3(x, y, z);}
+    constexpr_func coreVector2 xy  ()const       {return coreVector2(x, y);}
+    constexpr_func coreVector2 zw  ()const       {return coreVector2(z, w);}
+    inline void xyz(const coreVector3& v)        {x = v.x; y = v.y; z = v.z;}
+    inline void xy (const coreVector2& v)        {x = v.x; y = v.y;}
+    inline void zw (const coreVector2& v)        {z = v.x; w = v.y;}
     //! @}
 
     /*! direct functions */
@@ -329,22 +331,13 @@ public:
 
     /*! quaternion functions */
     //! @{
-    static constexpr_func coreVector4 QuatMul      (const coreVector4& vInA, const coreVector4& vInB);
+    static constexpr_func coreVector4 QuatMultiply (const coreVector4& v1, const coreVector4& v2);
     static constexpr_func coreVector4 QuatIdentity ()                          {return coreVector4(0.0f,0.0f,0.0f,1.0f);}
     constexpr_func        coreVector4 QuatConjugate()const                     {return coreVector4(-x, -y, -z, w);}
     inline                coreVector4 QuatInvert   ()const                     {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
     constexpr_func        coreVector3 QuatApply    (const coreVector3& v)const {return v + 2.0f * coreVector3::Cross(this->xyz(), coreVector3::Cross(this->xyz(), v) + w * v);}
     //! @}
 };
-
-
-// ****************************************************************
-/* normalize vector */
-inline coreVector2& coreVector2::Normalize()
-{
-    *this *= RSQRT(this->LengthSq());
-    return *this;
-}
 
 
 // ****************************************************************
@@ -393,6 +386,15 @@ constexpr_func coreUint coreVector2::PackUnorm2x16()const
 
 
 // ****************************************************************
+/* compress -1.0 to 1.0 vector into YX packed uint */
+constexpr_func coreUint coreVector2::PackSnorm2x16()const
+{
+    return (F_TO_UI((y < 0.0f) ? (65536.0f + y*32768.0f) : y*32767.0f) << 16) +
+           (F_TO_UI((x < 0.0f) ? (65536.0f + x*32768.0f) : x*32767.0f));
+};
+
+
+// ****************************************************************
 /* uncompress YX packed uint into 0.0 to 1.0 vector */
 constexpr_func coreVector2 coreVector2::UnpackUnorm2x16(const coreUint& iNumber)
 {
@@ -402,20 +404,24 @@ constexpr_func coreVector2 coreVector2::UnpackUnorm2x16(const coreUint& iNumber)
 
 
 // ****************************************************************
-/* calculate cross product */
-constexpr_func coreVector3 coreVector3::Cross(const coreVector3& vInA, const coreVector3& vInB)
+/* uncompress YX packed uint into -1.0 to 1.0 vector */
+inline coreVector2 coreVector2::UnpackSnorm2x16(const coreUint& iNumber)
 {
-    return coreVector3(vInA.y*vInB.z - vInA.z*vInB.y,
-                       vInA.z*vInB.x - vInA.x*vInB.z,
-                       vInA.x*vInB.y - vInA.y*vInB.x);
+    const coreVector2 A = coreVector2(I_TO_F( iNumber        & 0xFFFFu),
+                                      I_TO_F((iNumber >> 16) & 0xFFFFu));
+
+    return coreVector2((A.x >= 32768.0f) ? ((A.x - 65536.0f)/32768.0f) : (A.x/32767.0f),
+                       (A.y >= 32768.0f) ? ((A.y - 65536.0f)/32768.0f) : (A.y/32767.0f));
 }
 
+
 // ****************************************************************
-/* normalize vector */
-inline coreVector3& coreVector3::Normalize()
+/* calculate cross product */
+constexpr_func coreVector3 coreVector3::Cross(const coreVector3& v1, const coreVector3& v2)
 {
-    *this *= RSQRT(this->LengthSq());
-    return *this;
+    return coreVector3(v1.y*v2.z - v1.z*v2.y,
+                       v1.z*v2.x - v1.x*v2.z,
+                       v1.x*v2.y - v1.y*v2.x);
 }
 
 
@@ -484,19 +490,16 @@ inline coreVector3 coreVector3::HSVtoRGB()const
 
     const float s = V * S;
     const float t = s * (H - h);
-
     const float p = V - s;
-    const float q = V - t;
-    const float o = p + t;
 
     switch(F_TO_SI(h))
     {
-    case 1:  return coreVector3(q, V, p);
-    case 2:  return coreVector3(p, V, o);
-    case 3:  return coreVector3(p, q, V);
-    case 4:  return coreVector3(o, p, V);
-    case 5:  return coreVector3(V, p, q);
-    default: return coreVector3(V, o, p);
+    case 1:  return coreVector3(V - t, V,     p);
+    case 2:  return coreVector3(p,     V,     p + t);
+    case 3:  return coreVector3(p,     V - t, V);
+    case 4:  return coreVector3(p + t, p,     V);
+    case 5:  return coreVector3(V,     p,     V - t);
+    default: return coreVector3(V,     p + t, p);
     }
 }
 
@@ -600,12 +603,12 @@ inline coreVector4 coreVector4::UnpackSnorm210(const coreUint& iNumber)
 
 // ****************************************************************
 /* multiplicate two quaternions */
-constexpr_func coreVector4 coreVector4::QuatMul(const coreVector4& vInA, const coreVector4& vInB)
+constexpr_func coreVector4 coreVector4::QuatMultiply(const coreVector4& v1, const coreVector4& v2)
 {
-    return coreVector4(vInA.x*vInB.w + vInA.w*vInB.x + vInA.y*vInB.z - vInA.z*vInB.y,
-                       vInA.y*vInB.w + vInA.w*vInB.y + vInA.z*vInB.x - vInA.x*vInB.z,
-                       vInA.z*vInB.w + vInA.w*vInB.z + vInA.x*vInB.y - vInA.y*vInB.x,
-                       vInA.w*vInB.w - vInA.x*vInB.x - vInA.y*vInB.y - vInA.z*vInB.z);
+    return coreVector4(v1.x*v2.w + v1.w*v2.x + v1.y*v2.z - v1.z*v2.y,
+                       v1.y*v2.w + v1.w*v2.y + v1.z*v2.x - v1.x*v2.z,
+                       v1.z*v2.w + v1.w*v2.z + v1.x*v2.y - v1.y*v2.x,
+                       v1.w*v2.w - v1.x*v2.x - v1.y*v2.y - v1.z*v2.z);
 }
 
 

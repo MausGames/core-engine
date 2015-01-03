@@ -27,7 +27,7 @@ coreLog::coreLog(const char* pcPath)noexcept
         std::fputs("<style type=\"text/css\">                       \n", pFile);
         std::fputs("  body    {font: 0.95em courier new;}           \n", pFile);
         std::fputs(" .time    {color: #AAA;}                        \n", pFile);
-        std::fputs(" .thread  {color: green;}                       \n", pFile);
+        std::fputs(" .thread1 {color: green;}                       \n", pFile);
         std::fputs(" .thread2 {color: olive;}                       \n", pFile);
         std::fputs(" .data    {color: teal;}                        \n", pFile);
         std::fputs(" .gl      {color: purple;}                      \n", pFile);
@@ -38,8 +38,8 @@ coreLog::coreLog(const char* pcPath)noexcept
         std::fputs("</style>                                        \n", pFile);
 
         // write application data and timestamp
-        std::fprintf(pFile, CORE_LOG_BOLD("Executable:") " %s %s %s <br />\n", coreData::AppName(), __DATE__, __TIME__);
-        std::fprintf(pFile, CORE_LOG_BOLD("Started on:") " %s %s    <br />\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(pFile, CORE_LOG_BOLD("Executable:") " %s/%s %s %s <br />\n", DEFINED(_CORE_X64_) ? "x64" : "x86", coreData::AppName(), __DATE__, __TIME__);
+        std::fprintf(pFile, CORE_LOG_BOLD("Started on:") " %s %s       <br />\n", coreData::DateString(), coreData::TimeString());
 
         // close log file
         std::fclose(pFile);
@@ -52,7 +52,7 @@ coreLog::coreLog(const char* pcPath)noexcept
 
 // ****************************************************************
 /* write an OpenGL debug message */
-void GLAPIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam)
+void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam)
 {
     coreLog* pLog = s_cast<coreLog*>(c_cast<void*>(pUserParam));
 
@@ -67,7 +67,7 @@ void GLAPIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSe
     }
     pLog->ListEnd();
 
-    ASSERT(false)
+    WARN_IF(true) {}
 }
 
 
@@ -99,7 +99,7 @@ void coreLog::__Write(const bool& bTime, std::string sText)
 #if defined(_CORE_ANDROID_) || defined(_CORE_DEBUG_)
 
         // also write text to the standard output
-        SDL_Log(sText.c_str());
+        SDL_Log(sText.substr(0, SDL_MAX_LOG_MESSAGE).c_str());
 
 #endif
         // open log file
@@ -107,10 +107,9 @@ void coreLog::__Write(const bool& bTime, std::string sText)
         if(pFile)
         {
             // color brackets and convert new lines
-            int iPos = -1;
-            while((iPos = sText.find("("))  >= 0) sText.replace(iPos, 1, "<span class=\"data\">&#40;");
-            while((iPos = sText.find(")"))  >= 0) sText.replace(iPos, 1, "&#41;</span>");
-            while((iPos = sText.find("\n")) >= 0) sText.replace(iPos, 1, "<br />");
+            coreData::StrReplace(&sText, "(",  "<span class=\"data\">(");
+            coreData::StrReplace(&sText, ")",  ")</span>");
+            coreData::StrReplace(&sText, "\n", "<br />");
 
             if(bTime)
             {
@@ -119,7 +118,7 @@ void coreLog::__Write(const bool& bTime, std::string sText)
 
                 // write timestamp and thread-ID
                 std::fprintf(pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
-                             coreData::TimeString(), (iThread == m_iMainThread) ? "thread" : "thread2", iThread);
+                             coreData::TimeString(), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
             }
 
             // write text

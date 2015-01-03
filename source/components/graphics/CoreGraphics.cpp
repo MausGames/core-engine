@@ -9,7 +9,7 @@
 #include "Core.h"
 
 
-// ******************************************************************
+// ****************************************************************
 // constructor
 CoreGraphics::CoreGraphics()noexcept
 : m_vCamPosition    (coreVector3(0.0f,0.0f,0.0f))
@@ -47,9 +47,12 @@ CoreGraphics::CoreGraphics()noexcept
     Core::Log->ListEnd();
 
     // enable vertical synchronization
-         if(!SDL_GL_SetSwapInterval(-1)) Core::Log->Info("Vertical synchronization enabled (extended)");
-    else if(!SDL_GL_SetSwapInterval( 1)) Core::Log->Info("Vertical synchronization enabled (normal)");
-    else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
+    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_VSYNC))
+    {
+             if(!SDL_GL_SetSwapInterval(-1)) Core::Log->Info("Vertical synchronization enabled (extended)");
+        else if(!SDL_GL_SetSwapInterval( 1)) Core::Log->Info("Vertical synchronization enabled (normal)");
+        else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
+    }
 
     // setup texturing
     glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
@@ -100,7 +103,7 @@ CoreGraphics::CoreGraphics()noexcept
 
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT))
     {
-        // create resource context (after reset, because of flickering on Windows and fullscreen)
+        // create resource context (after reset, because of flickering on Windows with fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
         if(!m_pResourceContext) Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
                            else Core::Log->Info   ("Resource context created");
@@ -112,7 +115,7 @@ CoreGraphics::CoreGraphics()noexcept
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // destructor
 CoreGraphics::~CoreGraphics()
 {
@@ -131,7 +134,7 @@ CoreGraphics::~CoreGraphics()
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // set camera and create camera matrix
 void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
@@ -154,7 +157,7 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // set view and create projection matrices
 void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
 {
@@ -191,7 +194,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const flo
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // set and update ambient light
 void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
@@ -215,7 +218,7 @@ void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, c
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // send transformation data to the uniform buffer objects
 void CoreGraphics::SendTransformation()
 {
@@ -250,7 +253,7 @@ void CoreGraphics::SendTransformation()
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // send ambient data to the uniform buffer objects
 void CoreGraphics::SendAmbient()
 {
@@ -279,7 +282,7 @@ void CoreGraphics::SendAmbient()
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // take screenshot
 void CoreGraphics::Screenshot(const char* pcPath)const
 {
@@ -320,7 +323,7 @@ void CoreGraphics::Screenshot(const char* pcPath)const
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // update the graphics scene
 void CoreGraphics::__UpdateScene()
 {
@@ -329,7 +332,7 @@ void CoreGraphics::__UpdateScene()
         this->Screenshot();
 
     // disable last model, textures and shader-program
-    coreModel::Disable(true);
+    coreModel  ::Disable(true);
     coreTexture::DisableAll();
     coreProgram::Disable(true);
 
@@ -341,7 +344,9 @@ void CoreGraphics::__UpdateScene()
     }
 
     // swap color buffers
+    Core::Debug->MeasureEnd  (CORE_DEBUG_OVERALL_NAME);
     SDL_GL_SwapWindow(Core::System->GetWindow());
+    Core::Debug->MeasureStart(CORE_DEBUG_OVERALL_NAME);
 
     // clear color and depth buffer
 #if defined(_CORE_DEBUG_) || defined(_CORE_GLES_)

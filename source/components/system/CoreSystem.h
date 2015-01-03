@@ -73,16 +73,18 @@ public:
 
     //! get component properties
     //! @{
-    inline SDL_Window*                     GetWindow    ()const               {return m_pWindow;}
-    inline const coreVector2&              GetResolution()const               {return m_vResolution;}
-    inline const coreByte&                 GetFullscreen()const               {return m_iFullscreen;}
-    inline const std::vector<coreVector2>& GetAvailable ()const               {return m_avAvailable;}
-    inline const bool&                     GetMinimized ()const               {return m_bMinimized;}
-    inline const double&                   GetTotalTime ()const               {return m_dTotalTime;}
-    inline const float&                    GetTime      ()const               {return m_fLastTime;}
-    inline const float&                    GetTime      (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return (m_fLastTime >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const float&                    GetTimeSpeed (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
-    inline const coreUint&                 GetCurFrame  ()const               {return m_iCurFrame;}
+    inline SDL_Window*                     GetWindow       ()const               {return m_pWindow;}
+    inline const coreVector2&              GetResolution   ()const               {return m_vResolution;}
+    inline const coreByte&                 GetFullscreen   ()const               {return m_iFullscreen;}
+    inline const std::vector<coreVector2>& GetAvailable    ()const               {return m_avAvailable;}
+    inline const bool&                     GetMinimized    ()const               {return m_bMinimized;}
+    inline const double&                   GetTotalTime    ()const               {return m_dTotalTime;}
+    inline const float&                    GetTime         ()const               {return m_fLastTime;}
+    inline const float&                    GetTime         (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return (m_fLastTime >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const float&                    GetTimeSpeed    (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
+    inline const coreUint&                 GetCurFrame     ()const               {return m_iCurFrame;}
+    inline const double&                   GetPerfFrequency()const               {return m_dPerfFrequency;}
+    inline const coreUint64&               GetPerfTime     ()const               {return m_iPerfTime;}
     //! @}
 
     //! check hardware support

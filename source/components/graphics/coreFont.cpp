@@ -80,24 +80,24 @@ SDL_Surface* coreFont::CreateText(const char* pcText, const int& iHeight)
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
 
     // define color
-    constexpr_var SDL_Color aiFont = {0xFF, 0xFF, 0xFF};
-    constexpr_var SDL_Color aiBack = {0x00, 0x00, 0x00};
+    constexpr_var SDL_Color aiFront = {0xFF, 0xFF, 0xFF};
+    constexpr_var SDL_Color aiBack  = {0x00, 0x00, 0x00};
 
     // render and return the text surface
-    return TTF_RenderUTF8_Shaded(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiFont, aiBack);
+    return TTF_RenderUTF8_Shaded(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiFront, aiBack);
 }
 
-SDL_Surface* coreFont::CreateGlyph(const coreUshort& iGlyph,  const int& iHeight)
+SDL_Surface* coreFont::CreateGlyph(const coreUshort& iGlyph, const int& iHeight)
 {
     // check for specific height
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
 
     // define color
-    constexpr_var SDL_Color aiFont = {0xFF, 0xFF, 0xFF};
-    constexpr_var SDL_Color aiBack = {0x00, 0x00, 0x00};
+    constexpr_var SDL_Color aiFront = {0xFF, 0xFF, 0xFF};
+    constexpr_var SDL_Color aiBack  = {0x00, 0x00, 0x00};
 
     // render and return the text surface
-    return TTF_RenderGlyph_Shaded(m_apFont.at(iHeight), iGlyph, aiFont, aiBack);
+    return TTF_RenderGlyph_Shaded(m_apFont.at(iHeight), iGlyph, aiFront, aiBack);
 }
 
 
@@ -118,8 +118,9 @@ bool coreFont::__InitHeight(const int& iHeight)
         return false;
     }
 
-    // enable light font hinting
-    TTF_SetFontHinting(pNewFont, TTF_HINTING_LIGHT);
+    // enable font kerning and hinting
+    TTF_SetFontKerning(pNewFont, 1);
+    TTF_SetFontHinting(pNewFont, TTF_HINTING_MONO);
 
     // save sub-font
     m_apFont[iHeight] = pNewFont;

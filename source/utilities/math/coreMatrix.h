@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_MATRIX_H_
 #define _CORE_GUARD_MATRIX_H_
 
-// TODO: do not multiply always full matrices
+// TODO: do not multiply always full matrices, implement "modifying" functions
 
 
 // ****************************************************************
@@ -26,7 +26,7 @@ public:
             float _21, _22, _23;
             float _31, _32, _33;
         };
-        float m[3][3];
+        float arr[3][3];
     };
 
 
@@ -38,18 +38,18 @@ public:
 
     /*! compare operations */
     //! @{
-    inline bool operator == (const coreMatrix3& v)const {return std::memcmp(this, &v, sizeof(coreMatrix3)) ? false :  true;}
-    inline bool operator != (const coreMatrix3& v)const {return std::memcmp(this, &v, sizeof(coreMatrix3)) ?  true : false;}
+    inline bool operator == (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ? false :  true;}
+    inline bool operator != (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ?  true : false;}
     //! @}
 
     /*! matrix operations */
     //! @{
-    constexpr_func coreMatrix3 operator +  (const coreMatrix3& v)const;
-    constexpr_func coreMatrix3 operator -  (const coreMatrix3& v)const;
-    constexpr_func coreMatrix3 operator *  (const coreMatrix3& v)const;
-    inline         void        operator += (const coreMatrix3& v) {*this = *this + v;}
-    inline         void        operator -= (const coreMatrix3& v) {*this = *this - v;}
-    inline         void        operator *= (const coreMatrix3& v) {*this = *this * v;}
+    constexpr_func coreMatrix3 operator +  (const coreMatrix3& m)const;
+    constexpr_func coreMatrix3 operator -  (const coreMatrix3& m)const;
+    constexpr_func coreMatrix3 operator *  (const coreMatrix3& m)const;
+    inline         void        operator += (const coreMatrix3& m) {*this = *this + m;}
+    inline         void        operator -= (const coreMatrix3& m) {*this = *this - m;}
+    inline         void        operator *= (const coreMatrix3& m) {*this = *this * m;}
     //! @}
 
     /*! scalar operations */
@@ -58,14 +58,14 @@ public:
     inline                coreMatrix3 operator /  (const float& f)const                  {return  *this * RCP(f);}
     inline                void        operator *= (const float& f)                       {*this = *this * f;}
     inline                void        operator /= (const float& f)                       {*this = *this / f;}
-    friend constexpr_func coreMatrix3 operator *  (const float& f, const coreMatrix3& v) {return v * f;}
+    friend constexpr_func coreMatrix3 operator *  (const float& f, const coreMatrix3& m) {return m * f;}
     //! @}
 
     /*! convert matrix */
     //! @{
-    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
-    inline coreVector4 Quat()const;
-    inline void Quat(const coreVector4& v);
+    constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
+    inline        coreVector4 Quat()const;
+    static inline coreMatrix3 Quat(const coreVector4& v);
     //! @}
 
     /*! transpose matrix */
@@ -110,7 +110,7 @@ public:
             float _31, _32, _33, _34;
             float _41, _42, _43, _44;
         };
-        float m[4][4];
+        float arr[4][4];
     };
 
 
@@ -123,18 +123,18 @@ public:
 
     /*! compare operations */
     //! @{
-    inline bool operator == (const coreMatrix4& v)const {return std::memcmp(this, &v, sizeof(coreMatrix4)) ? false :  true;}
-    inline bool operator != (const coreMatrix4& v)const {return std::memcmp(this, &v, sizeof(coreMatrix4)) ?  true : false;}
+    inline bool operator == (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ? false :  true;}
+    inline bool operator != (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ?  true : false;}
     //! @}
 
     /*! matrix operations */
     //! @{
-    constexpr_func coreMatrix4 operator +  (const coreMatrix4& v)const;
-    constexpr_func coreMatrix4 operator -  (const coreMatrix4& v)const;
-    constexpr_func coreMatrix4 operator *  (const coreMatrix4& v)const hot_func;
-    inline         void        operator += (const coreMatrix4& v) {*this = *this + v;}
-    inline         void        operator -= (const coreMatrix4& v) {*this = *this - v;}
-    inline         void        operator *= (const coreMatrix4& v) {*this = *this * v;}
+    constexpr_func coreMatrix4 operator +  (const coreMatrix4& m)const;
+    constexpr_func coreMatrix4 operator -  (const coreMatrix4& m)const;
+    constexpr_func coreMatrix4 operator *  (const coreMatrix4& m)const;
+    inline         void        operator += (const coreMatrix4& m) {*this = *this + m;}
+    inline         void        operator -= (const coreMatrix4& m) {*this = *this - m;}
+    inline         void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     /*! scalar operations */
@@ -143,16 +143,16 @@ public:
     inline                coreMatrix4 operator /  (const float& f)const                  {return  *this * RCP(f);}
     inline                void        operator *= (const float& f)                       {*this = *this * f;}
     inline                void        operator /= (const float& f)                       {*this = *this / f;}
-    friend constexpr_func coreMatrix4 operator *  (const float& f, const coreMatrix4& v) {return v * f;}
+    friend constexpr_func coreMatrix4 operator *  (const float& f, const coreMatrix4& m) {return m * f;}
     //! @}
 
     /*! convert matrix */
     //! @{
-    constexpr_obj operator const float* ()const {return r_cast<const float*>(this);}
-    constexpr_func coreMatrix3 m123()const      {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
-    constexpr_func coreMatrix3 m124()const      {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
-    constexpr_func coreMatrix3 m134()const      {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
-    constexpr_func coreMatrix3 m234()const      {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
+    constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreMatrix3 m123()const       {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
+    constexpr_func coreMatrix3 m124()const       {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
+    constexpr_func coreMatrix3 m134()const       {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
+    constexpr_func coreMatrix3 m234()const       {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
     //! @}
 
     /*! transpose matrix */
@@ -186,6 +186,7 @@ public:
     static inline         coreMatrix4 Orientation(const coreVector3& vDirection, const coreVector3& vOrientation);
     static inline         coreMatrix4 Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
     static inline         coreMatrix4 Ortho      (const coreVector2& vResolution);
+    static inline         coreMatrix4 Ortho      (const float&       fLeft, const float& fRight, const float& fBottom, const float& fTop, const float& fNearClip, const float& fFarClip);
     static inline         coreMatrix4 Camera     (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
     //! @}
 };
@@ -213,31 +214,31 @@ constexpr_func coreMatrix3::coreMatrix3(const float& f11, const float& f12, cons
 
 // ****************************************************************
 /* addition with matrix */
-constexpr_func coreMatrix3 coreMatrix3::operator + (const coreMatrix3& v)const
+constexpr_func coreMatrix3 coreMatrix3::operator + (const coreMatrix3& m)const
 {
-    return coreMatrix3(_11+v._11, _12+v._12, _13+v._13,
-                       _21+v._21, _22+v._22, _23+v._23,
-                       _31+v._31, _32+v._32, _33+v._33);
+    return coreMatrix3(_11+m._11, _12+m._12, _13+m._13,
+                       _21+m._21, _22+m._22, _23+m._23,
+                       _31+m._31, _32+m._32, _33+m._33);
 }
 
 
 // ****************************************************************
 /* subtraction with matrix */
-constexpr_func coreMatrix3 coreMatrix3::operator - (const coreMatrix3& v)const
+constexpr_func coreMatrix3 coreMatrix3::operator - (const coreMatrix3& m)const
 {
-    return coreMatrix3(_11-v._11, _12-v._12, _13-v._13,
-                       _21-v._21, _22-v._22, _23-v._23,
-                       _31-v._31, _32-v._32, _33-v._33);
+    return coreMatrix3(_11-m._11, _12-m._12, _13-m._13,
+                       _21-m._21, _22-m._22, _23-m._23,
+                       _31-m._31, _32-m._32, _33-m._33);
 }
 
 
 // ****************************************************************
 /* multiplication with matrix */
-constexpr_func coreMatrix3 coreMatrix3::operator * (const coreMatrix3& v)const
+constexpr_func coreMatrix3 coreMatrix3::operator * (const coreMatrix3& m)const
 {
-    return coreMatrix3(_11*v._11 + _12*v._21 + _13*v._31, _11*v._12 + _12*v._22 + _13*v._32, _11*v._13 + _12*v._23 + _13*v._33,
-                       _21*v._11 + _22*v._21 + _23*v._31, _21*v._12 + _22*v._22 + _23*v._32, _21*v._13 + _22*v._23 + _23*v._33,
-                       _31*v._11 + _32*v._21 + _33*v._31, _31*v._12 + _32*v._22 + _33*v._32, _31*v._13 + _32*v._23 + _33*v._33);
+    return coreMatrix3(_11*m._11 + _12*m._21 + _13*m._31, _11*m._12 + _12*m._22 + _13*m._32, _11*m._13 + _12*m._23 + _13*m._33,
+                       _21*m._11 + _22*m._21 + _23*m._31, _21*m._12 + _22*m._22 + _23*m._32, _21*m._13 + _22*m._23 + _23*m._33,
+                       _31*m._11 + _32*m._21 + _33*m._31, _31*m._12 + _32*m._22 + _33*m._32, _31*m._13 + _32*m._23 + _33*m._33);
 }
 
 
@@ -259,37 +260,37 @@ inline coreVector4 coreMatrix3::Quat()const
 
     if(fTrace > 0.0f)
     {
-        const float s = 0.5f * RSQRT(fTrace + 1.0f);
-        return coreVector4((_23 - _32) *     s,
-                           (_31 - _13) *     s,
-                           (_12 - _21) *     s,
-                                 0.25f * RCP(s));
+        const float F = 0.5f * RSQRT(fTrace + 1.0f);
+        return coreVector4((_23 - _32) *     F,
+                           (_31 - _13) *     F,
+                           (_12 - _21) *     F,
+                                 0.25f * RCP(F));
     }
     else
     {
         if((_11 > _22) && (_11 > _33))
         {
-            const float s = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
-            return coreVector4(      0.25f * RCP(s),
-                               (_21 + _12) *     s,
-                               (_31 + _13) *     s,
-                               (_23 - _32) *     s);
+            const float F = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
+            return coreVector4(      0.25f * RCP(F),
+                               (_21 + _12) *     F,
+                               (_31 + _13) *     F,
+                               (_23 - _32) *     F);
         }
         else if(_22 > _33)
         {
-            const float s = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
-            return coreVector4((_21 + _12) *     s,
-                                     0.25f * RCP(s),
-                               (_32 + _23) *     s,
-                               (_31 - _13) *     s);
+            const float F = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
+            return coreVector4((_21 + _12) *     F,
+                                     0.25f * RCP(F),
+                               (_32 + _23) *     F,
+                               (_31 - _13) *     F);
         }
         else
         {
-            const float s = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
-            return coreVector4((_31 + _13) *     s,
-                               (_32 + _23) *     s,
-                                     0.25f * RCP(s),
-                               (_12 - _21) *     s);
+            const float F = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
+            return coreVector4((_31 + _13) *     F,
+                               (_32 + _23) *     F,
+                                     0.25f * RCP(F),
+                               (_12 - _21) *     F);
         }
     }
 }
@@ -297,7 +298,7 @@ inline coreVector4 coreMatrix3::Quat()const
 
 // ****************************************************************
 /* convert quaternion to matrix */
-inline void coreMatrix3::Quat(const coreVector4& v)
+inline coreMatrix3 coreMatrix3::Quat(const coreVector4& v)
 {
     const float XX = v.x*v.x;
     const float XY = v.x*v.y;
@@ -309,9 +310,9 @@ inline void coreMatrix3::Quat(const coreVector4& v)
     const float ZZ = v.z*v.z;
     const float ZW = v.z*v.w;
 
-    *this = coreMatrix3(1.0f - 2.0f * (YY + ZZ),        2.0f * (XY + ZW),        2.0f * (XZ - YW),
-                               2.0f * (XY - ZW), 1.0f - 2.0f * (XX + ZZ),        2.0f * (YZ + XW),
-                               2.0f * (XZ + YW),        2.0f * (YZ - XW), 1.0f - 2.0f * (XX + YY));
+    return coreMatrix3(1.0f - 2.0f * (YY + ZZ),        2.0f * (XY + ZW),        2.0f * (XZ - YW),
+                              2.0f * (XY - ZW), 1.0f - 2.0f * (XX + ZZ),        2.0f * (YZ + XW),
+                              2.0f * (XZ + YW),        2.0f * (YZ - XW), 1.0f - 2.0f * (XX + YY));
 }
 
 
@@ -422,38 +423,38 @@ constexpr_func coreMatrix4::coreMatrix4(const float& f11, const float& f12, cons
 
 // ****************************************************************
 /* addition with matrix */
-constexpr_func coreMatrix4 coreMatrix4::operator + (const coreMatrix4& v)const
+constexpr_func coreMatrix4 coreMatrix4::operator + (const coreMatrix4& m)const
 {
-    return coreMatrix4(_11+v._11, _12+v._12, _13+v._13, _14+v._14,
-                       _21+v._21, _22+v._22, _23+v._23, _24+v._24,
-                       _31+v._31, _32+v._32, _33+v._33, _34+v._34,
-                       _41+v._41, _42+v._42, _43+v._43, _44+v._44);
+    return coreMatrix4(_11+m._11, _12+m._12, _13+m._13, _14+m._14,
+                       _21+m._21, _22+m._22, _23+m._23, _24+m._24,
+                       _31+m._31, _32+m._32, _33+m._33, _34+m._34,
+                       _41+m._41, _42+m._42, _43+m._43, _44+m._44);
 }
 
 
 // ****************************************************************
 /* subtraction with matrix */
-constexpr_func coreMatrix4 coreMatrix4::operator - (const coreMatrix4& v)const
+constexpr_func coreMatrix4 coreMatrix4::operator - (const coreMatrix4& m)const
 {
-    return coreMatrix4(_11-v._11, _12-v._12, _13-v._13, _14-v._14,
-                       _21-v._21, _22-v._22, _23-v._23, _24-v._24,
-                       _31-v._31, _32-v._32, _33-v._33, _34-v._34,
-                       _41-v._41, _42-v._42, _43-v._43, _44-v._44);
+    return coreMatrix4(_11-m._11, _12-m._12, _13-m._13, _14-m._14,
+                       _21-m._21, _22-m._22, _23-m._23, _24-m._24,
+                       _31-m._31, _32-m._32, _33-m._33, _34-m._34,
+                       _41-m._41, _42-m._42, _43-m._43, _44-m._44);
 }
 
 
 // ****************************************************************
 /* multiplication with matrix */
-constexpr_func coreMatrix4 coreMatrix4::operator * (const coreMatrix4& v)const
+constexpr_func coreMatrix4 coreMatrix4::operator * (const coreMatrix4& m)const
 {
-    return coreMatrix4(_11*v._11 + _12*v._21 + _13*v._31 + _14*v._41, _11*v._12 + _12*v._22 + _13*v._32 + _14*v._42,
-                       _11*v._13 + _12*v._23 + _13*v._33 + _14*v._43, _11*v._14 + _12*v._24 + _13*v._34 + _14*v._44,
-                       _21*v._11 + _22*v._21 + _23*v._31 + _24*v._41, _21*v._12 + _22*v._22 + _23*v._32 + _24*v._42,
-                       _21*v._13 + _22*v._23 + _23*v._33 + _24*v._43, _21*v._14 + _22*v._24 + _23*v._34 + _24*v._44,
-                       _31*v._11 + _32*v._21 + _33*v._31 + _34*v._41, _31*v._12 + _32*v._22 + _33*v._32 + _34*v._42,
-                       _31*v._13 + _32*v._23 + _33*v._33 + _34*v._43, _31*v._14 + _32*v._24 + _33*v._34 + _34*v._44,
-                       _41*v._11 + _42*v._21 + _43*v._31 + _44*v._41, _41*v._12 + _42*v._22 + _43*v._32 + _44*v._42,
-                       _41*v._13 + _42*v._23 + _43*v._33 + _44*v._43, _41*v._14 + _42*v._24 + _43*v._34 + _44*v._44);
+    return coreMatrix4(_11*m._11 + _12*m._21 + _13*m._31 + _14*m._41, _11*m._12 + _12*m._22 + _13*m._32 + _14*m._42,
+                       _11*m._13 + _12*m._23 + _13*m._33 + _14*m._43, _11*m._14 + _12*m._24 + _13*m._34 + _14*m._44,
+                       _21*m._11 + _22*m._21 + _23*m._31 + _24*m._41, _21*m._12 + _22*m._22 + _23*m._32 + _24*m._42,
+                       _21*m._13 + _22*m._23 + _23*m._33 + _24*m._43, _21*m._14 + _22*m._24 + _23*m._34 + _24*m._44,
+                       _31*m._11 + _32*m._21 + _33*m._31 + _34*m._41, _31*m._12 + _32*m._22 + _33*m._32 + _34*m._42,
+                       _31*m._13 + _32*m._23 + _33*m._33 + _34*m._43, _31*m._14 + _32*m._24 + _33*m._34 + _34*m._44,
+                       _41*m._11 + _42*m._21 + _43*m._31 + _44*m._41, _41*m._12 + _42*m._22 + _43*m._32 + _44*m._42,
+                       _41*m._13 + _42*m._23 + _43*m._33 + _44*m._43, _41*m._14 + _42*m._24 + _43*m._34 + _44*m._44);
 }
 
 
@@ -512,8 +513,8 @@ inline coreMatrix4& coreMatrix4::Invert()
 /* calculate determinant */
 constexpr_func float coreMatrix4::Determinant()const
 {
-    return (_11*_22 - _12*_21) * (_33*_44 - _34*_43) - (_11*_23 - _13*_21) * (_32*_44 - _34*_42) + 
-           (_11*_24 - _14*_21) * (_32*_43 - _33*_42) + (_12*_23 - _13*_22) * (_31*_44 - _34*_41) - 
+    return (_11*_22 - _12*_21) * (_33*_44 - _34*_43) - (_11*_23 - _13*_21) * (_32*_44 - _34*_42) +
+           (_11*_24 - _14*_21) * (_32*_43 - _33*_42) + (_12*_23 - _13*_22) * (_31*_44 - _34*_41) -
            (_12*_24 - _14*_22) * (_31*_43 - _33*_41) + (_13*-24 - _14*_23) * (_31*_42 - _32*_41);
 }
 
@@ -639,7 +640,7 @@ inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, cons
 
 
 // ****************************************************************
-/* calculate orthographic projection matrix (simplified) */
+/* calculate orthographic projection matrix */
 inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
 {
     const float X = 2.0f * RCP(vResolution.x);
@@ -649,6 +650,22 @@ inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
                        0.0f,    Y, 0.0f, 0.0f,
                        0.0f, 0.0f, 1.0f, 0.0f,
                        0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+inline coreMatrix4 coreMatrix4::Ortho(const float& fLeft, const float& fRight, const float& fBottom, const float& fTop, const float& fNearClip, const float& fFarClip)
+{
+    const float X =  RCP(fRight   - fLeft);
+    const float Y =  RCP(fTop     - fBottom);
+    const float Z = -RCP(fFarClip - fNearClip);
+
+    const float A = -(fRight   + fLeft);
+    const float B = -(fTop     + fBottom);
+    const float C = -(fFarClip + fNearClip);
+
+    return coreMatrix4(2.0f*X,   0.0f,   0.0f, 0.0f,
+                         0.0f, 2.0f*Y,   0.0f, 0.0f,
+                         0.0f,   0.0f, 2.0f*Z, 0.0f,
+                          A*X,    B*Y,    C*Z, 1.0f);
 }
 
 

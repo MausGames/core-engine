@@ -169,11 +169,8 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
     ASSERT(pSurface->format->BitsPerPixel == 8)
 
     // convert text surface data
-    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, coreMath::NextAlign<4>(pSurface->w), pSurface->h, 24, CORE_TEXTURE_MASK);
+    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, coreMath::CeilAlign<4>(pSurface->w), pSurface->h, 24, CORE_TEXTURE_MASK);
     SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
-
-    // get new texture resolution
-    const coreVector2 vNewResolution = coreVector2(I_TO_F(pSurface->w - 2), I_TO_F(pSurface->h));
 
     if(bSub)
     {
@@ -184,11 +181,11 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
         }
 
         // update only a specific area of the texture
-        ASSERT((vNewResolution.x <= m_vResolution.x) && (vNewResolution.y <= m_vResolution.y))
         m_apTexture[0]->Modify(0, 0, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3, pConvert->pixels);
 
         // display only the specific area
-        this->SetTexSize(vNewResolution / m_vResolution);
+        this->SetTexSize(coreVector2(I_TO_F(pSurface->w - 1), I_TO_F(pSurface->h)) / m_vResolution);
+        ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
     }
     else
     {
@@ -200,7 +197,7 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
         m_apTexture[0]->Modify(0, 0, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3, pConvert->pixels);
 
         // save new texture resolution
-        m_vResolution = vNewResolution;
+        m_vResolution = coreVector2(I_TO_F(pSurface->w), I_TO_F(pSurface->h));
     }
 
     // delete text surface data

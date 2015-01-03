@@ -10,10 +10,15 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <shellapi.h>
+    #include <VersionHelpers.h>
 #elif defined(_CORE_LINUX_)
     #include <dirent.h>
+    #include <sys/utsname.h>
 #elif defined(_CORE_OSX_)
     #include <mach-o/dyld.h>
+#elif defined(_CORE_ANDROID_)
+    #include <dirent.h>
+    #include <sys/system_properties.h>
 #endif
 
 thread_local char     coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
@@ -28,8 +33,9 @@ const char* coreData::AppPath()
 
 #if defined(_CORE_WINDOWS_)
     GetModuleFileName(NULL, pcString, CORE_DATA_STRING_LEN);
-#elif defined(_CORE_LINUX_) && !defined(_CORE_ANDROID_)
-    readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN);
+#elif defined(_CORE_LINUX_)
+    const int iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN);
+    pcString[MAX(iLen, 0)] = '\0';
 #elif defined(_CORE_OSX_)
     coreUint iLen = CORE_DATA_STRING_LEN;
     _NSGetExecutablePath(pcString, &iLen);
@@ -38,6 +44,69 @@ const char* coreData::AppPath()
 #endif
 
     return pcString;
+}
+
+
+// ****************************************************************
+/* get operating system name */
+const char* coreData::SystemName()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // detect actual Windows version (GetVersionEx() is deprecated)
+    int i, j, k;
+    for(i = 5; IsWindowsVersionOrGreater(i, 0, 0); ++i) {} --i; int& iMajor = i;
+    for(j = 0; IsWindowsVersionOrGreater(i, j, 0); ++j) {} --j; int& iMinor = j;
+    for(k = 0; IsWindowsVersionOrGreater(i, j, k); ++k) {} --k; int& iPack  = k;
+
+    // map to corresponding sub-name
+    const char* pcSubString = NULL;
+    switch(iMajor*10 + iMinor)
+    {
+    case 64: pcSubString = "10";    break;
+    case 63: pcSubString = "8.1";   break;
+    case 62: pcSubString = "8";     break;
+    case 61: pcSubString = "7";     break;
+    case 60: pcSubString = "Vista"; break;
+    case 51: pcSubString = "XP";    break;
+    case 50: pcSubString = "2000";  break;
+
+    default:
+        pcSubString = PRINT("v%d.%d", iMajor, iMinor);
+        break;
+    }
+
+    // add service pack string when available
+    const char* pcPackString = iPack ? PRINT(" (Service Pack %d)", iPack) : "";
+
+    // return full operating system name
+    return PRINT("Windows %s%s", pcSubString, pcPackString);
+
+#elif defined(_CORE_LINUX_)
+
+    // fetch kernel information
+    utsname oInfo;
+    if(uname(&oInfo)) return "Linux";
+
+    // return full operating system name
+    return PRINT("%s %s (%s)", oInfo.sysname, oInfo.release, oInfo.version);
+
+#elif defined(_CORE_ANDROID_)
+
+    char acOS[PROP_VALUE_MAX], acSDK[PROP_VALUE_MAX];
+
+    // fetch operating system and SDK version strings
+    __system_property_get("ro.build.version.release", acOS);
+    __system_property_get("ro.build.version.sdk",     acSDK);
+
+    // return full operating system name
+    return PRINT("Android %s (API level %s)", acOS, acSDK);
+
+#elif defined(_CORE_OSX_)
+    return "OSX";
+#else
+    return "Unknown";
+#endif
 }
 
 
@@ -73,7 +142,7 @@ const char* coreData::GetCurDir()
 }
 
 
-// ******************************************************************
+// ****************************************************************
 /* open URL with default web-browser */
 coreError coreData::OpenURL(const char* pcURL)
 {
@@ -108,18 +177,18 @@ bool coreData::FileExists(const char* pcPath)
 
 // ****************************************************************
 /* retrieve relative paths of all files from a folder */
-coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput)
+coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* OUTPUT pasOutput)
 {
     WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
 #if defined(_CORE_WINDOWS_)
 
-    HANDLE hFolder;
-    WIN32_FIND_DATA hFile;
+    HANDLE pFolder;
+    WIN32_FIND_DATA oFile;
 
     // open folder
-    hFolder = FindFirstFile(PRINT("%s/%s", pcPath, pcFilter), &hFile);
-    if(hFolder == INVALID_HANDLE_VALUE)
+    pFolder = FindFirstFile(PRINT("%s/%s", pcPath, pcFilter), &oFile);
+    if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s) could not be opened", pcPath);
         return CORE_ERROR_FILE;
@@ -128,18 +197,18 @@ coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::ve
     do
     {
         // check and add file path
-        if(hFile.cFileName[0] != '.')
-            pasOutput->push_back(PRINT("%s/%s", pcPath, hFile.cFileName));
+        if(oFile.cFileName[0] != '.')
+            pasOutput->push_back(PRINT("%s/%s", pcPath, oFile.cFileName));
     }
-    while(FindNextFile(hFolder, &hFile));
+    while(FindNextFile(pFolder, &oFile));
 
     // close folder
-    FindClose(hFolder);
+    FindClose(pFolder);
 
 #else
 
     DIR* pDir;
-    dirent* pDirent;
+    dirent* pEntry;
 
     // open folder
     #if defined(_CORE_ANDROID_)
@@ -153,13 +222,13 @@ coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::ve
         return CORE_ERROR_FILE;
     }
 
-    while((pDirent = readdir(pDir)))
+    while((pEntry = readdir(pDir)))
     {
         // check and add file path
-        if(pDirent->d_name[0] != '.')
+        if(pEntry->d_name[0] != '.')
         {
-            if(coreData::StrCmpLike(pDirent->d_name, pcFilter))
-                pasOutput->push_back(PRINT("%s/%s", pcPath, pDirent->d_name));
+            if(coreData::StrCmpLike(pEntry->d_name, pcFilter))
+                pasOutput->push_back(PRINT("%s/%s", pcPath, pEntry->d_name));
         }
     }
 
@@ -176,14 +245,14 @@ coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::ve
 /* create folder hierarchy */
 void coreData::CreateFolder(const std::string& sPath)
 {
-    int iPos = 0;
+    std::size_t iPos = 0;
 
     // loop through path
-    while((iPos = sPath.find_first_of("/\\", iPos+2)) >= 0)
+    while((iPos = sPath.find_first_of("/\\", iPos+2)) != std::string::npos)
     {
         const std::string sSubFolder = sPath.substr(0, iPos);
 
-        // create subfolder
+        // create sub-folder
 #if defined(_CORE_WINDOWS_)
         CreateDirectory(sSubFolder.c_str(), NULL);
 #else
@@ -195,11 +264,11 @@ void coreData::CreateFolder(const std::string& sPath)
 
 // ****************************************************************
 /* retrieve current date and time as values */
-void coreData::DateTimeValue(coreUint* piYea, coreUint* piMon, coreUint* piDay, coreUint* piHou, coreUint* piMin, coreUint* piSec)
+void coreData::DateTimeValue(coreUint* OUTPUT piYea, coreUint* OUTPUT piMon, coreUint* OUTPUT piDay, coreUint* OUTPUT piHou, coreUint* OUTPUT piMin, coreUint* OUTPUT piSec)
 {
     // format current time
-    const time_t iTime = std::time(NULL);
-    tm* pLocal = std::localtime(&iTime);
+    const std::time_t iTime = std::time(NULL);
+    std::tm* pLocal = std::localtime(&iTime);
 
     // forward values
     if(piYea) *piYea = pLocal->tm_year + 1900;
@@ -218,11 +287,11 @@ const char* coreData::DateTimePrint(const char* pcFormat)
     char* pcString = coreData::__NextString();
 
     // format current time
-    const time_t iTime = std::time(NULL);
-    tm* pLocal = std::localtime(&iTime);
+    const std::time_t iTime = std::time(NULL);
+    std::tm* pLocal = std::localtime(&iTime);
 
     // assemble string
-    const coreUint iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
+    const std::size_t iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
 
     ASSERT(iReturn)
     return iReturn ? pcString : pcFormat;
@@ -235,7 +304,7 @@ const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
 {
     WARN_IF(!pcInput) return "";
 
-    const coreUint iLen = std::strlen(pcInput);
+    const coreUint iLen = coreUint(std::strlen(pcInput));
     return pcInput + (iLen - MIN(iLen, iNum));
 }
 
@@ -267,10 +336,29 @@ float coreData::StrVersion(const char* pcInput)
 void coreData::StrTrim(std::string* psInput)
 {
     // trim right
-    const int iLast = psInput->find_last_not_of(" \n\r\t");
-    if(iLast >= 0) psInput->erase(iLast+1);
+    const std::size_t iLast = psInput->find_last_not_of(" \n\r\t");
+    if(iLast != std::string::npos) psInput->erase(iLast+1);
 
     // trim left
-    const int iFirst = psInput->find_first_not_of(" \n\r\t");
-    if(iFirst >= 0) psInput->erase(0, iFirst);
+    const std::size_t iFirst = psInput->find_first_not_of(" \n\r\t");
+    if(iFirst != std::string::npos) psInput->erase(0, iFirst);
+}
+
+
+// ****************************************************************
+/* replace all occurrences of a sub-string with another one*/
+void coreData::StrReplace(std::string* psInput, const char* pcOld, const char* pcNew)
+{
+    std::size_t iPos = 0;
+
+    // save length of both sub-strings
+    const std::size_t iOldLen = std::strlen(pcOld);
+    const std::size_t iNewLen = std::strlen(pcNew);
+
+    // loop only once and replace all findings
+    while((iPos = psInput->find(pcOld, iPos)) != std::string::npos)
+    {
+        psInput->replace(iPos, iOldLen, pcNew);
+        iPos += iNewLen;
+    }
 }

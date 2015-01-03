@@ -20,6 +20,7 @@
 #define CORE_CONFIG_SYSTEM_WIDTH             "System",   "Width",           (800)
 #define CORE_CONFIG_SYSTEM_HEIGHT            "System",   "Height",          (600)
 #define CORE_CONFIG_SYSTEM_FULLSCREEN        "System",   "Fullscreen",      (0)
+#define CORE_CONFIG_SYSTEM_VSYNC             "System",   "Vsync",           (true)
 #define CORE_CONFIG_SYSTEM_LANGUAGE          "System",   "Language",        ("data/languages/english.lng")
 #define CORE_CONFIG_SYSTEM_DEBUGMODE         "System",   "DebugMode",       (false)
 

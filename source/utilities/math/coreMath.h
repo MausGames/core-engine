@@ -10,8 +10,8 @@
 #ifndef _CORE_GUARD_MATH_H_
 #define _CORE_GUARD_MATH_H_
 
-// TODO: SIN and COS with pre-calculated table ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?)
-// TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4)
+// TODO: SIN and COS with pre-calculated table ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?) what about sincos ?
+// TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4), put SSE version checks static into coreData ?
 
 
 // ****************************************************************
@@ -21,28 +21,30 @@
 #define PI (3.1415926535897932384626433832795f)                    //!< Archimedes' constant
 #define EU (2.7182818284590452353602874713527f)                    //!< Euler's number
 
-#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degree to radian
-#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radian to degree
+#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degrees to radians
+#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radians to degrees
+#define KM_TO_MI(x)   ((x) * 0.621371192237f)                      //!< convert kilometers to miles
+#define MI_TO_KM(x)   ((x) * 1.609344000000f)                      //!< convert miles to kilometers
 
-#define MIN(x,y,...) coreMath::Min(x, y, ##__VA_ARGS__)
-#define MAX(x,y,...) coreMath::Max(x, y, ##__VA_ARGS__)
-#define ABS(x)       coreMath::Abs(x)
-#define SIGN(x)      coreMath::Sign(x)
-#define CLAMP(a,x,y) coreMath::Clamp(a, x, y)
-#define LERP(x,y,s)  coreMath::Lerp(x, y, s)
-#define LERPS(x,y,s) coreMath::LerpSmooth(x, y, s)
-#define LERPB(x,y,s) coreMath::LerpBreak(x, y, s)
-#define FRACT(x)     coreMath::Fract(x)
-#define SQRT(x)      coreMath::Sqrt(x)
-#define RSQRT(x)     coreMath::Rsqrt(x)
-#define RCP(x)       coreMath::Rcp(x)
-#define SIN(x)       coreMath::Sin(x)
-#define COS(x)       coreMath::Cos(x)
-#define TAN(x)       coreMath::Tan(x)
-#define ATAN(x)      coreMath::Atan(x)
-#define COT(x)       coreMath::Cot(x)
-#define CEIL(x)      coreMath::Ceil(x)
-#define FLOOR(x)     coreMath::Floor(x)
+#define MIN   coreMath::Min
+#define MAX   coreMath::Max
+#define SIGN  coreMath::Sign
+#define ABS   coreMath::Abs
+#define CLAMP coreMath::Clamp
+#define LERP  coreMath::Lerp
+#define LERPS coreMath::LerpSmooth
+#define LERPB coreMath::LerpBreak
+#define FRACT coreMath::Fract
+#define SQRT  coreMath::Sqrt
+#define RSQRT coreMath::Rsqrt
+#define RCP   coreMath::Rcp
+#define SIN   coreMath::Sin
+#define COS   coreMath::Cos
+#define TAN   coreMath::Tan
+#define ATAN  coreMath::Atan
+#define COT   coreMath::Cot
+#define CEIL  coreMath::Ceil
+#define FLOOR coreMath::Floor
 
 
 // ****************************************************************
@@ -56,9 +58,9 @@ public:
     template <typename T, typename... A> static constexpr_func T Max(const T& x, const T& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
     template <typename T> static constexpr_func T    Min       (const T& x, const T& y)                    {return (x <   y)  ?    x  :   y;}
     template <typename T> static constexpr_func T    Max       (const T& x, const T& y)                    {return (x >   y)  ?    x  :   y;}
-    template <typename T> static constexpr_func T    Abs       (const T& x)                                {return (x < T(0)) ?   -x  :   x;}
     template <typename T> static constexpr_func T    Sign      (const T& x)                                {return (x < T(0)) ? T(-1) : T(1);}
-    template <typename T> static constexpr_func T    Clamp     (const T& a, const T& x, const T&     y)    {return MIN(MAX(a, x), y);}
+    template <typename T> static constexpr_func T    Abs       (const T& x)                                {return std::abs(x);}
+    template <typename T> static constexpr_func T    Clamp     (const T& x, const T& a, const T&     b)    {return MIN(MAX(x, a), b);}
     template <typename T> static constexpr_func T    Lerp      (const T& x, const T& y, const float& s)    {return x + (y - x) * s;}
     template <typename T> static inline         T    LerpSmooth(const T& x, const T& y, const float& s)    {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
     template <typename T> static inline         T    LerpBreak (const T& x, const T& y, const float& s)    {return LERP(x, y, SIN(s*PI*0.5f));}
@@ -67,9 +69,9 @@ public:
 
     /*! elementary operations */
     //! @{
-    template <int iBase> static inline float Log(const float& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
-    static inline float Fract(const float& fInput)                    {return fInput - I_TO_F(F_TO_SI(fInput));}
-    static inline float Sqrt (const float& fInput)                    {return fInput * RSQRT(fInput);}
+    template <coreUint iBase> static inline float Log(const float& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
+    static inline float Fract(const float& fInput)                         {return fInput - I_TO_F(F_TO_SI(fInput));}
+    static inline float Sqrt (const float& fInput)                         {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
     static inline float Rsqrt(float fInput);
     static inline float Rcp  (float fInput);
     //! @}
@@ -85,12 +87,12 @@ public:
 
     /*! rounding operations */
     //! @{
-    template <int iByte> static inline coreUint NextAlign(const int& iInput) {return coreMath::PrevAlign<iByte>(iInput) + iByte;}
-    template <int iByte> static inline coreUint PrevAlign(const int& iInput) {const int k = iInput - 1; return k - (k % iByte);}
-    static inline coreUint NextPOT(const coreUint& iInput)                   {coreUint k = 2; while(k < iInput) k <<= 1; return k;}
-    static inline coreUint PrevPOT(const coreUint& iInput)                   {return coreMath::NextPOT(iInput) >> 1;}
-    static inline float    Ceil   (const float&    fInput)                   {return std::ceil (fInput);}
-    static inline float    Floor  (const float&    fInput)                   {return std::floor(fInput);}
+    template <coreUint iByte> static inline coreUint CeilAlign (const coreUint& iInput) {const coreUint  k = iInput - 1; return k - (k % iByte) + iByte;}
+    template <coreUint iByte> static inline coreUint FloorAlign(const coreUint& iInput) {const coreUint& k = iInput;     return k - (k % iByte);}
+    static inline coreUint CeilPOT (const coreUint& iInput)                             {coreUint k = 2; while(k <  iInput) k <<= 1; return k;}
+    static inline coreUint FloorPOT(const coreUint& iInput)                             {coreUint k = 2; while(k <= iInput) k <<= 1; return k >> 1;}
+    static inline float    Ceil    (const float&    fInput)                             {return std::ceil (fInput);}
+    static inline float    Floor   (const float&    fInput)                             {return std::floor(fInput);}
     //! @}
 
 

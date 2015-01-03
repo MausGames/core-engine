@@ -9,7 +9,7 @@
 #include "Core.h"
 
 
-// ******************************************************************
+// ****************************************************************
 // constructor
 CoreSystem::CoreSystem()noexcept
 : m_vResolution (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
@@ -113,6 +113,9 @@ CoreSystem::CoreSystem()noexcept
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
+    // disable screen saver (automatically re-enabled)
+    SDL_DisableScreenSaver();
+
     // init high precision time
     m_dPerfFrequency = 1.0 / double(SDL_GetPerformanceFrequency());
     m_iPerfTime      = SDL_GetPerformanceCounter();
@@ -151,24 +154,25 @@ CoreSystem::CoreSystem()noexcept
     // log processor information
     Core::Log->ListStartInfo("Platform Information");
     {
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")     " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
-        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:") " %d MB",                           SDL_GetSystemRAM());
-        Core::Log->ListAdd(CORE_LOG_BOLD("SIMD Support:")  " SSE %s, AVX %s",                  m_fSSE ? PRINT("%.1f", m_fSSE) : "-", m_fAVX ? PRINT("%.1f", m_fAVX) : "-");
-        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[0]:")      " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
-        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[1]:")      " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                              coreData::SystemName());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MB",                           SDL_GetSystemRAM());
+        Core::Log->ListAdd(CORE_LOG_BOLD("SIMD Support:")     " SSE %s, AVX %s",                  m_fSSE ? PRINT("%.1f", m_fSSE) : "-", m_fAVX ? PRINT("%.1f", m_fAVX) : "-");
+        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[0]:")         " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
+        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[1]:")         " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
     }
     Core::Log->ListEnd();
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // destructor
 CoreSystem::~CoreSystem()
 {
     // clear memory
     m_avAvailable.clear();
 
-    // delete SDL main window object
+    // delete main window object
     SDL_DestroyWindow(m_pWindow);
 
     // shut down SDL libraries
@@ -180,7 +184,7 @@ CoreSystem::~CoreSystem()
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // change the icon of the window
 void CoreSystem::SetWindowIcon(const char* pcPath)
 {
@@ -197,7 +201,7 @@ void CoreSystem::SetWindowIcon(const char* pcPath)
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // update the window event system
 bool CoreSystem::__UpdateEvents()
 {
@@ -252,7 +256,7 @@ bool CoreSystem::__UpdateEvents()
 }
 
 
-// ******************************************************************
+// ****************************************************************
 // update the high precision time
 void CoreSystem::__UpdateTime()
 {

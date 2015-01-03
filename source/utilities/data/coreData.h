@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
 
+// TODO: check GetVersionEx() for Windows 10
+
 
 // ****************************************************************
 /* data definitions */
@@ -17,12 +19,12 @@
 #define CORE_DATA_STRING_LEN (256u)   //!< length of each return-string
 
 #if defined(_CORE_WINDOWS_)
-    #define CORE_DATA_SLASH "\\"      //!< default path-delimiter of the operating system
+    #define CORE_DATA_SLASH "\\"      //!< default path-delimiter of the operating system (as string)
 #else
     #define CORE_DATA_SLASH "/"
 #endif
 
-#define PRINT(x,...) coreData::Print(x, ##__VA_ARGS__)
+#define PRINT coreData::Print
 
 
 // ****************************************************************
@@ -37,8 +39,8 @@ private:
 public:
     /*! create formatted string */
     //! @{
-    template <typename... A> static const char* Print(const char* pcFormat, A&&... vArgs);
-    static inline                   const char* Print(const char* pcFormat) {return pcFormat;}
+    template <typename... A> static RETURN_RESTRICT const char* Print(const char* pcFormat, A&&... vArgs);
+    static inline                   RETURN_RESTRICT const char* Print(const char* pcFormat) {return pcFormat;}
     //! @}
 
     /*! get application properties */
@@ -46,6 +48,11 @@ public:
     static        const char* AppPath();
     static inline const char* AppName() {const char* pcString = coreData::AppPath(); const char* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? pcSlash+1 : pcString;}
     static inline const char* AppDir () {const char* pcString = coreData::AppPath(); const char* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<char*>(pcSlash+1)) = '\0'; return pcString;}
+    //! @}
+
+    /* get operating system properties */
+    //! @{
+    static const char* SystemName();
     //! @}
 
     /*! control current working directory */
@@ -62,13 +69,13 @@ public:
     /*! handle physical files and folders */
     //! @{
     static bool      FileExists  (const char* pcPath);
-    static coreError ScanFolder  (const char* pcPath, const char* pcFilter, std::vector<std::string>* pasOutput);
+    static coreError ScanFolder  (const char* pcPath, const char* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
     static void      CreateFolder(const std::string& sPath);
     //! @}
 
     /*! retrieve current date and time */
     //! @{
-    static void        DateTimeValue(coreUint* piYea, coreUint* piMon, coreUint* piDay, coreUint* piHou, coreUint* piMin, coreUint* piSec);
+    static void        DateTimeValue(coreUint* OUTPUT piYea, coreUint* OUTPUT piMon, coreUint* OUTPUT piDay, coreUint* OUTPUT piHou, coreUint* OUTPUT piMin, coreUint* OUTPUT piSec);
     static const char* DateTimePrint(const char* pcFormat);
     static inline const char* DateString() {return coreData::DateTimePrint("%Y-%m-%d");}
     static inline const char* TimeString() {return coreData::DateTimePrint("%H:%M:%S");}
@@ -86,6 +93,7 @@ public:
     static const char*         StrExtension(const char*  pcInput);
     static float               StrVersion  (const char*  pcInput);
     static void                StrTrim     (std::string* psInput);
+    static void                StrReplace  (std::string* psInput, const char* pcOld, const char* pcNew);
     //! @}
 
 private:
@@ -93,14 +101,14 @@ private:
 
     /*! access next return-string */
     //! @{
-    static inline char* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0; return m_aacString[m_iCurString];}
+    static inline RETURN_RESTRICT char* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0; return m_aacString[m_iCurString];}
     //! @}
 };
 
 
 // ****************************************************************
 /* create formatted string */
-template <typename... A> const char* coreData::Print(const char* pcFormat, A&&... vArgs)
+template <typename... A> RETURN_RESTRICT const char* coreData::Print(const char* pcFormat, A&&... vArgs)
 {
     char* pcString = coreData::__NextString();
 

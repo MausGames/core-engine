@@ -21,10 +21,12 @@
 #define CORE_INPUT_BUTTONS_JOYSTICK (32)    //!< number of regarded joystick buttons
 #define CORE_INPUT_FINGERS          (5)     //!< maximum number of simultaneous fingers
 
-#define CORE_INPUT_ID MIN(iID, coreUint(m_aJoystick.size()-1))
+#define CORE_INPUT_ID MIN(iID, coreUint(m_aJoystick.size())-1)
 
-#define CORE_INPUT_KEY(k) (SDL_SCANCODE_ ## k)
+#define CORE_INPUT_KEY(k)  (SDL_SCANCODE_ ## k)
+#define CORE_INPUT_CHAR(c) (SDLK_         ## c)
 typedef SDL_Scancode coreInputKey;
+typedef SDL_Keycode  coreInputChar;
 
 enum coreInputButton
 {
@@ -52,8 +54,8 @@ private:
     struct coreKeyboard
     {
         bool aabButton[CORE_INPUT_BUTTONS_KEYBOARD][4];   //!< status of the keyboard buttons
-        coreInputKey iLast;                               //!< last pressed keyboard button
-        char cChar;                                       //!< current text-input character
+        coreInputKey  iLast;                              //!< last pressed keyboard button
+        coreInputChar iChar;                              //!< current text-input character
 
         coreKeyboard()noexcept;
     };
@@ -127,7 +129,7 @@ public:
     //! @{
     inline const char* GetJoystickName(const coreUint& iID)const {return m_aJoystick[CORE_INPUT_ID].pHandle ? (SDL_JoystickName(m_aJoystick[CORE_INPUT_ID].pHandle)) : "";}
     inline const char* GetJoystickGUID(const coreUint& iID)const {if(m_aJoystick[CORE_INPUT_ID].pHandle) {char acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(m_aJoystick[CORE_INPUT_ID].pHandle), acGUID, ARRAY_SIZE(acGUID)); return PRINT("%s", acGUID);} return "";}
-    inline coreUint    GetJoystickNum ()const                    {return m_aJoystick.size()-1;}
+    inline coreUint    GetJoystickNum ()const                    {return coreUint(m_aJoystick.size())-1;}
     //! @}
 
     //! process input events
@@ -137,10 +139,10 @@ public:
 
     //! access keyboard input
     //! @{
-    inline void        SetKeyboardButton(const coreInputKey& iButton, const bool& bStatus)             {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; m_Keyboard.aabButton[iButton][0] = bStatus; if(bStatus) m_Keyboard.iLast = iButton;}
-    inline void        SetKeyboardChar  (const char& cChar)                                            {m_Keyboard.cChar = cChar;}
-    inline const bool& GetKeyboardButton(const coreInputKey& iButton, const coreInputType& iType)const {return m_Keyboard.aabButton[iButton][iType];}
-    inline const char& GetKeyboardChar  ()const                                                        {return m_Keyboard.cChar;}
+    inline void                 SetKeyboardButton(const coreInputKey&  iButton, const bool& bStatus)             {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; m_Keyboard.aabButton[iButton][0] = bStatus; if(bStatus) m_Keyboard.iLast = iButton;}
+    inline void                 SetKeyboardChar  (const coreInputChar& iChar)                                    {m_Keyboard.iChar = iChar;}
+    inline const bool&          GetKeyboardButton(const coreInputKey&  iButton, const coreInputType& iType)const {return m_Keyboard.aabButton[iButton][iType];}
+    inline const coreInputChar& GetKeyboardChar  ()const                                                         {return m_Keyboard.iChar;}
     //! @}
 
     //! access mouse input
@@ -158,7 +160,7 @@ public:
     //! access joystick input
     //! @{
     inline void               SetJoystickButton  (const coreUint& iID, const int& iButton, const bool& bStatus)             {WARN_IF(iButton >= CORE_INPUT_BUTTONS_JOYSTICK) return; m_aJoystick[CORE_INPUT_ID].aabButton[iButton][0] = bStatus; if(bStatus) m_aJoystick[CORE_INPUT_ID].iLast = iButton;}
-    inline void               SetJoystickRelative(const coreUint& iID, const coreByte& iAxis, const float& fValue)          {m_aJoystick[CORE_INPUT_ID].vRelative.m[iAxis] = fValue;}
+    inline void               SetJoystickRelative(const coreUint& iID, const coreByte& iAxis, const float& fValue)          {m_aJoystick[CORE_INPUT_ID].vRelative.arr[iAxis] = fValue;}
     inline const bool&        GetJoystickButton  (const coreUint& iID, const int& iButton, const coreInputType& iType)const {return m_aJoystick[CORE_INPUT_ID].aabButton[iButton][iType];}
     inline const coreVector2& GetJoystickRelative(const coreUint& iID)const                                                 {return m_aJoystick[CORE_INPUT_ID].vRelative;}
     //! @}
