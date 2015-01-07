@@ -213,42 +213,32 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
 {
     ASSERT(ptPointer)
 
-    if(m_pPersistentBuffer)
+    // keep persistent mapped buffer
+    if(!m_pPersistentBuffer)
     {
-        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        if(CORE_GL_SUPPORT(ARB_map_buffer_range))
         {
-            // flush persistent mapped buffer directly
-            glFlushMappedNamedBufferRange(m_iDataBuffer, m_iMapOffset, m_iMapLength);
+            if(CORE_GL_SUPPORT(ARB_direct_state_access))
+            {
+                // unmap buffer memory directly
+                glUnmapNamedBuffer(m_iDataBuffer);
+            }
+            else
+            {
+                // bind and unmap buffer memory
+                this->Bind();
+                glUnmapBuffer(m_iTarget);
+            }
         }
         else
         {
-            // bind and flush persistent mapped buffer
+            // send new data to the data buffer
             this->Bind();
-            glFlushMappedBufferRange(m_iTarget, m_iMapOffset, m_iMapLength);
-        }
-    }
-    else if(CORE_GL_SUPPORT(ARB_map_buffer_range))
-    {
-        if(CORE_GL_SUPPORT(ARB_direct_state_access))
-        {
-            // unmap buffer memory directly
-            glUnmapNamedBuffer(m_iDataBuffer);
-        }
-        else
-        {
-            // bind and unmap buffer memory
-            this->Bind();
-            glUnmapBuffer(m_iTarget);
-        }
-    }
-    else
-    {
-        // send new data to the data buffer
-        this->Bind();
-        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, ptPointer);
+            glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, ptPointer);
 
-        // delete temporary memory
-        SAFE_DELETE_ARRAY(ptPointer);
+            // delete temporary memory
+            SAFE_DELETE_ARRAY(ptPointer);
+        }
     }
 
     // create sync object

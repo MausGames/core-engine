@@ -331,6 +331,7 @@ template <typename T> void coreSpline<T>::TranslateRelative(const float& fDistan
 /* calculate final position and direction */
 template <typename T> void coreSpline<T>::__CalcPosDir(const float& fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
 {
+    // normal calculation:
     // *ptPosition  = (2.0f*X3 - 3.0f*X2 + 1.0f)*tP1 - (2.0f*X3 - 3.0f*X2)*tP2 + (     X3 - 2.0f*X2 +   X1)*tT1 + (     X3 -      X2)*tT2;
     // *ptDirection = (6.0f*X2 - 6.0f*X1       )*tP1 - (6.0f*X2 - 6.0f*X1)*tP2 + (3.0f*X2 - 4.0f*X1 + 1.0f)*tT1 + (3.0f*X2 - 2.0f*X1)*tT2;
 

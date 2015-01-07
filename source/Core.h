@@ -151,6 +151,7 @@
 
 // ****************************************************************
 // specific libraries
+#define HAVE_LIBC (1)
 #define GLEW_MX
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS

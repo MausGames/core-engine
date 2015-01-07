@@ -20,7 +20,7 @@
 /* 3d-object definitions */
 #define CORE_OBJECT3D_INSTANCE_SIZE      (2*sizeof(coreVector4) + 2*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
 #define CORE_OBJECT3D_INSTANCE_BUFFERS   (3u)                                                                   //!< number of concurrent instance data buffer
-#define CORE_OBJECT3D_INSTANCE_THRESHOLD (100u)                                                                 //!< minimum number of objects to draw instanced
+#define CORE_OBJECT3D_INSTANCE_THRESHOLD (5u)                                                                   //!< minimum number of objects to draw instanced
 
 
 // ****************************************************************

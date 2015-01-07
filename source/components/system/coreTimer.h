@@ -96,8 +96,8 @@ private:
 
 
 public:
-    constexpr_func          coreFlow()noexcept                    : m_fValue (0.0f)   {}
-    explicit constexpr_func coreFlow(const float& fValue)noexcept : m_fValue (fValue) {}
+    constexpr_func coreFlow()noexcept                    : m_fValue (0.0f)   {}
+    constexpr_func coreFlow(const float& fValue)noexcept : m_fValue (fValue) {}
 
     /*! access current value */
     //! @{

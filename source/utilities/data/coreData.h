@@ -10,8 +10,6 @@
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
 
-// TODO: check GetVersionEx() for Windows 10
-
 
 // ****************************************************************
 /* data definitions */
