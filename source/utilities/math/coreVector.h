@@ -182,6 +182,11 @@ public:
     /*! convert vector */
     //! @{
     constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_func coreVector3 xzy()const        {return coreVector3(x, z, y);}
+    constexpr_func coreVector3 yxz()const        {return coreVector3(y, x, z);}
+    constexpr_func coreVector3 yzx()const        {return coreVector3(y, z, x);}
+    constexpr_func coreVector3 zxy()const        {return coreVector3(z, x, y);}
+    constexpr_func coreVector3 zyx()const        {return coreVector3(z, y, x);}
     constexpr_func coreVector2 xy()const         {return coreVector2(x, y);}
     constexpr_func coreVector2 xz()const         {return coreVector2(x, z);}
     constexpr_func coreVector2 yx()const         {return coreVector2(y, x);}

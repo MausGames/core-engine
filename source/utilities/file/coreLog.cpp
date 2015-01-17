@@ -51,6 +51,15 @@ coreLog::coreLog(const char* pcPath)noexcept
 
 
 // ****************************************************************
+/* destructor */
+coreLog::~coreLog()
+{
+    // append final line
+    this->__Write(false, "<hr />");
+}
+
+
+// ****************************************************************
 /* write an OpenGL debug message */
 void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam)
 {

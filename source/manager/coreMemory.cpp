@@ -13,7 +13,7 @@
 // constructor
 coreMemoryManager::coreMemoryManager()noexcept
 {
-    Core::Log->Info("Memory Manager created");
+    Core::Log->Info(CORE_LOG_BOLD("Memory Manager created"));
 }
 
 

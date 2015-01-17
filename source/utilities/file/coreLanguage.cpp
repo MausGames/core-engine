@@ -10,9 +10,31 @@
 
 
 // ****************************************************************
+/* constructor */
+coreTranslate::coreTranslate()noexcept
+: m_pLanguage (NULL)
+{
+}
+
+
+// ****************************************************************
+/* destructor */
+coreTranslate::~coreTranslate()
+{
+    // safely unbind last language file
+    this->ChangeLanguage(NULL);
+
+    // clear memory
+    m_apsPointer.clear();
+}
+
+
+// ****************************************************************
 /* change associated language file */
 void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
 {
+    if(m_pLanguage == pLanguage) return;
+
     if(m_pLanguage)
     {
         // unbind everything from current language

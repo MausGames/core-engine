@@ -83,7 +83,7 @@ private:
 
 private:
     coreResourceHandle(coreResource* pResource, coreFile* pFile, const char* pcName, const bool& bAutomatic)noexcept;
-    ~coreResourceHandle() {ASSERT(!m_iRefCount) SAFE_DELETE(m_pResource)}
+    ~coreResourceHandle();
     friend class coreResourceManager;
 
 
@@ -103,7 +103,7 @@ public:
 
     /*! handle resource loading */
     //! @{
-    inline bool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic)       {m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}     
+    inline bool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic)       {m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
     inline bool Reload () {if( this->IsLoaded() && m_iRefCount) {m_pResource->Unload(); m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
     inline bool Nullify() {if( this->IsLoaded())                {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
     //! @}
@@ -254,6 +254,11 @@ private:
     int  __InitThread()override;
     int  __RunThread ()override;
     void __ExitThread()override;
+    //! @}
+
+    /*! load all relevant default resource */
+    //! @{
+    void __LoadDefault();
     //! @}
 };
 

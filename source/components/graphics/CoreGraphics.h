@@ -66,7 +66,7 @@ private:
 
     coreSelect<coreDataBuffer, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aiTransformBuffer;   //!< uniform buffer objects for transformation data
     coreSelect<coreDataBuffer, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aiAmbientBuffer;     //!< uniform buffer objects for ambient data
-    coreByte m_iUniformUpdate;                                                       //!< update status for the UBOs
+    coreByte m_iUniformUpdate;                                                       //!< update status for the UBOs (dirty flag)
 
     float m_fOpenGL;                                                                 //!< available OpenGL version
     float m_fGLSL;                                                                   //!< available GLSL version

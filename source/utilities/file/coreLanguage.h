@@ -11,7 +11,9 @@
 #define _CORE_GUARD_LANGUAGE_H_
 
 // TODO: save current main language file to config
-// TODO: is it possible that pointers to strings may change (vector resize) ?
+// TODO: is it possible that pointers to strings may change (vector resize) -> only if different language files have incompatible keys or size
+// TODO: add copy and move
+// TODO: currently key-identifier may cause problems in normal text
 
 
 // ****************************************************************
@@ -30,8 +32,8 @@ private:
 
 
 public:
-    coreTranslate()noexcept : m_pLanguage (NULL) {}
-    virtual ~coreTranslate() {this->ChangeLanguage(NULL); m_apsPointer.clear();}
+    coreTranslate()noexcept;
+    virtual ~coreTranslate();
     friend class coreLanguage;
 
     /*! change associated language file */
@@ -41,7 +43,7 @@ public:
 
 
 protected:
-    /*! bind and unbind own string pointer */
+    /*! bind and unbind own string pointers */
     //! @{
     void _BindString  (std::string* psString, const char* pcKey);
     void _UnbindString(std::string* psString);

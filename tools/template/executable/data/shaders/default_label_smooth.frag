@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////
 
 
-void VertexMain()
+void FragmentMain()
 {
-    gl_Position      = coreObject3DPosition();
-    v_av2TexCoord[0] = coreObject3DTexCoord();
+    float v1Alpha = coreTexture2D(0, v_av2TexCoord[0]).r;
+    gl_FragColor  = vec3(u_v4Color.rgb, u_v4Color.a * v1Alpha);
 }

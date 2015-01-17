@@ -609,14 +609,14 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 {
     ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
 
-    const coreVector3  D = -vDirection;
+    const coreVector3& D =  vDirection;
     const coreVector3& O =  vOrientation;
-    const coreVector3  S =  coreVector3::Cross(O, D).Normalize();
-    const coreVector3  U = -coreVector3::Cross(S, D).Normalize();
+    const coreVector3  S = -coreVector3::Cross(O, D).Normalize();
+    const coreVector3  U =  coreVector3::Cross(S, D).Normalize();
 
     return coreMatrix4( S.x,  S.y,  S.z, 0.0f,
-                        U.x,  U.y,  U.z, 0.0f,
                         D.x,  D.y,  D.z, 0.0f,
+                        U.x,  U.y,  U.z, 0.0f,
                        0.0f, 0.0f, 0.0f, 1.0f);
 }
 
@@ -662,10 +662,10 @@ inline coreMatrix4 coreMatrix4::Ortho(const float& fLeft, const float& fRight, c
     const float B = -(fTop     + fBottom);
     const float C = -(fFarClip + fNearClip);
 
-    return coreMatrix4(2.0f*X,   0.0f,   0.0f, 0.0f,
-                         0.0f, 2.0f*Y,   0.0f, 0.0f,
-                         0.0f,   0.0f, 2.0f*Z, 0.0f,
-                          A*X,    B*Y,    C*Z, 1.0f);
+    return coreMatrix4(X*2.0f,   0.0f,   0.0f, 0.0f,
+                         0.0f, Y*2.0f,   0.0f, 0.0f,
+                         0.0f,   0.0f, Z*2.0f, 0.0f,
+                          X*A,    Y*B,    Z*C, 1.0f);
 }
 
 
@@ -673,7 +673,12 @@ inline coreMatrix4 coreMatrix4::Ortho(const float& fLeft, const float& fRight, c
 /* calculate camera matrix */
 inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
+    float fTemp;
+
     coreMatrix4 mCamera = coreMatrix4::Orientation(vDirection, vOrientation);
+    fTemp = mCamera._21; mCamera._21 = mCamera._31; mCamera._31 = -fTemp;
+    fTemp = mCamera._22; mCamera._22 = mCamera._32; mCamera._32 = -fTemp;
+    fTemp = mCamera._23; mCamera._23 = mCamera._33; mCamera._33 = -fTemp;
 
     mCamera._14 = -mCamera._11*vPosition.x - mCamera._12*vPosition.y - mCamera._13*vPosition.z;
     mCamera._24 = -mCamera._21*vPosition.x - mCamera._22*vPosition.y - mCamera._23*vPosition.z;

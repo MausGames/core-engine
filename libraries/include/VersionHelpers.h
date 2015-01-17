@@ -14,7 +14,7 @@
 
 #ifdef _MSC_VER
 #pragma once
-#endif  // _MSC_VER
+#endif // _MSC_VER
 
 #include <specstrings.h>    // for _In_, etc.
 

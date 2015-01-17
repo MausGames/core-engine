@@ -37,17 +37,6 @@ CoreDebug::CoreDebug()noexcept
 {
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
-    // load certain default resources
-    Core::Manager::Resource->Load<coreTexture>("default_black.png", CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.png");
-    Core::Manager::Resource->Load<coreShader> ("default_2d.vert",   CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert");
-    Core::Manager::Resource->Load<coreShader> ("default_2d.frag",   CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag");
-    Core::Manager::Resource->Load<coreFont>   ("default.ttf",       CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
-
-    ((coreProgram*)Core::Manager::Resource->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
-        ->AttachShader("default_2d.vert")
-        ->AttachShader("default_2d.frag")
-        ->Finish();
-
     // enable the debug-monitor
     m_bEnabled = true;
 
@@ -59,7 +48,7 @@ CoreDebug::CoreDebug()noexcept
     // create background object
     m_Background.DefineProgram("default_2d_program");
     m_Background.DefineTexture(0, "default_black.png");
-    m_Background.SetPosition  (coreVector2( 0.0f ,0.0f));
+    m_Background.SetPosition  (coreVector2( 0.0f, 0.0f));
     m_Background.SetCenter    (coreVector2(-0.5f, 0.5f));
     m_Background.SetAlignment (coreVector2( 1.0f,-1.0f));
     m_Background.SetColor4    (coreVector4(0.05f,0.05f,0.05f,0.75f));

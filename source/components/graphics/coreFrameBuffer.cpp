@@ -9,7 +9,6 @@
 #include "Core.h"
 
 coreFrameBuffer* coreFrameBuffer::s_pCurrent          = NULL;
-coreObject2D*    coreFrameBuffer::s_pBlitFallback     = NULL;
 float            coreFrameBuffer::s_afViewData[5]; // = 0.0f;
 
 
@@ -248,7 +247,7 @@ void coreFrameBuffer::EndDraw()
 void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)const
 {
     ASSERT(m_iFrameBuffer)
-    ASSERT((!pDestination || ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x) && (iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y))) && 
+    ASSERT((!pDestination || ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x) && (iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y))) &&
                              ((iSrcX + iWidth) <= F_TO_UI(m_vResolution.x)                 && (iSrcY + iHeight) <= F_TO_UI(m_vResolution.y)))
 
     if(CORE_GL_SUPPORT(EXT_framebuffer_blit))
@@ -333,16 +332,17 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
                     const coreVector2 vSrcInvRes = coreVector2(1.0f,1.0f) / m_vResolution;
 
                     // forward transformation data and move
-                    s_pBlitFallback->SetSize     (coreVector2(I_TO_F(iWidth), -I_TO_F(iHeight)) * fDstInvWid);
-                    s_pBlitFallback->SetCenter   (coreVector2(I_TO_F(iDstX),   I_TO_F(iDstY))   * fDstInvWid + coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) * vDstInvRes * 0.5f - 0.5f);
-                    s_pBlitFallback->SetTexSize  (coreVector2(I_TO_F(iWidth),  I_TO_F(iHeight)) * vSrcInvRes);
-                    s_pBlitFallback->SetTexOffset(coreVector2(I_TO_F(iSrcX),   I_TO_F(iSrcY))   * vSrcInvRes);
-                    s_pBlitFallback->Move();
+                    coreObject2D* pBlitFallback = Core::Manager::Object->GetBlitFallback();
+                    pBlitFallback->SetSize     (coreVector2(I_TO_F(iWidth), -I_TO_F(iHeight)) * fDstInvWid);
+                    pBlitFallback->SetCenter   (coreVector2(I_TO_F(iDstX),   I_TO_F(iDstY))   * fDstInvWid + coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) * vDstInvRes * 0.5f - 0.5f);
+                    pBlitFallback->SetTexSize  (coreVector2(I_TO_F(iWidth),  I_TO_F(iHeight)) * vSrcInvRes);
+                    pBlitFallback->SetTexOffset(coreVector2(I_TO_F(iSrcX),   I_TO_F(iSrcY))   * vSrcInvRes);
+                    pBlitFallback->Move();
 
                     // forward source color texture and render
-                    s_pBlitFallback->DefineTexture(0, m_aColorTarget[0].pTexture);
-                    s_pBlitFallback->Render();
-                    s_pBlitFallback->DefineTexture(0, NULL);
+                    pBlitFallback->DefineTexture(0, m_aColorTarget[0].pTexture);
+                    pBlitFallback->Render();
+                    pBlitFallback->DefineTexture(0, NULL);
                 }
                 glEnable(GL_DEPTH_TEST);
                 glEnable(GL_BLEND);

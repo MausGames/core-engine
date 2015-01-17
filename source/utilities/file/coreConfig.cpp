@@ -15,10 +15,10 @@ coreConfig::coreConfig(const char* pcPath)noexcept
 : m_sPath (pcPath)
 {
     // define interface behavior
-    m_Config.SetUnicode(true);
-    m_Config.SetMultiKey(false);
+    m_Config.SetUnicode  (true);
+    m_Config.SetMultiKey (false);
     m_Config.SetMultiLine(false);
-    m_Config.SetSpaces(true);
+    m_Config.SetSpaces   (true);
 
     // load configuration file
     this->Load();

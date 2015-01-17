@@ -10,10 +10,14 @@
 #ifndef _CORE_GUARD_OBJECT2D_H_
 #define _CORE_GUARD_OBJECT2D_H_
 
+// TODO: add interaction for rotated objects (ABS is for 180 degrees)
+// TODO: Interact depends on Move, and Move of some menu objects depend on Interact
+// TODO: on IsClicked: make right mouse button on Android a longer push ?
+// TODO: on IsClicked: consider finger number
+
 
 // ****************************************************************
 // 2d-object class
-// TODO: maybe implement m_fFocusRange as vec2
 class coreObject2D : public coreObject
 {
 private:
@@ -25,23 +29,20 @@ private:
 
 
 protected:
-    static coreModel* s_pModel;   //!< global model object
+    coreMatrix3 m_mRotation;        //!< separate rotation matrix
+    coreMatrix3 m_mTransform;       //!< transformation matrix
 
-    coreMatrix3 m_mRotation;      //!< separate rotation matrix
-    coreMatrix3 m_mTransform;     //!< transformation matrix
-
-    bool  m_bFocused;             //!< interaction status
-    float m_fFocusRange;          //!< range factor used for interaction handling
+    bool        m_bFocused;         //!< interaction status
+    coreVector2 m_vFocusModifier;   //!< size-modifier for interaction handling
 
 #if defined(_CORE_ANDROID_)
-    int m_iFinger;                //!< separate finger interaction status (bitwise)
+    int m_iFinger;                  //!< separate finger interaction status (bitwise)
 #endif
 
 
 public:
     constexpr_weak coreObject2D()noexcept;
     virtual ~coreObject2D() {}
-    friend class coreObjectManager;
 
     //! define the visual appearance
     //! @{
@@ -69,13 +70,13 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetPosition  (const coreVector2& vPosition)   {if(m_vPosition  != vPosition)  {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vPosition  = vPosition;}}
-    inline void SetSize      (const coreVector2& vSize)       {if(m_vSize      != vSize)      {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vSize      = vSize;}}
-    inline void SetDirection (const coreVector2& vDirection)  {if(m_vDirection != vDirection) {m_iUpdate  = CORE_OBJECT_UPDATE_ALL;       m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
-    inline void SetCenter    (const coreVector2& vCenter)     {if(m_vCenter    != vCenter)    {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vCenter    = vCenter;}}
-    inline void SetAlignment (const coreVector2& vAlignment)  {if(m_vAlignment != vAlignment) {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vAlignment = vAlignment;}}
-    inline void SetFocus     (const bool&        bFocus)      {m_bFocused    = bFocus;}
-    inline void SetFocusRange(const float&       fFocusRange) {m_fFocusRange = fFocusRange;}
+    inline void SetPosition     (const coreVector2& vPosition)      {if(m_vPosition  != vPosition)  {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vPosition  = vPosition;}}
+    inline void SetSize         (const coreVector2& vSize)          {if(m_vSize      != vSize)      {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vSize      = vSize;}}
+    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {m_iUpdate  = CORE_OBJECT_UPDATE_ALL;       m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
+    inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vCenter    = vCenter;}}
+    inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vAlignment = vAlignment;}}
+    inline void SetFocus        (const bool&        bFocus)         {m_bFocused       = bFocus;}
+    inline void SetFocusModifier(const coreVector2& vFocusModifier) {m_vFocusModifier = vFocusModifier;}
     //! @}
 
     //! get object properties
@@ -94,17 +95,17 @@ public:
 // ****************************************************************
 // constructor
 constexpr_weak coreObject2D::coreObject2D()noexcept
-: m_vPosition   (coreVector2(0.0f,0.0f))
-, m_vSize       (coreVector2(0.0f,0.0f))
-, m_vDirection  (coreVector2(0.0f,1.0f))
-, m_vCenter     (coreVector2(0.0f,0.0f))
-, m_vAlignment  (coreVector2(0.0f,0.0f))
-, m_mRotation   (coreMatrix3::Identity())
-, m_mTransform  (coreMatrix3::Identity())
-, m_bFocused    (false)
-, m_fFocusRange (1.0f)
+: m_vPosition      (coreVector2(0.0f,0.0f))
+, m_vSize          (coreVector2(0.0f,0.0f))
+, m_vDirection     (coreVector2(0.0f,1.0f))
+, m_vCenter        (coreVector2(0.0f,0.0f))
+, m_vAlignment     (coreVector2(0.0f,0.0f))
+, m_mRotation      (coreMatrix3::Identity())
+, m_mTransform     (coreMatrix3::Identity())
+, m_bFocused       (false)
+, m_vFocusModifier (coreVector2(1.0f,1.0f))
 #if defined(_CORE_ANDROID_)
-, m_iFinger     (0)
+, m_iFinger        (0)
 #endif
 {
 }

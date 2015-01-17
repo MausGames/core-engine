@@ -16,13 +16,13 @@ coreModel* coreModel::s_pCurrent = NULL;
 // ****************************************************************
 // constructor
 coreModel::coreModel()noexcept
-: m_iVertexArray   (0)
-, m_iNumVertices   (0)
-, m_iNumIndices    (0)
-, m_fRadius        (0.0f)
-, m_vRange         (coreVector3(0.0f,0.0f,0.0f))
-, m_iPrimitiveType (GL_TRIANGLES)
-, m_iIndexType     (0)
+: m_iVertexArray    (0)
+, m_iNumVertices    (0)
+, m_iNumIndices     (0)
+, m_fBoundingRadius (0.0f)
+, m_vBoundingRange  (coreVector3(0.0f,0.0f,0.0f))
+, m_iPrimitiveType  (GL_TRIANGLES)
+, m_iIndexType      (0)
 {
 }
 
@@ -75,15 +75,15 @@ coreError coreModel::Load(coreFile* pFile)
     m_sPath        = pFile->GetPath();
     m_iSize        = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUshort);
 
-    // find maximum distance and range from the model center
+    // find maximum distance from the model center
     FOR_EACH(it, oImport.aVertexData)
     {
-        m_fRadius  = MAX(it->vPosition.LengthSq(), m_fRadius);
-        m_vRange.x = MAX(m_vRange.x, it->vPosition.x);
-        m_vRange.y = MAX(m_vRange.y, it->vPosition.y);
-        m_vRange.z = MAX(m_vRange.z, it->vPosition.z);
+        m_fBoundingRadius  = MAX(it->vPosition.LengthSq(), m_fBoundingRadius);
+        m_vBoundingRange.x = MAX(m_vBoundingRange.x, it->vPosition.x);
+        m_vBoundingRange.y = MAX(m_vBoundingRange.y, it->vPosition.y);
+        m_vBoundingRange.z = MAX(m_vBoundingRange.z, it->vPosition.z);
     }
-    m_fRadius = SQRT(m_fRadius);
+    m_fBoundingRadius = SQRT(m_fBoundingRadius);
 
     GLuint iNormFormat;
     std::function<coreUint(const coreVector4&)> nPackFunc;
@@ -126,32 +126,28 @@ coreError coreModel::Load(coreFile* pFile)
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, iNormFormat,       3*sizeof(float) + 2*sizeof(coreUint));
     SAFE_DELETE_ARRAY(pPackedData)
 
-    if(m_iNumVertices > 4)
-    {
 #if defined(_CORE_GLES_)
 
-        if(m_iNumVertices <= 256)
+    if(m_iNumVertices <= 256)
+    {
+        // reduce default index size
+        coreByte* pByteData = new coreByte[m_iNumIndices];
+        for(coreUint i = 0; i < m_iNumIndices; ++i)
         {
-            // reduce default index size
-            coreByte* pByteData = new coreByte[m_iNumIndices];
-            for(coreUint i = 0; i < m_iNumIndices; ++i)
-            {
-                // convert all indices
-                ASSERT(oImport.aiIndexData[i] < 256)
-                pByteData[i] = (coreByte)oImport.aiIndexData[i];
-            }
-
-            // create small index buffer
-            this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, CORE_DATABUFFER_STORAGE_STATIC);
-            SAFE_DELETE_ARRAY(pByteData)
+            // convert all indices
+            ASSERT(oImport.aiIndexData[i] < 256)
+            pByteData[i] = (coreByte)oImport.aiIndexData[i];
         }
-        else
+
+        // create small index buffer
+        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, CORE_DATABUFFER_STORAGE_STATIC);
+        SAFE_DELETE_ARRAY(pByteData)
+    }
+    else
 
 #endif
-        // create index buffer
-        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oImport.aiIndexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
-    }
-    else m_iPrimitiveType = GL_TRIANGLE_STRIP;
+    // create index buffer
+    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oImport.aiIndexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
 
     Core::Log->Info("Model (%s) loaded", pFile->GetPath());
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
@@ -180,14 +176,15 @@ coreError coreModel::Unload()
     m_Sync.Delete();
 
     // reset properties
-    m_sPath          = "";
-    m_iSize          = 0;
-    m_iVertexArray   = 0;
-    m_iNumVertices   = 0;
-    m_iNumIndices    = 0;
-    m_fRadius        = 0.0f;
-    m_iPrimitiveType = GL_TRIANGLES;
-    m_iIndexType     = 0;
+    m_sPath           = "";
+    m_iSize           = 0;
+    m_iVertexArray    = 0;
+    m_iNumVertices    = 0;
+    m_iNumIndices     = 0;
+    m_fBoundingRadius = 0.0f;
+    m_vBoundingRange  = coreVector3(0.0f,0.0f,0.0f);
+    m_iPrimitiveType  = GL_TRIANGLES;
+    m_iIndexType      = 0;
 
     return CORE_OK;
 }

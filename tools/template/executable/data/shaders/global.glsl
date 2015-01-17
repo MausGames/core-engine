@@ -348,6 +348,10 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     #endif
     
+    // low-memory attributes
+    vec2 a_v2LowPosition = a_v3RawPosition.xy;
+    vec2 a_v2LowTexCoord = vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y);
+    
     // remapped variables
     #if defined(_CORE_OPTION_INSTANCING_)
         #define u_v3Position  (a_v3DivPosition)
@@ -467,7 +471,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 // ****************************************************************
 #if defined(_CORE_VERTEX_SHADER_)
 
-    // supporting functions
+    // default model transformation
     vec3 coreObject3DTransform(const in vec3 v3Vector)
     {
     #if defined(_CORE_OPTION_NO_ROTATION_)
@@ -476,51 +480,34 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         return coreQuatApply(u_v4Rotation, v3Vector * u_v3Size) + u_v3Position;
     #endif
     }
-    vec3 coreObject3DTransform()
-    {
-        return coreObject3DTransform(a_v3RawPosition);
-    }
+    vec3 coreObject3DTransformRaw() {return coreObject3DTransform(a_v3RawPosition);}
+    vec3 coreObject3DTransformLow() {return coreObject3DTransform(vec3(a_v2LowPosition, 0.0));}
+    
+    // default particle range calculation
     vec3 coreParticleRange()
     {
     #if defined(_CORE_OPTION_NO_ROTATION_)
-        return coreTranspose(coreToMat3(u_m4Camera)) * vec3(a_v3RawPosition.xy * a_v1DivScale, 0.0);
+        return coreTranspose(coreToMat3(u_m4Camera)) * vec3(a_v2LowPosition * a_v1DivScale, 0.0);
     #else
         float v1Sin = sin(a_v1DivAngle);
         float v1Cos = cos(a_v1DivAngle);
-        return coreTranspose(coreToMat3(u_m4Camera)) * vec3(mat2(v1Cos, v1Sin, -v1Sin, v1Cos) * (a_v3RawPosition.xy * a_v1DivScale), 0.0);
+        return coreTranspose(coreToMat3(u_m4Camera)) * vec3(mat2(v1Cos, v1Sin, -v1Sin, v1Cos) * (a_v2LowPosition * a_v1DivScale), 0.0);
     #endif
     }
 
-    // position transformation functions
-    vec4 coreObject3DPosition()
-    {
-        return u_m4ViewProj * vec4(coreObject3DTransform(), 1.0);
-    }
-    vec4 coreObject2DPosition()
-    {
-        vec3 v3ScreenPos = u_m3ScreenView * vec3(a_v3RawPosition.xy, 1.0);
-        return vec4(v3ScreenPos.xy, 1.0, 1.0/*v3ScreenPos.z*/);
-    }
-    vec4 coreParticlePosition()
-    {
-        return u_m4ViewProj * vec4(coreParticleRange() + a_v3DivPosition, 1.0);
-    }
+    // default position transformation
+    vec4 coreObject3DPositionRaw() {return u_m4ViewProj * vec4(coreObject3DTransformRaw(), 1.0);}
+    vec4 coreObject3DPositionLow() {return u_m4ViewProj * vec4(coreObject3DTransformLow(), 1.0);}
+    vec4 coreObject2DPosition()    {return vec4((u_m3ScreenView * vec3(a_v2LowPosition, 1.0)).xy, 1.0, 1.0);}
+    vec4 coreParticlePosition()    {return u_m4ViewProj * vec4(coreParticleRange() + a_v3DivPosition, 1.0);}
 
-    // texture coordinate transformation functions
-    vec2 coreObject3DTexCoord()
-    {
-        return a_v2RawTexCoord * u_v2TexSize + u_v2TexOffset;
-    }
-    vec2 coreObject2DTexCoord()
-    {
-        return vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y) * u_v2TexSize + u_v2TexOffset;
-    }
-    vec2 coreParticleTexCoord()
-    {
-        return vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y);
-    }
+    // default texture coordinate transformation
+    vec2 coreObject3DTexCoordRaw() {return a_v2RawTexCoord * u_v2TexSize + u_v2TexOffset;}
+    vec2 coreObject3DTexCoordLow() {return a_v2LowTexCoord * u_v2TexSize + u_v2TexOffset;}
+    vec2 coreObject2DTexCoord()    {return a_v2LowTexCoord * u_v2TexSize + u_v2TexOffset;}
+    vec2 coreParticleTexCoord()    {return a_v2LowTexCoord;}
 
-    // color value retrieval functions
+    // recommended color value access
     vec4 coreObject3DColor()
     {
     #if defined(_CORE_OPTION_INSTANCING_)
@@ -532,7 +519,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #define coreObject2DColor() (u_v4Color)
     #define coreParticleColor() (coreObject3DColor())
 
-    // dot-3 bump mapping functions
+    // dot-3 bump mapping initialization and transformation
     vec3 g_n, g_t, g_b;
     void coreDot3VertexInit(const in vec4 v4Rotation, const in vec3 v3Normal, const in vec4 v4Tangent)
     { 
@@ -540,25 +527,17 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         g_n = v3Normal;
         g_t = v4Tangent.xyz;
     #else
-        g_n = normalize(coreQuatApply(v4Rotation, v3Normal));
-        g_t = normalize(coreQuatApply(v4Rotation, v4Tangent.xyz));
+        g_n = coreQuatApply(v4Rotation, v3Normal);
+        g_t = coreQuatApply(v4Rotation, v4Tangent.xyz);
     #endif
         g_b = cross(g_n, g_t) * v4Tangent.w;
     }
-    void coreDot3VertexInit()
-    {
-        coreDot3VertexInit(u_v4Rotation, a_v3RawNormal, a_v4RawTangent);
-    }
-    vec3 coreDot3VertexTransform(const in vec3 v3Vector)
-    {
-        return normalize(vec3(dot(v3Vector, g_t),
-                              dot(v3Vector, g_b),
-                              dot(v3Vector, g_n)));
-    }
+    void coreDot3VertexInit()                            {coreDot3VertexInit(u_v4Rotation, a_v3RawNormal, a_v4RawTangent);}
+    vec3 coreDot3VertexTransform(const in vec3 v3Vector) {return normalize(vec3(dot(v3Vector, g_t), dot(v3Vector, g_b), dot(v3Vector, g_n)));}
     
 #endif // _CORE_VERTEX_SHADER_
 
-// texture lookup functions
+// recommended texture lookup
 #if (__VERSION__) >= 130
     #define coreTexture2D(u,c)     (texture    (u_as2Texture2D    [u], c))
     #define coreTextureShadow(u,c) (textureProj(u_as2TextureShadow[u], c))

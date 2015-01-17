@@ -54,11 +54,8 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
     // allocate own texture to display text
     m_apTexture[0] = Core::Manager::Resource->LoadNew<coreTexture>();
 
-    // load shaders
-    this->DefineProgram(Core::Manager::Resource->Load<coreProgram>("default_label_program", CORE_RESOURCE_UPDATE_AUTO,   NULL))
-        ->AttachShader (Core::Manager::Resource->Load<coreShader> ("default_label.vert",    CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.vert"))
-        ->AttachShader (Core::Manager::Resource->Load<coreShader> ("default_label.frag",    CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.frag"))
-        ->Finish();
+    // load shader-program
+    this->DefineProgram("default_label_sharp_program");
 
     // reserve memory for text
     if(iLength) m_sText.reserve(iLength+1);

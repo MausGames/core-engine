@@ -59,19 +59,14 @@ coreError coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // convert file data
-    SDL_Surface* pConvert = SDL_CreateRGBSurface(0, pData->w, pData->h, pData->format->BitsPerPixel, CORE_TEXTURE_MASK);
-    SDL_SetSurfaceBlendMode(pData, SDL_BLENDMODE_NONE);
-    SDL_BlitSurface(pData, NULL, pConvert, NULL);
-
     // calculate data size and texture format
     const coreUint iDataSize =  pData->w * pData->h * pData->format->BytesPerPixel;
     const GLenum   iInternal = (pData->format->BytesPerPixel == 4) ? GL_RGBA8 : GL_RGB8;
     const GLenum   iFormat   = (pData->format->BytesPerPixel == 4) ? GL_RGBA  : GL_RGB;
 
     // create new texture
-    this->Create(pConvert->w, pConvert->h, iInternal, iFormat, GL_UNSIGNED_BYTE, GL_REPEAT, true);
-    this->Modify(0, 0, pConvert->w, pConvert->h, iDataSize, pConvert->pixels);
+    this->Create(pData->w, pData->h, iInternal, iFormat, GL_UNSIGNED_BYTE, GL_REPEAT, true);
+    this->Modify(0, 0, pData->w, pData->h, iDataSize, pData->pixels);
 
     // save properties
     m_sPath = pFile->GetPath();
@@ -79,7 +74,6 @@ coreError coreTexture::Load(coreFile* pFile)
 
     // delete file data
     SDL_FreeSurface(pData);
-    SDL_FreeSurface(pConvert);
 
     Core::Log->Info("Texture (%s:%u) loaded", pFile->GetPath(), m_iTexture);
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;

@@ -183,6 +183,9 @@ int Core::Run()
         Core::Application->Move();
         Core::Application->Render();
 
+        // update the object manager
+        Core::Manager::Object->__UpdateObjects();
+
         // update all remaining components
         Core::Debug   ->__UpdateOutput();
         Core::Graphics->__UpdateScene();

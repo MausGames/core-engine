@@ -34,7 +34,7 @@ const char* coreData::AppPath()
 #if defined(_CORE_WINDOWS_)
     GetModuleFileName(NULL, pcString, CORE_DATA_STRING_LEN);
 #elif defined(_CORE_LINUX_)
-    const int iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN);
+    const int iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1);
     pcString[MAX(iLen, 0)] = '\0';
 #elif defined(_CORE_OSX_)
     coreUint iLen = CORE_DATA_STRING_LEN;
@@ -333,7 +333,7 @@ float coreData::StrVersion(const char* pcInput)
 
 // ****************************************************************
 /* trim a standard string on both sides */
-void coreData::StrTrim(std::string* psInput)
+void coreData::StrTrim(std::string* OUTPUT psInput)
 {
     // trim right
     const std::size_t iLast = psInput->find_last_not_of(" \n\r\t");
@@ -347,7 +347,7 @@ void coreData::StrTrim(std::string* psInput)
 
 // ****************************************************************
 /* replace all occurrences of a sub-string with another one*/
-void coreData::StrReplace(std::string* psInput, const char* pcOld, const char* pcNew)
+void coreData::StrReplace(std::string* OUTPUT psInput, const char* pcOld, const char* pcNew)
 {
     std::size_t iPos = 0;
 

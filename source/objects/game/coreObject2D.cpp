@@ -8,8 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreModel* coreObject2D::s_pModel = NULL;
-
 
 // ****************************************************************
 // undefine the visual appearance
@@ -41,8 +39,8 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     // draw the model
-    s_pModel->Enable();
-    s_pModel->DrawArrays();
+    Core::Manager::Object->GetLowModel()->Enable();
+    Core::Manager::Object->GetLowModel()->DrawArrays();
 }
 
 void coreObject2D::Render()
@@ -86,13 +84,11 @@ void coreObject2D::Move()
 
 // ****************************************************************
 // interact with the 2d-object
-// TODO: add interaction for rotated objects (ABS is for 180 degrees)
-// TODO: Interact depends on Move, and Move of some menu objects depend on Interact
 void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
     const coreVector2 vScreenPosition = coreVector2(    m_mTransform._31,      m_mTransform._32);
-    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22)) * 0.5f * m_fFocusRange;
+    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22)) * 0.5f * m_vFocusModifier;
 
 #if defined(_CORE_ANDROID_)
 
@@ -129,8 +125,6 @@ void coreObject2D::Interact()
 
 // ****************************************************************
 // check for direct input
-// TODO: make right mouse button on Android a longer push ?
-// TODO: consider finger number
 bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)const
 {
 #if defined(_CORE_ANDROID_)

@@ -287,6 +287,19 @@
     inline         e& operator &= (e&       a, const e& b) {return (a = a & b);}                                                                                     \
     inline         e& operator ^= (e&       a, const e& b) {return (a = a ^ b);}
 
+// retrieve compile-time function and lambda properties
+template <typename T> struct function_traits   : public function_traits<decltype(&T::operator())> {};
+template <typename C, typename R, typename... A> struct function_traits<R(C::*)(A...)const>
+{
+    typedef R return_type;         //!< return type
+    enum {arity = sizeof...(A)};   //!< number of arguments
+
+    template <std::size_t iIndex> struct arg
+    {
+        typedef typename std::tuple_element<iIndex, std::tuple<A...> >::type type;   //!< argument type
+    };
+};
+
 // shorter common types and keywords
 #define f_list forward_list
 #define u_map  unordered_map
@@ -445,46 +458,35 @@ private:
 #else
     #include "additional/coreGL.h"
 #endif
-
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
-
 #include "utilities/data/coreSelect.h"
 #include "utilities/data/coreLookup.h"
 #include "utilities/data/coreRand.h"
-
 #include "utilities/file/coreLog.h"
 #include "utilities/file/coreConfig.h"
 #include "utilities/file/coreLanguage.h"
 #include "utilities/file/coreArchive.h"
-
 #include "utilities/math/coreVector.h"
 #include "utilities/math/coreMatrix.h"
 #include "utilities/math/coreSpline.h"
-
 #include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
 #include "components/system/coreThread.h"
-
 #include "manager/coreMemory.h"
 #include "manager/coreResource.h"
-
 #include "components/graphics/coreSync.h"
 #include "components/graphics/coreDataBuffer.h"
-
 #include "components/graphics/CoreGraphics.h"
 #include "components/graphics/coreModel.h"
 #include "components/graphics/coreTexture.h"
 #include "components/graphics/coreShader.h"
 #include "components/graphics/coreFont.h"
 #include "components/graphics/coreFrameBuffer.h"
-
 #include "components/audio/CoreAudio.h"
 #include "components/audio/coreSound.h"
 #include "components/audio/coreMusic.h"
-
 #include "components/input/CoreInput.h"
-
 #include "manager/coreObject.h"
 #include "objects/game/coreObject2D.h"
 #include "objects/game/coreObject3D.h"
@@ -496,7 +498,6 @@ private:
 #include "objects/menu/coreTextBox.h"
 #include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreMenu.h"
-
 #include "components/debug/CoreDebug.h"
 
 

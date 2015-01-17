@@ -13,6 +13,7 @@
 // TODO: define more log capturing spots, not only resource-loading/unloading and (few) errors
 // TODO: implement stack trace, described in OpenGL Insights (tested on MSVC, works only with available debug symbols)
 // TODO: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts, bacon
+// TODO: better specify, should it be possible to create many log files ? what about OpenGL debugging, console output and file header then ?
 
 
 // ****************************************************************
@@ -29,7 +30,7 @@ enum coreLogLevel : coreByte
     CORE_LOG_LEVEL_INFO    = 0x01,   //!< log info messages and headers
     CORE_LOG_LEVEL_WARNING = 0x02,   //!< log warning messages
     CORE_LOG_LEVEL_ERROR   = 0x04,   //!< log error messages
-    CORE_LOG_LEVEL_ALL     = 0xFF    //!< log everything
+    CORE_LOG_LEVEL_ALL     = 0x07    //!< log everything
 };
 EXTEND_ENUM(coreLogLevel)
 
@@ -50,7 +51,7 @@ private:
 
 public:
     explicit coreLog(const char* pcPath)noexcept;
-    ~coreLog() {this->__Write(false, "<hr />");}
+    ~coreLog();
 
     /*! message functions */
     //! @{

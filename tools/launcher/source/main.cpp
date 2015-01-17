@@ -21,23 +21,23 @@ typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 // ****************************************************************
 int ScanFolder(const char* pcPath, std::vector<std::string>* pasOutput)
 {
-    HANDLE hFolder;
-    WIN32_FIND_DATA hFile;
+    HANDLE pFolder;
+    WIN32_FIND_DATA oFile;
 
     // open folder
-    hFolder = FindFirstFile(pcPath, &hFile);
-    if(hFolder == INVALID_HANDLE_VALUE) return 1;
+    pFolder = FindFirstFile(pcPath, &oFile);
+    if(pFolder == INVALID_HANDLE_VALUE) return 1;
 
     do
     {
         // check and add file path
-        if(hFile.cFileName[0] != '.')
-            pasOutput->push_back(hFile.cFileName);
+        if(oFile.cFileName[0] != '.')
+            pasOutput->push_back(oFile.cFileName);
     }
-    while(FindNextFile(hFolder, &hFile));
+    while(FindNextFile(pFolder, &oFile));
 
     // close folder
-    FindClose(hFolder);
+    FindClose(pFolder);
     return 0;
 }
 

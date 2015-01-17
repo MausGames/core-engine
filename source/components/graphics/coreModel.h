@@ -18,6 +18,7 @@
 // TODO: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
 // TODO: compress texture-coords, 32bit is too much, but still need coords <0.0 >1.0 (probably to -1.0 2.0)
 // TODO: index buffer ignore as constructor parameter ? (ressource manager load)
+// TODO: currently radius and range can change, but they should not... implement more strict interface
 
 
 // ****************************************************************
@@ -65,8 +66,8 @@ private:
 
     coreUint    m_iNumVertices;                         //!< number of vertices
     coreUint    m_iNumIndices;                          //!< number of indices
-    float       m_fRadius;                              //!< maximum distance from the model center
-    coreVector3 m_vRange;                               //!< bounding box range from the model center
+    float       m_fBoundingRadius;                      //!< maximum direct distance from the model center
+    coreVector3 m_vBoundingRange;                       //!< maximum per-axis distance from the model center
 
     GLenum m_iPrimitiveType;                            //!< primitive type for draw calls (e.g. GL_TRIANGLES)
     GLenum m_iIndexType;                                //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
@@ -116,20 +117,20 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetRadius       (const float&       fRadius)        {m_fRadius        = fRadius;}
-    inline void SetRange        (const coreVector3& vRange)         {m_vRange         = vRange;}
-    inline void SetPrimitiveType(const GLenum&      iPrimitiveType) {m_iPrimitiveType = iPrimitiveType;}
+    inline void SetBoundingRadius(const float&       fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
+    inline void SetBoundingRange (const coreVector3& vBoundingRange)  {ASSERT( m_vBoundingRange.IsNull()) m_vBoundingRange  = vBoundingRange;}
+    inline void SetPrimitiveType (const GLenum&      iPrimitiveType)  {m_iPrimitiveType = iPrimitiveType;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint&      GetVertexArray  ()const {return m_iVertexArray;}
-    inline const coreUint&    GetNumVertices  ()const {return m_iNumVertices;}
-    inline const coreUint&    GetNumIndices   ()const {return m_iNumIndices;}
-    inline const float&       GetRadius       ()const {return m_fRadius;}
-    inline const coreVector3& GetRange        ()const {return m_vRange;}
-    inline const GLenum&      GetPrimitiveType()const {return m_iPrimitiveType;}
-    inline const GLenum&      GetIndexType    ()const {return m_iIndexType;}
+    inline const GLuint&      GetVertexArray   ()const {return m_iVertexArray;}
+    inline const coreUint&    GetNumVertices   ()const {return m_iNumVertices;}
+    inline const coreUint&    GetNumIndices    ()const {return m_iNumIndices;}
+    inline const float&       GetBoundingRadius()const {return m_fBoundingRadius;}
+    inline const coreVector3& GetBoundingRange ()const {return m_vBoundingRange;}
+    inline const GLenum&      GetPrimitiveType ()const {return m_iPrimitiveType;}
+    inline const GLenum&      GetIndexType     ()const {return m_iIndexType;}
     //! @}
 
     //! get currently active model object

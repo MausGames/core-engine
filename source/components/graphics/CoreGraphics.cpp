@@ -292,13 +292,13 @@ void CoreGraphics::Screenshot(const char* pcPath)const
     const int iSize   = iHeight*iPitch;
 
     // read pixel data from the frame buffer
-    coreByte* pData = new coreByte[iSize];
+    coreByte* pData = new coreByte[iSize*2];
     glReadPixels(0, 0, iWidth, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
 
     Core::Manager::Resource->AttachFunction([=]()
     {
         // flip pixel data vertically
-        coreByte* pConvert = new coreByte[iSize];
+        coreByte* pConvert = pData + iSize;
         for(int i = 0; i < iHeight; ++i)
             std::memcpy(pConvert + (iHeight-i-1)*iPitch, pData + i*iPitch, iPitch);
 
@@ -317,7 +317,6 @@ void CoreGraphics::Screenshot(const char* pcPath)const
 
         // delete pixel data
         delete pData;
-        delete pConvert;
         return CORE_OK;
     });
 }

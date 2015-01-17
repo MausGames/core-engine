@@ -10,13 +10,12 @@
 #ifndef _CORE_GUARD_LOOKUP_H_
 #define _CORE_GUARD_LOOKUP_H_
 
-// TODO: implement quicksort and binary search
+// TODO: implement quicksort and binary search (std::lower_bound)
 // TODO: measure performance with high amount of entries (>200), but should not be as good as (unordered_)map
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
 // TODO: caching system may still cause problems (e.g. coreLookupStr in combination with PRINT)
 
 
-// TODO: erklaerungen fuer template parameter
 // ****************************************************************
 /* generic lookup container class */
 template <typename K, typename I, typename T> class coreLookupGen

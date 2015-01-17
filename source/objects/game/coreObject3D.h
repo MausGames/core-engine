@@ -35,62 +35,63 @@ private:
 
 
 protected:
-    coreModelPtr m_pModel;     //!< model object
+    coreModelPtr m_pModel;              //!< model object
 
-    coreVector4 m_vRotation;   //!< separate rotation quaternion
-    float m_fCollisionRange;   //!< range factor used for collision detection
+    coreVector4 m_vRotation;            //!< separate rotation quaternion
 
-    bool m_bManaged;           //!< currently listed in the object manager
-    int  m_iType;              //!< identifier for the object type (0 = undefined)
+    coreVector3 m_vCollisionModifier;   //!< size-modifier for collision detection
+    float       m_fCollisionRadius;     //!< total collision radius (model radius * maximum size * maximum modifier)
+    coreVector3 m_vCollisionRange;      //!< total collision range (model range * size * modifier)
+
+    int m_iType;                        //!< object type identifier (!0 = currently registered in the object manager)
 
 
 public:
     constexpr_weak coreObject3D()noexcept;
-    virtual ~coreObject3D() {}
-    friend class coreObjectManager;
+    virtual ~coreObject3D();
 
     /*! define the visual appearance */
     //! @{
-    inline const coreModelPtr& DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;                                          return m_pModel;}
-    inline const coreModelPtr& DefineModel(const char*         pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); return m_pModel;}
+    inline const coreModelPtr& DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;                                          m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; return m_pModel;}
+    inline const coreModelPtr& DefineModel(const char*         pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; return m_pModel;}
     void Undefine();
     //! @}
 
     /*! render and move the 3d-object */
     //! @{
-    bool         Enable(const coreProgramPtr& pProgram);
-    bool         Enable();
-    virtual void Render(const coreProgramPtr& pProgram);
-    virtual void Render();
-    virtual void Move  ();
+    bool         Prepare(const coreProgramPtr& pProgram);
+    bool         Prepare();
+    virtual void Render (const coreProgramPtr& pProgram);
+    virtual void Render ();
+    virtual void Move   ();
     //! @}
 
-    /*! handle collision between different structures */
+    /*! work with the object manager */
     //! @{
-    static bool  Collision(const coreObject3D& Object1, const coreObject3D& Object2);
-    static float Collision(const coreObject3D& Object,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
+    void ChangeType(const int& iType);
     //! @}
 
     /*! set object properties */
     //! @{
-    inline void SetPosition      (const coreVector3& vPosition)       {m_vPosition       = vPosition;}
-    inline void SetSize          (const coreVector3& vSize)           {m_vSize           = vSize;}
-    inline void SetDirection     (const coreVector3& vDirection)      {if(m_vDirection   != vDirection)   {m_iUpdate = CORE_OBJECT_UPDATE_ALL; m_vDirection   = vDirection;}   ASSERT(vDirection  .IsNormalized())}
-    inline void SetOrientation   (const coreVector3& vOrientation)    {if(m_vOrientation != vOrientation) {m_iUpdate = CORE_OBJECT_UPDATE_ALL; m_vOrientation = vOrientation;} ASSERT(vOrientation.IsNormalized())}
-    inline void SetCollisionRange(const float&       fCollisionRange) {m_fCollisionRange = fCollisionRange;}
-    inline void SetType          (const int&         iType)           {m_iType           = iType;}
+    inline void SetPosition         (const coreVector3& vPosition)          {m_vPosition = vPosition;}
+    inline void SetSize             (const coreVector3& vSize)              {if(m_vSize              != vSize)              {m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; m_vSize              = vSize;}}
+    inline void SetDirection        (const coreVector3& vDirection)         {if(m_vDirection         != vDirection)         {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vDirection         = vDirection;}   ASSERT(vDirection  .IsNormalized())}
+    inline void SetOrientation      (const coreVector3& vOrientation)       {if(m_vOrientation       != vOrientation)       {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vOrientation       = vOrientation;} ASSERT(vOrientation.IsNormalized())}
+    inline void SetCollisionModifier(const coreVector3& vCollisionModifier) {if(m_vCollisionModifier != vCollisionModifier) {m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; m_vCollisionModifier = vCollisionModifier;}}
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const coreModelPtr& GetModel         ()const {return m_pModel;}
-    inline const coreVector3&  GetPosition      ()const {return m_vPosition;}
-    inline const coreVector3&  GetSize          ()const {return m_vSize;}
-    inline const coreVector3&  GetDirection     ()const {return m_vDirection;}
-    inline const coreVector3&  GetOrientation   ()const {return m_vOrientation;}
-    inline const coreVector4&  GetRotation      ()const {return m_vRotation;}
-    inline const float&        GetCollisionRange()const {return m_fCollisionRange;}
-    inline const int&          GetType          ()const {return m_iType;}
+    inline const coreModelPtr& GetModel            ()const {return m_pModel;}
+    inline const coreVector3&  GetPosition         ()const {return m_vPosition;}
+    inline const coreVector3&  GetSize             ()const {return m_vSize;}
+    inline const coreVector3&  GetDirection        ()const {return m_vDirection;}
+    inline const coreVector3&  GetOrientation      ()const {return m_vOrientation;}
+    inline const coreVector4&  GetRotation         ()const {return m_vRotation;}
+    inline const coreVector3&  GetCollisionModifier()const {return m_vCollisionModifier;}
+    inline const float&        GetCollisionRadius  ()const {return m_fCollisionRadius;}
+    inline const coreVector3&  GetCollisionRange   ()const {return m_vCollisionRange;}
+    inline const int&          GetType             ()const {return m_iType;}
     //! @}
 };
 
@@ -109,7 +110,7 @@ private:
     coreSelect<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
     coreSelect<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
 
-    bool m_bUpdate;                                                                    //!< buffer update status
+    bool m_bUpdate;                                                                    //!< buffer update status (dirty flag)
 
 
 public:
@@ -172,14 +173,15 @@ private:
 // ****************************************************************
 /* constructor */
 constexpr_weak coreObject3D::coreObject3D()noexcept
-: m_vPosition       (coreVector3(0.0f,0.0f, 0.0f))
-, m_vSize           (coreVector3(1.0f,1.0f, 1.0f))
-, m_vDirection      (coreVector3(0.0f,0.0f,-1.0f))
-, m_vOrientation    (coreVector3(0.0f,1.0f, 0.0f))
-, m_vRotation       (coreVector4::QuatIdentity())
-, m_fCollisionRange (1.0f)
-, m_bManaged        (false)
-, m_iType           (0)
+: m_vPosition          (coreVector3(0.0f,0.0f,0.0f))
+, m_vSize              (coreVector3(1.0f,1.0f,1.0f))
+, m_vDirection         (coreVector3(0.0f,1.0f,0.0f))
+, m_vOrientation       (coreVector3(0.0f,0.0f,1.0f))
+, m_vRotation          (coreVector4::QuatIdentity())
+, m_vCollisionModifier (coreVector3(1.0f,1.0f,1.0f))
+, m_fCollisionRadius   (0.0f)
+, m_vCollisionRange    (coreVector3(0.0f,0.0f,0.0f))
+, m_iType              (0)
 {
 }
 

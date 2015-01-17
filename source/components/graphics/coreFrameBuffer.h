@@ -78,8 +78,6 @@ private:
     float m_fFarClip;                                             //!< far clipping plane
 
     static coreFrameBuffer* s_pCurrent;                           //!< currently active frame buffer object
-
-    static coreObject2D* s_pBlitFallback;                         //!< 2d-object used for fallback-blitting onto the default frame buffer
     static float s_afViewData[5];                                 //!< view properties of the default frame buffer
 
 

@@ -123,7 +123,6 @@ private:
     coreUint m_iNumParticles;                                                          //!< number of particles
     coreUint m_iCurParticle;                                                           //!< current particle
 
-    static coreModel* s_pModel;                                                        //!< global model object
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                    //!< multiple texture objects
     coreProgramPtr m_pProgram;                                                         //!< shader-program object
 
@@ -133,13 +132,12 @@ private:
     coreSelect<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
     coreSelect<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
 
-    bool m_bUpdate;                                                                    //!< buffer update status
+    bool m_bUpdate;                                                                    //!< buffer update status (dirty flag)
 
 
 public:
     explicit coreParticleSystem(const coreUint& iNumParticles)noexcept;
     ~coreParticleSystem();
-    friend class coreObjectManager;
 
     //! define the visual appearance
     //! @{

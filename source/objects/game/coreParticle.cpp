@@ -8,8 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreModel* coreParticleSystem::s_pModel = NULL;
-
 
 // ****************************************************************
 // constructor
@@ -122,7 +120,7 @@ void coreParticleSystem::Render()
 
         // draw the model instanced
         glBindVertexArray(m_aiVertexArray.GetCur());
-        s_pModel->DrawArraysInstanced(coreUint(m_apRenderList.size()));
+        Core::Manager::Object->GetLowModel()->DrawArraysInstanced(coreUint(m_apRenderList.size()));
     }
     else
     {
@@ -140,8 +138,8 @@ void coreParticleSystem::Render()
             m_pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          oCurrent.vColor);
 
             // draw the model
-            s_pModel->Enable();
-            s_pModel->DrawArrays();
+            Core::Manager::Object->GetLowModel()->Enable();
+            Core::Manager::Object->GetLowModel()->DrawArrays();
         }
     }
 }
@@ -300,7 +298,7 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 6*sizeof(float));
 
             // set vertex data
-            s_pModel->GetVertexBuffer(0)->Activate(0);
+            Core::Manager::Object->GetLowModel()->GetVertexBuffer(0)->Activate(0);
             it->Activate(1);
 
             // enable vertex attribute array division

@@ -26,7 +26,7 @@ private:
     char m_cReplace;               //!< replacement character for hidden text
 
     bool m_bInput;                 //!< text-input status
-    bool m_bDisplay;               //!< caption update status
+    bool m_bDisplay;               //!< caption update status (dirty flag)
 
     bool m_bReturned;              //!< text-input finished with return key
 

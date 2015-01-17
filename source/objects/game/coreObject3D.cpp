@@ -10,6 +10,15 @@
 
 
 // ****************************************************************
+/* destructor */
+coreObject3D::~coreObject3D()
+{
+    // unbind from object manager
+    this->ChangeType(0);
+}
+
+
+// ****************************************************************
 /* undefine the visual appearance */
 void coreObject3D::Undefine()
 {
@@ -22,7 +31,7 @@ void coreObject3D::Undefine()
 
 // ****************************************************************
 /* separately enable all resources for rendering */
-bool coreObject3D::Enable(const coreProgramPtr& pProgram)
+bool coreObject3D::Prepare(const coreProgramPtr& pProgram)
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return false;
 
@@ -49,10 +58,10 @@ bool coreObject3D::Enable(const coreProgramPtr& pProgram)
     return true;
 }
 
-bool coreObject3D::Enable()
+bool coreObject3D::Prepare()
 {
     // enable default shader-program
-    return coreObject3D::Enable(m_pProgram);
+    return coreObject3D::Prepare(m_pProgram);
 }
 
 
@@ -61,7 +70,7 @@ bool coreObject3D::Enable()
 void coreObject3D::Render(const coreProgramPtr& pProgram)
 {
     // enable all resources
-    if(this->Enable(pProgram))
+    if(this->Prepare(pProgram))
     {
         // draw the model
         m_pModel->Draw();
@@ -82,10 +91,19 @@ void coreObject3D::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
-    if(m_iUpdate & CORE_OBJECT_UPDATE_ALL)
+    if(m_iUpdate)
     {
-        // update rotation quaternion
-        m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().Quat();
+        if(m_iUpdate & CORE_OBJECT_UPDATE_TRANSFORM)
+        {
+            // update rotation quaternion
+            m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().Quat();
+        }
+        if(m_iUpdate & CORE_OBJECT_UPDATE_COLLISION)
+        {
+            // update collision radius and range
+            m_fCollisionRadius = m_pModel->GetBoundingRadius() * this->GetSize().Max() * m_vCollisionModifier.Max();
+            m_vCollisionRange  = m_pModel->GetBoundingRange () * this->GetSize()       * m_vCollisionModifier;
+        }
 
         // reset the update status
         m_iUpdate = CORE_OBJECT_UPDATE_NOTHING;
@@ -94,41 +112,15 @@ void coreObject3D::Move()
 
 
 // ****************************************************************
-/* handle collision between two 3d-objects */
-bool coreObject3D::Collision(const coreObject3D& Object1, const coreObject3D& Object2)
+/* change object type and manager binding */
+void coreObject3D::ChangeType(const int& iType)
 {
-    // get bounding spheres
-    const float fRadius1     = Object1.GetModel()->GetRadius() * Object1.GetCollisionRange() * Object1.GetSize().Max();
-    const float fRadius2     = Object2.GetModel()->GetRadius() * Object2.GetCollisionRange() * Object2.GetSize().Max();
-    const float fMaxDistance = fRadius1 + fRadius2;
+    if(m_iType == iType) return;
 
-    // calculate distance between both objects
-    const coreVector3 vDiff = Object2.GetPosition() - Object1.GetPosition();
-
-    // check for intersection
-    return (vDiff.LengthSq() <= fMaxDistance * fMaxDistance) ? true : false;
-}
-
-
-// ****************************************************************
-/* handle collision between 3d-object and line */
-float coreObject3D::Collision(const coreObject3D& Object, const coreVector3& vLinePos, const coreVector3& vLineDir)
-{
-    ASSERT(vLineDir.IsNormalized())
-
-    // get bounding sphere
-    const float fRadius = Object.GetModel()->GetRadius() * Object.GetCollisionRange() * Object.GetSize().Max();
-
-    // calculate distance between both objects
-    const coreVector3 vDiff = Object.GetPosition() - vLinePos;
-
-    // calculate range parameters
-    const float fAdjacent   = coreVector3::Dot(vDiff, vLineDir);
-    const float fOppositeSq = vDiff.LengthSq() - fAdjacent * fAdjacent;
-    const float fRadiusSq   = fRadius * fRadius;
-
-    // check for intersection (return distance from line position to intersection point on success)
-    return (fOppositeSq <= fRadiusSq) ? (fAdjacent - SQRT(fRadiusSq - fOppositeSq)) : 0.0f;
+    // unbind from old type and bind to new type
+    if(m_iType) Core::Manager::Object->__UnbindObject(this, m_iType);
+    m_iType = iType;
+    if(m_iType) Core::Manager::Object->__BindObject  (this, m_iType);
 }
 
 
