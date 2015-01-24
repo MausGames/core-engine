@@ -38,7 +38,13 @@ coreResourceHandle::~coreResourceHandle()
 coreResourceRelation::coreResourceRelation()noexcept
 {
     // bind object to resource manager
-    Core::Manager::Resource->BindRelation(this);
+    Core::Manager::Resource->__BindRelation(this);
+}
+
+coreResourceRelation::coreResourceRelation(const coreResourceRelation& c)noexcept
+{
+    // bind object to resource manager
+    Core::Manager::Resource->__BindRelation(this);
 }
 
 
@@ -47,7 +53,7 @@ coreResourceRelation::coreResourceRelation()noexcept
 coreResourceRelation::~coreResourceRelation()
 {
     // unbind object from resource manager
-    Core::Manager::Resource->UnbindRelation(this);
+    Core::Manager::Resource->__UnbindRelation(this);
 }
 
 

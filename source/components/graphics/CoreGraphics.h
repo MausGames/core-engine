@@ -33,6 +33,8 @@
 // main graphics component
 class CoreGraphics final
 {
+friend class Core;
+
 private:
     //! light structure
     struct coreLight
@@ -75,7 +77,6 @@ private:
 private:
     CoreGraphics()noexcept;
     ~CoreGraphics();
-    friend class Core;
 
 
 public:
@@ -129,6 +130,8 @@ public:
 
 
 private:
+    DISABLE_COPY(CoreGraphics)
+
     //! update the graphics scene
     //! @{
     void __UpdateScene();

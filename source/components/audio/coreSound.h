@@ -87,6 +87,10 @@ public:
     inline const ALuint&         GetBuffer()const {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
     //! @}
+
+
+private:
+    DISABLE_COPY(coreSound)
 };
 
 

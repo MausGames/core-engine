@@ -18,7 +18,7 @@
 
 // ****************************************************************
 /* 3d-object definitions */
-#define CORE_OBJECT3D_INSTANCE_SIZE      (2*sizeof(coreVector4) + 2*sizeof(coreVector3) + 1*sizeof(coreUint))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
+#define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreVector4) + 2*sizeof(coreVector3) + 2*sizeof(coreUint))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
 #define CORE_OBJECT3D_INSTANCE_BUFFERS   (3u)                                                                   //!< number of concurrent instance data buffer
 #define CORE_OBJECT3D_INSTANCE_THRESHOLD (5u)                                                                   //!< minimum number of objects to draw instanced
 
@@ -40,15 +40,23 @@ protected:
     coreVector4 m_vRotation;            //!< separate rotation quaternion
 
     coreVector3 m_vCollisionModifier;   //!< size-modifier for collision detection
-    float       m_fCollisionRadius;     //!< total collision radius (model radius * maximum size * maximum modifier)
     coreVector3 m_vCollisionRange;      //!< total collision range (model range * size * modifier)
+    float       m_fCollisionRadius;     //!< total collision radius (model radius * maximum size * maximum modifier)
 
     int m_iType;                        //!< object type identifier (!0 = currently registered in the object manager)
 
 
 public:
     constexpr_weak coreObject3D()noexcept;
+    inline coreObject3D(const coreObject3D& c)noexcept;
+    inline coreObject3D(coreObject3D&&      m)noexcept;
     virtual ~coreObject3D();
+
+    /*! assignment operations */
+    //! @{
+    coreObject3D& operator = (const coreObject3D& c)noexcept;
+    coreObject3D& operator = (coreObject3D&&      m)noexcept;
+    //! @}
 
     /*! define the visual appearance */
     //! @{
@@ -66,7 +74,7 @@ public:
     virtual void Move   ();
     //! @}
 
-    /*! work with the object manager */
+    /*! change object type and manager registration */
     //! @{
     void ChangeType(const int& iType);
     //! @}
@@ -89,8 +97,8 @@ public:
     inline const coreVector3&  GetOrientation      ()const {return m_vOrientation;}
     inline const coreVector4&  GetRotation         ()const {return m_vRotation;}
     inline const coreVector3&  GetCollisionModifier()const {return m_vCollisionModifier;}
-    inline const float&        GetCollisionRadius  ()const {return m_fCollisionRadius;}
     inline const coreVector3&  GetCollisionRange   ()const {return m_vCollisionRange;}
+    inline const float&        GetCollisionRadius  ()const {return m_fCollisionRadius;}
     inline const int&          GetType             ()const {return m_iType;}
     //! @}
 };
@@ -145,11 +153,15 @@ public:
     inline void ShrinkToFit() {this->Reallocate(coreUint(m_apObjectList.size())); m_apObjectList.shrink_to_fit();}
     //! @}
 
+    /*! check for instancing status */
+    //! @{
+    inline bool IsInstanced()const {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
+    //! @}
+
     /*! access 3d-object list directly */
     //! @{
     inline       std::vector<coreObject3D*>* List()      {return &m_apObjectList;}
     inline const std::vector<coreObject3D*>* List()const {return &m_apObjectList;}
-    inline bool IsInstanced()const                       {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
     //! @}
 
     /*! get object properties */
@@ -179,10 +191,44 @@ constexpr_weak coreObject3D::coreObject3D()noexcept
 , m_vOrientation       (coreVector3(0.0f,0.0f,1.0f))
 , m_vRotation          (coreVector4::QuatIdentity())
 , m_vCollisionModifier (coreVector3(1.0f,1.0f,1.0f))
-, m_fCollisionRadius   (0.0f)
 , m_vCollisionRange    (coreVector3(0.0f,0.0f,0.0f))
+, m_fCollisionRadius   (0.0f)
 , m_iType              (0)
 {
+}
+
+inline coreObject3D::coreObject3D(const coreObject3D& c)noexcept
+: coreObject           (c)
+, m_vPosition          (c.m_vPosition)
+, m_vSize              (c.m_vSize)
+, m_vDirection         (c.m_vDirection)
+, m_vOrientation       (c.m_vOrientation)
+, m_pModel             (c.m_pModel)
+, m_vRotation          (c.m_vRotation)
+, m_vCollisionModifier (c.m_vCollisionModifier)
+, m_vCollisionRange    (c.m_vCollisionRange)
+, m_fCollisionRadius   (c.m_fCollisionRadius)
+, m_iType              (0)
+{
+    // bind to object manager
+    this->ChangeType(c.m_iType);
+}
+
+inline coreObject3D::coreObject3D(coreObject3D&& m)noexcept
+: coreObject           (std::move(m))
+, m_vPosition          (m.m_vPosition)
+, m_vSize              (m.m_vSize)
+, m_vDirection         (m.m_vDirection)
+, m_vOrientation       (m.m_vOrientation)
+, m_pModel             (std::move(m.m_pModel))
+, m_vRotation          (m.m_vRotation)
+, m_vCollisionModifier (m.m_vCollisionModifier)
+, m_vCollisionRange    (m.m_vCollisionRange)
+, m_fCollisionRadius   (m.m_fCollisionRadius)
+, m_iType              (0)
+{
+    // bind to object manager
+    this->ChangeType(m.m_iType);
 }
 
 

@@ -10,6 +10,18 @@
 #ifndef _CORE_GUARD_PARTICLE_H_
 #define _CORE_GUARD_PARTICLE_H_
 
+// TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee, solve in shader!)
+// TODO: what about velocity
+// TODO: texture arrays and texture index parameter to allow different objects to be rendered
+// TODO: SSBO[index] really faster than a divisor ? check also for their use instead of VAO in general
+// TODO: discard every X particle (create min 1) on lower systems ?
+// TODO: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
+// TODO: low systems: merge geometry to reduce draw calls
+// TODO: try same sort-algorithm proposed for instance list, no time-sort, but position-sort
+// TODO: automatic resizing function (preserve old values)
+// TODO: culling (also on instancing)
+// TODO: fix invalid returned particle (e.g. wrong effect, sort) when no free particle is available
+
 
 // ****************************************************************
 // particle definitions
@@ -19,10 +31,10 @@
 
 // ****************************************************************
 // particle class
-// TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee, solve in shader!)
-// TODO: what about velocity
 class coreParticle final
 {
+friend class coreParticleSystem;
+
 public:
     //! state structure
     struct coreState
@@ -49,7 +61,6 @@ private:
 private:
     constexpr_func coreParticle()noexcept;
     ~coreParticle() {}
-    friend class coreParticleSystem;
 
     //! control the particle
     //! @{
@@ -108,14 +119,6 @@ public:
 
 // ****************************************************************
 // particle system class
-// TODO: texture arrays and texture index parameter to allow different objects to be rendered
-// TODO: SSBO[index] really faster than a divisor ? check also for their use instead of VAO in general
-// TODO: discard every X particle (create min 1) on lower systems ?
-// TODO: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
-// TODO: low systems: merge geometry to reduce draw calls
-// TODO: try same sort-algorithm proposed for instance list, no time-sort, but position-sort
-// TODO: automatic resizing function (preserve old values)
-// TODO: culling (also on instancing)
 class coreParticleSystem final : public coreResourceRelation
 {
 private:
@@ -235,6 +238,10 @@ public:
     inline coreObject3D*       GetOrigin()const {return m_pOrigin;}
     inline coreParticleSystem* GetSystem()const {return m_pSystem;}
     //! @}
+
+
+private:
+    DISABLE_COPY(coreParticleEffect)
 };
 
 

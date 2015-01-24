@@ -42,6 +42,7 @@ coreRand::coreRand(coreRand&& m)noexcept
 , m_iNumRandoms (m.m_iNumRandoms)
 , m_iCurRandom  (m.m_iCurRandom)
 {
+    // reset pointer to moved random numbers
     m.m_piRandom = NULL;
 }
 
@@ -56,7 +57,7 @@ coreRand::~coreRand()
 
 
 // ****************************************************************
-/* assignment operator */
+/* assignment operations */
 coreRand& coreRand::operator = (coreRand o)noexcept
 {
     swap(*this, o);

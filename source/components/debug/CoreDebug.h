@@ -26,6 +26,8 @@
 /* main debug component */
 class CoreDebug final
 {
+friend class Core;
+
 private:
     /*! measure structure */
     struct coreMeasure
@@ -62,7 +64,6 @@ private:
 private:
     CoreDebug()noexcept;
     ~CoreDebug();
-    friend class Core;
 
 
 public:
@@ -77,6 +78,7 @@ public:
     template <typename... A> void InspectValue(const char* pcName, const char* pcFormat, A&&... vArgs);
     inline void InspectValue(const char* pcName, const bool&        bValue) {this->InspectValue(pcName, bValue ? "true" : "false");}
     inline void InspectValue(const char* pcName, const int&         iValue) {this->InspectValue(pcName, "%d",                     iValue);}
+    inline void InspectValue(const char* pcName, const coreUint&    iValue) {this->InspectValue(pcName, "%u",                     iValue);}
     inline void InspectValue(const char* pcName, const float&       fValue) {this->InspectValue(pcName, "%.5f",                   fValue);}
     inline void InspectValue(const char* pcName, const coreVector2& vValue) {this->InspectValue(pcName, "%.5f, %.5f",             vValue.x, vValue.y);}
     inline void InspectValue(const char* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
@@ -85,6 +87,8 @@ public:
 
 
 private:
+    DISABLE_COPY(CoreDebug)
+
     /*! update and display debug output */
     //! @{
     void __UpdateOutput();

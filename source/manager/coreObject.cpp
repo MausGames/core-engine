@@ -10,6 +10,45 @@
 
 
 // ****************************************************************
+/* assignment operations */
+coreObject& coreObject::operator = (const coreObject& c)noexcept
+{
+    // copy texture objects
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        m_apTexture[i] = c.m_apTexture[i];
+
+    // copy remaining properties
+    m_pProgram   = c.m_pProgram;
+    m_vColor     = c.m_vColor;
+    m_vTexSize   = c.m_vTexSize;
+    m_vTexOffset = c.m_vTexOffset;
+    m_iUpdate    = c.m_iUpdate;
+    m_iEnabled   = c.m_iEnabled;
+    m_iStatus    = c.m_iStatus;
+
+    return *this;
+}
+
+coreObject& coreObject::operator = (coreObject&& m)noexcept
+{
+    // move texture objects
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        m_apTexture[i] = std::move(m.m_apTexture[i]);
+
+    // move remaining properties
+    m_pProgram   = std::move(m.m_pProgram);
+    m_vColor     = m.m_vColor;
+    m_vTexSize   = m.m_vTexSize;
+    m_vTexOffset = m.m_vTexOffset;
+    m_iUpdate    = m.m_iUpdate;
+    m_iEnabled   = m.m_iEnabled;
+    m_iStatus    = m.m_iStatus;
+
+    return *this;
+}
+
+
+// ****************************************************************
 /* constructor */
 coreObjectManager::coreObjectManager()noexcept
 : m_pBlitFallback (NULL)
@@ -121,8 +160,8 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
                                          coreVector2( 0.5f,-0.5f).PackSnorm2x16()};
 
         // create low-memory model object
-        m_pLowModel->SetBoundingRadius(0.7071f);
         m_pLowModel->SetBoundingRange (coreVector3(0.5f,0.5f,0.0f));
+        m_pLowModel->SetBoundingRadius(0.7071f);
         m_pLowModel->SetPrimitiveType (GL_TRIANGLE_STRIP);
 
         // define vertex data
@@ -192,7 +231,7 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const int& iType)
 
 #endif
 
-    // add object to requested list (may create list)
+    // add object to requested list
     m_aapObjectList[iType].push_back(pObject);
 }
 

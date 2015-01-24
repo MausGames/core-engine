@@ -65,6 +65,8 @@ public:
 
 
 private:
+    DISABLE_COPY(coreLabel)
+
     //! reset with the resource manager
     //! @{
     void __Reset(const coreResourceReset& bInit)override;

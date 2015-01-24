@@ -40,7 +40,7 @@ public:
     coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept;
     coreLookupGen(coreLookupGen<K, I, T>&&      m)noexcept;
 
-    /*! assignment operator */
+    /*! assignment operations */
     //! @{
     coreLookupGen<K, I, T>& operator = (coreLookupGen<K, I, T> o)noexcept;
     template <typename R, typename O, typename S> friend void swap(coreLookupGen<R, O, S>& a, coreLookupGen<R, O, S>& b)noexcept;
@@ -148,6 +148,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 : m_pCache    (NULL)
 , m_tCacheKey (I(0))
 {
+    // pre-allocate some memory
     m_aList.reserve(MAX<std::size_t>(64u / sizeof(T), 2u));
 }
 
@@ -167,7 +168,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 
 
 // ****************************************************************
-/* assignment operator */
+/* assignment operations */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookupGen<K, I, T>::operator = (coreLookupGen<K, I, T> o)noexcept
 {
     swap(*this, o);

@@ -15,6 +15,8 @@
 // main audio component
 class CoreAudio final
 {
+friend class Core;
+
 private:
     ALCdevice*  m_pDevice;                   //!< audio device
     ALCcontext* m_pContext;                  //!< OpenAL context
@@ -35,7 +37,6 @@ private:
 private:
     CoreAudio()noexcept;
     ~CoreAudio();
-    friend class Core;
 
 
 public:
@@ -56,6 +57,10 @@ public:
     //! @{
     inline void SetVolume(const float& fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}
     //! @}
+
+
+private:
+    DISABLE_COPY(CoreAudio)
 };
 
 

@@ -19,8 +19,8 @@ coreModel::coreModel()noexcept
 : m_iVertexArray    (0)
 , m_iNumVertices    (0)
 , m_iNumIndices     (0)
-, m_fBoundingRadius (0.0f)
 , m_vBoundingRange  (coreVector3(0.0f,0.0f,0.0f))
+, m_fBoundingRadius (0.0f)
 , m_iPrimitiveType  (GL_TRIANGLES)
 , m_iIndexType      (0)
 {
@@ -78,10 +78,10 @@ coreError coreModel::Load(coreFile* pFile)
     // find maximum distance from the model center
     FOR_EACH(it, oImport.aVertexData)
     {
-        m_fBoundingRadius  = MAX(it->vPosition.LengthSq(), m_fBoundingRadius);
         m_vBoundingRange.x = MAX(m_vBoundingRange.x, it->vPosition.x);
         m_vBoundingRange.y = MAX(m_vBoundingRange.y, it->vPosition.y);
         m_vBoundingRange.z = MAX(m_vBoundingRange.z, it->vPosition.z);
+        m_fBoundingRadius  = MAX(it->vPosition.LengthSq(), m_fBoundingRadius);
     }
     m_fBoundingRadius = SQRT(m_fBoundingRadius);
 
@@ -181,8 +181,8 @@ coreError coreModel::Unload()
     m_iVertexArray    = 0;
     m_iNumVertices    = 0;
     m_iNumIndices     = 0;
-    m_fBoundingRadius = 0.0f;
     m_vBoundingRange  = coreVector3(0.0f,0.0f,0.0f);
+    m_fBoundingRadius = 0.0f;
     m_iPrimitiveType  = GL_TRIANGLES;
     m_iIndexType      = 0;
 

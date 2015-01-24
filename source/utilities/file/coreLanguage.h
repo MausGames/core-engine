@@ -12,7 +12,6 @@
 
 // TODO: save current main language file to config
 // TODO: is it possible that pointers to strings may change (vector resize) -> only if different language files have incompatible keys or size
-// TODO: add copy and move
 // TODO: currently key-identifier may cause problems in normal text
 
 
@@ -26,6 +25,8 @@
 /* translation interface */
 class INTERFACE coreTranslate
 {
+friend class coreLanguage;
+
 private:
     coreLanguage* m_pLanguage;                            //!< associated language file
     coreLookup<std::string*, std::string> m_apsPointer;   //!< own string pointers connected with keys <own, key>
@@ -33,8 +34,15 @@ private:
 
 public:
     coreTranslate()noexcept;
+    coreTranslate(const coreTranslate& c)noexcept;
+    coreTranslate(coreTranslate&&      m)noexcept;
     virtual ~coreTranslate();
-    friend class coreLanguage;
+
+    /*! assignment operations */
+    //! @{
+    coreTranslate& operator = (const coreTranslate& c)noexcept;
+    coreTranslate& operator = (coreTranslate&&      m)noexcept;
+    //! @}
 
     /*! change associated language file */
     //! @{
@@ -51,8 +59,6 @@ protected:
 
 
 private:
-    DISABLE_COPY(coreTranslate)
-
     /*! update object after modification */
     //! @{
     virtual void __Update() = 0;
@@ -64,6 +70,8 @@ private:
 /* language file class */
 class coreLanguage final
 {
+friend class coreTranslate;
+
 private:
     coreLookupStr<std::string> m_asStringList;             //!< list with language-strings to specific keys
 
@@ -76,7 +84,6 @@ private:
 public:
     explicit coreLanguage(const char* pcPath)noexcept;
     ~coreLanguage();
-    friend class coreTranslate;
 
     /*! load and access the language file */
     //! @{
@@ -96,8 +103,8 @@ private:
 
     /*! bind and unbind translation objects */
     //! @{
-    void __BindObject  (coreTranslate* pObject) {ASSERT(!m_apObject.count(pObject)) m_apObject.insert(pObject);}
-    void __UnbindObject(coreTranslate* pObject) {ASSERT( m_apObject.count(pObject)) m_apObject.erase (pObject);}
+    inline void __BindObject  (coreTranslate* pObject) {ASSERT(!m_apObject.count(pObject)) m_apObject.insert(pObject);}
+    inline void __UnbindObject(coreTranslate* pObject) {ASSERT( m_apObject.count(pObject)) m_apObject.erase (pObject);}
     //! @}
 };
 

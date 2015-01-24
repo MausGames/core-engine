@@ -66,8 +66,8 @@ private:
 
     coreUint    m_iNumVertices;                         //!< number of vertices
     coreUint    m_iNumIndices;                          //!< number of indices
-    float       m_fBoundingRadius;                      //!< maximum direct distance from the model center
     coreVector3 m_vBoundingRange;                       //!< maximum per-axis distance from the model center
+    float       m_fBoundingRadius;                      //!< maximum direct distance from the model center
 
     GLenum m_iPrimitiveType;                            //!< primitive type for draw calls (e.g. GL_TRIANGLES)
     GLenum m_iIndexType;                                //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
@@ -117,8 +117,8 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetBoundingRadius(const float&       fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
     inline void SetBoundingRange (const coreVector3& vBoundingRange)  {ASSERT( m_vBoundingRange.IsNull()) m_vBoundingRange  = vBoundingRange;}
+    inline void SetBoundingRadius(const float&       fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
     inline void SetPrimitiveType (const GLenum&      iPrimitiveType)  {m_iPrimitiveType = iPrimitiveType;}
     //! @}
 
@@ -127,8 +127,8 @@ public:
     inline const GLuint&      GetVertexArray   ()const {return m_iVertexArray;}
     inline const coreUint&    GetNumVertices   ()const {return m_iNumVertices;}
     inline const coreUint&    GetNumIndices    ()const {return m_iNumIndices;}
-    inline const float&       GetBoundingRadius()const {return m_fBoundingRadius;}
     inline const coreVector3& GetBoundingRange ()const {return m_vBoundingRange;}
+    inline const float&       GetBoundingRadius()const {return m_fBoundingRadius;}
     inline const GLenum&      GetPrimitiveType ()const {return m_iPrimitiveType;}
     inline const GLenum&      GetIndexType     ()const {return m_iIndexType;}
     //! @}
@@ -137,6 +137,10 @@ public:
     //! @{
     static inline coreModel* GetCurrent() {return s_pCurrent;}
     //! @}
+
+
+private:
+    DISABLE_COPY(coreModel)
 };
 
 

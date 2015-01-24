@@ -380,10 +380,11 @@ class coreObjectManager;
 // application framework
 class CoreApp final
 {
+friend class Core;
+
 private:
     CoreApp()noexcept {this->Setup(); this->Init();}
     ~CoreApp()        {this->Exit();}
-    friend class Core;
 
     //! auto-generated setup function
     //! @{

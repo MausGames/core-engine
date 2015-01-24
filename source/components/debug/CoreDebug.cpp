@@ -33,7 +33,7 @@ CoreDebug::coreInspect::coreInspect()noexcept
 CoreDebug::CoreDebug()noexcept
 : m_pOverall (NULL)
 , m_bEnabled (false)
-, m_bVisible (true)
+, m_bVisible (false)
 {
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
@@ -171,6 +171,13 @@ void CoreDebug::__UpdateOutput()
     {
              if(SDL_GL_GetSwapInterval())   SDL_GL_SetSwapInterval(0);
         else if(SDL_GL_SetSwapInterval(-1)) SDL_GL_SetSwapInterval(1);
+    }
+
+    // reset engine
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_PRESS))
+    {
+        Core::Reset();
+        return;
     }
 
     if(!m_bVisible) return;

@@ -39,6 +39,8 @@ public:
 
 
 private:
+    DISABLE_COPY(coreFont)
+
     //! init the font in a specific height
     //! @{
     bool __InitHeight(const int& iHeight);

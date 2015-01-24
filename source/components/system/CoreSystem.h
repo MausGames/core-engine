@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_SYSTEM_H_
 #define _CORE_GUARD_SYSTEM_H_
 
+// TODO: fullscreen enumeration
+
 
 // ****************************************************************
 // system definitions
@@ -20,6 +22,8 @@
 // main system component
 class CoreSystem final
 {
+friend class Core;
+
 private:
     SDL_Window* m_pWindow;                     //!< SDL main window object
 
@@ -50,7 +54,6 @@ private:
 private:
     CoreSystem()noexcept;
     ~CoreSystem();
-    friend class Core;
 
 
 public:
@@ -96,6 +99,8 @@ public:
 
 
 private:
+    DISABLE_COPY(CoreSystem)
+
     //! update the window event system
     //! @{
     bool __UpdateEvents();

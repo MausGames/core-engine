@@ -39,7 +39,7 @@ public:
     coreRand(coreRand&&      m)noexcept;
     ~coreRand();
 
-    /*! assignment operator */
+    /*! assignment operations */
     //! @{
     coreRand& operator = (coreRand o)noexcept;
     friend void swap(coreRand& a, coreRand& b)noexcept;

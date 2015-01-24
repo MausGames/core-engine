@@ -112,6 +112,7 @@ void Core::Reset()
     Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
 
     // shut down main components
+    SAFE_DELETE(Debug)
     SAFE_DELETE(Input)
     SAFE_DELETE(Graphics)
     SAFE_DELETE(System)
@@ -120,6 +121,7 @@ void Core::Reset()
     System   = new CoreSystem();
     Graphics = new CoreGraphics();
     Input    = new CoreInput();
+    Debug    = new CoreDebug();
 
     // setup the application
     Application->Setup();

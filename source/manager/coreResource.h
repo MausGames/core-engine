@@ -70,6 +70,8 @@ private:
 /* resource handle class */
 class coreResourceHandle final
 {
+friend class coreResourceManager;
+
 private:
     coreResource* m_pResource;   //!< holding resource object
     coreFile* m_pFile;           //!< pointer to resource file
@@ -84,7 +86,6 @@ private:
 private:
     coreResourceHandle(coreResource* pResource, coreFile* pFile, const char* pcName, const bool& bAutomatic)noexcept;
     ~coreResourceHandle();
-    friend class coreResourceManager;
 
 
 public:
@@ -178,15 +179,15 @@ private:
 /* relation interface */
 class INTERFACE coreResourceRelation
 {
+friend class coreResourceManager;
+
 public:
     coreResourceRelation()noexcept;
+    coreResourceRelation(const coreResourceRelation& c)noexcept;
     virtual ~coreResourceRelation();
-    friend class coreResourceManager;
 
 
 private:
-    DISABLE_COPY(coreResourceRelation)
-
     /*! reset with the resource manager */
     //! @{
     virtual void __Reset(const coreResourceReset& bInit) = 0;
@@ -198,6 +199,9 @@ private:
 /* resource manager */
 class coreResourceManager final : public coreThread
 {
+friend class Core;
+friend class coreResourceRelation;
+
 private:
     coreLookupStr<coreResourceHandle*> m_apHandle;    //!< resource handles
 
@@ -213,7 +217,6 @@ private:
 private:
     coreResourceManager()noexcept;
     ~coreResourceManager();
-    friend class Core;
 
 
 public:
@@ -243,12 +246,12 @@ public:
     /*! reset all resources and relation-objects */
     //! @{
     void Reset(const coreResourceReset& bInit);
-    inline void BindRelation  (coreResourceRelation* pObject) {ASSERT(!m_apRelation.count(pObject)) m_apRelation.insert(pObject);}
-    inline void UnbindRelation(coreResourceRelation* pObject) {ASSERT( m_apRelation.count(pObject)) m_apRelation.erase (pObject);}
     //! @}
 
 
 private:
+    DISABLE_COPY(coreResourceManager)
+
     /*! resource thread implementations */
     //! @{
     int  __InitThread()override;
@@ -260,6 +263,13 @@ private:
     //! @{
     void __LoadDefault();
     //! @}
+
+    /*! bind and unbind relation-objects */
+    //! @{
+    inline void __BindRelation  (coreResourceRelation* pRelation) {ASSERT(!m_apRelation.count(pRelation)) m_apRelation.insert(pRelation);}
+    inline void __UnbindRelation(coreResourceRelation* pRelation) {ASSERT( m_apRelation.count(pRelation)) m_apRelation.erase (pRelation);}
+    //! @}
+
 };
 
 

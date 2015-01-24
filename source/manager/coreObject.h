@@ -12,6 +12,7 @@
 
 // TODO: re-implement relative object behavior (additional classes?)
 // TODO: new collisions with lines are not saved correctly (no line identification)
+// TODO: GL_NV_fill_rectangle for low-memory model (state-tracking for polygon-mode ?)
 
 
 // ****************************************************************
@@ -54,10 +55,18 @@ protected:
 
 protected:
     constexpr_weak coreObject()noexcept;
+    inline coreObject(const coreObject& c)noexcept;
+    inline coreObject(coreObject&&      m)noexcept;
     ~coreObject() {}
 
 
 public:
+    /*! assignment operations */
+    //! @{
+    coreObject& operator = (const coreObject& c)noexcept;
+    coreObject& operator = (coreObject&&      m)noexcept;
+    //! @}
+
     /*! define the visual appearance */
     //! @{
     inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;                                          return m_apTexture[iUnit];}
@@ -100,6 +109,9 @@ public:
 /* object manager */
 class coreObjectManager final : public coreResourceRelation
 {
+friend class Core;
+friend class coreObject3D;
+
 private:
     /*! internal types */
     typedef std::vector<coreObject3D*> coreObjectList;
@@ -126,8 +138,6 @@ private:
 private:
     coreObjectManager()noexcept;
     ~coreObjectManager();
-    friend class Core;
-    friend class coreObject3D;
 
 
 public:
@@ -150,6 +160,8 @@ public:
 
 
 private:
+    DISABLE_COPY(coreObjectManager)
+
     /*! reset with the resource manager */
     //! @{
     void __Reset(const coreResourceReset& bInit)override;
@@ -185,6 +197,34 @@ constexpr_weak coreObject::coreObject()noexcept
 {
 }
 
+inline coreObject::coreObject(const coreObject& c)noexcept
+: m_pProgram   (c.m_pProgram)
+, m_vColor     (c.m_vColor)
+, m_vTexSize   (c.m_vTexSize)
+, m_vTexOffset (c.m_vTexOffset)
+, m_iUpdate    (c.m_iUpdate)
+, m_iEnabled   (c.m_iEnabled)
+, m_iStatus    (c.m_iStatus)
+{
+    // copy texture objects
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        m_apTexture[i] = c.m_apTexture[i];
+}
+
+inline coreObject::coreObject(coreObject&& m)noexcept
+: m_pProgram   (std::move(m.m_pProgram))
+, m_vColor     (m.m_vColor)
+, m_vTexSize   (m.m_vTexSize)
+, m_vTexOffset (m.m_vTexOffset)
+, m_iUpdate    (m.m_iUpdate)
+, m_iEnabled   (m.m_iEnabled)
+, m_iStatus    (m.m_iStatus)
+{
+    // move texture objects
+    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        m_apTexture[i] = std::move(m.m_apTexture[i]);
+}
+
 
 // ****************************************************************
 /* constructor */
@@ -203,7 +243,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, F&
     ASSERT(iType)
 
     // get requested list
-    const coreObjectList& oList = m_aapObjectList.at(iType);
+    const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
     FOR_EACH(it, oList)
@@ -235,8 +275,8 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType1, c
     ASSERT(iType1 && iType2 && iType1 != iType2)
 
     // get requested lists
-    const coreObjectList& oList1 = m_aapObjectList.at(iType1);
-    const coreObjectList& oList2 = m_aapObjectList.at(iType2);
+    const coreObjectList& oList1 = m_aapObjectList[iType1];
+    const coreObjectList& oList2 = m_aapObjectList[iType2];
 
     // loop through all objects
     FOR_EACH(it, oList1)
@@ -268,7 +308,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, co
     ASSERT(iType && pObject)
 
     // get requested list
-    const coreObjectList& oList = m_aapObjectList.at(iType);
+    const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
     FOR_EACH(it, oList)
@@ -293,7 +333,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, co
     ASSERT(iType)
 
     // get requested list
-    const coreObjectList& oList = m_aapObjectList.at(iType);
+    const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
     FOR_EACH(it, oList)

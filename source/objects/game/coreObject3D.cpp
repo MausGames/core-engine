@@ -19,6 +19,49 @@ coreObject3D::~coreObject3D()
 
 
 // ****************************************************************
+/* assignment operations */
+coreObject3D& coreObject3D::operator = (const coreObject3D& c)noexcept
+{
+    // bind to object manager
+    this->ChangeType(c.m_iType);
+
+    // copy remaining properties
+    coreObject::operator = (c);
+    m_vPosition          = c.m_vPosition;
+    m_vSize              = c.m_vSize;
+    m_vDirection         = c.m_vDirection;
+    m_vOrientation       = c.m_vOrientation;
+    m_pModel             = c.m_pModel;
+    m_vRotation          = c.m_vRotation;
+    m_vCollisionModifier = c.m_vCollisionModifier;
+    m_vCollisionRange    = c.m_vCollisionRange;
+    m_fCollisionRadius   = c.m_fCollisionRadius;
+
+    return *this;
+}
+
+coreObject3D& coreObject3D::operator = (coreObject3D&& m)noexcept
+{
+    // bind to object manager
+    this->ChangeType(m.m_iType);
+
+    // move remaining properties
+    coreObject::operator = (std::move(m));
+    m_vPosition          = m.m_vPosition;
+    m_vSize              = m.m_vSize;
+    m_vDirection         = m.m_vDirection;
+    m_vOrientation       = m.m_vOrientation;
+    m_pModel             = std::move(m.m_pModel);
+    m_vRotation          = m.m_vRotation;
+    m_vCollisionModifier = m.m_vCollisionModifier;
+    m_vCollisionRange    = m.m_vCollisionRange;
+    m_fCollisionRadius   = m.m_fCollisionRadius;
+
+    return *this;
+}
+
+
+// ****************************************************************
 /* undefine the visual appearance */
 void coreObject3D::Undefine()
 {
@@ -100,9 +143,9 @@ void coreObject3D::Move()
         }
         if(m_iUpdate & CORE_OBJECT_UPDATE_COLLISION)
         {
-            // update collision radius and range
-            m_fCollisionRadius = m_pModel->GetBoundingRadius() * this->GetSize().Max() * m_vCollisionModifier.Max();
+            // update collision range and radius
             m_vCollisionRange  = m_pModel->GetBoundingRange () * this->GetSize()       * m_vCollisionModifier;
+            m_fCollisionRadius = m_pModel->GetBoundingRadius() * this->GetSize().Max() * m_vCollisionModifier.Max();
         }
 
         // reset the update status
@@ -112,7 +155,7 @@ void coreObject3D::Move()
 
 
 // ****************************************************************
-/* change object type and manager binding */
+/* change object type and manager registration */
 void coreObject3D::ChangeType(const int& iType)
 {
     if(m_iType == iType) return;
@@ -204,16 +247,17 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
                 {
                     // compress data
-                    const coreUint    iColor     = pObject->GetColor4().PackUnorm4x8();
+                    const coreUint    iRotation  = pObject->GetRotation().PackSnorm4x8();
+                    const coreUint    iColor     = pObject->GetColor4  ().PackUnorm4x8();
                     const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
                     ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                     // write data to the buffer
-                    std::memcpy(pCursor,                                       &pObject->GetPosition(), sizeof(coreVector3));
-                    std::memcpy(pCursor +  3*sizeof(float),                    &pObject->GetSize(),     sizeof(coreVector3));
-                    std::memcpy(pCursor +  6*sizeof(float),                    &pObject->GetRotation(), sizeof(coreVector4));
-                    std::memcpy(pCursor + 10*sizeof(float),                    &iColor,                 sizeof(coreUint));
-                    std::memcpy(pCursor + 10*sizeof(float) + sizeof(coreUint), &vTexParams,             sizeof(coreVector4));
+                    std::memcpy(pCursor,                                        &pObject->GetPosition(), sizeof(coreVector3));
+                    std::memcpy(pCursor + 3*sizeof(float),                      &pObject->GetSize(),     sizeof(coreVector3));
+                    std::memcpy(pCursor + 6*sizeof(float),                      &iRotation,              sizeof(coreUint));
+                    std::memcpy(pCursor + 6*sizeof(float) + 1*sizeof(coreUint), &iColor,                 sizeof(coreUint));
+                    std::memcpy(pCursor + 6*sizeof(float) + 2*sizeof(coreUint), &vTexParams,             sizeof(coreVector4));
                     pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
                 }
             }
@@ -441,6 +485,8 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
+        if(m_aiInstanceBuffer[0]) return;
+
         // only allocate with enough capacity
         if(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
         {
@@ -448,11 +494,11 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
             {
                 // create instance data buffers
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,          0);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,          3*sizeof(float));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_FLOAT,          6*sizeof(float));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 10*sizeof(float));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         10*sizeof(float) + 1*sizeof(coreUint));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         0);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,         3*sizeof(float));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_BYTE,          6*sizeof(float));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 6*sizeof(float) + 1*sizeof(coreUint));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         6*sizeof(float) + 2*sizeof(coreUint));
             }
 
             // invoke buffer update

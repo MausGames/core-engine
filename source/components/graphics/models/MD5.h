@@ -146,9 +146,9 @@ struct md5File
     explicit md5File(const char** ppcData)noexcept
     {
         char acIdentifier[16] = "";
-        int iVersion          = 0;
-        int iNumJoints        = 0;
-        int iNumMeshes        = 0;
+        int  iVersion         = 0;
+        int  iNumJoints       = 0;
+        int  iNumMeshes       = 0;
 
         // check for correct file type
         MD5_SCAN(*ppcData, "")

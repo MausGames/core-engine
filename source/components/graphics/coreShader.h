@@ -127,6 +127,8 @@ public:
 
 
 private:
+    DISABLE_COPY(coreShader)
+
     //! load global shader code
     //! @{
     static void __LoadGlobalCode();
@@ -214,6 +216,8 @@ public:
 
 
 private:
+    DISABLE_COPY(coreProgram)
+
     //! write error-log
     //! @{
     void __WriteLog()const;

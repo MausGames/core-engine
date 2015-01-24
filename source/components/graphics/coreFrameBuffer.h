@@ -84,7 +84,6 @@ private:
 public:
     coreFrameBuffer()noexcept;
     ~coreFrameBuffer();
-    friend class coreObjectManager;
 
     //! control the frame buffer
     //! @{

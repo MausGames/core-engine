@@ -105,6 +105,8 @@ public:
 
 
 private:
+    DISABLE_COPY(coreMusic)
+
     //! read from music stream and update sound buffer
     //! @{
     bool __Stream(const ALuint& iBuffer);

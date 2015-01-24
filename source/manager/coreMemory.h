@@ -23,6 +23,8 @@
 // memory manager
 class coreMemoryManager final
 {
+friend class Core;
+
 private:
     coreLookupStr<std::weak_ptr<void> > m_apPointer;   //!< list with weak shared memory pointer
 
@@ -30,10 +32,11 @@ private:
 private:
     coreMemoryManager()noexcept;
     ~coreMemoryManager();
-    friend class Core;
 
 
 public:
+    DISABLE_COPY(coreMemoryManager)
+
     //! share memory pointer through specific identifier
     //! @{
     template <typename T, typename... A> std::shared_ptr<T> Share(const char* pcName, A&&... vArgs);

@@ -70,6 +70,8 @@ public:
 
 
 private:
+    DISABLE_COPY(coreTextBox)
+
     //! process new text-input characters
     //! @{
     bool __Write();

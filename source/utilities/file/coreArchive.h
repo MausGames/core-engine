@@ -22,6 +22,8 @@
 // file class
 class coreFile final
 {
+friend class coreArchive;
+
 private:
     std::string m_sPath;          //!< relative path of the file
 
@@ -36,7 +38,6 @@ public:
     explicit coreFile(const char* pcPath)noexcept;
     coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)noexcept;
     ~coreFile();
-    friend class coreArchive;
 
     //! save file
     //! @{

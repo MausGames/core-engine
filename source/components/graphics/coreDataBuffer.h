@@ -150,6 +150,10 @@ public:
     void DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const coreByte& iOffset);
     void Activate(const coreByte& iBinding);
     //! @}
+
+
+private:
+    DISABLE_COPY(coreVertexBuffer)
 };
 
 

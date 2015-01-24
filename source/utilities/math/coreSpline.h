@@ -41,7 +41,7 @@ public:
     coreSpline(coreSpline<T>&&      m)noexcept;
     ~coreSpline();
 
-    /*! assignment operator */
+    /*! assignment operations */
     //! @{
     coreSpline<T>& operator = (coreSpline<T> o)noexcept;
     template <typename S> friend void swap(coreSpline<S>& a, coreSpline<S>& b)noexcept;
@@ -124,12 +124,13 @@ template <typename T> coreSpline<T>::coreSpline(coreSpline<T>&& m)noexcept
 /* destructor */
 template <typename T> coreSpline<T>::~coreSpline()
 {
+    // remove all nodes
     this->ClearNodes();
 }
 
 
 // ****************************************************************
-/* assignment operator */
+/* assignment operations */
 template <typename T> coreSpline<T>& coreSpline<T>::operator = (coreSpline<T> o)noexcept
 {
     swap(*this, o);

@@ -45,6 +45,10 @@ public:
     //! @{
     inline const bool& GetCheck()const {return m_bCheck;}
     //! @}
+
+
+private:
+    DISABLE_COPY(coreCheckBox)
 };
 
 

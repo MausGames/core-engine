@@ -12,6 +12,7 @@
 
 // TODO: touch-related functions empty on non-mobile
 // TODO: death-zone and max joystick value into config file
+// TODO: identify joysticks by ID (maybe switch to gamepad interface)
 
 
 // ****************************************************************
@@ -46,9 +47,10 @@ enum coreInputType
 
 // ****************************************************************
 // main input component
-// TODO: identify joysticks by ID (maybe switch to gamepad interface)
 class CoreInput final
 {
+friend class Core;
+
 private:
     //! keyboard structure
     struct coreKeyboard
@@ -108,7 +110,6 @@ private:
 private:
     CoreInput()noexcept;
     ~CoreInput();
-    friend class Core;
 
 
 public:
@@ -194,6 +195,8 @@ public:
 
 
 private:
+    DISABLE_COPY(CoreInput)
+
     //! update and clear the input button interface
     //! @{
     void __UpdateButtons();
