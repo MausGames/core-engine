@@ -170,10 +170,9 @@ void coreObject3D::ChangeType(const int& iType)
 // ****************************************************************
 /* constructor */
 coreBatchList::coreBatchList(const coreUint& iStartCapacity)noexcept
-: m_iCurCapacity  (iStartCapacity)
-, m_iCurEnabled   (0)
-, m_aiVertexArray (0)
-, m_bUpdate       (false)
+: m_iCurCapacity (iStartCapacity)
+, m_iCurEnabled  (0)
+, m_bUpdate      (false)
 {
     ASSERT(iStartCapacity)
 
@@ -181,6 +180,7 @@ coreBatchList::coreBatchList(const coreUint& iStartCapacity)noexcept
     m_apObjectList.reserve(iStartCapacity);
 
     // create vertex array objects and instance data buffers
+    m_aiVertexArray.Fill(0);
     this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
@@ -232,11 +232,11 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         if(m_bUpdate)
         {
             // switch to next available array and buffer
-            m_aiVertexArray.Next();
+            m_aiVertexArray   .Next();
             m_aiInstanceBuffer.Next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aiInstanceBuffer.Current().Map<coreByte>(0, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)
@@ -253,7 +253,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                     ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                     // write data to the buffer
-                    std::memcpy(pCursor,                                        &pObject->GetPosition(), sizeof(coreVector3));
+                    std::memcpy(pCursor,                                         &pObject->GetPosition(), sizeof(coreVector3));
                     std::memcpy(pCursor + 3*sizeof(float),                      &pObject->GetSize(),     sizeof(coreVector3));
                     std::memcpy(pCursor + 6*sizeof(float),                      &iRotation,              sizeof(coreUint));
                     std::memcpy(pCursor + 6*sizeof(float) + 1*sizeof(coreUint), &iColor,                 sizeof(coreUint));
@@ -263,23 +263,23 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             }
 
             // unmap buffer
-            m_aiInstanceBuffer.GetCur().Unmap(pRange);
+            m_aiInstanceBuffer.Current().Unmap(pRange);
 
             // reset the update status
             m_bUpdate = false;
         }
 
         // bind vertex array object
-        if(m_aiVertexArray.GetCur()) glBindVertexArray(m_aiVertexArray.GetCur());
+        if(m_aiVertexArray.Current()) glBindVertexArray(m_aiVertexArray.Current());
         else
         {
             // create vertex array object
-            glGenVertexArrays(1, &m_aiVertexArray.GetCur());
-            glBindVertexArray(m_aiVertexArray.GetCur());
+            glGenVertexArrays(1, &m_aiVertexArray.Current());
+            glBindVertexArray(m_aiVertexArray.Current());
 
             // set vertex data
             pModel->GetVertexBuffer(0)->Activate(0);
-            m_aiInstanceBuffer.GetCur().Activate(1);
+            m_aiInstanceBuffer.Current().Activate(1);
 
             // set index data
             if(*pModel->GetIndexBuffer())
@@ -308,9 +308,9 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
     }
     else
     {
-        // draw without instancing
+        // draw without instancing (no inheritance)
         FOR_EACH(it, m_apObjectList)
-            (*it)->Render(pProgramSingle);
+            (*it)->coreObject3D::Render(pProgramSingle);
     }
 }
 
@@ -472,7 +472,7 @@ void coreBatchList::Clear()
 
     // delete vertex array objects
     if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray);
-    m_aiVertexArray.List()->fill(0);
+    m_aiVertexArray.Fill(0);
 }
 
 
@@ -494,11 +494,11 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
             {
                 // create instance data buffers
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         0);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,         3*sizeof(float));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_BYTE,          6*sizeof(float));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 6*sizeof(float) + 1*sizeof(coreUint));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         6*sizeof(float) + 2*sizeof(coreUint));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         false, 0);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,         false, 3*sizeof(float));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_BYTE,          false, 6*sizeof(float));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, false, 6*sizeof(float) + 1*sizeof(coreUint));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         false, 6*sizeof(float) + 2*sizeof(coreUint));
             }
 
             // invoke buffer update
@@ -509,7 +509,7 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
     {
         // delete vertex array objects
         if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray);
-        m_aiVertexArray.List()->fill(0);
+        m_aiVertexArray.Fill(0);
 
         // delete instance data buffers
         FOR_EACH(it, *m_aiInstanceBuffer.List())

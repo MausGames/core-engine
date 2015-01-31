@@ -46,6 +46,8 @@ public:
     constexpr_func coreTimer()noexcept;
     constexpr_func coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept;
 
+    ENABLE_COPY(coreTimer)
+
     /*! update the timer */
     //! @{
     bool Update(const float& fSpeedModifier);
@@ -98,6 +100,8 @@ private:
 public:
     constexpr_func coreFlow()noexcept                    : m_fValue (0.0f)   {}
     constexpr_func coreFlow(const float& fValue)noexcept : m_fValue (fValue) {}
+
+    ENABLE_COPY(coreFlow)
 
     /*! access current value */
     //! @{

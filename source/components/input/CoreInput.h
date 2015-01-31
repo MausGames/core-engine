@@ -49,8 +49,6 @@ enum coreInputType
 // main input component
 class CoreInput final
 {
-friend class Core;
-
 private:
     //! keyboard structure
     struct coreKeyboard
@@ -113,6 +111,9 @@ private:
 
 
 public:
+    FRIEND_CLASS(Core)
+    DISABLE_COPY(CoreInput)
+
     //! control the mouse cursor
     //! @{
     void DefineCursor(const char* pcPath);
@@ -195,8 +196,6 @@ public:
 
 
 private:
-    DISABLE_COPY(CoreInput)
-
     //! update and clear the input button interface
     //! @{
     void __UpdateButtons();

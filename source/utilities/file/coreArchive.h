@@ -10,6 +10,9 @@
 #ifndef _CORE_GUARD_ARCHIVE_H_
 #define _CORE_GUARD_ARCHIVE_H_
 
+// TODO: make archive a file
+// TODO: implement Unload into coreFile, so the unload is better
+
 
 // ****************************************************************
 // file definitions
@@ -22,8 +25,6 @@
 // file class
 class coreFile final
 {
-friend class coreArchive;
-
 private:
     std::string m_sPath;          //!< relative path of the file
 
@@ -38,6 +39,9 @@ public:
     explicit coreFile(const char* pcPath)noexcept;
     coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)noexcept;
     ~coreFile();
+
+    FRIEND_CLASS(coreArchive)
+    DISABLE_COPY(coreFile)
 
     //! save file
     //! @{
@@ -57,16 +61,11 @@ public:
     inline const coreByte* GetData()      {this->LoadData(); return m_pData;}
     inline const coreUint& GetSize()const {return m_iSize;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreFile)
 };
 
 
 // ****************************************************************
 // archive class
-// TODO: make archive a file
 class coreArchive final
 {
 private:
@@ -78,6 +77,8 @@ public:
     coreArchive()noexcept;
     explicit coreArchive(const char* pcPath)noexcept;
     ~coreArchive();
+
+    DISABLE_COPY(coreArchive)
 
     //! save archive
     //! @{
@@ -108,8 +109,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreArchive)
-
     //! calculate absolute data positions of all files
     //! @{
     void __CalculatePositions();
@@ -119,7 +118,6 @@ private:
 
 // ****************************************************************
 // file-unload helper class
-// TODO: implement this into coreFile, so the unload is better
 class coreFileUnload final
 {
 private:
@@ -130,10 +128,9 @@ public:
     explicit constexpr_func coreFileUnload(coreFile* pFile)noexcept : m_pFile (pFile) {}
     ~coreFileUnload() {ASSERT(m_pFile) m_pFile->UnloadData();}
 
-
-private:
     DISABLE_COPY(coreFileUnload)
-    DISABLE_HEAP
+    DISABLE_NEW
+    DISABLE_DELETE
 };
 
 

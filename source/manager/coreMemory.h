@@ -23,8 +23,6 @@
 // memory manager
 class coreMemoryManager final
 {
-friend class Core;
-
 private:
     coreLookupStr<std::weak_ptr<void> > m_apPointer;   //!< list with weak shared memory pointer
 
@@ -35,6 +33,7 @@ private:
 
 
 public:
+    FRIEND_CLASS(Core)
     DISABLE_COPY(coreMemoryManager)
 
     //! share memory pointer through specific identifier

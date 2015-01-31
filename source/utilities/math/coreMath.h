@@ -52,6 +52,8 @@
 class coreMath final
 {
 public:
+    DISABLE_CONSTRUCTION(coreMath)
+
     /*! special operations */
     //! @{
     template <typename T, typename... A> static constexpr_func T Min(const T& x, const T& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
@@ -94,10 +96,6 @@ public:
     static inline float    Ceil    (const float&    fInput)                             {return std::ceil (fInput);}
     static inline float    Floor   (const float&    fInput)                             {return std::floor(fInput);}
     //! @}
-
-
-private:
-    DISABLE_TORS(coreMath)
 };
 
 

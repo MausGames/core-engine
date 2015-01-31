@@ -35,6 +35,8 @@ private:
 
 
 public:
+    DISABLE_CONSTRUCTION(coreData)
+
     /*! create formatted string */
     //! @{
     template <typename... A> static RETURN_RESTRICT const char* Print(const char* pcFormat, A&&... vArgs);
@@ -94,9 +96,8 @@ public:
     static void                StrReplace  (std::string* OUTPUT psInput, const char* pcOld, const char* pcNew);
     //! @}
 
-private:
-    DISABLE_TORS(coreData)
 
+private:
     /*! access next return-string */
     //! @{
     static inline RETURN_RESTRICT char* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0; return m_aacString[m_iCurString];}

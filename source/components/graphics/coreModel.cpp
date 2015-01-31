@@ -120,10 +120,10 @@ coreError coreModel::Load(coreFile* pFile)
 
     // create vertex buffer
     coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,          0);
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT, 3*sizeof(float));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, iNormFormat,       3*sizeof(float) + 1*sizeof(coreUint));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, iNormFormat,       3*sizeof(float) + 2*sizeof(coreUint));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,          false, 0);
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT, false, 3*sizeof(float));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, iNormFormat,       false, 3*sizeof(float) + 1*sizeof(coreUint));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, iNormFormat,       false, 3*sizeof(float) + 2*sizeof(coreUint));
     SAFE_DELETE_ARRAY(pPackedData)
 
 #if defined(_CORE_GLES_)

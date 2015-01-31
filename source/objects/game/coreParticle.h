@@ -33,8 +33,6 @@
 // particle class
 class coreParticle final
 {
-friend class coreParticleSystem;
-
 public:
     //! state structure
     struct coreState
@@ -62,14 +60,11 @@ private:
     constexpr_func coreParticle()noexcept;
     ~coreParticle() {}
 
-    //! control the particle
-    //! @{
-    inline void Prepare(coreParticleEffect* pEffect) {m_pEffect = pEffect; m_fValue = 1.0f;}
-    inline void Update();
-    //! @}
-
 
 public:
+    FRIEND_CLASS(coreParticleSystem)
+    ENABLE_COPY (coreParticle)
+
     //! check current status
     //! @{
     inline bool IsActive()const {return (m_fValue > 0.0f) ? true : false;}
@@ -114,6 +109,14 @@ public:
     inline float               GetLifetime    ()const {return RCP(m_fSpeed);}
     inline coreParticleEffect* GetEffect      ()const {return m_pEffect;}
     //! @}
+
+
+private:
+    //! control the particle
+    //! @{
+    inline void __Prepare(coreParticleEffect* pEffect) {m_pEffect = pEffect; m_fValue = 1.0f;}
+    inline void __Update();
+    //! @}
 };
 
 
@@ -130,7 +133,7 @@ private:
     coreProgramPtr m_pProgram;                                                         //!< shader-program object
 
     std::list<coreParticle*> m_apRenderList;                                           //!< sorted render list with active particles
-    coreParticleEffect* m_pEmptyEffect;                                                //!< empty particle effect object
+    coreParticleEffect* m_pEmptyEffect;                                                //!< empty particle effect object (dynamic, because of class order)
 
     coreSelect<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
     coreSelect<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
@@ -141,6 +144,8 @@ private:
 public:
     explicit coreParticleSystem(const coreUint& iNumParticles)noexcept;
     ~coreParticleSystem();
+
+    DISABLE_COPY(coreParticleSystem)
 
     //! define the visual appearance
     //! @{
@@ -182,8 +187,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreParticleSystem)
-
     //! reset with the resource manager
     //! @{
     void __Reset(const coreResourceReset& bInit)override;
@@ -207,7 +210,9 @@ private:
 
 public:
     explicit coreParticleEffect(coreParticleSystem* pSystem)noexcept;
-    ~coreParticleEffect() {if(this->IsDynamic()) m_pSystem->Unbind(this);}
+    ~coreParticleEffect();
+
+    DISABLE_COPY(coreParticleEffect)
 
     //! create new particles
     //! @{
@@ -238,10 +243,6 @@ public:
     inline coreObject3D*       GetOrigin()const {return m_pOrigin;}
     inline coreParticleSystem* GetSystem()const {return m_pSystem;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreParticleEffect)
 };
 
 
@@ -268,7 +269,7 @@ constexpr_func coreParticle::coreParticle()noexcept
 
 // ****************************************************************
 // update the particle
-inline void coreParticle::Update()
+inline void coreParticle::__Update()
 {
     ASSERT(m_pEffect)
 

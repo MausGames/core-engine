@@ -52,6 +52,8 @@ public:
     explicit coreMusic(coreFile*   pFile)noexcept;
     ~coreMusic();
 
+    DISABLE_COPY(coreMusic)
+
     //! update the music object
     //! @{
     bool Update();
@@ -105,8 +107,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreMusic)
-
     //! read from music stream and update sound buffer
     //! @{
     bool __Stream(const ALuint& iBuffer);
@@ -140,6 +140,8 @@ private:
 public:
     coreMusicPlayer()noexcept;
     ~coreMusicPlayer();
+
+    DISABLE_COPY(coreMusicPlayer)
 
     //! update the music-player
     //! @{
@@ -189,8 +191,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreMusicPlayer)
-
     //! add music object
     //! @{
     coreError __AddMusic(coreFile* pFile);

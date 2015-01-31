@@ -44,6 +44,8 @@ public:
     constexpr_weak coreObject2D()noexcept;
     virtual ~coreObject2D() {}
 
+    ENABLE_COPY(coreObject2D)
+
     //! define the visual appearance
     //! @{
     void Undefine();
@@ -89,10 +91,6 @@ public:
     inline const coreMatrix3& GetRotation ()const {return m_mRotation;}
     inline const coreMatrix3& GetTransform()const {return m_mTransform;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreObject2D)
 };
 
 

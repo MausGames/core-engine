@@ -36,6 +36,8 @@ public:
                                const float& f21, const float& f22, const float& f23,
                                const float& f31, const float& f32, const float& f33)noexcept;
 
+    ENABLE_COPY(coreMatrix3)
+
     /*! compare operations */
     //! @{
     inline bool operator == (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ? false :  true;}
@@ -120,6 +122,8 @@ public:
                                const float& f21, const float& f22, const float& f23, const float& f24,
                                const float& f31, const float& f32, const float& f33, const float& f34,
                                const float& f41, const float& f42, const float& f43, const float& f44)noexcept;
+
+    ENABLE_COPY(coreMatrix4)
 
     /*! compare operations */
     //! @{

@@ -35,6 +35,8 @@ public:
     constexpr_func coreSync()noexcept : m_pSync (NULL) {}
     ~coreSync() {this->Delete();}
 
+    DISABLE_COPY(coreSync)
+
     //! handle the sync object
     //! @{
     bool Create();
@@ -45,10 +47,6 @@ public:
     //! @{
     coreError Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck);
     //! @}
-
-
-private:
-    DISABLE_COPY(coreSync)
 };
 
 

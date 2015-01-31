@@ -48,6 +48,8 @@ public:
     coreResource()noexcept : m_sPath (""), m_iSize (0) {}
     virtual ~coreResource()                            {}
 
+    DISABLE_COPY(coreResource)
+
     /*! load and unload resource data */
     //! @{
     virtual coreError Load(coreFile* pFile) = 0;
@@ -59,10 +61,6 @@ public:
     inline const char*     GetPath()const {return m_sPath.c_str();}
     inline const coreUint& GetSize()const {return m_iSize;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreResource)
 };
 
 
@@ -70,8 +68,6 @@ private:
 /* resource handle class */
 class coreResourceHandle final
 {
-friend class coreResourceManager;
-
 private:
     coreResource* m_pResource;   //!< holding resource object
     coreFile* m_pFile;           //!< pointer to resource file
@@ -89,6 +85,9 @@ private:
 
 
 public:
+    FRIEND_CLASS(coreResourceManager)
+    DISABLE_COPY(coreResourceHandle)
+
     /*! access resource object and status */
     //! @{
     inline coreResource* GetResource()const {return m_pResource;}
@@ -123,8 +122,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreResourceHandle)
-
     /*! handle automatic resource loading */
     //! @{
     inline bool __AutoUpdate() {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) {m_iStatus = m_pResource->Load(m_pFile); return true;} return false;}
@@ -148,6 +145,8 @@ public:
     coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
     ~coreResourcePtr();
 
+    DISABLE_NEW
+
     /*! assignment operator */
     //! @{
     coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
@@ -168,10 +167,6 @@ public:
     inline bool IsActive()const {return (m_pHandle && m_bActive)                          ? true : false;}
     inline bool IsUsable()const {return (m_pHandle && m_bActive && m_pHandle->IsLoaded()) ? true : false;}
     //! @}
-
-
-private:
-    DISABLE_HEAP
 };
 
 
@@ -179,12 +174,12 @@ private:
 /* relation interface */
 class INTERFACE coreResourceRelation
 {
-friend class coreResourceManager;
-
 public:
     coreResourceRelation()noexcept;
     coreResourceRelation(const coreResourceRelation& c)noexcept;
     virtual ~coreResourceRelation();
+
+    FRIEND_CLASS(coreResourceManager)
 
 
 private:
@@ -199,9 +194,6 @@ private:
 /* resource manager */
 class coreResourceManager final : public coreThread
 {
-friend class Core;
-friend class coreResourceRelation;
-
 private:
     coreLookupStr<coreResourceHandle*> m_apHandle;    //!< resource handles
 
@@ -220,6 +212,10 @@ private:
 
 
 public:
+    FRIEND_CLASS(Core)
+    FRIEND_CLASS(coreResourceRelation)
+    DISABLE_COPY(coreResourceManager)
+
     /*! update the resource manager */
     //! @{
     void UpdateResources();
@@ -250,8 +246,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreResourceManager)
-
     /*! resource thread implementations */
     //! @{
     int  __InitThread()override;
@@ -269,7 +263,6 @@ private:
     inline void __BindRelation  (coreResourceRelation* pRelation) {ASSERT(!m_apRelation.count(pRelation)) m_apRelation.insert(pRelation);}
     inline void __UnbindRelation(coreResourceRelation* pRelation) {ASSERT( m_apRelation.count(pRelation)) m_apRelation.erase (pRelation);}
     //! @}
-
 };
 
 

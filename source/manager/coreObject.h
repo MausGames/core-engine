@@ -24,7 +24,7 @@ enum coreObjectUpdate : coreByte
     CORE_OBJECT_UPDATE_COLLISION = 0x02,   //!< update collision-relevant values
     CORE_OBJECT_UPDATE_ALL       = 0x03    //!< update everything
 };
-EXTEND_ENUM(coreObjectUpdate)
+ENABLE_BITWISE(coreObjectUpdate)
 
 enum coreObjectEnable : coreByte
 {
@@ -33,7 +33,7 @@ enum coreObjectEnable : coreByte
     CORE_OBJECT_ENABLE_MOVE    = 0x02,   //!< enable move routine
     CORE_OBJECT_ENABLE_ALL     = 0x03    //!< enable all routines
 };
-EXTEND_ENUM(coreObjectEnable)
+ENABLE_BITWISE(coreObjectEnable)
 
 
 // ****************************************************************
@@ -93,14 +93,14 @@ public:
 
     /*! get object properties */
     //! @{
-    inline const coreTexturePtr&   GetTexture  (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
-    inline const coreProgramPtr&   GetProgram  ()const                      {return m_pProgram;}
-    inline const coreVector4&      GetColor4   ()const                      {return m_vColor;}
-    inline coreVector3             GetColor3   ()const                      {return m_vColor.xyz();}
-    inline const float&            GetAlpha    ()const                      {return m_vColor.a;}
-    inline const coreVector2&      GetTexSize  ()const                      {return m_vTexSize;}
-    inline const coreVector2&      GetTexOffset()const                      {return m_vTexOffset;}
-    inline const int&              GetStatus   ()const                      {return m_iStatus;}
+    inline const coreTexturePtr& GetTexture  (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
+    inline const coreProgramPtr& GetProgram  ()const                      {return m_pProgram;}
+    inline const coreVector4&    GetColor4   ()const                      {return m_vColor;}
+    inline coreVector3           GetColor3   ()const                      {return m_vColor.xyz();}
+    inline const float&          GetAlpha    ()const                      {return m_vColor.a;}
+    inline const coreVector2&    GetTexSize  ()const                      {return m_vTexSize;}
+    inline const coreVector2&    GetTexOffset()const                      {return m_vTexOffset;}
+    inline const int&            GetStatus   ()const                      {return m_iStatus;}
     //! @}
 };
 
@@ -109,9 +109,6 @@ public:
 /* object manager */
 class coreObjectManager final : public coreResourceRelation
 {
-friend class Core;
-friend class coreObject3D;
-
 private:
     /*! internal types */
     typedef std::vector<coreObject3D*> coreObjectList;
@@ -141,6 +138,10 @@ private:
 
 
 public:
+    FRIEND_CLASS(Core)
+    FRIEND_CLASS(coreObject3D)
+    DISABLE_COPY(coreObjectManager)
+
     /*! test collision between different structures */
     //! @{
     template <typename F> void TestCollision(const int&          iType,                                                               F&& nCallback);
@@ -160,8 +161,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreObjectManager)
-
     /*! reset with the resource manager */
     //! @{
     void __Reset(const coreResourceReset& bInit)override;

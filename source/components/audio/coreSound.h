@@ -54,6 +54,8 @@ public:
     coreSound()noexcept;
     ~coreSound();
 
+    DISABLE_COPY(coreSound)
+
     //! load and unload sound resource data
     //! @{
     coreError Load(coreFile* pFile)override;
@@ -87,10 +89,6 @@ public:
     inline const ALuint&         GetBuffer()const {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreSound)
 };
 
 

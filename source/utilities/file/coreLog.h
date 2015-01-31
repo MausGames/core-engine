@@ -32,7 +32,7 @@ enum coreLogLevel : coreByte
     CORE_LOG_LEVEL_ERROR   = 0x04,   //!< log error messages
     CORE_LOG_LEVEL_ALL     = 0x07    //!< log everything
 };
-EXTEND_ENUM(coreLogLevel)
+ENABLE_BITWISE(coreLogLevel)
 
 
 // ****************************************************************
@@ -52,6 +52,8 @@ private:
 public:
     explicit coreLog(const char* pcPath)noexcept;
     ~coreLog();
+
+    DISABLE_COPY(coreLog)
 
     /*! message functions */
     //! @{
@@ -83,8 +85,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreLog)
-
     /*! write text to the log file */
     //! @{
     void __Write(const bool& bTime, std::string sText);

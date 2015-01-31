@@ -14,6 +14,7 @@
 // TODO: instancing with more than one vertex array in the model ? (binding location)
 // TODO: implement efficient batch list sort function
 // TODO: compress rotation and texture parameters (2x16 ?)
+// TODO: make coreBatchList to template class, check for every casting
 
 
 // ****************************************************************
@@ -125,6 +126,8 @@ public:
     explicit coreBatchList(const coreUint& iStartCapacity)noexcept;
     ~coreBatchList();
 
+    DISABLE_COPY(coreBatchList)
+
     /*! define the visual appearance */
     //! @{
     inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram) {m_pProgram = pProgram;                                          return m_pProgram;}
@@ -173,8 +176,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreBatchList)
-
     /*! reset with the resource manager */
     //! @{
     void __Reset(const coreResourceReset& bInit)override;

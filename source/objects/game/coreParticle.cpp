@@ -14,7 +14,6 @@
 coreParticleSystem::coreParticleSystem(const coreUint& iNumParticles)noexcept
 : m_iNumParticles (iNumParticles)
 , m_iCurParticle  (0)
-, m_aiVertexArray (0)
 , m_bUpdate       (false)
 {
     ASSERT(iNumParticles)
@@ -25,7 +24,8 @@ coreParticleSystem::coreParticleSystem(const coreUint& iNumParticles)noexcept
     // create empty particle effect object
     m_pEmptyEffect = new coreParticleEffect(this);
 
-    // create vertex array object and instance data buffer
+    // create vertex array objects and instance data buffers
+    m_aiVertexArray.Fill(0);
     this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
@@ -41,7 +41,7 @@ coreParticleSystem::~coreParticleSystem()
     // delete empty particle effect object
     SAFE_DELETE(m_pEmptyEffect)
 
-    // delete vertex array object and instance data buffer
+    // delete vertex array objects and instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
 }
 
@@ -75,11 +75,11 @@ void coreParticleSystem::Render()
         if(m_bUpdate)
         {
             // switch to next available array and buffer
-            m_aiVertexArray.Next();
+            m_aiVertexArray   .Next();
             m_aiInstanceBuffer.Next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.GetCur().Map<coreByte>(0, coreUint(m_apRenderList.size()) * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aiInstanceBuffer.Current().Map<coreByte>(0, coreUint(m_apRenderList.size()) * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)
@@ -109,7 +109,7 @@ void coreParticleSystem::Render()
             }
 
             // unmap buffer
-            m_aiInstanceBuffer.GetCur().Unmap(pRange);
+            m_aiInstanceBuffer.Current().Unmap(pRange);
 
             // reset the update status
             m_bUpdate = false;
@@ -119,7 +119,7 @@ void coreParticleSystem::Render()
         coreModel::Disable(false);
 
         // draw the model instanced
-        glBindVertexArray(m_aiVertexArray.GetCur());
+        glBindVertexArray(m_aiVertexArray.Current());
         Core::Manager::Object->GetLowModel()->DrawArraysInstanced(coreUint(m_apRenderList.size()));
     }
     else
@@ -154,7 +154,7 @@ void coreParticleSystem::Move()
         coreParticle* pParticle = (*it);
 
         // update particle
-        pParticle->Update();
+        pParticle->__Update();
         if(!pParticle->IsActive())
         {
             // remove finished particle
@@ -184,7 +184,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         if(!pParticle->IsActive())
         {
             // prepare particle and add to render list
-            pParticle->Prepare(pEffect);
+            pParticle->__Prepare(pEffect);
             m_apRenderList.push_back(pParticle);
 
             return pParticle;
@@ -287,15 +287,15 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
         FOR_EACH(it, *m_aiInstanceBuffer.List())
         {
             // create vertex array objects
-            glGenVertexArrays(1, &m_aiVertexArray.GetCur());
-            glBindVertexArray(m_aiVertexArray.GetCur());
+            glGenVertexArrays(1, &m_aiVertexArray.Current());
+            glBindVertexArray(m_aiVertexArray.Current());
             m_aiVertexArray.Next();
 
             // create instance data buffers
             it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         0);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,         3*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, 6*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         false, 0);
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,         false, 3*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, false, 6*sizeof(float));
 
             // set vertex data
             Core::Manager::Object->GetLowModel()->GetVertexBuffer(0)->Activate(0);
@@ -321,7 +321,7 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
     {
         // delete vertex array objects
         glDeleteVertexArrays(3, m_aiVertexArray);
-        m_aiVertexArray.List()->fill(0);
+        m_aiVertexArray.Fill(0);
 
         // delete instance data buffers
         FOR_EACH(it, *m_aiInstanceBuffer.List())
@@ -339,6 +339,16 @@ coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 , m_pSystem   (pSystem)
 , m_pThis     (pSystem->GetEmptyEffect())
 {
+}
+
+
+// ****************************************************************
+// destructor
+coreParticleEffect::~coreParticleEffect()
+{
+    // unbind all dynamic particles
+    if(this->IsDynamic())
+        m_pSystem->Unbind(this);
 }
 
 

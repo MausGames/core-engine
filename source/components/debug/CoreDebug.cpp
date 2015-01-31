@@ -16,8 +16,9 @@ CoreDebug::coreMeasure::coreMeasure()noexcept
 , fCurrentCPU (0)
 , fCurrentGPU (0)
 {
-    aaiQuery[0].List()->fill(0);
-    aaiQuery[1].List()->fill(0);
+    // reset timer-query objects
+    aaiQuery[0].Fill(0);
+    aaiQuery[1].Fill(0);
 }
 
 
@@ -107,7 +108,7 @@ void CoreDebug::MeasureStart(const char* pcName)
 
     // fetch first CPU time value and start GPU performance measurement
     pMeasure->iPerfTime = SDL_GetPerformanceCounter();
-    if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].GetCur(), GL_TIMESTAMP);
+    if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].Current(), GL_TIMESTAMP);
 }
 
 
@@ -128,7 +129,7 @@ void CoreDebug::MeasureEnd(const char* pcName)
     if(pMeasure->aaiQuery[0][0])
     {
         // end GPU performance measurement
-        glQueryCounter(pMeasure->aaiQuery[1].GetCur(), GL_TIMESTAMP);
+        glQueryCounter(pMeasure->aaiQuery[1].Current(), GL_TIMESTAMP);
 
         // switch to next set of timer-queries (with older already-processed values, asynchronous)
         pMeasure->aaiQuery[0].Next();
@@ -136,8 +137,8 @@ void CoreDebug::MeasureEnd(const char* pcName)
 
         // fetch result from both timer-queries
         GLuint64 aiResult[2];
-        glGetQueryObjectui64v(pMeasure->aaiQuery[0].GetCur(), GL_QUERY_RESULT, &aiResult[0]);
-        glGetQueryObjectui64v(pMeasure->aaiQuery[1].GetCur(), GL_QUERY_RESULT, &aiResult[1]);
+        glGetQueryObjectui64v(pMeasure->aaiQuery[0].Current(), GL_QUERY_RESULT, &aiResult[0]);
+        glGetQueryObjectui64v(pMeasure->aaiQuery[1].Current(), GL_QUERY_RESULT, &aiResult[1]);
 
         // update GPU performance value
         const float fDifferenceGPU = float(double(aiResult[1] - aiResult[0]) / 1.0e06);
@@ -173,8 +174,12 @@ void CoreDebug::__UpdateOutput()
         else if(SDL_GL_SetSwapInterval(-1)) SDL_GL_SetSwapInterval(1);
     }
 
+    // hold screen
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_HOLD))
+        Core::System->SkipFrame();
+
     // reset engine
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F9), CORE_INPUT_PRESS))
     {
         Core::Reset();
         return;

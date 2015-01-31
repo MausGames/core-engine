@@ -29,6 +29,8 @@ public:
     coreButton(const char* pcIdle, const char* pcBusy)noexcept;
     virtual ~coreButton();
 
+    DISABLE_COPY(coreButton)
+
     //! construct the button
     //! @{
     void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength);
@@ -51,10 +53,6 @@ public:
     inline coreLabel* GetCaption ()const {return m_pCaption;}
     inline const int& GetOverride()const {return m_iOverride;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreButton)
 };
 
 

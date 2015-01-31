@@ -39,6 +39,8 @@ public:
     coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)noexcept;
     virtual ~coreMenu();
 
+    DISABLE_COPY(coreMenu)
+
     //! render and move the menu
     //! @{
     virtual void Render()override;
@@ -64,10 +66,6 @@ public:
     inline const coreByte&  GetOldSurface ()const {return m_iOldSurface;}
     inline const coreTimer& GetTransition ()const {return m_Transition;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreMenu)
 };
 
 

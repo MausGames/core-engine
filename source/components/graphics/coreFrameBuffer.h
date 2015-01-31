@@ -41,7 +41,7 @@ enum coreFrameBufferTarget : coreUshort
     CORE_FRAMEBUFFER_TARGET_DEPTH   = GL_DEPTH_BUFFER_BIT,    //!< use depth buffer
     CORE_FRAMEBUFFER_TARGET_STENCIL = GL_STENCIL_BUFFER_BIT   //!< use stencil buffer
 };
-EXTEND_ENUM(coreFrameBufferTarget)
+ENABLE_BITWISE(coreFrameBufferTarget)
 
 
 // ****************************************************************
@@ -84,6 +84,8 @@ private:
 public:
     coreFrameBuffer()noexcept;
     ~coreFrameBuffer();
+
+    DISABLE_COPY(coreFrameBuffer)
 
     //! control the frame buffer
     //! @{
@@ -142,8 +144,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreFrameBuffer)
-
     //! attach render targets
     //! @{
     coreRenderTarget* __AttachTarget(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);

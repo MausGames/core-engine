@@ -25,6 +25,8 @@ public:
     coreFont()noexcept;
     ~coreFont();
 
+    DISABLE_COPY(coreFont)
+
     //! load and unload font resource data
     //! @{
     coreError Load(coreFile* pFile)override;
@@ -39,8 +41,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreFont)
-
     //! init the font in a specific height
     //! @{
     bool __InitHeight(const int& iHeight);

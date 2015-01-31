@@ -30,6 +30,8 @@ public:
     explicit coreThread(const char* pcName)noexcept;
     virtual ~coreThread();
 
+    DISABLE_COPY(coreThread)
+
     /*! start and kill the thread */
     //! @{
     SDL_Thread* StartThread();
@@ -56,8 +58,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreThread)
-
     /*! execute the thread */
     //! @{
     int __Main();

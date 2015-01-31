@@ -22,8 +22,6 @@
 // main system component
 class CoreSystem final
 {
-friend class Core;
-
 private:
     SDL_Window* m_pWindow;                     //!< SDL main window object
 
@@ -57,6 +55,9 @@ private:
 
 
 public:
+    FRIEND_CLASS(Core)
+    DISABLE_COPY(CoreSystem)
+
     //! control window
     //! @{
     inline void SetWindowTitle(const char* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
@@ -99,8 +100,6 @@ public:
 
 
 private:
-    DISABLE_COPY(CoreSystem)
-
     //! update the window event system
     //! @{
     bool __UpdateEvents();

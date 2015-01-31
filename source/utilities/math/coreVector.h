@@ -29,6 +29,8 @@ public:
     constexpr_func coreVector2()noexcept                                 : x (0.0f), y (0.0f) {}
     constexpr_func coreVector2(const float& fx, const float& fy)noexcept : x (fx),   y (fy)   {}
 
+    ENABLE_COPY(coreVector2)
+
     /*! compare operations */
     //! @{
     inline bool operator == (const coreVector2& v)const {return std::memcmp(this, &v, sizeof(coreVector2)) ? false :  true;}
@@ -135,6 +137,8 @@ public:
     constexpr_func coreVector3(const coreVector2& v, const float& fz)noexcept             : x (v.x),  y (v.y),  z (fz)   {}
     constexpr_func coreVector3(const float& fx, const coreVector2& v)noexcept             : x (fx),   y (v.x),  z (v.y)  {}
     constexpr_func coreVector3(const float& fx, const float& fy, const float& fz)noexcept : x (fx),   y (fy),   z (fz)   {}
+
+    ENABLE_COPY(coreVector3)
 
     /*! compare operations */
     //! @{
@@ -259,6 +263,8 @@ public:
     constexpr_func coreVector4(const float& fx, const float& fy, const coreVector2& v)noexcept             : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
     constexpr_func coreVector4(const coreVector2& v1, const coreVector2& v2)noexcept                       : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
     constexpr_func coreVector4(const float& fx, const float& fy, const float& fz, const float& fw)noexcept : x (fx),   y (fy),   z (fz),   w (fw)   {}
+
+    ENABLE_COPY(coreVector4)
 
     /*! compare operations */
     //! @{

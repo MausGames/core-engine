@@ -166,7 +166,7 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
 
         // define vertex data
         coreVertexBuffer* pBuffer = m_pLowModel->CreateVertexBuffer(4, sizeof(coreUint), aiDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2, GL_SHORT, 0);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2, GL_SHORT, false, 0);
 
         Core::Log->Info("Low-memory model object created");
 

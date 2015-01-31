@@ -37,6 +37,8 @@ public:
     coreTextBox()noexcept;
     coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
 
+    DISABLE_COPY(coreTextBox)
+
     //! construct the text-box
     //! @{
     void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength);
@@ -70,8 +72,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreTextBox)
-
     //! process new text-input characters
     //! @{
     bool __Write();

@@ -26,8 +26,6 @@
 /* main debug component */
 class CoreDebug final
 {
-friend class Core;
-
 private:
     /*! measure structure */
     struct coreMeasure
@@ -67,6 +65,9 @@ private:
 
 
 public:
+    FRIEND_CLASS(Core)
+    DISABLE_COPY(CoreDebug)
+
     /*! measure performance between specific points */
     //! @{
     void MeasureStart(const char* pcName);
@@ -87,8 +88,6 @@ public:
 
 
 private:
-    DISABLE_COPY(CoreDebug)
-
     /*! update and display debug output */
     //! @{
     void __UpdateOutput();

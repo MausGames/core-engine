@@ -45,6 +45,8 @@ public:
     coreSwitchBox(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
     ~coreSwitchBox();
 
+    DISABLE_COPY(coreSwitchBox)
+
     //! construct the switch-box
     //! @{
     void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength);
@@ -95,8 +97,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreSwitchBox)
-
     //! update object after modification
     //! @{
     inline void __Update()override {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first.c_str());}

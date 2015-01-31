@@ -107,6 +107,8 @@ public:
     explicit coreShader(const char* pcCustomCode)noexcept;
     ~coreShader();
 
+    DISABLE_COPY(coreShader)
+
     //! load and unload shader resource data
     //! @{
     coreError Load(coreFile* pFile)override;
@@ -127,8 +129,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreShader)
-
     //! load global shader code
     //! @{
     static void __LoadGlobalCode();
@@ -163,6 +163,8 @@ private:
 public:
     coreProgram()noexcept;
     ~coreProgram();
+
+    DISABLE_COPY(coreProgram)
 
     //! load and unload shader-program
     //! @{
@@ -216,8 +218,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreProgram)
-
     //! write error-log
     //! @{
     void __WriteLog()const;

@@ -243,6 +243,8 @@
 #define DYN_KEEP(i)          {++i;}
 #define DYN_REMOVE(i,c)      {i = (c).erase(i); i ## __e = (c).end();}
 
+#define FRIEND_CLASS(c)      friend class c;
+
 #if defined(_CORE_DEBUG_)
     #define ASSERT(c)        {SDL_assert((c));}
 #else
@@ -255,30 +257,31 @@
 #define WARN_IF(c)           {SDL_assert(!(c));} if(c)
 #define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
 
-// enable additional information about the defined class
-#define ENABLE_INFO(c)                                    \
-    static inline const char* GetTypeName()  {return #c;} \
-    static inline const char* GetClassPath() {return __FILE__;}
-
 // disable constructor and destructor of the defined class
-#define DISABLE_TORS(c) \
-     c() = delete;      \
+#define DISABLE_CONSTRUCTION(c) \
+     c() = delete;              \
     ~c() = delete;
 
-// disable copy and move operations with the defined class
-#define DISABLE_COPY(c)                \
-    c             (const c&) = delete; \
+// enable (explicitly) or disable copy-operations with the defined class
+#define ENABLE_COPY(c)                  \
+    c             (const c&) = default; \
+    c& operator = (const c&) = default;
+#define DISABLE_COPY(c)                 \
+    c             (const c&) = delete;  \
     c& operator = (const c&) = delete;
 
-// disable heap operations with the defined class
-#define DISABLE_HEAP                                    \
-    void* operator new   (std::size_t)        = delete; \
-    void* operator new   (std::size_t, void*) = delete; \
-    void* operator new[] (std::size_t)        = delete; \
-    void* operator new[] (std::size_t, void*) = delete;
+// disable heap-operations with the defined class
+#define DISABLE_NEW                                        \
+    void* operator new      (std::size_t)        = delete; \
+    void* operator new      (std::size_t, void*) = delete; \
+    void* operator new[]    (std::size_t)        = delete; \
+    void* operator new[]    (std::size_t, void*) = delete;
+#define DISABLE_DELETE                                     \
+    void  operator delete   (void*)              = delete; \
+    void  operator delete[] (void*)              = delete;
 
-// enable bit-operations with the defined enumeration
-#define EXTEND_ENUM(e)                                                                                                                                               \
+// enable bitwise-operations with the defined enumeration
+#define ENABLE_BITWISE(e)                                                                                                                                               \
     constexpr_func e  operator ~  (const e& a)             {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
     constexpr_func e  operator |  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
     constexpr_func e  operator &  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
@@ -380,11 +383,11 @@ class coreObjectManager;
 // application framework
 class CoreApp final
 {
-friend class Core;
-
 private:
     CoreApp()noexcept {this->Setup(); this->Init();}
     ~CoreApp()        {this->Exit();}
+
+    FRIEND_CLASS(Core)
 
     //! auto-generated setup function
     //! @{

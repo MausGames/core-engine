@@ -163,7 +163,7 @@ void coreVertexBuffer::Delete()
 
 // ****************************************************************
 // define vertex attribute array
-void coreVertexBuffer::DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const coreByte& iOffset)
+void coreVertexBuffer::DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const bool& bInteger, const coreByte& iOffset)
 {
     ASSERT(this->GetDataBuffer())
 
@@ -176,14 +176,15 @@ void coreVertexBuffer::DefineAttribute(const int& iLocation, const coreByte& iCo
 #endif
 
     // create new vertex attribute array definition
-    coreAttribute NewAttribute;
-    NewAttribute.iLocation   = iLocation;
-    NewAttribute.iComponents = iComponents;
-    NewAttribute.iType       = iType;
-    NewAttribute.iOffset     = iOffset;
+    coreAttribute oNewAttribute;
+    oNewAttribute.iLocation   = iLocation;
+    oNewAttribute.iComponents = iComponents;
+    oNewAttribute.iType       = iType;
+    oNewAttribute.bInteger    = bInteger;
+    oNewAttribute.iOffset     = iOffset;
 
     // add definition to list
-    m_aAttribute.push_back(NewAttribute);
+    m_aAttribute.push_back(oNewAttribute);
 }
 
 
@@ -205,8 +206,12 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
             glVertexAttribBinding(it->iLocation, iBinding);
 
             // specify the vertex format
-            const bool bInteger = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
-            glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, bInteger, it->iOffset);
+            if(it->bInteger) glVertexAttribIFormat(it->iLocation, it->iComponents, it->iType, it->iOffset);
+            else
+            {
+                const bool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
+                glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, bNormalized, it->iOffset);
+            }
         }
     }
     else
@@ -220,8 +225,12 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
             glEnableVertexAttribArray(it->iLocation);
 
             // specify the vertex format
-            const bool bInteger = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
-            glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bInteger, m_iVertexSize, I_TO_P(it->iOffset));
+            if(it->bInteger) glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType, m_iVertexSize, I_TO_P(it->iOffset));
+            else
+            {
+                const bool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
+                glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bNormalized, m_iVertexSize, I_TO_P(it->iOffset));
+            }
         }
     }
 }

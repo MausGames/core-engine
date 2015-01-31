@@ -25,8 +25,6 @@
 /* translation interface */
 class INTERFACE coreTranslate
 {
-friend class coreLanguage;
-
 private:
     coreLanguage* m_pLanguage;                            //!< associated language file
     coreLookup<std::string*, std::string> m_apsPointer;   //!< own string pointers connected with keys <own, key>
@@ -37,6 +35,8 @@ public:
     coreTranslate(const coreTranslate& c)noexcept;
     coreTranslate(coreTranslate&&      m)noexcept;
     virtual ~coreTranslate();
+
+    FRIEND_CLASS(coreLanguage)
 
     /*! assignment operations */
     //! @{
@@ -70,8 +70,6 @@ private:
 /* language file class */
 class coreLanguage final
 {
-friend class coreTranslate;
-
 private:
     coreLookupStr<std::string> m_asStringList;             //!< list with language-strings to specific keys
 
@@ -84,6 +82,9 @@ private:
 public:
     explicit coreLanguage(const char* pcPath)noexcept;
     ~coreLanguage();
+
+    FRIEND_CLASS(coreTranslate)
+    DISABLE_COPY(coreLanguage)
 
     /*! load and access the language file */
     //! @{
@@ -99,8 +100,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreLanguage)
-
     /*! bind and unbind translation objects */
     //! @{
     inline void __BindObject  (coreTranslate* pObject) {ASSERT(!m_apObject.count(pObject)) m_apObject.insert(pObject);}

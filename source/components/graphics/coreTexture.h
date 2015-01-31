@@ -60,6 +60,8 @@ public:
     coreTexture()noexcept;
     ~coreTexture();
 
+    DISABLE_COPY(coreTexture)
+
     //! load and unload texture resource data
     //! @{
     coreError Load(coreFile* pFile)override;
@@ -96,8 +98,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreTexture)
-
     //! bind texture to texture unit
     //! @{
     static void __BindTexture(const coreByte& iUnit, coreTexture* pTexture);

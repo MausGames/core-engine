@@ -36,6 +36,8 @@ public:
     coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
     ~coreLabel();
 
+    DISABLE_COPY(coreLabel)
+
     //! construct the label
     //! @{
     void Construct(const char* pcFont, const int& iHeight, const coreUint& iLength);
@@ -65,8 +67,6 @@ public:
 
 
 private:
-    DISABLE_COPY(coreLabel)
-
     //! reset with the resource manager
     //! @{
     void __Reset(const coreResourceReset& bInit)override;

@@ -27,8 +27,7 @@ enum coreDataBufferStorage : coreUshort
     CORE_DATABUFFER_STORAGE_PERSISTENT = 0x0008,   //!< store persistent mapped buffer when supported (fallback to dynamic)
     CORE_DATABUFFER_STORAGE_FENCED     = 0x0100    //!< use sync object for reliable asynchronous processing
 };
-EXTEND_ENUM(coreDataBufferStorage)
-
+ENABLE_BITWISE(coreDataBufferStorage)
 
 enum coreDataBufferMap : coreByte
 {
@@ -61,6 +60,8 @@ private:
 public:
     constexpr_func coreDataBuffer()noexcept;
     ~coreDataBuffer() {this->Delete();}
+
+    DISABLE_COPY(coreDataBuffer)
 
     //! control the data buffer object
     //! @{
@@ -106,10 +107,6 @@ public:
     inline const GLenum&                GetTarget     ()const {return m_iTarget;}
     inline const coreUint&              GetSize       ()const {return m_iSize;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreDataBuffer)
 };
 
 
@@ -124,6 +121,7 @@ private:
         int      iLocation;     //!< attribute location
         coreByte iComponents;   //!< number of components
         GLenum   iType;         //!< component type (e.g. GL_FLOAT)
+        bool     bInteger;      //!< pure integer attribute
         coreByte iOffset;       //!< offset within the vertex
 
         constexpr_func coreAttribute()noexcept;
@@ -139,6 +137,8 @@ public:
     coreVertexBuffer()noexcept;
     ~coreVertexBuffer() {this->Delete();}
 
+    DISABLE_COPY(coreVertexBuffer)
+
     //! control the vertex buffer object
     //! @{
     void Create(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
@@ -147,13 +147,9 @@ public:
 
     //! define and activate the vertex structure
     //! @{
-    void DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const coreByte& iOffset);
+    void DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const bool& bInteger, const coreByte& iOffset);
     void Activate(const coreByte& iBinding);
     //! @}
-
-
-private:
-    DISABLE_COPY(coreVertexBuffer)
 };
 
 
@@ -260,6 +256,7 @@ constexpr_func coreVertexBuffer::coreAttribute::coreAttribute()noexcept
 : iLocation   (0)
 , iComponents (0)
 , iType       (0)
+, bInteger    (false)
 , iOffset     (0)
 {
 }

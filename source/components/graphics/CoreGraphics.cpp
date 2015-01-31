@@ -85,7 +85,7 @@ CoreGraphics::CoreGraphics()noexcept
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         FOR_EACH(it, *m_aiTransformBuffer.List()) it->Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
-        FOR_EACH(it, *m_aiAmbientBuffer.List())   it->Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE,   NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+        FOR_EACH(it, *m_aiAmbientBuffer  .List()) it->Create(GL_UNIFORM_BUFFER, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE,   NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
     }
 
     // reset camera and view
@@ -121,7 +121,7 @@ CoreGraphics::~CoreGraphics()
 {
     // delete uniform buffer objects
     FOR_EACH(it, *m_aiTransformBuffer.List()) it->Delete();
-    FOR_EACH(it, *m_aiAmbientBuffer.List())   it->Delete();
+    FOR_EACH(it, *m_aiAmbientBuffer  .List()) it->Delete();
 
     // dissociate render context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
@@ -232,10 +232,10 @@ void CoreGraphics::SendTransformation()
 
         // switch to next available buffer
         m_aiTransformBuffer.Next();
-        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_aiTransformBuffer.GetCur());
+        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_aiTransformBuffer.Current());
 
         // map required area of the UBO
-        coreByte* pRange = m_aiTransformBuffer.GetCur().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        coreByte* pRange = m_aiTransformBuffer.Current().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
         std::memcpy(pRange,                         &mViewProj,         sizeof(coreMatrix4));
@@ -243,7 +243,7 @@ void CoreGraphics::SendTransformation()
         std::memcpy(pRange + 2*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
         std::memcpy(pRange + 3*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
         std::memcpy(pRange + 4*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
-        m_aiTransformBuffer.GetCur().Unmap(pRange);
+        m_aiTransformBuffer.Current().Unmap(pRange);
     }
     else
     {
@@ -265,14 +265,14 @@ void CoreGraphics::SendAmbient()
     {
         // switch to next available buffer
         m_aiAmbientBuffer.Next();
-        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_aiAmbientBuffer.GetCur());
+        glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_aiAmbientBuffer.Current());
 
         // map required area of the UBO
-        coreByte* pRange = m_aiAmbientBuffer.GetCur().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        coreByte* pRange = m_aiAmbientBuffer.Current().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update ambient data
         std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
-        m_aiAmbientBuffer.GetCur().Unmap(pRange);
+        m_aiAmbientBuffer.Current().Unmap(pRange);
     }
     else
     {

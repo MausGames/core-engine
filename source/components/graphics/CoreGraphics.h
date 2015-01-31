@@ -33,8 +33,6 @@
 // main graphics component
 class CoreGraphics final
 {
-friend class Core;
-
 private:
     //! light structure
     struct coreLight
@@ -80,6 +78,9 @@ private:
 
 
 public:
+    FRIEND_CLASS(Core)
+    DISABLE_COPY(CoreGraphics)
+
     //! control camera and view
     //! @{
     void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
@@ -130,8 +131,6 @@ public:
 
 
 private:
-    DISABLE_COPY(CoreGraphics)
-
     //! update the graphics scene
     //! @{
     void __UpdateScene();

@@ -81,6 +81,8 @@ public:
     coreModel()noexcept;
     ~coreModel();
 
+    DISABLE_COPY(coreModel)
+
     //! load and unload model resource data
     //! @{
     coreError Load(coreFile* pFile)override;
@@ -137,10 +139,6 @@ public:
     //! @{
     static inline coreModel* GetCurrent() {return s_pCurrent;}
     //! @}
-
-
-private:
-    DISABLE_COPY(coreModel)
 };
 
 
