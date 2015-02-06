@@ -77,7 +77,7 @@ public:
 
     /*! check for enabled object routines */
     //! @{
-    inline bool IsEnabled(const coreObjectEnable& iEnabled)const {return (m_iEnabled & iEnabled) ? true : false;}
+    inline bool IsEnabled(const coreObjectEnable& iEnabled)const {return CONTAINS_VALUE(m_iEnabled, iEnabled) ? true : false;}
     //! @}
 
     /*! set object properties */
@@ -148,8 +148,8 @@ public:
     template <typename F> void TestCollision(const int&          iType1,   const int&          iType2,                                F&& nCallback);
     template <typename F> void TestCollision(const int&          iType,    const coreObject3D* pObject,                               F&& nCallback);
     template <typename F> void TestCollision(const int&          iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);
-    static bool                TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
-    static float               TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
+    static bool  FUNC_NOALIAS  TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
+    static float FUNC_NOALIAS  TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
     //! @}
 
     /*! get manager properties */
@@ -258,8 +258,8 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, F&
             // test collision and call function
             if(coreObjectManager::TestCollision(pObject1, pObject2))
             {
-                nCallback(s_cast<function_traits<F>::arg<0>::type>(pObject1),
-                          s_cast<function_traits<F>::arg<1>::type>(pObject2),
+                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pObject1),
+                          s_cast<typename TRAIT_ARG_TYPE(F, 1)>(pObject2),
                           this->__NewCollision(pObject1, pObject2));
             }
         }
@@ -273,9 +273,12 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType1, c
 {
     ASSERT(iType1 && iType2 && iType1 != iType2)
 
+    // make sure both lists are available
+    m_aapObjectList[iType2]; m_aapObjectList[iType1];
+
     // get requested lists
-    const coreObjectList& oList1 = m_aapObjectList[iType1];
-    const coreObjectList& oList2 = m_aapObjectList[iType2];
+    const coreObjectList& oList1 = m_aapObjectList.at(iType1);
+    const coreObjectList& oList2 = m_aapObjectList.at(iType2);
 
     // loop through all objects
     FOR_EACH(it, oList1)
@@ -291,8 +294,8 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType1, c
             // test collision and call function
             if(coreObjectManager::TestCollision(pObject1, pObject2))
             {
-                nCallback(s_cast<function_traits<F>::arg<0>::type>(pObject1),
-                          s_cast<function_traits<F>::arg<1>::type>(pObject2),
+                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pObject1),
+                          s_cast<typename TRAIT_ARG_TYPE(F, 1)>(pObject2),
                           this->__NewCollision(pObject1, pObject2));
             }
         }
@@ -318,7 +321,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, co
         // test collision and call function
         if(coreObjectManager::TestCollision(pCurObject, pObject))
         {
-            nCallback(s_cast<function_traits<F>::arg<0>::type>(pCurObject),
+            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pCurObject),
                       this->__NewCollision(pCurObject, pObject));
         }
     }
@@ -344,8 +347,8 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, co
         const float fDistance = coreObjectManager::TestCollision(pCurObject, vLinePos, vLineDir);
         if(fDistance)
         {
-            nCallback(s_cast<function_traits<F>::arg<0>::type>(pCurObject),
-                      fDistance, this->__NewCollision(pCurObject, NULL));
+            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pCurObject), fDistance,
+                      this->__NewCollision(pCurObject, NULL));
         }
     }
 }

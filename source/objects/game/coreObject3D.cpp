@@ -136,13 +136,16 @@ void coreObject3D::Move()
     // check current update status
     if(m_iUpdate)
     {
-        if(m_iUpdate & CORE_OBJECT_UPDATE_TRANSFORM)
+        if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
         {
             // update rotation quaternion
             m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().Quat();
         }
-        if(m_iUpdate & CORE_OBJECT_UPDATE_COLLISION)
+        if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {
+            // cancel update without valid model
+            if(!m_pModel.IsUsable()) return;
+
             // update collision range and radius
             m_vCollisionRange  = m_pModel->GetBoundingRange () * this->GetSize()       * m_vCollisionModifier;
             m_fCollisionRadius = m_pModel->GetBoundingRadius() * this->GetSize().Max() * m_vCollisionModifier.Max();

@@ -12,6 +12,20 @@
 
 // TODO: 3d text with link or own class ?
 // TODO: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
+// TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
+// TODO: in __Generate, use font-size calculation interface to check for font-size and pre-allocations
+
+
+// ****************************************************************
+// menu label definitions
+enum coreLabelUpdate : coreByte
+{
+    CORE_LABEL_UPDATE_NOTHING = 0x00,   //!< update nothing
+    CORE_LABEL_UPDATE_SIZE    = 0x01,   //!< update object size
+    CORE_LABEL_UPDATE_TEXTURE = 0x02,   //!< update and generate texture
+    CORE_LABEL_UPDATE_ALL     = 0x03    //!< update everything
+};
+ENABLE_BITWISE(coreLabelUpdate)
 
 
 // ****************************************************************
@@ -28,7 +42,7 @@ private:
     std::string m_sText;         //!< current text
     float       m_fScale;        //!< scale factor
 
-    coreByte m_iGenerate;        //!< generation status (0 = do nothing | 1 = update only size | 3 = update texture and size)
+    coreLabelUpdate m_iUpdate;   //!< update status (dirty flag)
 
 
 public:
@@ -54,7 +68,7 @@ public:
     bool        SetText        (const char*  pcText);
     bool        SetText        (const char*  pcText, const coreUint& iNum);
     inline void SetTextLanguage(const char*  pcKey)  {this->_BindString(&m_sText, pcKey);}
-    inline void SetScale       (const float& fScale) {if(m_fScale != fScale) {m_iGenerate |= 1; m_fScale = fScale;}}
+    inline void SetScale       (const float& fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
     //! @}
 
     //! get object properties
@@ -74,7 +88,7 @@ private:
 
     //! update object after modification
     //! @{
-    inline void __Update()override {m_iGenerate = 3;}
+    inline void __Update()override {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)}
     //! @}
 
     //! generate the texture

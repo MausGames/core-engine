@@ -79,7 +79,7 @@ coreObjectManager::~coreObjectManager()
 
 // ****************************************************************
 /* test collision between two 3d-objects */
-bool coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
+bool FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
 {
     ASSERT(pObject1 && pObject2)
 
@@ -92,35 +92,41 @@ bool coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreOb
     // check for sphere intersection
     if(vDiff.LengthSq() > fTotalRadius * fTotalRadius) return false;
 
-    // get collision range and rotation properties
-    const coreVector3 vTotalRange      =  pObject1->GetCollisionRange() + pObject2->GetCollisionRange();
-    const coreVector3 avDirection  [2] = {pObject1->GetDirection(),       pObject2->GetDirection()};
-    const coreVector3 avOrientation[2] = {pObject1->GetOrientation(),     pObject2->GetOrientation()};
+    // get collision range and rotation
+    const coreVector3& vRange1    = pObject1->GetCollisionRange();
+    const coreVector3& vRange2    = pObject2->GetCollisionRange();
+    const coreVector4& vRotation1 = pObject1->GetRotation();
+    const coreVector4& vRotation2 = pObject2->GetRotation();
 
-    // project range and distance onto every object axis
-    for(int i = 0; i < 2; ++i)
-    {
-        const coreVector3& D = avDirection[i];
+    // revert second rotation
+    const coreVector4 vRevRotation2 = vRotation2.QuatConjugate();
 
-        // check for Y axis intersection
-        if(ABS(vDiff      .x * D.x) + ABS(vDiff      .y * D.y) + ABS(vDiff      .z * D.z) >
-           ABS(vTotalRange.x * D.x) + ABS(vTotalRange.y * D.y) + ABS(vTotalRange.z * D.z))
-            return false;
+    // calculate relative transformation matrix (with absolute values to check only for maximums)
+    const coreMatrix3 M = coreMatrix3::Quat(coreVector4::QuatMultiply(vRevRotation2, vRotation1));
+    const coreMatrix3 S = coreMatrix3(ABS(M._11), ABS(M._12), ABS(M._13),
+                                      ABS(M._21), ABS(M._22), ABS(M._23),
+                                      ABS(M._31), ABS(M._32), ABS(M._33));
 
-        const coreVector3 T = coreVector3::Cross(D, avOrientation[i]);
+    // rotate and move first object relative to second (but distance only with single rotation)
+    const coreVector3 D1 = vRevRotation2.QuatApply(vDiff);
+    const coreVector3 R1 = vRange1 * S;
 
-        // check for X axis intersection
-        if(ABS(vDiff      .x * T.x) + ABS(vDiff      .y * T.y) + ABS(vDiff      .z * T.z) >
-           ABS(vTotalRange.x * T.x) + ABS(vTotalRange.y * T.y) + ABS(vTotalRange.z * T.z))
-            return false;
+    // check for first boundary intersection
+    if(ABS(D1.x) > R1.x + vRange2.x) return false;
+    if(ABS(D1.y) > R1.y + vRange2.y) return false;
+    if(ABS(D1.z) > R1.z + vRange2.z) return false;
 
-        const coreVector3 B = coreVector3::Cross(D, T);
+    // revert first rotation
+    const coreVector4 vRevRotation1 = vRotation1.QuatConjugate();
 
-        // check for Z axis intersection
-        if(ABS(vDiff      .x * B.x) + ABS(vDiff      .y * B.y) + ABS(vDiff      .z * B.z) >
-           ABS(vTotalRange.x * B.x) + ABS(vTotalRange.y * B.y) + ABS(vTotalRange.z * B.z))
-            return false;
-    }
+    // rotate and move second object relative to first
+    const coreVector3 D2 = vRevRotation1.QuatApply(vDiff);
+    const coreVector3 R2 = vRange2 * S.Transposed();
+
+    // check for second boundary intersection
+    if(ABS(D2.x) > vRange1.x + R2.x) return false;
+    if(ABS(D2.y) > vRange1.y + R2.y) return false;
+    if(ABS(D2.z) > vRange1.z + R2.z) return false;
 
     return true;
 }
@@ -128,7 +134,7 @@ bool coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreOb
 
 // ****************************************************************
 /* test collision between 3d-object and line */
-float coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vLinePos, const coreVector3& vLineDir)
+float FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vLinePos, const coreVector3& vLineDir)
 {
     ASSERT(pObject && vLineDir.IsNormalized())
 

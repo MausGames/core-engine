@@ -61,17 +61,13 @@
     #define _CORE_GCC_   (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
 #endif
 #if defined(__MINGW32__)
-    #include <_mingw.h>
-    #define _CORE_MINGW_ (__MINGW_MAJOR_VERSION*10000 + __MINGW_MINOR_VERSION*100 + __MINGW_PATCHLEVEL*1)
+    #define _CORE_MINGW_ (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
     #undef  _CORE_GCC_
 #endif
 #if defined(__clang__)
     #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
 #endif
-#if (!defined(_CORE_MSVC_)  || (_CORE_MSVC_)  <  1800) && \
-    (!defined(_CORE_GCC_)   || (_CORE_GCC_)   < 40800) && \
-    (!defined(_CORE_MINGW_) || (_CORE_MINGW_) < 40000) && \
-    (!defined(_CORE_CLANG_) || (_CORE_CLANG_) < 30300)
+#if ((_CORE_MSVC_) < 1800) && ((_CORE_GCC_) < 40800) && ((_CORE_MINGW_) < 40800) && ((_CORE_CLANG_) < 30300)
     #warning "Compiler not supported!"
 #endif
 
@@ -121,6 +117,7 @@
 #define _ALLOW_KEYWORD_MACROS
 #define  WIN32_LEAN_AND_MEAN
 #if defined(_CORE_MINGW_)
+    #define  WINVER (0x0500)
     #undef __STRICT_ANSI__
 #endif
 
@@ -169,7 +166,7 @@
 #include <AL/alc.h>
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
-#include <SI/SimpleIni.h>
+#include <SimpleIni.h>
 
 
 // ****************************************************************
@@ -230,11 +227,14 @@
 
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
-#define ARRAY_SIZE(a)        (sizeof(a) / sizeof((a)[0]))
 
 #define BIT(n)               (1 << (n))
-#define BIT_SET(o,n)         {(o) |=  BIT(n);}
-#define BIT_RESET(o,n)       {(o) &= ~BIT(n);}
+#define ADD_BIT(o,n)         { (o) |=     BIT(n);}
+#define ADD_VALUE(o,n)       { (o) |=        (n);}
+#define REMOVE_BIT(o,n)      { (o) &=    ~BIT(n);}
+#define REMOVE_VALUE(o,n)    { (o) &=       ~(n);}
+#define CONTAINS_BIT(o,n)    ( (o) &      BIT(n))
+#define CONTAINS_VALUE(o,n)  (((o) & (n)) == (n))
 
 #define FOR_EACH(i,c)        for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
 #define FOR_EACH_REV(i,c)    for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
@@ -290,18 +290,24 @@
     inline         e& operator &= (e&       a, const e& b) {return (a = a & b);}                                                                                     \
     inline         e& operator ^= (e&       a, const e& b) {return (a = a ^ b);}
 
-// retrieve compile-time function and lambda properties
-template <typename T> struct function_traits   : public function_traits<decltype(&T::operator())> {};
-template <typename C, typename R, typename... A> struct function_traits<R(C::*)(A...)const>
-{
-    typedef R return_type;         //!< return type
-    enum {arity = sizeof...(A)};   //!< number of arguments
+// retrieve compile-time pointer-safe array size
+template <typename T, std::size_t iSize> char (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
+#define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
 
-    template <std::size_t iIndex> struct arg
-    {
-        typedef typename std::tuple_element<iIndex, std::tuple<A...> >::type type;   //!< argument type
-    };
+// retrieve compile-time function and lambda properties
+template <typename T>                            struct function_traits                     : public function_traits<decltype(&T::operator())> {};
+template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                  {};
+template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                  {};
+template <typename R,             typename... A> struct function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
+template <typename R,             typename... A> struct function_traits<R      (A...)>
+{
+    typedef R return_type;                                                                                         //!< return type
+    template <std::size_t iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...> >::type;   //!< argument types
+    static const std::size_t arity = sizeof...(A);                                                                 //!< number of arguments
 };
+#define TRAIT_RETURN_TYPE(f) function_traits<f>::return_type
+#define TRAIT_ARG_TYPE(f,i)  function_traits<f>::template arg_type<i>
+#define TRAIT_ARITY(f)       function_traits<f>::arity
 
 // shorter common types and keywords
 #define f_list forward_list
@@ -440,6 +446,8 @@ private:
 
 
 public:
+    DISABLE_COPY(Core)
+
     //! reset engine
     //! @{
     static void Reset();

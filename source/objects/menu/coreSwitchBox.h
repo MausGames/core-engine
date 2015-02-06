@@ -10,6 +10,11 @@
 #ifndef _CORE_GUARD_SWITCHBOX_H_
 #define _CORE_GUARD_SWITCHBOX_H_
 
+// TODO: check for inheritance of coreLabel to remove separate caption object
+// TODO: separate/remove buttons from switchbox and allow "hooks" to own coreButton/coreObject2D objects
+// TODO: coreError on entry management
+// TODO: handle rotation on move (+ all menu objects)
+
 
 // ****************************************************************
 // menu switch-box definitions
@@ -18,9 +23,6 @@
 
 // ****************************************************************
 // menu switch-box class
-// TODO: check for inheritance of coreLabel to remove separate caption object
-// TODO: separate/remove buttons from switchbox and allow "hooks" to own coreButton/coreObject2D objects
-// TODO: coreError on entry management
 template <typename T> class coreSwitchBox final : public coreObject2D, public coreTranslate
 {
 public:
@@ -168,7 +170,7 @@ template <typename T> void coreSwitchBox<T>::Construct(const char* pcFont, const
 template <typename T> void coreSwitchBox<T>::Render()
 {
     // forward transparency
-    // TODO
+    // TODO: check implementation
     //m_aArrow[0].SetAlpha(this->GetAlpha());
     //m_aArrow[1].SetAlpha(this->GetAlpha());
     //m_Caption.SetAlpha(this->GetAlpha());
@@ -184,7 +186,6 @@ template <typename T> void coreSwitchBox<T>::Render()
 
 // ****************************************************************
 // move the switch-box
-// TODO: handle rotation (+ all menu objects)
 template <typename T> void coreSwitchBox<T>::Move()
 {
     // forward object interaction

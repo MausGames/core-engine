@@ -694,6 +694,13 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
 
 // ****************************************************************
 /* multiplication with matrix */
+inline coreVector2 coreVector2::operator * (const coreMatrix3& m)const
+{
+    const float w = RCP(x*m._13 + y*m._23 +   m._33);
+    return  coreVector2(x*m._11 + y*m._21 + w*m._31,
+                        x*m._12 + y*m._22 + w*m._32);
+}
+
 inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const
 {
     const float w = RCP(x*m._14 + y*m._24 +   m._44);
@@ -704,6 +711,13 @@ inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const
 
 // ****************************************************************
 /* multiplication with matrix */
+constexpr_func coreVector3 coreVector3::operator * (const coreMatrix3& m)const
+{
+    return coreVector3(x*m._11 + y*m._21 + z*m._31,
+                       x*m._12 + y*m._22 + z*m._32,
+                       x*m._13 + y*m._23 + z*m._33);
+}
+
 inline coreVector3 coreVector3::operator * (const coreMatrix4& m)const
 {
     const float w = RCP(x*m._14 + y*m._24 + z*m._34 +   m._44);

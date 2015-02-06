@@ -152,7 +152,7 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
         m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
 
         // invoke transformation data update
-        BIT_SET(m_iUniformUpdate, 1)
+        ADD_BIT(m_iUniformUpdate, 1)
     }
 }
 
@@ -189,7 +189,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const flo
         m_mOrtho       = coreMatrix4::Ortho(vResolution);
 
         // invoke transformation data update
-        BIT_SET(m_iUniformUpdate, 1)
+        ADD_BIT(m_iUniformUpdate, 1)
     }
 }
 
@@ -213,7 +213,7 @@ void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, c
     if(bNewLight)
     {
         // invoke ambient data update
-        BIT_SET(m_iUniformUpdate, 2)
+        ADD_BIT(m_iUniformUpdate, 2)
     }
 }
 
@@ -223,8 +223,8 @@ void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, c
 void CoreGraphics::SendTransformation()
 {
     // check update status
-    if(!(m_iUniformUpdate & BIT(1))) return;
-    BIT_RESET(m_iUniformUpdate, 1)
+    if(!CONTAINS_BIT(m_iUniformUpdate, 1)) return;
+    REMOVE_BIT(m_iUniformUpdate, 1)
 
     if(m_aiTransformBuffer[0])
     {
@@ -258,8 +258,8 @@ void CoreGraphics::SendTransformation()
 void CoreGraphics::SendAmbient()
 {
     // check update status
-    if(!(m_iUniformUpdate & BIT(2))) return;
-    BIT_RESET(m_iUniformUpdate, 2)
+    if(!CONTAINS_BIT(m_iUniformUpdate, 2)) return;
+    REMOVE_BIT(m_iUniformUpdate, 2)
 
     if(m_aiAmbientBuffer[0])
     {

@@ -19,7 +19,7 @@ coreLabel::coreLabel()noexcept
 , m_iLength     (0)
 , m_sText       ("")
 , m_fScale      (1.0f)
-, m_iGenerate   (0)
+, m_iUpdate     (CORE_LABEL_UPDATE_NOTHING)
 {
 }
 
@@ -69,20 +69,25 @@ void coreLabel::Render()
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
-    if(m_iGenerate)
+    if(m_iUpdate)
     {
         // check if requested font is loaded
         if(!m_pFont.GetHandle()->IsLoaded()) return;
 
-        // generate the texture
-        if(m_iGenerate & 2) this->__Generate(m_sText.c_str(), m_iLength ? true : false);
-        if(m_iGenerate & 1)
+        if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_TEXTURE))
+        {
+            // generate the texture
+            this->__Generate(m_sText.c_str(), m_iLength ? true : false);
+        }
+        if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
         {
             // update the object size
             this->SetSize(m_fScale * m_vTexSize * (m_vResolution * RCP(Core::System->GetResolution().y)) * (1.0f / CORE_LABEL_DETAIL));
             coreObject2D::Move();
         }
-        m_iGenerate = 0;
+
+        // reset the update status
+        m_iUpdate = CORE_LABEL_UPDATE_NOTHING;
     }
 
     // render the 2d-object
@@ -92,14 +97,13 @@ void coreLabel::Render()
 
 // ****************************************************************
 // move the label
-// TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
 void coreLabel::Move()
 {
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
     // move the 2d-object
-    if(!(m_iGenerate & 1)) coreObject2D::Move();
+    if(!CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE)) coreObject2D::Move();
 }
 
 
@@ -112,7 +116,7 @@ bool coreLabel::SetText(const char* pcText)
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
-        m_iGenerate = 3;
+        ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
         if(m_iLength) m_sText.assign(pcText, m_iLength);
@@ -129,7 +133,7 @@ bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
     // check for new text
     if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
     {
-        m_iGenerate = 3;
+        ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
         if(m_iLength) m_sText.assign(pcText, MIN(iNum, m_iLength));
@@ -150,7 +154,7 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
     {
         // invoke texture generation
         m_vResolution = coreVector2(0.0f,0.0f);
-        m_iGenerate   = 3;
+        ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
     }
     else m_apTexture[0]->Unload();
 }
@@ -158,7 +162,6 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 
 // ****************************************************************
 // generate the texture
-// TODO: use font-size calculation interface to check for font-size and pre-allocations
 void coreLabel::__Generate(const char* pcText, const bool& bSub)
 {
     // create text surface data

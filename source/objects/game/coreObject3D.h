@@ -61,8 +61,8 @@ public:
 
     /*! define the visual appearance */
     //! @{
-    inline const coreModelPtr& DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;                                          m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; return m_pModel;}
-    inline const coreModelPtr& DefineModel(const char*         pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; return m_pModel;}
+    inline const coreModelPtr& DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;                                          ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) return m_pModel;}
+    inline const coreModelPtr& DefineModel(const char*         pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) return m_pModel;}
     void Undefine();
     //! @}
 
@@ -83,10 +83,10 @@ public:
     /*! set object properties */
     //! @{
     inline void SetPosition         (const coreVector3& vPosition)          {m_vPosition = vPosition;}
-    inline void SetSize             (const coreVector3& vSize)              {if(m_vSize              != vSize)              {m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; m_vSize              = vSize;}}
-    inline void SetDirection        (const coreVector3& vDirection)         {if(m_vDirection         != vDirection)         {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vDirection         = vDirection;}   ASSERT(vDirection  .IsNormalized())}
-    inline void SetOrientation      (const coreVector3& vOrientation)       {if(m_vOrientation       != vOrientation)       {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vOrientation       = vOrientation;} ASSERT(vOrientation.IsNormalized())}
-    inline void SetCollisionModifier(const coreVector3& vCollisionModifier) {if(m_vCollisionModifier != vCollisionModifier) {m_iUpdate |= CORE_OBJECT_UPDATE_COLLISION; m_vCollisionModifier = vCollisionModifier;}}
+    inline void SetSize             (const coreVector3& vSize)              {if(m_vSize              != vSize)              {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vSize              = vSize;}}
+    inline void SetDirection        (const coreVector3& vDirection)         {if(m_vDirection         != vDirection)         {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection         = vDirection;}   ASSERT(vDirection  .IsNormalized())}
+    inline void SetOrientation      (const coreVector3& vOrientation)       {if(m_vOrientation       != vOrientation)       {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vOrientation       = vOrientation;} ASSERT(vOrientation.IsNormalized())}
+    inline void SetCollisionModifier(const coreVector3& vCollisionModifier) {if(m_vCollisionModifier != vCollisionModifier) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vCollisionModifier = vCollisionModifier;}}
     //! @}
 
     /*! get object properties */

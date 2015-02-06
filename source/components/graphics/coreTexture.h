@@ -15,6 +15,10 @@
 // TODO: implement light unbind (like in model and program)
 // TODO: implement invalidate and clear function like in FrameBuffer and DataBuffer
 // TODO: add option/config for trilinear filtering
+// TODO: load, check proper use of PBO, maybe implement static buffer(s!)
+// TODO: load, allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT ?)
+// TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
+// TODO: load, implement texture-compressions
 
 
 // ****************************************************************

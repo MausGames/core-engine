@@ -72,11 +72,11 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetPosition     (const coreVector2& vPosition)      {if(m_vPosition  != vPosition)  {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vPosition  = vPosition;}}
-    inline void SetSize         (const coreVector2& vSize)          {if(m_vSize      != vSize)      {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vSize      = vSize;}}
-    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {m_iUpdate  = CORE_OBJECT_UPDATE_ALL;       m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
-    inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vCenter    = vCenter;}}
-    inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {m_iUpdate |= CORE_OBJECT_UPDATE_TRANSFORM; m_vAlignment = vAlignment;}}
+    inline void SetPosition     (const coreVector2& vPosition)      {if(m_vPosition  != vPosition)  {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
+    inline void SetSize         (const coreVector2& vSize)          {if(m_vSize      != vSize)      {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
+    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_ALL)       m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
+    inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
+    inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetFocus        (const bool&        bFocus)         {m_bFocused       = bFocus;}
     inline void SetFocusModifier(const coreVector2& vFocusModifier) {m_vFocusModifier = vFocusModifier;}
     //! @}

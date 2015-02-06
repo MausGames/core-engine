@@ -10,9 +10,6 @@
 #ifndef _CORE_GUARD_MENU_H_
 #define _CORE_GUARD_MENU_H_
 
-
-// ****************************************************************
-// menu aggregation class
 // TODO: allow custom animations
 // TODO: remove wrong order while animating (double-objects)
 // TODO: implement general relative behavior, submenu, hierarchy (menu/2d objects)
@@ -21,6 +18,10 @@
 // TODO: sized menu class ? (# I forgot what it was)
 // TODO: template class !
 // TODO: handle individual transparency better
+
+
+// ****************************************************************
+// menu aggregation class
 class coreMenu : public coreObject2D
 {
 private:

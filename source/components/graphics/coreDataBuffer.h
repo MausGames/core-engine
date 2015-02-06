@@ -90,9 +90,9 @@ public:
 
     //! check for current buffer status
     //! @{
-    inline bool IsWritable  ()const {return (m_iStorageType & CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
-    inline bool IsPersistent()const {return m_pPersistentBuffer                               ?  true : false;}
-    inline bool IsMapped    ()const {return m_iMapLength                                      ?  true : false;}
+    inline bool IsWritable  ()const {return CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
+    inline bool IsPersistent()const {return m_pPersistentBuffer                                            ?  true : false;}
+    inline bool IsMapped    ()const {return m_iMapLength                                                   ?  true : false;}
     //! @}
 
     //! access buffer directly

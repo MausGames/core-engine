@@ -124,7 +124,7 @@ template <typename... A> RETURN_RESTRICT const char* coreData::Print(const char*
 
 #endif
 
-    ASSERT(-1 < iReturn && iReturn < CORE_DATA_STRING_LEN)
+    ASSERT(-1 < iReturn && iReturn < int(CORE_DATA_STRING_LEN))
     return pcString;
 }
 

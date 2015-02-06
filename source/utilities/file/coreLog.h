@@ -57,18 +57,18 @@ public:
 
     /*! message functions */
     //! @{
-    template <typename... A> inline        void Info   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
-    template <typename... A> inline        void Warning(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_WARNING) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline        void Info   (const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
+    template <typename... A> inline        void Warning(const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
     template <typename... A> FUNC_NORETURN void Error  (const char* pcText, A&&... vArgs);
     //! @}
 
     /*! special functions */
     //! @{
-    template <typename... A> inline void Header          (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> inline void ListStartInfo   (const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_INFO)    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
-    template <typename... A> inline void ListStartWarning(const char* pcText, A&&... vArgs) {if(m_iLevel & CORE_LOG_LEVEL_WARNING) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
-    template <typename... A> inline void ListAdd         (const char* pcText, A&&... vArgs) {if(m_bListStatus)                      this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
-    inline                          void ListEnd         ()                                 {if(m_bListStatus)                     {this->__Write(false, "</ul>"); m_bListStatus = false;}}
+    template <typename... A> inline void Header          (const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline void ListStartInfo   (const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
+    template <typename... A> inline void ListStartWarning(const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
+    template <typename... A> inline void ListAdd         (const char* pcText, A&&... vArgs) {if(m_bListStatus)                                     this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
+    inline                          void ListEnd         ()                                 {if(m_bListStatus)                                    {this->__Write(false, "</ul>"); m_bListStatus = false;}}
     //! @}
 
     /*! control logging level */
@@ -97,7 +97,7 @@ private:
 template <typename... A> FUNC_NORETURN void coreLog::Error(const char* pcText, A&&... vArgs)
 {
     // write error message
-    if(m_iLevel & CORE_LOG_LEVEL_ERROR) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
+    if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_ERROR)) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
 
     // show critical error message
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", __CORE_LOG_STRING.c_str(), NULL);

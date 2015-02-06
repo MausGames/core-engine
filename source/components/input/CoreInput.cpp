@@ -8,12 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#define CORE_INPUT_PRESS(x)   {(x)[3] = false;  (x)[2] = !(x)[1]; (x)[1] = true;}
-#define CORE_INPUT_RELEASE(x) {(x)[3] = (x)[1]; (x)[2] = false;   (x)[1] = false;}
-
-#define CORE_INPUT_JOYSTICK_DEAD (1000)
-#define CORE_INPUT_JOYSTICK_MAX  (8000)
-
 
 // ****************************************************************
 // constructor
@@ -60,7 +54,6 @@ CoreInput::coreTouch::coreTouch()noexcept
 
 // ****************************************************************
 // constructor
-// TODO: save GUID ?, format Name and GUID get functions
 CoreInput::CoreInput()noexcept
 : m_pCursor        (NULL)
 , m_bCursorVisible (true)
@@ -141,7 +134,6 @@ void CoreInput::DefineCursor(const char* pcPath)
 
 // ****************************************************************
 // show or hide the mouse cursor
-// TODO: handle unsupported RelativeMouseMode, SDL_HINT_MOUSE_RELATIVE_MODE_WARP
 void CoreInput::ShowCursor(const bool& bStatus)
 {
     if(m_bCursorVisible == bStatus) return;
@@ -289,15 +281,15 @@ void CoreInput::__UpdateButtons()
     // process keyboard inputs
     for(int i = 0; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
-             if( m_Keyboard.aabButton[i][0]) CORE_INPUT_PRESS  (m_Keyboard.aabButton[i])
-        else if(!m_Keyboard.aabButton[i][0]) CORE_INPUT_RELEASE(m_Keyboard.aabButton[i])
+             if( m_Keyboard.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Keyboard.aabButton[i])
+        else if(!m_Keyboard.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Keyboard.aabButton[i])
     }
 
     // process mouse inputs
     for(int i = 0; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
-             if( m_Mouse.aabButton[i][0]) CORE_INPUT_PRESS  (m_Mouse.aabButton[i])
-        else if(!m_Mouse.aabButton[i][0]) CORE_INPUT_RELEASE(m_Mouse.aabButton[i])
+             if( m_Mouse.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Mouse.aabButton[i])
+        else if(!m_Mouse.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Mouse.aabButton[i])
     }
 
     // process joystick inputs
@@ -305,16 +297,16 @@ void CoreInput::__UpdateButtons()
     {
         for(int i = 0; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
-                 if( it->aabButton[i][0]) CORE_INPUT_PRESS  (it->aabButton[i])
-            else if(!it->aabButton[i][0]) CORE_INPUT_RELEASE(it->aabButton[i])
+                 if( it->aabButton[i][0]) __CORE_INPUT_PRESS  (it->aabButton[i])
+            else if(!it->aabButton[i][0]) __CORE_INPUT_RELEASE(it->aabButton[i])
         }
     }
 
     // process touch inputs
     for(int i = 0; i < CORE_INPUT_FINGERS; ++i)
     {
-             if( m_aTouch[i].abButton[0]) CORE_INPUT_PRESS  (m_aTouch[i].abButton)
-        else if(!m_aTouch[i].abButton[0]) CORE_INPUT_RELEASE(m_aTouch[i].abButton)
+             if( m_aTouch[i].abButton[0]) __CORE_INPUT_PRESS  (m_aTouch[i].abButton)
+        else if(!m_aTouch[i].abButton[0]) __CORE_INPUT_RELEASE(m_aTouch[i].abButton)
     }
 
 #if defined(_CORE_LINUX_)
@@ -337,8 +329,7 @@ void CoreInput::__ClearButtons()
     // clear all last pressed buttons
     m_Keyboard.iLast = CORE_INPUT_KEY(UNKNOWN);
     m_Mouse.iLast    = -1;
-    FOR_EACH(it, m_aJoystick)
-        it->iLast = -1;
+    FOR_EACH(it, m_aJoystick) it->iLast = -1;
 
     // reset all relative movements
     m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);

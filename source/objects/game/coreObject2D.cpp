@@ -57,9 +57,9 @@ void coreObject2D::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
-    if(m_iUpdate & CORE_OBJECT_UPDATE_TRANSFORM)
+    if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
     {
-        if(m_iUpdate & CORE_OBJECT_UPDATE_ALL)
+        if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_ALL))
         {
             // update rotation matrix
             m_mRotation = coreMatrix3::Rotation(m_vDirection);
@@ -106,7 +106,7 @@ void coreObject2D::Interact()
            ABS(vInput.y) < vScreenSize.y)
         {
             m_bFocused = true;
-            BIT_SET(m_iFinger, i)
+            ADD_BIT(m_iFinger, i)
         }
     });
 
@@ -135,7 +135,7 @@ bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)c
         for(coreUint i = 0; i < CORE_INPUT_FINGERS; ++i)
         {
             // check for every finger on the object
-            if((m_iFinger & BIT(i)) && Core::Input->GetTouchButton(i, iType))
+            if(CONTAINS_BIT(m_iFinger, i) && Core::Input->GetTouchButton(i, iType))
                 return true;
         }
     }

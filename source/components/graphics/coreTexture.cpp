@@ -35,10 +35,6 @@ coreTexture::~coreTexture()
 
 // ****************************************************************
 // load texture resource data
-// TODO: check proper use of PBO, maybe implement static buffer(s!)
-// TODO: allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT ?)
-// TODO: check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
-// TODO: implement texture-compressions
 coreError coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status

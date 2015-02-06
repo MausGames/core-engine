@@ -65,7 +65,9 @@ public:
 
     /*! matrix operations */
     //! @{
+    inline coreVector2 operator *  (const coreMatrix3& m)const;
     inline coreVector2 operator *  (const coreMatrix4& m)const;
+    inline void        operator *= (const coreMatrix3& m) {*this = *this * m;}
     inline void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
@@ -174,8 +176,10 @@ public:
 
     /*! matrix operations */
     //! @{
-    inline coreVector3 operator *  (const coreMatrix4& m)const;
-    inline void        operator *= (const coreMatrix4& m) {*this = *this * m;}
+    constexpr_func coreVector3 operator *  (const coreMatrix3& m)const;
+    inline         coreVector3 operator *  (const coreMatrix4& m)const;
+    inline         void        operator *= (const coreMatrix3& m) {*this = *this * m;}
+    inline         void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
     /*! invert vector */

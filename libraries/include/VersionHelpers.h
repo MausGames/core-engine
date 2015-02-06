@@ -13,35 +13,30 @@
 #define _versionhelpers_H_INCLUDED_
 
 #ifdef _MSC_VER
-#pragma once
-#endif // _MSC_VER
-
-#include <specstrings.h>    // for _In_, etc.
+    #pragma once
+#endif
 
 #ifdef __cplusplus
-#define VERSIONHELPERAPI inline bool
-#else  // __cplusplus
-#define VERSIONHELPERAPI FORCEINLINE BOOL
-#endif // __cplusplus
+    #define VERSIONHELPERAPI inline bool
+#else
+    #define VERSIONHELPERAPI FORCEINLINE BOOL
+#endif
 
 
-VERSIONHELPERAPI
-IsWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
+VERSIONHELPERAPI IsWindowsVersionOrGreater(DWORD dwMajorVersion, DWORD dwMinorVersion, WORD wServicePackMajor)
 {
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
-    DWORDLONG        const dwlConditionMask = VerSetConditionMask(
-        VerSetConditionMask(
-        VerSetConditionMask(
-            0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-               VER_MINORVERSION, VER_GREATER_EQUAL),
-               VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+    OSVERSIONINFOEX oVersionInfo   = {sizeof(oVersionInfo), 0, 0, 0, 0, {0}, 0, 0};
+    oVersionInfo.dwMajorVersion    = dwMajorVersion;
+    oVersionInfo.dwMinorVersion    = dwMinorVersion;
+    oVersionInfo.wServicePackMajor = wServicePackMajor;
 
-    osvi.dwMajorVersion = wMajorVersion;
-    osvi.dwMinorVersion = wMinorVersion;
-    osvi.wServicePackMajor = wServicePackMajor;
+    const DWORDLONG iConditionMask = VerSetConditionMask(VerSetConditionMask(VerSetConditionMask(0,
+                                     VER_MAJORVERSION,     VER_GREATER_EQUAL),
+                                     VER_MINORVERSION,     VER_GREATER_EQUAL),
+                                     VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
 
-    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+    return (VerifyVersionInfo(&oVersionInfo, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, iConditionMask) != FALSE);
 }
 
 
-#endif // _VERSIONHELPERS_H_INCLUDED_
+#endif // _versionhelpers_H_INCLUDED_
