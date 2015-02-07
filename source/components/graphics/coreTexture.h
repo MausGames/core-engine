@@ -13,7 +13,6 @@
 // TODO: check for max available texture units (only at start?)
 // TODO: implement sampler objects
 // TODO: implement light unbind (like in model and program)
-// TODO: implement invalidate and clear function like in FrameBuffer and DataBuffer
 // TODO: add option/config for trilinear filtering
 // TODO: load, check proper use of PBO, maybe implement static buffer(s!)
 // TODO: load, allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT ?)
@@ -29,10 +28,11 @@
     #define CORE_TEXTURE_MASK 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
 #endif
 
-#define CORE_TEXTURE_SPEC_RGB     GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE
-#define CORE_TEXTURE_SPEC_RGBA    GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE
-#define CORE_TEXTURE_SPEC_DEPTH   GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT
-#define CORE_TEXTURE_SPEC_STENCIL GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE
+#define CORE_TEXTURE_SPEC_RGB           GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE
+#define CORE_TEXTURE_SPEC_RGBA          GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE
+#define CORE_TEXTURE_SPEC_DEPTH         GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT
+#define CORE_TEXTURE_SPEC_STENCIL       GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE
+#define CORE_TEXTURE_SPEC_DEPTH_STENCIL GL_DEPTH24_STENCIL8,  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8
 
 #define CORE_TEXTURE_UNITS_2D     (4u)                                                //!< number of 2d texture units (sampler2D)
 #define CORE_TEXTURE_UNITS_SHADOW (1u)                                                //!< number of shadow texture units (sampler2DShadow)
@@ -88,6 +88,12 @@ public:
     inline        void Enable (const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, this);}
     static inline void Disable(const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
     static inline void DisableAll()                   {for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i) coreTexture::Disable(i);}
+    //! @}
+
+    //! reset content of the texture
+    //! @{
+    void Clear     (const GLint& iLevel, const GLenum& iFormat, const GLenum& iType, const void* pData);
+    void Invalidate(const GLint& iLevel);
     //! @}
 
     //! get object properties

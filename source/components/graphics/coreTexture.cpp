@@ -208,6 +208,30 @@ void coreTexture::ShadowSampling(const bool& bStatus)
 
 
 // ****************************************************************
+// clear content of the texture
+void coreTexture::Clear(const GLint& iLevel, const GLenum& iFormat, const GLenum& iType, const void* pData)
+{
+    ASSERT(m_iTexture)
+
+    // clear the whole texture
+    if(CORE_GL_SUPPORT(ARB_clear_texture))
+        glClearTexImage(m_iTexture, iLevel, iFormat, iType, pData);
+}
+
+
+// ****************************************************************
+// invalidate content of the texture
+void coreTexture::Invalidate(const GLint& iLevel)
+{
+    ASSERT(m_iTexture)
+
+    // invalidate the whole texture
+    if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
+        glInvalidateTexImage(m_iTexture, iLevel);
+}
+
+
+// ****************************************************************
 // bind texture to texture unit
 void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
 {

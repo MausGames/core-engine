@@ -58,6 +58,7 @@ void __coreInitOpenGL()
         GLEW_EXT_framebuffer_blit        = true;
         GLEW_EXT_framebuffer_multisample = true;
         GLEW_EXT_texture_array           = true;
+        GLEW_EXT_packed_depth_stencil    = true;
     }
 
     // improve instancing compatibility

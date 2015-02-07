@@ -18,6 +18,7 @@
 // TODO: handle depth-blitting to default frame buffer without blit-function (impossible without over-engineering?)
 // TODO: save states and reset on fallback blitting
 // TODO: check if rendering quad is faster than blitting (only on default frame buffer? what about depth-stencil? still needs blit for MSAA)
+// TODO: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 // NOTE: notated as integer
