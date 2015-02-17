@@ -106,7 +106,7 @@ CoreInput::~CoreInput()
     // free the hardware mouse cursor
     if(m_pCursor) SDL_FreeCursor(m_pCursor);
 
-    Core::Log->Info("Input Interface shut down");
+    Core::Log->Info(CORE_LOG_BOLD("Input Interface shut down"));
 }
 
 

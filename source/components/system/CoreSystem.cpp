@@ -24,21 +24,21 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->Header("System Interface");
 
     // get SDL version
-    SDL_version Version;
-    SDL_GetVersion(&Version);
+    SDL_version oVersion;
+    SDL_GetVersion(&oVersion);
 
     // init SDL libraries
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
         Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("SDL initialized (%d.%d.%d %s)", Version.major, Version.minor, Version.patch, SDL_GetRevision());
+    else Core::Log->Info("SDL initialized (%d.%d.%d %s)", oVersion.major, oVersion.minor, oVersion.patch, SDL_GetRevision());
 
     // get number of logical processor cores
     m_iNumCores = MAX(SDL_GetCPUCount(), 1);
 
     // retrieve desktop resolution
-    SDL_DisplayMode Desktop;
-    SDL_GetDesktopDisplayMode(0, &Desktop);
-    const coreVector2 vDesktop = coreVector2(I_TO_F(Desktop.w), I_TO_F(Desktop.h));
+    SDL_DisplayMode oDesktop;
+    SDL_GetDesktopDisplayMode(0, &oDesktop);
+    const coreVector2 vDesktop = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
 
     // load all available screen resolutions
     const int iNumModes = SDL_GetNumDisplayModes(0);
@@ -49,22 +49,22 @@ CoreSystem::CoreSystem()noexcept
             for(int i = 0; i < iNumModes; ++i)
             {
                 // retrieve resolution
-                SDL_DisplayMode Mode;
-                SDL_GetDisplayMode(0, i, &Mode);
-                const coreVector2 vMode = coreVector2(I_TO_F(Mode.w), I_TO_F(Mode.h));
+                SDL_DisplayMode oMode;
+                SDL_GetDisplayMode(0, i, &oMode);
+                const coreVector2 vMode = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
 
-                coreUint j = 0;
-                for(; j < m_avAvailable.size(); ++j)
+                coreUint j = 0, k = coreUint(m_avAvailable.size());
+                for(; j < k; ++j)
                 {
                     // check for already added resolutions
                     if(m_avAvailable[j] == vMode)
                         break;
                 }
-                if(j == m_avAvailable.size())
+                if(j == k)
                 {
                     // add new resolution
                     m_avAvailable.push_back(vMode);
-                    Core::Log->ListAdd("%4d x %4d%s", Mode.w, Mode.h, (vMode == vDesktop) ? " (Desktop)" : "");
+                    Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vMode == vDesktop) ? " (Desktop)" : "");
                 }
             }
         }
@@ -78,7 +78,8 @@ CoreSystem::CoreSystem()noexcept
     else Core::Log->Warning("Could not get available screen resolutions (SDL: %s)", SDL_GetError());
 
     // configure the SDL window
-    const coreUint iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
+    const coreUint iCenter = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED;
+    const coreUint iFlags  = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
 
     // configure the OpenGL context
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
@@ -97,7 +98,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     // create main window object
-    m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
+    m_pWindow = SDL_CreateWindow(coreData::AppName(), iCenter, iCenter, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
     if(!m_pWindow)
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
@@ -108,7 +109,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
         // create another main window object
-        m_pWindow = SDL_CreateWindow(coreData::AppName(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
+        m_pWindow = SDL_CreateWindow(coreData::AppName(), iCenter, iCenter, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
@@ -180,7 +181,7 @@ CoreSystem::~CoreSystem()
     TTF_Quit();
     SDL_Quit();
 
-    Core::Log->Info("System Interface shut down");
+    Core::Log->Info(CORE_LOG_BOLD("System Interface shut down"));
 }
 
 

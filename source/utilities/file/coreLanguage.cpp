@@ -79,7 +79,7 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
     if(m_pLanguage)
     {
         // unbind everything from current language
-        FOR_EACH(it, m_apsPointer) m_pLanguage->UnbindForeign(it->first);
+        FOR_EACH(it, m_apsPointer) m_pLanguage->UnbindForeign(*m_apsPointer.get_key(it));
         m_pLanguage->__UnbindObject(this);
     }
 
@@ -90,7 +90,7 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
     {
         // bind everything to new language
         m_pLanguage->__BindObject(this);
-        FOR_EACH(it, m_apsPointer) m_pLanguage->BindForeign(it->first, it->second.c_str());
+        FOR_EACH(it, m_apsPointer) m_pLanguage->BindForeign(*m_apsPointer.get_key(it), it->c_str());
 
         // invoke object update
         this->__Update();
@@ -185,7 +185,7 @@ coreError coreLanguage::Load(const char* pcPath)
     };
 
     // clear all existing language strings
-    FOR_EACH(it, m_asStringList) it->second.clear();
+    FOR_EACH(it, m_asStringList) it->clear();
 
     std::string sKey = "";
     while(pcTo != pcEnd)
@@ -214,16 +214,16 @@ coreError coreLanguage::Load(const char* pcPath)
     // reduce memory consumption
     FOR_EACH(it, m_asStringList)
     {
-        std::string& sString = it->second;
+        std::string& sString = (*it);
 
         // assign key to empty language strings
-        if(sString.empty()) sString = it->first;
+        if(sString.empty()) sString = *m_asStringList.get_key(it);
         sString.shrink_to_fit();
     }
     m_asStringList.shrink_to_fit();
 
     // update all foreign strings and objects
-    FOR_EACH(it, m_apsForeign) (*it->first) = (*it->second);
+    FOR_EACH(it, m_apsForeign) (**m_apsForeign.get_key(it)) = (**it);
     FOR_EACH(it, m_apObject)   (*it)->__Update();
 
     Core::Log->Info("Language (%s) loaded", pFile->GetPath());

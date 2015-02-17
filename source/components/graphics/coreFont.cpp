@@ -55,7 +55,7 @@ coreError coreFont::Unload()
     if(!m_pFile) return CORE_INVALID_CALL;
 
     // delete all sub-fonts
-    FOR_EACH(it, m_apFont) TTF_CloseFont(it->second);
+    FOR_EACH(it, m_apFont) TTF_CloseFont(*it);
     m_apFont.clear();
 
     // delete file

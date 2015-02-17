@@ -96,7 +96,6 @@ void coreDataBuffer::Clear(const GLenum& iInternal, const GLenum& iFormat, const
 {
     ASSERT(m_iDataBuffer && this->IsWritable())
 
-    // clear the whole buffer
     if(CORE_GL_SUPPORT(ARB_clear_buffer_object))
     {
         if(CORE_GL_SUPPORT(ARB_direct_state_access))

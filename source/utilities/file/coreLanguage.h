@@ -98,6 +98,12 @@ public:
     inline void UnbindForeign(std::string* psForeign) {ASSERT(m_apsForeign.count(psForeign)) m_apsForeign.erase(psForeign);}
     //! @}
 
+    /*! get object properties */
+    //! @{
+    inline const char* GetPath      ()const {return m_sPath.c_str();}
+    inline coreUint    GetNumStrings()const {return coreUint(m_asStringList.size());}
+    //! @}
+
 
 private:
     /*! bind and unbind translation objects */

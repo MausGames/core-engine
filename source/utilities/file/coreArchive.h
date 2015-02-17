@@ -104,7 +104,7 @@ public:
     //! get object properties
     //! @{
     inline const char* GetPath    ()const {return m_sPath.c_str();}
-    inline coreUint    GetNumFiles()const {return m_apFile.size();}
+    inline coreUint    GetNumFiles()const {return coreUint(m_apFile.size());}
     //! @}
 
 

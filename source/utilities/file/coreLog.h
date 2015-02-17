@@ -71,16 +71,21 @@ public:
     inline                          void ListEnd         ()                                 {if(m_bListStatus)                                    {this->__Write(false, "</ul>"); m_bListStatus = false;}}
     //! @}
 
-    /*! control logging level */
-    //! @{
-    inline void SetLevel(const coreLogLevel& iLevel) {m_iLevel = iLevel;}
-    inline const coreLogLevel& GetLevel()const       {return m_iLevel;}
-    //! @}
-
     /*! handle OpenGL debug output */
     //! @{
     friend void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
     void DebugOpenGL();
+    //! @}
+
+    /*! set object properties */
+    //! @{
+    inline void SetLevel(const coreLogLevel& iLevel) {m_iLevel = iLevel;}
+    //! @}
+
+    /*! get object properties */
+    //! @{
+    inline const char*         GetPath ()const {return m_sPath.c_str();}
+    inline const coreLogLevel& GetLevel()const {return m_iLevel;}
     //! @}
 
 

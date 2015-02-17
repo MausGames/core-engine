@@ -73,7 +73,7 @@ coreObjectManager::~coreObjectManager()
     // free low-memory model object
     Core::Manager::Resource->Free(&m_pLowModel);
 
-    Core::Log->Info("Object Manager destroyed");
+    Core::Log->Info(CORE_LOG_BOLD("Object Manager destroyed"));
 }
 
 
@@ -203,11 +203,11 @@ void coreObjectManager::__UpdateObjects()
     // loop through all objects
     FOR_EACH(it, m_aapObjectList)
     {
-        FOR_EACH_DYN(et, it->second)
+        FOR_EACH_DYN(et, *it)
         {
             // check for invalid pointers and remove them
             if(*et) DYN_KEEP  (et)
-               else DYN_REMOVE(et, it->second)
+               else DYN_REMOVE(et, *it)
         }
     }
 
@@ -232,7 +232,7 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const int& iType)
 
         // check for duplicate objects
         FOR_EACH(it, m_aapObjectList)
-            FOR_EACH(et, it->second)
+            FOR_EACH(et, *it)
                 ASSERT(*et != pObject)
 
 #endif

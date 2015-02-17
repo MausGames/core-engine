@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_RESOURCE_H_
 #define _CORE_GUARD_RESOURCE_H_
 
-// TODO: ATI_meminfo and NVX_gpu_memory_info to check for memory usage ? (old, not wide supported)
+// TODO: ATI_meminfo and NVX_gpu_memory_info to check for memory usage ? (old, not widely supported)
 // TODO: variable templates for handle-list!
 // TODO: replace reference-counter with atomic variable ?
 // TODO: when and how to load default archive(s) ?
@@ -381,19 +381,30 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
 /* delete resource and resource handle */
 template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* pptResourcePtr)
 {
-    coreResourceHandle* pHandle = pptResourcePtr->GetHandle();
+    ASSERT(pptResourcePtr)
 
-    // remove resource handle from manager
+    // retrieve resource handle
+    coreResourceHandle* pHandle = pptResourcePtr->GetHandle();
     if(pHandle)
     {
         SDL_AtomicLock(&m_iLock);
-        m_apHandle.erase(pHandle);
+        {
+            // remove resource handle from manager
+            FOR_EACH(it, m_apHandle)
+            {
+                if((*it) == pHandle)
+                {
+                    m_apHandle.erase(it);
+                    break;
+                }
+            }
+        }
         SDL_AtomicUnlock(&m_iLock);
-    }
 
-    // delete resource and resource handle
-    *pptResourcePtr = NULL;
-    SAFE_DELETE(pHandle)
+        // delete resource handle
+        *pptResourcePtr = NULL;
+        SAFE_DELETE(pHandle)
+    }
 }
 
 

@@ -237,32 +237,32 @@ coreError coreArchive::Save(const char* pcPath)
     SDL_RWwrite(pArchive, aiHead, sizeof(coreUint), 2);
 
     // save number of files
-    const coreUint iSize = m_apFile.size();
+    const coreUint iSize = coreUint(m_apFile.size());
     SDL_RWwrite(pArchive, &iSize, sizeof(coreUint), 1);
 
     // cache missing file data
     FOR_EACH(it, m_apFile)
-        it->second->LoadData();
+        (*it)->LoadData();
 
     // save file headers
     this->__CalculatePositions();
     FOR_EACH(it, m_apFile)
     {
         // get path length
-        const coreUint iLen = MIN(coreUint(std::strlen(it->second->GetPath())), 255u);
+        const coreUint iLen = MIN(coreUint(std::strlen((*it)->GetPath())), 255u);
 
         // write header
-        SDL_RWwrite(pArchive, &iLen,                      sizeof(coreUint), 1);
-        SDL_RWwrite(pArchive, it->second->GetPath(),      sizeof(char),     iLen);
-        SDL_RWwrite(pArchive, &it->second->GetSize(),     sizeof(coreUint), 1);
-        SDL_RWwrite(pArchive, &it->second->m_iArchivePos, sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, &iLen,                 sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive,  (*it)->GetPath(),     sizeof(char),     iLen);
+        SDL_RWwrite(pArchive, &(*it)->GetSize(),     sizeof(coreUint), 1);
+        SDL_RWwrite(pArchive, &(*it)->m_iArchivePos, sizeof(coreUint), 1);
     }
 
     // save file data
     FOR_EACH(it, m_apFile)
     {
-        SDL_RWwrite(pArchive, it->second->GetData(), sizeof(coreByte), it->second->GetSize());
-        it->second->UnloadData();
+        SDL_RWwrite(pArchive, (*it)->GetData(), sizeof(coreByte), (*it)->GetSize());
+        (*it)->UnloadData();
     }
 
     // close archive
@@ -349,7 +349,7 @@ void coreArchive::ClearFiles()
 {
     // delete file objects
     FOR_EACH(it, m_apFile)
-        SAFE_DELETE(it->second)
+        SAFE_DELETE(*it)
 
     // clear memory
     m_apFile.clear();
@@ -363,13 +363,13 @@ void coreArchive::__CalculatePositions()
     // calculate data start position
     coreUint iCurPosition = sizeof(coreUint);
     FOR_EACH(it, m_apFile)
-        iCurPosition += coreUint(std::strlen(it->second->GetPath())) + 3*sizeof(coreUint);
+        iCurPosition += coreUint(std::strlen((*it)->GetPath())) + 3*sizeof(coreUint);
 
     FOR_EACH(it, m_apFile)
     {
         // set absolute data position
-        it->second->m_pArchive    = this;
-        it->second->m_iArchivePos = iCurPosition;
-        iCurPosition += it->second->GetSize();
+        (*it)->m_pArchive    = this;
+        (*it)->m_iArchivePos = iCurPosition;
+        iCurPosition += (*it)->GetSize();
     }
 }

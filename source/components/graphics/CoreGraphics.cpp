@@ -130,7 +130,7 @@ CoreGraphics::~CoreGraphics()
     SDL_GL_DeleteContext(m_pResourceContext);
     SDL_GL_DeleteContext(m_pRenderContext);
 
-    Core::Log->Info("Graphics Interface shut down");
+    Core::Log->Info(CORE_LOG_BOLD("Graphics Interface shut down"));
 }
 
 

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-int          coreTexture::s_iActiveUnit                     = 0;
+coreByte     coreTexture::s_iActiveUnit                     = 0;
 coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS]; // = NULL;
 
 
@@ -47,7 +47,7 @@ coreError coreTexture::Load(coreFile* pFile)
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetData()) return CORE_ERROR_FILE;
 
-    // decompress file data
+    // decompress file to plain pixel data
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
@@ -68,7 +68,7 @@ coreError coreTexture::Load(coreFile* pFile)
     m_sPath = pFile->GetPath();
     m_iSize = (iDataSize * 4) / ((m_iLevels > 1) ? 3 : 4);
 
-    // delete file data
+    // delete pixel data
     SDL_FreeSurface(pData);
 
     Core::Log->Info("Texture (%s:%u) loaded", pFile->GetPath(), m_iTexture);
@@ -180,10 +180,32 @@ void coreTexture::Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, con
     }
     else
     {
-        // bind and update texture data
-        this->Enable(0);
+        // bind (simple) and update texture data
+        glBindTexture  (GL_TEXTURE_2D, m_iTexture);
         glTexSubImage2D(GL_TEXTURE_2D, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_iFormat, m_iType, pData);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
+    }
+}
+
+
+// ****************************************************************
+// copy content from current read frame buffer
+void coreTexture::CopyFrameBuffer(const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)
+{
+    ASSERT(m_iTexture)
+    ASSERT(((iSrcX + iWidth) <= F_TO_UI(Core::Graphics->GetViewResolution().x)) && ((iSrcY + iHeight) <= F_TO_UI(Core::Graphics->GetViewResolution().y)) &&
+           ((iDstX + iWidth) <= F_TO_UI(m_vResolution                      .x)) && ((iDstY + iHeight) <= F_TO_UI(m_vResolution                      .y)))
+
+    if(CORE_GL_SUPPORT(ARB_direct_state_access))
+    {
+        // copy frame buffer directly
+        glCopyTextureSubImage2D(m_iTexture, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
+    }
+    else
+    {
+        // bind and copy frame buffer
+        this->Enable(0);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
     }
 }
 
@@ -194,7 +216,7 @@ void coreTexture::ShadowSampling(const bool& bStatus)
 {
     ASSERT(m_iFormat == GL_DEPTH_COMPONENT)
 
-    // enable the texture
+    // bind texture
     this->Enable(0);
 
     if(bStatus)
@@ -209,13 +231,21 @@ void coreTexture::ShadowSampling(const bool& bStatus)
 
 // ****************************************************************
 // clear content of the texture
-void coreTexture::Clear(const GLint& iLevel, const GLenum& iFormat, const GLenum& iType, const void* pData)
+void coreTexture::Clear(const GLint& iLevel)
 {
     ASSERT(m_iTexture)
 
-    // clear the whole texture
     if(CORE_GL_SUPPORT(ARB_clear_texture))
-        glClearTexImage(m_iTexture, iLevel, iFormat, iType, pData);
+    {
+        // clear content directly
+        glClearTexImage(m_iTexture, iLevel, m_iFormat, m_iType, NULL);
+    }
+    else
+    {
+        // bind and clear content (with fallback method)
+        this->Enable(0);
+        glTexSubImage2D(GL_TEXTURE_2D, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_iFormat, m_iType, NULL);
+    }
 }
 
 

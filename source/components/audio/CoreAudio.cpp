@@ -72,7 +72,7 @@ CoreAudio::~CoreAudio()
     alcDestroyContext(m_pContext);
     alcCloseDevice(m_pDevice);
 
-    Core::Log->Info("Audio Interface shut down");
+    Core::Log->Info(CORE_LOG_BOLD("Audio Interface shut down"));
 }
 
 
@@ -140,22 +140,24 @@ void CoreAudio::ClearSources(const ALuint& iBuffer)
 {
     FOR_EACH(it, m_aiBuffer)
     {
-        if(it->second == iBuffer)
+        if((*it) == iBuffer)
         {
+            const GLenum iSource = *m_aiBuffer.get_key(it);
+
 #if defined(_CORE_DEBUG_)
 
             // check for loop property
-            int iPlaying; alGetSourcei(it->first, AL_SOURCE_STATE, &iPlaying);
-            int iLooping; alGetSourcei(it->first, AL_LOOPING,      &iLooping);
+            int iPlaying; alGetSourcei(iSource, AL_SOURCE_STATE, &iPlaying);
+            int iLooping; alGetSourcei(iSource, AL_LOOPING,      &iLooping);
             ASSERT((iPlaying != AL_PLAYING) || !iLooping)
 
 #endif
             // stop sound source
-            alSourceStop(it->first);
-            alSourcei(it->first, AL_BUFFER, 0);
+            alSourceStop(iSource);
+            alSourcei(iSource, AL_BUFFER, 0);
 
             // reset sound buffer
-            it->second = 0;
+            (*it) = 0;
         }
     }
 }

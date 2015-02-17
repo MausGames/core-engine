@@ -80,6 +80,11 @@ public:
     inline float       GetFloat (const char* pcSection, const char* pcKey, const float& fDefault)  {const float fReturn  = (float)m_Config.GetDoubleValue(pcSection, pcKey, fDefault);  if(fReturn  == fDefault)  this->SetFloat (pcSection, pcKey, fDefault);  return fReturn;}
     inline const char* GetString(const char* pcSection, const char* pcKey, const char*  pcDefault) {const char* pcReturn =        m_Config.GetValue      (pcSection, pcKey, pcDefault); if(pcReturn == pcDefault) this->SetString(pcSection, pcKey, pcDefault); return pcReturn;}
     //! @}
+
+    /*! get object properties */
+    //! @{
+    inline const char* GetPath()const {return m_sPath.c_str();}
+    //! @}
 };
 
 

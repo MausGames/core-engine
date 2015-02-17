@@ -84,11 +84,11 @@ coreResourceManager::~coreResourceManager()
     this->Reset(CORE_RESOURCE_RESET_EXIT);
 
     // delete resource handles
-    FOR_EACH(it, m_apHandle) SAFE_DELETE(it->second)
+    FOR_EACH(it, m_apHandle) SAFE_DELETE(*it)
 
     // delete resource files
-    FOR_EACH(it, m_apArchive)    SAFE_DELETE(it->second)
-    FOR_EACH(it, m_apDirectFile) SAFE_DELETE(it->second)
+    FOR_EACH(it, m_apArchive)    SAFE_DELETE(*it)
+    FOR_EACH(it, m_apDirectFile) SAFE_DELETE(*it)
 
     // clear memory
     m_apHandle    .clear();
@@ -96,7 +96,7 @@ coreResourceManager::~coreResourceManager()
     m_apDirectFile.clear();
     m_apRelation  .clear();
 
-    Core::Log->Info("Resource Manager destroyed");
+    Core::Log->Info(CORE_LOG_BOLD("Resource Manager destroyed"));
 }
 
 
@@ -116,7 +116,7 @@ void coreResourceManager::UpdateResources()
                 {
                     // allow changes during iteration
                     SDL_AtomicUnlock(&m_iLock);
-                    SDL_AtomicLock(&m_iLock);
+                    SDL_AtomicLock  (&m_iLock);
                 }
             }
         }
@@ -151,7 +151,7 @@ coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
         // check archives
         FOR_EACH(it, m_apArchive)
         {
-            coreFile* pFile = it->second->GetFile(pcPath);
+            coreFile* pFile = (*it)->GetFile(pcPath);
             if(pFile) return pFile;
         }
 
@@ -202,7 +202,7 @@ void coreResourceManager::Reset(const coreResourceReset& bInit)
 
         // unload all resources
         FOR_EACH(it, m_apHandle)
-            it->second->Nullify();
+            (*it)->Nullify();
     }
 }
 

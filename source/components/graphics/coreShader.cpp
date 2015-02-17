@@ -242,7 +242,7 @@ coreError coreProgram::Load(coreFile* pFile)
     // check for duplicate attribute locations
     FOR_EACH(it, m_aiAttribute)
         FOR_EACH_SET(et, it+1, m_aiAttribute)
-            ASSERT(it->second != et->second && it->second >= 0)
+            ASSERT((*it) != (*et) && (*it) >= 0)
 
 #endif
 
@@ -276,8 +276,8 @@ coreError coreProgram::Load(coreFile* pFile)
     // bind custom attribute locations
     FOR_EACH(it, m_aiAttribute)
     {
-        if(it->second >= 0)
-            glBindAttribLocation(m_iProgram, it->second, it->first);
+        if((*it) >= 0)
+            glBindAttribLocation(m_iProgram, (*it), *m_aiAttribute.get_key(it));
     }
 
     // bind output locations

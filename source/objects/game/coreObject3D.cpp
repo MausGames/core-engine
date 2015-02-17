@@ -256,7 +256,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                     ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                     // write data to the buffer
-                    std::memcpy(pCursor,                                         &pObject->GetPosition(), sizeof(coreVector3));
+                    std::memcpy(pCursor,                                        &pObject->GetPosition(), sizeof(coreVector3));
                     std::memcpy(pCursor + 3*sizeof(float),                      &pObject->GetSize(),     sizeof(coreVector3));
                     std::memcpy(pCursor + 6*sizeof(float),                      &iRotation,              sizeof(coreUint));
                     std::memcpy(pCursor + 6*sizeof(float) + 1*sizeof(coreUint), &iColor,                 sizeof(coreUint));

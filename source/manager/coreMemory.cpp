@@ -24,5 +24,5 @@ coreMemoryManager::~coreMemoryManager()
     // clear memory
     m_apPointer.clear();
 
-    Core::Log->Info("Memory Manager destroyed");
+    Core::Log->Info(CORE_LOG_BOLD("Memory Manager destroyed"));
 }

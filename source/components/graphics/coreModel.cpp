@@ -146,6 +146,7 @@ coreError coreModel::Load(coreFile* pFile)
     else
 
 #endif
+
     // create index buffer
     this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oImport.aiIndexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
 
@@ -246,7 +247,7 @@ void coreModel::Enable()
         }
 
         // set vertex data
-        for(coreByte i = 0; i < m_apiVertexBuffer.size(); ++i)
+        for(coreByte i = 0, j = coreByte(m_apiVertexBuffer.size()); i < j; ++i)
             m_apiVertexBuffer[i]->Activate(i);
 
         // set index data

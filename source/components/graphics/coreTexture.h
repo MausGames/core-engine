@@ -56,7 +56,7 @@ private:
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
 
-    static int s_iActiveUnit;                            //!< active texture unit
+    static coreByte     s_iActiveUnit;                   //!< active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
 
 
@@ -76,6 +76,7 @@ public:
     //! @{
     void Create(const coreUint& iWidth, const coreUint& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const bool& bFilter);
     void Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, const coreUint& iWidth, const coreUint& iHeight, const coreUint& iDataSize, const void* pData);
+    void CopyFrameBuffer(const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight);
     //! @}
 
     //! configure shadow sampling
@@ -92,7 +93,7 @@ public:
 
     //! reset content of the texture
     //! @{
-    void Clear     (const GLint& iLevel, const GLenum& iFormat, const GLenum& iType, const void* pData);
+    void Clear     (const GLint& iLevel);
     void Invalidate(const GLint& iLevel);
     //! @}
 

@@ -1,13 +1,13 @@
-@echo off
+@ECHO OFF
 
-ver | findstr /i "5\.1\." > nul
+VER | FINDSTR /i "5\.1\." > NUL
 
 IF %ERRORLEVEL% EQU 0 (
 
-start /D "bin\windows\x86" CoreApp_mingw.exe
+START /D "bin\windows\x86" CoreApp_mingw.exe
 
 ) ELSE (
 
-start /D "bin\windows\x86" CoreApp_msvc.exe
+START /D "bin\windows\x86" CoreApp_msvc.exe
 
 )

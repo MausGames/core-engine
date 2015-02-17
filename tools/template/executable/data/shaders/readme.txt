@@ -33,11 +33,6 @@ vec2 coreObject3DTexCoordLow()
 vec2 coreObject2DTexCoord()
 vec2 coreParticleTexCoord()
 
-// recommended color value access
-vec4 coreObject3DColor()
-vec4 coreObject2DColor()
-vec4 coreParticleColor()
-
 // dot-3 bump mapping initialization (with rotation quaternion)
 void coreDot3VertexInit(in vec4 v4Rotation, in vec3 v3Normal, in vec4 v4Tangent)
 void coreDot3VertexInit()
@@ -91,9 +86,8 @@ vec2 v_av2TexCoord[CORE_NUM_TEXTURES_2D]
 vec4 v_av4LightDir[CORE_NUM_LIGHTS]
 vec3 v_v3ViewDir
 
-vec4 u_v4Color       // color value
-vec2 u_v2TexSize     // texture size (not with particles or on instancing)
-vec2 u_v2TexOffset   // texture offset (not with particles or on instancing)
+vec2 (u_v2TexSize)     // texture size (not with particles or on instancing)
+vec2 (u_v2TexOffset)   // texture offset (not with particles or on instancing)
 
 
 // ****************************************************************
@@ -108,12 +102,13 @@ vec3  coreHSVtoRGB      (in vec3)            // HSV to RGB conversion
 vec3  coreRGBtoHSV      (in vec3)            // RGB to HSV conversion
 float coreLengthSq      (in vec2)            // vector square length
 float coreLengthSq      (in vec3)
+vec3  coreUnpackNormal  (in vec2)            // vector normal decompression
 vec3  coreQuatApply     (in vec4, in vec3)   // quaternion transformation
 mat3  coreTranspose     (in mat3)            // matrix transpose
 mat4  coreTranspose     (in mat4)
 mat3  coreInvert        (in mat3)            // matrix invert
 mat4  coreInvert        (in mat4)
-mat3  coreToMat3        (in mat4)            // matrix convert
+mat3  coreMat4to3       (in mat4)            // matrix convert
 uint  corePackUnorm4x8  (in vec4)            // value pack (4x 8bit float -> 1x 32bit uint)
 vec4  coreUnpackUnorm4x8(in uint)            // value unpack (1x 32bit uint -> 4x 8bit float)
 
@@ -132,6 +127,8 @@ mat4 u_m4Perspective   // perspective projection matrix
 mat4 u_m4Ortho         // orthographic projection matrix
 vec4 u_v4Resolution    // current viewport resolution (xy = normal, zw = reciprocal)
 
+vec4 u_v4Color         // color value
+
 struct
 {
     vec4 v4Position
@@ -140,9 +137,9 @@ struct
 } u_aLight[CORE_NUM_LIGHTS]   // light data directly from the application
 
 // object3D attributes
-vec3 u_v3Position;            // position offset
-vec3 u_v3Size;                // non-uniform size factor
-vec4 u_v4Rotation;            // rotation quaternion (can also be used for normal rotation)
+vec3 u_v3Position             // position offset
+vec3 u_v3Size                 // non-uniform size factor
+vec4 u_v4Rotation             // rotation quaternion (can also be used for normal rotation)
 
 // object2D attributes
 mat3 u_m3ScreenView           // full screen-view matrix

@@ -43,7 +43,7 @@ CoreDebug::CoreDebug()noexcept
 
     // create overall performance output object
     this->MeasureStart(CORE_DEBUG_OVERALL_NAME);
-    m_pOverall = m_apMeasure.begin()->second;
+    m_pOverall = m_apMeasure.front();
     m_pOverall->oOutput.SetColor3(COLOR_WHITE);
 
     // create background object
@@ -61,8 +61,8 @@ CoreDebug::CoreDebug()noexcept
 CoreDebug::~CoreDebug()
 {
     // delete all measure and inspect objects
-    FOR_EACH(it, m_apMeasure) SAFE_DELETE(it->second)
-    FOR_EACH(it, m_apInspect) SAFE_DELETE(it->second)
+    FOR_EACH(it, m_apMeasure) SAFE_DELETE(*it)
+    FOR_EACH(it, m_apInspect) SAFE_DELETE(*it)
 
     // clear memory
     m_apMeasure.clear();
@@ -147,9 +147,9 @@ void CoreDebug::MeasureEnd(const char* pcName)
 
     if(pMeasure == m_pOverall)
     {
-        // add additional performance information (approximated framerate and system utilization)
-        const float fMax = MAX(pMeasure->fCurrentCPU, pMeasure->fCurrentGPU);
-        pcName = PRINT("%s%s %.1f %.1f%%", pcName, SDL_GL_GetSwapInterval() ? "*" : "", RCP(fMax)*1000.0f, fMax*6.0f);
+        // add additional performance information (framerate and system utilization)
+        const float fTime = Core::System->GetTime();
+        if(fTime) pcName = PRINT("%s%s %.1f %05.1f%%", pcName, SDL_GL_GetSwapInterval() ? "*" : "", RCP(fTime), fTime*6000.0f);
     }
 
     // write formatted values to output label
@@ -194,19 +194,23 @@ void CoreDebug::__UpdateOutput()
     // move measure objects
     FOR_EACH(it, m_apMeasure)
     {
-        it->second->oOutput.SetPosition(coreVector2(0.0f, --iCurLine*0.023f));
-        it->second->oOutput.Move();
+        coreMeasure* pMeasure = (*it);
 
-        fNewSizeX = MAX(fNewSizeX, it->second->oOutput.GetSize().x + 0.005f);
+        pMeasure->oOutput.SetPosition(coreVector2(0.0f, --iCurLine*0.023f));
+        pMeasure->oOutput.Move();
+
+        fNewSizeX = MAX(fNewSizeX, pMeasure->oOutput.GetSize().x + 0.005f);
     }
 
     // move inspect objects
     FOR_EACH(it, m_apInspect)
     {
-        it->second->oOutput.SetPosition(coreVector2(0.0f, --iCurLine*0.023f));
-        it->second->oOutput.Move();
+        coreInspect* pInspect = (*it);
 
-        fNewSizeX = MAX(fNewSizeX, it->second->oOutput.GetSize().x + 0.005f);
+        pInspect->oOutput.SetPosition(coreVector2(0.0f, --iCurLine*0.023f));
+        pInspect->oOutput.Move();
+
+        fNewSizeX = MAX(fNewSizeX, pInspect->oOutput.GetSize().x + 0.005f);
     }
 
     // move background object (adjust size automatically)
@@ -218,7 +222,7 @@ void CoreDebug::__UpdateOutput()
     {
         // render full output
         m_Background.Render();
-        FOR_EACH(it, m_apMeasure) it->second->oOutput.Render();
-        FOR_EACH(it, m_apInspect) it->second->oOutput.Render();
+        FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
+        FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
     }
 }

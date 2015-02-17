@@ -67,7 +67,7 @@
     #endif
     #if defined(_CORE_FRAGMENT_SHADER_)
         #define varying in
-    #endif 
+    #endif
 #else
     #undef  _CORE_OPTION_INSTANCING_
     #define flat
@@ -127,7 +127,7 @@ vec3 coreRGBtoHSV(const in vec3 v3RGB)
     float d = v - coreMin3(R, G, B);
 
     if(d == 0.0) return vec3(0.0, 0.0, v);
-    
+
     float s = d / v;
 
     if(R == v) return vec3((0.0 + (G - B) / d) / 6.0, s, v);
@@ -138,6 +138,13 @@ vec3 coreRGBtoHSV(const in vec3 v3RGB)
 // vector square length
 float coreLengthSq(const in vec2 v) {return dot(v, v);}
 float coreLengthSq(const in vec3 v) {return dot(v, v);}
+
+// vector normal decompression
+vec3 coreUnpackNormal(const in vec2 v)
+{
+    vec2 A = v * 2.0 - 1.0;
+    return vec3(A, sqrt(1.0 - coreLengthSq(A)));
+}
 
 // quaternion transformation
 vec3 coreQuatApply(const in vec4 q, const in vec3 v)
@@ -212,9 +219,9 @@ mat4 coreInvert(const in mat4 m)
 
 // matrix convert
 #if (__VERSION__) >= 120
-    #define coreToMat3(m) mat3(m)
+    #define coreMat4to3(m) mat3(m)
 #else
-    #define coreToMat3(m) mat3(m[0].xyz, m[1].xyz, m[2].xyz)
+    #define coreMat4to3(m) mat3(m[0].xyz, m[1].xyz, m[2].xyz)
 #endif
 
 // value pack and unpack
@@ -310,7 +317,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         in vec2 a_v2RawTexCoord;
         in vec3 a_v3RawNormal;
         in vec4 a_v4RawTangent;
-        
+
         // instancing attributes
         in vec3 a_v3DivPosition;
         in vec3 a_v3DivSize;
@@ -335,7 +342,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         attribute vec2 a_v2RawTexCoord;
         attribute vec3 a_v3RawNormal;
         attribute vec4 a_v4RawTangent;
-        
+
         // instancing uniforms
         uniform vec3 a_v3DivPosition;
         uniform vec3 a_v3DivData;
@@ -347,16 +354,17 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         varying vec3 v_v3ViewDir;
 
     #endif
-    
+
     // low-memory attributes
     vec2 a_v2LowPosition = a_v3RawPosition.xy;
     vec2 a_v2LowTexCoord = vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y);
-    
+
     // remapped variables
     #if defined(_CORE_OPTION_INSTANCING_)
         #define u_v3Position  (a_v3DivPosition)
         #define u_v3Size      (a_v3DivSize)
         #define u_v4Rotation  (a_v4DivRotation)
+        #define u_v4Color     (a_v4DivColor)
         #define u_v2TexSize   (a_v4DivTexParam.xy)
         #define u_v2TexOffset (a_v4DivTexParam.zw)
     #else
@@ -366,7 +374,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #define a_v1DivScale (a_v3DivData.x)
     #define a_v1DivAngle (a_v3DivData.y)
     #define a_v1DivValue (a_v3DivData.z)
-    
+
     // main function
     void VertexMain();
     void main()
@@ -374,10 +382,10 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #if defined(_CORE_OPTION_INSTANCING_)
         v_v4VarColor = a_v4DivColor;
     #endif
-    
+
         VertexMain();
     }
-    
+
 #endif // _CORE_VERTEX_SHADER_
 
 
@@ -413,7 +421,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         vec4 v_av4LightDir[CORE_NUM_LIGHTS];
         vec3 v_v3ViewDir;
     } Out;
-    
+
     // main function
     void GeometryMain();
     void main()
@@ -450,14 +458,14 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         varying vec3 v_v3ViewDir;
 
     #endif
-    
+
     // remapped variables
     #if defined(_CORE_OPTION_INSTANCING_)
         #define u_v4Color (v_v4VarColor)
     #endif
     #define u_v2TexSize   (u_v4TexParam.xy)
     #define u_v2TexOffset (u_v4TexParam.zw)
-    
+
     // main function
     void FragmentMain();
     void main()
@@ -482,16 +490,16 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     }
     vec3 coreObject3DTransformRaw() {return coreObject3DTransform(a_v3RawPosition);}
     vec3 coreObject3DTransformLow() {return coreObject3DTransform(vec3(a_v2LowPosition, 0.0));}
-    
+
     // default particle range calculation
     vec3 coreParticleRange()
     {
     #if defined(_CORE_OPTION_NO_ROTATION_)
-        return coreTranspose(coreToMat3(u_m4Camera)) * vec3(a_v2LowPosition * a_v1DivScale, 0.0);
+        return coreTranspose(coreMat4to3(u_m4Camera)) * vec3(a_v2LowPosition * a_v1DivScale, 0.0);
     #else
         float v1Sin = sin(a_v1DivAngle);
         float v1Cos = cos(a_v1DivAngle);
-        return coreTranspose(coreToMat3(u_m4Camera)) * vec3(mat2(v1Cos, v1Sin, -v1Sin, v1Cos) * (a_v2LowPosition * a_v1DivScale), 0.0);
+        return coreTranspose(coreMat4to3(u_m4Camera)) * vec3(mat2(v1Cos, v1Sin, -v1Sin, v1Cos) * (a_v2LowPosition * a_v1DivScale), 0.0);
     #endif
     }
 
@@ -507,22 +515,10 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     vec2 coreObject2DTexCoord()    {return a_v2LowTexCoord * u_v2TexSize + u_v2TexOffset;}
     vec2 coreParticleTexCoord()    {return a_v2LowTexCoord;}
 
-    // recommended color value access
-    vec4 coreObject3DColor()
-    {
-    #if defined(_CORE_OPTION_INSTANCING_)
-        return v_v4VarColor;
-    #else
-        return u_v4Color;
-    #endif
-    }
-    #define coreObject2DColor() (u_v4Color)
-    #define coreParticleColor() (coreObject3DColor())
-
     // dot-3 bump mapping initialization and transformation
     vec3 g_n, g_t, g_b;
     void coreDot3VertexInit(const in vec4 v4Rotation, const in vec3 v3Normal, const in vec4 v4Tangent)
-    { 
+    {
     #if defined(_CORE_OPTION_NO_ROTATION_)
         g_n = v3Normal;
         g_t = v4Tangent.xyz;
@@ -534,7 +530,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     }
     void coreDot3VertexInit()                            {coreDot3VertexInit(u_v4Rotation, a_v3RawNormal, a_v4RawTangent);}
     vec3 coreDot3VertexTransform(const in vec3 v3Vector) {return normalize(vec3(dot(v3Vector, g_t), dot(v3Vector, g_b), dot(v3Vector, g_n)));}
-    
+
 #endif // _CORE_VERTEX_SHADER_
 
 // recommended texture lookup
