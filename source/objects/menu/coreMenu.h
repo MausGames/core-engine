@@ -13,11 +13,13 @@
 // TODO: allow custom animations
 // TODO: remove wrong order while animating (double-objects)
 // TODO: implement general relative behavior, submenu, hierarchy (menu/2d objects)
-// TODO: optimize rendering with a frame buffer
+// TODO: optimize rendering with a frame buffer ?
 // TODO: implement tab-switching and keyboard/gamepad control
 // TODO: sized menu class ? (# I forgot what it was)
 // TODO: template class !
 // TODO: handle individual transparency better
+// TODO: depth-pass
+// TODO: surface-vector-vector ?
 
 
 // ****************************************************************

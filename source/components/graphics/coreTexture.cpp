@@ -83,7 +83,7 @@ coreError coreTexture::Unload()
     if(!m_iTexture) return CORE_INVALID_CALL;
 
     // disable still active texture bindings
-    for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i)
+    for(coreByte i = CORE_TEXTURE_UNITS; i--; )
         if(s_apBound[i] == this) coreTexture::Disable(i);
 
     // delete texture

@@ -13,7 +13,7 @@ shader main functions are named *VertexMain()* and *FragmentMain()*
 
 ## Functions ##
 
-// default model transformation (position, size, rotation, without camera or projection)
+// default model transformation (position, size, rotation, without camera and projection)
 vec3 coreObject3DTransform(in vec3)
 vec3 coreObject3DTransformRaw()
 vec3 coreObject3DTransformLow()

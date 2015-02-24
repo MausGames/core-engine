@@ -184,7 +184,7 @@ coreError coreLanguage::Load(const char* pcPath)
         pcFrom = pcTo + 1;
     };
 
-    // clear all existing language strings
+    // clear all existing language-strings
     FOR_EACH(it, m_asStringList) it->clear();
 
     std::string sKey = "";
@@ -216,14 +216,14 @@ coreError coreLanguage::Load(const char* pcPath)
     {
         std::string& sString = (*it);
 
-        // assign key to empty language strings
-        if(sString.empty()) sString = *m_asStringList.get_key(it);
+        // assign key as value to possible empty language-string
+        if(sString.empty()) sString.assign(*m_asStringList.get_key(it));
         sString.shrink_to_fit();
     }
     m_asStringList.shrink_to_fit();
 
     // update all foreign strings and objects
-    FOR_EACH(it, m_apsForeign) (**m_apsForeign.get_key(it)) = (**it);
+    FOR_EACH(it, m_apsForeign) (*m_apsForeign.get_key(it))->assign(m_asStringList[it->c_str()]);
     FOR_EACH(it, m_apObject)   (*it)->__Update();
 
     Core::Log->Info("Language (%s) loaded", pFile->GetPath());
@@ -237,13 +237,12 @@ void coreLanguage::BindForeign(std::string* psForeign, const char* pcKey)
 {
     ASSERT(psForeign && pcKey)
 
-    // assign key as value to new language strings
+    // assign key as value to possible new language-string
     if(!m_asStringList.count(pcKey)) m_asStringList[pcKey].assign(pcKey);
 
-    // retrieve language-string and save both pointers
-    std::string& sString    = m_asStringList[pcKey];
-    m_apsForeign[psForeign] = &sString;
+    // save foreign string pointer and key
+    m_apsForeign[psForeign].assign(pcKey);
 
-    // initially update foreign string
-    *psForeign = sString;
+    // initially update the foreign string
+    psForeign->assign(m_asStringList[pcKey]);
 }

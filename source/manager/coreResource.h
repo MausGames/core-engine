@@ -219,6 +219,7 @@ public:
     /*! update the resource manager */
     //! @{
     void UpdateResources();
+    inline bool IsLoading()const {FOR_EACH(it, m_apHandle) {if(!(*it)->IsLoaded() && (*it)->GetRefCount()) return true;} return false;}
     //! @}
 
     /*! create and delete resource and resource handle */

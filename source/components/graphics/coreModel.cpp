@@ -78,9 +78,9 @@ coreError coreModel::Load(coreFile* pFile)
     // find maximum distance from the model center
     FOR_EACH(it, oImport.aVertexData)
     {
-        m_vBoundingRange.x = MAX(m_vBoundingRange.x, it->vPosition.x);
-        m_vBoundingRange.y = MAX(m_vBoundingRange.y, it->vPosition.y);
-        m_vBoundingRange.z = MAX(m_vBoundingRange.z, it->vPosition.z);
+        m_vBoundingRange.x = MAX(m_vBoundingRange.x, ABS(it->vPosition.x));
+        m_vBoundingRange.y = MAX(m_vBoundingRange.y, ABS(it->vPosition.y));
+        m_vBoundingRange.z = MAX(m_vBoundingRange.z, ABS(it->vPosition.z));
         m_fBoundingRadius  = MAX(it->vPosition.LengthSq(), m_fBoundingRadius);
     }
     m_fBoundingRadius = SQRT(m_fBoundingRadius);

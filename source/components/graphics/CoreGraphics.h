@@ -15,7 +15,7 @@
 // TODO: implement post-processing pipeline (in CoreGraphics or own class?)
 // TODO: implement conditional rendering (e.g. occlusion queries)
 // TODO: multidrawindirect, array textures
-// TODO: wrap glDisable, glDepthMask, glCullFace, etc. within the class
+// TODO: wrap glDisable, glDepthMask, glCullFace, etc. within the class (reference-counter for nested calls ?)
 // TODO: different names for camera, view, lights
 // TODO: defer uniform-push to next shader-enable
 // TODO: improve screenshot with pixel-pack-buffer

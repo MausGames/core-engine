@@ -88,7 +88,7 @@ public:
     //! @{
     inline        void Enable (const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, this);}
     static inline void Disable(const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
-    static inline void DisableAll()                   {for(int i = CORE_TEXTURE_UNITS-1; i >= 0; --i) coreTexture::Disable(i);}
+    static inline void DisableAll()                   {for(coreByte i = CORE_TEXTURE_UNITS; i--; ) coreTexture::Disable(i);}
     //! @}
 
     //! reset content of the texture

@@ -11,8 +11,8 @@
 #define _CORE_GUARD_LANGUAGE_H_
 
 // TODO: save current main language file to config
-// TODO: is it possible that pointers to strings may change (vector resize) -> only if different language files have incompatible keys or size
-// TODO: currently key-identifier may cause problems in normal text
+// TODO: currently key-identifier $ may cause problems in normal text
+// TODO: reduce memory consumption with all the redundant keys in containers
 
 
 // ****************************************************************
@@ -71,12 +71,12 @@ private:
 class coreLanguage final
 {
 private:
-    coreLookupStr<std::string> m_asStringList;             //!< list with language-strings to specific keys
+    coreLookupStr<std::string> m_asStringList;            //!< list with language-strings to specific keys
 
-    coreLookup<std::string*, std::string*> m_apsForeign;   //!< foreign string pointers connected with language-strings <foreign, language>
-    std::u_set<coreTranslate*> m_apObject;                 //!< objects to update after modification
+    coreLookup<std::string*, std::string> m_apsForeign;   //!< foreign string pointers connected with keys <foreign, key>
+    std::u_set<coreTranslate*> m_apObject;                //!< objects to update after modification
 
-    std::string m_sPath;                                   //!< relative path of the file
+    std::string m_sPath;                                  //!< relative path of the file
 
 
 public:

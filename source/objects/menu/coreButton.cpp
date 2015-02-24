@@ -96,9 +96,9 @@ void coreButton::Move()
     {
         if(m_iUpdate)
         {
-            m_pCaption->SetPosition(this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment());
+            m_pCaption->SetPosition (this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment());
             m_pCaption->SetDirection(this->GetDirection());
-            m_pCaption->SetCenter(this->GetCenter());
+            m_pCaption->SetCenter   (this->GetCenter());
             m_pCaption->Move();
         }
     }

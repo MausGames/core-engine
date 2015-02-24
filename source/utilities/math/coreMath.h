@@ -41,6 +41,8 @@
 #define SIN   coreMath::Sin
 #define COS   coreMath::Cos
 #define TAN   coreMath::Tan
+#define ASIN  coreMath::Asin
+#define ACOS  coreMath::Acos
 #define ATAN  coreMath::Atan
 #define COT   coreMath::Cot
 #define CEIL  coreMath::Ceil
@@ -71,9 +73,11 @@ public:
 
     /*! elementary operations */
     //! @{
-    template <coreUint iBase> static inline float Log(const float& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
-    static inline float Fract(const float& fInput)                         {return fInput - I_TO_F(F_TO_SI(fInput));}
-    static inline float Sqrt (const float& fInput)                         {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
+    template <coreUint iBase> static inline float Log    (const float& fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
+    template <>               static inline float Log< 2>(const float& fInput) {return std::log2 (fInput);}
+    template <>               static inline float Log<10>(const float& fInput) {return std::log10(fInput);}
+    static inline float Fract(const float& fInput)                             {return fInput - I_TO_F(F_TO_SI(fInput));}
+    static inline float Sqrt (const float& fInput)                             {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
     static inline float Rsqrt(float fInput);
     static inline float Rcp  (float fInput);
     //! @}
@@ -83,6 +87,8 @@ public:
     static inline float Sin (const float& fInput) {return std::sin (fInput);}
     static inline float Cos (const float& fInput) {return std::cos (fInput);}
     static inline float Tan (const float& fInput) {return std::tan (fInput);}
+    static inline float Asin(const float& fInput) {return std::asin(fInput);}
+    static inline float Acos(const float& fInput) {return std::acos(fInput);}
     static inline float Atan(const float& fInput) {return std::atan(fInput);}
     static inline float Cot (const float& fInput) {return TAN(PI*0.5f - fInput);}
     //! @}
