@@ -182,10 +182,6 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
 
         // update only a specific area of the texture
         m_apTexture[0]->Modify(0, 0, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3, pConvert->pixels);
-
-        // display only the specific area
-        this->SetTexSize(coreVector2(I_TO_F(pSurface->w - 1), I_TO_F(pSurface->h)) / m_vResolution);
-        ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
     }
     else
     {
@@ -197,8 +193,12 @@ void coreLabel::__Generate(const char* pcText, const bool& bSub)
         m_apTexture[0]->Modify(0, 0, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3, pConvert->pixels);
 
         // save new texture resolution
-        m_vResolution = coreVector2(I_TO_F(pSurface->w), I_TO_F(pSurface->h));
+        m_vResolution = coreVector2(I_TO_F(pConvert->w), I_TO_F(pConvert->h));
     }
+
+    // display only visible texture area
+    this->SetTexSize(coreVector2(I_TO_F(pSurface->w), I_TO_F(pSurface->h)) / m_vResolution);
+    ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
 
     // delete text surface data
     SDL_FreeSurface(pSurface);

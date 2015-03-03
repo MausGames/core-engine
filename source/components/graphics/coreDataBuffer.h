@@ -213,8 +213,21 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
 {
     ASSERT(ptPointer)
 
-    // keep persistent mapped buffer
-    if(!m_pPersistentBuffer)
+    if(m_pPersistentBuffer)
+    {
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // flush persistent mapped buffer directly
+            glFlushMappedNamedBufferRange(m_iDataBuffer, m_iMapOffset, m_iMapLength);
+        }
+        else
+        {
+            // bind and flush persistent mapped buffer
+            this->Bind();
+            glFlushMappedBufferRange(m_iTarget, m_iMapOffset, m_iMapLength);
+        }
+    }
+    else
     {
         if(CORE_GL_SUPPORT(ARB_map_buffer_range))
         {

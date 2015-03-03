@@ -128,9 +128,9 @@ coreError coreSound::Unload()
     m_sPath      = "";
     m_iSize      = 0;
     m_iBuffer    = 0;
+    m_Format     = coreWaveFormat();
     m_iCurSource = 0;
     m_pCurRef    = NULL;
-    m_Format     = coreWaveFormat();
 
     return CORE_OK;
 }

@@ -51,6 +51,7 @@
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 // TODO: check pointer-int conversions
 // TODO: remember hot, cold, nonnull
+// TODO: rename to coreStatus, check all values
 
 
 // compiler

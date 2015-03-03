@@ -39,7 +39,7 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
         GLenum iFlags = 0;
         switch(m_iStorageType & 0xFF)
         {
-        case CORE_DATABUFFER_STORAGE_PERSISTENT: ADD_VALUE(iFlags, GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT)
+        case CORE_DATABUFFER_STORAGE_PERSISTENT: ADD_VALUE(iFlags, GL_MAP_PERSISTENT_BIT)
         case CORE_DATABUFFER_STORAGE_DYNAMIC:    ADD_VALUE(iFlags, GL_MAP_WRITE_BIT)
         default: break;
         }
@@ -49,7 +49,7 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const 
 
         // map persistent mapped buffer
         if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_PERSISTENT))
-            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags | GL_MAP_INVALIDATE_BUFFER_BIT));
+            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
     }
     else
     {
