@@ -47,11 +47,11 @@
 // TODO: implement GL_KHR_robustness (performance penalties ?)
 // TODO: explicit flush control for context change (SDL?)
 // TODO: check for performance penalties and alternatives for thread_local
-// TODO: WinXP requires MSVC redist 12 (MinGW) or XP compiler
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 // TODO: check pointer-int conversions
-// TODO: remember hot, cold, nonnull
-// TODO: rename to coreStatus, check all values
+// TODO: reduce core-prefix ? (e.g. cr)
+
+// NOTE: always compile Win32 libraries/executables for WinXP
 
 
 // compiler
@@ -112,7 +112,7 @@
 
 
 // ****************************************************************
-// basic libraries
+// base libraries
 #define _HAS_EXCEPTIONS (0)
 #define _CRT_SECURE_NO_WARNINGS
 #define _ALLOW_KEYWORD_MACROS
@@ -214,6 +214,19 @@
     #define constexpr_weak constexpr_func
 #endif
 
+// disable unwanted compiler warnings (with /W4)
+#pragma warning(disable : 4100)   //!< unreferenced formal parameter
+#pragma warning(disable : 4127)   //!< constant branch expression
+#pragma warning(disable : 4201)   //!< nameless struct or union
+#pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
+#pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision
+
+// enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
+#pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4738 4826 4837 4928 4946)
+
+// #pragma warning(default : 4820)             //!< byte padding
+// #pragma warning(default : 4242 4244 4365)   //!< loss of precision
+
 
 // ****************************************************************
 // general definitions
@@ -310,7 +323,7 @@ template <typename R,             typename... A> struct function_traits<R      (
 #define TRAIT_ARG_TYPE(f,i)  function_traits<f>::template arg_type<i>
 #define TRAIT_ARITY(f)       function_traits<f>::arity
 
-// shorter common types and keywords
+// shorter common keywords
 #define f_list forward_list
 #define u_map  unordered_map
 #define u_set  unordered_set
@@ -319,18 +332,28 @@ template <typename R,             typename... A> struct function_traits<R      (
 #define r_cast reinterpret_cast
 #define c_cast const_cast
 
-// basic sized unsigned integer types
-typedef std::uint8_t  coreByte;
-typedef std::uint16_t coreUshort;
-typedef std::uint32_t coreUint;
+// type definitions
+typedef std::int8_t   coreInt8;
+typedef std::int16_t  coreInt16;
+typedef std::int32_t  coreInt32;
+typedef std::int64_t  coreInt64;
+typedef std::uint8_t  coreUint8;
+typedef std::uint16_t coreUint16;
+typedef std::uint32_t coreUint32;
 typedef std::uint64_t coreUint64;
+typedef std::size_t   coreUintW;
+typedef std::uint8_t  coreByte;
+typedef bool          coreBool;
+typedef char          coreChar;
+typedef float         coreFloat;
+typedef double        coreDouble;
 
 // type conversion macros
-#define F_TO_SI(x) ((int)          (x))   //!< float to signed int
-#define F_TO_UI(x) ((unsigned)(int)(x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
-#define I_TO_F(x)  ((float)(int)   (x))   //!< int to float (force [_mm_cvtepi32_ps])
-#define P_TO_I(x)  ((int)(long)    (x))   //!< pointer to int
-#define I_TO_P(x)  ((void*)(long)  (x))   //!< int to pointer
+#define F_TO_SI(x) ((int)                 (x))   //!< float to signed int
+#define F_TO_UI(x) ((unsigned)(int)       (x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
+#define I_TO_F(x)  ((float)(int)          (x))   //!< int to float (force [_mm_cvtepi32_ps])
+#define P_TO_I(x)  ((std::intptr_t)(void*)(x))   //!< pointer to int
+#define I_TO_P(x)  ((void*)(std::intptr_t)(x))   //!< int to pointer
 
 // default color values
 #define COLOR_WHITE  coreVector3(1.000f, 1.000f, 1.000f)
@@ -344,18 +367,18 @@ typedef std::uint64_t coreUint64;
 #define COLOR_SILVER coreVector3(0.855f, 0.855f, 0.878f)
 #define COLOR_GOLD   coreVector3(1.000f, 0.859f, 0.000f)
 
-enum coreError : int
+enum coreStatus : coreInt8
 {
-    CORE_OK            =   0,    //!< everything is fine
-    CORE_BUSY          =  10,    //!< currently waiting for an event
+    CORE_OK            =  0,    //!< everything is fine
+    CORE_BUSY          =  1,    //!< currently waiting for an event
 
-    CORE_ERROR_FILE    = -10,    //!< error on reading, writing or finding a file or folder
-    CORE_ERROR_SUPPORT = -20,    //!< requested feature is not supported on the target system
-    CORE_ERROR_SYSTEM  = -30,    //!< invalid system or application behavior
+    CORE_ERROR_FILE    = -1,    //!< error on reading, writing or finding a file or folder
+    CORE_ERROR_SUPPORT = -2,    //!< requested feature is not supported on the target system
+    CORE_ERROR_SYSTEM  = -3,    //!< invalid system or application behavior
 
-    CORE_INVALID_CALL  = -110,   //!< object has wrong status
-    CORE_INVALID_INPUT = -120,   //!< function parameters are invalid
-    CORE_INVALID_DATA  = -130,   //!< depending objects contain wrong data
+    CORE_INVALID_CALL  = -11,   //!< object has wrong status
+    CORE_INVALID_INPUT = -12,   //!< function parameters are invalid
+    CORE_INVALID_DATA  = -13,   //!< depending objects contain wrong data
 };
 
 
@@ -459,7 +482,7 @@ private:
     //! run engine
     //! @{
     friend ENTRY_POINT int main(int argc, char* argv[]);
-    static int Run();
+    static coreStatus Run();
     //! @}
 };
 

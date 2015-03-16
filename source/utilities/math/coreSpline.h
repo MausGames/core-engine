@@ -22,9 +22,9 @@ private:
     /*! node structure */
     struct coreNode
     {
-        T     tPosition;   //!< position of the node
-        T     tTangent;    //!< tangent of the node
-        float fDistance;   //!< distance from this node to the next (0.0f = last or spiky node)
+        T         tPosition;   //!< position of the node
+        T         tTangent;    //!< tangent of the node
+        coreFloat fDistance;   //!< distance from this node to the next (0.0f = last or spiky node)
 
         constexpr_func coreNode()noexcept;
     };
@@ -32,7 +32,7 @@ private:
 
 private:
     std::vector<coreNode> m_apNode;   //!< nodes of the spline
-    float m_fTotalDistance;           //!< approximated total distance
+    coreFloat m_fTotalDistance;       //!< approximated total distance
 
 
 public:
@@ -52,40 +52,40 @@ public:
     void AddNode   (const T& tPosition, const T& tTangent);
     void AddNodes  (const T& tPosition, const T& tTangentIn, const T& tTangentOut);
     void AddLoop   ();
-    void DeleteNode(const coreUint& iIndex);
+    void DeleteNode(const coreUintW& iIndex);
     void ClearNodes();
     //! @}
 
     /*! edit node properties */
     //! @{
-    void EditNodePosition(const coreUint& iIndex, const T& tNewPosition);
-    void EditNodeTangent (const coreUint& iIndex, const T& tNewTangent);
+    void EditNodePosition(const coreUintW& iIndex, const T& tNewPosition);
+    void EditNodeTangent (const coreUintW& iIndex, const T& tNewTangent);
     //! @}
 
     /*! calculate position and direction */
     //! @{
-    void     CalcPosDir   (const float& fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const;
-    inline T CalcPosition (const float& fDistance)const {T tPos; this->CalcPosDir(fDistance, &tPos, NULL); return tPos;}
-    inline T CalcDirection(const float& fDistance)const {T tDir; this->CalcPosDir(fDistance, NULL, &tDir); return tDir;}
+    void     CalcPosDir   (const coreFloat& fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const;
+    inline T CalcPosition (const coreFloat& fDistance)const {T tPos; this->CalcPosDir(fDistance, &tPos, NULL); return tPos;}
+    inline T CalcDirection(const coreFloat& fDistance)const {T tDir; this->CalcPosDir(fDistance, NULL, &tDir); return tDir;}
     //! @}
 
     /*! translate distance into relative node index and time */
     //! @{
-    void TranslateRelative(const float& fDistance, coreUint* OUTPUT piRelIndex, float* OUTPUT pfRelTime)const;
+    void TranslateRelative(const coreFloat& fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const;
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const coreNode& GetNode         (const coreUint& iIndex)const {return m_apNode.at(iIndex);}
-    inline coreUint        GetNumNodes     ()const                       {return coreUint(m_apNode.size());}
-    inline const float&    GetTotalDistance()const                       {return m_fTotalDistance;}
+    inline const coreNode&  GetNode         (const coreUintW& iIndex)const {return m_apNode.at(iIndex);}
+    inline       coreUintW  GetNumNodes     ()const                        {return m_apNode.size();}
+    inline const coreFloat& GetTotalDistance()const                        {return m_fTotalDistance;}
     //! @}
 
 
 private:
     /*! calculate final position and direction */
     //! @{
-    static void __CalcPosDir(const float& fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection);
+    static void __CalcPosDir(const coreFloat& fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection);
     //! @}
 };
 
@@ -194,17 +194,17 @@ template <typename T> void coreSpline<T>::AddLoop()
 
 // ****************************************************************
 /* remove node from spline */
-template <typename T> void coreSpline<T>::DeleteNode(const coreUint& iIndex)
+template <typename T> void coreSpline<T>::DeleteNode(const coreUintW& iIndex)
 {
-    WARN_IF(iIndex >= coreUint(m_apNode.size())) return;
+    WARN_IF(iIndex >= m_apNode.size()) return;
 
     if(iIndex)
     {
-        const coreUint iNextIndex = iIndex + 1;
-        coreNode&      oPrevNode  = m_apNode[iIndex - 1];
+        const coreUintW iNextIndex = iIndex + 1;
+        coreNode&       oPrevNode  = m_apNode[iIndex - 1];
 
         // calculate new distance between previous and next node
-        const float fNewDistance = (iNextIndex >= coreUint(m_apNode.size())) ? 0.0f : (m_apNode[iNextIndex].tPosition - oPrevNode.tPosition).Length();
+        const coreFloat fNewDistance = (iNextIndex >= m_apNode.size()) ? 0.0f : (m_apNode[iNextIndex].tPosition - oPrevNode.tPosition).Length();
 
         // add new distance and remove both old distances
         m_fTotalDistance   += fNewDistance - oPrevNode.fDistance - m_apNode[iIndex].fDistance;
@@ -213,7 +213,7 @@ template <typename T> void coreSpline<T>::DeleteNode(const coreUint& iIndex)
     else m_fTotalDistance -= m_apNode[iIndex].fDistance;
 
     // remove old node
-    m_apNode.erase(m_apNode.begin()+iIndex);
+    m_apNode.erase(m_apNode.begin() + iIndex);
 }
 
 
@@ -231,22 +231,22 @@ template <typename T> void coreSpline<T>::ClearNodes()
 
 // ****************************************************************
 /* edit node position */
-template <typename T> void coreSpline<T>::EditNodePosition(const coreUint& iIndex, const T& tNewPosition)
+template <typename T> void coreSpline<T>::EditNodePosition(const coreUintW& iIndex, const T& tNewPosition)
 {
-    ASSERT(iIndex < coreUint(m_apNode.size()))
+    ASSERT(iIndex < m_apNode.size())
 
     // set new node position
     coreNode& oCurNode = m_apNode[iIndex];
     oCurNode.tPosition = tNewPosition;
 
     // update relation to next node
-    const coreUint iNextIndex = iIndex + 1;
-    if(iNextIndex < coreUint(m_apNode.size()))
+    const coreUintW iNextIndex = iIndex + 1;
+    if(iNextIndex < m_apNode.size())
     {
         const coreNode& oNextNode = m_apNode[iNextIndex];
 
         // calculate new distance between current and next node
-        const float fNewDistance = (oNextNode.tPosition - oCurNode.tPosition).Length();
+        const coreFloat fNewDistance = (oNextNode.tPosition - oCurNode.tPosition).Length();
 
         // edit current node and total distance
         m_fTotalDistance  += fNewDistance - oCurNode.fDistance;
@@ -259,7 +259,7 @@ template <typename T> void coreSpline<T>::EditNodePosition(const coreUint& iInde
         coreNode& oPrevNode = m_apNode[iIndex - 1];
 
         // calculate new distance between previous and current node
-        const float fNewDistance = (oCurNode.tPosition - oPrevNode.tPosition).Length();
+        const coreFloat fNewDistance = (oCurNode.tPosition - oPrevNode.tPosition).Length();
 
         // edit previous node and total distance
         m_fTotalDistance   += fNewDistance - oPrevNode.fDistance;
@@ -270,9 +270,9 @@ template <typename T> void coreSpline<T>::EditNodePosition(const coreUint& iInde
 
 // ****************************************************************
 /* edit node tangent */
-template <typename T> void coreSpline<T>::EditNodeTangent(const coreUint& iIndex, const T& tNewTangent)
+template <typename T> void coreSpline<T>::EditNodeTangent(const coreUintW& iIndex, const T& tNewTangent)
 {
-    ASSERT((iIndex < coreUint(m_apNode.size())) && tNewTangent.IsNormalized())
+    ASSERT((iIndex < m_apNode.size()) && tNewTangent.IsNormalized())
 
     // only set new node tangent
     m_apNode[iIndex].tTangent = tNewTangent;
@@ -281,13 +281,13 @@ template <typename T> void coreSpline<T>::EditNodeTangent(const coreUint& iIndex
 
 // ****************************************************************
 /* calculate position and direction */
-template <typename T> void coreSpline<T>::CalcPosDir(const float& fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const
+template <typename T> void coreSpline<T>::CalcPosDir(const coreFloat& fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const
 {
     ASSERT(ptPosition || ptDirection)
 
     // translate distance into relative node index and time
-    coreUint iRelIndex;
-    float    fRelTime;
+    coreUintW iRelIndex;
+    coreFloat fRelTime;
     this->TranslateRelative(fDistance, &iRelIndex, &fRelTime);
 
     // get both enclosing nodes
@@ -305,17 +305,17 @@ template <typename T> void coreSpline<T>::CalcPosDir(const float& fDistance, T* 
 
 // ****************************************************************
 /* translate distance into relative node index and time */
-template <typename T> void coreSpline<T>::TranslateRelative(const float& fDistance, coreUint* OUTPUT piRelIndex, float* OUTPUT pfRelTime)const
+template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat& fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const
 {
     ASSERT(piRelIndex && pfRelTime && (m_apNode.size() >= 2))
 
-    coreUint       iCurIndex    = 0;
-    float          fCurDistance = 0.0f;
-    const coreUint iMaxIndex    = coreUint(m_apNode.size()) - 2;
-    const float    fMaxDistance = MIN(fDistance, m_fTotalDistance);
+    coreUintW       iCurIndex    = 0;
+    coreFloat       fCurDistance = 0.0f;
+    const coreUintW iMaxIndex    = m_apNode.size() - 2;
+    const coreFloat fMaxDistance = MIN(fDistance, m_fTotalDistance);
 
     // search for first relative node
-    float fNewDistance;
+    coreFloat fNewDistance;
     while((iCurIndex < iMaxIndex) && ((fNewDistance = fCurDistance + m_apNode[iCurIndex].fDistance) < fMaxDistance))
     {
         ++iCurIndex;
@@ -330,32 +330,32 @@ template <typename T> void coreSpline<T>::TranslateRelative(const float& fDistan
 
 // ****************************************************************
 /* calculate final position and direction */
-template <typename T> void coreSpline<T>::__CalcPosDir(const float& fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
+template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat& fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
 {
     // normal calculation:
     // *ptPosition  = (2.0f*X3 - 3.0f*X2 + 1.0f)*tP1 - (2.0f*X3 - 3.0f*X2)*tP2 + (     X3 - 2.0f*X2 +   X1)*tT1 + (     X3 -      X2)*tT2;
     // *ptDirection = (6.0f*X2 - 6.0f*X1       )*tP1 - (6.0f*X2 - 6.0f*X1)*tP2 + (3.0f*X2 - 4.0f*X1 + 1.0f)*tT1 + (3.0f*X2 - 2.0f*X1)*tT2;
 
-    const float& X1 = fTime;
-    const float  X2 =   X1 *  X1;
-    const float  D  = 3.0f *  X2;
-    const float  E  =   X2 -  X1;
-    const T      PP =  tP1 - tP2;
+    const coreFloat& X1 = fTime;
+    const coreFloat  X2 =   X1 *  X1;
+    const coreFloat  D  = 3.0f *  X2;
+    const coreFloat  E  =   X2 -  X1;
+    const T          PP =  tP1 - tP2;
 
     if(ptPosition)
     {
         // use default cubic Hermite interpolation
-        const float X3 = X2 * X1;
-        const float A  = X3 - X2;
-        *ptPosition    = (2.0f * X3 - D)*PP + tP1 + (A - E)*tT1 + (A)*tT2;
+        const coreFloat X3 = X2 * X1;
+        const coreFloat A  = X3 - X2;
+        *ptPosition = (2.0f * X3 - D)*PP + tP1 + (A - E)*tT1 + (A)*tT2;
     }
 
     if(ptDirection)
     {
         // use first derivation to get tangent value (and normalize it)
-        const float B = 2.0f * X1;
-        const float C =    D -  B;
-        *ptDirection  = ((6.0f * E)*PP + (C - B + 1.0f)*tT1 + (C)*tT2).Normalize();
+        const coreFloat B = 2.0f * X1;
+        const coreFloat C =    D -  B;
+        *ptDirection = ((6.0f * E)*PP + (C - B + 1.0f)*tT1 + (C)*tT2).Normalize();
     }
 }
 

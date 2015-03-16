@@ -32,8 +32,8 @@ CoreGraphics::CoreGraphics()noexcept
     Core::Log->DebugOpenGL();
 
     // save version numbers
-    m_fOpenGL = coreData::StrVersion(r_cast<const char*>(glGetString(GL_VERSION)));
-    m_fGLSL   = coreData::StrVersion(r_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    m_fOpenGL = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
+    m_fGLSL   = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // log video card information
     Core::Log->ListStartInfo("Video Card Information");
@@ -42,7 +42,7 @@ CoreGraphics::CoreGraphics()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
         Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
         Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Core::Log->ListAdd(r_cast<const char*>(glGetString(GL_EXTENSIONS)));
+        Core::Log->ListAdd(r_cast<const coreChar*>(glGetString(GL_EXTENSIONS)));
     }
     Core::Log->ListEnd();
 
@@ -93,7 +93,7 @@ CoreGraphics::CoreGraphics()noexcept
     this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
 
     // reset ambient
-    for(coreByte i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+    for(coreUintW i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
         this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
 
     // reset scene
@@ -138,7 +138,7 @@ CoreGraphics::~CoreGraphics()
 // set camera and create camera matrix
 void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
-    bool bNewCamera = false;
+    coreBool bNewCamera = false;
 
     // set properties of the camera
     ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
@@ -152,16 +152,16 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
         m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
 
         // invoke transformation data update
-        ADD_BIT(m_iUniformUpdate, 1)
+        ADD_BIT(m_iUniformUpdate, 0)
     }
 }
 
 
 // ****************************************************************
 // set view and create projection matrices
-void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
+void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip)
 {
-    bool bNewView = false;
+    coreBool bNewView = false;
 
     // retrieve window resolution
     if(!vResolution.x) vResolution.x = Core::System->GetResolution().x;
@@ -189,20 +189,20 @@ void CoreGraphics::SetView(coreVector2 vResolution, const float& fFOV, const flo
         m_mOrtho       = coreMatrix4::Ortho(vResolution);
 
         // invoke transformation data update
-        ADD_BIT(m_iUniformUpdate, 1)
+        ADD_BIT(m_iUniformUpdate, 0)
     }
 }
 
 
 // ****************************************************************
 // set and update ambient light
-void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
+void CoreGraphics::SetLight(const coreUintW& iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
-    bool bNewLight = false;
+    coreBool bNewLight = false;
 
     // get requested ambient light
-    ASSERT(iID < CORE_GRAPHICS_LIGHTS)
-    coreLight& CurLight = m_aLight[iID];
+    ASSERT(iIndex < CORE_GRAPHICS_LIGHTS)
+    coreLight& CurLight = m_aLight[iIndex];
 
     // set properties of the ambient light
     ASSERT(vDirection.xyz().IsNormalized())
@@ -213,7 +213,7 @@ void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, c
     if(bNewLight)
     {
         // invoke ambient data update
-        ADD_BIT(m_iUniformUpdate, 2)
+        ADD_BIT(m_iUniformUpdate, 1)
     }
 }
 
@@ -223,8 +223,8 @@ void CoreGraphics::SetLight(const coreByte& iID, const coreVector4& vPosition, c
 void CoreGraphics::SendTransformation()
 {
     // check update status
-    if(!CONTAINS_BIT(m_iUniformUpdate, 1)) return;
-    REMOVE_BIT(m_iUniformUpdate, 1)
+    if(!CONTAINS_BIT(m_iUniformUpdate, 0)) return;
+    REMOVE_BIT(m_iUniformUpdate, 0)
 
     if(m_aiTransformBuffer[0])
     {
@@ -258,8 +258,8 @@ void CoreGraphics::SendTransformation()
 void CoreGraphics::SendAmbient()
 {
     // check update status
-    if(!CONTAINS_BIT(m_iUniformUpdate, 2)) return;
-    REMOVE_BIT(m_iUniformUpdate, 2)
+    if(!CONTAINS_BIT(m_iUniformUpdate, 1)) return;
+    REMOVE_BIT(m_iUniformUpdate, 1)
 
     if(m_aiAmbientBuffer[0])
     {
@@ -284,12 +284,12 @@ void CoreGraphics::SendAmbient()
 
 // ****************************************************************
 // take screenshot
-void CoreGraphics::Screenshot(const char* pcPath)const
+void CoreGraphics::Screenshot(const coreChar* pcPath)const
 {
-    const int iWidth  = F_TO_SI(Core::System->GetResolution().x);
-    const int iHeight = F_TO_SI(Core::System->GetResolution().y);
-    const int iPitch  = iWidth*3;
-    const int iSize   = iHeight*iPitch;
+    const coreUintW iWidth  = F_TO_UI(Core::System->GetResolution().x);
+    const coreUintW iHeight = F_TO_UI(Core::System->GetResolution().y);
+    const coreUintW iPitch  = iWidth*3;
+    const coreUintW iSize   = iHeight*iPitch;
 
     // read pixel data from the frame buffer
     coreByte* pData = new coreByte[iSize*2];
@@ -299,7 +299,7 @@ void CoreGraphics::Screenshot(const char* pcPath)const
     {
         // flip pixel data vertically
         coreByte* pConvert = pData + iSize;
-        for(int i = 0; i < iHeight; ++i)
+        for(coreUintW i = 0; i < iHeight; ++i)
             std::memcpy(pConvert + (iHeight-i-1)*iPitch, pData + i*iPitch, iPitch);
 
         // create SDL surface
@@ -307,7 +307,7 @@ void CoreGraphics::Screenshot(const char* pcPath)const
         if(pSurface)
         {
             // create folder hierarchy
-            const char* pcFullPath = PRINT(std::strcmp(coreData::StrExtension(pcPath), "png") ? "%s.png" : "%s", pcPath);
+            const coreChar* pcFullPath = PRINT(std::strcmp(coreData::StrExtension(pcPath), "png") ? "%s.png" : "%s", pcPath);
             coreData::CreateFolder(pcFullPath);
 
             // save the surface as PNG image

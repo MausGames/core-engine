@@ -38,7 +38,7 @@ public:
 
     //! share memory pointer through specific identifier
     //! @{
-    template <typename T, typename... A> std::shared_ptr<T> Share(const char* pcName, A&&... vArgs);
+    template <typename T, typename... A> std::shared_ptr<T> Share(const coreChar* pcName, A&&... vArgs);
     //! @}
 };
 
@@ -46,7 +46,7 @@ public:
 // ****************************************************************
 // share memory pointer through specific identifier
 // TODO: check if return is optimized
-template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share(const char* pcName, A&&... vArgs)
+template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share(const coreChar* pcName, A&&... vArgs)
 {
     // check for existing pointer
     if(m_apPointer.count(pcName))

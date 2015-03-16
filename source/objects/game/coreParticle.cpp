@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreParticleSystem::coreParticleSystem(const coreUint& iNumParticles)noexcept
+coreParticleSystem::coreParticleSystem(const coreUint32& iNumParticles)noexcept
 : m_iNumParticles (iNumParticles)
 , m_iCurParticle  (0)
 , m_bUpdate       (false)
@@ -51,7 +51,7 @@ coreParticleSystem::~coreParticleSystem()
 void coreParticleSystem::Undefine()
 {
     // reset all resource and memory pointers
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
 }
 
@@ -67,7 +67,7 @@ void coreParticleSystem::Render()
     if(!m_pProgram->Enable())  return;
 
     // enable all active textures
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     if(m_aiInstanceBuffer[0])
@@ -79,7 +79,7 @@ void coreParticleSystem::Render()
             m_aiInstanceBuffer.Next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.Current().Map<coreByte>(0, coreUint(m_apRenderList.size()) * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aiInstanceBuffer.Current().Map<coreByte>(0, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)
@@ -99,12 +99,12 @@ void coreParticleSystem::Render()
 
                 // compress remaining data
                 const coreVector3 vData  = coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue());
-                const coreUint    iColor = oCurrent.vColor.PackUnorm4x8();
+                const coreUint32  iColor = oCurrent.vColor.PackUnorm4x8();
                 ASSERT(oCurrent.vColor.Min() >= 0.0f && oCurrent.vColor.Max() <= 1.0f)
 
                 // write remaining data to the buffer
                 std::memcpy(pCursor + 1*sizeof(coreVector3), &vData,  sizeof(coreVector3));
-                std::memcpy(pCursor + 2*sizeof(coreVector3), &iColor, sizeof(coreUint));
+                std::memcpy(pCursor + 2*sizeof(coreVector3), &iColor, sizeof(coreUint32));
                 pCursor += CORE_PARTICLE_INSTANCE_SIZE;
             }
 
@@ -120,7 +120,7 @@ void coreParticleSystem::Render()
 
         // draw the model instanced
         glBindVertexArray(m_aiVertexArray.Current());
-        Core::Manager::Object->GetLowModel()->DrawArraysInstanced(coreUint(m_apRenderList.size()));
+        Core::Manager::Object->GetLowModel()->DrawArraysInstanced(m_apRenderList.size());
     }
     else
     {
@@ -175,7 +175,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
     ASSERT(pEffect)
 
     // loop through all particles
-    for(coreUint i = 0; i < m_iNumParticles; ++i)
+    for(coreUintW i = m_iNumParticles; i--; )
     {
         if(++m_iCurParticle >= m_iNumParticles) m_iCurParticle = 0;
 
@@ -294,8 +294,8 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
             // create instance data buffers
             it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         false, 0);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,         false, 3*sizeof(float));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, false, 6*sizeof(float));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3, GL_FLOAT,         false, 3*sizeof(coreFloat));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, false, 6*sizeof(coreFloat));
 
             // set vertex data
             Core::Manager::Object->GetLowModel()->GetVertexBuffer(0)->Activate(0);
@@ -354,7 +354,7 @@ coreParticleEffect::~coreParticleEffect()
 
 // ****************************************************************
 // change associated particle system object
-void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const bool& bUnbind)
+void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBool& bUnbind)
 {
     ASSERT(pSystem)
 

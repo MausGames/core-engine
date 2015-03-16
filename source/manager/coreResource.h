@@ -22,13 +22,13 @@
 
 // ****************************************************************
 /* resource definitions */
-enum coreResourceUpdate : bool
+enum coreResourceUpdate : coreBool
 {
     CORE_RESOURCE_UPDATE_MANUAL = false,   //!< updated and managed by the developer
     CORE_RESOURCE_UPDATE_AUTO   = true     //!< updated automatically by the resource manager
 };
 
-enum coreResourceReset : bool
+enum coreResourceReset : coreBool
 {
     CORE_RESOURCE_RESET_EXIT = false,   //!< invoke shut down routine
     CORE_RESOURCE_RESET_INIT = true     //!< invoke start up routine
@@ -41,7 +41,7 @@ class INTERFACE coreResource
 {
 protected:
     std::string m_sPath;   //!< relative path of the resource file
-    coreUint    m_iSize;   //!< data size in bytes
+    coreUint32  m_iSize;   //!< data size in bytes
 
 
 public:
@@ -52,14 +52,14 @@ public:
 
     /*! load and unload resource data */
     //! @{
-    virtual coreError Load(coreFile* pFile) = 0;
-    virtual coreError Unload()              = 0;
+    virtual coreStatus Load(coreFile* pFile) = 0;
+    virtual coreStatus Unload()              = 0;
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const char*     GetPath()const {return m_sPath.c_str();}
-    inline const coreUint& GetSize()const {return m_iSize;}
+    inline const coreChar*   GetPath()const {return m_sPath.c_str();}
+    inline const coreUint32& GetSize()const {return m_iSize;}
     //! @}
 };
 
@@ -73,14 +73,14 @@ private:
     coreFile* m_pFile;           //!< pointer to resource file
 
     std::string m_sName;         //!< identifier of this resource handle
-    bool m_bAutomatic;           //!< updated automatically by the resource manager
+    coreBool m_bAutomatic;       //!< updated automatically by the resource manager
 
-    int m_iRefCount;             //!< simple reference-counter
-    coreError m_iStatus;         //!< current resource status
+    coreInt32  m_iRefCount;      //!< simple reference-counter
+    coreStatus m_iStatus;        //!< current resource status
 
 
 private:
-    coreResourceHandle(coreResource* pResource, coreFile* pFile, const char* pcName, const bool& bAutomatic)noexcept;
+    coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool& bAutomatic)noexcept;
     ~coreResourceHandle();
 
 
@@ -90,9 +90,9 @@ public:
 
     /*! access resource object and status */
     //! @{
-    inline coreResource* GetResource()const {return m_pResource;}
-    inline const bool&   IsAutomatic()const {return m_bAutomatic;}
-    inline bool          IsLoaded   ()const {return (m_iStatus != CORE_BUSY) ? true : false;}
+    inline coreResource*   GetResource()const {return m_pResource;}
+    inline const coreBool& IsAutomatic()const {return m_bAutomatic;}
+    inline       coreBool  IsLoaded   ()const {return (m_iStatus != CORE_BUSY) ? true : false;}
     //! @}
 
     /*! control the reference-counter */
@@ -103,9 +103,9 @@ public:
 
     /*! handle resource loading */
     //! @{
-    inline bool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic)       {m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline bool Reload () {if( this->IsLoaded() && m_iRefCount) {m_pResource->Unload(); m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline bool Nullify() {if( this->IsLoaded())                {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
+    inline coreBool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic)       {m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
+    inline coreBool Reload () {if( this->IsLoaded() && m_iRefCount) {m_pResource->Unload(); m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
+    inline coreBool Nullify() {if( this->IsLoaded())                {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
     //! @}
 
     /*! insert asynchronous functions */
@@ -115,16 +115,16 @@ public:
 
     /*! get object properties */
     //! @{
-    inline const char*      GetName    ()const {return m_sName.c_str();}
-    inline const int&       GetRefCount()const {return m_iRefCount;}
-    inline const coreError& GetStatus  ()const {return m_iStatus;}
+    inline const coreChar*   GetName    ()const {return m_sName.c_str();}
+    inline const coreInt32&  GetRefCount()const {return m_iRefCount;}
+    inline const coreStatus& GetStatus  ()const {return m_iStatus;}
     //! @}
 
 
 private:
     /*! handle automatic resource loading */
     //! @{
-    inline bool __AutoUpdate() {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) {m_iStatus = m_pResource->Load(m_pFile); return true;} return false;}
+    inline coreBool __AutoUpdate() {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) {m_iStatus = m_pResource->Load(m_pFile); return true;} return false;}
     //! @}
 };
 
@@ -135,7 +135,7 @@ template <typename T> class coreResourcePtr final
 {
 private:
     coreResourceHandle* m_pHandle;   //!< resource handle
-    bool m_bActive;                  //!< status value to overload the reference-counter
+    coreBool m_bActive;              //!< status value to overload the reference-counter
 
 
 public:
@@ -155,17 +155,17 @@ public:
 
     /*! access resource object and resource handle */
     //! @{
-    inline T* operator ->   ()const             {ASSERT(m_pHandle) return   s_cast<T*>(m_pHandle->GetResource());}
-    inline T& operator *    ()const             {ASSERT(m_pHandle) return *(s_cast<T*>(m_pHandle->GetResource()));}
-    inline    operator bool ()const             {return m_pHandle ? true : false;}
+    inline T* operator ->       ()const         {ASSERT(m_pHandle) return   s_cast<T*>(m_pHandle->GetResource());}
+    inline T& operator *        ()const         {ASSERT(m_pHandle) return *(s_cast<T*>(m_pHandle->GetResource()));}
+    inline    operator coreBool ()const         {return m_pHandle ? true : false;}
     inline coreResourceHandle* GetHandle()const {return m_pHandle;}
     //! @}
 
     /*! overload the reference-counter */
     //! @{
-    void SetActive(const bool& bStatus);
-    inline bool IsActive()const {return (m_pHandle && m_bActive)                          ? true : false;}
-    inline bool IsUsable()const {return (m_pHandle && m_bActive && m_pHandle->IsLoaded()) ? true : false;}
+    void SetActive(const coreBool& bStatus);
+    inline coreBool IsActive()const {return (m_pHandle && m_bActive)                          ? true : false;}
+    inline coreBool IsUsable()const {return (m_pHandle && m_bActive && m_pHandle->IsLoaded()) ? true : false;}
     //! @}
 };
 
@@ -203,7 +203,7 @@ private:
     std::u_set<coreResourceRelation*> m_apRelation;   //!< objects to reset with the resource manager
 
     SDL_SpinLock m_iLock;                             //!< spinlock to prevent invalid resource handle access
-    bool m_bActive;                                   //!< current management status
+    coreBool m_bActive;                               //!< current management status
 
 
 private:
@@ -219,25 +219,25 @@ public:
     /*! update the resource manager */
     //! @{
     void UpdateResources();
-    inline bool IsLoading()const {FOR_EACH(it, m_apHandle) {if(!(*it)->IsLoaded() && (*it)->GetRefCount()) return true;} return false;}
+    inline coreBool IsLoading()const {FOR_EACH(it, m_apHandle) {if(!(*it)->IsLoaded() && (*it)->GetRefCount()) return true;} return false;}
     //! @}
 
     /*! create and delete resource and resource handle */
     //! @{
-    template <typename T, typename... A>        coreResourceHandle* Load   (const char* pcName, const coreResourceUpdate& bUpdate, const char* pcPath, A&&... vArgs);
+    template <typename T, typename... A>        coreResourceHandle* Load   (const coreChar* pcName, const coreResourceUpdate& bUpdate, const coreChar* pcPath, A&&... vArgs);
     template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);}
     template <typename T> void Free(coreResourcePtr<T>* pptResourcePtr);
     //! @}
 
     /*! get existing resource handle */
     //! @{
-    template <typename T> inline coreResourceHandle* Get(const char* pcName) {if(!pcName) return NULL; ASSERT(m_apHandle.count(pcName)) return this->Load<T>(pcName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
+    template <typename T> inline coreResourceHandle* Get(const coreChar* pcName) {if(!pcName) return NULL; ASSERT(m_apHandle.count(pcName)) return this->Load<T>(pcName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
     //! @}
 
     /*! retrieve archives and resource files */
     //! @{
-    coreArchive* RetrieveArchive(const char* pcPath);
-    coreFile*    RetrieveFile   (const char* pcPath);
+    coreArchive* RetrieveArchive(const coreChar* pcPath);
+    coreFile*    RetrieveFile   (const coreChar* pcPath);
     //! @}
 
     /*! reset all resources and relation-objects */
@@ -249,9 +249,9 @@ public:
 private:
     /*! resource thread implementations */
     //! @{
-    int  __InitThread()override;
-    int  __RunThread ()override;
-    void __ExitThread()override;
+    coreStatus __InitThread()override;
+    coreStatus __RunThread ()override;
+    void       __ExitThread()override;
     //! @}
 
     /*! load all relevant default resource */
@@ -346,7 +346,7 @@ template <typename S> void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)noe
 
 // ****************************************************************
 /* overload the reference-counter */
-template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
+template <typename T> void coreResourcePtr<T>::SetActive(const coreBool& bStatus)
 {
     if(m_bActive && !bStatus)
     {
@@ -365,7 +365,7 @@ template <typename T> void coreResourcePtr<T>::SetActive(const bool& bStatus)
 
 // ****************************************************************
 /* create resource and resource handle */
-template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const char* pcName, const coreResourceUpdate& bUpdate, const char* pcPath, A&&... vArgs)
+template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreChar* pcName, const coreResourceUpdate& bUpdate, const coreChar* pcPath, A&&... vArgs)
 {
     // check for existing resource handle
     if(m_apHandle.count(pcName)) return m_apHandle.at(pcName);

@@ -164,7 +164,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 : m_ptValueCache (NULL)
 , m_ptKeyCache   (NULL)
 {
-    constexpr_var std::size_t iSize = MAX<std::size_t>(64u / sizeof(T), 2u);
+    constexpr_var std::size_t iSize = MAX(64u / sizeof(T), 2u);
 
     // pre-allocate some memory
     m_atValueList.reserve(iSize);

@@ -38,7 +38,7 @@ CoreAudio::CoreAudio()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
         Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
-        Core::Log->ListAdd(r_cast<const char*>(alGetString(AL_EXTENSIONS)));
+        Core::Log->ListAdd(r_cast<const coreChar*>(alGetString(AL_EXTENSIONS)));
     }
     Core::Log->ListEnd();
 
@@ -80,7 +80,7 @@ CoreAudio::~CoreAudio()
 // control the listener
 void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
-    bool bNewOrientation = false;
+    coreBool bNewOrientation = false;
 
     // set and update properties of the listener
     ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
@@ -93,11 +93,11 @@ void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVe
     if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
 }
 
-void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
+void CoreAudio::SetListener(const coreFloat& fSpeed, const coreInt8 iTimeID)
 {
     // calculate velocity as relative camera movement
-    const float fTime = Core::System->GetTime(iTimeID);
-    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * fSpeed * (fTime ? RCP(fTime) : 0.0f);
+    const coreFloat   fTime     =  Core::System->GetTime(iTimeID);
+    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * (fTime ? (fSpeed * RCP(fTime)) : 0.0f);
 
     // adjust listener with camera properties
     this->SetListener(Core::Graphics->GetCamPosition(),
@@ -112,12 +112,12 @@ void CoreAudio::SetListener(const float& fSpeed, const int iTimeID)
 ALuint CoreAudio::NextSource(const ALuint& iBuffer)
 {
     // search for next free sound source
-    for(int i = 0; i < m_iNumSources; ++i)
+    for(coreUintW i = m_iNumSources; i--; )
     {
         if(++m_iCurSource >= m_iNumSources) m_iCurSource = 0;
 
         // check status
-        int iStatus;
+        ALint iStatus;
         alGetSourcei(m_pSource[m_iCurSource], AL_SOURCE_STATE, &iStatus);
         if(iStatus != AL_PLAYING)
         {
@@ -147,8 +147,8 @@ void CoreAudio::ClearSources(const ALuint& iBuffer)
 #if defined(_CORE_DEBUG_)
 
             // check for loop property
-            int iPlaying; alGetSourcei(iSource, AL_SOURCE_STATE, &iPlaying);
-            int iLooping; alGetSourcei(iSource, AL_LOOPING,      &iLooping);
+            ALint iPlaying; alGetSourcei(iSource, AL_SOURCE_STATE, &iPlaying);
+            ALint iLooping; alGetSourcei(iSource, AL_LOOPING,      &iLooping);
             ASSERT((iPlaying != AL_PLAYING) || !iLooping)
 
 #endif

@@ -14,7 +14,7 @@
 void coreObject2D::Undefine()
 {
     // reset all resource and memory pointers
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
 }
 
@@ -35,7 +35,7 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     // draw the model
@@ -96,7 +96,7 @@ void coreObject2D::Interact()
     m_bFocused = false;
     m_iFinger  = 0;
 
-    Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUint& i)
+    Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUintW& i)
     {
         // get relative finger position
         const coreVector2 vInput = Core::Input->GetTouchPosition(i) * Core::System->GetResolution() - vScreenPosition;
@@ -125,14 +125,14 @@ void coreObject2D::Interact()
 
 // ****************************************************************
 // check for direct input
-bool coreObject2D::IsClicked(const coreByte iButton, const coreInputType iType)const
+coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType iType)const
 {
 #if defined(_CORE_ANDROID_)
 
     // check for general intersection status
     if(m_bFocused)
     {
-        for(coreUint i = 0; i < CORE_INPUT_FINGERS; ++i)
+        for(coreUintW i = 0; i < CORE_INPUT_FINGERS; ++i)
         {
             // check for every finger on the object
             if(CONTAINS_BIT(m_iFinger, i) && Core::Input->GetTouchButton(i, iType))

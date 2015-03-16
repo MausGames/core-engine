@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-ENTRY_POINT int coreThreadMain(void* pData);
+ENTRY_POINT coreInt32 coreThreadMain(void* pData);
 
 
 // ****************************************************************
 /* constructor */
-coreThread::coreThread(const char* pcName)noexcept
+coreThread::coreThread(const coreChar* pcName)noexcept
 : m_pThread     (NULL)
 , m_sName       (pcName)
 , m_iExecutions (1)
@@ -92,17 +92,17 @@ void coreThread::UpdateFunctions()
 
 // ****************************************************************
 /* execute the thread */
-int coreThread::__Main()
+coreStatus coreThread::__Main()
 {
-    coreUint iCurFrame     = 0;
-    coreByte iCurExecution = 0;
+    coreUint32 iCurFrame     = 0;
+    coreUint8  iCurExecution = 0;
 
     // call init-routine
     Core::Log->Info("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
-    int iReturn = this->__InitThread();
+    coreStatus iReturn = this->__InitThread();
 
     // begin main-loop
-    while(iReturn == 0)
+    while(iReturn == CORE_OK)
     {
         do
         {
@@ -141,7 +141,7 @@ int coreThread::__Main()
 
 // ****************************************************************
 /* entry-point function */
-ENTRY_POINT int coreThreadMain(void* pData)
+ENTRY_POINT coreInt32 coreThreadMain(void* pData)
 {
     // retrieve thread object
     coreThread* pThread = s_cast<coreThread*>(pData);

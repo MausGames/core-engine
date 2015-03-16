@@ -23,30 +23,30 @@
 class CoreSystem final
 {
 private:
-    SDL_Window* m_pWindow;                     //!< SDL main window object
+    SDL_Window* m_pWindow;                         //!< SDL main window object
 
-    coreVector2 m_vResolution;                 //!< width and height of the window
-    coreByte    m_iFullscreen;                 //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
+    coreVector2 m_vResolution;                     //!< width and height of the window
+    coreUint8   m_iFullscreen;                     //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
 
-    std::vector<coreVector2> m_avAvailable;    //!< all available screen resolutions
-    bool m_bMinimized;                         //!< window/application was minimized
-    bool m_bTerminated;                        //!< application will be terminated
+    std::vector<coreVector2> m_avAvailable;        //!< all available screen resolutions
+    coreBool m_bMinimized;                         //!< window/application was minimized
+    coreBool m_bTerminated;                        //!< application will be terminated
 
-    double m_dTotalTime;                       //!< total time since start of the application
-    float  m_fLastTime;                        //!< smoothed last frame time
-    float  m_afTime[CORE_SYSTEM_TIMES];        //!< dynamic frame times
-    float  m_afTimeSpeed[CORE_SYSTEM_TIMES];   //!< speed factor for the dynamic frame times
+    coreDouble m_dTotalTime;                       //!< total time since start of the application
+    coreFloat  m_fLastTime;                        //!< smoothed last frame time
+    coreFloat  m_afTime     [CORE_SYSTEM_TIMES];   //!< dynamic frame times
+    coreFloat  m_afTimeSpeed[CORE_SYSTEM_TIMES];   //!< speed factor for the dynamic frame times
 
-    coreUint m_iCurFrame;                      //!< current frame number since start of the application
-    coreByte m_iSkipFrame;                     //!< skip frame status
+    coreUint32 m_iCurFrame;                        //!< current frame number since start of the application
+    coreUint8  m_iSkipFrame;                       //!< skip frame status
 
-    double     m_dPerfFrequency;               //!< high precision time coefficient
-    coreUint64 m_iPerfTime;                    //!< high precision time value
+    coreDouble m_dPerfFrequency;                   //!< high precision time coefficient
+    coreUint64 m_iPerfTime;                        //!< high precision time value
 
-    coreByte m_iNumCores;                      //!< number of logical processor cores
-    float m_fSSE;                              //!< available SSE version
-    float m_fAVX;                              //!< available AVX version
-    int   m_aaiCPUID[2][4];                    //!< features of the processor
+    coreUint8 m_iNumCores;                         //!< number of logical processor cores
+    coreFloat m_fSSE;                              //!< available SSE version
+    coreFloat m_fAVX;                              //!< available AVX version
+    coreInt32 m_aaiCPUID[2][4];                    //!< features of the processor
 
 
 private:
@@ -60,14 +60,14 @@ public:
 
     //! control window
     //! @{
-    inline void SetWindowTitle(const char* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
-    void        SetWindowIcon (const char* pcPath);
+    inline void SetWindowTitle(const coreChar* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
+    void        SetWindowIcon (const coreChar* pcPath);
     //! @}
 
     //! control time
     //! @{
-    inline void SetTimeSpeed(const int& iID, const float& fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
-    inline void SkipFrame()                                           {m_iSkipFrame = 2;}
+    inline void SetTimeSpeed(const coreUintW& iID, const coreFloat& fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
+    inline void SkipFrame()                                                     {m_iSkipFrame = 2;}
     //! @}
 
     //! terminate the application
@@ -77,32 +77,32 @@ public:
 
     //! get component properties
     //! @{
-    inline SDL_Window*                     GetWindow       ()const               {return m_pWindow;}
-    inline const coreVector2&              GetResolution   ()const               {return m_vResolution;}
-    inline const coreByte&                 GetFullscreen   ()const               {return m_iFullscreen;}
-    inline const std::vector<coreVector2>& GetAvailable    ()const               {return m_avAvailable;}
-    inline const bool&                     GetMinimized    ()const               {return m_bMinimized;}
-    inline const double&                   GetTotalTime    ()const               {return m_dTotalTime;}
-    inline const float&                    GetTime         ()const               {return m_fLastTime;}
-    inline const float&                    GetTime         (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return (m_fLastTime >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const float&                    GetTimeSpeed    (const int& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
-    inline const coreUint&                 GetCurFrame     ()const               {return m_iCurFrame;}
-    inline const double&                   GetPerfFrequency()const               {return m_dPerfFrequency;}
-    inline const coreUint64&               GetPerfTime     ()const               {return m_iPerfTime;}
+    inline       SDL_Window*               GetWindow       ()const                     {return m_pWindow;}
+    inline const coreVector2&              GetResolution   ()const                     {return m_vResolution;}
+    inline const coreUint8&                GetFullscreen   ()const                     {return m_iFullscreen;}
+    inline const std::vector<coreVector2>& GetAvailable    ()const                     {return m_avAvailable;}
+    inline const coreBool&                 GetMinimized    ()const                     {return m_bMinimized;}
+    inline const coreDouble&               GetTotalTime    ()const                     {return m_dTotalTime;}
+    inline const coreFloat&                GetTime         ()const                     {return m_fLastTime;}
+    inline const coreFloat&                GetTime         (const coreInt8&  iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const coreFloat&                GetTimeSpeed    (const coreUintW& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
+    inline const coreUint32&               GetCurFrame     ()const                     {return m_iCurFrame;}
+    inline const coreDouble&               GetPerfFrequency()const                     {return m_dPerfFrequency;}
+    inline const coreUint64&               GetPerfTime     ()const                     {return m_iPerfTime;}
     //! @}
 
     //! check hardware support
     //! @{
-    inline const coreByte& SupportNumCores()const {return m_iNumCores;}
-    inline const float&    SupportSSE     ()const {return m_fSSE;}
-    inline const float&    SupportAVX     ()const {return m_fAVX;}
+    inline const coreUint8& SupportNumCores()const {return m_iNumCores;}
+    inline const coreFloat& SupportSSE     ()const {return m_fSSE;}
+    inline const coreFloat& SupportAVX     ()const {return m_fAVX;}
     //! @}
 
 
 private:
     //! update the window event system
     //! @{
-    bool __UpdateEvents();
+    coreBool __UpdateEvents();
     //! @}
 
     //! update the high precision time

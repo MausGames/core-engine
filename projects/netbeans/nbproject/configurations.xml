@@ -4,126 +4,124 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="f1" displayName="source" projectFiles="true">
-        <logicalFolder name="additional" displayName="additional" projectFiles="true">
-          <logicalFolder name="android" displayName="android" projectFiles="true">
-            <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
-          </logicalFolder>
-          <itemPath>../../source/additional/coreGL.cpp</itemPath>
-          <itemPath>../../source/additional/coreGL.h</itemPath>
-          <itemPath>../../source/additional/coreGLES.cpp</itemPath>
-          <itemPath>../../source/additional/coreGLES.h</itemPath>
+      <logicalFolder name="additional" displayName="additional" projectFiles="true">
+        <logicalFolder name="android" displayName="android" projectFiles="true">
+          <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
         </logicalFolder>
-        <logicalFolder name="components" displayName="components" projectFiles="true">
-          <logicalFolder name="audio" displayName="audio" projectFiles="true">
-            <itemPath>../../source/components/audio/CoreAudio.cpp</itemPath>
-            <itemPath>../../source/components/audio/CoreAudio.h</itemPath>
-            <itemPath>../../source/components/audio/coreMusic.cpp</itemPath>
-            <itemPath>../../source/components/audio/coreMusic.h</itemPath>
-            <itemPath>../../source/components/audio/coreSound.cpp</itemPath>
-            <itemPath>../../source/components/audio/coreSound.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="debug" displayName="debug" projectFiles="true">
-            <itemPath>../../source/components/debug/CoreDebug.cpp</itemPath>
-            <itemPath>../../source/components/debug/CoreDebug.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
-            <logicalFolder name="models" displayName="models" projectFiles="true">
-              <itemPath>../../source/components/graphics/models/MD3.h</itemPath>
-              <itemPath>../../source/components/graphics/models/MD5.h</itemPath>
-            </logicalFolder>
-            <itemPath>../../source/components/graphics/CoreGraphics.cpp</itemPath>
-            <itemPath>../../source/components/graphics/CoreGraphics.h</itemPath>
-            <itemPath>../../source/components/graphics/coreDataBuffer.cpp</itemPath>
-            <itemPath>../../source/components/graphics/coreDataBuffer.h</itemPath>
-            <itemPath>../../source/components/graphics/coreFont.cpp</itemPath>
-            <itemPath>../../source/components/graphics/coreFont.h</itemPath>
-            <itemPath>../../source/components/graphics/coreFrameBuffer.cpp</itemPath>
-            <itemPath>../../source/components/graphics/coreFrameBuffer.h</itemPath>
-            <itemPath>../../source/components/graphics/coreModel.cpp</itemPath>
-            <itemPath>../../source/components/graphics/coreModel.h</itemPath>
-            <itemPath>../../source/components/graphics/coreShader.cpp</itemPath>
-            <itemPath>../../source/components/graphics/coreShader.h</itemPath>
-            <itemPath>../../source/components/graphics/coreSync.cpp</itemPath>
-            <itemPath>../../source/components/graphics/coreSync.h</itemPath>
-            <itemPath>../../source/components/graphics/coreTexture.cpp</itemPath>
-            <itemPath>../../source/components/graphics/coreTexture.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="input" displayName="input" projectFiles="true">
-            <itemPath>../../source/components/input/CoreInput.cpp</itemPath>
-            <itemPath>../../source/components/input/CoreInput.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="system" displayName="system" projectFiles="true">
-            <itemPath>../../source/components/system/CoreSystem.cpp</itemPath>
-            <itemPath>../../source/components/system/CoreSystem.h</itemPath>
-            <itemPath>../../source/components/system/coreThread.cpp</itemPath>
-            <itemPath>../../source/components/system/coreThread.h</itemPath>
-            <itemPath>../../source/components/system/coreTimer.cpp</itemPath>
-            <itemPath>../../source/components/system/coreTimer.h</itemPath>
-          </logicalFolder>
-        </logicalFolder>
-        <logicalFolder name="manager" displayName="manager" projectFiles="true">
-          <itemPath>../../source/manager/coreMemory.cpp</itemPath>
-          <itemPath>../../source/manager/coreMemory.h</itemPath>
-          <itemPath>../../source/manager/coreObject.cpp</itemPath>
-          <itemPath>../../source/manager/coreObject.h</itemPath>
-          <itemPath>../../source/manager/coreResource.cpp</itemPath>
-          <itemPath>../../source/manager/coreResource.h</itemPath>
-        </logicalFolder>
-        <logicalFolder name="objects" displayName="objects" projectFiles="true">
-          <logicalFolder name="game" displayName="game" projectFiles="true">
-            <itemPath>../../source/objects/game/coreObject2D.cpp</itemPath>
-            <itemPath>../../source/objects/game/coreObject2D.h</itemPath>
-            <itemPath>../../source/objects/game/coreObject3D.cpp</itemPath>
-            <itemPath>../../source/objects/game/coreObject3D.h</itemPath>
-            <itemPath>../../source/objects/game/coreParticle.cpp</itemPath>
-            <itemPath>../../source/objects/game/coreParticle.h</itemPath>
-            <itemPath>../../source/objects/game/coreScene.cpp</itemPath>
-            <itemPath>../../source/objects/game/coreScene.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="menu" displayName="menu" projectFiles="true">
-            <itemPath>../../source/objects/menu/coreButton.cpp</itemPath>
-            <itemPath>../../source/objects/menu/coreButton.h</itemPath>
-            <itemPath>../../source/objects/menu/coreCheckBox.cpp</itemPath>
-            <itemPath>../../source/objects/menu/coreCheckBox.h</itemPath>
-            <itemPath>../../source/objects/menu/coreLabel.cpp</itemPath>
-            <itemPath>../../source/objects/menu/coreLabel.h</itemPath>
-            <itemPath>../../source/objects/menu/coreMenu.cpp</itemPath>
-            <itemPath>../../source/objects/menu/coreMenu.h</itemPath>
-            <itemPath>../../source/objects/menu/coreSwitchBox.h</itemPath>
-            <itemPath>../../source/objects/menu/coreTextBox.cpp</itemPath>
-            <itemPath>../../source/objects/menu/coreTextBox.h</itemPath>
-          </logicalFolder>
-        </logicalFolder>
-        <logicalFolder name="utilities" displayName="utilities" projectFiles="true">
-          <logicalFolder name="data" displayName="data" projectFiles="true">
-            <itemPath>../../source/utilities/data/coreData.cpp</itemPath>
-            <itemPath>../../source/utilities/data/coreData.h</itemPath>
-            <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
-            <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
-            <itemPath>../../source/utilities/data/coreRand.h</itemPath>
-            <itemPath>../../source/utilities/data/coreSelect.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="file" displayName="file" projectFiles="true">
-            <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
-            <itemPath>../../source/utilities/file/coreArchive.h</itemPath>
-            <itemPath>../../source/utilities/file/coreConfig.cpp</itemPath>
-            <itemPath>../../source/utilities/file/coreConfig.h</itemPath>
-            <itemPath>../../source/utilities/file/coreLanguage.cpp</itemPath>
-            <itemPath>../../source/utilities/file/coreLanguage.h</itemPath>
-            <itemPath>../../source/utilities/file/coreLog.cpp</itemPath>
-            <itemPath>../../source/utilities/file/coreLog.h</itemPath>
-          </logicalFolder>
-          <logicalFolder name="math" displayName="math" projectFiles="true">
-            <itemPath>../../source/utilities/math/coreMath.h</itemPath>
-            <itemPath>../../source/utilities/math/coreMatrix.h</itemPath>
-            <itemPath>../../source/utilities/math/coreSpline.h</itemPath>
-            <itemPath>../../source/utilities/math/coreVector.h</itemPath>
-          </logicalFolder>
-        </logicalFolder>
-        <itemPath>../../source/Core.cpp</itemPath>
-        <itemPath>../../source/Core.h</itemPath>
+        <itemPath>../../source/additional/coreGL.cpp</itemPath>
+        <itemPath>../../source/additional/coreGL.h</itemPath>
+        <itemPath>../../source/additional/coreGLES.cpp</itemPath>
+        <itemPath>../../source/additional/coreGLES.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="components" displayName="components" projectFiles="true">
+        <logicalFolder name="audio" displayName="audio" projectFiles="true">
+          <itemPath>../../source/components/audio/CoreAudio.cpp</itemPath>
+          <itemPath>../../source/components/audio/CoreAudio.h</itemPath>
+          <itemPath>../../source/components/audio/coreMusic.cpp</itemPath>
+          <itemPath>../../source/components/audio/coreMusic.h</itemPath>
+          <itemPath>../../source/components/audio/coreSound.cpp</itemPath>
+          <itemPath>../../source/components/audio/coreSound.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="debug" displayName="debug" projectFiles="true">
+          <itemPath>../../source/components/debug/CoreDebug.cpp</itemPath>
+          <itemPath>../../source/components/debug/CoreDebug.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
+          <logicalFolder name="models" displayName="models" projectFiles="true">
+            <itemPath>../../source/components/graphics/models/MD3.h</itemPath>
+            <itemPath>../../source/components/graphics/models/MD5.h</itemPath>
+          </logicalFolder>
+          <itemPath>../../source/components/graphics/CoreGraphics.cpp</itemPath>
+          <itemPath>../../source/components/graphics/CoreGraphics.h</itemPath>
+          <itemPath>../../source/components/graphics/coreDataBuffer.cpp</itemPath>
+          <itemPath>../../source/components/graphics/coreDataBuffer.h</itemPath>
+          <itemPath>../../source/components/graphics/coreFont.cpp</itemPath>
+          <itemPath>../../source/components/graphics/coreFont.h</itemPath>
+          <itemPath>../../source/components/graphics/coreFrameBuffer.cpp</itemPath>
+          <itemPath>../../source/components/graphics/coreFrameBuffer.h</itemPath>
+          <itemPath>../../source/components/graphics/coreModel.cpp</itemPath>
+          <itemPath>../../source/components/graphics/coreModel.h</itemPath>
+          <itemPath>../../source/components/graphics/coreShader.cpp</itemPath>
+          <itemPath>../../source/components/graphics/coreShader.h</itemPath>
+          <itemPath>../../source/components/graphics/coreSync.cpp</itemPath>
+          <itemPath>../../source/components/graphics/coreSync.h</itemPath>
+          <itemPath>../../source/components/graphics/coreTexture.cpp</itemPath>
+          <itemPath>../../source/components/graphics/coreTexture.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="input" displayName="input" projectFiles="true">
+          <itemPath>../../source/components/input/CoreInput.cpp</itemPath>
+          <itemPath>../../source/components/input/CoreInput.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="system" displayName="system" projectFiles="true">
+          <itemPath>../../source/components/system/CoreSystem.cpp</itemPath>
+          <itemPath>../../source/components/system/CoreSystem.h</itemPath>
+          <itemPath>../../source/components/system/coreThread.cpp</itemPath>
+          <itemPath>../../source/components/system/coreThread.h</itemPath>
+          <itemPath>../../source/components/system/coreTimer.cpp</itemPath>
+          <itemPath>../../source/components/system/coreTimer.h</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+      <logicalFolder name="manager" displayName="manager" projectFiles="true">
+        <itemPath>../../source/manager/coreMemory.cpp</itemPath>
+        <itemPath>../../source/manager/coreMemory.h</itemPath>
+        <itemPath>../../source/manager/coreObject.cpp</itemPath>
+        <itemPath>../../source/manager/coreObject.h</itemPath>
+        <itemPath>../../source/manager/coreResource.cpp</itemPath>
+        <itemPath>../../source/manager/coreResource.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="objects" displayName="objects" projectFiles="true">
+        <logicalFolder name="game" displayName="game" projectFiles="true">
+          <itemPath>../../source/objects/game/coreObject2D.cpp</itemPath>
+          <itemPath>../../source/objects/game/coreObject2D.h</itemPath>
+          <itemPath>../../source/objects/game/coreObject3D.cpp</itemPath>
+          <itemPath>../../source/objects/game/coreObject3D.h</itemPath>
+          <itemPath>../../source/objects/game/coreParticle.cpp</itemPath>
+          <itemPath>../../source/objects/game/coreParticle.h</itemPath>
+          <itemPath>../../source/objects/game/coreScene.cpp</itemPath>
+          <itemPath>../../source/objects/game/coreScene.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="menu" displayName="menu" projectFiles="true">
+          <itemPath>../../source/objects/menu/coreButton.cpp</itemPath>
+          <itemPath>../../source/objects/menu/coreButton.h</itemPath>
+          <itemPath>../../source/objects/menu/coreCheckBox.cpp</itemPath>
+          <itemPath>../../source/objects/menu/coreCheckBox.h</itemPath>
+          <itemPath>../../source/objects/menu/coreLabel.cpp</itemPath>
+          <itemPath>../../source/objects/menu/coreLabel.h</itemPath>
+          <itemPath>../../source/objects/menu/coreMenu.cpp</itemPath>
+          <itemPath>../../source/objects/menu/coreMenu.h</itemPath>
+          <itemPath>../../source/objects/menu/coreSwitchBox.h</itemPath>
+          <itemPath>../../source/objects/menu/coreTextBox.cpp</itemPath>
+          <itemPath>../../source/objects/menu/coreTextBox.h</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+      <logicalFolder name="utilities" displayName="utilities" projectFiles="true">
+        <logicalFolder name="data" displayName="data" projectFiles="true">
+          <itemPath>../../source/utilities/data/coreData.cpp</itemPath>
+          <itemPath>../../source/utilities/data/coreData.h</itemPath>
+          <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
+          <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
+          <itemPath>../../source/utilities/data/coreRand.h</itemPath>
+          <itemPath>../../source/utilities/data/coreSelect.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="file" displayName="file" projectFiles="true">
+          <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
+          <itemPath>../../source/utilities/file/coreArchive.h</itemPath>
+          <itemPath>../../source/utilities/file/coreConfig.cpp</itemPath>
+          <itemPath>../../source/utilities/file/coreConfig.h</itemPath>
+          <itemPath>../../source/utilities/file/coreLanguage.cpp</itemPath>
+          <itemPath>../../source/utilities/file/coreLanguage.h</itemPath>
+          <itemPath>../../source/utilities/file/coreLog.cpp</itemPath>
+          <itemPath>../../source/utilities/file/coreLog.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="math" displayName="math" projectFiles="true">
+          <itemPath>../../source/utilities/math/coreMath.h</itemPath>
+          <itemPath>../../source/utilities/math/coreMatrix.h</itemPath>
+          <itemPath>../../source/utilities/math/coreSpline.h</itemPath>
+          <itemPath>../../source/utilities/math/coreVector.h</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+      <itemPath>../../source/Core.cpp</itemPath>
+      <itemPath>../../source/Core.h</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"

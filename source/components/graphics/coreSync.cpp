@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // create sync object
-bool coreSync::Create()
+coreBool coreSync::Create()
 {
     if(!m_pSync)
     {
@@ -45,7 +45,7 @@ void coreSync::Delete()
 
 // ****************************************************************
 // check for sync object status
-coreError coreSync::Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck)
+coreStatus coreSync::Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck)
 {
     if(!m_pSync) return CORE_INVALID_CALL;
 

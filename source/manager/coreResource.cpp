@@ -11,7 +11,7 @@
 
 // ****************************************************************
 /* constructor */
-coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const char* pcName, const bool& bAutomatic)noexcept
+coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool& bAutomatic)noexcept
 : m_pResource  (pResource)
 , m_pFile      (pFile)
 , m_sName      (pcName)
@@ -109,7 +109,7 @@ void coreResourceManager::UpdateResources()
     {
         SDL_AtomicLock(&m_iLock);
         {
-            for(coreUint i = 0; i < m_apHandle.size(); ++i)
+            for(coreUintW i = 0; i < m_apHandle.size(); ++i)
             {
                 // update resource handle
                 if(m_apHandle[i]->__AutoUpdate())
@@ -127,7 +127,7 @@ void coreResourceManager::UpdateResources()
 
 // ****************************************************************
 /* retrieve archive */
-coreArchive* coreResourceManager::RetrieveArchive(const char* pcPath)
+coreArchive* coreResourceManager::RetrieveArchive(const coreChar* pcPath)
 {
     // check for existing archive
     if(m_apArchive.count(pcPath)) return m_apArchive[pcPath];
@@ -143,7 +143,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const char* pcPath)
 
 // ****************************************************************
 /* retrieve resource file */
-coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
+coreFile* coreResourceManager::RetrieveFile(const coreChar* pcPath)
 {
     // try to open direct resource file first
     if(!coreData::FileExists(pcPath))
@@ -174,7 +174,7 @@ coreFile* coreResourceManager::RetrieveFile(const char* pcPath)
 /* reset all resources and relation-objects */
 void coreResourceManager::Reset(const coreResourceReset& bInit)
 {
-    const bool bActive = bInit ? true : false;
+    const coreBool bActive = bInit ? true : false;
 
     // check and set current status
     if(m_bActive == bActive) return;
@@ -209,7 +209,7 @@ void coreResourceManager::Reset(const coreResourceReset& bInit)
 
 // ****************************************************************
 /* init resource thread */
-int coreResourceManager::__InitThread()
+coreStatus coreResourceManager::__InitThread()
 {
     // assign resource context to resource thread
     if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphics->GetResourceContext()))
@@ -227,18 +227,18 @@ int coreResourceManager::__InitThread()
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-    return 0;
+    return CORE_OK;
 }
 
 
 // ****************************************************************
 /* run resource thread */
-int coreResourceManager::__RunThread()
+coreStatus coreResourceManager::__RunThread()
 {
     // update the resource manager
     this->UpdateResources();
 
-    return 0;
+    return CORE_OK;
 }
 
 

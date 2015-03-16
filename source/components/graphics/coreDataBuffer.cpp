@@ -13,7 +13,7 @@ coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
 
 // ****************************************************************
 // create buffer storage
-void coreDataBuffer::Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const coreDataBufferStorage& iStorageType)
+void coreDataBuffer::Create(const GLenum& iTarget, const coreUint32& iSize, const void* pData, const coreDataBufferStorage& iStorageType)
 {
     WARN_IF(m_iDataBuffer) this->Delete();
     ASSERT(iSize)
@@ -135,7 +135,7 @@ coreVertexBuffer::coreVertexBuffer()noexcept
 
 // ****************************************************************
 // create buffer storage
-void coreVertexBuffer::Create(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
+void coreVertexBuffer::Create(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
 {
     // create buffer storage
     coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iStorageType);
@@ -162,7 +162,7 @@ void coreVertexBuffer::Delete()
 
 // ****************************************************************
 // define vertex attribute array
-void coreVertexBuffer::DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const bool& bInteger, const coreByte& iOffset)
+void coreVertexBuffer::DefineAttribute(const coreUint8& iLocation, const coreUint8& iComponents, const GLenum& iType, const coreBool& bInteger, const coreUint8& iOffset)
 {
     ASSERT(this->GetDataBuffer())
 
@@ -189,7 +189,7 @@ void coreVertexBuffer::DefineAttribute(const int& iLocation, const coreByte& iCo
 
 // ****************************************************************
 // activate the vertex structure
-void coreVertexBuffer::Activate(const coreByte& iBinding)
+void coreVertexBuffer::Activate(const coreUint8& iBinding)
 {
     ASSERT(this->GetDataBuffer() && !m_aAttribute.empty())
 
@@ -208,7 +208,7 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
             if(it->bInteger) glVertexAttribIFormat(it->iLocation, it->iComponents, it->iType, it->iOffset);
             else
             {
-                const bool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
+                const coreBool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
                 glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, bNormalized, it->iOffset);
             }
         }
@@ -227,7 +227,7 @@ void coreVertexBuffer::Activate(const coreByte& iBinding)
             if(it->bInteger) glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType, m_iVertexSize, I_TO_P(it->iOffset));
             else
             {
-                const bool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
+                const coreBool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
                 glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bNormalized, m_iVertexSize, I_TO_P(it->iOffset));
             }
         }

@@ -24,7 +24,7 @@
 #define CORE_LOG_ITALIC(s)     "<i>" s "</i>"   //!< display text italic
 #define CORE_LOG_UNDERLINED(s) "<u>" s "</u>"   //!< display text underlined
 
-enum coreLogLevel : coreByte
+enum coreLogLevel : coreUint8
 {
     CORE_LOG_LEVEL_NOTHING = 0x00,   //!< log nothing
     CORE_LOG_LEVEL_INFO    = 0x01,   //!< log info messages and headers
@@ -46,29 +46,29 @@ private:
     SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
     SDL_SpinLock m_iLock;         //!< spinlock to prevent asynchronous log access
 
-    bool m_bListStatus;           //!< currently writing a list
+    coreBool m_bListStatus;       //!< currently writing a list
 
 
 public:
-    explicit coreLog(const char* pcPath)noexcept;
+    explicit coreLog(const coreChar* pcPath)noexcept;
     ~coreLog();
 
     DISABLE_COPY(coreLog)
 
     /*! message functions */
     //! @{
-    template <typename... A> inline        void Info   (const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
-    template <typename... A> inline        void Warning(const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> FUNC_NORETURN void Error  (const char* pcText, A&&... vArgs);
+    template <typename... A> inline        void Info   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
+    template <typename... A> inline        void Warning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> FUNC_NORETURN void Error  (const coreChar* pcText, A&&... vArgs);
     //! @}
 
     /*! special functions */
     //! @{
-    template <typename... A> inline void Header          (const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> inline void ListStartInfo   (const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
-    template <typename... A> inline void ListStartWarning(const char* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
-    template <typename... A> inline void ListAdd         (const char* pcText, A&&... vArgs) {if(m_bListStatus)                                     this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
-    inline                          void ListEnd         ()                                 {if(m_bListStatus)                                    {this->__Write(false, "</ul>"); m_bListStatus = false;}}
+    template <typename... A> inline void Header          (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
+    template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
+    template <typename... A> inline void ListAdd         (const coreChar* pcText, A&&... vArgs) {if(m_bListStatus)                                     this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
+    inline                          void ListEnd         ()                                     {if(m_bListStatus)                                    {this->__Write(false, "</ul>"); m_bListStatus = false;}}
     //! @}
 
     /*! handle OpenGL debug output */
@@ -84,7 +84,7 @@ public:
 
     /*! get object properties */
     //! @{
-    inline const char*         GetPath ()const {return m_sPath.c_str();}
+    inline const coreChar*     GetPath ()const {return m_sPath.c_str();}
     inline const coreLogLevel& GetLevel()const {return m_iLevel;}
     //! @}
 
@@ -92,14 +92,14 @@ public:
 private:
     /*! write text to the log file */
     //! @{
-    void __Write(const bool& bTime, std::string sText);
+    void __Write(const coreBool& bTime, std::string sText);
     //! @}
 };
 
 
 // ****************************************************************
 /* write error message and shut down the application */
-template <typename... A> FUNC_NORETURN void coreLog::Error(const char* pcText, A&&... vArgs)
+template <typename... A> FUNC_NORETURN void coreLog::Error(const coreChar* pcText, A&&... vArgs)
 {
     // write error message
     if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_ERROR)) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");

@@ -17,7 +17,7 @@
 // TODO: reorder indices/vertices in memory to improve post-transform caching (maybe in model-file, nvTriStrip)
 // TODO: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
 // TODO: compress texture-coords, 32bit is too much, but still need coords <0.0 >1.0 (probably to -1.0 2.0)
-// TODO: index buffer ignore as constructor parameter ? (ressource manager load)
+// TODO: index buffer ignore as constructor parameter ? (resource manager load)
 // TODO: currently radius and range can change, but they should not... implement more strict interface
 
 
@@ -41,9 +41,9 @@ public:
     struct coreVertexPacked
     {
         coreVector3 vPosition;   //!< vertex position
-        coreUint    iTexCoord;   //!< texture coordinate
-        coreUint    iNormal;     //!< normal vector
-        coreUint    iTangent;    //!< additional tangent vector
+        coreUint32  iTexCoord;   //!< texture coordinate
+        coreUint32  iNormal;     //!< normal vector
+        coreUint32  iTangent;    //!< additional tangent vector
 
         constexpr_func coreVertexPacked()noexcept;
     };
@@ -52,7 +52,7 @@ public:
     struct coreImport
     {
         std::vector<coreVertex> aVertexData;   //!< raw vertex data
-        std::vector<coreUshort> aiIndexData;   //!< raw index data
+        std::vector<coreUint16> aiIndexData;   //!< raw index data
 
         coreImport()noexcept {}
     };
@@ -64,10 +64,10 @@ private:
     std::vector<coreVertexBuffer*> m_apiVertexBuffer;   //!< vertex buffers
     coreDataBuffer                 m_iIndexBuffer;      //!< index buffer
 
-    coreUint    m_iNumVertices;                         //!< number of vertices
-    coreUint    m_iNumIndices;                          //!< number of indices
+    coreUint32  m_iNumVertices;                         //!< number of vertices
+    coreUint32  m_iNumIndices;                          //!< number of indices
     coreVector3 m_vBoundingRange;                       //!< maximum per-axis distance from the model center
-    float       m_fBoundingRadius;                      //!< maximum direct distance from the model center
+    coreFloat   m_fBoundingRadius;                      //!< maximum direct distance from the model center
 
     GLenum m_iPrimitiveType;                            //!< primitive type for draw calls (e.g. GL_TRIANGLES)
     GLenum m_iIndexType;                                //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
@@ -85,8 +85,8 @@ public:
 
     //! load and unload model resource data
     //! @{
-    coreError Load(coreFile* pFile)override;
-    coreError Unload()override;
+    coreStatus Load(coreFile* pFile)override;
+    coreStatus Unload()override;
     //! @}
 
     //! draw the model
@@ -98,39 +98,39 @@ public:
 
     //! draw the model instanced
     //! @{
-    inline void DrawInstanced        (const coreUint& iCount)const {if(m_iIndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
-    void        DrawArraysInstanced  (const coreUint& iCount)const;
-    void        DrawElementsInstanced(const coreUint& iCount)const;
+    inline void DrawInstanced        (const coreUint32& iCount)const {if(m_iIndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
+    void        DrawArraysInstanced  (const coreUint32& iCount)const;
+    void        DrawElementsInstanced(const coreUint32& iCount)const;
     //! @}
 
     //! enable and disable the model
     //! @{
     void Enable();
-    static void Disable(const bool& bFull);
+    static void Disable(const coreBool& bFull);
     //! @}
 
     //! generate custom model resource data
     //! @{
-    coreVertexBuffer*        CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
-    coreDataBuffer*          CreateIndexBuffer (const coreUint& iNumIndices,  const coreByte& iIndexSize,  const void* pIndexData,  const coreDataBufferStorage& iStorageType);
-    inline coreVertexBuffer* GetVertexBuffer   (const coreUint& iID) {return m_apiVertexBuffer[iID];}
-    inline coreDataBuffer*   GetIndexBuffer    ()                    {return &m_iIndexBuffer;}
+    coreVertexBuffer*        CreateVertexBuffer(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
+    coreDataBuffer*          CreateIndexBuffer (const coreUint32& iNumIndices,  const coreUint8& iIndexSize,  const void* pIndexData,  const coreDataBufferStorage& iStorageType);
+    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW& iIndex) {return m_apiVertexBuffer[iIndex];}
+    inline coreDataBuffer*   GetIndexBuffer    ()                        {return &m_iIndexBuffer;}
     //! @}
 
     //! set object properties
     //! @{
     inline void SetBoundingRange (const coreVector3& vBoundingRange)  {ASSERT( m_vBoundingRange.IsNull()) m_vBoundingRange  = vBoundingRange;}
-    inline void SetBoundingRadius(const float&       fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
+    inline void SetBoundingRadius(const coreFloat&   fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
     inline void SetPrimitiveType (const GLenum&      iPrimitiveType)  {m_iPrimitiveType = iPrimitiveType;}
     //! @}
 
     //! get object properties
     //! @{
     inline const GLuint&      GetVertexArray   ()const {return m_iVertexArray;}
-    inline const coreUint&    GetNumVertices   ()const {return m_iNumVertices;}
-    inline const coreUint&    GetNumIndices    ()const {return m_iNumIndices;}
+    inline const coreUint32&  GetNumVertices   ()const {return m_iNumVertices;}
+    inline const coreUint32&  GetNumIndices    ()const {return m_iNumIndices;}
     inline const coreVector3& GetBoundingRange ()const {return m_vBoundingRange;}
-    inline const float&       GetBoundingRadius()const {return m_fBoundingRadius;}
+    inline const coreFloat&   GetBoundingRadius()const {return m_fBoundingRadius;}
     inline const GLenum&      GetPrimitiveType ()const {return m_iPrimitiveType;}
     inline const GLenum&      GetIndexType     ()const {return m_iIndexType;}
     //! @}

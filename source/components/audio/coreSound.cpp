@@ -29,7 +29,7 @@ coreSound::~coreSound()
 
 // ****************************************************************
 // load sound resource data
-coreError coreSound::Load(coreFile* pFile)
+coreStatus coreSound::Load(coreFile* pFile)
 {
     coreFileUnload Unload(pFile);
 
@@ -40,8 +40,8 @@ coreError coreSound::Load(coreFile* pFile)
     const coreByte* pData = pFile->GetData();
     if(!pData) return CORE_ERROR_FILE;
 
-    char acID[4];
-    coreUint iSize;
+    coreChar   acID[4];
+    coreUint32 iSize;
 
     // read header
     std::memcpy(acID,   pData, 4); pData += 4;
@@ -57,8 +57,8 @@ coreError coreSound::Load(coreFile* pFile)
 
     // read sub-chunks
     const coreByte* pSoundData = NULL;
-    coreUint iSoundSize = 0;
-    while(coreUint(pData - pFile->GetData()) < pFile->GetSize())
+    coreUint32      iSoundSize = 0;
+    while(coreUint32(pData - pFile->GetData()) < pFile->GetSize())
     {
         std::memcpy(acID,   pData, 4); pData += 4;
         std::memcpy(&iSize, pData, 4); pData += 4;
@@ -88,6 +88,7 @@ coreError coreSound::Load(coreFile* pFile)
              if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_STEREO8;
         else if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_STEREO16;
     }
+    ASSERT(iSoundFormat)
 
     // create sound buffer
     alGenBuffers(1, &m_iBuffer);
@@ -112,7 +113,7 @@ coreError coreSound::Load(coreFile* pFile)
 
 // ****************************************************************
 // unload sound resource data
-coreError coreSound::Unload()
+coreStatus coreSound::Unload()
 {
     if(!m_iBuffer) return CORE_INVALID_CALL;
 
@@ -138,7 +139,7 @@ coreError coreSound::Unload()
 
 // ****************************************************************
 // play the sound with positional behavior
-void coreSound::PlayPosition(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop, const coreVector3& vPosition)
+void coreSound::PlayPosition(const void* pRef, const coreFloat& fVolume, const coreFloat& fPitch, const coreFloat& fPitchRnd, const coreBool& bLoop, const coreVector3& vPosition)
 {
     // set active reference pointer
     m_pCurRef = pRef;
@@ -156,7 +157,7 @@ void coreSound::PlayPosition(const void* pRef, const float& fVolume, const float
         alSourcei (m_iCurSource, AL_SOURCE_RELATIVE,    false);
 
         alSourcef (m_iCurSource, AL_GAIN,               fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_SOUNDVOLUME));
-        alSourcef (m_iCurSource, AL_PITCH,              fPitch * (fPitchRnd ? 1.0f + Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
+        alSourcef (m_iCurSource, AL_PITCH,              fPitch  * (fPitchRnd ? 1.0f + Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
         alSourcei (m_iCurSource, AL_LOOPING,            bLoop);
 
         alSourcefv(m_iCurSource, AL_POSITION,           vPosition);
@@ -173,7 +174,7 @@ void coreSound::PlayPosition(const void* pRef, const float& fVolume, const float
 
 // ****************************************************************
 // play the sound with relative behavior
-void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float& fPitch, const float& fPitchRnd, const bool& bLoop)
+void coreSound::PlayRelative(const void* pRef, const coreFloat& fVolume, const coreFloat& fPitch, const coreFloat& fPitchRnd, const coreBool& bLoop)
 {
     // set active reference pointer
     m_pCurRef = pRef;
@@ -191,7 +192,7 @@ void coreSound::PlayRelative(const void* pRef, const float& fVolume, const float
         alSourcei (m_iCurSource, AL_SOURCE_RELATIVE, true);
 
         alSourcef (m_iCurSource, AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_SOUNDVOLUME));
-        alSourcef (m_iCurSource, AL_PITCH,           fPitch * (fPitchRnd ? 1.0f + Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
+        alSourcef (m_iCurSource, AL_PITCH,           fPitch  * (fPitchRnd ? 1.0f + Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
         alSourcei (m_iCurSource, AL_LOOPING,         bLoop);
 
         alSourcefv(m_iCurSource, AL_POSITION,        coreVector3(0.0f,0.0f,0.0f));
@@ -222,12 +223,12 @@ void coreSound::Stop()
 
 // ****************************************************************
 // get playback status
-bool coreSound::IsPlaying()const
+coreBool coreSound::IsPlaying()const
 {
     if(!m_iCurSource) return false;
 
     // retrieve current status
-    int iStatus;
+    ALint iStatus;
     alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iStatus);
 
     // check for playback
@@ -245,7 +246,7 @@ void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelo
 #if defined(_CORE_DEBUG_)
 
         // check for relative property
-        int iStatus;
+        ALint iStatus;
         alGetSourcei(m_iCurSource, AL_SOURCE_RELATIVE, &iStatus);
         ASSERT(!iStatus)
 

@@ -21,12 +21,12 @@ void __coreInitOpenGLES()
     std::memset(&g_CoreContext, 0, sizeof(coreContext));
 
     // get full extension string
-    if(g_sExtensions.empty()) g_sExtensions = r_cast<const char*>(glGetString(GL_EXTENSIONS));
+    if(g_sExtensions.empty()) g_sExtensions = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
 
     // get OpenGL ES version
-    g_CoreContext.__fVersion = coreData::StrVersion(r_cast<const char*>(glGetString(GL_VERSION)));
+    g_CoreContext.__fVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
     g_CoreContext.__bES3     = (g_CoreContext.__fVersion >= 3.0f);
-    const bool&     bES3     =  g_CoreContext.__bES3;
+    const coreBool& bES3     =  g_CoreContext.__bES3;
 
     // implement GL_EXT_discard_framebuffer
     if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))

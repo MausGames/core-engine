@@ -16,7 +16,7 @@
 
 // ****************************************************************
 // sync definitions
-enum coreSyncCheck : coreByte
+enum coreSyncCheck : coreUint8
 {
     CORE_SYNC_CHECK_ONLY    = 0,                            //!< check only for current status
     CORE_SYNC_CHECK_FLUSHED = GL_SYNC_FLUSH_COMMANDS_BIT    //!< check and flush the command buffer
@@ -39,13 +39,13 @@ public:
 
     //! handle the sync object
     //! @{
-    bool Create();
-    void Delete();
+    coreBool Create();
+    void     Delete();
     //! @}
 
     //! check for sync object status
     //! @{
-    coreError Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck);
+    coreStatus Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck);
     //! @}
 };
 

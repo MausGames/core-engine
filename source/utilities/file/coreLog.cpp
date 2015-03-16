@@ -11,7 +11,7 @@
 
 // ****************************************************************
 /* constructor */
-coreLog::coreLog(const char* pcPath)noexcept
+coreLog::coreLog(const coreChar* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_iLevel      (CORE_LOG_LEVEL_ALL)
 , m_iMainThread (0)
@@ -101,7 +101,7 @@ void coreLog::DebugOpenGL()
 
 // ****************************************************************
 /* write text to the log file */
-void coreLog::__Write(const bool& bTime, std::string sText)
+void coreLog::__Write(const coreBool& bTime, std::string sText)
 {
     SDL_AtomicLock(&m_iLock);
     {

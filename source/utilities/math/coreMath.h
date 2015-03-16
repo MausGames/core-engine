@@ -28,9 +28,9 @@
 
 #define MIN   coreMath::Min
 #define MAX   coreMath::Max
+#define CLAMP coreMath::Clamp
 #define SIGN  coreMath::Sign
 #define ABS   coreMath::Abs
-#define CLAMP coreMath::Clamp
 #define LERP  coreMath::Lerp
 #define LERPS coreMath::LerpSmooth
 #define LERPB coreMath::LerpBreak
@@ -58,56 +58,56 @@ public:
 
     /*! special operations */
     //! @{
-    template <typename T, typename... A> static constexpr_func T Min(const T& x, const T& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename... A> static constexpr_func T Max(const T& x, const T& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T> static constexpr_func T    Min       (const T& x, const T& y)                    {return (x <   y)  ?    x  :   y;}
-    template <typename T> static constexpr_func T    Max       (const T& x, const T& y)                    {return (x >   y)  ?    x  :   y;}
-    template <typename T> static constexpr_func T    Sign      (const T& x)                                {return (x < T(0)) ? T(-1) : T(1);}
-    template <typename T> static constexpr_func T    Abs       (const T& x)                                {return std::abs(x);}
-    template <typename T> static constexpr_func T    Clamp     (const T& x, const T& a, const T&     b)    {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr_func T    Lerp      (const T& x, const T& y, const float& s)    {return x + (y - x) * s;}
-    template <typename T> static inline         T    LerpSmooth(const T& x, const T& y, const float& s)    {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline         T    LerpBreak (const T& x, const T& y, const float& s)    {return LERP(x, y, SIN(s*PI*0.5f));}
-    template <typename T> static constexpr_func bool InRange   (const T& x, const T& c, const T&     r)    {return ((c-r) <= x && x <= (c+r));}
+    template <typename T, typename S, typename... A> static constexpr_func T Min(const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S, typename... A> static constexpr_func T Max(const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S> static constexpr_func T Min  (const T& x, const S& y)                            {return (x < y) ? x : y;}
+    template <typename T, typename S> static constexpr_func T Max  (const T& x, const S& y)                            {return (x > y) ? x : y;}
+    template <typename T, typename S> static constexpr_func T Clamp(const T& x, const S& a, const S& b)                {return MIN(MAX(x, a), b);}
+    template <typename T> static constexpr_func T        Sign      (const T& x)                                        {return std::copysign(T(1), x);}
+    template <typename T> static constexpr_func T        Abs       (const T& x)                                        {return std::abs(x);}
+    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s)        {return x + (y - x) * s;}
+    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)        {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)        {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                {return ((c-r) <= x && x <= (c+r));}
     //! @}
 
     /*! elementary operations */
     //! @{
-    template <coreUint iBase> static inline float Log    (const float& fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
-    template <>               static inline float Log< 2>(const float& fInput) {return std::log2 (fInput);}
-    template <>               static inline float Log<10>(const float& fInput) {return std::log10(fInput);}
-    static inline float Fract(const float& fInput)                             {return fInput - I_TO_F(F_TO_SI(fInput));}
-    static inline float Sqrt (const float& fInput)                             {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
-    static inline float Rsqrt(float fInput);
-    static inline float Rcp  (float fInput);
+    template <coreUintW iBase> static inline coreFloat Log    (const coreFloat& fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
+    template <>                static inline coreFloat Log< 2>(const coreFloat& fInput) {return std::log2 (fInput);}
+    template <>                static inline coreFloat Log<10>(const coreFloat& fInput) {return std::log10(fInput);}
+    static inline coreFloat Fract(const coreFloat& fInput)                              {return fInput - I_TO_F(F_TO_SI(fInput));}
+    static inline coreFloat Sqrt (const coreFloat& fInput)                              {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
+    static inline coreFloat Rsqrt(coreFloat fInput);
+    static inline coreFloat Rcp  (coreFloat fInput);
     //! @}
 
     /*! trigonometric operations */
     //! @{
-    static inline float Sin (const float& fInput) {return std::sin (fInput);}
-    static inline float Cos (const float& fInput) {return std::cos (fInput);}
-    static inline float Tan (const float& fInput) {return std::tan (fInput);}
-    static inline float Asin(const float& fInput) {return std::asin(fInput);}
-    static inline float Acos(const float& fInput) {return std::acos(fInput);}
-    static inline float Atan(const float& fInput) {return std::atan(fInput);}
-    static inline float Cot (const float& fInput) {return TAN(PI*0.5f - fInput);}
+    static inline coreFloat Sin (const coreFloat& fInput) {return std::sin (fInput);}
+    static inline coreFloat Cos (const coreFloat& fInput) {return std::cos (fInput);}
+    static inline coreFloat Tan (const coreFloat& fInput) {return std::tan (fInput);}
+    static inline coreFloat Asin(const coreFloat& fInput) {return std::asin(fInput);}
+    static inline coreFloat Acos(const coreFloat& fInput) {return std::acos(fInput);}
+    static inline coreFloat Atan(const coreFloat& fInput) {return std::atan(fInput);}
+    static inline coreFloat Cot (const coreFloat& fInput) {return TAN(PI*0.5f - fInput);}
     //! @}
 
     /*! rounding operations */
     //! @{
-    template <coreUint iByte> static inline coreUint CeilAlign (const coreUint& iInput) {const coreUint  k = iInput - 1; return k - (k % iByte) + iByte;}
-    template <coreUint iByte> static inline coreUint FloorAlign(const coreUint& iInput) {const coreUint& k = iInput;     return k - (k % iByte);}
-    static inline coreUint CeilPOT (const coreUint& iInput)                             {coreUint k = 2; while(k <  iInput) k <<= 1; return k;}
-    static inline coreUint FloorPOT(const coreUint& iInput)                             {coreUint k = 2; while(k <= iInput) k <<= 1; return k >> 1;}
-    static inline float    Ceil    (const float&    fInput)                             {return std::ceil (fInput);}
-    static inline float    Floor   (const float&    fInput)                             {return std::floor(fInput);}
+    template <coreUintW iByte, typename T> static inline T CeilAlign (const T& iInput) {const T  k = iInput - 1; return k - (k % iByte) + iByte;}
+    template <coreUintW iByte, typename T> static inline T FloorAlign(const T& iInput) {const T& k = iInput;     return k - (k % iByte);}
+    template                  <typename T> static inline T CeilPOT   (const T& iInput) {T k = 2; while(k <  iInput) k <<= 1; return k;}
+    template                  <typename T> static inline T FloorPOT  (const T& iInput) {T k = 2; while(k <= iInput) k <<= 1; return k >> 1;}
+    static inline coreFloat Ceil (const coreFloat& fInput)                             {return std::ceil (fInput);}
+    static inline coreFloat Floor(const coreFloat& fInput)                             {return std::floor(fInput);}
     //! @}
 };
 
 
 // ****************************************************************
 /* calculate inverse square root */
-inline float coreMath::Rsqrt(float fInput)
+inline coreFloat coreMath::Rsqrt(coreFloat fInput)
 {
     ASSERT(fInput > 0.0f)
 
@@ -124,7 +124,7 @@ inline float coreMath::Rsqrt(float fInput)
     // old approximation
     /*
         const float fHalfValue = fInput*0.5f;
-        coreUint* piPointer    = r_cast<coreUint*>(&fInput);
+        uint* piPointer        = r_cast<uint*>(&fInput);
         *piPointer             = 0x5F3759DF - (*piPointer >> 1);
 
         fInput *= 1.5f - fInput*fInput*fHalfValue;
@@ -139,7 +139,7 @@ inline float coreMath::Rsqrt(float fInput)
 
 // ****************************************************************
 /* calculate approximate reciprocal */
-inline float coreMath::Rcp(float fInput)
+inline coreFloat coreMath::Rcp(coreFloat fInput)
 {
     ASSERT(fInput)
 
@@ -155,9 +155,9 @@ inline float coreMath::Rcp(float fInput)
 
     // old approximation
     /*
-        const float fValue  = fInput;
-        coreUint* piPointer = r_cast<coreUint*>(&fInput);
-        *piPointer          = 0x7EEEEEEE - *piPointer;
+        const float fValue = fInput;
+        uint* piPointer    = r_cast<uint*>(&fInput);
+        *piPointer         = 0x7EEEEEEE - *piPointer;
 
         fInput *= 2.0f - fInput*fValue;
         fInput *= 2.0f - fInput*fValue;

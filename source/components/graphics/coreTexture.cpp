@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreByte     coreTexture::s_iActiveUnit                     = 0;
+coreUintW    coreTexture::s_iActiveUnit                     = 0;
 coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS]; // = NULL;
 
 
@@ -35,10 +35,10 @@ coreTexture::~coreTexture()
 
 // ****************************************************************
 // load texture resource data
-coreError coreTexture::Load(coreFile* pFile)
+coreStatus coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
+    const coreStatus iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck >= CORE_OK) return iCheck;
 
     coreFileUnload Unload(pFile);
@@ -56,9 +56,9 @@ coreError coreTexture::Load(coreFile* pFile)
     }
 
     // calculate data size and texture format
-    const coreUint iDataSize =  pData->w * pData->h * pData->format->BytesPerPixel;
-    const GLenum   iInternal = (pData->format->BytesPerPixel == 4) ? GL_RGBA8 : GL_RGB8;
-    const GLenum   iFormat   = (pData->format->BytesPerPixel == 4) ? GL_RGBA  : GL_RGB;
+    const coreUint32 iDataSize =  pData->w * pData->h * pData->format->BytesPerPixel;
+    const GLenum     iInternal = (pData->format->BytesPerPixel == 4) ? GL_RGBA8 : GL_RGB8;
+    const GLenum     iFormat   = (pData->format->BytesPerPixel == 4) ? GL_RGBA  : GL_RGB;
 
     // create new texture
     this->Create(pData->w, pData->h, iInternal, iFormat, GL_UNSIGNED_BYTE, GL_REPEAT, true);
@@ -78,12 +78,12 @@ coreError coreTexture::Load(coreFile* pFile)
 
 // ****************************************************************
 // unload texture resource data
-coreError coreTexture::Unload()
+coreStatus coreTexture::Unload()
 {
     if(!m_iTexture) return CORE_INVALID_CALL;
 
     // disable still active texture bindings
-    for(coreByte i = CORE_TEXTURE_UNITS; i--; )
+    for(coreUintW i = CORE_TEXTURE_UNITS; i--; )
         if(s_apBound[i] == this) coreTexture::Disable(i);
 
     // delete texture
@@ -109,18 +109,18 @@ coreError coreTexture::Unload()
 
 // ****************************************************************
 // create texture memory
-void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const bool& bFilter)
+void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const coreBool& bFilter)
 {
     WARN_IF(m_iTexture) this->Unload();
 
     // check for OpenGL extensions
-    const bool& bStorage     = CORE_GL_SUPPORT(ARB_texture_storage);
-    const bool  bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic) && bFilter;
-    const bool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && bFilter;
+    const coreBool& bStorage     = CORE_GL_SUPPORT(ARB_texture_storage);
+    const coreBool  bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic) && bFilter;
+    const coreBool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && bFilter;
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
-    m_iLevels     = bMipMap ? F_TO_SI(coreMath::Log<2>(m_vResolution.Max())) + 1 : 1;
+    m_iLevels     = bMipMap ? F_TO_UI(coreMath::Log<2>(m_vResolution.Max())) + 1 : 1;
     m_iInternal   = iInternal;
     m_iFormat     = iFormat;
     m_iType       = iType;
@@ -152,15 +152,15 @@ void coreTexture::Create(const coreUint& iWidth, const coreUint& iHeight, const 
 
 // ****************************************************************
 // modify texture memory
-void coreTexture::Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, const coreUint& iWidth, const coreUint& iHeight, const coreUint& iDataSize, const void* pData)
+void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY, const coreUint32& iWidth, const coreUint32& iHeight, const coreUint32& iDataSize, const void* pData)
 {
     WARN_IF(!m_iTexture) return;
     ASSERT(((iOffsetX + iWidth) <= F_TO_UI(m_vResolution.x)) && ((iOffsetY + iHeight) <= F_TO_UI(m_vResolution.y)))
 
     // check for OpenGL extensions
-    const bool& bDirectState = CORE_GL_SUPPORT(ARB_direct_state_access);
-    const bool  bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
-    const bool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1);
+    const coreBool& bDirectState = CORE_GL_SUPPORT(ARB_direct_state_access);
+    const coreBool  bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
+    const coreBool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1);
 
     coreDataBuffer iBuffer;
     if(bPixelBuffer)
@@ -190,7 +190,7 @@ void coreTexture::Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, con
 
 // ****************************************************************
 // copy content from current read frame buffer
-void coreTexture::CopyFrameBuffer(const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)
+void coreTexture::CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight)
 {
     ASSERT(m_iTexture)
     ASSERT(((iSrcX + iWidth) <= F_TO_UI(Core::Graphics->GetViewResolution().x)) && ((iSrcY + iHeight) <= F_TO_UI(Core::Graphics->GetViewResolution().y)) &&
@@ -212,7 +212,7 @@ void coreTexture::CopyFrameBuffer(const coreUint& iSrcX, const coreUint& iSrcY, 
 
 // ****************************************************************
 // configure shadow sampling
-void coreTexture::ShadowSampling(const bool& bStatus)
+void coreTexture::ShadowSampling(const coreBool& bStatus)
 {
     ASSERT(m_iFormat == GL_DEPTH_COMPONENT)
 
@@ -263,7 +263,7 @@ void coreTexture::Invalidate(const GLint& iLevel)
 
 // ****************************************************************
 // bind texture to texture unit
-void coreTexture::__BindTexture(const coreByte& iUnit, coreTexture* pTexture)
+void coreTexture::__BindTexture(const coreUintW& iUnit, coreTexture* pTexture)
 {
     ASSERT(iUnit < CORE_TEXTURE_UNITS)
 

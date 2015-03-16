@@ -28,15 +28,15 @@
 // frame buffer definitions
 #define __CORE_FRAMEBUFFER_ALL_TARGETS(a)                                                    \
     coreRenderTarget* a[CORE_SHADER_OUTPUT_COLORS + 2] = {&m_DepthTarget, &m_StencilTarget}; \
-    for(coreByte i = 2; i < ARRAY_SIZE(a); ++i) a[i] = &m_aColorTarget[i - 2];
+    for(coreUintW i = 2; i < ARRAY_SIZE(a); ++i) a[i] = &m_aColorTarget[i - 2];
 
-enum coreFrameBufferCreate : bool
+enum coreFrameBufferCreate : coreBool
 {
     CORE_FRAMEBUFFER_CREATE_NORMAL       = false,   //!< create normal frame buffer
     CORE_FRAMEBUFFER_CREATE_MULTISAMPLED = true     //!< create multisampled frame buffer
 };
 
-enum coreFrameBufferTarget : coreUshort
+enum coreFrameBufferTarget : coreUint16
 {
     CORE_FRAMEBUFFER_TARGET_COLOR   = GL_COLOR_BUFFER_BIT,    //!< use color buffer
     CORE_FRAMEBUFFER_TARGET_DEPTH   = GL_DEPTH_BUFFER_BIT,    //!< use depth buffer
@@ -60,8 +60,8 @@ private:
         GLenum iType;               //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
 
         constexpr_weak coreRenderTarget()noexcept;
-        inline bool IsTexture()const {return pTexture ? true : false;}
-        inline bool IsBuffer ()const {return !this->IsTexture();}
+        inline coreBool IsTexture()const {return pTexture ? true : false;}
+        inline coreBool IsBuffer ()const {return !this->IsTexture();}
     };
 
 
@@ -74,12 +74,12 @@ private:
 
     coreVector2 m_vResolution;                                    //!< resolution of the frame buffer
 
-    float m_fFOV;                                                 //!< field-of-view
-    float m_fNearClip;                                            //!< near clipping plane
-    float m_fFarClip;                                             //!< far clipping plane
+    coreFloat m_fFOV;                                             //!< field-of-view
+    coreFloat m_fNearClip;                                        //!< near clipping plane
+    coreFloat m_fFarClip;                                         //!< far clipping plane
 
     static coreFrameBuffer* s_pCurrent;                           //!< currently active frame buffer object
-    static float s_afViewData[5];                                 //!< view properties of the default frame buffer
+    static coreFloat s_afViewData[5];                             //!< view properties of the default frame buffer
 
 
 public:
@@ -96,8 +96,8 @@ public:
 
     //! attach render targets
     //! @{
-    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const char* pcName = NULL);
-    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
+    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const coreChar* pcName = NULL);
+    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
     void DetachTargets();
     //! @}
 
@@ -109,7 +109,7 @@ public:
 
     //! copy content to another frame buffer
     //! @{
-    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)const;
+    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight)const;
     void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)const;
     //! @}
 
@@ -126,28 +126,28 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetFOV     (const float& fFOV)      {m_fFOV      = fFOV;}
-    inline void SetNearClip(const float& fNearClip) {m_fNearClip = fNearClip;}
-    inline void SetFarClip (const float& fFarClip)  {m_fFarClip  = fFarClip;}
+    inline void SetFOV     (const coreFloat& fFOV)      {m_fFOV      = fFOV;}
+    inline void SetNearClip(const coreFloat& fNearClip) {m_fNearClip = fNearClip;}
+    inline void SetFarClip (const coreFloat& fFarClip)  {m_fFarClip  = fFarClip;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint&           GetFrameBuffer  ()const                            {return m_iFrameBuffer;}
-    inline const coreRenderTarget& GetColorTarget  (const coreByte& iColorIndex)const {ASSERT(iColorIndex < CORE_SHADER_OUTPUT_COLORS) return m_aColorTarget[iColorIndex];}
-    inline const coreRenderTarget& GetDepthTarget  ()const                            {return m_DepthTarget;}
-    inline const coreRenderTarget& GetStencilTarget()const                            {return m_StencilTarget;}
-    inline const coreVector2&      GetResolution   ()const                            {return m_vResolution;}
-    inline const float&            GetFOV          ()const                            {return m_fFOV;}
-    inline const float&            GetNearClip     ()const                            {return m_fNearClip;}
-    inline const float&            GetFarClip      ()const                            {return m_fFarClip;}
+    inline const GLuint&           GetFrameBuffer  ()const                             {return m_iFrameBuffer;}
+    inline const coreRenderTarget& GetColorTarget  (const coreUintW& iColorIndex)const {ASSERT(iColorIndex < CORE_SHADER_OUTPUT_COLORS) return m_aColorTarget[iColorIndex];}
+    inline const coreRenderTarget& GetDepthTarget  ()const                             {return m_DepthTarget;}
+    inline const coreRenderTarget& GetStencilTarget()const                             {return m_StencilTarget;}
+    inline const coreVector2&      GetResolution   ()const                             {return m_vResolution;}
+    inline const coreFloat&        GetFOV          ()const                             {return m_fFOV;}
+    inline const coreFloat&        GetNearClip     ()const                             {return m_fNearClip;}
+    inline const coreFloat&        GetFarClip      ()const                             {return m_fFarClip;}
     //! @}
 
 
 private:
     //! attach render targets
     //! @{
-    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
+    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
     //! @}
 };
 

@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreCheckBox::coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)noexcept
+coreCheckBox::coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)noexcept
 : coreCheckBox ()
 {
     // construct on creation
@@ -21,7 +21,7 @@ coreCheckBox::coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchec
 
 // ****************************************************************
 // construct the check-box
-void coreCheckBox::Construct(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)
+void coreCheckBox::Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)
 {
     // construct the button
     coreButton::Construct(pcIdleUnchecked, pcBusyUnchecked);
@@ -48,7 +48,7 @@ void coreCheckBox::Move()
 
 // ****************************************************************
 // set check status
-void coreCheckBox::SetCheck(const bool& bCheck)
+void coreCheckBox::SetCheck(const coreBool& bCheck)
 {
     if(m_bCheck == bCheck) return;
 

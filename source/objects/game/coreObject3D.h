@@ -19,9 +19,9 @@
 
 // ****************************************************************
 /* 3d-object definitions */
-#define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreVector4) + 2*sizeof(coreVector3) + 2*sizeof(coreUint))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
-#define CORE_OBJECT3D_INSTANCE_BUFFERS   (3u)                                                                   //!< number of concurrent instance data buffer
-#define CORE_OBJECT3D_INSTANCE_THRESHOLD (5u)                                                                   //!< minimum number of objects to draw instanced
+#define CORE_OBJECT3D_INSTANCE_SIZE      (1*sizeof(coreVector4) + 2*sizeof(coreVector3) + 2*sizeof(coreUint32))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
+#define CORE_OBJECT3D_INSTANCE_BUFFERS   (3u)                                                                     //!< number of concurrent instance data buffer
+#define CORE_OBJECT3D_INSTANCE_THRESHOLD (5u)                                                                     //!< minimum number of objects to draw instanced
 
 
 // ****************************************************************
@@ -42,9 +42,9 @@ protected:
 
     coreVector3 m_vCollisionModifier;   //!< size-modifier for collision detection
     coreVector3 m_vCollisionRange;      //!< total collision range (model range * size * modifier)
-    float       m_fCollisionRadius;     //!< total collision radius (model radius * maximum size * maximum modifier)
+    coreFloat   m_fCollisionRadius;     //!< total collision radius (model radius * maximum size * maximum modifier)
 
-    int m_iType;                        //!< object type identifier (!0 = currently registered in the object manager)
+    coreInt32 m_iType;                  //!< object type identifier (!0 = currently registered in the object manager)
 
 
 public:
@@ -62,14 +62,14 @@ public:
     /*! define the visual appearance */
     //! @{
     inline const coreModelPtr& DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;                                          ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) return m_pModel;}
-    inline const coreModelPtr& DefineModel(const char*         pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) return m_pModel;}
+    inline const coreModelPtr& DefineModel(const coreChar*     pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) return m_pModel;}
     void Undefine();
     //! @}
 
     /*! render and move the 3d-object */
     //! @{
-    bool         Prepare(const coreProgramPtr& pProgram);
-    bool         Prepare();
+    coreBool     Prepare(const coreProgramPtr& pProgram);
+    coreBool     Prepare();
     virtual void Render (const coreProgramPtr& pProgram);
     virtual void Render ();
     virtual void Move   ();
@@ -77,7 +77,7 @@ public:
 
     /*! change object type and manager registration */
     //! @{
-    void ChangeType(const int& iType);
+    void ChangeType(const coreInt32& iType);
     //! @}
 
     /*! set object properties */
@@ -99,8 +99,8 @@ public:
     inline const coreVector4&  GetRotation         ()const {return m_vRotation;}
     inline const coreVector3&  GetCollisionModifier()const {return m_vCollisionModifier;}
     inline const coreVector3&  GetCollisionRange   ()const {return m_vCollisionRange;}
-    inline const float&        GetCollisionRadius  ()const {return m_fCollisionRadius;}
-    inline const int&          GetType             ()const {return m_iType;}
+    inline const coreFloat&    GetCollisionRadius  ()const {return m_fCollisionRadius;}
+    inline const coreInt32&    GetType             ()const {return m_iType;}
     //! @}
 };
 
@@ -111,19 +111,19 @@ class coreBatchList final : public coreResourceRelation
 {
 private:
     std::vector<coreObject3D*> m_apObjectList;                                         //!< list with pointers to similar 3d-objects
-    coreUint m_iCurCapacity;                                                           //!< current instance-capacity of all related resources
-    coreUint m_iCurEnabled;                                                            //!< current number of render-enabled 3d-objects (render-count)
+    coreUint32 m_iCurCapacity;                                                         //!< current instance-capacity of all related resources
+    coreUint32 m_iCurEnabled;                                                          //!< current number of render-enabled 3d-objects (render-count)
 
     coreProgramPtr m_pProgram;                                                         //!< shader-program object
 
     coreSelect<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
     coreSelect<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
 
-    bool m_bUpdate;                                                                    //!< buffer update status (dirty flag)
+    coreBool m_bUpdate;                                                                //!< buffer update status (dirty flag)
 
 
 public:
-    explicit coreBatchList(const coreUint& iStartCapacity)noexcept;
+    explicit coreBatchList(const coreUint32& iStartCapacity)noexcept;
     ~coreBatchList();
 
     DISABLE_COPY(coreBatchList)
@@ -131,7 +131,7 @@ public:
     /*! define the visual appearance */
     //! @{
     inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram) {m_pProgram = pProgram;                                          return m_pProgram;}
-    inline const coreProgramPtr& DefineProgram(const char*           pcName)   {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
+    inline const coreProgramPtr& DefineProgram(const coreChar*       pcName)   {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
     void Undefine();
     //! @}
 
@@ -151,14 +151,14 @@ public:
 
     /*! control memory allocation */
     //! @{
-    void        Reallocate(const coreUint& iNewCapacity);
+    void        Reallocate(const coreUint32& iNewCapacity);
     void        Clear();
-    inline void ShrinkToFit() {this->Reallocate(coreUint(m_apObjectList.size())); m_apObjectList.shrink_to_fit();}
+    inline void ShrinkToFit() {this->Reallocate(m_apObjectList.size()); m_apObjectList.shrink_to_fit();}
     //! @}
 
     /*! check for instancing status */
     //! @{
-    inline bool IsInstanced()const {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
+    inline coreBool IsInstanced()const {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
     //! @}
 
     /*! access 3d-object list directly */
@@ -170,8 +170,8 @@ public:
     /*! get object properties */
     //! @{
     inline const coreProgramPtr& GetProgram    ()const {return m_pProgram;}
-    inline const coreUint&       GetCurCapacity()const {return m_iCurCapacity;}
-    inline const coreUint&       GetCurEnabled ()const {return m_iCurEnabled;}
+    inline const coreUint32&     GetCurCapacity()const {return m_iCurCapacity;}
+    inline const coreUint32&     GetCurEnabled ()const {return m_iCurEnabled;}
     //! @}
 
 

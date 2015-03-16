@@ -23,7 +23,7 @@ coreLabel::coreLabel()noexcept
 {
 }
 
-coreLabel::coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+coreLabel::coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
 : coreLabel ()
 {
     // construct on creation
@@ -42,10 +42,10 @@ coreLabel::~coreLabel()
 
 // ****************************************************************
 // construct the label
-void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint& iLength)
+void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
 {
     // save properties
-    m_iHeight = F_TO_SI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
+    m_iHeight = F_TO_UI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
     m_iLength = iLength;
 
     // set font object
@@ -58,7 +58,7 @@ void coreLabel::Construct(const char* pcFont, const int& iHeight, const coreUint
     this->DefineProgram("default_label_sharp_program");
 
     // reserve memory for text
-    if(iLength) m_sText.reserve(iLength+1);
+    if(iLength) m_sText.reserve(iLength + 1);
 }
 
 
@@ -109,7 +109,7 @@ void coreLabel::Move()
 
 // ****************************************************************
 // change the current text
-bool coreLabel::SetText(const char* pcText)
+coreBool coreLabel::SetText(const coreChar* pcText)
 {
     ASSERT(!m_iLength || std::strlen(pcText) <= m_iLength)
 
@@ -126,9 +126,9 @@ bool coreLabel::SetText(const char* pcText)
     return false;
 }
 
-bool coreLabel::SetText(const char* pcText, const coreUint& iNum)
+coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8& iNum)
 {
-    ASSERT(!m_iLength || (MIN(iNum, (coreUint)std::strlen(pcText)) <= m_iLength && iNum <= m_iLength))
+    ASSERT(!m_iLength || iNum <= m_iLength)
 
     // check for new text
     if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
@@ -162,7 +162,7 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 
 // ****************************************************************
 // generate the texture
-void coreLabel::__Generate(const char* pcText, const bool& bSub)
+void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
 {
     // create text surface data
     SDL_Surface* pSurface = m_pFont->CreateText(pcText, m_iHeight);

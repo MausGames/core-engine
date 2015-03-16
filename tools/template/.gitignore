@@ -27,3 +27,4 @@ projects/android/project/obj/
 executable/logfile.html
 executable/bin/windows/*.pdb
 executable/bin/windows/*.ilk
+executable/screenshots/

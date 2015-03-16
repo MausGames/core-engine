@@ -97,15 +97,15 @@ void Core::Reset()
     Log->Warning("Reset started");
 
     // save current state
-    const double      dTotalTime      = System->m_dTotalTime;
-    const coreUint    iCurFrame       = System->m_iCurFrame;
-    const float       fFOV            = Graphics->m_fFOV;
-    const float       fNearClip       = Graphics->m_fNearClip;
-    const float       fFarClip        = Graphics->m_fFarClip;
+    const coreDouble  dTotalTime      = System->m_dTotalTime;
+    const coreUint32  iCurFrame       = System->m_iCurFrame;
+    const coreFloat   fFOV            = Graphics->m_fFOV;
+    const coreFloat   fNearClip       = Graphics->m_fNearClip;
+    const coreFloat   fFarClip        = Graphics->m_fFarClip;
     const coreVector3 vCamPosition    = Graphics->m_vCamPosition;
     const coreVector3 vCamDirection   = Graphics->m_vCamDirection;
     const coreVector3 vCamOrientation = Graphics->m_vCamOrientation;
-    float                   afTimeSpeed[CORE_SYSTEM_TIMES];    std::memcpy(afTimeSpeed, System->m_afTimeSpeed, sizeof(afTimeSpeed));
+    coreFloat               afTimeSpeed[CORE_SYSTEM_TIMES];    std::memcpy(afTimeSpeed, System->m_afTimeSpeed, sizeof(afTimeSpeed));
     CoreGraphics::coreLight aLight     [CORE_GRAPHICS_LIGHTS]; std::memcpy(aLight,      Graphics->m_aLight,    sizeof(aLight));
 
     // shut down resource manager
@@ -134,8 +134,8 @@ void Core::Reset()
     System->m_iCurFrame  = iCurFrame;
     Graphics->SetView  (System->GetResolution(), fFOV, fNearClip, fFarClip);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
-    for(coreUint i = 0; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
-    for(coreUint i = 0; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
+    for(coreUintW i = 0; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
+    for(coreUintW i = 0; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
 
     Log->Warning("Reset finished");
 }
@@ -163,7 +163,7 @@ ENTRY_POINT int main(int argc, char* argv[])
 
 // ****************************************************************
 // run engine
-int Core::Run()
+coreStatus Core::Run()
 {
     // create engine instance
     Core Engine;
@@ -205,5 +205,5 @@ int Core::Run()
     // reset logging level
     Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);
 
-    return 0;
+    return CORE_OK;
 }

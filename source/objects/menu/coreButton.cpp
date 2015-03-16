@@ -11,14 +11,14 @@
 
 // ****************************************************************
 // constructor
-coreButton::coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
 : coreButton ()
 {
     // construct on creation
     this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
 }
 
-coreButton::coreButton(const char* pcIdle, const char* pcBusy)noexcept
+coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy)noexcept
 : coreButton ()
 {
     // construct on creation
@@ -37,7 +37,7 @@ coreButton::~coreButton()
 
 // ****************************************************************
 // construct the button
-void coreButton::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
+void coreButton::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
 {
     // create the label
     if(m_pCaption) SAFE_DELETE(m_pCaption)
@@ -47,7 +47,7 @@ void coreButton::Construct(const char* pcIdle, const char* pcBusy, const char* p
     this->Construct(pcIdle, pcBusy);
 }
 
-void coreButton::Construct(const char* pcIdle, const char* pcBusy)
+void coreButton::Construct(const coreChar* pcIdle, const coreChar* pcBusy)
 {
     // load background textures
     if(pcIdle) m_apBackground[0] = Core::Manager::Resource->Get<coreTexture>(pcIdle);
@@ -84,7 +84,7 @@ void coreButton::Move()
     ASSERT(m_pProgram)
 
     // set current background texture
-    const bool bStatus = (m_iOverride > 0) ? true : ((m_iOverride < 0) ? false : this->IsFocused());
+    const coreBool bStatus = (m_iOverride > 0) ? true : ((m_iOverride < 0) ? false : this->IsFocused());
     if(m_bBusy != bStatus)
     {
         m_bBusy = bStatus;

@@ -19,7 +19,7 @@
 
 // ****************************************************************
 // data buffer definitions
-enum coreDataBufferStorage : coreUshort
+enum coreDataBufferStorage : coreUint16
 {
     CORE_DATABUFFER_STORAGE_STATIC     = 0x0001,   //!< store fast static buffer (STATIC_DRAW)
     CORE_DATABUFFER_STORAGE_DYNAMIC    = 0x0002,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
@@ -29,7 +29,7 @@ enum coreDataBufferStorage : coreUshort
 };
 ENABLE_BITWISE(coreDataBufferStorage)
 
-enum coreDataBufferMap : coreByte
+enum coreDataBufferMap : coreUint8
 {
     CORE_DATABUFFER_MAP_INVALIDATE_ALL   = GL_MAP_INVALIDATE_BUFFER_BIT,   //!< invalidate complete buffer
     CORE_DATABUFFER_MAP_INVALIDATE_RANGE = GL_MAP_INVALIDATE_RANGE_BIT,    //!< invalidate only required range
@@ -45,12 +45,12 @@ private:
     GLuint m_iDataBuffer;                          //!< data buffer identifier
     coreDataBufferStorage m_iStorageType;          //!< storage type
 
-    GLenum   m_iTarget;                            //!< buffer target (e.g. GL_ARRAY_BUFFER)
-    coreUint m_iSize;                              //!< data size in bytes
+    GLenum     m_iTarget;                          //!< buffer target (e.g. GL_ARRAY_BUFFER)
+    coreUint32 m_iSize;                            //!< data size in bytes
 
-    coreByte* m_pPersistentBuffer;                 //!< pointer to persistent mapped buffer
-    coreUint  m_iMapOffset;                        //!< current mapping offset
-    coreUint  m_iMapLength;                        //!< current mapping length
+    coreByte*  m_pPersistentBuffer;                //!< pointer to persistent mapped buffer
+    coreUint32 m_iMapOffset;                       //!< current mapping offset
+    coreUint32 m_iMapLength;                       //!< current mapping length
 
     coreSync* m_pSync;                             //!< optional sync object for reliable asynchronous processing
 
@@ -65,7 +65,7 @@ public:
 
     //! control the data buffer object
     //! @{
-    void Create(const GLenum& iTarget, const coreUint& iSize, const void* pData, const coreDataBufferStorage& iStorageType);
+    void Create(const GLenum& iTarget, const coreUint32& iSize, const void* pData, const coreDataBufferStorage& iStorageType);
     void Delete();
     //! @}
 
@@ -73,12 +73,12 @@ public:
     //! @{
     inline void Bind()const                                                 {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
     static inline void Bind  (const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
-    static inline void Unbind(const GLenum& iTarget, const bool& bFull)     {if(bFull) coreDataBuffer::Bind(iTarget, 0); else s_aiBound[iTarget] = 0;}
+    static inline void Unbind(const GLenum& iTarget, const coreBool& bFull) {if(bFull) coreDataBuffer::Bind(iTarget, 0); else s_aiBound[iTarget] = 0;}
     //! @}
 
     //! modify buffer memory
     //! @{
-    template <typename T> RETURN_RESTRICT T* Map  (const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType);
+    template <typename T> RETURN_RESTRICT T* Map  (const coreUint32& iOffset, const coreUint32& iLength, const coreDataBufferMap& iMapType);
     template <typename T> void               Unmap(T* ptPointer);
     //! @}
 
@@ -90,9 +90,9 @@ public:
 
     //! check for current buffer status
     //! @{
-    inline bool IsWritable  ()const {return CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
-    inline bool IsPersistent()const {return m_pPersistentBuffer                                            ?  true : false;}
-    inline bool IsMapped    ()const {return m_iMapLength                                                   ?  true : false;}
+    inline coreBool IsWritable  ()const {return CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
+    inline coreBool IsPersistent()const {return m_pPersistentBuffer                                            ?  true : false;}
+    inline coreBool IsMapped    ()const {return m_iMapLength                                                   ?  true : false;}
     //! @}
 
     //! access buffer directly
@@ -105,7 +105,7 @@ public:
     inline const GLuint&                GetDataBuffer ()const {return m_iDataBuffer;}
     inline const coreDataBufferStorage& GetStorageType()const {return m_iStorageType;}
     inline const GLenum&                GetTarget     ()const {return m_iTarget;}
-    inline const coreUint&              GetSize       ()const {return m_iSize;}
+    inline const coreUint32&            GetSize       ()const {return m_iSize;}
     //! @}
 };
 
@@ -118,18 +118,18 @@ private:
     //! vertex attribute array structure
     struct coreAttribute
     {
-        int      iLocation;     //!< attribute location
-        coreByte iComponents;   //!< number of components
-        GLenum   iType;         //!< component type (e.g. GL_FLOAT)
-        bool     bInteger;      //!< pure integer attribute
-        coreByte iOffset;       //!< offset within the vertex
+        coreUint8 iLocation;     //!< attribute location
+        coreUint8 iComponents;   //!< number of components
+        GLenum    iType;         //!< component type (e.g. GL_FLOAT)
+        coreBool  bInteger;      //!< pure integer attribute
+        coreUint8 iOffset;       //!< offset within the vertex
 
         constexpr_func coreAttribute()noexcept;
     };
 
 
 private:
-    coreByte m_iVertexSize;                    //!< size of each vertex in bytes
+    coreUint8 m_iVertexSize;                   //!< size of each vertex in bytes
     std::vector<coreAttribute> m_aAttribute;   //!< defined vertex attribute arrays
 
 
@@ -141,14 +141,14 @@ public:
 
     //! control the vertex buffer object
     //! @{
-    void Create(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
+    void Create(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
     void Delete();
     //! @}
 
     //! define and activate the vertex structure
     //! @{
-    void DefineAttribute(const int& iLocation, const coreByte& iComponents, const GLenum& iType, const bool& bInteger, const coreByte& iOffset);
-    void Activate(const coreByte& iBinding);
+    void DefineAttribute(const coreUint8& iLocation, const coreUint8& iComponents, const GLenum& iType, const coreBool& bInteger, const coreUint8& iOffset);
+    void Activate(const coreUint8& iBinding);
     //! @}
 };
 
@@ -170,7 +170,7 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 
 // ****************************************************************
 // map buffer memory for writing operations
-template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint& iOffset, const coreUint& iLength, const coreDataBufferMap& iMapType)
+template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32& iOffset, const coreUint32& iLength, const coreDataBufferMap& iMapType)
 {
     ASSERT(m_iDataBuffer && this->IsWritable() && (iOffset+iLength <= m_iSize))
 

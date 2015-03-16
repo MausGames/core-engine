@@ -15,21 +15,21 @@
 /* MD3-header structure */
 struct md3Header
 {
-    char acIdentity[4];    //!< magic number (IDP3)
-    int  iVersion;         //!< version number (15)
+    coreChar   acIdentity[4];     //!< magic number (IDP3)
+    coreInt32 iVersion;          //!< version number (15)
 
-    char acName[64];       //!< internal file name
-    int  iFlags;           //!< 'dunno
+    coreChar   acName[64];        //!< internal file name
+    coreInt32 iFlags;            //!< 'dunno
 
-    int iNumFrames;        //!< number of frames
-    int iNumTags;          //!< number of tags
-    int iNumSurfaces;      //!< number of surfaces
-    int iNumSkins;         //!< number of skins (unused)
+    coreInt32 iNumFrames;        //!< number of frames
+    coreInt32 iNumTags;          //!< number of tags
+    coreInt32 iNumSurfaces;      //!< number of surfaces
+    coreInt32 iNumSkins;         //!< number of skins (unused)
 
-    int iOffsetFrames;     //!< byte offset to frame data
-    int iOffsetTags;       //!< byte offset to tag data
-    int iOffsetSurfaces;   //!< byte offset to surface data
-    int iOffsetEOF;        //!< end of file (file size)
+    coreInt32 iOffsetFrames;     //!< byte offset to frame data
+    coreInt32 iOffsetTags;       //!< byte offset to tag data
+    coreInt32 iOffsetSurfaces;   //!< byte offset to surface data
+    coreInt32 iOffsetEOF;        //!< end of file (file size)
 };
 
 
@@ -40,9 +40,9 @@ struct md3Frame
     coreVector3 vMinBounds;   //!< first corner of the bounding box
     coreVector3 vMaxBounds;   //!< second corner of the bounding box
     coreVector3 vOrigin;      //!< local origin (0.0f, 0.0f, 0.0f)
-    float fRadius;            //!< bounding sphere radius
+    coreFloat   fRadius;      //!< bounding sphere radius
 
-    char acName[16];          //!< frame name
+    coreChar acName[16];      //!< frame name
 };
 
 
@@ -50,7 +50,7 @@ struct md3Frame
 /* MD3-tag structure */
 struct md3Tag
 {
-    char acName[64];       //!< tag name
+    coreChar acName[64];   //!< tag name
 
     coreVector3 vOrigin;   //!< origin coordinates
     coreMatrix3 mAxis;     //!< associated rotation matrix
@@ -61,21 +61,21 @@ struct md3Tag
 /* MD3-mesh structure */
 struct md3Mesh
 {
-    char acIdentity[4];     //!< magic number (IDP3)
+    coreChar acIdentity[4];        //!< magic number (IDP3)
 
-    char acName[64];        //!< surface name
-    int  iFlags;            //!< 'dunno again
+    coreChar  acName[64];         //!< surface name
+    coreInt32 iFlags;             //!< 'dunno again
 
-    int iNumFrames;         //!< number of frames
-    int iNumShaders;        //!< number of shaders
-    int iNumVertices;       //!< number of vertices
-    int iNumTriangles;      //!< number of triangles
+    coreInt32 iNumFrames;         //!< number of frames
+    coreInt32 iNumShaders;        //!< number of shaders
+    coreInt32 iNumVertices;       //!< number of vertices
+    coreInt32 iNumTriangles;      //!< number of triangles
 
-    int iOffsetTriangles;   //!< byte offset to triangle data
-    int iOffsetShaders;     //!< byte offset to shader data
-    int iOffsetTexture;     //!< byte offset to texture data
-    int iOffsetVertices;    //!< byte offset to vertex data
-    int iOffsetEnd;         //!< surface end (next surface)
+    coreInt32 iOffsetTriangles;   //!< byte offset to triangle data
+    coreInt32 iOffsetShaders;     //!< byte offset to shader data
+    coreInt32 iOffsetTexture;     //!< byte offset to texture data
+    coreInt32 iOffsetVertices;    //!< byte offset to vertex data
+    coreInt32 iOffsetEnd;         //!< surface end (next surface)
 };
 
 
@@ -83,8 +83,8 @@ struct md3Mesh
 /* MD3-shader structure */
 struct md3Shader
 {
-    char acName[64];     //!< shader name
-    int  iShaderIndex;   //!< shader index number
+    coreChar  acName[64];     //!< shader name
+    coreInt32 iShaderIndex;   //!< shader index number
 };
 
 
@@ -92,7 +92,7 @@ struct md3Shader
 /* MD3-triangle structure */
 struct md3Triangle
 {
-    coreUint aiIndex[3];   //!< triangle indices
+    coreUint32 aiIndex[3];   //!< triangle indices
 };
 
 
@@ -108,8 +108,8 @@ struct md3Texture
 /* MD3-vertex structure */
 struct md3Vertex
 {
-    short    asCoord[3];    //!< compressed vertex coordinates (1:64)
-    coreByte aiNormal[2];   //!< compressed normal zenith and azimuth
+    coreInt16 asCoord[3];    //!< compressed vertex coordinates (1:64)
+    coreUint8 aiNormal[2];   //!< compressed normal zenith and azimuth
 };
 
 
@@ -138,7 +138,7 @@ struct md3File
 
 // ****************************************************************
 /* import MD3 model file (simplified) */
-inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUTPUT pOutput)
+inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OUTPUT pOutput)
 {
     WARN_IF(!pData || !pOutput) return CORE_INVALID_INPUT;
 
@@ -163,7 +163,7 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
 
     // read surface data
     const coreByte* pCursor = pData + oFile.oHeader.iOffsetSurfaces;
-    for(int i = 0; i < oFile.oHeader.iNumSurfaces; ++i)
+    for(coreUintW i = 0, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)
     {
         md3Surface& oSurface = oFile.pSurface[i];
         md3Mesh&    oMesh    = oSurface.oMesh;
@@ -188,9 +188,10 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
     const md3Surface& oSurface = oFile.pSurface[0];
 
     // cache size values
-    const int& iNumVertices  = oSurface.oMesh.iNumVertices;
-    const int  iNumIndices   = oSurface.oMesh.iNumTriangles*3;
-    const int& iNumTriangles = oSurface.oMesh.iNumTriangles;
+    const coreUintW iNumVertices  = oSurface.oMesh.iNumVertices;
+    const coreUintW iNumIndices   = oSurface.oMesh.iNumTriangles * 3;
+    const coreUintW iNumTriangles = oSurface.oMesh.iNumTriangles;
+    ASSERT(iNumVertices <= 0xFFFF)
 
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);
@@ -199,7 +200,7 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
     coreVector3* pvOrtho2 = new coreVector3[iNumVertices];
 
     // loop through all vertices
-    for(int i = 0; i < iNumVertices; ++i)
+    for(coreUintW i = 0; i < iNumVertices; ++i)
     {
         // calculate vertex position
         pVertex[i].vPosition = coreVector3(I_TO_F(oSurface.pVertex[i].asCoord[0]),
@@ -207,9 +208,9 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
                                            I_TO_F(oSurface.pVertex[i].asCoord[2])) * 0.015625f;
 
         // calculate vertex normal
-        const float fLat   = I_TO_F(oSurface.pVertex[i].aiNormal[1]) * (PI / 128.0f);
-        const float fLng   = I_TO_F(oSurface.pVertex[i].aiNormal[0]) * (PI / 128.0f);
-        const float fSin   = SIN(fLng);
+        const coreFloat fLat = I_TO_F(oSurface.pVertex[i].aiNormal[1]) * (PI / 128.0f);
+        const coreFloat fLng = I_TO_F(oSurface.pVertex[i].aiNormal[0]) * (PI / 128.0f);
+        const coreFloat fSin = SIN(fLng);
         pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).Normalize();
 
         // forward texture coordinate
@@ -217,7 +218,7 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
     }
 
     // loop through all triangles
-    for(int i = 0; i < iNumTriangles; ++i)
+    for(coreUintW i = 0; i < iNumTriangles; ++i)
     {
         const md3Triangle& oTriangle = oSurface.pTriangle[i];
 
@@ -228,18 +229,18 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
         const coreVector2 B2 = pVertex[oTriangle.aiIndex[2]].vTexCoord - pVertex[oTriangle.aiIndex[0]].vTexCoord;
 
         // calculate local tangent vector parameters
-        const float R = RCP(B1.s*B2.t - B2.s*B1.t);
+        const coreFloat   R  = RCP(B1.s*B2.t - B2.s*B1.t);
         const coreVector3 D1 = (A1*B2.t - A2*B1.t) * R;
         const coreVector3 D2 = (A2*B1.s - A1*B2.s) * R;
 
-        for(int j = 0; j < 3; ++j)
+        for(coreUintW j = 0; j < 3; ++j)
         {
             // add local values to each point of the triangle
             pvOrtho1[oTriangle.aiIndex[j]] += D1;
             pvOrtho2[oTriangle.aiIndex[j]] += D2;
         }
     }
-    for(int i = 0; i < iNumVertices; ++i)
+    for(coreUintW i = 0; i < iNumVertices; ++i)
     {
         // finish the Gram-Schmidt process to calculate the tangent vector and binormal sign (w)
         pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalize(),
@@ -248,10 +249,12 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
 
     // copy index data counter-clockwise
     pOutput->aiIndexData.resize(iNumIndices);
-    for(int i = 0; i < iNumTriangles; ++i)
+    for(coreUintW i = 0; i < iNumTriangles; ++i)
     {
-        for(int j = 0; j < 3; ++j)
-            pOutput->aiIndexData[i*3+j] = (coreUshort)oFile.pSurface[0].pTriangle[i].aiIndex[2-j];
+        for(coreUintW j = 0; j < 3; ++j)
+        {
+            pOutput->aiIndexData[i*3+j] = coreUint16(oFile.pSurface[0].pTriangle[i].aiIndex[2-j]);
+        }
     }
 
     // free required vertex memory
@@ -259,7 +262,7 @@ inline coreError coreImportMD3(const coreByte* pData, coreModel::coreImport* OUT
     SAFE_DELETE_ARRAY(pvOrtho2)
 
     // free model file memory
-    for(int i = 0; i < oFile.oHeader.iNumSurfaces; i++)
+    for(coreUintW i = 0, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)
     {
         SAFE_DELETE_ARRAY(oFile.pSurface[i].pTriangle)
         SAFE_DELETE_ARRAY(oFile.pSurface[i].pTexture)

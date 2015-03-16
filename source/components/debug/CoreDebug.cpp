@@ -72,7 +72,7 @@ CoreDebug::~CoreDebug()
 
 // ****************************************************************
 /* start measuring performance */
-void CoreDebug::MeasureStart(const char* pcName)
+void CoreDebug::MeasureStart(const coreChar* pcName)
 {
     if(!m_bEnabled) return;
 
@@ -89,7 +89,7 @@ void CoreDebug::MeasureStart(const char* pcName)
             glGenQueries(CORE_DEBUG_QUERIES, pNewMeasure->aaiQuery[1]);
 
             // already process later queries to remove invalid values
-            for(coreByte i = 1; i < CORE_DEBUG_QUERIES; ++i)
+            for(coreUintW i = 1; i < CORE_DEBUG_QUERIES; ++i)
             {
                 glQueryCounter(pNewMeasure->aaiQuery[0][i], GL_TIMESTAMP);
                 glQueryCounter(pNewMeasure->aaiQuery[1][i], GL_TIMESTAMP);
@@ -114,7 +114,7 @@ void CoreDebug::MeasureStart(const char* pcName)
 
 // ****************************************************************
 /* end measuring performance */
-void CoreDebug::MeasureEnd(const char* pcName)
+void CoreDebug::MeasureEnd(const coreChar* pcName)
 {
     if(!m_bEnabled) return;
 
@@ -123,7 +123,7 @@ void CoreDebug::MeasureEnd(const char* pcName)
     coreMeasure* pMeasure = m_apMeasure.at(pcName);
 
     // fetch second CPU time value and update CPU performance value
-    const float fDifferenceCPU = float(double(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
+    const coreFloat fDifferenceCPU = coreFloat(coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
     pMeasure->fCurrentCPU = pMeasure->fCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
 
     if(pMeasure->aaiQuery[0][0])
@@ -141,14 +141,14 @@ void CoreDebug::MeasureEnd(const char* pcName)
         glGetQueryObjectui64v(pMeasure->aaiQuery[1].Current(), GL_QUERY_RESULT, &aiResult[1]);
 
         // update GPU performance value
-        const float fDifferenceGPU = float(double(aiResult[1] - aiResult[0]) / 1.0e06);
+        const coreFloat fDifferenceGPU = coreFloat(coreDouble(aiResult[1] - aiResult[0]) / 1.0e06);
         pMeasure->fCurrentGPU = pMeasure->fCurrentGPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceGPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
     }
 
     if(pMeasure == m_pOverall)
     {
         // add additional performance information (framerate and system utilization)
-        const float fTime = Core::System->GetTime();
+        const coreFloat& fTime = Core::System->GetTime();
         if(fTime) pcName = PRINT("%s%s %.1f %05.1f%%", pcName, SDL_GL_GetSwapInterval() ? "*" : "", RCP(fTime), fTime*6000.0f);
     }
 
@@ -188,15 +188,15 @@ void CoreDebug::__UpdateOutput()
     if(!m_bVisible) return;
 
     // loop through all objects
-    int   iCurLine  = 1;
-    float fNewSizeX = m_Background.GetSize().x;
+    coreInt8  iCurLine  = 1;
+    coreFloat fNewSizeX = m_Background.GetSize().x;
 
     // move measure objects
     FOR_EACH(it, m_apMeasure)
     {
         coreMeasure* pMeasure = (*it);
 
-        pMeasure->oOutput.SetPosition(coreVector2(0.0f, --iCurLine*0.023f));
+        pMeasure->oOutput.SetPosition(coreVector2(0.0f, I_TO_F(--iCurLine)*0.023f));
         pMeasure->oOutput.Move();
 
         fNewSizeX = MAX(fNewSizeX, pMeasure->oOutput.GetSize().x + 0.005f);
@@ -207,22 +207,26 @@ void CoreDebug::__UpdateOutput()
     {
         coreInspect* pInspect = (*it);
 
-        pInspect->oOutput.SetPosition(coreVector2(0.0f, --iCurLine*0.023f));
+        pInspect->oOutput.SetPosition(coreVector2(0.0f, I_TO_F(--iCurLine)*0.023f));
         pInspect->oOutput.Move();
 
         fNewSizeX = MAX(fNewSizeX, pInspect->oOutput.GetSize().x + 0.005f);
     }
 
     // move background object (adjust size automatically)
-    m_Background.SetSize(coreVector2(fNewSizeX, (1-iCurLine)*0.023f + 0.005f));
+    m_Background.SetSize(coreVector2(fNewSizeX, I_TO_F(1-iCurLine)*0.023f + 0.005f));
     m_Background.Move();
 
     // hide output on screenshots
     if(!Core::Input->GetKeyboardButton(CORE_INPUT_KEY(PRINTSCREEN), CORE_INPUT_PRESS))
     {
-        // render full output
-        m_Background.Render();
-        FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
-        FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
+        glDisable(GL_DEPTH_TEST);
+        {
+            // render full output
+            m_Background.Render();
+            FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
+            FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
+        }
+        glEnable(GL_DEPTH_TEST);
     }
 }

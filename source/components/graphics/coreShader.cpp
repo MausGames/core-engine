@@ -14,16 +14,16 @@ coreProgram* coreProgram::s_pCurrent           = NULL;
 
 // ****************************************************************
 // create static string lists
-template <const char* pcString, coreUint iLength, coreUint iNum> struct sStringList
+template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sStringList
 {
-    char aacEntry[iNum][iLength];
+    coreChar aacEntry[iNum][iLength];
 
-    sStringList()noexcept {for(coreUint i = 0; i < iNum; ++i) std::sprintf(aacEntry[i], pcString, i);}
-    inline const char* operator [] (const coreUint& i)const {return aacEntry[i];}
+    sStringList()noexcept {for(coreUintW i = 0; i < iNum; ++i) std::sprintf(aacEntry[i], pcString, i);}
+    inline const coreChar* operator [] (const coreUintW& iIndex)const {return aacEntry[iIndex];}
 };
 
 #define STRING_ARRAY(s,n,v)           \
-    extern const char v ## __a[] = s; \
+    extern const coreChar v ## __a[] = s; \
     const sStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
 
 STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
@@ -42,7 +42,7 @@ coreShader::coreShader()noexcept
 {
 }
 
-coreShader::coreShader(const char* pcCustomCode)noexcept
+coreShader::coreShader(const coreChar* pcCustomCode)noexcept
 : m_iShader     (0)
 , m_iType       (0)
 , m_sCustomCode (pcCustomCode)
@@ -60,7 +60,7 @@ coreShader::~coreShader()
 
 // ****************************************************************
 // load shader resource data
-coreError coreShader::Load(coreFile* pFile)
+coreStatus coreShader::Load(coreFile* pFile)
 {
     coreFileUnload Unload(pFile);
 
@@ -69,10 +69,10 @@ coreError coreShader::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_ERROR_FILE;
 
     // extract file extension
-    const char* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
+    const coreChar* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
 
     // set shader type
-    const char* pcTypeDef;
+    const coreChar* pcTypeDef;
          if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {m_iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_          (1) \n";}
     else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {m_iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_    (1) \n";}
     else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {m_iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_ (1) \n";}
@@ -89,16 +89,16 @@ coreError coreShader::Load(coreFile* pFile)
     if((m_iType == GL_GEOMETRY_SHADER)                                             && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
 
     // load quality level and global shader data
-    const char* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
+    const coreChar* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobalCode();
 
     // assemble the shader
-    const char* apcData[6] = {s_asGlobalCode[0].c_str(),       pcTypeDef,                   pcQualityDef,                   m_sCustomCode.c_str(),       s_asGlobalCode[1].c_str(),       r_cast<const char*>(pFile->GetData())};
-    const int   aiSize[6]  = {(int)s_asGlobalCode[0].length(), (int)std::strlen(pcTypeDef), (int)std::strlen(pcQualityDef), (int)m_sCustomCode.length(), (int)s_asGlobalCode[1].length(), (int)pFile->GetSize()};
+    const coreChar* apcData[6] = {s_asGlobalCode[0].c_str(),              pcTypeDef,              pcQualityDef,  m_sCustomCode.c_str(),  s_asGlobalCode[1].c_str(), r_cast<const coreChar*>(pFile->GetData())};
+    const coreInt32 aiSize [6] = {s_asGlobalCode[0].length(), std::strlen(pcTypeDef), std::strlen(pcQualityDef), m_sCustomCode.length(), s_asGlobalCode[1].length(),                        pFile->GetSize()};
 
     // create and compile the shader
     m_iShader = glCreateShader(m_iType);
-    glShaderSource(m_iShader, 6, apcData, aiSize);
+    glShaderSource (m_iShader, 6, apcData, aiSize);
     glCompileShader(m_iShader);
 
     // save properties
@@ -106,18 +106,18 @@ coreError coreShader::Load(coreFile* pFile)
     m_iSize = aiSize[0] + aiSize[1] + aiSize[2];
 
     // check for errors
-    int iStatus;
+    GLint iStatus;
     glGetShaderiv(m_iShader, GL_COMPILE_STATUS, &iStatus);
     if(!iStatus)
     {
         // get length of error-log
-        int iLength;
+        GLint iLength;
         glGetShaderiv(m_iShader, GL_INFO_LOG_LENGTH, &iLength);
 
         if(iLength)
         {
             // get error-log
-            char* pcLog = new char[iLength];
+            coreChar* pcLog = new coreChar[iLength];
             glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
 
             // write error-log
@@ -138,7 +138,7 @@ coreError coreShader::Load(coreFile* pFile)
 
 // ****************************************************************
 // unload shader resource data
-coreError coreShader::Unload()
+coreStatus coreShader::Unload()
 {
     if(!m_iShader) return CORE_INVALID_CALL;
 
@@ -174,7 +174,7 @@ void coreShader::__LoadGlobalCode()
     WARN_IF(!pFile->GetData()) return;
 
     // copy and unload data
-    s_asGlobalCode[1].append(r_cast<const char*>(pFile->GetData()), pFile->GetSize());
+    s_asGlobalCode[1].append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
     s_asGlobalCode[1].append(1, '\n');
     pFile->UnloadData();
 
@@ -201,17 +201,17 @@ coreProgram::~coreProgram()
     this->Unload();
 
     // remove all shader objects and attribute locations
-    m_apShader.clear();
+    m_apShader   .clear();
     m_aiAttribute.clear();
 }
 
 
 // ****************************************************************
 // load shader-program
-coreError coreProgram::Load(coreFile* pFile)
+coreStatus coreProgram::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
+    const coreStatus iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck == CORE_OK) m_iStatus = CORE_SHADER_FINISHED;
     if(iCheck >= CORE_OK) return iCheck;
 
@@ -283,7 +283,7 @@ coreError coreProgram::Load(coreFile* pFile)
     // bind output locations
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        for(coreByte i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+        for(coreUintW i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             glBindFragDataLocation(m_iProgram, i, avOutColor[i]);
     }
 
@@ -292,14 +292,14 @@ coreError coreProgram::Load(coreFile* pFile)
     glUseProgram (m_iProgram);
 
     // bind texture units
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS_2D; ++i)     glUniform1i(glGetUniformLocation(m_iProgram, avTexture2D    [i]), i);
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTexture2D    [i]), i);
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
 
     // bind uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        const int iTransformBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_TRANSFORM);
-        const int iAmbientBlock   = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_AMBIENT);
+        const GLint iTransformBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_TRANSFORM);
+        const GLint iAmbientBlock   = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_AMBIENT);
         if(iTransformBlock >= 0) glUniformBlockBinding(m_iProgram, iTransformBlock, CORE_SHADER_BUFFER_TRANSFORM_NUM);
         if(iAmbientBlock   >= 0) glUniformBlockBinding(m_iProgram, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
     }
@@ -314,7 +314,7 @@ coreError coreProgram::Load(coreFile* pFile)
     m_sPath.pop_back();
 
     // check for errors
-    int iStatus;
+    GLint iStatus;
     glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
     if(!iStatus)
     {
@@ -323,7 +323,7 @@ coreError coreProgram::Load(coreFile* pFile)
     }
 
     // create sync object
-    const bool bSync = m_Sync.Create();
+    const coreBool bSync = m_Sync.Create();
     if(!bSync) m_iStatus = CORE_SHADER_FINISHED;
 
     Core::Log->Info("Program (%s:%u) loaded", m_sPath.c_str(), m_iProgram);
@@ -333,7 +333,7 @@ coreError coreProgram::Load(coreFile* pFile)
 
 // ****************************************************************
 // unload shader-program
-coreError coreProgram::Unload()
+coreStatus coreProgram::Unload()
 {
     if(!m_iProgram) return CORE_INVALID_CALL;
 
@@ -366,7 +366,7 @@ coreError coreProgram::Unload()
 
 // ****************************************************************
 // enable the shader-program
-bool coreProgram::Enable()
+coreBool coreProgram::Enable()
 {
     ASSERT(m_iStatus)
 
@@ -395,11 +395,11 @@ bool coreProgram::Enable()
         this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetViewResolution());
 
         // forward ambient data
-        for(coreByte i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+        for(coreUintW i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
         {
-            this->SendUniform(avLightPosition[i],  Core::Graphics->GetLight(i).vPosition);
+            this->SendUniform(avLightPosition [i], Core::Graphics->GetLight(i).vPosition);
             this->SendUniform(avLightDirection[i], Core::Graphics->GetLight(i).vDirection);
-            this->SendUniform(avLightValue[i],     Core::Graphics->GetLight(i).vValue);
+            this->SendUniform(avLightValue    [i], Core::Graphics->GetLight(i).vValue);
         }
     }
 
@@ -409,7 +409,7 @@ bool coreProgram::Enable()
     glValidateProgram(m_iProgram);
 
     // check for errors
-    int iStatus;
+    GLint iStatus;
     glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatus);
     if(!iStatus)
     {
@@ -425,7 +425,7 @@ bool coreProgram::Enable()
 
 // ****************************************************************
 // disable the shader-program
-void coreProgram::Disable(const bool& bFull)
+void coreProgram::Disable(const coreBool& bFull)
 {
     // reset current shader-program
     s_pCurrent = NULL;
@@ -435,10 +435,10 @@ void coreProgram::Disable(const bool& bFull)
 
 // ****************************************************************
 // send new uniform 3x3-matrix
-void coreProgram::SendUniform(const char* pcName, const coreMatrix3& mMatrix, const bool& bTranspose)
+void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool& bTranspose)
 {
     // get uniform location
-    const int iLocation = this->GetUniform(pcName);
+    const coreInt8 iLocation = this->GetUniform(pcName);
     if(iLocation >= 0)
     {
         // send new value
@@ -453,10 +453,10 @@ void coreProgram::SendUniform(const char* pcName, const coreMatrix3& mMatrix, co
 
 // ****************************************************************
 // send new uniform 4x4-matrix
-void coreProgram::SendUniform(const char* pcName, const coreMatrix4& mMatrix, const bool& bTranspose)
+void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool& bTranspose)
 {
     // get uniform location
-    const int iLocation = this->GetUniform(pcName);
+    const coreInt8 iLocation = this->GetUniform(pcName);
     if(iLocation >= 0)
     {
         // send new value
@@ -474,13 +474,13 @@ void coreProgram::SendUniform(const char* pcName, const coreMatrix4& mMatrix, co
 void coreProgram::__WriteLog()const
 {
     // get length of error-log
-    int iLength;
+    GLint iLength;
     glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
 
     if(iLength)
     {
         // get error-log
-        char* pcLog = new char[iLength];
+        coreChar* pcLog = new coreChar[iLength];
         glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
 
         // write error-log

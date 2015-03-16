@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-int coreTextBox::s_iActiveCounter = 0;
+coreInt8 coreTextBox::s_iActiveCounter = 0;
 
 
 // ****************************************************************
@@ -24,7 +24,7 @@ coreTextBox::coreTextBox()noexcept
 {
 }
 
-coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+coreTextBox::coreTextBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
 : coreTextBox ()
 {
     // construct on creation
@@ -34,7 +34,7 @@ coreTextBox::coreTextBox(const char* pcIdle, const char* pcBusy, const char* pcF
 
 // ****************************************************************
 // construct the text-box
-void coreTextBox::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
+void coreTextBox::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
 {
     ASSERT(iLength)
 
@@ -96,7 +96,7 @@ void coreTextBox::Move()
 
 // ****************************************************************
 // set text-input status
-void coreTextBox::SetInput(const bool& bInput)
+void coreTextBox::SetInput(const coreBool& bInput)
 {
     if(m_bInput == bInput) return;
 
@@ -121,7 +121,7 @@ void coreTextBox::SetInput(const bool& bInput)
 
 // ****************************************************************
 // process new text-input characters
-bool coreTextBox::__Write()
+coreBool coreTextBox::__Write()
 {
     // get new text-input character
     const coreInputChar& iChar = Core::Input->GetKeyboardChar();
@@ -140,20 +140,20 @@ bool coreTextBox::__Write()
         else if(iChar == CORE_INPUT_CHAR(PASTE))
         {
             // paste text from clipboard
-            char* pcPaste = SDL_GetClipboardText();
+            coreChar* pcPaste = SDL_GetClipboardText();
             if(pcPaste)
             {
-                const size_t iLen = MIN<size_t>(std::strlen(pcPaste), (m_pCaption->GetLength()-1) - m_sText.length());
+                const coreUintW iLen = MIN(std::strlen(pcPaste), coreUintW(m_pCaption->GetLength()-1) - m_sText.length());
 
                 // append and clamp to remaining string space
                 m_sText.append(pcPaste, iLen);
                 SDL_free(pcPaste);
             }
         }
-        else if(m_sText.length() < m_pCaption->GetLength()-1)
+        else if(m_sText.length() < coreUintW(m_pCaption->GetLength()-1))
         {
             // append new character
-            m_sText.append(1, char(iChar));
+            m_sText.append(1, coreChar(iChar));
         }
 
         m_bDisplay = true;

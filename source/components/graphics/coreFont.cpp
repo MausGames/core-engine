@@ -27,7 +27,7 @@ coreFont::~coreFont()
 
 // ****************************************************************
 // load font resource data
-coreError coreFont::Load(coreFile* pFile)
+coreStatus coreFont::Load(coreFile* pFile)
 {
     WARN_IF(m_pFile)      return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
@@ -50,7 +50,7 @@ coreError coreFont::Load(coreFile* pFile)
 
 // ****************************************************************
 // unload font resource data
-coreError coreFont::Unload()
+coreStatus coreFont::Unload()
 {
     if(!m_pFile) return CORE_INVALID_CALL;
 
@@ -72,7 +72,7 @@ coreError coreFont::Unload()
 
 // ****************************************************************
 // create text surface with the font
-SDL_Surface* coreFont::CreateText(const char* pcText, const int& iHeight)
+SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint8& iHeight)
 {
     ASSERT(pcText)
 
@@ -87,7 +87,7 @@ SDL_Surface* coreFont::CreateText(const char* pcText, const int& iHeight)
     return TTF_RenderUTF8_Shaded(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiFront, aiBack);
 }
 
-SDL_Surface* coreFont::CreateGlyph(const coreUshort& iGlyph, const int& iHeight)
+SDL_Surface* coreFont::CreateGlyph(const coreUint16& iGlyph, const coreUint8& iHeight)
 {
     // check for specific height
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
@@ -103,7 +103,7 @@ SDL_Surface* coreFont::CreateGlyph(const coreUshort& iGlyph, const int& iHeight)
 
 // ****************************************************************
 // init font in a specific height
-bool coreFont::__InitHeight(const int& iHeight)
+coreBool coreFont::__InitHeight(const coreUint8& iHeight)
 {
     ASSERT(!m_apFont.count(iHeight))
 

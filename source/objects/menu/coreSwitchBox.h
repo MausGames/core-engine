@@ -35,24 +35,24 @@ private:
     coreLabel  m_Caption;              //!< label displaying the current entry
 
     std::vector<coreEntry> m_aEntry;   //!< list with entries and associated values
-    coreUint m_iCurIndex;              //!< index of the current entry
+    coreUintW m_iCurIndex;             //!< index of the current entry
 
-    bool      m_bEndless;              //!< endless repeat behavior
+    coreBool  m_bEndless;              //!< endless repeat behavior
     coreTimer m_Automatic;             //!< automatic forward behavior
 
 
 public:
     coreSwitchBox()noexcept;
-    coreSwitchBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
-    coreSwitchBox(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
+    coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept;
+    coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept;
     ~coreSwitchBox();
 
     DISABLE_COPY(coreSwitchBox)
 
     //! construct the switch-box
     //! @{
-    void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength);
-    void Construct(const char* pcFont, const int& iHeight, const coreUint& iLength);
+    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength);
+    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength);
     //! @}
 
     //! render and move the switch-box
@@ -63,38 +63,38 @@ public:
 
     //! manage entries
     //! @{
-    void AddEntry        (const char* pcText, const T& tValue);
-    void AddEntryLanguage(const char* pcKey,  const T& tValue);
-    void DeleteEntry     (const coreUint& iIndex);
+    void AddEntry        (const coreChar*  pcText, const T& tValue);
+    void AddEntryLanguage(const coreChar*  pcKey,  const T& tValue);
+    void DeleteEntry     (const coreUintW& iIndex);
     void ClearEntries();
     //! @}
 
     //! switch current entry
     //! @{
-    void Select(const coreUint& iIndex);
+    void Select(const coreUintW& iIndex);
     void Next    ();
     void Previous();
     //! @}
 
     //! access entries
     //! @{
-    inline const coreEntry& GetEntry   (const coreUint& iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex];}
-    inline const coreEntry& GetCurEntry()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex];}
+    inline const coreEntry& GetEntry   (const coreUintW& iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex];}
+    inline const coreEntry& GetCurEntry()const                        {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex];}
     //! @}
 
     //! set object properties
     //! @{
-    inline void SetEndless  (const bool&  bEndless) {m_bEndless = bEndless;}
-    inline void SetAutomatic(const float& fSpeed)   {m_Automatic.SetSpeed(fSpeed);}
+    inline void SetEndless  (const coreBool&  bEndless) {m_bEndless = bEndless;}
+    inline void SetAutomatic(const coreFloat& fSpeed)   {m_Automatic.SetSpeed(fSpeed);}
     //! @}
 
     //! get object properties
     //! @{
-    inline coreButton*     GetArrow     (const coreUint& iIndex) {ASSERT(iIndex < 2) return &m_aArrow[iIndex];}
-    inline coreLabel*      GetCaption   ()                       {return &m_Caption;}
-    inline coreUint        GetNumEntries()const                  {return m_aEntry.size();}
-    inline const coreUint& GetCurIndex  ()const                  {return m_iCurIndex;}
-    inline const bool&     GetEndless   ()const                  {return m_bEndless;}
+    inline       coreButton* GetArrow     (const coreUintW& iIndex) {ASSERT(iIndex < 2) return &m_aArrow[iIndex];}
+    inline       coreLabel*  GetCaption   ()                        {return &m_Caption;}
+    inline       coreUintW   GetNumEntries()const                   {return m_aEntry.size();}
+    inline const coreUintW&  GetCurIndex  ()const                   {return m_iCurIndex;}
+    inline const coreBool&   GetEndless   ()const                   {return m_bEndless;}
     //! @}
 
 
@@ -115,14 +115,14 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 {
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
     this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
@@ -141,7 +141,7 @@ template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 
 // ****************************************************************
 // construct the switch-box
-template <typename T> void coreSwitchBox<T>::Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)
+template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
 {
     // create selection arrows
     m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, 2);
@@ -153,7 +153,7 @@ template <typename T> void coreSwitchBox<T>::Construct(const char* pcIdle, const
     this->Construct(pcFont, iHeight, iLength);
 }
 
-template <typename T> void coreSwitchBox<T>::Construct(const char* pcFont, const int& iHeight, const coreUint& iLength)
+template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
 {
     ASSERT(iLength)
 
@@ -201,8 +201,8 @@ template <typename T> void coreSwitchBox<T>::Move()
     }
 
     // check for selection arrow interaction
-    const bool abStatus[2] = {m_aArrow[0].IsClicked(CORE_INPUT_LEFT, CORE_INPUT_HOLD),
-                              m_aArrow[1].IsClicked(CORE_INPUT_LEFT, CORE_INPUT_HOLD)};
+    const coreBool abStatus[2] = {m_aArrow[0].IsClicked(CORE_INPUT_LEFT, CORE_INPUT_HOLD),
+                                  m_aArrow[1].IsClicked(CORE_INPUT_LEFT, CORE_INPUT_HOLD)};
 
     if(abStatus[0] || abStatus[1])
     {
@@ -263,7 +263,7 @@ template <typename T> void coreSwitchBox<T>::Move()
 
 // ****************************************************************
 // add entry
-template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcText, const T& tValue)
+template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, const T& tValue)
 {
     // create new entry
     m_aEntry.push_back(coreEntry(pcText, tValue));
@@ -272,7 +272,7 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const char* pcText, const 
     if(m_aEntry.size() == 1) this->__Update();
 }
 
-template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const char* pcKey, const T& tValue)
+template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreChar* pcKey, const T& tValue)
 {
     // create and bind new entry
     this->AddEntry("", tValue);
@@ -282,10 +282,10 @@ template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const char* pcKey,
 
 // ****************************************************************
 // remove entry
-template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUint& iIndex)
+template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUintW& iIndex)
 {
     ASSERT(iIndex < m_aEntry.size())
-    auto it = m_aEntry.begin()+iIndex;
+    auto it = m_aEntry.begin() + iIndex;
 
     // unbind entry
     this->_UnbindString(&it->first);
@@ -318,7 +318,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
 
 // ****************************************************************
 // switch to specific entry
-template <typename T> void coreSwitchBox<T>::Select(const coreUint& iIndex)
+template <typename T> void coreSwitchBox<T>::Select(const coreUintW& iIndex)
 {
     ASSERT(iIndex < m_aEntry.size())
 
@@ -339,7 +339,7 @@ template <typename T> void coreSwitchBox<T>::Next()
 
     // increase current index
     if(++m_iCurIndex >= m_aEntry.size())
-        m_iCurIndex = m_bEndless ? 0 : (coreUint(m_aEntry.size())-1);
+        m_iCurIndex = m_bEndless ? 0 : (m_aEntry.size() - 1);
 
     // update text
     this->__Update();
@@ -354,7 +354,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
 
     // decrease current index
     if(--m_iCurIndex >= m_aEntry.size())
-        m_iCurIndex = m_bEndless ? (coreUint(m_aEntry.size())-1) : 0;
+        m_iCurIndex = m_bEndless ? (m_aEntry.size() - 1) : 0;
 
     // update text
     this->__Update();

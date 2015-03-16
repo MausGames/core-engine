@@ -13,13 +13,13 @@
 
 // ****************************************************************
 /* timer definitions */
-enum coreTimerPlay : bool
+enum coreTimerPlay : coreBool
 {
     CORE_TIMER_PLAY_CURRENT = false,   //!< play from current position
     CORE_TIMER_PLAY_RESET   = true     //!< play from the beginning
 };
 
-enum coreTimerGet : bool
+enum coreTimerGet : coreBool
 {
     CORE_TIMER_GET_NORMAL   = false,   //!< get current value
     CORE_TIMER_GET_REVERSED = true     //!< get reversed current value (end - value)
@@ -31,26 +31,26 @@ enum coreTimerGet : bool
 class coreTimer final
 {
 private:
-    float m_fValue;         //!< current value
-    float m_fEnd;           //!< target value
-    float m_fSpeed;         //!< speed factor of the timer
+    coreFloat m_fValue;       //!< current value
+    coreFloat m_fEnd;         //!< target value
+    coreFloat m_fSpeed;       //!< speed factor of the timer
 
-    coreUint m_iMaxLoops;   //!< max number of loops (0 = infinite)
-    coreUint m_iCurLoops;   //!< current number of loops
+    coreUint16 m_iMaxLoops;   //!< max number of loops (0 = infinite)
+    coreUint16 m_iCurLoops;   //!< current number of loops
 
-    int  m_iTimeID;         //!< ID of the used frame time
-    bool m_bStatus;         //!< current play status
+    coreInt8 m_iTimeID;       //!< ID of the used frame time
+    coreBool m_bStatus;       //!< current play status
 
 
 public:
     constexpr_func coreTimer()noexcept;
-    constexpr_func coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept;
+    constexpr_func coreTimer(const coreFloat& fEnd, const coreFloat& fSpeed, const coreUint16& iLoops)noexcept;
 
     ENABLE_COPY(coreTimer)
 
     /*! update the timer */
     //! @{
-    bool Update(const float& fSpeedModifier);
+    coreBool Update(const coreFloat& fSpeedModifier);
     //! @}
 
     /*! control the timer */
@@ -63,28 +63,28 @@ public:
 
     /*! set all basic object properties */
     //! @{
-    inline void Set(const float& fEnd, const float& fSpeed, const coreUint& iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoops = iLoops;}
+    inline void Set(const coreFloat& fEnd, const coreFloat& fSpeed, const coreUint16& iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoops = iLoops;}
     //! @}
 
     /*! set object properties */
     //! @{
-    inline void SetValue   (const float&    fValue)    {m_fValue    = fValue;}
-    inline void SetEnd     (const float&    fEnd)      {m_fEnd      = fEnd;}
-    inline void SetSpeed   (const float&    fSpeed)    {m_fSpeed    = fSpeed;}
-    inline void SetMaxLoops(const coreUint& iMaxLoops) {m_iMaxLoops = iMaxLoops;}
-    inline void SetCurLoops(const coreUint& iCurLoops) {m_iCurLoops = iCurLoops;}
-    inline void SetTimeID  (const int&      iTimeID)   {m_iTimeID   = iTimeID;}
+    inline void SetValue   (const coreFloat&  fValue)    {m_fValue    = fValue;}
+    inline void SetEnd     (const coreFloat&  fEnd)      {m_fEnd      = fEnd;}
+    inline void SetSpeed   (const coreFloat&  fSpeed)    {m_fSpeed    = fSpeed;}
+    inline void SetMaxLoops(const coreUint16& iMaxLoops) {m_iMaxLoops = iMaxLoops;}
+    inline void SetCurLoops(const coreUint16& iCurLoops) {m_iCurLoops = iCurLoops;}
+    inline void SetTimeID  (const coreInt8&   iTimeID)   {m_iTimeID   = iTimeID;}
     //! @}
 
     /*! get object properties */
     //! @{
-    inline float           GetValue   (const coreTimerGet& bReversed)const {return bReversed ? (m_fEnd - m_fValue) : m_fValue;}
-    inline const float&    GetEnd     ()const                              {return m_fEnd;}
-    inline const float&    GetSpeed   ()const                              {return m_fSpeed;}
-    inline const coreUint& GetMaxLoops()const                              {return m_iMaxLoops;}
-    inline const coreUint& GetCurLoops()const                              {return m_iCurLoops;}
-    inline const int&      GetTimeID  ()const                              {return m_iTimeID;}
-    inline const bool&     GetStatus  ()const                              {return m_bStatus;}
+    inline       coreFloat   GetValue   (const coreTimerGet& bReversed)const {return bReversed ? (m_fEnd - m_fValue) : m_fValue;}
+    inline const coreFloat&  GetEnd     ()const                              {return m_fEnd;}
+    inline const coreFloat&  GetSpeed   ()const                              {return m_fSpeed;}
+    inline const coreUint16& GetMaxLoops()const                              {return m_iMaxLoops;}
+    inline const coreUint16& GetCurLoops()const                              {return m_iCurLoops;}
+    inline const coreInt8&   GetTimeID  ()const                              {return m_iTimeID;}
+    inline const coreBool&   GetStatus  ()const                              {return m_bStatus;}
     //! @}
 };
 
@@ -94,26 +94,26 @@ public:
 class coreFlow final
 {
 private:
-    float m_fValue;   //!< current value
+    coreFloat m_fValue;   //!< current value
 
 
 public:
-    constexpr_func coreFlow()noexcept                    : m_fValue (0.0f)   {}
-    constexpr_func coreFlow(const float& fValue)noexcept : m_fValue (fValue) {}
+    constexpr_func coreFlow()noexcept                        : m_fValue (0.0f)   {}
+    constexpr_func coreFlow(const coreFloat& fValue)noexcept : m_fValue (fValue) {}
 
     ENABLE_COPY(coreFlow)
 
     /*! access current value */
     //! @{
-    inline operator       float& ()           {return  m_fValue;}
-    inline operator const float& ()const      {return  m_fValue;}
-    inline float& operator = (const float& f) {return (m_fValue = f);}
+    inline operator       coreFloat& ()               {return  m_fValue;}
+    inline operator const coreFloat& ()const          {return  m_fValue;}
+    inline coreFloat& operator = (const coreFloat& f) {return (m_fValue = f);}
     //! @}
 
     /*! update the flowing value */
     //! @{
-    inline void Update(const float& fSpeed)                     {m_fValue += fSpeed * Core::System->GetTime();}
-    inline void Update(const float& fSpeed, const int& iTimeID) {m_fValue += fSpeed * Core::System->GetTime(iTimeID);}
+    inline void Update(const coreFloat& fSpeed)                          {m_fValue += fSpeed * Core::System->GetTime();}
+    inline void Update(const coreFloat& fSpeed, const coreInt8& iTimeID) {m_fValue += fSpeed * Core::System->GetTime(iTimeID);}
     //! @}
 };
 
@@ -125,7 +125,7 @@ constexpr_func coreTimer::coreTimer()noexcept
 {
 }
 
-constexpr_func coreTimer::coreTimer(const float& fEnd, const float& fSpeed, const coreUint& iLoops)noexcept
+constexpr_func coreTimer::coreTimer(const coreFloat& fEnd, const coreFloat& fSpeed, const coreUint16& iLoops)noexcept
 : m_fValue    (0.0f)
 , m_fEnd      (fEnd)
 , m_fSpeed    (fSpeed)

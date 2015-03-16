@@ -32,11 +32,11 @@ protected:
     coreMatrix3 m_mRotation;        //!< separate rotation matrix
     coreMatrix3 m_mTransform;       //!< transformation matrix
 
-    bool        m_bFocused;         //!< interaction status
+    coreBool    m_bFocused;         //!< interaction status
     coreVector2 m_vFocusModifier;   //!< size-modifier for interaction handling
 
 #if defined(_CORE_ANDROID_)
-    int m_iFinger;                  //!< separate finger interaction status (bitwise)
+    coreUint32 m_iFinger;           //!< separate finger interaction status (bitwise)
 #endif
 
 
@@ -61,8 +61,8 @@ public:
     //! interact with the 2d-object
     //! @{
     void Interact();
-    bool IsClicked(const coreByte iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
-    inline const bool& IsFocused()const {return m_bFocused;}
+    coreBool IsClicked(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
+    inline const coreBool& IsFocused()const {return m_bFocused;}
     //! @}
 
     //! transform the whole object
@@ -77,7 +77,7 @@ public:
     inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_ALL)       m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
     inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
     inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
-    inline void SetFocus        (const bool&        bFocus)         {m_bFocused       = bFocus;}
+    inline void SetFocus        (const coreBool&    bFocus)         {m_bFocused       = bFocus;}
     inline void SetFocusModifier(const coreVector2& vFocusModifier) {m_vFocusModifier = vFocusModifier;}
     //! @}
 

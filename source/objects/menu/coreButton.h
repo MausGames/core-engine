@@ -19,22 +19,22 @@ protected:
     coreTexturePtr m_apBackground[2];   //!< background textures (0 = idle | 1 = busy)
     coreLabel* m_pCaption;              //!< label displayed inside of the button
 
-    bool m_bBusy;                       //!< current background status
-    int  m_iOverride;                   //!< override current background status (0 = normal | 1 = always busy | -1 = always idle)
+    coreBool m_bBusy;                   //!< current background status
+    coreInt8 m_iOverride;               //!< override current background status (0 = normal | 1 = always busy | -1 = always idle)
 
 
 public:
     constexpr_weak coreButton()noexcept;
-    coreButton(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
-    coreButton(const char* pcIdle, const char* pcBusy)noexcept;
+    coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept;
+    coreButton(const coreChar* pcIdle, const coreChar* pcBusy)noexcept;
     virtual ~coreButton();
 
     DISABLE_COPY(coreButton)
 
     //! construct the button
     //! @{
-    void Construct(const char* pcIdle, const char* pcBusy, const char* pcFont, const int& iHeight, const coreUint& iLength);
-    void Construct(const char* pcIdle, const char* pcBusy);
+    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength);
+    void Construct(const coreChar* pcIdle, const coreChar* pcBusy);
     //! @}
 
     //! render and move the button
@@ -45,13 +45,13 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetOverride(const int& iOverride) {m_iOverride = iOverride;}
+    inline void SetOverride(const coreInt8& iOverride) {m_iOverride = iOverride;}
     //! @}
 
     //! get object properties
     //! @{
-    inline coreLabel* GetCaption ()const {return m_pCaption;}
-    inline const int& GetOverride()const {return m_iOverride;}
+    inline       coreLabel* GetCaption ()const {return m_pCaption;}
+    inline const coreInt8&  GetOverride()const {return m_iOverride;}
     //! @}
 };
 

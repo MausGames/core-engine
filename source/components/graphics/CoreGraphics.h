@@ -49,9 +49,9 @@ private:
     SDL_GLContext m_pRenderContext;                                                  //!< primary OpenGL context for render operations
     SDL_GLContext m_pResourceContext;                                                //!< secondary OpenGL context for resource loading
 
-    float m_fFOV;                                                                    //!< field-of-view
-    float m_fNearClip;                                                               //!< near clipping plane
-    float m_fFarClip;                                                                //!< far clipping plane
+    coreFloat m_fFOV;                                                                //!< field-of-view
+    coreFloat m_fNearClip;                                                           //!< near clipping plane
+    coreFloat m_fFarClip;                                                            //!< far clipping plane
 
     coreVector3 m_vCamPosition;                                                      //!< position of the camera
     coreVector3 m_vCamDirection;                                                     //!< direction of the camera
@@ -66,10 +66,10 @@ private:
 
     coreSelect<coreDataBuffer, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aiTransformBuffer;   //!< uniform buffer objects for transformation data
     coreSelect<coreDataBuffer, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aiAmbientBuffer;     //!< uniform buffer objects for ambient data
-    coreByte m_iUniformUpdate;                                                       //!< update status for the UBOs (dirty flag)
+    coreUint8 m_iUniformUpdate;                                                      //!< update status for the UBOs (dirty flag)
 
-    float m_fOpenGL;                                                                 //!< available OpenGL version
-    float m_fGLSL;                                                                   //!< available GLSL version
+    coreFloat m_fOpenGL;                                                             //!< available OpenGL version
+    coreFloat m_fGLSL;                                                               //!< available GLSL version
 
 
 private:
@@ -84,12 +84,12 @@ public:
     //! control camera and view
     //! @{
     void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
-    void SetView  (coreVector2 vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
+    void SetView  (coreVector2 vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip);
     //! @}
 
     //! control ambient
     //! @{
-    void SetLight(const coreByte& iID, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
+    void SetLight(const coreUintW& iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
     //! @}
 
     //! send data to the uniform buffer objects
@@ -100,33 +100,33 @@ public:
 
     //! take screenshot
     //! @{
-    void        Screenshot(const char* pcPath)const;
+    void        Screenshot(const coreChar* pcPath)const;
     inline void Screenshot()const {this->Screenshot(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S"));}
     //! @}
 
     //! get component properties
     //! @{
-    inline const SDL_GLContext&  GetRenderContext  ()const                    {return m_pRenderContext;}
-    inline const SDL_GLContext&  GetResourceContext()const                    {return m_pResourceContext;}
-    inline const float&          GetFOV            ()const                    {return m_fFOV;}
-    inline const float&          GetNearClip       ()const                    {return m_fNearClip;}
-    inline const float&          GetFarClip        ()const                    {return m_fFarClip;}
-    inline const coreVector3&    GetCamPosition    ()const                    {return m_vCamPosition;}
-    inline const coreVector3&    GetCamDirection   ()const                    {return m_vCamDirection;}
-    inline const coreVector3&    GetCamOrientation ()const                    {return m_vCamOrientation;}
-    inline const coreMatrix4&    GetCamera         ()const                    {return m_mCamera;}
-    inline const coreMatrix4&    GetPerspective    ()const                    {return m_mPerspective;}
-    inline const coreMatrix4&    GetOrtho          ()const                    {return m_mOrtho;}
-    inline const coreVector4&    GetViewResolution ()const                    {return m_vViewResolution;}
-    inline const coreLight&      GetLight          (const coreByte& iID)const {ASSERT(iID < CORE_GRAPHICS_LIGHTS) return m_aLight[iID];}
-    inline const coreDataBuffer* GetTransformBuffer()const                    {return m_aiTransformBuffer;}
-    inline const coreDataBuffer* GetAmbientBuffer  ()const                    {return m_aiAmbientBuffer;}
+    inline const SDL_GLContext&  GetRenderContext  ()const                        {return m_pRenderContext;}
+    inline const SDL_GLContext&  GetResourceContext()const                        {return m_pResourceContext;}
+    inline const coreFloat&      GetFOV            ()const                        {return m_fFOV;}
+    inline const coreFloat&      GetNearClip       ()const                        {return m_fNearClip;}
+    inline const coreFloat&      GetFarClip        ()const                        {return m_fFarClip;}
+    inline const coreVector3&    GetCamPosition    ()const                        {return m_vCamPosition;}
+    inline const coreVector3&    GetCamDirection   ()const                        {return m_vCamDirection;}
+    inline const coreVector3&    GetCamOrientation ()const                        {return m_vCamOrientation;}
+    inline const coreMatrix4&    GetCamera         ()const                        {return m_mCamera;}
+    inline const coreMatrix4&    GetPerspective    ()const                        {return m_mPerspective;}
+    inline const coreMatrix4&    GetOrtho          ()const                        {return m_mOrtho;}
+    inline const coreVector4&    GetViewResolution ()const                        {return m_vViewResolution;}
+    inline const coreLight&      GetLight          (const coreUintW& iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
+    inline const coreDataBuffer* GetTransformBuffer()const                        {return m_aiTransformBuffer;}
+    inline const coreDataBuffer* GetAmbientBuffer  ()const                        {return m_aiAmbientBuffer;}
     //! @}
 
     //! check OpenGL versions
     //! @{
-    inline const float& VersionOpenGL()const {return m_fOpenGL;}
-    inline const float& VersionGLSL  ()const {return m_fGLSL;}
+    inline const coreFloat& VersionOpenGL()const {return m_fOpenGL;}
+    inline const coreFloat& VersionGLSL  ()const {return m_fGLSL;}
     //! @}
 
 

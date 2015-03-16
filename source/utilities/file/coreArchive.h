@@ -12,6 +12,7 @@
 
 // TODO: make archive a file
 // TODO: implement Unload into coreFile, so the unload is better
+// TODO: check sum
 
 
 // ****************************************************************
@@ -28,16 +29,16 @@ class coreFile final
 private:
     std::string m_sPath;          //!< relative path of the file
 
-    coreByte* m_pData;            //!< file data
-    coreUint  m_iSize;            //!< size of the file
+    coreByte*  m_pData;           //!< file data
+    coreUint32 m_iSize;           //!< size of the file
 
     coreArchive* m_pArchive;      //!< associated archive
-    coreUint     m_iArchivePos;   //!< absolute data position in the associated archive (0 = file doesn't exist physically)
+    coreUint32   m_iArchivePos;   //!< absolute data position in the associated archive (0 = file doesn't exist physically)
 
 
 public:
-    explicit coreFile(const char* pcPath)noexcept;
-    coreFile(const char* pcPath, coreByte* pData, const coreUint& iSize)noexcept;
+    explicit coreFile(const coreChar* pcPath)noexcept;
+    coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32& iSize)noexcept;
     ~coreFile();
 
     FRIEND_CLASS(coreArchive)
@@ -45,21 +46,21 @@ public:
 
     //! save file
     //! @{
-    coreError Save(const char* pcPath);
+    coreStatus Save(const coreChar* pcPath);
     //! @}
 
     //! load and unload file data
     //! @{
-    coreError LoadData();
-    coreByte* MoveData();
-    inline coreError UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
+    coreStatus LoadData();
+    coreByte*  MoveData();
+    inline coreStatus UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const char*     GetPath()const {return m_sPath.c_str();}
-    inline const coreByte* GetData()      {this->LoadData(); return m_pData;}
-    inline const coreUint& GetSize()const {return m_iSize;}
+    inline const coreChar*   GetPath()const {return m_sPath.c_str();}
+    inline const coreByte*   GetData()      {this->LoadData(); return m_pData;}
+    inline const coreUint32& GetSize()const {return m_iSize;}
     //! @}
 };
 
@@ -75,36 +76,36 @@ private:
 
 public:
     coreArchive()noexcept;
-    explicit coreArchive(const char* pcPath)noexcept;
+    explicit coreArchive(const coreChar* pcPath)noexcept;
     ~coreArchive();
 
     DISABLE_COPY(coreArchive)
 
     //! save archive
     //! @{
-    coreError Save(const char* pcPath);
+    coreStatus Save(const coreChar* pcPath);
     //! @}
 
     //! manage file objects
     //! @{
-    coreError AddFile   (const char* pcPath);
-    coreError AddFile   (coreFile*   pFile);
-    coreError DeleteFile(const coreUint& iIndex);
-    coreError DeleteFile(const char*     pcPath);
-    coreError DeleteFile(coreFile*       pFile);
+    coreStatus AddFile   (const coreChar*  pcPath);
+    coreStatus AddFile   (coreFile*        pFile);
+    coreStatus DeleteFile(const coreUintW& iIndex);
+    coreStatus DeleteFile(const coreChar*  pcPath);
+    coreStatus DeleteFile(coreFile*        pFile);
     void ClearFiles();
     //! @}
 
     //! access file objects
     //! @{
-    inline coreFile* GetFile(const coreUint& iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex] : NULL;}
-    inline coreFile* GetFile(const char*     pcPath) {return (m_apFile.count(pcPath))   ? m_apFile[pcPath] : NULL;}
+    inline coreFile* GetFile(const coreUintW& iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex] : NULL;}
+    inline coreFile* GetFile(const coreChar* pcPath)  {return (m_apFile.count(pcPath))   ? m_apFile[pcPath] : NULL;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const char* GetPath    ()const {return m_sPath.c_str();}
-    inline coreUint    GetNumFiles()const {return coreUint(m_apFile.size());}
+    inline const coreChar* GetPath    ()const {return m_sPath.c_str();}
+    inline       coreUintW GetNumFiles()const {return m_apFile.size();}
     //! @}
 
 

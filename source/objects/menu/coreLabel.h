@@ -14,11 +14,12 @@
 // TODO: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
 // TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
 // TODO: in __Generate, use font-size calculation interface to check for font-size and pre-allocations
+// TODO: change text-generation to per-glyph interface or gather all text into big textures
 
 
 // ****************************************************************
 // menu label definitions
-enum coreLabelUpdate : coreByte
+enum coreLabelUpdate : coreUint8
 {
     CORE_LABEL_UPDATE_NOTHING = 0x00,   //!< update nothing
     CORE_LABEL_UPDATE_SIZE    = 0x01,   //!< update object size
@@ -34,27 +35,27 @@ class coreLabel final : public coreObject2D, public coreResourceRelation, public
 {
 private:
     coreFontPtr m_pFont;         //!< font object
-    int         m_iHeight;       //!< specific height for the font
+    coreUint8   m_iHeight;       //!< specific height for the font
 
     coreVector2 m_vResolution;   //!< resolution of the generated texture
-    coreUint    m_iLength;       //!< max number of characters (0 = dynamic)
+    coreUint8   m_iLength;       //!< max number of characters (0 = dynamic)
 
     std::string m_sText;         //!< current text
-    float       m_fScale;        //!< scale factor
+    coreFloat   m_fScale;        //!< scale factor
 
     coreLabelUpdate m_iUpdate;   //!< update status (dirty flag)
 
 
 public:
     coreLabel()noexcept;
-    coreLabel(const char* pcFont, const int& iHeight, const coreUint& iLength)noexcept;
+    coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept;
     ~coreLabel();
 
     DISABLE_COPY(coreLabel)
 
     //! construct the label
     //! @{
-    void Construct(const char* pcFont, const int& iHeight, const coreUint& iLength);
+    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength);
     //! @}
 
     //! render and move the label
@@ -65,18 +66,18 @@ public:
 
     //! set object properties
     //! @{
-    bool        SetText        (const char*  pcText);
-    bool        SetText        (const char*  pcText, const coreUint& iNum);
-    inline void SetTextLanguage(const char*  pcKey)  {this->_BindString(&m_sText, pcKey);}
-    inline void SetScale       (const float& fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
+    coreBool    SetText        (const coreChar*  pcText);
+    coreBool    SetText        (const coreChar*  pcText, const coreUint8& iNum);
+    inline void SetTextLanguage(const coreChar*  pcKey)  {this->_BindString(&m_sText, pcKey);}
+    inline void SetScale       (const coreFloat& fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
     //! @}
 
     //! get object properties
     //! @{
     inline const coreVector2& GetResolution()const {return m_vResolution;}
-    inline const coreUint&    GetLength    ()const {return m_iLength;}
-    inline const char*        GetText      ()const {return m_sText.c_str();}
-    inline const float&       GetScale     ()const {return m_fScale;}
+    inline const coreUint8&   GetLength    ()const {return m_iLength;}
+    inline const coreChar*    GetText      ()const {return m_sText.c_str();}
+    inline const coreFloat&   GetScale     ()const {return m_fScale;}
     //! @}
 
 
@@ -93,7 +94,7 @@ private:
 
     //! generate the texture
     //! @{
-    void __Generate(const char* pcText, const bool& bSub);
+    void __Generate(const coreChar* pcText, const coreBool& bSub);
     //! @}
 };
 

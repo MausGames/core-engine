@@ -11,7 +11,7 @@
 
 // ****************************************************************
 /* constructor */
-coreConfig::coreConfig(const char* pcPath)noexcept
+coreConfig::coreConfig(const coreChar* pcPath)noexcept
 : m_sPath (pcPath)
 {
     // define interface behavior
@@ -58,7 +58,7 @@ coreConfig::~coreConfig()
 
 // ****************************************************************
 /* load configuration file */
-coreError coreConfig::Load()
+coreStatus coreConfig::Load()
 {
     // load configuration file
     if(m_Config.LoadFile(m_sPath.c_str()) < 0)
@@ -74,7 +74,7 @@ coreError coreConfig::Load()
 
 // ****************************************************************
 /* save configuration file */
-coreError coreConfig::Save()const
+coreStatus coreConfig::Save()const
 {
     // save configuration file
     if(m_Config.SaveFile(m_sPath.c_str()) < 0)

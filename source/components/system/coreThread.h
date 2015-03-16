@@ -16,18 +16,18 @@
 class INTERFACE coreThread
 {
 private:
-    SDL_Thread* m_pThread;                             //!< pointer to thread structure
-    std::string m_sName;                               //!< name of the thread
+    SDL_Thread* m_pThread;                                    //!< pointer to thread structure
+    std::string m_sName;                                      //!< name of the thread
 
-    coreByte m_iExecutions;                            //!< max number of executions per frame (0 = unshackled)
-    bool     m_bActive;                                //!< active and currently not forced to shut down
+    coreUint8 m_iExecutions;                                  //!< max number of executions per frame (0 = unshackled)
+    coreBool  m_bActive;                                      //!< active and currently not forced to shut down
 
-    std::vector<std::function<int()> > m_anFunction;   //!< custom functions being executed by the thread
-    SDL_SpinLock m_iLock;                              //!< spinlock to prevent invalid function access
+    std::vector<std::function<coreStatus()> > m_anFunction;   //!< custom functions being executed by the thread
+    SDL_SpinLock m_iLock;                                     //!< spinlock to prevent invalid function access
 
 
 public:
-    explicit coreThread(const char* pcName)noexcept;
+    explicit coreThread(const coreChar* pcName)noexcept;
     virtual ~coreThread();
 
     DISABLE_COPY(coreThread)
@@ -36,7 +36,7 @@ public:
     //! @{
     SDL_Thread* StartThread();
     void        KillThread ();
-    inline const bool& IsActive()const {return m_bActive;}
+    inline const coreBool& IsActive()const {return m_bActive;}
     //! @}
 
     /*! run custom functions within the thread */
@@ -47,28 +47,28 @@ public:
 
     /*! set object properties */
     //! @{
-    inline void SetExecutions(const coreByte& iExecutions) {m_iExecutions = iExecutions;}
+    inline void SetExecutions(const coreUint8& iExecutions) {m_iExecutions = iExecutions;}
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const char*     GetName      ()const {return m_sName.c_str();}
-    inline const coreByte& GetExecutions()const {return m_iExecutions;}
+    inline const coreChar*  GetName      ()const {return m_sName.c_str();}
+    inline const coreUint8& GetExecutions()const {return m_iExecutions;}
     //! @}
 
 
 private:
     /*! execute the thread */
     //! @{
-    int __Main();
-    virtual int  __InitThread() = 0;
-    virtual int  __RunThread () = 0;
-    virtual void __ExitThread() = 0;
+    coreStatus __Main();
+    virtual coreStatus __InitThread() = 0;
+    virtual coreStatus __RunThread () = 0;
+    virtual void       __ExitThread() = 0;
     //! @}
 
     /*! entry-point function */
     //! @{
-    friend ENTRY_POINT int coreThreadMain(void* pData);
+    friend ENTRY_POINT coreInt32 coreThreadMain(void* pData);
     //! @}
 };
 

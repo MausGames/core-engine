@@ -30,8 +30,8 @@
 class coreData final
 {
 private:
-    static thread_local char     m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings
-    static thread_local coreUint m_iCurString;                                              //!< current return-string
+    static thread_local coreChar  m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings
+    static thread_local coreUintW m_iCurString;                                              //!< current return-string
 
 
 public:
@@ -39,105 +39,105 @@ public:
 
     /*! create formatted string */
     //! @{
-    template <typename... A> static RETURN_RESTRICT const char* Print(const char* pcFormat, A&&... vArgs);
-    static inline                   RETURN_RESTRICT const char* Print(const char* pcFormat) {return pcFormat;}
+    template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
+    static inline                   RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
     //! @}
 
     /*! get application properties */
     //! @{
-    static        const char* AppPath();
-    static inline const char* AppName() {const char* pcString = coreData::AppPath(); const char* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? pcSlash+1 : pcString;}
-    static inline const char* AppDir () {const char* pcString = coreData::AppPath(); const char* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<char*>(pcSlash+1)) = '\0'; return pcString;}
+    static        const coreChar* AppPath();
+    static inline const coreChar* AppName() {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? pcSlash+1 : pcString;}
+    static inline const coreChar* AppDir () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<coreChar*>(pcSlash+1)) = '\0'; return pcString;}
     //! @}
 
     /* get operating system properties */
     //! @{
-    static const char* SystemName();
+    static const coreChar* SystemName();
     //! @}
 
     /*! control current working directory */
     //! @{
-    static coreError   SetCurDir(const char* pcPath);
-    static const char* GetCurDir();
+    static       coreStatus SetCurDir(const coreChar* pcPath);
+    static const coreChar*  GetCurDir();
     //! @}
 
     /*! open URL with default web-browser */
     //! @{
-    static coreError OpenURL(const char* pcURL);
+    static coreStatus OpenURL(const coreChar* pcURL);
     //! @}
 
     /*! handle physical files and folders */
     //! @{
-    static bool      FileExists  (const char* pcPath);
-    static coreError ScanFolder  (const char* pcPath, const char* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
-    static void      CreateFolder(const std::string& sPath);
+    static coreBool   FileExists  (const coreChar* pcPath);
+    static coreStatus ScanFolder  (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
+    static void       CreateFolder(const std::string& sPath);
     //! @}
 
     /*! retrieve current date and time */
     //! @{
-    static void        DateTimeValue(coreUint* OUTPUT piYea, coreUint* OUTPUT piMon, coreUint* OUTPUT piDay, coreUint* OUTPUT piHou, coreUint* OUTPUT piMin, coreUint* OUTPUT piSec);
-    static const char* DateTimePrint(const char* pcFormat);
-    static inline const char* DateString() {return coreData::DateTimePrint("%Y-%m-%d");}
-    static inline const char* TimeString() {return coreData::DateTimePrint("%H:%M:%S");}
+    static void            DateTimeValue(coreUint32* OUTPUT piYea, coreUint32* OUTPUT piMon, coreUint32* OUTPUT piDay, coreUint32* OUTPUT piHou, coreUint32* OUTPUT piMin, coreUint32* OUTPUT piSec);
+    static const coreChar* DateTimePrint(const coreChar* pcFormat);
+    static inline const coreChar* DateString() {return coreData::DateTimePrint("%Y-%m-%d");}
+    static inline const coreChar* TimeString() {return coreData::DateTimePrint("%H:%M:%S");}
     //! @}
 
     /*! operate with string data */
     //! @{
-    template <typename F> static const char* StrProcess(const char* pcInput, F&& nFunction);
-    static constexpr_func int  StrLenConst (const char* s)                {return *s ? 1 + StrLenConst(s+1) : 0;}
-    static constexpr_func bool StrCmpConst (const char* s, const char* t) {return *s ? (*s == *t) && StrCmpConst(s+1, t+1) : !*t;}
-    static inline         bool StrCmpLike  (const char* s, const char* t) {return (*t == '*') ? StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1, t+1) : !*t;}
-    static inline const char*  StrUpper    (const char* pcInput)          {return coreData::StrProcess(pcInput, toupper);}
-    static inline const char*  StrLower    (const char* pcInput)          {return coreData::StrProcess(pcInput, tolower);}
-    static const char*         StrRight    (const char* pcInput, const coreUint& iNum);
-    static const char*         StrExtension(const char* pcInput);
-    static float               StrVersion  (const char* pcInput);
-    static void                StrTrim     (std::string* OUTPUT psInput);
-    static void                StrReplace  (std::string* OUTPUT psInput, const char* pcOld, const char* pcNew);
+    template <typename F> static const coreChar* StrProcess(const coreChar* pcInput, F&& nFunction);
+    static constexpr_func coreUintW StrLenConst (const coreChar* s)                    {return *s ? 1 + StrLenConst(s+1) : 0;}
+    static constexpr_func coreBool  StrCmpConst (const coreChar* s, const coreChar* t) {return *s ? (*s == *t) && StrCmpConst(s+1, t+1) : !*t;}
+    static inline         coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return (*t == '*') ? StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1, t+1) : !*t;}
+    static inline const coreChar*   StrUpper    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, toupper);}
+    static inline const coreChar*   StrLower    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, tolower);}
+    static const coreChar*          StrRight    (const coreChar* pcInput, const coreUintW& iNum);
+    static const coreChar*          StrExtension(const coreChar* pcInput);
+    static coreFloat                StrVersion  (const coreChar* pcInput);
+    static void                     StrTrim     (std::string* OUTPUT psInput);
+    static void                     StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
     //! @}
 
 
 private:
     /*! access next return-string */
     //! @{
-    static inline RETURN_RESTRICT char* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0; return m_aacString[m_iCurString];}
+    static inline RETURN_RESTRICT coreChar* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0; return m_aacString[m_iCurString];}
     //! @}
 };
 
 
 // ****************************************************************
 /* create formatted string */
-template <typename... A> RETURN_RESTRICT const char* coreData::Print(const char* pcFormat, A&&... vArgs)
+template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const coreChar* pcFormat, A&&... vArgs)
 {
-    char* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
 
     // assemble string without guaranteed null-termination
-    const int iReturn = _snprintf(pcString, CORE_DATA_STRING_LEN - 1, pcFormat, std::forward<A>(vArgs)...);
+    const coreInt32 iReturn = _snprintf(pcString, CORE_DATA_STRING_LEN - 1, pcFormat, std::forward<A>(vArgs)...);
     pcString[CORE_DATA_STRING_LEN - 1] = '\0';
 
 #else
 
     // assemble string
-    const int iReturn = snprintf(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
+    const coreInt32 iReturn = snprintf(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
 
 #endif
 
-    ASSERT(-1 < iReturn && iReturn < int(CORE_DATA_STRING_LEN))
+    ASSERT(-1 < iReturn && iReturn < coreInt32(CORE_DATA_STRING_LEN))
     return pcString;
 }
 
 
 // ****************************************************************
 /* process string with custom sub-function */
-template <typename F> const char* coreData::StrProcess(const char* pcInput, F&& nFunction)
+template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInput, F&& nFunction)
 {
-    char* pcString = coreData::__NextString();
-    char* pcCursor = pcString;
+    coreChar* pcString = coreData::__NextString();
+    coreChar* pcCursor = pcString;
 
     // define max string position
-    const char* pcEnd = pcInput + CORE_DATA_STRING_LEN - 1;
+    const coreChar* pcEnd = pcInput + CORE_DATA_STRING_LEN - 1;
     ASSERT(std::strlen(pcInput) < CORE_DATA_STRING_LEN)
 
     // process all characters individually

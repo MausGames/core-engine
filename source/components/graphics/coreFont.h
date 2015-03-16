@@ -17,8 +17,8 @@
 class coreFont final : public coreResource
 {
 private:
-    coreLookup<int, TTF_Font*> m_apFont;   //!< list with sub-fonts in different heights
-    coreFile* m_pFile;                     //!< file object with resource data
+    coreLookup<coreUint8, TTF_Font*> m_apFont;   //!< list with sub-fonts in different heights
+    coreFile* m_pFile;                           //!< file object with resource data
 
 
 public:
@@ -29,21 +29,21 @@ public:
 
     //! load and unload font resource data
     //! @{
-    coreError Load(coreFile* pFile)override;
-    coreError Unload()override;
+    coreStatus Load(coreFile* pFile)override;
+    coreStatus Unload()override;
     //! @}
 
     //! create text surface with the font
     //! @{
-    SDL_Surface* CreateText (const char*       pcText, const int& iHeight);
-    SDL_Surface* CreateGlyph(const coreUshort& iGlyph, const int& iHeight);
+    SDL_Surface* CreateText (const coreChar*   pcText, const coreUint8& iHeight);
+    SDL_Surface* CreateGlyph(const coreUint16& iGlyph, const coreUint8& iHeight);
     //! @}
 
 
 private:
     //! init the font in a specific height
     //! @{
-    bool __InitHeight(const int& iHeight);
+    coreBool __InitHeight(const coreUint8& iHeight);
     //! @}
 };
 

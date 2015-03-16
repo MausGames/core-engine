@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)
+coreMenu::coreMenu(const coreUint8& iNumSurfaces, const coreUint8& iStartSurface)
 : m_pCurObject   (NULL)
 , m_iNumSurfaces (iNumSurfaces)
 , m_iCurSurface  (iStartSurface)
@@ -28,8 +28,8 @@ coreMenu::coreMenu(const coreByte& iNumSurfaces, const coreByte& iStartSurface)
 coreMenu::~coreMenu()
 {
     // remove all menu objects
-    for(int i = 0; i < m_iNumSurfaces; ++i) m_papObject[i].clear();
-    for(int i = 0; i < 3;              ++i) m_aapRender[i].clear();
+    for(coreUintW i = 0; i < m_iNumSurfaces; ++i) m_papObject[i].clear();
+    for(coreUintW i = 0; i < 3;              ++i) m_aapRender[i].clear();
 
     // delete surfaces
     SAFE_DELETE_ARRAY(m_papObject)
@@ -43,7 +43,7 @@ void coreMenu::Render()
     if(m_Transition.GetStatus())
     {
         // render transition between surfaces
-        for(int i = 0; i < 3; ++i)
+        for(coreUintW i = 0; i < 3; ++i)
         {
             FOR_EACH(it, m_aapRender[i])
                 (*it)->Render();
@@ -75,12 +75,12 @@ void coreMenu::Move()
         }
 
         // set alpha value for each render-list
-        const float afAlpha[3] = {this->GetAlpha(),
-                                  this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_REVERSED),
-                                  this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_NORMAL)};
+        const coreFloat afAlpha[3] = {this->GetAlpha(),
+                                      this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_REVERSED),
+                                      this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_NORMAL)};
 
         // move transition between surfaces
-        for(int i = 0; i < 3; ++i)
+        for(coreUintW i = 0; i < 3; ++i)
         {
             FOR_EACH(it, m_aapRender[i])
             {
@@ -118,7 +118,7 @@ void coreMenu::Move()
 
 // ****************************************************************
 // bind menu object
-void coreMenu::BindObject(const coreByte& iSurface, coreObject2D* pObject)
+void coreMenu::BindObject(const coreUintW& iSurface, coreObject2D* pObject)
 {
 #if defined(_CORE_DEBUG_)
 
@@ -136,7 +136,7 @@ void coreMenu::BindObject(const coreByte& iSurface, coreObject2D* pObject)
 
 // ****************************************************************
 // unbind menu object
-void coreMenu::UnbindObject(const coreByte& iSurface, coreObject2D* pObject)
+void coreMenu::UnbindObject(const coreUintW& iSurface, coreObject2D* pObject)
 {
     // loop through all menu objects
     FOR_EACH(it, m_papObject[iSurface])
@@ -153,7 +153,7 @@ void coreMenu::UnbindObject(const coreByte& iSurface, coreObject2D* pObject)
 
 // ****************************************************************
 // change current surface
-bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
+coreBool coreMenu::ChangeSurface(const coreUint8& iNewSurface, const coreFloat& fSpeed)
 {
          if(iNewSurface == m_iCurSurface)  return false;
     WARN_IF(iNewSurface >= m_iNumSurfaces) return false;
@@ -173,21 +173,21 @@ bool coreMenu::ChangeSurface(const coreByte& iNewSurface, const float& fSpeed)
         }
 
         // clear and refill all render-lists
-        for(int i = 0; i < 3; ++i) m_aapRender[i].clear();
+        for(coreUintW i = 0; i < 3; ++i) m_aapRender[i].clear();
         FOR_EACH(it, m_papObject[m_iCurSurface]) m_aapRender[1].push_back(*it);
         FOR_EACH(it, m_papObject[iNewSurface])   m_aapRender[2].push_back(*it);
 
         // find objects on both surfaces
-        for(coreUint i = 0; i < m_aapRender[1].size(); ++i)
+        for(coreUintW i = 0; i < m_aapRender[1].size(); ++i)
         {
-            for(coreUint j = 0; j < m_aapRender[2].size(); ++j)
+            for(coreUintW j = 0; j < m_aapRender[2].size(); ++j)
             {
                 if(m_aapRender[1][i] == m_aapRender[2][j])
                 {
                     // move object to own render-list
                     m_aapRender[0].push_back(m_aapRender[1][i]);
-                    m_aapRender[1].erase(m_aapRender[1].begin()+i);
-                    m_aapRender[2].erase(m_aapRender[2].begin()+j);
+                    m_aapRender[1].erase(m_aapRender[1].begin() + i);
+                    m_aapRender[2].erase(m_aapRender[2].begin() + j);
 
                     --i;
                     break;

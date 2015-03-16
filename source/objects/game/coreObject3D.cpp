@@ -66,7 +66,7 @@ coreObject3D& coreObject3D::operator = (coreObject3D&& m)noexcept
 void coreObject3D::Undefine()
 {
     // reset all resource and memory pointers
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
     m_pModel   = NULL;
 }
@@ -74,7 +74,7 @@ void coreObject3D::Undefine()
 
 // ****************************************************************
 /* separately enable all resources for rendering */
-bool coreObject3D::Prepare(const coreProgramPtr& pProgram)
+coreBool coreObject3D::Prepare(const coreProgramPtr& pProgram)
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return false;
 
@@ -93,7 +93,7 @@ bool coreObject3D::Prepare(const coreProgramPtr& pProgram)
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,    coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     // enable the model
@@ -101,7 +101,7 @@ bool coreObject3D::Prepare(const coreProgramPtr& pProgram)
     return true;
 }
 
-bool coreObject3D::Prepare()
+coreBool coreObject3D::Prepare()
 {
     // enable default shader-program
     return coreObject3D::Prepare(m_pProgram);
@@ -159,7 +159,7 @@ void coreObject3D::Move()
 
 // ****************************************************************
 /* change object type and manager registration */
-void coreObject3D::ChangeType(const int& iType)
+void coreObject3D::ChangeType(const coreInt32& iType)
 {
     if(m_iType == iType) return;
 
@@ -172,7 +172,7 @@ void coreObject3D::ChangeType(const int& iType)
 
 // ****************************************************************
 /* constructor */
-coreBatchList::coreBatchList(const coreUint& iStartCapacity)noexcept
+coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
 : m_iCurCapacity (iStartCapacity)
 , m_iCurEnabled  (0)
 , m_bUpdate      (false)
@@ -229,7 +229,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         if(!pProgramInstanced->Enable())  return;
 
         // enable all active textures
-        for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+        for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
             if(pFirst->GetTexture(i).IsUsable()) pFirst->GetTexture(i)->Enable(i);
 
         if(m_bUpdate)
@@ -250,17 +250,17 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
                 {
                     // compress data
-                    const coreUint    iRotation  = pObject->GetRotation().PackSnorm4x8();
-                    const coreUint    iColor     = pObject->GetColor4  ().PackUnorm4x8();
+                    const coreUint32  iRotation  = pObject->GetRotation().PackSnorm4x8();
+                    const coreUint32  iColor     = pObject->GetColor4  ().PackUnorm4x8();
                     const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
                     ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                     // write data to the buffer
-                    std::memcpy(pCursor,                                        &pObject->GetPosition(), sizeof(coreVector3));
-                    std::memcpy(pCursor + 3*sizeof(float),                      &pObject->GetSize(),     sizeof(coreVector3));
-                    std::memcpy(pCursor + 6*sizeof(float),                      &iRotation,              sizeof(coreUint));
-                    std::memcpy(pCursor + 6*sizeof(float) + 1*sizeof(coreUint), &iColor,                 sizeof(coreUint));
-                    std::memcpy(pCursor + 6*sizeof(float) + 2*sizeof(coreUint), &vTexParams,             sizeof(coreVector4));
+                    std::memcpy(pCursor,                                              &pObject->GetPosition(), sizeof(coreVector3));
+                    std::memcpy(pCursor + 3*sizeof(coreFloat),                        &pObject->GetSize(),     sizeof(coreVector3));
+                    std::memcpy(pCursor + 6*sizeof(coreFloat),                        &iRotation,              sizeof(coreUint32));
+                    std::memcpy(pCursor + 6*sizeof(coreFloat) + 1*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
+                    std::memcpy(pCursor + 6*sizeof(coreFloat) + 2*sizeof(coreUint32), &vTexParams,             sizeof(coreVector4));
                     pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
                 }
             }
@@ -358,8 +358,8 @@ void coreBatchList::MoveSort()
     m_iCurEnabled = 0;
 
     // compare first object with nothing (never true)
-    float fOldDistance    = 0.0f;
-    bool  bOldTransparent = false;
+    coreFloat fOldDistance    = 0.0f;
+    coreBool  bOldTransparent = false;
 
     FOR_EACH(it, m_apObjectList)
     {
@@ -376,8 +376,8 @@ void coreBatchList::MoveSort()
             pObject->Move();
 
             // calculate properties of current object
-            const float fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
-            const bool  bCurTransparent = (pObject->GetAlpha() < 1.0f) ? true : false;
+            const coreFloat fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
+            const coreBool  bCurTransparent = (pObject->GetAlpha() < 1.0f) ? true : false;
 
             // sort objects (opaque first and from front to back, transparent later and from back to front)
             if(( bCurTransparent && (bOldTransparent && (fCurDistance > fOldDistance))) ||
@@ -451,7 +451,7 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
 
 // ****************************************************************
 /* change current capacity */
-void coreBatchList::Reallocate(const coreUint& iNewCapacity)
+void coreBatchList::Reallocate(const coreUint32& iNewCapacity)
 {
          if(iNewCapacity == m_iCurCapacity)        return;
     WARN_IF(iNewCapacity <  m_apObjectList.size()) return;
@@ -498,10 +498,10 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
                 // create instance data buffers
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3, GL_FLOAT,         false, 0);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,         false, 3*sizeof(float));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_BYTE,          false, 6*sizeof(float));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, false, 6*sizeof(float) + 1*sizeof(coreUint));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         false, 6*sizeof(float) + 2*sizeof(coreUint));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3, GL_FLOAT,         false, 3*sizeof(coreFloat));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4, GL_BYTE,          false, 6*sizeof(coreFloat));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4, GL_UNSIGNED_BYTE, false, 6*sizeof(coreFloat) + 1*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4, GL_FLOAT,         false, 6*sizeof(coreFloat) + 2*sizeof(coreUint32));
             }
 
             // invoke buffer update

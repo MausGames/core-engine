@@ -9,7 +9,7 @@
 #include "Core.h"
 
 coreFrameBuffer* coreFrameBuffer::s_pCurrent          = NULL;
-float            coreFrameBuffer::s_afViewData[5]; // = 0.0f;
+coreFloat        coreFrameBuffer::s_afViewData[5]; // = 0.0f;
 
 
 // ****************************************************************
@@ -51,23 +51,23 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
     // set resolution
-    const int iWidth  = F_TO_SI(vResolution.x);
-    const int iHeight = F_TO_SI(vResolution.y);
-    m_vResolution     = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
+    const coreUint32 iWidth  = F_TO_UI(vResolution.x);
+    const coreUint32 iHeight = F_TO_UI(vResolution.y);
+    m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
 
     // set number of samples
-    const int iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ?
-                         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0;
+    const coreUint8 iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ?
+                               Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0;
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
-    for(coreByte i = 0; i < ARRAY_SIZE(apTarget); ++i)
+    for(coreUintW i = 0; i < ARRAY_SIZE(apTarget); ++i)
     {
         coreRenderTarget* pTarget = apTarget[i];
         if(!pTarget->iInternal) continue;
 
         // set attachment point (depending on target order)
-        int iAttachment;
+        GLenum iAttachment;
         switch(i)
         {
         default: iAttachment = GL_COLOR_ATTACHMENT0 + (i-2); break;
@@ -129,7 +129,7 @@ void coreFrameBuffer::Delete()
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
-    for(coreByte i = 0; i < ARRAY_SIZE(apTarget); ++i)
+    for(coreUintW i = 0; i < ARRAY_SIZE(apTarget); ++i)
     {
         // unload render target texture
         if(apTarget[i]->pTexture) apTarget[i]->pTexture->Unload();
@@ -150,7 +150,7 @@ void coreFrameBuffer::Delete()
 
 // ****************************************************************
 // attach render target texture
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const char* pcName)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const coreChar* pcName)
 {
     // get requested render target structure
     coreRenderTarget* pTarget = this->__AttachTarget(iTarget, iColorIndex, iInternal, iFormat, iType);
@@ -172,7 +172,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
 
 // ****************************************************************
 // attach render target buffer
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
 {
     // get requested render target structure
     if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (iTarget, iColorIndex, iInternal, iFormat, iType);
@@ -188,7 +188,7 @@ void coreFrameBuffer::DetachTargets()
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
-    for(coreByte i = 0; i < ARRAY_SIZE(apTarget); ++i)
+    for(coreUintW i = 0; i < ARRAY_SIZE(apTarget); ++i)
     {
         // free render target texture
         if(apTarget[i]->pTexture) Core::Manager::Resource->Free(&apTarget[i]->pTexture);
@@ -244,7 +244,7 @@ void coreFrameBuffer::EndDraw()
 
 // ****************************************************************
 // copy content to another frame buffer
-void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight)const
+void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight)const
 {
     ASSERT(m_iFrameBuffer)
     ASSERT((!pDestination || ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x) && (iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y))) &&
@@ -281,7 +281,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
         if(pDestination)
         {
             // switch to source frame buffer
-            const bool bToggle = (s_pCurrent != this);
+            const coreBool bToggle = (s_pCurrent != this);
             if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
             // handle color target blitting
@@ -327,7 +327,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
                 glDisable(GL_DEPTH_TEST);
                 glDisable(GL_BLEND);
                 {
-                    const float&      fDstInvWid = Core::Graphics->GetViewResolution().w;
+                    const coreFloat&  fDstInvWid = Core::Graphics->GetViewResolution().w;
                     const coreVector2 vDstInvRes = Core::Graphics->GetViewResolution().zw();
                     const coreVector2 vSrcInvRes = coreVector2(1.0f,1.0f) / m_vResolution;
 
@@ -367,7 +367,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget& iTargets)
     ASSERT(m_iFrameBuffer)
 
     // switch to destination frame buffer
-    const bool bToggle = (s_pCurrent != this);
+    const coreBool bToggle = (s_pCurrent != this);
     if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
     // clear content
@@ -387,7 +387,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
         GLenum aiAttachment[3];
-        coreByte iNum = 0;
+        coreInt32 iNum = 0;
 
         // assemble required attachments
         if(CONTAINS_VALUE(iTargets, CORE_FRAMEBUFFER_TARGET_COLOR))   aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0;
@@ -403,7 +403,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
         else
         {
             // switch to destination frame buffer
-            const bool bToggle = (s_pCurrent != this);
+            const coreBool bToggle = (s_pCurrent != this);
             if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
 
             // invalidate content
@@ -418,7 +418,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
 
 // ****************************************************************
 // attach default render target
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget& iTarget, const coreByte& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
 {
     ASSERT(!m_iFrameBuffer && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 

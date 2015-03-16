@@ -207,22 +207,22 @@ inline void      glQueryCounter                  (GLuint id, GLenum target)     
 /* context structure */
 struct coreContext
 {
-    float __fVersion;
-    bool  __bES3;
+    coreFloat __fVersion;
+    coreBool  __bES3;
 
-    bool __GL_EXT_discard_framebuffer;
-    bool __GL_EXT_texture_storage;
-    bool __GL_EXT_map_buffer_range;
-    bool __GL_EXT_instanced_arrays;
-    bool __GL_EXT_texture_filter_anisotropic;
-    bool __GL_NV_pixel_buffer_object;
-    bool __GL_NV_framebuffer_blit;
-    bool __GL_NV_framebuffer_multisample;
-    bool __GL_OES_vertex_array_object;
-    bool __GL_OES_depth_texture;
-    bool __GL_OES_texture_stencil8;
-    bool __GL_OES_rgb8_rgba8;   // silent
-    bool __GL_OES_mapbuffer;    // silent
+    GLboolean __GL_EXT_discard_framebuffer;
+    GLboolean __GL_EXT_texture_storage;
+    GLboolean __GL_EXT_map_buffer_range;
+    GLboolean __GL_EXT_instanced_arrays;
+    GLboolean __GL_EXT_texture_filter_anisotropic;
+    GLboolean __GL_NV_pixel_buffer_object;
+    GLboolean __GL_NV_framebuffer_blit;
+    GLboolean __GL_NV_framebuffer_multisample;
+    GLboolean __GL_OES_vertex_array_object;
+    GLboolean __GL_OES_depth_texture;
+    GLboolean __GL_OES_texture_stencil8;
+    GLboolean __GL_OES_rgb8_rgba8;   // silent
+    GLboolean __GL_OES_mapbuffer;    // silent
 
     GLenum __GL_READ_FRAMEBUFFER;
     GLenum __GL_DRAW_FRAMEBUFFER;

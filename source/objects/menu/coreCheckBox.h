@@ -17,20 +17,20 @@ class coreCheckBox final : public coreButton
 {
 private:
     coreTexturePtr m_apUnchecked[2];   //!< unchecked background textures (0 = idle | 1 = busy)
-    coreTexturePtr m_apChecked[2];     //!< checked background textures (0 = idle | 1 = busy)
+    coreTexturePtr m_apChecked[2];     //!< checked background textures   (0 = idle | 1 = busy)
 
-    bool m_bCheck;                     //!< check status
+    coreBool m_bCheck;                 //!< check status
 
 
 public:
     constexpr_weak coreCheckBox()noexcept;
-    coreCheckBox(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked)noexcept;
+    coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)noexcept;
 
     DISABLE_COPY(coreCheckBox)
 
     //! construct the check-box
     //! @{
-    void Construct(const char* pcIdleUnchecked, const char* pcBusyUnchecked, const char* pcIdleChecked, const char* pcBusyChecked);
+    void Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked);
     //! @}
 
     //! move the check-box
@@ -40,12 +40,12 @@ public:
 
     //! set object properties
     //! @{
-    void SetCheck(const bool& bCheck);
+    void SetCheck(const coreBool& bCheck);
     //! @}
 
     //! get object properties
     //! @{
-    inline const bool& GetCheck()const {return m_bCheck;}
+    inline const coreBool& GetCheck()const {return m_bCheck;}
     //! @}
 };
 

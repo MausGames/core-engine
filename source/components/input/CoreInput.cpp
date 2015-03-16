@@ -22,7 +22,7 @@ CoreInput::coreKeyboard::coreKeyboard()noexcept
 // ****************************************************************
 // constructor
 CoreInput::coreMouse::coreMouse()noexcept
-: iLast     (0)
+: iLast     (0xFF)
 , vPosition (coreVector2(0.0f,0.0f))
 , vRelative (coreVector3(0.0f,0.0f,0.0f))
 {
@@ -34,7 +34,7 @@ CoreInput::coreMouse::coreMouse()noexcept
 // constructor
 CoreInput::coreJoystick::coreJoystick()noexcept
 : pHandle   (NULL)
-, iLast     (0)
+, iLast     (0xFF)
 , vRelative (coreVector2(0.0f,0.0f))
 {
     std::memset(aabButton, 0, sizeof(aabButton));
@@ -61,13 +61,13 @@ CoreInput::CoreInput()noexcept
     Core::Log->Header("Input Interface");
 
     // check for available joystick devices
-    const int iNumJoysticks = SDL_NumJoysticks();
+    const coreUintW iNumJoysticks = SDL_NumJoysticks();
     if(iNumJoysticks)
     {
         Core::Log->ListStartInfo("Joysticks and Gamepads found");
         {
             m_aJoystick.reserve(iNumJoysticks);
-            for(int i = 0; i < iNumJoysticks; ++i)
+            for(coreUintW i = 0; i < iNumJoysticks; ++i)
             {
                 coreJoystick Joystick;
 
@@ -112,7 +112,7 @@ CoreInput::~CoreInput()
 
 // ****************************************************************
 // set the cursor object
-void CoreInput::DefineCursor(const char* pcPath)
+void CoreInput::DefineCursor(const coreChar* pcPath)
 {
     coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
@@ -134,7 +134,7 @@ void CoreInput::DefineCursor(const char* pcPath)
 
 // ****************************************************************
 // show or hide the mouse cursor
-void CoreInput::ShowCursor(const bool& bStatus)
+void CoreInput::ShowCursor(const coreBool& bStatus)
 {
     if(m_bCursorVisible == bStatus) return;
 
@@ -149,7 +149,7 @@ void CoreInput::ShowCursor(const bool& bStatus)
 
 // ****************************************************************
 // control mouse with keyboard
-void CoreInput::UseMouseWithKeyboard(const coreInputKey& iLeft, const coreInputKey& iRight, const coreInputKey& iUp, const coreInputKey& iDown, const coreInputKey& iButton1, const coreInputKey& iButton2, const float& fSpeed)
+void CoreInput::UseMouseWithKeyboard(const coreInputKey& iLeft, const coreInputKey& iRight, const coreInputKey& iUp, const coreInputKey& iDown, const coreInputKey& iButton1, const coreInputKey& iButton2, const coreFloat& fSpeed)
 {
     // TODO: implement function
 }
@@ -157,12 +157,12 @@ void CoreInput::UseMouseWithKeyboard(const coreInputKey& iLeft, const coreInputK
 
 // ****************************************************************
 // control mouse with joystick
-void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, const int& iButton2, const float& fSpeed)
+void CoreInput::UseMouseWithJoystick(const coreUintW& iIndex, const coreUint8& iButton1, const coreUint8& iButton2, const coreFloat& fSpeed)
 {
-    if(iID >= m_aJoystick.size()) return;
+    if(iIndex >= m_aJoystick.size()) return;
 
     // move the mouse cursor
-    const coreVector2& vAcc = m_aJoystick[iID].vRelative;
+    const coreVector2& vAcc = m_aJoystick[iIndex].vRelative;
     if(!vAcc.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
@@ -171,16 +171,16 @@ void CoreInput::UseMouseWithJoystick(const coreUint& iID, const int& iButton1, c
     }
 
     // press mouse buttons
-    if(this->GetJoystickButton(iID, iButton1, CORE_INPUT_PRESS))   this->SetMouseButton(1, true);
-    if(this->GetJoystickButton(iID, iButton1, CORE_INPUT_RELEASE)) this->SetMouseButton(1, false);
-    if(this->GetJoystickButton(iID, iButton2, CORE_INPUT_PRESS))   this->SetMouseButton(2, true);
-    if(this->GetJoystickButton(iID, iButton2, CORE_INPUT_RELEASE)) this->SetMouseButton(2, false);
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_PRESS))   this->SetMouseButton(1, true);
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_RELEASE)) this->SetMouseButton(1, false);
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_PRESS))   this->SetMouseButton(2, true);
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_RELEASE)) this->SetMouseButton(2, false);
 }
 
 
 // ****************************************************************
 // process input events
-bool CoreInput::ProcessEvent(const SDL_Event& Event)
+coreBool CoreInput::ProcessEvent(const SDL_Event& Event)
 {
     switch(Event.type)
     {
@@ -246,27 +246,27 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(ABS((int)Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEAD)
+        if(ABS(Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEAD)
             this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, CLAMP(I_TO_F(Event.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
         else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
         break;
 
     // press finger
     case SDL_FINGERDOWN:
-        this->SetTouchButton  ((coreUint)Event.tfinger.fingerId, true);
-        this->SetTouchPosition((coreUint)Event.tfinger.fingerId, coreVector2(Event.tfinger.x, -Event.tfinger.y) + coreVector2(-0.5f,0.5f));
+        this->SetTouchButton  (coreUintW(Event.tfinger.fingerId), true);
+        this->SetTouchPosition(coreUintW(Event.tfinger.fingerId), coreVector2(Event.tfinger.x, -Event.tfinger.y) + coreVector2(-0.5f,0.5f));
         break;
 
     // release finger
     case SDL_FINGERUP:
-        this->SetTouchButton((coreUint)Event.tfinger.fingerId, false);
+        this->SetTouchButton(coreUintW(Event.tfinger.fingerId), false);
         break;
 
     // move finger
     case SDL_FINGERMOTION:
-        this->SetTouchPosition((coreUint)Event.tfinger.fingerId, coreVector2(Event.tfinger.x,  -Event.tfinger.y)  + coreVector2(-0.5f,0.5f));
-        this->SetTouchRelative((coreUint)Event.tfinger.fingerId, coreVector2(Event.tfinger.dx, -Event.tfinger.dy) + this->GetTouchRelative((coreUint)Event.tfinger.fingerId));
-        this->SetTouchPressure((coreUint)Event.tfinger.fingerId, Event.tfinger.pressure);
+        this->SetTouchPosition(coreUintW(Event.tfinger.fingerId), coreVector2(Event.tfinger.x,  -Event.tfinger.y)  + coreVector2(-0.5f,0.5f));
+        this->SetTouchRelative(coreUintW(Event.tfinger.fingerId), coreVector2(Event.tfinger.dx, -Event.tfinger.dy) + this->GetTouchRelative(coreUintW(Event.tfinger.fingerId)));
+        this->SetTouchPressure(coreUintW(Event.tfinger.fingerId), Event.tfinger.pressure);
         break;
     }
 
@@ -279,14 +279,14 @@ bool CoreInput::ProcessEvent(const SDL_Event& Event)
 void CoreInput::__UpdateButtons()
 {
     // process keyboard inputs
-    for(int i = 0; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
+    for(coreUintW i = 0; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
              if( m_Keyboard.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Keyboard.aabButton[i])
         else if(!m_Keyboard.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Keyboard.aabButton[i])
     }
 
     // process mouse inputs
-    for(int i = 0; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
+    for(coreUintW i = 0; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
              if( m_Mouse.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Mouse.aabButton[i])
         else if(!m_Mouse.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Mouse.aabButton[i])
@@ -295,7 +295,7 @@ void CoreInput::__UpdateButtons()
     // process joystick inputs
     FOR_EACH(it, m_aJoystick)
     {
-        for(int i = 0; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
+        for(coreUintW i = 0; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
                  if( it->aabButton[i][0]) __CORE_INPUT_PRESS  (it->aabButton[i])
             else if(!it->aabButton[i][0]) __CORE_INPUT_RELEASE(it->aabButton[i])
@@ -303,7 +303,7 @@ void CoreInput::__UpdateButtons()
     }
 
     // process touch inputs
-    for(int i = 0; i < CORE_INPUT_FINGERS; ++i)
+    for(coreUintW i = 0; i < CORE_INPUT_FINGERS; ++i)
     {
              if( m_aTouch[i].abButton[0]) __CORE_INPUT_PRESS  (m_aTouch[i].abButton)
         else if(!m_aTouch[i].abButton[0]) __CORE_INPUT_RELEASE(m_aTouch[i].abButton)
@@ -328,12 +328,12 @@ void CoreInput::__ClearButtons()
 {
     // clear all last pressed buttons
     m_Keyboard.iLast = CORE_INPUT_KEY(UNKNOWN);
-    m_Mouse.iLast    = -1;
-    FOR_EACH(it, m_aJoystick) it->iLast = -1;
+    m_Mouse.iLast    = 0xFF;
+    FOR_EACH(it, m_aJoystick) it->iLast = 0xFF;
 
     // reset all relative movements
     m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);
-    for(int i = 0; i < CORE_INPUT_FINGERS; ++i)
+    for(coreUintW i = 0; i < CORE_INPUT_FINGERS; ++i)
         m_aTouch[i].vRelative = coreVector2(0.0f,0.0f);
 
     // clear current text-input character

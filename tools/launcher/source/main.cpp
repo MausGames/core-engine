@@ -53,7 +53,7 @@ bool IsWindowsVistaOrHigher()
     GetVersionEx(&iOS);
 
     // check for Windows Vista or higher
-    return iOS.dwMajorVersion >= 6;
+    return (iOS.dwMajorVersion >= 6) ? true : false;
 }
 
 
@@ -62,16 +62,13 @@ bool IsWow64()
 {
     int iStatus = 0;
 
-    if(IsWindowsVistaOrHigher())
+    // get function pointer from kernel library
+    LPFN_ISWOW64PROCESS nIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(GetModuleHandle("kernel32"), "IsWow64Process");
+    if(nIsWow64Process)
     {
-        // get function pointer from kernel library
-        LPFN_ISWOW64PROCESS nIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(GetModuleHandle("kernel32"), "IsWow64Process");
-        if(nIsWow64Process)
-        {
-            // check for 64-bit operating system
-            if(!nIsWow64Process(GetCurrentProcess(), &iStatus))
-                iStatus = 0;
-        }
+        // check for 64-bit operating system
+        if(!nIsWow64Process(GetCurrentProcess(), &iStatus))
+            iStatus = 0;
     }
 
     return iStatus ? true : false;
@@ -82,11 +79,11 @@ bool IsWow64()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int iCmdShow)
 {
     // change working directory
-    if(!SetCurrentDirectory(IsWow64() ? "bin\\windows\\x64\\" : "bin\\windows\\x86\\")) return -2;
+    if(!SetCurrentDirectory((IsWow64() && IsWindowsVistaOrHigher()) ? "bin\\windows\\x64\\" : "bin\\windows\\x86\\")) return -2;
 
     // get executable name
     std::vector<std::string> asFile;
-    ScanFolder(IsWindowsVistaOrHigher() ? "*_msvc.exe" : "*_mingw.exe", &asFile);
+    ScanFolder("*_msvc.exe", &asFile);
 
     // start real application
     return asFile.empty() ? -1 : (int)ShellExecute(NULL, "open", asFile[0].c_str(), NULL, NULL, SW_SHOWNORMAL);

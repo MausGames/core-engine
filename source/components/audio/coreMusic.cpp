@@ -11,23 +11,18 @@
 
 // ****************************************************************
 // callback functions for the music stream object
-std::size_t WrapFread (void* pData, std::size_t iSize, std::size_t iCount, SDL_RWops* pFile) {return       SDL_RWread (pFile, pData, iSize, iCount);}
-int         WrapFseek (SDL_RWops* pFile, ogg_int64_t iOffset, int iWhence)                   {return (int) SDL_RWseek (pFile, iOffset, iWhence);}
-int         WrapFclose(SDL_RWops* pFile)                                                     {return       SDL_RWclose(pFile);}
-long        WrapFtell (SDL_RWops* pFile)                                                     {return (long)SDL_RWtell (pFile);}
-
-ov_callbacks OV_CALLBACKS =
+static ov_callbacks OV_CALLBACKS =
 {
-    (std::size_t (*)(void*, std::size_t, std::size_t, void*)) WrapFread,
-    (int         (*)(void*, ogg_int64_t, int))                WrapFseek,
-    (int         (*)(void*))                                  WrapFclose,
-    (long        (*)(void*))                                  WrapFtell
+    [](void* pData, std::size_t iSize, std::size_t iCount, void* pFile) {return (std::size_t)SDL_RWread ((SDL_RWops*)pFile, pData, iSize, iCount);},
+    [](void* pFile, ogg_int64_t iOffset, int iWhence)                   {return (int)        SDL_RWseek ((SDL_RWops*)pFile, iOffset, iWhence);},
+    [](void* pFile)                                                     {return (int)        SDL_RWclose((SDL_RWops*)pFile);},
+    [](void* pFile)                                                     {return (long)       SDL_RWtell ((SDL_RWops*)pFile);}
 };
 
 
 // ****************************************************************
 // constructor
-coreMusic::coreMusic(const char* pcPath)noexcept
+coreMusic::coreMusic(const coreChar* pcPath)noexcept
 : coreMusic (Core::Manager::Resource->RetrieveFile(pcPath))
 {
 }
@@ -38,6 +33,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 , m_pInfo    (NULL)
 , m_pComment (NULL)
 , m_dMaxTime (0.0)
+, m_fVolume  (1.0f)
 , m_fPitch   (1.0f)
 , m_bLoop    (false)
 , m_bStatus  (false)
@@ -54,7 +50,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
 
     // test file format and open music stream
-            int iError = ov_test_callbacks(pSource, &m_Stream, NULL, 0, OV_CALLBACKS);
+    coreInt32   iError = ov_test_callbacks(pSource, &m_Stream, NULL, 0, OV_CALLBACKS);
     if(!iError) iError = ov_test_open(&m_Stream);
     if( iError)
     {
@@ -96,7 +92,7 @@ coreMusic::~coreMusic()
 
 // ****************************************************************
 // update the music object
-bool coreMusic::Update()
+coreBool coreMusic::Update()
 {
     if(!m_bStatus) return false;
 
@@ -108,7 +104,7 @@ bool coreMusic::Update()
     }
 
     // get number of processed sound buffers
-    int iProcessed;
+    ALint iProcessed;
     alGetSourcei(m_iSource, AL_BUFFERS_PROCESSED, &iProcessed);
 
     if(iProcessed)
@@ -128,7 +124,7 @@ bool coreMusic::Update()
         alSourceQueueBuffers(m_iSource, 1, &iBuffer);
 
         // check for wrong status
-        int iStatus;
+        ALint iStatus;
         alGetSourcei(m_iSource, AL_SOURCE_STATE, &iStatus);
         if(iStatus != AL_PLAYING) alSourcePlay(m_iSource);
     }
@@ -139,7 +135,7 @@ bool coreMusic::Update()
 
 // ****************************************************************
 // play the music
-coreError coreMusic::Play()
+coreStatus coreMusic::Play()
 {
     if(m_iSource) return CORE_INVALID_CALL;
     if(!m_pFile)  return CORE_INVALID_DATA;
@@ -205,14 +201,14 @@ void coreMusic::Pause()
 
 // ****************************************************************
 // get specific meta-information
-const char* coreMusic::GetComment(const char* pcName)const
+const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 {
     if(m_pComment)
     {
-        const std::size_t iLen = std::strlen(pcName);
+        const coreUintW iLen = std::strlen(pcName);
 
         // loop through all comments
-        for(int i = 0; i < m_pComment->comments; ++i)
+        for(coreUintW i = 0, ie = m_pComment->comments; i < ie; ++i)
         {
             // check comment and extract meta-information
             if(!std::strncmp(pcName, m_pComment->user_comments[i], iLen))
@@ -227,18 +223,18 @@ const char* coreMusic::GetComment(const char* pcName)const
 
 // ****************************************************************
 // read from music stream and update sound buffer
-bool coreMusic::__Stream(const ALuint& iBuffer)
+coreBool coreMusic::__Stream(const ALuint& iBuffer)
 {
-    char acData[CORE_MUSIC_CHUNK * 4];
+    coreChar acData[4 * CORE_MUSIC_CHUNK];
 
-    const int iChunkSize = MIN(F_TO_SI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4 * CORE_MUSIC_CHUNK);
-    int iReadSize = 0;
+    const coreInt32 iChunkSize = MIN(F_TO_SI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4 * CORE_MUSIC_CHUNK);
+    coreInt32       iReadSize  = 0;
 
     // process the defined music stream chunk size
     while(iReadSize < iChunkSize)
     {
         // read and decode data from the music track
-        const int iResult = ov_read(&m_Stream, acData + iReadSize, iChunkSize - iReadSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
+        const coreInt32 iResult = ov_read(&m_Stream, acData + iReadSize, iChunkSize - iReadSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
 
         if(iResult > 0) iReadSize += iResult;
         else break;
@@ -280,7 +276,7 @@ coreMusicPlayer::~coreMusicPlayer()
 
 // ****************************************************************
 // update the music-player
-bool coreMusicPlayer::Update()
+coreBool coreMusicPlayer::Update()
 {
     if(m_apMusic.empty()) return false;
     ASSERT(m_pCurMusic != m_pEmptyMusic)
@@ -314,7 +310,6 @@ bool coreMusicPlayer::Update()
         case CORE_MUSIC_SINGLE_REPEAT:   m_pCurMusic->Play();
         case CORE_MUSIC_SINGLE_NOREPEAT: break;
         }
-
         return true;
     }
     return false;
@@ -343,7 +338,7 @@ void coreMusicPlayer::Shuffle()
     m_apSequence = m_apMusic;
 
     // shuffle the list
-    std::shuffle(m_apSequence.begin(), m_apSequence.end(), std::default_random_engine((int)std::time(NULL)));
+    std::shuffle(m_apSequence.begin(), m_apSequence.end(), std::default_random_engine(CORE_RAND_TIME));
 
     // switch to first music object
     this->Select(0);
@@ -352,7 +347,7 @@ void coreMusicPlayer::Shuffle()
 
 // ****************************************************************
 // add music object from file
-coreError coreMusicPlayer::AddMusicFile(const char* pcPath)
+coreStatus coreMusicPlayer::AddMusicFile(const coreChar* pcPath)
 {
     // load from path
     return this->__AddMusic(Core::Manager::Resource->RetrieveFile(pcPath));
@@ -361,15 +356,15 @@ coreError coreMusicPlayer::AddMusicFile(const char* pcPath)
 
 // ****************************************************************
 // add music object from archive
-coreError coreMusicPlayer::AddMusicArchive(const char* pcPath, const char* pcFilter)
+coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreChar* pcFilter)
 {
-    bool bStatus = false;
+    coreBool bStatus = false;
 
     // retrieve archive with resource files
     coreArchive* pArchive = Core::Manager::Resource->RetrieveArchive(pcPath);
 
     // try to add all files to the music-player
-    for(coreUint i = 0; i < pArchive->GetNumFiles(); ++i)
+    for(coreUintW i = 0, ie = pArchive->GetNumFiles(); i < ie; ++i)
     {
         // check path and use only specific files
         if(coreData::StrCmpLike(pArchive->GetFile(i)->GetPath(), pcFilter))
@@ -385,9 +380,9 @@ coreError coreMusicPlayer::AddMusicArchive(const char* pcPath, const char* pcFil
 
 // ****************************************************************
 // add music object from folder
-coreError coreMusicPlayer::AddMusicFolder(const char* pcPath, const char* pcFilter)
+coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreChar* pcFilter)
 {
-    bool bStatus = false;
+    coreBool bStatus = false;
 
     // get specific files from the folder
     std::vector<std::string> asFolder;
@@ -406,14 +401,14 @@ coreError coreMusicPlayer::AddMusicFolder(const char* pcPath, const char* pcFilt
 
 // ****************************************************************
 // remove music object
-coreError coreMusicPlayer::DeleteMusic(const coreUint& iIndex)
+coreStatus coreMusicPlayer::DeleteMusic(const coreUintW& iIndex)
 {
     WARN_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
 
     coreMusic* pMusic = m_apMusic[iIndex];
 
     // remove music object
-    m_apMusic.erase(m_apMusic.begin()+iIndex);
+    m_apMusic   .erase(m_apMusic.begin() + iIndex);
     m_apSequence.erase(std::find(m_apSequence.begin(), m_apSequence.end(), pMusic));
 
     // delete music object
@@ -436,7 +431,7 @@ void coreMusicPlayer::ClearMusic()
         SAFE_DELETE(*it)
 
     // clear memory
-    m_apMusic.clear();
+    m_apMusic   .clear();
     m_apSequence.clear();
 
     // reset current music object
@@ -446,13 +441,13 @@ void coreMusicPlayer::ClearMusic()
 
 // ****************************************************************
 // switch to specific music object
-void coreMusicPlayer::Select(const coreUint& iIndex)
+void coreMusicPlayer::Select(const coreUintW& iIndex)
 {
     WARN_IF(iIndex >= m_apMusic.size())     return;
     if(m_pCurMusic == m_apSequence[iIndex]) return;
 
     // get playback status
-    const bool bStatus = m_pCurMusic->IsPlaying();
+    const coreBool bStatus = m_pCurMusic->IsPlaying();
 
     if(bStatus)
     {
@@ -482,9 +477,9 @@ void coreMusicPlayer::Select(const coreUint& iIndex)
 
 // ****************************************************************
 // switch to next music object
-bool coreMusicPlayer::Next()
+coreBool coreMusicPlayer::Next()
 {
-    if(m_iCurIndex+1 >= m_apMusic.size())
+    if((m_iCurIndex + 1) >= m_apMusic.size())
     {
         // back to the beginning
         this->Select(0);
@@ -492,31 +487,31 @@ bool coreMusicPlayer::Next()
     }
 
     // go to next music object
-    this->Select(m_iCurIndex+1);
+    this->Select(m_iCurIndex + 1);
     return false;
 }
 
 
 // ****************************************************************
 // switch to previous music object
-bool coreMusicPlayer::Previous()
+coreBool coreMusicPlayer::Previous()
 {
     if(m_iCurIndex == 0)
     {
         // back to the end
-        this->Select(coreUint(m_apMusic.size())-1);
+        this->Select(m_apMusic.size() - 1);
         return true;
     }
 
     // go to previous music object
-    this->Select(m_iCurIndex-1);
+    this->Select(m_iCurIndex - 1);
     return false;
 }
 
 
 // ****************************************************************
 // add music object
-coreError coreMusicPlayer::__AddMusic(coreFile* pFile)
+coreStatus coreMusicPlayer::__AddMusic(coreFile* pFile)
 {
     // create new music object
     coreMusic* pNewMusic = new coreMusic(pFile);
@@ -528,7 +523,7 @@ coreError coreMusicPlayer::__AddMusic(coreFile* pFile)
     }
 
     // add music object to the music-player
-    m_apMusic.push_back(pNewMusic);
+    m_apMusic   .push_back(pNewMusic);
     m_apSequence.push_back(pNewMusic);
 
     // init the access pointer

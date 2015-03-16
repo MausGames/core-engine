@@ -41,26 +41,26 @@ CoreSystem::CoreSystem()noexcept
     const coreVector2 vDesktop = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
 
     // load all available screen resolutions
-    const int iNumModes = SDL_GetNumDisplayModes(0);
+    const coreUintW iNumModes = SDL_GetNumDisplayModes(0);
     if(iNumModes)
     {
         Core::Log->ListStartInfo("Available Screen Resolutions");
         {
-            for(int i = 0; i < iNumModes; ++i)
+            for(coreUintW i = 0; i < iNumModes; ++i)
             {
                 // retrieve resolution
                 SDL_DisplayMode oMode;
                 SDL_GetDisplayMode(0, i, &oMode);
                 const coreVector2 vMode = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
 
-                coreUint j = 0, k = coreUint(m_avAvailable.size());
-                for(; j < k; ++j)
+                coreUintW j = 0, je = m_avAvailable.size();
+                for(; j < je; ++j)
                 {
                     // check for already added resolutions
                     if(m_avAvailable[j] == vMode)
                         break;
                 }
-                if(j == k)
+                if(j == je)
                 {
                     // add new resolution
                     m_avAvailable.push_back(vMode);
@@ -78,8 +78,8 @@ CoreSystem::CoreSystem()noexcept
     else Core::Log->Warning("Could not get available screen resolutions (SDL: %s)", SDL_GetError());
 
     // configure the SDL window
-    const coreUint iCenter = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED;
-    const coreUint iFlags  = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
+    const coreUint32 iCenter = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED;
+    const coreUint32 iFlags  = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
 
     // configure the OpenGL context
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
@@ -118,13 +118,13 @@ CoreSystem::CoreSystem()noexcept
     SDL_DisableScreenSaver();
 
     // init high precision time
-    m_dPerfFrequency = 1.0 / double(SDL_GetPerformanceFrequency());
+    m_dPerfFrequency = 1.0 / coreDouble(SDL_GetPerformanceFrequency());
     m_iPerfTime      = SDL_GetPerformanceCounter();
 
     // reset dynamic frame times
-    for(int i = 0; i < CORE_SYSTEM_TIMES; ++i)
+    for(coreUintW i = 0; i < CORE_SYSTEM_TIMES; ++i)
     {
-        m_afTime[i]      = 0.0f;
+        m_afTime     [i] = 0.0f;
         m_afTimeSpeed[i] = 1.0f;
     }
 
@@ -156,7 +156,7 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->ListStartInfo("Platform Information");
     {
         Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                              coreData::SystemName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %.4s%.4s%.4s (%d Logical Cores)", r_cast<char*>(&m_aaiCPUID[0][1]), r_cast<char*>(&m_aaiCPUID[0][3]), r_cast<char*>(&m_aaiCPUID[0][2]), m_iNumCores);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %.4s%.4s%.4s (%d Logical Cores)", r_cast<coreChar*>(&m_aaiCPUID[0][1]), r_cast<coreChar*>(&m_aaiCPUID[0][3]), r_cast<coreChar*>(&m_aaiCPUID[0][2]), m_iNumCores);
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MB",                           SDL_GetSystemRAM());
         Core::Log->ListAdd(CORE_LOG_BOLD("SIMD Support:")     " SSE %s, AVX %s",                  m_fSSE ? PRINT("%.1f", m_fSSE) : "-", m_fAVX ? PRINT("%.1f", m_fAVX) : "-");
         Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[0]:")         " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
@@ -187,7 +187,7 @@ CoreSystem::~CoreSystem()
 
 // ****************************************************************
 // change the icon of the window
-void CoreSystem::SetWindowIcon(const char* pcPath)
+void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 {
     coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
@@ -204,7 +204,7 @@ void CoreSystem::SetWindowIcon(const char* pcPath)
 
 // ****************************************************************
 // update the window event system
-bool CoreSystem::__UpdateEvents()
+coreBool CoreSystem::__UpdateEvents()
 {
     // reset minimize status
     m_bMinimized = false;
@@ -262,9 +262,9 @@ bool CoreSystem::__UpdateEvents()
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
-    const uint64_t iNewPerfTime = SDL_GetPerformanceCounter();
-    const float    fNewLastTime = float(double(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
-    m_iPerfTime                 = iNewPerfTime;
+    const coreUint64 iNewPerfTime = SDL_GetPerformanceCounter();
+    const coreFloat  fNewLastTime = coreFloat(coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
+    m_iPerfTime                   = iNewPerfTime;
 
     if(m_iSkipFrame || fNewLastTime >= 0.25f)
     {
@@ -278,12 +278,12 @@ void CoreSystem::__UpdateTime()
     {
         // smooth last frame time and increase total time
         m_fLastTime   = 0.85f * m_fLastTime + 0.15f * fNewLastTime;
-        m_dTotalTime += (double)m_fLastTime;
+        m_dTotalTime += coreDouble(m_fLastTime);
     }
 
     // update dynamic frame times
-    for(int i = 0; i < CORE_SYSTEM_TIMES; ++i)
-        m_afTime[i] = m_fLastTime*m_afTimeSpeed[i];
+    for(coreUintW i = 0; i < CORE_SYSTEM_TIMES; ++i)
+        m_afTime[i] = m_fLastTime * m_afTimeSpeed[i];
 
     // increase current frame number
     ++m_iCurFrame;

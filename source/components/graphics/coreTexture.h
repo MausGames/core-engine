@@ -48,7 +48,7 @@ private:
     GLuint m_iTexture;                                   //!< texture identifier
 
     coreVector2 m_vResolution;                           //!< resolution of the base level
-    coreByte    m_iLevels;                               //!< number of texture levels
+    coreUint8   m_iLevels;                               //!< number of texture levels
 
     GLenum m_iInternal;                                  //!< internal memory format (e.g. GL_RGBA8)
     GLenum m_iFormat;                                    //!< pixel data format (e.g. GL_RGBA)
@@ -56,7 +56,7 @@ private:
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
 
-    static coreByte     s_iActiveUnit;                   //!< active texture unit
+    static coreUintW    s_iActiveUnit;                   //!< active texture unit
     static coreTexture* s_apBound[CORE_TEXTURE_UNITS];   //!< texture objects currently associated with texture units
 
 
@@ -68,27 +68,27 @@ public:
 
     //! load and unload texture resource data
     //! @{
-    coreError Load(coreFile* pFile)override;
-    coreError Unload()override;
+    coreStatus Load(coreFile* pFile)override;
+    coreStatus Unload()override;
     //! @}
 
     //! handle texture memory
     //! @{
-    void Create(const coreUint& iWidth, const coreUint& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const bool& bFilter);
-    void Modify(const coreUint& iOffsetX, const coreUint& iOffsetY, const coreUint& iWidth, const coreUint& iHeight, const coreUint& iDataSize, const void* pData);
-    void CopyFrameBuffer(const coreUint& iSrcX, const coreUint& iSrcY, const coreUint& iDstX, const coreUint& iDstY, const coreUint& iWidth, const coreUint& iHeight);
+    void Create(const coreUint32& iWidth, const coreUint32& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const coreBool& bFilter);
+    void Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY, const coreUint32& iWidth, const coreUint32& iHeight, const coreUint32& iDataSize, const void* pData);
+    void CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight);
     //! @}
 
     //! configure shadow sampling
     //! @{
-    void ShadowSampling(const bool& bStatus);
+    void ShadowSampling(const coreBool& bStatus);
     //! @}
 
     //! enable and disable the texture
     //! @{
-    inline        void Enable (const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, this);}
-    static inline void Disable(const coreByte& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
-    static inline void DisableAll()                   {for(coreByte i = CORE_TEXTURE_UNITS; i--; ) coreTexture::Disable(i);}
+    inline        void Enable (const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, this);}
+    static inline void Disable(const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
+    static inline void DisableAll()                    {for(coreUintW i = CORE_TEXTURE_UNITS; i--; ) coreTexture::Disable(i);}
     //! @}
 
     //! reset content of the texture
@@ -101,7 +101,7 @@ public:
     //! @{
     inline const GLuint&      GetTexture   ()const {return m_iTexture;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
-    inline const coreByte&    GetLevels    ()const {return m_iLevels;}
+    inline const coreUint8&   GetLevels    ()const {return m_iLevels;}
     inline const GLenum&      GetInternal  ()const {return m_iInternal;}
     inline const GLenum&      GetFormat    ()const {return m_iFormat;}
     inline const GLenum&      GetType      ()const {return m_iType;}
@@ -111,7 +111,7 @@ public:
 private:
     //! bind texture to texture unit
     //! @{
-    static void __BindTexture(const coreByte& iUnit, coreTexture* pTexture);
+    static void __BindTexture(const coreUintW& iUnit, coreTexture* pTexture);
     //! @}
 };
 

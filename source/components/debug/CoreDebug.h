@@ -32,8 +32,8 @@ private:
     {
         coreUint64 iPerfTime;                                 //!< high precision CPU time value at start
         coreSelect<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
-        float fCurrentCPU;                                    //!< current CPU performance value
-        float fCurrentGPU;                                    //!< current GPU performance value
+        coreFloat fCurrentCPU;                                //!< current CPU performance value
+        coreFloat fCurrentGPU;                                //!< current GPU performance value
         coreLabel oOutput;                                    //!< label for displaying output
 
         coreMeasure()noexcept;
@@ -55,8 +55,8 @@ private:
 
     coreObject2D m_Background;                 //!< background object to increase output readability
 
-    bool m_bEnabled;                           //!< debug-monitor is enabled (debug-build or debug-context)
-    bool m_bVisible;                           //!< output is visible on screen
+    coreBool m_bEnabled;                       //!< debug-monitor is enabled (debug-build or debug-context)
+    coreBool m_bVisible;                       //!< output is visible on screen
 
 
 private:
@@ -70,20 +70,20 @@ public:
 
     /*! measure performance between specific points */
     //! @{
-    void MeasureStart(const char* pcName);
-    void MeasureEnd  (const char* pcName);
+    void MeasureStart(const coreChar* pcName);
+    void MeasureEnd  (const coreChar* pcName);
     //! @}
 
     /*! inspect and display values during run-time */
     //! @{
-    template <typename... A> void InspectValue(const char* pcName, const char* pcFormat, A&&... vArgs);
-    inline void InspectValue(const char* pcName, const bool&        bValue) {this->InspectValue(pcName, bValue ? "true" : "false");}
-    inline void InspectValue(const char* pcName, const int&         iValue) {this->InspectValue(pcName, "%d",                     iValue);}
-    inline void InspectValue(const char* pcName, const coreUint&    iValue) {this->InspectValue(pcName, "%u",                     iValue);}
-    inline void InspectValue(const char* pcName, const float&       fValue) {this->InspectValue(pcName, "%.5f",                   fValue);}
-    inline void InspectValue(const char* pcName, const coreVector2& vValue) {this->InspectValue(pcName, "%.5f, %.5f",             vValue.x, vValue.y);}
-    inline void InspectValue(const char* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
-    inline void InspectValue(const char* pcName, const coreVector4& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
+    template <typename... A> void InspectValue(const coreChar* pcName, const coreChar* pcFormat, A&&... vArgs);
+    inline void InspectValue(const coreChar* pcName, const coreBool&    bValue) {this->InspectValue(pcName, bValue ? "true" : "false");}
+    inline void InspectValue(const coreChar* pcName, const coreInt32&   iValue) {this->InspectValue(pcName, "%d",                     iValue);}
+    inline void InspectValue(const coreChar* pcName, const coreUint32&  iValue) {this->InspectValue(pcName, "%u",                     iValue);}
+    inline void InspectValue(const coreChar* pcName, const coreFloat&   fValue) {this->InspectValue(pcName, "%.5f",                   fValue);}
+    inline void InspectValue(const coreChar* pcName, const coreVector2& vValue) {this->InspectValue(pcName, "%.5f, %.5f",             vValue.x, vValue.y);}
+    inline void InspectValue(const coreChar* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
+    inline void InspectValue(const coreChar* pcName, const coreVector4& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
     //! @}
 
 
@@ -97,7 +97,7 @@ private:
 
 // ****************************************************************
 /* inspect and display values during run-time */
-template <typename... A> void CoreDebug::InspectValue(const char* pcName, const char* pcFormat, A&&... vArgs)
+template <typename... A> void CoreDebug::InspectValue(const coreChar* pcName, const coreChar* pcFormat, A&&... vArgs)
 {
     if(!m_bEnabled) return;
 
@@ -115,7 +115,7 @@ template <typename... A> void CoreDebug::InspectValue(const char* pcName, const 
         oOutput.SetColor3   (COLOR_GREEN);
     }
 
-    // write formated values to output label
+    // write formatted values to output label
     m_apInspect.at(pcName)->oOutput.SetText(PRINT("%s (%s)", pcName, PRINT(pcFormat, std::forward<A>(vArgs)...)));
 }
 

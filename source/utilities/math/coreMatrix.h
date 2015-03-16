@@ -22,26 +22,26 @@ public:
     {
         struct
         {
-            float _11, _12, _13;
-            float _21, _22, _23;
-            float _31, _32, _33;
+            coreFloat _11, _12, _13;
+            coreFloat _21, _22, _23;
+            coreFloat _31, _32, _33;
         };
-        float arr[3][3];
+        coreFloat arr[3][3];
     };
 
 
 public:
     constexpr_func coreMatrix3()noexcept;
-    constexpr_func coreMatrix3(const float& f11, const float& f12, const float& f13,
-                               const float& f21, const float& f22, const float& f23,
-                               const float& f31, const float& f32, const float& f33)noexcept;
+    constexpr_func coreMatrix3(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13,
+                               const coreFloat& f21, const coreFloat& f22, const coreFloat& f23,
+                               const coreFloat& f31, const coreFloat& f32, const coreFloat& f33)noexcept;
 
     ENABLE_COPY(coreMatrix3)
 
     /*! compare operations */
     //! @{
-    inline bool operator == (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ? false :  true;}
-    inline bool operator != (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ?  true : false;}
+    inline coreBool operator == (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ? false :  true;}
+    inline coreBool operator != (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ?  true : false;}
     //! @}
 
     /*! matrix operations */
@@ -56,16 +56,16 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr_func        coreMatrix3 operator *  (const float& f)const;
-    inline                coreMatrix3 operator /  (const float& f)const                  {return  *this * RCP(f);}
-    inline                void        operator *= (const float& f)                       {*this = *this * f;}
-    inline                void        operator /= (const float& f)                       {*this = *this / f;}
-    friend constexpr_func coreMatrix3 operator *  (const float& f, const coreMatrix3& m) {return m * f;}
+    constexpr_func        coreMatrix3 operator *  (const coreFloat& f)const;
+    inline                coreMatrix3 operator /  (const coreFloat& f)const                  {return  *this * RCP(f);}
+    inline                void        operator *= (const coreFloat& f)                       {*this = *this * f;}
+    inline                void        operator /= (const coreFloat& f)                       {*this = *this / f;}
+    friend constexpr_func coreMatrix3 operator *  (const coreFloat& f, const coreMatrix3& m) {return m * f;}
     //! @}
 
     /*! convert matrix */
     //! @{
-    constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
+    constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
     inline        coreVector4 Quat()const;
     static inline coreMatrix3 Quat(const coreVector4& v);
     //! @}
@@ -84,7 +84,7 @@ public:
 
     /*! direct functions */
     //! @{
-    constexpr_func float Determinant()const;
+    constexpr_func coreFloat Determinant()const;
     //! @}
 
     /*! static functions */
@@ -93,7 +93,7 @@ public:
     static constexpr_func coreMatrix3 Translation(const coreVector2& vPosition);
     static constexpr_func coreMatrix3 Scaling    (const coreVector2& vSize);
     static inline         coreMatrix3 Rotation   (const coreVector2& vDirection);
-    static inline         coreMatrix3 Rotation   (const float&       fAngle);
+    static inline         coreMatrix3 Rotation   (const coreFloat&   fAngle);
     //! @}
 };
 
@@ -107,28 +107,28 @@ public:
     {
         struct
         {
-            float _11, _12, _13, _14;
-            float _21, _22, _23, _24;
-            float _31, _32, _33, _34;
-            float _41, _42, _43, _44;
+            coreFloat _11, _12, _13, _14;
+            coreFloat _21, _22, _23, _24;
+            coreFloat _31, _32, _33, _34;
+            coreFloat _41, _42, _43, _44;
         };
-        float arr[4][4];
+        coreFloat arr[4][4];
     };
 
 
 public:
     constexpr_func coreMatrix4()noexcept;
-    constexpr_func coreMatrix4(const float& f11, const float& f12, const float& f13, const float& f14,
-                               const float& f21, const float& f22, const float& f23, const float& f24,
-                               const float& f31, const float& f32, const float& f33, const float& f34,
-                               const float& f41, const float& f42, const float& f43, const float& f44)noexcept;
+    constexpr_func coreMatrix4(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13, const coreFloat& f14,
+                               const coreFloat& f21, const coreFloat& f22, const coreFloat& f23, const coreFloat& f24,
+                               const coreFloat& f31, const coreFloat& f32, const coreFloat& f33, const coreFloat& f34,
+                               const coreFloat& f41, const coreFloat& f42, const coreFloat& f43, const coreFloat& f44)noexcept;
 
     ENABLE_COPY(coreMatrix4)
 
     /*! compare operations */
     //! @{
-    inline bool operator == (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ? false :  true;}
-    inline bool operator != (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ?  true : false;}
+    inline coreBool operator == (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ? false :  true;}
+    inline coreBool operator != (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ?  true : false;}
     //! @}
 
     /*! matrix operations */
@@ -143,20 +143,20 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr_func        coreMatrix4 operator *  (const float& f)const;
-    inline                coreMatrix4 operator /  (const float& f)const                  {return  *this * RCP(f);}
-    inline                void        operator *= (const float& f)                       {*this = *this * f;}
-    inline                void        operator /= (const float& f)                       {*this = *this / f;}
-    friend constexpr_func coreMatrix4 operator *  (const float& f, const coreMatrix4& m) {return m * f;}
+    constexpr_func        coreMatrix4 operator *  (const coreFloat& f)const;
+    inline                coreMatrix4 operator /  (const coreFloat& f)const                  {return  *this * RCP(f);}
+    inline                void        operator *= (const coreFloat& f)                       {*this = *this * f;}
+    inline                void        operator /= (const coreFloat& f)                       {*this = *this / f;}
+    friend constexpr_func coreMatrix4 operator *  (const coreFloat& f, const coreMatrix4& m) {return m * f;}
     //! @}
 
     /*! convert matrix */
     //! @{
-    constexpr_weak operator const float* ()const {return r_cast<const float*>(this);}
-    constexpr_func coreMatrix3 m123()const       {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
-    constexpr_func coreMatrix3 m124()const       {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
-    constexpr_func coreMatrix3 m134()const       {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
-    constexpr_func coreMatrix3 m234()const       {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
+    constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
+    constexpr_func coreMatrix3 m123()const           {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
+    constexpr_func coreMatrix3 m124()const           {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
+    constexpr_func coreMatrix3 m134()const           {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
+    constexpr_func coreMatrix3 m234()const           {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
     //! @}
 
     /*! transpose matrix */
@@ -173,7 +173,7 @@ public:
 
     /*! direct functions */
     //! @{
-    constexpr_func float Determinant()const;
+    constexpr_func coreFloat Determinant()const;
     //! @}
 
     /*! static functions */
@@ -182,15 +182,15 @@ public:
     static constexpr_func coreMatrix4 Translation(const coreVector3& vPosition);
     static constexpr_func coreMatrix4 Scaling    (const coreVector3& vSize);
     static inline         coreMatrix4 RotationX  (const coreVector2& vDirection);
-    static inline         coreMatrix4 RotationX  (const float&       fAngle);
+    static inline         coreMatrix4 RotationX  (const coreFloat&   fAngle);
     static inline         coreMatrix4 RotationY  (const coreVector2& vDirection);
-    static inline         coreMatrix4 RotationY  (const float&       fAngle);
+    static inline         coreMatrix4 RotationY  (const coreFloat&   fAngle);
     static inline         coreMatrix4 RotationZ  (const coreVector2& vDirection);
-    static inline         coreMatrix4 RotationZ  (const float&       fAngle);
+    static inline         coreMatrix4 RotationZ  (const coreFloat&   fAngle);
     static inline         coreMatrix4 Orientation(const coreVector3& vDirection, const coreVector3& vOrientation);
-    static inline         coreMatrix4 Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip);
+    static inline         coreMatrix4 Perspective(const coreVector2& vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip);
     static inline         coreMatrix4 Ortho      (const coreVector2& vResolution);
-    static inline         coreMatrix4 Ortho      (const float&       fLeft, const float& fRight, const float& fBottom, const float& fTop, const float& fNearClip, const float& fFarClip);
+    static inline         coreMatrix4 Ortho      (const coreFloat&   fLeft, const coreFloat& fRight, const coreFloat& fBottom, const coreFloat& fTop, const coreFloat& fNearClip, const coreFloat& fFarClip);
     static inline         coreMatrix4 Camera     (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
     //! @}
 };
@@ -206,9 +206,9 @@ constexpr_func coreMatrix3::coreMatrix3()noexcept
 {
 }
 
-constexpr_func coreMatrix3::coreMatrix3(const float& f11, const float& f12, const float& f13,
-                                        const float& f21, const float& f22, const float& f23,
-                                        const float& f31, const float& f32, const float& f33)noexcept
+constexpr_func coreMatrix3::coreMatrix3(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13,
+                                        const coreFloat& f21, const coreFloat& f22, const coreFloat& f23,
+                                        const coreFloat& f31, const coreFloat& f32, const coreFloat& f33)noexcept
 : _11 (f11), _12 (f12), _13 (f13)
 , _21 (f21), _22 (f22), _23 (f23)
 , _31 (f31), _32 (f32), _33 (f33)
@@ -248,7 +248,7 @@ constexpr_func coreMatrix3 coreMatrix3::operator * (const coreMatrix3& m)const
 
 // ****************************************************************
 /* multiplication with scalar */
-constexpr_func coreMatrix3 coreMatrix3::operator * (const float& f)const
+constexpr_func coreMatrix3 coreMatrix3::operator * (const coreFloat& f)const
 {
     return coreMatrix3(_11*f, _12*f, _13*f,
                        _21*f, _22*f, _23*f,
@@ -260,11 +260,11 @@ constexpr_func coreMatrix3 coreMatrix3::operator * (const float& f)const
 /* convert matrix to quaternion */
 inline coreVector4 coreMatrix3::Quat()const
 {
-    const float fTrace = _11 + _22 + _33;
+    const coreFloat fTrace = _11 + _22 + _33;
 
     if(fTrace > 0.0f)
     {
-        const float F = 0.5f * RSQRT(fTrace + 1.0f);
+        const coreFloat F = 0.5f * RSQRT(fTrace + 1.0f);
         return coreVector4((_23 - _32) *     F,
                            (_31 - _13) *     F,
                            (_12 - _21) *     F,
@@ -274,7 +274,7 @@ inline coreVector4 coreMatrix3::Quat()const
     {
         if((_11 > _22) && (_11 > _33))
         {
-            const float F = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
+            const coreFloat F = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
             return coreVector4(      0.25f * RCP(F),
                                (_21 + _12) *     F,
                                (_31 + _13) *     F,
@@ -282,7 +282,7 @@ inline coreVector4 coreMatrix3::Quat()const
         }
         else if(_22 > _33)
         {
-            const float F = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
+            const coreFloat F = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
             return coreVector4((_21 + _12) *     F,
                                      0.25f * RCP(F),
                                (_32 + _23) *     F,
@@ -290,7 +290,7 @@ inline coreVector4 coreMatrix3::Quat()const
         }
         else
         {
-            const float F = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
+            const coreFloat F = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
             return coreVector4((_31 + _13) *     F,
                                (_32 + _23) *     F,
                                      0.25f * RCP(F),
@@ -304,15 +304,15 @@ inline coreVector4 coreMatrix3::Quat()const
 /* convert quaternion to matrix */
 inline coreMatrix3 coreMatrix3::Quat(const coreVector4& v)
 {
-    const float XX = v.x*v.x;
-    const float XY = v.x*v.y;
-    const float XZ = v.x*v.z;
-    const float XW = v.x*v.w;
-    const float YY = v.y*v.y;
-    const float YZ = v.y*v.z;
-    const float YW = v.y*v.w;
-    const float ZZ = v.z*v.z;
-    const float ZW = v.z*v.w;
+    const coreFloat XX = v.x*v.x;
+    const coreFloat XY = v.x*v.y;
+    const coreFloat XZ = v.x*v.z;
+    const coreFloat XW = v.x*v.w;
+    const coreFloat YY = v.y*v.y;
+    const coreFloat YZ = v.y*v.z;
+    const coreFloat YW = v.y*v.w;
+    const coreFloat ZZ = v.z*v.z;
+    const coreFloat ZW = v.z*v.w;
 
     return coreMatrix3(1.0f - 2.0f * (YY + ZZ),        2.0f * (XY + ZW),        2.0f * (XZ - YW),
                               2.0f * (XY - ZW), 1.0f - 2.0f * (XX + ZZ),        2.0f * (YZ + XW),
@@ -336,9 +336,9 @@ inline coreMatrix3& coreMatrix3::Transpose()
 /* invert matrix */
 inline coreMatrix3& coreMatrix3::Invert()
 {
-    const float A = _22*_33 - _23*_32;
-    const float B = _23*_31 - _21*_33;
-    const float C = _21*_32 - _22*_31;
+    const coreFloat A = _22*_33 - _23*_32;
+    const coreFloat B = _23*_31 - _21*_33;
+    const coreFloat C = _21*_32 - _22*_31;
 
     *this = coreMatrix3(A, _13*_32 - _12*_33, _12*_23 - _13*_22,
                         B, _11*_33 - _13*_31, _13*_21 - _11*_23,
@@ -351,7 +351,7 @@ inline coreMatrix3& coreMatrix3::Invert()
 
 // ****************************************************************
 /* calculate determinant */
-constexpr_func float coreMatrix3::Determinant()const
+constexpr_func coreFloat coreMatrix3::Determinant()const
 {
     return _11*(_22*_33 - _23*_32) + _12*(_23*_31 - _21*_33) + _13*(_21*_32 - _22*_31);
 }
@@ -397,7 +397,7 @@ inline coreMatrix3 coreMatrix3::Rotation(const coreVector2& vDirection)
                                 0.0f,         0.0f, 1.0f);
 }
 
-inline coreMatrix3 coreMatrix3::Rotation(const float& fAngle)
+inline coreMatrix3 coreMatrix3::Rotation(const coreFloat& fAngle)
 {
     return coreMatrix3::Rotation(coreVector2::Direction(fAngle));
 }
@@ -413,10 +413,10 @@ constexpr_func coreMatrix4::coreMatrix4()noexcept
 {
 }
 
-constexpr_func coreMatrix4::coreMatrix4(const float& f11, const float& f12, const float& f13, const float& f14,
-                                        const float& f21, const float& f22, const float& f23, const float& f24,
-                                        const float& f31, const float& f32, const float& f33, const float& f34,
-                                        const float& f41, const float& f42, const float& f43, const float& f44)noexcept
+constexpr_func coreMatrix4::coreMatrix4(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13, const coreFloat& f14,
+                                        const coreFloat& f21, const coreFloat& f22, const coreFloat& f23, const coreFloat& f24,
+                                        const coreFloat& f31, const coreFloat& f32, const coreFloat& f33, const coreFloat& f34,
+                                        const coreFloat& f41, const coreFloat& f42, const coreFloat& f43, const coreFloat& f44)noexcept
 : _11 (f11), _12 (f12), _13 (f13), _14 (f14)
 , _21 (f21), _22 (f22), _23 (f23), _24 (f24)
 , _31 (f31), _32 (f32), _33 (f33), _34 (f34)
@@ -464,7 +464,7 @@ constexpr_func coreMatrix4 coreMatrix4::operator * (const coreMatrix4& m)const
 
 // ****************************************************************
 /* multiplication with scalar */
-constexpr_func coreMatrix4 coreMatrix4::operator * (const float& f)const
+constexpr_func coreMatrix4 coreMatrix4::operator * (const coreFloat& f)const
 {
     return coreMatrix4(_11*f, _12*f, _13*f, _14*f,
                        _21*f, _22*f, _23*f, _24*f,
@@ -490,18 +490,18 @@ inline coreMatrix4& coreMatrix4::Transpose()
 /* invert matrix */
 inline coreMatrix4& coreMatrix4::Invert()
 {
-    const float A = _11*_22 - _12*_21;
-    const float B = _11*_23 - _13*_21;
-    const float C = _11*_24 - _14*_21;
-    const float D = _12*_23 - _13*_22;
-    const float E = _12*_24 - _14*_22;
-    const float F = _13*_24 - _14*_23;
-    const float G = _31*_42 - _32*_41;
-    const float H = _31*_43 - _33*_41;
-    const float I = _31*_44 - _34*_41;
-    const float J = _32*_43 - _33*_42;
-    const float K = _32*_44 - _34*_42;
-    const float L = _33*_44 - _34*_43;
+    const coreFloat A = _11*_22 - _12*_21;
+    const coreFloat B = _11*_23 - _13*_21;
+    const coreFloat C = _11*_24 - _14*_21;
+    const coreFloat D = _12*_23 - _13*_22;
+    const coreFloat E = _12*_24 - _14*_22;
+    const coreFloat F = _13*_24 - _14*_23;
+    const coreFloat G = _31*_42 - _32*_41;
+    const coreFloat H = _31*_43 - _33*_41;
+    const coreFloat I = _31*_44 - _34*_41;
+    const coreFloat J = _32*_43 - _33*_42;
+    const coreFloat K = _32*_44 - _34*_42;
+    const coreFloat L = _33*_44 - _34*_43;
 
     *this = coreMatrix4(_22*L - _23*K + _24*J, _13*K - _12*L - _14*J, _42*F - _43*E + _44*D, _33*E - _32*F - _34*D,
                         _23*I - _21*L - _24*H, _11*L - _13*I + _14*H, _43*C - _41*F - _44*B, _31*F - _33*C + _34*B,
@@ -515,7 +515,7 @@ inline coreMatrix4& coreMatrix4::Invert()
 
 // ****************************************************************
 /* calculate determinant */
-constexpr_func float coreMatrix4::Determinant()const
+constexpr_func coreFloat coreMatrix4::Determinant()const
 {
     return (_11*_22 - _12*_21) * (_33*_44 - _34*_43) - (_11*_23 - _13*_21) * (_32*_44 - _34*_42) +
            (_11*_24 - _14*_21) * (_32*_43 - _33*_42) + (_12*_23 - _13*_22) * (_31*_44 - _34*_41) -
@@ -567,7 +567,7 @@ inline coreMatrix4 coreMatrix4::RotationX(const coreVector2& vDirection)
                        0.0f,          0.0f,          0.0f, 1.0f);
 }
 
-inline coreMatrix4 coreMatrix4::RotationX(const float& fAngle)
+inline coreMatrix4 coreMatrix4::RotationX(const coreFloat& fAngle)
 {
     return coreMatrix4::RotationX(coreVector2::Direction(fAngle));
 }
@@ -584,7 +584,7 @@ inline coreMatrix4 coreMatrix4::RotationY(const coreVector2& vDirection)
                                0.0f, 0.0f,          0.0f, 1.0f);
 }
 
-inline coreMatrix4 coreMatrix4::RotationY(const float& fAngle)noexcept
+inline coreMatrix4 coreMatrix4::RotationY(const coreFloat& fAngle)
 {
     return coreMatrix4::RotationY(coreVector2::Direction(fAngle));
 }
@@ -601,7 +601,7 @@ inline coreMatrix4 coreMatrix4::RotationZ(const coreVector2& vDirection)
                                 0.0f,         0.0f, 0.0f, 1.0f);
 }
 
-inline coreMatrix4 coreMatrix4::RotationZ(const float& fAngle)
+inline coreMatrix4 coreMatrix4::RotationZ(const coreFloat& fAngle)
 {
     return coreMatrix4::RotationZ(coreVector2::Direction(fAngle));
 }
@@ -627,14 +627,14 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 
 // ****************************************************************
 /* calculate perspective projection matrix */
-inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, const float& fFOV, const float& fNearClip, const float& fFarClip)
+inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip)
 {
-    const float Y = COT(fFOV * 0.5f);
-    const float X = Y * vResolution.yx().AspectRatio();
+    const coreFloat Y = COT(fFOV * 0.5f);
+    const coreFloat X = Y * vResolution.yx().AspectRatio();
 
-    const float& N = fNearClip;
-    const float& F = fFarClip;
-    const float  I = RCP(N-F);
+    const coreFloat& N = fNearClip;
+    const coreFloat& F = fFarClip;
+    const coreFloat  I = RCP(N-F);
 
     return coreMatrix4(   X, 0.0f,       0.0f,  0.0f,
                        0.0f,    Y,       0.0f,  0.0f,
@@ -647,8 +647,8 @@ inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, cons
 /* calculate orthographic projection matrix */
 inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
 {
-    const float X = 2.0f * RCP(vResolution.x);
-    const float Y = 2.0f * RCP(vResolution.y);
+    const coreFloat X = 2.0f * RCP(vResolution.x);
+    const coreFloat Y = 2.0f * RCP(vResolution.y);
 
     return coreMatrix4(   X, 0.0f, 0.0f, 0.0f,
                        0.0f,    Y, 0.0f, 0.0f,
@@ -656,15 +656,15 @@ inline coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
                        0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-inline coreMatrix4 coreMatrix4::Ortho(const float& fLeft, const float& fRight, const float& fBottom, const float& fTop, const float& fNearClip, const float& fFarClip)
+inline coreMatrix4 coreMatrix4::Ortho(const coreFloat& fLeft, const coreFloat& fRight, const coreFloat& fBottom, const coreFloat& fTop, const coreFloat& fNearClip, const coreFloat& fFarClip)
 {
-    const float X =  RCP(fRight   - fLeft);
-    const float Y =  RCP(fTop     - fBottom);
-    const float Z = -RCP(fFarClip - fNearClip);
+    const coreFloat X =  RCP(fRight   - fLeft);
+    const coreFloat Y =  RCP(fTop     - fBottom);
+    const coreFloat Z = -RCP(fFarClip - fNearClip);
 
-    const float A = -(fRight   + fLeft);
-    const float B = -(fTop     + fBottom);
-    const float C = -(fFarClip + fNearClip);
+    const coreFloat A = -(fRight   + fLeft);
+    const coreFloat B = -(fTop     + fBottom);
+    const coreFloat C = -(fFarClip + fNearClip);
 
     return coreMatrix4(X*2.0f,   0.0f,   0.0f, 0.0f,
                          0.0f, Y*2.0f,   0.0f, 0.0f,
@@ -677,7 +677,7 @@ inline coreMatrix4 coreMatrix4::Ortho(const float& fLeft, const float& fRight, c
 /* calculate camera matrix */
 inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
-    float fTemp;
+    coreFloat fTemp;
 
     coreMatrix4 mCamera = coreMatrix4::Orientation(vDirection, vOrientation);
     fTemp = mCamera._21; mCamera._21 = mCamera._31; mCamera._31 = -fTemp;
@@ -696,16 +696,16 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
 /* multiplication with matrix */
 inline coreVector2 coreVector2::operator * (const coreMatrix3& m)const
 {
-    const float w = RCP(x*m._13 + y*m._23 +   m._33);
-    return  coreVector2(x*m._11 + y*m._21 + w*m._31,
-                        x*m._12 + y*m._22 + w*m._32);
+    const coreFloat w = RCP(x*m._13 + y*m._23 +   m._33);
+    return      coreVector2(x*m._11 + y*m._21 + w*m._31,
+                            x*m._12 + y*m._22 + w*m._32);
 }
 
 inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const
 {
-    const float w = RCP(x*m._14 + y*m._24 +   m._44);
-    return  coreVector2(x*m._11 + y*m._21 + w*m._41,
-                        x*m._12 + y*m._22 + w*m._42);
+    const coreFloat w = RCP(x*m._14 + y*m._24 +   m._44);
+    return      coreVector2(x*m._11 + y*m._21 + w*m._41,
+                            x*m._12 + y*m._22 + w*m._42);
 }
 
 
@@ -720,10 +720,10 @@ constexpr_func coreVector3 coreVector3::operator * (const coreMatrix3& m)const
 
 inline coreVector3 coreVector3::operator * (const coreMatrix4& m)const
 {
-    const float w = RCP(x*m._14 + y*m._24 + z*m._34 +   m._44);
-    return  coreVector3(x*m._11 + y*m._21 + z*m._31 + w*m._41,
-                        x*m._12 + y*m._22 + z*m._32 + w*m._42,
-                        x*m._13 + y*m._23 + z*m._33 + w*m._43);
+    const coreFloat w = RCP(x*m._14 + y*m._24 + z*m._34 +   m._44);
+    return      coreVector3(x*m._11 + y*m._21 + z*m._31 + w*m._41,
+                            x*m._12 + y*m._22 + z*m._32 + w*m._42,
+                            x*m._13 + y*m._23 + z*m._33 + w*m._43);
 }
 
 

@@ -37,10 +37,10 @@ coreModel::~coreModel()
 
 // ****************************************************************
 // load model resource data
-coreError coreModel::Load(coreFile* pFile)
+coreStatus coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreError iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
+    const coreStatus iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck >= CORE_OK) return iCheck;
 
     coreFileUnload Unload(pFile);
@@ -50,7 +50,7 @@ coreError coreModel::Load(coreFile* pFile)
     if(!pFile->GetData())               return CORE_ERROR_FILE;
 
     // extract file extension
-    const char* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
+    const coreChar* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
 
     // import model file
     coreImport oImport;
@@ -70,10 +70,10 @@ coreError coreModel::Load(coreFile* pFile)
     }
 
     // save properties
-    m_iNumVertices = coreUint(oImport.aVertexData.size());
-    m_iNumIndices  = coreUint(oImport.aiIndexData.size());
+    m_iNumVertices = oImport.aVertexData.size();
+    m_iNumIndices  = oImport.aiIndexData.size();
     m_sPath        = pFile->GetPath();
-    m_iSize        = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUshort);
+    m_iSize        = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUint16);
 
     // find maximum distance from the model center
     FOR_EACH(it, oImport.aVertexData)
@@ -86,7 +86,7 @@ coreError coreModel::Load(coreFile* pFile)
     m_fBoundingRadius = SQRT(m_fBoundingRadius);
 
     GLuint iNormFormat;
-    std::function<coreUint(const coreVector4&)> nPackFunc;
+    std::function<coreUint32(const coreVector4&)> nPackFunc;
     if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev))
     {
         // use high-precision packed format
@@ -102,7 +102,7 @@ coreError coreModel::Load(coreFile* pFile)
 
     // reduce total vertex size
     coreVertexPacked* pPackedData = new coreVertexPacked[m_iNumVertices];
-    for(coreUint i = 0; i < m_iNumVertices; ++i)
+    for(coreUintW i = 0, ie = m_iNumVertices; i < ie; ++i)
     {
         const coreVertex& oVertex = oImport.aVertexData[i];
 
@@ -121,9 +121,9 @@ coreError coreModel::Load(coreFile* pFile)
     // create vertex buffer
     coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,          false, 0);
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT, false, 3*sizeof(float));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, iNormFormat,       false, 3*sizeof(float) + 1*sizeof(coreUint));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, iNormFormat,       false, 3*sizeof(float) + 2*sizeof(coreUint));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT, false, 3*sizeof(coreFloat));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, iNormFormat,       false, 3*sizeof(coreFloat) + 1*sizeof(coreUint32));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, iNormFormat,       false, 3*sizeof(coreFloat) + 2*sizeof(coreUint32));
     SAFE_DELETE_ARRAY(pPackedData)
 
 #if defined(_CORE_GLES_)
@@ -131,24 +131,24 @@ coreError coreModel::Load(coreFile* pFile)
     if(m_iNumVertices <= 256)
     {
         // reduce default index size
-        coreByte* pByteData = new coreByte[m_iNumIndices];
-        for(coreUint i = 0; i < m_iNumIndices; ++i)
+        coreUint8* pSmallData = new coreUint8[m_iNumIndices];
+        for(coreUintW i = 0, ie = m_iNumIndices; i < ie; ++i)
         {
             // convert all indices
             ASSERT(oImport.aiIndexData[i] < 256)
-            pByteData[i] = (coreByte)oImport.aiIndexData[i];
+            pSmallData[i] = coreUint8(oImport.aiIndexData[i]);
         }
 
         // create small index buffer
-        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreByte), pByteData, CORE_DATABUFFER_STORAGE_STATIC);
-        SAFE_DELETE_ARRAY(pByteData)
+        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint8), pSmallData, CORE_DATABUFFER_STORAGE_STATIC);
+        SAFE_DELETE_ARRAY(pSmallData)
     }
     else
 
 #endif
 
     // create index buffer
-    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUshort), oImport.aiIndexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
+    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), oImport.aiIndexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
 
     Core::Log->Info("Model (%s) loaded", pFile->GetPath());
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
@@ -157,7 +157,7 @@ coreError coreModel::Load(coreFile* pFile)
 
 // ****************************************************************
 // unload model resource data
-coreError coreModel::Unload()
+coreStatus coreModel::Unload()
 {
     if(m_apiVertexBuffer.empty()) return CORE_INVALID_CALL;
 
@@ -210,14 +210,14 @@ void coreModel::DrawElements()const
 
 // ****************************************************************
 // draw the model instanced
-void coreModel::DrawArraysInstanced(const coreUint& iCount)const
+void coreModel::DrawArraysInstanced(const coreUint32& iCount)const
 {
     // check and draw the model instanced
     ASSERT(s_pCurrent == this || !s_pCurrent)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
-void coreModel::DrawElementsInstanced(const coreUint& iCount)const
+void coreModel::DrawElementsInstanced(const coreUint32& iCount)const
 {
     // check and draw the model instanced
     ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
@@ -247,7 +247,7 @@ void coreModel::Enable()
         }
 
         // set vertex data
-        for(coreByte i = 0, j = coreByte(m_apiVertexBuffer.size()); i < j; ++i)
+        for(coreUintW i = 0, ie = m_apiVertexBuffer.size(); i < ie; ++i)
             m_apiVertexBuffer[i]->Activate(i);
 
         // set index data
@@ -258,12 +258,12 @@ void coreModel::Enable()
 
 // ****************************************************************
 // disable the model
-void coreModel::Disable(const bool& bFull)
+void coreModel::Disable(const coreBool& bFull)
 {
     // reset current model object
     s_pCurrent = NULL;
 
-    bool bFullUnbind = false;
+    coreBool bFullUnbind = false;
     if(bFull)
     {
         // unbind vertex array object
@@ -279,7 +279,7 @@ void coreModel::Disable(const bool& bFull)
 
 // ****************************************************************
 // create vertex buffer
-coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, const coreByte& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
+coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
 {
     ASSERT(!m_iVertexArray)
 
@@ -300,7 +300,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint& iNumVertices, co
 
 // ****************************************************************
 // create index buffer
-coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint& iNumIndices, const coreByte& iIndexSize, const void* pIndexData, const coreDataBufferStorage& iStorageType)
+coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32& iNumIndices, const coreUint8& iIndexSize, const void* pIndexData, const coreDataBufferStorage& iStorageType)
 {
     ASSERT(!m_iVertexArray && !m_iIndexBuffer)
 

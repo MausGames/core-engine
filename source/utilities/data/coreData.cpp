@@ -21,23 +21,23 @@
     #include <sys/system_properties.h>
 #endif
 
-thread_local char     coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
-thread_local coreUint coreData::m_iCurString                                                = 0;
+thread_local coreChar  coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
+thread_local coreUintW coreData::m_iCurString                                                = 0;
 
 
 // ****************************************************************
 /* get full application path */
-const char* coreData::AppPath()
+const coreChar* coreData::AppPath()
 {
-    char* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
     GetModuleFileName(NULL, pcString, CORE_DATA_STRING_LEN);
 #elif defined(_CORE_LINUX_)
-    const int iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1);
+    const coreInt32 iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1);
     pcString[MAX(iLen, 0)] = '\0';
 #elif defined(_CORE_OSX_)
-    coreUint iLen = CORE_DATA_STRING_LEN;
+    coreUint32 iLen = CORE_DATA_STRING_LEN;
     _NSGetExecutablePath(pcString, &iLen);
 #else
     return "";
@@ -49,18 +49,18 @@ const char* coreData::AppPath()
 
 // ****************************************************************
 /* get operating system name */
-const char* coreData::SystemName()
+const coreChar* coreData::SystemName()
 {
 #if defined(_CORE_WINDOWS_)
 
     // detect actual Windows version (GetVersionEx() is deprecated)
-    int i, j, k;
-    for(i = 5; IsWindowsVersionOrGreater(i, 0, 0); ++i) {} --i; int& iMajor = i;
-    for(j = 0; IsWindowsVersionOrGreater(i, j, 0); ++j) {} --j; int& iMinor = j;
-    for(k = 0; IsWindowsVersionOrGreater(i, j, k); ++k) {} --k; int& iPack  = k;
+    coreUint32 i, j, k;
+    for(i = 5; IsWindowsVersionOrGreater(i, 0, 0); ++i) {} --i; coreUint32& iMajor = i;
+    for(j = 0; IsWindowsVersionOrGreater(i, j, 0); ++j) {} --j; coreUint32& iMinor = j;
+    for(k = 0; IsWindowsVersionOrGreater(i, j, k); ++k) {} --k; coreUint32& iPack  = k;
 
     // map to corresponding sub-name
-    const char* pcSubString = NULL;
+    const coreChar* pcSubString = NULL;
     switch(iMajor*10 + iMinor)
     {
     case 64: pcSubString = "10";    break;
@@ -77,7 +77,7 @@ const char* coreData::SystemName()
     }
 
     // add service pack string when available
-    const char* pcPackString = iPack ? PRINT(" (Service Pack %d)", iPack) : "";
+    const coreChar* pcPackString = iPack ? PRINT(" (Service Pack %d)", iPack) : "";
 
     // return full operating system name
     return PRINT("Windows %s%s", pcSubString, pcPackString);
@@ -93,7 +93,7 @@ const char* coreData::SystemName()
 
 #elif defined(_CORE_ANDROID_)
 
-    char acOS[PROP_VALUE_MAX], acSDK[PROP_VALUE_MAX];
+    coreChar acOS[PROP_VALUE_MAX], acSDK[PROP_VALUE_MAX];
 
     // fetch operating system and SDK version strings
     __system_property_get("ro.build.version.release", acOS);
@@ -112,7 +112,7 @@ const char* coreData::SystemName()
 
 // ****************************************************************
 /* set current working directory */
-coreError coreData::SetCurDir(const char* pcPath)
+coreStatus coreData::SetCurDir(const coreChar* pcPath)
 {
 #if defined(_CORE_WINDOWS_)
     if(SetCurrentDirectory(pcPath)) return CORE_OK;
@@ -126,9 +126,9 @@ coreError coreData::SetCurDir(const char* pcPath)
 
 // ****************************************************************
 /* get current working directory */
-const char* coreData::GetCurDir()
+const coreChar* coreData::GetCurDir()
 {
-    char* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
     GetCurrentDirectory(CORE_DATA_STRING_LEN - 1, pcString);
@@ -144,10 +144,10 @@ const char* coreData::GetCurDir()
 
 // ****************************************************************
 /* open URL with default web-browser */
-coreError coreData::OpenURL(const char* pcURL)
+coreStatus coreData::OpenURL(const coreChar* pcURL)
 {
 #if defined(_CORE_WINDOWS_)
-    if(int(ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
+    if(P_TO_I(ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
 #elif defined(_CORE_LINUX_)
     if(system(NULL)) if(!system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
 #else
@@ -160,7 +160,7 @@ coreError coreData::OpenURL(const char* pcURL)
 
 // ****************************************************************
 /* check if file exists */
-bool coreData::FileExists(const char* pcPath)
+coreBool coreData::FileExists(const coreChar* pcPath)
 {
     // open file
     SDL_RWops* pFile = SDL_RWFromFile(pcPath, "r");
@@ -177,7 +177,7 @@ bool coreData::FileExists(const char* pcPath)
 
 // ****************************************************************
 /* retrieve relative paths of all files from a folder */
-coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::vector<std::string>* OUTPUT pasOutput)
+coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput)
 {
     WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
@@ -245,7 +245,7 @@ coreError coreData::ScanFolder(const char* pcPath, const char* pcFilter, std::ve
 /* create folder hierarchy */
 void coreData::CreateFolder(const std::string& sPath)
 {
-    std::size_t iPos = 0;
+    coreUintW iPos = 0;
 
     // loop through path
     while((iPos = sPath.find_first_of("/\\", iPos+2)) != std::string::npos)
@@ -264,7 +264,7 @@ void coreData::CreateFolder(const std::string& sPath)
 
 // ****************************************************************
 /* retrieve current date and time as values */
-void coreData::DateTimeValue(coreUint* OUTPUT piYea, coreUint* OUTPUT piMon, coreUint* OUTPUT piDay, coreUint* OUTPUT piHou, coreUint* OUTPUT piMin, coreUint* OUTPUT piSec)
+void coreData::DateTimeValue(coreUint32* OUTPUT piYea, coreUint32* OUTPUT piMon, coreUint32* OUTPUT piDay, coreUint32* OUTPUT piHou, coreUint32* OUTPUT piMin, coreUint32* OUTPUT piSec)
 {
     // format current time
     const std::time_t iTime = std::time(NULL);
@@ -282,16 +282,16 @@ void coreData::DateTimeValue(coreUint* OUTPUT piYea, coreUint* OUTPUT piMon, cor
 
 // ****************************************************************
 /* retrieve current date and time as formatted string */
-const char* coreData::DateTimePrint(const char* pcFormat)
+const coreChar* coreData::DateTimePrint(const coreChar* pcFormat)
 {
-    char* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextString();
 
     // format current time
     const std::time_t iTime = std::time(NULL);
     std::tm* pLocal = std::localtime(&iTime);
 
     // assemble string
-    const std::size_t iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
+    const coreUintW iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
 
     ASSERT(iReturn)
     return iReturn ? pcString : pcFormat;
@@ -300,33 +300,33 @@ const char* coreData::DateTimePrint(const char* pcFormat)
 
 // ****************************************************************
 /* safely get last characters of a string */
-const char* coreData::StrRight(const char* pcInput, const coreUint& iNum)
+const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW& iNum)
 {
     WARN_IF(!pcInput) return "";
 
-    const coreUint iLen = coreUint(std::strlen(pcInput));
+    const coreUintW iLen = std::strlen(pcInput);
     return pcInput + (iLen - MIN(iLen, iNum));
 }
 
 
 // ****************************************************************
 /* safely get file extension */
-const char* coreData::StrExtension(const char* pcInput)
+const coreChar* coreData::StrExtension(const coreChar* pcInput)
 {
     WARN_IF(!pcInput) return "";
 
-    const char* pcDot = std::strrchr(pcInput, '.');
+    const coreChar* pcDot = std::strrchr(pcInput, '.');
     return pcDot ? pcDot+1 : pcInput;
 }
 
 
 // ****************************************************************
 /* safely get version number */
-float coreData::StrVersion(const char* pcInput)
+coreFloat coreData::StrVersion(const coreChar* pcInput)
 {
     WARN_IF(!pcInput) return 0.0f;
 
-    const char* pcDot = std::strchr(pcInput, '.');
+    const coreChar* pcDot = std::strchr(pcInput, '.');
     return pcDot ? (I_TO_F((pcDot-1)[0] - '0') + 0.1f * I_TO_F((pcDot+1)[0] - '0')) : 0.0f;
 }
 
@@ -336,24 +336,24 @@ float coreData::StrVersion(const char* pcInput)
 void coreData::StrTrim(std::string* OUTPUT psInput)
 {
     // trim right
-    const std::size_t iLast = psInput->find_last_not_of(" \n\r\t");
+    const coreUintW iLast = psInput->find_last_not_of(" \n\r\t");
     if(iLast != std::string::npos) psInput->erase(iLast+1);
 
     // trim left
-    const std::size_t iFirst = psInput->find_first_not_of(" \n\r\t");
+    const coreUintW iFirst = psInput->find_first_not_of(" \n\r\t");
     if(iFirst != std::string::npos) psInput->erase(0, iFirst);
 }
 
 
 // ****************************************************************
 /* replace all occurrences of a sub-string with another one*/
-void coreData::StrReplace(std::string* OUTPUT psInput, const char* pcOld, const char* pcNew)
+void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew)
 {
-    std::size_t iPos = 0;
+    coreUintW iPos = 0;
 
     // save length of both sub-strings
-    const std::size_t iOldLen = std::strlen(pcOld);
-    const std::size_t iNewLen = std::strlen(pcNew);
+    const coreUintW iOldLen = std::strlen(pcOld);
+    const coreUintW iNewLen = std::strlen(pcNew);
 
     // loop only once and replace all findings
     while((iPos = psInput->find(pcOld, iPos)) != std::string::npos)

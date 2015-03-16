@@ -53,7 +53,7 @@ public:
 protected:
     /*! bind and unbind own string pointers */
     //! @{
-    void _BindString  (std::string* psString, const char* pcKey);
+    void _BindString  (std::string* psString, const coreChar* pcKey);
     void _UnbindString(std::string* psString);
     //! @}
 
@@ -80,7 +80,7 @@ private:
 
 
 public:
-    explicit coreLanguage(const char* pcPath)noexcept;
+    explicit coreLanguage(const coreChar* pcPath)noexcept;
     ~coreLanguage();
 
     FRIEND_CLASS(coreTranslate)
@@ -88,20 +88,20 @@ public:
 
     /*! load and access the language file */
     //! @{
-    coreError Load(const char* pcPath);
-    inline const char* GetString(const char* pcKey)const {return m_asStringList.count(pcKey) ? m_asStringList.at(pcKey).c_str() : pcKey;}
+    coreStatus Load(const coreChar* pcPath);
+    inline const coreChar* GetString(const coreChar* pcKey)const {return m_asStringList.count(pcKey) ? m_asStringList.at(pcKey).c_str() : pcKey;}
     //! @}
 
     /*! bind and unbind foreign string pointers */
     //! @{
-    void        BindForeign  (std::string* psForeign, const char* pcKey);
+    void        BindForeign  (std::string* psForeign, const coreChar* pcKey);
     inline void UnbindForeign(std::string* psForeign) {ASSERT(m_apsForeign.count(psForeign)) m_apsForeign.erase(psForeign);}
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const char* GetPath      ()const {return m_sPath.c_str();}
-    inline coreUint    GetNumStrings()const {return coreUint(m_asStringList.size());}
+    inline const coreChar* GetPath      ()const {return m_sPath.c_str();}
+    inline       coreUintW GetNumStrings()const {return m_asStringList.size();}
     //! @}
 
 

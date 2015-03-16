@@ -17,7 +17,7 @@
 
 // ****************************************************************
 /* object definitions */
-enum coreObjectUpdate : coreByte
+enum coreObjectUpdate : coreUint8
 {
     CORE_OBJECT_UPDATE_NOTHING   = 0x00,   //!< update nothing
     CORE_OBJECT_UPDATE_TRANSFORM = 0x01,   //!< update transformation values
@@ -26,7 +26,7 @@ enum coreObjectUpdate : coreByte
 };
 ENABLE_BITWISE(coreObjectUpdate)
 
-enum coreObjectEnable : coreByte
+enum coreObjectEnable : coreUint8
 {
     CORE_OBJECT_ENABLE_NOTHING = 0x00,   //!< do nothing
     CORE_OBJECT_ENABLE_RENDER  = 0x01,   //!< enable render routine
@@ -50,7 +50,7 @@ protected:
 
     coreObjectUpdate m_iUpdate;                       //!< update status (dirty flag)
     coreObjectEnable m_iEnabled;                      //!< enabled object routines
-    int m_iStatus;                                    //!< numeric status-value for individual use
+    coreInt32 m_iStatus;                              //!< numeric status-value for individual use
 
 
 protected:
@@ -69,38 +69,38 @@ public:
 
     /*! define the visual appearance */
     //! @{
-    inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;                                          return m_apTexture[iUnit];}
-    inline const coreTexturePtr& DefineTexture(const coreByte& iUnit, const char*           pcName)   {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(pcName); return m_apTexture[iUnit];}
-    inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram)                        {m_pProgram = pProgram;                                          return m_pProgram;}
-    inline const coreProgramPtr& DefineProgram(const char*           pcName)                          {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
+    inline const coreTexturePtr& DefineTexture(const coreUintW& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;                                          return m_apTexture[iUnit];}
+    inline const coreTexturePtr& DefineTexture(const coreUintW& iUnit, const coreChar*       pcName)   {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(pcName); return m_apTexture[iUnit];}
+    inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram)                         {m_pProgram = pProgram;                                          return m_pProgram;}
+    inline const coreProgramPtr& DefineProgram(const coreChar*       pcName)                           {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
     //! @}
 
     /*! check for enabled object routines */
     //! @{
-    inline bool IsEnabled(const coreObjectEnable& iEnabled)const {return CONTAINS_VALUE(m_iEnabled, iEnabled) ? true : false;}
+    inline coreBool IsEnabled(const coreObjectEnable& iEnabled)const {return CONTAINS_VALUE(m_iEnabled, iEnabled) ? true : false;}
     //! @}
 
     /*! set object properties */
     //! @{
     inline void SetColor4   (const coreVector4&      vColor)     {m_vColor     = vColor;}
     inline void SetColor3   (const coreVector3&      vColor)     {m_vColor.xyz(vColor);}
-    inline void SetAlpha    (const float&            fAlpha)     {m_vColor.a   = fAlpha;}
+    inline void SetAlpha    (const coreFloat&        fAlpha)     {m_vColor.a   = fAlpha;}
     inline void SetTexSize  (const coreVector2&      vTexSize)   {m_vTexSize   = vTexSize;}
     inline void SetTexOffset(const coreVector2&      vTexOffset) {m_vTexOffset = vTexOffset;}
     inline void SetEnabled  (const coreObjectEnable& iEnabled)   {m_iEnabled   = iEnabled;}
-    inline void SetStatus   (const int&              iStatus)    {m_iStatus    = iStatus;}
+    inline void SetStatus   (const coreInt32&        iStatus)    {m_iStatus    = iStatus;}
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const coreTexturePtr& GetTexture  (const coreByte& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
-    inline const coreProgramPtr& GetProgram  ()const                      {return m_pProgram;}
-    inline const coreVector4&    GetColor4   ()const                      {return m_vColor;}
-    inline coreVector3           GetColor3   ()const                      {return m_vColor.xyz();}
-    inline const float&          GetAlpha    ()const                      {return m_vColor.a;}
-    inline const coreVector2&    GetTexSize  ()const                      {return m_vTexSize;}
-    inline const coreVector2&    GetTexOffset()const                      {return m_vTexOffset;}
-    inline const int&            GetStatus   ()const                      {return m_iStatus;}
+    inline const coreTexturePtr& GetTexture  (const coreUintW& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
+    inline const coreProgramPtr& GetProgram  ()const                       {return m_pProgram;}
+    inline const coreVector4&    GetColor4   ()const                       {return m_vColor;}
+    inline       coreVector3     GetColor3   ()const                       {return m_vColor.xyz();}
+    inline const coreFloat&      GetAlpha    ()const                       {return m_vColor.a;}
+    inline const coreVector2&    GetTexSize  ()const                       {return m_vTexSize;}
+    inline const coreVector2&    GetTexOffset()const                       {return m_vTexOffset;}
+    inline const coreInt32&      GetStatus   ()const                       {return m_iStatus;}
     //! @}
 };
 
@@ -118,18 +118,18 @@ private:
     {
         const coreObject3D* pObject1;     //!< first 3d-object
         const coreObject3D* pObject2;     //!< second 3d-object
-        coreUint            iLastFrame;   //!< frame number of their last collision
+        coreUint32          iLastFrame;   //!< frame number of their last collision
 
         constexpr_func coreObjectCollision()noexcept;
     };
 
 
 private:
-    coreLookup<int, coreObjectList>  m_aapObjectList;      //!< lists with pointers to registered 3d-objects
-    std::vector<coreObjectCollision> m_aObjectCollision;   //!< currently recorded collisions
+    coreLookup<coreInt32, coreObjectList> m_aapObjectList;   //!< lists with pointers to registered 3d-objects <type, list>
+    std::vector<coreObjectCollision> m_aObjectCollision;     //!< currently recorded collisions
 
-    coreModelPtr  m_pLowModel;                             //!< low-memory model object (4 bytes per vertex, simple square)
-    coreObject2D* m_pBlitFallback;                         //!< 2d-object used for fallback-blitting onto the default frame buffer
+    coreModelPtr  m_pLowModel;                               //!< low-memory model object (4 bytes per vertex, simple square)
+    coreObject2D* m_pBlitFallback;                           //!< 2d-object used for fallback-blitting onto the default frame buffer
 
 
 private:
@@ -144,19 +144,19 @@ public:
 
     /*! test collision between different structures */
     //! @{
-    template <typename F> void TestCollision(const int&          iType,                                                               F&& nCallback);
-    template <typename F> void TestCollision(const int&          iType1,   const int&          iType2,                                F&& nCallback);
-    template <typename F> void TestCollision(const int&          iType,    const coreObject3D* pObject,                               F&& nCallback);
-    template <typename F> void TestCollision(const int&          iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);
-    static bool  FUNC_NOALIAS  TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
-    static float FUNC_NOALIAS  TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
+    template <typename F> void    TestCollision(const coreInt32&    iType,                                                               F&& nCallback);
+    template <typename F> void    TestCollision(const coreInt32&    iType1,   const coreInt32&    iType2,                                F&& nCallback);
+    template <typename F> void    TestCollision(const coreInt32&    iType,    const coreObject3D* pObject,                               F&& nCallback);
+    template <typename F> void    TestCollision(const coreInt32&    iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);
+    static coreBool  FUNC_NOALIAS TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
+    static coreFloat FUNC_NOALIAS TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
     //! @}
 
     /*! get manager properties */
     //! @{
-    inline const coreObjectList& GetObjectList  (const int& iType)const {return m_aapObjectList.at(iType);}
-    inline const coreModelPtr&   GetLowModel    ()const                 {return m_pLowModel;}
-    inline coreObject2D*         GetBlitFallback()const                 {return m_pBlitFallback;}
+    inline const coreObjectList& GetObjectList  (const coreInt32& iType)const {return m_aapObjectList.at(iType);}
+    inline const coreModelPtr&   GetLowModel    ()const                       {return m_pLowModel;}
+    inline       coreObject2D*   GetBlitFallback()const                       {return m_pBlitFallback;}
     //! @}
 
 
@@ -173,13 +173,13 @@ private:
 
     /*! bind and unbind 3d-objects to types */
     //! @{
-    void __BindObject  (coreObject3D* pObject, const int& iType);
-    void __UnbindObject(coreObject3D* pObject, const int& iType);
+    void __BindObject  (coreObject3D* pObject, const coreInt32& iType);
+    void __UnbindObject(coreObject3D* pObject, const coreInt32& iType);
     //! @}
 
     /*! handle and track new collisions */
     //! @{
-    bool __NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
+    coreBool __NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
     //! @}
 };
 
@@ -206,7 +206,7 @@ inline coreObject::coreObject(const coreObject& c)noexcept
 , m_iStatus    (c.m_iStatus)
 {
     // copy texture objects
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = c.m_apTexture[i];
 }
 
@@ -220,7 +220,7 @@ inline coreObject::coreObject(coreObject&& m)noexcept
 , m_iStatus    (m.m_iStatus)
 {
     // move texture objects
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = std::move(m.m_apTexture[i]);
 }
 
@@ -237,7 +237,7 @@ constexpr_func coreObjectManager::coreObjectCollision::coreObjectCollision()noex
 
 // ****************************************************************
 /* test collision within a list */
-template <typename F> void coreObjectManager::TestCollision(const int& iType, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType, F&& nCallback)
 {
     ASSERT(iType)
 
@@ -269,7 +269,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, F&
 
 // ****************************************************************
 /* test collision between two different lists */
-template <typename F> void coreObjectManager::TestCollision(const int& iType1, const int& iType2, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType1, const coreInt32& iType2, F&& nCallback)
 {
     ASSERT(iType1 && iType2 && iType1 != iType2)
 
@@ -305,7 +305,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType1, c
 
 // ****************************************************************
 /* test collision between list and 3d-object */
-template <typename F> void coreObjectManager::TestCollision(const int& iType, const coreObject3D* pObject, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType, const coreObject3D* pObject, F&& nCallback)
 {
     ASSERT(iType && pObject)
 
@@ -330,7 +330,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, co
 
 // ****************************************************************
 /* test collision between list and line */
-template <typename F> void coreObjectManager::TestCollision(const int& iType, const coreVector3& vLinePos, const coreVector3& vLineDir, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType, const coreVector3& vLinePos, const coreVector3& vLineDir, F&& nCallback)
 {
     ASSERT(iType)
 
@@ -344,7 +344,7 @@ template <typename F> void coreObjectManager::TestCollision(const int& iType, co
         if(!pCurObject) continue;
 
         // test collision and call function
-        const float fDistance = coreObjectManager::TestCollision(pCurObject, vLinePos, vLineDir);
+        const coreFloat fDistance = coreObjectManager::TestCollision(pCurObject, vLinePos, vLineDir);
         if(fDistance)
         {
             nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pCurObject), fDistance,

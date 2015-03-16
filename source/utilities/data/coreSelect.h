@@ -15,11 +15,11 @@
 
 // ****************************************************************
 /* extended array class */
-template <typename T, coreUint iSize> class coreSelect final
+template <typename T, coreUintW iSize> class coreSelect final
 {
 private:
     std::array<T, iSize> m_atItem;   //!< static item container
-    coreUint m_iCurIndex;            //!< index of the current item
+    coreUintW m_iCurIndex;           //!< index of the current item
 
 
 public:
@@ -30,14 +30,14 @@ public:
     /*! assignment operations */
     //! @{
     coreSelect<T, iSize>& operator = (coreSelect<T, iSize> o)noexcept;
-    template <typename S, coreUint iSize2> friend void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b)noexcept;
+    template <typename S, coreUintW iSize2> friend void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b)noexcept;
     //! @}
 
     /*! switch current item */
     //! @{
-    inline void Select(const coreUint& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = CLAMP(iIndex, 0u, iSize - 1);}
-    inline void Next    ()                     {if(++m_iCurIndex >= iSize) m_iCurIndex = 0u;}
-    inline void Previous()                     {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1;}
+    inline void Select(const coreUintW& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = CLAMP(iIndex, 0u, iSize - 1);}
+    inline void Next    ()                      {if(++m_iCurIndex >= iSize) m_iCurIndex = 0u;}
+    inline void Previous()                      {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1;}
     //! @}
 
     /*! access reference to current item */
@@ -63,18 +63,18 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T, coreUint iSize> coreSelect<T, iSize>::coreSelect()noexcept
+template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect()noexcept
 : m_iCurIndex (0)
 {
 }
 
-template <typename T, coreUint iSize> coreSelect<T, iSize>::coreSelect(const coreSelect<T, iSize>& c)noexcept
+template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect(const coreSelect<T, iSize>& c)noexcept
 : m_atItem    (c.m_atItem)
 , m_iCurIndex (c.m_iCurIndex)
 {
 }
 
-template <typename T, coreUint iSize> coreSelect<T, iSize>::coreSelect(coreSelect<T, iSize>&& m)noexcept
+template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect(coreSelect<T, iSize>&& m)noexcept
 : m_atItem    (std::move(m.m_atItem))
 , m_iCurIndex (m.m_iCurIndex)
 {
@@ -83,13 +83,13 @@ template <typename T, coreUint iSize> coreSelect<T, iSize>::coreSelect(coreSelec
 
 // ****************************************************************
 /* assignment operations */
-template <typename T, coreUint iSize> coreSelect<T, iSize>& coreSelect<T, iSize>::operator = (coreSelect<T, iSize> o)noexcept
+template <typename T, coreUintW iSize> coreSelect<T, iSize>& coreSelect<T, iSize>::operator = (coreSelect<T, iSize> o)noexcept
 {
     swap(*this, o);
     return *this;
 }
 
-template <typename S, coreUint iSize2> void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b)noexcept
+template <typename S, coreUintW iSize2> void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b)noexcept
 {
     using std::swap;
     swap(a.m_atItem,    b.m_atItem);

@@ -14,7 +14,7 @@
 coreObject& coreObject::operator = (const coreObject& c)noexcept
 {
     // copy texture objects
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = c.m_apTexture[i];
 
     // copy remaining properties
@@ -32,7 +32,7 @@ coreObject& coreObject::operator = (const coreObject& c)noexcept
 coreObject& coreObject::operator = (coreObject&& m)noexcept
 {
     // move texture objects
-    for(coreByte i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = std::move(m.m_apTexture[i]);
 
     // move remaining properties
@@ -79,12 +79,12 @@ coreObjectManager::~coreObjectManager()
 
 // ****************************************************************
 /* test collision between two 3d-objects */
-bool FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
+coreBool FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
 {
     ASSERT(pObject1 && pObject2)
 
     // get collision radius
-    const float fTotalRadius = pObject1->GetCollisionRadius() + pObject2->GetCollisionRadius();
+    const coreFloat fTotalRadius = pObject1->GetCollisionRadius() + pObject2->GetCollisionRadius();
 
     // calculate distance between both objects
     const coreVector3 vDiff = pObject1->GetPosition() - pObject2->GetPosition();
@@ -134,20 +134,20 @@ bool FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject1,
 
 // ****************************************************************
 /* test collision between 3d-object and line */
-float FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vLinePos, const coreVector3& vLineDir)
+coreFloat FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vLinePos, const coreVector3& vLineDir)
 {
     ASSERT(pObject && vLineDir.IsNormalized())
 
     // get collision radius
-    const float& fRadius = pObject->GetCollisionRadius();
+    const coreFloat& fRadius = pObject->GetCollisionRadius();
 
     // calculate distance between both objects
     const coreVector3 vDiff = pObject->GetPosition() - vLinePos;
 
     // calculate range parameters
-    const float fAdjacent   = coreVector3::Dot(vDiff, vLineDir);
-    const float fOppositeSq = vDiff.LengthSq() - fAdjacent * fAdjacent;
-    const float fRadiusSq   = fRadius * fRadius;
+    const coreFloat fAdjacent   = coreVector3::Dot(vDiff, vLineDir);
+    const coreFloat fOppositeSq = vDiff.LengthSq() - fAdjacent * fAdjacent;
+    const coreFloat fRadiusSq   = fRadius * fRadius;
 
     // check for sphere intersection (return distance from line position to intersection point on success)
     return (fOppositeSq <= fRadiusSq) ? (fAdjacent - SQRT(fRadiusSq - fOppositeSq)) : 0.0f;
@@ -160,10 +160,10 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
 {
     if(bInit)
     {
-        const coreUint aiDataStrip[4] = {coreVector2(-0.5f, 0.5f).PackSnorm2x16(),
-                                         coreVector2(-0.5f,-0.5f).PackSnorm2x16(),
-                                         coreVector2( 0.5f, 0.5f).PackSnorm2x16(),
-                                         coreVector2( 0.5f,-0.5f).PackSnorm2x16()};
+        const coreUint32 aiDataStrip[4] = {coreVector2(-0.5f, 0.5f).PackSnorm2x16(),
+                                           coreVector2(-0.5f,-0.5f).PackSnorm2x16(),
+                                           coreVector2( 0.5f, 0.5f).PackSnorm2x16(),
+                                           coreVector2( 0.5f,-0.5f).PackSnorm2x16()};
 
         // create low-memory model object
         m_pLowModel->SetBoundingRange (coreVector3(0.5f,0.5f,0.0f));
@@ -171,7 +171,7 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
         m_pLowModel->SetPrimitiveType (GL_TRIANGLE_STRIP);
 
         // define vertex data
-        coreVertexBuffer* pBuffer = m_pLowModel->CreateVertexBuffer(4, sizeof(coreUint), aiDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
+        coreVertexBuffer* pBuffer = m_pLowModel->CreateVertexBuffer(4, sizeof(coreUint32), aiDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
         pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2, GL_SHORT, false, 0);
 
         Core::Log->Info("Low-memory model object created");
@@ -212,7 +212,7 @@ void coreObjectManager::__UpdateObjects()
     }
 
     // loop through all collisions
-    const coreUint& iCurFrame = Core::System->GetCurFrame();
+    const coreUint32& iCurFrame = Core::System->GetCurFrame();
     FOR_EACH_DYN(it, m_aObjectCollision)
     {
         // check for old entries and remove them
@@ -224,7 +224,7 @@ void coreObjectManager::__UpdateObjects()
 
 // ****************************************************************
 /* bind 3d-object to type */
-void coreObjectManager::__BindObject(coreObject3D* pObject, const int& iType)
+void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32& iType)
 {
     ASSERT(pObject && iType)
 
@@ -244,7 +244,7 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const int& iType)
 
 // ****************************************************************
 /* unbind 3d-object from type */
-void coreObjectManager::__UnbindObject(coreObject3D* pObject, const int& iType)
+void coreObjectManager::__UnbindObject(coreObject3D* pObject, const coreInt32& iType)
 {
     ASSERT(pObject && iType)
 
@@ -266,7 +266,7 @@ void coreObjectManager::__UnbindObject(coreObject3D* pObject, const int& iType)
 
 // ****************************************************************
 /* handle and track new collisions */
-bool coreObjectManager::__NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
+coreBool coreObjectManager::__NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
 {
     // loop through all collisions
     FOR_EACH(it, m_aObjectCollision)

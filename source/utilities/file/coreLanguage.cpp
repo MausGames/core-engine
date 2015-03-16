@@ -100,7 +100,7 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
 
 // ****************************************************************
 /* bind own string pointer */
-void coreTranslate::_BindString(std::string* psString, const char* pcKey)
+void coreTranslate::_BindString(std::string* psString, const coreChar* pcKey)
 {
     ASSERT(psString && pcKey)
 
@@ -136,7 +136,7 @@ void coreTranslate::_UnbindString(std::string* psString)
 
 // ****************************************************************
 /* constructor */
-coreLanguage::coreLanguage(const char* pcPath)noexcept
+coreLanguage::coreLanguage(const coreChar* pcPath)noexcept
 : m_sPath ("")
 {
     // load language file
@@ -161,18 +161,18 @@ coreLanguage::~coreLanguage()
 
 // ****************************************************************
 /* load language file */
-coreError coreLanguage::Load(const char* pcPath)
+coreStatus coreLanguage::Load(const coreChar* pcPath)
 {
     coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
     // get file data
-    const char* pcData = r_cast<const char*>(pFile->GetData());
+    const coreChar* pcData = r_cast<const coreChar*>(pFile->GetData());
     if(!pcData) return CORE_ERROR_FILE;
 
     // prepare range pointers (from, to) and end pointer (out of bound)
-    const char* pcFrom = pcData + 1;
-    const char* pcTo   = pcFrom;
-    const char* pcEnd  = pcFrom + pFile->GetSize() - 1;
+    const coreChar* pcFrom = pcData + 1;
+    const coreChar* pcTo   = pcFrom;
+    const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1;
 
     auto nAssignFunc = [&pcFrom, &pcTo](std::string* pString)
     {
@@ -233,7 +233,7 @@ coreError coreLanguage::Load(const char* pcPath)
 
 // ****************************************************************
 /* bind foreign string pointer */
-void coreLanguage::BindForeign(std::string* psForeign, const char* pcKey)
+void coreLanguage::BindForeign(std::string* psForeign, const coreChar* pcKey)
 {
     ASSERT(psForeign && pcKey)
 

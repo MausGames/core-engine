@@ -11,7 +11,7 @@
 
 // ****************************************************************
 /* update the timer */
-bool coreTimer::Update(const float& fSpeedModifier)
+coreBool coreTimer::Update(const coreFloat& fSpeedModifier)
 {
     if(m_bStatus)
     {
