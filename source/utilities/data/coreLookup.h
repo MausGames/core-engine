@@ -56,22 +56,22 @@ public:
 
     /*! check number of existing entries */
     //! @{
-    inline bool        count(const I& tKey)      {return this->__check(this->__retrieve(tKey));}
-    inline bool        count(const I& tKey)const {return this->__check(this->__retrieve(tKey));}
-    inline std::size_t size ()const              {return m_atValueList.size ();}
-    inline bool        empty()const              {return m_atValueList.empty();}
+    inline coreBool  count(const I& tKey)      {return this->__check(this->__retrieve(tKey));}
+    inline coreBool  count(const I& tKey)const {return this->__check(this->__retrieve(tKey));}
+    inline coreUintW size ()const              {return m_atValueList.size ();}
+    inline coreBool  empty()const              {return m_atValueList.empty();}
     //! @}
 
     /*! control memory allocation */
     //! @{
-    inline void        reserve(const std::size_t& iReserve) {this->__cache_clear(); m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
-    inline void        shrink_to_fit()                      {this->__cache_clear(); m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
-    inline std::size_t capacity()const                      {return m_atValueList.capacity();}
+    inline void      reserve(const coreUintW& iReserve) {this->__cache_clear(); m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
+    inline void      shrink_to_fit()                    {this->__cache_clear(); m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
+    inline coreUintW capacity()const                    {return m_atValueList.capacity();}
     //! @}
 
     /*! remove existing entries */
     //! @{
-    bool                     erase(const I& tKey);
+    coreBool                 erase(const I& tKey);
     inline coreValueIterator erase(const coreValueConstIterator& it) {this->__cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}
     inline void              clear()                                 {this->__cache_clear(); m_atValueList.clear(); m_atKeyList.clear();}
     //! @}
@@ -105,15 +105,15 @@ public:
 protected:
     /*! check for successful entry lookup */
     //! @{
-    inline bool __check(const coreKeyIterator&      it)      {return (it != m_atKeyList.end()) ? true : false;}
-    inline bool __check(const coreKeyConstIterator& it)const {return (it != m_atKeyList.end()) ? true : false;}
+    inline coreBool __check(const coreKeyIterator&      it)      {return (it != m_atKeyList.end()) ? true : false;}
+    inline coreBool __check(const coreKeyConstIterator& it)const {return (it != m_atKeyList.end()) ? true : false;}
     //! @}
 
     /*! cache last requested entry */
     //! @{
-    inline void __cache_set(T* ptValue, K* ptKey) {m_ptValueCache = ptValue; m_ptKeyCache =  ptKey;}
-    inline void __cache_clear()                   {m_ptValueCache = NULL;    m_ptKeyCache =  NULL;}
-    inline bool __cache_try(const I& tKey)const   {return (m_ptKeyCache && (*m_ptKeyCache == tKey)) ? true : false;}
+    inline void     __cache_set(T* ptValue, K* ptKey) {m_ptValueCache = ptValue; m_ptKeyCache =  ptKey;}
+    inline void     __cache_clear()                   {m_ptValueCache = NULL;    m_ptKeyCache =  NULL;}
+    inline coreBool __cache_try(const I& tKey)const   {return (m_ptKeyCache && (*m_ptKeyCache == tKey)) ? true : false;}
     //! @}
 
     /*! lookup entry by key */
@@ -131,29 +131,29 @@ template <typename K, typename T> using coreLookup = coreLookupGen<K, K, T>;
 
 // ****************************************************************
 /* string lookup container class */
-template <typename T> class coreLookupStr final : public coreLookupGen<std::string, const char*, T>
+template <typename T> class coreLookupStr final : public coreLookupGen<std::string, const coreChar*, T>
 {
 public:
     coreLookupStr()noexcept {}
 
     /*! access specific entry */
     //! @{
-    using coreLookupGen<std::string, const char*, T>::operator [];
-    inline T& operator [] (const std::size_t& iIndex) {return this->m_atValueList[iIndex];}
+    using coreLookupGen<std::string, const coreChar*, T>::operator [];
+    inline T& operator [] (const coreUintW& iIndex) {return this->m_atValueList[iIndex];}
     //! @}
 
     /*! remove existing entries */
     //! @{
-    using coreLookupGen<std::string, const char*, T>::erase;
-    inline typename coreLookupStr<T>::coreValueIterator erase(const std::size_t& iIndex) {this->__cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    using coreLookupGen<std::string, const coreChar*, T>::erase;
+    inline typename coreLookupStr<T>::coreValueIterator erase(const coreUintW& iIndex) {this->__cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 
 
 private:
     /*! lookup entry by string-key */
     //! @{
-    typename coreLookupStr<T>::coreKeyIterator      __retrieve(const char* pcKey);
-    typename coreLookupStr<T>::coreKeyConstIterator __retrieve(const char* pcKey)const;
+    typename coreLookupStr<T>::coreKeyIterator      __retrieve(const coreChar* pcKey);
+    typename coreLookupStr<T>::coreKeyConstIterator __retrieve(const coreChar* pcKey)const;
     //! @}
 };
 
@@ -164,7 +164,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 : m_ptValueCache (NULL)
 , m_ptKeyCache   (NULL)
 {
-    constexpr_var std::size_t iSize = MAX(64u / sizeof(T), 2u);
+    constexpr_var coreUintW iSize = MAX(64u / sizeof(T), 2u);
 
     // pre-allocate some memory
     m_atValueList.reserve(iSize);
@@ -247,7 +247,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
 
 // ****************************************************************
 /* remove existing entry */
-template <typename K, typename I, typename T> bool coreLookupGen<K, I, T>::erase(const I& tKey)
+template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::erase(const I& tKey)
 {
     // lookup entry by key
     auto it = this->__retrieve(tKey);
@@ -301,7 +301,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
 
 // ****************************************************************
 /* lookup entry by string-key */
-template <typename T> typename coreLookupStr<T>::coreKeyIterator coreLookupStr<T>::__retrieve(const char* pcKey)
+template <typename T> typename coreLookupStr<T>::coreKeyIterator coreLookupStr<T>::__retrieve(const coreChar* pcKey)
 {
     // loop through all entries
     FOR_EACH(it, this->m_atKeyList)
@@ -318,7 +318,7 @@ template <typename T> typename coreLookupStr<T>::coreKeyIterator coreLookupStr<T
     return this->m_atKeyList.end();
 }
 
-template <typename T> typename coreLookupStr<T>::coreKeyConstIterator coreLookupStr<T>::__retrieve(const char* pcKey)const
+template <typename T> typename coreLookupStr<T>::coreKeyConstIterator coreLookupStr<T>::__retrieve(const coreChar* pcKey)const
 {
     // loop through all entries
     FOR_EACH(it, this->m_atKeyList)

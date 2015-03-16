@@ -13,10 +13,10 @@
 // callback functions for the music stream object
 static ov_callbacks OV_CALLBACKS =
 {
-    [](void* pData, std::size_t iSize, std::size_t iCount, void* pFile) {return (std::size_t)SDL_RWread ((SDL_RWops*)pFile, pData, iSize, iCount);},
-    [](void* pFile, ogg_int64_t iOffset, int iWhence)                   {return (int)        SDL_RWseek ((SDL_RWops*)pFile, iOffset, iWhence);},
-    [](void* pFile)                                                     {return (int)        SDL_RWclose((SDL_RWops*)pFile);},
-    [](void* pFile)                                                     {return (long)       SDL_RWtell ((SDL_RWops*)pFile);}
+    [](void* pData, coreUintW iSize, coreUintW iCount, void* pFile) {return (coreUintW)SDL_RWread ((SDL_RWops*)pFile, pData, iSize, iCount);},
+    [](void* pFile, coreInt64 iOffset, coreInt32 iWhence)           {return (coreInt32)SDL_RWseek ((SDL_RWops*)pFile, iOffset, iWhence);},
+    [](void* pFile)                                                 {return (coreInt32)SDL_RWclose((SDL_RWops*)pFile);},
+    [](void* pFile)                                                 {return (long)     SDL_RWtell ((SDL_RWops*)pFile);}
 };
 
 

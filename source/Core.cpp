@@ -143,7 +143,7 @@ void Core::Reset()
 
 // ****************************************************************
 // main function
-ENTRY_POINT int main(int argc, char* argv[])
+ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar* argv[])
 {
 #if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
 

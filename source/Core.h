@@ -304,25 +304,6 @@
     inline         e& operator &= (e&       a, const e& b) {return (a = a & b);}                                                                                     \
     inline         e& operator ^= (e&       a, const e& b) {return (a = a ^ b);}
 
-// retrieve compile-time pointer-safe array size
-template <typename T, std::size_t iSize> char (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
-#define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
-
-// retrieve compile-time function and lambda properties
-template <typename T>                            struct function_traits                     : public function_traits<decltype(&T::operator())> {};
-template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                  {};
-template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                  {};
-template <typename R,             typename... A> struct function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
-template <typename R,             typename... A> struct function_traits<R      (A...)>
-{
-    typedef R return_type;                                                                                         //!< return type
-    template <std::size_t iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...> >::type;   //!< argument types
-    static const std::size_t arity = sizeof...(A);                                                                 //!< number of arguments
-};
-#define TRAIT_RETURN_TYPE(f) function_traits<f>::return_type
-#define TRAIT_ARG_TYPE(f,i)  function_traits<f>::template arg_type<i>
-#define TRAIT_ARITY(f)       function_traits<f>::arity
-
 // shorter common keywords
 #define f_list forward_list
 #define u_map  unordered_map
@@ -331,6 +312,13 @@ template <typename R,             typename... A> struct function_traits<R      (
 #define d_cast dynamic_cast
 #define r_cast reinterpret_cast
 #define c_cast const_cast
+
+// type conversion macros
+#define F_TO_SI(x) ((int)                 (x))   //!< float to signed int
+#define F_TO_UI(x) ((unsigned)(int)       (x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
+#define I_TO_F(x)  ((float)(int)          (x))   //!< int to float (force [_mm_cvtepi32_ps])
+#define P_TO_I(x)  ((std::intptr_t)(void*)(x))   //!< pointer to int
+#define I_TO_P(x)  ((void*)(std::intptr_t)(x))   //!< int to pointer
 
 // type definitions
 typedef std::int8_t   coreInt8;
@@ -348,12 +336,24 @@ typedef char          coreChar;
 typedef float         coreFloat;
 typedef double        coreDouble;
 
-// type conversion macros
-#define F_TO_SI(x) ((int)                 (x))   //!< float to signed int
-#define F_TO_UI(x) ((unsigned)(int)       (x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
-#define I_TO_F(x)  ((float)(int)          (x))   //!< int to float (force [_mm_cvtepi32_ps])
-#define P_TO_I(x)  ((std::intptr_t)(void*)(x))   //!< pointer to int
-#define I_TO_P(x)  ((void*)(std::intptr_t)(x))   //!< int to pointer
+// retrieve compile-time pointer-safe array size
+template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
+#define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
+
+// retrieve compile-time function and lambda properties
+template <typename T>                            struct function_traits                     : public function_traits<decltype(&T::operator())> {};
+template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                  {};
+template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                  {};
+template <typename R,             typename... A> struct function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
+template <typename R,             typename... A> struct function_traits<R      (A...)>
+{
+    typedef R return_type;                                                                                       //!< return type
+    template <coreUintW iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...> >::type;   //!< argument types
+    static const coreUintW arity = sizeof...(A);                                                                 //!< number of arguments
+};
+#define TRAIT_RETURN_TYPE(f) function_traits<f>::return_type
+#define TRAIT_ARG_TYPE(f,i)  function_traits<f>::template arg_type<i>
+#define TRAIT_ARITY(f)       function_traits<f>::arity
 
 // default color values
 #define COLOR_WHITE  coreVector3(1.000f, 1.000f, 1.000f)
@@ -481,7 +481,7 @@ public:
 private:
     //! run engine
     //! @{
-    friend ENTRY_POINT int main(int argc, char* argv[]);
+    friend ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar* argv[]);
     static coreStatus Run();
     //! @}
 };
