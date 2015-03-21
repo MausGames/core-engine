@@ -14,10 +14,10 @@
 // TODO: implement sampler objects
 // TODO: implement light unbind (like in model and program)
 // TODO: add option/config for trilinear filtering
-// TODO: load, check proper use of PBO, maybe implement static buffer(s!)
+// TODO: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
 // TODO: load, allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT ?)
 // TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
-// TODO: load, implement texture-compressions
+// TODO: last few compressed mipmap levels contain only garbage
 
 
 // ****************************************************************
@@ -34,10 +34,21 @@
 #define CORE_TEXTURE_SPEC_STENCIL       GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE
 #define CORE_TEXTURE_SPEC_DEPTH_STENCIL GL_DEPTH24_STENCIL8,  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8
 
+#define CORE_TEXTURE_COMPRESSED_SIZE(x,c) ((x) / (((c) == 3) ? 6 : 4))
+
 #define CORE_TEXTURE_UNITS_2D     (4u)                                                //!< number of 2d texture units (sampler2D)
 #define CORE_TEXTURE_UNITS_SHADOW (1u)                                                //!< number of shadow texture units (sampler2DShadow)
 #define CORE_TEXTURE_UNITS        (CORE_TEXTURE_UNITS_2D+CORE_TEXTURE_UNITS_SHADOW)   //!< total number of texture units
 #define CORE_TEXTURE_SHADOW       (CORE_TEXTURE_UNITS_2D)                             //!< first shadow texture unit
+
+enum coreTextureMode : coreUint8
+{
+    CORE_TEXTURE_MODE_DEFAULT  = 0x00,   //!< do nothing special
+    CORE_TEXTURE_MODE_COMPRESS = 0x01,   //!< perform color texture compression
+    CORE_TEXTURE_MODE_FILTER   = 0x02,   //!< perform anisotropic filtering and mipmapping
+    CORE_TEXTURE_MODE_REPEAT   = 0x04    //!< perform repeating texture sampling
+};
+ENABLE_BITWISE(coreTextureMode)
 
 
 // ****************************************************************
@@ -49,6 +60,7 @@ private:
 
     coreVector2 m_vResolution;                           //!< resolution of the base level
     coreUint8   m_iLevels;                               //!< number of texture levels
+    coreInt8    m_iCompressed;                           //!< compression status
 
     GLenum m_iInternal;                                  //!< internal memory format (e.g. GL_RGBA8)
     GLenum m_iFormat;                                    //!< pixel data format (e.g. GL_RGBA)
@@ -62,6 +74,7 @@ private:
 
 public:
     coreTexture()noexcept;
+    explicit coreTexture(const bool& bLoadCompressed)noexcept;
     ~coreTexture();
 
     DISABLE_COPY(coreTexture)
@@ -74,8 +87,8 @@ public:
 
     //! handle texture memory
     //! @{
-    void Create(const coreUint32& iWidth, const coreUint32& iHeight, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const GLenum& iWrapMode, const coreBool& bFilter);
-    void Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY, const coreUint32& iWidth, const coreUint32& iHeight, const coreUint32& iDataSize, const void* pData);
+    void Create(const coreUint32& iWidth, const coreUint32& iHeight, GLenum iInternal, GLenum iFormat, const GLenum& iType, const coreTextureMode& iTextureMode);
+    void Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY, const coreUint32& iWidth, const coreUint32& iHeight, const coreUint32& iDataSize, const coreByte* pData);
     void CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight);
     //! @}
 
@@ -86,15 +99,21 @@ public:
 
     //! enable and disable the texture
     //! @{
-    inline        void Enable (const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, this);}
+    inline        void Enable (const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iTexture)}
     static inline void Disable(const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
     static inline void DisableAll()                    {for(coreUintW i = CORE_TEXTURE_UNITS; i--; ) coreTexture::Disable(i);}
     //! @}
 
     //! reset content of the texture
     //! @{
-    void Clear     (const GLint& iLevel);
-    void Invalidate(const GLint& iLevel);
+    void Clear     (const coreUint8& iLevel);
+    void Invalidate(const coreUint8& iLevel);
+    //! @}
+
+    //! process and convert image data
+    //! @{
+    static void CreateNextLevel (const coreUintW& iInWidth, const coreUintW& iInHeight, const coreUintW& iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static void CreateCompressed(const coreUintW& iInWidth, const coreUintW& iInHeight, const coreUintW& iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
     //! @}
 
     //! get object properties

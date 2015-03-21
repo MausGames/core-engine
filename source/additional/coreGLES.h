@@ -84,6 +84,14 @@ typedef void (GL_APIENTRY * PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GL
 
 
 // ****************************************************************
+/* GL_EXT_texture_compression_s3tc */
+#define CORE_GL_EXT_texture_compression_s3tc __CORE_GLES_VAR(GL_EXT_texture_compression_s3tc)
+
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT  0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
+
+
+// ****************************************************************
 /* GL_NV_pixel_buffer_object (mapped on GL_ARB_pixel_buffer_object) */
 #define CORE_GL_ARB_pixel_buffer_object __CORE_GLES_VAR(GL_NV_pixel_buffer_object)
 
@@ -215,6 +223,7 @@ struct coreContext
     GLboolean __GL_EXT_map_buffer_range;
     GLboolean __GL_EXT_instanced_arrays;
     GLboolean __GL_EXT_texture_filter_anisotropic;
+    GLboolean __GL_EXT_texture_compression_s3tc;
     GLboolean __GL_NV_pixel_buffer_object;
     GLboolean __GL_NV_framebuffer_blit;
     GLboolean __GL_NV_framebuffer_multisample;

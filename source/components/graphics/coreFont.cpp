@@ -41,7 +41,6 @@ coreStatus coreFont::Load(coreFile* pFile)
 
     // save properties
     m_sPath = pFile->GetPath();
-    m_iSize = pFile->GetSize();
 
     Core::Log->Info("Font (%s) loaded", pFile->GetPath());
     return CORE_OK;
@@ -64,7 +63,6 @@ coreStatus coreFont::Unload()
 
     // reset properties
     m_sPath = "";
-    m_iSize = 0;
 
     return CORE_OK;
 }

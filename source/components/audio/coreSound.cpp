@@ -96,7 +96,6 @@ coreStatus coreSound::Load(coreFile* pFile)
 
     // save properties
     m_sPath = pFile->GetPath();
-    m_iSize = iSoundSize;
 
     // check for errors
     const ALenum iError = alGetError();
@@ -127,7 +126,6 @@ coreStatus coreSound::Unload()
 
     // reset properties
     m_sPath      = "";
-    m_iSize      = 0;
     m_iBuffer    = 0;
     m_Format     = coreWaveFormat();
     m_iCurSource = 0;

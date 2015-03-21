@@ -41,12 +41,11 @@ class INTERFACE coreResource
 {
 protected:
     std::string m_sPath;   //!< relative path of the resource file
-    coreUint32  m_iSize;   //!< data size in bytes
 
 
 public:
-    coreResource()noexcept : m_sPath (""), m_iSize (0) {}
-    virtual ~coreResource()                            {}
+    coreResource()noexcept : m_sPath ("") {}
+    virtual ~coreResource()               {}
 
     DISABLE_COPY(coreResource)
 
@@ -58,8 +57,7 @@ public:
 
     /*! get object properties */
     //! @{
-    inline const coreChar*   GetPath()const {return m_sPath.c_str();}
-    inline const coreUint32& GetSize()const {return m_iSize;}
+    inline const coreChar* GetPath()const {return m_sPath.c_str();}
     //! @}
 };
 

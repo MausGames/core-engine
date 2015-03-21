@@ -216,7 +216,7 @@
 
 // disable unwanted compiler warnings (with /W4)
 #pragma warning(disable : 4100)   //!< unreferenced formal parameter
-#pragma warning(disable : 4127)   //!< constant branch expression
+#pragma warning(disable : 4127)   //!< constant conditional expression
 #pragma warning(disable : 4201)   //!< nameless struct or union
 #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
 #pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision

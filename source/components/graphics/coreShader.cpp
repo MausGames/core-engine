@@ -37,8 +37,7 @@ STRING_ARRAY(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avO
 // ****************************************************************
 // constructor
 coreShader::coreShader()noexcept
-: m_iShader (0)
-, m_iType   (0)
+: coreShader ("")
 {
 }
 
@@ -103,7 +102,6 @@ coreStatus coreShader::Load(coreFile* pFile)
 
     // save properties
     m_sPath = pFile->GetPath();
-    m_iSize = aiSize[0] + aiSize[1] + aiSize[2];
 
     // check for errors
     GLint iStatus;
@@ -148,7 +146,6 @@ coreStatus coreShader::Unload()
 
     // reset properties
     m_sPath   = "";
-    m_iSize   = 0;
     m_iShader = 0;
     m_iType   = 0;
 
@@ -309,7 +306,6 @@ coreStatus coreProgram::Load(coreFile* pFile)
     {
         m_sPath += (*it).GetHandle()->GetName();
         m_sPath += ":";
-        m_iSize += (*it)->GetSize();
     }
     m_sPath.pop_back();
 
@@ -352,7 +348,6 @@ coreStatus coreProgram::Unload()
 
     // reset properties
     m_sPath    = "";
-    m_iSize    = 0;
     m_iProgram = 0;
     m_iStatus  = CORE_SHADER_DEFINED;
 

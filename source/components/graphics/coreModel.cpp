@@ -73,7 +73,6 @@ coreStatus coreModel::Load(coreFile* pFile)
     m_iNumVertices = oImport.aVertexData.size();
     m_iNumIndices  = oImport.aiIndexData.size();
     m_sPath        = pFile->GetPath();
-    m_iSize        = m_iNumVertices*sizeof(coreVertex) + m_iNumIndices*sizeof(coreUint16);
 
     // find maximum distance from the model center
     FOR_EACH(it, oImport.aVertexData)
@@ -178,7 +177,6 @@ coreStatus coreModel::Unload()
 
     // reset properties
     m_sPath           = "";
-    m_iSize           = 0;
     m_iVertexArray    = 0;
     m_iNumVertices    = 0;
     m_iNumIndices     = 0;

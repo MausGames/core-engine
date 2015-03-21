@@ -71,33 +71,37 @@ public:
     inline void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
-    /*! invert vector */
-    //! @{
-    constexpr_func coreVector2 operator - ()const {return coreVector2(-x, -y);}
-    //! @}
-
     /*! convert vector */
     //! @{
     constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
     constexpr_func coreVector2 yx()const             {return coreVector2(y, x);}
     //! @}
 
+    /*! invert vector */
+    //! @{
+    constexpr_func coreVector2  operator - ()const {return coreVector2(-x, -y);}
+    inline         coreVector2& InvertX    ()      {x = -x; return *this;}
+    inline         coreVector2& InvertY    ()      {y = -y; return *this;}
+    constexpr_func coreVector2  InvertedX  ()const {return coreVector2(-x,  y);}
+    constexpr_func coreVector2  InvertedY  ()const {return coreVector2( x, -y);}
+    //! @}
+
     /*! normalize vector */
     //! @{
-    inline coreVector2&     Normalize   ()      {*this *= RSQRT(this->LengthSq()); return *this;}
-    inline coreVector2      Normalized  ()const {return coreVector2(*this).Normalize();}
-    constexpr_func coreBool IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    inline coreVector2& Normalize ()      {*this *= RSQRT(this->LengthSq()); return *this;}
+    inline coreVector2  Normalized()const {return coreVector2(*this).Normalize();}
     //! @}
 
     /*! direct functions */
     //! @{
-    inline         coreFloat Length     ()const {return SQRT(this->LengthSq());}
-    constexpr_func coreFloat LengthSq   ()const {return (x*x + y*y);}
-    constexpr_func coreFloat Min        ()const {return MIN(x, y);}
-    constexpr_func coreFloat Max        ()const {return MAX(x, y);}
-    inline         coreFloat AspectRatio()const {return (x * RCP(y));}
-    inline         coreFloat Angle      ()const {return y ? (ATAN(this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);}
-    constexpr_func coreBool  IsNull     ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline         coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr_func coreFloat LengthSq    ()const {return (x*x + y*y);}
+    constexpr_func coreFloat Min         ()const {return MIN(x, y);}
+    constexpr_func coreFloat Max         ()const {return MAX(x, y);}
+    inline         coreFloat AspectRatio ()const {return (x * RCP(y));}
+    inline         coreFloat Angle       ()const {return y ? (ATAN(this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);}
+    constexpr_func coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    constexpr_func coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -182,11 +186,6 @@ public:
     inline         void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
-    /*! invert vector */
-    //! @{
-    constexpr_func coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
-    //! @}
-
     /*! convert vector */
     //! @{
     constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
@@ -209,20 +208,25 @@ public:
     inline void zy(const coreVector2& v)             {z = v.x; y = v.y;}
     //! @}
 
+    /*! invert vector */
+    //! @{
+    constexpr_func coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
+    //! @}
+
     /*! normalize vector */
     //! @{
-    inline coreVector3&     Normalize   ()      {*this *= RSQRT(this->LengthSq()); return *this;}
-    inline coreVector3      Normalized  ()const {return coreVector3(*this).Normalize();}
-    constexpr_func coreBool IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    inline coreVector3& Normalize ()      {*this *= RSQRT(this->LengthSq()); return *this;}
+    inline coreVector3  Normalized()const {return coreVector3(*this).Normalize();}
     //! @}
 
     /*! direct functions */
     //! @{
-    inline         coreFloat Length  ()const {return SQRT(this->LengthSq());}
-    constexpr_func coreFloat LengthSq()const {return (x*x + y*y + z*z);}
-    constexpr_func coreFloat Min     ()const {return MIN(x, y, z);}
-    constexpr_func coreFloat Max     ()const {return MAX(x, y, z);}
-    constexpr_func coreBool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline         coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr_func coreFloat LengthSq    ()const {return (x*x + y*y + z*z);}
+    constexpr_func coreFloat Min         ()const {return MIN(x, y, z);}
+    constexpr_func coreFloat Max         ()const {return MAX(x, y, z);}
+    constexpr_func coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    constexpr_func coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -308,11 +312,6 @@ public:
     inline         void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
 
-    /*! invert vector */
-    //! @{
-    constexpr_func coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
-    //! @}
-
     /*! convert vector */
     //! @{
     constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
@@ -323,6 +322,11 @@ public:
     inline void xyz(const coreVector3& v)            {x = v.x; y = v.y; z = v.z;}
     inline void xy (const coreVector2& v)            {x = v.x; y = v.y;}
     inline void zw (const coreVector2& v)            {z = v.x; w = v.y;}
+    //! @}
+
+    /*! invert vector */
+    //! @{
+    constexpr_func coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
     //! @}
 
     /*! direct functions */

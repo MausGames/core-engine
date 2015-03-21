@@ -1,5 +1,6 @@
 // Modified version for Core Engine
 // Please use the original library from the Windows SDK
+
 /******************************************************************
 *                                                                 *
 *  VersionHelpers.h -- This module defines helper functions to    *

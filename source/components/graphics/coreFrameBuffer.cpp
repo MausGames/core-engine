@@ -78,7 +78,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
         if(pTarget->pTexture)
         {
             // create render target texture
-            pTarget->pTexture->Create(iWidth, iHeight, pTarget->iInternal, pTarget->iFormat, pTarget->iType, GL_CLAMP_TO_EDGE, false);
+            pTarget->pTexture->Create(iWidth, iHeight, pTarget->iInternal, pTarget->iFormat, pTarget->iType, CORE_TEXTURE_MODE_DEFAULT);
 
             // attach render target texture to frame buffer
             glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetTexture(), 0);

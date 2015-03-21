@@ -66,6 +66,9 @@ void __coreInitOpenGLES()
     // implement GL_EXT_texture_filter_anisotropic
     __CORE_GLES_CHECK(GL_EXT_texture_filter_anisotropic, false);
 
+    // implement GL_EXT_texture_compression_s3tc
+    __CORE_GLES_CHECK(GL_EXT_texture_compression_s3tc, false);
+
     // implement GL_NV_pixel_buffer_object
     __CORE_GLES_CHECK(GL_NV_pixel_buffer_object, bES3);
 
