@@ -16,7 +16,7 @@ ENTRY_POINT coreInt32 coreThreadMain(void* pData);
 coreThread::coreThread(const coreChar* pcName)noexcept
 : m_pThread     (NULL)
 , m_sName       (pcName)
-, m_iExecutions (1)
+, m_iExecutions (1u)
 , m_bActive     (false)
 , m_iLock       (0)
 {
@@ -94,8 +94,8 @@ void coreThread::UpdateFunctions()
 /* execute the thread */
 coreStatus coreThread::__Main()
 {
-    coreUint32 iCurFrame     = 0;
-    coreUint8  iCurExecution = 0;
+    coreUint32 iCurFrame     = 0u;
+    coreUint8  iCurExecution = 0u;
 
     // call init-routine
     Core::Log->Info("Thread (%s:%04lu) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
@@ -119,7 +119,7 @@ coreStatus coreThread::__Main()
         {
             // save latest frame number
             iCurFrame     = Core::System->GetCurFrame();
-            iCurExecution = 0;
+            iCurExecution = 0u;
         }
         ++iCurExecution;
 

@@ -109,7 +109,7 @@ void coreResourceManager::UpdateResources()
     {
         SDL_AtomicLock(&m_iLock);
         {
-            for(coreUintW i = 0; i < m_apHandle.size(); ++i)
+            for(coreUintW i = 0u; i < m_apHandle.size(); ++i)
             {
                 // update resource handle
                 if(m_apHandle[i]->__AutoUpdate())

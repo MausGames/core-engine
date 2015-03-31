@@ -10,10 +10,11 @@
 #ifndef _CORE_GUARD_FONT_H_
 #define _CORE_GUARD_FONT_H_
 
+// TODO: distance fields for sharper text
+
 
 // ****************************************************************
 // font class
-// TODO: distance fields for sharper text
 class coreFont final : public coreResource
 {
 private:

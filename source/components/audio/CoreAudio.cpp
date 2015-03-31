@@ -13,7 +13,7 @@
 // constructor
 CoreAudio::CoreAudio()noexcept
 : m_iNumSources (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
-, m_iCurSource  (0)
+, m_iCurSource  (0u)
 , m_fVolume     (-1.0f)
 {
     Core::Log->Header("Audio Interface");
@@ -114,7 +114,7 @@ ALuint CoreAudio::NextSource(const ALuint& iBuffer)
     // search for next free sound source
     for(coreUintW i = m_iNumSources; i--; )
     {
-        if(++m_iCurSource >= m_iNumSources) m_iCurSource = 0;
+        if(++m_iCurSource >= m_iNumSources) m_iCurSource = 0u;
 
         // check status
         ALint iStatus;
@@ -130,7 +130,7 @@ ALuint CoreAudio::NextSource(const ALuint& iBuffer)
     }
 
     // no free sound source available
-    return 0;
+    return 0u;
 }
 
 
@@ -157,7 +157,7 @@ void CoreAudio::ClearSources(const ALuint& iBuffer)
             alSourcei(iSource, AL_BUFFER, 0);
 
             // reset sound buffer
-            (*it) = 0;
+            (*it) = 0u;
         }
     }
 }

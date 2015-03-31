@@ -22,7 +22,7 @@ CoreInput::coreKeyboard::coreKeyboard()noexcept
 // ****************************************************************
 // constructor
 CoreInput::coreMouse::coreMouse()noexcept
-: iLast     (0xFF)
+: iLast     (0xFFu)
 , vPosition (coreVector2(0.0f,0.0f))
 , vRelative (coreVector3(0.0f,0.0f,0.0f))
 {
@@ -34,7 +34,7 @@ CoreInput::coreMouse::coreMouse()noexcept
 // constructor
 CoreInput::coreJoystick::coreJoystick()noexcept
 : pHandle   (NULL)
-, iLast     (0xFF)
+, iLast     (0xFFu)
 , vRelative (coreVector2(0.0f,0.0f))
 {
     std::memset(aabButton, 0, sizeof(aabButton));
@@ -67,7 +67,7 @@ CoreInput::CoreInput()noexcept
         Core::Log->ListStartInfo("Joysticks and Gamepads found");
         {
             m_aJoystick.reserve(iNumJoysticks);
-            for(coreUintW i = 0; i < iNumJoysticks; ++i)
+            for(coreUintW i = 0u; i < iNumJoysticks; ++i)
             {
                 coreJoystick Joystick;
 
@@ -279,14 +279,14 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& Event)
 void CoreInput::__UpdateButtons()
 {
     // process keyboard inputs
-    for(coreUintW i = 0; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
+    for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
              if( m_Keyboard.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Keyboard.aabButton[i])
         else if(!m_Keyboard.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Keyboard.aabButton[i])
     }
 
     // process mouse inputs
-    for(coreUintW i = 0; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
+    for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
              if( m_Mouse.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Mouse.aabButton[i])
         else if(!m_Mouse.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Mouse.aabButton[i])
@@ -295,7 +295,7 @@ void CoreInput::__UpdateButtons()
     // process joystick inputs
     FOR_EACH(it, m_aJoystick)
     {
-        for(coreUintW i = 0; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
+        for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
                  if( it->aabButton[i][0]) __CORE_INPUT_PRESS  (it->aabButton[i])
             else if(!it->aabButton[i][0]) __CORE_INPUT_RELEASE(it->aabButton[i])
@@ -303,7 +303,7 @@ void CoreInput::__UpdateButtons()
     }
 
     // process touch inputs
-    for(coreUintW i = 0; i < CORE_INPUT_FINGERS; ++i)
+    for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
     {
              if( m_aTouch[i].abButton[0]) __CORE_INPUT_PRESS  (m_aTouch[i].abButton)
         else if(!m_aTouch[i].abButton[0]) __CORE_INPUT_RELEASE(m_aTouch[i].abButton)
@@ -328,12 +328,12 @@ void CoreInput::__ClearButtons()
 {
     // clear all last pressed buttons
     m_Keyboard.iLast = CORE_INPUT_KEY(UNKNOWN);
-    m_Mouse.iLast    = 0xFF;
-    FOR_EACH(it, m_aJoystick) it->iLast = 0xFF;
+    m_Mouse.iLast    = 0xFFu;
+    FOR_EACH(it, m_aJoystick) it->iLast = 0xFFu;
 
     // reset all relative movements
     m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);
-    for(coreUintW i = 0; i < CORE_INPUT_FINGERS; ++i)
+    for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
         m_aTouch[i].vRelative = coreVector2(0.0f,0.0f);
 
     // clear current text-input character

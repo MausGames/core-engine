@@ -112,7 +112,7 @@ struct md5Mesh
 
     explicit md5Mesh(const coreChar** ppcData)noexcept
     {
-        coreUintW iNum = 0;
+        coreUintW iNum = 0u;
 
         MD5_SCAN(*ppcData, "%*s %*s %*s %u", &iNum)
         aVertex.reserve(iNum);
@@ -147,13 +147,13 @@ struct md5File
     {
         coreChar  acIdentifier[16] = "";
         coreInt32 iVersion         = 0;
-        coreUintW iNumJoints       = 0;
-        coreUintW iNumMeshes       = 0;
+        coreUintW iNumJoints       = 0u;
+        coreUintW iNumMeshes       = 0u;
 
         // check for correct file type
         MD5_SCAN(*ppcData, "")
         MD5_SCAN(*ppcData, "%15s %d", r_cast<coreChar*>(&acIdentifier), &iVersion)
-        if(std::strncmp(acIdentifier, "MD5Version", 10) || iVersion != 10) return;
+        if(std::strncmp(acIdentifier, "MD5Version", 10u) || iVersion != 10) return;
 
         // read number of objects
         MD5_SCAN(*ppcData, "%*s %*s")
@@ -163,7 +163,7 @@ struct md5File
         aMesh .reserve(iNumMeshes);
 
         // read joint and mesh data
-        for(coreUintW i = 0, ie = (iNumMeshes + 1); i < ie; ++i)
+        for(coreUintW i = 0u, ie = (iNumMeshes + 1u); i < ie; ++i)
         {
             MD5_SCAN(*ppcData, "%*s")
             MD5_SCAN(*ppcData, "%*s")
@@ -205,9 +205,9 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
 
     // cache size values
     const coreUintW iNumVertices  = oMesh.aVertex  .size();
-    const coreUintW iNumIndices   = oMesh.aTriangle.size() * 3;
+    const coreUintW iNumIndices   = oMesh.aTriangle.size() * 3u;
     const coreUintW iNumTriangles = oMesh.aTriangle.size();
-    ASSERT(iNumVertices <= 0xFFFF)
+    ASSERT(iNumVertices <= 0xFFFFu)
 
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);
@@ -216,12 +216,12 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     coreVector3* pvOrtho2 = new coreVector3[iNumVertices];
 
     // loop through all vertices
-    for(coreUintW i = 0; i < iNumVertices; ++i)
+    for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
         const md5Vertex& oVertex = oMesh.aVertex[i];
 
         // calculate vertex position
-        for(coreUintW j = 0, je = oVertex.iWeightCount; j < je; ++j)
+        for(coreUintW j = 0u, je = oVertex.iWeightCount; j < je; ++j)
         {
             const md5Weight& oWeight = oMesh.aWeight[j + oVertex.iWeightStart];
             const md5Joint&  oJoint  = oFile.aJoint[oWeight.iJoint];
@@ -233,7 +233,7 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     }
 
     // loop through all triangles
-    for(coreUintW i = 0; i < iNumTriangles; ++i)
+    for(coreUintW i = 0u; i < iNumTriangles; ++i)
     {
         const md5Triangle& oTriangle = oMesh.aTriangle[i];
 
@@ -251,7 +251,7 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
         const coreVector3 D1 = (A1*B2.t - A2*B1.t) * R;
         const coreVector3 D2 = (A2*B1.s - A1*B2.s) * R;
 
-        for(coreUintW j = 0; j < 3; ++j)
+        for(coreUintW j = 0u; j < 3u; ++j)
         {
             // add local values to each point of the triangle
             pVertex [oTriangle.aiVertex[j]].vNormal += N;
@@ -259,7 +259,7 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
             pvOrtho2[oTriangle.aiVertex[j]] += D2;
         }
     }
-    for(coreUintW i = 0; i < iNumVertices; ++i)
+    for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
         // normalize the normal vector
         pVertex[i].vNormal.Normalize();

@@ -14,7 +14,7 @@
 void coreObject2D::Undefine()
 {
     // reset all resource and memory pointers
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
 }
 
@@ -35,7 +35,7 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
         if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
 
     // draw the model
@@ -67,14 +67,18 @@ void coreObject2D::Move()
 
         // calculate resolution-modified transformation parameters
         const coreVector2& vResolution     = Core::System->GetResolution();
-        const coreVector2  vScreenPosition = (m_vPosition + 0.5f*m_vSize*m_vAlignment) * vResolution.Min() + m_vCenter * vResolution;
-        const coreVector2  vScreenSize     = m_vSize * vResolution.Min();
+        const coreVector2  vScreenPosition = m_vPosition * vResolution.Min() + m_vCenter * vResolution;
+        const coreVector2  vScreenSize     = m_vSize     * vResolution.Min();
 
         // update transformation matrix
         m_mTransform = m_mRotation;
         m_mTransform._11 *= vScreenSize.x;     m_mTransform._12 *= vScreenSize.x;
         m_mTransform._21 *= vScreenSize.y;     m_mTransform._22 *= vScreenSize.y;
         m_mTransform._31  = vScreenPosition.x; m_mTransform._32  = vScreenPosition.y;
+
+        // add alignment-offset to position
+        m_mTransform._31 += 0.5f * m_vAlignment.x * ABS(m_mTransform._11 + m_mTransform._21);
+        m_mTransform._32 += 0.5f * m_vAlignment.y * ABS(m_mTransform._12 + m_mTransform._22);
 
         // reset the update status
         m_iUpdate = CORE_OBJECT_UPDATE_NOTHING;
@@ -94,7 +98,7 @@ void coreObject2D::Interact()
 
     // reset interaction status
     m_bFocused = false;
-    m_iFinger  = 0;
+    m_iFinger  = 0u;
 
     Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUintW& i)
     {
@@ -132,7 +136,7 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType iT
     // check for general intersection status
     if(m_bFocused)
     {
-        for(coreUintW i = 0; i < CORE_INPUT_FINGERS; ++i)
+        for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
         {
             // check for every finger on the object
             if(CONTAINS_BIT(m_iFinger, i) && Core::Input->GetTouchButton(i, iType))

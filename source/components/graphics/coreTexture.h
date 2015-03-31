@@ -23,9 +23,9 @@
 // ****************************************************************
 // texture definitions
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    #define CORE_TEXTURE_MASK 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF
+    #define CORE_TEXTURE_MASK 0xFF000000u, 0x00FF0000u, 0x0000FF00u, 0x000000FFu
 #else
-    #define CORE_TEXTURE_MASK 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000
+    #define CORE_TEXTURE_MASK 0x000000FFu, 0x0000FF00u, 0x00FF0000u, 0xFF000000u
 #endif
 
 #define CORE_TEXTURE_SPEC_RGB           GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE
@@ -34,7 +34,7 @@
 #define CORE_TEXTURE_SPEC_STENCIL       GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE
 #define CORE_TEXTURE_SPEC_DEPTH_STENCIL GL_DEPTH24_STENCIL8,  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8
 
-#define CORE_TEXTURE_COMPRESSED_SIZE(x,c) ((x) / (((c) == 3) ? 6 : 4))
+#define CORE_TEXTURE_COMPRESSED_SIZE(x,c) ((x) / (((c) == 3u) ? 6u : 4u))
 
 #define CORE_TEXTURE_UNITS_2D     (4u)                                                //!< number of 2d texture units (sampler2D)
 #define CORE_TEXTURE_UNITS_SHADOW (1u)                                                //!< number of shadow texture units (sampler2DShadow)
@@ -43,10 +43,10 @@
 
 enum coreTextureMode : coreUint8
 {
-    CORE_TEXTURE_MODE_DEFAULT  = 0x00,   //!< do nothing special
-    CORE_TEXTURE_MODE_COMPRESS = 0x01,   //!< perform color texture compression
-    CORE_TEXTURE_MODE_FILTER   = 0x02,   //!< perform anisotropic filtering and mipmapping
-    CORE_TEXTURE_MODE_REPEAT   = 0x04    //!< perform repeating texture sampling
+    CORE_TEXTURE_MODE_DEFAULT  = 0x00u,   //!< do nothing special
+    CORE_TEXTURE_MODE_COMPRESS = 0x01u,   //!< perform color texture compression
+    CORE_TEXTURE_MODE_FILTER   = 0x02u,   //!< perform anisotropic filtering and mipmapping
+    CORE_TEXTURE_MODE_REPEAT   = 0x04u    //!< perform repeating texture sampling
 };
 ENABLE_BITWISE(coreTextureMode)
 

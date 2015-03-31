@@ -28,7 +28,7 @@ coreMusic::coreMusic(const coreChar* pcPath)noexcept
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
-: m_iSource  (0)
+: m_iSource  (0u)
 , m_pFile    (NULL)
 , m_pInfo    (NULL)
 , m_pComment (NULL)
@@ -141,7 +141,7 @@ coreStatus coreMusic::Play()
     if(!m_pFile)  return CORE_INVALID_DATA;
 
     // retrieve next free sound source
-    m_iSource = Core::Audio->NextSource(0);
+    m_iSource = Core::Audio->NextSource(0u);
     if(m_iSource)
     {
         // prepare sound buffers
@@ -208,7 +208,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
         const coreUintW iLen = std::strlen(pcName);
 
         // loop through all comments
-        for(coreUintW i = 0, ie = m_pComment->comments; i < ie; ++i)
+        for(coreUintW i = 0u, ie = m_pComment->comments; i < ie; ++i)
         {
             // check comment and extract meta-information
             if(!std::strncmp(pcName, m_pComment->user_comments[i], iLen))
@@ -225,9 +225,9 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 // read from music stream and update sound buffer
 coreBool coreMusic::__Stream(const ALuint& iBuffer)
 {
-    coreChar acData[4 * CORE_MUSIC_CHUNK];
+    coreChar acData[4u * CORE_MUSIC_CHUNK];
 
-    const coreInt32 iChunkSize = MIN(F_TO_SI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4 * CORE_MUSIC_CHUNK);
+    const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4u * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;
 
     // process the defined music stream chunk size
@@ -253,12 +253,12 @@ coreBool coreMusic::__Stream(const ALuint& iBuffer)
 // constructor
 coreMusicPlayer::coreMusicPlayer()noexcept
 : m_iRepeat       (CORE_MUSIC_ALL_REPEAT)
-, m_iCurIndex     (0)
-, m_FadeTimer     (coreTimer(1.0f, 0.0f, 1))
+, m_iCurIndex     (0u)
+, m_FadeTimer     (coreTimer(1.0f, 0.0f, 1u))
 , m_pFadePrevious (NULL)
 {
     // create empty music object
-    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0));
+    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0x00));
     m_pCurMusic   = m_pEmptyMusic;
 }
 
@@ -289,7 +289,7 @@ coreBool coreMusicPlayer::Update()
 
         // adjust their volume
         m_pFadePrevious->SetVolume(m_FadeTimer.GetValue(CORE_TIMER_GET_REVERSED));
-        m_pCurMusic->SetVolume(m_FadeTimer.GetValue(CORE_TIMER_GET_NORMAL));
+        m_pCurMusic    ->SetVolume(m_FadeTimer.GetValue(CORE_TIMER_GET_NORMAL));
 
         // update the previous music object
         m_pFadePrevious->Update();
@@ -305,7 +305,7 @@ coreBool coreMusicPlayer::Update()
         // repeat, switch or stop as defined
         switch(m_iRepeat)
         {
-        case CORE_MUSIC_ALL_NOREPEAT:    if(m_iCurIndex+1 >= m_apMusic.size()) break;
+        case CORE_MUSIC_ALL_NOREPEAT:    if((m_iCurIndex + 1u) >= m_apMusic.size()) break;
         case CORE_MUSIC_ALL_REPEAT:      this->Next();
         case CORE_MUSIC_SINGLE_REPEAT:   m_pCurMusic->Play();
         case CORE_MUSIC_SINGLE_NOREPEAT: break;
@@ -364,7 +364,7 @@ coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreCh
     coreArchive* pArchive = Core::Manager::Resource->RetrieveArchive(pcPath);
 
     // try to add all files to the music-player
-    for(coreUintW i = 0, ie = pArchive->GetNumFiles(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = pArchive->GetNumFiles(); i < ie; ++i)
     {
         // check path and use only specific files
         if(coreData::StrCmpLike(pArchive->GetFile(i)->GetPath(), pcFilter))
@@ -416,7 +416,7 @@ coreStatus coreMusicPlayer::DeleteMusic(const coreUintW& iIndex)
 
     // check and switch the current music object
     if(m_apMusic.empty()) m_pCurMusic = m_pEmptyMusic;
-    else this->Select(0);
+    else this->Select(0u);
 
     return CORE_OK;
 }
@@ -479,15 +479,15 @@ void coreMusicPlayer::Select(const coreUintW& iIndex)
 // switch to next music object
 coreBool coreMusicPlayer::Next()
 {
-    if((m_iCurIndex + 1) >= m_apMusic.size())
+    if((m_iCurIndex + 1u) >= m_apMusic.size())
     {
         // back to the beginning
-        this->Select(0);
+        this->Select(0u);
         return true;
     }
 
     // go to next music object
-    this->Select(m_iCurIndex + 1);
+    this->Select(m_iCurIndex + 1u);
     return false;
 }
 
@@ -496,15 +496,15 @@ coreBool coreMusicPlayer::Next()
 // switch to previous music object
 coreBool coreMusicPlayer::Previous()
 {
-    if(m_iCurIndex == 0)
+    if(m_iCurIndex == 0u)
     {
         // back to the end
-        this->Select(m_apMusic.size() - 1);
+        this->Select(m_apMusic.size() - 1u);
         return true;
     }
 
     // go to previous music object
-    this->Select(m_iCurIndex - 1);
+    this->Select(m_iCurIndex - 1u);
     return false;
 }
 

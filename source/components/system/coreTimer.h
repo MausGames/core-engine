@@ -57,7 +57,7 @@ public:
     //! @{
     inline void Play (const coreTimerPlay& bReset) {m_bStatus = true; if(bReset) this->Reset();}
     inline void Pause()                            {m_bStatus = false;}
-    inline void Reset()                            {m_fValue  = 0.0f; m_iCurLoops = 0;}
+    inline void Reset()                            {m_fValue  = 0.0f; m_iCurLoops = 0u;}
     inline void Stop ()                            {this->Pause(); this->Reset();}
     //! @}
 
@@ -121,7 +121,7 @@ public:
 // ****************************************************************
 /* constructor */
 constexpr_func coreTimer::coreTimer()noexcept
-: coreTimer (1.0f, 1.0f, 0)
+: coreTimer (1.0f, 1.0f, 0u)
 {
 }
 
@@ -130,7 +130,7 @@ constexpr_func coreTimer::coreTimer(const coreFloat& fEnd, const coreFloat& fSpe
 , m_fEnd      (fEnd)
 , m_fSpeed    (fSpeed)
 , m_iMaxLoops (iLoops)
-, m_iCurLoops (0)
+, m_iCurLoops (0u)
 , m_iTimeID   (-1)
 , m_bStatus   (false)
 {

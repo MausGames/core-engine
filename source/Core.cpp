@@ -31,7 +31,7 @@ Core::Core()noexcept
     Log    = new coreLog("logfile.html");
     Log->Header("Utilities");
     Config = new coreConfig("config.ini");
-    Rand   = new coreRand(2048);
+    Rand   = new coreRand(2048u);
 
     // init main components
     System   = new CoreSystem();
@@ -134,8 +134,8 @@ void Core::Reset()
     System->m_iCurFrame  = iCurFrame;
     Graphics->SetView  (System->GetResolution(), fFOV, fNearClip, fFarClip);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
-    for(coreUintW i = 0; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
-    for(coreUintW i = 0; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
+    for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
+    for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
 
     Log->Warning("Reset finished");
 }

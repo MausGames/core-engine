@@ -18,7 +18,7 @@ coreBool coreSync::Create()
         if(CORE_GL_SUPPORT(ARB_sync))
         {
             // generate new sync object
-            m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+            m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0u);
             return true;
         }
 

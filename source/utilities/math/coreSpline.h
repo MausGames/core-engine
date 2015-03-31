@@ -200,8 +200,8 @@ template <typename T> void coreSpline<T>::DeleteNode(const coreUintW& iIndex)
 
     if(iIndex)
     {
-        const coreUintW iNextIndex = iIndex + 1;
-        coreNode&       oPrevNode  = m_apNode[iIndex - 1];
+        const coreUintW iNextIndex = iIndex + 1u;
+        coreNode&       oPrevNode  = m_apNode[iIndex - 1u];
 
         // calculate new distance between previous and next node
         const coreFloat fNewDistance = (iNextIndex >= m_apNode.size()) ? 0.0f : (m_apNode[iNextIndex].tPosition - oPrevNode.tPosition).Length();
@@ -240,7 +240,7 @@ template <typename T> void coreSpline<T>::EditNodePosition(const coreUintW& iInd
     oCurNode.tPosition = tNewPosition;
 
     // update relation to next node
-    const coreUintW iNextIndex = iIndex + 1;
+    const coreUintW iNextIndex = iIndex + 1u;
     if(iNextIndex < m_apNode.size())
     {
         const coreNode& oNextNode = m_apNode[iNextIndex];
@@ -256,7 +256,7 @@ template <typename T> void coreSpline<T>::EditNodePosition(const coreUintW& iInd
     // update relation to previous node
     if(iIndex)
     {
-        coreNode& oPrevNode = m_apNode[iIndex - 1];
+        coreNode& oPrevNode = m_apNode[iIndex - 1u];
 
         // calculate new distance between previous and current node
         const coreFloat fNewDistance = (oCurNode.tPosition - oPrevNode.tPosition).Length();
@@ -292,7 +292,7 @@ template <typename T> void coreSpline<T>::CalcPosDir(const coreFloat& fDistance,
 
     // get both enclosing nodes
     const coreNode& oCurNode  = m_apNode[iRelIndex];
-    const coreNode& oNextNode = m_apNode[iRelIndex + 1];
+    const coreNode& oNextNode = m_apNode[iRelIndex + 1u];
 
     // scale tangents of both nodes with distance between them
     const T tCurVelocity  = oCurNode .tTangent * oCurNode.fDistance;
@@ -307,11 +307,11 @@ template <typename T> void coreSpline<T>::CalcPosDir(const coreFloat& fDistance,
 /* translate distance into relative node index and time */
 template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat& fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const
 {
-    ASSERT(piRelIndex && pfRelTime && (m_apNode.size() >= 2))
+    ASSERT(piRelIndex && pfRelTime && (m_apNode.size() >= 2u))
 
-    coreUintW       iCurIndex    = 0;
+    coreUintW       iCurIndex    = 0u;
     coreFloat       fCurDistance = 0.0f;
-    const coreUintW iMaxIndex    = m_apNode.size() - 2;
+    const coreUintW iMaxIndex    = m_apNode.size() - 2u;
     const coreFloat fMaxDistance = MIN(fDistance, m_fTotalDistance);
 
     // search for first relative node

@@ -14,9 +14,9 @@
 coreFile::coreFile(const coreChar* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_pData       (NULL)
-, m_iSize       (0)
+, m_iSize       (0u)
 , m_pArchive    (NULL)
-, m_iArchivePos (1)
+, m_iArchivePos (1u)
 {
     if(m_sPath.empty()) return;
 
@@ -41,7 +41,7 @@ coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32& iS
 , m_pData       (pData)
 , m_iSize       (iSize)
 , m_pArchive    (NULL)
-, m_iArchivePos (0)
+, m_iArchivePos (0u)
 {
 }
 
@@ -79,7 +79,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
     // close file
     SDL_RWclose(pFile);
-    if(!m_iArchivePos) m_iArchivePos = 1;
+    if(!m_iArchivePos) m_iArchivePos = 1u;
 
     return CORE_OK;
 }
@@ -166,7 +166,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 
     // read magic number and file version
     coreUint32 aiHead[2];
-    SDL_RWread(pArchive, &aiHead, sizeof(coreUint32), 2);
+    SDL_RWread(pArchive, &aiHead, sizeof(coreUint32), 2u);
 
     // check magic number
     if(aiHead[0] != CORE_FILE_MAGIC)
@@ -178,7 +178,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 
     // read number of files
     coreUint16 iSize;
-    SDL_RWread(pArchive, &iSize, sizeof(coreUint16), 1);
+    SDL_RWread(pArchive, &iSize, sizeof(coreUint16), 1u);
 
     // read file headers
     for(coreUintW i = iSize; i--; )
@@ -189,10 +189,10 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
         coreUint32 iArchivePos;
 
         // read file header data
-        SDL_RWread(pArchive, &iPathLen,    sizeof(coreUint8),  1);
+        SDL_RWread(pArchive, &iPathLen,    sizeof(coreUint8),  1u);
         SDL_RWread(pArchive, acPath,       sizeof(coreChar),   iPathLen);
-        SDL_RWread(pArchive, &iSize,       sizeof(coreUint32), 1);
-        SDL_RWread(pArchive, &iArchivePos, sizeof(coreUint32), 1);
+        SDL_RWread(pArchive, &iSize,       sizeof(coreUint32), 1u);
+        SDL_RWread(pArchive, &iArchivePos, sizeof(coreUint32), 1u);
 
         // add new file object
         coreFile* pNewFile      = new coreFile(acPath, NULL, iSize);
@@ -234,11 +234,11 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
     // save magic number and file version
     const coreUint32 aiHead[2] = {CORE_FILE_MAGIC, CORE_FILE_VERSION};
-    SDL_RWwrite(pArchive, aiHead, sizeof(coreUint32), 2);
+    SDL_RWwrite(pArchive, aiHead, sizeof(coreUint32), 2u);
 
     // save number of files
     const coreUint16 iSize = m_apFile.size();
-    SDL_RWwrite(pArchive, &iSize, sizeof(coreUint16), 1);
+    SDL_RWwrite(pArchive, &iSize, sizeof(coreUint16), 1u);
 
     // cache missing file data
     FOR_EACH(it, m_apFile)
@@ -252,10 +252,10 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
         const coreUint8 iPathLen = MIN(std::strlen((*it)->GetPath()), 255u);
 
         // write header
-        SDL_RWwrite(pArchive, &iPathLen,             sizeof(coreUint8),  1);
+        SDL_RWwrite(pArchive, &iPathLen,             sizeof(coreUint8),  1u);
         SDL_RWwrite(pArchive,  (*it)->GetPath(),     sizeof(coreChar),   iPathLen);
-        SDL_RWwrite(pArchive, &(*it)->GetSize(),     sizeof(coreUint32), 1);
-        SDL_RWwrite(pArchive, &(*it)->m_iArchivePos, sizeof(coreUint32), 1);
+        SDL_RWwrite(pArchive, &(*it)->GetSize(),     sizeof(coreUint32), 1u);
+        SDL_RWwrite(pArchive, &(*it)->m_iArchivePos, sizeof(coreUint32), 1u);
     }
 
     // save file data
@@ -306,7 +306,7 @@ coreStatus coreArchive::AddFile(coreFile* pFile)
 
     // associate archive
     pFile->m_pArchive    = this;
-    pFile->m_iArchivePos = 0;
+    pFile->m_iArchivePos = 0u;
 
     return CORE_OK;
 }
@@ -361,9 +361,9 @@ void coreArchive::ClearFiles()
 void coreArchive::__CalculatePositions()
 {
     // calculate data start position
-    coreUint32 iCurPosition = sizeof(coreUint32)*2 + sizeof(coreUint16);
+    coreUint32 iCurPosition = 2u*sizeof(coreUint32) + sizeof(coreUint16);
     FOR_EACH(it, m_apFile)
-        iCurPosition += sizeof(coreUint8) + std::strlen((*it)->GetPath()) + sizeof(coreUint32)*2;
+        iCurPosition += sizeof(coreUint8) + std::strlen((*it)->GetPath()) + 2u*sizeof(coreUint32);
 
     FOR_EACH(it, m_apFile)
     {

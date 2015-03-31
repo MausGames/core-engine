@@ -170,9 +170,9 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     if(!pcData) return CORE_ERROR_FILE;
 
     // prepare range pointers (from, to) and end pointer (out of bound)
-    const coreChar* pcFrom = pcData + 1;
+    const coreChar* pcFrom = pcData + 1u;
     const coreChar* pcTo   = pcFrom;
-    const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1;
+    const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1u;
 
     auto nAssignFunc = [&pcFrom, &pcTo](std::string* pString)
     {
@@ -181,7 +181,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
         coreData::StrTrim(pString);
 
         // begin next string
-        pcFrom = pcTo + 1;
+        pcFrom = pcTo + 1u;
     };
 
     // clear all existing language-strings
@@ -194,7 +194,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
         {
             // extract key
             nAssignFunc(&sKey);
-            WARN_IF(sKey.empty()) sKey.assign(1, ' ');
+            WARN_IF(sKey.empty()) sKey.assign(1u, ' ');
         }
         else if(*pcTo == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {

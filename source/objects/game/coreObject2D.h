@@ -107,7 +107,7 @@ constexpr_weak coreObject2D::coreObject2D()noexcept
 , m_bFocused       (false)
 , m_vFocusModifier (coreVector2(1.0f,1.0f))
 #if defined(_CORE_ANDROID_)
-, m_iFinger        (0)
+, m_iFinger        (0u)
 #endif
 {
 }

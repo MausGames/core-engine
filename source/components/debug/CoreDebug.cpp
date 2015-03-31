@@ -12,13 +12,13 @@
 // ****************************************************************
 /* constructor */
 CoreDebug::coreMeasure::coreMeasure()noexcept
-: iPerfTime   (0)
-, fCurrentCPU (0)
-, fCurrentGPU (0)
+: iPerfTime   (0u)
+, fCurrentCPU (0.0f)
+, fCurrentGPU (0.0f)
 {
     // reset timer-query objects
-    aaiQuery[0].Fill(0);
-    aaiQuery[1].Fill(0);
+    aaiQuery[0].Fill(0u);
+    aaiQuery[1].Fill(0u);
 }
 
 
@@ -89,7 +89,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
             glGenQueries(CORE_DEBUG_QUERIES, pNewMeasure->aaiQuery[1]);
 
             // already process later queries to remove invalid values
-            for(coreUintW i = 1; i < CORE_DEBUG_QUERIES; ++i)
+            for(coreUintW i = 1u; i < CORE_DEBUG_QUERIES; ++i)
             {
                 glQueryCounter(pNewMeasure->aaiQuery[0][i], GL_TIMESTAMP);
                 glQueryCounter(pNewMeasure->aaiQuery[1][i], GL_TIMESTAMP);
@@ -98,7 +98,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
 
         // configure output label
         coreLabel& oOutput = pNewMeasure->oOutput;
-        oOutput.Construct   ("default.ttf", 16, 64);
+        oOutput.Construct   ("default.ttf", 16u, 64u);
         oOutput.SetCenter   (coreVector2(-0.5f, 0.5f));
         oOutput.SetAlignment(coreVector2( 1.0f,-1.0f));
         oOutput.SetColor3   (COLOR_BLUE);
@@ -177,6 +177,10 @@ void CoreDebug::__UpdateOutput()
     // hold screen
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_HOLD))
         Core::System->SkipFrame();
+
+    // trigger breakpoint
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F4), CORE_INPUT_PRESS))
+        SDL_TriggerBreakpoint();
 
     // reset engine
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F9), CORE_INPUT_PRESS))

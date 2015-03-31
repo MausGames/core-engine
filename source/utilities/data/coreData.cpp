@@ -22,7 +22,7 @@
 #endif
 
 thread_local coreChar  coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
-thread_local coreUintW coreData::m_iCurString                                                = 0;
+thread_local coreUintW coreData::m_iCurString                                                = 0u;
 
 
 // ****************************************************************
@@ -34,7 +34,7 @@ const coreChar* coreData::AppPath()
 #if defined(_CORE_WINDOWS_)
     GetModuleFileName(NULL, pcString, CORE_DATA_STRING_LEN);
 #elif defined(_CORE_LINUX_)
-    const coreInt32 iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1);
+    const coreInt32 iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1u);
     pcString[MAX(iLen, 0)] = '\0';
 #elif defined(_CORE_OSX_)
     coreUint32 iLen = CORE_DATA_STRING_LEN;
@@ -55,21 +55,21 @@ const coreChar* coreData::SystemName()
 
     // detect actual Windows version (GetVersionEx() is deprecated)
     coreUint32 i, j, k;
-    for(i = 5; IsWindowsVersionOrGreater(i, 0, 0); ++i) {} --i; coreUint32& iMajor = i;
-    for(j = 0; IsWindowsVersionOrGreater(i, j, 0); ++j) {} --j; coreUint32& iMinor = j;
-    for(k = 0; IsWindowsVersionOrGreater(i, j, k); ++k) {} --k; coreUint32& iPack  = k;
+    for(i = 5u; IsWindowsVersionOrGreater(i, 0u, 0u); ++i) {} --i; coreUint32& iMajor = i;
+    for(j = 0u; IsWindowsVersionOrGreater(i,  j, 0u); ++j) {} --j; coreUint32& iMinor = j;
+    for(k = 0u; IsWindowsVersionOrGreater(i,  j,  k); ++k) {} --k; coreUint32& iPack  = k;
 
     // map to corresponding sub-name
     const coreChar* pcSubString = NULL;
-    switch(iMajor*10 + iMinor)
+    switch(iMajor*10u + iMinor)
     {
-    case 64: pcSubString = "10";    break;
-    case 63: pcSubString = "8.1";   break;
-    case 62: pcSubString = "8";     break;
-    case 61: pcSubString = "7";     break;
-    case 60: pcSubString = "Vista"; break;
-    case 51: pcSubString = "XP";    break;
-    case 50: pcSubString = "2000";  break;
+    case 64u: pcSubString = "10";    break;
+    case 63u: pcSubString = "8.1";   break;
+    case 62u: pcSubString = "8";     break;
+    case 61u: pcSubString = "7";     break;
+    case 60u: pcSubString = "Vista"; break;
+    case 51u: pcSubString = "XP";    break;
+    case 50u: pcSubString = "2000";  break;
 
     default:
         pcSubString = PRINT("v%d.%d", iMajor, iMinor);
@@ -131,9 +131,9 @@ const coreChar* coreData::GetCurDir()
     coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
-    GetCurrentDirectory(CORE_DATA_STRING_LEN - 1, pcString);
+    GetCurrentDirectory(CORE_DATA_STRING_LEN - 1u, pcString);
 #elif !defined(_CORE_ANDROID_)
-    getcwd(pcString, CORE_DATA_STRING_LEN - 1);
+    getcwd(pcString, CORE_DATA_STRING_LEN - 1u);
 #else
     return "";
 #endif
@@ -245,12 +245,12 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
 /* create folder hierarchy */
 void coreData::CreateFolder(const std::string& sPath)
 {
-    coreUintW iPos = 0;
+    coreUintW iPos = 0u;
 
     // loop through path
-    while((iPos = sPath.find_first_of("/\\", iPos+2)) != std::string::npos)
+    while((iPos = sPath.find_first_of("/\\", iPos+2u)) != std::string::npos)
     {
-        const std::string sSubFolder = sPath.substr(0, iPos);
+        const std::string sSubFolder = sPath.substr(0u, iPos);
 
         // create sub-folder
 #if defined(_CORE_WINDOWS_)
@@ -271,8 +271,8 @@ void coreData::DateTimeValue(coreUint32* OUTPUT piYea, coreUint32* OUTPUT piMon,
     std::tm* pLocal = std::localtime(&iTime);
 
     // forward values
-    if(piYea) *piYea = pLocal->tm_year + 1900;
-    if(piMon) *piMon = pLocal->tm_mon  + 1;
+    if(piYea) *piYea = pLocal->tm_year + 1900u;
+    if(piMon) *piMon = pLocal->tm_mon  + 1u;
     if(piDay) *piDay = pLocal->tm_mday;
     if(piHou) *piHou = pLocal->tm_hour;
     if(piMin) *piMin = pLocal->tm_min;
@@ -316,7 +316,7 @@ const coreChar* coreData::StrExtension(const coreChar* pcInput)
     WARN_IF(!pcInput) return "";
 
     const coreChar* pcDot = std::strrchr(pcInput, '.');
-    return pcDot ? pcDot+1 : pcInput;
+    return pcDot ? pcDot+1u : pcInput;
 }
 
 
@@ -327,7 +327,7 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
     WARN_IF(!pcInput) return 0.0f;
 
     const coreChar* pcDot = std::strchr(pcInput, '.');
-    return pcDot ? (I_TO_F((pcDot-1)[0] - '0') + 0.1f * I_TO_F((pcDot+1)[0] - '0')) : 0.0f;
+    return pcDot ? (I_TO_F((pcDot-1u)[0] - '0') + 0.1f * I_TO_F((pcDot+1u)[0] - '0')) : 0.0f;
 }
 
 
@@ -337,11 +337,11 @@ void coreData::StrTrim(std::string* OUTPUT psInput)
 {
     // trim right
     const coreUintW iLast = psInput->find_last_not_of(" \n\r\t");
-    if(iLast != std::string::npos) psInput->erase(iLast+1);
+    if(iLast != std::string::npos) psInput->erase(iLast+1u);
 
     // trim left
     const coreUintW iFirst = psInput->find_first_not_of(" \n\r\t");
-    if(iFirst != std::string::npos) psInput->erase(0, iFirst);
+    if(iFirst != std::string::npos) psInput->erase(0u, iFirst);
 }
 
 
@@ -349,7 +349,7 @@ void coreData::StrTrim(std::string* OUTPUT psInput)
 /* replace all occurrences of a sub-string with another one*/
 void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew)
 {
-    coreUintW iPos = 0;
+    coreUintW iPos = 0u;
 
     // save length of both sub-strings
     const coreUintW iOldLen = std::strlen(pcOld);

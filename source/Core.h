@@ -242,7 +242,7 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
 
-#define BIT(n)               (1 << (n))
+#define BIT(n)               (1u << (n))
 #define ADD_BIT(o,n)         { (o) |=     BIT(n);}
 #define ADD_VALUE(o,n)       { (o) |=        (n);}
 #define REMOVE_BIT(o,n)      { (o) &=    ~BIT(n);}
@@ -295,7 +295,7 @@
     void  operator delete[] (void*)              = delete;
 
 // enable bitwise-operations with the defined enumeration
-#define ENABLE_BITWISE(e)                                                                                                                                               \
+#define ENABLE_BITWISE(e)                                                                                                                                            \
     constexpr_func e  operator ~  (const e& a)             {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
     constexpr_func e  operator |  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
     constexpr_func e  operator &  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \

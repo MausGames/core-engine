@@ -15,7 +15,7 @@ coreFloat        coreFrameBuffer::s_afViewData[5]; // = 0.0f;
 // ****************************************************************
 // constructor
 coreFrameBuffer::coreFrameBuffer()noexcept
-: m_iFrameBuffer (0)
+: m_iFrameBuffer (0u)
 , m_vResolution  (coreVector2(0.0f,0.0f))
 , m_fFOV         (Core::Graphics->GetFOV())
 , m_fNearClip    (Core::Graphics->GetNearClip())
@@ -57,11 +57,11 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 
     // set number of samples
     const coreUint8 iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ?
-                               Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0;
+                               Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0u;
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
-    for(coreUintW i = 0; i < ARRAY_SIZE(apTarget); ++i)
+    for(coreUintW i = 0u; i < ARRAY_SIZE(apTarget); ++i)
     {
         coreRenderTarget* pTarget = apTarget[i];
         if(!pTarget->iInternal) continue;
@@ -70,9 +70,9 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
         GLenum iAttachment;
         switch(i)
         {
-        default: iAttachment = GL_COLOR_ATTACHMENT0 + (i-2); break;
-        case 0:  iAttachment = GL_DEPTH_ATTACHMENT;          break;
-        case 1:  iAttachment = GL_STENCIL_ATTACHMENT;        break;
+        default: iAttachment = GL_COLOR_ATTACHMENT0 + (i-2u); break;
+        case 0u: iAttachment = GL_DEPTH_ATTACHMENT;           break;
+        case 1u: iAttachment = GL_STENCIL_ATTACHMENT;         break;
         }
 
         if(pTarget->pTexture)
@@ -95,7 +95,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 
             // attach render target buffer to frame buffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, iAttachment, GL_RENDERBUFFER, pTarget->iBuffer);
-            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+            glBindRenderbuffer(GL_RENDERBUFFER, 0u);
         }
     }
 
@@ -104,7 +104,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 
     // retrieve frame buffer status
     const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
 
     // check for errors
     if(iError != GL_FRAMEBUFFER_COMPLETE)
@@ -129,7 +129,7 @@ void coreFrameBuffer::Delete()
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
-    for(coreUintW i = 0; i < ARRAY_SIZE(apTarget); ++i)
+    for(coreUintW i = 0u; i < ARRAY_SIZE(apTarget); ++i)
     {
         // unload render target texture
         if(apTarget[i]->pTexture) apTarget[i]->pTexture->Unload();
@@ -138,12 +138,12 @@ void coreFrameBuffer::Delete()
         if(apTarget[i]->iBuffer)
         {
             glDeleteRenderbuffers(1, &apTarget[i]->iBuffer);
-            apTarget[i]->iBuffer = 0;
+            apTarget[i]->iBuffer = 0u;
         }
     }
 
     // reset properties
-    m_iFrameBuffer = 0;
+    m_iFrameBuffer = 0u;
     m_vResolution  = coreVector2(0.0f,0.0f);
 }
 
@@ -188,15 +188,15 @@ void coreFrameBuffer::DetachTargets()
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
-    for(coreUintW i = 0; i < ARRAY_SIZE(apTarget); ++i)
+    for(coreUintW i = 0u; i < ARRAY_SIZE(apTarget); ++i)
     {
         // free render target texture
         if(apTarget[i]->pTexture) Core::Manager::Resource->Free(&apTarget[i]->pTexture);
 
         // reset properties
-        apTarget[i]->iInternal = 0;
-        apTarget[i]->iFormat   = 0;
-        apTarget[i]->iType     = 0;
+        apTarget[i]->iInternal = 0u;
+        apTarget[i]->iFormat   = 0u;
+        apTarget[i]->iType     = 0u;
     }
 }
 
@@ -233,7 +233,7 @@ void coreFrameBuffer::EndDraw()
     if(!s_pCurrent) return;
 
     // reset frame buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0u);
     s_pCurrent = NULL;
 
     // reset view frustum
@@ -255,7 +255,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // copy content directly
-            glBlitNamedFramebuffer(m_iFrameBuffer, pDestination ? pDestination->GetFrameBuffer() : 0,
+            glBlitNamedFramebuffer(m_iFrameBuffer, pDestination ? pDestination->GetFrameBuffer() : 0u,
                                    iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                                    iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
                                    iTargets, GL_NEAREST);
@@ -264,7 +264,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
         {
             // switch to source and destination frame buffer
             if(s_pCurrent != this)         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_iFrameBuffer);
-            if(s_pCurrent != pDestination) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pDestination ? pDestination->GetFrameBuffer() : 0);
+            if(s_pCurrent != pDestination) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pDestination ? pDestination->GetFrameBuffer() : 0u);
 
             // copy content
             glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
@@ -272,7 +272,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
                               iTargets, GL_NEAREST);
 
             // switch back to old frame buffer
-            glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
         }
     }
     else
@@ -301,19 +301,19 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
                 if(pDestination->m_DepthTarget.pTexture)
                 {
                     // attach source depth texture as color target
-                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DepthTarget.pTexture->GetTexture(), 0);
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DepthTarget.pTexture->GetTexture(), 0u);
 
                     // copy screen to destination texture
                     pDestination->m_DepthTarget.pTexture->Enable(0);
                     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iDstX, iDstY, iWidth, iHeight);
 
                     // re-attach old color target
-                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_aColorTarget[0].pTexture ? m_aColorTarget[0].pTexture->GetTexture() : 0, 0);
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_aColorTarget[0].pTexture ? m_aColorTarget[0].pTexture->GetTexture() : 0u, 0);
                 }
             }
 
             // switch back to old frame buffer
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
         }
         else
         {
@@ -340,9 +340,9 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
                     pBlitFallback->Move();
 
                     // forward source color texture and render
-                    pBlitFallback->DefineTexture(0, m_aColorTarget[0].pTexture);
+                    pBlitFallback->DefineTexture(0u, m_aColorTarget[0].pTexture);
                     pBlitFallback->Render();
-                    pBlitFallback->DefineTexture(0, NULL);
+                    pBlitFallback->DefineTexture(0u, NULL);
                 }
                 glEnable(GL_DEPTH_TEST);
                 glEnable(GL_BLEND);
@@ -356,7 +356,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
 
 void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)const
 {
-    this->Blit(iTargets, pDestination, 0, 0, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
+    this->Blit(iTargets, pDestination, 0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
 }
 
 
@@ -374,7 +374,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget& iTargets)
     glClear(iTargets);
 
     // switch back to old frame buffer
-    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
 }
 
 
@@ -410,7 +410,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
             glInvalidateFramebuffer(GL_FRAMEBUFFER, iNum, aiAttachment);
 
             // switch back to old frame buffer
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
         }
     }
 }
@@ -425,7 +425,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
 #if defined(_CORE_GLES_)
 
     // currently only one color attachment supported
-    if(iColorIndex > 0) return NULL;
+    if(iColorIndex > 0u) return NULL;
 
 #endif
 

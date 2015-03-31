@@ -15,10 +15,10 @@
 /* MD3-header structure */
 struct md3Header
 {
-    coreChar   acIdentity[4];     //!< magic number (IDP3)
+    coreChar  acIdentity[4];     //!< magic number (IDP3)
     coreInt32 iVersion;          //!< version number (15)
 
-    coreChar   acName[64];        //!< internal file name
+    coreChar  acName[64];        //!< internal file name
     coreInt32 iFlags;            //!< 'dunno
 
     coreInt32 iNumFrames;        //!< number of frames
@@ -108,7 +108,7 @@ struct md3Texture
 /* MD3-vertex structure */
 struct md3Vertex
 {
-    coreInt16 asCoord[3];    //!< compressed vertex coordinates (1:64)
+    coreInt16 asCoord [3];   //!< compressed vertex coordinates (1:64)
     coreUint8 aiNormal[2];   //!< compressed normal zenith and azimuth
 };
 
@@ -151,7 +151,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     std::memcpy(&oFile.oHeader, pData, sizeof(md3Header));
 
     // check for correct file type
-    if(std::strncmp(oFile.oHeader.acIdentity, "IDP3", 4) || oFile.oHeader.iVersion != 15)
+    if(std::strncmp(oFile.oHeader.acIdentity, "IDP3", 4u) || oFile.oHeader.iVersion != 15)
         return CORE_INVALID_DATA;
 
     // allocate frame and surface memory
@@ -163,7 +163,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
 
     // read surface data
     const coreByte* pCursor = pData + oFile.oHeader.iOffsetSurfaces;
-    for(coreUintW i = 0, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)
+    for(coreUintW i = 0u, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)
     {
         md3Surface& oSurface = oFile.pSurface[i];
         md3Mesh&    oMesh    = oSurface.oMesh;
@@ -189,9 +189,9 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
 
     // cache size values
     const coreUintW iNumVertices  = oSurface.oMesh.iNumVertices;
-    const coreUintW iNumIndices   = oSurface.oMesh.iNumTriangles * 3;
+    const coreUintW iNumIndices   = oSurface.oMesh.iNumTriangles * 3u;
     const coreUintW iNumTriangles = oSurface.oMesh.iNumTriangles;
-    ASSERT(iNumVertices <= 0xFFFF)
+    ASSERT(iNumVertices <= 0xFFFFu)
 
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);
@@ -200,7 +200,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     coreVector3* pvOrtho2 = new coreVector3[iNumVertices];
 
     // loop through all vertices
-    for(coreUintW i = 0; i < iNumVertices; ++i)
+    for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
         // calculate vertex position
         pVertex[i].vPosition = coreVector3(I_TO_F(oSurface.pVertex[i].asCoord[0]),
@@ -218,7 +218,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     }
 
     // loop through all triangles
-    for(coreUintW i = 0; i < iNumTriangles; ++i)
+    for(coreUintW i = 0u; i < iNumTriangles; ++i)
     {
         const md3Triangle& oTriangle = oSurface.pTriangle[i];
 
@@ -233,14 +233,14 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
         const coreVector3 D1 = (A1*B2.t - A2*B1.t) * R;
         const coreVector3 D2 = (A2*B1.s - A1*B2.s) * R;
 
-        for(coreUintW j = 0; j < 3; ++j)
+        for(coreUintW j = 0u; j < 3u; ++j)
         {
             // add local values to each point of the triangle
             pvOrtho1[oTriangle.aiIndex[j]] += D1;
             pvOrtho2[oTriangle.aiIndex[j]] += D2;
         }
     }
-    for(coreUintW i = 0; i < iNumVertices; ++i)
+    for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
         // finish the Gram-Schmidt process to calculate the tangent vector and binormal sign (w)
         pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalize(),
@@ -249,11 +249,11 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
 
     // copy index data counter-clockwise
     pOutput->aiIndexData.resize(iNumIndices);
-    for(coreUintW i = 0; i < iNumTriangles; ++i)
+    for(coreUintW i = 0u; i < iNumTriangles; ++i)
     {
-        for(coreUintW j = 0; j < 3; ++j)
+        for(coreUintW j = 0u; j < 3u; ++j)
         {
-            pOutput->aiIndexData[i*3+j] = coreUint16(oFile.pSurface[0].pTriangle[i].aiIndex[2-j]);
+            pOutput->aiIndexData[i*3u+j] = coreUint16(oFile.pSurface[0].pTriangle[i].aiIndex[2u-j]);
         }
     }
 
@@ -262,7 +262,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     SAFE_DELETE_ARRAY(pvOrtho2)
 
     // free model file memory
-    for(coreUintW i = 0, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)
+    for(coreUintW i = 0u, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)
     {
         SAFE_DELETE_ARRAY(oFile.pSurface[i].pTriangle)
         SAFE_DELETE_ARRAY(oFile.pSurface[i].pTexture)

@@ -74,11 +74,11 @@ public:
 
     /*! elementary operations */
     //! @{
-    template <coreUintW iBase> static inline coreFloat Log    (const coreFloat& fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
-    template <>                static inline coreFloat Log< 2>(const coreFloat& fInput) {return std::log2 (fInput);}
-    template <>                static inline coreFloat Log<10>(const coreFloat& fInput) {return std::log10(fInput);}
-    static inline coreFloat Fract(const coreFloat& fInput)                              {return fInput - I_TO_F(F_TO_SI(fInput));}
-    static inline coreFloat Sqrt (const coreFloat& fInput)                              {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
+    template <coreUintW iBase> static inline coreFloat Log     (const coreFloat& fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
+    template <>                static inline coreFloat Log< 2u>(const coreFloat& fInput) {return std::log2 (fInput);}
+    template <>                static inline coreFloat Log<10u>(const coreFloat& fInput) {return std::log10(fInput);}
+    static inline coreFloat Fract(const coreFloat& fInput)                               {return fInput - I_TO_F(F_TO_SI(fInput));}
+    static inline coreFloat Sqrt (const coreFloat& fInput)                               {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
     static inline coreFloat Rsqrt(coreFloat fInput);
     static inline coreFloat Rcp  (coreFloat fInput);
     //! @}
@@ -126,7 +126,7 @@ inline coreFloat coreMath::Rsqrt(coreFloat fInput)
     /*
         const float fHalfValue = fInput*0.5f;
         uint* piPointer        = r_cast<uint*>(&fInput);
-        *piPointer             = 0x5F3759DF - (*piPointer >> 1);
+        *piPointer             = 0x5F3759DFu - (*piPointer >> 1u);
 
         fInput *= 1.5f - fInput*fInput*fHalfValue;
         fInput *= 1.5f - fInput*fInput*fHalfValue;
@@ -158,7 +158,7 @@ inline coreFloat coreMath::Rcp(coreFloat fInput)
     /*
         const float fValue = fInput;
         uint* piPointer    = r_cast<uint*>(&fInput);
-        *piPointer         = 0x7EEEEEEE - *piPointer;
+        *piPointer         = 0x7EEEEEEEu - *piPointer;
 
         fInput *= 2.0f - fInput*fValue;
         fInput *= 2.0f - fInput*fValue;

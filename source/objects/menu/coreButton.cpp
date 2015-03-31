@@ -88,7 +88,7 @@ void coreButton::Move()
     if(m_bBusy != bStatus)
     {
         m_bBusy = bStatus;
-        m_apTexture[0] = m_apBackground[m_bBusy ? 1 : 0];
+        m_apTexture[0] = m_apBackground[m_bBusy ? 1u : 0u];
     }
 
     // update the label

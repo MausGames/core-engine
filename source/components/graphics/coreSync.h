@@ -18,7 +18,7 @@
 // sync definitions
 enum coreSyncCheck : coreUint8
 {
-    CORE_SYNC_CHECK_ONLY    = 0,                            //!< check only for current status
+    CORE_SYNC_CHECK_ONLY    = 0u,                           //!< check only for current status
     CORE_SYNC_CHECK_FLUSHED = GL_SYNC_FLUSH_COMMANDS_BIT    //!< check and flush the command buffer
 };
 

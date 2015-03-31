@@ -18,7 +18,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sS
 {
     coreChar aacEntry[iNum][iLength];
 
-    sStringList()noexcept {for(coreUintW i = 0; i < iNum; ++i) std::sprintf(aacEntry[i], pcString, i);}
+    sStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) std::sprintf(aacEntry[i], pcString, i);}
     inline const coreChar* operator [] (const coreUintW& iIndex)const {return aacEntry[iIndex];}
 };
 
@@ -42,8 +42,8 @@ coreShader::coreShader()noexcept
 }
 
 coreShader::coreShader(const coreChar* pcCustomCode)noexcept
-: m_iShader     (0)
-, m_iType       (0)
+: m_iShader     (0u)
+, m_iType       (0u)
 , m_sCustomCode (pcCustomCode)
 {
 }
@@ -146,8 +146,8 @@ coreStatus coreShader::Unload()
 
     // reset properties
     m_sPath   = "";
-    m_iShader = 0;
-    m_iType   = 0;
+    m_iShader = 0u;
+    m_iType   = 0u;
 
     return CORE_OK;
 }
@@ -172,7 +172,7 @@ void coreShader::__LoadGlobalCode()
 
     // copy and unload data
     s_asGlobalCode[1].append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
-    s_asGlobalCode[1].append(1, '\n');
+    s_asGlobalCode[1].append(1u, '\n');
     pFile->UnloadData();
 
     // reduce memory consumption
@@ -184,8 +184,8 @@ void coreShader::__LoadGlobalCode()
 // ****************************************************************
 // constructor
 coreProgram::coreProgram()noexcept
-: m_iProgram (0)
-, m_iStatus  (CORE_SHADER_NEW)
+: m_iProgram (0u)
+, m_iStatus  (CORE_PROGRAM_NEW)
 {
 }
 
@@ -208,14 +208,14 @@ coreProgram::~coreProgram()
 coreStatus coreProgram::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreStatus iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
-    if(iCheck == CORE_OK) m_iStatus = CORE_SHADER_FINISHED;
+    const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
+    if(iCheck == CORE_OK) m_iStatus = CORE_PROGRAM_FINISHED;
     if(iCheck >= CORE_OK) return iCheck;
 
     // check for shader-program status
-    if(m_iStatus < CORE_SHADER_DEFINED) return CORE_BUSY;
-    if(m_iStatus > CORE_SHADER_DEFINED) return CORE_INVALID_CALL;
-    WARN_IF(m_iProgram)                 return CORE_INVALID_CALL;
+    if(m_iStatus < CORE_PROGRAM_DEFINED) return CORE_BUSY;
+    if(m_iStatus > CORE_PROGRAM_DEFINED) return CORE_INVALID_CALL;
+    WARN_IF(m_iProgram)                  return CORE_INVALID_CALL;
 
     // load all required shader objects
     FOR_EACH(it, m_apShader)
@@ -233,12 +233,12 @@ coreStatus coreProgram::Load(coreFile* pFile)
 
     // check for duplicate shader objects
     FOR_EACH(it, m_apShader)
-        FOR_EACH_SET(et, it+1, m_apShader)
+        FOR_EACH_SET(et, it+1u, m_apShader)
             ASSERT(std::strcmp((*it)->GetPath(), (*et)->GetPath()))
 
     // check for duplicate attribute locations
     FOR_EACH(it, m_aiAttribute)
-        FOR_EACH_SET(et, it+1, m_aiAttribute)
+        FOR_EACH_SET(et, it+1u, m_aiAttribute)
             ASSERT((*it) != (*et) && (*it) >= 0)
 
 #endif
@@ -280,7 +280,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     // bind output locations
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        for(coreUintW i = 0; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+        for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             glBindFragDataLocation(m_iProgram, i, avOutColor[i]);
     }
 
@@ -289,16 +289,16 @@ coreStatus coreProgram::Load(coreFile* pFile)
     glUseProgram (m_iProgram);
 
     // bind texture units
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTexture2D    [i]), i);
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTexture2D    [i]), i);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
 
     // bind uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        const GLint iTransformBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_TRANSFORM);
-        const GLint iAmbientBlock   = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_AMBIENT);
-        if(iTransformBlock >= 0) glUniformBlockBinding(m_iProgram, iTransformBlock, CORE_SHADER_BUFFER_TRANSFORM_NUM);
-        if(iAmbientBlock   >= 0) glUniformBlockBinding(m_iProgram, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
+        const GLuint iTransformBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_TRANSFORM);
+        const GLuint iAmbientBlock   = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_AMBIENT);
+        if(iTransformBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iProgram, iTransformBlock, CORE_SHADER_BUFFER_TRANSFORM_NUM);
+        if(iAmbientBlock   != GL_INVALID_INDEX) glUniformBlockBinding(m_iProgram, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
     }
 
     // save properties
@@ -320,7 +320,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
 
     // create sync object
     const coreBool bSync = m_Sync.Create();
-    if(!bSync) m_iStatus = CORE_SHADER_FINISHED;
+    if(!bSync) m_iStatus = CORE_PROGRAM_FINISHED;
 
     Core::Log->Info("Program (%s:%u) loaded", m_sPath.c_str(), m_iProgram);
     return bSync ? CORE_BUSY : CORE_OK;
@@ -348,12 +348,12 @@ coreStatus coreProgram::Unload()
 
     // reset properties
     m_sPath    = "";
-    m_iProgram = 0;
-    m_iStatus  = CORE_SHADER_DEFINED;
+    m_iProgram = 0u;
+    m_iStatus  = CORE_PROGRAM_DEFINED;
 
     // clear uniform locations and cache
     m_aiUniform.clear();
-    m_avCache.clear();
+    m_avCache  .clear();
 
     return CORE_OK;
 }
@@ -370,8 +370,8 @@ coreBool coreProgram::Enable()
     Core::Graphics->SendAmbient();
 
     // check current shader-program
-    if(s_pCurrent == this)                 return true;
-    if(m_iStatus  != CORE_SHADER_FINISHED) return false;
+    if(s_pCurrent == this)                  return true;
+    if(m_iStatus  != CORE_PROGRAM_FINISHED) return false;
 
     // set current shader-program
     s_pCurrent = this;
@@ -390,7 +390,7 @@ coreBool coreProgram::Enable()
         this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetViewResolution());
 
         // forward ambient data
-        for(coreUintW i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+        for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i)
         {
             this->SendUniform(avLightPosition [i], Core::Graphics->GetLight(i).vPosition);
             this->SendUniform(avLightDirection[i], Core::Graphics->GetLight(i).vDirection);
@@ -424,7 +424,7 @@ void coreProgram::Disable(const coreBool& bFull)
 {
     // reset current shader-program
     s_pCurrent = NULL;
-    if(bFull) glUseProgram(0);
+    if(bFull) glUseProgram(0u);
 }
 
 

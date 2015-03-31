@@ -16,7 +16,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_vCamDirection   (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamOrientation (coreVector3(0.0f,0.0f,0.0f))
 , m_vViewResolution (coreVector4(0.0f,0.0f,0.0f,0.0f))
-, m_iUniformUpdate  (0)
+, m_iUniformUpdate  (0u)
 {
     Core::Log->Header("Graphics Interface");
 
@@ -93,7 +93,7 @@ CoreGraphics::CoreGraphics()noexcept
     this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
 
     // reset ambient
-    for(coreUintW i = 0; i < CORE_GRAPHICS_LIGHTS; ++i)
+    for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i)
         this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
 
     // reset scene
@@ -152,7 +152,7 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
         m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
 
         // invoke transformation data update
-        ADD_BIT(m_iUniformUpdate, 0)
+        ADD_BIT(m_iUniformUpdate, 0u)
     }
 }
 
@@ -189,7 +189,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat& fFOV, const
         m_mOrtho       = coreMatrix4::Ortho(vResolution);
 
         // invoke transformation data update
-        ADD_BIT(m_iUniformUpdate, 0)
+        ADD_BIT(m_iUniformUpdate, 0u)
     }
 }
 
@@ -213,7 +213,7 @@ void CoreGraphics::SetLight(const coreUintW& iIndex, const coreVector4& vPositio
     if(bNewLight)
     {
         // invoke ambient data update
-        ADD_BIT(m_iUniformUpdate, 1)
+        ADD_BIT(m_iUniformUpdate, 1u)
     }
 }
 
@@ -223,8 +223,8 @@ void CoreGraphics::SetLight(const coreUintW& iIndex, const coreVector4& vPositio
 void CoreGraphics::SendTransformation()
 {
     // check update status
-    if(!CONTAINS_BIT(m_iUniformUpdate, 0)) return;
-    REMOVE_BIT(m_iUniformUpdate, 0)
+    if(!CONTAINS_BIT(m_iUniformUpdate, 0u)) return;
+    REMOVE_BIT(m_iUniformUpdate, 0u)
 
     if(m_aiTransformBuffer[0])
     {
@@ -235,14 +235,14 @@ void CoreGraphics::SendTransformation()
         glBindBufferBase(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_aiTransformBuffer.Current());
 
         // map required area of the UBO
-        coreByte* pRange = m_aiTransformBuffer.Current().Map<coreByte>(0, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        coreByte* pRange = m_aiTransformBuffer.Current().Map<coreByte>(0u, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
-        std::memcpy(pRange,                         &mViewProj,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 1*sizeof(coreMatrix4), &m_mCamera,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 2*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
-        std::memcpy(pRange + 3*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
-        std::memcpy(pRange + 4*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
+        std::memcpy(pRange,                          &mViewProj,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 1u*sizeof(coreMatrix4), &m_mCamera,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 2u*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
+        std::memcpy(pRange + 3u*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
+        std::memcpy(pRange + 4u*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
         m_aiTransformBuffer.Current().Unmap(pRange);
     }
     else
@@ -258,8 +258,8 @@ void CoreGraphics::SendTransformation()
 void CoreGraphics::SendAmbient()
 {
     // check update status
-    if(!CONTAINS_BIT(m_iUniformUpdate, 1)) return;
-    REMOVE_BIT(m_iUniformUpdate, 1)
+    if(!CONTAINS_BIT(m_iUniformUpdate, 1u)) return;
+    REMOVE_BIT(m_iUniformUpdate, 1u)
 
     if(m_aiAmbientBuffer[0])
     {
@@ -288,19 +288,19 @@ void CoreGraphics::Screenshot(const coreChar* pcPath)const
 {
     const coreUintW iWidth  = F_TO_UI(Core::System->GetResolution().x);
     const coreUintW iHeight = F_TO_UI(Core::System->GetResolution().y);
-    const coreUintW iPitch  = iWidth*3;
-    const coreUintW iSize   = iHeight*iPitch;
+    const coreUintW iPitch  = iWidth  * 3u;
+    const coreUintW iSize   = iHeight * iPitch;
 
     // read pixel data from the frame buffer
-    coreByte* pData = new coreByte[iSize*2];
+    coreByte* pData = new coreByte[iSize * 2u];
     glReadPixels(0, 0, iWidth, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
 
     Core::Manager::Resource->AttachFunction([=]()
     {
         // flip pixel data vertically
         coreByte* pConvert = pData + iSize;
-        for(coreUintW i = 0; i < iHeight; ++i)
-            std::memcpy(pConvert + (iHeight-i-1)*iPitch, pData + i*iPitch, iPitch);
+        for(coreUintW i = 0u; i < iHeight; ++i)
+            std::memcpy(pConvert + (iHeight - i - 1u) * iPitch, pData + i * iPitch, iPitch);
 
         // create SDL surface
         SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidth, iHeight, 24, iPitch, CORE_TEXTURE_MASK);

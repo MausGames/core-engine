@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-thread_local GLEWContext g_GlewContext; // = 0;
+thread_local GLEWContext g_GlewContext; // = 0x00;
 
 
 // ****************************************************************

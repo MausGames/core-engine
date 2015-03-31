@@ -18,8 +18,8 @@ CoreSystem::CoreSystem()noexcept
 , m_bTerminated (false)
 , m_dTotalTime  (0.0f)
 , m_fLastTime   (0.0f)
-, m_iCurFrame   (0)
-, m_iSkipFrame  (2)
+, m_iCurFrame   (0u)
+, m_iSkipFrame  (2u)
 {
     Core::Log->Header("System Interface");
 
@@ -46,14 +46,14 @@ CoreSystem::CoreSystem()noexcept
     {
         Core::Log->ListStartInfo("Available Screen Resolutions");
         {
-            for(coreUintW i = 0; i < iNumModes; ++i)
+            for(coreUintW i = 0u; i < iNumModes; ++i)
             {
                 // retrieve resolution
                 SDL_DisplayMode oMode;
                 SDL_GetDisplayMode(0, i, &oMode);
                 const coreVector2 vMode = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
 
-                coreUintW j = 0, je = m_avAvailable.size();
+                coreUintW j = 0u, je = m_avAvailable.size();
                 for(; j < je; ++j)
                 {
                     // check for already added resolutions
@@ -71,15 +71,15 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->ListEnd();
 
         // override screen resolution
-        if(m_avAvailable.size() == 1) m_vResolution = m_avAvailable.back();
+        if(m_avAvailable.size() == 1u) m_vResolution = m_avAvailable.back();
         if(!m_vResolution.x) m_vResolution.x = vDesktop.x;
         if(!m_vResolution.y) m_vResolution.y = vDesktop.y;
     }
     else Core::Log->Warning("Could not get available screen resolutions (SDL: %s)", SDL_GetError());
 
     // configure the SDL window
-    const coreUint32 iCenter = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED;
-    const coreUint32 iFlags  = SDL_WINDOW_OPENGL | (m_iFullscreen == 2 ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1 ? SDL_WINDOW_BORDERLESS : 0));
+    const coreUint32 iCenter = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0u : SDL_WINDOWPOS_CENTERED;
+    const coreUint32 iFlags  = SDL_WINDOW_OPENGL | (m_iFullscreen == 2u ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
 
     // configure the OpenGL context
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
@@ -122,7 +122,7 @@ CoreSystem::CoreSystem()noexcept
     m_iPerfTime      = SDL_GetPerformanceCounter();
 
     // reset dynamic frame times
-    for(coreUintW i = 0; i < CORE_SYSTEM_TIMES; ++i)
+    for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES; ++i)
     {
         m_afTime     [i] = 0.0f;
         m_afTimeSpeed[i] = 1.0f;
@@ -282,7 +282,7 @@ void CoreSystem::__UpdateTime()
     }
 
     // update dynamic frame times
-    for(coreUintW i = 0; i < CORE_SYSTEM_TIMES; ++i)
+    for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES; ++i)
         m_afTime[i] = m_fLastTime * m_afTimeSpeed[i];
 
     // increase current frame number

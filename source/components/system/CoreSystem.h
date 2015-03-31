@@ -15,7 +15,7 @@
 
 // ****************************************************************
 // system definitions
-#define CORE_SYSTEM_TIMES (4)   //!< number of dynamic frame times (signed)
+#define CORE_SYSTEM_TIMES (4u)   //!< number of dynamic frame times
 
 
 // ****************************************************************
@@ -67,7 +67,7 @@ public:
     //! control time
     //! @{
     inline void SetTimeSpeed(const coreUintW& iID, const coreFloat& fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
-    inline void SkipFrame()                                                     {m_iSkipFrame = 2;}
+    inline void SkipFrame()                                                     {m_iSkipFrame = 2u;}
     //! @}
 
     //! terminate the application
@@ -84,8 +84,8 @@ public:
     inline const coreBool&                 GetMinimized    ()const                     {return m_bMinimized;}
     inline const coreDouble&               GetTotalTime    ()const                     {return m_dTotalTime;}
     inline const coreFloat&                GetTime         ()const                     {return m_fLastTime;}
-    inline const coreFloat&                GetTime         (const coreInt8&  iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const coreFloat&                GetTimeSpeed    (const coreUintW& iID)const {ASSERT(iID < CORE_SYSTEM_TIMES) return m_afTimeSpeed[iID];}
+    inline const coreFloat&                GetTime         (const coreInt8&  iID)const {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const coreFloat&                GetTimeSpeed    (const coreUintW& iID)const {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
     inline const coreUint32&               GetCurFrame     ()const                     {return m_iCurFrame;}
     inline const coreDouble&               GetPerfFrequency()const                     {return m_dPerfFrequency;}
     inline const coreUint64&               GetPerfTime     ()const                     {return m_iPerfTime;}

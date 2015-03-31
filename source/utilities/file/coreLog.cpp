@@ -14,7 +14,7 @@
 coreLog::coreLog(const coreChar* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_iLevel      (CORE_LOG_LEVEL_ALL)
-, m_iMainThread (0)
+, m_iMainThread (0u)
 , m_iLock       (0)
 , m_bListStatus (false)
 {
@@ -45,7 +45,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fclose(pFile);
 
         // save thread-ID from the creator
-        m_iMainThread = SDL_ThreadID() % 10000;
+        m_iMainThread = SDL_ThreadID() % 10000u;
     }
 }
 
@@ -123,7 +123,7 @@ void coreLog::__Write(const coreBool& bTime, std::string sText)
             if(bTime)
             {
                 // get thread-ID
-                const SDL_threadID iThread = SDL_ThreadID() % 10000;
+                const SDL_threadID iThread = SDL_ThreadID() % 10000u;
 
                 // write timestamp and thread-ID
                 std::fprintf(pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",

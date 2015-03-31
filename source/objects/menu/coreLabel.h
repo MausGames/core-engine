@@ -21,10 +21,10 @@
 // menu label definitions
 enum coreLabelUpdate : coreUint8
 {
-    CORE_LABEL_UPDATE_NOTHING = 0x00,   //!< update nothing
-    CORE_LABEL_UPDATE_SIZE    = 0x01,   //!< update object size
-    CORE_LABEL_UPDATE_TEXTURE = 0x02,   //!< update and generate texture
-    CORE_LABEL_UPDATE_ALL     = 0x03    //!< update everything
+    CORE_LABEL_UPDATE_NOTHING = 0x00u,   //!< update nothing
+    CORE_LABEL_UPDATE_SIZE    = 0x01u,   //!< update object size
+    CORE_LABEL_UPDATE_TEXTURE = 0x02u,   //!< update and generate texture
+    CORE_LABEL_UPDATE_ALL     = 0x03u    //!< update everything
 };
 ENABLE_BITWISE(coreLabelUpdate)
 

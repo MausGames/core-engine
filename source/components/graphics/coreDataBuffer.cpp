@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0;
+coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0u;
 
 
 // ****************************************************************
@@ -36,8 +36,8 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint32& iSize, cons
     else if(CORE_GL_SUPPORT(ARB_buffer_storage))
     {
         // set storage flags
-        GLenum iFlags = 0;
-        switch(m_iStorageType & 0xFF)
+        GLenum iFlags = 0u;
+        switch(m_iStorageType & 0xFFu)
         {
         case CORE_DATABUFFER_STORAGE_PERSISTENT: ADD_VALUE(iFlags, GL_MAP_PERSISTENT_BIT)
         case CORE_DATABUFFER_STORAGE_DYNAMIC:    ADD_VALUE(iFlags, GL_MAP_WRITE_BIT)
@@ -73,7 +73,7 @@ void coreDataBuffer::Delete()
     if(m_pPersistentBuffer)
     {
         m_pPersistentBuffer = NULL;
-        this->Unmap(r_cast<coreByte*>(~0ul));
+        this->Unmap(r_cast<coreByte*>(~0x00));
     }
 
     // delete buffer
@@ -83,10 +83,10 @@ void coreDataBuffer::Delete()
     SAFE_DELETE(m_pSync)
 
     // reset properties
-    m_iDataBuffer  = 0;
+    m_iDataBuffer  = 0u;
     m_iStorageType = CORE_DATABUFFER_STORAGE_STATIC;
-    m_iTarget      = 0;
-    m_iSize        = 0;
+    m_iTarget      = 0u;
+    m_iSize        = 0u;
 }
 
 
@@ -128,7 +128,7 @@ void coreDataBuffer::Invalidate()
 // ****************************************************************
 // constructor
 coreVertexBuffer::coreVertexBuffer()noexcept
-: m_iVertexSize (0)
+: m_iVertexSize (0u)
 {
 }
 
@@ -155,7 +155,7 @@ void coreVertexBuffer::Delete()
     coreDataBuffer::Delete();
 
     // reset properties
-    m_iVertexSize = 0;
+    m_iVertexSize = 0u;
     m_aAttribute.clear();
 }
 

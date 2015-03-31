@@ -16,13 +16,13 @@ coreModel* coreModel::s_pCurrent = NULL;
 // ****************************************************************
 // constructor
 coreModel::coreModel()noexcept
-: m_iVertexArray    (0)
-, m_iNumVertices    (0)
-, m_iNumIndices     (0)
+: m_iVertexArray    (0u)
+, m_iNumVertices    (0u)
+, m_iNumIndices     (0u)
 , m_vBoundingRange  (coreVector3(0.0f,0.0f,0.0f))
 , m_fBoundingRadius (0.0f)
 , m_iPrimitiveType  (GL_TRIANGLES)
-, m_iIndexType      (0)
+, m_iIndexType      (0u)
 {
 }
 
@@ -40,7 +40,7 @@ coreModel::~coreModel()
 coreStatus coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreStatus iCheck = m_Sync.Check(0, CORE_SYNC_CHECK_FLUSHED);
+    const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck >= CORE_OK) return iCheck;
 
     coreFileUnload Unload(pFile);
@@ -54,8 +54,8 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // import model file
     coreImport oImport;
-         if(!std::strncmp(pcExtension, "md5", 3)) coreImportMD5(pFile->GetData(), &oImport);
-    else if(!std::strncmp(pcExtension, "md3", 3)) coreImportMD3(pFile->GetData(), &oImport);
+         if(!std::strncmp(pcExtension, "md5", 3u)) coreImportMD5(pFile->GetData(), &oImport);
+    else if(!std::strncmp(pcExtension, "md3", 3u)) coreImportMD3(pFile->GetData(), &oImport);
     else
     {
         Core::Log->Warning("Model (%s) could not be identified (valid extensions: md5[mesh], md3)", pFile->GetPath());
@@ -101,7 +101,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // reduce total vertex size
     coreVertexPacked* pPackedData = new coreVertexPacked[m_iNumVertices];
-    for(coreUintW i = 0, ie = m_iNumVertices; i < ie; ++i)
+    for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
     {
         const coreVertex& oVertex = oImport.aVertexData[i];
 
@@ -119,22 +119,22 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // create vertex buffer
     coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3, GL_FLOAT,          false, 0);
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2, GL_UNSIGNED_SHORT, false, 3*sizeof(coreFloat));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4, iNormFormat,       false, 3*sizeof(coreFloat) + 1*sizeof(coreUint32));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4, iNormFormat,       false, 3*sizeof(coreFloat) + 2*sizeof(coreUint32));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3u, GL_FLOAT,          false, 0u);
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT, false, 3u*sizeof(coreFloat));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, iNormFormat,       false, 3u*sizeof(coreFloat) + 1u*sizeof(coreUint32));
+    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, iNormFormat,       false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
     SAFE_DELETE_ARRAY(pPackedData)
 
 #if defined(_CORE_GLES_)
 
-    if(m_iNumVertices <= 256)
+    if(m_iNumVertices <= 256u)
     {
         // reduce default index size
         coreUint8* pSmallData = new coreUint8[m_iNumIndices];
-        for(coreUintW i = 0, ie = m_iNumIndices; i < ie; ++i)
+        for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
         {
             // convert all indices
-            ASSERT(oImport.aiIndexData[i] < 256)
+            ASSERT(oImport.aiIndexData[i] < 256u)
             pSmallData[i] = coreUint8(oImport.aiIndexData[i]);
         }
 
@@ -177,13 +177,13 @@ coreStatus coreModel::Unload()
 
     // reset properties
     m_sPath           = "";
-    m_iVertexArray    = 0;
-    m_iNumVertices    = 0;
-    m_iNumIndices     = 0;
+    m_iVertexArray    = 0u;
+    m_iNumVertices    = 0u;
+    m_iNumIndices     = 0u;
     m_vBoundingRange  = coreVector3(0.0f,0.0f,0.0f);
     m_fBoundingRadius = 0.0f;
     m_iPrimitiveType  = GL_TRIANGLES;
-    m_iIndexType      = 0;
+    m_iIndexType      = 0u;
 
     return CORE_OK;
 }
@@ -202,7 +202,7 @@ void coreModel::DrawElements()const
 {
     // check and draw the model
     ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
-    glDrawRangeElements(m_iPrimitiveType, 0, m_iNumVertices, m_iNumIndices, m_iIndexType, 0);
+    glDrawRangeElements(m_iPrimitiveType, 0u, m_iNumVertices, m_iNumIndices, m_iIndexType, NULL);
 }
 
 
@@ -219,7 +219,7 @@ void coreModel::DrawElementsInstanced(const coreUint32& iCount)const
 {
     // check and draw the model instanced
     ASSERT((s_pCurrent == this || !s_pCurrent) && m_iIndexBuffer)
-    glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, 0, iCount);
+    glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, NULL, iCount);
 }
 
 
@@ -245,7 +245,7 @@ void coreModel::Enable()
         }
 
         // set vertex data
-        for(coreUintW i = 0, ie = m_apiVertexBuffer.size(); i < ie; ++i)
+        for(coreUintW i = 0u, ie = m_apiVertexBuffer.size(); i < ie; ++i)
             m_apiVertexBuffer[i]->Activate(i);
 
         // set index data
@@ -265,7 +265,7 @@ void coreModel::Disable(const coreBool& bFull)
     if(bFull)
     {
         // unbind vertex array object
-        if(CORE_GL_SUPPORT(ARB_vertex_array_object)) glBindVertexArray(0);
+        if(CORE_GL_SUPPORT(ARB_vertex_array_object)) glBindVertexArray(0u);
         else bFullUnbind = true;
     }
 
@@ -309,9 +309,9 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32& iNumIndices, cons
     switch(iIndexSize)
     {
     default: WARN_IF(true) {}
-    case 4:  m_iIndexType = GL_UNSIGNED_INT;   break;
-    case 2:  m_iIndexType = GL_UNSIGNED_SHORT; break;
-    case 1:  m_iIndexType = GL_UNSIGNED_BYTE;  break;
+    case 4u:  m_iIndexType = GL_UNSIGNED_INT;   break;
+    case 2u:  m_iIndexType = GL_UNSIGNED_SHORT; break;
+    case 1u:  m_iIndexType = GL_UNSIGNED_BYTE;  break;
     }
 
     // disable current model object (to unbind current VAO)

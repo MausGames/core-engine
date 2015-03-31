@@ -143,17 +143,17 @@ coreBool coreTextBox::__Write()
             coreChar* pcPaste = SDL_GetClipboardText();
             if(pcPaste)
             {
-                const coreUintW iLen = MIN(std::strlen(pcPaste), coreUintW(m_pCaption->GetLength()-1) - m_sText.length());
+                const coreUintW iLen = MIN(std::strlen(pcPaste), coreUintW(m_pCaption->GetLength() - 1u) - m_sText.length());
 
                 // append and clamp to remaining string space
                 m_sText.append(pcPaste, iLen);
                 SDL_free(pcPaste);
             }
         }
-        else if(m_sText.length() < coreUintW(m_pCaption->GetLength()-1))
+        else if(m_sText.length() < coreUintW(m_pCaption->GetLength() - 1u))
         {
             // append new character
-            m_sText.append(1, coreChar(iChar));
+            m_sText.append(1u, coreChar(iChar));
         }
 
         m_bDisplay = true;

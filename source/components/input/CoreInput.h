@@ -22,7 +22,7 @@
 // input definitions
 #define __CORE_INPUT_PRESS(x)       {(x)[3] = false;  (x)[2] = !(x)[1]; (x)[1] = true;}
 #define __CORE_INPUT_RELEASE(x)     {(x)[3] = (x)[1]; (x)[2] = false;   (x)[1] = false;}
-#define __CORE_INPUT_JOYSTICK_ID    (MIN(iIndex, m_aJoystick.size()-1))
+#define __CORE_INPUT_JOYSTICK_ID    (MIN(iIndex, m_aJoystick.size() - 1u))
 
 #define CORE_INPUT_BUTTONS_KEYBOARD (284u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    (16u)    //!< number of regarded mouse buttons
@@ -39,17 +39,17 @@ typedef SDL_Keycode  coreInputChar;
 
 enum coreInputButton : coreUint8
 {
-    CORE_INPUT_LEFT   = 1,
-    CORE_INPUT_MIDDLE = 2,
-    CORE_INPUT_RIGHT  = 3
+    CORE_INPUT_LEFT   = 1u,
+    CORE_INPUT_MIDDLE = 2u,
+    CORE_INPUT_RIGHT  = 3u
 };
 
 enum coreInputType : coreUint8
 {
-    CORE_INPUT_DATA    = 0,
-    CORE_INPUT_HOLD    = 1,
-    CORE_INPUT_PRESS   = 2,
-    CORE_INPUT_RELEASE = 3
+    CORE_INPUT_DATA    = 0u,
+    CORE_INPUT_HOLD    = 1u,
+    CORE_INPUT_PRESS   = 2u,
+    CORE_INPUT_RELEASE = 3u
 };
 
 
@@ -139,7 +139,7 @@ public:
     //! @{
     inline const coreChar* GetJoystickName(const coreUintW& iIndex)const {return m_aJoystick[__CORE_INPUT_JOYSTICK_ID].pHandle ? (SDL_JoystickName(m_aJoystick[__CORE_INPUT_JOYSTICK_ID].pHandle)) : "";}
     inline const coreChar* GetJoystickGUID(const coreUintW& iIndex)const {if(m_aJoystick[__CORE_INPUT_JOYSTICK_ID].pHandle) {coreChar acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(m_aJoystick[__CORE_INPUT_JOYSTICK_ID].pHandle), acGUID, ARRAY_SIZE(acGUID)); return PRINT("%s", acGUID);} return "";}
-    inline       coreUintW GetJoystickNum ()const                        {return m_aJoystick.size()-1;}
+    inline coreUintW       GetJoystickNum ()const                        {return m_aJoystick.size() - 1u;}
     //! @}
 
     //! process input events
@@ -197,9 +197,9 @@ public:
 
     //! clear status of specific input button
     //! @{
-    inline void ClearKeyboardButton(const coreInputKey& iButton)                       {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; for(coreUintW i = 0; i < 4; ++i) m_Keyboard.aabButton[iButton][i]                            = false;}
-    inline void ClearMouseButton   (const coreUint8&    iButton)                       {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE)    return; for(coreUintW i = 0; i < 4; ++i) m_Mouse.aabButton[iButton][i]                               = false;}
-    inline void ClearJoystickButton(const coreUintW& iIndex, const coreUint8& iButton) {WARN_IF(iButton >= CORE_INPUT_BUTTONS_JOYSTICK) return; for(coreUintW i = 0; i < 4; ++i) m_aJoystick[__CORE_INPUT_JOYSTICK_ID].aabButton[iButton][i] = false;}
+    inline void ClearKeyboardButton(const coreInputKey& iButton)                       {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; for(coreUintW i = 0u; i < 4u; ++i) m_Keyboard.aabButton[iButton][i]                            = false;}
+    inline void ClearMouseButton   (const coreUint8&    iButton)                       {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE)    return; for(coreUintW i = 0u; i < 4u; ++i) m_Mouse.aabButton[iButton][i]                               = false;}
+    inline void ClearJoystickButton(const coreUintW& iIndex, const coreUint8& iButton) {WARN_IF(iButton >= CORE_INPUT_BUTTONS_JOYSTICK) return; for(coreUintW i = 0u; i < 4u; ++i) m_aJoystick[__CORE_INPUT_JOYSTICK_ID].aabButton[iButton][i] = false;}
     //! @}
 
 
@@ -216,7 +216,7 @@ private:
 // call function for each active finger
 template <typename F> void CoreInput::ForEachFinger(const coreInputType& iType, F&& nFunction)
 {
-    for(coreUintW i = 0; i < CORE_INPUT_FINGERS; ++i)
+    for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
     {
         // check finger status and call function
         if(Core::Input->GetTouchButton(i, iType))

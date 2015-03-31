@@ -96,12 +96,12 @@ public:
 // ****************************************************************
 // constructor
 constexpr_func coreSound::coreWaveFormat::coreWaveFormat()noexcept
-: iAudioFormat   (0)
-, iNumChannels   (0)
-, iSampleRate    (0)
-, iByteRate      (0)
-, iBlockAlign    (0)
-, iBitsPerSample (0)
+: iAudioFormat   (0u)
+, iNumChannels   (0u)
+, iSampleRate    (0u)
+, iByteRate      (0u)
+, iBlockAlign    (0u)
+, iBitsPerSample (0u)
 {
 }
 

@@ -26,11 +26,11 @@
 
 enum coreLogLevel : coreUint8
 {
-    CORE_LOG_LEVEL_NOTHING = 0x00,   //!< log nothing
-    CORE_LOG_LEVEL_INFO    = 0x01,   //!< log info messages and headers
-    CORE_LOG_LEVEL_WARNING = 0x02,   //!< log warning messages
-    CORE_LOG_LEVEL_ERROR   = 0x04,   //!< log error messages
-    CORE_LOG_LEVEL_ALL     = 0x07    //!< log everything
+    CORE_LOG_LEVEL_NOTHING = 0x00u,   //!< log nothing
+    CORE_LOG_LEVEL_INFO    = 0x01u,   //!< log info messages and headers
+    CORE_LOG_LEVEL_WARNING = 0x02u,   //!< log warning messages
+    CORE_LOG_LEVEL_ERROR   = 0x04u,   //!< log error messages
+    CORE_LOG_LEVEL_ALL     = 0x07u    //!< log everything
 };
 ENABLE_BITWISE(coreLogLevel)
 

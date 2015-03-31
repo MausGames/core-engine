@@ -90,7 +90,7 @@ public:
 
     //! get object properties
     //! @{
-    inline       coreButton* GetArrow     (const coreUintW& iIndex) {ASSERT(iIndex < 2) return &m_aArrow[iIndex];}
+    inline       coreButton* GetArrow     (const coreUintW& iIndex) {ASSERT(iIndex < 2u) return &m_aArrow[iIndex];}
     inline       coreLabel*  GetCaption   ()                        {return &m_Caption;}
     inline       coreUintW   GetNumEntries()const                   {return m_aEntry.size();}
     inline const coreUintW&  GetCurIndex  ()const                   {return m_iCurIndex;}
@@ -111,7 +111,7 @@ private:
 template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 : m_iCurIndex (0)
 , m_bEndless  (false)
-, m_Automatic (coreTimer(1.0f, 10.0f, 1))
+, m_Automatic (coreTimer(1.0f, 10.0f, 1u))
 {
 }
 
@@ -144,8 +144,8 @@ template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
 {
     // create selection arrows
-    m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, 2);
-    m_aArrow[1].Construct(pcIdle, pcBusy, pcFont, iHeight, 2);
+    m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, 2u);
+    m_aArrow[1].Construct(pcIdle, pcBusy, pcFont, iHeight, 2u);
     m_aArrow[0].GetCaption()->SetText("<");
     m_aArrow[1].GetCaption()->SetText(">");
 
@@ -269,7 +269,7 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, co
     m_aEntry.push_back(coreEntry(pcText, tValue));
 
     // update text
-    if(m_aEntry.size() == 1) this->__Update();
+    if(m_aEntry.size() == 1u) this->__Update();
 }
 
 template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreChar* pcKey, const T& tValue)
@@ -309,7 +309,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
 
     // remove all entries and reset index
     m_aEntry.clear();
-    m_iCurIndex = 0;
+    m_iCurIndex = 0u;
 
     // update text
     this->__Update();
@@ -339,7 +339,7 @@ template <typename T> void coreSwitchBox<T>::Next()
 
     // increase current index
     if(++m_iCurIndex >= m_aEntry.size())
-        m_iCurIndex = m_bEndless ? 0 : (m_aEntry.size() - 1);
+        m_iCurIndex = m_bEndless ? 0u : (m_aEntry.size() - 1u);
 
     // update text
     this->__Update();
@@ -354,7 +354,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
 
     // decrease current index
     if(--m_iCurIndex >= m_aEntry.size())
-        m_iCurIndex = m_bEndless ? (m_aEntry.size() - 1) : 0;
+        m_iCurIndex = m_bEndless ? (m_aEntry.size() - 1u) : 0u;
 
     // update text
     this->__Update();

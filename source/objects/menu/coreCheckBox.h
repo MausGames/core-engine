@@ -17,7 +17,7 @@ class coreCheckBox final : public coreButton
 {
 private:
     coreTexturePtr m_apUnchecked[2];   //!< unchecked background textures (0 = idle | 1 = busy)
-    coreTexturePtr m_apChecked[2];     //!< checked background textures   (0 = idle | 1 = busy)
+    coreTexturePtr m_apChecked  [2];   //!< checked background textures   (0 = idle | 1 = busy)
 
     coreBool m_bCheck;                 //!< check status
 

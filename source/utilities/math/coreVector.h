@@ -79,11 +79,13 @@ public:
 
     /*! invert vector */
     //! @{
-    constexpr_func coreVector2  operator - ()const {return coreVector2(-x, -y);}
-    inline         coreVector2& InvertX    ()      {x = -x; return *this;}
-    inline         coreVector2& InvertY    ()      {y = -y; return *this;}
-    constexpr_func coreVector2  InvertedX  ()const {return coreVector2(-x,  y);}
-    constexpr_func coreVector2  InvertedY  ()const {return coreVector2( x, -y);}
+    constexpr_func coreVector2  operator - ()const {return  coreVector2(-x, -y);}
+    inline         coreVector2& InvertX    ()      {x = -x;                      return *this;}
+    inline         coreVector2& InvertY    ()      {y = -y;                      return *this;}
+    inline         coreVector2  Rotate90   ()      {*this = coreVector2( y, -x); return *this;}
+    constexpr_func coreVector2  InvertedX  ()const {return  coreVector2(-x,  y);}
+    constexpr_func coreVector2  InvertedY  ()const {return  coreVector2( x, -y);}
+    constexpr_func coreVector2  Rotated90  ()const {return  coreVector2( y, -x);}
     //! @}
 
     /*! normalize vector */
@@ -94,14 +96,15 @@ public:
 
     /*! direct functions */
     //! @{
-    inline         coreFloat Length      ()const {return SQRT(this->LengthSq());}
-    constexpr_func coreFloat LengthSq    ()const {return (x*x + y*y);}
-    constexpr_func coreFloat Min         ()const {return MIN(x, y);}
-    constexpr_func coreFloat Max         ()const {return MAX(x, y);}
-    inline         coreFloat AspectRatio ()const {return (x * RCP(y));}
-    inline         coreFloat Angle       ()const {return y ? (ATAN(this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);}
-    constexpr_func coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
-    constexpr_func coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline         coreFloat   Length      ()const {return SQRT(this->LengthSq());}
+    constexpr_func coreFloat   LengthSq    ()const {return (x*x + y*y);}
+    constexpr_func coreFloat   Min         ()const {return MIN(x, y);}
+    constexpr_func coreFloat   Max         ()const {return MAX(x, y);}
+    constexpr_func coreVector2 Abs         ()const {return coreVector2(ABS(x), ABS(y));}
+    inline         coreFloat   AspectRatio ()const {return (x * RCP(y));}
+    inline         coreFloat   Angle       ()const {return y ? (ATAN(this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);}
+    constexpr_func coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    constexpr_func coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -210,7 +213,13 @@ public:
 
     /*! invert vector */
     //! @{
-    constexpr_func coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
+    constexpr_func coreVector3  operator - ()const {return coreVector3(-x, -y, -z);}
+    inline         coreVector3& InvertX    ()      {x = -x; return *this;}
+    inline         coreVector3& InvertY    ()      {y = -y; return *this;}
+    inline         coreVector3& InvertZ    ()      {z = -z; return *this;}
+    constexpr_func coreVector3  InvertedX  ()const {return coreVector3(-x,  y,  z);}
+    constexpr_func coreVector3  InvertedY  ()const {return coreVector3( x, -y,  z);}
+    constexpr_func coreVector3  InvertedZ  ()const {return coreVector3( x,  y, -z);}
     //! @}
 
     /*! normalize vector */
@@ -221,12 +230,13 @@ public:
 
     /*! direct functions */
     //! @{
-    inline         coreFloat Length      ()const {return SQRT(this->LengthSq());}
-    constexpr_func coreFloat LengthSq    ()const {return (x*x + y*y + z*z);}
-    constexpr_func coreFloat Min         ()const {return MIN(x, y, z);}
-    constexpr_func coreFloat Max         ()const {return MAX(x, y, z);}
-    constexpr_func coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
-    constexpr_func coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline         coreFloat   Length      ()const {return SQRT(this->LengthSq());}
+    constexpr_func coreFloat   LengthSq    ()const {return (x*x + y*y + z*z);}
+    constexpr_func coreFloat   Min         ()const {return MIN(x, y, z);}
+    constexpr_func coreFloat   Max         ()const {return MAX(x, y, z);}
+    constexpr_func coreVector3 Abs         ()const {return coreVector3(ABS(x), ABS(y), ABS(z));}
+    constexpr_func coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    constexpr_func coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -399,7 +409,7 @@ inline coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const core
 /* compress 0.0 to 1.0 vector into YX packed uint */
 constexpr_func coreUint32 coreVector2::PackUnorm2x16()const
 {
-    return (F_TO_UI(y * 65535.0f) << 16) +
+    return (F_TO_UI(y * 65535.0f) << 16u) +
            (F_TO_UI(x * 65535.0f));
 }
 
@@ -408,7 +418,7 @@ constexpr_func coreUint32 coreVector2::PackUnorm2x16()const
 /* compress -1.0 to 1.0 vector into YX packed uint */
 constexpr_func coreUint32 coreVector2::PackSnorm2x16()const
 {
-    return (F_TO_UI((y < 0.0f) ? (65536.0f + y*32768.0f) : y*32767.0f) << 16) +
+    return (F_TO_UI((y < 0.0f) ? (65536.0f + y*32768.0f) : y*32767.0f) << 16u) +
            (F_TO_UI((x < 0.0f) ? (65536.0f + x*32768.0f) : x*32767.0f));
 };
 
@@ -417,8 +427,8 @@ constexpr_func coreUint32 coreVector2::PackSnorm2x16()const
 /* uncompress YX packed uint into 0.0 to 1.0 vector */
 constexpr_func coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32& iNumber)
 {
-    return coreVector2(I_TO_F( iNumber        & 0xFFFFu),
-                       I_TO_F((iNumber >> 16) & 0xFFFFu)) * 1.525902189e-5f;
+    return coreVector2(I_TO_F( iNumber         & 0xFFFFu),
+                       I_TO_F((iNumber >> 16u) & 0xFFFFu)) * 1.525902189e-5f;
 }
 
 
@@ -426,8 +436,8 @@ constexpr_func coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32& iNumbe
 /* uncompress YX packed uint into -1.0 to 1.0 vector */
 inline coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32& iNumber)
 {
-    const coreVector2 A = coreVector2(I_TO_F( iNumber        & 0xFFFFu),
-                                      I_TO_F((iNumber >> 16) & 0xFFFFu));
+    const coreVector2 A = coreVector2(I_TO_F( iNumber         & 0xFFFFu),
+                                      I_TO_F((iNumber >> 16u) & 0xFFFFu));
 
     return coreVector2((A.x >= 32768.0f) ? ((A.x - 65536.0f)/32768.0f) : (A.x/32767.0f),
                        (A.y >= 32768.0f) ? ((A.y - 65536.0f)/32768.0f) : (A.y/32767.0f));
@@ -548,9 +558,9 @@ inline coreVector3 coreVector3::RGBtoHSV()const
 /* compress 0.0 to 1.0 vector into WZYX packed uint */
 constexpr_func coreUint32 coreVector4::PackUnorm4x8()const
 {
-    return (F_TO_UI(w * 255.0f) << 24) +
-           (F_TO_UI(z * 255.0f) << 16) +
-           (F_TO_UI(y * 255.0f) <<  8) +
+    return (F_TO_UI(w * 255.0f) << 24u) +
+           (F_TO_UI(z * 255.0f) << 16u) +
+           (F_TO_UI(y * 255.0f) <<  8u) +
            (F_TO_UI(x * 255.0f));
 };
 
@@ -559,9 +569,9 @@ constexpr_func coreUint32 coreVector4::PackUnorm4x8()const
 /* compress -1.0 to 1.0 vector into WZYX packed uint */
 constexpr_func coreUint32 coreVector4::PackSnorm4x8()const
 {
-    return (F_TO_UI((w < 0.0f) ? (256.0f + w*128.0f) : w*127.0f) << 24) +
-           (F_TO_UI((z < 0.0f) ? (256.0f + z*128.0f) : z*127.0f) << 16) +
-           (F_TO_UI((y < 0.0f) ? (256.0f + y*128.0f) : y*127.0f) <<  8) +
+    return (F_TO_UI((w < 0.0f) ? (256.0f + w*128.0f) : w*127.0f) << 24u) +
+           (F_TO_UI((z < 0.0f) ? (256.0f + z*128.0f) : z*127.0f) << 16u) +
+           (F_TO_UI((y < 0.0f) ? (256.0f + y*128.0f) : y*127.0f) <<  8u) +
            (F_TO_UI((x < 0.0f) ? (256.0f + x*128.0f) : x*127.0f));
 };
 
@@ -570,9 +580,9 @@ constexpr_func coreUint32 coreVector4::PackSnorm4x8()const
 /* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint */
 constexpr_func coreUint32 coreVector4::PackSnorm210()const
 {
-    return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : w*  1.0f) << 30) +
-           (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : z*511.0f) << 20) +
-           (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : y*511.0f) << 10) +
+    return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : w*  1.0f) << 30u) +
+           (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : z*511.0f) << 20u) +
+           (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : y*511.0f) << 10u) +
            (F_TO_UI((x < 0.0f) ? (1024.0f + x*512.0f) : x*511.0f));
 };
 
@@ -581,10 +591,10 @@ constexpr_func coreUint32 coreVector4::PackSnorm210()const
 /* uncompress WZYX packed uint into 0.0 to 1.0 vector */
 constexpr_func coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32& iNumber)
 {
-    return coreVector4(I_TO_F( iNumber        & 0xFFu),
-                       I_TO_F((iNumber >>  8) & 0xFFu),
-                       I_TO_F((iNumber >> 16) & 0xFFu),
-                       I_TO_F((iNumber >> 24) & 0xFFu)) * 0.003921569f;
+    return coreVector4(I_TO_F( iNumber         & 0xFFu),
+                       I_TO_F((iNumber >>  8u) & 0xFFu),
+                       I_TO_F((iNumber >> 16u) & 0xFFu),
+                       I_TO_F((iNumber >> 24u) & 0xFFu)) * 3.921568627e-3f;
 }
 
 
@@ -592,10 +602,10 @@ constexpr_func coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32& iNumber
 /* uncompress WZYX packed uint into -1.0 to 1.0 vector */
 inline coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32& iNumber)
 {
-    const coreVector4 A = coreVector4(I_TO_F( iNumber        & 0xFFu),
-                                      I_TO_F((iNumber >>  8) & 0xFFu),
-                                      I_TO_F((iNumber >> 16) & 0xFFu),
-                                      I_TO_F((iNumber >> 24) & 0xFFu));
+    const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0xFFu),
+                                      I_TO_F((iNumber >>  8u) & 0xFFu),
+                                      I_TO_F((iNumber >> 16u) & 0xFFu),
+                                      I_TO_F((iNumber >> 24u) & 0xFFu));
 
     return coreVector4((A.x >= 128.0f) ? ((A.x - 256.0f)/128.0f) : (A.x/127.0f),
                        (A.y >= 128.0f) ? ((A.y - 256.0f)/128.0f) : (A.y/127.0f),
@@ -608,10 +618,10 @@ inline coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32& iNumber)
 /* uncompress 2_10_10_10_rev packed uint into -1.0 to 1.0 vector */
 inline coreVector4 coreVector4::UnpackSnorm210(const coreUint32& iNumber)
 {
-    const coreVector4 A = coreVector4(I_TO_F( iNumber        & 0x3FFu),
-                                      I_TO_F((iNumber >> 10) & 0x3FFu),
-                                      I_TO_F((iNumber >> 20) & 0x3FFu),
-                                      I_TO_F((iNumber >> 30) & 0x003u));
+    const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0x3FFu),
+                                      I_TO_F((iNumber >> 10u) & 0x3FFu),
+                                      I_TO_F((iNumber >> 20u) & 0x3FFu),
+                                      I_TO_F((iNumber >> 30u) & 0x003u));
 
     return coreVector4((A.x >= 512.0f) ? ((A.x - 1024.0f)/512.0f) : (A.x/511.0f),
                        (A.y >= 512.0f) ? ((A.y - 1024.0f)/512.0f) : (A.y/511.0f),

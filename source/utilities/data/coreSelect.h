@@ -35,9 +35,9 @@ public:
 
     /*! switch current item */
     //! @{
-    inline void Select(const coreUintW& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = CLAMP(iIndex, 0u, iSize - 1);}
+    inline void Select(const coreUintW& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = CLAMP(iIndex, 0u, iSize - 1u);}
     inline void Next    ()                      {if(++m_iCurIndex >= iSize) m_iCurIndex = 0u;}
-    inline void Previous()                      {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1;}
+    inline void Previous()                      {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1u;}
     //! @}
 
     /*! access reference to current item */
@@ -64,7 +64,7 @@ public:
 // ****************************************************************
 /* constructor */
 template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect()noexcept
-: m_iCurIndex (0)
+: m_iCurIndex (0u)
 {
 }
 

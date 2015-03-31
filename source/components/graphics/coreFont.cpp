@@ -37,7 +37,7 @@ coreStatus coreFont::Load(coreFile* pFile)
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
 
     // create test font
-    if(!this->__InitHeight(1)) return CORE_INVALID_DATA;
+    if(!this->__InitHeight(1u)) return CORE_INVALID_DATA;
 
     // save properties
     m_sPath = pFile->GetPath();
@@ -78,8 +78,8 @@ SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint8& iHeig
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
 
     // define color
-    constexpr_var SDL_Color aiFront = {0xFF, 0xFF, 0xFF};
-    constexpr_var SDL_Color aiBack  = {0x00, 0x00, 0x00};
+    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu};
+    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u};
 
     // render and return the text surface
     return TTF_RenderUTF8_Shaded(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiFront, aiBack);
@@ -91,8 +91,8 @@ SDL_Surface* coreFont::CreateGlyph(const coreUint16& iGlyph, const coreUint8& iH
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
 
     // define color
-    constexpr_var SDL_Color aiFront = {0xFF, 0xFF, 0xFF};
-    constexpr_var SDL_Color aiBack  = {0x00, 0x00, 0x00};
+    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu};
+    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u};
 
     // render and return the text surface
     return TTF_RenderGlyph_Shaded(m_apFont.at(iHeight), iGlyph, aiFront, aiBack);

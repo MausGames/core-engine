@@ -14,7 +14,7 @@
 coreObject& coreObject::operator = (const coreObject& c)noexcept
 {
     // copy texture objects
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = c.m_apTexture[i];
 
     // copy remaining properties
@@ -32,7 +32,7 @@ coreObject& coreObject::operator = (const coreObject& c)noexcept
 coreObject& coreObject::operator = (coreObject&& m)noexcept
 {
     // move texture objects
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = std::move(m.m_apTexture[i]);
 
     // move remaining properties
@@ -171,8 +171,8 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
         m_pLowModel->SetPrimitiveType (GL_TRIANGLE_STRIP);
 
         // define vertex data
-        coreVertexBuffer* pBuffer = m_pLowModel->CreateVertexBuffer(4, sizeof(coreUint32), aiDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2, GL_SHORT, false, 0);
+        coreVertexBuffer* pBuffer = m_pLowModel->CreateVertexBuffer(4u, sizeof(coreUint32), aiDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_SHORT, false, 0u);
 
         Core::Log->Info("Low-memory model object created");
 

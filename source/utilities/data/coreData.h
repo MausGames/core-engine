@@ -46,8 +46,8 @@ public:
     /*! get application properties */
     //! @{
     static        const coreChar* AppPath();
-    static inline const coreChar* AppName() {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? pcSlash+1 : pcString;}
-    static inline const coreChar* AppDir () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<coreChar*>(pcSlash+1)) = '\0'; return pcString;}
+    static inline const coreChar* AppName() {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? pcSlash + 1u : pcString;}
+    static inline const coreChar* AppDir () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<coreChar*>(pcSlash + 1u)) = '\0'; return pcString;}
     //! @}
 
     /* get operating system properties */
@@ -84,9 +84,9 @@ public:
     /*! operate with string data */
     //! @{
     template <typename F> static const coreChar* StrProcess(const coreChar* pcInput, F&& nFunction);
-    static constexpr_func coreUintW StrLenConst (const coreChar* s)                    {return *s ? 1 + StrLenConst(s+1) : 0;}
-    static constexpr_func coreBool  StrCmpConst (const coreChar* s, const coreChar* t) {return *s ? (*s == *t) && StrCmpConst(s+1, t+1) : !*t;}
-    static inline         coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return (*t == '*') ? StrCmpLike(s, t+1) || (*s && StrCmpLike(s+1, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1, t+1) : !*t;}
+    static constexpr_func coreUintW StrLenConst (const coreChar* s)                    {return *s ? 1u + StrLenConst(s+1u) : 0u;}
+    static constexpr_func coreBool  StrCmpConst (const coreChar* s, const coreChar* t) {return *s ? (*s == *t) && StrCmpConst(s+1u, t+1u) : !*t;}
+    static inline         coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return (*t == '*') ? StrCmpLike(s, t+1u) || (*s && StrCmpLike(s+1u, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1u, t+1u) : !*t;}
     static inline const coreChar*   StrUpper    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, toupper);}
     static inline const coreChar*   StrLower    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, tolower);}
     static const coreChar*          StrRight    (const coreChar* pcInput, const coreUintW& iNum);
@@ -100,7 +100,7 @@ public:
 private:
     /*! access next return-string */
     //! @{
-    static inline RETURN_RESTRICT coreChar* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0; return m_aacString[m_iCurString];}
+    static inline RETURN_RESTRICT coreChar* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0u; return m_aacString[m_iCurString];}
     //! @}
 };
 
@@ -114,8 +114,8 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 #if defined(_CORE_WINDOWS_)
 
     // assemble string without guaranteed null-termination
-    const coreInt32 iReturn = _snprintf(pcString, CORE_DATA_STRING_LEN - 1, pcFormat, std::forward<A>(vArgs)...);
-    pcString[CORE_DATA_STRING_LEN - 1] = '\0';
+    const coreInt32 iReturn = _snprintf(pcString, CORE_DATA_STRING_LEN - 1u, pcFormat, std::forward<A>(vArgs)...);
+    pcString[CORE_DATA_STRING_LEN - 1u] = '\0';
 
 #else
 
@@ -137,7 +137,7 @@ template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInp
     coreChar* pcCursor = pcString;
 
     // define max string position
-    const coreChar* pcEnd = pcInput + CORE_DATA_STRING_LEN - 1;
+    const coreChar* pcEnd = pcInput + CORE_DATA_STRING_LEN - 1u;
     ASSERT(std::strlen(pcInput) < CORE_DATA_STRING_LEN)
 
     // process all characters individually

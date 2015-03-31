@@ -27,8 +27,8 @@
 // ****************************************************************
 // frame buffer definitions
 #define __CORE_FRAMEBUFFER_ALL_TARGETS(a)                                                    \
-    coreRenderTarget* a[CORE_SHADER_OUTPUT_COLORS + 2] = {&m_DepthTarget, &m_StencilTarget}; \
-    for(coreUintW i = 2; i < ARRAY_SIZE(a); ++i) a[i] = &m_aColorTarget[i - 2];
+    coreRenderTarget* a[CORE_SHADER_OUTPUT_COLORS + 2u] = {&m_DepthTarget, &m_StencilTarget}; \
+    for(coreUintW i = 2u; i < ARRAY_SIZE(a); ++i) a[i] = &m_aColorTarget[i - 2u];
 
 enum coreFrameBufferCreate : coreBool
 {
@@ -155,10 +155,10 @@ private:
 // ****************************************************************
 // constructor
 constexpr_weak coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
-: iBuffer   (0)
-, iInternal (0)
-, iFormat   (0)
-, iType     (0)
+: iBuffer   (0u)
+, iInternal (0u)
+, iFormat   (0u)
+, iType     (0u)
 {
 }
 

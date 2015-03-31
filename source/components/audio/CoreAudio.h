@@ -46,7 +46,7 @@ public:
     //! control the listener
     //! @{
     void SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation);
-    void SetListener(const coreFloat&   fSpeed,    const coreInt8     iTimeID = -1);
+    void SetListener(const coreFloat& fSpeed, const coreInt8 iTimeID = -1);
     //! @}
 
     //! distribute sound sources

@@ -12,8 +12,8 @@
 // ****************************************************************
 // constructor
 coreSound::coreSound()noexcept
-: m_iBuffer    (0)
-, m_iCurSource (0)
+: m_iBuffer    (0u)
+, m_iCurSource (0u)
 , m_pCurRef    (NULL)
 {
 }
@@ -44,12 +44,12 @@ coreStatus coreSound::Load(coreFile* pFile)
     coreUint32 iSize;
 
     // read header
-    std::memcpy(acID,   pData, 4); pData += 4;
-    std::memcpy(&iSize, pData, 4); pData += 4;
+    std::memcpy(acID,   pData, 4u); pData += 4u;
+    std::memcpy(&iSize, pData, 4u); pData += 4u;
 
     // check file format
-    if(!std::strncmp(acID, "RIFF", 4)) {std::memcpy(acID, pData, 4); pData += 4;}
-    if( std::strncmp(acID, "WAVE", 4))
+    if(!std::strncmp(acID, "RIFF", 4u)) {std::memcpy(acID, pData, 4u); pData += 4u;}
+    if( std::strncmp(acID, "WAVE", 4u))
     {
         Core::Log->Warning("Sound (%s) is not a valid WAVE-file", pFile->GetPath());
         return CORE_INVALID_DATA;
@@ -57,20 +57,20 @@ coreStatus coreSound::Load(coreFile* pFile)
 
     // read sub-chunks
     const coreByte* pSoundData = NULL;
-    coreUint32      iSoundSize = 0;
+    coreUint32      iSoundSize = 0u;
     while(coreUint32(pData - pFile->GetData()) < pFile->GetSize())
     {
-        std::memcpy(acID,   pData, 4); pData += 4;
-        std::memcpy(&iSize, pData, 4); pData += 4;
+        std::memcpy(acID,   pData, 4u); pData += 4u;
+        std::memcpy(&iSize, pData, 4u); pData += 4u;
 
-             if(!std::strncmp(acID, "fmt ", 4)) {std::memcpy(&m_Format, pData, sizeof(m_Format));}
-        else if(!std::strncmp(acID, "data", 4)) {pSoundData = pData; iSoundSize = iSize;}
+             if(!std::strncmp(acID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format));}
+        else if(!std::strncmp(acID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize;}
 
         pData += iSize;
     }
 
     // check for compression
-    if(m_Format.iAudioFormat != 1)
+    if(m_Format.iAudioFormat != 1u)
     {
         Core::Log->Warning("Sound (%s) is not PCM encoded, compression is not supported", pFile->GetPath());
         return CORE_INVALID_DATA;
@@ -78,15 +78,15 @@ coreStatus coreSound::Load(coreFile* pFile)
 
     // set sound data format
     ALenum iSoundFormat = 0;
-    if(m_Format.iNumChannels == 1)
+    if(m_Format.iNumChannels == 1u)
     {
-             if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_MONO8;
-        else if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_MONO16;
+             if(m_Format.iBitsPerSample ==  8u) iSoundFormat = AL_FORMAT_MONO8;
+        else if(m_Format.iBitsPerSample == 16u) iSoundFormat = AL_FORMAT_MONO16;
     }
-    else if(m_Format.iNumChannels == 2)
+    else if(m_Format.iNumChannels == 2u)
     {
-             if(m_Format.iBitsPerSample ==  8) iSoundFormat = AL_FORMAT_STEREO8;
-        else if(m_Format.iBitsPerSample == 16) iSoundFormat = AL_FORMAT_STEREO16;
+             if(m_Format.iBitsPerSample ==  8u) iSoundFormat = AL_FORMAT_STEREO8;
+        else if(m_Format.iBitsPerSample == 16u) iSoundFormat = AL_FORMAT_STEREO16;
     }
     ASSERT(iSoundFormat)
 
@@ -126,9 +126,9 @@ coreStatus coreSound::Unload()
 
     // reset properties
     m_sPath      = "";
-    m_iBuffer    = 0;
+    m_iBuffer    = 0u;
     m_Format     = coreWaveFormat();
-    m_iCurSource = 0;
+    m_iCurSource = 0u;
     m_pCurRef    = NULL;
 
     return CORE_OK;
@@ -214,7 +214,7 @@ void coreSound::Stop()
 
         // remove invalid sound source
         m_aiSource.erase(m_pCurRef);
-        m_iCurSource = 0;
+        m_iCurSource = 0u;
     }
 }
 
@@ -261,8 +261,8 @@ void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelo
 ALuint coreSound::CheckRef(const void* pRef)
 {
     // check if sound source is available
-    if(!pRef) return 0;
-    if(!m_aiSource.count(pRef)) return 0;
+    if(!pRef) return 0u;
+    if(!m_aiSource.count(pRef)) return 0u;
 
     // check if sound source is still valid
     const ALuint& iSource = m_aiSource.at(pRef);
@@ -270,5 +270,5 @@ ALuint coreSound::CheckRef(const void* pRef)
 
     // remove invalid sound source
     m_aiSource.erase(pRef);
-    return 0;
+    return 0u;
 }

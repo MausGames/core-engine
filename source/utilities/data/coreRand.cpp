@@ -8,21 +8,21 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreUint32 coreRand::s_iSeed = 0;
+coreUint32 coreRand::s_iSeed = 0u;
 
 
 // ****************************************************************
 /* constructor */
 coreRand::coreRand(const coreUintW& iNumRandoms, const coreUint32 iSeed)noexcept
 : m_iNumRandoms (iNumRandoms)
-, m_iCurRandom  (0)
+, m_iCurRandom  (0u)
 {
     // init random number generator
     coreRand::Seed(iSeed);
 
     // pre-generate random numbers
     m_piRandom = new coreInt16[m_iNumRandoms];
-    for(coreUintW i = 0; i < m_iNumRandoms; ++i)
+    for(coreUintW i = 0u; i < m_iNumRandoms; ++i)
         m_piRandom[i] = coreRand::Rand();
 
     Core::Log->Info("Random Numbers (%u:%u) generated", iNumRandoms, iSeed);

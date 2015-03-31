@@ -21,11 +21,11 @@
 // data buffer definitions
 enum coreDataBufferStorage : coreUint16
 {
-    CORE_DATABUFFER_STORAGE_STATIC     = 0x0001,   //!< store fast static buffer (STATIC_DRAW)
-    CORE_DATABUFFER_STORAGE_DYNAMIC    = 0x0002,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
-    CORE_DATABUFFER_STORAGE_STREAM     = 0x0004,   //!< store writable temporary buffer (STREAM_DRAW)
-    CORE_DATABUFFER_STORAGE_PERSISTENT = 0x0008,   //!< store persistent mapped buffer when supported (fallback to dynamic)
-    CORE_DATABUFFER_STORAGE_FENCED     = 0x0100    //!< use sync object for reliable asynchronous processing
+    CORE_DATABUFFER_STORAGE_STATIC     = 0x0001u,   //!< store fast static buffer (STATIC_DRAW)
+    CORE_DATABUFFER_STORAGE_DYNAMIC    = 0x0002u,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
+    CORE_DATABUFFER_STORAGE_STREAM     = 0x0004u,   //!< store writable temporary buffer (STREAM_DRAW)
+    CORE_DATABUFFER_STORAGE_PERSISTENT = 0x0008u,   //!< store persistent mapped buffer when supported (fallback to dynamic)
+    CORE_DATABUFFER_STORAGE_FENCED     = 0x0100u    //!< use sync object for reliable asynchronous processing
 };
 ENABLE_BITWISE(coreDataBufferStorage)
 
@@ -73,7 +73,7 @@ public:
     //! @{
     inline void Bind()const                                                 {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
     static inline void Bind  (const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
-    static inline void Unbind(const GLenum& iTarget, const coreBool& bFull) {if(bFull) coreDataBuffer::Bind(iTarget, 0); else s_aiBound[iTarget] = 0;}
+    static inline void Unbind(const GLenum& iTarget, const coreBool& bFull) {if(bFull) coreDataBuffer::Bind(iTarget, 0u); else s_aiBound[iTarget] = 0u;}
     //! @}
 
     //! modify buffer memory
@@ -156,13 +156,13 @@ public:
 // ****************************************************************
 // constructor
 constexpr_func coreDataBuffer::coreDataBuffer()noexcept
-: m_iDataBuffer       (0)
+: m_iDataBuffer       (0u)
 , m_iStorageType      (CORE_DATABUFFER_STORAGE_STATIC)
-, m_iTarget           (0)
-, m_iSize             (0)
+, m_iTarget           (0u)
+, m_iSize             (0u)
 , m_pPersistentBuffer (NULL)
-, m_iMapOffset        (0)
-, m_iMapLength        (0)
+, m_iMapOffset        (0u)
+, m_iMapLength        (0u)
 , m_pSync             (NULL)
 {
 }
@@ -201,7 +201,7 @@ template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32& i
     else
     {
         // create temporary memory
-        T* ptPointer = new T[iLength / sizeof(T) + 1];
+        T* ptPointer = new T[iLength / sizeof(T) + 1u];
         return ptPointer;
     }
 }
@@ -258,19 +258,19 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
     if(m_pSync) m_pSync->Create();
 
     // reset mapping attributes
-    m_iMapOffset = 0;
-    m_iMapLength = 0;
+    m_iMapOffset = 0u;
+    m_iMapLength = 0u;
 }
 
 
 // ****************************************************************
 // constructor
 constexpr_func coreVertexBuffer::coreAttribute::coreAttribute()noexcept
-: iLocation   (0)
-, iComponents (0)
-, iType       (0)
+: iLocation   (0u)
+, iComponents (0u)
+, iType       (0u)
 , bInteger    (false)
-, iOffset     (0)
+, iOffset     (0u)
 {
 }
 

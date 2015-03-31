@@ -15,8 +15,8 @@
 
 // ****************************************************************
 // memory definitions
-#define CORE_MEMORY_SHARED PRINT("!%s:%d",    coreData::StrRight(__FILE__, 8), __LINE__)
-#define CORE_MEMORY_UNIQUE PRINT("!%s:%d:%p", coreData::StrRight(__FILE__, 8), __LINE__, this)
+#define CORE_MEMORY_SHARED PRINT("!%s:%d",    coreData::StrRight(__FILE__, 8u), __LINE__)
+#define CORE_MEMORY_UNIQUE PRINT("!%s:%d:%p", coreData::StrRight(__FILE__, 8u), __LINE__, this)
 
 
 // ****************************************************************

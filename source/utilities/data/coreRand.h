@@ -16,7 +16,7 @@
 
 // ****************************************************************
 /* random number definitions */
-#define CORE_RAND_MAX  (0x7FFF)                                                     //!< max raw random number (15 bit)
+#define CORE_RAND_MAX  (0x7FFFu)                                                    //!< max raw random number (15 bit)
 #define CORE_RAND_TIME (DEFINED(_CORE_DEBUG_) ? 0u : coreUint32(std::time(NULL)))   //!< use current time to seed the generator (not on debug mode)
 
 
@@ -46,12 +46,12 @@ public:
 
     /*! reset current random number */
     //! @{
-    inline void Reset() {m_iCurRandom = 0;}
+    inline void Reset() {m_iCurRandom = 0u;}
     //! @}
 
     /*! retrieve pre-calculated random number */
     //! @{
-    inline const coreInt16& Raw()                                        {if(++m_iCurRandom >= m_iNumRandoms) m_iCurRandom = 0; return m_piRandom[m_iCurRandom];}
+    inline const coreInt16& Raw()                                        {if(++m_iCurRandom >= m_iNumRandoms) m_iCurRandom = 0u; return m_piRandom[m_iCurRandom];}
     inline coreInt16 Int  (const coreInt16& iMax)                        {return              (this->Raw()  % (iMax         +  1));}
     inline coreInt16 Int  (const coreInt16& iMin, const coreInt16& iMax) {return iMin +       (this->Raw()  % (iMax - iMin  +  1));}
     inline coreFloat Float(const coreFloat& fMax)                        {return        I_TO_F(this->Raw()) *  fMax         * (1.0f / I_TO_F(CORE_RAND_MAX));}
@@ -66,7 +66,7 @@ public:
     /*! control global random number generation */
     //! @{
     static inline void      Seed(const coreUint32 iSeed = CORE_RAND_TIME) {s_iSeed = iSeed;}
-    static inline coreInt16 Rand()                                        {s_iSeed = 214013 * s_iSeed + 2531011; return (s_iSeed >> 16) & CORE_RAND_MAX;}
+    static inline coreInt16 Rand()                                        {s_iSeed = 214013u * s_iSeed + 2531011u; return (s_iSeed >> 16u) & CORE_RAND_MAX;}
     //! @}
 };
 

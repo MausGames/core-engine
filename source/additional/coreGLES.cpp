@@ -10,7 +10,7 @@
 #include <EGL/egl.h>
 
 std::string              g_sExtensions     = "";
-thread_local coreContext g_CoreContext; // = 0;
+thread_local coreContext g_CoreContext; // = 0x00;
 
 
 // ****************************************************************

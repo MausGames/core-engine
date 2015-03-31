@@ -32,8 +32,8 @@
 // shader definitions
 #define CORE_SHADER_BUFFER_TRANSFORM            "b_Transform"
 #define CORE_SHADER_BUFFER_AMBIENT              "b_Ambient"
-#define CORE_SHADER_BUFFER_TRANSFORM_NUM        (0)
-#define CORE_SHADER_BUFFER_AMBIENT_NUM          (1)
+#define CORE_SHADER_BUFFER_TRANSFORM_NUM        (0u)
+#define CORE_SHADER_BUFFER_AMBIENT_NUM          (1u)
 
 #define CORE_SHADER_UNIFORM_VIEWPROJ            "u_m4ViewProj"
 #define CORE_SHADER_UNIFORM_CAMERA              "u_m4Camera"
@@ -58,10 +58,10 @@
 #define CORE_SHADER_ATTRIBUTE_TEXCOORD          "a_v2RawTexCoord"
 #define CORE_SHADER_ATTRIBUTE_NORMAL            "a_v3RawNormal"
 #define CORE_SHADER_ATTRIBUTE_TANGENT           "a_v4RawTangent"
-#define CORE_SHADER_ATTRIBUTE_POSITION_NUM      (0)
-#define CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM      (1)
-#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM        (2)
-#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM       (3)
+#define CORE_SHADER_ATTRIBUTE_POSITION_NUM      (0u)
+#define CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM      (1u)
+#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM        (2u)
+#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM       (3u)
 
 #define CORE_SHADER_ATTRIBUTE_DIV_POSITION      "a_v3DivPosition"
 #define CORE_SHADER_ATTRIBUTE_DIV_SIZE          "a_v3DivSize"
@@ -69,12 +69,12 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_DATA          "a_v3DivData"
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR         "a_v4DivColor"
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM      "a_v4DivTexParam"
-#define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM  (4)
-#define CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM      (5)
-#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM  (6)
-#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (5)
-#define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7)
-#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8)
+#define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM  (4u)
+#define CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM      (5u)
+#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM  (6u)
+#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (5u)
+#define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7u)
+#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
 
 #define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%d]"
 #define CORE_SHADER_OUTPUT_COLORS               (4u)
@@ -82,11 +82,11 @@
 #define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_  (1) \n"
 #define CORE_SHADER_OPTION_NO_ROTATION          "#define _CORE_OPTION_NO_ROTATION_ (1) \n"
 
-enum coreShaderStatus : coreUint8
+enum coreProgramStatus : coreUint8
 {
-    CORE_SHADER_NEW      = 0,   //!< new and empty
-    CORE_SHADER_DEFINED  = 1,   //!< ready for linking
-    CORE_SHADER_FINISHED = 2    //!< texture units bound
+    CORE_PROGRAM_NEW      = 0u,   //!< new and empty
+    CORE_PROGRAM_DEFINED  = 1u,   //!< ready for linking
+    CORE_PROGRAM_FINISHED = 2u    //!< texture units bound
 };
 
 
@@ -146,18 +146,18 @@ typedef coreResourcePtr<coreShader> coreShaderPtr;
 class coreProgram final : public coreResource
 {
 private:
-    GLuint m_iProgram;                                      //!< shader-program identifier
+    GLuint m_iProgram;                                     //!< shader-program identifier
 
-    std::vector<coreShaderPtr> m_apShader;                  //!< attached shader objects
-    coreShaderStatus m_iStatus;                             //!< current status
+    std::vector<coreShaderPtr> m_apShader;                 //!< attached shader objects
+    coreProgramStatus m_iStatus;                           //!< current status
 
-    coreLookup<const coreChar*, coreInt8>  m_aiUniform;     //!< uniform locations
-    coreLookup<const coreChar*, coreUint8> m_aiAttribute;   //!< attribute locations
-    coreLookup<coreInt8, coreVector4> m_avCache;            //!< cached uniform values
+    coreLookup<const coreChar*, coreInt8> m_aiUniform;     //!< uniform locations
+    coreLookup<const coreChar*, coreInt8> m_aiAttribute;   //!< attribute locations
+    coreLookup<coreInt8, coreVector4> m_avCache;           //!< cached uniform values
 
-    coreSync m_Sync;                                        //!< sync object for asynchronous shader-program loading
+    coreSync m_Sync;                                       //!< sync object for asynchronous shader-program loading
 
-    static coreProgram* s_pCurrent;                         //!< currently active shader-program
+    static coreProgram* s_pCurrent;                        //!< currently active shader-program
 
 
 public:
@@ -183,8 +183,8 @@ public:
     inline coreProgram* AttachShader (const coreShaderPtr& pShader)                            {if(!m_iStatus) {m_apShader.push_back(pShader);                                          m_apShader.back().SetActive(false);} return this;}
     inline coreProgram* AttachShader (const coreChar*      pcName)                             {if(!m_iStatus) {m_apShader.push_back(Core::Manager::Resource->Get<coreShader>(pcName)); m_apShader.back().SetActive(false);} return this;}
     inline coreProgram* BindAttribute(const coreChar*      pcName, const coreUint8& iLocation) {if(!m_iStatus)  m_aiAttribute[pcName] = iLocation;                                                                           return this;}
-    inline void Finish ()                                                                      {if(!m_iStatus)  m_iStatus = CORE_SHADER_DEFINED;}
-    inline void Restart()                                                                      {this->Unload(); m_apShader.clear(); m_aiAttribute.clear(); m_iStatus = CORE_SHADER_NEW;}
+    inline void Finish ()                                                                      {if(!m_iStatus)  m_iStatus = CORE_PROGRAM_DEFINED;}
+    inline void Restart()                                                                      {this->Unload(); m_apShader.clear(); m_aiAttribute.clear(); m_iStatus = CORE_PROGRAM_NEW;}
     //! @}
 
     //! send new uniform values
@@ -207,8 +207,8 @@ public:
     //! @{
     inline const GLuint&                     GetProgram  ()const                  {return m_iProgram;}
     inline const std::vector<coreShaderPtr>& GetShader   ()const                  {return m_apShader;}
-    inline const coreInt8&                   GetUniform  (const coreChar* pcName) {if(!m_aiUniform  .count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_FINISHED && s_pCurrent == this) m_aiUniform  [pcName] = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform  .at(pcName);}
-    inline const coreUint8&                  GetAttribute(const coreChar* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_SHADER_FINISHED && s_pCurrent == this) m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
+    inline const coreInt8&                   GetUniform  (const coreChar* pcName) {if(!m_aiUniform  .count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  [pcName] = glGetUniformLocation(m_iProgram, pcName);} return m_aiUniform  .at(pcName);}
+    inline const coreInt8&                   GetAttribute(const coreChar* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute[pcName] = glGetAttribLocation (m_iProgram, pcName);} return m_aiAttribute.at(pcName);}
     //! @}
 
     //! get currently active shader-program

@@ -19,19 +19,19 @@
 /* object definitions */
 enum coreObjectUpdate : coreUint8
 {
-    CORE_OBJECT_UPDATE_NOTHING   = 0x00,   //!< update nothing
-    CORE_OBJECT_UPDATE_TRANSFORM = 0x01,   //!< update transformation values
-    CORE_OBJECT_UPDATE_COLLISION = 0x02,   //!< update collision-relevant values
-    CORE_OBJECT_UPDATE_ALL       = 0x03    //!< update everything
+    CORE_OBJECT_UPDATE_NOTHING   = 0x00u,   //!< update nothing
+    CORE_OBJECT_UPDATE_TRANSFORM = 0x01u,   //!< update transformation values
+    CORE_OBJECT_UPDATE_COLLISION = 0x02u,   //!< update collision-relevant values
+    CORE_OBJECT_UPDATE_ALL       = 0x03u    //!< update everything
 };
 ENABLE_BITWISE(coreObjectUpdate)
 
 enum coreObjectEnable : coreUint8
 {
-    CORE_OBJECT_ENABLE_NOTHING = 0x00,   //!< do nothing
-    CORE_OBJECT_ENABLE_RENDER  = 0x01,   //!< enable render routine
-    CORE_OBJECT_ENABLE_MOVE    = 0x02,   //!< enable move routine
-    CORE_OBJECT_ENABLE_ALL     = 0x03    //!< enable all routines
+    CORE_OBJECT_ENABLE_NOTHING = 0x00u,   //!< do nothing
+    CORE_OBJECT_ENABLE_RENDER  = 0x01u,   //!< enable render routine
+    CORE_OBJECT_ENABLE_MOVE    = 0x02u,   //!< enable move routine
+    CORE_OBJECT_ENABLE_ALL     = 0x03u    //!< enable all routines
 };
 ENABLE_BITWISE(coreObjectEnable)
 
@@ -206,7 +206,7 @@ inline coreObject::coreObject(const coreObject& c)noexcept
 , m_iStatus    (c.m_iStatus)
 {
     // copy texture objects
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = c.m_apTexture[i];
 }
 
@@ -220,7 +220,7 @@ inline coreObject::coreObject(coreObject&& m)noexcept
 , m_iStatus    (m.m_iStatus)
 {
     // move texture objects
-    for(coreUintW i = 0; i < CORE_TEXTURE_UNITS; ++i)
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
         m_apTexture[i] = std::move(m.m_apTexture[i]);
 }
 
@@ -230,7 +230,7 @@ inline coreObject::coreObject(coreObject&& m)noexcept
 constexpr_func coreObjectManager::coreObjectCollision::coreObjectCollision()noexcept
 : pObject1   (NULL)
 , pObject2   (NULL)
-, iLastFrame (0)
+, iLastFrame (0u)
 {
 }
 
@@ -250,7 +250,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
         coreObject3D* pObject1 = (*it);
         if(!pObject1) continue;
 
-        FOR_EACH_SET(et, it+1, oList)
+        FOR_EACH_SET(et, it+1u, oList)
         {
             coreObject3D* pObject2 = (*et);
             if(!pObject2) continue;
@@ -258,8 +258,8 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
             // test collision and call function
             if(coreObjectManager::TestCollision(pObject1, pObject2))
             {
-                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pObject1),
-                          s_cast<typename TRAIT_ARG_TYPE(F, 1)>(pObject2),
+                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
+                          s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
                           this->__NewCollision(pObject1, pObject2));
             }
         }
@@ -294,8 +294,8 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
             // test collision and call function
             if(coreObjectManager::TestCollision(pObject1, pObject2))
             {
-                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pObject1),
-                          s_cast<typename TRAIT_ARG_TYPE(F, 1)>(pObject2),
+                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
+                          s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
                           this->__NewCollision(pObject1, pObject2));
             }
         }
@@ -321,7 +321,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
         // test collision and call function
         if(coreObjectManager::TestCollision(pCurObject, pObject))
         {
-            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pCurObject),
+            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
                       this->__NewCollision(pCurObject, pObject));
         }
     }
@@ -347,7 +347,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
         const coreFloat fDistance = coreObjectManager::TestCollision(pCurObject, vLinePos, vLineDir);
         if(fDistance)
         {
-            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0)>(pCurObject), fDistance,
+            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject), fDistance,
                       this->__NewCollision(pCurObject, NULL));
         }
     }

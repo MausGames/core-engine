@@ -157,9 +157,9 @@ constexpr_func coreModel::coreVertex::coreVertex()noexcept
 // constructor
 constexpr_func coreModel::coreVertexPacked::coreVertexPacked()noexcept
 : vPosition (coreVector3(0.0f,0.0f,0.0f))
-, iTexCoord (0)
-, iNormal   (0)
-, iTangent  (0)
+, iTexCoord (0u)
+, iNormal   (0u)
+, iTangent  (0u)
 {
 }
 
