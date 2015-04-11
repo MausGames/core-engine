@@ -74,11 +74,9 @@ public:
 
     /*! elementary operations */
     //! @{
-    template <coreUintW iBase> static inline coreFloat Log     (const coreFloat& fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
-    template <>                static inline coreFloat Log< 2u>(const coreFloat& fInput) {return std::log2 (fInput);}
-    template <>                static inline coreFloat Log<10u>(const coreFloat& fInput) {return std::log10(fInput);}
-    static inline coreFloat Fract(const coreFloat& fInput)                               {return fInput - I_TO_F(F_TO_SI(fInput));}
-    static inline coreFloat Sqrt (const coreFloat& fInput)                               {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
+    template <coreUintW iBase> static inline coreFloat Log(const coreFloat& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
+    static inline coreFloat Fract(const coreFloat& fInput)                          {return fInput - I_TO_F(F_TO_SI(fInput));}
+    static inline coreFloat Sqrt (const coreFloat& fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
     static inline coreFloat Rsqrt(coreFloat fInput);
     static inline coreFloat Rcp  (coreFloat fInput);
     //! @}
@@ -104,6 +102,12 @@ public:
     static inline coreFloat Floor(const coreFloat& fInput)                             {return std::floor(fInput);}
     //! @}
 };
+
+
+// ****************************************************************
+/* template specializations */
+template <> inline coreFloat coreMath::Log< 2u>(const coreFloat& fInput) {return std::log2 (fInput);}
+template <> inline coreFloat coreMath::Log<10u>(const coreFloat& fInput) {return std::log10(fInput);}
 
 
 // ****************************************************************

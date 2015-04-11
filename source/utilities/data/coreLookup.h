@@ -147,14 +147,6 @@ public:
     using coreLookupGen<std::string, const coreChar*, T>::erase;
     inline typename coreLookupStr<T>::coreValueIterator erase(const coreUintW& iIndex) {this->__cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
-
-
-private:
-    /*! lookup entry by string-key */
-    //! @{
-    typename coreLookupStr<T>::coreKeyIterator      __retrieve(const coreChar* pcKey);
-    typename coreLookupStr<T>::coreKeyConstIterator __retrieve(const coreChar* pcKey)const;
-    //! @}
 };
 
 
@@ -296,39 +288,6 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
     }
 
     return m_atKeyList.end();
-}
-
-
-// ****************************************************************
-/* lookup entry by string-key */
-template <typename T> typename coreLookupStr<T>::coreKeyIterator coreLookupStr<T>::__retrieve(const coreChar* pcKey)
-{
-    // loop through all entries
-    FOR_EACH(it, this->m_atKeyList)
-    {
-        // compare string-key
-        if(!std::strcmp(it->c_str(), pcKey))
-        {
-            // cache current entry
-            this->__cache_set(&(*this->get_value(it)), &(*it));
-            return it;
-        }
-    }
-
-    return this->m_atKeyList.end();
-}
-
-template <typename T> typename coreLookupStr<T>::coreKeyConstIterator coreLookupStr<T>::__retrieve(const coreChar* pcKey)const
-{
-    // loop through all entries
-    FOR_EACH(it, this->m_atKeyList)
-    {
-        // compare string-key
-        if(!std::strcmp(it->c_str(), pcKey))
-            return it;
-    }
-
-    return this->m_atKeyList.end();
 }
 
 

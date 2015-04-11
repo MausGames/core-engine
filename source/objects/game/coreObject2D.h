@@ -29,7 +29,7 @@ private:
 
 
 protected:
-    coreMatrix3 m_mRotation;        //!< separate rotation matrix
+    coreMatrix2 m_mRotation;        //!< separate rotation matrix
     coreMatrix3 m_mTransform;       //!< transformation matrix
 
     coreBool    m_bFocused;         //!< interaction status
@@ -88,7 +88,7 @@ public:
     inline const coreVector2& GetDirection()const {return m_vDirection;}
     inline const coreVector2& GetCenter   ()const {return m_vCenter;}
     inline const coreVector2& GetAlignment()const {return m_vAlignment;}
-    inline const coreMatrix3& GetRotation ()const {return m_mRotation;}
+    inline const coreMatrix2& GetRotation ()const {return m_mRotation;}
     inline const coreMatrix3& GetTransform()const {return m_mTransform;}
     //! @}
 };
@@ -102,7 +102,7 @@ constexpr_weak coreObject2D::coreObject2D()noexcept
 , m_vDirection     (coreVector2(0.0f,1.0f))
 , m_vCenter        (coreVector2(0.0f,0.0f))
 , m_vAlignment     (coreVector2(0.0f,0.0f))
-, m_mRotation      (coreMatrix3::Identity())
+, m_mRotation      (coreMatrix2::Identity())
 , m_mTransform     (coreMatrix3::Identity())
 , m_bFocused       (false)
 , m_vFocusModifier (coreVector2(1.0f,1.0f))

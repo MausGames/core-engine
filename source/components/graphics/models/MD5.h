@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_MD5_H_
 #define _CORE_GUARD_MD5_H_
 
-// TODO: (collapse vertices (e.g. same pos) and merge nearly identical vertices in this process (with threshold and std::map)) only adapt normals ?
+// TODO: (collapse vertices (e.g. same pos) and merge nearly identical vertices in this process (with threshold and lookup-table)) only adapt normals ?
 
 
 // ****************************************************************

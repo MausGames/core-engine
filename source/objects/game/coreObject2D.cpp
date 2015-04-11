@@ -62,7 +62,7 @@ void coreObject2D::Move()
         if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_ALL))
         {
             // update rotation matrix
-            m_mRotation = coreMatrix3::Rotation(m_vDirection);
+            m_mRotation = coreMatrix2::Rotation(m_vDirection);
         }
 
         // calculate resolution-modified transformation parameters
@@ -71,7 +71,7 @@ void coreObject2D::Move()
         const coreVector2  vScreenSize     = m_vSize     * vResolution.Min();
 
         // update transformation matrix
-        m_mTransform = m_mRotation;
+        m_mTransform = coreMatrix3(m_mRotation);
         m_mTransform._11 *= vScreenSize.x;     m_mTransform._12 *= vScreenSize.x;
         m_mTransform._21 *= vScreenSize.y;     m_mTransform._22 *= vScreenSize.y;
         m_mTransform._31  = vScreenPosition.x; m_mTransform._32  = vScreenPosition.y;

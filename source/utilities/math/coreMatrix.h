@@ -14,6 +14,38 @@
 
 
 // ****************************************************************
+/* 2x2-matrix class */
+class coreMatrix2 final
+{
+public:
+    union
+    {
+        struct
+        {
+            coreFloat _11, _12;
+            coreFloat _21, _22;
+        };
+        coreFloat arr[2][2];
+    };
+
+
+public:
+    constexpr_func coreMatrix2()noexcept;
+    constexpr_func coreMatrix2(const coreFloat& f11, const coreFloat& f12,
+                               const coreFloat& f21, const coreFloat& f22)noexcept;
+
+    ENABLE_COPY(coreMatrix2)
+
+    /*! static functions */
+    //! @{
+    static constexpr_func coreMatrix2 Identity();
+    static inline         coreMatrix2 Rotation(const coreVector2& vDirection);
+    static inline         coreMatrix2 Rotation(const coreFloat&   fAngle);
+    //! @}
+};
+
+
+// ****************************************************************
 /* 3x3-matrix class */
 class coreMatrix3 final
 {
@@ -35,6 +67,7 @@ public:
     constexpr_func coreMatrix3(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13,
                                const coreFloat& f21, const coreFloat& f22, const coreFloat& f23,
                                const coreFloat& f31, const coreFloat& f32, const coreFloat& f33)noexcept;
+    constexpr_func explicit coreMatrix3(const coreMatrix2& m)noexcept;
 
     ENABLE_COPY(coreMatrix3)
 
@@ -122,6 +155,8 @@ public:
                                const coreFloat& f21, const coreFloat& f22, const coreFloat& f23, const coreFloat& f24,
                                const coreFloat& f31, const coreFloat& f32, const coreFloat& f33, const coreFloat& f34,
                                const coreFloat& f41, const coreFloat& f42, const coreFloat& f43, const coreFloat& f44)noexcept;
+    constexpr_func explicit coreMatrix4(const coreMatrix3& m)noexcept;
+    constexpr_func explicit coreMatrix4(const coreMatrix2& m)noexcept;
 
     ENABLE_COPY(coreMatrix4)
 
@@ -196,6 +231,45 @@ public:
 };
 
 
+// ****************************************************************
+/* constructor */
+constexpr_func coreMatrix2::coreMatrix2()noexcept
+: _11 (1.0f), _12 (0.0f)
+, _21 (0.0f), _22 (1.0f)
+{
+}
+
+constexpr_func coreMatrix2::coreMatrix2(const coreFloat& f11, const coreFloat& f12,
+                                        const coreFloat& f21, const coreFloat& f22)noexcept
+: _11 (f11), _12 (f12)
+, _21 (f21), _22 (f22)
+{
+}
+
+
+// ****************************************************************
+/* get identity matrix */
+constexpr_func coreMatrix2 coreMatrix2::Identity()
+{
+    return coreMatrix2(1.0f, 0.0f,
+                       0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get rotation matrix */
+inline coreMatrix2 coreMatrix2::Rotation(const coreVector2& vDirection)
+{
+    ASSERT(vDirection.IsNormalized())
+    return coreMatrix2( vDirection.y, vDirection.x,
+                       -vDirection.x, vDirection.y);
+}
+
+inline coreMatrix2 coreMatrix2::Rotation(const coreFloat& fAngle)
+{
+    return coreMatrix2::Rotation(coreVector2::Direction(fAngle));
+}
+
 
 // ****************************************************************
 /* constructor */
@@ -212,6 +286,13 @@ constexpr_func coreMatrix3::coreMatrix3(const coreFloat& f11, const coreFloat& f
 : _11 (f11), _12 (f12), _13 (f13)
 , _21 (f21), _22 (f22), _23 (f23)
 , _31 (f31), _32 (f32), _33 (f33)
+{
+}
+
+constexpr_func coreMatrix3::coreMatrix3(const coreMatrix2& m)noexcept
+: _11 (m._11), _12 (m._12), _13 (0.0f)
+, _21 (m._21), _22 (m._22), _23 (0.0f)
+, _31  (0.0f), _32  (0.0f), _33 (1.0f)
 {
 }
 
@@ -421,6 +502,22 @@ constexpr_func coreMatrix4::coreMatrix4(const coreFloat& f11, const coreFloat& f
 , _21 (f21), _22 (f22), _23 (f23), _24 (f24)
 , _31 (f31), _32 (f32), _33 (f33), _34 (f34)
 , _41 (f41), _42 (f42), _43 (f43), _44 (f44)
+{
+}
+
+constexpr_func coreMatrix4::coreMatrix4(const coreMatrix3& m)noexcept
+: _11 (m._11), _12 (m._12), _13 (m._13), _14 (0.0f)
+, _21 (m._21), _22 (m._22), _23 (m._23), _24 (0.0f)
+, _31 (m._31), _32 (m._32), _33 (m._33), _34 (0.0f)
+, _41  (0.0f), _42  (0.0f), _43  (0.0f), _44 (1.0f)
+{
+}
+
+constexpr_func coreMatrix4::coreMatrix4(const coreMatrix2& m)noexcept
+: _11 (m._11), _12 (m._12), _13 (0.0f), _14 (0.0f)
+, _21 (m._21), _22 (m._22), _23 (0.0f), _24 (0.0f)
+, _31  (0.0f), _32  (0.0f), _33 (1.0f), _34 (0.0f)
+, _41  (0.0f), _42  (0.0f), _43 (0.0f), _44 (1.0f)
 {
 }
 
@@ -694,6 +791,12 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
 
 // ****************************************************************
 /* multiplication with matrix */
+inline coreVector2 coreVector2::operator * (const coreMatrix2& m)const
+{
+    return coreVector2(x*m._11 + y*m._21,
+                       x*m._12 + y*m._22);
+}
+
 inline coreVector2 coreVector2::operator * (const coreMatrix3& m)const
 {
     const coreFloat w = RCP(x*m._13 + y*m._23 +   m._33);

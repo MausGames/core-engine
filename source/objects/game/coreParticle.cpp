@@ -23,6 +23,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32& iNumParticles)noexcept
 
     // create empty particle effect object
     m_pEmptyEffect = new coreParticleEffect(this);
+    m_pEmptyEffect->m_pThis = m_pEmptyEffect;
 
     // create vertex array objects and instance data buffers
     m_aiVertexArray.Fill(0u);

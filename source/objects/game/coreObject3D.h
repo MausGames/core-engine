@@ -31,8 +31,8 @@ class coreObject3D : public coreObject
 private:
     coreVector3 m_vPosition;      //!< position of the 3d-object
     coreVector3 m_vSize;          //!< size-factor of the 3d-object
-    coreVector3 m_vDirection;     //!< direction for the rotation matrix
-    coreVector3 m_vOrientation;   //!< orientation for the rotation matrix
+    coreVector3 m_vDirection;     //!< direction for the rotation quaternion
+    coreVector3 m_vOrientation;   //!< orientation for the rotation quaternion
 
 
 protected:

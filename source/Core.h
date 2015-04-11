@@ -144,7 +144,6 @@
 #include <vector>
 #include <list>
 #include <unordered_set>
-#include <unordered_map>
 
 
 // ****************************************************************
@@ -177,7 +176,7 @@
     #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
     #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
     #define RETURN_NONNULL                         //!< returned pointer will not be null
-    #define FUNC_PURE                              //!< function does not modify anything and returns a single value
+    #define FUNC_PURE                              //!< function does not modify anything (parameter, global) and returns a single value
     #define FUNC_CONST      __declspec(noalias)    //!< function reads only parameters without indirections and returns a single value
     #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use first-level indirections
     #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates with exit(3) or abort(3)
@@ -214,18 +213,22 @@
     #define constexpr_weak constexpr_func
 #endif
 
-// disable unwanted compiler warnings (with /W4)
-#pragma warning(disable : 4100)   //!< unreferenced formal parameter
-#pragma warning(disable : 4127)   //!< constant conditional expression
-#pragma warning(disable : 4201)   //!< nameless struct or union
-#pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
-#pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision
+#if defined(_CORE_MSVC_)
 
-// enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
-#pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4738 4826 4837 4928 4946)
+    // disable unwanted compiler warnings (with /W4)
+    #pragma warning(disable : 4100)   //!< unreferenced formal parameter
+    #pragma warning(disable : 4127)   //!< constant conditional expression
+    #pragma warning(disable : 4201)   //!< nameless struct or union
+    #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
+    #pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision
 
-// #pragma warning(default : 4820)             //!< byte padding
-// #pragma warning(default : 4242 4244 4365)   //!< loss of precision
+    // enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
+    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4738 4826 4837 4928 4946)
+
+    // #pragma warning(default : 4820)             //!< byte padding
+    // #pragma warning(default : 4242 4244 4365)   //!< loss of precision
+
+#endif
 
 
 // ****************************************************************
@@ -336,6 +339,10 @@ typedef char          coreChar;
 typedef float         coreFloat;
 typedef double        coreDouble;
 
+// override string comparison operator (faster but unsecure)
+inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
+inline coreBool operator == (const coreChar*    b, const std::string& a) {return !std::strcmp(a.c_str(), b);}
+
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
@@ -378,7 +385,7 @@ enum coreStatus : coreInt8
 
     CORE_INVALID_CALL  = -11,   //!< object has wrong status
     CORE_INVALID_INPUT = -12,   //!< function parameters are invalid
-    CORE_INVALID_DATA  = -13,   //!< depending objects contain wrong data
+    CORE_INVALID_DATA  = -13    //!< depending objects contain wrong data
 };
 
 
@@ -387,6 +394,7 @@ enum coreStatus : coreInt8
 class coreVector2;
 class coreVector3;
 class coreVector4;
+class coreMatrix2;
 class coreMatrix3;
 class coreMatrix4;
 class coreFile;

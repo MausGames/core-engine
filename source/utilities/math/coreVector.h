@@ -65,8 +65,10 @@ public:
 
     /*! matrix operations */
     //! @{
+    inline coreVector2 operator *  (const coreMatrix2& m)const;
     inline coreVector2 operator *  (const coreMatrix3& m)const;
     inline coreVector2 operator *  (const coreMatrix4& m)const;
+    inline void        operator *= (const coreMatrix2& m) {*this = *this * m;}
     inline void        operator *= (const coreMatrix3& m) {*this = *this * m;}
     inline void        operator *= (const coreMatrix4& m) {*this = *this * m;}
     //! @}
@@ -79,13 +81,21 @@ public:
 
     /*! invert vector */
     //! @{
-    constexpr_func coreVector2  operator - ()const {return  coreVector2(-x, -y);}
-    inline         coreVector2& InvertX    ()      {x = -x;                      return *this;}
-    inline         coreVector2& InvertY    ()      {y = -y;                      return *this;}
-    inline         coreVector2  Rotate90   ()      {*this = coreVector2( y, -x); return *this;}
-    constexpr_func coreVector2  InvertedX  ()const {return  coreVector2(-x,  y);}
-    constexpr_func coreVector2  InvertedY  ()const {return  coreVector2( x, -y);}
-    constexpr_func coreVector2  Rotated90  ()const {return  coreVector2( y, -x);}
+    constexpr_func coreVector2  operator - ()const {return coreVector2(-x, -y);}
+    inline         coreVector2& InvertX    ()      {x = -x; return *this;}
+    inline         coreVector2& InvertY    ()      {y = -y; return *this;}
+    constexpr_func coreVector2  InvertedX  ()const {return coreVector2(-x,  y);}
+    constexpr_func coreVector2  InvertedY  ()const {return coreVector2( x, -y);}
+    //! @}
+
+    /*! rotate vector */
+    //! @{
+    inline         coreVector2& Rotate90  ()      {*this = coreVector2(  y,  -x);                   return *this;}
+    inline         coreVector2& Rotate45  ()      {*this = coreVector2(x+y, y-x) * 7.071067812e-1f; return *this;}
+    inline         coreVector2& Rotate135 ()      {*this = coreVector2(y-x,-x-y) * 7.071067812e-1f; return *this;}
+    constexpr_func coreVector2  Rotated90 ()const {return  coreVector2(  y,  -x);}
+    constexpr_func coreVector2  Rotated45 ()const {return  coreVector2(x+y, y-x) * 7.071067812e-1f;}
+    constexpr_func coreVector2  Rotated135()const {return  coreVector2(y-x,-x-y) * 7.071067812e-1f;}
     //! @}
 
     /*! normalize vector */
@@ -102,7 +112,7 @@ public:
     constexpr_func coreFloat   Max         ()const {return MAX(x, y);}
     constexpr_func coreVector2 Abs         ()const {return coreVector2(ABS(x), ABS(y));}
     inline         coreFloat   AspectRatio ()const {return (x * RCP(y));}
-    inline         coreFloat   Angle       ()const {return y ? (ATAN(this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);}
+    inline         coreFloat   Angle       ()const {return (y) ? (ATAN(-this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);}
     constexpr_func coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     constexpr_func coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}

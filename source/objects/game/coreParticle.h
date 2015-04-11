@@ -212,6 +212,7 @@ public:
     explicit coreParticleEffect(coreParticleSystem* pSystem)noexcept;
     ~coreParticleEffect();
 
+    FRIEND_CLASS(coreParticleSystem)
     DISABLE_COPY(coreParticleEffect)
 
     //! create new particles
