@@ -108,7 +108,7 @@ constexpr_func coreSound::coreWaveFormat::coreWaveFormat()noexcept
 
 // ****************************************************************
 // sound resource access type
-typedef coreResourcePtr<coreSound> coreSoundPtr;
+using coreSoundPtr = coreResourcePtr<coreSound>;
 
 
 #endif // _CORE_GUARD_SOUND_H_

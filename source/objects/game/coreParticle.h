@@ -133,7 +133,7 @@ private:
     coreProgramPtr m_pProgram;                                                         //!< shader-program object
 
     std::list<coreParticle*> m_apRenderList;                                           //!< sorted render list with active particles
-    coreParticleEffect* m_pEmptyEffect;                                                //!< empty particle effect object (dynamic, because of class order)
+    coreParticleEffect* m_pDefaultEffect;                                              //!< default particle effect object (dynamic, because of class order)
 
     coreSelect<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
     coreSelect<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
@@ -165,7 +165,7 @@ public:
     //! create new particles
     //! @{
     coreParticle*        CreateParticle(coreParticleEffect* pEffect);
-    inline coreParticle* CreateParticle() {return this->CreateParticle(m_pEmptyEffect);}
+    inline coreParticle* CreateParticle() {return this->CreateParticle(m_pDefaultEffect);}
     //! @}
 
     //! remove particle effect objects and particles
@@ -182,7 +182,7 @@ public:
     inline const coreProgramPtr& GetProgram           ()const                       {return m_pProgram;}
     inline const coreUint32&     GetNumParticles      ()const                       {return m_iNumParticles;}
     inline       coreUintW       GetNumActiveParticles()const                       {return m_apRenderList.size();}
-    inline coreParticleEffect*   GetEmptyEffect       ()const                       {return m_pEmptyEffect;}
+    inline coreParticleEffect*   GetDefaultEffect     ()const                       {return m_pDefaultEffect;}
     //! @}
 
 
@@ -205,7 +205,7 @@ private:
     coreObject3D* m_pOrigin;         //!< origin object for relative movement
 
     coreParticleSystem* m_pSystem;   //!< associated particle system object
-    coreParticleEffect* m_pThis;     //!< pointer to foreign empty object or to itself (to improve destructor performance)
+    coreParticleEffect* m_pThis;     //!< pointer to foreign default object or to itself (to improve destructor performance)
 
 
 public:

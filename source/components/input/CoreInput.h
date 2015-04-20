@@ -34,8 +34,8 @@
 
 #define CORE_INPUT_KEY(k)  (SDL_SCANCODE_ ## k)
 #define CORE_INPUT_CHAR(c) (SDLK_         ## c)
-typedef SDL_Scancode coreInputKey;
-typedef SDL_Keycode  coreInputChar;
+using coreInputKey  = SDL_Scancode;
+using coreInputChar = SDL_Keycode;
 
 enum coreInputButton : coreUint8
 {

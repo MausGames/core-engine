@@ -21,9 +21,9 @@ coreParticleSystem::coreParticleSystem(const coreUint32& iNumParticles)noexcept
     // pre-allocate particles
     m_pParticle = new coreParticle[m_iNumParticles];
 
-    // create empty particle effect object
-    m_pEmptyEffect = new coreParticleEffect(this);
-    m_pEmptyEffect->m_pThis = m_pEmptyEffect;
+    // create default particle effect object
+    m_pDefaultEffect = new coreParticleEffect(this);
+    m_pDefaultEffect->m_pThis = m_pDefaultEffect;
 
     // create vertex array objects and instance data buffers
     m_aiVertexArray.Fill(0u);
@@ -39,8 +39,8 @@ coreParticleSystem::~coreParticleSystem()
     this->ClearAll();
     SAFE_DELETE_ARRAY(m_pParticle)
 
-    // delete empty particle effect object
-    SAFE_DELETE(m_pEmptyEffect)
+    // delete default particle effect object
+    SAFE_DELETE(m_pDefaultEffect)
 
     // delete vertex array objects and instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
@@ -215,7 +215,7 @@ void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
             if(pEffect->GetOrigin()) pParticle->m_CurrentState.vPosition += pEffect->GetOrigin()->GetPosition();
 
             // reset associated particle effect object
-            pParticle->m_pEffect = m_pEmptyEffect;
+            pParticle->m_pEffect = m_pDefaultEffect;
         }
     }
 }
@@ -258,7 +258,7 @@ void coreParticleSystem::UnbindAll()
         if(pEffect->GetOrigin()) pParticle->m_CurrentState.vPosition += pEffect->GetOrigin()->GetPosition();
 
         // reset associated particle effect object
-        pParticle->m_pEffect = m_pEmptyEffect;
+        pParticle->m_pEffect = m_pDefaultEffect;
     }
 }
 
@@ -338,7 +338,7 @@ coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 , m_iTimeID   (-1)
 , m_pOrigin   (NULL)
 , m_pSystem   (pSystem)
-, m_pThis     (pSystem->GetEmptyEffect())
+, m_pThis     (pSystem->GetDefaultEffect())
 {
 }
 
@@ -365,7 +365,7 @@ void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBoo
         // unbind old particles (not unbining them may cause crash if not handled)
         if(bUnbind) m_pSystem->Unbind(this);
     }
-    else m_pThis = pSystem->GetEmptyEffect();
+    else m_pThis = pSystem->GetDefaultEffect();
 
     // set new particle system object
     m_pSystem = pSystem;

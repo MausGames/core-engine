@@ -166,7 +166,7 @@ constexpr_func coreModel::coreVertexPacked::coreVertexPacked()noexcept
 
 // ****************************************************************
 // model resource access type
-typedef coreResourcePtr<coreModel> coreModelPtr;
+using coreModelPtr = coreResourcePtr<coreModel>;
 
 
 #endif // _CORE_GUARD_MODEL_H_

@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_VECTOR_H_
 #define _CORE_GUARD_VECTOR_H_
 
+// TODO: check out Clang ext_vector_type
+
 
 // ****************************************************************
 /* 2d-vector class */

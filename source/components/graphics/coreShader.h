@@ -138,7 +138,7 @@ private:
 
 // ****************************************************************
 // shader resource access type
-typedef coreResourcePtr<coreShader> coreShaderPtr;
+using coreShaderPtr = coreResourcePtr<coreShader>;
 
 
 // ****************************************************************
@@ -227,7 +227,7 @@ private:
 
 // ****************************************************************
 // shader-program resource access type
-typedef coreResourcePtr<coreProgram> coreProgramPtr;
+using coreProgramPtr = coreResourcePtr<coreProgram>;
 
 
 #endif // _CORE_GUARD_SHADER_H_

@@ -33,7 +33,7 @@ private:
 
 
 public:
-    coreRand(const coreUintW& iNumRandoms, const coreUint32 iSeed = CORE_RAND_TIME)noexcept;
+    explicit coreRand(const coreUintW& iNumRandoms, const coreUint32 iSeed = CORE_RAND_TIME)noexcept;
     coreRand(const coreRand& c)noexcept;
     coreRand(coreRand&&      m)noexcept;
     ~coreRand();

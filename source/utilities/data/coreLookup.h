@@ -21,12 +21,12 @@ template <typename K, typename I, typename T> class coreLookupGen
 {
 protected:
     /*! internal types */
-    typedef std::vector<T>                         coreValueList;
-    typedef std::vector<K>                         coreKeyList;
-    typedef typename coreValueList::iterator       coreValueIterator;
-    typedef typename coreValueList::const_iterator coreValueConstIterator;
-    typedef typename coreKeyList  ::iterator       coreKeyIterator;
-    typedef typename coreKeyList  ::const_iterator coreKeyConstIterator;
+    using coreValueList          = std::vector<T>;
+    using coreKeyList            = std::vector<K>;
+    using coreValueIterator      = typename coreValueList::iterator;
+    using coreValueConstIterator = typename coreValueList::const_iterator;
+    using coreKeyIterator        = typename coreKeyList  ::iterator;
+    using coreKeyConstIterator   = typename coreKeyList  ::const_iterator;
 
 
 protected:

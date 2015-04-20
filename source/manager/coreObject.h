@@ -111,7 +111,7 @@ class coreObjectManager final : public coreResourceRelation
 {
 private:
     /*! internal types */
-    typedef std::vector<coreObject3D*> coreObjectList;
+    using coreObjectList = std::vector<coreObject3D*>;
 
     /*! object collision structure */
     struct coreObjectCollision
@@ -245,14 +245,14 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
     const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
-    FOR_EACH(it, oList)
+    for(coreUintW i = 0, ie = oList.size(); i < ie; ++i)
     {
-        coreObject3D* pObject1 = (*it);
+        coreObject3D* pObject1 = oList[i];
         if(!pObject1) continue;
 
-        FOR_EACH_SET(et, it+1u, oList)
+        for(coreUintW j = i + 1u; j < ie; ++j)
         {
-            coreObject3D* pObject2 = (*et);
+            coreObject3D* pObject2 = oList[j];
             if(!pObject2) continue;
 
             // test collision and call function
@@ -271,7 +271,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
 /* test collision between two different lists */
 template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType1, const coreInt32& iType2, F&& nCallback)
 {
-    ASSERT(iType1 && iType2 && iType1 != iType2)
+    ASSERT(iType1 && iType2 && (iType1 != iType2))
 
     // make sure both lists are available
     m_aapObjectList[iType2]; m_aapObjectList[iType1];
@@ -281,14 +281,14 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
     const coreObjectList& oList2 = m_aapObjectList.at(iType2);
 
     // loop through all objects
-    FOR_EACH(it, oList1)
+    for(coreUintW i = 0, ie = oList1.size(); i < ie; ++i)
     {
-        coreObject3D* pObject1 = (*it);
+        coreObject3D* pObject1 = oList1[i];
         if(!pObject1) continue;
 
-        FOR_EACH(et, oList2)
+        for(coreUintW j = 0, je = oList2.size(); j < je; ++j)
         {
-            coreObject3D* pObject2 = (*et);
+            coreObject3D* pObject2 = oList2[j];
             if(!pObject2) continue;
 
             // test collision and call function
@@ -313,9 +313,9 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
     const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
-    FOR_EACH(it, oList)
+    for(coreUintW i = 0, ie = oList.size(); i < ie; ++i)
     {
-        coreObject3D* pCurObject = (*it);
+        coreObject3D* pCurObject = oList[i];
         if(!pCurObject) continue;
 
         // test collision and call function
@@ -338,9 +338,9 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
     const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
-    FOR_EACH(it, oList)
+    for(coreUintW i = 0, ie = oList.size(); i < ie; ++i)
     {
-        coreObject3D* pCurObject = (*it);
+        coreObject3D* pCurObject = oList[i];
         if(!pCurObject) continue;
 
         // test collision and call function

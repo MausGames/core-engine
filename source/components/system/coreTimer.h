@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_TIMER_H_
 #define _CORE_GUARD_TIMER_H_
 
+// TODO: implement flow-interface to reduce clamped to zero
+
 
 // ****************************************************************
 /* timer definitions */
@@ -98,7 +100,7 @@ private:
 
 
 public:
-    constexpr_func coreFlow()noexcept                        : m_fValue (0.0f)   {}
+    constexpr_func coreFlow() = default;
     constexpr_func coreFlow(const coreFloat& fValue)noexcept : m_fValue (fValue) {}
 
     ENABLE_COPY(coreFlow)

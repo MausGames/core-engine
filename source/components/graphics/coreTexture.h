@@ -28,6 +28,8 @@
     #define CORE_TEXTURE_MASK 0x000000FFu, 0x0000FF00u, 0x00FF0000u, 0xFF000000u
 #endif
 
+#define CORE_TEXTURE_SPEC_R             GL_R8,                GL_R,               GL_UNSIGNED_BYTE
+#define CORE_TEXTURE_SPEC_RG            GL_RG8,               GL_RG,              GL_UNSIGNED_BYTE
 #define CORE_TEXTURE_SPEC_RGB           GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE
 #define CORE_TEXTURE_SPEC_RGBA          GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE
 #define CORE_TEXTURE_SPEC_DEPTH         GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT
@@ -137,7 +139,7 @@ private:
 
 // ****************************************************************
 // texture resource access type
-typedef coreResourcePtr<coreTexture> coreTexturePtr;
+using coreTexturePtr = coreResourcePtr<coreTexture>;
 
 
 #endif // _CORE_GUARD_TEXTURE_H_

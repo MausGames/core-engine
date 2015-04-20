@@ -51,7 +51,7 @@ private:
 
 // ****************************************************************
 // font resource access type
-typedef coreResourcePtr<coreFont> coreFontPtr;
+using coreFontPtr = coreResourcePtr<coreFont>;
 
 
 #endif // _CORE_GUARD_FONT_H_

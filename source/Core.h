@@ -324,20 +324,20 @@
 #define I_TO_P(x)  ((void*)(std::intptr_t)(x))   //!< int to pointer
 
 // type definitions
-typedef std::int8_t   coreInt8;
-typedef std::int16_t  coreInt16;
-typedef std::int32_t  coreInt32;
-typedef std::int64_t  coreInt64;
-typedef std::uint8_t  coreUint8;
-typedef std::uint16_t coreUint16;
-typedef std::uint32_t coreUint32;
-typedef std::uint64_t coreUint64;
-typedef std::size_t   coreUintW;
-typedef std::uint8_t  coreByte;
-typedef bool          coreBool;
-typedef char          coreChar;
-typedef float         coreFloat;
-typedef double        coreDouble;
+using coreInt8   = std::int8_t;
+using coreInt16  = std::int16_t;
+using coreInt32  = std::int32_t;
+using coreInt64  = std::int64_t;
+using coreUint8  = std::uint8_t;
+using coreUint16 = std::uint16_t;
+using coreUint32 = std::uint32_t;
+using coreUint64 = std::uint64_t;
+using coreUintW  = std::size_t;
+using coreByte   = std::uint8_t;
+using coreBool   = bool;
+using coreChar   = char;
+using coreFloat  = float;
+using coreDouble = double;
 
 // override string comparison operator (faster but unsecure)
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
@@ -354,7 +354,7 @@ template <typename R, typename C, typename... A> struct function_traits<R(C::*)(
 template <typename R,             typename... A> struct function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
 template <typename R,             typename... A> struct function_traits<R      (A...)>
 {
-    typedef R return_type;                                                                                       //!< return type
+    using return_type = R;                                                                                       //!< return type
     template <coreUintW iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...> >::type;   //!< argument types
     static const coreUintW arity = sizeof...(A);                                                                 //!< number of arguments
 };

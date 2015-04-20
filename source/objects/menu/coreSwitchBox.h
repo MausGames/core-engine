@@ -27,7 +27,7 @@ template <typename T> class coreSwitchBox final : public coreObject2D, public co
 {
 public:
     //! internal type
-    typedef std::pair<std::string, T> coreEntry;
+    using coreEntry = std::pair<std::string, T>;
 
 
 private:
