@@ -77,7 +77,7 @@ public:
 
     /*! check for enabled object routines */
     //! @{
-    inline coreBool IsEnabled(const coreObjectEnable& iEnabled)const {return CONTAINS_VALUE(m_iEnabled, iEnabled) ? true : false;}
+    inline coreBool IsEnabled(const coreObjectEnable& iEnabled)const {ASSERT(iEnabled) return CONTAINS_VALUE(m_iEnabled, iEnabled) ? true : false;}
     //! @}
 
     /*! set object properties */

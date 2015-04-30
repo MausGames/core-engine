@@ -330,16 +330,20 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 /* assignment operator */
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
 {
-    swap(*this, o);
+    std::swap(*this, o);
     return *this;
 }
 
 template <typename S> void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b)noexcept
 {
-    using std::swap;
-    swap(a.m_pHandle, b.m_pHandle);
-    swap(a.m_bActive, b.m_bActive);
+    std::swap(a.m_pHandle, b.m_pHandle);
+    std::swap(a.m_bActive, b.m_bActive);
 }
+
+
+// ****************************************************************
+/* swap specialization */
+namespace std {template<typename S> inline void swap(coreResourcePtr<S>& a, coreResourcePtr<S>& b) {::swap(a, b);}}
 
 
 // ****************************************************************

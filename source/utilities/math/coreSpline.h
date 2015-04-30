@@ -133,16 +133,20 @@ template <typename T> coreSpline<T>::~coreSpline()
 /* assignment operations */
 template <typename T> coreSpline<T>& coreSpline<T>::operator = (coreSpline<T> o)noexcept
 {
-    swap(*this, o);
+    std::swap(*this, o);
     return *this;
 }
 
 template <typename S> void swap(coreSpline<S>& a, coreSpline<S>& b)noexcept
 {
-    using std::swap;
-    swap(a.m_apNode,         b.m_apNode);
-    swap(a.m_fTotalDistance, b.m_fTotalDistance);
+    std::swap(a.m_apNode,         b.m_apNode);
+    std::swap(a.m_fTotalDistance, b.m_fTotalDistance);
 }
+
+
+// ****************************************************************
+/* swap specialization */
+namespace std {template<typename S> inline void swap(coreSpline<S>& a, coreSpline<S>& b) {::swap(a, b);}}
 
 
 // ****************************************************************

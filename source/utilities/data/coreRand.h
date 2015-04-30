@@ -71,4 +71,9 @@ public:
 };
 
 
+// ****************************************************************
+/* swap specialization */
+namespace std {template<> inline void swap(coreRand& a, coreRand& b) {::swap(a, b);}}
+
+
 #endif /* _CORE_GUARD_RAND_H_ */

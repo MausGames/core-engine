@@ -149,6 +149,7 @@ typedef void (GL_APIENTRY * PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint *
 // ****************************************************************
 /* other remapped identifiers */
 #define glClearDepth                     glClearDepthf
+#define glDepthRange                     glDepthRangef
 #define glDrawRangeElements(a,b,c,d,e,f) glDrawElements(a, d, e, f)
 
 

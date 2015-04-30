@@ -62,10 +62,18 @@ coreStatus coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // calculate data size and texture format
+    // calculate data size
     const coreUint32 iDataSize =  pData->w * pData->h * pData->format->BytesPerPixel;
-    const GLenum     iInternal = (pData->format->BytesPerPixel == 4u) ? GL_RGBA8 : GL_RGB8;
-    const GLenum     iFormat   = (pData->format->BytesPerPixel == 4u) ? GL_RGBA  : GL_RGB;
+
+    // define texture format
+    GLenum iInternal, iFormat;
+    switch(pData->format->BytesPerPixel)
+    {
+    default: ASSERT(false)
+    case 1u: iInternal = GL_R8;    iFormat = GL_RED;  break;
+    case 3u: iInternal = GL_RGB8;  iFormat = GL_RGB;  break;
+    case 4u: iInternal = GL_RGBA8; iFormat = GL_RGBA; break;
+    }
 
     // check for compression capability
     const coreTextureMode bCompress = (coreMath::IsPOT(pData->w) && coreMath::IsPOT(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;

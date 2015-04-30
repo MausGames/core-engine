@@ -36,7 +36,7 @@ coreLabel::coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const cor
 coreLabel::~coreLabel()
 {
     // free own texture
-    Core::Manager::Resource->Free(&m_apTexture[0]);
+    Core::Manager::Resource->Free(&m_apTexture[1]);
 }
 
 
@@ -52,8 +52,8 @@ void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, cons
     m_pFont = Core::Manager::Resource->Get<coreFont>(pcFont);
 
     // allocate own texture to display text
-    if(m_apTexture[0]) Core::Manager::Resource->Free(&m_apTexture[0]);
-    m_apTexture[0] = Core::Manager::Resource->LoadNew<coreTexture>();
+    if(m_apTexture[1]) Core::Manager::Resource->Free(&m_apTexture[1]);
+    m_apTexture[1] = Core::Manager::Resource->LoadNew<coreTexture>();
 
     // load shader-program
     this->DefineProgram("default_label_sharp_program");
@@ -157,7 +157,7 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
         m_vResolution = coreVector2(0.0f,0.0f);
         ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
     }
-    else m_apTexture[0]->Unload();
+    else m_apTexture[1]->Unload();
 }
 
 
@@ -182,16 +182,16 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
         }
 
         // update only a specific area of the texture
-        m_apTexture[0]->Modify(0u, 0u, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3u, s_cast<coreByte*>(pConvert->pixels));
+        m_apTexture[1]->Modify(0u, 0u, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3u, s_cast<coreByte*>(pConvert->pixels));
     }
     else
     {
         // delete old texture
-        m_apTexture[0]->Unload();
+        m_apTexture[1]->Unload();
 
         // create new texture
-        m_apTexture[0]->Create(pConvert->w, pConvert->h, CORE_TEXTURE_SPEC_RGB, CORE_TEXTURE_MODE_DEFAULT);
-        m_apTexture[0]->Modify(0u, 0u, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3u, s_cast<coreByte*>(pConvert->pixels));
+        m_apTexture[1]->Create(pConvert->w, pConvert->h, CORE_TEXTURE_SPEC_RGB, CORE_TEXTURE_MODE_DEFAULT);
+        m_apTexture[1]->Modify(0u, 0u, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3u, s_cast<coreByte*>(pConvert->pixels));
 
         // save new texture resolution
         m_vResolution = coreVector2(I_TO_F(pConvert->w), I_TO_F(pConvert->h));

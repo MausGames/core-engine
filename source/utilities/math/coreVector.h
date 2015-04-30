@@ -11,6 +11,7 @@
 #define _CORE_GUARD_VECTOR_H_
 
 // TODO: check out Clang ext_vector_type
+// TODO: check for ()=default constructor
 
 
 // ****************************************************************

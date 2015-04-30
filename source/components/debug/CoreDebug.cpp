@@ -179,7 +179,7 @@ void CoreDebug::__UpdateOutput()
         Core::System->SkipFrame();
 
     // trigger breakpoint
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F4), CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F8), CORE_INPUT_PRESS))
         SDL_TriggerBreakpoint();
 
     // reset engine

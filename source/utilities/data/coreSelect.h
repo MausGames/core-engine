@@ -85,16 +85,20 @@ template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect(coreSele
 /* assignment operations */
 template <typename T, coreUintW iSize> coreSelect<T, iSize>& coreSelect<T, iSize>::operator = (coreSelect<T, iSize> o)noexcept
 {
-    swap(*this, o);
+    std::swap(*this, o);
     return *this;
 }
 
 template <typename S, coreUintW iSize2> void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b)noexcept
 {
-    using std::swap;
-    swap(a.m_atItem,    b.m_atItem);
-    swap(a.m_iCurIndex, b.m_iCurIndex);
+    std::swap(a.m_atItem,    b.m_atItem);
+    std::swap(a.m_iCurIndex, b.m_iCurIndex);
 }
+
+
+// ****************************************************************
+/* swap specialization */
+namespace std {template<typename S, coreUintW iSize2> inline void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b) {::swap(a, b);}}
 
 
 #endif /* _CORE_GUARD_SELECT_H_ */

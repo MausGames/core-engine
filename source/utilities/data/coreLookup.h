@@ -184,18 +184,22 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 /* assignment operations */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookupGen<K, I, T>::operator = (coreLookupGen<K, I, T> o)noexcept
 {
-    swap(*this, o);
+    std::swap(*this, o);
     return *this;
 }
 
 template <typename R, typename O, typename S> void swap(coreLookupGen<R, O, S>& a, coreLookupGen<R, O, S>& b)noexcept
 {
-    using std::swap;
-    swap(a.m_atValueList,  b.m_atValueList);
-    swap(a.m_atKeyList,    b.m_atKeyList);
-    swap(a.m_ptValueCache, b.m_ptValueCache);
-    swap(a.m_ptKeyCache,   b.m_ptKeyCache);
+    std::swap(a.m_atValueList,  b.m_atValueList);
+    std::swap(a.m_atKeyList,    b.m_atKeyList);
+    std::swap(a.m_ptValueCache, b.m_ptValueCache);
+    std::swap(a.m_ptKeyCache,   b.m_ptKeyCache);
 }
+
+
+// ****************************************************************
+/* swap specialization */
+namespace std {template<typename R, typename O, typename S> inline void swap(coreLookupGen<R, O, S>& a, coreLookupGen<R, O, S>& b) {::swap(a, b);}}
 
 
 // ****************************************************************
