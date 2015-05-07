@@ -220,8 +220,10 @@ mat4 coreInvert(const in mat4 m)
 // matrix convert
 #if (__VERSION__) >= 120
     #define coreMat4to3(m) mat3(m)
+    #define coreMat3to2(m) mat2(m)
 #else
     #define coreMat4to3(m) mat3(m[0].xyz, m[1].xyz, m[2].xyz)
+    #define coreMat3to2(m) mat2(m[0].xy,  m[1].xy)
 #endif
 
 // value pack and unpack

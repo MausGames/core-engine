@@ -100,7 +100,7 @@ private:
 
 
 public:
-    constexpr_func coreFlow() = default;
+    coreFlow() = default;
     constexpr_func coreFlow(const coreFloat& fValue)noexcept : m_fValue (fValue) {}
 
     ENABLE_COPY(coreFlow)

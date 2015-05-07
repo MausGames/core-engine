@@ -33,9 +33,11 @@ CoreInput::coreMouse::coreMouse()noexcept
 // ****************************************************************
 // constructor
 CoreInput::coreJoystick::coreJoystick()noexcept
-: pHandle   (NULL)
-, iLast     (0xFFu)
-, vRelative (coreVector2(0.0f,0.0f))
+: pController (NULL)
+, pJoystick   (NULL)
+, pHaptic     (NULL)
+, iLast       (0xFFu)
+, vRelative   (coreVector2(0.0f,0.0f))
 {
     std::memset(aabButton, 0, sizeof(aabButton));
 }
@@ -69,20 +71,42 @@ CoreInput::CoreInput()noexcept
             m_aJoystick.reserve(iNumJoysticks);
             for(coreUintW i = 0u; i < iNumJoysticks; ++i)
             {
-                coreJoystick Joystick;
+                coreJoystick oJoystick;
 
-                // open and save joystick device
-                Joystick.pHandle = SDL_JoystickOpen(i);
-                m_aJoystick.push_back(Joystick);
+                // open game controller and joystick device
+                oJoystick.pController = SDL_GameControllerOpen(i);
+                oJoystick.pJoystick   = oJoystick.pController ? SDL_GameControllerGetJoystick(oJoystick.pController) : SDL_JoystickOpen(i);
 
-                Core::Log->ListAdd("%s (%s)", this->GetJoystickName(i), this->GetJoystickGUID(i));
+                // try to open haptic device
+                oJoystick.pHaptic = SDL_HapticOpenFromJoystick(oJoystick.pJoystick);
+                if(oJoystick.pHaptic)
+                {
+                    // check for simple rumble playback
+                    if(SDL_HapticRumbleInit(oJoystick.pHaptic))
+                    {
+                        SDL_HapticClose(oJoystick.pHaptic);
+                        oJoystick.pHaptic = NULL;
+                    }
+                }
+
+                // save joystick object
+                m_aJoystick.push_back(oJoystick);
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s / %s)", oJoystick.pController ? "Gamepad" : "Joystick",
+                                                                         this->GetJoystickName(i), this->GetJoystickGUID(i),
+                                                                         oJoystick.pHaptic ? "haptic" : "no haptic");
             }
         }
         Core::Log->ListEnd();
+
+        // sort correctly by joystick instance ID
+        std::sort(m_aJoystick.begin(), m_aJoystick.end(), [](const coreJoystick& a, const coreJoystick& b)
+        {
+            return (SDL_JoystickInstanceID(a.pJoystick) < SDL_JoystickInstanceID(b.pJoystick));
+        });
     }
     else Core::Log->Info("No Joysticks or Gamepads found");
 
-    // append empty joystick device to prevent problems
+    // append empty joystick object to prevent problems
     m_aJoystick.push_back(coreJoystick());
 }
 
@@ -91,17 +115,14 @@ CoreInput::CoreInput()noexcept
 // destructor
 CoreInput::~CoreInput()
 {
-#if !defined(_CORE_ANDROID_)
-
-    // close all joystick devices
+    // close all joystick and haptic devices
     FOR_EACH(it, m_aJoystick)
     {
-        if(it->pHandle)
-            SDL_JoystickClose(it->pHandle);
+             if(it->pHaptic)     SDL_HapticClose        (it->pHaptic);
+             if(it->pController) SDL_GameControllerClose(it->pController);
+        else if(it->pJoystick)   SDL_JoystickClose      (it->pJoystick);
     }
     m_aJoystick.clear();
-
-#endif
 
     // free the hardware mouse cursor
     if(m_pCursor) SDL_FreeCursor(m_pCursor);
@@ -171,10 +192,28 @@ void CoreInput::UseMouseWithJoystick(const coreUintW& iIndex, const coreUint8& i
     }
 
     // press mouse buttons
-    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_PRESS))   this->SetMouseButton(1, true);
-    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_RELEASE)) this->SetMouseButton(1, false);
-    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_PRESS))   this->SetMouseButton(2, true);
-    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_RELEASE)) this->SetMouseButton(2, false);
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_PRESS))   {this->SetMouseButton(1, true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_RELEASE)) {this->SetMouseButton(1, false);}
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_PRESS))   {this->SetMouseButton(2, true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_RELEASE)) {this->SetMouseButton(2, false);}
+}
+
+
+// ****************************************************************
+// forward d-pad input to stick input on joystick
+void CoreInput::ForwardDpadToStick(const coreUintW& iIndex)
+{
+    // check for d-pad buttons and invoke stick movement
+         if(this->GetJoystickButton(iIndex, 11u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u,  1.0f);
+    else if(this->GetJoystickButton(iIndex, 12u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u, -1.0f);
+         if(this->GetJoystickButton(iIndex, 13u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u, -1.0f);
+    else if(this->GetJoystickButton(iIndex, 14u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u,  1.0f);
+
+    // reset stick movement on release
+    if(this->GetJoystickButton(iIndex, 11u, CORE_INPUT_RELEASE) ||
+       this->GetJoystickButton(iIndex, 12u, CORE_INPUT_RELEASE)) this->SetJoystickRelative(iIndex, 1u, 0.0f);
+    if(this->GetJoystickButton(iIndex, 13u, CORE_INPUT_RELEASE) ||
+       this->GetJoystickButton(iIndex, 14u, CORE_INPUT_RELEASE)) this->SetJoystickRelative(iIndex, 0u, 0.0f);
 }
 
 
@@ -236,19 +275,28 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& Event)
 
     // press joystick button
     case SDL_JOYBUTTONDOWN:
+        if(__CORE_INPUT_JOYSTICK(Event.jbutton.which).pController) break;
+    case SDL_CONTROLLERBUTTONDOWN:
         this->SetJoystickButton(Event.jbutton.which, Event.jbutton.button, true);
         break;
 
     // release joystick button
     case SDL_JOYBUTTONUP:
+        if(__CORE_INPUT_JOYSTICK(Event.jbutton.which).pController) break;
+    case SDL_CONTROLLERBUTTONUP:
         this->SetJoystickButton(Event.jbutton.which, Event.jbutton.button, false);
         break;
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(ABS(Event.jaxis.value) > CORE_INPUT_JOYSTICK_DEAD)
-            this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, CLAMP(I_TO_F(Event.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
-        else this->SetJoystickRelative(Event.jbutton.which, Event.jaxis.axis, 0.0f);
+        if(__CORE_INPUT_JOYSTICK(Event.jbutton.which).pController) break;
+    case SDL_CONTROLLERAXISMOTION:
+        if(Event.jaxis.axis < 2u)
+        {
+            if(ABS(coreInt32(Event.jaxis.value)) > CORE_INPUT_JOYSTICK_DEAD)
+                 this->SetJoystickRelative(Event.jaxis.which, Event.jaxis.axis, CLAMP(I_TO_F(Event.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
+            else this->SetJoystickRelative(Event.jaxis.which, Event.jaxis.axis, 0.0f);
+        }
         break;
 
     // press finger

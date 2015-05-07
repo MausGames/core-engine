@@ -40,6 +40,8 @@
 #define CORE_CONFIG_AUDIO_SOUNDVOLUME           "Audio",    "SoundVolume",        (1.0f)
 #define CORE_CONFIG_AUDIO_MUSICVOLUME           "Audio",    "MusicVolume",        (1.0f)
 
+#define CORE_CONFIG_INPUT_HAPTIC                "Input",    "Haptic",             (true)
+
 
 // ****************************************************************
 /* configuration file class */

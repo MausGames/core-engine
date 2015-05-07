@@ -341,9 +341,11 @@ public:
     constexpr_func coreVector3 xyzw()const           {return coreVector3(x, y, z)*w;}
     constexpr_func coreVector3 xyz ()const           {return coreVector3(x, y, z);}
     constexpr_func coreVector2 xy  ()const           {return coreVector2(x, y);}
+    constexpr_func coreVector2 yz  ()const           {return coreVector2(y, z);}
     constexpr_func coreVector2 zw  ()const           {return coreVector2(z, w);}
     inline void xyz(const coreVector3& v)            {x = v.x; y = v.y; z = v.z;}
     inline void xy (const coreVector2& v)            {x = v.x; y = v.y;}
+    inline void yz (const coreVector2& v)            {y = v.x; z = v.y;}
     inline void zw (const coreVector2& v)            {z = v.x; w = v.y;}
     //! @}
 

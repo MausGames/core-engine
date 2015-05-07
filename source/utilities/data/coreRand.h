@@ -73,6 +73,7 @@ public:
 
 // ****************************************************************
 /* swap specialization */
+void swap(coreRand& a, coreRand& b)noexcept;
 namespace std {template<> inline void swap(coreRand& a, coreRand& b) {::swap(a, b);}}
 
 

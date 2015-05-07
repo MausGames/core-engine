@@ -28,7 +28,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GetVersion(&oVersion);
 
     // init SDL libraries
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
         Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
     else Core::Log->Info("SDL initialized (%d.%d.%d %s)", oVersion.major, oVersion.minor, oVersion.patch, SDL_GetRevision());
 
@@ -117,7 +117,7 @@ CoreSystem::CoreSystem()noexcept
     // disable screen saver (automatically re-enabled)
     SDL_DisableScreenSaver();
 
-    // init high precision time
+    // init high-precision time
     m_dPerfFrequency = 1.0 / coreDouble(SDL_GetPerformanceFrequency());
     m_iPerfTime      = SDL_GetPerformanceCounter();
 
@@ -258,7 +258,7 @@ coreBool CoreSystem::__UpdateEvents()
 
 
 // ****************************************************************
-// update the high precision time
+// update the high-precision time
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time

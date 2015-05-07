@@ -40,8 +40,8 @@ private:
     coreUint32 m_iCurFrame;                        //!< current frame number since start of the application
     coreUint8  m_iSkipFrame;                       //!< skip frame status
 
-    coreDouble m_dPerfFrequency;                   //!< high precision time coefficient
-    coreUint64 m_iPerfTime;                        //!< high precision time value
+    coreDouble m_dPerfFrequency;                   //!< high-precision time coefficient
+    coreUint64 m_iPerfTime;                        //!< high-precision time value
 
     coreUint8 m_iNumCores;                         //!< number of logical processor cores
     coreFloat m_fSSE;                              //!< available SSE version
@@ -105,7 +105,7 @@ private:
     coreBool __UpdateEvents();
     //! @}
 
-    //! update the high precision time
+    //! update the high-precision time
     //! @{
     void __UpdateTime();
     //! @}

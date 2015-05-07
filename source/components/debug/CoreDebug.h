@@ -30,7 +30,7 @@ private:
     /*! measure structure */
     struct coreMeasure
     {
-        coreUint64 iPerfTime;                                 //!< high precision CPU time value at start
+        coreUint64 iPerfTime;                                 //!< high-precision CPU time value at start
         coreSelect<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
         coreFloat fCurrentCPU;                                //!< current CPU performance value
         coreFloat fCurrentGPU;                                //!< current GPU performance value
@@ -85,6 +85,9 @@ public:
     inline void InspectValue(const coreChar* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
     inline void InspectValue(const coreChar* pcName, const coreVector4& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
     //! @}
+
+    /*! check for debug-monitor status */
+    inline const coreBool& IsEnabled()const {return m_bEnabled;}
 
 
 private:
