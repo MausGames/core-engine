@@ -38,11 +38,14 @@ CoreGraphics::CoreGraphics()noexcept
     // log video card information
     Core::Log->ListStartInfo("Video Card Information");
     {
+        std::string sExtensions;
+        coreExtensions(&sExtensions);
+
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
         Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
         Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Core::Log->ListAdd(r_cast<const coreChar*>(glGetString(GL_EXTENSIONS)));
+        Core::Log->ListAdd(sExtensions.c_str());
     }
     Core::Log->ListEnd();
 
@@ -55,7 +58,7 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // setup texturing
-    glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    if(DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 

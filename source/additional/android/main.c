@@ -1,6 +1,11 @@
-// Modified version for Core Engine
-// Please use the original file from http://hg.libsdl.org/SDL/file/tip/src/main/android/SDL_android_main.c or http://www.libsdl.org/
-
+//////////////////////////////////////////////////////////
+//*----------------------------------------------------*//
+//| Part of the Core Engine (http://www.maus-games.at) |//
+//*----------------------------------------------------*//
+//| Released under the zlib License                    |//
+//| More information available in the readme file      |//
+//*----------------------------------------------------*//
+//////////////////////////////////////////////////////////
 #if defined(__ANDROID__)
 
 #include <SDL2/SDL_config.h>

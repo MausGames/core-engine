@@ -93,7 +93,30 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING));
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) ? 1 : 0);
 
-    // create optional debug context
+    // check for core profile
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE) && !DEFINED(_CORE_GLES_))
+    {
+        // create quick test-window and -context
+        m_pWindow = SDL_CreateWindow("OpenGL Test", -32, -32, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        if(m_pWindow)
+        {
+            SDL_GLContext pContext = SDL_GL_CreateContext(m_pWindow);
+            if(pContext)
+            {
+                // get highest OpenGL version
+                const coreFloat fVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
+                SDL_GL_DeleteContext(pContext);
+
+                // set version and request core profile
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, F_TO_SI(fVersion));
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, F_TO_SI(fVersion*10.0f) % 10);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_CORE);
+            }
+            SDL_DestroyWindow(m_pWindow);
+        }
+    }
+
+    // check for debug context
     if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
@@ -103,7 +126,7 @@ CoreSystem::CoreSystem()noexcept
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
 
-        // override configuration
+        // try compatible configuration
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         16);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
@@ -114,7 +137,7 @@ CoreSystem::CoreSystem()noexcept
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
-    // disable screen saver (automatically re-enabled)
+    // disable screen saver
     SDL_DisableScreenSaver();
 
     // init high-precision time
@@ -148,8 +171,7 @@ CoreSystem::CoreSystem()noexcept
     else if(m_aaiCPUID[1][3] & BIT(26)) m_fSSE = 2.0f;
     else if(m_aaiCPUID[1][3] & BIT(25)) m_fSSE = 1.0f;
                                    else m_fSSE = 0.0f;
-         if(m_aaiCPUID[1][1] & BIT( 5)) m_fAVX = 2.0f;
-    else if(m_aaiCPUID[1][2] & BIT(28)) m_fAVX = 1.0f;
+         if(m_aaiCPUID[1][2] & BIT(28)) m_fAVX = 1.0f;
                                    else m_fAVX = 0.0f;
 
     // log processor information

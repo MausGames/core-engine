@@ -53,7 +53,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(V_ENG_LIB_PATH)/include \
 LOCAL_SRC_FILES := $(V_SRC_PATH)/main.cpp                                \
                    $(V_SRC_PATH)/application.cpp                         \
                    $(V_ENG_PATH)/Core.cpp                                \
-                   $(V_ENG_PATH)/additional/android/SDL_android_main.c   \
+                   $(V_ENG_PATH)/additional/android/main.c               \
                    $(V_ENG_PATH)/additional/coreGLES.cpp                 \
                    $(V_ENG_PATH)/components/audio/CoreAudio.cpp          \
                    $(V_ENG_PATH)/components/audio/coreMusic.cpp          \

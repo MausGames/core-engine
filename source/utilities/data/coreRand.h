@@ -56,6 +56,7 @@ public:
     inline coreInt16 Int  (const coreInt16& iMin, const coreInt16& iMax) {return iMin +       (this->Raw()  % (iMax - iMin  +  1));}
     inline coreFloat Float(const coreFloat& fMax)                        {return        I_TO_F(this->Raw()) *  fMax         * (1.0f / I_TO_F(CORE_RAND_MAX));}
     inline coreFloat Float(const coreFloat& fMin, const coreFloat& fMax) {return fMin + I_TO_F(this->Raw()) * (fMax - fMin) * (1.0f / I_TO_F(CORE_RAND_MAX));}
+    inline coreBool  Bool ()                                             {return              (this->Raw()  & 0x0001) ? true : false;}
     //! @}
 
     /*! get object properties */

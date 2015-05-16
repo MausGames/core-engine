@@ -27,6 +27,7 @@ extern void __coreInitOpenGL();
 
 // ****************************************************************
 /* check for extensions */
+extern void coreExtensions(std::string* OUTPUT sOutput);
 #define CORE_GL_SUPPORT(e) ((GLEW_ ## e) ? true : false)
 
 

@@ -118,3 +118,12 @@ void __coreInitOpenGLES()
         __CORE_GLES_VAR_SET(GL_RGBA8, GL_RGBA4)
     }
 }
+
+
+// ****************************************************************
+/* get extension string */
+void coreExtensions(std::string* OUTPUT sOutput)
+{
+    // copy saved extension string
+    *sOutput = g_sExtensions;
+}

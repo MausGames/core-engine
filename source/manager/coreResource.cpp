@@ -223,7 +223,7 @@ coreStatus coreResourceManager::__InitThread()
     Core::Log->DebugOpenGL();
 
     // setup texturing
-    glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    if(DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 

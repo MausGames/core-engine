@@ -84,9 +84,6 @@
     <ClCompile Include="..\..\..\source\components\audio\coreMusic.cpp">
       <Filter>source\components\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\additional\android\SDL_android_main.c">
-      <Filter>source\additional\android</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\utilities\data\coreData.cpp">
       <Filter>source\utilities\data</Filter>
     </ClCompile>
@@ -170,6 +167,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\components\debug\CoreDebug.cpp">
       <Filter>source\components\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\android\main.c">
+      <Filter>source\additional\android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreCPUID.cpp">
+      <Filter>source\additional</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -310,6 +313,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\debug\CoreDebug.h">
       <Filter>source\components\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\coreCPUID.h">
+      <Filter>source\additional</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

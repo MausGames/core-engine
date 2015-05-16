@@ -10,6 +10,8 @@
 #ifndef _CORE_GLES_H_
 #define	_CORE_GLES_H_
 
+// TODO: __CORE_GLES_CHECK does not handle sub-strings
+
 
 // ****************************************************************
 /* default extensions */
@@ -271,6 +273,7 @@ extern void __coreInitOpenGLES();
 
 // ****************************************************************
 /* check for extensions */
+extern void coreExtensions(std::string* OUTPUT sOutput);
 #define CORE_GL_SUPPORT(e) (CORE_GL_ ## e)
 
 

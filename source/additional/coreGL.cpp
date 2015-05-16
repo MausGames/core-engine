@@ -143,3 +143,35 @@ void __coreInitOpenGL()
     if(!GLEW_EXT_framebuffer_object)
         Core::Log->Warning("Frame Buffer Objects not supported, application may not work properly");
 }
+
+
+// ****************************************************************
+/* get extension string */
+void coreExtensions(std::string* OUTPUT sOutput)
+{
+    if(GLEW_VERSION_3_0)
+    {
+        // get number of available extensions
+        GLint iNumExtensions;
+        glGetIntegerv(GL_NUM_EXTENSIONS, &iNumExtensions);
+
+        // reserve some memory
+        sOutput->reserve(iNumExtensions * 64u);
+
+        // concatenate all extensions to a single string
+        for(coreUintW i = 0u, ie = iNumExtensions; i < ie; ++i)
+        {
+            *sOutput += r_cast<const coreChar*>(glGetStringi(GL_EXTENSIONS, i));
+            *sOutput += ' ';
+        }
+
+        // reduce output size
+        sOutput->pop_back();
+        sOutput->shrink_to_fit();
+    }
+    else
+    {
+        // get full extension string
+        *sOutput = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
+    }
+}
