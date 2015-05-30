@@ -32,9 +32,6 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
     else Core::Log->Info("SDL initialized (%d.%d.%d %s)", oVersion.major, oVersion.minor, oVersion.patch, SDL_GetRevision());
 
-    // get number of logical processor cores
-    m_iNumCores = MAX(SDL_GetCPUCount(), 1);
-
     // retrieve desktop resolution
     SDL_DisplayMode oDesktop;
     SDL_GetDesktopDisplayMode(0, &oDesktop);
@@ -151,38 +148,12 @@ CoreSystem::CoreSystem()noexcept
         m_afTimeSpeed[i] = 1.0f;
     }
 
-    // retrieve features of the processor
-#if defined(_CORE_SSE_)
-    #if defined(_CORE_MSVC_)
-        __cpuid(m_aaiCPUID[0], 0);
-        __cpuid(m_aaiCPUID[1], 1);
-    #else
-        asm volatile("cpuid" : "=a" (m_aaiCPUID[0][0]), "=b" (m_aaiCPUID[0][1]), "=c" (m_aaiCPUID[0][2]), "=d" (m_aaiCPUID[0][3]) : "a" (0), "c" (0));
-        asm volatile("cpuid" : "=a" (m_aaiCPUID[1][0]), "=b" (m_aaiCPUID[1][1]), "=c" (m_aaiCPUID[1][2]), "=d" (m_aaiCPUID[1][3]) : "a" (1), "c" (0));
-    #endif
-#else
-    std::memset(m_aaiCPUID, 0, sizeof(m_aaiCPUID));
-#endif
-
-    // check for SIMD support
-         if(m_aaiCPUID[1][2] & BIT(20)) m_fSSE = 4.2f;
-    else if(m_aaiCPUID[1][2] & BIT(19)) m_fSSE = 4.1f;
-    else if(m_aaiCPUID[1][2] & BIT( 0)) m_fSSE = 3.0f;
-    else if(m_aaiCPUID[1][3] & BIT(26)) m_fSSE = 2.0f;
-    else if(m_aaiCPUID[1][3] & BIT(25)) m_fSSE = 1.0f;
-                                   else m_fSSE = 0.0f;
-         if(m_aaiCPUID[1][2] & BIT(28)) m_fAVX = 1.0f;
-                                   else m_fAVX = 0.0f;
-
     // log processor information
     Core::Log->ListStartInfo("Platform Information");
     {
-        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                              coreData::SystemName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %.4s%.4s%.4s (%d Logical Cores)", r_cast<coreChar*>(&m_aaiCPUID[0][1]), r_cast<coreChar*>(&m_aaiCPUID[0][3]), r_cast<coreChar*>(&m_aaiCPUID[0][2]), m_iNumCores);
-        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MB",                           SDL_GetSystemRAM());
-        Core::Log->ListAdd(CORE_LOG_BOLD("SIMD Support:")     " SSE %s, AVX %s",                  m_fSSE ? PRINT("%.1f", m_fSSE) : "-", m_fAVX ? PRINT("%.1f", m_fAVX) : "-");
-        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[0]:")         " %08X %08X %08X %08X",             m_aaiCPUID[0][0], m_aaiCPUID[0][1], m_aaiCPUID[0][2], m_aaiCPUID[0][3]);
-        Core::Log->ListAdd(CORE_LOG_BOLD("CPUID[1]:")         " %08X %08X %08X %08X",             m_aaiCPUID[1][0], m_aaiCPUID[1][1], m_aaiCPUID[1][2], m_aaiCPUID[1][3]);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                                             coreData::SystemName());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %s (%s, %d Logical Cores, %d Bytes Cache Line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MiB",                                         SDL_GetSystemRAM());
     }
     Core::Log->ListEnd();
 }
@@ -232,14 +203,14 @@ coreBool CoreSystem::__UpdateEvents()
     m_bMinimized = false;
 
     // process events
-    SDL_Event Event;
-    while(SDL_PollEvent(&Event))
+    SDL_Event oEvent;
+    while(SDL_PollEvent(&oEvent))
     {
-        switch(Event.type)
+        switch(oEvent.type)
         {
         // control window
         case SDL_WINDOWEVENT:
-            switch(Event.window.event)
+            switch(oEvent.window.event)
             {
             // minimize window
             case SDL_WINDOWEVENT_HIDDEN:
@@ -252,8 +223,8 @@ coreBool CoreSystem::__UpdateEvents()
 
             // close window
             case SDL_WINDOWEVENT_CLOSE:
-                if(Event.window.windowID == SDL_GetWindowID(m_pWindow)) this->Quit();
-                else SDL_DestroyWindow(SDL_GetWindowFromID(Event.window.windowID));
+                if(oEvent.window.windowID == SDL_GetWindowID(m_pWindow)) this->Quit();
+                else SDL_DestroyWindow(SDL_GetWindowFromID(oEvent.window.windowID));
                 break;
             }
             break;
@@ -271,7 +242,7 @@ coreBool CoreSystem::__UpdateEvents()
             break;
 
         // forward event to input component
-        default: if(!Core::Input->ProcessEvent(Event)) return true;
+        default: if(!Core::Input->ProcessEvent(oEvent)) return true;
         }
     }
 

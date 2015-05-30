@@ -219,102 +219,102 @@ void CoreInput::ForwardDpadToStick(const coreUintW& iIndex)
 
 // ****************************************************************
 // process input events
-coreBool CoreInput::ProcessEvent(const SDL_Event& Event)
+coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 {
-    switch(Event.type)
+    switch(oEvent.type)
     {
     // set text-input character
     case SDL_TEXTINPUT:
-        Core::Input->SetKeyboardChar(Event.text.text[0]);
+        Core::Input->SetKeyboardChar(oEvent.text.text[0]);
         break;
 
     // press keyboard button
     case SDL_KEYDOWN:
-        this->SetKeyboardButton(Event.key.keysym.scancode, true);
-             if(Event.key.keysym.scancode == CORE_INPUT_KEY(BACKSPACE)) this->SetKeyboardChar(CORE_INPUT_CHAR(BACKSPACE));
-        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(RETURN))    this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
-        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(KP_ENTER))  this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
-        else if(Event.key.keysym.mod & KMOD_CTRL)
+        this->SetKeyboardButton(oEvent.key.keysym.scancode, true);
+             if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(BACKSPACE)) this->SetKeyboardChar(CORE_INPUT_CHAR(BACKSPACE));
+        else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(RETURN))    this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
+        else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(KP_ENTER))  this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
+        else if(oEvent.key.keysym.mod & KMOD_CTRL)
         {
-                 if(Event.key.keysym.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
-            else if(Event.key.keysym.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
-            else if(Event.key.keysym.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
+                 if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
+            else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
+            else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
         }
-        else if(Event.key.keysym.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;
+        else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;
         break;
 
     // release keyboard button
     case SDL_KEYUP:
-        this->SetKeyboardButton(Event.key.keysym.scancode, false);
+        this->SetKeyboardButton(oEvent.key.keysym.scancode, false);
         break;
 
     // press mouse button
     case SDL_MOUSEBUTTONDOWN:
-        this->SetMouseButton(Event.button.button, true);
+        this->SetMouseButton(oEvent.button.button, true);
         break;
 
     // release mouse button
     case SDL_MOUSEBUTTONUP:
-        this->SetMouseButton(Event.button.button, false);
+        this->SetMouseButton(oEvent.button.button, false);
         break;
 
     // move mouse position
     case SDL_MOUSEMOTION:
-        if(Event.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x) ||
-           Event.motion.y != F_TO_SI(0.5f*Core::System->GetResolution().y))
+        if(oEvent.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x) ||
+           oEvent.motion.y != F_TO_SI(0.5f*Core::System->GetResolution().y))
         {
-            this->SetMousePosition(coreVector2(I_TO_F(Event.motion.x),    -I_TO_F(Event.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
-            this->SetMouseRelative(coreVector2(I_TO_F(Event.motion.xrel), -I_TO_F(Event.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
+            this->SetMousePosition(coreVector2(I_TO_F(oEvent.motion.x),    -I_TO_F(oEvent.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
+            this->SetMouseRelative(coreVector2(I_TO_F(oEvent.motion.xrel), -I_TO_F(oEvent.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
         }
         break;
 
     // move mouse wheel
     case SDL_MOUSEWHEEL:
-        this->SetMouseWheel(I_TO_F(Event.wheel.y));
+        this->SetMouseWheel(I_TO_F(oEvent.wheel.y));
         break;
 
     // press joystick button
     case SDL_JOYBUTTONDOWN:
-        if(__CORE_INPUT_JOYSTICK(Event.jbutton.which).pController) break;
+        if(__CORE_INPUT_JOYSTICK(oEvent.jbutton.which).pController) break;
     case SDL_CONTROLLERBUTTONDOWN:
-        this->SetJoystickButton(Event.jbutton.which, Event.jbutton.button, true);
+        this->SetJoystickButton(oEvent.jbutton.which, oEvent.jbutton.button, true);
         break;
 
     // release joystick button
     case SDL_JOYBUTTONUP:
-        if(__CORE_INPUT_JOYSTICK(Event.jbutton.which).pController) break;
+        if(__CORE_INPUT_JOYSTICK(oEvent.jbutton.which).pController) break;
     case SDL_CONTROLLERBUTTONUP:
-        this->SetJoystickButton(Event.jbutton.which, Event.jbutton.button, false);
+        this->SetJoystickButton(oEvent.jbutton.which, oEvent.jbutton.button, false);
         break;
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(__CORE_INPUT_JOYSTICK(Event.jbutton.which).pController) break;
+        if(__CORE_INPUT_JOYSTICK(oEvent.jbutton.which).pController) break;
     case SDL_CONTROLLERAXISMOTION:
-        if(Event.jaxis.axis < 2u)
+        if(oEvent.jaxis.axis < 2u)
         {
-            if(ABS(coreInt32(Event.jaxis.value)) > CORE_INPUT_JOYSTICK_DEAD)
-                 this->SetJoystickRelative(Event.jaxis.which, Event.jaxis.axis, CLAMP(I_TO_F(Event.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (Event.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
-            else this->SetJoystickRelative(Event.jaxis.which, Event.jaxis.axis, 0.0f);
+            if(ABS(coreInt32(oEvent.jaxis.value)) > CORE_INPUT_JOYSTICK_DEAD)
+                 this->SetJoystickRelative(oEvent.jaxis.which, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (oEvent.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
+            else this->SetJoystickRelative(oEvent.jaxis.which, oEvent.jaxis.axis, 0.0f);
         }
         break;
 
     // press finger
     case SDL_FINGERDOWN:
-        this->SetTouchButton  (coreUintW(Event.tfinger.fingerId), true);
-        this->SetTouchPosition(coreUintW(Event.tfinger.fingerId), coreVector2(Event.tfinger.x, -Event.tfinger.y) + coreVector2(-0.5f,0.5f));
+        this->SetTouchButton  (coreUintW(oEvent.tfinger.fingerId), true);
+        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerId), coreVector2(oEvent.tfinger.x, -oEvent.tfinger.y) + coreVector2(-0.5f,0.5f));
         break;
 
     // release finger
     case SDL_FINGERUP:
-        this->SetTouchButton(coreUintW(Event.tfinger.fingerId), false);
+        this->SetTouchButton(coreUintW(oEvent.tfinger.fingerId), false);
         break;
 
     // move finger
     case SDL_FINGERMOTION:
-        this->SetTouchPosition(coreUintW(Event.tfinger.fingerId), coreVector2(Event.tfinger.x,  -Event.tfinger.y)  + coreVector2(-0.5f,0.5f));
-        this->SetTouchRelative(coreUintW(Event.tfinger.fingerId), coreVector2(Event.tfinger.dx, -Event.tfinger.dy) + this->GetTouchRelative(coreUintW(Event.tfinger.fingerId)));
-        this->SetTouchPressure(coreUintW(Event.tfinger.fingerId), Event.tfinger.pressure);
+        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerId), coreVector2(oEvent.tfinger.x,  -oEvent.tfinger.y)  + coreVector2(-0.5f,0.5f));
+        this->SetTouchRelative(coreUintW(oEvent.tfinger.fingerId), coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(coreUintW(oEvent.tfinger.fingerId)));
+        this->SetTouchPressure(coreUintW(oEvent.tfinger.fingerId), oEvent.tfinger.pressure);
         break;
     }
 

@@ -13,6 +13,7 @@
 // TODO: re-implement relative object behavior (additional classes?)
 // TODO: new collisions with lines are not saved correctly (no line identification)
 // TODO: GL_NV_fill_rectangle for low-memory model (state-tracking for polygon-mode ?)
+// TODO: single triangle for fullscreen processing ?
 
 
 // ****************************************************************

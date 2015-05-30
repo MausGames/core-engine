@@ -177,11 +177,11 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
     }
 
     // read number of files
-    coreUint16 iSize;
-    SDL_RWread(pArchive, &iSize, sizeof(coreUint16), 1u);
+    coreUint16 iFiles;
+    SDL_RWread(pArchive, &iFiles, sizeof(coreUint16), 1u);
 
     // read file headers
-    for(coreUintW i = iSize; i--; )
+    for(coreUintW i = iFiles; i--; )
     {
         coreUint8  iPathLen;
         coreChar   acPath[256];
@@ -203,7 +203,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 
     // close archive
     SDL_RWclose(pArchive);
-    Core::Log->Info("Archive (%s:%u) opened", m_sPath.c_str(), iSize);
+    Core::Log->Info("Archive (%s:%u) opened", m_sPath.c_str(), iFiles);
 }
 
 
@@ -237,8 +237,8 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     SDL_RWwrite(pArchive, aiHead, sizeof(coreUint32), 2u);
 
     // save number of files
-    const coreUint16 iSize = m_apFile.size();
-    SDL_RWwrite(pArchive, &iSize, sizeof(coreUint16), 1u);
+    const coreUint16 iFiles = m_apFile.size();
+    SDL_RWwrite(pArchive, &iFiles, sizeof(coreUint16), 1u);
 
     // cache missing file data
     FOR_EACH(it, m_apFile)

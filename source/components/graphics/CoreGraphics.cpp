@@ -319,7 +319,7 @@ void CoreGraphics::Screenshot(const coreChar* pcPath)const
         }
 
         // delete pixel data
-        delete pData;
+        delete[] pData;
         return CORE_OK;
     });
 }

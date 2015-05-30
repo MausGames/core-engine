@@ -247,9 +247,9 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
         const coreVector3 N = coreVector3::Cross(A1.Normalized(), A2.Normalized());
 
         // calculate local tangent vector parameters
-        const coreFloat   R  = RCP(B1.s*B2.t - B2.s*B1.t);
-        const coreVector3 D1 = (A1*B2.t - A2*B1.t) * R;
-        const coreVector3 D2 = (A2*B1.s - A1*B2.s) * R;
+        const coreFloat   R  = RCP(B1.x*B2.y - B2.x*B1.y);
+        const coreVector3 D1 = (A1*B2.y - A2*B1.y) * R;
+        const coreVector3 D2 = (A2*B1.x - A1*B2.x) * R;
 
         for(coreUintW j = 0u; j < 3u; ++j)
         {

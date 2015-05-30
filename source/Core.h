@@ -50,6 +50,7 @@
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 // TODO: check pointer-int conversions
 // TODO: reduce core-prefix ? (e.g. cr)
+// TODO: inline coreUintW operator "" _uw (unsigned long long i) {return coreUintW(i);} 
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -245,12 +246,13 @@
 #define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
 
-#define BIT(n)               (1u << (n))
+#define BIT(n)               (1u << (n))   // starts with 0
+#define BITLINE(n)           (BIT(n) - 1u)
 #define ADD_BIT(o,n)         { (o) |=     BIT(n);}
 #define ADD_VALUE(o,n)       { (o) |=        (n);}
 #define REMOVE_BIT(o,n)      { (o) &=    ~BIT(n);}
 #define REMOVE_VALUE(o,n)    { (o) &=       ~(n);}
-#define CONTAINS_BIT(o,n)    ( (o) &      BIT(n))
+#define CONTAINS_BIT(o,n)    (((o) &      BIT(n)) ? true : false)
 #define CONTAINS_VALUE(o,n)  (((o) & (n)) == (n))
 
 #define FOR_EACH(i,c)        for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
@@ -502,6 +504,7 @@ private:
 #else
     #include "additional/coreGL.h"
 #endif
+#include "additional/coreCPUID.h"
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
 #include "utilities/data/coreSelect.h"

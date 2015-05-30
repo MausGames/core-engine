@@ -92,8 +92,8 @@ coreStatus coreShader::Load(coreFile* pFile)
     coreShader::__LoadGlobalCode();
 
     // assemble the shader
-    const coreChar* apcData[6] = {s_asGlobalCode[0].c_str(),              pcTypeDef,              pcQualityDef,  m_sCustomCode.c_str(),  s_asGlobalCode[1].c_str(), r_cast<const coreChar*>(pFile->GetData())};
-    const coreInt32 aiSize [6] = {s_asGlobalCode[0].length(), std::strlen(pcTypeDef), std::strlen(pcQualityDef), m_sCustomCode.length(), s_asGlobalCode[1].length(),                        pFile->GetSize()};
+    const coreChar* apcData[6] = {          s_asGlobalCode[0].c_str(),                         pcTypeDef,                         pcQualityDef,             m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),   r_cast<const coreChar*>(pFile->GetData())};
+    const coreInt32 aiSize [6] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()),               coreInt32(pFile->GetSize())};
 
     // create and compile the shader
     m_iShader = glCreateShader(m_iType);

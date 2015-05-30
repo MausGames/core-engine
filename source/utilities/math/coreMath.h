@@ -69,7 +69,7 @@ public:
     template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)        {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
     template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)        {return LERP(x, y, SIN(s*PI*0.5f));}
     template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                {return ((c-r) <= x && x <= (c+r));}
-    template <typename T> static inline         coreBool IsPOT     (const T& x)                                        {return !(x & (x - 1));}
+    template <typename T> static inline         coreBool IsPOT     (const T& x)                                        {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */

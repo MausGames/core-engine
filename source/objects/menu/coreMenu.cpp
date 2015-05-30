@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreMenu::coreMenu(const coreUint8& iNumSurfaces, const coreUint8& iStartSurface)
+coreMenu::coreMenu(const coreUint8& iNumSurfaces, const coreUint8& iStartSurface)noexcept
 : m_pCurObject   (NULL)
 , m_iNumSurfaces (iNumSurfaces)
 , m_iCurSurface  (iStartSurface)

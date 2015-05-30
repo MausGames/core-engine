@@ -22,8 +22,7 @@ public:
     union
     {
         struct {coreFloat x, y;};
-        struct {coreFloat u, v;};
-        struct {coreFloat s, t;};
+        struct {coreFloat r, g;};
         coreFloat arr[2];
     };
 

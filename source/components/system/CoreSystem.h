@@ -43,11 +43,6 @@ private:
     coreDouble m_dPerfFrequency;                   //!< high-precision time coefficient
     coreUint64 m_iPerfTime;                        //!< high-precision time value
 
-    coreUint8 m_iNumCores;                         //!< number of logical processor cores
-    coreFloat m_fSSE;                              //!< available SSE version
-    coreFloat m_fAVX;                              //!< available AVX version
-    coreInt32 m_aaiCPUID[2][4];                    //!< features of the processor
-
 
 private:
     CoreSystem()noexcept;
@@ -89,13 +84,6 @@ public:
     inline const coreUint32&               GetCurFrame     ()const                     {return m_iCurFrame;}
     inline const coreDouble&               GetPerfFrequency()const                     {return m_dPerfFrequency;}
     inline const coreUint64&               GetPerfTime     ()const                     {return m_iPerfTime;}
-    //! @}
-
-    //! check hardware support
-    //! @{
-    inline const coreUint8& SupportNumCores()const {return m_iNumCores;}
-    inline const coreFloat& SupportSSE     ()const {return m_fSSE;}
-    inline const coreFloat& SupportAVX     ()const {return m_fAVX;}
     //! @}
 
 
