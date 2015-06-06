@@ -18,6 +18,7 @@
 // TODO: load, allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT ?)
 // TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
 // TODO: last few compressed mipmap levels contain only garbage
+// TODO: check out AMD compress library, when other formats are required (e.g. for Android)
 
 
 // ****************************************************************

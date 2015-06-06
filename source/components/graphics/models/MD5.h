@@ -171,7 +171,7 @@ struct md5File
             if(i) aMesh.push_back(std::move(md5Mesh(ppcData)));
             else for(coreUintW j = iNumJoints; j--; ) aJoint.push_back(md5Joint(ppcData));
 
-            MD5_SCAN(*ppcData, "%*s")
+            if(i != iNumMeshes) MD5_SCAN(*ppcData, "%*s")   // # ignore last symbol, because there is no 0-delimiter
         }
     }
 

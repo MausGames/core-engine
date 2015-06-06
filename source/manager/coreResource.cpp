@@ -263,14 +263,14 @@ void coreResourceManager::__LoadDefault()
     this->Load<coreShader> ("default_label_sharp.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_sharp.frag");
     this->Load<coreFont>   ("default.ttf",              CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
 
-    ((coreProgram*)    this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
-        ->AttachShader(this->Get <coreShader> ("default_2d.vert"))
-        ->AttachShader(this->Get <coreShader> ("default_2d.frag"))
+    s_cast<coreProgram*>(this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
+        ->AttachShader  (this->Get <coreShader> ("default_2d.vert"))
+        ->AttachShader  (this->Get <coreShader> ("default_2d.frag"))
         ->Finish();
 
-    ((coreProgram*)    this->Load<coreProgram>("default_label_sharp_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
-        ->AttachShader(this->Get <coreShader> ("default_label.vert"))
-        ->AttachShader(this->Get <coreShader> ("default_label_sharp.frag"))
+    s_cast<coreProgram*>(this->Load<coreProgram>("default_label_sharp_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
+        ->AttachShader  (this->Get <coreShader> ("default_label.vert"))
+        ->AttachShader  (this->Get <coreShader> ("default_label_sharp.frag"))
         ->Finish();
 
     Core::Log->Info("Default resources loaded");

@@ -365,16 +365,16 @@ template <typename R,             typename... A> struct function_traits<R      (
 #define TRAIT_ARITY(f)       function_traits<f>::arity
 
 // default color values
-#define COLOR_WHITE  coreVector3(1.000f, 1.000f, 1.000f)
-#define COLOR_YELLOW coreVector3(1.000f, 0.824f, 0.392f)
-#define COLOR_ORANGE coreVector3(1.000f, 0.443f, 0.227f)
-#define COLOR_RED    coreVector3(1.000f, 0.275f, 0.275f)
-#define COLOR_PURPLE coreVector3(0.710f, 0.333f, 1.000f)
-#define COLOR_BLUE   coreVector3(0.102f, 0.702f, 1.000f)
-#define COLOR_GREEN  coreVector3(0.118f, 0.745f, 0.353f)
-#define COLOR_BRONZE coreVector3(0.925f, 0.663f, 0.259f)
-#define COLOR_SILVER coreVector3(0.855f, 0.855f, 0.878f)
-#define COLOR_GOLD   coreVector3(1.000f, 0.859f, 0.000f)
+#define COLOR_WHITE  (coreVector3(1.000f, 1.000f, 1.000f))
+#define COLOR_YELLOW (coreVector3(1.000f, 0.824f, 0.392f))
+#define COLOR_ORANGE (coreVector3(1.000f, 0.443f, 0.227f))
+#define COLOR_RED    (coreVector3(1.000f, 0.275f, 0.275f))
+#define COLOR_PURPLE (coreVector3(0.710f, 0.333f, 1.000f))
+#define COLOR_BLUE   (coreVector3(0.102f, 0.702f, 1.000f))
+#define COLOR_GREEN  (coreVector3(0.118f, 0.745f, 0.353f))
+#define COLOR_BRONZE (coreVector3(0.925f, 0.663f, 0.259f))
+#define COLOR_SILVER (coreVector3(0.855f, 0.855f, 0.878f))
+#define COLOR_GOLD   (coreVector3(1.000f, 0.859f, 0.000f))
 
 enum coreStatus : coreInt8
 {

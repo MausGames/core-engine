@@ -100,6 +100,18 @@ SDL_Surface* coreFont::CreateGlyph(const coreUint16& iGlyph, const coreUint8& iH
 
 
 // ****************************************************************
+// retrieve the dimensions of a glyph
+void coreFont::RetrieveGlyphMetrics(const coreUint16& iGlyph, const coreUint8& iHeight, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
+{
+    // check for specific height
+    if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
+
+    // retrieve the dimensions of a glyph
+    TTF_GlyphMetrics(m_apFont.at(iHeight), iGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
+}
+
+
+// ****************************************************************
 // init font in a specific height
 coreBool coreFont::__InitHeight(const coreUint8& iHeight)
 {

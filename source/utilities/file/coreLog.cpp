@@ -12,37 +12,38 @@
 // ****************************************************************
 /* constructor */
 coreLog::coreLog(const coreChar* pcPath)noexcept
-: m_sPath       (pcPath)
+: m_pFile       (NULL)
+, m_sPath       (pcPath)
 , m_iLevel      (CORE_LOG_LEVEL_ALL)
 , m_iMainThread (0u)
 , m_iLock       (0)
 , m_bListStatus (false)
 {
     // open and reset log file
-    std::FILE* pFile = std::fopen(m_sPath.c_str(), "w");
-    if(pFile)
+    m_pFile = std::fopen(m_sPath.c_str(), "w");
+    if(m_pFile)
     {
         // write basic style sheet
-        std::fputs("<!DOCTYPE html>                                 \n", pFile);
-        std::fputs("<style type=\"text/css\">                       \n", pFile);
-        std::fputs("  body    {font: 0.95em courier new;}           \n", pFile);
-        std::fputs(" .time    {color: #AAA;}                        \n", pFile);
-        std::fputs(" .thread1 {color: green;}                       \n", pFile);
-        std::fputs(" .thread2 {color: olive;}                       \n", pFile);
-        std::fputs(" .data    {color: teal;}                        \n", pFile);
-        std::fputs(" .gl      {color: purple;}                      \n", pFile);
-        std::fputs(" .warning {font-weight: bold; color: coral;}    \n", pFile);
-        std::fputs(" .error   {font-weight: bold; color: red;}      \n", pFile);
-        std::fputs(" .header  {font-weight: bold; font-size: 1.4em;}\n", pFile);
-        std::fputs(" .list    {font-weight: bold;}                  \n", pFile);
-        std::fputs("</style>                                        \n", pFile);
+        std::fputs("<!DOCTYPE html>                                 \n", m_pFile);
+        std::fputs("<style type=\"text/css\">                       \n", m_pFile);
+        std::fputs("  body    {font: 0.95em courier new;}           \n", m_pFile);
+        std::fputs(" .time    {color: #AAA;}                        \n", m_pFile);
+        std::fputs(" .thread1 {color: green;}                       \n", m_pFile);
+        std::fputs(" .thread2 {color: olive;}                       \n", m_pFile);
+        std::fputs(" .data    {color: teal;}                        \n", m_pFile);
+        std::fputs(" .gl      {color: purple;}                      \n", m_pFile);
+        std::fputs(" .warning {font-weight: bold; color: coral;}    \n", m_pFile);
+        std::fputs(" .error   {font-weight: bold; color: red;}      \n", m_pFile);
+        std::fputs(" .header  {font-weight: bold; font-size: 1.4em;}\n", m_pFile);
+        std::fputs(" .list    {font-weight: bold;}                  \n", m_pFile);
+        std::fputs("</style>                                        \n", m_pFile);
 
         // write application data and timestamp
-        std::fprintf(pFile, CORE_LOG_BOLD("Executable:") " %s/%s %s %s <br />\n", DEFINED(_CORE_X64_) ? "x64" : "x86", coreData::AppName(), __DATE__, __TIME__);
-        std::fprintf(pFile, CORE_LOG_BOLD("Started on:") " %s %s       <br />\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s/%s %s %s <br />\n", DEFINED(_CORE_X64_) ? "x64" : "x86", coreData::AppName(), __DATE__, __TIME__);
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s       <br />\n", coreData::DateString(), coreData::TimeString());
 
-        // close log file
-        std::fclose(pFile);
+        // flush log file
+        std::fflush(m_pFile);
 
         // save thread-ID from the creator
         m_iMainThread = SDL_ThreadID() % 10000u;
@@ -56,6 +57,9 @@ coreLog::~coreLog()
 {
     // append final line
     this->__Write(false, "<hr />");
+
+    // close log file
+    std::fclose(m_pFile);
 }
 
 
@@ -111,9 +115,8 @@ void coreLog::__Write(const coreBool& bTime, std::string sText)
         SDL_Log(sText.substr(0, SDL_MAX_LOG_MESSAGE).c_str());
 
 #endif
-        // open log file
-        std::FILE* pFile = std::fopen(m_sPath.c_str(), "a");
-        if(pFile)
+        // check for valid log file
+        if(m_pFile)
         {
             // color brackets and convert new lines
             coreData::StrReplace(&sText, "(",  "<span class=\"data\">(");
@@ -126,16 +129,16 @@ void coreLog::__Write(const coreBool& bTime, std::string sText)
                 const SDL_threadID iThread = SDL_ThreadID() % 10000u;
 
                 // write timestamp and thread-ID
-                std::fprintf(pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
+                std::fprintf(m_pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
                              coreData::TimeString(), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
             }
 
             // write text
-            std::fputs(sText.c_str(), pFile);
-            std::fputs("\n",          pFile);
+            std::fputs(sText.c_str(), m_pFile);
+            std::fputs("\n",          m_pFile);
 
-            // close log file
-            std::fclose(pFile);
+            // flush log file
+            std::fflush(m_pFile);
         }
     }
     SDL_AtomicUnlock(&m_iLock);

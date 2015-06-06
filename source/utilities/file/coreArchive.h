@@ -17,9 +17,9 @@
 
 // ****************************************************************
 // file definitions
-#define CORE_FILE_MAGIC     0x012F5B66u    //!< magic number of core-archives
-#define CORE_FILE_VERSION   0x00000001u    //!< current file version of core-archives
-#define CORE_FILE_EXTENSION "cfa"          //!< extension of core-archives
+#define CORE_FILE_MAGIC     (0x012F5B66u)   //!< magic number of core-archives
+#define CORE_FILE_VERSION   (0x00000001u)   //!< current file version of core-archives
+#define CORE_FILE_EXTENSION "cfa"           //!< extension of core-archives
 
 
 // ****************************************************************

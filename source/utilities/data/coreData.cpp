@@ -162,6 +162,19 @@ coreStatus coreData::OpenURL(const coreChar* pcURL)
 /* check if file exists */
 coreBool coreData::FileExists(const coreChar* pcPath)
 {
+#if defined(_CORE_WINDOWS_)
+
+    // quick Windows check
+    return (GetFileAttributes(pcPath) == INVALID_FILE_ATTRIBUTES) ? false : true;
+
+#elif defined(_CORE_LINUX_)
+
+    // quick Linux check (with POSIX)
+    struct stat oBuffer;
+    return stat(pcPath, &oBuffer) ? false : true;
+
+#else
+
     // open file
     SDL_RWops* pFile = SDL_RWFromFile(pcPath, "r");
     if(pFile)
@@ -170,8 +183,9 @@ coreBool coreData::FileExists(const coreChar* pcPath)
         SDL_RWclose(pFile);
         return true;
     }
-
     return false;
+
+#endif
 }
 
 

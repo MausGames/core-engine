@@ -19,6 +19,8 @@
 
 // ****************************************************************
 // menu label definitions
+#define CORE_LABEL_DETAIL (0.95f)
+
 enum coreLabelUpdate : coreUint8
 {
     CORE_LABEL_UPDATE_NOTHING = 0x00u,   //!< update nothing
@@ -37,8 +39,8 @@ private:
     coreFontPtr m_pFont;         //!< font object
     coreUint8   m_iHeight;       //!< specific height for the font
 
-    coreVector2 m_vResolution;   //!< resolution of the generated texture
     coreUint8   m_iLength;       //!< max number of characters (0 = dynamic)
+    coreVector2 m_vResolution;   //!< resolution of the generated texture
 
     std::string m_sText;         //!< current text
     coreFloat   m_fScale;        //!< scale factor
@@ -74,8 +76,10 @@ public:
 
     //! get object properties
     //! @{
-    inline const coreVector2& GetResolution()const {return m_vResolution;}
+    inline const coreFontPtr& GetFont      ()const {return m_pFont;}
+    inline const coreUint8&   GetHeight    ()const {return m_iHeight;}
     inline const coreUint8&   GetLength    ()const {return m_iLength;}
+    inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreChar*    GetText      ()const {return m_sText.c_str();}
     inline const coreFloat&   GetScale     ()const {return m_fScale;}
     //! @}

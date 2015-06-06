@@ -8,15 +8,13 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-#define CORE_LABEL_DETAIL 0.95f
-
 
 // ****************************************************************
 // constructor
 coreLabel::coreLabel()noexcept
 : m_iHeight     (0u)
-, m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLength     (0u)
+, m_vResolution (coreVector2(0.0f,0.0f))
 , m_sText       ("")
 , m_fScale      (1.0f)
 , m_iUpdate     (CORE_LABEL_UPDATE_NOTHING)
@@ -83,7 +81,7 @@ void coreLabel::Render()
         if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
         {
             // update the object size
-            this->SetSize(m_fScale * m_vTexSize * (m_vResolution * RCP(Core::System->GetResolution().y)) * (1.0f / CORE_LABEL_DETAIL));
+            this->SetSize(m_vTexSize * m_vResolution * (m_fScale * RCP(Core::System->GetResolution().y) / CORE_LABEL_DETAIL));
             coreObject2D::Move();
         }
 

@@ -32,6 +32,20 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
     else Core::Log->Info("SDL initialized (%d.%d.%d %s)", oVersion.major, oVersion.minor, oVersion.patch, SDL_GetRevision());
 
+    // load all available displays
+    const coreUintW iNumDisplays = SDL_GetNumVideoDisplays();
+    if(iNumDisplays)
+    {
+        Core::Log->ListStartInfo("Available Displays");
+        {
+            // retrieve display
+            for(coreUintW i = 0u; i < iNumDisplays; ++i)
+                Core::Log->ListAdd(CORE_LOG_BOLD("%u:") " %s", i+1u, SDL_GetDisplayName(i));
+        }
+        Core::Log->ListEnd();
+    }
+    else Core::Log->Warning("Could not get available displays (SDL: %s)", SDL_GetError());
+
     // retrieve desktop resolution
     SDL_DisplayMode oDesktop;
     SDL_GetDesktopDisplayMode(0, &oDesktop);
@@ -136,6 +150,9 @@ CoreSystem::CoreSystem()noexcept
 
     // disable screen saver
     SDL_DisableScreenSaver();
+
+    // grab mouse on fullscreen
+    if(m_iFullscreen == 2u) SDL_SetWindowGrab(m_pWindow, SDL_TRUE);
 
     // init high-precision time
     m_dPerfFrequency = 1.0 / coreDouble(SDL_GetPerformanceFrequency());

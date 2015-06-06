@@ -40,6 +40,13 @@ public:
     SDL_Surface* CreateGlyph(const coreUint16& iGlyph, const coreUint8& iHeight);
     //! @}
 
+    //! retrieve font-related attributes
+    //! @{
+    inline const coreChar* RetrieveFamilyName() {ASSERT(!m_apFont.empty()) return TTF_FontFaceFamilyName(m_apFont.at(1u));}
+    inline const coreChar* RetrieveStyleName () {ASSERT(!m_apFont.empty()) return TTF_FontFaceStyleName (m_apFont.at(1u));}
+    void RetrieveGlyphMetrics(const coreUint16& iGlyph, const coreUint8& iHeight, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
+    //! @}
+
 
 private:
     //! init the font in a specific height

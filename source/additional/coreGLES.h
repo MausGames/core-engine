@@ -23,10 +23,17 @@
 #define CORE_GL_ARB_geometry_shader4           false
 #define CORE_GL_ARB_sync                       false
 #define CORE_GL_ARB_direct_state_access        false
-#define CORE_GL_ARB_vertex_type_2_10_10_10_rev false
 #define CORE_GL_ARB_timer_query                false
 #define CORE_GL_KHR_debug                      false
 #define CORE_GL_EXT_framebuffer_object         true
+
+
+// ****************************************************************
+/* GL_ARB_vertex_type_2_10_10_10_rev (no GLES extension) */
+#define CORE_GL_ARB_vertex_type_2_10_10_10_rev __CORE_GLES_VAR(GL_ARB_vertex_type_2_10_10_10_rev)
+
+#define GL_UNSIGNED_INT_2_10_10_10_REV 0x8368
+#define GL_INT_2_10_10_10_REV          0x8D9F
 
 
 // ****************************************************************
@@ -141,7 +148,6 @@ typedef void (GL_APIENTRY * PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint *
 /* GL_OES_texture_stencil8 (mapped on GL_ARB_texture_stencil8) */
 #define CORE_GL_ARB_texture_stencil8 __CORE_GLES_VAR(GL_OES_texture_stencil8)
 
-
 // ****************************************************************
 /* GL_OES_rgb8_rgba8 (silent) */
 #define GL_RGB8  __CORE_GLES_VAR(GL_RGB8)
@@ -177,8 +183,6 @@ typedef uint64_t GLuint64;
 #define GL_TESS_EVALUATION_SHADER      0x8E87
 #define GL_TESS_CONTROL_SHADER         0x8E88
 #define GL_GEOMETRY_SHADER             0x8DD9
-#define GL_UNSIGNED_INT_2_10_10_10_REV 0x8368
-#define GL_INT_2_10_10_10_REV          0x8D9F
 #define GL_TIMESTAMP                   0x8E28
 #define GL_QUERY_RESULT                0x8866
 
@@ -221,6 +225,7 @@ struct coreContext
     coreFloat __fVersion;
     coreBool  __bES3;
 
+    GLboolean __GL_ARB_vertex_type_2_10_10_10_rev;
     GLboolean __GL_EXT_discard_framebuffer;
     GLboolean __GL_EXT_texture_storage;
     GLboolean __GL_EXT_map_buffer_range;

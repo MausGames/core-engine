@@ -81,6 +81,7 @@ CoreGraphics::CoreGraphics()noexcept
     // setup rasterization
     glEnable(GL_MULTISAMPLE);
     glDisable(GL_DITHER);
+    glDisable(GL_FRAMEBUFFER_SRGB);
     glColorMask(true, true, true, true);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 

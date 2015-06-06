@@ -120,6 +120,8 @@ void coreMenu::Move()
 // bind menu object
 void coreMenu::BindObject(const coreUintW& iSurface, coreObject2D* pObject)
 {
+    ASSERT(iSurface < m_iNumSurfaces)
+
 #if defined(_CORE_DEBUG_)
 
     // check for duplicate menu objects
@@ -138,6 +140,8 @@ void coreMenu::BindObject(const coreUintW& iSurface, coreObject2D* pObject)
 // unbind menu object
 void coreMenu::UnbindObject(const coreUintW& iSurface, coreObject2D* pObject)
 {
+    ASSERT(iSurface < m_iNumSurfaces)
+
     // loop through all menu objects
     FOR_EACH(it, m_papObject[iSurface])
     {

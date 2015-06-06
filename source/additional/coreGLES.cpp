@@ -28,6 +28,9 @@ void __coreInitOpenGLES()
     g_CoreContext.__bES3     = (g_CoreContext.__fVersion >= 3.0f);
     const coreBool& bES3     =  g_CoreContext.__bES3;
 
+    // implement GL_ARB_vertex_type_2_10_10_10_rev
+    __CORE_GLES_CHECK(GL_ARB_vertex_type_2_10_10_10_rev, bES3);
+
     // implement GL_EXT_discard_framebuffer
     if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))
     {

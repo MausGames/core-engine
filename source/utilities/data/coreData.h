@@ -40,7 +40,7 @@ public:
     /*! create formatted string */
     //! @{
     template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
-    static inline                   RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
+    static constexpr_func           RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
     //! @}
 
     /*! get application properties */
