@@ -250,17 +250,18 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
                 {
                     // compress data
-                    const coreUint32  iRotation  = pObject->GetRotation().PackSnorm4x8();
-                    const coreUint32  iColor     = pObject->GetColor4  ().PackUnorm4x8();
-                    const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
+                    const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f).PackFloat4x16();
+                    const coreUint32 iRotation  = pObject->GetRotation().PackSnorm4x8();
+                    const coreUint32 iColor     = pObject->GetColor4  ().PackUnorm4x8();
+                    const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
                     ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                     // write data to the buffer
                     std::memcpy(pCursor,                                                &pObject->GetPosition(), sizeof(coreVector3));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &pObject->GetSize(),     sizeof(coreVector3));
-                    std::memcpy(pCursor + 6u*sizeof(coreFloat),                         &iRotation,              sizeof(coreUint32));
-                    std::memcpy(pCursor + 6u*sizeof(coreFloat) + 1u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
-                    std::memcpy(pCursor + 6u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &vTexParams,             sizeof(coreVector4));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iSize,                  sizeof(coreUint64));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iRotation,              sizeof(coreUint32));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 3u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32), &iTexParams,             sizeof(coreUint64));
                     pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
                 }
             }
@@ -484,7 +485,7 @@ void coreBatchList::Clear()
 void coreBatchList::__Reset(const coreResourceReset& bInit)
 {
     // check for OpenGL extensions
-    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;
 
     if(bInit)
     {
@@ -498,10 +499,10 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
                 // create instance data buffers
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3u, GL_FLOAT,         false, 3u*sizeof(coreFloat));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_BYTE,          false, 6u*sizeof(coreFloat));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 6u*sizeof(coreFloat) + 1u*sizeof(coreUint32));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_FLOAT,         false, 6u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_BYTE,          false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 3u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32));
             }
 
             // invoke buffer update

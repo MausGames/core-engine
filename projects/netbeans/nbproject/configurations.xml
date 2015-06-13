@@ -8,6 +8,8 @@
         <logicalFolder name="android" displayName="android" projectFiles="true">
           <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
         </logicalFolder>
+        <itemPath>../../source/additional/coreCPUID.cpp</itemPath>
+        <itemPath>../../source/additional/coreCPUID.h</itemPath>
         <itemPath>../../source/additional/coreGL.cpp</itemPath>
         <itemPath>../../source/additional/coreGL.h</itemPath>
         <itemPath>../../source/additional/coreGLES.cpp</itemPath>
@@ -167,6 +169,16 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -579,6 +591,16 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/additional/coreCPUID.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
@@ -989,6 +1011,16 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -1409,6 +1441,16 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/additional/coreCPUID.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
@@ -1828,6 +1870,16 @@
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="../../source/additional/coreCPUID.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
@@ -2245,6 +2297,16 @@
       <item path="../../source/Core.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/Core.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="../../source/additional/coreCPUID.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -256,12 +256,6 @@
     <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp" />
-    <ClCompile Include="..\..\..\source\objects\game\coreScene.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\objects\menu\coreButton.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp" />
@@ -308,7 +302,6 @@
     <ClInclude Include="..\..\..\source\objects\game\coreObject2D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreParticle.h" />
-    <ClInclude Include="..\..\..\source\objects\game\coreScene.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreButton.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreCheckBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h" />

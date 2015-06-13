@@ -99,13 +99,13 @@ void coreParticleSystem::Render()
                 else std::memcpy(pCursor, &oCurrent.vPosition, sizeof(coreVector3));
 
                 // compress remaining data
-                const coreVector3 vData  = coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue());
-                const coreUint32  iColor = oCurrent.vColor.PackUnorm4x8();
+                const coreUint64 iData  = coreVector4(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue(), 0.0f).PackFloat4x16();
+                const coreUint32 iColor = oCurrent.vColor.PackUnorm4x8();
                 ASSERT(oCurrent.vColor.Min() >= 0.0f && oCurrent.vColor.Max() <= 1.0f)
 
                 // write remaining data to the buffer
-                std::memcpy(pCursor + 1u*sizeof(coreVector3), &vData,  sizeof(coreVector3));
-                std::memcpy(pCursor + 2u*sizeof(coreVector3), &iColor, sizeof(coreUint32));
+                std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iData,  sizeof(coreUint64));
+                std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iColor, sizeof(coreUint32));
                 pCursor += CORE_PARTICLE_INSTANCE_SIZE;
             }
 
@@ -281,7 +281,7 @@ void coreParticleSystem::ClearAll()
 void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 {
     // check for OpenGL extensions
-    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;
 
     if(bInit)
     {
@@ -295,8 +295,8 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
             // create instance data buffers
             it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3u, GL_FLOAT,         false, 3u*sizeof(coreFloat));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 6u*sizeof(coreFloat));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
+            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
 
             // set vertex data
             Core::Manager::Object->GetLowModel()->GetVertexBuffer(0u)->Activate(0u);

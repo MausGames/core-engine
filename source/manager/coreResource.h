@@ -375,9 +375,11 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     // create new resource handle
     coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), pcPath ? this->RetrieveFile(pcPath) : NULL, pcName, bUpdate ? true : false);
 
-    // add resource handle to manager
-    SDL_AtomicLock  (&m_iLock);
-    m_apHandle[pcName] = pNewHandle;
+    SDL_AtomicLock(&m_iLock);
+    {
+        // add resource handle to manager
+        m_apHandle[pcName] = pNewHandle;
+    }
     SDL_AtomicUnlock(&m_iLock);
 
     return pNewHandle;

@@ -12,6 +12,7 @@
 
 // TODO: SIN and COS with pre-calculated table ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?) what about sincos ?
 // TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4), put SSE version checks static into coreData ?
+// TODO: FUNC_CONST on every function in this class ?
 
 
 // ****************************************************************
@@ -101,6 +102,12 @@ public:
     static inline coreFloat Ceil (const coreFloat& fInput)                             {return std::ceil (fInput);}
     static inline coreFloat Floor(const coreFloat& fInput)                             {return std::floor(fInput);}
     //! @}
+
+    /*! converting operations */
+    //! @{
+    static inline coreUint16 Float32to16(const coreFloat&  fInput);
+    static inline coreFloat  Float16to32(const coreUint16& iInput);
+    //! @}
 };
 
 
@@ -172,6 +179,28 @@ inline coreFloat coreMath::Rcp(coreFloat fInput)
 
     return fInput;
 }
+
+
+// ****************************************************************
+/* convert single-precision float into half-precision */
+inline coreUint16 coreMath::Float32to16(const coreFloat& fInput)
+{
+    const coreUint32 A = *r_cast<const coreUint32*>(&fInput);
+
+    return (A & 0x7F800000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x1C000u) |
+                                 ((A & 0x80000000u) >> 16u)) : 0u;
+};
+
+
+// ****************************************************************
+/* convert half-precision float into single-precision */
+inline coreFloat coreMath::Float16to32(const coreUint16& iInput)
+{
+    const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
+                                                (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
+
+    return *r_cast<const coreFloat*>(&A);
+};
 
 
 #endif /* _CORE_GUARD_MATH_H_ */

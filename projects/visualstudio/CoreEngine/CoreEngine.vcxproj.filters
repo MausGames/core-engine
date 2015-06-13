@@ -156,9 +156,6 @@
     <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp">
       <Filter>source\objects\game</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\objects\game\coreScene.cpp">
-      <Filter>source\objects\game</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGL.cpp">
       <Filter>source\additional</Filter>
     </ClCompile>
@@ -291,9 +288,6 @@
       <Filter>source\components\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\game\coreParticle.h">
-      <Filter>source\objects\game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\objects\game\coreScene.h">
       <Filter>source\objects\game</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreGL.h">

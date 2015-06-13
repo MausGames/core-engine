@@ -148,7 +148,7 @@ public:
 
     //! process input events
     //! @{
-    coreBool ProcessEvent(const SDL_Event& Event);
+    coreBool ProcessEvent(const SDL_Event& oEvent);
     //! @}
 
     //! access keyboard input

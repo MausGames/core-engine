@@ -24,6 +24,7 @@
 #define CORE_GL_ARB_sync                       false
 #define CORE_GL_ARB_direct_state_access        false
 #define CORE_GL_ARB_timer_query                false
+#define CORE_GL_ARB_half_float_vertex          false   // different token value in OES_vertex_half_float
 #define CORE_GL_KHR_debug                      false
 #define CORE_GL_EXT_framebuffer_object         true
 
@@ -185,6 +186,7 @@ typedef uint64_t GLuint64;
 #define GL_GEOMETRY_SHADER             0x8DD9
 #define GL_TIMESTAMP                   0x8E28
 #define GL_QUERY_RESULT                0x8866
+#define GL_HALF_FLOAT                  0x140B   // 0x8D61 in OES_vertex_half_float
 
 typedef void (GL_APIENTRY * GLDEBUGPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 inline void      glDrawBuffer                    (GLenum mode)                                                                                                                                                                            {}
