@@ -147,9 +147,9 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
 
     if(pMeasure == m_pOverall)
     {
-        // add additional performance information (framerate and system utilization)
+        // add additional performance information (framerate and process memory)
         const coreFloat& fTime = Core::System->GetTime();
-        if(fTime) pcName = PRINT("%s%s %.1f %05.1f%%", pcName, SDL_GL_GetSwapInterval() ? "*" : "", RCP(fTime), fTime*6000.0f);
+        if(fTime) pcName = PRINT("%s%s %.1f, %.2fMiB", pcName, SDL_GL_GetSwapInterval() ? "*" : "", RCP(fTime), coreDouble(coreData::AppMemory()) / 1048576.0);
     }
 
     // write formatted values to output label

@@ -251,17 +251,17 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 {
                     // compress data
                     const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f).PackFloat4x16();
-                    const coreUint32 iRotation  = pObject->GetRotation().PackSnorm4x8();
-                    const coreUint32 iColor     = pObject->GetColor4  ().PackUnorm4x8();
+                    const coreUint64 iRotation  = pObject->GetRotation().PackSnorm4x16();
+                    const coreUint32 iColor     = pObject->GetColor4  ().PackUnorm4x8 ();
                     const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
                     ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
                     // write data to the buffer
                     std::memcpy(pCursor,                                                &pObject->GetPosition(), sizeof(coreVector3));
                     std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iSize,                  sizeof(coreUint64));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iRotation,              sizeof(coreUint32));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 3u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32), &iTexParams,             sizeof(coreUint64));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iRotation,              sizeof(coreUint64));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32), &iTexParams,             sizeof(coreUint64));
                     pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
                 }
             }
@@ -500,9 +500,9 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_BYTE,          false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 3u*sizeof(coreUint32));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32));
             }
 
             // invoke buffer update

@@ -76,7 +76,7 @@ public:
     /*! elementary operations */
     //! @{
     template <coreUintW iBase> static inline coreFloat Log(const coreFloat& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
-    static inline coreFloat Fract(const coreFloat& fInput)                          {return fInput - I_TO_F(F_TO_SI(fInput));}
+    static inline coreFloat Fract(const coreFloat& fInput)                          {return fInput - std::trunc(fInput);}
     static inline coreFloat Sqrt (const coreFloat& fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
     static inline coreFloat Rsqrt(coreFloat fInput);
     static inline coreFloat Rcp  (coreFloat fInput);

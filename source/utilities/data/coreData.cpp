@@ -10,6 +10,7 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <shellapi.h>
+    #include <Psapi.h>
     #include <VersionHelpers.h>
 #elif defined(_CORE_LINUX_)
     #include <dirent.h>
@@ -23,6 +24,48 @@
 
 thread_local coreChar  coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
 thread_local coreUintW coreData::m_iCurString                                                = 0u;
+
+
+// ****************************************************************
+/* get amount of memory physically mapped to the application */
+coreUint64 coreData::AppMemory()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // get process handle
+    HANDLE pProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, GetCurrentProcessId());
+    if(pProcess)
+    {
+        PROCESS_MEMORY_COUNTERS oMemory;
+
+        // retrieve memory usage information
+        GetProcessMemoryInfo(pProcess, &oMemory, sizeof(oMemory));
+        CloseHandle(pProcess);
+
+        // return current working set size
+        return oMemory.WorkingSetSize;
+    }
+
+#elif defined(_CORE_LINUX_)
+
+    // open memory pseudo-file
+    std::FILE* pFile = std::fopen("/proc/self/statm", "r");
+    if(pFile)
+    {
+        coreUint64 iPages;
+
+        // read resident set size (in pages)
+        std::fscanf(pFile, "%*s %llu", &iPages);
+        std::fclose(pFile);
+
+        // multiply with page-size and return
+        return iPages * sysconf(_SC_PAGESIZE);
+    }
+
+#endif
+
+    return 0u;
+}
 
 
 // ****************************************************************

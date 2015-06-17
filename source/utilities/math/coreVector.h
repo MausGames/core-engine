@@ -366,13 +366,17 @@ public:
 
     /*! packing functions */
     //! @{
+    constexpr_func        coreUint32  PackSnorm210   ()const;
     constexpr_func        coreUint32  PackUnorm4x8   ()const;
     constexpr_func        coreUint32  PackSnorm4x8   ()const;
-    constexpr_func        coreUint32  PackSnorm210   ()const;
+    constexpr_func        coreUint64  PackUnorm4x16  ()const;
+    constexpr_func        coreUint64  PackSnorm4x16  ()const;
     inline                coreUint64  PackFloat4x16  ()const;
+    static inline         coreVector4 UnpackSnorm210 (const coreUint32& iNumber);
     static constexpr_func coreVector4 UnpackUnorm4x8 (const coreUint32& iNumber);
     static inline         coreVector4 UnpackSnorm4x8 (const coreUint32& iNumber);
-    static inline         coreVector4 UnpackSnorm210 (const coreUint32& iNumber);
+    static constexpr_func coreVector4 UnpackUnorm4x16(const coreUint64& iNumber);
+    static inline         coreVector4 UnpackSnorm4x16(const coreUint64& iNumber);
     static inline         coreVector4 UnpackFloat4x16(const coreUint64& iNumber);
     //! @}
 
@@ -591,6 +595,17 @@ inline coreVector3 coreVector3::RGBtoHSV()const
 
 
 // ****************************************************************
+/* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint */
+constexpr_func coreUint32 coreVector4::PackSnorm210()const
+{
+    return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : w*  1.0f) << 30u) |
+           (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : z*511.0f) << 20u) |
+           (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : y*511.0f) << 10u) |
+           (F_TO_UI((x < 0.0f) ? (1024.0f + x*512.0f) : x*511.0f));
+};
+
+
+// ****************************************************************
 /* compress 0.0 to 1.0 vector into WZYX packed uint */
 constexpr_func coreUint32 coreVector4::PackUnorm4x8()const
 {
@@ -613,13 +628,24 @@ constexpr_func coreUint32 coreVector4::PackSnorm4x8()const
 
 
 // ****************************************************************
-/* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint */
-constexpr_func coreUint32 coreVector4::PackSnorm210()const
+/* compress 0.0 to 1.0 vector into WZYX packed uint64 */
+constexpr_func coreUint64 coreVector4::PackUnorm4x16()const
 {
-    return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : w*  1.0f) << 30u) |
-           (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : z*511.0f) << 20u) |
-           (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : y*511.0f) << 10u) |
-           (F_TO_UI((x < 0.0f) ? (1024.0f + x*512.0f) : x*511.0f));
+    return (coreUint64(w * 65535.0f) << 48u) |
+           (coreUint64(z * 65535.0f) << 32u) |
+           (coreUint64(y * 65535.0f) << 16u) |
+           (coreUint64(x * 65535.0f));
+};
+
+
+// ****************************************************************
+/* compress -1.0 to 1.0 vector into WZYX packed uint64 */
+constexpr_func coreUint64 coreVector4::PackSnorm4x16()const
+{
+    return (coreUint64((w < 0.0f) ? (65536.0f + w*32768.0f) : w*32767.0f) << 48u) |
+           (coreUint64((z < 0.0f) ? (65536.0f + z*32768.0f) : z*32767.0f) << 32u) |
+           (coreUint64((y < 0.0f) ? (65536.0f + y*32768.0f) : y*32767.0f) << 16u) |
+           (coreUint64((x < 0.0f) ? (65536.0f + x*32768.0f) : x*32767.0f));
 };
 
 
@@ -631,6 +657,22 @@ inline coreUint64 coreVector4::PackFloat4x16()const
            (coreUint64(coreMath::Float32to16(z)) << 32u) |
            (coreUint64(coreMath::Float32to16(y)) << 16u) |
            (coreUint64(coreMath::Float32to16(x)));
+}
+
+
+// ****************************************************************
+/* uncompress 2_10_10_10_rev packed uint into -1.0 to 1.0 vector */
+inline coreVector4 coreVector4::UnpackSnorm210(const coreUint32& iNumber)
+{
+    const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0x3FFu),
+                                      I_TO_F((iNumber >> 10u) & 0x3FFu),
+                                      I_TO_F((iNumber >> 20u) & 0x3FFu),
+                                      I_TO_F((iNumber >> 30u) & 0x003u));
+
+    return coreVector4((A.x >= 512.0f) ? ((A.x - 1024.0f)/512.0f) : (A.x/511.0f),
+                       (A.y >= 512.0f) ? ((A.y - 1024.0f)/512.0f) : (A.y/511.0f),
+                       (A.z >= 512.0f) ? ((A.z - 1024.0f)/512.0f) : (A.z/511.0f),
+                       (A.w >=   2.0f) ? ((A.w -    4.0f)/  2.0f) : (A.w/  1.0f));
 }
 
 
@@ -662,18 +704,29 @@ inline coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32& iNumber)
 
 
 // ****************************************************************
-/* uncompress 2_10_10_10_rev packed uint into -1.0 to 1.0 vector */
-inline coreVector4 coreVector4::UnpackSnorm210(const coreUint32& iNumber)
+/* uncompress WZYX packed uint64 into 0.0 to 1.0 vector */
+constexpr_func coreVector4 coreVector4::UnpackUnorm4x16(const coreUint64& iNumber)
 {
-    const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0x3FFu),
-                                      I_TO_F((iNumber >> 10u) & 0x3FFu),
-                                      I_TO_F((iNumber >> 20u) & 0x3FFu),
-                                      I_TO_F((iNumber >> 30u) & 0x003u));
+    return coreVector4(I_TO_F( iNumber         & 0xFFFFu),
+                       I_TO_F((iNumber >> 16u) & 0xFFFFu),
+                       I_TO_F((iNumber >> 32u) & 0xFFFFu),
+                       I_TO_F((iNumber >> 48u) & 0xFFFFu)) * 1.525902190e-5f;
+}
 
-    return coreVector4((A.x >= 512.0f) ? ((A.x - 1024.0f)/512.0f) : (A.x/511.0f),
-                       (A.y >= 512.0f) ? ((A.y - 1024.0f)/512.0f) : (A.y/511.0f),
-                       (A.z >= 512.0f) ? ((A.z - 1024.0f)/512.0f) : (A.z/511.0f),
-                       (A.w >=   2.0f) ? ((A.w -    4.0f)/  2.0f) : (A.w/  1.0f));
+
+// ****************************************************************
+/* uncompress WZYX packed uint64 into -1.0 to 1.0 vector */
+inline coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64& iNumber)
+{
+    const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0xFFFFu),
+                                      I_TO_F((iNumber >> 16u) & 0xFFFFu),
+                                      I_TO_F((iNumber >> 32u) & 0xFFFFu),
+                                      I_TO_F((iNumber >> 48u) & 0xFFFFu));
+
+    return coreVector4((A.x >= 32768.0f) ? ((A.x - 65536.0f)/32768.0f) : (A.x/32767.0f),
+                       (A.y >= 32768.0f) ? ((A.y - 65536.0f)/32768.0f) : (A.y/32767.0f),
+                       (A.z >= 32768.0f) ? ((A.z - 65536.0f)/32768.0f) : (A.z/32767.0f),
+                       (A.w >= 32768.0f) ? ((A.w - 65536.0f)/32768.0f) : (A.w/32767.0f));
 }
 
 
