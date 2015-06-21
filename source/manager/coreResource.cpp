@@ -60,9 +60,10 @@ coreResourceRelation::~coreResourceRelation()
 // ****************************************************************
 /* constructor */
 coreResourceManager::coreResourceManager()noexcept
-: coreThread ("resource_thread")
-, m_iLock    (0)
-, m_bActive  (false)
+: coreThread      ("resource_thread")
+, m_iResourceLock (0)
+, m_iFileLock     (0)
+, m_bActive       (false)
 {
     // start up the resource manager
     this->Reset(CORE_RESOURCE_RESET_INIT);
@@ -107,7 +108,7 @@ void coreResourceManager::UpdateResources()
     // check for current status
     if(m_bActive)
     {
-        SDL_AtomicLock(&m_iLock);
+        SDL_AtomicLock(&m_iResourceLock);
         {
             for(coreUintW i = 0u; i < m_apHandle.size(); ++i)
             {
@@ -115,12 +116,12 @@ void coreResourceManager::UpdateResources()
                 if(m_apHandle[i]->__AutoUpdate())
                 {
                     // allow changes during iteration
-                    SDL_AtomicUnlock(&m_iLock);
-                    SDL_AtomicLock  (&m_iLock);
+                    SDL_AtomicUnlock(&m_iResourceLock);
+                    SDL_AtomicLock  (&m_iResourceLock);
                 }
             }
         }
-        SDL_AtomicUnlock(&m_iLock);
+        SDL_AtomicUnlock(&m_iResourceLock);
     }
 }
 
@@ -129,6 +130,8 @@ void coreResourceManager::UpdateResources()
 /* retrieve archive */
 coreArchive* coreResourceManager::RetrieveArchive(const coreChar* pcPath)
 {
+    coreLockRelease oRelease(m_iFileLock);
+
     // check for existing archive
     if(m_apArchive.count(pcPath)) return m_apArchive[pcPath];
 
@@ -145,6 +148,8 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreChar* pcPath)
 /* retrieve resource file */
 coreFile* coreResourceManager::RetrieveFile(const coreChar* pcPath)
 {
+    coreLockRelease oRelease(m_iFileLock);
+
     // try to open direct resource file first
     if(!coreData::FileExists(pcPath))
     {

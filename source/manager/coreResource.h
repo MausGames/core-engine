@@ -200,7 +200,8 @@ private:
 
     std::u_set<coreResourceRelation*> m_apRelation;   //!< objects to reset with the resource manager
 
-    SDL_SpinLock m_iLock;                             //!< spinlock to prevent invalid resource handle access
+    SDL_SpinLock m_iResourceLock;                     //!< spinlock to prevent invalid resource handle access
+    SDL_SpinLock m_iFileLock;                         //!< spinlock to prevent invalid resource file access
     coreBool m_bActive;                               //!< current management status
 
 
@@ -375,12 +376,12 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     // create new resource handle
     coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), pcPath ? this->RetrieveFile(pcPath) : NULL, pcName, bUpdate ? true : false);
 
-    SDL_AtomicLock(&m_iLock);
+    SDL_AtomicLock(&m_iResourceLock);
     {
         // add resource handle to manager
         m_apHandle[pcName] = pNewHandle;
     }
-    SDL_AtomicUnlock(&m_iLock);
+    SDL_AtomicUnlock(&m_iResourceLock);
 
     return pNewHandle;
 }
@@ -396,7 +397,7 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* pptReso
     coreResourceHandle* pHandle = pptResourcePtr->GetHandle();
     if(pHandle)
     {
-        SDL_AtomicLock(&m_iLock);
+        SDL_AtomicLock(&m_iResourceLock);
         {
             // remove resource handle from manager
             FOR_EACH(it, m_apHandle)
@@ -408,7 +409,7 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* pptReso
                 }
             }
         }
-        SDL_AtomicUnlock(&m_iLock);
+        SDL_AtomicUnlock(&m_iResourceLock);
 
         // delete resource handle
         *pptResourcePtr = NULL;

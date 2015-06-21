@@ -31,7 +31,7 @@ coreSound::~coreSound()
 // load sound resource data
 coreStatus coreSound::Load(coreFile* pFile)
 {
-    coreFileUnload Unload(pFile);
+    coreFileUnload oUnload(pFile);
 
     WARN_IF(m_iBuffer) return CORE_INVALID_CALL;
     if(!pFile)         return CORE_INVALID_INPUT;

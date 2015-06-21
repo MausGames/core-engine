@@ -30,7 +30,7 @@ thread_local coreUintW coreData::m_iCurString                                   
 /* get amount of memory physically mapped to the application */
 coreUint64 coreData::AppMemory()
 {
-#if defined(_CORE_WINDOWS_)
+#if defined(_CORE_WINDOWS_) && defined(_CORE_X64_)
 
     // get process handle
     HANDLE pProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, GetCurrentProcessId());

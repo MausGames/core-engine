@@ -107,39 +107,38 @@ void coreLog::DebugOpenGL()
 /* write text to the log file */
 void coreLog::__Write(const coreBool& bTime, std::string sText)
 {
-    SDL_AtomicLock(&m_iLock);
-    {
+    coreLockRelease oRelease(m_iLock);
+
 #if defined(_CORE_ANDROID_) || defined(_CORE_DEBUG_)
 
-        // also write text to the standard output
-        SDL_Log(sText.substr(0, SDL_MAX_LOG_MESSAGE).c_str());
+    // also write text to the standard output
+    SDL_Log(sText.substr(0, SDL_MAX_LOG_MESSAGE).c_str());
 
 #endif
-        // check for valid log file
-        if(m_pFile)
+
+    // check for valid log file
+    if(m_pFile)
+    {
+        // color brackets and convert new lines
+        coreData::StrReplace(&sText, "(",  "<span class=\"data\">(");
+        coreData::StrReplace(&sText, ")",  ")</span>");
+        coreData::StrReplace(&sText, "\n", "<br />");
+
+        if(bTime)
         {
-            // color brackets and convert new lines
-            coreData::StrReplace(&sText, "(",  "<span class=\"data\">(");
-            coreData::StrReplace(&sText, ")",  ")</span>");
-            coreData::StrReplace(&sText, "\n", "<br />");
+            // get thread-ID
+            const SDL_threadID iThread = SDL_ThreadID() % 10000u;
 
-            if(bTime)
-            {
-                // get thread-ID
-                const SDL_threadID iThread = SDL_ThreadID() % 10000u;
-
-                // write timestamp and thread-ID
-                std::fprintf(m_pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
-                             coreData::TimeString(), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
-            }
-
-            // write text
-            std::fputs(sText.c_str(), m_pFile);
-            std::fputs("\n",          m_pFile);
-
-            // flush log file
-            std::fflush(m_pFile);
+            // write timestamp and thread-ID
+            std::fprintf(m_pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
+                            coreData::TimeString(), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
         }
+
+        // write text
+        std::fputs(sText.c_str(), m_pFile);
+        std::fputs("\n",          m_pFile);
+
+        // flush log file
+        std::fflush(m_pFile);
     }
-    SDL_AtomicUnlock(&m_iLock);
 }

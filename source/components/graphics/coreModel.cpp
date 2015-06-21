@@ -9,6 +9,7 @@
 #include "Core.h"
 #include "models/MD3.h"
 #include "models/MD5.h"
+#include <forsyth_too.h>
 
 coreModel* coreModel::s_pCurrent = NULL;
 
@@ -43,7 +44,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck >= CORE_OK) return iCheck;
 
-    coreFileUnload Unload(pFile);
+    coreFileUnload oUnload(pFile);
 
     WARN_IF(!m_apiVertexBuffer.empty()) return CORE_INVALID_CALL;
     if(!pFile)                          return CORE_INVALID_INPUT;
@@ -125,29 +126,34 @@ coreStatus coreModel::Load(coreFile* pFile)
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, iNormFormat,       false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
     SAFE_DELETE_ARRAY(pPackedData)
 
+    // apply post-transform vertex cache optimization to index data
+    coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
+    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 32u);
+
 #if defined(_CORE_GLES_)
 
     if(m_iNumVertices <= 256u)
     {
         // reduce default index size
-        coreUint8* pSmallData = new coreUint8[m_iNumIndices];
+        coreUint8* piSmallData = new coreUint8[m_iNumIndices];
         for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
         {
             // convert all indices
-            ASSERT(oImport.aiIndexData[i] < 256u)
-            pSmallData[i] = coreUint8(oImport.aiIndexData[i]);
+            ASSERT(piOptimizedData[i] < 256u)
+            piSmallData[i] = coreUint8(piOptimizedData[i]);
         }
 
         // create small index buffer
-        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint8), pSmallData, CORE_DATABUFFER_STORAGE_STATIC);
-        SAFE_DELETE_ARRAY(pSmallData)
+        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint8), piSmallData, CORE_DATABUFFER_STORAGE_STATIC);
+        SAFE_DELETE_ARRAY(piSmallData)
     }
     else
 
 #endif
 
     // create index buffer
-    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), oImport.aiIndexData.data(), CORE_DATABUFFER_STORAGE_STATIC);
+    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), piOptimizedData, CORE_DATABUFFER_STORAGE_STATIC);
+    SAFE_DELETE_ARRAY(piOptimizedData)
 
     Core::Log->Info("Model (%s) loaded", pFile->GetPath());
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;

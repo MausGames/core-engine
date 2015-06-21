@@ -135,4 +135,22 @@ public:
 };
 
 
+// ****************************************************************
+// spinlock-release helper class
+class coreLockRelease final
+{
+private:
+    SDL_SpinLock& m_iLock;   //!< associated spinlock
+
+
+public:
+    explicit coreLockRelease(SDL_SpinLock& iLock)noexcept : m_iLock (iLock) {SDL_AtomicLock  (&m_iLock);}
+    ~coreLockRelease()                                                      {SDL_AtomicUnlock(&m_iLock);}
+
+    DISABLE_COPY(coreLockRelease)
+    DISABLE_NEW
+    DISABLE_DELETE
+};
+
+
 #endif // _CORE_GUARD_ARCHIVE_H_

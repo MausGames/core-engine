@@ -61,7 +61,7 @@ coreShader::~coreShader()
 // load shader resource data
 coreStatus coreShader::Load(coreFile* pFile)
 {
-    coreFileUnload Unload(pFile);
+    coreFileUnload oUnload(pFile);
 
     WARN_IF(m_iShader)    return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
