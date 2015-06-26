@@ -42,8 +42,9 @@ public:
 
     /*! access reference to current item */
     //! @{
-    inline       T& Current()      {return m_atItem[m_iCurIndex];}
-    inline const T& Current()const {return m_atItem[m_iCurIndex];}
+    inline       T&        Current()      {return m_atItem[m_iCurIndex];}
+    inline const T&        Current()const {return m_atItem[m_iCurIndex];}
+    inline const coreUintW Index  ()const {return m_iCurIndex;}
     //! @}
 
     /*! modify the item container */

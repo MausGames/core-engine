@@ -96,22 +96,23 @@ vec2 (u_v2TexOffset)   // texture offset (not with particles or on instancing)
 
 ## Functions ##
 
-T     coreMin3          (in T, in T, in T)   // trinary minimum
-T     coreMax3          (in T, in T, in T)   // trinary maximum
-vec3  coreHSVtoRGB      (in vec3)            // HSV to RGB conversion
-vec3  coreRGBtoHSV      (in vec3)            // RGB to HSV conversion
-float coreLengthSq      (in vec2)            // vector square length
-float coreLengthSq      (in vec3)
-vec3  coreUnpackNormal  (in vec2)            // vector normal decompression
-vec3  coreQuatApply     (in vec4, in vec3)   // quaternion transformation
-mat3  coreTranspose     (in mat3)            // matrix transpose
-mat4  coreTranspose     (in mat4)
-mat3  coreInvert        (in mat3)            // matrix invert
-mat4  coreInvert        (in mat4)
-mat3  coreMat4to3       (in mat4)            // matrix convert
-mat2  coreMat3to2       (in mat3)
-uint  corePackUnorm4x8  (in vec4)            // value pack (4x 8bit float -> 1x 32bit uint)
-vec4  coreUnpackUnorm4x8(in uint)            // value unpack (1x 32bit uint -> 4x 8bit float)
+T     coreMin3             (in T, in T, in T)   // trinary minimum
+T     coreMax3             (in T, in T, in T)   // trinary maximum
+vec3  coreHSVtoRGB         (in vec3)            // HSV to RGB conversion
+vec3  coreRGBtoHSV         (in vec3)            // RGB to HSV conversion
+float coreLengthSq         (in vec2)            // vector square length
+float coreLengthSq         (in vec3)
+vec3  coreUnpackNormal     (in vec2)            // vector normal decompression (with z-reconstruction)
+vec3  coreUnpackNormalDeriv(in vec2)            // vector normal decompression (with partial-derivative)
+vec3  coreQuatApply        (in vec4, in vec3)   // quaternion transformation
+mat3  coreTranspose        (in mat3)            // matrix transpose
+mat4  coreTranspose        (in mat4)
+mat3  coreInvert           (in mat3)            // matrix invert
+mat4  coreInvert           (in mat4)
+mat3  coreMat4to3          (in mat4)            // matrix convert
+mat2  coreMat3to2          (in mat3)
+uint  corePackUnorm4x8     (in vec4)            // value pack (4x 8bit float -> 1x 32bit uint)
+vec4  coreUnpackUnorm4x8   (in uint)            // value unpack (1x 32bit uint -> 4x 8bit float)
 
 vec4  coreTexture2D    (in int v1Unit, in vec2 v2TexCoord)    // normal texture lookup
 float coreTextureShadow(in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures

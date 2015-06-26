@@ -13,6 +13,7 @@
 // constructor
 coreLabel::coreLabel()noexcept
 : m_iHeight     (0u)
+, m_bOutlined   (false)
 , m_iLength     (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_sText       ("")
@@ -21,11 +22,11 @@ coreLabel::coreLabel()noexcept
 {
 }
 
-coreLabel::coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
+coreLabel::coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept
 : coreLabel ()
 {
     // construct on creation
-    this->Construct(pcFont, iHeight, iLength);
+    this->Construct(pcFont, iHeight, bOutlined, iLength);
 }
 
 
@@ -40,11 +41,12 @@ coreLabel::~coreLabel()
 
 // ****************************************************************
 // construct the label
-void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
+void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)
 {
     // save properties
-    m_iHeight = F_TO_UI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
-    m_iLength = iLength;
+    m_iHeight   = F_TO_UI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
+    m_bOutlined = bOutlined;
+    m_iLength   = iLength;
 
     // set font object
     m_pFont = Core::Manager::Resource->Get<coreFont>(pcFont);
@@ -54,7 +56,7 @@ void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, cons
     m_apTexture[1] = Core::Manager::Resource->LoadNew<coreTexture>();
 
     // load shader-program
-    this->DefineProgram("default_label_sharp_program");
+    this->DefineProgram(bOutlined ? "default_label_sharp_program" : "default_label_smooth_program");
 
     // reserve memory for text
     if(iLength) m_sText.reserve(iLength + 1u);
@@ -163,24 +165,70 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 // generate the texture
 void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
 {
-    // create text surface data
-    SDL_Surface* pSurface = m_pFont->CreateText(pcText, m_iHeight);
-    ASSERT(pSurface->format->BitsPerPixel == 8u)
+    SDL_Surface* pSolid   = NULL;
+    SDL_Surface* pOutline = NULL;
+    coreByte*    pData    = NULL;
 
-    // convert text surface data
-    SDL_Surface* pConvert = SDL_CreateRGBSurface(0u, coreMath::CeilAlign<4u>(pSurface->w), pSurface->h, 24, CORE_TEXTURE_MASK);
-    SDL_BlitSurface(pSurface, NULL, pConvert, NULL);
+    // create solid text surface data
+    pSolid = m_pFont->CreateText(pcText, m_iHeight);
+    ASSERT(pSolid->format->BitsPerPixel == 8u)
+
+    if(m_bOutlined)
+    {
+        // create outlined text surface data
+        pOutline = m_pFont->CreateTextOutline(pcText, m_iHeight);
+        ASSERT(pOutline->format->BitsPerPixel == 8u)
+    }
+
+    // set base properties
+    const SDL_Surface* pBaseSurface = m_bOutlined ? pOutline : pSolid;
+    const coreUintW    iComponents  = m_bOutlined ? (CORE_GL_SUPPORT(ARB_texture_rg) ? 2u : 3u) : 1u;
+
+    // set texture properties
+    const coreUint32 iWidth  = pBaseSurface->w;
+    const coreUint32 iHeight = pBaseSurface->h;
+    const coreUint32 iPitch  = pBaseSurface->pitch;
+    const coreUintW  iSize   = iPitch * iHeight * iComponents;
+    ASSERT(!(iPitch % 4u))
+
+    if(m_bOutlined)
+    {
+        coreByte* pInput1 = s_cast<coreByte*>(pSolid  ->pixels);
+        coreByte* pInput2 = s_cast<coreByte*>(pOutline->pixels);
+
+        // allocate buffer to merge solid and outlined pixels
+        pData = new coreByte[iSize];
+        std::memset(pData, 0, iSize);
+
+        // insert solid pixels
+        for(coreUintW j = 0u, je = pSolid->h - FONT_OUTLINE_SIZE; j < je; ++j)
+        {
+            const coreUintW a = (j * pOutline->pitch + FONT_OUTLINE_SIZE) * iComponents;
+            const coreUintW b =  j * pSolid  ->pitch;
+
+            for(coreUintW i = 0u, ie = pSolid->pitch; i < ie; ++i)
+                pData[a + i * iComponents] = pInput1[b + i];
+        }
+
+        // insert outlined pixels
+        for(coreUintW j = 0u, je = pOutline->h - FONT_OUTLINE_SIZE; j < je; ++j)
+        {
+            const coreUintW a =  j                      * pOutline->pitch * iComponents + 1u;
+            const coreUintW b = (j + FONT_OUTLINE_SIZE) * pOutline->pitch;
+
+            for(coreUintW i = 0u, ie = pOutline->pitch; i < ie; ++i)
+                pData[a + i * iComponents] = pInput2[b + i];
+        }
+    }
+    else pData = s_cast<coreByte*>(pSolid->pixels);
 
     if(bSub)
     {
-        if(!m_vResolution.x)
-        {
-            // create static texture
-            this->__Generate((std::string(m_iLength, 'W') + "gjy").c_str(), false);
-        }
+        // create static texture
+        if(!m_vResolution.x) this->__Generate((std::string(m_iLength, 'W') + "gjy])").c_str(), false);
 
         // update only a specific area of the texture
-        m_apTexture[1]->Modify(0u, 0u, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3u, s_cast<coreByte*>(pConvert->pixels));
+        m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
     }
     else
     {
@@ -188,18 +236,19 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
         m_apTexture[1]->Unload();
 
         // create new texture
-        m_apTexture[1]->Create(pConvert->w, pConvert->h, CORE_TEXTURE_SPEC_RGB, CORE_TEXTURE_MODE_DEFAULT);
-        m_apTexture[1]->Modify(0u, 0u, pConvert->w, pConvert->h, pConvert->w * pConvert->h * 3u, s_cast<coreByte*>(pConvert->pixels));
+        m_apTexture[1]->Create(iPitch, iHeight, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), CORE_TEXTURE_MODE_DEFAULT);
+        m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
 
         // save new texture resolution
-        m_vResolution = coreVector2(I_TO_F(pConvert->w), I_TO_F(pConvert->h));
+        m_vResolution = coreVector2(I_TO_F(iPitch), I_TO_F(iHeight));
     }
 
     // display only visible texture area
-    this->SetTexSize(coreVector2(I_TO_F(pSurface->w), I_TO_F(pSurface->h)) / m_vResolution);
+    this->SetTexSize(coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) / m_vResolution);
     ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
 
     // delete text surface data
-    SDL_FreeSurface(pSurface);
-    SDL_FreeSurface(pConvert);
+    SDL_FreeSurface(pSolid);
+    SDL_FreeSurface(pOutline);
+    if(m_bOutlined) SAFE_DELETE_ARRAY(pData)
 }

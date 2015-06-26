@@ -11,11 +11,11 @@
 
 // ****************************************************************
 // constructor
-coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
+coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept
 : coreButton ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
+    this->Construct(pcIdle, pcBusy, pcFont, iHeight, bOutlined, iLength);
 }
 
 coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy)noexcept
@@ -37,11 +37,11 @@ coreButton::~coreButton()
 
 // ****************************************************************
 // construct the button
-void coreButton::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
+void coreButton::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)
 {
     // create the label
     if(m_pCaption) SAFE_DELETE(m_pCaption)
-    m_pCaption = new coreLabel(pcFont, iHeight, iLength);
+    m_pCaption = new coreLabel(pcFont, iHeight, bOutlined, iLength);
 
     // construct remaining object
     this->Construct(pcIdle, pcBusy);

@@ -32,6 +32,9 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
     else Core::Log->Info("SDL initialized (%d.%d.%d %s)", oVersion.major, oVersion.minor, oVersion.patch, SDL_GetRevision());
 
+    // automatically shut down SDL libraries on exit
+    std::atexit([]() {IMG_Quit(); TTF_Quit(); SDL_Quit();});
+
     // load all available displays
     const coreUintW iNumDisplays = SDL_GetNumVideoDisplays();
     if(iNumDisplays)
@@ -185,11 +188,6 @@ CoreSystem::~CoreSystem()
 
     // delete main window object
     SDL_DestroyWindow(m_pWindow);
-
-    // shut down SDL libraries
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
 
     Core::Log->Info(CORE_LOG_BOLD("System Interface shut down"));
 }

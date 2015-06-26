@@ -46,30 +46,32 @@ private:
 
 
 private:
-    SDL_GLContext m_pRenderContext;                                                  //!< primary OpenGL context for render operations
-    SDL_GLContext m_pResourceContext;                                                //!< secondary OpenGL context for resource loading
+    SDL_GLContext m_pRenderContext;                                         //!< primary OpenGL context for render operations
+    SDL_GLContext m_pResourceContext;                                       //!< secondary OpenGL context for resource loading
 
-    coreFloat m_fFOV;                                                                //!< field-of-view
-    coreFloat m_fNearClip;                                                           //!< near clipping plane
-    coreFloat m_fFarClip;                                                            //!< far clipping plane
+    coreFloat m_fFOV;                                                       //!< field-of-view
+    coreFloat m_fNearClip;                                                  //!< near clipping plane
+    coreFloat m_fFarClip;                                                   //!< far clipping plane
 
-    coreVector3 m_vCamPosition;                                                      //!< position of the camera
-    coreVector3 m_vCamDirection;                                                     //!< direction of the camera
-    coreVector3 m_vCamOrientation;                                                   //!< orientation of the camera
-    coreMatrix4 m_mCamera;                                                           //!< camera matrix
+    coreVector3 m_vCamPosition;                                             //!< position of the camera
+    coreVector3 m_vCamDirection;                                            //!< direction of the camera
+    coreVector3 m_vCamOrientation;                                          //!< orientation of the camera
+    coreMatrix4 m_mCamera;                                                  //!< camera matrix
 
-    coreMatrix4 m_mPerspective;                                                      //!< perspective projection matrix
-    coreMatrix4 m_mOrtho;                                                            //!< orthographic projection matrix
-    coreVector4 m_vViewResolution;                                                   //!< current viewport resolution (xy = normal, zw = reciprocal)
+    coreMatrix4 m_mPerspective;                                             //!< perspective projection matrix
+    coreMatrix4 m_mOrtho;                                                   //!< orthographic projection matrix
+    coreVector4 m_vViewResolution;                                          //!< current viewport resolution (xy = normal, zw = reciprocal)
 
-    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                                        //!< global ambient lights
+    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                               //!< global ambient lights
 
-    coreSelect<coreDataBuffer, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aiTransformBuffer;   //!< uniform buffer objects for transformation data
-    coreSelect<coreDataBuffer, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aiAmbientBuffer;     //!< uniform buffer objects for ambient data
-    coreUint8 m_iUniformUpdate;                                                      //!< update status for the UBOs (dirty flag)
+    coreDataBuffer m_iTransformBuffer;                                      //!< uniform buffer objects for transformation data
+    coreDataBuffer m_iAmbientBuffer;                                        //!< uniform buffer objects for ambient data
+    coreSelect<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aTransformSync;   //!< transformation sync objects (for each sub-range)
+    coreSelect<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     //!< ambient sync objects
+    coreUint8 m_iUniformUpdate;                                             //!< update status for the UBOs (dirty flag)
 
-    coreFloat m_fOpenGL;                                                             //!< available OpenGL version
-    coreFloat m_fGLSL;                                                               //!< available GLSL version
+    coreFloat m_fOpenGL;                                                    //!< available OpenGL version
+    coreFloat m_fGLSL;                                                      //!< available GLSL version
 
 
 private:
@@ -119,8 +121,8 @@ public:
     inline const coreMatrix4&    GetOrtho          ()const                        {return m_mOrtho;}
     inline const coreVector4&    GetViewResolution ()const                        {return m_vViewResolution;}
     inline const coreLight&      GetLight          (const coreUintW& iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
-    inline const coreDataBuffer* GetTransformBuffer()const                        {return m_aiTransformBuffer;}
-    inline const coreDataBuffer* GetAmbientBuffer  ()const                        {return m_aiAmbientBuffer;}
+    inline const coreDataBuffer& GetTransformBuffer()const                        {return m_iTransformBuffer;}
+    inline const coreDataBuffer& GetAmbientBuffer  ()const                        {return m_iAmbientBuffer;}
     //! @}
 
     //! check OpenGL versions

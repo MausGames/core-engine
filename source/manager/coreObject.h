@@ -14,6 +14,7 @@
 // TODO: new collisions with lines are not saved correctly (no line identification)
 // TODO: GL_NV_fill_rectangle for low-memory model (state-tracking for polygon-mode ?)
 // TODO: single triangle for fullscreen processing ?
+// TODO: fix resource-manager reset, change location of global resources/objects (incl. single triangle)
 
 
 // ****************************************************************
@@ -108,7 +109,7 @@ public:
 
 // ****************************************************************
 /* object manager */
-class coreObjectManager final : public coreResourceRelation
+class coreObjectManager final
 {
 private:
     /*! internal types */
@@ -164,7 +165,7 @@ public:
 private:
     /*! reset with the resource manager */
     //! @{
-    void __Reset(const coreResourceReset& bInit)override;
+    void __Reset(const coreResourceReset& bInit);
     //! @}
 
     /*! update all objects and collisions */

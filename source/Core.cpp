@@ -110,6 +110,7 @@ void Core::Reset()
 
     // shut down resource manager
     Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
+    Manager::Object->__Reset(CORE_RESOURCE_RESET_EXIT);
 
     // shut down main components
     SAFE_DELETE(Debug)
@@ -127,6 +128,7 @@ void Core::Reset()
     Application->Setup();
 
     // start up resource manager
+    Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
     Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
 
     // load former state
@@ -137,7 +139,7 @@ void Core::Reset()
     for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
     for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
 
-    Log->Warning("Reset finished");
+    Log->Header("Reset finished");
 }
 
 

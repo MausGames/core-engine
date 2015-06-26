@@ -37,7 +37,7 @@ coreStatus coreFont::Load(coreFile* pFile)
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
 
     // create test font
-    if(!this->__InitHeight(1u)) return CORE_INVALID_DATA;
+    if(!this->__InitHeight(1)) return CORE_INVALID_DATA;
 
     // save properties
     m_sPath = pFile->GetPath();
@@ -69,7 +69,7 @@ coreStatus coreFont::Unload()
 
 
 // ****************************************************************
-// create text surface with the font
+// create solid text with the font
 SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint8& iHeight)
 {
     ASSERT(pcText)
@@ -78,8 +78,8 @@ SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint8& iHeig
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
 
     // define color
-    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu};
-    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u};
+    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu, 0xFFu};
+    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u, 0xFFu};
 
     // render and return the text surface
     return TTF_RenderUTF8_Shaded(m_apFont.at(iHeight), (pcText[0] == '\0') ? " " : pcText, aiFront, aiBack);
@@ -91,11 +91,31 @@ SDL_Surface* coreFont::CreateGlyph(const coreUint16& iGlyph, const coreUint8& iH
     if(!m_apFont.count(iHeight)) this->__InitHeight(iHeight);
 
     // define color
-    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu};
-    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u};
+    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu, 0xFFu};
+    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u, 0xFFu};
 
     // render and return the text surface
     return TTF_RenderGlyph_Shaded(m_apFont.at(iHeight), iGlyph, aiFront, aiBack);
+}
+
+
+
+// ****************************************************************
+// create outlined text with the font
+SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint8& iHeight)
+{
+    ASSERT(pcText)
+
+    // check for specific height
+    const coreInt16 iOutHeight = -coreInt16(iHeight);
+    if(!m_apFont.count(iOutHeight)) this->__InitHeight(iOutHeight);
+
+    // define color
+    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu, 0xFFu};
+    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u, 0xFFu};
+
+    // render and return the text surface
+    return TTF_RenderUTF8_Shaded(m_apFont.at(iOutHeight), (pcText[0] == '\0') ? " " : pcText, aiFront, aiBack);
 }
 
 
@@ -113,7 +133,7 @@ void coreFont::RetrieveGlyphMetrics(const coreUint16& iGlyph, const coreUint8& i
 
 // ****************************************************************
 // init font in a specific height
-coreBool coreFont::__InitHeight(const coreUint8& iHeight)
+coreBool coreFont::__InitHeight(const coreInt16& iHeight)
 {
     ASSERT(!m_apFont.count(iHeight))
 
@@ -121,7 +141,7 @@ coreBool coreFont::__InitHeight(const coreUint8& iHeight)
     SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
 
     // create new sub-font
-    TTF_Font* pNewFont = TTF_OpenFontRW(pSource, true, iHeight);
+    TTF_Font* pNewFont = TTF_OpenFontRW(pSource, true, ABS(iHeight));
     if(!pNewFont)
     {
         Core::Log->Warning("Font (%s:%d) could not be loaded", m_pFile->GetPath(), iHeight);
@@ -131,6 +151,9 @@ coreBool coreFont::__InitHeight(const coreUint8& iHeight)
     // enable font kerning and hinting
     TTF_SetFontKerning(pNewFont, 1);
     TTF_SetFontHinting(pNewFont, TTF_HINTING_MONO);
+
+    // 
+    if(iHeight < 0) TTF_SetFontOutline(pNewFont, FONT_OUTLINE_SIZE);
 
     // save sub-font
     m_apFont[iHeight] = pNewFont;

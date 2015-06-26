@@ -366,12 +366,14 @@ public:
 
     /*! packing functions */
     //! @{
+    constexpr_func        coreUint32  PackUnorm210   ()const;
     constexpr_func        coreUint32  PackSnorm210   ()const;
     constexpr_func        coreUint32  PackUnorm4x8   ()const;
     constexpr_func        coreUint32  PackSnorm4x8   ()const;
     constexpr_func        coreUint64  PackUnorm4x16  ()const;
     constexpr_func        coreUint64  PackSnorm4x16  ()const;
     inline                coreUint64  PackFloat4x16  ()const;
+    static constexpr_func coreVector4 UnpackUnorm210 (const coreUint32& iNumber);
     static inline         coreVector4 UnpackSnorm210 (const coreUint32& iNumber);
     static constexpr_func coreVector4 UnpackUnorm4x8 (const coreUint32& iNumber);
     static inline         coreVector4 UnpackSnorm4x8 (const coreUint32& iNumber);
@@ -595,6 +597,17 @@ inline coreVector3 coreVector3::RGBtoHSV()const
 
 
 // ****************************************************************
+/* compress 0.0 to 1.0 vector into 2_10_10_10_rev packed uint */
+constexpr_func coreUint32 coreVector4::PackUnorm210()const
+{
+    return (F_TO_UI(w *    3.0f) << 30u) |
+           (F_TO_UI(z * 1023.0f) << 20u) |
+           (F_TO_UI(y * 1023.0f) << 10u) |
+           (F_TO_UI(x * 1023.0f));
+};
+
+
+// ****************************************************************
 /* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint */
 constexpr_func coreUint32 coreVector4::PackSnorm210()const
 {
@@ -657,6 +670,17 @@ inline coreUint64 coreVector4::PackFloat4x16()const
            (coreUint64(coreMath::Float32to16(z)) << 32u) |
            (coreUint64(coreMath::Float32to16(y)) << 16u) |
            (coreUint64(coreMath::Float32to16(x)));
+}
+
+
+// ****************************************************************
+/* uncompress 2_10_10_10_rev packed uint into 0.0 to 1.0 vector */
+constexpr_func coreVector4 coreVector4::UnpackUnorm210(const coreUint32& iNumber)
+{
+    return coreVector4(coreVector3(I_TO_F( iNumber         & 0x3FFu),
+                                   I_TO_F((iNumber >> 10u) & 0x3FFu),
+                                   I_TO_F((iNumber >> 20u) & 0x3FFu)) * 9.775171065e-4f,
+                                   I_TO_F((iNumber >> 30u) & 0x003u)  * 3.333333333e-1f);
 }
 
 

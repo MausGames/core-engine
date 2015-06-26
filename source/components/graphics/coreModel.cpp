@@ -118,6 +118,31 @@ coreStatus coreModel::Load(coreFile* pFile)
         pPackedData[i].iTangent  = nPackFunc(oVertex.vTangent);
     }
 
+    // apply post-transform vertex cache optimization to index data
+    coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
+    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 32u);
+
+    // apply pre-transform vertex cache optimization to vertex data
+    coreUint16 iCurIndex = 0u;
+    for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
+    {
+        if(piOptimizedData[i] >= iCurIndex)
+        {
+            const coreUint16 iNew = iCurIndex++;
+            const coreUint16 iOld = piOptimizedData[i];
+
+            // swap vertices
+            std::swap(pPackedData[iNew], pPackedData[iOld]);
+
+            // swap indices
+            for(coreUintW j = i; j < ie; ++j)
+            {
+                     if(piOptimizedData[j] == iNew) piOptimizedData[j] = iOld;
+                else if(piOptimizedData[j] == iOld) piOptimizedData[j] = iNew;
+            }
+        }
+    }
+
     // create vertex buffer
     coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3u, GL_FLOAT,          false, 0u);
@@ -125,10 +150,6 @@ coreStatus coreModel::Load(coreFile* pFile)
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, iNormFormat,       false, 3u*sizeof(coreFloat) + 1u*sizeof(coreUint32));
     pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, iNormFormat,       false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
     SAFE_DELETE_ARRAY(pPackedData)
-
-    // apply post-transform vertex cache optimization to index data
-    coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
-    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 32u);
 
 #if defined(_CORE_GLES_)
 

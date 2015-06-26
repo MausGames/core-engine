@@ -53,11 +53,9 @@ private:
     //! render target structure
     struct coreRenderTarget
     {
-        coreTexturePtr pTexture;    //!< render target texture (readable)
-        GLuint iBuffer;             //!< render target buffer (fast, multisampled)
-        GLenum iInternal;           //!< internal memory format (e.g. GL_RGBA8)
-        GLenum iFormat;             //!< pixel data format (e.g. GL_RGBA)
-        GLenum iType;               //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
+        coreTexturePtr  pTexture;   //!< render target texture (readable)
+        GLuint          iBuffer;    //!< render target buffer (fast, multisampled)
+        coreTextureSpec oSpec;      //!< texture and buffer specification (format)
 
         constexpr_weak coreRenderTarget()noexcept;
         inline coreBool IsTexture()const {return pTexture ? true : false;}
@@ -96,8 +94,8 @@ public:
 
     //! attach render targets
     //! @{
-    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const coreChar* pcName = NULL);
-    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
+    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName = NULL);
+    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec);
     void DetachTargets();
     //! @}
 
@@ -147,7 +145,7 @@ public:
 private:
     //! attach render targets
     //! @{
-    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType);
+    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec);
     //! @}
 };
 
@@ -155,10 +153,8 @@ private:
 // ****************************************************************
 // constructor
 constexpr_weak coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
-: iBuffer   (0u)
-, iInternal (0u)
-, iFormat   (0u)
-, iType     (0u)
+: iBuffer (0u)
+, oSpec   (coreTextureSpec(0u, 0u, 0u))
 {
 }
 

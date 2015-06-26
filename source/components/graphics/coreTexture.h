@@ -29,15 +29,22 @@
     #define CORE_TEXTURE_MASK 0x000000FFu, 0x0000FF00u, 0x00FF0000u, 0xFF000000u
 #endif
 
-#define CORE_TEXTURE_SPEC_R             GL_R8,                GL_RED,             GL_UNSIGNED_BYTE
-#define CORE_TEXTURE_SPEC_RG            GL_RG8,               GL_RG,              GL_UNSIGNED_BYTE
-#define CORE_TEXTURE_SPEC_RGB           GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE
-#define CORE_TEXTURE_SPEC_RGBA          GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE
-#define CORE_TEXTURE_SPEC_DEPTH         GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT
-#define CORE_TEXTURE_SPEC_STENCIL       GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE
-#define CORE_TEXTURE_SPEC_DEPTH_STENCIL GL_DEPTH24_STENCIL8,  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8
+#undef  GL_RED
+#define GL_RED (CORE_GL_SUPPORT(ARB_texture_rg) ? 0x1903 : GL_LUMINANCE)
 
-#define CORE_TEXTURE_COMPRESSED_SIZE(x,c) ((x) / (((c) == 3u) ? 6u : 4u))
+#define CORE_TEXTURE_SPEC_R             (coreTextureSpec(GL_R8,                GL_RED,             GL_UNSIGNED_BYTE))
+#define CORE_TEXTURE_SPEC_RG            (coreTextureSpec(GL_RG8,               GL_RG,              GL_UNSIGNED_BYTE))
+#define CORE_TEXTURE_SPEC_RGB           (coreTextureSpec(GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE))
+#define CORE_TEXTURE_SPEC_RGBA          (coreTextureSpec(GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE))
+#define CORE_TEXTURE_SPEC_DEPTH         (coreTextureSpec(GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT))
+#define CORE_TEXTURE_SPEC_STENCIL       (coreTextureSpec(GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE))
+#define CORE_TEXTURE_SPEC_DEPTH_STENCIL (coreTextureSpec(GL_DEPTH24_STENCIL8,  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8))
+
+#define CORE_TEXTURE_SPEC_COMPONENTS(i)   \
+    ((i == 4u) ? CORE_TEXTURE_SPEC_RGBA : \
+     (i == 3u) ? CORE_TEXTURE_SPEC_RGB  : \
+     (i == 2u) ? CORE_TEXTURE_SPEC_RG   : \
+                 CORE_TEXTURE_SPEC_R)
 
 #define CORE_TEXTURE_UNITS_2D     (4u)                                                //!< number of 2d texture units (sampler2D)
 #define CORE_TEXTURE_UNITS_SHADOW (1u)                                                //!< number of shadow texture units (sampler2DShadow)
@@ -55,6 +62,18 @@ ENABLE_BITWISE(coreTextureMode)
 
 
 // ****************************************************************
+// texture specification structure
+struct coreTextureSpec
+{
+    GLenum iInternal;   //!< internal memory format (e.g. GL_RGBA8)
+    GLenum iFormat;     //!< pixel data format (e.g. GL_RGBA)
+    GLenum iType;       //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
+
+    constexpr_func coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept;
+};
+
+
+// ****************************************************************
 // texture class
 class coreTexture final : public coreResource
 {
@@ -65,9 +84,8 @@ private:
     coreUint8   m_iLevels;                               //!< number of texture levels
     coreInt8    m_iCompressed;                           //!< compression status
 
-    GLenum m_iInternal;                                  //!< internal memory format (e.g. GL_RGBA8)
-    GLenum m_iFormat;                                    //!< pixel data format (e.g. GL_RGBA)
-    GLenum m_iType;                                      //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
+    coreTextureSpec m_Spec;                              //!< texture specification (format)
+    coreTextureMode m_iMode;                             //!< texture mode (sampling)
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
 
@@ -90,7 +108,7 @@ public:
 
     //! handle texture memory
     //! @{
-    void Create(const coreUint32& iWidth, const coreUint32& iHeight, GLenum iInternal, GLenum iFormat, const GLenum& iType, const coreTextureMode& iTextureMode);
+    void Create(const coreUint32& iWidth, const coreUint32& iHeight, const coreTextureSpec& oSpec, const coreTextureMode& iMode);
     void Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY, const coreUint32& iWidth, const coreUint32& iHeight, const coreUint32& iDataSize, const coreByte* pData);
     void CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight);
     //! @}
@@ -121,12 +139,11 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint&      GetTexture   ()const {return m_iTexture;}
-    inline const coreVector2& GetResolution()const {return m_vResolution;}
-    inline const coreUint8&   GetLevels    ()const {return m_iLevels;}
-    inline const GLenum&      GetInternal  ()const {return m_iInternal;}
-    inline const GLenum&      GetFormat    ()const {return m_iFormat;}
-    inline const GLenum&      GetType      ()const {return m_iType;}
+    inline const GLuint&          GetTexture   ()const {return m_iTexture;}
+    inline const coreVector2&     GetResolution()const {return m_vResolution;}
+    inline const coreUint8&       GetLevels    ()const {return m_iLevels;}
+    inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
+    inline const coreTextureMode& GetMode      ()const {return m_iMode;}
     //! @}
 
 
@@ -141,6 +158,16 @@ private:
 // ****************************************************************
 // texture resource access type
 using coreTexturePtr = coreResourcePtr<coreTexture>;
+
+
+// ****************************************************************
+// constructor
+constexpr_func coreTextureSpec::coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept
+: iInternal (iInternal)
+, iFormat   (iFormat)
+, iType     (iType)
+{
+}
 
 
 #endif // _CORE_GUARD_TEXTURE_H_

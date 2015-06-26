@@ -25,9 +25,8 @@ coreTexture::coreTexture(const bool& bLoadCompressed)noexcept
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
 , m_iCompressed (bLoadCompressed ? 0 : -1)
-, m_iInternal   (0u)
-, m_iFormat     (0u)
-, m_iType       (0u)
+, m_Spec        (coreTextureSpec(0u, 0u, 0u))
+, m_iMode       (CORE_TEXTURE_MODE_DEFAULT)
 {
 }
 
@@ -63,23 +62,13 @@ coreStatus coreTexture::Load(coreFile* pFile)
     }
 
     // calculate data size
-    const coreUint32 iDataSize =  pData->w * pData->h * pData->format->BytesPerPixel;
-
-    // define texture format
-    GLenum iInternal, iFormat;
-    switch(pData->format->BytesPerPixel)
-    {
-    default: ASSERT(false)
-    case 1u: iInternal = GL_R8;    iFormat = GL_RED;  break;
-    case 3u: iInternal = GL_RGB8;  iFormat = GL_RGB;  break;
-    case 4u: iInternal = GL_RGBA8; iFormat = GL_RGBA; break;
-    }
+    const coreUint32 iDataSize = pData->w * pData->h * pData->format->BytesPerPixel;
 
     // check for compression capability
     const coreTextureMode bCompress = (coreMath::IsPOT(pData->w) && coreMath::IsPOT(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
 
     // create texture
-    this->Create(pData->w, pData->h, iInternal, iFormat, GL_UNSIGNED_BYTE, bCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
+    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(pData->format->BytesPerPixel), bCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
     this->Modify(0u, 0u, pData->w, pData->h, iDataSize, s_cast<coreByte*>(pData->pixels));
 
     // save properties
@@ -116,9 +105,8 @@ coreStatus coreTexture::Unload()
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
     m_iCompressed = MIN(m_iCompressed, 0);
-    m_iInternal   = 0u;
-    m_iFormat     = 0u;
-    m_iType       = 0u;
+    m_Spec        = coreTextureSpec(0u, 0u, 0u);
+    m_iMode       = CORE_TEXTURE_MODE_DEFAULT;
 
     return CORE_OK;
 }
@@ -126,18 +114,24 @@ coreStatus coreTexture::Unload()
 
 // ****************************************************************
 // create texture memory
-void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, GLenum iInternal, GLenum iFormat, const GLenum& iType, const coreTextureMode& iTextureMode)
+void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, const coreTextureSpec& oSpec, const coreTextureMode& iMode)
 {
     WARN_IF(m_iTexture) this->Unload();
 
     // check for OpenGL extensions
     const coreBool& bStorage     = CORE_GL_SUPPORT(ARB_texture_storage);
-    const coreBool  bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic) && CONTAINS_VALUE(iTextureMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && CONTAINS_VALUE(iTextureMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool  bCompress    = CORE_GL_SUPPORT(EXT_texture_compression_s3tc)   && CONTAINS_VALUE(iTextureMode, CORE_TEXTURE_MODE_COMPRESS) && Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION);
+    const coreBool  bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic) && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool  bCompress    = CORE_GL_SUPPORT(EXT_texture_compression_s3tc)   && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_COMPRESS) && Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION);
+
+    // save properties
+    m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
+    m_iLevels     = bMipMap ? F_TO_UI(coreMath::Log<2u>(m_vResolution.Max())) + 1u : 1u;
+    m_Spec        = oSpec;
+    m_iMode       = iMode;
 
     // set wrap mode
-    const GLenum iWrapMode = CONTAINS_VALUE(iTextureMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+    const GLenum iWrapMode = CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
     // set compression
     if(bCompress)
@@ -146,21 +140,14 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, GL
         else
         {
             // overwrite with appropriate compressed texture format (S3TC)
-            switch(iFormat)
+            switch(m_Spec.iFormat)
             {
             default: ASSERT(false)
-            case GL_RGB:  iInternal = iFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; m_iCompressed = 1; break;
-            case GL_RGBA: iInternal = iFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; m_iCompressed = 1; break;
+            case GL_RGB:  m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; m_iCompressed = 1; break;
+            case GL_RGBA: m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; m_iCompressed = 1; break;
             }
         }
     }
-
-    // save properties
-    m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
-    m_iLevels     = bMipMap ? F_TO_UI(coreMath::Log<2u>(m_vResolution.Max())) + 1u : 1u;
-    m_iInternal   = iInternal;
-    m_iFormat     = iFormat;
-    m_iType       = iType;
 
     // generate texture
     glGenTextures(1, &m_iTexture);
@@ -176,12 +163,12 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, GL
     if(bStorage)
     {
         // allocate immutable texture memory
-        glTexStorage2D(GL_TEXTURE_2D, m_iLevels, m_iInternal, iWidth, iHeight);
+        glTexStorage2D(GL_TEXTURE_2D, m_iLevels, m_Spec.iInternal, iWidth, iHeight);
     }
     else
     {
         // allocate normal texture memory
-        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_iFormat : m_iInternal, iWidth, iHeight, 0, m_iFormat, m_iType, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_Spec.iFormat, m_Spec.iType, NULL);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
     }
 }
@@ -207,8 +194,8 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
         glBindTexture(GL_TEXTURE_2D, m_iTexture);
 
         // calculate components and compressed size
-        const coreUint32 iComponents = iDataSize / (iWidth * iHeight);
-        const coreUint32 iPackedSize = CORE_TEXTURE_COMPRESSED_SIZE(iDataSize, iComponents);
+        const coreUint32 iComponents =  iDataSize / (iWidth * iHeight);
+        const coreUint32 iPackedSize = (iDataSize / ((iComponents == 3u) ? 6u : 4u));
 
         // allocate required image memory
         coreByte* pPackedData  = new coreByte[iPackedSize];
@@ -232,7 +219,7 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
             // upload image to texture
             coreDataBuffer iBuffer;
             if(bPixelBuffer) iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iCurSize, pPackedData, CORE_DATABUFFER_STORAGE_STREAM);
-            glCompressedTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, iCurWidth, iCurHeight, m_iFormat, iCurSize, bPixelBuffer ? NULL : pPackedData);
+            glCompressedTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, iCurWidth, iCurHeight, m_Spec.iFormat, iCurSize, bPixelBuffer ? NULL : pPackedData);
 
             // check for still valid resolution
             if((iCurWidth <= 4u) || (iCurHeight <= 4u) || !bMipMap) break;
@@ -262,14 +249,14 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
         if(bDirectState)
         {
             // update texture data directly
-            glTextureSubImage2D(m_iTexture, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_iFormat, m_iType, pData);
+            glTextureSubImage2D(m_iTexture, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
             if(bMipMap) glGenerateTextureMipmap(m_iTexture);
         }
         else
         {
             // bind (simple) and update texture data
             glBindTexture  (GL_TEXTURE_2D, m_iTexture);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_iFormat, m_iType, pData);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
             if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
         }
     }
@@ -302,7 +289,7 @@ void coreTexture::CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSr
 // configure shadow sampling
 void coreTexture::ShadowSampling(const coreBool& bStatus)
 {
-    ASSERT(m_iTexture && (m_iFormat == GL_DEPTH_COMPONENT || m_iFormat == GL_DEPTH_STENCIL))
+    ASSERT(m_iTexture && (m_Spec.iFormat == GL_DEPTH_COMPONENT || m_Spec.iFormat == GL_DEPTH_STENCIL))
 
     // bind texture
     this->Enable(0u);
@@ -326,13 +313,13 @@ void coreTexture::Clear(const coreUint8& iLevel)
     if(CORE_GL_SUPPORT(ARB_clear_texture))
     {
         // clear content directly
-        glClearTexImage(m_iTexture, iLevel, m_iFormat, m_iType, NULL);
+        glClearTexImage(m_iTexture, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
     }
     else
     {
         // bind and clear content (with fallback method)
         this->Enable(0u);
-        glTexSubImage2D(GL_TEXTURE_2D, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_iFormat, m_iType, NULL);
+        glTexSubImage2D(GL_TEXTURE_2D, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_Spec.iFormat, m_Spec.iType, NULL);
     }
 }
 

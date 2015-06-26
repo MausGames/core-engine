@@ -38,6 +38,7 @@ class coreLabel final : public coreObject2D, public coreResourceRelation, public
 private:
     coreFontPtr m_pFont;         //!< font object
     coreUint8   m_iHeight;       //!< specific height for the font
+    coreBool    m_bOutlined;     //!< create very sharp outlined text
 
     coreUint8   m_iLength;       //!< max number of characters (0 = dynamic)
     coreVector2 m_vResolution;   //!< resolution of the generated texture
@@ -50,14 +51,14 @@ private:
 
 public:
     coreLabel()noexcept;
-    coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept;
+    coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept;
     ~coreLabel();
 
     DISABLE_COPY(coreLabel)
 
     //! construct the label
     //! @{
-    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength);
+    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength);
     //! @}
 
     //! render and move the label
@@ -78,6 +79,7 @@ public:
     //! @{
     inline const coreFontPtr& GetFont      ()const {return m_pFont;}
     inline const coreUint8&   GetHeight    ()const {return m_iHeight;}
+    inline const coreBool&    GetOutlined  ()const {return m_bOutlined;}
     inline const coreUint8&   GetLength    ()const {return m_iLength;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreChar*    GetText      ()const {return m_sText.c_str();}

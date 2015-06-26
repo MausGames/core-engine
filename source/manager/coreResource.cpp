@@ -260,13 +260,14 @@ void coreResourceManager::__ExitThread()
 /* load all relevant default resource */
 void coreResourceManager::__LoadDefault()
 {
-    this->Load<coreTexture>("default_black.png",        CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.png");
-    this->Load<coreTexture>("default_white.png",        CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.png");
-    this->Load<coreShader> ("default_2d.vert",          CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert");
-    this->Load<coreShader> ("default_2d.frag",          CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag");
-    this->Load<coreShader> ("default_label.vert",       CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.vert");
-    this->Load<coreShader> ("default_label_sharp.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_sharp.frag");
-    this->Load<coreFont>   ("default.ttf",              CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
+    this->Load<coreTexture>("default_black.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.png");
+    this->Load<coreTexture>("default_white.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.png");
+    this->Load<coreShader> ("default_2d.vert",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert");
+    this->Load<coreShader> ("default_2d.frag",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag");
+    this->Load<coreShader> ("default_label.vert",        CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.vert");
+    this->Load<coreShader> ("default_label_sharp.frag",  CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_sharp.frag");
+    this->Load<coreShader> ("default_label_smooth.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_smooth.frag");
+    this->Load<coreFont>   ("default.ttf",               CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
 
     s_cast<coreProgram*>(this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
         ->AttachShader  (this->Get <coreShader> ("default_2d.vert"))
@@ -276,6 +277,11 @@ void coreResourceManager::__LoadDefault()
     s_cast<coreProgram*>(this->Load<coreProgram>("default_label_sharp_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
         ->AttachShader  (this->Get <coreShader> ("default_label.vert"))
         ->AttachShader  (this->Get <coreShader> ("default_label_sharp.frag"))
+        ->Finish();
+
+    s_cast<coreProgram*>(this->Load<coreProgram>("default_label_smooth_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetResource())
+        ->AttachShader  (this->Get <coreShader> ("default_label.vert"))
+        ->AttachShader  (this->Get <coreShader> ("default_label_smooth.frag"))
         ->Finish();
 
     Core::Log->Info("Default resources loaded");

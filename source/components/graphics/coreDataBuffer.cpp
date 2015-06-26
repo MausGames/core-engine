@@ -92,7 +92,7 @@ void coreDataBuffer::Delete()
 
 // ****************************************************************
 // clear content of the data buffer object
-void coreDataBuffer::Clear(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const void* pData)
+void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pData)
 {
     ASSERT(m_iDataBuffer && this->IsWritable())
 
@@ -101,13 +101,13 @@ void coreDataBuffer::Clear(const GLenum& iInternal, const GLenum& iFormat, const
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // clear content directly
-            glClearNamedBufferData(m_iDataBuffer, iInternal, iFormat, iType, pData);
+            glClearNamedBufferData(m_iDataBuffer, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
         }
         else
         {
             // bind and clear content
             this->Bind();
-            glClearBufferData(m_iTarget, iInternal, iFormat, iType, pData);
+            glClearBufferData(m_iTarget, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
         }
     }
 }

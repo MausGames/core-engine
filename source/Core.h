@@ -404,6 +404,7 @@ class coreArchive;
 class coreObject2D;
 class coreObject3D;
 class coreParticleEffect;
+struct coreTextureSpec;
 
 class coreLog;
 class coreConfig;

@@ -64,7 +64,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     for(coreUintW i = 0u; i < ARRAY_SIZE(apTarget); ++i)
     {
         coreRenderTarget* pTarget = apTarget[i];
-        if(!pTarget->iInternal) continue;
+        if(!pTarget->oSpec.iInternal) continue;
 
         // set attachment point (depending on target order)
         GLenum iAttachment;
@@ -78,7 +78,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
         if(pTarget->pTexture)
         {
             // create render target texture
-            pTarget->pTexture->Create(iWidth, iHeight, pTarget->iInternal, pTarget->iFormat, pTarget->iType, CORE_TEXTURE_MODE_DEFAULT);
+            pTarget->pTexture->Create(iWidth, iHeight, pTarget->oSpec, CORE_TEXTURE_MODE_DEFAULT);
 
             // attach render target texture to frame buffer
             glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetTexture(), 0);
@@ -90,8 +90,8 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
             glBindRenderbuffer(GL_RENDERBUFFER, pTarget->iBuffer);
 
             // allocate buffer memory
-            if(iSamples) glRenderbufferStorageMultisample(GL_RENDERBUFFER, iSamples, pTarget->iInternal, iWidth, iHeight);
-                    else glRenderbufferStorage           (GL_RENDERBUFFER,           pTarget->iInternal, iWidth, iHeight);
+            if(iSamples) glRenderbufferStorageMultisample(GL_RENDERBUFFER, iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
+                    else glRenderbufferStorage           (GL_RENDERBUFFER,           pTarget->oSpec.iInternal, iWidth, iHeight);
 
             // attach render target buffer to frame buffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, iAttachment, GL_RENDERBUFFER, pTarget->iBuffer);
@@ -100,7 +100,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     }
 
     // ignore color drawings without color attachment
-    if(!m_aColorTarget[0].iInternal) glDrawBuffer(GL_NONE);
+    if(!m_aColorTarget[0].oSpec.iInternal) glDrawBuffer(GL_NONE);
 
     // retrieve frame buffer status
     const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -150,10 +150,10 @@ void coreFrameBuffer::Delete()
 
 // ****************************************************************
 // attach render target texture
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const coreChar* pcName)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName)
 {
     // get requested render target structure
-    coreRenderTarget* pTarget = this->__AttachTarget(iTarget, iColorIndex, iInternal, iFormat, iType);
+    coreRenderTarget* pTarget = this->__AttachTarget(iTarget, iColorIndex, oSpec);
     if(pTarget)
     {
         // check for OpenGL extensions
@@ -172,11 +172,11 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
 
 // ****************************************************************
 // attach render target buffer
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec)
 {
     // get requested render target structure
-    if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (iTarget, iColorIndex, iInternal, iFormat, iType);
-                                         else return this->AttachTargetTexture(iTarget, iColorIndex, iInternal, iFormat, iType);
+    if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (iTarget, iColorIndex, oSpec);
+                                         else return this->AttachTargetTexture(iTarget, iColorIndex, oSpec);
 }
 
 
@@ -194,9 +194,7 @@ void coreFrameBuffer::DetachTargets()
         if(apTarget[i]->pTexture) Core::Manager::Resource->Free(&apTarget[i]->pTexture);
 
         // reset properties
-        apTarget[i]->iInternal = 0u;
-        apTarget[i]->iFormat   = 0u;
-        apTarget[i]->iType     = 0u;
+        apTarget[i]->oSpec = coreTextureSpec(0u, 0u, 0u);
     }
 }
 
@@ -418,7 +416,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
 
 // ****************************************************************
 // attach default render target
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec)
 {
     ASSERT(!m_iFrameBuffer && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
@@ -440,9 +438,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
     if(pTarget->pTexture) Core::Manager::Resource->Free(&pTarget->pTexture);
 
     // set properties
-    pTarget->iInternal = iInternal;
-    pTarget->iFormat   = iFormat;
-    pTarget->iType     = iType;
+    pTarget->oSpec = oSpec;
 
     return pTarget;
 }

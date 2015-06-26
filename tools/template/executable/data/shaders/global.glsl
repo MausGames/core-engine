@@ -143,7 +143,12 @@ float coreLengthSq(const in vec3 v) {return dot(v, v);}
 vec3 coreUnpackNormal(const in vec2 v)
 {
     vec2 A = v * 2.0 - 1.0;
-    return vec3(A, sqrt(1.0 - coreLengthSq(A)));
+    return normalize(vec3(A, sqrt(1.0 - coreLengthSq(A))));
+}
+vec3 coreUnpackNormalDeriv(const in vec2 v)
+{
+    vec2 A = v * 2.0 - 1.0;
+    return normalize(vec3(A, 1.0));
 }
 
 // quaternion transformation

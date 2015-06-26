@@ -84,7 +84,7 @@ public:
 
     //! reset content of the data buffer object
     //! @{
-    void Clear(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType, const void* pData);
+    void Clear(const coreTextureSpec& oTextureSpec, const void* pData);
     void Invalidate();
     //! @}
 

@@ -67,7 +67,7 @@ coreObjectManager::coreObjectManager()noexcept
 /* destructor */
 coreObjectManager::~coreObjectManager()
 {
-    // shut down the resource manager
+    // shut down the object manager
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
 
     // free low-memory model object

@@ -24,22 +24,22 @@ coreTextBox::coreTextBox()noexcept
 {
 }
 
-coreTextBox::coreTextBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)noexcept
+coreTextBox::coreTextBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept
 : coreTextBox ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
+    this->Construct(pcIdle, pcBusy, pcFont, iHeight, bOutlined, iLength);
 }
 
 
 // ****************************************************************
 // construct the text-box
-void coreTextBox::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iLength)
+void coreTextBox::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)
 {
     ASSERT(iLength)
 
     // construct the button
-    coreButton::Construct(pcIdle, pcBusy, pcFont, iHeight, iLength);
+    coreButton::Construct(pcIdle, pcBusy, pcFont, iHeight, bOutlined, iLength);
 
     // reserve memory for text
     m_sText    .reserve(iLength);
