@@ -19,6 +19,7 @@
 // TODO: save states and reset on fallback blitting
 // TODO: check if rendering quad is faster than blitting (only on default frame buffer? what about depth-stencil? still needs blit for MSAA)
 // TODO: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)
+// TODO: change R and RG targets to RGB when not supported ?
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 // NOTE: notated as integer
@@ -26,7 +27,7 @@
 
 // ****************************************************************
 // frame buffer definitions
-#define __CORE_FRAMEBUFFER_ALL_TARGETS(a)                                                    \
+#define __CORE_FRAMEBUFFER_ALL_TARGETS(a)                                                     \
     coreRenderTarget* a[CORE_SHADER_OUTPUT_COLORS + 2u] = {&m_DepthTarget, &m_StencilTarget}; \
     for(coreUintW i = 2u; i < ARRAY_SIZE(a); ++i) a[i] = &m_aColorTarget[i - 2u];
 
