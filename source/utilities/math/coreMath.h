@@ -59,18 +59,18 @@ public:
 
     /*! special operations */
     //! @{
-    template <typename T, typename S, typename... A> static constexpr_func T Min(const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S, typename... A> static constexpr_func T Max(const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S> static constexpr_func T Min  (const T& x, const S& y)                            {return (x < y) ? x : y;}
-    template <typename T, typename S> static constexpr_func T Max  (const T& x, const S& y)                            {return (x > y) ? x : y;}
-    template <typename T, typename S> static constexpr_func T Clamp(const T& x, const S& a, const S& b)                {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr_func T        Sign      (const T& x)                                        {return std::copysign(T(1), x);}
-    template <typename T> static constexpr_func T        Abs       (const T& x)                                        {return std::abs(x);}
-    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s)        {return x + (y - x) * s;}
-    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)        {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)        {return LERP(x, y, SIN(s*PI*0.5f));}
-    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                {return ((c-r) <= x && x <= (c+r));}
-    template <typename T> static inline         coreBool IsPOT     (const T& x)                                        {return !(x & (x - T(1)));}
+    template <typename T, typename S, typename... A> static constexpr_func T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S, typename... A> static constexpr_func T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S>                static constexpr_func T Min  (const T& x, const S& y)               {return (x < y) ? x : y;}
+    template <typename T, typename S>                static constexpr_func T Max  (const T& x, const S& y)               {return (x > y) ? x : y;}
+    template <typename T, typename S, typename R>    static constexpr_func T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
+    template <typename T> static constexpr_func T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
+    template <typename T> static constexpr_func T        Abs       (const T& x)                                          {return std::abs(x);}
+    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s)          {return x + (y - x) * s;}
+    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                  {return ((c-r) <= x && x <= (c+r));}
+    template <typename T> static inline         coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */
@@ -199,7 +199,8 @@ inline coreFloat coreMath::Float16to32(const coreUint16& iInput)
     const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
                                                 (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
 
-    return *r_cast<const coreFloat*>(&A);
+    const coreFloat* B = r_cast<const coreFloat*>(&A);
+    return *B;
 };
 
 

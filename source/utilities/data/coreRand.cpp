@@ -60,11 +60,11 @@ coreRand::~coreRand()
 /* assignment operations */
 coreRand& coreRand::operator = (coreRand o)noexcept
 {
-    std::swap(*this, o);
+    swap(*this, o);
     return *this;
 }
 
-void swap(coreRand& a, coreRand& b)noexcept
+void coreRand::swap(coreRand& a, coreRand& b)noexcept
 {
     std::swap(a.m_piRandom,    b.m_piRandom);
     std::swap(a.m_iNumRandoms, b.m_iNumRandoms);

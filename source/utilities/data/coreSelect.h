@@ -30,7 +30,7 @@ public:
     /*! assignment operations */
     //! @{
     coreSelect<T, iSize>& operator = (coreSelect<T, iSize> o)noexcept;
-    template <typename S, coreUintW iSize2> friend void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b)noexcept;
+    static void swap(coreSelect<T, iSize>& a, coreSelect<T, iSize>& b)noexcept;
     //! @}
 
     /*! switch current item */
@@ -86,11 +86,11 @@ template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect(coreSele
 /* assignment operations */
 template <typename T, coreUintW iSize> coreSelect<T, iSize>& coreSelect<T, iSize>::operator = (coreSelect<T, iSize> o)noexcept
 {
-    std::swap(*this, o);
+    swap(*this, o);
     return *this;
 }
 
-template <typename S, coreUintW iSize2> void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b)noexcept
+template <typename T, coreUintW iSize> void coreSelect<T, iSize>::swap(coreSelect<T, iSize>& a, coreSelect<T, iSize>& b)noexcept
 {
     std::swap(a.m_atItem,    b.m_atItem);
     std::swap(a.m_iCurIndex, b.m_iCurIndex);
@@ -99,7 +99,7 @@ template <typename S, coreUintW iSize2> void swap(coreSelect<S, iSize2>& a, core
 
 // ****************************************************************
 /* swap specialization */
-namespace std {template<typename S, coreUintW iSize2> inline void swap(coreSelect<S, iSize2>& a, coreSelect<S, iSize2>& b) {::swap(a, b);}}
+namespace std {template<typename T, coreUintW iSize> inline void swap(coreSelect<T, iSize>& a, coreSelect<T, iSize>& b) {coreSelect<T, iSize>::swap(a, b);}}
 
 
 #endif /* _CORE_GUARD_SELECT_H_ */

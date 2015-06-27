@@ -41,7 +41,7 @@ public:
     /*! assignment operations */
     //! @{
     coreRand& operator = (coreRand o)noexcept;
-    friend void swap(coreRand& a, coreRand& b)noexcept;
+    static void swap(coreRand& a, coreRand& b)noexcept;
     //! @}
 
     /*! reset current random number */
@@ -75,7 +75,7 @@ public:
 // ****************************************************************
 /* swap specialization */
 void swap(coreRand& a, coreRand& b)noexcept;
-namespace std {template<> inline void swap(coreRand& a, coreRand& b) {::swap(a, b);}}
+namespace std {template<> inline void swap(coreRand& a, coreRand& b) {coreRand::swap(a, b);}}
 
 
 #endif /* _CORE_GUARD_RAND_H_ */
