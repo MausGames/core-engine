@@ -25,7 +25,7 @@ protected:
 
 public:
     constexpr_weak coreButton()noexcept;
-    coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept;
+    coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
     coreButton(const coreChar* pcIdle, const coreChar* pcBusy)noexcept;
     virtual ~coreButton();
 
@@ -33,7 +33,7 @@ public:
 
     //! construct the button
     //! @{
-    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength);
+    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
     void Construct(const coreChar* pcIdle, const coreChar* pcBusy);
     //! @}
 

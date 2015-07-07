@@ -43,16 +43,16 @@ private:
 
 public:
     coreSwitchBox()noexcept;
-    coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept;
-    coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept;
+    coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
     ~coreSwitchBox();
 
     DISABLE_COPY(coreSwitchBox)
 
     //! construct the switch-box
     //! @{
-    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength);
-    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength);
+    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
     //! @}
 
     //! render and move the switch-box
@@ -115,18 +115,18 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 {
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy, pcFont, iHeight, bOutlined, iLength);
+    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, iLength);
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
-    this->Construct(pcFont, iHeight, bOutlined, iLength);
+    this->Construct(pcFont, iHeight, iOutline, iLength);
 }
 
 
@@ -141,24 +141,22 @@ template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 
 // ****************************************************************
 // construct the switch-box
-template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)
+template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     // create selection arrows
-    m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, bOutlined, 2u);
-    m_aArrow[1].Construct(pcIdle, pcBusy, pcFont, iHeight, bOutlined, 2u);
+    m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, 0u);
+    m_aArrow[1].Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, 0u);
     m_aArrow[0].GetCaption()->SetText("<");
     m_aArrow[1].GetCaption()->SetText(">");
 
     // construct remaining object
-    this->Construct(pcFont, iHeight, bOutlined, iLength);
+    this->Construct(pcFont, iHeight, iOutline, iLength);
 }
 
-template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)
+template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
-    ASSERT(iLength)
-
     // create the label
-    m_Caption.Construct(pcFont, iHeight, bOutlined, iLength);
+    m_Caption.Construct(pcFont, iHeight, iOutline, iLength);
 
     // init automatic forward behavior
     m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
@@ -359,6 +357,12 @@ template <typename T> void coreSwitchBox<T>::Previous()
     // update text
     this->__Update();
 }
+
+
+// ****************************************************************
+// default switch-box types
+using coreSwitchBoxU8  = coreSwitchBox<coreUint8>;
+using coreSwitchBoxStr = coreSwitchBox<std::string>;
 
 
 #endif // _CORE_GUARD_SWITCHBOX_H_

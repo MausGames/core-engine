@@ -29,8 +29,9 @@
     #define CORE_TEXTURE_MASK 0x000000FFu, 0x0000FF00u, 0x00FF0000u, 0xFF000000u
 #endif
 
+#define GL_RED_R 0x1903
 #undef  GL_RED
-#define GL_RED (CORE_GL_SUPPORT(ARB_texture_rg) ? 0x1903 : GL_LUMINANCE)
+#define GL_RED (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_RED_R : GL_LUMINANCE)
 
 #define CORE_TEXTURE_SPEC_R             (coreTextureSpec(GL_R8,                GL_RED,             GL_UNSIGNED_BYTE))
 #define CORE_TEXTURE_SPEC_RG            (coreTextureSpec(GL_RG8,               GL_RG,              GL_UNSIGNED_BYTE))

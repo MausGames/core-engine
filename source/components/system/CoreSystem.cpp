@@ -198,6 +198,7 @@ CoreSystem::~CoreSystem()
 void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 {
     coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+    coreFileUnload oUnload(pFile);
 
     // load texture from file
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));

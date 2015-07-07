@@ -25,12 +25,14 @@ private:
 public:
     constexpr_weak coreCheckBox()noexcept;
     coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)noexcept;
+    coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept;
 
     DISABLE_COPY(coreCheckBox)
 
     //! construct the check-box
     //! @{
     void Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked);
+    void Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline);
     //! @}
 
     //! move the check-box
@@ -46,6 +48,13 @@ public:
     //! get object properties
     //! @{
     inline const coreBool& GetCheck()const {return m_bCheck;}
+    //! @}
+
+
+private:
+    //! construct the check-box
+    //! @{
+    void __Construct(const coreChar* pcIdleChecked, const coreChar* pcBusyChecked);
     //! @}
 };
 

@@ -18,6 +18,13 @@ coreCheckBox::coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBu
     this->Construct(pcIdleUnchecked, pcBusyUnchecked, pcIdleChecked, pcBusyChecked);
 }
 
+coreCheckBox::coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept
+: coreCheckBox ()
+{
+    // construct on creation
+    this->Construct(pcIdleUnchecked, pcBusyUnchecked, pcIdleChecked, pcBusyChecked, pcFont, iHeight, iOutline);
+}
+
 
 // ****************************************************************
 // construct the check-box
@@ -26,11 +33,19 @@ void coreCheckBox::Construct(const coreChar* pcIdleUnchecked, const coreChar* pc
     // construct the button
     coreButton::Construct(pcIdleUnchecked, pcBusyUnchecked);
 
-    // load background textures
-    m_apUnchecked[0] = m_apBackground[0];
-    m_apUnchecked[1] = m_apBackground[1];
-    if(pcIdleChecked) m_apChecked[0] = Core::Manager::Resource->Get<coreTexture>(pcIdleChecked);
-    if(pcBusyChecked) m_apChecked[1] = Core::Manager::Resource->Get<coreTexture>(pcBusyChecked);
+    // construct remaining object
+    this->__Construct(pcIdleChecked, pcBusyChecked);
+}
+
+void coreCheckBox::Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline)
+{
+    // construct the button with label
+    coreButton::Construct(pcIdleUnchecked, pcBusyUnchecked, pcFont, iHeight, iOutline, 0u);
+    this->GetCaption()->SetText   ("X");
+    this->GetCaption()->SetEnabled(CORE_OBJECT_ENABLE_NOTHING);
+
+    // construct remaining object
+    this->__Construct(pcIdleChecked, pcBusyChecked);
 }
 
 
@@ -59,6 +74,25 @@ void coreCheckBox::SetCheck(const coreBool& bCheck)
     m_apBackground[0] = m_bCheck ? m_apChecked[0] : m_apUnchecked[0];
     m_apBackground[1] = m_bCheck ? m_apChecked[1] : m_apUnchecked[1];
 
+    // change label visibility
+    if(this->GetCaption())
+    {
+        this->GetCaption()->SetEnabled(m_bCheck ? CORE_OBJECT_ENABLE_ALL : CORE_OBJECT_ENABLE_NOTHING);
+        this->GetCaption()->Move();
+    }
+
     // invoke background update
     m_bBusy = !m_bBusy;
+}
+
+
+// ****************************************************************
+// construct the check-box
+void coreCheckBox::__Construct(const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)
+{
+    // load background textures
+    m_apUnchecked[0] = m_apBackground[0];
+    m_apUnchecked[1] = m_apBackground[1];
+    if(pcIdleChecked) m_apChecked[0] = Core::Manager::Resource->Get<coreTexture>(pcIdleChecked);
+    if(pcBusyChecked) m_apChecked[1] = Core::Manager::Resource->Get<coreTexture>(pcBusyChecked);
 }

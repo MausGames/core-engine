@@ -13,7 +13,7 @@
 // constructor
 coreLabel::coreLabel()noexcept
 : m_iHeight     (0u)
-, m_bOutlined   (false)
+, m_iOutline    (0u)
 , m_iLength     (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_sText       ("")
@@ -22,11 +22,11 @@ coreLabel::coreLabel()noexcept
 {
 }
 
-coreLabel::coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)noexcept
+coreLabel::coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreLabel ()
 {
     // construct on creation
-    this->Construct(pcFont, iHeight, bOutlined, iLength);
+    this->Construct(pcFont, iHeight, iOutline, iLength);
 }
 
 
@@ -41,12 +41,12 @@ coreLabel::~coreLabel()
 
 // ****************************************************************
 // construct the label
-void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreBool& bOutlined, const coreUint8& iLength)
+void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     // save properties
-    m_iHeight   = F_TO_UI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
-    m_bOutlined = bOutlined;
-    m_iLength   = iLength;
+    m_iHeight  = F_TO_UI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
+    m_iOutline = iOutline;
+    m_iLength  = iLength;
 
     // set font object
     m_pFont = Core::Manager::Resource->Get<coreFont>(pcFont);
@@ -56,7 +56,7 @@ void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, cons
     m_apTexture[1] = Core::Manager::Resource->LoadNew<coreTexture>();
 
     // load shader-program
-    this->DefineProgram(bOutlined ? "default_label_sharp_program" : "default_label_smooth_program");
+    this->DefineProgram(iOutline ? "default_label_sharp_program" : "default_label_smooth_program");
 
     // reserve memory for text
     if(iLength) m_sText.reserve(iLength + 1u);
@@ -173,25 +173,22 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
     pSolid = m_pFont->CreateText(pcText, m_iHeight);
     ASSERT(pSolid->format->BitsPerPixel == 8u)
 
-    if(m_bOutlined)
+    if(m_iOutline)
     {
         // create outlined text surface data
-        pOutline = m_pFont->CreateTextOutline(pcText, m_iHeight);
+        pOutline = m_pFont->CreateTextOutline(pcText, m_iHeight, m_iOutline);
         ASSERT(pOutline->format->BitsPerPixel == 8u)
     }
 
-    // set base properties
-    const SDL_Surface* pBaseSurface = m_bOutlined ? pOutline : pSolid;
-    const coreUintW    iComponents  = m_bOutlined ? (CORE_GL_SUPPORT(ARB_texture_rg) ? 2u : 3u) : 1u;
-
     // set texture properties
-    const coreUint32 iWidth  = pBaseSurface->w;
-    const coreUint32 iHeight = pBaseSurface->h;
-    const coreUint32 iPitch  = pBaseSurface->pitch;
-    const coreUintW  iSize   = iPitch * iHeight * iComponents;
+    const coreUintW  iComponents = pOutline ? (CORE_GL_SUPPORT(ARB_texture_rg) ? 2u : 3u) : 1u;
+    const coreUint32 iWidth      = pOutline ?  pOutline->w                                : pSolid->w;
+    const coreUint32 iHeight     = pOutline ? (pSolid->h + 2u * m_iOutline)               : pSolid->h;
+    const coreUint32 iPitch      = pOutline ?  pOutline->pitch                            : pSolid->pitch;
+    const coreUintW  iSize       = iPitch * iHeight * iComponents;
     ASSERT(!(iPitch % 4u))
 
-    if(m_bOutlined)
+    if(pOutline)
     {
         coreByte* pInput1 = s_cast<coreByte*>(pSolid  ->pixels);
         coreByte* pInput2 = s_cast<coreByte*>(pOutline->pixels);
@@ -201,20 +198,21 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
         std::memset(pData, 0, iSize);
 
         // insert solid pixels
-        for(coreUintW j = 0u, je = pSolid->h - FONT_OUTLINE_SIZE; j < je; ++j)
+        const coreUintW iOffset = (pOutline->pitch + 1u) * iComponents * m_iOutline;
+        for(coreUintW j = 0u, je = pSolid->h; j < je; ++j)
         {
-            const coreUintW a = (j * pOutline->pitch + FONT_OUTLINE_SIZE) * iComponents;
-            const coreUintW b =  j * pSolid  ->pitch;
+            const coreUintW b = j * pSolid  ->pitch;
+            const coreUintW a = j * pOutline->pitch * iComponents + iOffset;
 
             for(coreUintW i = 0u, ie = pSolid->pitch; i < ie; ++i)
                 pData[a + i * iComponents] = pInput1[b + i];
         }
 
         // insert outlined pixels
-        for(coreUintW j = 0u, je = pOutline->h - FONT_OUTLINE_SIZE; j < je; ++j)
+        for(coreUintW j = 0u, je = pOutline->h; j < je; ++j)
         {
-            const coreUintW a =  j                      * pOutline->pitch * iComponents + 1u;
-            const coreUintW b = (j + FONT_OUTLINE_SIZE) * pOutline->pitch;
+            const coreUintW b = j * pOutline->pitch;
+            const coreUintW a = b * iComponents + 1u;
 
             for(coreUintW i = 0u, ie = pOutline->pitch; i < ie; ++i)
                 pData[a + i * iComponents] = pInput2[b + i];
@@ -250,5 +248,5 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
     // delete text surface data
     SDL_FreeSurface(pSolid);
     SDL_FreeSurface(pOutline);
-    if(m_bOutlined) SAFE_DELETE_ARRAY(pData)
+    if(pOutline) SAFE_DELETE_ARRAY(pData)
 }
