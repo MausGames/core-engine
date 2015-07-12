@@ -188,8 +188,8 @@ void coreResourceManager::Reset(const coreResourceReset& bInit)
     if(m_bActive)
     {
         // start up relation-objects
-        FOR_EACH(it, m_apRelation)
-            (*it)->__Reset(CORE_RESOURCE_RESET_INIT);
+        for(coreUintW i = 0u; i < m_apRelation.size(); ++i)
+            m_apRelation[i]->__Reset(CORE_RESOURCE_RESET_INIT);
 
         // start resource thread
         if(Core::Graphics->GetResourceContext())
@@ -202,8 +202,8 @@ void coreResourceManager::Reset(const coreResourceReset& bInit)
             this->KillThread();
 
         // shut down relation-objects
-        FOR_EACH(it, m_apRelation)
-            (*it)->__Reset(CORE_RESOURCE_RESET_EXIT);
+        for(coreUintW i = 0u; i < m_apRelation.size(); ++i)
+            m_apRelation[i]->__Reset(CORE_RESOURCE_RESET_EXIT);
 
         // unload all resources
         FOR_EACH(it, m_apHandle)

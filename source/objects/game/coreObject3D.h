@@ -110,16 +110,16 @@ public:
 class coreBatchList final : public coreResourceRelation
 {
 private:
-    std::vector<coreObject3D*> m_apObjectList;                                         //!< list with pointers to similar 3d-objects
-    coreUint32 m_iCurCapacity;                                                         //!< current instance-capacity of all related resources
-    coreUint32 m_iCurEnabled;                                                          //!< current number of render-enabled 3d-objects (render-count)
+    std::vector<coreObject3D*> m_apObjectList;                                        //!< list with pointers to similar 3d-objects
+    coreUint32 m_iCurCapacity;                                                        //!< current instance-capacity of all related resources
+    coreUint32 m_iCurEnabled;                                                         //!< current number of render-enabled 3d-objects (render-count)
 
-    coreProgramPtr m_pProgram;                                                         //!< shader-program object
+    coreProgramPtr m_pProgram;                                                        //!< shader-program object
 
-    coreSelect<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
-    coreSelect<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
+    coreRound<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
+    coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
 
-    coreBool m_bUpdate;                                                                //!< buffer update status (dirty flag)
+    coreBool m_bUpdate;                                                               //!< buffer update status (dirty flag)
 
 
 public:

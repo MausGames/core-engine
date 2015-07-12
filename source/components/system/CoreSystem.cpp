@@ -52,7 +52,7 @@ CoreSystem::CoreSystem()noexcept
     // retrieve desktop resolution
     SDL_DisplayMode oDesktop;
     SDL_GetDesktopDisplayMode(0, &oDesktop);
-    const coreVector2 vDesktop = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
+    m_vDesktopRes = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
 
     // load all available screen resolutions
     const coreUintW iNumModes = SDL_GetNumDisplayModes(0);
@@ -67,27 +67,27 @@ CoreSystem::CoreSystem()noexcept
                 SDL_GetDisplayMode(0, i, &oMode);
                 const coreVector2 vMode = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
 
-                coreUintW j = 0u, je = m_avAvailable.size();
+                coreUintW j = 0u, je = m_avAvailableRes.size();
                 for(; j < je; ++j)
                 {
                     // check for already added resolutions
-                    if(m_avAvailable[j] == vMode)
+                    if(m_avAvailableRes[j] == vMode)
                         break;
                 }
                 if(j == je)
                 {
                     // add new resolution
-                    m_avAvailable.push_back(vMode);
-                    Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vMode == vDesktop) ? " (Desktop)" : "");
+                    m_avAvailableRes.push_back(vMode);
+                    Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vMode == m_vDesktopRes) ? " (Desktop)" : "");
                 }
             }
         }
         Core::Log->ListEnd();
 
         // override screen resolution
-        if(m_avAvailable.size() == 1u) m_vResolution = m_avAvailable.back();
-        if(!m_vResolution.x) m_vResolution.x = vDesktop.x;
-        if(!m_vResolution.y) m_vResolution.y = vDesktop.y;
+        if(m_avAvailableRes.size() == 1u) m_vResolution = m_avAvailableRes.back();
+        if(!m_vResolution.x) m_vResolution.x = m_vDesktopRes.x;
+        if(!m_vResolution.y) m_vResolution.y = m_vDesktopRes.y;
     }
     else Core::Log->Warning("Could not get available screen resolutions (SDL: %s)", SDL_GetError());
 
@@ -184,7 +184,7 @@ CoreSystem::CoreSystem()noexcept
 CoreSystem::~CoreSystem()
 {
     // clear memory
-    m_avAvailable.clear();
+    m_avAvailableRes.clear();
 
     // delete main window object
     SDL_DestroyWindow(m_pWindow);

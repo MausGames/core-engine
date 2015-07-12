@@ -7,15 +7,15 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef _CORE_GUARD_SELECT_H_
-#define _CORE_GUARD_SELECT_H_
+#ifndef _CORE_GUARD_ARRAY_H_
+#define _CORE_GUARD_ARRAY_H_
 
 // TODO: create a dynamic-sized version with std::vector ? (replacement in coreRand and coreParticleSystem)
 
 
 // ****************************************************************
-/* extended array class */
-template <typename T, coreUintW iSize> class coreSelect final
+/* round-robin array class */
+template <typename T, coreUintW iSize> class coreRound final
 {
 private:
     std::array<T, iSize> m_atItem;   //!< static item container
@@ -23,14 +23,14 @@ private:
 
 
 public:
-    coreSelect()noexcept;
-    coreSelect(const coreSelect<T, iSize>& c)noexcept;
-    coreSelect(coreSelect<T, iSize>&&      m)noexcept;
+    coreRound()noexcept;
+    coreRound(const coreRound<T, iSize>& c)noexcept;
+    coreRound(coreRound<T, iSize>&&      m)noexcept;
 
     /*! assignment operations */
     //! @{
-    coreSelect<T, iSize>& operator = (coreSelect<T, iSize> o)noexcept;
-    static void swap(coreSelect<T, iSize>& a, coreSelect<T, iSize>& b)noexcept;
+    coreRound<T, iSize>& operator = (coreRound<T, iSize> o)noexcept;
+    static void swap(coreRound<T, iSize>& a, coreRound<T, iSize>& b)noexcept;
     //! @}
 
     /*! switch current item */
@@ -64,18 +64,18 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect()noexcept
+template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound()noexcept
 : m_iCurIndex (0u)
 {
 }
 
-template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect(const coreSelect<T, iSize>& c)noexcept
+template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound(const coreRound<T, iSize>& c)noexcept
 : m_atItem    (c.m_atItem)
 , m_iCurIndex (c.m_iCurIndex)
 {
 }
 
-template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect(coreSelect<T, iSize>&& m)noexcept
+template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound(coreRound<T, iSize>&& m)noexcept
 : m_atItem    (std::move(m.m_atItem))
 , m_iCurIndex (m.m_iCurIndex)
 {
@@ -84,13 +84,13 @@ template <typename T, coreUintW iSize> coreSelect<T, iSize>::coreSelect(coreSele
 
 // ****************************************************************
 /* assignment operations */
-template <typename T, coreUintW iSize> coreSelect<T, iSize>& coreSelect<T, iSize>::operator = (coreSelect<T, iSize> o)noexcept
+template <typename T, coreUintW iSize> coreRound<T, iSize>& coreRound<T, iSize>::operator = (coreRound<T, iSize> o)noexcept
 {
     swap(*this, o);
     return *this;
 }
 
-template <typename T, coreUintW iSize> void coreSelect<T, iSize>::swap(coreSelect<T, iSize>& a, coreSelect<T, iSize>& b)noexcept
+template <typename T, coreUintW iSize> void coreRound<T, iSize>::swap(coreRound<T, iSize>& a, coreRound<T, iSize>& b)noexcept
 {
     std::swap(a.m_atItem,    b.m_atItem);
     std::swap(a.m_iCurIndex, b.m_iCurIndex);
@@ -99,7 +99,7 @@ template <typename T, coreUintW iSize> void coreSelect<T, iSize>::swap(coreSelec
 
 // ****************************************************************
 /* swap specialization */
-namespace std {template<typename T, coreUintW iSize> inline void swap(coreSelect<T, iSize>& a, coreSelect<T, iSize>& b) {coreSelect<T, iSize>::swap(a, b);}}
+namespace std {template<typename T, coreUintW iSize> inline void swap(coreRound<T, iSize>& a, coreRound<T, iSize>& b) {coreRound<T, iSize>::swap(a, b);}}
 
 
-#endif /* _CORE_GUARD_SELECT_H_ */
+#endif /* _CORE_GUARD_ARRAY_H_ */

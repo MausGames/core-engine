@@ -63,6 +63,8 @@ protected:
 
 
 public:
+    FRIEND_CLASS(coreObjectManager)
+
     /*! assignment operations */
     //! @{
     coreObject& operator = (const coreObject& c)noexcept;
@@ -130,6 +132,8 @@ private:
     coreLookup<coreInt32, coreObjectList> m_aapObjectList;   //!< lists with pointers to registered 3d-objects <type, list>
     std::vector<coreObjectCollision> m_aObjectCollision;     //!< currently recorded collisions
 
+    coreSet<coreObject2D*> m_apSpriteList;                   //!< list with pointers to all existing 2d-objects
+
     coreModelPtr  m_pLowModel;                               //!< low-memory model object (4 bytes per vertex, simple square)
     coreObject2D* m_pBlitFallback;                           //!< 2d-object used for fallback-blitting onto the default frame buffer
 
@@ -141,6 +145,7 @@ private:
 
 public:
     FRIEND_CLASS(Core)
+    FRIEND_CLASS(coreObject2D)
     FRIEND_CLASS(coreObject3D)
     DISABLE_COPY(coreObjectManager)
 
@@ -177,6 +182,12 @@ private:
     //! @{
     void __BindObject  (coreObject3D* pObject, const coreInt32& iType);
     void __UnbindObject(coreObject3D* pObject, const coreInt32& iType);
+    //! @}
+
+    /*! bind and unbind 2d-objects */
+    //! @{
+    inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!m_apSpriteList.count(pSprite)) m_apSpriteList.insert(pSprite);}
+    inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( m_apSpriteList.count(pSprite)) m_apSpriteList.erase (pSprite);}
     //! @}
 
     /*! handle and track new collisions */

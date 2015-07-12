@@ -127,6 +127,9 @@ CoreGraphics::~CoreGraphics()
     m_iTransformBuffer.Delete();
     m_iAmbientBuffer  .Delete();
 
+    // disable vertical synchronization
+    SDL_GL_SetSwapInterval(0);
+
     // dissociate render context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
 

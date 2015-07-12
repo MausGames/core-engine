@@ -139,12 +139,14 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, co
         WARN_IF(!coreMath::IsPOT(iWidth) || !coreMath::IsPOT(iHeight)) {}
         else
         {
-            // overwrite with appropriate compressed texture format (S3TC)
+            // overwrite with appropriate compressed texture format (RGTC or S3TC)
             switch(m_Spec.iFormat)
             {
-            default: ASSERT(false)
-            case GL_RGB:  m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; m_iCompressed = 1; break;
-            case GL_RGBA: m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; m_iCompressed = 1; break;
+            default: ASSERT(false) //GL_EXT_texture_compression_rgtc
+            //case GL_RED_R: m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RED_RGTC1_EXT;       m_iCompressed = 1; break;
+            //case GL_RG:    m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RED_GREEN_RGTC2_EXT; m_iCompressed = 1; break;
+            case GL_RGB:   m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;   m_iCompressed = 1; break;
+            case GL_RGBA:  m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;  m_iCompressed = 1; break;
             }
         }
     }
@@ -152,6 +154,7 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, co
     // generate texture
     glGenTextures(1, &m_iTexture);
     glBindTexture(GL_TEXTURE_2D, m_iTexture);
+    s_apBound[s_iActiveUnit] = NULL;
 
     // set sampling parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
@@ -192,6 +195,7 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
 
         // bind texture (simple)
         glBindTexture(GL_TEXTURE_2D, m_iTexture);
+        s_apBound[s_iActiveUnit] = NULL;
 
         // calculate components and compressed size
         const coreUint32 iComponents =  iDataSize / (iWidth * iHeight);
@@ -254,8 +258,11 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
         }
         else
         {
-            // bind (simple) and update texture data
-            glBindTexture  (GL_TEXTURE_2D, m_iTexture);
+            // bind texture (simple)
+            glBindTexture(GL_TEXTURE_2D, m_iTexture);
+            s_apBound[s_iActiveUnit] = NULL;
+
+            // update texture data
             glTexSubImage2D(GL_TEXTURE_2D, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
             if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
         }

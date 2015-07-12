@@ -293,9 +293,6 @@
     <ClInclude Include="..\..\..\source\additional\coreGL.h">
       <Filter>source\additional</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\utilities\data\coreSelect.h">
-      <Filter>source\utilities\data</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\components\graphics\models\MD3.h">
       <Filter>source\components\graphics\models</Filter>
     </ClInclude>
@@ -310,6 +307,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreCPUID.h">
       <Filter>source\additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreSet.h">
+      <Filter>source\utilities\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreRound.h">
+      <Filter>source\utilities\data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

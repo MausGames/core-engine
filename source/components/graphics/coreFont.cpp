@@ -128,6 +128,31 @@ void coreFont::RetrieveGlyphMetrics(const coreUint16& iGlyph, const coreUint8& i
     TTF_GlyphMetrics(m_aapFont.at(iHeight).at(iOutline), iGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
 }
 
+coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint8& iHeight, const coreUint8& iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
+{
+    ASSERT(pcMultiByte)
+
+    coreUint16 iGlyph = 0u;
+    coreUint8  iBytes = 1u;
+
+    // handle multibyte UTF-8 encoding
+    if(*pcMultiByte < 0)
+    {
+        // count number of bytes
+        iBytes = 2u + CONTAINS_VALUE(*pcMultiByte, 0xE0u) + CONTAINS_VALUE(*pcMultiByte, 0xF0u);
+        ASSERT(iBytes < 4u)
+
+        // convert characters (with foreign library)
+        SI_ConvertW<coreUint16> oConvert(true);
+        oConvert.ConvertFromStore(pcMultiByte, iBytes, &iGlyph, 1u);
+    }
+    else iGlyph = *pcMultiByte;
+
+    // retrieve dimensions and return number of bytes
+    this->RetrieveGlyphMetrics(iGlyph, iHeight, iOutline, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
+    return iBytes;
+}
+
 
 // ****************************************************************
 // init font in a specific height

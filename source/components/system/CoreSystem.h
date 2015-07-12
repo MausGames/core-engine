@@ -29,9 +29,11 @@ private:
     coreVector2 m_vResolution;                     //!< width and height of the window
     coreUint8   m_iFullscreen;                     //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
 
-    std::vector<coreVector2> m_avAvailable;        //!< all available screen resolutions
     coreBool m_bMinimized;                         //!< window/application was minimized
     coreBool m_bTerminated;                        //!< application will be terminated
+
+    std::vector<coreVector2> m_avAvailableRes;     //!< all available screen resolutions
+    coreVector2 m_vDesktopRes;                     //!< desktop resolution
 
     coreDouble m_dTotalTime;                       //!< total time since start of the application
     coreFloat  m_fLastTime;                        //!< smoothed last frame time
@@ -76,8 +78,9 @@ public:
     inline       SDL_Window*               GetWindow       ()const                     {return m_pWindow;}
     inline const coreVector2&              GetResolution   ()const                     {return m_vResolution;}
     inline const coreUint8&                GetFullscreen   ()const                     {return m_iFullscreen;}
-    inline const std::vector<coreVector2>& GetAvailable    ()const                     {return m_avAvailable;}
     inline const coreBool&                 GetMinimized    ()const                     {return m_bMinimized;}
+    inline const std::vector<coreVector2>& GetAvailableRes ()const                     {return m_avAvailableRes;}
+    inline const coreVector2&              GetDesktopRes   ()const                     {return m_vDesktopRes;}
     inline const coreDouble&               GetTotalTime    ()const                     {return m_dTotalTime;}
     inline const coreFloat&                GetTime         ()const                     {return m_fLastTime;}
     inline const coreFloat&                GetTime         (const coreInt8&  iID)const {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}

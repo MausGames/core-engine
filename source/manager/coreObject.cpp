@@ -184,6 +184,13 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
 
             Core::Log->Warning("Frame buffer fallback created");
         }
+
+        // force update of all existing 2d-objects
+        FOR_EACH(it, m_apSpriteList)
+        {
+            (*it)->m_iUpdate = CORE_OBJECT_UPDATE_ALL;
+            (*it)->Move();
+        }
     }
     else
     {

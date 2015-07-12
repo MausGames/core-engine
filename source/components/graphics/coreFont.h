@@ -11,6 +11,7 @@
 #define _CORE_GUARD_FONT_H_
 
 // TODO: distance fields for sharper text
+// TODO: 4-byte UTF-8 is beyond U+10000 and therefore bigger than uint16
 
 
 // ****************************************************************
@@ -50,7 +51,8 @@ public:
     //! @{
     inline const coreChar* RetrieveFamilyName() {ASSERT(!m_aapFont.empty()) return TTF_FontFaceFamilyName(m_aapFont.at(1u).at(0u));}
     inline const coreChar* RetrieveStyleName () {ASSERT(!m_aapFont.empty()) return TTF_FontFaceStyleName (m_aapFont.at(1u).at(0u));}
-    void RetrieveGlyphMetrics(const coreUint16& iGlyph, const coreUint8& iHeight, const coreUint8& iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
+    void      RetrieveGlyphMetrics(const coreUint16& iGlyph,      const coreUint8& iHeight, const coreUint8& iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
+    coreUint8 RetrieveGlyphMetrics(const coreChar*   pcMultiByte, const coreUint8& iHeight, const coreUint8& iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
     //! @}
 
 

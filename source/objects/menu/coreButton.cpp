@@ -79,6 +79,9 @@ void coreButton::Render()
 // move the button
 void coreButton::Move()
 {
+    // override focus status
+    if(m_iOverride < 0) this->SetFocus(false);
+
     // set current background texture
     const coreBool bStatus = (m_iOverride > 0) ? true : ((m_iOverride < 0) ? false : this->IsFocused());
     if(m_bBusy != bStatus)

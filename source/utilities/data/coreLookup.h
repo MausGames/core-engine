@@ -69,7 +69,7 @@ public:
     inline coreUintW capacity()const                    {return m_atValueList.capacity();}
     //! @}
 
-    /*! remove existing entries */
+    /*! remove existing entry */
     //! @{
     coreBool                 erase(const I& tKey);
     inline coreValueIterator erase(const coreValueIterator& it) {this->__cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}

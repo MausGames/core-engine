@@ -74,7 +74,7 @@ private:
     coreLookupStr<std::string> m_asStringList;            //!< list with language-strings to specific keys
 
     coreLookup<std::string*, std::string> m_apsForeign;   //!< foreign string pointers connected with keys <foreign, key>
-    std::u_set<coreTranslate*> m_apObject;                //!< objects to update after modification
+    coreSet<coreTranslate*> m_apObject;                   //!< objects to update after modification
 
     std::string m_sPath;                                  //!< relative path of the file
 

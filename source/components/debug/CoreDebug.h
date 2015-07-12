@@ -31,11 +31,11 @@ private:
     /*! measure structure */
     struct coreMeasure
     {
-        coreUint64 iPerfTime;                                 //!< high-precision CPU time value at start
-        coreSelect<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
-        coreFloat fCurrentCPU;                                //!< current CPU performance value
-        coreFloat fCurrentGPU;                                //!< current GPU performance value
-        coreLabel oOutput;                                    //!< label for displaying output
+        coreUint64 iPerfTime;                                //!< high-precision CPU time value at start
+        coreRound<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
+        coreFloat fCurrentCPU;                               //!< current CPU performance value
+        coreFloat fCurrentGPU;                               //!< current GPU performance value
+        coreLabel oOutput;                                   //!< label for displaying output
 
         coreMeasure()noexcept;
     };

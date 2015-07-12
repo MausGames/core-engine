@@ -29,7 +29,6 @@ private:
 
 
 protected:
-    coreMatrix2 m_mRotation;        //!< separate rotation matrix
     coreMatrix3 m_mTransform;       //!< transformation matrix
 
     coreBool    m_bFocused;         //!< interaction status
@@ -41,10 +40,16 @@ protected:
 
 
 public:
-    constexpr_weak coreObject2D()noexcept;
-    virtual ~coreObject2D() {}
+    coreObject2D()noexcept;
+    coreObject2D(const coreObject2D& c)noexcept;
+    coreObject2D(coreObject2D&&      m)noexcept;
+    virtual ~coreObject2D();
 
-    ENABLE_COPY(coreObject2D)
+    /*! assignment operations */
+    //! @{
+    coreObject2D& operator = (const coreObject2D& c)noexcept;
+    coreObject2D& operator = (coreObject2D&&      m)noexcept;
+    //! @}
 
     //! define the visual appearance
     //! @{
@@ -74,7 +79,7 @@ public:
     //! @{
     inline void SetPosition     (const coreVector2& vPosition)      {if(m_vPosition  != vPosition)  {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
     inline void SetSize         (const coreVector2& vSize)          {if(m_vSize      != vSize)      {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
-    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_ALL)       m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
+    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
     inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
     inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetFocus        (const coreBool&    bFocus)         {m_bFocused       = bFocus;}
@@ -88,29 +93,9 @@ public:
     inline const coreVector2& GetDirection()const {return m_vDirection;}
     inline const coreVector2& GetCenter   ()const {return m_vCenter;}
     inline const coreVector2& GetAlignment()const {return m_vAlignment;}
-    inline const coreMatrix2& GetRotation ()const {return m_mRotation;}
     inline const coreMatrix3& GetTransform()const {return m_mTransform;}
     //! @}
 };
-
-
-// ****************************************************************
-// constructor
-constexpr_weak coreObject2D::coreObject2D()noexcept
-: m_vPosition      (coreVector2(0.0f,0.0f))
-, m_vSize          (coreVector2(0.0f,0.0f))
-, m_vDirection     (coreVector2(0.0f,1.0f))
-, m_vCenter        (coreVector2(0.0f,0.0f))
-, m_vAlignment     (coreVector2(0.0f,0.0f))
-, m_mRotation      (coreMatrix2::Identity())
-, m_mTransform     (coreMatrix3::Identity())
-, m_bFocused       (false)
-, m_vFocusModifier (coreVector2(1.0f,1.0f))
-#if defined(_CORE_ANDROID_)
-, m_iFinger        (0u)
-#endif
-{
-}
 
 
 #endif // _CORE_GUARD_OBJECT2D_H_

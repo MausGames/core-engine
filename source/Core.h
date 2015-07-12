@@ -144,7 +144,6 @@
 #include <array>
 #include <vector>
 #include <list>
-#include <unordered_set>
 
 
 // ****************************************************************
@@ -508,7 +507,8 @@ private:
 #include "additional/coreCPUID.h"
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
-#include "utilities/data/coreSelect.h"
+#include "utilities/data/coreRound.h"
+#include "utilities/data/coreSet.h"
 #include "utilities/data/coreLookup.h"
 #include "utilities/data/coreRand.h"
 #include "utilities/file/coreLog.h"

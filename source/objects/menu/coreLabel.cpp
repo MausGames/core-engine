@@ -44,7 +44,7 @@ coreLabel::~coreLabel()
 void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     // save properties
-    m_iHeight  = F_TO_UI(I_TO_F(iHeight) * (Core::System->GetResolution().y / 800.0f) * CORE_LABEL_DETAIL);
+    m_iHeight  = iHeight;
     m_iOutline = iOutline;
     m_iLength  = iLength;
 
@@ -83,7 +83,7 @@ void coreLabel::Render()
         if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
         {
             // update the object size
-            this->SetSize(m_vTexSize * m_vResolution * (m_fScale * RCP(Core::System->GetResolution().y) / CORE_LABEL_DETAIL));
+            this->SetSize(m_vTexSize * m_vResolution * (CORE_LABEL_SIZE_FACTOR * m_fScale));
             coreObject2D::Move();
         }
 
@@ -169,14 +169,17 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
     SDL_Surface* pOutline = NULL;
     coreByte*    pData    = NULL;
 
+    // get relative font height
+    const coreUint8 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+
     // create solid text surface data
-    pSolid = m_pFont->CreateText(pcText, m_iHeight);
+    pSolid = m_pFont->CreateText(pcText, iRelHeight);
     ASSERT(pSolid->format->BitsPerPixel == 8u)
 
     if(m_iOutline)
     {
         // create outlined text surface data
-        pOutline = m_pFont->CreateTextOutline(pcText, m_iHeight, m_iOutline);
+        pOutline = m_pFont->CreateTextOutline(pcText, iRelHeight, m_iOutline);
         ASSERT(pOutline->format->BitsPerPixel == 8u)
     }
 

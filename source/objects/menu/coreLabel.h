@@ -19,7 +19,11 @@
 
 // ****************************************************************
 // menu label definitions
-#define CORE_LABEL_DETAIL (0.95f)
+#define CORE_LABEL_DETAIL        (Core::System->GetResolution().y * 0.95f)
+#define CORE_LABEL_SIZE_FACTOR   (RCP(CORE_LABEL_DETAIL))       //!< map texture resolution on current window resolution
+#define CORE_LABEL_HEIGHT_FACTOR (CORE_LABEL_DETAIL / 800.0f)   //!< set real font height relative to current window resolution
+
+#define CORE_LABEL_HEIGHT_RELATIVE(x) (F_TO_UI(I_TO_F(x) * CORE_LABEL_HEIGHT_FACTOR))
 
 enum coreLabelUpdate : coreUint8
 {

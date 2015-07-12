@@ -27,7 +27,7 @@ template <typename T> class coreSwitchBox final : public coreObject2D, public co
 {
 public:
     //! internal type
-    using coreEntry = std::pair<std::string, T>;
+    using coreEntry = std::pair<std::string*, T>;
 
 
 private:
@@ -71,7 +71,9 @@ public:
 
     //! switch current entry
     //! @{
-    void Select(const coreUintW& iIndex);
+    void     SelectIndex(const coreUintW& iIndex);
+    coreBool SelectText (const coreChar*  pcText);
+    coreBool SelectValue(const T&         tValue);
     void Next    ();
     void Previous();
     //! @}
@@ -80,6 +82,12 @@ public:
     //! @{
     inline const coreEntry& GetEntry   (const coreUintW& iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex];}
     inline const coreEntry& GetCurEntry()const                        {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex];}
+    //! @}
+
+    //! interact with the switch-box
+    //! @{
+    inline coreBool IsClickedArrow(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const {return (m_aArrow[0].IsClicked(iButton, iType) || m_aArrow[1].IsClicked(iButton, iType)) ? true : false;}
+    inline coreBool IsFocusedArrow()const                                                                                        {return (m_aArrow[0].IsFocused()               || m_aArrow[1].IsFocused())               ? true : false;}
     //! @}
 
     //! set object properties
@@ -101,7 +109,7 @@ public:
 private:
     //! update object after modification
     //! @{
-    inline void __Update()override {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first.c_str());}
+    inline void __Update()override {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first->c_str());}
     //! @}
 };
 
@@ -146,6 +154,8 @@ template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcIdle, c
     // create selection arrows
     m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, 0u);
     m_aArrow[1].Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, 0u);
+    m_aArrow[0].SetAlpha (0.0f);
+    m_aArrow[1].SetAlpha (0.0f);
     m_aArrow[0].GetCaption()->SetText("<");
     m_aArrow[1].GetCaption()->SetText(">");
 
@@ -171,13 +181,13 @@ template <typename T> void coreSwitchBox<T>::Render()
     // TODO: check implementation
     //m_aArrow[0].SetAlpha(this->GetAlpha());
     //m_aArrow[1].SetAlpha(this->GetAlpha());
-    //m_Caption.SetAlpha(this->GetAlpha());
 
     // render selection arrows
     m_aArrow[0].Render();
     m_aArrow[1].Render();
 
     // render the label
+    m_Caption.SetAlpha(this->GetAlpha());
     m_Caption.Render();
 }
 
@@ -264,7 +274,7 @@ template <typename T> void coreSwitchBox<T>::Move()
 template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, const T& tValue)
 {
     // create new entry
-    m_aEntry.push_back(coreEntry(pcText, tValue));
+    m_aEntry.push_back(coreEntry(new std::string(pcText), tValue));
 
     // update text
     if(m_aEntry.size() == 1u) this->__Update();
@@ -274,7 +284,7 @@ template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreChar* pc
 {
     // create and bind new entry
     this->AddEntry("", tValue);
-    this->_BindString(&m_aEntry.back().first, pcKey);
+    this->_BindString(m_aEntry.back().first, pcKey);
 }
 
 
@@ -286,7 +296,8 @@ template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUintW& iIndex
     auto it = m_aEntry.begin() + iIndex;
 
     // unbind entry
-    this->_UnbindString(&it->first);
+    this->_UnbindString(it->first);
+    SAFE_DELETE(it->first)
 
     // remove entry and update index
     m_aEntry.erase(it);
@@ -303,7 +314,10 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
 {
     // unbind all entries
     FOR_EACH(it, m_aEntry)
-        this->_UnbindString(&it->first);
+    {
+        this->_UnbindString(it->first);
+        SAFE_DELETE(it->first)
+    }
 
     // remove all entries and reset index
     m_aEntry.clear();
@@ -316,7 +330,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
 
 // ****************************************************************
 // switch to specific entry
-template <typename T> void coreSwitchBox<T>::Select(const coreUintW& iIndex)
+template <typename T> void coreSwitchBox<T>::SelectIndex(const coreUintW& iIndex)
 {
     ASSERT(iIndex < m_aEntry.size())
 
@@ -326,6 +340,41 @@ template <typename T> void coreSwitchBox<T>::Select(const coreUintW& iIndex)
 
     // update text
     this->__Update();
+}
+
+
+template <typename T> coreBool coreSwitchBox<T>::SelectText(const coreChar* pcText)
+{
+    // loop through all entries
+    for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
+    {
+        // search and select specific text
+        if(!std::strcmp(m_aEntry[i].first->c_str(), pcText))
+        {
+            this->SelectIndex(i);
+            return true;
+        }
+    }
+
+    // text not found
+    return false;
+}
+
+template <typename T> coreBool coreSwitchBox<T>::SelectValue(const T& tValue)
+{
+    // loop through all entries
+    for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
+    {
+        // search and select specific value
+        if(m_aEntry[i].second == tValue)
+        {
+            this->SelectIndex(i);
+            return true;
+        }
+    }
+
+    // value not found
+    return false;
 }
 
 

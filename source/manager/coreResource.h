@@ -193,16 +193,16 @@ private:
 class coreResourceManager final : public coreThread
 {
 private:
-    coreLookupStr<coreResourceHandle*> m_apHandle;    //!< resource handles
+    coreLookupStr<coreResourceHandle*> m_apHandle;   //!< resource handles
 
-    coreLookupStr<coreArchive*> m_apArchive;          //!< archives with resource files
-    coreLookupStr<coreFile*> m_apDirectFile;          //!< direct resource files
+    coreLookupStr<coreArchive*> m_apArchive;         //!< archives with resource files
+    coreLookupStr<coreFile*> m_apDirectFile;         //!< direct resource files
 
-    std::u_set<coreResourceRelation*> m_apRelation;   //!< objects to reset with the resource manager
+    coreSet<coreResourceRelation*> m_apRelation;     //!< objects to reset with the resource manager
 
-    SDL_SpinLock m_iResourceLock;                     //!< spinlock to prevent invalid resource handle access
-    SDL_SpinLock m_iFileLock;                         //!< spinlock to prevent invalid resource file access
-    coreBool m_bActive;                               //!< current management status
+    SDL_SpinLock m_iResourceLock;                    //!< spinlock to prevent invalid resource handle access
+    SDL_SpinLock m_iFileLock;                        //!< spinlock to prevent invalid resource file access
+    coreBool m_bActive;                              //!< current management status
 
 
 private:
