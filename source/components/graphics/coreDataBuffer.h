@@ -52,7 +52,7 @@ private:
     coreUint32 m_iMapOffset;                       //!< current mapping offset
     coreUint32 m_iMapLength;                       //!< current mapping length
 
-    coreSync* m_pSync;                             //!< optional sync object for reliable asynchronous processing
+    coreSync m_Sync;                               //!< sync object for reliable asynchronous processing
 
     static coreLookup<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
 
@@ -163,7 +163,6 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 , m_pPersistentBuffer (NULL)
 , m_iMapOffset        (0u)
 , m_iMapLength        (0u)
-, m_pSync             (NULL)
 {
 }
 
@@ -179,7 +178,8 @@ template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32& i
     m_iMapLength = iLength;
 
     // check for sync object status
-    if(m_pSync) m_pSync->Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_ONLY);
+    if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+        m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_ONLY);
 
     // return persistent mapped buffer
     if(m_pPersistentBuffer) return r_cast<T*>(m_pPersistentBuffer + iOffset);
@@ -255,7 +255,8 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
     }
 
     // create sync object
-    if(m_pSync) m_pSync->Create();
+    if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+        m_Sync.Create();
 
     // reset mapping attributes
     m_iMapOffset = 0u;

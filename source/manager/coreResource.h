@@ -47,7 +47,7 @@ public:
     coreResource()noexcept : m_sPath ("") {}
     virtual ~coreResource()               {}
 
-    DISABLE_COPY(coreResource)
+    ENABLE_COPY(coreResource)
 
     /*! load and unload resource data */
     //! @{

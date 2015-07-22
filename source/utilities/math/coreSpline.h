@@ -37,15 +37,9 @@ private:
 
 public:
     coreSpline()noexcept;
-    coreSpline(const coreSpline<T>& c)noexcept;
-    coreSpline(coreSpline<T>&&      m)noexcept;
     ~coreSpline();
 
-    /*! assignment operations */
-    //! @{
-    coreSpline<T>& operator = (coreSpline<T> o)noexcept;
-    static void swap(coreSpline<T>& a, coreSpline<T>& b)noexcept;
-    //! @}
+    ENABLE_COPY(coreSpline)
 
     /*! manage nodes */
     //! @{
@@ -107,18 +101,6 @@ template <typename T> coreSpline<T>::coreSpline()noexcept
 {
 }
 
-template <typename T> coreSpline<T>::coreSpline(const coreSpline<T>& c)noexcept
-: m_apNode         (c.m_apNode)
-, m_fTotalDistance (c.m_fTotalDistance)
-{
-}
-
-template <typename T> coreSpline<T>::coreSpline(coreSpline<T>&& m)noexcept
-: m_apNode         (std::move(m.m_apNode))
-, m_fTotalDistance (m.m_fTotalDistance)
-{
-}
-
 
 // ****************************************************************
 /* destructor */
@@ -127,26 +109,6 @@ template <typename T> coreSpline<T>::~coreSpline()
     // remove all nodes
     this->ClearNodes();
 }
-
-
-// ****************************************************************
-/* assignment operations */
-template <typename T> coreSpline<T>& coreSpline<T>::operator = (coreSpline<T> o)noexcept
-{
-    swap(*this, o);
-    return *this;
-}
-
-template <typename T> void coreSpline<T>::swap(coreSpline<T>& a, coreSpline<T>& b)noexcept
-{
-    std::swap(a.m_apNode,         b.m_apNode);
-    std::swap(a.m_fTotalDistance, b.m_fTotalDistance);
-}
-
-
-// ****************************************************************
-/* swap specialization */
-namespace std {template<typename T> inline void swap(coreSpline<T>& a, coreSpline<T>& b) {coreSpline<T>::swap(a, b);}}
 
 
 // ****************************************************************

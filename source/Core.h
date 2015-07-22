@@ -198,8 +198,7 @@
 #endif
 
 #if defined(_CORE_MSVC_)
-    #define thread_local   __declspec(thread)   // # keyword
-    #define noexcept       throw()              // # keyword
+    #define noexcept       throw()   //!< exceptions disabled
     #define constexpr_var  const
     #define constexpr_func inline
 #else
@@ -280,13 +279,17 @@
      c() = delete;              \
     ~c() = delete;
 
-// enable (explicitly) or disable copy-operations with the defined class
+// enable (explicitly) or disable copy- and move-operations with the defined class
 #define ENABLE_COPY(c)                  \
     c             (const c&) = default; \
-    c& operator = (const c&) = default;
+    c& operator = (const c&) = default; \
+    c             (c&&)      = default; \
+    c& operator = (c&&)      = default;
 #define DISABLE_COPY(c)                 \
     c             (const c&) = delete;  \
-    c& operator = (const c&) = delete;
+    c& operator = (const c&) = delete;  \
+    c             (c&&)      = delete;  \
+    c& operator = (c&&)      = delete;
 
 // disable heap-operations with the defined class
 #define DISABLE_NEW                                        \
@@ -339,6 +342,9 @@ using coreBool   = bool;
 using coreChar   = char;
 using coreFloat  = float;
 using coreDouble = double;
+
+// user-defined literals
+constexpr_func coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
 
 // override string comparison operator (faster but unsecure)
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}

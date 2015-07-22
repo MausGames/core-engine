@@ -112,7 +112,7 @@ void coreLog::__Write(const coreBool& bTime, std::string sText)
 #if defined(_CORE_ANDROID_) || defined(_CORE_DEBUG_)
 
     // also write text to the standard output
-    SDL_Log(sText.substr(0, SDL_MAX_LOG_MESSAGE).c_str());
+    SDL_Log(sText.substr(0, SDL_MAX_LOG_MESSAGE - 1u).c_str());
 
 #endif
 

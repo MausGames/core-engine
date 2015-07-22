@@ -56,10 +56,6 @@ void coreDataBuffer::Create(const GLenum& iTarget, const coreUint32& iSize, cons
         // allocate normal buffer memory
         glBufferData(m_iTarget, m_iSize, pData, this->IsWritable() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     }
-
-    // create sync object
-    if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
-        m_pSync = new coreSync();
 }
 
 
@@ -78,9 +74,6 @@ void coreDataBuffer::Delete()
 
     // delete buffer
     glDeleteBuffers(1, &m_iDataBuffer);
-
-    // delete sync object
-    SAFE_DELETE(m_pSync)
 
     // reset properties
     m_iDataBuffer  = 0u;

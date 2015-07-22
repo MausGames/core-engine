@@ -57,19 +57,12 @@ protected:
 
 protected:
     constexpr_weak coreObject()noexcept;
-    inline coreObject(const coreObject& c)noexcept;
-    inline coreObject(coreObject&&      m)noexcept;
     ~coreObject() {}
 
 
 public:
     FRIEND_CLASS(coreObjectManager)
-
-    /*! assignment operations */
-    //! @{
-    coreObject& operator = (const coreObject& c)noexcept;
-    coreObject& operator = (coreObject&&      m)noexcept;
-    //! @}
+    ENABLE_COPY (coreObject)
 
     /*! define the visual appearance */
     //! @{
@@ -207,34 +200,6 @@ constexpr_weak coreObject::coreObject()noexcept
 , m_iEnabled   (CORE_OBJECT_ENABLE_ALL)
 , m_iStatus    (0)
 {
-}
-
-inline coreObject::coreObject(const coreObject& c)noexcept
-: m_pProgram   (c.m_pProgram)
-, m_vColor     (c.m_vColor)
-, m_vTexSize   (c.m_vTexSize)
-, m_vTexOffset (c.m_vTexOffset)
-, m_iUpdate    (c.m_iUpdate)
-, m_iEnabled   (c.m_iEnabled)
-, m_iStatus    (c.m_iStatus)
-{
-    // copy texture objects
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
-        m_apTexture[i] = c.m_apTexture[i];
-}
-
-inline coreObject::coreObject(coreObject&& m)noexcept
-: m_pProgram   (std::move(m.m_pProgram))
-, m_vColor     (m.m_vColor)
-, m_vTexSize   (m.m_vTexSize)
-, m_vTexOffset (m.m_vTexOffset)
-, m_iUpdate    (m.m_iUpdate)
-, m_iEnabled   (m.m_iEnabled)
-, m_iStatus    (m.m_iStatus)
-{
-    // move texture objects
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
-        m_apTexture[i] = std::move(m.m_apTexture[i]);
 }
 
 

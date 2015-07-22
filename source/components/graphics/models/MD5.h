@@ -114,15 +114,15 @@ struct md5Mesh
     {
         coreUintW iNum = 0u;
 
-        MD5_SCAN(*ppcData, "%*s %*s %*s %u", &iNum)
+        MD5_SCAN(*ppcData, "%*s %*s %*s %zu", &iNum)
         aVertex.reserve(iNum);
         for(coreUintW i = iNum; i--; ) aVertex.push_back(md5Vertex(ppcData));
 
-        MD5_SCAN(*ppcData, "%*s %u", &iNum)
+        MD5_SCAN(*ppcData, "%*s %zu", &iNum)
         aTriangle.reserve(iNum);
         for(coreUintW i = iNum; i--; ) aTriangle.push_back(md5Triangle(ppcData));
 
-        MD5_SCAN(*ppcData, "%*s %u", &iNum)
+        MD5_SCAN(*ppcData, "%*s %zu", &iNum)
         aWeight.reserve(iNum);
         for(coreUintW i = iNum; i--; ) aWeight.push_back(md5Weight(ppcData));
     }
@@ -157,8 +157,8 @@ struct md5File
 
         // read number of objects
         MD5_SCAN(*ppcData, "%*s %*s")
-        MD5_SCAN(*ppcData, "%*s %u", &iNumJoints)
-        MD5_SCAN(*ppcData, "%*s %u", &iNumMeshes)
+        MD5_SCAN(*ppcData, "%*s %zu", &iNumJoints)
+        MD5_SCAN(*ppcData, "%*s %zu", &iNumMeshes)
         aJoint.reserve(iNumJoints);
         aMesh .reserve(iNumMeshes);
 

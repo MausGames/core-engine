@@ -11,6 +11,7 @@
 #define _CORE_GUARD_MEMORY_H_
 
 // TODO: implement memory management, duh'
+// TODO: check if Share return is optimized
 
 
 // ****************************************************************
@@ -45,7 +46,6 @@ public:
 
 // ****************************************************************
 // share memory pointer through specific identifier
-// TODO: check if return is optimized
 template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share(const coreChar* pcName, A&&... vArgs)
 {
     // check for existing pointer

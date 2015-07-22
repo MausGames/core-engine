@@ -24,14 +24,8 @@ private:
 
 public:
     coreRound()noexcept;
-    coreRound(const coreRound<T, iSize>& c)noexcept;
-    coreRound(coreRound<T, iSize>&&      m)noexcept;
 
-    /*! assignment operations */
-    //! @{
-    coreRound<T, iSize>& operator = (coreRound<T, iSize> o)noexcept;
-    static void swap(coreRound<T, iSize>& a, coreRound<T, iSize>& b)noexcept;
-    //! @}
+    ENABLE_COPY(coreRound)
 
     /*! switch current item */
     //! @{
@@ -68,38 +62,6 @@ template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound()noexcept
 : m_iCurIndex (0u)
 {
 }
-
-template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound(const coreRound<T, iSize>& c)noexcept
-: m_atItem    (c.m_atItem)
-, m_iCurIndex (c.m_iCurIndex)
-{
-}
-
-template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound(coreRound<T, iSize>&& m)noexcept
-: m_atItem    (std::move(m.m_atItem))
-, m_iCurIndex (m.m_iCurIndex)
-{
-}
-
-
-// ****************************************************************
-/* assignment operations */
-template <typename T, coreUintW iSize> coreRound<T, iSize>& coreRound<T, iSize>::operator = (coreRound<T, iSize> o)noexcept
-{
-    swap(*this, o);
-    return *this;
-}
-
-template <typename T, coreUintW iSize> void coreRound<T, iSize>::swap(coreRound<T, iSize>& a, coreRound<T, iSize>& b)noexcept
-{
-    std::swap(a.m_atItem,    b.m_atItem);
-    std::swap(a.m_iCurIndex, b.m_iCurIndex);
-}
-
-
-// ****************************************************************
-/* swap specialization */
-namespace std {template<typename T, coreUintW iSize> inline void swap(coreRound<T, iSize>& a, coreRound<T, iSize>& b) {coreRound<T, iSize>::swap(a, b);}}
 
 
 #endif /* _CORE_GUARD_ARRAY_H_ */

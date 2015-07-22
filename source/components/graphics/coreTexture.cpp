@@ -394,9 +394,9 @@ void coreTexture::CreateCompressed(const coreUintW& iInWidth, const coreUintW& i
            (iComponents == 3u || iComponents == 4u) && pInput && pOutput)
 
     // save memory offsets and alpha status
-    const coreUintW iInOffsetX = 4u  * iComponents;
-    const coreUintW iInOffsetY = 3u  * iComponents * iInWidth;
-    const coreUintW iOutOffset = 1u << iComponents;
+    const coreUintW iInOffsetX = 4u    * iComponents;
+    const coreUintW iInOffsetY = 3u    * iComponents * iInWidth;
+    const coreUintW iOutOffset = 1_zu << iComponents;
     const coreInt32 iAlpha     = iComponents - 3;
 
     // loop through all input texels

@@ -327,6 +327,10 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
         // delete instance data buffers
         FOR_EACH(it, *m_aiInstanceBuffer.List())
             it->Delete();
+
+        // reset selected array and buffer (to synchronize)
+        m_aiVertexArray   .Select(0u);
+        m_aiInstanceBuffer.Select(0u);
     }
 }
 
