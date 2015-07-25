@@ -175,6 +175,8 @@ void coreObject3D::ChangeType(const coreInt32& iType)
 coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
 : m_iCurCapacity (iStartCapacity)
 , m_iCurEnabled  (0u)
+, m_pLastModel   (NULL)
+, m_iFilled      (0u)
 , m_bUpdate      (false)
 {
     ASSERT(iStartCapacity)
@@ -223,6 +225,10 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 
         // check for model status
         if(!pModel.IsUsable()) return;
+
+        // detect model changes and invoke update
+        if(m_pLastModel != pModel.GetHandle()) m_iFilled = 0u;
+        m_pLastModel = pModel.GetHandle();
 
         // enable the shader-program
         if(!pProgramInstanced.IsUsable()) return;
@@ -273,17 +279,20 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             m_bUpdate = false;
         }
 
-        // bind vertex array object
-        if(m_aiVertexArray.Current()) glBindVertexArray(m_aiVertexArray.Current());
-        else
-        {
-            // create vertex array object
-            glGenVertexArrays(1, &m_aiVertexArray.Current());
-            glBindVertexArray(m_aiVertexArray.Current());
+        // disable current model object (because of direct VAO use)
+        coreModel::Disable(false);
 
-            // set vertex data
+        // bind vertex array object
+        glBindVertexArray(m_aiVertexArray.Current());
+
+        // activate missing geometry data
+        if(!CONTAINS_BIT(m_iFilled, m_aiVertexArray.Index()))
+        {
+            ADD_BIT(m_iFilled, m_aiVertexArray.Index())
+            STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_OBJECT3D_INSTANCE_BUFFERS)
+
+            // set vertex data (model only)
             pModel->GetVertexBuffer(0u)->Activate(0u);
-            m_aiInstanceBuffer.Current().Activate(1u);
 
             // set index data
             if(*pModel->GetIndexBuffer())
@@ -291,21 +300,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
                 pModel->GetIndexBuffer()->Bind();
             }
-
-            // enable vertex attribute array division
-            if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1u, 1u);
-            else
-            {
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1u);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     1u);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 1u);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1u);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 1u);
-            }
         }
-
-        // disable current model object (because of direct VAO use)
-        coreModel::Disable(false);
 
         // draw the model instanced
         pModel->DrawInstanced(m_iCurEnabled);
@@ -407,14 +402,6 @@ void coreBatchList::MoveSort()
 /* bind 3d-object */
 void coreBatchList::BindObject(coreObject3D* pObject)
 {
-#if defined(_CORE_DEBUG_)
-
-    // check for duplicate objects
-    FOR_EACH(it, m_apObjectList)
-        ASSERT((*it) != pObject)
-
-#endif
-
     if(m_apObjectList.size() >= m_iCurCapacity)
     {
         // increase current capacity by 50%
@@ -422,7 +409,7 @@ void coreBatchList::BindObject(coreObject3D* pObject)
     }
 
     // add object to list
-    m_apObjectList.push_back(pObject);
+    m_apObjectList.insert(pObject);
 }
 
 
@@ -430,23 +417,11 @@ void coreBatchList::BindObject(coreObject3D* pObject)
 /* unbind 3d-object */
 void coreBatchList::UnbindObject(coreObject3D* pObject)
 {
-    // find object in list
-    FOR_EACH(it, m_apObjectList)
-    {
-        if((*it) == pObject)
-        {
-            // remove object from list
-            m_apObjectList.erase(it);
+    // remove object from list
+    m_apObjectList.erase(pObject);
 
-            // clear on the last entry
-            if(m_apObjectList.empty()) this->Clear();
-
-            return;
-        }
-    }
-
-    // object not found
-    WARN_IF(true) {}
+    // clear on the last entry
+    if(m_apObjectList.empty()) this->Clear();
 }
 
 
@@ -471,12 +446,18 @@ void coreBatchList::Reallocate(const coreUint32& iNewCapacity)
 /* remove all 3d-objects */
 void coreBatchList::Clear()
 {
-    // clear memory
+    // just clear memory
     m_apObjectList.clear();
+}
 
-    // delete vertex array objects
-    if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray);
-    m_aiVertexArray.Fill(0u);
+
+// ****************************************************************
+/* remove unused capacity */
+void coreBatchList::ShrinkToFit()
+{
+    // reallocate to current number of bound objects
+    this->Reallocate(m_apObjectList.size());
+    m_apObjectList.shrink_to_fit();
 }
 
 
@@ -496,6 +477,11 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
         {
             FOR_EACH(it, *m_aiInstanceBuffer.List())
             {
+                // create vertex array object
+                glGenVertexArrays(1, &m_aiVertexArray.Current());
+                glBindVertexArray(m_aiVertexArray.Current());
+                m_aiVertexArray.Next();
+
                 // create instance data buffers
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
@@ -503,9 +489,16 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32));
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32));
+
+                // set vertex data (instancing only)
+                it->ActivateDivided(1u, 1u);
             }
 
-            // invoke buffer update
+            // disable current model object (to fully enable the next model)
+            coreModel::Disable(false);
+
+            // invoke vertex array and buffer update
+            m_iFilled = 0u;
             m_bUpdate = true;
         }
     }
@@ -518,5 +511,9 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
         // delete instance data buffers
         FOR_EACH(it, *m_aiInstanceBuffer.List())
             it->Delete();
+
+        // reset selected array and buffer (to synchronize)
+        m_aiVertexArray   .Select(0u);
+        m_aiInstanceBuffer.Select(0u);
     }
 }

@@ -148,7 +148,8 @@ public:
     //! define and activate the vertex structure
     //! @{
     void DefineAttribute(const coreUint8& iLocation, const coreUint8& iComponents, const GLenum& iType, const coreBool& bInteger, const coreUint8& iOffset);
-    void Activate(const coreUint8& iBinding);
+    void Activate       (const coreUint8& iBinding);
+    void ActivateDivided(const coreUint8& iBinding, const coreUint8& iDivisor);
     //! @}
 };
 

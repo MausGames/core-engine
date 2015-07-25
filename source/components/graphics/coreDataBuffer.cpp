@@ -226,3 +226,23 @@ void coreVertexBuffer::Activate(const coreUint8& iBinding)
         }
     }
 }
+
+void coreVertexBuffer::ActivateDivided(const coreUint8& iBinding, const coreUint8& iDivisor)
+{
+    // activate the vertex structure
+    this->Activate(iBinding);
+
+    if(CORE_GL_SUPPORT(ARB_instanced_arrays))
+    {
+        if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding))
+        {
+            // enable array division per binding
+            glVertexBindingDivisor(iBinding, iDivisor);
+        }
+        else
+        {
+            // enable array division per attribute
+            FOR_EACH(it, m_aAttribute) glVertexAttribDivisor(it->iLocation, iDivisor);
+        }
+    }
+}

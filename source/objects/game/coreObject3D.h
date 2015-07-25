@@ -110,7 +110,7 @@ public:
 class coreBatchList final : public coreResourceRelation
 {
 private:
-    std::vector<coreObject3D*> m_apObjectList;                                        //!< list with pointers to similar 3d-objects
+    coreSet<coreObject3D*> m_apObjectList;                                            //!< list with pointers to similar 3d-objects
     coreUint32 m_iCurCapacity;                                                        //!< current instance-capacity of all related resources
     coreUint32 m_iCurEnabled;                                                         //!< current number of render-enabled 3d-objects (render-count)
 
@@ -119,7 +119,10 @@ private:
     coreRound<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
     coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
 
-    coreBool m_bUpdate;                                                               //!< buffer update status (dirty flag)
+    const void* m_pLastModel;                                                         //!< pointer to last used model (to detect changes and update the vertex array)
+
+    coreUint8 m_iFilled;                                                              //!< vertex array fill status
+    coreBool  m_bUpdate;                                                              //!< buffer update status (dirty flag)
 
 
 public:
@@ -151,9 +154,9 @@ public:
 
     /*! control memory allocation */
     //! @{
-    void        Reallocate(const coreUint32& iNewCapacity);
-    void        Clear();
-    inline void ShrinkToFit() {this->Reallocate(m_apObjectList.size()); m_apObjectList.shrink_to_fit();}
+    void Reallocate(const coreUint32& iNewCapacity);
+    void Clear();
+    void ShrinkToFit();
     //! @}
 
     /*! check for instancing status */
@@ -163,8 +166,8 @@ public:
 
     /*! access 3d-object list directly */
     //! @{
-    inline       std::vector<coreObject3D*>* List()      {return &m_apObjectList;}
-    inline const std::vector<coreObject3D*>* List()const {return &m_apObjectList;}
+    inline       coreSet<coreObject3D*>* List()      {return &m_apObjectList;}
+    inline const coreSet<coreObject3D*>* List()const {return &m_apObjectList;}
     //! @}
 
     /*! get object properties */

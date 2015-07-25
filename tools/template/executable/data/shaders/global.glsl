@@ -22,6 +22,7 @@
 #if defined(GL_ES)
     #extension GL_EXT_shadow_samplers : enable
 #else
+    #extension GL_ARB_uniform_buffer_object : enable
     #extension GL_AMD_shader_trinary_minmax : enable
 #endif
 #pragma optimize(on)
@@ -183,7 +184,7 @@ mat4 coreTranspose(const in mat4 m)
 // matrix invert
 mat3 coreInvert(const in mat3 m)
 {
-#if (__VERSION__) >= 140
+#if (__VERSION__) >= 150
     return inverse(m);
 #else
     float A = m[1][1]*m[2][2] - m[1][2]*m[2][1];
@@ -198,7 +199,7 @@ mat3 coreInvert(const in mat3 m)
 }
 mat4 coreInvert(const in mat4 m)
 {
-#if (__VERSION__) >= 140
+#if (__VERSION__) >= 150
     return inverse(m);
 #else
     float A = m[0][0]*m[1][1] - m[0][1]*m[1][0];

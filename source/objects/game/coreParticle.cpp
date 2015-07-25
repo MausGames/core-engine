@@ -300,16 +300,7 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 
             // set vertex data
             Core::Manager::Object->GetLowModel()->GetVertexBuffer(0u)->Activate(0u);
-            it->Activate(1u);
-
-            // enable vertex attribute array division
-            if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding)) glVertexBindingDivisor(1u, 1u);
-            else
-            {
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 1u);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     1u);
-                glVertexAttribDivisor(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    1u);
-            }
+            it->ActivateDivided(1u, 1u);
         }
 
         // disable current model object (to fully enable the next model)
