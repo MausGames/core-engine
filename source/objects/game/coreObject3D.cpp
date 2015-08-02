@@ -179,14 +179,12 @@ coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
 , m_iFilled      (0u)
 , m_bUpdate      (false)
 {
-    ASSERT(iStartCapacity)
-
     // reserve memory for objects
     m_apObjectList.reserve(iStartCapacity);
 
     // create vertex array objects and instance data buffers
     m_aiVertexArray.Fill(0u);
-    this->__Reset(CORE_RESOURCE_RESET_INIT);
+    if(iStartCapacity) this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
 
@@ -402,6 +400,8 @@ void coreBatchList::MoveSort()
 /* bind 3d-object */
 void coreBatchList::BindObject(coreObject3D* pObject)
 {
+    ASSERT(m_iCurCapacity)
+
     if(m_apObjectList.size() >= m_iCurCapacity)
     {
         // increase current capacity by 50%

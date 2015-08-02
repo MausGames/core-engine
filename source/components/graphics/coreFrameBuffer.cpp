@@ -17,9 +17,9 @@ coreFloat        coreFrameBuffer::s_afViewData[5]; // = 0.0f;
 coreFrameBuffer::coreFrameBuffer()noexcept
 : m_iFrameBuffer (0u)
 , m_vResolution  (coreVector2(0.0f,0.0f))
-, m_fFOV         (Core::Graphics->GetFOV())
-, m_fNearClip    (Core::Graphics->GetNearClip())
-, m_fFarClip     (Core::Graphics->GetFarClip())
+, m_fFOV         (0.0f)
+, m_fNearClip    (0.0f)
+, m_fFarClip     (0.0f)
 {
 }
 
@@ -54,6 +54,11 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     const coreUint32 iWidth  = F_TO_UI(vResolution.x);
     const coreUint32 iHeight = F_TO_UI(vResolution.y);
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
+
+    // set view properties
+    if(!m_fFOV)      m_fFOV      = Core::Graphics->GetFOV();
+    if(!m_fNearClip) m_fNearClip = Core::Graphics->GetNearClip();
+    if(!m_fFarClip)  m_fFarClip  = Core::Graphics->GetFarClip();
 
     // set number of samples
     const coreUint8 iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ?
@@ -101,6 +106,20 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 
     // ignore color drawings without color attachment
     if(!m_aColorTarget[0].oSpec.iInternal) glDrawBuffer(GL_NONE);
+    else
+    {
+        GLenum aiAttachment[CORE_SHADER_OUTPUT_COLORS];
+        coreInt32 iNum = 0;
+
+        // enable color drawings with all target buffers
+        for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+        {
+            // check for available color attachments
+            if(m_aColorTarget[i].oSpec.iInternal)
+                aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
+        }
+        glDrawBuffers(iNum, aiAttachment);
+    }
 
     // retrieve frame buffer status
     const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -384,11 +403,19 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
 
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
-        GLenum aiAttachment[3];
+        GLenum aiAttachment[CORE_SHADER_OUTPUT_COLORS + 2u];
         coreInt32 iNum = 0;
 
         // assemble required attachments
-        if(CONTAINS_VALUE(iTargets, CORE_FRAMEBUFFER_TARGET_COLOR))   aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0;
+        if(CONTAINS_VALUE(iTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
+        {
+            for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+            {
+                // check for available color attachments
+                if(m_aColorTarget[i].oSpec.iInternal)
+                    aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
+            }
+        }
         if(CONTAINS_VALUE(iTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
         if(CONTAINS_VALUE(iTargets, CORE_FRAMEBUFFER_TARGET_STENCIL)) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
         WARN_IF(!iNum) return;

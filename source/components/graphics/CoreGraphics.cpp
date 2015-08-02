@@ -88,8 +88,8 @@ CoreGraphics::CoreGraphics()noexcept
     // create uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        m_iTransformBuffer.Create(GL_UNIFORM_BUFFER, coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE) * CORE_GRAPHICS_UNIFORM_BUFFERS, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
-        m_iAmbientBuffer  .Create(GL_UNIFORM_BUFFER, coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE)   * CORE_GRAPHICS_UNIFORM_BUFFERS, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
+        m_TransformBuffer.Create(GL_UNIFORM_BUFFER, coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE) * CORE_GRAPHICS_UNIFORM_BUFFERS, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
+        m_AmbientBuffer  .Create(GL_UNIFORM_BUFFER, coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE)   * CORE_GRAPHICS_UNIFORM_BUFFERS, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT);
     }
 
     // reset camera and view
@@ -124,8 +124,8 @@ CoreGraphics::CoreGraphics()noexcept
 CoreGraphics::~CoreGraphics()
 {
     // delete uniform buffer objects
-    m_iTransformBuffer.Delete();
-    m_iAmbientBuffer  .Delete();
+    m_TransformBuffer.Delete();
+    m_AmbientBuffer  .Delete();
 
     // disable vertical synchronization
     SDL_GL_SetSwapInterval(0);
@@ -233,7 +233,7 @@ void CoreGraphics::SendTransformation()
     if(!CONTAINS_BIT(m_iUniformUpdate, 0u)) return;
     REMOVE_BIT(m_iUniformUpdate, 0u)
 
-    if(m_iTransformBuffer)
+    if(m_TransformBuffer)
     {
         const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
@@ -243,8 +243,8 @@ void CoreGraphics::SendTransformation()
         const coreUint32 iOffset = m_aTransformSync.Index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
 
         // bind and map required area of the UBO
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_iTransformBuffer, iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
-        coreByte* pRange = m_iTransformBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer, iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
+        coreByte* pRange = m_TransformBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
         std::memcpy(pRange,                          &mViewProj,         sizeof(coreMatrix4));
@@ -252,7 +252,7 @@ void CoreGraphics::SendTransformation()
         std::memcpy(pRange + 2u*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
         std::memcpy(pRange + 3u*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
         std::memcpy(pRange + 4u*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
-        m_iTransformBuffer.Unmap(pRange);
+        m_TransformBuffer.Unmap(pRange);
 
         // create sync object
         m_aTransformSync.Current().Create();
@@ -273,7 +273,7 @@ void CoreGraphics::SendAmbient()
     if(!CONTAINS_BIT(m_iUniformUpdate, 1u)) return;
     REMOVE_BIT(m_iUniformUpdate, 1u)
 
-    if(m_iAmbientBuffer)
+    if(m_AmbientBuffer)
     {
         // switch and check next available sync object
         m_aAmbientSync.Next();
@@ -281,12 +281,12 @@ void CoreGraphics::SendAmbient()
         const coreUint32 iOffset = m_aAmbientSync.Index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
 
         // bind and map required area of the UBO
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_iAmbientBuffer, iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
-        coreByte* pRange = m_iAmbientBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer, iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+        coreByte* pRange = m_AmbientBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update ambient data
         std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
-        m_iAmbientBuffer.Unmap(pRange);
+        m_AmbientBuffer.Unmap(pRange);
 
         // create sync object
         m_aAmbientSync.Current().Create();
@@ -312,7 +312,10 @@ void CoreGraphics::Screenshot(const coreChar* pcPath)const
     coreByte* pData = new coreByte[iSize * 2u];
     glReadPixels(0, 0, iWidth, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
 
-    Core::Manager::Resource->AttachFunction([=]()
+    // copy path into another thread
+    std::string sPathCopy = pcPath;
+
+    Core::Manager::Resource->AttachFunction([=, sPathCopy {std::move(sPathCopy)}]()
     {
         // flip pixel data vertically
         coreByte* pConvert = pData + iSize;
@@ -324,7 +327,7 @@ void CoreGraphics::Screenshot(const coreChar* pcPath)const
         if(pSurface)
         {
             // create folder hierarchy
-            const coreChar* pcFullPath = PRINT(std::strcmp(coreData::StrExtension(pcPath), "png") ? "%s.png" : "%s", pcPath);
+            const coreChar* pcFullPath = PRINT(std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? "%s.png" : "%s", sPathCopy.c_str());
             coreData::CreateFolder(pcFullPath);
 
             // save the surface as PNG image

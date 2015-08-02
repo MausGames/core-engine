@@ -59,22 +59,22 @@ public:
 
 
 private:
-    GLuint m_iVertexArray;                              //!< vertex array object
+    GLuint m_iVertexArray;                             //!< vertex array object
 
-    std::vector<coreVertexBuffer*> m_apiVertexBuffer;   //!< vertex buffers
-    coreDataBuffer                 m_iIndexBuffer;      //!< index buffer
+    std::vector<coreVertexBuffer*> m_apVertexBuffer;   //!< vertex buffers
+    coreDataBuffer                 m_IndexBuffer;      //!< index buffer
 
-    coreUint32  m_iNumVertices;                         //!< number of vertices
-    coreUint32  m_iNumIndices;                          //!< number of indices
-    coreVector3 m_vBoundingRange;                       //!< maximum per-axis distance from the model center
-    coreFloat   m_fBoundingRadius;                      //!< maximum direct distance from the model center
+    coreUint32  m_iNumVertices;                        //!< number of vertices
+    coreUint32  m_iNumIndices;                         //!< number of indices
+    coreVector3 m_vBoundingRange;                      //!< maximum per-axis distance from the model center
+    coreFloat   m_fBoundingRadius;                     //!< maximum direct distance from the model center
 
-    GLenum m_iPrimitiveType;                            //!< primitive type for draw calls (e.g. GL_TRIANGLES)
-    GLenum m_iIndexType;                                //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
+    GLenum m_iPrimitiveType;                           //!< primitive type for draw calls (e.g. GL_TRIANGLES)
+    GLenum m_iIndexType;                               //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
 
-    coreSync m_Sync;                                    //!< sync object for asynchronous model loading
+    coreSync m_Sync;                                   //!< sync object for asynchronous model loading
 
-    static coreModel* s_pCurrent;                       //!< currently active model object
+    static coreModel* s_pCurrent;                      //!< currently active model object
 
 
 public:
@@ -91,14 +91,14 @@ public:
 
     //! draw the model
     //! @{
-    inline void Draw        ()const {if(m_iIndexBuffer) this->DrawElements(); else this->DrawArrays();}
+    inline void Draw        ()const {if(m_IndexBuffer) this->DrawElements(); else this->DrawArrays();}
     void        DrawArrays  ()const;
     void        DrawElements()const;
     //! @}
 
     //! draw the model instanced
     //! @{
-    inline void DrawInstanced        (const coreUint32& iCount)const {if(m_iIndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
+    inline void DrawInstanced        (const coreUint32& iCount)const {if(m_IndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
     void        DrawArraysInstanced  (const coreUint32& iCount)const;
     void        DrawElementsInstanced(const coreUint32& iCount)const;
     //! @}
@@ -113,8 +113,8 @@ public:
     //! @{
     coreVertexBuffer*        CreateVertexBuffer(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
     coreDataBuffer*          CreateIndexBuffer (const coreUint32& iNumIndices,  const coreUint8& iIndexSize,  const void* pIndexData,  const coreDataBufferStorage& iStorageType);
-    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW& iIndex) {return m_apiVertexBuffer[iIndex];}
-    inline coreDataBuffer*   GetIndexBuffer    ()                        {return &m_iIndexBuffer;}
+    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW& iIndex) {return m_apVertexBuffer[iIndex];}
+    inline coreDataBuffer*   GetIndexBuffer    ()                        {return &m_IndexBuffer;}
     //! @}
 
     //! set object properties

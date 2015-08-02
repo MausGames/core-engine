@@ -75,6 +75,9 @@ void coreDataBuffer::Delete()
     // delete buffer
     glDeleteBuffers(1, &m_iDataBuffer);
 
+    // delete sync object
+    m_Sync.Delete();
+
     // reset properties
     m_iDataBuffer  = 0u;
     m_iStorageType = CORE_DATABUFFER_STORAGE_STATIC;

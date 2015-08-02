@@ -22,7 +22,6 @@
 // TODO: change R and RG targets to RGB when not supported ?
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
-// NOTE: notated as integer
 
 
 // ****************************************************************

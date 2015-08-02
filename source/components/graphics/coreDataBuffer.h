@@ -14,7 +14,6 @@
 // TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
-// NOTE: notated as integer
 
 
 // ****************************************************************

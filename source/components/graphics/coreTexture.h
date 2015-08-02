@@ -15,7 +15,6 @@
 // TODO: implement light unbind (like in model and program)
 // TODO: add option/config for trilinear filtering
 // TODO: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
-// TODO: load, allow 1-channel textures (GLES uses GL_ALPHA/GL_LUMINANCE, GL uses GL_RED/GL_DEPTH_COMPONENT ?)
 // TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
 // TODO: last few compressed mipmap levels contain only garbage
 // TODO: check out AMD compress library, when other formats are required (e.g. for Android)
@@ -37,6 +36,7 @@
 #define CORE_TEXTURE_SPEC_RG            (coreTextureSpec(GL_RG8,               GL_RG,              GL_UNSIGNED_BYTE))
 #define CORE_TEXTURE_SPEC_RGB           (coreTextureSpec(GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE))
 #define CORE_TEXTURE_SPEC_RGBA          (coreTextureSpec(GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE))
+#define CORE_TEXTURE_SPEC_RGBA_16F      (coreTextureSpec(GL_RGBA16F,           GL_RGBA,            GL_HALF_FLOAT))
 #define CORE_TEXTURE_SPEC_DEPTH         (coreTextureSpec(GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT))
 #define CORE_TEXTURE_SPEC_STENCIL       (coreTextureSpec(GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE))
 #define CORE_TEXTURE_SPEC_DEPTH_STENCIL (coreTextureSpec(GL_DEPTH24_STENCIL8,  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8))
@@ -96,7 +96,7 @@ private:
 
 public:
     coreTexture()noexcept;
-    explicit coreTexture(const bool& bLoadCompressed)noexcept;
+    explicit coreTexture(const coreBool& bLoadCompressed)noexcept;
     ~coreTexture();
 
     DISABLE_COPY(coreTexture)

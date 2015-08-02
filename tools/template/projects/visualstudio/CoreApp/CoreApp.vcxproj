@@ -19,7 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\source\application.cpp" />
     <ClCompile Include="..\..\..\source\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\source\main.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{323E13E4-2099-4F61-B4D4-BC1612D1B6B0}</ProjectGuid>

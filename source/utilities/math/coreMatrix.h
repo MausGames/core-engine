@@ -213,20 +213,21 @@ public:
 
     /*! static functions */
     //! @{
-    static constexpr_func coreMatrix4 Identity   ();
-    static constexpr_func coreMatrix4 Translation(const coreVector3& vPosition);
-    static constexpr_func coreMatrix4 Scaling    (const coreVector3& vSize);
-    static inline         coreMatrix4 RotationX  (const coreVector2& vDirection);
-    static inline         coreMatrix4 RotationX  (const coreFloat&   fAngle);
-    static inline         coreMatrix4 RotationY  (const coreVector2& vDirection);
-    static inline         coreMatrix4 RotationY  (const coreFloat&   fAngle);
-    static inline         coreMatrix4 RotationZ  (const coreVector2& vDirection);
-    static inline         coreMatrix4 RotationZ  (const coreFloat&   fAngle);
-    static inline         coreMatrix4 Orientation(const coreVector3& vDirection, const coreVector3& vOrientation);
-    static inline         coreMatrix4 Perspective(const coreVector2& vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip);
-    static inline         coreMatrix4 Ortho      (const coreVector2& vResolution);
-    static inline         coreMatrix4 Ortho      (const coreFloat&   fLeft, const coreFloat& fRight, const coreFloat& fBottom, const coreFloat& fTop, const coreFloat& fNearClip, const coreFloat& fFarClip);
-    static inline         coreMatrix4 Camera     (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
+    static constexpr_func coreMatrix4 Identity    ();
+    static constexpr_func coreMatrix4 Translation (const coreVector3& vPosition);
+    static constexpr_func coreMatrix4 Scaling     (const coreVector3& vSize);
+    static inline         coreMatrix4 RotationX   (const coreVector2& vDirection);
+    static inline         coreMatrix4 RotationX   (const coreFloat&   fAngle);
+    static inline         coreMatrix4 RotationY   (const coreVector2& vDirection);
+    static inline         coreMatrix4 RotationY   (const coreFloat&   fAngle);
+    static inline         coreMatrix4 RotationZ   (const coreVector2& vDirection);
+    static inline         coreMatrix4 RotationZ   (const coreFloat&   fAngle);
+    static inline         coreMatrix4 RotationAxis(const coreFloat&   fAngle, const coreVector3& vAxis);
+    static inline         coreMatrix4 Orientation (const coreVector3& vDirection, const coreVector3& vOrientation);
+    static inline         coreMatrix4 Perspective (const coreVector2& vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip);
+    static inline         coreMatrix4 Ortho       (const coreVector2& vResolution);
+    static inline         coreMatrix4 Ortho       (const coreFloat&   fLeft, const coreFloat& fRight, const coreFloat& fBottom, const coreFloat& fTop, const coreFloat& fNearClip, const coreFloat& fFarClip);
+    static inline         coreMatrix4 Camera      (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
     //! @}
 };
 
@@ -705,6 +706,33 @@ inline coreMatrix4 coreMatrix4::RotationZ(const coreFloat& fAngle)
 
 
 // ****************************************************************
+/* get rotation matrix around arbitrary axis */
+inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat& fAngle, const coreVector3& vAxis)
+{
+    const coreFloat C = COS(fAngle);
+    const coreFloat S = SIN(fAngle);
+    const coreFloat I = 1.0f - C;
+
+    const coreFloat XX = vAxis.x * vAxis.x * I;
+    const coreFloat YY = vAxis.y * vAxis.y * I;
+    const coreFloat ZZ = vAxis.z * vAxis.z * I;
+
+    const coreFloat XY = vAxis.x * vAxis.y * I;
+    const coreFloat XZ = vAxis.x * vAxis.z * I;
+    const coreFloat YZ = vAxis.y * vAxis.z * I;
+
+    const coreFloat SX = vAxis.x * S;
+    const coreFloat SY = vAxis.y * S;
+    const coreFloat SZ = vAxis.z * S;
+
+    return coreMatrix4(XX +  C, XY + SZ, XZ - SY, 0.0f,
+                       XY - SZ, YY +  C, YZ + SX, 0.0f,
+                       XZ + SY, YZ - SX, ZZ +  C, 0.0f,
+                          0.0f,    0.0f,    0.0f, 1.0f);
+}
+
+
+// ****************************************************************
 /* calculate orientation matrix */
 inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)
 {
@@ -761,7 +789,7 @@ inline coreMatrix4 coreMatrix4::Ortho(const coreFloat& fLeft, const coreFloat& f
 
     const coreFloat A = -(fRight   + fLeft);
     const coreFloat B = -(fTop     + fBottom);
-    const coreFloat C = -(fFarClip + fNearClip);
+    const coreFloat C =  (fFarClip + fNearClip);
 
     return coreMatrix4(X*2.0f,   0.0f,   0.0f, 0.0f,
                          0.0f, Y*2.0f,   0.0f, 0.0f,

@@ -5,6 +5,7 @@ projects/visualstudio/CoreApp/x64/
 projects/visualstudio/*.opensdf
 projects/visualstudio/*.sdf
 projects/visualstudio/*.suo
+projects/visualstudio/.vs/
 projects/visualstudio/ipch/
 projects/visualstudio/Debug/
 projects/visualstudio/Release/

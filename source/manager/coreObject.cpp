@@ -150,7 +150,8 @@ void coreObjectManager::__Reset(const coreResourceReset& bInit)
         FOR_EACH(it, m_apSpriteList)
         {
             (*it)->m_iUpdate = CORE_OBJECT_UPDATE_ALL;
-            (*it)->Move();
+            (*it)->coreObject2D::Move();
+            (*it)->m_iUpdate = CORE_OBJECT_UPDATE_ALL;
         }
     }
     else

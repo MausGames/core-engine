@@ -11,7 +11,7 @@
 #define _CORE_GUARD_MATH_H_
 
 // TODO: SIN and COS with pre-calculated table ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?) what about sincos ?
-// TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4), put SSE version checks static into coreData ?
+// TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4) ?
 // TODO: FUNC_CONST on every function in this class ?
 
 
@@ -70,7 +70,7 @@ public:
     template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
     template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, SIN(s*PI*0.5f));}
     template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                  {return ((c-r) <= x && x <= (c+r));}
-    template <typename T> static inline         coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
+    template <typename T> static constexpr_func coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */

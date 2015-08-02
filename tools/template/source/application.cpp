@@ -30,10 +30,10 @@ void CoreApp::Setup()
     // set window title and icon
     Core::System->SetWindowTitle("Core Application");
     Core::System->SetWindowIcon("data/textures/game_icon.png");
-    
+
     // set view frustum
     Core::Graphics->ResizeView(Core::System->GetResolution(), DEG_TO_RAD(55.0f), 0.1f, 1000.0f);
-    
+
     // set cursor
 #if defined(_CORE_LINUX_)
     Core::Input->DefineCursor("data/textures/default_cursor_low.png");

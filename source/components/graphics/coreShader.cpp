@@ -166,14 +166,19 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS          (%d) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS         (%d) \n", CORE_SHADER_OUTPUT_COLORS));
 
-    // retrieve global shader file
-    coreFile* pFile = Core::Manager::Resource->RetrieveFile("data/shaders/global.glsl");
-    WARN_IF(!pFile->GetData()) return;
+    auto nRetrieveFunc = [&](const coreChar* pcPath)
+    {
+        // retrieve shader file
+        coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+        WARN_IF(!pFile->GetData()) return;
 
-    // copy and unload data
-    s_asGlobalCode[1].append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
-    s_asGlobalCode[1].append(1u, '\n');
-    pFile->UnloadData();
+        // copy and unload data
+        s_asGlobalCode[1].append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
+        s_asGlobalCode[1].append(1u, '\n');
+        pFile->UnloadData();
+    };
+    nRetrieveFunc("data/shaders/global.glsl");
+    nRetrieveFunc("data/shaders/custom.glsl");
 
     // reduce memory consumption
     s_asGlobalCode[0].shrink_to_fit();

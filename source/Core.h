@@ -50,7 +50,6 @@
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 // TODO: check pointer-int conversions
 // TODO: reduce core-prefix ? (e.g. cr)
-// TODO: inline coreUintW operator "" _uw (unsigned long long i) {return coreUintW(i);} 
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -176,10 +175,10 @@
     #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
     #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
     #define RETURN_NONNULL                         //!< returned pointer will not be null
-    #define FUNC_PURE                              //!< function does not modify anything (parameter, global) and returns a single value
+    #define FUNC_PURE                              //!< function reads only parameters and non-volatile globals and returns a single value
     #define FUNC_CONST      __declspec(noalias)    //!< function reads only parameters without indirections and returns a single value
-    #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use first-level indirections
-    #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates with exit(3) or abort(3)
+    #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use (read and write) first-level indirections
+    #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates (e.g. with exit(3) or abort(3))
 #else
     #define OUTPUT          __restrict__
     #define INTERFACE
@@ -346,7 +345,7 @@ using coreDouble = double;
 // user-defined literals
 constexpr_func coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
 
-// override string comparison operator (faster but unsecure)
+// override string comparison operator (faster but insecure)
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
 inline coreBool operator == (const coreChar*    b, const std::string& a) {return !std::strcmp(a.c_str(), b);}
 

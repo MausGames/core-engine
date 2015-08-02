@@ -11,6 +11,7 @@
 #define	_CORE_GL_H_
 
 // TODO: functionality to ignore and force arbitrary extensions through the config file
+// TODO: check <GL 2.0 mappings and GLSL 1.0
 
 
 // ****************************************************************

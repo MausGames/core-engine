@@ -64,8 +64,8 @@ private:
 
     coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                              //!< global ambient lights
 
-    coreDataBuffer m_iTransformBuffer;                                     //!< uniform buffer objects for transformation data
-    coreDataBuffer m_iAmbientBuffer;                                       //!< uniform buffer objects for ambient data
+    coreDataBuffer m_TransformBuffer;                                      //!< uniform buffer objects for transformation data
+    coreDataBuffer m_AmbientBuffer;                                        //!< uniform buffer objects for ambient data
     coreRound<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aTransformSync;   //!< transformation sync objects (for each sub-range)
     coreRound<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     //!< ambient sync objects
     coreUint8 m_iUniformUpdate;                                            //!< update status for the UBOs (dirty flag)
@@ -121,8 +121,8 @@ public:
     inline const coreMatrix4&    GetOrtho          ()const                        {return m_mOrtho;}
     inline const coreVector4&    GetViewResolution ()const                        {return m_vViewResolution;}
     inline const coreLight&      GetLight          (const coreUintW& iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
-    inline const coreDataBuffer& GetTransformBuffer()const                        {return m_iTransformBuffer;}
-    inline const coreDataBuffer& GetAmbientBuffer  ()const                        {return m_iAmbientBuffer;}
+    inline const coreDataBuffer& GetTransformBuffer()const                        {return m_TransformBuffer;}
+    inline const coreDataBuffer& GetAmbientBuffer  ()const                        {return m_AmbientBuffer;}
     //! @}
 
     //! check OpenGL versions

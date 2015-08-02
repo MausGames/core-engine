@@ -221,8 +221,8 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
             coreTexture::CreateCompressed(iCurWidth, iCurHeight, iComponents, pData, pPackedData);
 
             // upload image to texture
-            coreDataBuffer iBuffer;
-            if(bPixelBuffer) iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iCurSize, pPackedData, CORE_DATABUFFER_STORAGE_STREAM);
+            coreDataBuffer oBuffer;
+            if(bPixelBuffer) oBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iCurSize, pPackedData, CORE_DATABUFFER_STORAGE_STREAM);
             glCompressedTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, iCurWidth, iCurHeight, m_Spec.iFormat, iCurSize, bPixelBuffer ? NULL : pPackedData);
 
             // check for still valid resolution
@@ -240,11 +240,11 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
     }
     else
     {
-        coreDataBuffer iBuffer;
+        coreDataBuffer oBuffer;
         if(bPixelBuffer)
         {
             // create pixel buffer object for asynchronous texture loading
-            iBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, pData, CORE_DATABUFFER_STORAGE_STREAM);
+            oBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, pData, CORE_DATABUFFER_STORAGE_STREAM);
 
             // use PBO instead of client memory
             pData = NULL;
