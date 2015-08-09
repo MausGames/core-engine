@@ -14,7 +14,8 @@ coreUint32 coreRand::s_iSeed = 0u;
 // ****************************************************************
 /* constructor */
 coreRand::coreRand(const coreUintW& iNumRandoms, const coreUint32 iSeed)noexcept
-: m_iNumRandoms (iNumRandoms)
+: m_piRandom    (NULL)
+, m_iNumRandoms (iNumRandoms)
 , m_iCurRandom  (0u)
 {
     // init random number generator
@@ -29,7 +30,8 @@ coreRand::coreRand(const coreUintW& iNumRandoms, const coreUint32 iSeed)noexcept
 }
 
 coreRand::coreRand(const coreRand& c)noexcept
-: m_iNumRandoms (c.m_iNumRandoms)
+: m_piRandom    (NULL)
+, m_iNumRandoms (c.m_iNumRandoms)
 , m_iCurRandom  (c.m_iCurRandom)
 {
     // copy random numbers
@@ -42,7 +44,6 @@ coreRand::coreRand(coreRand&& m)noexcept
 , m_iNumRandoms (m.m_iNumRandoms)
 , m_iCurRandom  (m.m_iCurRandom)
 {
-    // reset pointer to moved random numbers
     m.m_piRandom = NULL;
 }
 
@@ -60,13 +61,8 @@ coreRand::~coreRand()
 /* assignment operations */
 coreRand& coreRand::operator = (coreRand o)noexcept
 {
-    swap(*this, o);
+    std::swap(m_piRandom,    o.m_piRandom);
+    std::swap(m_iNumRandoms, o.m_iNumRandoms);
+    std::swap(m_iCurRandom,  o.m_iCurRandom);
     return *this;
-}
-
-void coreRand::swap(coreRand& a, coreRand& b)noexcept
-{
-    std::swap(a.m_piRandom,    b.m_piRandom);
-    std::swap(a.m_iNumRandoms, b.m_iNumRandoms);
-    std::swap(a.m_iCurRandom,  b.m_iCurRandom);
 }

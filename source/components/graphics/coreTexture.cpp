@@ -9,8 +9,8 @@
 #include "Core.h"
 #include <stb_dxt.h>
 
-coreUintW    coreTexture::s_iActiveUnit                     = 0u;
-coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS]; // = NULL;
+coreUintW    coreTexture::s_iActiveUnit                 = 0u;
+coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS] = {};
 
 
 // ****************************************************************
@@ -21,12 +21,14 @@ coreTexture::coreTexture()noexcept
 }
 
 coreTexture::coreTexture(const bool& bLoadCompressed)noexcept
-: m_iTexture    (0u)
+: coreResource  ()
+, m_iTexture    (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
 , m_iCompressed (bLoadCompressed ? 0 : -1)
 , m_Spec        (coreTextureSpec(0u, 0u, 0u))
 , m_iMode       (CORE_TEXTURE_MODE_DEFAULT)
+, m_Sync        ()
 {
 }
 

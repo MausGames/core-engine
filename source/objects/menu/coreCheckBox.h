@@ -23,7 +23,7 @@ private:
 
 
 public:
-    constexpr_weak coreCheckBox()noexcept;
+    coreCheckBox()noexcept;
     coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)noexcept;
     coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept;
 
@@ -57,14 +57,6 @@ private:
     void __Construct(const coreChar* pcIdleChecked, const coreChar* pcBusyChecked);
     //! @}
 };
-
-
-// ****************************************************************
-// constructor
-constexpr_weak coreCheckBox::coreCheckBox()noexcept
-: m_bCheck (false)
-{
-}
 
 
 #endif // _CORE_GUARD_CHECKBOX_H_

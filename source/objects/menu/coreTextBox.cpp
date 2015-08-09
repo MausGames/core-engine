@@ -14,7 +14,8 @@ coreInt8 coreTextBox::s_iActiveCounter = 0;
 // ****************************************************************
 // constructor
 coreTextBox::coreTextBox()noexcept
-: m_sText     ("")
+: coreButton  ()
+, m_sText     ("")
 , m_sPrevious ("")
 , m_cCursor   ('|')
 , m_cReplace  ('\0')

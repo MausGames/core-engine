@@ -10,6 +10,58 @@
 
 
 // ****************************************************************
+/* constructor */
+coreObject3D::coreObject3D()noexcept
+: coreObject           ()
+, m_vPosition          (coreVector3(0.0f,0.0f,0.0f))
+, m_vSize              (coreVector3(1.0f,1.0f,1.0f))
+, m_vDirection         (coreVector3(0.0f,1.0f,0.0f))
+, m_vOrientation       (coreVector3(0.0f,0.0f,1.0f))
+, m_pModel             (NULL)
+, m_vRotation          (coreVector4::QuatIdentity())
+, m_vCollisionModifier (coreVector3(1.0f,1.0f,1.0f))
+, m_vCollisionRange    (coreVector3(0.0f,0.0f,0.0f))
+, m_fCollisionRadius   (0.0f)
+, m_iType              (0)
+{
+}
+
+coreObject3D::coreObject3D(const coreObject3D& c)noexcept
+: coreObject           (c)
+, m_vPosition          (c.m_vPosition)
+, m_vSize              (c.m_vSize)
+, m_vDirection         (c.m_vDirection)
+, m_vOrientation       (c.m_vOrientation)
+, m_pModel             (c.m_pModel)
+, m_vRotation          (c.m_vRotation)
+, m_vCollisionModifier (c.m_vCollisionModifier)
+, m_vCollisionRange    (c.m_vCollisionRange)
+, m_fCollisionRadius   (c.m_fCollisionRadius)
+, m_iType              (0)
+{
+    // bind to object manager
+    this->ChangeType(c.m_iType);
+}
+
+coreObject3D::coreObject3D(coreObject3D&& m)noexcept
+: coreObject           (std::move(m))
+, m_vPosition          (m.m_vPosition)
+, m_vSize              (m.m_vSize)
+, m_vDirection         (m.m_vDirection)
+, m_vOrientation       (m.m_vOrientation)
+, m_pModel             (std::move(m.m_pModel))
+, m_vRotation          (m.m_vRotation)
+, m_vCollisionModifier (m.m_vCollisionModifier)
+, m_vCollisionRange    (m.m_vCollisionRange)
+, m_fCollisionRadius   (m.m_fCollisionRadius)
+, m_iType              (0)
+{
+    // bind to object manager
+    this->ChangeType(m.m_iType);
+}
+
+
+// ****************************************************************
 /* destructor */
 coreObject3D::~coreObject3D()
 {
@@ -173,11 +225,16 @@ void coreObject3D::ChangeType(const coreInt32& iType)
 // ****************************************************************
 /* constructor */
 coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
-: m_iCurCapacity (iStartCapacity)
-, m_iCurEnabled  (0u)
-, m_pLastModel   (NULL)
-, m_iFilled      (0u)
-, m_bUpdate      (false)
+: coreResourceRelation ()
+, m_apObjectList       {}
+, m_iCurCapacity       (iStartCapacity)
+, m_iCurEnabled        (0u)
+, m_pProgram           (NULL)
+, m_aiVertexArray      {}
+, m_aiInstanceBuffer   {}
+, m_pLastModel         (NULL)
+, m_iFilled            (0u)
+, m_bUpdate            (false)
 {
     // reserve memory for objects
     m_apObjectList.reserve(iStartCapacity);

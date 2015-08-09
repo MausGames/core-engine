@@ -45,7 +45,7 @@ public:
     coreObject2D(coreObject2D&&      m)noexcept;
     virtual ~coreObject2D();
 
-    /*! assignment operations */
+    //! assignment operations
     //! @{
     coreObject2D& operator = (const coreObject2D& c)noexcept;
     coreObject2D& operator = (coreObject2D&&      m)noexcept;

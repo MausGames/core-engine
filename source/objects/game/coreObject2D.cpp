@@ -12,7 +12,8 @@
 // ****************************************************************
 // constructor
 coreObject2D::coreObject2D()noexcept
-: m_vPosition      (coreVector2(0.0f,0.0f))
+: coreObject       ()
+, m_vPosition      (coreVector2(0.0f,0.0f))
 , m_vSize          (coreVector2(0.0f,0.0f))
 , m_vDirection     (coreVector2(0.0f,1.0f))
 , m_vCenter        (coreVector2(0.0f,0.0f))

@@ -12,7 +12,8 @@
 // ****************************************************************
 /* constructor */
 coreTranslate::coreTranslate()noexcept
-: m_pLanguage (NULL)
+: m_pLanguage  (NULL)
+, m_apsPointer {}
 {
 }
 
@@ -137,7 +138,10 @@ void coreTranslate::_UnbindString(std::string* psString)
 // ****************************************************************
 /* constructor */
 coreLanguage::coreLanguage(const coreChar* pcPath)noexcept
-: m_sPath ("")
+: m_asStringList {}
+, m_apsForeign   {}
+, m_apObject     {}
+, m_sPath        ("")
 {
     // load language file
     this->Load(pcPath);

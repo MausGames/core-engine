@@ -126,7 +126,7 @@ private:
 
 
 public:
-    explicit constexpr_func coreFileUnload(coreFile* pFile)noexcept : m_pFile (pFile) {}
+    constexpr_func explicit coreFileUnload(coreFile* pFile)noexcept : m_pFile (pFile) {}
     ~coreFileUnload() {ASSERT(m_pFile) m_pFile->UnloadData();}
 
     DISABLE_COPY(coreFileUnload)

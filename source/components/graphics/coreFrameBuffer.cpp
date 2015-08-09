@@ -8,18 +8,21 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreFrameBuffer* coreFrameBuffer::s_pCurrent          = NULL;
-coreFloat        coreFrameBuffer::s_afViewData[5]; // = 0.0f;
+coreFrameBuffer* coreFrameBuffer::s_pCurrent      = NULL;
+coreFloat        coreFrameBuffer::s_afViewData[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
 
 // ****************************************************************
 // constructor
 coreFrameBuffer::coreFrameBuffer()noexcept
-: m_iFrameBuffer (0u)
-, m_vResolution  (coreVector2(0.0f,0.0f))
-, m_fFOV         (0.0f)
-, m_fNearClip    (0.0f)
-, m_fFarClip     (0.0f)
+: m_iFrameBuffer  (0u)
+, m_aColorTarget  {}
+, m_DepthTarget   ()
+, m_StencilTarget ()
+, m_vResolution   (coreVector2(0.0f,0.0f))
+, m_fFOV          (0.0f)
+, m_fNearClip     (0.0f)
+, m_fFarClip      (0.0f)
 {
 }
 

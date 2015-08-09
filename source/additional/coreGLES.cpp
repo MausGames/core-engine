@@ -9,8 +9,8 @@
 #include "Core.h"
 #include <EGL/egl.h>
 
-std::string              g_sExtensions     = "";
-thread_local coreContext g_CoreContext; // = 0x00;
+std::string              g_sExtensions = "";
+thread_local coreContext g_CoreContext = {};
 
 
 // ****************************************************************

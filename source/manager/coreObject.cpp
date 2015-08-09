@@ -11,8 +11,27 @@
 
 // ****************************************************************
 /* constructor */
+coreObject::coreObject()noexcept
+: m_apTexture  {}
+, m_pProgram   (NULL)
+, m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
+, m_vTexSize   (coreVector2(1.0f,1.0f))
+, m_vTexOffset (coreVector2(0.0f,0.0f))
+, m_iUpdate    (CORE_OBJECT_UPDATE_ALL)
+, m_iEnabled   (CORE_OBJECT_ENABLE_ALL)
+, m_iStatus    (0)
+{
+}
+
+
+// ****************************************************************
+/* constructor */
 coreObjectManager::coreObjectManager()noexcept
-: m_pBlitFallback (NULL)
+: m_aapObjectList    {}
+, m_aObjectCollision {}
+, m_apSpriteList     {}
+, m_pLowModel        (NULL)
+, m_pBlitFallback    (NULL)
 {
     // allocate low-memory model object
     m_pLowModel = Core::Manager::Resource->LoadNew<coreModel>();

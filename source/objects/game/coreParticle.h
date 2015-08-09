@@ -41,8 +41,6 @@ public:
         coreFloat   fScale;      //!< scale-factor of the particle
         coreFloat   fAngle;      //!< orientation-angle of the particle
         coreVector4 vColor;      //!< RGBA color-value
-
-        constexpr_func coreState()noexcept;
     };
 
 
@@ -249,21 +247,12 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr_func coreParticle::coreState::coreState()noexcept
-: vPosition (coreVector3(0.0f,0.0f,0.0f))
-, fScale    (0.0f)
-, fAngle    (0.0f)
-, vColor    (coreVector4(1.0f,1.0f,1.0f,1.0f))
-{
-}
-
-
-// ****************************************************************
-// constructor
 constexpr_func coreParticle::coreParticle()noexcept
-: m_fValue  (0.0f)
-, m_fSpeed  (1.0f)
-, m_pEffect (NULL)
+: m_CurrentState {}
+, m_MoveState    {}
+, m_fValue       (0.0f)
+, m_fSpeed       (1.0f)
+, m_pEffect      (NULL)
 {
 }
 

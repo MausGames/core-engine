@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::string  coreShader::s_asGlobalCode[2]; // = "";
-coreProgram* coreProgram::s_pCurrent           = NULL;
+std::string  coreShader::s_asGlobalCode[2] = {"", ""};
+coreProgram* coreProgram::s_pCurrent       = NULL;
 
 
 // ****************************************************************
@@ -22,7 +22,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sS
     inline const coreChar* operator [] (const coreUintW& iIndex)const {return aacEntry[iIndex];}
 };
 
-#define STRING_ARRAY(s,n,v)           \
+#define STRING_ARRAY(s,n,v)               \
     extern const coreChar v ## __a[] = s; \
     const sStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
 
@@ -42,7 +42,8 @@ coreShader::coreShader()noexcept
 }
 
 coreShader::coreShader(const coreChar* pcCustomCode)noexcept
-: m_iShader     (0u)
+: coreResource  ()
+, m_iShader     (0u)
 , m_iType       (0u)
 , m_sCustomCode (pcCustomCode)
 {
@@ -189,8 +190,14 @@ void coreShader::__LoadGlobalCode()
 // ****************************************************************
 // constructor
 coreProgram::coreProgram()noexcept
-: m_iProgram (0u)
-, m_iStatus  (CORE_PROGRAM_NEW)
+: coreResource  ()
+, m_iProgram    (0u)
+, m_apShader    {}
+, m_iStatus     (CORE_PROGRAM_NEW)
+, m_aiUniform   {}
+, m_aiAttribute {}
+, m_avCache     {}
+, m_Sync        ()
 {
 }
 

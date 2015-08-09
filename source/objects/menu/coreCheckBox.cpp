@@ -11,6 +11,14 @@
 
 // ****************************************************************
 // constructor
+coreCheckBox::coreCheckBox()noexcept
+: coreButton    ()
+, m_apUnchecked {NULL, NULL}
+, m_apChecked   {NULL, NULL}
+, m_bCheck      (false)
+{
+}
+
 coreCheckBox::coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)noexcept
 : coreCheckBox ()
 {

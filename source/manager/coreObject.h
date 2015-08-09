@@ -56,7 +56,7 @@ protected:
 
 
 protected:
-    constexpr_weak coreObject()noexcept;
+    coreObject()noexcept;
     ~coreObject() {}
 
 
@@ -116,8 +116,6 @@ private:
         const coreObject3D* pObject1;     //!< first 3d-object
         const coreObject3D* pObject2;     //!< second 3d-object
         coreUint32          iLastFrame;   //!< frame number of their last collision
-
-        constexpr_func coreObjectCollision()noexcept;
     };
 
 
@@ -188,29 +186,6 @@ private:
     coreBool __NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
     //! @}
 };
-
-
-// ****************************************************************
-/* constructor */
-constexpr_weak coreObject::coreObject()noexcept
-: m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
-, m_vTexSize   (coreVector2(1.0f,1.0f))
-, m_vTexOffset (coreVector2(0.0f,0.0f))
-, m_iUpdate    (CORE_OBJECT_UPDATE_ALL)
-, m_iEnabled   (CORE_OBJECT_ENABLE_ALL)
-, m_iStatus    (0)
-{
-}
-
-
-// ****************************************************************
-/* constructor */
-constexpr_func coreObjectManager::coreObjectCollision::coreObjectCollision()noexcept
-: pObject1   (NULL)
-, pObject2   (NULL)
-, iLastFrame (0u)
-{
-}
 
 
 // ****************************************************************

@@ -12,7 +12,9 @@
 // ****************************************************************
 // constructor
 coreFont::coreFont()noexcept
-: m_pFile (NULL)
+: coreResource ()
+, m_aapFont    {}
+, m_pFile      (NULL)
 {
 }
 
@@ -175,7 +177,7 @@ coreBool coreFont::__InitHeight(const coreUint8& iHeight, const coreUint8& iOutl
     TTF_SetFontKerning(pNewFont, 1);
     TTF_SetFontHinting(pNewFont, TTF_HINTING_MONO);
 
-    // 
+    // enable outlining
     if(iOutline) TTF_SetFontOutline(pNewFont, iOutline);
 
     // save sub-font

@@ -27,7 +27,11 @@
 #define CORE_INPUT_BUTTONS_KEYBOARD (284u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    (16u)    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK (32u)    //!< number of regarded joystick buttons
-#define CORE_INPUT_FINGERS          (5u)     //!< maximum number of simultaneous fingers
+#if defined(_CORE_ANDROID_)
+    #define CORE_INPUT_FINGERS      (5u)     //!< maximum number of simultaneous fingers
+#else
+    #define CORE_INPUT_FINGERS      (1u)
+#endif
 
 #define CORE_INPUT_JOYSTICK_DEAD    (0x2000)
 #define CORE_INPUT_JOYSTICK_MAX     (0x7000)
@@ -64,8 +68,6 @@ private:
         coreBool      aabButton[CORE_INPUT_BUTTONS_KEYBOARD][4];   //!< status of the keyboard buttons
         coreInputKey  iLast;                                       //!< last pressed keyboard button
         coreInputChar iChar;                                       //!< current text-input character
-
-        coreKeyboard()noexcept;
     };
 
     //! mouse structure
@@ -75,8 +77,6 @@ private:
         coreUint8   iLast;                                    //!< last pressed mouse button
         coreVector2 vPosition;                                //!< absolute position of the mouse cursor
         coreVector3 vRelative;                                //!< relative movement of the mouse cursor
-
-        coreMouse()noexcept;
     };
 
     //! joystick structure
@@ -89,8 +89,6 @@ private:
         coreBool    aabButton[CORE_INPUT_BUTTONS_JOYSTICK][4];   //!< status of the joystick buttons
         coreUint8   iLast;                                       //!< last pressed joystick button
         coreVector2 vRelative;                                   //!< relative movement of the control axis
-
-        coreJoystick()noexcept;
     };
 
     //! touch structure
@@ -100,8 +98,6 @@ private:
         coreVector2 vPosition;     //!< absolute position of the finger
         coreVector2 vRelative;     //!< relative movement of the finger
         coreFloat   fPressure;     //!< current quantity of pressure applied
-
-        coreTouch()noexcept;
     };
 
 
@@ -113,7 +109,7 @@ private:
     coreTouch m_aTouch[CORE_INPUT_FINGERS];   //!< array with touch objects
 
     SDL_Cursor* m_pCursor;                    //!< hardware mouse cursor
-    coreBool m_bCursorVisible;                //!< status of the mouse cursor
+    coreBool    m_bCursorVisible;             //!< status of the mouse cursor
 
 
 private:

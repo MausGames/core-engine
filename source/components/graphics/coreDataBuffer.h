@@ -58,9 +58,13 @@ private:
 
 public:
     constexpr_func coreDataBuffer()noexcept;
-    ~coreDataBuffer() {this->Delete();}
+    inline coreDataBuffer(coreDataBuffer&& m)noexcept;
+    ~coreDataBuffer();
 
-    DISABLE_COPY(coreDataBuffer)
+    //! assignment operations
+    //! @{
+    coreDataBuffer& operator = (coreDataBuffer o)noexcept;
+    //! @}
 
     //! control the data buffer object
     //! @{
@@ -122,8 +126,6 @@ private:
         GLenum    iType;         //!< component type (e.g. GL_FLOAT)
         coreBool  bInteger;      //!< pure integer attribute
         coreUint8 iOffset;       //!< offset within the vertex
-
-        constexpr_func coreAttribute()noexcept;
     };
 
 
@@ -134,9 +136,13 @@ private:
 
 public:
     coreVertexBuffer()noexcept;
-    ~coreVertexBuffer() {this->Delete();}
+    coreVertexBuffer(coreVertexBuffer&& m)noexcept;
+    ~coreVertexBuffer();
 
-    DISABLE_COPY(coreVertexBuffer)
+    //! assignment operations
+    //! @{
+    coreVertexBuffer& operator = (coreVertexBuffer o)noexcept;
+    //! @}
 
     //! control the vertex buffer object
     //! @{
@@ -163,7 +169,21 @@ constexpr_func coreDataBuffer::coreDataBuffer()noexcept
 , m_pPersistentBuffer (NULL)
 , m_iMapOffset        (0u)
 , m_iMapLength        (0u)
+, m_Sync              ()
 {
+}
+
+inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
+: m_iDataBuffer       (m.m_iDataBuffer)
+, m_iStorageType      (m.m_iStorageType)
+, m_iTarget           (m.m_iTarget)
+, m_iSize             (m.m_iSize)
+, m_pPersistentBuffer (m.m_pPersistentBuffer)
+, m_iMapOffset        (m.m_iMapOffset)
+, m_iMapLength        (m.m_iMapLength)
+, m_Sync              (std::move(m.m_Sync))
+{
+    m.m_iDataBuffer = 0u;
 }
 
 
@@ -179,7 +199,7 @@ template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32& i
 
     // check for sync object status
     if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
-        m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_ONLY);
+        m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
 
     // return persistent mapped buffer
     if(m_pPersistentBuffer) return r_cast<T*>(m_pPersistentBuffer + iOffset);
@@ -261,18 +281,6 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
     // reset mapping attributes
     m_iMapOffset = 0u;
     m_iMapLength = 0u;
-}
-
-
-// ****************************************************************
-// constructor
-constexpr_func coreVertexBuffer::coreAttribute::coreAttribute()noexcept
-: iLocation   (0u)
-, iComponents (0u)
-, iType       (0u)
-, bInteger    (false)
-, iOffset     (0u)
-{
 }
 
 

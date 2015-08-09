@@ -17,6 +17,7 @@
 // TODO: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
 // TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
 // TODO: last few compressed mipmap levels contain only garbage
+// TODO: replace linear filtering in mipmap generation with better filter (e.g. sinc)
 // TODO: check out AMD compress library, when other formats are required (e.g. for Android)
 
 

@@ -28,8 +28,10 @@ coreMusic::coreMusic(const coreChar* pcPath)noexcept
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
-: m_iSource  (0u)
+: m_aiBuffer {0u, 0u}
+, m_iSource  (0u)
 , m_pFile    (NULL)
+, m_Stream   {}
 , m_pInfo    (NULL)
 , m_pComment (NULL)
 , m_dMaxTime (0.0)
@@ -38,10 +40,6 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 , m_bLoop    (false)
 , m_bStatus  (false)
 {
-    // reset memory
-    std::memset(&m_aiBuffer, 0, sizeof(m_aiBuffer));
-    std::memset(&m_Stream,   0, sizeof(m_Stream));
-
     if(!pFile)            return;
     if(!pFile->GetData()) return;
 
@@ -252,7 +250,11 @@ coreBool coreMusic::__Stream(const ALuint& iBuffer)
 // ****************************************************************
 // constructor
 coreMusicPlayer::coreMusicPlayer()noexcept
-: m_iRepeat       (CORE_MUSIC_ALL_REPEAT)
+: m_apMusic       {}
+, m_pEmptyMusic   (NULL)
+, m_apSequence    {}
+, m_iRepeat       (CORE_MUSIC_ALL_REPEAT)
+, m_pCurMusic     (NULL)
 , m_iCurIndex     (0u)
 , m_FadeTimer     (coreTimer(1.0f, 0.0f, 1u))
 , m_pFadePrevious (NULL)

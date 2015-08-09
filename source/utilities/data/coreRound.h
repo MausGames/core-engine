@@ -59,7 +59,8 @@ public:
 // ****************************************************************
 /* constructor */
 template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound()noexcept
-: m_iCurIndex (0u)
+: m_atItem    {}
+, m_iCurIndex (0u)
 {
 }
 

@@ -12,7 +12,10 @@
 // ****************************************************************
 // constructor
 coreSound::coreSound()noexcept
-: m_iBuffer    (0u)
+: coreResource ()
+, m_iBuffer    (0u)
+, m_Format     {}
+, m_aiSource   {}
 , m_iCurSource (0u)
 , m_pCurRef    (NULL)
 {
@@ -127,7 +130,7 @@ coreStatus coreSound::Unload()
     // reset properties
     m_sPath      = "";
     m_iBuffer    = 0u;
-    m_Format     = coreWaveFormat();
+    m_Format     = {};
     m_iCurSource = 0u;
     m_pCurRef    = NULL;
 

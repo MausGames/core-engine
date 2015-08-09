@@ -8,13 +8,15 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-const coreCPUID::__coreCPUID coreCPUID::s_CPUID; // = 0x00
+const coreCPUID::__coreCPUID coreCPUID::s_CPUID = {};
 
 
 // ****************************************************************
 /* constructor */
 coreCPUID::__coreCPUID::__coreCPUID()noexcept
-: bIsIntel (false)
+: acVendor {}
+, acBrand  {}
+, bIsIntel (false)
 , bIsAMD   (false)
 , i01ECX   (0)
 , i01EDX   (0)

@@ -12,9 +12,17 @@
 // ****************************************************************
 // constructor
 coreParticleSystem::coreParticleSystem(const coreUint32& iNumParticles)noexcept
-: m_iNumParticles (iNumParticles)
-, m_iCurParticle  (0u)
-, m_bUpdate       (false)
+: coreResourceRelation ()
+, m_pParticle          (NULL)
+, m_iNumParticles      (iNumParticles)
+, m_iCurParticle       (0u)
+, m_apTexture          {}
+, m_pProgram           (NULL)
+, m_apRenderList       {}
+, m_pDefaultEffect     (NULL)
+, m_aiVertexArray      {}
+, m_aiInstanceBuffer   {}
+, m_bUpdate            (false)
 {
     ASSERT(iNumParticles)
 

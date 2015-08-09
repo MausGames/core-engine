@@ -12,11 +12,26 @@
 // ****************************************************************
 // constructor
 CoreGraphics::CoreGraphics()noexcept
-: m_vCamPosition    (coreVector3(0.0f,0.0f,0.0f))
-, m_vCamDirection   (coreVector3(0.0f,0.0f,0.0f))
-, m_vCamOrientation (coreVector3(0.0f,0.0f,0.0f))
-, m_vViewResolution (coreVector4(0.0f,0.0f,0.0f,0.0f))
-, m_iUniformUpdate  (0u)
+: m_pRenderContext   (NULL)
+, m_pResourceContext (NULL)
+, m_fFOV             (0.0f)
+, m_fNearClip        (0.0f)
+, m_fFarClip         (0.0f)
+, m_vCamPosition     (coreVector3(0.0f,0.0f,0.0f))
+, m_vCamDirection    (coreVector3(0.0f,0.0f,0.0f))
+, m_vCamOrientation  (coreVector3(0.0f,0.0f,0.0f))
+, m_mCamera          (coreMatrix4::Identity())
+, m_mPerspective     (coreMatrix4::Identity())
+, m_mOrtho           (coreMatrix4::Identity())
+, m_vViewResolution  (coreVector4(0.0f,0.0f,0.0f,0.0f))
+, m_aLight           {{}}
+, m_TransformBuffer  ()
+, m_AmbientBuffer    ()
+, m_aTransformSync   {}
+, m_aAmbientSync     {}
+, m_iUniformUpdate   (0u)
+, m_fOpenGL          (0.0f)
+, m_fGLSL            (0.0f)
 {
     Core::Log->Header("Graphics Interface");
 
@@ -239,7 +254,7 @@ void CoreGraphics::SendTransformation()
 
         // switch and check next available sync object
         m_aTransformSync.Next();
-        m_aTransformSync.Current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_ONLY);
+        m_aTransformSync.Current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
         const coreUint32 iOffset = m_aTransformSync.Index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
 
         // bind and map required area of the UBO
@@ -277,7 +292,7 @@ void CoreGraphics::SendAmbient()
     {
         // switch and check next available sync object
         m_aAmbientSync.Next();
-        m_aAmbientSync.Current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_ONLY);
+        m_aAmbientSync.Current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
         const coreUint32 iOffset = m_aAmbientSync.Index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
 
         // bind and map required area of the UBO
@@ -315,7 +330,7 @@ void CoreGraphics::Screenshot(const coreChar* pcPath)const
     // copy path into another thread
     std::string sPathCopy = pcPath;
 
-    Core::Manager::Resource->AttachFunction([=, sPathCopy {std::move(sPathCopy)}]()
+    Core::Manager::Resource->AttachFunction([=, sPathCopy = std::move(sPathCopy)]()
     {
         // flip pixel data vertically
         coreByte* pConvert = pData + iSize;

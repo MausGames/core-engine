@@ -12,14 +12,21 @@
 // ****************************************************************
 // constructor
 CoreSystem::CoreSystem()noexcept
-: m_vResolution (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
-, m_iFullscreen (Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
-, m_bMinimized  (false)
-, m_bTerminated (false)
-, m_dTotalTime  (0.0f)
-, m_fLastTime   (0.0f)
-, m_iCurFrame   (0u)
-, m_iSkipFrame  (2u)
+: m_pWindow        (NULL)
+, m_vResolution    (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
+, m_iFullscreen    (Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
+, m_bMinimized     (false)
+, m_bTerminated    (false)
+, m_avAvailableRes {}
+, m_vDesktopRes    (coreVector2(0.0f,0.0f))
+, m_dTotalTime     (0.0f)
+, m_fLastTime      (0.0f)
+, m_afTime         {}
+, m_afTimeSpeed    {}
+, m_iCurFrame      (0u)
+, m_iSkipFrame     (1u)
+, m_dPerfFrequency (0.0)
+, m_iPerfTime      (0u)
 {
     Core::Log->Header("System Interface");
 

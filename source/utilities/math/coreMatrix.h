@@ -30,7 +30,7 @@ public:
 
 
 public:
-    constexpr_func coreMatrix2()noexcept;
+    coreMatrix2() = default;
     constexpr_func coreMatrix2(const coreFloat& f11, const coreFloat& f12,
                                const coreFloat& f21, const coreFloat& f22)noexcept;
 
@@ -63,7 +63,7 @@ public:
 
 
 public:
-    constexpr_func coreMatrix3()noexcept;
+    coreMatrix3() = default;
     constexpr_func coreMatrix3(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13,
                                const coreFloat& f21, const coreFloat& f22, const coreFloat& f23,
                                const coreFloat& f31, const coreFloat& f32, const coreFloat& f33)noexcept;
@@ -98,7 +98,7 @@ public:
 
     /*! convert matrix */
     //! @{
-    constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
+    constexpr_cast operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
     inline        coreVector4 Quat()const;
     static inline coreMatrix3 Quat(const coreVector4& v);
     //! @}
@@ -150,7 +150,7 @@ public:
 
 
 public:
-    constexpr_func coreMatrix4()noexcept;
+    coreMatrix4() = default;
     constexpr_func coreMatrix4(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13, const coreFloat& f14,
                                const coreFloat& f21, const coreFloat& f22, const coreFloat& f23, const coreFloat& f24,
                                const coreFloat& f31, const coreFloat& f32, const coreFloat& f33, const coreFloat& f34,
@@ -187,7 +187,7 @@ public:
 
     /*! convert matrix */
     //! @{
-    constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
+    constexpr_cast operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
     constexpr_func coreMatrix3 m123()const           {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
     constexpr_func coreMatrix3 m124()const           {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
     constexpr_func coreMatrix3 m134()const           {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
@@ -234,12 +234,6 @@ public:
 
 // ****************************************************************
 /* constructor */
-constexpr_func coreMatrix2::coreMatrix2()noexcept
-: _11 (1.0f), _12 (0.0f)
-, _21 (0.0f), _22 (1.0f)
-{
-}
-
 constexpr_func coreMatrix2::coreMatrix2(const coreFloat& f11, const coreFloat& f12,
                                         const coreFloat& f21, const coreFloat& f22)noexcept
 : _11 (f11), _12 (f12)
@@ -274,13 +268,6 @@ inline coreMatrix2 coreMatrix2::Rotation(const coreFloat& fAngle)
 
 // ****************************************************************
 /* constructor */
-constexpr_func coreMatrix3::coreMatrix3()noexcept
-: _11 (1.0f), _12 (0.0f), _13 (0.0f)
-, _21 (0.0f), _22 (1.0f), _23 (0.0f)
-, _31 (0.0f), _32 (0.0f), _33 (1.0f)
-{
-}
-
 constexpr_func coreMatrix3::coreMatrix3(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13,
                                         const coreFloat& f21, const coreFloat& f22, const coreFloat& f23,
                                         const coreFloat& f31, const coreFloat& f32, const coreFloat& f33)noexcept
@@ -487,14 +474,6 @@ inline coreMatrix3 coreMatrix3::Rotation(const coreFloat& fAngle)
 
 // ****************************************************************
 /* constructor */
-constexpr_func coreMatrix4::coreMatrix4()noexcept
-: _11 (1.0f), _12 (0.0f), _13 (0.0f), _14 (0.0f)
-, _21 (0.0f), _22 (1.0f), _23 (0.0f), _24 (0.0f)
-, _31 (0.0f), _32 (0.0f), _33 (1.0f), _34 (0.0f)
-, _41 (0.0f), _42 (0.0f), _43 (0.0f), _44 (1.0f)
-{
-}
-
 constexpr_func coreMatrix4::coreMatrix4(const coreFloat& f11, const coreFloat& f12, const coreFloat& f13, const coreFloat& f14,
                                         const coreFloat& f21, const coreFloat& f22, const coreFloat& f23, const coreFloat& f24,
                                         const coreFloat& f31, const coreFloat& f32, const coreFloat& f33, const coreFloat& f34,
@@ -867,6 +846,13 @@ constexpr_func coreVector4 coreVector4::operator * (const coreMatrix4& m)const
                        x*m._13 + y*m._23 + z*m._33 + w*m._43,
                        x*m._14 + y*m._24 + z*m._34 + w*m._44);
 }
+
+
+// ****************************************************************
+/* additional checks */
+STATIC_ASSERT(std::is_pod<coreMatrix2>::value == true)
+STATIC_ASSERT(std::is_pod<coreMatrix3>::value == true)
+STATIC_ASSERT(std::is_pod<coreMatrix4>::value == true)
 
 
 #endif /* _CORE_GUARD_MATRIX_H_ */

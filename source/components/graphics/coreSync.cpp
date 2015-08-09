@@ -10,7 +10,25 @@
 
 
 // ****************************************************************
-// create sync object
+/* destructor */
+coreSync::~coreSync()
+{
+    // delete sync object
+    this->Delete();
+}
+
+
+// ****************************************************************
+/* assignment operations */
+coreSync& coreSync::operator = (coreSync o)noexcept
+{
+    std::swap(m_pSync, o.m_pSync);
+    return *this;
+}
+
+
+// ****************************************************************
+/* create sync object */
 coreBool coreSync::Create()
 {
     if(!m_pSync)
@@ -22,8 +40,8 @@ coreBool coreSync::Create()
             return true;
         }
 
-        // flush all commands
-        glFlush();
+        // or flush all commands
+        coreSync::Flush();
     }
 
     return false;
@@ -31,7 +49,7 @@ coreBool coreSync::Create()
 
 
 // ****************************************************************
-// delete sync object
+/* delete sync object */
 void coreSync::Delete()
 {
     if(m_pSync)
@@ -44,7 +62,7 @@ void coreSync::Delete()
 
 
 // ****************************************************************
-// check for sync object status
+/* check for sync object status */
 coreStatus coreSync::Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck)
 {
     if(!m_pSync) return CORE_INVALID_CALL;

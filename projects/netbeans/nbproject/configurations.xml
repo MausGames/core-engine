@@ -150,13 +150,12 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <standard>8</standard>
           <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -572,12 +571,11 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <standard>8</standard>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -993,12 +991,11 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <standard>8</standard>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -1419,12 +1416,11 @@
         <ccTool>
           <developmentMode>6</developmentMode>
           <stripSymbols>true</stripSymbols>
-          <standard>8</standard>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1848,12 +1844,11 @@
         <ccTool>
           <developmentMode>6</developmentMode>
           <stripSymbols>true</stripSymbols>
-          <standard>8</standard>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -2276,12 +2271,11 @@
         </cTool>
         <ccTool>
           <developmentMode>6</developmentMode>
-          <standard>8</standard>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1</commandLine>
+          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>

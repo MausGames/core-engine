@@ -12,13 +12,17 @@
 // ****************************************************************
 // constructor
 coreLabel::coreLabel()noexcept
-: m_iHeight     (0u)
-, m_iOutline    (0u)
-, m_iLength     (0u)
-, m_vResolution (coreVector2(0.0f,0.0f))
-, m_sText       ("")
-, m_fScale      (1.0f)
-, m_iUpdate     (CORE_LABEL_UPDATE_NOTHING)
+: coreObject2D         ()
+, coreTranslate        ()
+, coreResourceRelation ()
+, m_pFont              (NULL)
+, m_iHeight            (0u)
+, m_iOutline           (0u)
+, m_iLength            (0u)
+, m_vResolution        (coreVector2(0.0f,0.0f))
+, m_sText              ("")
+, m_fScale             (1.0f)
+, m_iUpdate            (CORE_LABEL_UPDATE_NOTHING)
 {
 }
 

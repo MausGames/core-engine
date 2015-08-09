@@ -11,7 +11,6 @@
 #define _CORE_GUARD_VECTOR_H_
 
 // TODO: check out Clang ext_vector_type
-// TODO: check for ()=default constructor
 
 
 // ****************************************************************
@@ -28,8 +27,8 @@ public:
 
 
 public:
-    constexpr_func coreVector2()noexcept                                         : x (0.0f), y (0.0f) {}
-    constexpr_func coreVector2(const coreFloat& fx, const coreFloat& fy)noexcept : x (fx),   y (fy)   {}
+    coreVector2() = default;
+    constexpr_func coreVector2(const coreFloat& fx, const coreFloat& fy)noexcept : x (fx), y (fy) {}
 
     ENABLE_COPY(coreVector2)
 
@@ -77,7 +76,7 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
+    constexpr_cast operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
     constexpr_func coreVector2 yx()const             {return coreVector2(y, x);}
     //! @}
 
@@ -156,10 +155,10 @@ public:
 
 
 public:
-    constexpr_func coreVector3()noexcept                                                              : x (0.0f), y (0.0f), z (0.0f) {}
-    constexpr_func coreVector3(const coreVector2& v, const coreFloat& fz)noexcept                     : x (v.x),  y (v.y),  z (fz)   {}
-    constexpr_func coreVector3(const coreFloat& fx, const coreVector2& v)noexcept                     : x (fx),   y (v.x),  z (v.y)  {}
-    constexpr_func coreVector3(const coreFloat& fx, const coreFloat& fy, const coreFloat& fz)noexcept : x (fx),   y (fy),   z (fz)   {}
+    coreVector3() = default;
+    constexpr_func coreVector3(const coreVector2& v, const coreFloat& fz)noexcept                     : x (v.x), y (v.y), z (fz)  {}
+    constexpr_func coreVector3(const coreFloat& fx, const coreVector2& v)noexcept                     : x (fx),  y (v.x), z (v.y) {}
+    constexpr_func coreVector3(const coreFloat& fx, const coreFloat& fy, const coreFloat& fz)noexcept : x (fx),  y (fy),  z (fz)  {}
 
     ENABLE_COPY(coreVector3)
 
@@ -205,7 +204,7 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
+    constexpr_cast operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
     constexpr_func coreVector3 xzy()const            {return coreVector3(x, z, y);}
     constexpr_func coreVector3 yxz()const            {return coreVector3(y, x, z);}
     constexpr_func coreVector3 yzx()const            {return coreVector3(y, z, x);}
@@ -287,7 +286,7 @@ public:
 
 
 public:
-    constexpr_func coreVector4()noexcept                                                                                   : x (0.0f), y (0.0f), z (0.0f), w (0.0f) {}
+    coreVector4() = default;
     constexpr_func coreVector4(const coreVector3& v, const coreFloat& fw)noexcept                                          : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
     constexpr_func coreVector4(const coreFloat& fx, const coreVector3& v)noexcept                                          : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
     constexpr_func coreVector4(const coreVector2& v, const coreFloat& fz, const coreFloat& fw)noexcept                     : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
@@ -338,7 +337,7 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr_weak operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
+    constexpr_cast operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
     constexpr_func coreVector3 xyzw()const           {return coreVector3(x, y, z)*w;}
     constexpr_func coreVector3 xyz ()const           {return coreVector3(x, y, z);}
     constexpr_func coreVector2 xy  ()const           {return coreVector2(x, y);}
@@ -774,6 +773,13 @@ constexpr_func coreVector4 coreVector4::QuatMultiply(const coreVector4& v1, cons
                        v1.z*v2.w + v1.w*v2.z + v1.x*v2.y - v1.y*v2.x,
                        v1.w*v2.w - v1.x*v2.x - v1.y*v2.y - v1.z*v2.z);
 }
+
+
+// ****************************************************************
+/* additional checks */
+STATIC_ASSERT(std::is_pod<coreVector2>::value == true)
+STATIC_ASSERT(std::is_pod<coreVector3>::value == true)
+STATIC_ASSERT(std::is_pod<coreVector4>::value == true)
 
 
 #endif /* _CORE_GUARD_VECTOR_H_ */

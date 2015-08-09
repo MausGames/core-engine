@@ -25,7 +25,7 @@ public:
     /*! remove existing item */
     //! @{
     using std::vector<T>::erase;
-    inline const_iterator erase(T& tItem) {FOR_EACH(it, *this) if((*it) == tItem) return this->erase(it); return this->end();}
+    inline typename std::vector<T>::const_iterator erase(T& tItem) {FOR_EACH(it, *this) if((*it) == tItem) return this->erase(it); return this->end();}
     //! @}
 
     /*! check for existing item */

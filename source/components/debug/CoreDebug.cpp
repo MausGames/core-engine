@@ -13,18 +13,18 @@
 /* constructor */
 CoreDebug::coreMeasure::coreMeasure()noexcept
 : iPerfTime   (0u)
+, aaiQuery    {}
 , fCurrentCPU (0.0f)
 , fCurrentGPU (0.0f)
+, oOutput     ()
 {
-    // reset timer-query objects
-    aaiQuery[0].Fill(0u);
-    aaiQuery[1].Fill(0u);
 }
 
 
 // ****************************************************************
 /* constructor */
 CoreDebug::coreInspect::coreInspect()noexcept
+: oOutput ()
 {
 }
 
@@ -32,9 +32,12 @@ CoreDebug::coreInspect::coreInspect()noexcept
 // ****************************************************************
 /* constructor */
 CoreDebug::CoreDebug()noexcept
-: m_pOverall (NULL)
-, m_bEnabled (false)
-, m_bVisible (false)
+: m_apMeasure  {}
+, m_apInspect  {}
+, m_pOverall   (NULL)
+, m_Background ()
+, m_bEnabled   (false)
+, m_bVisible   (false)
 {
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 

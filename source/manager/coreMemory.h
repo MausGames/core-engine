@@ -59,7 +59,7 @@ template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share
     }
 
     // create new pointer
-    std::shared_ptr<T> pNewPointer = std::shared_ptr<T>(new T(std::forward<A>(vArgs)...));
+    std::shared_ptr<T> pNewPointer = std::make_shared<T>(std::forward<A>(vArgs)...);
     m_apPointer[pcName] = pNewPointer;
 
     return pNewPointer;

@@ -12,6 +12,7 @@
 // ****************************************************************
 // constructor
 coreMemoryManager::coreMemoryManager()noexcept
+: m_apPointer {}
 {
     Core::Log->Info(CORE_LOG_BOLD("Memory Manager created"));
 }

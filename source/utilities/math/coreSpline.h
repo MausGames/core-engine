@@ -25,8 +25,6 @@ private:
         T         tPosition;   //!< position of the node
         T         tTangent;    //!< tangent of the node
         coreFloat fDistance;   //!< distance from this node to the next (0.0f = last or spiky node)
-
-        constexpr_func coreNode()noexcept;
     };
 
 
@@ -86,18 +84,9 @@ private:
 
 // ****************************************************************
 /* constructor */
-template <typename T> constexpr_func coreSpline<T>::coreNode::coreNode()noexcept
-: tPosition (T())
-, tTangent  (T())
-, fDistance (0.0f)
-{
-}
-
-
-// ****************************************************************
-/* constructor */
 template <typename T> coreSpline<T>::coreSpline()noexcept
-: m_fTotalDistance (0.0f)
+: m_apNode         {}
+, m_fTotalDistance (0.0f)
 {
 }
 
@@ -121,6 +110,7 @@ template <typename T> void coreSpline<T>::AddNode(const T& tPosition, const T& t
     coreNode oNewNode;
     oNewNode.tPosition = tPosition;
     oNewNode.tTangent  = tTangent;
+    oNewNode.fDistance = 0.0f;
 
     if(!m_apNode.empty())
     {

@@ -22,8 +22,8 @@
     #include <sys/system_properties.h>
 #endif
 
-thread_local coreChar  coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN]; // = "";
-thread_local coreUintW coreData::m_iCurString                                                = 0u;
+thread_local coreChar  coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN] = {{}};
+thread_local coreUintW coreData::m_iCurString                                            = 0u;
 
 
 // ****************************************************************

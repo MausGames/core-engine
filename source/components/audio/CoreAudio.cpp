@@ -12,8 +12,15 @@
 // ****************************************************************
 // constructor
 CoreAudio::CoreAudio()noexcept
-: m_iNumSources (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
+: m_pDevice     (NULL)
+, m_pContext    (NULL)
+, m_vPosition   (coreVector3(0.0f,0.0f,0.0f))
+, m_vVelocity   (coreVector3(0.0f,0.0f,0.0f))
+, m_avDirection {coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,0.0f)}
+, m_pSource     (NULL)
+, m_iNumSources (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
 , m_iCurSource  (0u)
+, m_aiBuffer    {}
 , m_fVolume     (-1.0f)
 {
     Core::Log->Header("Audio Interface");

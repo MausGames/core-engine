@@ -36,8 +36,6 @@ public:
         coreUint32 iByteRate;        //!< required data transfer rate (iSampleRate * iBlockAlign)
         coreUint16 iBlockAlign;      //!< size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))
         coreUint16 iBitsPerSample;   //!< sample resolution
-
-        constexpr_func coreWaveFormat()noexcept;
     };
 
 
@@ -91,19 +89,6 @@ public:
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
     //! @}
 };
-
-
-// ****************************************************************
-// constructor
-constexpr_func coreSound::coreWaveFormat::coreWaveFormat()noexcept
-: iAudioFormat   (0u)
-, iNumChannels   (0u)
-, iSampleRate    (0u)
-, iByteRate      (0u)
-, iBlockAlign    (0u)
-, iBitsPerSample (0u)
-{
-}
 
 
 // ****************************************************************

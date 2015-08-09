@@ -117,9 +117,14 @@ private:
 // ****************************************************************
 // constructor
 template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
-: m_iCurIndex (0)
-, m_bEndless  (false)
-, m_Automatic (coreTimer(1.0f, 10.0f, 1u))
+: coreObject2D  ()
+, coreTranslate ()
+, m_aArrow      {}
+, m_Caption     ()
+, m_aEntry      {}
+, m_iCurIndex   (0)
+, m_bEndless    (false)
+, m_Automatic   (coreTimer(1.0f, 10.0f, 1u))
 {
 }
 

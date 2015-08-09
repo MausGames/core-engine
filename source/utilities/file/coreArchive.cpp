@@ -149,12 +149,14 @@ coreByte* coreFile::MoveData()
 // ****************************************************************
 // constructor
 coreArchive::coreArchive()noexcept
-: m_sPath ("")
+: m_sPath  ("")
+, m_apFile {}
 {
 }
 
 coreArchive::coreArchive(const coreChar* pcPath)noexcept
-: m_sPath (pcPath)
+: m_sPath  (pcPath)
+, m_apFile {}
 {
     // open archive
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "rb");

@@ -17,13 +17,17 @@ coreModel* coreModel::s_pCurrent = NULL;
 // ****************************************************************
 // constructor
 coreModel::coreModel()noexcept
-: m_iVertexArray    (0u)
+: coreResource      ()
+, m_iVertexArray    (0u)
+, m_aVertexBuffer   {}
+, m_IndexBuffer     ()
 , m_iNumVertices    (0u)
 , m_iNumIndices     (0u)
 , m_vBoundingRange  (coreVector3(0.0f,0.0f,0.0f))
 , m_fBoundingRadius (0.0f)
 , m_iPrimitiveType  (GL_TRIANGLES)
 , m_iIndexType      (0u)
+, m_Sync            ()
 {
 }
 
@@ -46,9 +50,9 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     coreFileUnload oUnload(pFile);
 
-    WARN_IF(!m_apVertexBuffer.empty()) return CORE_INVALID_CALL;
-    if(!pFile)                         return CORE_INVALID_INPUT;
-    if(!pFile->GetData())              return CORE_ERROR_FILE;
+    WARN_IF(!m_aVertexBuffer.empty()) return CORE_INVALID_CALL;
+    if(!pFile)                        return CORE_INVALID_INPUT;
+    if(!pFile->GetData())             return CORE_ERROR_FILE;
 
     // extract file extension
     const coreChar* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
@@ -195,14 +199,13 @@ coreStatus coreModel::Load(coreFile* pFile)
 // unload model resource data
 coreStatus coreModel::Unload()
 {
-    if(m_apVertexBuffer.empty()) return CORE_INVALID_CALL;
+    if(m_aVertexBuffer.empty()) return CORE_INVALID_CALL;
 
     // disable still active model
     if(s_pCurrent == this) coreModel::Disable(true);
 
     // delete all data buffers
-    FOR_EACH(it, m_apVertexBuffer) SAFE_DELETE(*it)
-    m_apVertexBuffer.clear();
+    m_aVertexBuffer.clear();
     m_IndexBuffer.Delete();
 
     // delete vertex array object
@@ -264,7 +267,7 @@ void coreModel::DrawElementsInstanced(const coreUint32& iCount)const
 // enable the model
 void coreModel::Enable()
 {
-    ASSERT(!m_apVertexBuffer.empty())
+    ASSERT(!m_aVertexBuffer.empty())
 
     // check and save current model object
     if(s_pCurrent == this) return;
@@ -282,8 +285,8 @@ void coreModel::Enable()
         }
 
         // set vertex data
-        for(coreUintW i = 0u, ie = m_apVertexBuffer.size(); i < ie; ++i)
-            m_apVertexBuffer[i]->Activate(i);
+        for(coreUintW i = 0u, ie = m_aVertexBuffer.size(); i < ie; ++i)
+            m_aVertexBuffer[i].Activate(i);
 
         // set index data
         if(m_IndexBuffer) m_IndexBuffer.Bind();
@@ -319,17 +322,17 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32& iNumVertices, 
     ASSERT(!m_iVertexArray)
 
     // save properties
-    if(m_apVertexBuffer.empty()) m_iNumVertices = iNumVertices;
+    if(m_aVertexBuffer.empty()) m_iNumVertices = iNumVertices;
     ASSERT(m_iNumVertices == iNumVertices)
 
     // create vertex buffer
-    m_apVertexBuffer.push_back(new coreVertexBuffer());
-    m_apVertexBuffer.back()->Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
+    m_aVertexBuffer.push_back(coreVertexBuffer());
+    m_aVertexBuffer.back().Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
 
     // disable current model object (to fully enable the next model)
     coreModel::Disable(false);
 
-    return m_apVertexBuffer.back();
+    return &m_aVertexBuffer.back();
 }
 
 

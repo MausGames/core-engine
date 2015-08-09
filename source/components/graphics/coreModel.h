@@ -33,8 +33,6 @@ public:
         coreVector2 vTexCoord;   //!< texture coordinate
         coreVector3 vNormal;     //!< normal vector
         coreVector4 vTangent;    //!< additional tangent vector
-
-        constexpr_func coreVertex()noexcept;
     };
 
     //! compressed vertex structure
@@ -44,8 +42,6 @@ public:
         coreUint32  iTexCoord;   //!< texture coordinate
         coreUint32  iNormal;     //!< normal vector
         coreUint32  iTangent;    //!< additional tangent vector
-
-        constexpr_func coreVertexPacked()noexcept;
     };
 
     //! import structure
@@ -53,28 +49,26 @@ public:
     {
         std::vector<coreVertex> aVertexData;   //!< raw vertex data
         std::vector<coreUint16> aiIndexData;   //!< raw index data
-
-        coreImport()noexcept {}
     };
 
 
 private:
-    GLuint m_iVertexArray;                             //!< vertex array object
+    GLuint m_iVertexArray;                           //!< vertex array object
 
-    std::vector<coreVertexBuffer*> m_apVertexBuffer;   //!< vertex buffers
-    coreDataBuffer                 m_IndexBuffer;      //!< index buffer
+    std::vector<coreVertexBuffer> m_aVertexBuffer;   //!< vertex buffers
+    coreDataBuffer                m_IndexBuffer;     //!< index buffer
 
-    coreUint32  m_iNumVertices;                        //!< number of vertices
-    coreUint32  m_iNumIndices;                         //!< number of indices
-    coreVector3 m_vBoundingRange;                      //!< maximum per-axis distance from the model center
-    coreFloat   m_fBoundingRadius;                     //!< maximum direct distance from the model center
+    coreUint32  m_iNumVertices;                      //!< number of vertices
+    coreUint32  m_iNumIndices;                       //!< number of indices
+    coreVector3 m_vBoundingRange;                    //!< maximum per-axis distance from the model center
+    coreFloat   m_fBoundingRadius;                   //!< maximum direct distance from the model center
 
-    GLenum m_iPrimitiveType;                           //!< primitive type for draw calls (e.g. GL_TRIANGLES)
-    GLenum m_iIndexType;                               //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
+    GLenum m_iPrimitiveType;                         //!< primitive type for draw calls (e.g. GL_TRIANGLES)
+    GLenum m_iIndexType;                             //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
 
-    coreSync m_Sync;                                   //!< sync object for asynchronous model loading
+    coreSync m_Sync;                                 //!< sync object for asynchronous model loading
 
-    static coreModel* s_pCurrent;                      //!< currently active model object
+    static coreModel* s_pCurrent;                    //!< currently active model object
 
 
 public:
@@ -113,7 +107,7 @@ public:
     //! @{
     coreVertexBuffer*        CreateVertexBuffer(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
     coreDataBuffer*          CreateIndexBuffer (const coreUint32& iNumIndices,  const coreUint8& iIndexSize,  const void* pIndexData,  const coreDataBufferStorage& iStorageType);
-    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW& iIndex) {return m_apVertexBuffer[iIndex];}
+    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW& iIndex) {return &m_aVertexBuffer[iIndex];}
     inline coreDataBuffer*   GetIndexBuffer    ()                        {return &m_IndexBuffer;}
     //! @}
 
@@ -140,28 +134,6 @@ public:
     static inline coreModel* GetCurrent() {return s_pCurrent;}
     //! @}
 };
-
-
-// ****************************************************************
-// constructor
-constexpr_func coreModel::coreVertex::coreVertex()noexcept
-: vPosition (coreVector3(0.0f,0.0f,0.0f))
-, vTexCoord (coreVector2(0.0f,0.0f))
-, vNormal   (coreVector3(0.0f,0.0f,0.0f))
-, vTangent  (coreVector4(0.0f,0.0f,0.0f,0.0f))
-{
-}
-
-
-// ****************************************************************
-// constructor
-constexpr_func coreModel::coreVertexPacked::coreVertexPacked()noexcept
-: vPosition (coreVector3(0.0f,0.0f,0.0f))
-, iTexCoord (0u)
-, iNormal   (0u)
-, iTangent  (0u)
-{
-}
 
 
 // ****************************************************************

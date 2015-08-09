@@ -12,7 +12,8 @@
 // ****************************************************************
 /* constructor */
 coreConfig::coreConfig(const coreChar* pcPath)noexcept
-: m_sPath (pcPath)
+: m_sPath  (pcPath)
+, m_Config ()
 {
     // define interface behavior
     m_Config.SetUnicode  (true);

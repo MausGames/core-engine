@@ -45,7 +45,6 @@ public:
     /*! assignment operations */
     //! @{
     coreLookupGen<K, I, T>& operator = (coreLookupGen<K, I, T> o)noexcept;
-    static void swap(coreLookupGen<K, I, T>& a, coreLookupGen<K, I, T>& b)noexcept;
     //! @}
 
     /*! access specific entry */
@@ -184,22 +183,12 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 /* assignment operations */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookupGen<K, I, T>::operator = (coreLookupGen<K, I, T> o)noexcept
 {
-    swap(*this, o);
+    std::swap(m_atValueList,  o.m_atValueList);
+    std::swap(m_atKeyList,    o.m_atKeyList);
+    std::swap(m_ptValueCache, o.m_ptValueCache);
+    std::swap(m_ptKeyCache,   o.m_ptKeyCache);
     return *this;
 }
-
-template <typename K, typename I, typename T> void coreLookupGen<K, I, T>::swap(coreLookupGen<K, I, T>& a, coreLookupGen<K, I, T>& b)noexcept
-{
-    std::swap(a.m_atValueList,  b.m_atValueList);
-    std::swap(a.m_atKeyList,    b.m_atKeyList);
-    std::swap(a.m_ptValueCache, b.m_ptValueCache);
-    std::swap(a.m_ptKeyCache,   b.m_ptKeyCache);
-}
-
-
-// ****************************************************************
-/* swap specialization */
-namespace std {template<typename K, typename I, typename T> inline void swap(coreLookupGen<K, I, T>& a, coreLookupGen<K, I, T>& b) {coreLookupGen<K, I, T>::swap(a, b);}}
 
 
 // ****************************************************************

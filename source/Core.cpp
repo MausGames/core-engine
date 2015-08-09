@@ -24,7 +24,7 @@ CoreApp*             Core::Application       = NULL;
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 Core::Core()noexcept
 {
     // init utilities
@@ -60,7 +60,7 @@ Core::Core()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 Core::~Core()
 {
     Core::Log->Header("Shut Down");
@@ -91,7 +91,7 @@ Core::~Core()
 
 
 // ****************************************************************
-// reset engine
+/* reset engine */
 void Core::Reset()
 {
     Log->Warning("Reset started");
@@ -144,7 +144,7 @@ void Core::Reset()
 
 
 // ****************************************************************
-// main function
+/* main function */
 ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar* argv[])
 {
 #if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
@@ -164,7 +164,7 @@ ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar* argv[])
 
 
 // ****************************************************************
-// run engine
+/* run engine */
 coreStatus Core::Run()
 {
     // create engine instance

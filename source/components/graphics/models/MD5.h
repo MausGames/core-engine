@@ -212,8 +212,8 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);
     coreModel::coreVertex* pVertex = pOutput->aVertexData.data();
-    coreVector3* pvOrtho1 = new coreVector3[iNumVertices];
-    coreVector3* pvOrtho2 = new coreVector3[iNumVertices];
+    coreVector3* pvOrtho1 = new coreVector3[iNumVertices]; std::memset(pvOrtho1, 0, iNumVertices * sizeof(coreVector3));
+    coreVector3* pvOrtho2 = new coreVector3[iNumVertices]; std::memset(pvOrtho2, 0, iNumVertices * sizeof(coreVector3));
 
     // loop through all vertices
     for(coreUintW i = 0u; i < iNumVertices; ++i)

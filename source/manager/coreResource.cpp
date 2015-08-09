@@ -61,6 +61,10 @@ coreResourceRelation::~coreResourceRelation()
 /* constructor */
 coreResourceManager::coreResourceManager()noexcept
 : coreThread      ("resource_thread")
+, m_apHandle      {}
+, m_apArchive     {}
+, m_apDirectFile  {}
+, m_apRelation    {}
 , m_iResourceLock (0)
 , m_iFileLock     (0)
 , m_bActive       (false)

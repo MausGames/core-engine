@@ -11,6 +11,15 @@
 
 // ****************************************************************
 // constructor
+coreButton::coreButton()noexcept
+: coreObject2D   ()
+, m_apBackground {NULL, NULL}
+, m_pCaption     (NULL)
+, m_bBusy        (false)
+, m_iOverride    (0)
+{
+}
+
 coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreButton ()
 {

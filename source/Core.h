@@ -112,7 +112,7 @@
 
 
 // ****************************************************************
-// base libraries
+/* base libraries */
 #define _HAS_EXCEPTIONS (0)
 #define _CRT_SECURE_NO_WARNINGS
 #define _ALLOW_KEYWORD_MACROS
@@ -146,7 +146,7 @@
 
 
 // ****************************************************************
-// specific libraries
+/* specific libraries */
 #define HAVE_LIBC (1)
 #define GLEW_MX
 #define GLEW_NO_GLU
@@ -169,7 +169,7 @@
 
 
 // ****************************************************************
-// compiler definitions
+/* compiler definitions */
 #if defined(_CORE_MSVC_)
     #define OUTPUT          __restrict             //!< output parameter without aliasing (never)
     #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
@@ -206,9 +206,9 @@
 #endif
 
 #if defined(_CORE_CLANG_)
-    #define constexpr_weak inline   //!< currently for typecasts and constructors with non-trivial arrays
+    #define constexpr_cast inline
 #else
-    #define constexpr_weak constexpr_func
+    #define constexpr_cast constexpr_func
 #endif
 
 #if defined(_CORE_MSVC_)
@@ -230,7 +230,7 @@
 
 
 // ****************************************************************
-// general definitions
+/* general definitions */
 #undef  NULL
 #define NULL nullptr
 
@@ -396,18 +396,18 @@ enum coreStatus : coreInt8
 
 
 // ****************************************************************
-// forward declarations
-class coreVector2;
-class coreVector3;
-class coreVector4;
-class coreMatrix2;
-class coreMatrix3;
-class coreMatrix4;
-class coreFile;
-class coreArchive;
-class coreObject2D;
-class coreObject3D;
-class coreParticleEffect;
+/* forward declarations */
+class  coreVector2;
+class  coreVector3;
+class  coreVector4;
+class  coreMatrix2;
+class  coreMatrix3;
+class  coreMatrix4;
+class  coreFile;
+class  coreArchive;
+class  coreObject2D;
+class  coreObject3D;
+class  coreParticleEffect;
 struct coreTextureSpec;
 
 class coreLog;
@@ -425,7 +425,7 @@ class coreObjectManager;
 
 
 // ****************************************************************
-// application framework
+/* application framework */
 class CoreApp final
 {
 private:
@@ -434,18 +434,18 @@ private:
 
     FRIEND_CLASS(Core)
 
-    //! auto-generated setup function
+    /*! auto-generated setup function */
     //! @{
     void Setup();
     //! @}
 
-    //! undefined init and exit function
+    /*! undefined init and exit function */
     //! @{
     void Init();
     void Exit();
     //! @}
 
-    //! undefined render and move function
+    /*! undefined render and move function */
     //! @{
     void Render();
     void Move();
@@ -454,7 +454,7 @@ private:
 
 
 // ****************************************************************
-// engine framework
+/* engine framework */
 class Core final
 {
 public:
@@ -487,14 +487,14 @@ private:
 public:
     DISABLE_COPY(Core)
 
-    //! reset engine
+    /*! reset engine */
     //! @{
     static void Reset();
     //! @}
 
 
 private:
-    //! run engine
+    /*! run engine */
     //! @{
     friend ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar* argv[]);
     static coreStatus Run();
@@ -503,7 +503,7 @@ private:
 
 
 // ****************************************************************
-// engine header files
+/* engine header files */
 #if defined(_CORE_GLES_)
     #include "additional/coreGLES.h"
 #else
@@ -554,7 +554,7 @@ private:
 #include "components/debug/CoreDebug.h"
 
 
-#endif // _CORE_GUARD_H_
+#endif /* _CORE_GUARD_H_ */
 
 // 0100010001101111001000000111010001101000011010010110111001100111011100110010000001
 // 1100100110100101100111011010000111010000101100001000000110111101110010001000000110

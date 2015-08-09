@@ -11,53 +11,12 @@
 
 // ****************************************************************
 // constructor
-CoreInput::coreKeyboard::coreKeyboard()noexcept
-: iLast (CORE_INPUT_KEY (UNKNOWN))
-, iChar (CORE_INPUT_CHAR(UNKNOWN))
-{
-    std::memset(aabButton, 0, sizeof(aabButton));
-}
-
-
-// ****************************************************************
-// constructor
-CoreInput::coreMouse::coreMouse()noexcept
-: iLast     (0xFFu)
-, vPosition (coreVector2(0.0f,0.0f))
-, vRelative (coreVector3(0.0f,0.0f,0.0f))
-{
-    std::memset(aabButton, 0, sizeof(aabButton));
-}
-
-
-// ****************************************************************
-// constructor
-CoreInput::coreJoystick::coreJoystick()noexcept
-: pController (NULL)
-, pJoystick   (NULL)
-, pHaptic     (NULL)
-, iLast       (0xFFu)
-, vRelative   (coreVector2(0.0f,0.0f))
-{
-    std::memset(aabButton, 0, sizeof(aabButton));
-}
-
-
-// ****************************************************************
-// constructor
-CoreInput::coreTouch::coreTouch()noexcept
-: vPosition (coreVector2(0.0f,0.0f))
-, vRelative (coreVector2(0.0f,0.0f))
-, fPressure (0.0f)
-{
-    std::memset(abButton, 0, sizeof(abButton));
-}
-
-
-// ****************************************************************
-// constructor
 CoreInput::CoreInput()noexcept
-: m_pCursor        (NULL)
+: m_Keyboard       ()
+, m_Mouse          ()
+, m_aJoystick      {}
+, m_aTouch         {{}}
+, m_pCursor        (NULL)
 , m_bCursorVisible (true)
 {
     Core::Log->Header("Input Interface");

@@ -57,7 +57,7 @@ private:
         GLuint          iBuffer;    //!< render target buffer (fast, multisampled)
         coreTextureSpec oSpec;      //!< texture and buffer specification (format)
 
-        constexpr_weak coreRenderTarget()noexcept;
+        constexpr_func coreRenderTarget()noexcept;
         inline coreBool IsTexture()const {return pTexture ? true : false;}
         inline coreBool IsBuffer ()const {return !this->IsTexture();}
     };
@@ -152,9 +152,10 @@ private:
 
 // ****************************************************************
 // constructor
-constexpr_weak coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
-: iBuffer (0u)
-, oSpec   (coreTextureSpec(0u, 0u, 0u))
+constexpr_func coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
+: pTexture (NULL)
+, iBuffer  (0u)
+, oSpec    (coreTextureSpec(0u, 0u, 0u))
 {
 }
 

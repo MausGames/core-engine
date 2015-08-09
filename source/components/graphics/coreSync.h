@@ -10,21 +10,21 @@
 #ifndef _CORE_GUARD_SYNC_H_
 #define _CORE_GUARD_SYNC_H_
 
-// TODO: wrap glFlush and glFinish
-// TODO: CheckAsync which uses the function-attachment interface (which thread?)
+// TODO: implement CheckAsync which uses the function-attachment interface (which thread?)
+// TODO: wrap GL_TIMEOUT_IGNORED
 
 
 // ****************************************************************
-// sync definitions
+/* sync definitions */
 enum coreSyncCheck : coreUint8
 {
-    CORE_SYNC_CHECK_ONLY    = 0u,                           //!< check only for current status
+    CORE_SYNC_CHECK_NORMAL  = 0u,                           //!< check only for current status
     CORE_SYNC_CHECK_FLUSHED = GL_SYNC_FLUSH_COMMANDS_BIT    //!< check and flush the command buffer
 };
 
 
 // ****************************************************************
-// sync class
+/* sync class */
 class coreSync final
 {
 private:
@@ -32,22 +32,46 @@ private:
 
 
 public:
-    constexpr_func coreSync()noexcept : m_pSync (NULL) {}
-    ~coreSync() {this->Delete();}
+    constexpr_func coreSync()noexcept;
+    inline coreSync(coreSync&& m)noexcept;
+    ~coreSync();
 
-    DISABLE_COPY(coreSync)
+    /*! assignment operations */
+    //! @{
+    coreSync& operator = (coreSync o)noexcept;
+    //! @}
 
-    //! handle the sync object
+    /*! handle the sync object */
     //! @{
     coreBool Create();
     void     Delete();
     //! @}
 
-    //! check for sync object status
+    /*! check for sync object status */
     //! @{
     coreStatus Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck);
+    //! @}
+
+    /*! invoke explicit synchronization */
+    //! @{
+    static inline void Flush () {glFlush ();}
+    static inline void Finish() {glFinish();}
     //! @}
 };
 
 
-#endif // _CORE_GUARD_SYNC_H_
+// ****************************************************************
+/* constructor */
+constexpr_func coreSync::coreSync()noexcept
+: m_pSync (NULL)
+{
+}
+
+inline coreSync::coreSync(coreSync&& m)noexcept
+: m_pSync (m.m_pSync)
+{
+    m.m_pSync = NULL;
+}
+
+
+#endif /* _CORE_GUARD_SYNC_H_ */

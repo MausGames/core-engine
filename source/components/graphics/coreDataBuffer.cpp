@@ -8,7 +8,32 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound; // = 0u;
+coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound = {};
+
+
+// ****************************************************************
+// destructor
+coreDataBuffer::~coreDataBuffer()
+{
+    // delete buffer storage
+    this->Delete();
+}
+
+
+// ****************************************************************
+// assignment operations
+coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer o)noexcept
+{
+    std::swap(m_iDataBuffer,       o.m_iDataBuffer);
+    std::swap(m_iStorageType,      o.m_iStorageType);
+    std::swap(m_iTarget,           o.m_iTarget);
+    std::swap(m_iSize,             o.m_iSize);
+    std::swap(m_pPersistentBuffer, o.m_pPersistentBuffer);
+    std::swap(m_iMapOffset,        o.m_iMapOffset);
+    std::swap(m_iMapLength,        o.m_iMapLength);
+    std::swap(m_Sync,              o.m_Sync);
+    return *this;
+}
 
 
 // ****************************************************************
@@ -124,8 +149,37 @@ void coreDataBuffer::Invalidate()
 // ****************************************************************
 // constructor
 coreVertexBuffer::coreVertexBuffer()noexcept
-: m_iVertexSize (0u)
+: coreDataBuffer ()
+, m_iVertexSize  (0u)
+, m_aAttribute   {}
 {
+}
+
+coreVertexBuffer::coreVertexBuffer(coreVertexBuffer&& m)noexcept
+: coreDataBuffer (std::move(m))
+, m_iVertexSize  (m.m_iVertexSize)
+, m_aAttribute   (std::move(m.m_aAttribute))
+{
+}
+
+
+// ****************************************************************
+// destructor
+coreVertexBuffer::~coreVertexBuffer()
+{
+    // delete buffer storage
+    this->Delete();
+}
+
+
+// ****************************************************************
+// assignment operations
+coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer o)noexcept
+{
+    std::swap(s_cast<coreDataBuffer&>(*this), s_cast<coreDataBuffer&>(o));
+    std::swap(m_iVertexSize,                  o.m_iVertexSize);
+    std::swap(m_aAttribute,                   o.m_aAttribute);
+    return *this;
 }
 
 

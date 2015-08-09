@@ -139,4 +139,9 @@ constexpr_func coreTimer::coreTimer(const coreFloat& fEnd, const coreFloat& fSpe
 }
 
 
+// ****************************************************************
+/* additional checks */
+STATIC_ASSERT(std::is_pod<coreFlow>::value == true)
+
+
 #endif /* _CORE_GUARD_TIMER_H_ */

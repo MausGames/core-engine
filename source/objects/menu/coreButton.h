@@ -24,7 +24,7 @@ protected:
 
 
 public:
-    constexpr_weak coreButton()noexcept;
+    coreButton()noexcept;
     coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
     coreButton(const coreChar* pcIdle, const coreChar* pcBusy)noexcept;
     virtual ~coreButton();
@@ -54,16 +54,6 @@ public:
     inline const coreInt8&  GetOverride()const {return m_iOverride;}
     //! @}
 };
-
-
-// ****************************************************************
-// constructor
-constexpr_weak coreButton::coreButton()noexcept
-: m_pCaption  (NULL)
-, m_bBusy     (false)
-, m_iOverride (0)
-{
-}
 
 
 #endif // _CORE_GUARD_BUTTON_H_

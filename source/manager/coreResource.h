@@ -137,7 +137,7 @@ private:
 
 
 public:
-    constexpr_func coreResourcePtr()noexcept;
+    constexpr_func explicit coreResourcePtr(std::nullptr_t p = NULL)noexcept;
     coreResourcePtr(coreResourceHandle* pHandle)noexcept;
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
@@ -148,7 +148,6 @@ public:
     /*! assignment operator */
     //! @{
     coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
-    static void swap(coreResourcePtr<T>& a, coreResourcePtr<T>& b)noexcept;
     //! @}
 
     /*! access resource object and resource handle */
@@ -291,7 +290,7 @@ template <typename F> void coreResourceHandle::OnLoadOnce(F&& nFunction)const
 
 // ****************************************************************
 /* constructor */
-template <typename T> constexpr_func coreResourcePtr<T>::coreResourcePtr()noexcept
+template <typename T> constexpr_func coreResourcePtr<T>::coreResourcePtr(std::nullptr_t)noexcept
 : m_pHandle (NULL)
 , m_bActive (true)
 {
@@ -331,20 +330,10 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 /* assignment operator */
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
 {
-    swap(*this, o);
+    std::swap(m_pHandle, o.m_pHandle);
+    std::swap(m_bActive, o.m_bActive);
     return *this;
 }
-
-template <typename T> void coreResourcePtr<T>::swap(coreResourcePtr<T>& a, coreResourcePtr<T>& b)noexcept
-{
-    std::swap(a.m_pHandle, b.m_pHandle);
-    std::swap(a.m_bActive, b.m_bActive);
-}
-
-
-// ****************************************************************
-/* swap specialization */
-namespace std {template<typename T> inline void swap(coreResourcePtr<T>& a, coreResourcePtr<T>& b) {coreResourcePtr<T>::swap(a, b);}}
 
 
 // ****************************************************************

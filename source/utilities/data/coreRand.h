@@ -41,7 +41,6 @@ public:
     /*! assignment operations */
     //! @{
     coreRand& operator = (coreRand o)noexcept;
-    static void swap(coreRand& a, coreRand& b)noexcept;
     //! @}
 
     /*! reset current random number */
@@ -70,12 +69,6 @@ public:
     static inline coreInt16 Rand()                                        {s_iSeed = 214013u * s_iSeed + 2531011u; return (s_iSeed >> 16u) & CORE_RAND_MAX;}
     //! @}
 };
-
-
-// ****************************************************************
-/* swap specialization */
-void swap(coreRand& a, coreRand& b)noexcept;
-namespace std {template<> inline void swap(coreRand& a, coreRand& b) {coreRand::swap(a, b);}}
 
 
 #endif /* _CORE_GUARD_RAND_H_ */

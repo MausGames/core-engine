@@ -12,10 +12,13 @@
 // ****************************************************************
 // constructor
 coreMenu::coreMenu(const coreUint8& iNumSurfaces, const coreUint8& iStartSurface)noexcept
-: m_pCurObject   (NULL)
+: coreObject2D   ()
+, m_papObject    (NULL)
+, m_pCurObject   (NULL)
 , m_iNumSurfaces (iNumSurfaces)
 , m_iCurSurface  (iStartSurface)
 , m_iOldSurface  (iStartSurface)
+, m_aapRender    {}
 , m_Transition   (coreTimer(1.0f, 1.0f, 1u))
 {
     // create surfaces
