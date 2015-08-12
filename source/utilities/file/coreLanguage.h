@@ -33,7 +33,6 @@ private:
 public:
     coreTranslate()noexcept;
     coreTranslate(const coreTranslate& c)noexcept;
-    coreTranslate(coreTranslate&&      m)noexcept;
     virtual ~coreTranslate();
 
     FRIEND_CLASS(coreLanguage)
@@ -41,7 +40,6 @@ public:
     /*! assignment operations */
     //! @{
     coreTranslate& operator = (const coreTranslate& c)noexcept;
-    coreTranslate& operator = (coreTranslate&&      m)noexcept;
     //! @}
 
     /*! change associated language file */

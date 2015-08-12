@@ -48,8 +48,9 @@
 // TODO: explicit flush control for context change (SDL?)
 // TODO: check for performance penalties and alternatives for thread_local
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
-// TODO: check pointer-int conversions
 // TODO: reduce core-prefix ? (e.g. cr)
+// TODO: unique pointers and move semantics for functions taking ownership of a pointer
+// TODO: video class
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -251,6 +252,7 @@
 #define REMOVE_VALUE(o,n)    { (o) &=       ~(n);}
 #define CONTAINS_BIT(o,n)    (((o) &      BIT(n)) ? true : false)
 #define CONTAINS_VALUE(o,n)  (((o) & (n)) == (n))
+#define SET_BIT(o,n,t)       { (o) ^= ((o) ^ -int(t)) & BIT(n);}
 
 #define FOR_EACH(i,c)        for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
 #define FOR_EACH_REV(i,c)    for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)

@@ -12,8 +12,8 @@
 // ****************************************************************
 // constructor
 CoreInput::CoreInput()noexcept
-: m_Keyboard       ()
-, m_Mouse          ()
+: m_Keyboard       {}
+, m_Mouse          {}
 , m_aJoystick      {}
 , m_aTouch         {{}}
 , m_pCursor        (NULL)
@@ -289,15 +289,15 @@ void CoreInput::__UpdateButtons()
     // process keyboard inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
-             if( m_Keyboard.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Keyboard.aabButton[i])
-        else if(!m_Keyboard.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Keyboard.aabButton[i])
+        if(CONTAINS_BIT(m_Keyboard.aiButton[i], 0u)) __CORE_INPUT_PRESS  (m_Keyboard.aiButton[i])
+                                                else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[i])
     }
 
     // process mouse inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
-             if( m_Mouse.aabButton[i][0]) __CORE_INPUT_PRESS  (m_Mouse.aabButton[i])
-        else if(!m_Mouse.aabButton[i][0]) __CORE_INPUT_RELEASE(m_Mouse.aabButton[i])
+        if(CONTAINS_BIT(m_Mouse.aiButton[i], 0u)) __CORE_INPUT_PRESS  (m_Mouse.aiButton[i])
+                                             else __CORE_INPUT_RELEASE(m_Mouse.aiButton[i])
     }
 
     // process joystick inputs
@@ -305,16 +305,16 @@ void CoreInput::__UpdateButtons()
     {
         for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
-                 if( it->aabButton[i][0]) __CORE_INPUT_PRESS  (it->aabButton[i])
-            else if(!it->aabButton[i][0]) __CORE_INPUT_RELEASE(it->aabButton[i])
+            if(CONTAINS_BIT(it->aiButton[i], 0u)) __CORE_INPUT_PRESS  (it->aiButton[i])
+                                             else __CORE_INPUT_RELEASE(it->aiButton[i])
         }
     }
 
     // process touch inputs
     for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
     {
-             if( m_aTouch[i].abButton[0]) __CORE_INPUT_PRESS  (m_aTouch[i].abButton)
-        else if(!m_aTouch[i].abButton[0]) __CORE_INPUT_RELEASE(m_aTouch[i].abButton)
+        if(CONTAINS_BIT(m_aTouch[i].iButton, 0u)) __CORE_INPUT_PRESS  (m_aTouch[i].iButton)
+                                             else __CORE_INPUT_RELEASE(m_aTouch[i].iButton)
     }
 
 #if defined(_CORE_LINUX_)

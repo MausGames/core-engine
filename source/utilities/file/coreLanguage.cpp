@@ -19,18 +19,10 @@ coreTranslate::coreTranslate()noexcept
 
 coreTranslate::coreTranslate(const coreTranslate& c)noexcept
 : m_pLanguage  (NULL)
-, m_apsPointer (c.m_apsPointer)
+, m_apsPointer {}
 {
     // associate object with language
     this->ChangeLanguage(c.m_pLanguage);
-}
-
-coreTranslate::coreTranslate(coreTranslate&& m)noexcept
-: m_pLanguage  (NULL)
-, m_apsPointer (std::move(m.m_apsPointer))
-{
-    // associate object with language
-    this->ChangeLanguage(m.m_pLanguage);
 }
 
 
@@ -52,20 +44,6 @@ coreTranslate& coreTranslate::operator = (const coreTranslate& c)noexcept
 {
     // associate object with language
     this->ChangeLanguage(c.m_pLanguage);
-
-    // copy remaining properties
-    m_apsPointer = c.m_apsPointer;
-
-    return *this;
-}
-
-coreTranslate& coreTranslate::operator = (coreTranslate&& m)noexcept
-{
-    // associate object with language
-    this->ChangeLanguage(m.m_pLanguage);
-
-    // move remaining properties
-    m_apsPointer = std::move(m.m_apsPointer);
 
     return *this;
 }

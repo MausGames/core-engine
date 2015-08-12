@@ -106,8 +106,8 @@ template <typename... A> FUNC_NORETURN void coreLog::Error(const coreChar* pcTex
     // write error message
     if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_ERROR)) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
 
-    // show critical error message
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", __CORE_LOG_STRING.c_str(), NULL);
+    // also show message box
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Critical Error", __CORE_LOG_STRING.c_str(), NULL);
     WARN_IF(true) {}
 
     // shut down the application

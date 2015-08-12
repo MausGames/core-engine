@@ -69,7 +69,7 @@ void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iS
 {
     coreLog* pLog = s_cast<coreLog*>(c_cast<void*>(pUserParam));
 
-    // write message
+    // write debug message
     pLog->ListStartWarning("OpenGL Debug Message");
     {
         pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("ID:")       "     %d</span>", iID);
@@ -80,6 +80,8 @@ void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iS
     }
     pLog->ListEnd();
 
+    // also show message box
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OpenGL Error", pcMessage, NULL);
     WARN_IF(true) {}
 }
 

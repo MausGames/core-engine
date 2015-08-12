@@ -152,7 +152,9 @@ public:
 // ****************************************************************
 /* constructor */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen()noexcept
-: m_ptValueCache (NULL)
+: m_atValueList  {}
+, m_atKeyList    {}
+, m_ptValueCache (NULL)
 , m_ptKeyCache   (NULL)
 {
     constexpr_var coreUintW iSize = MAX(64u / sizeof(T), 2u);
