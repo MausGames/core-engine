@@ -400,6 +400,7 @@ coreBool coreProgram::Enable()
         this->SendUniform(CORE_SHADER_UNIFORM_PERSPECTIVE, Core::Graphics->GetPerspective(), false);
         this->SendUniform(CORE_SHADER_UNIFORM_ORTHO,       Core::Graphics->GetOrtho(),       false);
         this->SendUniform(CORE_SHADER_UNIFORM_RESOLUTION,  Core::Graphics->GetViewResolution());
+        this->SendUniform(CORE_SHADER_UNIFORM_CAMPOSITION, Core::Graphics->GetCamPosition());
 
         // forward ambient data
         for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i)

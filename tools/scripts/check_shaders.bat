@@ -4,6 +4,7 @@ SET _EXECUTABLE_="%~dp0glslang.exe"
 SET _PARAMETERS_=-t -w
 
 SET _GLOBAL_="%~1\global.glsl"
+SET _CUSTOM_="%~1\custom.glsl"
 SET _LOG_=shader_log.txt
 
 SET _A_VERSION=(110 120 140 150 330 400 410 420 430 440 450)
@@ -26,7 +27,7 @@ FOR %%V IN %_A_VERSION% DO (
         (@ECHO #define CORE_NUM_LIGHTS          4) >> temp
         (@ECHO #define CORE_NUM_OUTPUTS         4) >> temp
 
-        COPY /B temp + %_GLOBAL_% + "%%G" temp.vert > NUL
+        COPY /B temp + %_GLOBAL_% + %_CUSTOM_% + "%%G" temp.vert > NUL
         CALL %_EXECUTABLE_% %_PARAMETERS_% temp.vert >> %_LOG_%
 
     )
@@ -43,7 +44,7 @@ FOR %%V IN %_A_VERSION% DO (
         (@ECHO #define CORE_NUM_LIGHTS          4) >> temp
         (@ECHO #define CORE_NUM_OUTPUTS         4) >> temp
 
-        COPY /B temp + %_GLOBAL_% + "%%G" temp.frag > NUL
+        COPY /B temp + %_GLOBAL_% + %_CUSTOM_% + "%%G" temp.frag > NUL
         CALL %_EXECUTABLE_% %_PARAMETERS_% temp.frag >> %_LOG_%
 
     )

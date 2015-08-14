@@ -33,12 +33,12 @@ vec2 coreObject3DTexCoordLow()
 vec2 coreObject2DTexCoord()
 vec2 coreParticleTexCoord()
 
-// dot-3 bump mapping initialization (with rotation quaternion)
-void coreDot3VertexInit(in vec4 v4Rotation, in vec3 v3Normal, in vec4 v4Tangent)
-void coreDot3VertexInit()
+// calculate tangent-space matrix (with rotation quaternion)
+mat3 coreTangentSpaceMatrix(in vec4 v4Rotation, in vec3 v3Normal, in vec4 v4Tangent)
+mat3 coreTangentSpaceMatrix()
 
-// dot-3 vector transformation
-vec3 coreDot3VertexTransform(in vec3)
+// transform lighting properties into tangent-space (default, vertex shader only)
+void coreLightingTransform(in vec3 v3Position)
 
 
 ## In ##
@@ -50,7 +50,7 @@ vec3 a_v3RawNormal       // normal vector
 vec4 a_v4RawTangent      // tangent vector (xyz = tangent, w = binormal sign)
 vec2 u_v2TexSize         // texture size
 vec2 u_v2TexOffset       // texture offset
-vec2 (a_v2LowPosition)   // raw vertex position (only with low-memory model, recommended)
+vec2 (a_v2LowPosition)   // raw vertex position    (only with low-memory model, recommended)
 vec2 (a_v2LowTexCoord)   // raw texture coordinate (only with low-memory model, recommended)
 
 // object2D attributes
@@ -71,8 +71,10 @@ float a_v1DivValue       // animation value (from 1.0 to 0.0)
 
 vec4 v_v4VarColor                          // custom color value forward (don't use together with u_v4Color in fragment shader)
 vec2 v_av2TexCoord[CORE_NUM_TEXTURES_2D]   // predefined texture coordinate forward (to next shader stage)
-vec4 v_av4LightDir[CORE_NUM_LIGHTS]        // predefined light direction forward
-vec3 v_v3ViewDir                           // predefined view direction forward
+vec4 v_av4LightPos[CORE_NUM_LIGHTS]        // tangent-space light position forward
+vec4 v_av4LightDir[CORE_NUM_LIGHTS]        // tangent-space light direction forward
+vec3 v_v3TangentPos                        // tangent-space vertex position forward (used for view direction)
+vec3 v_v3TangentCam                        // tangent-space camera position forward (used for view direction)
 
 
 // ****************************************************************
@@ -83,10 +85,14 @@ vec3 v_v3ViewDir                           // predefined view direction forward
 
 vec4 v_v4VarColor
 vec2 v_av2TexCoord[CORE_NUM_TEXTURES_2D]
+vec4 v_av4LightPos[CORE_NUM_LIGHTS]
 vec4 v_av4LightDir[CORE_NUM_LIGHTS]
-vec3 v_v3ViewDir
+vec3 v_v3TangentPos
+vec3 v_v3TangentCam
 
-vec2 (u_v2TexSize)     // texture size (not with particles or on instancing)
+vec3 v_v3ViewDir       // pre-calculated view direction (not normalized)
+
+vec2 (u_v2TexSize)     // texture size   (not with particles or on instancing)
 vec2 (u_v2TexOffset)   // texture offset (not with particles or on instancing)
 
 
@@ -96,23 +102,25 @@ vec2 (u_v2TexOffset)   // texture offset (not with particles or on instancing)
 
 ## Functions ##
 
-T     coreMin3             (in T, in T, in T)   // trinary minimum
-T     coreMax3             (in T, in T, in T)   // trinary maximum
-vec3  coreHSVtoRGB         (in vec3)            // HSV to RGB conversion
-vec3  coreRGBtoHSV         (in vec3)            // RGB to HSV conversion
-float coreLengthSq         (in vec2)            // vector square length
-float coreLengthSq         (in vec3)
-vec3  coreUnpackNormal     (in vec2)            // vector normal decompression (with z-reconstruction)
-vec3  coreUnpackNormalDeriv(in vec2)            // vector normal decompression (with partial-derivative)
-vec3  coreQuatApply        (in vec4, in vec3)   // quaternion transformation
-mat3  coreTranspose        (in mat3)            // matrix transpose
-mat4  coreTranspose        (in mat4)
-mat3  coreInvert           (in mat3)            // matrix invert
-mat4  coreInvert           (in mat4)
-mat3  coreMat4to3          (in mat4)            // matrix convert
-mat2  coreMat3to2          (in mat3)
-uint  corePackUnorm4x8     (in vec4)            // value pack (4x 8bit float -> 1x 32bit uint)
-vec4  coreUnpackUnorm4x8   (in uint)            // value unpack (1x 32bit uint -> 4x 8bit float)
+T     coreMin3                (in T, in T, in T)   // trinary minimum
+T     coreMax3                (in T, in T, in T)   // trinary maximum
+vec3  coreHSVtoRGB            (in vec3)            // HSV to RGB conversion
+vec3  coreRGBtoHSV            (in vec3)            // RGB to HSV conversion
+float coreLengthSq            (in vec2)            // vector square length
+float coreLengthSq            (in vec3)
+vec2  corePackNormalSphere    (in vec3)            // vector normal pack   (with Lambert azimuthal equal-area projection)
+vec3  coreUnpackNormalSphere  (in vec2)            // vector normal unpack (with Lambert azimuthal equal-area projection)
+vec3  coreUnpackNormalMap     (in vec2)            // vector normal unpack (with z-reconstruction)
+vec3  coreUnpackNormalMapDeriv(in vec2)            // vector normal unpack (with partial-derivative)
+vec3  coreQuatApply           (in vec4, in vec3)   // quaternion transformation
+mat3  coreTranspose           (in mat3)            // matrix transpose
+mat4  coreTranspose           (in mat4)
+mat3  coreInvert              (in mat3)            // matrix invert
+mat4  coreInvert              (in mat4)
+mat3  coreMat4to3             (in mat4)            // matrix convert
+mat2  coreMat3to2             (in mat3)
+uint  corePackUnorm4x8        (in vec4)            // value pack   (4x 8bit float -> 1x 32bit uint)
+vec4  coreUnpackUnorm4x8      (in uint)            // value unpack (1x 32bit uint -> 4x 8bit float)
 
 vec4  coreTexture2D    (in int v1Unit, in vec2 v2TexCoord)    // normal texture lookup
 float coreTextureShadow(in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures
@@ -128,6 +136,7 @@ mat4 u_m4Camera        // camera matrix
 mat4 u_m4Perspective   // perspective projection matrix
 mat4 u_m4Ortho         // orthographic projection matrix
 vec4 u_v4Resolution    // current viewport resolution (xy = normal, zw = reciprocal)
+vec3 u_v3CamPosition   // camera position
 
 vec4 u_v4Color         // color value
 

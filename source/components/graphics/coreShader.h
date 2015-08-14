@@ -40,6 +40,7 @@
 #define CORE_SHADER_UNIFORM_PERSPECTIVE         "u_m4Perspective"
 #define CORE_SHADER_UNIFORM_ORTHO               "u_m4Ortho"
 #define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
+#define CORE_SHADER_UNIFORM_CAMPOSITION         "u_v3CamPosition"
 
 #define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_aLight[%u].v4Position"
 #define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_aLight[%u].v4Direction"

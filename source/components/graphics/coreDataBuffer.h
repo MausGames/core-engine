@@ -156,6 +156,11 @@ public:
     void Activate       (const coreUint8& iBinding);
     void ActivateDivided(const coreUint8& iBinding, const coreUint8& iDivisor);
     //! @}
+
+    //! get object properties
+    //! @{
+    inline const coreUint8& GetVertexSize()const {return m_iVertexSize;}
+    //! @}
 };
 
 

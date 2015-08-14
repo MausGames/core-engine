@@ -262,11 +262,12 @@ void CoreGraphics::SendTransformation()
         coreByte* pRange = m_TransformBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
-        std::memcpy(pRange,                          &mViewProj,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 1u*sizeof(coreMatrix4), &m_mCamera,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 2u*sizeof(coreMatrix4), &m_mPerspective,    sizeof(coreMatrix4));
-        std::memcpy(pRange + 3u*sizeof(coreMatrix4), &m_mOrtho,          sizeof(coreMatrix4));
-        std::memcpy(pRange + 4u*sizeof(coreMatrix4), &m_vViewResolution, sizeof(coreVector4));
+        std::memcpy(pRange,                                                 &mViewProj,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 1u*sizeof(coreMatrix4),                        &m_mCamera,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 2u*sizeof(coreMatrix4),                        &m_mPerspective,    sizeof(coreMatrix4));
+        std::memcpy(pRange + 3u*sizeof(coreMatrix4),                        &m_mOrtho,          sizeof(coreMatrix4));
+        std::memcpy(pRange + 4u*sizeof(coreMatrix4),                        &m_vViewResolution, sizeof(coreVector4));
+        std::memcpy(pRange + 4u*sizeof(coreMatrix4) + 4u*sizeof(coreFloat), &m_vCamPosition,    sizeof(coreVector3));
         m_TransformBuffer.Unmap(pRange);
 
         // create sync object
