@@ -108,7 +108,7 @@ public:
 
     /*! insert asynchronous functions */
     //! @{
-    template <typename F> void OnLoadOnce(F&& nFunction)const;
+    template <typename F> void OnLoadOnce(F&& nFunction)const;   //!< [](void) -> void
     //! @}
 
     /*! get object properties */

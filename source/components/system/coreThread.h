@@ -42,7 +42,7 @@ public:
     /*! run custom functions within the thread */
     //! @{
     void UpdateFunctions();
-    template <typename F> inline void AttachFunction(F&& nFunction) {ASSERT(m_anFunction.size() < 60u) SDL_AtomicLock(&m_iLock); m_anFunction.push_back(nFunction); SDL_AtomicUnlock(&m_iLock);}
+    template <typename F> inline void AttachFunction(F&& nFunction) {ASSERT(m_anFunction.size() < 60u) SDL_AtomicLock(&m_iLock); m_anFunction.push_back(nFunction); SDL_AtomicUnlock(&m_iLock);}   //!< [](void) -> coreError (CORE_OK, CORE_BUSY)
     //! @}
 
     /*! set object properties */

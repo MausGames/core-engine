@@ -215,8 +215,8 @@ public:
 
     //! create new particles
     //! @{
-    template <typename F> void CreateParticle(const coreUintW& iNum, const coreFloat& fFrequency, F&& nFunction);
-    template <typename F> void CreateParticle(const coreUintW& iNum,                              F&& nFunction);
+    template <typename F> void CreateParticle(const coreUintW& iNum, const coreFloat& fFrequency, F&& nFunction);   //!< [](coreParticle* OUTPUT pParticle) -> void
+    template <typename F> void CreateParticle(const coreUintW& iNum,                              F&& nFunction);   //!< [](coreParticle* OUTPUT pParticle) -> void
     inline coreParticle* CreateParticle() {return m_pSystem->CreateParticle(m_pThis);}
     //! @}
 

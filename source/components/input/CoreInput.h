@@ -186,7 +186,7 @@ public:
     inline const coreVector2& GetTouchPosition(const coreUintW& iIndex)const                             {return m_aTouch[iIndex].vPosition;}
     inline const coreVector2& GetTouchRelative(const coreUintW& iIndex)const                             {return m_aTouch[iIndex].vRelative;}
     inline const coreFloat&   GetTouchPressure(const coreUintW& iIndex)const                             {return m_aTouch[iIndex].fPressure;}
-    template <typename F> void ForEachFinger(const coreInputType& iType, F&& nFunction);
+    template <typename F> void ForEachFinger(const coreInputType& iType, F&& nFunction);   //!< [](const coreUintW& iFingerIndex) -> void
     //! @}
 
     //! get last pressed input button

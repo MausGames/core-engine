@@ -231,7 +231,8 @@ coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
 , m_iCurEnabled        (0u)
 , m_pProgram           (NULL)
 , m_aiVertexArray      {}
-, m_aiInstanceBuffer   {}
+, m_aInstanceBuffer    {}
+, m_paCustomBuffer     (NULL)
 , m_pLastModel         (NULL)
 , m_iFilled            (0u)
 , m_bUpdate            (false)
@@ -254,6 +255,9 @@ coreBatchList::~coreBatchList()
 
     // delete vertex array objects and instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
+
+    // free custom attribute buffer memory
+    SAFE_DELETE(m_paCustomBuffer)
 }
 
 
@@ -296,11 +300,11 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         if(m_bUpdate)
         {
             // switch to next available array and buffer
-            m_aiVertexArray   .Next();
-            m_aiInstanceBuffer.Next();
+            m_aiVertexArray  .Next();
+            m_aInstanceBuffer.Next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.Current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aInstanceBuffer.Current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)
@@ -328,7 +332,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             }
 
             // unmap buffer
-            m_aiInstanceBuffer.Current().Unmap(pRange);
+            m_aInstanceBuffer.Current().Unmap(pRange);
 
             // reset the update status
             m_bUpdate = false;
@@ -527,12 +531,12 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
-        if(m_aiInstanceBuffer[0]) return;
+        if(m_aInstanceBuffer[0]) return;
 
         // only allocate with enough capacity
         if(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
         {
-            FOR_EACH(it, *m_aiInstanceBuffer.List())
+            FOR_EACH(it, *m_aInstanceBuffer.List())
             {
                 // create vertex array object
                 glGenVertexArrays(1, &m_aiVertexArray.Current());
@@ -549,6 +553,16 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
 
                 // set vertex data (instancing only)
                 it->ActivateDivided(1u, 1u);
+
+                if(m_paCustomBuffer)
+                {
+                    coreVertexBuffer& oBuffer = m_paCustomBuffer->Current();
+                    m_paCustomBuffer->Next();
+
+                    // also re-create and activate custom attribute buffer
+                    oBuffer.Create(m_iCurCapacity, oBuffer.GetVertexSize(), NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+                    oBuffer.ActivateDivided(2u, 1u);
+                }
             }
 
             // disable current model object (to fully enable the next model)
@@ -566,11 +580,21 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
         m_aiVertexArray.Fill(0u);
 
         // delete instance data buffers
-        FOR_EACH(it, *m_aiInstanceBuffer.List())
+        FOR_EACH(it, *m_aInstanceBuffer.List())
             it->Delete();
 
         // reset selected array and buffer (to synchronize)
-        m_aiVertexArray   .Select(0u);
-        m_aiInstanceBuffer.Select(0u);
+        m_aiVertexArray  .Select(0u);
+        m_aInstanceBuffer.Select(0u);
+
+        if(m_paCustomBuffer)
+        {
+            // delete custom attribute buffers (keep attributes and vertex size)
+            FOR_EACH(it, *m_paCustomBuffer->List())
+                it->coreDataBuffer::Delete();
+
+            // reset selected buffer (to synchronize)
+            m_paCustomBuffer->Select(0u);
+        }
     }
 }

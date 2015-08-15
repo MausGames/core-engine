@@ -116,8 +116,9 @@ private:
 
     coreProgramPtr m_pProgram;                                                        //!< shader-program object
 
-    coreRound<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
-    coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
+    coreRound<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS>  m_aiVertexArray;     //!< vertex array objects
+    coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>  m_aInstanceBuffer;   //!< instance data buffers
+    coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>* m_paCustomBuffer;    //!< optional custom attribute buffers
 
     const void* m_pLastModel;                                                         //!< pointer to last used model (to detect changes and update the vertex array)
 
@@ -159,9 +160,15 @@ public:
     void ShrinkToFit();
     //! @}
 
+    /*! control custom vertex attributes */
+    //! @{
+    template <typename F> void CreateCustom(const coreUintW& iVertexSize, F&& nDefineBufferFunc);   //!< [](coreVertexBuffer* OUTPUT pBuffer) -> void
+    template <typename F> void UpdateCustom(F&& nUpdateDataFunc);                                   //!< [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void
+    //! @}
+
     /*! check for instancing status */
     //! @{
-    inline coreBool IsInstanced()const {return (m_aiInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
+    inline coreBool IsInstanced()const {return (m_aInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
     //! @}
 
     /*! access 3d-object list directly */
@@ -184,6 +191,70 @@ private:
     void __Reset(const coreResourceReset& bInit)override;
     //! @}
 };
+
+
+// ****************************************************************
+/* create buffer for custom vertex attributes */
+template <typename F> void coreBatchList::CreateCustom(const coreUintW& iVertexSize, F&& nDefineBufferFunc)
+{
+    ASSERT(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
+    WARN_IF(m_paCustomBuffer) return;
+
+    // allocate custom attribute buffer memory
+    m_paCustomBuffer = new coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>();
+
+    for(coreUintW i = 0u; i < CORE_OBJECT3D_INSTANCE_BUFFERS; ++i)
+    {
+        coreVertexBuffer& oBuffer = (*m_paCustomBuffer)[i];
+
+        // bind corresponding vertex array object
+        glBindVertexArray(m_aiVertexArray[i]);
+
+        // create custom attribute buffers
+        oBuffer.Create(m_iCurCapacity, iVertexSize, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+        nDefineBufferFunc(&oBuffer);
+
+        // set vertex data
+        oBuffer.ActivateDivided(2u, 1u);
+    }
+}
+
+
+// ****************************************************************
+/* update custom vertex attributes per active object */
+template <typename F> void coreBatchList::UpdateCustom(F&& nUpdateDataFunc)
+{
+    ASSERT(m_paCustomBuffer)
+    if(!this->IsInstanced() || !m_bUpdate) return;
+
+    // get vertex size
+    const coreUintW iVertexSize = (*m_paCustomBuffer)[0].GetVertexSize();
+
+    // switch to next available buffer
+    ASSERT(m_paCustomBuffer->Index() == m_aInstanceBuffer.Index())
+    m_paCustomBuffer->Next();
+
+    // map required area of the custom attribute buffer
+    coreByte* pRange  = m_paCustomBuffer->Current().Map<coreByte>(0u, m_iCurEnabled * iVertexSize, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+    coreByte* pCursor = pRange;
+
+    FOR_EACH(it, m_apObjectList)
+    {
+        coreObject3D* pObject = (*it);
+
+        // render only enabled objects
+        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+        {
+            // write data to the buffer
+            nUpdateDataFunc(r_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCursor),
+                            s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject));
+            pCursor += iVertexSize;
+        }
+    }
+
+    // unmap buffer
+    m_paCustomBuffer->Current().Unmap(pRange);
+}
 
 
 #endif /* _CORE_GUARD_OBJECT3D_H_ */
