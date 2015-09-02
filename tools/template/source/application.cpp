@@ -32,7 +32,7 @@ void CoreApp::Setup()
     Core::System->SetWindowIcon("data/textures/game_icon.png");
 
     // set view frustum
-    Core::Graphics->ResizeView(Core::System->GetResolution(), DEG_TO_RAD(55.0f), 0.1f, 1000.0f);
+    Core::Graphics->SetView(Core::System->GetResolution(), DEG_TO_RAD(55.0f), 1.0f, 500.0f);
 
     // set cursor
 #if defined(_CORE_LINUX_)

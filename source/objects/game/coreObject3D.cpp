@@ -235,7 +235,7 @@ coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
 , m_paCustomBuffer     (NULL)
 , m_pLastModel         (NULL)
 , m_iFilled            (0u)
-, m_bUpdate            (false)
+, m_iUpdate            (0u)
 {
     // reserve memory for objects
     m_apObjectList.reserve(iStartCapacity);
@@ -297,7 +297,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
             if(pFirst->GetTexture(i).IsUsable()) pFirst->GetTexture(i)->Enable(i);
 
-        if(m_bUpdate)
+        if(CONTAINS_BIT(m_iUpdate, 0u))
         {
             // switch to next available array and buffer
             m_aiVertexArray  .Next();
@@ -335,7 +335,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             m_aInstanceBuffer.Current().Unmap(pRange);
 
             // reset the update status
-            m_bUpdate = false;
+            REMOVE_BIT(m_iUpdate, 0u)
         }
 
         // disable current model object (because of direct VAO use)
@@ -399,7 +399,7 @@ void coreBatchList::MoveNormal()
     }
 
     // set the update status
-    m_bUpdate = true;
+    m_iUpdate = 3u;
 }
 
 
@@ -453,7 +453,7 @@ void coreBatchList::MoveSort()
     }
 
     // set the update status
-    m_bUpdate = true;
+    m_iUpdate = 3u;
 }
 
 
@@ -570,7 +570,7 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
 
             // invoke vertex array and buffer update
             m_iFilled = 0u;
-            m_bUpdate = true;
+            m_iUpdate = 3u;
         }
     }
     else

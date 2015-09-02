@@ -123,7 +123,7 @@ private:
     const void* m_pLastModel;                                                         //!< pointer to last used model (to detect changes and update the vertex array)
 
     coreUint8 m_iFilled;                                                              //!< vertex array fill status
-    coreBool  m_bUpdate;                                                              //!< buffer update status (dirty flag)
+    coreUint8 m_iUpdate;                                                              //!< buffer update status (dirty flag)
 
 
 public:
@@ -225,14 +225,14 @@ template <typename F> void coreBatchList::CreateCustom(const coreUintW& iVertexS
 template <typename F> void coreBatchList::UpdateCustom(F&& nUpdateDataFunc)
 {
     ASSERT(m_paCustomBuffer)
-    if(!this->IsInstanced() || !m_bUpdate) return;
+    if(!this->IsInstanced() || !CONTAINS_BIT(m_iUpdate, 1u)) return;
 
     // get vertex size
     const coreUintW iVertexSize = (*m_paCustomBuffer)[0].GetVertexSize();
 
     // switch to next available buffer
-    ASSERT(m_paCustomBuffer->Index() == m_aInstanceBuffer.Index())
-    m_paCustomBuffer->Next();
+    m_paCustomBuffer->Select(m_aInstanceBuffer.Index());
+    if(CONTAINS_BIT(m_iUpdate, 0u)) m_paCustomBuffer->Next();
 
     // map required area of the custom attribute buffer
     coreByte* pRange  = m_paCustomBuffer->Current().Map<coreByte>(0u, m_iCurEnabled * iVertexSize, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
@@ -254,6 +254,9 @@ template <typename F> void coreBatchList::UpdateCustom(F&& nUpdateDataFunc)
 
     // unmap buffer
     m_paCustomBuffer->Current().Unmap(pRange);
+
+    // reset the update status
+    REMOVE_BIT(m_iUpdate, 1u)
 }
 
 

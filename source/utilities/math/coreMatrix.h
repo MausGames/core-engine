@@ -11,6 +11,7 @@
 #define _CORE_GUARD_MATRIX_H_
 
 // TODO: do not multiply always full matrices, implement "modifying" functions
+// TODO: implement "Rotation from One Vector to Another" matrix
 
 
 // ****************************************************************
