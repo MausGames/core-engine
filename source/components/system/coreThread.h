@@ -16,14 +16,14 @@
 class INTERFACE coreThread
 {
 private:
-    SDL_Thread* m_pThread;                                    //!< pointer to thread structure
-    std::string m_sName;                                      //!< name of the thread
+    SDL_Thread* m_pThread;                                   //!< pointer to thread structure
+    std::string m_sName;                                     //!< name of the thread
 
-    coreUint8 m_iExecutions;                                  //!< max number of executions per frame (0 = unshackled)
-    coreBool  m_bActive;                                      //!< active and currently not forced to shut down
+    coreUint8 m_iExecutions;                                 //!< max number of executions per frame (0 = unshackled)
+    coreBool  m_bActive;                                     //!< active and currently not forced to shut down
 
-    std::vector<std::function<coreStatus()> > m_anFunction;   //!< custom functions being executed by the thread
-    SDL_SpinLock m_iLock;                                     //!< spinlock to prevent invalid function access
+    std::vector<std::function<coreStatus()>> m_anFunction;   //!< custom functions being executed by the thread
+    SDL_SpinLock m_iLock;                                    //!< spinlock to prevent invalid function access
 
 
 public:

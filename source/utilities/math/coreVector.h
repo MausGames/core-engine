@@ -113,7 +113,7 @@ public:
     constexpr_func coreFloat   Max         ()const {return MAX(x, y);}
     constexpr_func coreVector2 Abs         ()const {return coreVector2(ABS(x), ABS(y));}
     inline         coreFloat   AspectRatio ()const {return (x * RCP(y));}
-    inline         coreFloat   Angle       ()const {return -std::atan2(x, y);/*(y) ? (ATAN(-this->AspectRatio()) + ((y < 0.0f) ? PI*1.0f : PI*0.0f)) : ((x < 0.0f) ? PI*0.5f : PI*1.5f);*/}
+    inline         coreFloat   Angle       ()const {return (-std::atan2(x, y));}
     constexpr_func coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     constexpr_func coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}

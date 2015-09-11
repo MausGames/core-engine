@@ -362,9 +362,9 @@ template <typename R, typename C, typename... A> struct function_traits<R(C::*)(
 template <typename R,             typename... A> struct function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
 template <typename R,             typename... A> struct function_traits<R      (A...)>
 {
-    using return_type = R;                                                                                       //!< return type
-    template <coreUintW iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...> >::type;   //!< argument types
-    static const coreUintW arity = sizeof...(A);                                                                 //!< number of arguments
+    using return_type = R;                                                                                      //!< return type
+    template <coreUintW iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   //!< argument types
+    static const coreUintW arity = sizeof...(A);                                                                //!< number of arguments
 };
 #define TRAIT_RETURN_TYPE(f) function_traits<f>::return_type
 #define TRAIT_ARG_TYPE(f,i)  function_traits<f>::template arg_type<i>
