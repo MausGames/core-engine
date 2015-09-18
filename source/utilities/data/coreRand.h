@@ -12,6 +12,7 @@
 
 // TODO: move global random number object here ?
 // TODO: make size a template parameter ?
+// TODO: check out Xorshift (or Xorshift+) algorithm to increase period
 
 
 // ****************************************************************

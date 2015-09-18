@@ -37,11 +37,15 @@ public:
 
     ENABLE_COPY(coreMatrix2)
 
+    /*! transpose matrix */
+    //! @{
+    inline coreMatrix2& Transpose ();
+    inline coreMatrix2  Transposed()const {return coreMatrix2(*this).Transpose();}
+    //! @}
+
     /*! static functions */
     //! @{
     static constexpr_func coreMatrix2 Identity();
-    static inline         coreMatrix2 Rotation(const coreVector2& vDirection);
-    static inline         coreMatrix2 Rotation(const coreFloat&   fAngle);
     //! @}
 };
 
@@ -100,9 +104,11 @@ public:
     /*! convert matrix */
     //! @{
     constexpr_cast operator const coreFloat* ()const {return r_cast<const coreFloat*>(this);}
-    inline        coreVector4 Quat()const;
-    static inline coreMatrix3 Quat(const coreVector4& v);
-    //! @}
+    constexpr_func coreMatrix2 m12 ()const           {return coreMatrix2(_11, _12, _21, _22);}
+    constexpr_func coreMatrix2 m13 ()const           {return coreMatrix2(_11, _13, _31, _33);}
+    constexpr_func coreMatrix2 m23 ()const           {return coreMatrix2(_22, _23, _32, _33);}
+    inline         coreVector4 Quat()const;
+    static inline  coreMatrix3 Quat(const coreVector4& v);
 
     /*! transpose matrix */
     //! @{
@@ -244,26 +250,22 @@ constexpr_func coreMatrix2::coreMatrix2(const coreFloat& f11, const coreFloat& f
 
 
 // ****************************************************************
+/* transpose matrix */
+inline coreMatrix2& coreMatrix2::Transpose()
+{
+    *this = coreMatrix2(_11, _21,
+                        _12, _22);
+
+    return *this;
+}
+
+
+// ****************************************************************
 /* get identity matrix */
 constexpr_func coreMatrix2 coreMatrix2::Identity()
 {
     return coreMatrix2(1.0f, 0.0f,
                        0.0f, 1.0f);
-}
-
-
-// ****************************************************************
-/* get rotation matrix */
-inline coreMatrix2 coreMatrix2::Rotation(const coreVector2& vDirection)
-{
-    ASSERT(vDirection.IsNormalized())
-    return coreMatrix2( vDirection.y, vDirection.x,
-                       -vDirection.x, vDirection.y);
-}
-
-inline coreMatrix2 coreMatrix2::Rotation(const coreFloat& fAngle)
-{
-    return coreMatrix2::Rotation(coreVector2::Direction(fAngle));
 }
 
 

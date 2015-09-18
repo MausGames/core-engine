@@ -14,6 +14,7 @@
 // TODO: Interact depends on Move, and Move of some menu objects depend on Interact
 // TODO: on IsClicked: make right mouse button on Android a longer push ?
 // TODO: on IsClicked: consider finger number
+// TODO: use only 3x2 matrix to store transformation
 
 
 // ****************************************************************

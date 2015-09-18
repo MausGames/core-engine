@@ -766,7 +766,7 @@ inline coreVector4 coreVector4::UnpackFloat4x16(const coreUint64& iNumber)
 
 
 // ****************************************************************
-/* multiplicate two quaternions */
+/* multiplicate two quaternions (Grassman product) */
 constexpr_func coreVector4 coreVector4::QuatMultiply(const coreVector4& v1, const coreVector4& v2)
 {
     return coreVector4(v1.x*v2.w + v1.w*v2.x + v1.y*v2.z - v1.z*v2.y,
