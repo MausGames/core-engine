@@ -8,7 +8,7 @@
 // USAGE:
 //   call stb_compress_dxt_block() for every block (you must pad)
 //     source should be a 4x4 block of RGBA data in row-major order;
-//     A is ignored if you specify alpha=0; you can turn on dithering
+//     A is ignored if you specify components!=4; you can turn on dithering
 //     and "high quality" using mode.
 //
 // version history:
@@ -28,7 +28,7 @@
 #define STB_DXT_DITHER    1   // use dithering. dubious win. never use for normal maps and the like!
 #define STB_DXT_HIGHQUAL  2   // high quality mode, does two refinement steps instead of 1. ~30-40% slower.
 
-void stb_compress_dxt_block(unsigned char *dest, const unsigned char *src, int alpha, int mode);
+void stb_compress_dxt_block(unsigned char *dest, const unsigned char *src, int components, int mode);
 #define STB_COMPRESS_DXT_BLOCK
 
 #define STB_DXT_IMPLEMENTATION
@@ -608,7 +608,7 @@ static void stb__InitDXT()
    stb__PrepareOptTable(&stb__OMatch6[0][0],stb__Expand6,64);
 }
 
-void stb_compress_dxt_block(unsigned char *dest, const unsigned char *src, int alpha, int mode)
+void stb_compress_dxt_block(unsigned char *dest, const unsigned char *src, int components, int mode)
 {
    static int init=1;
    if (init) {
@@ -616,13 +616,35 @@ void stb_compress_dxt_block(unsigned char *dest, const unsigned char *src, int a
       init=0;
    }
 
-   if (alpha) {
-      stb__CompressAlphaBlock(dest,(unsigned char*) src,mode);
+   switch(components)
+   {
+   case 4:
+      stb__CompressAlphaBlock(dest,  (unsigned char*) src,  mode);
       dest += 8;
+   case 3:
+      stb__CompressColorBlock(dest,  (unsigned char*) src,  mode);
+      break;
+   case 2:
+      stb__CompressAlphaBlock(dest+8,(unsigned char*) src-2,mode);
+   case 1:
+      stb__CompressAlphaBlock(dest,  (unsigned char*) src-3,mode);
+      break;
+   }
+}
+
+int stb_compress_dxt_ratio(int components)
+{
+   switch(components)
+   {
+   case 4: return 4;
+   case 3: return 6;
+   case 2: return 2;
+   case 1: return 2;
    }
 
-   stb__CompressColorBlock(dest,(unsigned char*) src,mode);
+   return 0;
 }
+
 #endif // STB_DXT_IMPLEMENTATION
 
 #endif // STB_INCLUDE_STB_DXT_H

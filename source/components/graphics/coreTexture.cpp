@@ -121,10 +121,9 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, co
     WARN_IF(m_iTexture) this->Unload();
 
     // check for OpenGL extensions
-    const coreBool& bStorage     = CORE_GL_SUPPORT(ARB_texture_storage);
-    const coreBool  bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic) && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)         && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool  bCompress    = CORE_GL_SUPPORT(EXT_texture_compression_s3tc)   && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_COMPRESS) && Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION);
+    const coreBool bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic)                && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && CONTAINS_VALUE(iMode, CORE_TEXTURE_MODE_COMPRESS);
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
@@ -142,14 +141,16 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, co
         else
         {
             // overwrite with appropriate compressed texture format (RGTC or S3TC)
-            switch(m_Spec.iFormat)
+            GLenum iNewFormat = 0u;
+            switch(m_Spec.iInternal)
             {
-            default: ASSERT(false) //GL_EXT_texture_compression_rgtc
-            //case GL_RED_R: m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RED_RGTC1_EXT;       m_iCompressed = 1; break;
-            //case GL_RG:    m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RED_GREEN_RGTC2_EXT; m_iCompressed = 1; break;
-            case GL_RGB:   m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;   m_iCompressed = 1; break;
-            case GL_RGBA:  m_Spec.iInternal = m_Spec.iFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;  m_iCompressed = 1; break;
+            default: ASSERT(false)
+            case GL_R8:    if(CORE_GL_SUPPORT(EXT_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_RGTC1_EXT;       break;
+            case GL_RG8:   if(CORE_GL_SUPPORT(EXT_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_GREEN_RGTC2_EXT; break;
+            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;   break;
+            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;  break;
             }
+            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_iCompressed = 1;}
         }
     }
 
@@ -165,7 +166,7 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, co
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
     if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER)));
 
-    if(bStorage)
+    if(CORE_GL_SUPPORT(ARB_texture_storage))
     {
         // allocate immutable texture memory
         glTexStorage2D(GL_TEXTURE_2D, m_iLevels, m_Spec.iInternal, iWidth, iHeight);
@@ -187,9 +188,8 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
     ASSERT(((iOffsetX + iWidth) <= F_TO_UI(m_vResolution.x)) && ((iOffsetY + iHeight) <= F_TO_UI(m_vResolution.y)))
 
     // check for OpenGL extensions
-    const coreBool& bDirectState = CORE_GL_SUPPORT(ARB_direct_state_access);
-    const coreBool  bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
-    const coreBool  bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1u);
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
+    const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1u);
 
     if(m_iCompressed > 0)
     {
@@ -200,8 +200,8 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
         s_apBound[s_iActiveUnit] = NULL;
 
         // calculate components and compressed size
-        const coreUint32 iComponents =  iDataSize / (iWidth * iHeight);
-        const coreUint32 iPackedSize = (iDataSize / ((iComponents == 3u) ? 6u : 4u));
+        const coreUint32 iComponents = iDataSize / (iWidth * iHeight);
+        const coreUint32 iPackedSize = iDataSize / stb_compress_dxt_ratio(iComponents);
 
         // allocate required image memory
         coreByte* pPackedData  = new coreByte[iPackedSize];
@@ -252,11 +252,17 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
             pData = NULL;
         }
 
-        if(bDirectState)
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
-            // update texture data directly
+            // update texture data directly (new)
             glTextureSubImage2D(m_iTexture, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
             if(bMipMap) glGenerateTextureMipmap(m_iTexture);
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // update texture data directly (old)
+            glTextureSubImage2DEXT(m_iTexture, GL_TEXTURE_2D, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
+            if(bMipMap) glGenerateTextureMipmapEXT(m_iTexture, GL_TEXTURE_2D);
         }
         else
         {
@@ -282,8 +288,13 @@ void coreTexture::CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSr
 
     if(CORE_GL_SUPPORT(ARB_direct_state_access))
     {
-        // copy frame buffer directly
+        // copy frame buffer directly (new)
         glCopyTextureSubImage2D(m_iTexture, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
+    }
+    else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+    {
+        // copy frame buffer directly (old)
+        glCopyTextureSubImage2DEXT(m_iTexture, GL_TEXTURE_2D, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
     }
     else
     {
@@ -393,13 +404,12 @@ void coreTexture::CreateCompressed(const coreUintW& iInWidth, const coreUintW& i
 {
     ASSERT(coreMath::IsPOT(iInWidth)  && (iInWidth  >= 4u) &&
            coreMath::IsPOT(iInHeight) && (iInHeight >= 4u) &&
-           (iComponents == 3u || iComponents == 4u) && pInput && pOutput)
+           iComponents && pInput && pOutput)
 
     // save memory offsets and alpha status
-    const coreUintW iInOffsetX = 4u    * iComponents;
-    const coreUintW iInOffsetY = 3u    * iComponents * iInWidth;
-    const coreUintW iOutOffset = 1_zu << iComponents;
-    const coreInt32 iAlpha     = iComponents - 3;
+    const coreUintW iInOffsetX = 4u * iComponents;
+    const coreUintW iInOffsetY = 3u * iComponents * iInWidth;
+    const coreUintW iOutOffset = 8u * (2u - (iComponents % 2u));
 
     // loop through all input texels
     for(coreUintW y = 0u; y < iInHeight; y += 4u)
@@ -414,8 +424,8 @@ void coreTexture::CreateCompressed(const coreUintW& iInWidth, const coreUintW& i
             for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i +  8u) * 4u, pInput + (i + 2u*iInWidth) * iComponents, iComponents);
             for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i + 12u) * 4u, pInput + (i + 3u*iInWidth) * iComponents, iComponents);
 
-            // compress block with S3TC DXT1 (RGB) or DXT5 (RGBA)
-            stb_compress_dxt_block(pOutput, aBlock, iAlpha, STB_DXT_HIGHQUAL);
+            // compress block (R -> RGTC1/BC4, RG -> RGTC2/BC5, RGB -> DXT1/BC1, RGBA -> DXT5/BC3)
+            stb_compress_dxt_block(pOutput, aBlock, iComponents, STB_DXT_HIGHQUAL);
 
             // increment pointers
             pInput  += iInOffsetX;
@@ -440,8 +450,13 @@ void coreTexture::__BindTexture(const coreUintW& iUnit, coreTexture* pTexture)
 
     if(CORE_GL_SUPPORT(ARB_direct_state_access))
     {
-        // bind texture directly
+        // bind texture directly (new)
         glBindTextureUnit(iUnit, pTexture ? pTexture->GetTexture() : 0u);
+    }
+    else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+    {
+        // bind texture directly (old)
+        glBindMultiTextureEXT(GL_TEXTURE0 + iUnit, GL_TEXTURE_2D, pTexture ? pTexture->GetTexture() : 0u);
     }
     else
     {

@@ -15,18 +15,19 @@
 
 // ****************************************************************
 /* default extensions */
-#define CORE_GL_ARB_buffer_storage             false
-#define CORE_GL_ARB_clear_buffer_object        false
-#define CORE_GL_ARB_vertex_attrib_binding      false
-#define CORE_GL_ARB_uniform_buffer_object      false   // controls shader-handling
-#define CORE_GL_ARB_tessellation_shader        false
-#define CORE_GL_ARB_geometry_shader4           false
-#define CORE_GL_ARB_sync                       false
-#define CORE_GL_ARB_direct_state_access        false
-#define CORE_GL_ARB_timer_query                false
-#define CORE_GL_ARB_half_float_vertex          false   // different token value in OES_vertex_half_float
-#define CORE_GL_KHR_debug                      false
-#define CORE_GL_EXT_framebuffer_object         true
+#define CORE_GL_ARB_buffer_storage        false
+#define CORE_GL_ARB_clear_buffer_object   false
+#define CORE_GL_ARB_vertex_attrib_binding false
+#define CORE_GL_ARB_uniform_buffer_object false   // controls shader-handling
+#define CORE_GL_ARB_tessellation_shader   false
+#define CORE_GL_ARB_geometry_shader4      false
+#define CORE_GL_ARB_sync                  false
+#define CORE_GL_ARB_direct_state_access   false
+#define CORE_GL_ARB_timer_query           false
+#define CORE_GL_ARB_half_float_vertex     false   // different token value in OES_vertex_half_float
+#define CORE_GL_KHR_debug                 false
+#define CORE_GL_EXT_direct_state_access   false
+#define CORE_GL_EXT_framebuffer_object    true
 
 
 // ****************************************************************

@@ -213,8 +213,13 @@ template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32& i
     {
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
-            // map buffer memory directly
+            // map buffer memory directly (new)
             return s_cast<T*>(glMapNamedBufferRange(m_iDataBuffer, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // map buffer memory directly (old)
+            return s_cast<T*>(glMapNamedBufferRangeEXT(m_iDataBuffer, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
         }
         else
         {
@@ -242,8 +247,13 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
     {
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
-            // flush persistent mapped buffer directly
+            // flush persistent mapped buffer directly (new)
             glFlushMappedNamedBufferRange(m_iDataBuffer, m_iMapOffset, m_iMapLength);
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // flush persistent mapped buffer directly (old)
+            glFlushMappedNamedBufferRangeEXT(m_iDataBuffer, m_iMapOffset, m_iMapLength);
         }
         else
         {
@@ -258,8 +268,13 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
         {
             if(CORE_GL_SUPPORT(ARB_direct_state_access))
             {
-                // unmap buffer memory directly
+                // unmap buffer memory directly (new)
                 glUnmapNamedBuffer(m_iDataBuffer);
+            }
+            else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+            {
+                // unmap buffer memory directly (old)
+                glUnmapNamedBufferEXT(m_iDataBuffer);
             }
             else
             {

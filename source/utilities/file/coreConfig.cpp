@@ -40,7 +40,7 @@ coreConfig::coreConfig(const coreChar* pcPath)noexcept
             FOR_EACH(pKey, apKey)
             {
                 // write specific configuration value
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s.%s:") " %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s") ".%s: %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
             }
         }
     }

@@ -121,8 +121,13 @@ void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pDat
     {
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
-            // clear content directly
+            // clear content directly (new)
             glClearNamedBufferData(m_iDataBuffer, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // clear content directly (old)
+            glClearNamedBufferDataEXT(m_iDataBuffer, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
         }
         else
         {

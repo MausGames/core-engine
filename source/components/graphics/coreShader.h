@@ -219,9 +219,10 @@ public:
 
 
 private:
-    //! write error-log
+    //! write debug information to log file
     //! @{
     void __WriteLog()const;
+    void __WriteInterface()const;
     //! @}
 };
 

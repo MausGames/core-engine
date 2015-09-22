@@ -109,19 +109,19 @@ coreStatus coreShader::Load(coreFile* pFile)
     glGetShaderiv(m_iShader, GL_COMPILE_STATUS, &iStatus);
     if(!iStatus)
     {
-        // get length of error-log
+        // get length of info-log
         GLint iLength;
         glGetShaderiv(m_iShader, GL_INFO_LOG_LENGTH, &iLength);
 
         if(iLength)
         {
-            // get error-log
+            // get info-log
             coreChar* pcLog = new coreChar[iLength];
             glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
 
-            // write error-log
+            // write info-log
             Core::Log->Warning("Shader (%s) could not be compiled", pFile->GetPath());
-            Core::Log->ListStartWarning("Shader Error Log");
+            Core::Log->ListStartWarning("Shader Log");
             Core::Log->ListAdd(pcLog);
             Core::Log->ListEnd();
 
@@ -335,6 +335,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     if(!bSync) m_iStatus = CORE_PROGRAM_FINISHED;
 
     Core::Log->Info("Program (%s:%u) loaded", m_sPath.c_str(), m_iProgram);
+    this->__WriteInterface();
     return bSync ? CORE_BUSY : CORE_OK;
 }
 
@@ -411,7 +412,7 @@ coreBool coreProgram::Enable()
         }
     }
 
-#if defined(_CORE_DEBUG_)
+#if defined(_CORE_DEBUG_)   // # never in release
 
     // validate shader-program
     glValidateProgram(m_iProgram);
@@ -478,22 +479,22 @@ void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix
 
 
 // ****************************************************************
-// write error-log
+// write info-log to log file
 void coreProgram::__WriteLog()const
 {
-    // get length of error-log
+    // get length of info-log
     GLint iLength;
     glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
 
     if(iLength)
     {
-        // get error-log
+        // get info-log
         coreChar* pcLog = new coreChar[iLength];
         glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
 
-        // write error-log
+        // write info-log
         Core::Log->Warning("Program (%s) could not be linked or validated", m_sPath.c_str());
-        Core::Log->ListStartWarning("Program Error Log");
+        Core::Log->ListStartWarning("Program Log");
         {
             FOR_EACH(it, m_apShader)
                 Core::Log->ListAdd("%s (%s)", it->GetHandle()->GetName(), (*it)->GetPath());
@@ -503,4 +504,47 @@ void coreProgram::__WriteLog()const
 
         SAFE_DELETE_ARRAY(pcLog)
     }
+}
+
+
+// ****************************************************************
+// write interface to log file
+void coreProgram::__WriteInterface()const
+{
+    if(!CORE_GL_SUPPORT(ARB_program_interface_query)) return;
+
+    Core::Log->ListStartInfo("Program Interface");
+    {
+        GLint iNumInput, iNumUniform;
+
+        // get number of active shader-program resources
+        glGetProgramInterfaceiv(m_iProgram, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &iNumInput);
+        glGetProgramInterfaceiv(m_iProgram, GL_UNIFORM,       GL_ACTIVE_RESOURCES, &iNumUniform);
+
+        coreChar acName[64];
+        GLint    aiValue[2];
+
+        constexpr_var GLenum aiProperty[2] = {GL_LOCATION, GL_OFFSET};
+
+        // write active vertex attributes (name, location)
+        Core::Log->ListAdd(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
+        for(coreUintW i = 0u, ie = iNumInput; i < ie; ++i)
+        {
+            glGetProgramResourceName(m_iProgram, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
+            glGetProgramResourceiv  (m_iProgram, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
+
+            Core::Log->ListAdd("%s:%i", acName, aiValue[0]);
+        }
+
+        // write active uniforms (name, location, block offset)
+        Core::Log->ListAdd(CORE_LOG_BOLD("Uniforms:") " %d", iNumUniform);
+        for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
+        {
+            glGetProgramResourceName(m_iProgram, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
+            glGetProgramResourceiv  (m_iProgram, GL_UNIFORM, i, 2, aiProperty, 2,   NULL, aiValue);
+
+            Core::Log->ListAdd("%s:%i:%i", acName, aiValue[0], aiValue[1]);
+        }
+    }
+    Core::Log->ListEnd();
 }
