@@ -243,8 +243,8 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
         const coreVector2 B1 = pVertex[oTriangle.aiVertex[1]].vTexCoord - pVertex[oTriangle.aiVertex[0]].vTexCoord;
         const coreVector2 B2 = pVertex[oTriangle.aiVertex[2]].vTexCoord - pVertex[oTriangle.aiVertex[0]].vTexCoord;
 
-        // calculate local normal vector
-        const coreVector3 N = coreVector3::Cross(A1.Normalized(), A2.Normalized());
+        // calculate local normal vector (Nelson Max algorithm)
+        const coreVector3 N = coreVector3::Cross(A1, A2) * RCP(A1.LengthSq() + A2.LengthSq());
 
         // calculate local tangent vector parameters
         const coreFloat   R  = RCP(B1.x*B2.y - B2.x*B1.y);

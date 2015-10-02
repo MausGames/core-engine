@@ -362,7 +362,7 @@ void coreTexture::CreateNextLevel(const coreUintW& iInWidth, const coreUintW& iI
 {
     ASSERT(coreMath::IsPOT(iInWidth)  && (iInWidth  >= 2u) &&
            coreMath::IsPOT(iInHeight) && (iInHeight >= 2u) &&
-           iComponents && pInput && pOutput)
+           (iComponents <= 4u) && pInput && pOutput)
 
     // save output texture size
     const coreUintW iOutWidth  = iInWidth  >> 1u;
@@ -404,7 +404,7 @@ void coreTexture::CreateCompressed(const coreUintW& iInWidth, const coreUintW& i
 {
     ASSERT(coreMath::IsPOT(iInWidth)  && (iInWidth  >= 4u) &&
            coreMath::IsPOT(iInHeight) && (iInHeight >= 4u) &&
-           iComponents && pInput && pOutput)
+           (iComponents <= 4u) && pInput && pOutput)
 
     // save memory offsets and alpha status
     const coreUintW iInOffsetX = 4u * iComponents;

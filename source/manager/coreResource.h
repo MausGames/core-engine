@@ -133,7 +133,6 @@ template <typename T> class coreResourcePtr final
 {
 private:
     coreResourceHandle* m_pHandle;   //!< resource handle
-    coreBool m_bActive;              //!< status value to overload the reference-counter
 
 
 public:
@@ -158,11 +157,9 @@ public:
     inline coreResourceHandle* GetHandle()const {return m_pHandle;}
     //! @}
 
-    /*! overload the reference-counter */
+    /*! check for usable resource object */
     //! @{
-    void SetActive(const coreBool& bStatus);
-    inline coreBool IsActive()const {return (m_pHandle && m_bActive)                          ? true : false;}
-    inline coreBool IsUsable()const {return (m_pHandle && m_bActive && m_pHandle->IsLoaded()) ? true : false;}
+    inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded()) ? true : false;}
     //! @}
 };
 
@@ -292,27 +289,23 @@ template <typename F> void coreResourceHandle::OnLoadOnce(F&& nFunction)const
 /* constructor */
 template <typename T> constexpr_func coreResourcePtr<T>::coreResourcePtr(std::nullptr_t)noexcept
 : m_pHandle (NULL)
-, m_bActive (true)
 {
 }
 
 template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pHandle)noexcept
 : m_pHandle (pHandle)
-, m_bActive (true)
 {
-    if(this->IsActive()) m_pHandle->RefIncrease();
+    if(m_pHandle) m_pHandle->RefIncrease();
 }
 
 template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr<T>& c)noexcept
 : m_pHandle (c.m_pHandle)
-, m_bActive (c.m_bActive)
 {
-    if(this->IsActive()) m_pHandle->RefIncrease();
+    if(m_pHandle) m_pHandle->RefIncrease();
 }
 
 template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m)noexcept
 : m_pHandle (m.m_pHandle)
-, m_bActive (m.m_bActive)
 {
     m.m_pHandle = NULL;
 }
@@ -322,7 +315,7 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m
 /* destructor */
 template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 {
-    if(this->IsActive()) m_pHandle->RefDecrease();
+    if(m_pHandle) m_pHandle->RefDecrease();
 }
 
 
@@ -331,27 +324,7 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
 {
     std::swap(m_pHandle, o.m_pHandle);
-    std::swap(m_bActive, o.m_bActive);
     return *this;
-}
-
-
-// ****************************************************************
-/* overload the reference-counter */
-template <typename T> void coreResourcePtr<T>::SetActive(const coreBool& bStatus)
-{
-    if(m_bActive && !bStatus)
-    {
-        // set resource access inactive
-        if(m_pHandle) m_pHandle->RefDecrease();
-        m_bActive = false;
-    }
-    else if(!m_bActive && bStatus)
-    {
-        // set resource access active
-        if(m_pHandle) m_pHandle->RefIncrease();
-        m_bActive = true;
-    }
 }
 
 

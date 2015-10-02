@@ -155,7 +155,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -575,7 +575,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -995,7 +995,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -1420,7 +1420,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1848,7 +1848,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -2275,7 +2275,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>

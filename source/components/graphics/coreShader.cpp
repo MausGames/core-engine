@@ -190,14 +190,15 @@ void coreShader::__LoadGlobalCode()
 // ****************************************************************
 // constructor
 coreProgram::coreProgram()noexcept
-: coreResource  ()
-, m_iProgram    (0u)
-, m_apShader    {}
-, m_iStatus     (CORE_PROGRAM_NEW)
-, m_aiUniform   {}
-, m_aiAttribute {}
-, m_avCache     {}
-, m_Sync        ()
+: coreResource     ()
+, m_iProgram       (0u)
+, m_apShader       {}
+, m_apShaderHandle {}
+, m_iStatus        (CORE_PROGRAM_NEW)
+, m_aiUniform      {}
+, m_aiAttribute    {}
+, m_avCache        {}
+, m_Sync           ()
 {
 }
 
@@ -210,8 +211,9 @@ coreProgram::~coreProgram()
     this->Unload();
 
     // remove all shader objects and attribute locations
-    m_apShader   .clear();
-    m_aiAttribute.clear();
+    m_apShader      .clear();
+    m_apShaderHandle.clear();
+    m_aiAttribute   .clear();
 }
 
 
@@ -230,15 +232,15 @@ coreStatus coreProgram::Load(coreFile* pFile)
     WARN_IF(m_iProgram)                  return CORE_INVALID_CALL;
 
     // load all required shader objects
-    FOR_EACH(it, m_apShader)
+    if(m_apShader.empty())
     {
-        it->SetActive(true);
-        it->GetHandle()->Update();
+        FOR_EACH(it, m_apShaderHandle)
+            m_apShader.push_back(*it);
     }
     FOR_EACH(it, m_apShader)
     {
-        if(!it->IsUsable())
-            return CORE_BUSY;
+        it->GetHandle()->Update();
+        if(!it->IsUsable()) return CORE_BUSY;
     }
 
 #if defined(_CORE_DEBUG_)
@@ -350,7 +352,7 @@ coreStatus coreProgram::Unload()
     if(s_pCurrent == this) coreProgram::Disable(true);
 
     // disable shader objects
-    FOR_EACH(it, m_apShader) it->SetActive(false);
+    m_apShader.clear();
 
     // delete shader-program (with implicit shader object detachment)
     glDeleteProgram(m_iProgram);
@@ -446,8 +448,8 @@ void coreProgram::Disable(const coreBool& bFull)
 // send new uniform 3x3-matrix
 void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool& bTranspose)
 {
-    // get uniform location
-    const coreInt8 iLocation = this->GetUniform(pcName);
+    // retrieve uniform location
+    const coreInt8 iLocation = this->RetrieveUniform(pcName);
     if(iLocation >= 0)
     {
         // send new value
@@ -464,8 +466,8 @@ void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix
 // send new uniform 4x4-matrix
 void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool& bTranspose)
 {
-    // get uniform location
-    const coreInt8 iLocation = this->GetUniform(pcName);
+    // retrieve uniform location
+    const coreInt8 iLocation = this->RetrieveUniform(pcName);
     if(iLocation >= 0)
     {
         // send new value

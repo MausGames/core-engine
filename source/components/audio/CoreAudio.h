@@ -10,8 +10,6 @@
 #ifndef _CORE_GUARD_AUDIO_H_
 #define _CORE_GUARD_AUDIO_H_
 
-// TODO: vorbis_version_string
-
 
 // ****************************************************************
 // main audio component

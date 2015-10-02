@@ -108,9 +108,8 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-std=c++11" />
 			<Add option="-Wall" />
-			<Add option="-fno-exceptions -msse4.1" />
+			<Add option="-fno-exceptions -fno-rtti -msse4.1 -std=c++14" />
 			<Add directory="../../source" />
 			<Add directory="../../libraries/include" />
 		</Compiler>

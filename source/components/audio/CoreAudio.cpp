@@ -49,6 +49,9 @@ CoreAudio::CoreAudio()noexcept
     }
     Core::Log->ListEnd();
 
+    // log Ogg Vorbis library version
+    Core::Log->Info("Ogg Vorbis initialized (%s)", vorbis_version_string());
+
     // reset listener
     constexpr_var coreVector3 vInit = coreVector3(1.0f,0.0f,0.0f);
     this->SetListener(vInit, vInit, vInit, vInit);

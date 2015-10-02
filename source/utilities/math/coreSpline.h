@@ -12,6 +12,7 @@
 
 // TODO: implement insert-node function
 // TODO: multidimensional spline ((spline-)interpolation between other splines)
+// TODO: allow tangents with arbitrary length
 
 
 // ****************************************************************

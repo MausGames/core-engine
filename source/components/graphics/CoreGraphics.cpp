@@ -224,13 +224,13 @@ void CoreGraphics::SetLight(const coreUintW& iIndex, const coreVector4& vPositio
 
     // get requested ambient light
     ASSERT(iIndex < CORE_GRAPHICS_LIGHTS)
-    coreLight& CurLight = m_aLight[iIndex];
+    coreLight& oCurLight = m_aLight[iIndex];
 
     // set properties of the ambient light
     ASSERT(vDirection.xyz().IsNormalized())
-    if(CurLight.vPosition  != vPosition)  {CurLight.vPosition  = vPosition;  bNewLight = true;}
-    if(CurLight.vDirection != vDirection) {CurLight.vDirection = vDirection; bNewLight = true;}
-    if(CurLight.vValue     != vValue)     {CurLight.vValue     = vValue;     bNewLight = true;}
+    if(oCurLight.vPosition  != vPosition)  {oCurLight.vPosition  = vPosition;  bNewLight = true;}
+    if(oCurLight.vDirection != vDirection) {oCurLight.vDirection = vDirection; bNewLight = true;}
+    if(oCurLight.vValue     != vValue)     {oCurLight.vValue     = vValue;     bNewLight = true;}
 
     if(bNewLight)
     {
