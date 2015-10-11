@@ -66,7 +66,7 @@ CoreInput::CoreInput()noexcept
     else Core::Log->Info("No Joysticks or Gamepads found");
 
     // append empty joystick object to prevent problems
-    m_aJoystick.push_back(coreJoystick());
+    m_aJoystick.emplace_back();
 }
 
 

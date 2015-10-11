@@ -101,7 +101,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
 
         // configure output label
         coreLabel& oOutput = pNewMeasure->oOutput;
-        oOutput.Construct   ("default.ttf", 16u, false, 64u);
+        oOutput.Construct   ("default.ttf", 16u, 0u, 64u);
         oOutput.SetCenter   (coreVector2(-0.5f, 0.5f));
         oOutput.SetAlignment(coreVector2( 1.0f,-1.0f));
         oOutput.SetColor3   (COLOR_BLUE);

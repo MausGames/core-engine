@@ -116,9 +116,9 @@ private:
 
     coreProgramPtr m_pProgram;                                                        //!< shader-program object
 
-    coreRound<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS>  m_aiVertexArray;     //!< vertex array objects
-    coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>  m_aInstanceBuffer;   //!< instance data buffers
-    coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>* m_paCustomBuffer;    //!< optional custom attribute buffers
+    coreArray<GLuint,           CORE_OBJECT3D_INSTANCE_BUFFERS>  m_aiVertexArray;     //!< vertex array objects
+    coreArray<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>  m_aInstanceBuffer;   //!< instance data buffers
+    coreArray<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>* m_paCustomBuffer;    //!< optional custom attribute buffers
 
     const void* m_pLastModel;                                                         //!< pointer to last used model (to detect changes and update the vertex array)
 
@@ -201,7 +201,7 @@ template <typename F> void coreBatchList::CreateCustom(const coreUintW& iVertexS
     WARN_IF(m_paCustomBuffer) return;
 
     // allocate custom attribute buffer memory
-    m_paCustomBuffer = new coreRound<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>();
+    m_paCustomBuffer = new coreArray<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>();
 
     for(coreUintW i = 0u; i < CORE_OBJECT3D_INSTANCE_BUFFERS; ++i)
     {

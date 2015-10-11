@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_MATH_H_
 #define _CORE_GUARD_MATH_H_
 
-// TODO: SIN and COS with pre-calculated table and interpolation ? (1 for both, precision == memory) or SSE (already uses SSE with MSVC+/arch:SSE2 ?) what about sincos ?
+// TODO: SIN and COS with MacLaurin or Taylor series (no lookup-table, because memory access may be equally slow)
 // TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4) ?
 // TODO: FUNC_CONST on every function in this class ?
 
@@ -187,7 +187,7 @@ inline coreUint16 coreMath::Float32to16(const coreFloat& fInput)
 {
     const coreUint32 A = *r_cast<const coreUint32*>(&fInput);
 
-    return (A & 0x7F800000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x1C000u) |
+    return (A & 0x7F800000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x0001C000u) |
                                  ((A & 0x80000000u) >> 16u)) : 0u;
 };
 

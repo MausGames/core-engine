@@ -220,7 +220,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
     if(!this->__check(it))
     {
         // create new entry
-        m_atValueList.push_back(T());
+        m_atValueList.emplace_back();
         m_atKeyList  .push_back(tKey);
 
         // cache current entry

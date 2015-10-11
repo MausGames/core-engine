@@ -513,39 +513,53 @@ void coreProgram::__WriteLog()const
 // write interface to log file
 void coreProgram::__WriteInterface()const
 {
-    if(!CORE_GL_SUPPORT(ARB_program_interface_query)) return;
+    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
     Core::Log->ListStartInfo("Program Interface");
     {
-        GLint iNumInput, iNumUniform;
+        GLint iNumInput;
+        GLint iNumUniform;
 
-        // get number of active shader-program resources
-        glGetProgramInterfaceiv(m_iProgram, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &iNumInput);
-        glGetProgramInterfaceiv(m_iProgram, GL_UNIFORM,       GL_ACTIVE_RESOURCES, &iNumUniform);
-
-        coreChar acName[64];
-        GLint    aiValue[2];
-
-        constexpr_var GLenum aiProperty[2] = {GL_LOCATION, GL_OFFSET};
-
-        // write active vertex attributes (name, location)
-        Core::Log->ListAdd(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
-        for(coreUintW i = 0u, ie = iNumInput; i < ie; ++i)
+        if(CORE_GL_SUPPORT(ARB_program_interface_query))
         {
-            glGetProgramResourceName(m_iProgram, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
-            glGetProgramResourceiv  (m_iProgram, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
+            coreChar acName[64];
+            GLint    aiValue[2];
 
-            Core::Log->ListAdd("%s:%i", acName, aiValue[0]);
+            constexpr_var GLenum aiProperty[2] = {GL_LOCATION, GL_OFFSET};
+
+            // get number of active shader-program resources
+            glGetProgramInterfaceiv(m_iProgram, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &iNumInput);
+            glGetProgramInterfaceiv(m_iProgram, GL_UNIFORM,       GL_ACTIVE_RESOURCES, &iNumUniform);
+
+            // write active vertex attributes (name, location)
+            Core::Log->ListAdd(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
+            for(coreUintW i = 0u, ie = iNumInput; i < ie; ++i)
+            {
+                glGetProgramResourceName(m_iProgram, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
+                glGetProgramResourceiv  (m_iProgram, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
+
+                Core::Log->ListAdd("%s:%i", acName, aiValue[0]);
+            }
+
+            // write active uniforms (name, location, block offset)
+            Core::Log->ListAdd(CORE_LOG_BOLD("Uniforms:") " %d", iNumUniform);
+            for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
+            {
+                glGetProgramResourceName(m_iProgram, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
+                glGetProgramResourceiv  (m_iProgram, GL_UNIFORM, i, 2, aiProperty, 2,   NULL, aiValue);
+
+                Core::Log->ListAdd("%s:%i:%i", acName, aiValue[0], aiValue[1]);
+            }
         }
-
-        // write active uniforms (name, location, block offset)
-        Core::Log->ListAdd(CORE_LOG_BOLD("Uniforms:") " %d", iNumUniform);
-        for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
+        else
         {
-            glGetProgramResourceName(m_iProgram, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
-            glGetProgramResourceiv  (m_iProgram, GL_UNIFORM, i, 2, aiProperty, 2,   NULL, aiValue);
+            // get number of active shader-program resources
+            glGetProgramiv(m_iProgram, GL_ACTIVE_ATTRIBUTES, &iNumInput);
+            glGetProgramiv(m_iProgram, GL_ACTIVE_UNIFORMS,   &iNumUniform);
 
-            Core::Log->ListAdd("%s:%i:%i", acName, aiValue[0], aiValue[1]);
+            // write only numbers
+            Core::Log->ListAdd(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
+            Core::Log->ListAdd(CORE_LOG_BOLD("Uniforms:")   " %d", iNumUniform);
         }
     }
     Core::Log->ListEnd();

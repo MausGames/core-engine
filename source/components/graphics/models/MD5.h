@@ -116,15 +116,15 @@ struct md5Mesh
 
         MD5_SCAN(*ppcData, "%*s %*s %*s %zu", &iNum)
         aVertex.reserve(iNum);
-        for(coreUintW i = iNum; i--; ) aVertex.push_back(md5Vertex(ppcData));
+        for(coreUintW i = iNum; i--; ) aVertex.emplace_back(ppcData);
 
         MD5_SCAN(*ppcData, "%*s %zu", &iNum)
         aTriangle.reserve(iNum);
-        for(coreUintW i = iNum; i--; ) aTriangle.push_back(md5Triangle(ppcData));
+        for(coreUintW i = iNum; i--; ) aTriangle.emplace_back(ppcData);
 
         MD5_SCAN(*ppcData, "%*s %zu", &iNum)
         aWeight.reserve(iNum);
-        for(coreUintW i = iNum; i--; ) aWeight.push_back(md5Weight(ppcData));
+        for(coreUintW i = iNum; i--; ) aWeight.emplace_back(ppcData);
     }
 
     md5Mesh(md5Mesh&& m)noexcept
@@ -168,8 +168,8 @@ struct md5File
             MD5_SCAN(*ppcData, "%*s")
             MD5_SCAN(*ppcData, "%*s")
 
-            if(i) aMesh.push_back(std::move(md5Mesh(ppcData)));
-            else for(coreUintW j = iNumJoints; j--; ) aJoint.push_back(md5Joint(ppcData));
+            if(i) aMesh.emplace_back(ppcData);
+            else for(coreUintW j = iNumJoints; j--; ) aJoint.emplace_back(ppcData);
 
             if(i != iNumMeshes) MD5_SCAN(*ppcData, "%*s")   // # ignore last symbol, because there is no 0-delimiter
         }

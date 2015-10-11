@@ -133,8 +133,8 @@ private:
     std::list<coreParticle*> m_apRenderList;                                          //!< sorted render list with active particles
     coreParticleEffect* m_pDefaultEffect;                                             //!< default particle effect object (dynamic, because of class order)
 
-    coreRound<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
-    coreRound<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
+    coreArray<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
+    coreArray<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aiInstanceBuffer;   //!< instance data buffers
 
     coreBool m_bUpdate;                                                               //!< buffer update status (dirty flag)
 

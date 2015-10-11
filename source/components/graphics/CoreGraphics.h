@@ -23,7 +23,7 @@
 
 // ****************************************************************
 // graphics definitions
-#define CORE_GRAPHICS_LIGHTS                 (4u)                                              //!< number of ambient lights
+#define CORE_GRAPHICS_LIGHTS                 (2u)                                              //!< number of ambient lights
 #define CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE (4u*sizeof(coreMatrix4) + 7u*sizeof(coreFloat))   //!< transformation uniform data size (view-projection, camera matrix, perspective, ortho, resolution, camera position)
 #define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE   (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))        //!< ambient uniform data size (light-positions, light-directions, light-values)
 #define CORE_GRAPHICS_UNIFORM_BUFFERS        (24u)                                             //!< number of concurrent uniform buffer objects
@@ -64,8 +64,8 @@ private:
 
     coreDataBuffer m_TransformBuffer;                                      //!< uniform buffer objects for transformation data
     coreDataBuffer m_AmbientBuffer;                                        //!< uniform buffer objects for ambient data
-    coreRound<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aTransformSync;   //!< transformation sync objects (for each sub-range)
-    coreRound<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     //!< ambient sync objects
+    coreArray<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aTransformSync;   //!< transformation sync objects (for each sub-range)
+    coreArray<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     //!< ambient sync objects
     coreUint8 m_iUniformUpdate;                                            //!< update status for the UBOs (dirty flag)
 
     coreFloat m_fOpenGL;                                                   //!< available OpenGL version

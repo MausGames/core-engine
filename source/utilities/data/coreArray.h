@@ -15,7 +15,7 @@
 
 // ****************************************************************
 /* round-robin array class */
-template <typename T, coreUintW iSize> class coreRound final
+template <typename T, coreUintW iSize> class coreArray final
 {
 private:
     std::array<T, iSize> m_atItem;   //!< static item container
@@ -23,13 +23,13 @@ private:
 
 
 public:
-    coreRound()noexcept;
+    coreArray()noexcept;
 
-    ENABLE_COPY(coreRound)
+    ENABLE_COPY(coreArray)
 
     /*! switch current item */
     //! @{
-    inline void Select(const coreUintW& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = CLAMP(iIndex, 0u, iSize - 1u);}
+    inline void Select(const coreUintW& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = iIndex;}
     inline void Next    ()                      {if(++m_iCurIndex >= iSize) m_iCurIndex = 0u;}
     inline void Previous()                      {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1u;}
     //! @}
@@ -58,7 +58,7 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T, coreUintW iSize> coreRound<T, iSize>::coreRound()noexcept
+template <typename T, coreUintW iSize> coreArray<T, iSize>::coreArray()noexcept
 : m_atItem    {}
 , m_iCurIndex (0u)
 {

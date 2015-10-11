@@ -308,7 +308,7 @@
     <ClInclude Include="..\..\..\source\objects\menu\coreMenu.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreTextBox.h" />
-    <ClInclude Include="..\..\..\source\utilities\data\coreRound.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreArray.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreData.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />

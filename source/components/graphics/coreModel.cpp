@@ -79,48 +79,20 @@ coreStatus coreModel::Load(coreFile* pFile)
     m_iNumIndices  = oImport.aiIndexData.size();
     m_sPath        = pFile->GetPath();
 
-    // find maximum distance from the model center
     FOR_EACH(it, oImport.aVertexData)
     {
+        // check for valid vertex attributes
+        ASSERT((0.0f <= it->vTexCoord.x)    && (it->vTexCoord.x <= 1.0f) &&
+               (0.0f <= it->vTexCoord.y)    && (it->vTexCoord.y <= 1.0f) &&
+               (it->vNormal.IsNormalized()) && (it->vTangent.xyz().IsNormalized()))
+
+        // find maximum distance from the model center
         m_vBoundingRange.x = MAX(m_vBoundingRange.x, ABS(it->vPosition.x));
         m_vBoundingRange.y = MAX(m_vBoundingRange.y, ABS(it->vPosition.y));
         m_vBoundingRange.z = MAX(m_vBoundingRange.z, ABS(it->vPosition.z));
         m_fBoundingRadius  = MAX(it->vPosition.LengthSq(), m_fBoundingRadius);
     }
     m_fBoundingRadius = SQRT(m_fBoundingRadius);
-
-    GLuint iNormFormat;
-    std::function<coreUint32(const coreVector4&)> nPackFunc;
-    if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev))
-    {
-        // use high-precision packed format
-        iNormFormat = GL_INT_2_10_10_10_REV;
-        nPackFunc   = [](const coreVector4& vVector) {return vVector.PackSnorm210();};
-    }
-    else
-    {
-        // use low-precision byte format
-        iNormFormat = GL_BYTE;
-        nPackFunc   = [](const coreVector4& vVector) {return vVector.PackSnorm4x8();};
-    }
-
-    // reduce total vertex size
-    coreVertexPacked* pPackedData = new coreVertexPacked[m_iNumVertices];
-    for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
-    {
-        const coreVertex& oVertex = oImport.aVertexData[i];
-
-        // check for valid attribute values
-        ASSERT((0.0f <= oVertex.vTexCoord.x)    && (oVertex.vTexCoord.x <= 1.0f) &&
-               (0.0f <= oVertex.vTexCoord.y)    && (oVertex.vTexCoord.y <= 1.0f) &&
-               (oVertex.vNormal.IsNormalized()) && (oVertex.vTangent.xyz().IsNormalized()))
-
-        // convert vertex attributes
-        pPackedData[i].vPosition = oVertex.vPosition;
-        pPackedData[i].iTexCoord = oVertex.vTexCoord.PackUnorm2x16();
-        pPackedData[i].iNormal   = nPackFunc(coreVector4(oVertex.vNormal, 0.0f));
-        pPackedData[i].iTangent  = nPackFunc(oVertex.vTangent);
-    }
 
 #if defined(_CORE_DEBUG_)
 
@@ -130,6 +102,10 @@ coreStatus coreModel::Load(coreFile* pFile)
 
 #else
 
+    // prepare index-map (for deferred remapping)
+    coreUint16 aiMap[0xFFFFu];
+    for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) aiMap[i] = i & 0xFFFFu;
+
     // apply post-transform vertex cache optimization to index data
     coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
     Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 32u);
@@ -138,32 +114,80 @@ coreStatus coreModel::Load(coreFile* pFile)
     coreUint16 iCurIndex = 0u;
     for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
     {
-        if(piOptimizedData[i] >= iCurIndex)
+        const coreUint16& iFirst = piOptimizedData[i];
+        ASSERT(iFirst < m_iNumVertices)
+
+        // check first map entry
+        if(aiMap[iFirst] >= iCurIndex)
         {
             const coreUint16 iNew = iCurIndex++;
-            const coreUint16 iOld = piOptimizedData[i];
+            const coreUint16 iOld = aiMap[iFirst];
+
+            // find second map entry
+            coreUint16 iSecond = iNew;
+            while(aiMap[iSecond] != iNew) iSecond = aiMap[iSecond];
+
+            // swap indices (in map)
+            aiMap[iFirst]  = iNew;
+            aiMap[iSecond] = iOld;
 
             // swap vertices
-            std::swap(pPackedData[iNew], pPackedData[iOld]);
-
-            // swap indices
-            for(coreUintW j = i; j < ie; ++j)
-            {
-                     if(piOptimizedData[j] == iNew) piOptimizedData[j] = iOld;
-                else if(piOptimizedData[j] == iOld) piOptimizedData[j] = iNew;
-            }
+            std::swap(oImport.aVertexData[iNew], oImport.aVertexData[iOld]);
         }
     }
 
+    // remap all indices
+    for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
+        piOptimizedData[i] = aiMap[piOptimizedData[i]];
+
 #endif
 
-    // create vertex buffer
-    coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPacked), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3u, GL_FLOAT,          false, 0u);
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT, false, 3u*sizeof(coreFloat));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, iNormFormat,       false, 3u*sizeof(coreFloat) + 1u*sizeof(coreUint32));
-    pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, iNormFormat,       false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
-    SAFE_DELETE_ARRAY(pPackedData)
+    if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev) && CORE_GL_SUPPORT(ARB_half_float_vertex))
+    {
+        // reduce total vertex size (high quality compression)
+        coreVertexPackedHigh* pPackedData = new coreVertexPackedHigh[m_iNumVertices];
+        for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
+        {
+            const coreVertex& oVertex = oImport.aVertexData[i];
+
+            // convert vertex attributes
+            pPackedData[i].iPosition = coreVector4(oVertex.vPosition, 0.0f).PackFloat4x16();
+            pPackedData[i].iTexCoord = oVertex.vTexCoord                   .PackUnorm2x16();
+            pPackedData[i].iNormal   = coreVector4(oVertex.vNormal,   0.0f).PackSnorm210 ();
+            pPackedData[i].iTangent  = oVertex.vTangent                    .PackSnorm210 ();
+        }
+
+        // create vertex buffer
+        coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPackedHigh), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 4u, GL_HALF_FLOAT,         false, 0u);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT,     false, 2u*sizeof(coreUint32));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_INT_2_10_10_10_REV, false, 3u*sizeof(coreUint32));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_INT_2_10_10_10_REV, false, 4u*sizeof(coreUint32));
+        SAFE_DELETE_ARRAY(pPackedData)
+    }
+    else
+    {
+        // reduce total vertex size (low quality compression)
+        coreVertexPackedLow* pPackedData = new coreVertexPackedLow[m_iNumVertices];
+        for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
+        {
+            const coreVertex& oVertex = oImport.aVertexData[i];
+
+            // convert vertex attributes
+            pPackedData[i].vPosition = oVertex.vPosition;
+            pPackedData[i].iTexCoord = oVertex.vTexCoord                 .PackUnorm2x16();
+            pPackedData[i].iNormal   = coreVector4(oVertex.vNormal, 0.0f).PackSnorm4x8 ();
+            pPackedData[i].iTangent  = oVertex.vTangent                  .PackSnorm4x8 ();
+        }
+
+        // create vertex buffer
+        coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPackedLow), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3u, GL_FLOAT,          false, 0u);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT, false, 3u*sizeof(coreFloat));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_BYTE,           false, 3u*sizeof(coreFloat) + 1u*sizeof(coreUint32));
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_BYTE,           false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
+        SAFE_DELETE_ARRAY(pPackedData)
+    }
 
 #if defined(_CORE_GLES_)
 
@@ -326,7 +350,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32& iNumVertices, 
     ASSERT(m_iNumVertices == iNumVertices)
 
     // create vertex buffer
-    m_aVertexBuffer.push_back(coreVertexBuffer());
+    m_aVertexBuffer.emplace_back();
     m_aVertexBuffer.back().Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
 
     // disable current model object (to fully enable the next model)

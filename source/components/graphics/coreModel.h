@@ -36,12 +36,19 @@ public:
     };
 
     //! compressed vertex structure
-    struct coreVertexPacked
+    struct coreVertexPackedHigh
+    {
+        coreUint64 iPosition;    //!< vertex position           (Float4x16)
+        coreUint32 iTexCoord;    //!< texture coordinate        (Unorm2x16)
+        coreUint32 iNormal;      //!< normal vector             (Snorm210)
+        coreUint32 iTangent;     //!< additional tangent vector (Snorm210)
+    };
+    struct coreVertexPackedLow
     {
         coreVector3 vPosition;   //!< vertex position
-        coreUint32  iTexCoord;   //!< texture coordinate
-        coreUint32  iNormal;     //!< normal vector
-        coreUint32  iTangent;    //!< additional tangent vector
+        coreUint32  iTexCoord;   //!< texture coordinate        (Unorm2x16)
+        coreUint32  iNormal;     //!< normal vector             (Snorm4x8)
+        coreUint32  iTangent;    //!< additional tangent vector (Snorm4x8)
     };
 
     //! import structure

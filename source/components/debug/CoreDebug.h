@@ -32,7 +32,7 @@ private:
     struct coreMeasure
     {
         coreUint64 iPerfTime;                                //!< high-precision CPU time value at start
-        coreRound<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
+        coreArray<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
         coreFloat fCurrentCPU;                               //!< current CPU performance value
         coreFloat fCurrentGPU;                               //!< current GPU performance value
         coreLabel oOutput;                                   //!< label for displaying output
@@ -113,7 +113,7 @@ template <typename... A> void CoreDebug::InspectValue(const coreChar* pcName, co
 
         // configure output label
         coreLabel& oOutput = pNewInspect->oOutput;
-        oOutput.Construct   ("default.ttf", 16u, false, 64u);
+        oOutput.Construct   ("default.ttf", 16u, 0u, 64u);
         oOutput.SetCenter   (coreVector2(-0.5f, 0.5f));
         oOutput.SetAlignment(coreVector2( 1.0f,-1.0f));
         oOutput.SetColor3   (COLOR_GREEN);

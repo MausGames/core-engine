@@ -279,7 +279,7 @@ template <typename T> void coreSwitchBox<T>::Move()
 template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, const T& tValue)
 {
     // create new entry
-    m_aEntry.push_back(coreEntry(new std::string(pcText), tValue));
+    m_aEntry.emplace_back(new std::string(pcText), tValue);
 
     // update text
     if(m_aEntry.size() == 1u) this->__Update();

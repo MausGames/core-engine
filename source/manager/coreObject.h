@@ -142,12 +142,12 @@ public:
 
     /*! test collision between different structures */
     //! @{
-    template <typename F> void    TestCollision(const coreInt32&    iType,                                                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA,     coreObject3D* OUTPUT pObjectB,     const coreBool& bFirstHit) -> void
-    template <typename F> void    TestCollision(const coreInt32&    iType1,   const coreInt32&    iType2,                                F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectType1, coreObject3D* OUTPUT pObjectType2, const coreBool& bFirstHit) -> void
-    template <typename F> void    TestCollision(const coreInt32&    iType,    const coreObject3D* pObject,                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool& bFirstHit) -> void
-    template <typename F> void    TestCollision(const coreInt32&    iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool& bFirstHit) -> void
-    static coreBool  FUNC_NOALIAS TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
-    static coreFloat FUNC_NOALIAS TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
+    template <typename F> void TestCollision(const coreInt32&    iType,                                                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA,     coreObject3D* OUTPUT pObjectB,     const coreBool& bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32&    iType1,   const coreInt32&    iType2,                                F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectType1, coreObject3D* OUTPUT pObjectType2, const coreBool& bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32&    iType,    const coreObject3D* pObject,                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool& bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32&    iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool& bFirstHit) -> void
+    static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
+    static coreFloat           TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
     //! @}
 
     /*! get manager properties */

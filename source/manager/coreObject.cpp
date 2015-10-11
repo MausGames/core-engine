@@ -59,7 +59,7 @@ coreObjectManager::~coreObjectManager()
 
 // ****************************************************************
 /* test collision between two 3d-objects */
-coreBool FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
+coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
 {
     ASSERT(pObject1 && pObject2)
 
@@ -114,7 +114,7 @@ coreBool FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObje
 
 // ****************************************************************
 /* test collision between 3d-object and line */
-coreFloat FUNC_NOALIAS coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vLinePos, const coreVector3& vLineDir)
+coreFloat coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vLinePos, const coreVector3& vLineDir)
 {
     ASSERT(pObject && vLineDir.IsNormalized())
 

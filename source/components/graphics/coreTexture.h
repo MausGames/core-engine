@@ -26,12 +26,12 @@
 // ****************************************************************
 // texture definitions
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    #define CORE_TEXTURE_MASK 0xFF000000u, 0x00FF0000u, 0x0000FF00u, 0x000000FFu
+    #define CORE_TEXTURE_MASK (0xFF000000u), (0x00FF0000u), (0x0000FF00u), (0x000000FFu)
 #else
-    #define CORE_TEXTURE_MASK 0x000000FFu, 0x0000FF00u, 0x00FF0000u, 0xFF000000u
+    #define CORE_TEXTURE_MASK (0x000000FFu), (0x0000FF00u), (0x00FF0000u), (0xFF000000u)
 #endif
 
-#define GL_RED_R 0x1903
+#define GL_RED_R (0x1903)
 #undef  GL_RED
 #define GL_RED (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_RED_R : GL_LUMINANCE)
 
@@ -54,7 +54,7 @@
      (i == 2u) ? CORE_TEXTURE_SPEC_RG8   : \
                  CORE_TEXTURE_SPEC_R8)
 
-#define CORE_TEXTURE_UNITS_2D     (4u)                                                //!< number of 2d texture units (sampler2D)
+#define CORE_TEXTURE_UNITS_2D     (4u)                                                //!< number of 2d texture units     (sampler2D)
 #define CORE_TEXTURE_UNITS_SHADOW (1u)                                                //!< number of shadow texture units (sampler2DShadow)
 #define CORE_TEXTURE_UNITS        (CORE_TEXTURE_UNITS_2D+CORE_TEXTURE_UNITS_SHADOW)   //!< total number of texture units
 #define CORE_TEXTURE_SHADOW       (CORE_TEXTURE_UNITS_2D)                             //!< first shadow texture unit

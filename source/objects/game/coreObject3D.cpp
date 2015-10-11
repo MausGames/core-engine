@@ -315,9 +315,9 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                 if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
                 {
                     // compress data
-                    const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f).PackFloat4x16();
-                    const coreUint64 iRotation  = pObject->GetRotation().PackSnorm4x16();
-                    const coreUint32 iColor     = pObject->GetColor4  ().PackUnorm4x8 ();
+                    const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f)                      .PackFloat4x16();
+                    const coreUint64 iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
+                    const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
                     const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
                     ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
 
