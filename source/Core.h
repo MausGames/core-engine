@@ -352,6 +352,13 @@ inline coreBool operator == (const std::string& a, const coreChar*    b) {return
 inline coreBool operator == (const coreChar*    a, const std::string& b) {return !std::strcmp(a,         b.c_str());}
 inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
 
+// override integer swap function (without temporary)
+#define __SWAP(t) namespace std{inline void swap(t& a, t& b)noexcept {(a ^ b) && (b ^= a ^= b, a ^= b);}}
+    __SWAP(coreInt8)  __SWAP(coreInt16)  __SWAP(coreInt32)  __SWAP(coreInt64)
+    __SWAP(coreUint8) __SWAP(coreUint16) __SWAP(coreUint32) __SWAP(coreUint64)
+    __SWAP(coreBool)  __SWAP(coreChar)
+#undef __SWAP
+
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))

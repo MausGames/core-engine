@@ -35,6 +35,7 @@
 #define LERP  coreMath::Lerp
 #define LERPS coreMath::LerpSmooth
 #define LERPB coreMath::LerpBreak
+#define TRUNC coreMath::Trunc
 #define FRACT coreMath::Fract
 #define SQRT  coreMath::Sqrt
 #define RSQRT coreMath::Rsqrt
@@ -59,24 +60,25 @@ public:
 
     /*! special operations */
     //! @{
-    template <typename T, typename S, typename... A> static constexpr_func T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S, typename... A> static constexpr_func T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S>                static constexpr_func T Min  (const T& x, const S& y)               {return (x < y) ? x : y;}
-    template <typename T, typename S>                static constexpr_func T Max  (const T& x, const S& y)               {return (x > y) ? x : y;}
-    template <typename T, typename S, typename R>    static constexpr_func T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr_func T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
-    template <typename T> static constexpr_func T        Abs       (const T& x)                                          {return std::abs(x);}
-    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s)          {return x + (y - x) * s;}
-    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, SIN(s*PI*0.5f));}
-    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                  {return ((c-r) <= x && x <= (c+r));}
-    template <typename T> static constexpr_func coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
+    template <typename T, typename S, typename... A> static inline T Min  (T x, S y, A&&... vArgs)              {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S, typename... A> static inline T Max  (T x, S y, A&&... vArgs)              {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S>                static inline T Min  (T x, S y)                            {return y ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S>                static inline T Max  (T x, S y)                            {return x ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S, typename R>    static inline T Clamp(T x, S a, R b)                       {return MIN(MAX(x, a), b);}
+    template <typename T> static constexpr_func T        Sign      (const T& x)                                 {return std::copysign(T(1), x);}
+    template <typename T> static constexpr_func T        Abs       (const T& x)                                 {return std::abs(x);}
+    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s) {return x + (y - x) * s;}
+    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s) {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s) {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)         {return ABS(x-c) <= r;}
+    template <typename T> static constexpr_func coreBool IsPOT     (const T& x)                                 {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */
     //! @{
     template <coreUintW iBase> static inline coreFloat Log(const coreFloat& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
-    static inline coreFloat Fract(const coreFloat& fInput)                          {return fInput - std::trunc(fInput);}
+    static inline coreFloat Trunc(const coreFloat& fInput)                          {return std::trunc(fInput);}
+    static inline coreFloat Fract(const coreFloat& fInput)                          {return fInput - TRUNC(fInput);}
     static inline coreFloat Sqrt (const coreFloat& fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
     static inline coreFloat Rsqrt(coreFloat fInput);
     static inline coreFloat Rcp  (coreFloat fInput);
@@ -115,6 +117,27 @@ public:
 /* template specializations */
 template <> inline coreFloat coreMath::Log< 2u>(const coreFloat& fInput) {return std::log2 (fInput);}
 template <> inline coreFloat coreMath::Log<10u>(const coreFloat& fInput) {return std::log10(fInput);}
+
+#if defined(_CORE_SSE_)
+
+    // optimized calculation with SSE
+    template <> inline coreFloat coreMath::Min(coreFloat x, coreFloat y)
+    {
+        _mm_store_ss(&x, _mm_min_ss(_mm_load_ss(&x), _mm_load_ss(&y)));
+        return x;
+    }
+    template <> inline coreFloat coreMath::Max(coreFloat x, coreFloat y)
+    {
+        _mm_store_ss(&x, _mm_max_ss(_mm_load_ss(&x), _mm_load_ss(&y)));
+        return x;
+    }
+    template <> inline coreFloat coreMath::Clamp(coreFloat x, coreFloat a, coreFloat b)
+    {
+        _mm_store_ss(&x, _mm_min_ss(_mm_max_ss(_mm_load_ss(&x), _mm_load_ss(&a)), _mm_load_ss(&b)));
+        return x;
+    }
+
+#endif
 
 
 // ****************************************************************
@@ -187,8 +210,8 @@ inline coreUint16 coreMath::Float32to16(const coreFloat& fInput)
 {
     const coreUint32 A = *r_cast<const coreUint32*>(&fInput);
 
-    return (A & 0x7F800000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x0001C000u) |
-                                 ((A & 0x80000000u) >> 16u)) : 0u;
+    return ((A & 0x7FFFFFFFu) > 0x38000000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x0001C000u) |
+                                                 ((A & 0x80000000u) >> 16u)) & 0xFFFFu : 0u;
 };
 
 
