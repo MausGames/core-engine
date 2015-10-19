@@ -324,7 +324,7 @@
 // type conversion macros
 #define F_TO_SI(x) ((int)                 (x))   //!< float to signed int
 #define F_TO_UI(x) ((unsigned)(int)       (x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
-#define I_TO_F(x)  ((float)(int)          (x))   //!< int to float (force [_mm_cvtepi32_ps])
+#define I_TO_F(x)  ((float)(int)          (x))   //!< int to float          (force [_mm_cvtepi32_ps])
 #define P_TO_I(x)  ((std::intptr_t)(void*)(x))   //!< pointer to int
 #define I_TO_P(x)  ((void*)(std::intptr_t)(x))   //!< int to pointer
 
@@ -352,7 +352,7 @@ inline coreBool operator == (const std::string& a, const coreChar*    b) {return
 inline coreBool operator == (const coreChar*    a, const std::string& b) {return !std::strcmp(a,         b.c_str());}
 inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
 
-// override integer swap function (without temporary)
+// override integer swap function (without temporary variable)
 #define __SWAP(t) namespace std{inline void swap(t& a, t& b)noexcept {(a ^ b) && (b ^= a ^= b, a ^= b);}}
     __SWAP(coreInt8)  __SWAP(coreInt16)  __SWAP(coreInt32)  __SWAP(coreInt64)
     __SWAP(coreUint8) __SWAP(coreUint16) __SWAP(coreUint32) __SWAP(coreUint64)

@@ -11,6 +11,7 @@
 #define _CORE_GUARD_RAND_H_
 
 // TODO: move global random number object here ?
+// TODO: do not pre-calculate global random numbers, memory access more expensive then direct calculation (only seed access)
 // TODO: make size a template parameter ?
 // TODO: check out Xorshift (or Xorshift+) algorithm to increase period
 

@@ -60,18 +60,18 @@ public:
 
     /*! special operations */
     //! @{
-    template <typename T, typename S, typename... A> static inline T Min  (T x, S y, A&&... vArgs)              {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S, typename... A> static inline T Max  (T x, S y, A&&... vArgs)              {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S>                static inline T Min  (T x, S y)                            {return y ^ ((x ^ y) & -(x < y));}
-    template <typename T, typename S>                static inline T Max  (T x, S y)                            {return x ^ ((x ^ y) & -(x < y));}
-    template <typename T, typename S, typename R>    static inline T Clamp(T x, S a, R b)                       {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr_func T        Sign      (const T& x)                                 {return std::copysign(T(1), x);}
-    template <typename T> static constexpr_func T        Abs       (const T& x)                                 {return std::abs(x);}
-    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s) {return x + (y - x) * s;}
-    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s) {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s) {return LERP(x, y, SIN(s*PI*0.5f));}
-    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)         {return ABS(x-c) <= r;}
-    template <typename T> static constexpr_func coreBool IsPOT     (const T& x)                                 {return !(x & (x - T(1)));}
+    template <typename T, typename S, typename... A> static constexpr_func T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S, typename... A> static constexpr_func T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S>                static constexpr_func T Min  (const T& x, const S& y)               {return y ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S>                static constexpr_func T Max  (const T& x, const S& y)               {return x ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S, typename R>    static constexpr_func T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
+    template <typename T> static constexpr_func T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
+    template <typename T> static constexpr_func T        Abs       (const T& x)                                          {return std::abs(x);}
+    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s)          {return x + (y - x) * s;}
+    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                  {return ABS(x - c) <= r;}
+    template <typename T> static constexpr_func coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */
@@ -80,8 +80,8 @@ public:
     static inline coreFloat Trunc(const coreFloat& fInput)                          {return std::trunc(fInput);}
     static inline coreFloat Fract(const coreFloat& fInput)                          {return fInput - TRUNC(fInput);}
     static inline coreFloat Sqrt (const coreFloat& fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
-    static inline coreFloat Rsqrt(coreFloat fInput);
-    static inline coreFloat Rcp  (coreFloat fInput);
+    static inline coreFloat Rsqrt(const coreFloat& fInput);
+    static inline coreFloat Rcp  (const coreFloat& fInput);
     //! @}
 
     /*! trigonometric operations */
@@ -115,46 +115,40 @@ public:
 
 // ****************************************************************
 /* template specializations */
-template <> inline coreFloat coreMath::Log< 2u>(const coreFloat& fInput) {return std::log2 (fInput);}
-template <> inline coreFloat coreMath::Log<10u>(const coreFloat& fInput) {return std::log10(fInput);}
-
 #if defined(_CORE_SSE_)
 
     // optimized calculation with SSE
-    template <> inline coreFloat coreMath::Min(coreFloat x, coreFloat y)
-    {
-        _mm_store_ss(&x, _mm_min_ss(_mm_load_ss(&x), _mm_load_ss(&y)));
-        return x;
-    }
-    template <> inline coreFloat coreMath::Max(coreFloat x, coreFloat y)
-    {
-        _mm_store_ss(&x, _mm_max_ss(_mm_load_ss(&x), _mm_load_ss(&y)));
-        return x;
-    }
-    template <> inline coreFloat coreMath::Clamp(coreFloat x, coreFloat a, coreFloat b)
-    {
-        _mm_store_ss(&x, _mm_min_ss(_mm_max_ss(_mm_load_ss(&x), _mm_load_ss(&a)), _mm_load_ss(&b)));
-        return x;
-    }
+    template <> constexpr_func coreFloat coreMath::Min  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_min_ss(_mm_set_ss(x), _mm_set_ss(y)));}
+    template <> constexpr_func coreFloat coreMath::Max  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(y)));}
+    template <> constexpr_func coreFloat coreMath::Clamp(const coreFloat& x, const coreFloat& a, const coreFloat& b) {return _mm_cvtss_f32(_mm_min_ss(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(a)), _mm_set_ss(b)));}
+
+#else
+
+    // normal calculation
+    template <> constexpr_func coreFloat coreMath::Min(const coreFloat& x, const coreFloat& y) {return (x < y) ? x : y;}
+    template <> constexpr_func coreFloat coreMath::Max(const coreFloat& x, const coreFloat& y) {return (x > y) ? x : y;}
 
 #endif
+
+template <> inline coreFloat coreMath::Log< 2u>(const coreFloat& fInput) {return std::log2 (fInput);}
+template <> inline coreFloat coreMath::Log<10u>(const coreFloat& fInput) {return std::log10(fInput);}
 
 
 // ****************************************************************
 /* calculate inverse square root */
-inline coreFloat coreMath::Rsqrt(coreFloat fInput)
+inline coreFloat coreMath::Rsqrt(const coreFloat& fInput)
 {
     ASSERT(fInput > 0.0f)
 
 #if defined(_CORE_SSE_)
 
     // optimized calculation with SSE2
-    _mm_store_ss(&fInput, _mm_rsqrt_ss(_mm_load_ss(&fInput)));
+    return _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(fInput)));
 
 #else
 
     // normal calculation
-    fInput = 1.0f / std::sqrt(fInput);
+    return 1.0f / std::sqrt(fInput);
 
     // old approximation
     /*
@@ -167,26 +161,24 @@ inline coreFloat coreMath::Rsqrt(coreFloat fInput)
     */
 
 #endif
-
-    return fInput;
 }
 
 
 // ****************************************************************
 /* calculate approximate reciprocal */
-inline coreFloat coreMath::Rcp(coreFloat fInput)
+inline coreFloat coreMath::Rcp(const coreFloat& fInput)
 {
     ASSERT(fInput)
 
 #if defined(_CORE_SSE_)
 
     // optimized calculation with SSE2
-    _mm_store_ss(&fInput, _mm_rcp_ss(_mm_load_ss(&fInput)));
+    return _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(fInput)));
 
 #else
 
     // normal calculation
-    fInput = 1.0f / fInput;
+    return 1.0f / fInput;
 
     // old approximation
     /*
@@ -199,8 +191,6 @@ inline coreFloat coreMath::Rcp(coreFloat fInput)
     */
 
 #endif
-
-    return fInput;
 }
 
 
