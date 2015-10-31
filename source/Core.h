@@ -241,8 +241,8 @@
 #define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
 #define DEFINED(a)           (__DEFINED(a, #a))
 
-#define SAFE_DELETE(p)       {if(p) {delete   (p); (p) = NULL;}}
-#define SAFE_DELETE_ARRAY(p) {if(p) {delete[] (p); (p) = NULL;}}
+#define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
+#define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
 
 #define BIT(n)               (1u << (n))   // starts with 0
 #define BITLINE(n)           (BIT(n) - 1u)
