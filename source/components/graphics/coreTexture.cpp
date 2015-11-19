@@ -325,6 +325,18 @@ void coreTexture::ShadowSampling(const coreBool& bStatus)
 
 
 // ****************************************************************
+// bind texture level to image unit
+void coreTexture::BindImage(const coreUintW& iUnit, const coreUint8& iLevel, const GLenum& iAccess)
+{
+    ASSERT(m_iTexture && (iLevel < m_iLevels))
+
+    // bind directly without layering
+    if(CORE_GL_SUPPORT(ARB_shader_image_load_store))
+        glBindImageTexture(iUnit, m_iTexture, iLevel, false, 0, iAccess, m_Spec.iInternal);
+}
+
+
+// ****************************************************************
 // clear content of the texture
 void coreTexture::Clear(const coreUint8& iLevel)
 {

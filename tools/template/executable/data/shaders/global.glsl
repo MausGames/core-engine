@@ -514,6 +514,12 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 
 // ****************************************************************
+#if defined(_CORE_COMPUTE_SHADER_)
+
+#endif // _CORE_COMPUTE_SHADER_
+
+
+// ****************************************************************
 #if defined(_CORE_VERTEX_SHADER_)
 
     // default model transformation

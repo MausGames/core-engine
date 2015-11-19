@@ -49,6 +49,7 @@
 #define COT   coreMath::Cot
 #define CEIL  coreMath::Ceil
 #define FLOOR coreMath::Floor
+#define ROUND coreMath::Round
 
 
 // ****************************************************************
@@ -103,6 +104,7 @@ public:
     template                  <typename T> static inline T FloorPOT  (const T& iInput) {T k = 2; while(k <= iInput) k <<= 1; return k >> 1;}
     static inline coreFloat Ceil (const coreFloat& fInput)                             {return std::ceil (fInput);}
     static inline coreFloat Floor(const coreFloat& fInput)                             {return std::floor(fInput);}
+    static inline coreFloat Round(const coreFloat& fInput)                             {return std::round(fInput);}
     //! @}
 
     /*! converting operations */
@@ -118,9 +120,9 @@ public:
 #if defined(_CORE_SSE_)
 
     // optimized calculation with SSE
-    template <> constexpr_func coreFloat coreMath::Min  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_min_ss(_mm_set_ss(x), _mm_set_ss(y)));}
-    template <> constexpr_func coreFloat coreMath::Max  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(y)));}
-    template <> constexpr_func coreFloat coreMath::Clamp(const coreFloat& x, const coreFloat& a, const coreFloat& b) {return _mm_cvtss_f32(_mm_min_ss(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(a)), _mm_set_ss(b)));}
+    template <> inline coreFloat coreMath::Min  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_min_ss(_mm_set_ss(x), _mm_set_ss(y)));}
+    template <> inline coreFloat coreMath::Max  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(y)));}
+    template <> inline coreFloat coreMath::Clamp(const coreFloat& x, const coreFloat& a, const coreFloat& b) {return _mm_cvtss_f32(_mm_min_ss(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(a)), _mm_set_ss(b)));}
 
 #else
 
@@ -212,8 +214,7 @@ inline coreFloat coreMath::Float16to32(const coreUint16& iInput)
     const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
                                                 (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
 
-    const coreFloat* B = r_cast<const coreFloat*>(&A);
-    return *B;
+    return *r_cast<const coreFloat*>(&A);
 };
 
 

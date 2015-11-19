@@ -127,6 +127,11 @@ public:
     void ShadowSampling(const coreBool& bStatus);
     //! @}
 
+    //! bind texture level to image unit
+    //! @{
+    void BindImage(const coreUintW& iUnit, const coreUint8& iLevel, const GLenum& iAccess);
+    //! @}
+
     //! enable and disable the texture
     //! @{
     inline        void Enable (const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iTexture)}

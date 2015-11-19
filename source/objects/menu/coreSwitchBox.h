@@ -119,7 +119,7 @@ private:
 template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 : coreObject2D  ()
 , coreTranslate ()
-, m_aArrow      {}
+, m_aArrow      ()
 , m_Caption     ()
 , m_aEntry      {}
 , m_iCurIndex   (0)

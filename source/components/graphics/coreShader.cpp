@@ -78,15 +78,17 @@ coreStatus coreShader::Load(coreFile* pFile)
     else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {m_iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_ (1) \n";}
     else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {m_iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_        (1) \n";}
     else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {m_iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_        (1) \n";}
+    else if(!std::strcmp(pcExtension, "cs")  || !std::strcmp(pcExtension, "comp")) {m_iType = GL_COMPUTE_SHADER;         pcTypeDef = "#define _CORE_COMPUTE_SHADER_         (1) \n";}
     else
     {
-        Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag)", pFile->GetPath());
+        Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag, cs, comp)", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
 
     // check for OpenGL extensions
     if((m_iType == GL_TESS_CONTROL_SHADER || m_iType == GL_TESS_EVALUATION_SHADER) && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
     if((m_iType == GL_GEOMETRY_SHADER)                                             && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
+    if((m_iType == GL_COMPUTE_SHADER)                                              && !CORE_GL_SUPPORT(ARB_compute_shader))      return CORE_OK;
 
     // load quality level and global shader data
     const coreChar* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
@@ -381,8 +383,8 @@ coreBool coreProgram::Enable()
     ASSERT(m_iStatus)
 
     // try to update global uniform data
-    Core::Graphics->SendTransformation();
-    Core::Graphics->SendAmbient();
+    Core::Graphics->UpdateTransformation();
+    Core::Graphics->UpdateAmbient();
 
     // check current shader-program
     if(s_pCurrent == this)                  return true;
@@ -441,6 +443,20 @@ void coreProgram::Disable(const coreBool& bFull)
     // reset current shader-program
     s_pCurrent = NULL;
     if(bFull) glUseProgram(0u);
+}
+
+
+// ****************************************************************
+// execute a compute shader-program
+void coreProgram::DispatchCompute(const coreUint32& iGroupsX, const coreUint32& iGroupsY, const coreUint32& iGroupsZ)
+{
+    ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this)
+
+    if(CORE_GL_SUPPORT(ARB_compute_shader))
+    {
+        // launch one or more compute work groups
+        glDispatchCompute(iGroupsX, iGroupsY, iGroupsZ);
+    }
 }
 
 

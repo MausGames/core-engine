@@ -30,8 +30,8 @@ CoreGraphics::CoreGraphics()noexcept
 , m_aTransformSync   {}
 , m_aAmbientSync     {}
 , m_iUniformUpdate   (0u)
-, m_fOpenGL          (0.0f)
-, m_fGLSL            (0.0f)
+, m_fVersionOpenGL   (0.0f)
+, m_fVersionGLSL     (0.0f)
 {
     Core::Log->Header("Graphics Interface");
 
@@ -47,8 +47,8 @@ CoreGraphics::CoreGraphics()noexcept
     Core::Log->DebugOpenGL();
 
     // save version numbers
-    m_fOpenGL = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
-    m_fGLSL   = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    m_fVersionOpenGL = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
+    m_fVersionGLSL   = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // log video card information
     Core::Log->ListStartInfo("Video Card Information");
@@ -241,8 +241,8 @@ void CoreGraphics::SetLight(const coreUintW& iIndex, const coreVector4& vPositio
 
 
 // ****************************************************************
-// send transformation data to the uniform buffer objects
-void CoreGraphics::SendTransformation()
+// update transformation data for the uniform buffer objects
+void CoreGraphics::UpdateTransformation()
 {
     // check update status
     if(!CONTAINS_BIT(m_iUniformUpdate, 0u)) return;
@@ -282,8 +282,8 @@ void CoreGraphics::SendTransformation()
 
 
 // ****************************************************************
-// send ambient data to the uniform buffer objects
-void CoreGraphics::SendAmbient()
+// update ambient data for the uniform buffer objects
+void CoreGraphics::UpdateAmbient()
 {
     // check update status
     if(!CONTAINS_BIT(m_iUniformUpdate, 1u)) return;
@@ -317,7 +317,7 @@ void CoreGraphics::SendAmbient()
 
 // ****************************************************************
 // take screenshot
-void CoreGraphics::Screenshot(const coreChar* pcPath)const
+void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 {
     const coreUintW iWidth  = F_TO_UI(Core::System->GetResolution().x);
     const coreUintW iHeight = F_TO_UI(Core::System->GetResolution().y);
@@ -364,7 +364,7 @@ void CoreGraphics::__UpdateScene()
 {
     // take screenshot
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(PRINTSCREEN), CORE_INPUT_PRESS))
-        this->Screenshot();
+        this->TakeScreenshot();
 
     // disable last model, textures and shader-program
     coreModel  ::Disable(true);

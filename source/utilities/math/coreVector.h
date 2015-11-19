@@ -109,8 +109,8 @@ public:
     //! @{
     inline         coreFloat   Length      ()const {return SQRT(this->LengthSq());}
     constexpr_func coreFloat   LengthSq    ()const {return (x*x + y*y);}
-    constexpr_func coreFloat   Min         ()const {return MIN(x, y);}
-    constexpr_func coreFloat   Max         ()const {return MAX(x, y);}
+    inline         coreFloat   Min         ()const {return MIN(x, y);}
+    inline         coreFloat   Max         ()const {return MAX(x, y);}
     constexpr_func coreVector2 Abs         ()const {return coreVector2(ABS(x), ABS(y));}
     inline         coreFloat   AspectRatio ()const {return (x * RCP(y));}
     inline         coreFloat   Angle       ()const {return (-std::atan2(x, y));}
@@ -245,8 +245,8 @@ public:
     //! @{
     inline         coreFloat   Length      ()const {return SQRT(this->LengthSq());}
     constexpr_func coreFloat   LengthSq    ()const {return (x*x + y*y + z*z);}
-    constexpr_func coreFloat   Min         ()const {return MIN(x, y, z);}
-    constexpr_func coreFloat   Max         ()const {return MAX(x, y, z);}
+    inline         coreFloat   Min         ()const {return MIN(x, y, z);}
+    inline         coreFloat   Max         ()const {return MAX(x, y, z);}
     constexpr_func coreVector3 Abs         ()const {return coreVector3(ABS(x), ABS(y), ABS(z));}
     constexpr_func coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     constexpr_func coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
@@ -359,8 +359,8 @@ public:
     //! @{
     inline         coreFloat Length  ()const {return SQRT(this->LengthSq());}
     constexpr_func coreFloat LengthSq()const {return (x*x + y*y + z*z + w*w);}
-    constexpr_func coreFloat Min     ()const {return MIN(x, y, z, w);}
-    constexpr_func coreFloat Max     ()const {return MAX(x, y, z, w);}
+    inline         coreFloat Min     ()const {return MIN(x, y, z, w);}
+    inline         coreFloat Max     ()const {return MAX(x, y, z, w);}
     constexpr_func coreBool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 

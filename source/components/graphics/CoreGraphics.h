@@ -68,8 +68,8 @@ private:
     coreArray<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     //!< ambient sync objects
     coreUint8 m_iUniformUpdate;                                            //!< update status for the UBOs (dirty flag)
 
-    coreFloat m_fOpenGL;                                                   //!< available OpenGL version
-    coreFloat m_fGLSL;                                                     //!< available GLSL version
+    coreFloat m_fVersionOpenGL;                                            //!< available OpenGL version
+    coreFloat m_fVersionGLSL;                                              //!< available GLSL version
 
 
 private:
@@ -92,16 +92,16 @@ public:
     void SetLight(const coreUintW& iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
     //! @}
 
-    //! send data to the uniform buffer objects
+    //! update data for the uniform buffer objects
     //! @{
-    void SendTransformation();
-    void SendAmbient();
+    void UpdateTransformation();
+    void UpdateAmbient();
     //! @}
 
     //! take screenshot
     //! @{
-    void        Screenshot(const coreChar* pcPath)const;
-    inline void Screenshot()const {this->Screenshot(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S"));}
+    void        TakeScreenshot(const coreChar* pcPath)const;
+    inline void TakeScreenshot()const {this->TakeScreenshot(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S"));}
     //! @}
 
     //! get component properties
@@ -125,8 +125,8 @@ public:
 
     //! check OpenGL versions
     //! @{
-    inline const coreFloat& VersionOpenGL()const {return m_fOpenGL;}
-    inline const coreFloat& VersionGLSL  ()const {return m_fGLSL;}
+    inline const coreFloat& VersionOpenGL()const {return m_fVersionOpenGL;}
+    inline const coreFloat& VersionGLSL  ()const {return m_fVersionGLSL;}
     //! @}
 
 

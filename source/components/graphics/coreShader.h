@@ -180,6 +180,11 @@ public:
     static void Disable(const coreBool& bFull);
     //! @}
 
+    //! execute a compute shader-program
+    //! @{
+    void DispatchCompute(const coreUint32& iGroupsX, const coreUint32& iGroupsY, const coreUint32& iGroupsZ);
+    //! @}
+
     //! define shader objects and attribute locations
     //! @{
     inline coreProgram* AttachShader (const coreShaderPtr& pShader)                            {if(!m_iStatus)  m_apShaderHandle.push_back(pShader.GetHandle());                              return this;}
