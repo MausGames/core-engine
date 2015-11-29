@@ -23,6 +23,7 @@
     #extension GL_EXT_shadow_samplers : enable
 #else
     #extension GL_ARB_uniform_buffer_object : enable
+    #extension GL_ARB_shader_group_vote     : enable
     #extension GL_AMD_shader_trinary_minmax : enable
 #endif
 #pragma optimize(on)
@@ -88,6 +89,15 @@ struct coreLight
     vec4 v4Direction;
     vec4 v4Value;
 };
+
+// condition across group of shader invocations
+#if defined(GL_ARB_shader_group_vote)
+    #define coreAnyInvocation(x)  (anyInvocationARB (x))
+    #define coreAllInvocations(x) (allInvocationsARB(x))
+#else
+    #define coreAnyInvocation(x)  (x)
+    #define coreAllInvocations(x) (x)
+#endif
 
 // trinary min and max
 #if defined(GL_AMD_shader_trinary_minmax)

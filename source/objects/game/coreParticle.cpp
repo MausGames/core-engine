@@ -34,7 +34,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32& iNumParticles)noexcept
     m_pDefaultEffect->m_pThis = m_pDefaultEffect;
 
     // create vertex array objects and instance data buffers
-    m_aiVertexArray.Fill(0u);
+    m_aiVertexArray.fill(0u);
     this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
@@ -84,11 +84,11 @@ void coreParticleSystem::Render()
         if(m_bUpdate)
         {
             // switch to next available array and buffer
-            m_aiVertexArray   .Next();
-            m_aiInstanceBuffer.Next();
+            m_aiVertexArray   .next();
+            m_aiInstanceBuffer.next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.Current().Map<coreByte>(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aiInstanceBuffer.current().Map<coreByte>(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)
@@ -118,7 +118,7 @@ void coreParticleSystem::Render()
             }
 
             // unmap buffer
-            m_aiInstanceBuffer.Current().Unmap(pRange);
+            m_aiInstanceBuffer.current().Unmap(pRange);
 
             // reset the update status
             m_bUpdate = false;
@@ -128,7 +128,7 @@ void coreParticleSystem::Render()
         coreModel::Disable(false);
 
         // draw the model instanced
-        glBindVertexArray(m_aiVertexArray.Current());
+        glBindVertexArray(m_aiVertexArray.current());
         Core::Manager::Object->GetLowModel()->DrawArraysInstanced(m_apRenderList.size());
     }
     else
@@ -293,12 +293,12 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
 
     if(bInit)
     {
-        FOR_EACH(it, *m_aiInstanceBuffer.List())
+        FOR_EACH(it, m_aiInstanceBuffer)
         {
             // create vertex array objects
-            glGenVertexArrays(1, &m_aiVertexArray.Current());
-            glBindVertexArray(m_aiVertexArray.Current());
-            m_aiVertexArray.Next();
+            glGenVertexArrays(1, &m_aiVertexArray.current());
+            glBindVertexArray(m_aiVertexArray.current());
+            m_aiVertexArray.next();
 
             // create instance data buffers
             it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
@@ -320,16 +320,16 @@ void coreParticleSystem::__Reset(const coreResourceReset& bInit)
     else
     {
         // delete vertex array objects
-        glDeleteVertexArrays(3, m_aiVertexArray);
-        m_aiVertexArray.Fill(0u);
+        glDeleteVertexArrays(3, m_aiVertexArray.data());
+        m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
-        FOR_EACH(it, *m_aiInstanceBuffer.List())
+        FOR_EACH(it, m_aiInstanceBuffer)
             it->Delete();
 
         // reset selected array and buffer (to synchronize)
-        m_aiVertexArray   .Select(0u);
-        m_aiInstanceBuffer.Select(0u);
+        m_aiVertexArray   .select(0u);
+        m_aiInstanceBuffer.select(0u);
     }
 }
 

@@ -36,6 +36,7 @@ CoreDebug::CoreDebug()noexcept
 , m_apInspect  {}
 , m_pOverall   (NULL)
 , m_Background ()
+, m_Loading    ()
 , m_bEnabled   (false)
 , m_bVisible   (false)
 {
@@ -56,6 +57,13 @@ CoreDebug::CoreDebug()noexcept
     m_Background.SetCenter    (coreVector2(-0.5f, 0.5f));
     m_Background.SetAlignment (coreVector2( 1.0f,-1.0f));
     m_Background.SetColor4    (coreVector4(0.05f,0.05f,0.05f,0.75f));
+
+    // create loading indicator
+    m_Loading.Construct   ("default.ttf", 16u, 0u, 0u);
+    m_Loading.SetCenter   (coreVector2(-0.5f, 0.5f));
+    m_Loading.SetAlignment(coreVector2( 1.0f,-1.0f));
+    m_Loading.SetColor3   (COLOR_ORANGE);
+    m_Loading.SetText     ("Loading");
 }
 
 
@@ -88,8 +96,8 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
         if(CORE_GL_SUPPORT(ARB_timer_query))
         {
             // create timer-query objects
-            glGenQueries(CORE_DEBUG_QUERIES, pNewMeasure->aaiQuery[0]);
-            glGenQueries(CORE_DEBUG_QUERIES, pNewMeasure->aaiQuery[1]);
+            glGenQueries(CORE_DEBUG_QUERIES, pNewMeasure->aaiQuery[0].data());
+            glGenQueries(CORE_DEBUG_QUERIES, pNewMeasure->aaiQuery[1].data());
 
             // already process later queries to remove invalid values
             for(coreUintW i = 1u; i < CORE_DEBUG_QUERIES; ++i)
@@ -111,7 +119,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
 
     // fetch first CPU time value and start GPU performance measurement
     pMeasure->iPerfTime = SDL_GetPerformanceCounter();
-    if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].Current(), GL_TIMESTAMP);
+    if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].current(), GL_TIMESTAMP);
 }
 
 
@@ -132,16 +140,16 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
     if(pMeasure->aaiQuery[0][0])
     {
         // end GPU performance measurement
-        glQueryCounter(pMeasure->aaiQuery[1].Current(), GL_TIMESTAMP);
+        glQueryCounter(pMeasure->aaiQuery[1].current(), GL_TIMESTAMP);
 
         // switch to next set of timer-queries (with older already-processed values, asynchronous)
-        pMeasure->aaiQuery[0].Next();
-        pMeasure->aaiQuery[1].Next();
+        pMeasure->aaiQuery[0].next();
+        pMeasure->aaiQuery[1].next();
 
         // fetch result from both timer-queries
         GLuint64 aiResult[2];
-        glGetQueryObjectui64v(pMeasure->aaiQuery[0].Current(), GL_QUERY_RESULT, &aiResult[0]);
-        glGetQueryObjectui64v(pMeasure->aaiQuery[1].Current(), GL_QUERY_RESULT, &aiResult[1]);
+        glGetQueryObjectui64v(pMeasure->aaiQuery[0].current(), GL_QUERY_RESULT, &aiResult[0]);
+        glGetQueryObjectui64v(pMeasure->aaiQuery[1].current(), GL_QUERY_RESULT, &aiResult[1]);
 
         // update GPU performance value
         const coreFloat fDifferenceGPU = coreFloat(coreDouble(aiResult[1] - aiResult[0]) / 1.0e06);
@@ -220,6 +228,14 @@ void CoreDebug::__UpdateOutput()
         fNewSizeX = MAX(fNewSizeX, pInspect->oOutput.GetSize().x + 0.005f);
     }
 
+    // move loading indicator
+    const coreBool bIsLoading = Core::Manager::Resource->IsLoading();
+    if(bIsLoading)
+    {
+        m_Loading.SetPosition(coreVector2(0.0f, I_TO_F(--iCurLine)*0.023f));
+        m_Loading.Move();
+    }
+
     // move background object (adjust size automatically)
     m_Background.SetSize(coreVector2(fNewSizeX, I_TO_F(1-iCurLine)*0.023f + 0.005f));
     m_Background.Move();
@@ -233,6 +249,7 @@ void CoreDebug::__UpdateOutput()
             m_Background.Render();
             FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
             FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
+            if(bIsLoading) m_Loading.Render();
         }
         glEnable(GL_DEPTH_TEST);
     }

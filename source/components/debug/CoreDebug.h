@@ -55,6 +55,7 @@ private:
     coreMeasure* m_pOverall;                   //!< pointer to overall performance output object
 
     coreObject2D m_Background;                 //!< background object to increase output readability
+    coreLabel    m_Loading;                    //!< resource manager loading indicator
 
     coreBool m_bEnabled;                       //!< debug-monitor is enabled (debug-build or debug-context)
     coreBool m_bVisible;                       //!< output is visible on screen

@@ -15,7 +15,6 @@
 // TODO: identify joysticks by ID (maybe switch to gamepad interface)
 // TODO: save GUID ?, format Name and GUID get functions
 // TODO: handle unsupported RelativeMouseMode, SDL_HINT_MOUSE_RELATIVE_MODE_WARP
-// TODO: change button-bools to bitfield-ints
 
 
 // ****************************************************************

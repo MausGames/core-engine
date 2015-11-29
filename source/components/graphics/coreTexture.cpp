@@ -20,7 +20,7 @@ coreTexture::coreTexture()noexcept
 {
 }
 
-coreTexture::coreTexture(const bool& bLoadCompressed)noexcept
+coreTexture::coreTexture(const coreBool& bLoadCompressed)noexcept
 : coreResource  ()
 , m_iTexture    (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))

@@ -253,9 +253,9 @@ void CoreGraphics::UpdateTransformation()
         const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
         // switch and check next available sync object
-        m_aTransformSync.Next();
-        m_aTransformSync.Current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
-        const coreUint32 iOffset = m_aTransformSync.Index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
+        m_aTransformSync.next();
+        m_aTransformSync.current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
+        const coreUint32 iOffset = m_aTransformSync.index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
 
         // bind and map required area of the UBO
         glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer, iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
@@ -271,7 +271,7 @@ void CoreGraphics::UpdateTransformation()
         m_TransformBuffer.Unmap(pRange);
 
         // create sync object
-        m_aTransformSync.Current().Create();
+        m_aTransformSync.current().Create();
     }
     else
     {
@@ -292,9 +292,9 @@ void CoreGraphics::UpdateAmbient()
     if(m_AmbientBuffer)
     {
         // switch and check next available sync object
-        m_aAmbientSync.Next();
-        m_aAmbientSync.Current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
-        const coreUint32 iOffset = m_aAmbientSync.Index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+        m_aAmbientSync.next();
+        m_aAmbientSync.current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
+        const coreUint32 iOffset = m_aAmbientSync.index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
 
         // bind and map required area of the UBO
         glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer, iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
@@ -305,7 +305,7 @@ void CoreGraphics::UpdateAmbient()
         m_AmbientBuffer.Unmap(pRange);
 
         // create sync object
-        m_aAmbientSync.Current().Create();
+        m_aAmbientSync.current().Create();
     }
     else
     {

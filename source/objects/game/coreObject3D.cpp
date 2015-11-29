@@ -241,7 +241,7 @@ coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
     m_apObjectList.reserve(iStartCapacity);
 
     // create vertex array objects and instance data buffers
-    m_aiVertexArray.Fill(0u);
+    m_aiVertexArray.fill(0u);
     if(iStartCapacity) this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
@@ -300,11 +300,11 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         if(CONTAINS_BIT(m_iUpdate, 0u))
         {
             // switch to next available array and buffer
-            m_aiVertexArray  .Next();
-            m_aInstanceBuffer.Next();
+            m_aiVertexArray  .next();
+            m_aInstanceBuffer.next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aInstanceBuffer.Current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aInstanceBuffer.current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)
@@ -332,7 +332,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             }
 
             // unmap buffer
-            m_aInstanceBuffer.Current().Unmap(pRange);
+            m_aInstanceBuffer.current().Unmap(pRange);
 
             // reset the update status
             REMOVE_BIT(m_iUpdate, 0u)
@@ -342,12 +342,12 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         coreModel::Disable(false);
 
         // bind vertex array object
-        glBindVertexArray(m_aiVertexArray.Current());
+        glBindVertexArray(m_aiVertexArray.current());
 
         // activate missing geometry data
-        if(!CONTAINS_BIT(m_iFilled, m_aiVertexArray.Index()))
+        if(!CONTAINS_BIT(m_iFilled, m_aiVertexArray.index()))
         {
-            ADD_BIT(m_iFilled, m_aiVertexArray.Index())
+            ADD_BIT(m_iFilled, m_aiVertexArray.index())
             STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_OBJECT3D_INSTANCE_BUFFERS)
 
             // set vertex data (model only)
@@ -536,12 +536,12 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
         // only allocate with enough capacity
         if(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
         {
-            FOR_EACH(it, *m_aInstanceBuffer.List())
+            FOR_EACH(it, m_aInstanceBuffer)
             {
                 // create vertex array object
-                glGenVertexArrays(1, &m_aiVertexArray.Current());
-                glBindVertexArray(m_aiVertexArray.Current());
-                m_aiVertexArray.Next();
+                glGenVertexArrays(1, &m_aiVertexArray.current());
+                glBindVertexArray(m_aiVertexArray.current());
+                m_aiVertexArray.next();
 
                 // create instance data buffers
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
@@ -556,8 +556,8 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
 
                 if(m_paCustomBuffer)
                 {
-                    coreVertexBuffer& oBuffer = m_paCustomBuffer->Current();
-                    m_paCustomBuffer->Next();
+                    coreVertexBuffer& oBuffer = m_paCustomBuffer->current();
+                    m_paCustomBuffer->next();
 
                     // also re-create and activate custom attribute buffer
                     oBuffer.Create(m_iCurCapacity, oBuffer.GetVertexSize(), NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
@@ -576,25 +576,25 @@ void coreBatchList::__Reset(const coreResourceReset& bInit)
     else
     {
         // delete vertex array objects
-        if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray);
-        m_aiVertexArray.Fill(0u);
+        if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray.data());
+        m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
-        FOR_EACH(it, *m_aInstanceBuffer.List())
+        FOR_EACH(it, m_aInstanceBuffer)
             it->Delete();
 
         // reset selected array and buffer (to synchronize)
-        m_aiVertexArray  .Select(0u);
-        m_aInstanceBuffer.Select(0u);
+        m_aiVertexArray  .select(0u);
+        m_aInstanceBuffer.select(0u);
 
         if(m_paCustomBuffer)
         {
             // delete custom attribute buffers (keep attributes and vertex size)
-            FOR_EACH(it, *m_paCustomBuffer->List())
+            FOR_EACH(it, *m_paCustomBuffer)
                 it->coreDataBuffer::Delete();
 
             // reset selected buffer (to synchronize)
-            m_paCustomBuffer->Select(0u);
+            m_paCustomBuffer->select(0u);
         }
     }
 }
