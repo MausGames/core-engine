@@ -539,7 +539,7 @@ void coreProgram::__WriteInterface()const
             coreChar acName[64];
             GLint    aiValue[2];
 
-            constexpr_var GLenum aiProperty[2] = {GL_LOCATION, GL_OFFSET};
+            constexpr GLenum aiProperty[] = {GL_LOCATION, GL_OFFSET};
 
             // get number of active shader-program resources
             glGetProgramInterfaceiv(m_iProgram, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &iNumInput);

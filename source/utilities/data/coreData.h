@@ -40,7 +40,7 @@ public:
     /*! create formatted string */
     //! @{
     template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
-    static constexpr_func           RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
+    static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
     //! @}
 
     /*! get application properties */
@@ -85,9 +85,9 @@ public:
     /*! operate with string data */
     //! @{
     template <typename F> static const coreChar* StrProcess(const coreChar* pcInput, F&& nFunction);   //!< [](const coreChar& cChar) -> coreChar
-    static constexpr_func coreUintW StrLenConst (const coreChar* s)                    {return *s ? 1u + StrLenConst(s+1u) : 0u;}
-    static constexpr_func coreBool  StrCmpConst (const coreChar* s, const coreChar* t) {return *s ? (*s == *t) && StrCmpConst(s+1u, t+1u) : !*t;}
-    static inline         coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return (*t == '*') ? StrCmpLike(s, t+1u) || (*s && StrCmpLike(s+1u, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1u, t+1u) : !*t;}
+    static constexpr    coreUintW   StrLenConst (const coreChar* s)                    {return *s ? 1u + StrLenConst(s+1u) : 0u;}
+    static constexpr    coreBool    StrCmpConst (const coreChar* s, const coreChar* t) {return *s ? (*s == *t) && StrCmpConst(s+1u, t+1u) : !*t;}
+    static inline       coreBool    StrCmpLike  (const coreChar* s, const coreChar* t) {return (*t == '*') ? StrCmpLike(s, t+1u) || (*s && StrCmpLike(s+1u, t)) : *s ? ((*t == '?') || (toupper(*s) == toupper(*t))) && StrCmpLike(s+1u, t+1u) : !*t;}
     static inline const coreChar*   StrUpper    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, toupper);}
     static inline const coreChar*   StrLower    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, tolower);}
     static const coreChar*          StrRight    (const coreChar* pcInput, const coreUintW& iNum);

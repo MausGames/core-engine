@@ -157,7 +157,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 , m_ptValueCache (NULL)
 , m_ptKeyCache   (NULL)
 {
-    constexpr_var coreUintW iSize = MAX(64u / sizeof(T), 2u);
+    constexpr coreUintW iSize = MAX(64u / sizeof(T), 2u);
 
     // pre-allocate some memory
     m_atValueList.reserve(iSize);

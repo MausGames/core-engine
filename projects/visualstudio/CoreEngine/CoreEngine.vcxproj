@@ -317,6 +317,7 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreSet.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\hash\CRC32.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreArchive.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreConfig.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreLanguage.h" />

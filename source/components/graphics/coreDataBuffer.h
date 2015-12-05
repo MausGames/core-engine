@@ -57,7 +57,7 @@ private:
 
 
 public:
-    constexpr_func coreDataBuffer()noexcept;
+    constexpr coreDataBuffer()noexcept;
     inline coreDataBuffer(coreDataBuffer&& m)noexcept;
     ~coreDataBuffer();
 
@@ -166,7 +166,7 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr_func coreDataBuffer::coreDataBuffer()noexcept
+constexpr coreDataBuffer::coreDataBuffer()noexcept
 : m_iDataBuffer       (0u)
 , m_iStorageType      (CORE_DATABUFFER_STORAGE_STATIC)
 , m_iTarget           (0u)

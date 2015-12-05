@@ -32,7 +32,7 @@ private:
 
 
 public:
-    constexpr_func coreSync()noexcept;
+    constexpr coreSync()noexcept;
     inline coreSync(coreSync&& m)noexcept;
     ~coreSync();
 
@@ -62,7 +62,7 @@ public:
 
 // ****************************************************************
 /* constructor */
-constexpr_func coreSync::coreSync()noexcept
+constexpr coreSync::coreSync()noexcept
 : m_pSync (NULL)
 {
 }

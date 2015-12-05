@@ -59,11 +59,10 @@ CoreDebug::CoreDebug()noexcept
     m_Background.SetColor4    (coreVector4(0.05f,0.05f,0.05f,0.75f));
 
     // create loading indicator
-    m_Loading.Construct   ("default.ttf", 16u, 0u, 0u);
+    m_Loading.Construct   ("default.ttf", 16u, 0u, 16u);
     m_Loading.SetCenter   (coreVector2(-0.5f, 0.5f));
     m_Loading.SetAlignment(coreVector2( 1.0f,-1.0f));
     m_Loading.SetColor3   (COLOR_ORANGE);
-    m_Loading.SetText     ("Loading");
 }
 
 
@@ -229,10 +228,11 @@ void CoreDebug::__UpdateOutput()
     }
 
     // move loading indicator
-    const coreBool bIsLoading = Core::Manager::Resource->IsLoading();
-    if(bIsLoading)
+    const coreUintW iLoadingNum = Core::Manager::Resource->IsLoadingNum();
+    if(iLoadingNum)
     {
         m_Loading.SetPosition(coreVector2(0.0f, I_TO_F(--iCurLine)*0.023f));
+        m_Loading.SetText(PRINT("Loading (%d)", iLoadingNum));
         m_Loading.Move();
     }
 
@@ -249,7 +249,7 @@ void CoreDebug::__UpdateOutput()
             m_Background.Render();
             FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
             FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
-            if(bIsLoading) m_Loading.Render();
+            if(iLoadingNum) m_Loading.Render();
         }
         glEnable(GL_DEPTH_TEST);
     }

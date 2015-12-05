@@ -374,7 +374,7 @@ void CoreGraphics::__UpdateScene()
     // explicitly invalidate depth buffer
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
-        constexpr_var GLenum aiAttachment[] = {GL_DEPTH};
+        constexpr GLenum aiAttachment[] = {GL_DEPTH};
         glInvalidateFramebuffer(GL_FRAMEBUFFER, ARRAY_SIZE(aiAttachment), aiAttachment);
     }
 

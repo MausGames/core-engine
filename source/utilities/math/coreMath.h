@@ -61,18 +61,18 @@ public:
 
     /*! special operations */
     //! @{
-    template <typename T, typename S, typename... A> static constexpr_func T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S, typename... A> static constexpr_func T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S>                static constexpr_func T Min  (const T& x, const S& y)               {return y ^ ((x ^ y) & -(x < y));}
-    template <typename T, typename S>                static constexpr_func T Max  (const T& x, const S& y)               {return x ^ ((x ^ y) & -(x < y));}
-    template <typename T, typename S, typename R>    static constexpr_func T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr_func T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
-    template <typename T> static constexpr_func T        Abs       (const T& x)                                          {return std::abs(x);}
-    template <typename T> static constexpr_func T        Lerp      (const T& x, const T& y, const coreFloat& s)          {return x + (y - x) * s;}
-    template <typename T> static inline         T        LerpSmooth(const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline         T        LerpBreak (const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, SIN(s*PI*0.5f));}
-    template <typename T> static constexpr_func coreBool InRange   (const T& x, const T& c, const T& r)                  {return ABS(x - c) <= r;}
-    template <typename T> static constexpr_func coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
+    template <typename T, typename S, typename... A> static constexpr T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S, typename... A> static constexpr T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S>                static constexpr T Min  (const T& x, const S& y)               {return y ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S>                static constexpr T Max  (const T& x, const S& y)               {return x ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S, typename R>    static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
+    template <typename T> static inline    T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
+    template <typename T> static inline    T        Abs       (const T& x)                                          {return std::abs(x);}
+    template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat& s)          {return x + (y - x) * s;}
+    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                  {return (x - c)*(x - c) <= r*r;}
+    template <typename T> static constexpr coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */
@@ -127,8 +127,8 @@ public:
 #else
 
     // normal calculation
-    template <> constexpr_func coreFloat coreMath::Min(const coreFloat& x, const coreFloat& y) {return (x < y) ? x : y;}
-    template <> constexpr_func coreFloat coreMath::Max(const coreFloat& x, const coreFloat& y) {return (x > y) ? x : y;}
+    template <> constexpr coreFloat coreMath::Min(const coreFloat& x, const coreFloat& y) {return (x < y) ? x : y;}
+    template <> constexpr coreFloat coreMath::Max(const coreFloat& x, const coreFloat& y) {return (x > y) ? x : y;}
 
 #endif
 

@@ -78,7 +78,7 @@ struct coreTextureSpec
     GLenum iType;       //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
 
     coreTextureSpec() = default;
-    constexpr_func coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept;
+    constexpr coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept;
 };
 
 
@@ -176,7 +176,7 @@ using coreTexturePtr = coreResourcePtr<coreTexture>;
 
 // ****************************************************************
 // constructor
-constexpr_func coreTextureSpec::coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept
+constexpr coreTextureSpec::coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept
 : iInternal (iInternal)
 , iFormat   (iFormat)
 , iType     (iType)

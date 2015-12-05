@@ -96,8 +96,8 @@ SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint8
         this->__InitHeight(iHeight, iOutline);
 
     // define color
-    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu, 0xFFu};
-    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u, 0xFFu};
+    constexpr SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu, 0xFFu};
+    constexpr SDL_Color aiBack  = {0x00u, 0x00u, 0x00u, 0xFFu};
 
     // render and return the text surface
     return TTF_RenderUTF8_Shaded(m_aapFont.at(iHeight).at(iOutline), (pcText[0] == '\0') ? " " : pcText, aiFront, aiBack);
@@ -110,8 +110,8 @@ SDL_Surface* coreFont::CreateGlyphOutline(const coreUint16& iGlyph, const coreUi
         this->__InitHeight(iHeight, iOutline);
 
     // define color
-    constexpr_var SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu, 0xFFu};
-    constexpr_var SDL_Color aiBack  = {0x00u, 0x00u, 0x00u, 0xFFu};
+    constexpr SDL_Color aiFront = {0xFFu, 0xFFu, 0xFFu, 0xFFu};
+    constexpr SDL_Color aiBack  = {0x00u, 0x00u, 0x00u, 0xFFu};
 
     // render and return the text surface
     return TTF_RenderGlyph_Shaded(m_aapFont.at(iHeight).at(iOutline), iGlyph, aiFront, aiBack);

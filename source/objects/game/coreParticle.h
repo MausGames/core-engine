@@ -55,7 +55,7 @@ private:
 
 
 private:
-    constexpr_func coreParticle()noexcept;
+    constexpr coreParticle()noexcept;
     ~coreParticle() {}
 
 
@@ -247,7 +247,7 @@ public:
 
 // ****************************************************************
 // constructor
-constexpr_func coreParticle::coreParticle()noexcept
+constexpr coreParticle::coreParticle()noexcept
 : m_CurrentState {}
 , m_MoveState    {}
 , m_fValue       (0.0f)

@@ -90,7 +90,8 @@ public:
     //! @{
     inline coreResource*   GetResource()const {return m_pResource;}
     inline const coreBool& IsAutomatic()const {return m_bAutomatic;}
-    inline       coreBool  IsLoaded   ()const {return (m_iStatus != CORE_BUSY) ? true : false;}
+    inline       coreBool  IsLoaded   ()const {return (m_iStatus != CORE_BUSY)           ? true : false;}
+    inline       coreBool  IsLoading  ()const {return (!this->IsLoaded() && m_iRefCount) ? true : false;}
     //! @}
 
     /*! control the reference-counter */
@@ -136,7 +137,7 @@ private:
 
 
 public:
-    constexpr_func explicit coreResourcePtr(std::nullptr_t p = NULL)noexcept;
+    constexpr explicit coreResourcePtr(std::nullptr_t p = NULL)noexcept;
     coreResourcePtr(coreResourceHandle* pHandle)noexcept;
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
@@ -214,7 +215,8 @@ public:
     /*! update the resource manager */
     //! @{
     void UpdateResources();
-    inline coreBool IsLoading()const {FOR_EACH(it, m_apHandle) {if(!(*it)->IsLoaded() && (*it)->GetRefCount()) return true;} return false;}
+    inline coreBool  IsLoading   ()const {return std::any_of  (m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
+    inline coreUintW IsLoadingNum()const {return std::count_if(m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
     //! @}
 
     /*! create and delete resource and resource handle */
@@ -287,7 +289,7 @@ template <typename F> void coreResourceHandle::OnLoadOnce(F&& nFunction)const
 
 // ****************************************************************
 /* constructor */
-template <typename T> constexpr_func coreResourcePtr<T>::coreResourcePtr(std::nullptr_t)noexcept
+template <typename T> constexpr coreResourcePtr<T>::coreResourcePtr(std::nullptr_t)noexcept
 : m_pHandle (NULL)
 {
 }

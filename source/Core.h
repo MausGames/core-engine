@@ -198,18 +198,10 @@
 #endif
 
 #if defined(_CORE_MSVC_)
-    #define noexcept       throw()   //!< exceptions disabled
-    #define constexpr_var  const
-    #define constexpr_func inline
+    #define noexcept  throw()   //!< exceptions disabled
+    #define CONSTEXPR inline
 #else
-    #define constexpr_var  constexpr
-    #define constexpr_func constexpr
-#endif
-
-#if defined(_CORE_CLANG_)
-    #define constexpr_cast inline
-#else
-    #define constexpr_cast constexpr_func
+    #define CONSTEXPR constexpr
 #endif
 
 #if defined(_CORE_MSVC_)
@@ -303,14 +295,14 @@
     void  operator delete[] (void*)              = delete;
 
 // enable bitwise-operations with the defined enumeration
-#define ENABLE_BITWISE(e)                                                                                                                                            \
-    constexpr_func e  operator ~  (const e& a)             {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
-    constexpr_func e  operator |  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr_func e  operator &  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr_func e  operator ^  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
-    inline         e& operator |= (e&       a, const e& b) {return (a = a | b);}                                                                                     \
-    inline         e& operator &= (e&       a, const e& b) {return (a = a & b);}                                                                                     \
-    inline         e& operator ^= (e&       a, const e& b) {return (a = a ^ b);}
+#define ENABLE_BITWISE(e)                                                                                                                                       \
+    constexpr e  operator ~  (const e& a)             {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
+    constexpr e  operator |  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr e  operator &  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr e  operator ^  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
+    inline    e& operator |= (e&       a, const e& b) {return (a = a | b);}                                                                                     \
+    inline    e& operator &= (e&       a, const e& b) {return (a = a & b);}                                                                                     \
+    inline    e& operator ^= (e&       a, const e& b) {return (a = a ^ b);}
 
 // shorter common keywords
 #define f_list forward_list
@@ -345,7 +337,7 @@ using coreFloat  = float;
 using coreDouble = double;
 
 // user-defined literals
-constexpr_func coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
+constexpr coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
 
 // override string comparison operator (faster but insecure)
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
@@ -506,7 +498,7 @@ public:
 private:
     /*! run engine */
     //! @{
-    friend ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar* argv[]);
+    friend ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar** argv);
     static coreStatus Run();
     //! @}
 };
@@ -533,6 +525,7 @@ private:
 #include "utilities/math/coreVector.h"
 #include "utilities/math/coreMatrix.h"
 #include "utilities/math/coreSpline.h"
+#include "utilities/data/hash/CRC32.h" // ###
 #include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
 #include "components/system/coreThread.h"

@@ -102,6 +102,8 @@ vec2 (u_v2TexOffset)   // texture offset (not with particles or on instancing)
 
 ## Functions ##
 
+bool  coreAnyInvocation       (in bool)            // condition across group of shader invocations
+bool  coreAllInvocations      (in bool)
 T     coreMin3                (in T, in T, in T)   // trinary minimum
 T     coreMax3                (in T, in T, in T)   // trinary maximum
 vec3  coreHSVtoRGB            (in vec3)            // HSV to RGB conversion
