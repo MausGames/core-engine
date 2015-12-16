@@ -13,6 +13,8 @@
 // TODO: implement quicksort and binary search (std::lower_bound)
 // TODO: measure performance with high amount of entries (>200), but should not be as good as (unordered_)map
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
+// TODO: check for detection of inconsistent vector-manipulation (changing value-ordering through iterator, without changing the key-ordering)
+// TODO: string hashing
 
 
 // ****************************************************************
@@ -72,7 +74,14 @@ public:
     //! @{
     coreBool                 erase(const I& tKey);
     inline coreValueIterator erase(const coreValueIterator& it) {this->_cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}
-    inline void              clear()                            {this->_cache_clear(); m_atValueList.clear(); m_atKeyList.clear();}
+    inline void              clear()                            {this->_cache_clear(); m_atValueList.clear();    m_atKeyList.clear();}
+    inline void              pop_back ()                        {this->_cache_clear(); m_atValueList.pop_back(); m_atKeyList.pop_back();}
+    inline void              pop_front()                        {this->_cache_clear(); this->erase(this->front());}
+    //! @}
+
+    /*! manipulate container structure */
+    //! @{
+    inline void reverse() {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
     //! @}
 
     /*! return first and last entry */
@@ -133,7 +142,9 @@ template <typename K, typename T> using coreLookup = coreLookupGen<K, K, T>;
 template <typename T> class coreLookupStr final : public coreLookupGen<std::string, const coreChar*, T>
 {
 public:
-    coreLookupStr()noexcept {}
+    coreLookupStr() = default;
+
+    ENABLE_COPY(coreLookupStr)
 
     /*! access specific entry */
     //! @{

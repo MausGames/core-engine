@@ -17,7 +17,7 @@
 
 // ****************************************************************
 /* math definitions */
-#define CORE_MATH_PRECISION (0.0001f)                              //!< default floating-point precision
+#define CORE_MATH_PRECISION (0.001f)                               //!< default floating-point precision
 
 #define PI (3.1415926535897932384626433832795f)                    //!< Archimedes' constant
 #define EU (2.7182818284590452353602874713527f)                    //!< Euler's number

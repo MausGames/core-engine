@@ -98,21 +98,21 @@ const coreChar* coreData::SystemName()
 
     // detect actual Windows version (GetVersionEx() is deprecated)
     coreUint32 i, j, k;
-    for(i = 5u; IsWindowsVersionOrGreater(i, 0u, 0u); ++i) {} --i; coreUint32& iMajor = i;
-    for(j = 0u; IsWindowsVersionOrGreater(i,  j, 0u); ++j) {} --j; coreUint32& iMinor = j;
-    for(k = 0u; IsWindowsVersionOrGreater(i,  j,  k); ++k) {} --k; coreUint32& iPack  = k;
+    for(i = 5u; IsWindowsVersionOrGreater(i, 0u, 0u); ++i) {} --i; const coreUint32& iMajor = i;
+    for(j = 0u; IsWindowsVersionOrGreater(i,  j, 0u); ++j) {} --j; const coreUint32& iMinor = j;
+    for(k = 0u; IsWindowsVersionOrGreater(i,  j,  k); ++k) {} --k; const coreUint32& iPack  = k;
 
     // map to corresponding sub-name
-    const coreChar* pcSubString = NULL;
+    const coreChar* pcSubString;
     switch(iMajor*10u + iMinor)
     {
-    case 64u: pcSubString = "10";    break;
-    case 63u: pcSubString = "8.1";   break;
-    case 62u: pcSubString = "8";     break;
-    case 61u: pcSubString = "7";     break;
-    case 60u: pcSubString = "Vista"; break;
-    case 51u: pcSubString = "XP";    break;
-    case 50u: pcSubString = "2000";  break;
+    case 100u: pcSubString = "10";    break;
+    case  63u: pcSubString = "8.1";   break;
+    case  62u: pcSubString = "8";     break;
+    case  61u: pcSubString = "7";     break;
+    case  60u: pcSubString = "Vista"; break;
+    case  51u: pcSubString = "XP";    break;
+    case  50u: pcSubString = "2000";  break;
 
     default:
         pcSubString = PRINT("v%d.%d", iMajor, iMinor);
@@ -219,7 +219,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 #else
 
     // open file
-    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "r");
+    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "rb");
     if(pFile)
     {
         // file exists
@@ -227,6 +227,44 @@ coreBool coreData::FileExists(const coreChar* pcPath)
         return true;
     }
     return false;
+
+#endif
+}
+
+
+// ****************************************************************
+/* retrieve file size */
+coreInt64 coreData::FileSize(const coreChar* pcPath)
+{
+#if defined(_CORE_WINDOWS_)
+
+    // get extended file attributes
+    WIN32_FILE_ATTRIBUTE_DATA oAttributes;
+    if(!GetFileAttributesEx(pcPath, GetFileExInfoStandard, &oAttributes)) return -1;
+
+    // return combined size
+    return (coreInt64(oAttributes.nFileSizeHigh) << 32u) |
+           (coreInt64(oAttributes.nFileSizeLow));
+
+#elif defined(_CORE_LINUX_)
+
+    // quick Linux check (with POSIX)
+    struct stat oBuffer;
+    return stat(pcPath, &oBuffer) ? -1 : oBuffer.st_size;
+
+#else
+
+    // open file
+    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "rb");
+    if(pFile)
+    {
+        // get size from stream
+        const coreInt64 iSize = SDL_RWsize(pFile);
+        SDL_RWclose(pFile);
+
+        return iSize;
+    }
+    return -1;
 
 #endif
 }

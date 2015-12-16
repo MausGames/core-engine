@@ -12,6 +12,7 @@
 
 // TODO: implement memory management, duh'
 // TODO: check if Share return is optimized
+// TODO: asynchronous memory defragmentation
 
 
 // ****************************************************************

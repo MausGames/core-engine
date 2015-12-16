@@ -181,6 +181,9 @@
     <PostBuildEvent>
       <Command>..\..\..\..\CoreEngine\tools\scripts\sign_app.bat $(OutDir)$(TargetFileName)</Command>
     </PostBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>$(SolutionDir)manifest.xml</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -216,6 +219,9 @@
     <PostBuildEvent>
       <Command>..\..\..\..\CoreEngine\tools\scripts\sign_app.bat $(OutDir)$(TargetFileName)</Command>
     </PostBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>$(SolutionDir)manifest.xml</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

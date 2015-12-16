@@ -80,9 +80,13 @@ void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iS
     }
     pLog->ListEnd();
 
+#if defined(_CORE_DEBUG_)
+
     // also show message box
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OpenGL Error", pcMessage, NULL);
     WARN_IF(true) {}
+
+#endif
 }
 
 
@@ -100,7 +104,7 @@ void coreLog::DebugOpenGL()
 
         // set callback function and filter
         glDebugMessageCallback(&WriteOpenGL, this);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
     }
 }
 
@@ -133,7 +137,7 @@ void coreLog::__Write(const coreBool& bTime, std::string sText)
 
             // write timestamp and thread-ID
             std::fprintf(m_pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
-                            coreData::TimeString(), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
+                         coreData::TimeString(), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
         }
 
         // write text

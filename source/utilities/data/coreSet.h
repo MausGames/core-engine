@@ -16,6 +16,10 @@
 template <typename T> class coreSet final : public std::vector<T>
 {
 public:
+    coreSet() = default;
+
+    ENABLE_COPY(coreSet)
+
     /*! insert new unique item */
     //! @{
     using std::vector<T>::insert;

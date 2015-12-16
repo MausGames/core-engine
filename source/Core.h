@@ -50,7 +50,7 @@
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 // TODO: reduce core-prefix ? (e.g. cr)
 // TODO: unique pointers and move semantics for functions taking ownership of a pointer
-// TODO: video class
+// TODO: video class, string class, path class
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 

@@ -20,20 +20,13 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
 {
     if(m_sPath.empty()) return;
 
-    // open file
-    SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
-    if(!pFile)
-    {
-        Core::Log->Warning("File (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError());
-        return;
-    }
+    // retrieve and clamp file size
+    const coreInt64 iFullSize = coreData::FileSize(m_sPath.c_str());
+    if((0 <= iFullSize) && (iFullSize <= 0xFFFFFFFF)) m_iSize = iFullSize;
 
-    // get file size
-    m_iSize = coreUint32(SDL_RWsize(pFile));
-
-    // close file
-    SDL_RWclose(pFile);
-    Core::Log->Info("File (%s:%u) opened", m_sPath.c_str(), m_iSize);
+    // check for success
+    if(!m_iSize) Core::Log->Warning("File (%s) could not be opened", m_sPath.c_str());
+            else Core::Log->Info   ("File (%s:%u) opened",           m_sPath.c_str(), m_iSize);
 }
 
 coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32& iSize)noexcept

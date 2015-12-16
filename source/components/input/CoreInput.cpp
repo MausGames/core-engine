@@ -30,7 +30,7 @@ CoreInput::CoreInput()noexcept
             m_aJoystick.reserve(iNumJoysticks);
             for(coreUintW i = 0u; i < iNumJoysticks; ++i)
             {
-                coreJoystick oJoystick;
+                coreJoystick oJoystick = {};
 
                 // open game controller and joystick device
                 oJoystick.pController = SDL_GameControllerOpen(i);

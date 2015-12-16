@@ -22,7 +22,7 @@
 
 // ****************************************************************
 // music definitions
-#define CORE_MUSIC_CHUNK (0x4000u)   //!< size of a music stream chunk in bytes
+#define CORE_MUSIC_CHUNK (0x2000u)   //!< size of a music stream chunk in bytes
 
 enum coreMusicRepeat : coreUint8
 {
