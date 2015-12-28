@@ -132,16 +132,16 @@ void coreResourceManager::UpdateResources()
 
 // ****************************************************************
 /* retrieve archive */
-coreArchive* coreResourceManager::RetrieveArchive(const coreChar* pcPath)
+coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 {
     coreLockRelease oRelease(m_iFileLock);
 
     // check for existing archive
-    if(m_apArchive.count(pcPath)) return m_apArchive[pcPath];
+    if(m_apArchive.count(sPath)) return m_apArchive.at(sPath);
 
     // load new archive
-    coreArchive* pNewArchive = new coreArchive(pcPath);
-    m_apArchive[pcPath] = pNewArchive;
+    coreArchive* pNewArchive = new coreArchive(sPath.GetString());
+    m_apArchive[sPath] = pNewArchive;
 
     ASSERT(pNewArchive->GetNumFiles())
     return pNewArchive;
@@ -150,17 +150,17 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreChar* pcPath)
 
 // ****************************************************************
 /* retrieve resource file */
-coreFile* coreResourceManager::RetrieveFile(const coreChar* pcPath)
+coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 {
     coreLockRelease oRelease(m_iFileLock);
 
     // try to open direct resource file first
-    if(!coreData::FileExists(pcPath))
+    if(!coreData::FileExists(sPath.GetString()))
     {
         // check archives
         FOR_EACH(it, m_apArchive)
         {
-            coreFile* pFile = (*it)->GetFile(pcPath);
+            coreFile* pFile = (*it)->GetFile(sPath.GetString());
             if(pFile) return pFile;
         }
 
@@ -169,11 +169,11 @@ coreFile* coreResourceManager::RetrieveFile(const coreChar* pcPath)
     }
 
     // check for existing direct resource file
-    if(m_apDirectFile.count(pcPath)) return m_apDirectFile[pcPath];
+    if(m_apDirectFile.count(sPath)) return m_apDirectFile.at(sPath);
 
     // load new direct resource file
-    coreFile* pNewFile = new coreFile(pcPath);
-    m_apDirectFile[pcPath] = pNewFile;
+    coreFile* pNewFile = new coreFile(sPath.GetString());
+    m_apDirectFile[sPath] = pNewFile;
 
     return pNewFile;
 }

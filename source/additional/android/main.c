@@ -37,7 +37,7 @@ void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* pEnv, jclass pCls, jobje
     SDL_SetMainReady();
 
     // run the application
-    char* argv[2] = {SDL_strdup("SDL_app"), NULL};
+    char* argv[2] = {SDL_strdup("CoreApp"), NULL};
     SDL_main(1, argv);
 }
 

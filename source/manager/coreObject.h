@@ -66,10 +66,12 @@ public:
 
     /*! define the visual appearance */
     //! @{
-    inline const coreTexturePtr& DefineTexture(const coreUintW& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;                                          return m_apTexture[iUnit];}
-    inline const coreTexturePtr& DefineTexture(const coreUintW& iUnit, const coreChar*       pcName)   {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(pcName); return m_apTexture[iUnit];}
-    inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram)                         {m_pProgram = pProgram;                                          return m_pProgram;}
-    inline const coreProgramPtr& DefineProgram(const coreChar*       pcName)                           {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
+    inline void DefineTexture(const coreUintW& iUnit, std::nullptr_t)                 {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = NULL;}
+    inline void DefineTexture(const coreUintW& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
+    inline void DefineTexture(const coreUintW& iUnit, const coreHashString& sName)    {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(sName);}
+    inline void DefineProgram(std::nullptr_t)                                         {m_pProgram = NULL;}
+    inline void DefineProgram(const coreProgramPtr& pProgram)                         {m_pProgram = pProgram;}
+    inline void DefineProgram(const coreHashString& sName)                            {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
     //! @}
 
     /*! check for enabled object routines */

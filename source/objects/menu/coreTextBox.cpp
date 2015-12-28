@@ -25,22 +25,22 @@ coreTextBox::coreTextBox()noexcept
 {
 }
 
-coreTextBox::coreTextBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
+coreTextBox::coreTextBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreTextBox ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, iLength);
+    this->Construct(sIdle, sBusy, sFont, iHeight, iOutline, iLength);
 }
 
 
 // ****************************************************************
 // construct the text-box
-void coreTextBox::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
+void coreTextBox::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     ASSERT(iLength)
 
     // construct the button
-    coreButton::Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, iLength);
+    coreButton::Construct(sIdle, sBusy, sFont, iHeight, iOutline, iLength);
 
     // reserve memory for text
     m_sText    .reserve(iLength);

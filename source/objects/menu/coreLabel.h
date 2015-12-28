@@ -55,14 +55,14 @@ private:
 
 public:
     coreLabel()noexcept;
-    coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreLabel(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
     ~coreLabel();
 
     DISABLE_COPY(coreLabel)
 
     //! construct the label
     //! @{
-    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
     //! @}
 
     //! render and move the label
@@ -73,10 +73,10 @@ public:
 
     //! set object properties
     //! @{
-    coreBool    SetText        (const coreChar*  pcText);
-    coreBool    SetText        (const coreChar*  pcText, const coreUint8& iNum);
-    inline void SetTextLanguage(const coreChar*  pcKey)  {this->_BindString(&m_sText, pcKey);}
-    inline void SetScale       (const coreFloat& fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
+    coreBool    SetText        (const coreChar*       pcText);
+    coreBool    SetText        (const coreChar*       pcText, const coreUint8& iNum);
+    inline void SetTextLanguage(const coreHashString& sKey)   {this->_BindString(&m_sText, sKey);}
+    inline void SetScale       (const coreFloat&      fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
     //! @}
 
     //! get object properties

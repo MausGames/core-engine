@@ -51,7 +51,7 @@ public:
 protected:
     /*! bind and unbind own string pointers */
     //! @{
-    void _BindString  (std::string* psString, const coreChar* pcKey);
+    void _BindString  (std::string* psString, const coreHashString& sKey);
     void _UnbindString(std::string* psString);
     //! @}
 
@@ -87,12 +87,12 @@ public:
     /*! load and access the language file */
     //! @{
     coreStatus Load(const coreChar* pcPath);
-    inline const coreChar* GetString(const coreChar* pcKey)const {return m_asStringList.count(pcKey) ? m_asStringList.at(pcKey).c_str() : pcKey;}
+    inline const coreChar* GetString(const coreHashString& sKey)const {return m_asStringList.count(sKey) ? m_asStringList.at(sKey).c_str() : sKey.GetString();}
     //! @}
 
     /*! bind and unbind foreign string pointers */
     //! @{
-    void        BindForeign  (std::string* psForeign, const coreChar* pcKey);
+    void        BindForeign  (std::string* psForeign, const coreHashString& sKey);
     inline void UnbindForeign(std::string* psForeign) {ASSERT(m_apsForeign.count(psForeign)) m_apsForeign.erase(psForeign);}
     //! @}
 

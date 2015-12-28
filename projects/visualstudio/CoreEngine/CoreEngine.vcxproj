@@ -56,13 +56,13 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -97,8 +97,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level4</WarningLevel>
@@ -110,25 +108,18 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>SDL2main.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level4</WarningLevel>
@@ -139,25 +130,18 @@
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>SDL2main.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -171,7 +155,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
-      <AdditionalOptions>/Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <ExceptionHandling>false</ExceptionHandling>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
@@ -191,8 +175,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -205,7 +187,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
-      <AdditionalOptions>/Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <ExceptionHandling>false</ExceptionHandling>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
@@ -237,6 +219,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGL.cpp" />
+    <ClCompile Include="..\..\..\source\additional\windows\main.c" />
     <ClCompile Include="..\..\..\source\components\audio\CoreAudio.cpp" />
     <ClCompile Include="..\..\..\source\components\audio\coreMusic.cpp" />
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp" />
@@ -314,6 +297,7 @@
     <ClInclude Include="..\..\..\source\objects\menu\coreTextBox.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreArray.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreData.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreHashString.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreSet.h" />

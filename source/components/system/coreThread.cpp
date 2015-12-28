@@ -108,11 +108,7 @@ coreStatus coreThread::__Main()
         do
         {
             // wait for next frame or execution
-#if defined(_CORE_SSE_)
-            _mm_pause();
-#else
             SDL_Delay(1u);
-#endif
         }
         while((iCurFrame >= Core::System->GetCurFrame()) && (iCurExecution == m_iExecutions) && m_bActive);
 

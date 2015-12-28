@@ -9,9 +9,9 @@
 #define _HAS_EXCEPTIONS (0)
 #define WIN32_LEAN_AND_MEAN
 
-#pragma warning (disable : 4100)
+#pragma warning(disable : 4100)
 
-#include <Windows.h>
+#include <windows.h>
 #include <shellapi.h>
 
 #include <string>

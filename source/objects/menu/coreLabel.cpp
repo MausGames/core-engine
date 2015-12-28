@@ -26,11 +26,11 @@ coreLabel::coreLabel()noexcept
 {
 }
 
-coreLabel::coreLabel(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
+coreLabel::coreLabel(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreLabel ()
 {
     // construct on creation
-    this->Construct(pcFont, iHeight, iOutline, iLength);
+    this->Construct(sFont, iHeight, iOutline, iLength);
 }
 
 
@@ -45,7 +45,7 @@ coreLabel::~coreLabel()
 
 // ****************************************************************
 // construct the label
-void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
+void coreLabel::Construct(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     // save properties
     m_iHeight  = iHeight;
@@ -53,7 +53,7 @@ void coreLabel::Construct(const coreChar* pcFont, const coreUint8& iHeight, cons
     m_iLength  = iLength;
 
     // set font object
-    m_pFont = Core::Manager::Resource->Get<coreFont>(pcFont);
+    m_pFont = Core::Manager::Resource->Get<coreFont>(sFont);
 
     // allocate own texture to display text
     if(m_apTexture[1]) Core::Manager::Resource->Free(&m_apTexture[1]);

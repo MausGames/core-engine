@@ -20,7 +20,6 @@
 				<Linker>
 					<Add option="-mwindows" />
 					<Add library="MinGW32" />
-					<Add library="SDL2main" />
 					<Add library="CoreEngine_mingw_debug" />
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />
@@ -78,7 +77,6 @@
 					<Add option="-static-libstdc++" />
 					<Add option="-mwindows" />
 					<Add library="MinGW32" />
-					<Add library="SDL2main" />
 					<Add library="CoreEngine_mingw" />
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />

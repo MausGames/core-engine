@@ -43,16 +43,16 @@ private:
 
 public:
     coreSwitchBox()noexcept;
-    coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
-    coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreSwitchBox(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
     ~coreSwitchBox();
 
     DISABLE_COPY(coreSwitchBox)
 
     //! construct the switch-box
     //! @{
-    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
-    void Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
     //! @}
 
     //! render and move the switch-box
@@ -63,9 +63,9 @@ public:
 
     //! manage entries
     //! @{
-    void AddEntry        (const coreChar*  pcText, const T& tValue);
-    void AddEntryLanguage(const coreChar*  pcKey,  const T& tValue);
-    void DeleteEntry     (const coreUintW& iIndex);
+    void AddEntry        (const coreChar*       pcText, const T& tValue);
+    void AddEntryLanguage(const coreHashString& sKey,   const T& tValue);
+    void DeleteEntry     (const coreUintW&      iIndex);
     void ClearEntries();
     //! @}
 
@@ -128,18 +128,18 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 {
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, iLength);
+    this->Construct(sIdle, sBusy, sFont, iHeight, iOutline, iLength);
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
-    this->Construct(pcFont, iHeight, iOutline, iLength);
+    this->Construct(sFont, iHeight, iOutline, iLength);
 }
 
 
@@ -154,24 +154,24 @@ template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 
 // ****************************************************************
 // construct the switch-box
-template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
+template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     // create selection arrows
-    m_aArrow[0].Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, 0u);
-    m_aArrow[1].Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, 0u);
+    m_aArrow[0].Construct(sIdle, sBusy, sFont, iHeight, iOutline, 0u);
+    m_aArrow[1].Construct(sIdle, sBusy, sFont, iHeight, iOutline, 0u);
     m_aArrow[0].SetAlpha (0.0f);
     m_aArrow[1].SetAlpha (0.0f);
     m_aArrow[0].GetCaption()->SetText("<");
     m_aArrow[1].GetCaption()->SetText(">");
 
     // construct remaining object
-    this->Construct(pcFont, iHeight, iOutline, iLength);
+    this->Construct(sFont, iHeight, iOutline, iLength);
 }
 
-template <typename T> void coreSwitchBox<T>::Construct(const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
+template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     // create the label
-    m_Caption.Construct(pcFont, iHeight, iOutline, iLength);
+    m_Caption.Construct(sFont, iHeight, iOutline, iLength);
 
     // init automatic forward behavior
     m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
@@ -285,11 +285,11 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, co
     if(m_aEntry.size() == 1u) this->__Update();
 }
 
-template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreChar* pcKey, const T& tValue)
+template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreHashString& sKey, const T& tValue)
 {
     // create and bind new entry
     this->AddEntry("", tValue);
-    this->_BindString(m_aEntry.back().first, pcKey);
+    this->_BindString(m_aEntry.back().first, sKey);
 }
 
 

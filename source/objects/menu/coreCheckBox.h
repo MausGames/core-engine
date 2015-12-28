@@ -24,15 +24,15 @@ private:
 
 public:
     coreCheckBox()noexcept;
-    coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)noexcept;
-    coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept;
+    coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)noexcept;
+    coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept;
 
     DISABLE_COPY(coreCheckBox)
 
     //! construct the check-box
     //! @{
-    void Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked);
-    void Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline);
+    void Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked);
+    void Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline);
     //! @}
 
     //! move the check-box
@@ -54,7 +54,7 @@ public:
 private:
     //! construct the check-box
     //! @{
-    void __Construct(const coreChar* pcIdleChecked, const coreChar* pcBusyChecked);
+    void __Construct(const coreHashString& sIdleChecked, const coreHashString& sBusyChecked);
     //! @}
 };
 

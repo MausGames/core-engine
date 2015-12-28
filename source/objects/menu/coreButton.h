@@ -25,16 +25,16 @@ protected:
 
 public:
     coreButton()noexcept;
-    coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
-    coreButton(const coreChar* pcIdle, const coreChar* pcBusy)noexcept;
+    coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreButton(const coreHashString& sIdle, const coreHashString& sBusy)noexcept;
     virtual ~coreButton();
 
     DISABLE_COPY(coreButton)
 
     //! construct the button
     //! @{
-    void Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
-    void Construct(const coreChar* pcIdle, const coreChar* pcBusy);
+    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreHashString& sIdle, const coreHashString& sBusy);
     //! @}
 
     //! render and move the button

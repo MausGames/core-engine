@@ -50,7 +50,8 @@
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 // TODO: reduce core-prefix ? (e.g. cr)
 // TODO: unique pointers and move semantics for functions taking ownership of a pointer
-// TODO: video class, string class, path class
+// TODO: video class, string class, path/url class, pool+stack-allocator
+// TODO: fix constexpr msvc bug (not compiler-setting?) (constexpr-results not saved after compilation, functions often re-evaluated at run-time)
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -514,6 +515,8 @@ private:
 #include "additional/coreCPUID.h"
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
+#include "utilities/data/hash/CRC32.h" // ###
+#include "utilities/data/coreHashString.h"
 #include "utilities/data/coreArray.h"
 #include "utilities/data/coreSet.h"
 #include "utilities/data/coreLookup.h"
@@ -525,7 +528,6 @@ private:
 #include "utilities/math/coreVector.h"
 #include "utilities/math/coreMatrix.h"
 #include "utilities/math/coreSpline.h"
-#include "utilities/data/hash/CRC32.h" // ###
 #include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
 #include "components/system/coreThread.h"

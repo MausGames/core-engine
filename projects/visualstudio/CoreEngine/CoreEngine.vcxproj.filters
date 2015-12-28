@@ -58,6 +58,9 @@
     <Filter Include="source\utilities\data\hash">
       <UniqueIdentifier>{838592f7-58e2-41e0-be8d-82b373e3faa1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\additional\windows">
+      <UniqueIdentifier>{fbc18f25-82be-45dc-ba1a-3e9b7a70d3d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -173,6 +176,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreCPUID.cpp">
       <Filter>source\additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\windows\main.c">
+      <Filter>source\additional\windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -319,6 +325,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\data\hash\CRC32.h">
       <Filter>source\utilities\data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreHashString.h">
+      <Filter>source\utilities\data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

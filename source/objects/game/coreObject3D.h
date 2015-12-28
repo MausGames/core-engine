@@ -61,8 +61,9 @@ public:
 
     /*! define the visual appearance */
     //! @{
-    inline const coreModelPtr& DefineModel(const coreModelPtr& pModel) {m_pModel = pModel;                                          ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) return m_pModel;}
-    inline const coreModelPtr& DefineModel(const coreChar*     pcName) {m_pModel = Core::Manager::Resource->Get<coreModel>(pcName); ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION) return m_pModel;}
+    inline void DefineModel(std::nullptr_t)               {m_pModel = NULL;                                           ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineModel(const coreModelPtr&   pModel) {m_pModel = pModel;                                         ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineModel(const coreHashString& sName)  {m_pModel = Core::Manager::Resource->Get<coreModel>(sName); ADD_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION)}
     void Undefine();
     //! @}
 
@@ -134,8 +135,9 @@ public:
 
     /*! define the visual appearance */
     //! @{
-    inline const coreProgramPtr& DefineProgram(const coreProgramPtr& pProgram) {m_pProgram = pProgram;                                          return m_pProgram;}
-    inline const coreProgramPtr& DefineProgram(const coreChar*       pcName)   {m_pProgram = Core::Manager::Resource->Get<coreProgram>(pcName); return m_pProgram;}
+    inline void DefineProgram(std::nullptr_t)                 {m_pProgram = NULL;}
+    inline void DefineProgram(const coreProgramPtr& pProgram) {m_pProgram = pProgram;}
+    inline void DefineProgram(const coreHashString& sName)    {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
     void Undefine();
     //! @}
 

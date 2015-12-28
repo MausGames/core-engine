@@ -221,20 +221,20 @@ public:
 
     /*! create and delete resource and resource handle */
     //! @{
-    template <typename T, typename... A>        coreResourceHandle* Load   (const coreChar* pcName, const coreResourceUpdate& bUpdate, const coreChar* pcPath, A&&... vArgs);
+    template <typename T, typename... A>        coreResourceHandle* Load   (const coreHashString& sName, const coreResourceUpdate& bUpdate, const coreHashString& sPath, A&&... vArgs);
     template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);}
     template <typename T> void Free(coreResourcePtr<T>* pptResourcePtr);
     //! @}
 
     /*! get existing resource handle */
     //! @{
-    template <typename T> inline coreResourceHandle* Get(const coreChar* pcName) {if(!pcName) return NULL; ASSERT(m_apHandle.count(pcName)) return this->Load<T>(pcName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
+    template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
     //! @}
 
     /*! retrieve archives and resource files */
     //! @{
-    coreArchive* RetrieveArchive(const coreChar* pcPath);
-    coreFile*    RetrieveFile   (const coreChar* pcPath);
+    coreArchive* RetrieveArchive(const coreHashString& sPath);
+    coreFile*    RetrieveFile   (const coreHashString& sPath);
     //! @}
 
     /*! reset all resources and relation-objects */
@@ -332,18 +332,18 @@ template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreRe
 
 // ****************************************************************
 /* create resource and resource handle */
-template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreChar* pcName, const coreResourceUpdate& bUpdate, const coreChar* pcPath, A&&... vArgs)
+template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreHashString& sName, const coreResourceUpdate& bUpdate, const coreHashString& sPath, A&&... vArgs)
 {
     // check for existing resource handle
-    if(m_apHandle.count(pcName)) return m_apHandle.at(pcName);
+    if(m_apHandle.count(sName)) return m_apHandle.at(sName);
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), pcPath ? this->RetrieveFile(pcPath) : NULL, pcName, bUpdate ? true : false);
+    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), bUpdate ? true : false);
 
     SDL_AtomicLock(&m_iResourceLock);
     {
         // add resource handle to manager
-        m_apHandle[pcName] = pNewHandle;
+        m_apHandle[sName] = pNewHandle;
     }
     SDL_AtomicUnlock(&m_iResourceLock);
 

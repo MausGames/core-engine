@@ -84,20 +84,24 @@ constexpr coreUint32 g_aiTableCRC32[256] =
 
 // ****************************************************************
 /* CRC-32 hash function */
-template <typename T> constexpr FUNC_PURE coreUint32 coreHashCRC32(const T* pData, const coreUintW& iLength, const coreUint32& iCode)
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, const coreUintW iLength, const coreUint32 iCode)
 {
-    STATIC_ASSERT(sizeof(T) == 1u)
     return iLength ? coreHashCRC32(pData + 1u, iLength - 1u, g_aiTableCRC32[(*pData) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
 }
 
-template <typename T> constexpr FUNC_PURE coreUint32 coreHashCRC32(const T* pData, const coreUintW& iLength)
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, const coreUintW iLength)
 {
     return coreHashCRC32(pData, iLength, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
 }
 
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString, const coreUint32 iCode)
+{
+    return *pcString ? coreHashCRC32(pcString + 1u, g_aiTableCRC32[(*pcString) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
+}
+
 constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
 {
-    return coreHashCRC32(pcString, coreData::StrLenConst(pcString));
+    return coreHashCRC32(pcString, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
 }
 
 

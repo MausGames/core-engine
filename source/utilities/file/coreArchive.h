@@ -98,8 +98,8 @@ public:
 
     //! access file objects
     //! @{
-    inline coreFile* GetFile(const coreUintW& iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex] : NULL;}
-    inline coreFile* GetFile(const coreChar* pcPath)  {return (m_apFile.count(pcPath))   ? m_apFile[pcPath] : NULL;}
+    inline coreFile* GetFile(const coreUintW& iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex]    : NULL;}
+    inline coreFile* GetFile(const coreChar* pcPath)  {return (m_apFile.count(pcPath))   ? m_apFile.at(pcPath) : NULL;}
     //! @}
 
     //! get object properties

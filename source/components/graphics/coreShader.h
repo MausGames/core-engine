@@ -187,11 +187,11 @@ public:
 
     //! define shader objects and attribute locations
     //! @{
-    inline coreProgram* AttachShader (const coreShaderPtr& pShader)                            {if(!m_iStatus)  m_apShaderHandle.push_back(pShader.GetHandle());                              return this;}
-    inline coreProgram* AttachShader (const coreChar*      pcName)                             {if(!m_iStatus)  m_apShaderHandle.push_back(Core::Manager::Resource->Get<coreShader>(pcName)); return this;}
-    inline coreProgram* BindAttribute(const coreChar*      pcName, const coreUint8& iLocation) {if(!m_iStatus)  m_aiAttribute[pcName] = iLocation;                                            return this;}
-    inline void Finish ()                                                                      {if(!m_iStatus) {m_apShader.reserve(m_apShaderHandle.size()); m_apShaderHandle.shrink_to_fit(); m_aiAttribute.shrink_to_fit(); m_iStatus = CORE_PROGRAM_DEFINED;}}
-    inline void Restart()                                                                      {this->Unload(); m_apShader.clear();                          m_apShaderHandle.clear();         m_aiAttribute.clear();         m_iStatus = CORE_PROGRAM_NEW;}
+    inline coreProgram* AttachShader (const coreShaderPtr&  pShader)                            {if(!m_iStatus)  m_apShaderHandle.push_back(pShader.GetHandle());                             return this;}
+    inline coreProgram* AttachShader (const coreHashString& sName)                              {if(!m_iStatus)  m_apShaderHandle.push_back(Core::Manager::Resource->Get<coreShader>(sName)); return this;}
+    inline coreProgram* BindAttribute(const coreChar*       pcName, const coreUint8& iLocation) {if(!m_iStatus)  m_aiAttribute[pcName] = iLocation;                                           return this;}
+    inline void Finish ()                                                                       {if(!m_iStatus) {m_apShader.reserve(m_apShaderHandle.size()); m_apShaderHandle.shrink_to_fit(); m_aiAttribute.shrink_to_fit(); m_iStatus = CORE_PROGRAM_DEFINED;}}
+    inline void Restart()                                                                       {this->Unload(); m_apShader.clear();                          m_apShaderHandle.clear();         m_aiAttribute.clear();         m_iStatus = CORE_PROGRAM_NEW;}
     //! @}
 
     //! send new uniform values

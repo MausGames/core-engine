@@ -79,9 +79,9 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
 
 // ****************************************************************
 /* bind own string pointer */
-void coreTranslate::_BindString(std::string* psString, const coreChar* pcKey)
+void coreTranslate::_BindString(std::string* psString, const coreHashString& sKey)
 {
-    ASSERT(psString && pcKey)
+    ASSERT(psString && sKey)
 
     if(!m_pLanguage)
     {
@@ -90,8 +90,8 @@ void coreTranslate::_BindString(std::string* psString, const coreChar* pcKey)
     }
 
     // bind string to language and save it internally
-    m_pLanguage->BindForeign(psString, pcKey);
-    m_apsPointer[psString] = pcKey;
+    m_pLanguage->BindForeign(psString, sKey);
+    m_apsPointer[psString] = sKey.GetString();
 
     // invoke object update
     this->__Update();
@@ -199,7 +199,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
         std::string& sString = (*it);
 
         // assign key as value to possible empty language-string
-        if(sString.empty()) sString.assign(*m_asStringList.get_key(it));
+        if(sString.empty()) sString.assign(m_asStringList.get_string(it));
         sString.shrink_to_fit();
     }
     m_asStringList.shrink_to_fit();
@@ -215,16 +215,16 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
 
 // ****************************************************************
 /* bind foreign string pointer */
-void coreLanguage::BindForeign(std::string* psForeign, const coreChar* pcKey)
+void coreLanguage::BindForeign(std::string* psForeign, const coreHashString& sKey)
 {
-    ASSERT(psForeign && pcKey)
+    ASSERT(psForeign && sKey)
 
     // assign key as value to possible new language-string
-    if(!m_asStringList.count(pcKey)) m_asStringList[pcKey].assign(pcKey);
+    if(!m_asStringList.count(sKey)) m_asStringList[sKey].assign(sKey.GetString());
 
     // save foreign string pointer and key
-    m_apsForeign[psForeign].assign(pcKey);
+    m_apsForeign[psForeign].assign(sKey.GetString());
 
     // initially update the foreign string
-    psForeign->assign(m_asStringList[pcKey]);
+    psForeign->assign(m_asStringList[sKey]);
 }

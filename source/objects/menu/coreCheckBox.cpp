@@ -19,41 +19,41 @@ coreCheckBox::coreCheckBox()noexcept
 {
 }
 
-coreCheckBox::coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)noexcept
+coreCheckBox::coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)noexcept
 : coreCheckBox ()
 {
     // construct on creation
-    this->Construct(pcIdleUnchecked, pcBusyUnchecked, pcIdleChecked, pcBusyChecked);
+    this->Construct(sIdleUnchecked, sBusyUnchecked, sIdleChecked, sBusyChecked);
 }
 
-coreCheckBox::coreCheckBox(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept
+coreCheckBox::coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept
 : coreCheckBox ()
 {
     // construct on creation
-    this->Construct(pcIdleUnchecked, pcBusyUnchecked, pcIdleChecked, pcBusyChecked, pcFont, iHeight, iOutline);
+    this->Construct(sIdleUnchecked, sBusyUnchecked, sIdleChecked, sBusyChecked, sFont, iHeight, iOutline);
 }
 
 
 // ****************************************************************
 // construct the check-box
-void coreCheckBox::Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)
+void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)
 {
     // construct the button
-    coreButton::Construct(pcIdleUnchecked, pcBusyUnchecked);
+    coreButton::Construct(sIdleUnchecked, sBusyUnchecked);
 
     // construct remaining object
-    this->__Construct(pcIdleChecked, pcBusyChecked);
+    this->__Construct(sIdleChecked, sBusyChecked);
 }
 
-void coreCheckBox::Construct(const coreChar* pcIdleUnchecked, const coreChar* pcBusyUnchecked, const coreChar* pcIdleChecked, const coreChar* pcBusyChecked, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline)
+void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline)
 {
     // construct the button with label
-    coreButton::Construct(pcIdleUnchecked, pcBusyUnchecked, pcFont, iHeight, iOutline, 0u);
+    coreButton::Construct(sIdleUnchecked, sBusyUnchecked, sFont, iHeight, iOutline, 0u);
     this->GetCaption()->SetText   ("X");
     this->GetCaption()->SetEnabled(CORE_OBJECT_ENABLE_NOTHING);
 
     // construct remaining object
-    this->__Construct(pcIdleChecked, pcBusyChecked);
+    this->__Construct(sIdleChecked, sBusyChecked);
 }
 
 
@@ -96,11 +96,11 @@ void coreCheckBox::SetCheck(const coreBool& bCheck)
 
 // ****************************************************************
 // construct the check-box
-void coreCheckBox::__Construct(const coreChar* pcIdleChecked, const coreChar* pcBusyChecked)
+void coreCheckBox::__Construct(const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)
 {
     // load background textures
     m_apUnchecked[0] = m_apBackground[0];
     m_apUnchecked[1] = m_apBackground[1];
-    if(pcIdleChecked) m_apChecked[0] = Core::Manager::Resource->Get<coreTexture>(pcIdleChecked);
-    if(pcBusyChecked) m_apChecked[1] = Core::Manager::Resource->Get<coreTexture>(pcBusyChecked);
+    if(sIdleChecked) m_apChecked[0] = Core::Manager::Resource->Get<coreTexture>(sIdleChecked);
+    if(sBusyChecked) m_apChecked[1] = Core::Manager::Resource->Get<coreTexture>(sBusyChecked);
 }

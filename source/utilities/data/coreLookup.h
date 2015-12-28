@@ -70,6 +70,13 @@ public:
     inline coreUintW capacity()const                    {return m_atValueList.capacity();}
     //! @}
 
+    /*! manage container ordering */
+    //! @{
+    inline void sort_asc () {this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
+    inline void sort_desc() {this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
+    inline void reverse  () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
+    //! @}
+
     /*! remove existing entry */
     //! @{
     coreBool                 erase(const I& tKey);
@@ -77,11 +84,6 @@ public:
     inline void              clear()                            {this->_cache_clear(); m_atValueList.clear();    m_atKeyList.clear();}
     inline void              pop_back ()                        {this->_cache_clear(); m_atValueList.pop_back(); m_atKeyList.pop_back();}
     inline void              pop_front()                        {this->_cache_clear(); this->erase(this->front());}
-    //! @}
-
-    /*! manipulate container structure */
-    //! @{
-    inline void reverse() {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
     //! @}
 
     /*! return first and last entry */
@@ -129,6 +131,11 @@ protected:
     coreKeyIterator      _retrieve(const I& tKey);
     coreKeyConstIterator _retrieve(const I& tKey)const;
     //! @}
+
+    /*! sort entries with comparison function */
+    //! @{
+    template <typename F> void _sort(F&& nCompareFunc);   //!< [](const auto& a, const auto& b) -> coreBool
+    //! @}
 };
 
 
@@ -139,8 +146,12 @@ template <typename K, typename T> using coreLookup = coreLookupGen<K, K, T>;
 
 // ****************************************************************
 /* string lookup container class */
-template <typename T> class coreLookupStr final : public coreLookupGen<std::string, const coreChar*, T>
+template <typename T> class coreLookupStr final : public coreLookupGen<coreUint32, coreHashString, T>
 {
+private:
+    coreLookup<coreUint32, std::string> m_asStringList;   //!< list with original strings
+
+
 public:
     coreLookupStr() = default;
 
@@ -148,14 +159,22 @@ public:
 
     /*! access specific entry */
     //! @{
-    using coreLookupGen<std::string, const coreChar*, T>::operator [];
-    inline T& operator [] (const coreUintW& iIndex) {return this->m_atValueList[iIndex];}
+    inline T& operator [] (const coreHashString& sKey)   {if(!m_asStringList.count(sKey)) m_asStringList[sKey].assign(sKey.GetString()); return coreLookupGen<coreUint32, coreHashString, T>::operator [] (sKey);}
+    inline T& operator [] (const coreUintW&      iIndex) {return this->m_atValueList[iIndex];}
     //! @}
 
     /*! remove existing entries */
     //! @{
-    using coreLookupGen<std::string, const coreChar*, T>::erase;
+    using coreLookupGen<coreUint32, coreHashString, T>::erase;
     inline typename coreLookupStr<T>::coreValueIterator erase(const coreUintW& iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    //! @}
+
+    /*! return original strings */
+    //! @{
+    inline const coreChar* get_string(const coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
     //! @}
 };
 
@@ -294,6 +313,32 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
     }
 
     return m_atKeyList.end();
+}
+
+
+// ****************************************************************
+/* sort entries with comparison function */
+template <typename K, typename I, typename T> template <typename F> void coreLookupGen<K, I, T>::_sort(F&& nCompareFunc)
+{
+    std::vector<std::pair<K, T>> aPairList;
+
+    // merge values and keys into single container
+    aPairList.reserve(m_atKeyList.size());
+    FOR_EACH(it, m_atKeyList)
+    {
+        aPairList.emplace_back(std::move(*it), std::move(*this->get_value(it)));
+    }
+
+    // sort the container
+    std::sort(aPairList.begin(), aPairList.end(), nCompareFunc);
+
+    // move entries back into separate lists
+    this->clear();
+    FOR_EACH(it, aPairList)
+    {
+        m_atKeyList  .push_back(std::move(it->first));
+        m_atValueList.push_back(std::move(it->second));
+    }
 }
 
 

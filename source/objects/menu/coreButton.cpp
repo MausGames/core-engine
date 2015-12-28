@@ -20,18 +20,18 @@ coreButton::coreButton()noexcept
 {
 }
 
-coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
+coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
 : coreButton ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy, pcFont, iHeight, iOutline, iLength);
+    this->Construct(sIdle, sBusy, sFont, iHeight, iOutline, iLength);
 }
 
-coreButton::coreButton(const coreChar* pcIdle, const coreChar* pcBusy)noexcept
+coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy)noexcept
 : coreButton ()
 {
     // construct on creation
-    this->Construct(pcIdle, pcBusy);
+    this->Construct(sIdle, sBusy);
 }
 
 
@@ -46,21 +46,21 @@ coreButton::~coreButton()
 
 // ****************************************************************
 // construct the button
-void coreButton::Construct(const coreChar* pcIdle, const coreChar* pcBusy, const coreChar* pcFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
+void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
 {
     // create the label
     if(m_pCaption) SAFE_DELETE(m_pCaption)
-    m_pCaption = new coreLabel(pcFont, iHeight, iOutline, iLength);
+    m_pCaption = new coreLabel(sFont, iHeight, iOutline, iLength);
 
     // construct remaining object
-    this->Construct(pcIdle, pcBusy);
+    this->Construct(sIdle, sBusy);
 }
 
-void coreButton::Construct(const coreChar* pcIdle, const coreChar* pcBusy)
+void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy)
 {
     // load background textures
-    if(pcIdle) m_apBackground[0] = Core::Manager::Resource->Get<coreTexture>(pcIdle);
-    if(pcBusy) m_apBackground[1] = Core::Manager::Resource->Get<coreTexture>(pcBusy);
+    if(sIdle) m_apBackground[0] = Core::Manager::Resource->Get<coreTexture>(sIdle);
+    if(sBusy) m_apBackground[1] = Core::Manager::Resource->Get<coreTexture>(sBusy);
     m_apTexture[0] = m_apBackground[0];
 
     // load shader-program

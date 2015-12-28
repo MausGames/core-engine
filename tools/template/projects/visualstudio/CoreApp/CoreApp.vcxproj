@@ -64,13 +64,13 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -102,8 +102,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -114,20 +112,17 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>SDL2main.lib CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalOptions>CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -137,21 +132,18 @@
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>SDL2main.lib CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalOptions>CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -165,16 +157,14 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
-      <AdditionalOptions>/Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalOptions>SDL2main.lib CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -188,8 +178,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -202,16 +190,14 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
-      <AdditionalOptions>/Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalOptions>SDL2main.lib CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

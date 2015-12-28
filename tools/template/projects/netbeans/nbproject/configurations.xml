@@ -55,7 +55,6 @@
           <additionalDep>../../../CoreEngine/output/windows/x86/libCoreEngine_mingw_debug.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lMinGW32</linkerOptionItem>
-            <linkerLibLibItem>SDL2main</linkerLibLibItem>
             <linkerLibLibItem>CoreEngine_mingw_debug</linkerLibLibItem>
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
@@ -245,7 +244,6 @@
           <additionalDep>../../../CoreEngine/output/windows/x86/libCoreEngine_mingw.a</additionalDep>
           <linkerLibItems>
             <linkerOptionItem>-lMinGW32</linkerOptionItem>
-            <linkerLibLibItem>SDL2main</linkerLibLibItem>
             <linkerLibLibItem>CoreEngine_mingw</linkerLibLibItem>
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
