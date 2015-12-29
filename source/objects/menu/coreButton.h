@@ -25,7 +25,7 @@ protected:
 
 public:
     coreButton()noexcept;
-    coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
     coreButton(const coreHashString& sIdle, const coreHashString& sBusy)noexcept;
     virtual ~coreButton();
 
@@ -33,7 +33,7 @@ public:
 
     //! construct the button
     //! @{
-    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength);
     void Construct(const coreHashString& sIdle, const coreHashString& sBusy);
     //! @}
 
@@ -45,7 +45,7 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetOverride(const coreInt8& iOverride) {m_iOverride = iOverride;}
+    inline void SetOverride(const coreInt8 iOverride) {m_iOverride = iOverride;}
     //! @}
 
     //! get object properties

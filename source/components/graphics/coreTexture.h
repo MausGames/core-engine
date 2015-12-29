@@ -78,7 +78,7 @@ struct coreTextureSpec
     GLenum iType;       //!< pixel data type (e.g. GL_UNSIGNED_BYTE)
 
     coreTextureSpec() = default;
-    constexpr coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept;
+    constexpr coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType)noexcept;
 };
 
 
@@ -104,7 +104,7 @@ private:
 
 public:
     coreTexture()noexcept;
-    explicit coreTexture(const coreBool& bLoadCompressed)noexcept;
+    explicit coreTexture(const coreBool bLoadCompressed)noexcept;
     ~coreTexture();
 
     DISABLE_COPY(coreTexture)
@@ -117,38 +117,38 @@ public:
 
     //! handle texture memory
     //! @{
-    void Create(const coreUint32& iWidth, const coreUint32& iHeight, const coreTextureSpec& oSpec, const coreTextureMode& iMode);
-    void Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY, const coreUint32& iWidth, const coreUint32& iHeight, const coreUint32& iDataSize, const coreByte* pData);
-    void CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight);
+    void Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode iMode);
+    void Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData);
+    void CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight);
     //! @}
 
     //! configure shadow sampling
     //! @{
-    void ShadowSampling(const coreBool& bStatus);
+    void ShadowSampling(const coreBool bStatus);
     //! @}
 
     //! bind texture level to image unit
     //! @{
-    void BindImage(const coreUintW& iUnit, const coreUint8& iLevel, const GLenum& iAccess);
+    void BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess);
     //! @}
 
     //! enable and disable the texture
     //! @{
-    inline        void Enable (const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iTexture)}
-    static inline void Disable(const coreUintW& iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
-    static inline void DisableAll()                    {for(coreUintW i = CORE_TEXTURE_UNITS; i--; ) coreTexture::Disable(i);}
+    inline        void Enable (const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iTexture)}
+    static inline void Disable(const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
+    static inline void DisableAll()                   {for(coreUintW i = CORE_TEXTURE_UNITS; i--; ) coreTexture::Disable(i);}
     //! @}
 
     //! reset content of the texture
     //! @{
-    void Clear     (const coreUint8& iLevel);
-    void Invalidate(const coreUint8& iLevel);
+    void Clear     (const coreUint8 iLevel);
+    void Invalidate(const coreUint8 iLevel);
     //! @}
 
     //! process and convert image data
     //! @{
-    static void CreateNextLevel (const coreUintW& iInWidth, const coreUintW& iInHeight, const coreUintW& iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
-    static void CreateCompressed(const coreUintW& iInWidth, const coreUintW& iInHeight, const coreUintW& iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static void CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
     //! @}
 
     //! get object properties
@@ -164,7 +164,7 @@ public:
 private:
     //! bind texture to texture unit
     //! @{
-    static void __BindTexture(const coreUintW& iUnit, coreTexture* pTexture);
+    static void __BindTexture(const coreUintW iUnit, coreTexture* pTexture);
     //! @}
 };
 
@@ -176,7 +176,7 @@ using coreTexturePtr = coreResourcePtr<coreTexture>;
 
 // ****************************************************************
 // constructor
-constexpr coreTextureSpec::coreTextureSpec(const GLenum& iInternal, const GLenum& iFormat, const GLenum& iType)noexcept
+constexpr coreTextureSpec::coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType)noexcept
 : iInternal (iInternal)
 , iFormat   (iFormat)
 , iType     (iType)

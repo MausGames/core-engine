@@ -41,7 +41,7 @@ coreFrameBuffer::~coreFrameBuffer()
 
 // ****************************************************************
 // create frame buffer object
-void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate& bType)
+void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate bType)
 {
     WARN_IF(m_iFrameBuffer) this->Delete();
     ASSERT(vResolution.x > 0.0f && vResolution.y > 0.0f)
@@ -172,7 +172,7 @@ void coreFrameBuffer::Delete()
 
 // ****************************************************************
 // attach render target texture
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName)
 {
     // get requested render target structure
     coreRenderTarget* pTarget = this->__AttachTarget(iTarget, iColorIndex, oSpec);
@@ -194,7 +194,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
 
 // ****************************************************************
 // attach render target buffer
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
     // get requested render target structure
     if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (iTarget, iColorIndex, oSpec);
@@ -264,7 +264,7 @@ void coreFrameBuffer::EndDraw()
 
 // ****************************************************************
 // copy content to another frame buffer
-void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight)const
+void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
 {
     ASSERT(m_iFrameBuffer)
     ASSERT((!pDestination || ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x) && (iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y))) &&
@@ -374,7 +374,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
     }
 }
 
-void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)const
+void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination)const
 {
     this->Blit(iTargets, pDestination, 0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
 }
@@ -382,7 +382,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffe
 
 // ****************************************************************
 // clear content of the frame buffer
-void coreFrameBuffer::Clear(const coreFrameBufferTarget& iTargets)
+void coreFrameBuffer::Clear(const coreFrameBufferTarget iTargets)
 {
     ASSERT(m_iFrameBuffer)
 
@@ -400,7 +400,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget& iTargets)
 
 // ****************************************************************
 // invalidate content of the frame buffer
-void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
+void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
 {
     ASSERT(m_iFrameBuffer)
 
@@ -446,7 +446,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget& iTargets)
 
 // ****************************************************************
 // attach default render target
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
     ASSERT(!m_iFrameBuffer && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 

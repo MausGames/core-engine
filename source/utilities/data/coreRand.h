@@ -35,7 +35,7 @@ private:
 
 
 public:
-    explicit coreRand(const coreUintW& iNumRandoms, const coreUint32 iSeed = CORE_RAND_TIME)noexcept;
+    explicit coreRand(const coreUintW iNumRandoms, const coreUint32 iSeed = CORE_RAND_TIME)noexcept;
     coreRand(const coreRand& c)noexcept;
     coreRand(coreRand&&      m)noexcept;
     ~coreRand();
@@ -52,12 +52,12 @@ public:
 
     /*! retrieve pre-calculated random number */
     //! @{
-    inline const coreInt16& Raw()                                        {if(++m_iCurRandom >= m_iNumRandoms) m_iCurRandom = 0u; return m_piRandom[m_iCurRandom];}
-    inline coreInt16 Int  (const coreInt16& iMax)                        {return              (this->Raw()  % (iMax         +  1));}
-    inline coreInt16 Int  (const coreInt16& iMin, const coreInt16& iMax) {return iMin +       (this->Raw()  % (iMax - iMin  +  1));}
-    inline coreFloat Float(const coreFloat& fMax)                        {return        I_TO_F(this->Raw()) *  fMax         * (1.0f / I_TO_F(CORE_RAND_MAX));}
-    inline coreFloat Float(const coreFloat& fMin, const coreFloat& fMax) {return fMin + I_TO_F(this->Raw()) * (fMax - fMin) * (1.0f / I_TO_F(CORE_RAND_MAX));}
-    inline coreBool  Bool ()                                             {return              (this->Raw()  & 0x0001) ? true : false;}
+    inline const coreInt16& Raw()                                      {if(++m_iCurRandom >= m_iNumRandoms) m_iCurRandom = 0u; return m_piRandom[m_iCurRandom];}
+    inline coreInt16 Int  (const coreInt16 iMax)                       {return              (this->Raw()  % (iMax         +  1));}
+    inline coreInt16 Int  (const coreInt16 iMin, const coreInt16 iMax) {return iMin +       (this->Raw()  % (iMax - iMin  +  1));}
+    inline coreFloat Float(const coreFloat fMax)                       {return        I_TO_F(this->Raw()) *  fMax         * (1.0f / I_TO_F(CORE_RAND_MAX));}
+    inline coreFloat Float(const coreFloat fMin, const coreFloat fMax) {return fMin + I_TO_F(this->Raw()) * (fMax - fMin) * (1.0f / I_TO_F(CORE_RAND_MAX));}
+    inline coreBool  Bool ()                                           {return              (this->Raw()  & 0x0001) ? true : false;}
     //! @}
 
     /*! get object properties */

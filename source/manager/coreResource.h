@@ -78,7 +78,7 @@ private:
 
 
 private:
-    coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool& bAutomatic)noexcept;
+    coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic)noexcept;
     ~coreResourceHandle();
 
 
@@ -180,7 +180,7 @@ public:
 private:
     /*! reset with the resource manager */
     //! @{
-    virtual void __Reset(const coreResourceReset& bInit) = 0;
+    virtual void __Reset(const coreResourceReset bInit) = 0;
     //! @}
 };
 
@@ -221,7 +221,7 @@ public:
 
     /*! create and delete resource and resource handle */
     //! @{
-    template <typename T, typename... A>        coreResourceHandle* Load   (const coreHashString& sName, const coreResourceUpdate& bUpdate, const coreHashString& sPath, A&&... vArgs);
+    template <typename T, typename... A>        coreResourceHandle* Load   (const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs);
     template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);}
     template <typename T> void Free(coreResourcePtr<T>* pptResourcePtr);
     //! @}
@@ -239,7 +239,7 @@ public:
 
     /*! reset all resources and relation-objects */
     //! @{
-    void Reset(const coreResourceReset& bInit);
+    void Reset(const coreResourceReset bInit);
     //! @}
 
 
@@ -332,7 +332,7 @@ template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreRe
 
 // ****************************************************************
 /* create resource and resource handle */
-template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreHashString& sName, const coreResourceUpdate& bUpdate, const coreHashString& sPath, A&&... vArgs)
+template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs)
 {
     // check for existing resource handle
     if(m_apHandle.count(sName)) return m_apHandle.at(sName);

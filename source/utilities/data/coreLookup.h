@@ -65,9 +65,9 @@ public:
 
     /*! control memory allocation */
     //! @{
-    inline void      reserve(const coreUintW& iReserve) {this->_cache_clear(); m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
-    inline void      shrink_to_fit()                    {this->_cache_clear(); m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
-    inline coreUintW capacity()const                    {return m_atValueList.capacity();}
+    inline void      reserve(const coreUintW iReserve) {this->_cache_clear(); m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
+    inline void      shrink_to_fit()                   {this->_cache_clear(); m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
+    inline coreUintW capacity()const                   {return m_atValueList.capacity();}
     //! @}
 
     /*! manage container ordering */
@@ -160,13 +160,13 @@ public:
     /*! access specific entry */
     //! @{
     inline T& operator [] (const coreHashString& sKey)   {if(!m_asStringList.count(sKey)) m_asStringList[sKey].assign(sKey.GetString()); return coreLookupGen<coreUint32, coreHashString, T>::operator [] (sKey);}
-    inline T& operator [] (const coreUintW&      iIndex) {return this->m_atValueList[iIndex];}
+    inline T& operator [] (const coreUintW       iIndex) {return this->m_atValueList[iIndex];}
     //! @}
 
     /*! remove existing entries */
     //! @{
     using coreLookupGen<coreUint32, coreHashString, T>::erase;
-    inline typename coreLookupStr<T>::coreValueIterator erase(const coreUintW& iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    inline typename coreLookupStr<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 
     /*! return original strings */

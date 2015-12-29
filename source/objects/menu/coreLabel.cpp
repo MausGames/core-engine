@@ -26,7 +26,7 @@ coreLabel::coreLabel()noexcept
 {
 }
 
-coreLabel::coreLabel(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
+coreLabel::coreLabel(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept
 : coreLabel ()
 {
     // construct on creation
@@ -45,7 +45,7 @@ coreLabel::~coreLabel()
 
 // ****************************************************************
 // construct the label
-void coreLabel::Construct(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
+void coreLabel::Construct(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)
 {
     // save properties
     m_iHeight  = iHeight;
@@ -131,7 +131,7 @@ coreBool coreLabel::SetText(const coreChar* pcText)
     return false;
 }
 
-coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8& iNum)
+coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
 {
     ASSERT(!m_iLength || iNum <= m_iLength)
 
@@ -151,7 +151,7 @@ coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8& iNum)
 
 // ****************************************************************
 // reset with the resource manager
-void coreLabel::__Reset(const coreResourceReset& bInit)
+void coreLabel::__Reset(const coreResourceReset bInit)
 {
     if(!m_pFont) return;
 
@@ -167,7 +167,7 @@ void coreLabel::__Reset(const coreResourceReset& bInit)
 
 // ****************************************************************
 // generate the texture
-void coreLabel::__Generate(const coreChar* pcText, const coreBool& bSub)
+void coreLabel::__Generate(const coreChar* pcText, const coreBool bSub)
 {
     SDL_Surface* pSolid   = NULL;
     SDL_Surface* pOutline = NULL;

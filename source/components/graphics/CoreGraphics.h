@@ -84,12 +84,12 @@ public:
     //! control camera and view
     //! @{
     void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
-    void SetView  (coreVector2 vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip);
+    void SetView  (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
     //! @}
 
     //! control ambient
     //! @{
-    void SetLight(const coreUintW& iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
+    void SetLight(const coreUintW iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
     //! @}
 
     //! update data for the uniform buffer objects
@@ -106,21 +106,21 @@ public:
 
     //! get component properties
     //! @{
-    inline const SDL_GLContext&  GetRenderContext  ()const                        {return m_pRenderContext;}
-    inline const SDL_GLContext&  GetResourceContext()const                        {return m_pResourceContext;}
-    inline const coreFloat&      GetFOV            ()const                        {return m_fFOV;}
-    inline const coreFloat&      GetNearClip       ()const                        {return m_fNearClip;}
-    inline const coreFloat&      GetFarClip        ()const                        {return m_fFarClip;}
-    inline const coreVector3&    GetCamPosition    ()const                        {return m_vCamPosition;}
-    inline const coreVector3&    GetCamDirection   ()const                        {return m_vCamDirection;}
-    inline const coreVector3&    GetCamOrientation ()const                        {return m_vCamOrientation;}
-    inline const coreMatrix4&    GetCamera         ()const                        {return m_mCamera;}
-    inline const coreMatrix4&    GetPerspective    ()const                        {return m_mPerspective;}
-    inline const coreMatrix4&    GetOrtho          ()const                        {return m_mOrtho;}
-    inline const coreVector4&    GetViewResolution ()const                        {return m_vViewResolution;}
-    inline const coreLight&      GetLight          (const coreUintW& iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
-    inline const coreDataBuffer& GetTransformBuffer()const                        {return m_TransformBuffer;}
-    inline const coreDataBuffer& GetAmbientBuffer  ()const                        {return m_AmbientBuffer;}
+    inline const SDL_GLContext&  GetRenderContext  ()const                       {return m_pRenderContext;}
+    inline const SDL_GLContext&  GetResourceContext()const                       {return m_pResourceContext;}
+    inline const coreFloat&      GetFOV            ()const                       {return m_fFOV;}
+    inline const coreFloat&      GetNearClip       ()const                       {return m_fNearClip;}
+    inline const coreFloat&      GetFarClip        ()const                       {return m_fFarClip;}
+    inline const coreVector3&    GetCamPosition    ()const                       {return m_vCamPosition;}
+    inline const coreVector3&    GetCamDirection   ()const                       {return m_vCamDirection;}
+    inline const coreVector3&    GetCamOrientation ()const                       {return m_vCamOrientation;}
+    inline const coreMatrix4&    GetCamera         ()const                       {return m_mCamera;}
+    inline const coreMatrix4&    GetPerspective    ()const                       {return m_mPerspective;}
+    inline const coreMatrix4&    GetOrtho          ()const                       {return m_mOrtho;}
+    inline const coreVector4&    GetViewResolution ()const                       {return m_vViewResolution;}
+    inline const coreLight&      GetLight          (const coreUintW iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
+    inline const coreDataBuffer& GetTransformBuffer()const                       {return m_TransformBuffer;}
+    inline const coreDataBuffer& GetAmbientBuffer  ()const                       {return m_AmbientBuffer;}
     //! @}
 
     //! check OpenGL versions

@@ -20,7 +20,7 @@ coreTexture::coreTexture()noexcept
 {
 }
 
-coreTexture::coreTexture(const coreBool& bLoadCompressed)noexcept
+coreTexture::coreTexture(const coreBool bLoadCompressed)noexcept
 : coreResource  ()
 , m_iTexture    (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
@@ -116,7 +116,7 @@ coreStatus coreTexture::Unload()
 
 // ****************************************************************
 // create texture memory
-void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, const coreTextureSpec& oSpec, const coreTextureMode& iMode)
+void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode iMode)
 {
     WARN_IF(m_iTexture) this->Unload();
 
@@ -182,7 +182,7 @@ void coreTexture::Create(const coreUint32& iWidth, const coreUint32& iHeight, co
 
 // ****************************************************************
 // modify texture memory
-void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY, const coreUint32& iWidth, const coreUint32& iHeight, const coreUint32& iDataSize, const coreByte* pData)
+void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData)
 {
     WARN_IF(!m_iTexture) return;
     ASSERT(((iOffsetX + iWidth) <= F_TO_UI(m_vResolution.x)) && ((iOffsetY + iHeight) <= F_TO_UI(m_vResolution.y)))
@@ -280,7 +280,7 @@ void coreTexture::Modify(const coreUint32& iOffsetX, const coreUint32& iOffsetY,
 
 // ****************************************************************
 // copy content from current read frame buffer
-void coreTexture::CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight)
+void coreTexture::CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)
 {
     ASSERT(m_iTexture)
     ASSERT(((iSrcX + iWidth) <= F_TO_UI(Core::Graphics->GetViewResolution().x)) && ((iSrcY + iHeight) <= F_TO_UI(Core::Graphics->GetViewResolution().y)) &&
@@ -307,7 +307,7 @@ void coreTexture::CopyFrameBuffer(const coreUint32& iSrcX, const coreUint32& iSr
 
 // ****************************************************************
 // configure shadow sampling
-void coreTexture::ShadowSampling(const coreBool& bStatus)
+void coreTexture::ShadowSampling(const coreBool bStatus)
 {
     ASSERT(m_iTexture && (m_Spec.iFormat == GL_DEPTH_COMPONENT || m_Spec.iFormat == GL_DEPTH_STENCIL))
 
@@ -326,7 +326,7 @@ void coreTexture::ShadowSampling(const coreBool& bStatus)
 
 // ****************************************************************
 // bind texture level to image unit
-void coreTexture::BindImage(const coreUintW& iUnit, const coreUint8& iLevel, const GLenum& iAccess)
+void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess)
 {
     ASSERT(m_iTexture && (iLevel < m_iLevels))
 
@@ -338,7 +338,7 @@ void coreTexture::BindImage(const coreUintW& iUnit, const coreUint8& iLevel, con
 
 // ****************************************************************
 // clear content of the texture
-void coreTexture::Clear(const coreUint8& iLevel)
+void coreTexture::Clear(const coreUint8 iLevel)
 {
     ASSERT(m_iTexture && (iLevel < m_iLevels))
 
@@ -358,7 +358,7 @@ void coreTexture::Clear(const coreUint8& iLevel)
 
 // ****************************************************************
 // invalidate content of the texture
-void coreTexture::Invalidate(const coreUint8& iLevel)
+void coreTexture::Invalidate(const coreUint8 iLevel)
 {
     ASSERT(m_iTexture && (iLevel < m_iLevels))
 
@@ -370,7 +370,7 @@ void coreTexture::Invalidate(const coreUint8& iLevel)
 
 // ****************************************************************
 // create next level-of-detail image
-void coreTexture::CreateNextLevel(const coreUintW& iInWidth, const coreUintW& iInHeight, const coreUintW& iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
+void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
 {
     ASSERT(coreMath::IsPOT(iInWidth)  && (iInWidth  >= 2u) &&
            coreMath::IsPOT(iInHeight) && (iInHeight >= 2u) &&
@@ -412,7 +412,7 @@ void coreTexture::CreateNextLevel(const coreUintW& iInWidth, const coreUintW& iI
 
 // ****************************************************************
 // create compressed image
-void coreTexture::CreateCompressed(const coreUintW& iInWidth, const coreUintW& iInHeight, const coreUintW& iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
+void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
 {
     ASSERT(coreMath::IsPOT(iInWidth)  && (iInWidth  >= 4u) &&
            coreMath::IsPOT(iInHeight) && (iInHeight >= 4u) &&
@@ -452,7 +452,7 @@ void coreTexture::CreateCompressed(const coreUintW& iInWidth, const coreUintW& i
 
 // ****************************************************************
 // bind texture to texture unit
-void coreTexture::__BindTexture(const coreUintW& iUnit, coreTexture* pTexture)
+void coreTexture::__BindTexture(const coreUintW iUnit, coreTexture* pTexture)
 {
     ASSERT(iUnit < CORE_TEXTURE_UNITS)
 

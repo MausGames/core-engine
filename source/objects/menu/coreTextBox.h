@@ -35,13 +35,13 @@ private:
 
 public:
     coreTextBox()noexcept;
-    coreTextBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreTextBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
 
     DISABLE_COPY(coreTextBox)
 
     //! construct the text-box
     //! @{
-    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength);
     //! @}
 
     //! move the text-box
@@ -57,9 +57,9 @@ public:
     //! set object properties
     //! @{
     inline void SetText   (const coreChar* pcText)   {if(m_sText    != pcText)   {m_sText    = pcText;   m_bDisplay = true;}}
-    inline void SetCursor (const coreChar& cCursor)  {if(m_cCursor  != cCursor)  {m_cCursor  = cCursor;  m_bDisplay = true;}}
-    inline void SetReplace(const coreChar& cReplace) {if(m_cReplace != cReplace) {m_cReplace = cReplace; m_bDisplay = true;}}
-    void SetInput(const coreBool& bInput);
+    inline void SetCursor (const coreChar  cCursor)  {if(m_cCursor  != cCursor)  {m_cCursor  = cCursor;  m_bDisplay = true;}}
+    inline void SetReplace(const coreChar  cReplace) {if(m_cReplace != cReplace) {m_cReplace = cReplace; m_bDisplay = true;}}
+    void SetInput(const coreBool bInput);
     //! @}
 
     //! get object properties

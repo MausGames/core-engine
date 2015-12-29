@@ -395,7 +395,7 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat)
 
 // ****************************************************************
 /* safely get last characters of a string */
-const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW& iNum)
+const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW iNum)
 {
     WARN_IF(!pcInput) return "";
 

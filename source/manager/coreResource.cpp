@@ -11,7 +11,7 @@
 
 // ****************************************************************
 /* constructor */
-coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool& bAutomatic)noexcept
+coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic)noexcept
 : m_pResource  (pResource)
 , m_pFile      (pFile)
 , m_sName      (pcName)
@@ -181,7 +181,7 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
 // ****************************************************************
 /* reset all resources and relation-objects */
-void coreResourceManager::Reset(const coreResourceReset& bInit)
+void coreResourceManager::Reset(const coreResourceReset bInit)
 {
     const coreBool bActive = bInit ? true : false;
 

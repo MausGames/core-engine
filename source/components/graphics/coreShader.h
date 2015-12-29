@@ -177,32 +177,32 @@ public:
     //! enable and disable the shader-program
     //! @{
     coreBool Enable();
-    static void Disable(const coreBool& bFull);
+    static void Disable(const coreBool bFull);
     //! @}
 
     //! execute a compute shader-program
     //! @{
-    void DispatchCompute(const coreUint32& iGroupsX, const coreUint32& iGroupsY, const coreUint32& iGroupsZ);
+    void DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ);
     //! @}
 
     //! define shader objects and attribute locations
     //! @{
-    inline coreProgram* AttachShader (const coreShaderPtr&  pShader)                            {if(!m_iStatus)  m_apShaderHandle.push_back(pShader.GetHandle());                             return this;}
-    inline coreProgram* AttachShader (const coreHashString& sName)                              {if(!m_iStatus)  m_apShaderHandle.push_back(Core::Manager::Resource->Get<coreShader>(sName)); return this;}
-    inline coreProgram* BindAttribute(const coreChar*       pcName, const coreUint8& iLocation) {if(!m_iStatus)  m_aiAttribute[pcName] = iLocation;                                           return this;}
-    inline void Finish ()                                                                       {if(!m_iStatus) {m_apShader.reserve(m_apShaderHandle.size()); m_apShaderHandle.shrink_to_fit(); m_aiAttribute.shrink_to_fit(); m_iStatus = CORE_PROGRAM_DEFINED;}}
-    inline void Restart()                                                                       {this->Unload(); m_apShader.clear();                          m_apShaderHandle.clear();         m_aiAttribute.clear();         m_iStatus = CORE_PROGRAM_NEW;}
+    inline coreProgram* AttachShader (const coreShaderPtr&  pShader)                           {if(!m_iStatus)  m_apShaderHandle.push_back(pShader.GetHandle());                             return this;}
+    inline coreProgram* AttachShader (const coreHashString& sName)                             {if(!m_iStatus)  m_apShaderHandle.push_back(Core::Manager::Resource->Get<coreShader>(sName)); return this;}
+    inline coreProgram* BindAttribute(const coreChar*       pcName, const coreUint8 iLocation) {if(!m_iStatus)  m_aiAttribute[pcName] = iLocation;                                           return this;}
+    inline void Finish ()                                                                      {if(!m_iStatus) {m_apShader.reserve(m_apShaderHandle.size()); m_apShaderHandle.shrink_to_fit(); m_aiAttribute.shrink_to_fit(); m_iStatus = CORE_PROGRAM_DEFINED;}}
+    inline void Restart()                                                                      {this->Unload(); m_apShader.clear();                          m_apShaderHandle.clear();         m_aiAttribute.clear();         m_iStatus = CORE_PROGRAM_NEW;}
     //! @}
 
     //! send new uniform values
     //! @{
-    inline void SendUniform(const coreChar* pcName, const coreInt32&   iInt)    {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(I_TO_F(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
-    inline void SendUniform(const coreChar* pcName, const coreFloat&   fFloat)  {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,       0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
+    inline void SendUniform(const coreChar* pcName, const coreInt32    iInt)    {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(I_TO_F(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
+    inline void SendUniform(const coreChar* pcName, const coreFloat    fFloat)  {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,       0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
     inline void SendUniform(const coreChar* pcName, const coreVector2& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
     inline void SendUniform(const coreChar* pcName, const coreVector3& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f)))             glUniform3fv(iLocation, 1, vVector);}
     inline void SendUniform(const coreChar* pcName, const coreVector4& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, vVector))                                     glUniform4fv(iLocation, 1, vVector);}
-    void        SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool& bTranspose);
-    void        SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool& bTranspose);
+    void        SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool bTranspose);
+    void        SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool bTranspose);
     //! @}
 
     //! retrieve uniform and attribute locations
@@ -213,14 +213,14 @@ public:
 
     //! check for cached uniform values
     //! @{
-    inline coreBool CheckCache(const coreInt8& iLocation, const coreVector4& vVector) {if(iLocation < 0) return false; if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
+    inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4& vVector) {if(iLocation < 0) return false; if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint& GetProgram   ()const                        {return m_iProgram;}
-    inline coreShader*   GetShader    (const coreUintW& iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return s_cast<coreShader*>(m_apShaderHandle[iIndex]->GetResource());}
-    inline coreUintW     GetNumShaders()const                        {return m_apShaderHandle.size();}
+    inline const GLuint& GetProgram   ()const                       {return m_iProgram;}
+    inline coreShader*   GetShader    (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return s_cast<coreShader*>(m_apShaderHandle[iIndex]->GetResource());}
+    inline coreUintW     GetNumShaders()const                       {return m_apShaderHandle.size();}
     //! @}
 
     //! get currently active shader-program

@@ -78,7 +78,7 @@ public:
 
     /*! change object type and manager registration */
     //! @{
-    void ChangeType(const coreInt32& iType);
+    void ChangeType(const coreInt32 iType);
     //! @}
 
     /*! set object properties */
@@ -128,7 +128,7 @@ private:
 
 
 public:
-    explicit coreBatchList(const coreUint32& iStartCapacity = 0u)noexcept;
+    explicit coreBatchList(const coreUint32 iStartCapacity = 0u)noexcept;
     ~coreBatchList();
 
     DISABLE_COPY(coreBatchList)
@@ -157,15 +157,15 @@ public:
 
     /*! control memory allocation */
     //! @{
-    void Reallocate(const coreUint32& iNewCapacity);
+    void Reallocate(const coreUint32 iNewCapacity);
     void Clear();
     void ShrinkToFit();
     //! @}
 
     /*! control custom vertex attributes */
     //! @{
-    template <typename F> void CreateCustom(const coreUintW& iVertexSize, F&& nDefineBufferFunc);   //!< [](coreVertexBuffer* OUTPUT pBuffer) -> void
-    template <typename F> void UpdateCustom(F&& nUpdateDataFunc);                                   //!< [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void
+    template <typename F> void CreateCustom(const coreUintW iVertexSize, F&& nDefineBufferFunc);   //!< [](coreVertexBuffer* OUTPUT pBuffer) -> void
+    template <typename F> void UpdateCustom(F&& nUpdateDataFunc);                                  //!< [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void
     //! @}
 
     /*! check for instancing status */
@@ -190,14 +190,14 @@ public:
 private:
     /*! reset with the resource manager */
     //! @{
-    void __Reset(const coreResourceReset& bInit)override;
+    void __Reset(const coreResourceReset bInit)override;
     //! @}
 };
 
 
 // ****************************************************************
 /* create buffer for custom vertex attributes */
-template <typename F> void coreBatchList::CreateCustom(const coreUintW& iVertexSize, F&& nDefineBufferFunc)
+template <typename F> void coreBatchList::CreateCustom(const coreUintW iVertexSize, F&& nDefineBufferFunc)
 {
     ASSERT(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
     WARN_IF(m_paCustomBuffer) return;

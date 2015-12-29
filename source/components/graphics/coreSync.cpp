@@ -63,7 +63,7 @@ void coreSync::Delete()
 
 // ****************************************************************
 /* check for sync object status */
-coreStatus coreSync::Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck)
+coreStatus coreSync::Check(const coreUint64 iNanoWait, const coreSyncCheck iCheck)
 {
     if(!m_pSync) return CORE_INVALID_CALL;
 

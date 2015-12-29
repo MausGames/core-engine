@@ -44,19 +44,19 @@ public:
     //! control the listener
     //! @{
     void SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation);
-    void SetListener(const coreFloat& fSpeed, const coreInt8 iTimeID = -1);
+    void SetListener(const coreFloat fSpeed, const coreInt8 iTimeID = -1);
     //! @}
 
     //! distribute sound sources
     //! @{
-    inline coreBool CheckSource (const ALuint& iBuffer, const ALuint& iSource)const {if(!m_aiBuffer.count(iSource)) return false; return (m_aiBuffer.at(iSource) == iBuffer) ? true : false;}
-    ALuint          NextSource  (const ALuint& iBuffer);
-    void            ClearSources(const ALuint& iBuffer);
+    inline coreBool CheckSource (const ALuint iBuffer, const ALuint iSource)const {if(!m_aiBuffer.count(iSource)) return false; return (m_aiBuffer.at(iSource) == iBuffer) ? true : false;}
+    ALuint          NextSource  (const ALuint iBuffer);
+    void            ClearSources(const ALuint iBuffer);
     //! @}
 
     //! set global volume
     //! @{
-    inline void SetVolume(const coreFloat& fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}
+    inline void SetVolume(const coreFloat fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}
     //! @}
 };
 

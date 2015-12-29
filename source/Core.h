@@ -39,7 +39,6 @@
 #define _CORE_GUARD_H_
 
 // TODO: improve sort and structure under all class access modifiers
-// TODO: don't forward/return trivial types as reference ? (address > value)
 // TODO: check for template parameters <42>
 // TODO: put everything in a namespace ? split up coreData and coreMath
 // TODO: remove this whole static pointer stuff, namespace for main-classes together with math and data ?
@@ -266,7 +265,7 @@
     #endif
 #endif
 #define WARN_IF(c)           {SDL_assert(!(c));} if(c)
-#define STATIC_ASSERT(c)     static_assert(c, "[" #c "]");
+#define STATIC_ASSERT(c)     static_assert(c, "Static Assertion [" #c "]");
 
 // disable constructor and destructor of the defined class
 #define DISABLE_CONSTRUCTION(c) \
@@ -296,14 +295,14 @@
     void  operator delete[] (void*)              = delete;
 
 // enable bitwise-operations with the defined enumeration
-#define ENABLE_BITWISE(e)                                                                                                                                       \
-    constexpr e  operator ~  (const e& a)             {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
-    constexpr e  operator |  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr e  operator &  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr e  operator ^  (const e& a, const e& b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
-    inline    e& operator |= (e&       a, const e& b) {return (a = a | b);}                                                                                     \
-    inline    e& operator &= (e&       a, const e& b) {return (a = a & b);}                                                                                     \
-    inline    e& operator ^= (e&       a, const e& b) {return (a = a ^ b);}
+#define ENABLE_BITWISE(e)                                                                                                                                     \
+    constexpr e  operator ~  (const e a)            {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
+    constexpr e  operator |  (const e a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr e  operator &  (const e a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr e  operator ^  (const e a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
+    inline    e& operator |= (e&      a, const e b) {return (a = a | b);}                                                                                     \
+    inline    e& operator &= (e&      a, const e b) {return (a = a & b);}                                                                                     \
+    inline    e& operator ^= (e&      a, const e b) {return (a = a ^ b);}
 
 // shorter common keywords
 #define f_list forward_list

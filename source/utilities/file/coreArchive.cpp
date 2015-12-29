@@ -29,7 +29,7 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
             else Core::Log->Info   ("File (%s:%u) opened",           m_sPath.c_str(), m_iSize);
 }
 
-coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32& iSize)noexcept
+coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)noexcept
 : m_sPath       (pcPath)
 , m_pData       (pData)
 , m_iSize       (iSize)
@@ -309,7 +309,7 @@ coreStatus coreArchive::AddFile(coreFile* pFile)
 
 // ****************************************************************
 // remove file object
-coreStatus coreArchive::DeleteFile(const coreUintW& iIndex)
+coreStatus coreArchive::DeleteFile(const coreUintW iIndex)
 {
     if(iIndex >= m_apFile.size()) return CORE_INVALID_INPUT;
 

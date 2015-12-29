@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreParticleSystem::coreParticleSystem(const coreUint32& iNumParticles)noexcept
+coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 : coreResourceRelation ()
 , m_pParticle          (NULL)
 , m_iNumParticles      (iNumParticles)
@@ -286,7 +286,7 @@ void coreParticleSystem::ClearAll()
 
 // ****************************************************************
 // reset with the resource manager
-void coreParticleSystem::__Reset(const coreResourceReset& bInit)
+void coreParticleSystem::__Reset(const coreResourceReset bInit)
 {
     // check for OpenGL extensions
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;
@@ -358,7 +358,7 @@ coreParticleEffect::~coreParticleEffect()
 
 // ****************************************************************
 // change associated particle system object
-void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBool& bUnbind)
+void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBool bUnbind)
 {
     ASSERT(pSystem)
 

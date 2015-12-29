@@ -181,7 +181,7 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
 
 // ****************************************************************
 // set view and create projection matrices
-void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat& fFOV, const coreFloat& fNearClip, const coreFloat& fFarClip)
+void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
 {
     coreBool bNewView = false;
 
@@ -218,7 +218,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat& fFOV, const
 
 // ****************************************************************
 // set and update ambient light
-void CoreGraphics::SetLight(const coreUintW& iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
+void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
     coreBool bNewLight = false;
 

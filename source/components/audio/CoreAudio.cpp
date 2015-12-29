@@ -103,7 +103,7 @@ void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVe
     if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
 }
 
-void CoreAudio::SetListener(const coreFloat& fSpeed, const coreInt8 iTimeID)
+void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
 {
     // calculate velocity as relative camera movement
     const coreFloat   fTime     =  Core::System->GetTime(iTimeID);
@@ -119,7 +119,7 @@ void CoreAudio::SetListener(const coreFloat& fSpeed, const coreInt8 iTimeID)
 
 // ****************************************************************
 // retrieve next free sound source
-ALuint CoreAudio::NextSource(const ALuint& iBuffer)
+ALuint CoreAudio::NextSource(const ALuint iBuffer)
 {
     // search for next free sound source
     for(coreUintW i = m_iNumSources; i--; )
@@ -146,7 +146,7 @@ ALuint CoreAudio::NextSource(const ALuint& iBuffer)
 
 // ****************************************************************
 // unbind sound buffer from all sound sources
-void CoreAudio::ClearSources(const ALuint& iBuffer)
+void CoreAudio::ClearSources(const ALuint iBuffer)
 {
     FOR_EACH(it, m_aiBuffer)
     {

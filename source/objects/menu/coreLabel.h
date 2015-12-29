@@ -55,14 +55,14 @@ private:
 
 public:
     coreLabel()noexcept;
-    coreLabel(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept;
+    coreLabel(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
     ~coreLabel();
 
     DISABLE_COPY(coreLabel)
 
     //! construct the label
     //! @{
-    void Construct(const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength);
+    void Construct(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength);
     //! @}
 
     //! render and move the label
@@ -74,9 +74,9 @@ public:
     //! set object properties
     //! @{
     coreBool    SetText        (const coreChar*       pcText);
-    coreBool    SetText        (const coreChar*       pcText, const coreUint8& iNum);
+    coreBool    SetText        (const coreChar*       pcText, const coreUint8 iNum);
     inline void SetTextLanguage(const coreHashString& sKey)   {this->_BindString(&m_sText, sKey);}
-    inline void SetScale       (const coreFloat&      fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
+    inline void SetScale       (const coreFloat       fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
     //! @}
 
     //! get object properties
@@ -94,7 +94,7 @@ public:
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const coreResourceReset& bInit)override;
+    void __Reset(const coreResourceReset bInit)override;
     //! @}
 
     //! update object after modification
@@ -104,7 +104,7 @@ private:
 
     //! generate the texture
     //! @{
-    void __Generate(const coreChar* pcText, const coreBool& bSub);
+    void __Generate(const coreChar* pcText, const coreBool bSub);
     //! @}
 };
 

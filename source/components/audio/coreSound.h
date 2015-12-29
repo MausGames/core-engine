@@ -63,8 +63,8 @@ public:
 
     //! control playback
     //! @{
-    void PlayPosition(const void* pRef, const coreFloat& fVolume, const coreFloat& fPitch, const coreFloat& fPitchRnd, const coreBool& bLoop, const coreVector3& vPosition);
-    void PlayRelative(const void* pRef, const coreFloat& fVolume, const coreFloat& fPitch, const coreFloat& fPitchRnd, const coreBool& bLoop);
+    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop, const coreVector3& vPosition);
+    void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop);
     void Stop();
     coreBool IsPlaying()const;
     //! @}
@@ -72,9 +72,9 @@ public:
     //! set various sound source properties
     //! @{
     void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
-    inline void SetVolume(const coreFloat& fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume); ASSERT(fVolume >= 0.0f)}
-    inline void SetPitch (const coreFloat& fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);  ASSERT(fPitch  >= 0.0f)}
-    inline void SetLoop  (const coreBool&  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
+    inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume); ASSERT(fVolume >= 0.0f)}
+    inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);  ASSERT(fPitch  >= 0.0f)}
+    inline void SetLoop  (const coreBool  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
     //! enable active sound source with reference pointer

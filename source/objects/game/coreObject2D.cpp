@@ -200,7 +200,7 @@ void coreObject2D::Interact()
     m_bFocused = false;
     m_iFinger  = 0u;
 
-    Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUintW& i)
+    Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUintW i)
     {
         // get relative finger position
         const coreVector2 vInput = Core::Input->GetTouchPosition(i) * Core::System->GetResolution() - vScreenPosition;

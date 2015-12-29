@@ -66,40 +66,40 @@ public:
 
     /*! define the visual appearance */
     //! @{
-    inline void DefineTexture(const coreUintW& iUnit, std::nullptr_t)                 {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = NULL;}
-    inline void DefineTexture(const coreUintW& iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
-    inline void DefineTexture(const coreUintW& iUnit, const coreHashString& sName)    {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(sName);}
-    inline void DefineProgram(std::nullptr_t)                                         {m_pProgram = NULL;}
-    inline void DefineProgram(const coreProgramPtr& pProgram)                         {m_pProgram = pProgram;}
-    inline void DefineProgram(const coreHashString& sName)                            {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
+    inline void DefineTexture(const coreUintW iUnit, std::nullptr_t)                 {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = NULL;}
+    inline void DefineTexture(const coreUintW iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
+    inline void DefineTexture(const coreUintW iUnit, const coreHashString& sName)    {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(sName);}
+    inline void DefineProgram(std::nullptr_t)                                        {m_pProgram = NULL;}
+    inline void DefineProgram(const coreProgramPtr& pProgram)                        {m_pProgram = pProgram;}
+    inline void DefineProgram(const coreHashString& sName)                           {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
     //! @}
 
     /*! check for enabled object routines */
     //! @{
-    inline coreBool IsEnabled(const coreObjectEnable& iEnabled)const {ASSERT(iEnabled) return CONTAINS_VALUE(m_iEnabled, iEnabled) ? true : false;}
+    inline coreBool IsEnabled(const coreObjectEnable iEnabled)const {ASSERT(iEnabled) return CONTAINS_VALUE(m_iEnabled, iEnabled) ? true : false;}
     //! @}
 
     /*! set object properties */
     //! @{
-    inline void SetColor4   (const coreVector4&      vColor)     {m_vColor     = vColor;}
-    inline void SetColor3   (const coreVector3&      vColor)     {m_vColor.xyz(vColor);}
-    inline void SetAlpha    (const coreFloat&        fAlpha)     {m_vColor.a   = fAlpha;}
-    inline void SetTexSize  (const coreVector2&      vTexSize)   {m_vTexSize   = vTexSize;}
-    inline void SetTexOffset(const coreVector2&      vTexOffset) {m_vTexOffset = vTexOffset;}
-    inline void SetEnabled  (const coreObjectEnable& iEnabled)   {m_iEnabled   = iEnabled;}
-    inline void SetStatus   (const coreInt32&        iStatus)    {m_iStatus    = iStatus;}
+    inline void SetColor4   (const coreVector4&     vColor)     {m_vColor     = vColor;}
+    inline void SetColor3   (const coreVector3&     vColor)     {m_vColor.xyz(vColor);}
+    inline void SetAlpha    (const coreFloat        fAlpha)     {m_vColor.a   = fAlpha;}
+    inline void SetTexSize  (const coreVector2&     vTexSize)   {m_vTexSize   = vTexSize;}
+    inline void SetTexOffset(const coreVector2&     vTexOffset) {m_vTexOffset = vTexOffset;}
+    inline void SetEnabled  (const coreObjectEnable iEnabled)   {m_iEnabled   = iEnabled;}
+    inline void SetStatus   (const coreInt32        iStatus)    {m_iStatus    = iStatus;}
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const coreTexturePtr& GetTexture  (const coreUintW& iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
-    inline const coreProgramPtr& GetProgram  ()const                       {return m_pProgram;}
-    inline const coreVector4&    GetColor4   ()const                       {return m_vColor;}
-    inline       coreVector3     GetColor3   ()const                       {return m_vColor.xyz();}
-    inline const coreFloat&      GetAlpha    ()const                       {return m_vColor.a;}
-    inline const coreVector2&    GetTexSize  ()const                       {return m_vTexSize;}
-    inline const coreVector2&    GetTexOffset()const                       {return m_vTexOffset;}
-    inline const coreInt32&      GetStatus   ()const                       {return m_iStatus;}
+    inline const coreTexturePtr& GetTexture  (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
+    inline const coreProgramPtr& GetProgram  ()const                      {return m_pProgram;}
+    inline const coreVector4&    GetColor4   ()const                      {return m_vColor;}
+    inline       coreVector3     GetColor3   ()const                      {return m_vColor.xyz();}
+    inline const coreFloat&      GetAlpha    ()const                      {return m_vColor.a;}
+    inline const coreVector2&    GetTexSize  ()const                      {return m_vTexSize;}
+    inline const coreVector2&    GetTexOffset()const                      {return m_vTexOffset;}
+    inline const coreInt32&      GetStatus   ()const                      {return m_iStatus;}
     //! @}
 };
 
@@ -144,26 +144,26 @@ public:
 
     /*! test collision between different structures */
     //! @{
-    template <typename F> void TestCollision(const coreInt32&    iType,                                                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA,     coreObject3D* OUTPUT pObjectB,     const coreBool& bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32&    iType1,   const coreInt32&    iType2,                                F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectType1, coreObject3D* OUTPUT pObjectType2, const coreBool& bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32&    iType,    const coreObject3D* pObject,                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool& bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32&    iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool& bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,                                                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA,     coreObject3D* OUTPUT pObjectB,     const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32     iType2,                                F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectType1, coreObject3D* OUTPUT pObjectType2, const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    const coreObject3D* pObject,                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool bFirstHit) -> void
     static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
     static coreFloat           TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
     //! @}
 
     /*! get manager properties */
     //! @{
-    inline const coreObjectList& GetObjectList  (const coreInt32& iType)const {return m_aapObjectList.at(iType);}
-    inline const coreModelPtr&   GetLowModel    ()const                       {return m_pLowModel;}
-    inline       coreObject2D*   GetBlitFallback()const                       {return m_pBlitFallback;}
+    inline const coreObjectList& GetObjectList  (const coreInt32 iType)const {return m_aapObjectList.at(iType);}
+    inline const coreModelPtr&   GetLowModel    ()const                      {return m_pLowModel;}
+    inline       coreObject2D*   GetBlitFallback()const                      {return m_pBlitFallback;}
     //! @}
 
 
 private:
     /*! reset with the resource manager */
     //! @{
-    void __Reset(const coreResourceReset& bInit);
+    void __Reset(const coreResourceReset bInit);
     //! @}
 
     /*! update all objects and collisions */
@@ -173,8 +173,8 @@ private:
 
     /*! bind and unbind 3d-objects to types */
     //! @{
-    void __BindObject  (coreObject3D* pObject, const coreInt32& iType);
-    void __UnbindObject(coreObject3D* pObject, const coreInt32& iType);
+    void __BindObject  (coreObject3D* pObject, const coreInt32 iType);
+    void __UnbindObject(coreObject3D* pObject, const coreInt32 iType);
     //! @}
 
     /*! bind and unbind 2d-objects */
@@ -192,7 +192,7 @@ private:
 
 // ****************************************************************
 /* test collision within a list */
-template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, F&& nCallback)
 {
     ASSERT(iType)
 
@@ -224,7 +224,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
 
 // ****************************************************************
 /* test collision between two different lists */
-template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType1, const coreInt32& iType2, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType1, const coreInt32 iType2, F&& nCallback)
 {
     ASSERT(iType1 && iType2 && (iType1 != iType2))
 
@@ -260,7 +260,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
 
 // ****************************************************************
 /* test collision between list and 3d-object */
-template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType, const coreObject3D* pObject, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, const coreObject3D* pObject, F&& nCallback)
 {
     ASSERT(iType && pObject)
 
@@ -285,7 +285,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32& iTy
 
 // ****************************************************************
 /* test collision between list and line */
-template <typename F> void coreObjectManager::TestCollision(const coreInt32& iType, const coreVector3& vLinePos, const coreVector3& vLineDir, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, const coreVector3& vLinePos, const coreVector3& vLineDir, F&& nCallback)
 {
     ASSERT(iType)
 

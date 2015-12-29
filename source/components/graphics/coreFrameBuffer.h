@@ -88,14 +88,14 @@ public:
 
     //! control the frame buffer
     //! @{
-    void Create(const coreVector2& vResolution, const coreFrameBufferCreate& bType);
+    void Create(const coreVector2& vResolution, const coreFrameBufferCreate bType);
     void Delete();
     //! @}
 
     //! attach render targets
     //! @{
-    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName = NULL);
-    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec);
+    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName = NULL);
+    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
     void DetachTargets();
     //! @}
 
@@ -107,45 +107,45 @@ public:
 
     //! copy content to another frame buffer
     //! @{
-    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination, const coreUint32& iSrcX, const coreUint32& iSrcY, const coreUint32& iDstX, const coreUint32& iDstY, const coreUint32& iWidth, const coreUint32& iHeight)const;
-    void Blit(const coreFrameBufferTarget& iTargets, coreFrameBuffer* pDestination)const;
+    void Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;
+    void Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination)const;
     //! @}
 
     //! reset content of the frame buffer
     //! @{
-    void Clear     (const coreFrameBufferTarget& iTargets);
-    void Invalidate(const coreFrameBufferTarget& iTargets);
+    void Clear     (const coreFrameBufferTarget iTargets);
+    void Invalidate(const coreFrameBufferTarget iTargets);
     //! @}
 
     //! access buffer directly
     //! @{
-    inline operator const GLuint& ()const {return m_iFrameBuffer;}
+    inline operator GLuint ()const {return m_iFrameBuffer;}
     //! @}
 
     //! set object properties
     //! @{
-    inline void SetFOV     (const coreFloat& fFOV)      {m_fFOV      = fFOV;}
-    inline void SetNearClip(const coreFloat& fNearClip) {m_fNearClip = fNearClip;}
-    inline void SetFarClip (const coreFloat& fFarClip)  {m_fFarClip  = fFarClip;}
+    inline void SetFOV     (const coreFloat fFOV)      {m_fFOV      = fFOV;}
+    inline void SetNearClip(const coreFloat fNearClip) {m_fNearClip = fNearClip;}
+    inline void SetFarClip (const coreFloat fFarClip)  {m_fFarClip  = fFarClip;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint&           GetFrameBuffer  ()const                             {return m_iFrameBuffer;}
-    inline const coreRenderTarget& GetColorTarget  (const coreUintW& iColorIndex)const {ASSERT(iColorIndex < CORE_SHADER_OUTPUT_COLORS) return m_aColorTarget[iColorIndex];}
-    inline const coreRenderTarget& GetDepthTarget  ()const                             {return m_DepthTarget;}
-    inline const coreRenderTarget& GetStencilTarget()const                             {return m_StencilTarget;}
-    inline const coreVector2&      GetResolution   ()const                             {return m_vResolution;}
-    inline const coreFloat&        GetFOV          ()const                             {return m_fFOV;}
-    inline const coreFloat&        GetNearClip     ()const                             {return m_fNearClip;}
-    inline const coreFloat&        GetFarClip      ()const                             {return m_fFarClip;}
+    inline const GLuint&           GetFrameBuffer  ()const                            {return m_iFrameBuffer;}
+    inline const coreRenderTarget& GetColorTarget  (const coreUintW iColorIndex)const {ASSERT(iColorIndex < CORE_SHADER_OUTPUT_COLORS) return m_aColorTarget[iColorIndex];}
+    inline const coreRenderTarget& GetDepthTarget  ()const                            {return m_DepthTarget;}
+    inline const coreRenderTarget& GetStencilTarget()const                            {return m_StencilTarget;}
+    inline const coreVector2&      GetResolution   ()const                            {return m_vResolution;}
+    inline const coreFloat&        GetFOV          ()const                            {return m_fFOV;}
+    inline const coreFloat&        GetNearClip     ()const                            {return m_fNearClip;}
+    inline const coreFloat&        GetFarClip      ()const                            {return m_fFarClip;}
     //! @}
 
 
 private:
     //! attach render targets
     //! @{
-    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget& iTarget, const coreUintW& iColorIndex, const coreTextureSpec& oSpec);
+    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
     //! @}
 };
 

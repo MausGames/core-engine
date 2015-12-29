@@ -272,14 +272,14 @@ void coreModel::DrawElements()const
 
 // ****************************************************************
 // draw the model instanced
-void coreModel::DrawArraysInstanced(const coreUint32& iCount)const
+void coreModel::DrawArraysInstanced(const coreUint32 iCount)const
 {
     // check and draw the model instanced
     ASSERT(s_pCurrent == this || !s_pCurrent)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
-void coreModel::DrawElementsInstanced(const coreUint32& iCount)const
+void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
 {
     // check and draw the model instanced
     ASSERT((s_pCurrent == this || !s_pCurrent) && m_IndexBuffer)
@@ -320,7 +320,7 @@ void coreModel::Enable()
 
 // ****************************************************************
 // disable the model
-void coreModel::Disable(const coreBool& bFull)
+void coreModel::Disable(const coreBool bFull)
 {
     // reset current model object
     s_pCurrent = NULL;
@@ -341,7 +341,7 @@ void coreModel::Disable(const coreBool& bFull)
 
 // ****************************************************************
 // create vertex buffer
-coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
+coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType)
 {
     ASSERT(!m_iVertexArray)
 
@@ -362,7 +362,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32& iNumVertices, 
 
 // ****************************************************************
 // create index buffer
-coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32& iNumIndices, const coreUint8& iIndexSize, const void* pIndexData, const coreDataBufferStorage& iStorageType)
+coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const coreUint8 iIndexSize, const void* pIndexData, const coreDataBufferStorage iStorageType)
 {
     ASSERT(!m_iVertexArray && !m_IndexBuffer)
 

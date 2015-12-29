@@ -99,30 +99,30 @@ public:
 
     //! draw the model instanced
     //! @{
-    inline void DrawInstanced        (const coreUint32& iCount)const {if(m_IndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
-    void        DrawArraysInstanced  (const coreUint32& iCount)const;
-    void        DrawElementsInstanced(const coreUint32& iCount)const;
+    inline void DrawInstanced        (const coreUint32 iCount)const {if(m_IndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
+    void        DrawArraysInstanced  (const coreUint32 iCount)const;
+    void        DrawElementsInstanced(const coreUint32 iCount)const;
     //! @}
 
     //! enable and disable the model
     //! @{
     void Enable();
-    static void Disable(const coreBool& bFull);
+    static void Disable(const coreBool bFull);
     //! @}
 
     //! generate custom model resource data
     //! @{
-    coreVertexBuffer*        CreateVertexBuffer(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
-    coreDataBuffer*          CreateIndexBuffer (const coreUint32& iNumIndices,  const coreUint8& iIndexSize,  const void* pIndexData,  const coreDataBufferStorage& iStorageType);
-    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW& iIndex) {return &m_aVertexBuffer[iIndex];}
-    inline coreDataBuffer*   GetIndexBuffer    ()                        {return &m_IndexBuffer;}
+    coreVertexBuffer*        CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType);
+    coreDataBuffer*          CreateIndexBuffer (const coreUint32 iNumIndices,  const coreUint8 iIndexSize,  const void* pIndexData,  const coreDataBufferStorage iStorageType);
+    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW iIndex) {return &m_aVertexBuffer[iIndex];}
+    inline coreDataBuffer*   GetIndexBuffer    ()                       {return &m_IndexBuffer;}
     //! @}
 
     //! set object properties
     //! @{
     inline void SetBoundingRange (const coreVector3& vBoundingRange)  {ASSERT( m_vBoundingRange.IsNull()) m_vBoundingRange  = vBoundingRange;}
-    inline void SetBoundingRadius(const coreFloat&   fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
-    inline void SetPrimitiveType (const GLenum&      iPrimitiveType)  {m_iPrimitiveType = iPrimitiveType;}
+    inline void SetBoundingRadius(const coreFloat    fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
+    inline void SetPrimitiveType (const GLenum       iPrimitiveType)  {m_iPrimitiveType = iPrimitiveType;}
     //! @}
 
     //! get object properties

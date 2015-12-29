@@ -38,7 +38,7 @@ coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer o)noexcept
 
 // ****************************************************************
 // create buffer storage
-void coreDataBuffer::Create(const GLenum& iTarget, const coreUint32& iSize, const void* pData, const coreDataBufferStorage& iStorageType)
+void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage iStorageType)
 {
     WARN_IF(m_iDataBuffer) this->Delete();
     ASSERT(iSize)
@@ -190,7 +190,7 @@ coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer o)noexcept
 
 // ****************************************************************
 // create buffer storage
-void coreVertexBuffer::Create(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType)
+void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType)
 {
     // create buffer storage
     coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iStorageType);
@@ -217,7 +217,7 @@ void coreVertexBuffer::Delete()
 
 // ****************************************************************
 // define vertex attribute array
-void coreVertexBuffer::DefineAttribute(const coreUint8& iLocation, const coreUint8& iComponents, const GLenum& iType, const coreBool& bInteger, const coreUint8& iOffset)
+void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreBool bInteger, const coreUint8 iOffset)
 {
     ASSERT(this->GetDataBuffer())
 
@@ -244,7 +244,7 @@ void coreVertexBuffer::DefineAttribute(const coreUint8& iLocation, const coreUin
 
 // ****************************************************************
 // activate the vertex structure
-void coreVertexBuffer::Activate(const coreUint8& iBinding)
+void coreVertexBuffer::Activate(const coreUint8 iBinding)
 {
     ASSERT(this->GetDataBuffer() && !m_aAttribute.empty())
 
@@ -289,7 +289,7 @@ void coreVertexBuffer::Activate(const coreUint8& iBinding)
     }
 }
 
-void coreVertexBuffer::ActivateDivided(const coreUint8& iBinding, const coreUint8& iDivisor)
+void coreVertexBuffer::ActivateDivided(const coreUint8 iBinding, const coreUint8 iDivisor)
 {
     // activate the vertex structure
     this->Activate(iBinding);

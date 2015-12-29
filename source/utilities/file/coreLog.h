@@ -81,7 +81,7 @@ public:
 
     /*! set object properties */
     //! @{
-    inline void SetLevel(const coreLogLevel& iLevel) {m_iLevel = iLevel;}
+    inline void SetLevel(const coreLogLevel iLevel) {m_iLevel = iLevel;}
     //! @}
 
     /*! get object properties */
@@ -94,7 +94,7 @@ public:
 private:
     /*! write text to the log file */
     //! @{
-    void __Write(const coreBool& bTime, std::string sText);
+    void __Write(const coreBool bTime, std::string sText);
     //! @}
 };
 

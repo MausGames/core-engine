@@ -25,7 +25,7 @@ coreTextBox::coreTextBox()noexcept
 {
 }
 
-coreTextBox::coreTextBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)noexcept
+coreTextBox::coreTextBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept
 : coreTextBox ()
 {
     // construct on creation
@@ -35,7 +35,7 @@ coreTextBox::coreTextBox(const coreHashString& sIdle, const coreHashString& sBus
 
 // ****************************************************************
 // construct the text-box
-void coreTextBox::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline, const coreUint8& iLength)
+void coreTextBox::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)
 {
     ASSERT(iLength)
 
@@ -97,7 +97,7 @@ void coreTextBox::Move()
 
 // ****************************************************************
 // set text-input status
-void coreTextBox::SetInput(const coreBool& bInput)
+void coreTextBox::SetInput(const coreBool bInput)
 {
     if(m_bInput == bInput) return;
 

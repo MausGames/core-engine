@@ -140,7 +140,7 @@ coreStatus coreSound::Unload()
 
 // ****************************************************************
 // play the sound with positional behavior
-void coreSound::PlayPosition(const void* pRef, const coreFloat& fVolume, const coreFloat& fPitch, const coreFloat& fPitchRnd, const coreBool& bLoop, const coreVector3& vPosition)
+void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop, const coreVector3& vPosition)
 {
     // set active reference pointer
     m_pCurRef = pRef;
@@ -175,7 +175,7 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat& fVolume, const c
 
 // ****************************************************************
 // play the sound with relative behavior
-void coreSound::PlayRelative(const void* pRef, const coreFloat& fVolume, const coreFloat& fPitch, const coreFloat& fPitchRnd, const coreBool& bLoop)
+void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop)
 {
     // set active reference pointer
     m_pCurRef = pRef;

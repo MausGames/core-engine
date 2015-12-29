@@ -211,7 +211,7 @@ void coreObject3D::Move()
 
 // ****************************************************************
 /* change object type and manager registration */
-void coreObject3D::ChangeType(const coreInt32& iType)
+void coreObject3D::ChangeType(const coreInt32 iType)
 {
     if(m_iType == iType) return;
 
@@ -224,7 +224,7 @@ void coreObject3D::ChangeType(const coreInt32& iType)
 
 // ****************************************************************
 /* constructor */
-coreBatchList::coreBatchList(const coreUint32& iStartCapacity)noexcept
+coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 : coreResourceRelation ()
 , m_apObjectList       {}
 , m_iCurCapacity       (iStartCapacity)
@@ -488,7 +488,7 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
 
 // ****************************************************************
 /* change current capacity */
-void coreBatchList::Reallocate(const coreUint32& iNewCapacity)
+void coreBatchList::Reallocate(const coreUint32 iNewCapacity)
 {
          if(iNewCapacity == m_iCurCapacity)        return;
     WARN_IF(iNewCapacity <  m_apObjectList.size()) return;
@@ -524,7 +524,7 @@ void coreBatchList::ShrinkToFit()
 
 // ****************************************************************
 /* reset with the resource manager */
-void coreBatchList::__Reset(const coreResourceReset& bInit)
+void coreBatchList::__Reset(const coreResourceReset bInit)
 {
     // check for OpenGL extensions
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;

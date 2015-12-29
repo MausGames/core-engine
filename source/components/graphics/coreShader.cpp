@@ -19,7 +19,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sS
     coreChar aacEntry[iNum][iLength];
 
     sStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) std::sprintf(aacEntry[i], pcString, i);}
-    inline const coreChar* operator [] (const coreUintW& iIndex)const {return aacEntry[iIndex];}
+    inline const coreChar* operator [] (const coreUintW iIndex)const {return aacEntry[iIndex];}
 };
 
 #define STRING_ARRAY(s,n,v)               \
@@ -438,7 +438,7 @@ coreBool coreProgram::Enable()
 
 // ****************************************************************
 // disable the shader-program
-void coreProgram::Disable(const coreBool& bFull)
+void coreProgram::Disable(const coreBool bFull)
 {
     // reset current shader-program
     s_pCurrent = NULL;
@@ -448,7 +448,7 @@ void coreProgram::Disable(const coreBool& bFull)
 
 // ****************************************************************
 // execute a compute shader-program
-void coreProgram::DispatchCompute(const coreUint32& iGroupsX, const coreUint32& iGroupsY, const coreUint32& iGroupsZ)
+void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ)
 {
     ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this)
 
@@ -460,7 +460,7 @@ void coreProgram::DispatchCompute(const coreUint32& iGroupsX, const coreUint32& 
 
 // ****************************************************************
 // send new uniform 3x3-matrix
-void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool& bTranspose)
+void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
     const coreInt8 iLocation = this->RetrieveUniform(pcName);
@@ -478,7 +478,7 @@ void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix
 
 // ****************************************************************
 // send new uniform 4x4-matrix
-void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool& bTranspose)
+void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
     const coreInt8 iLocation = this->RetrieveUniform(pcName);

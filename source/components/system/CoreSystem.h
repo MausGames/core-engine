@@ -64,8 +64,8 @@ public:
 
     //! control time
     //! @{
-    inline void SetTimeSpeed(const coreUintW& iID, const coreFloat& fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
-    inline void SkipFrame()                                                     {m_iSkipFrame = 2u;}
+    inline void SetTimeSpeed(const coreUintW iID, const coreFloat fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
+    inline void SkipFrame()                                                   {m_iSkipFrame = 2u;}
     //! @}
 
     //! terminate the application
@@ -75,19 +75,19 @@ public:
 
     //! get component properties
     //! @{
-    inline       SDL_Window*               GetWindow       ()const                     {return m_pWindow;}
-    inline const coreVector2&              GetResolution   ()const                     {return m_vResolution;}
-    inline const coreUint8&                GetFullscreen   ()const                     {return m_iFullscreen;}
-    inline const coreBool&                 GetMinimized    ()const                     {return m_bMinimized;}
-    inline const std::vector<coreVector2>& GetAvailableRes ()const                     {return m_avAvailableRes;}
-    inline const coreVector2&              GetDesktopRes   ()const                     {return m_vDesktopRes;}
-    inline const coreDouble&               GetTotalTime    ()const                     {return m_dTotalTime;}
-    inline const coreFloat&                GetTime         ()const                     {return m_fLastTime;}
-    inline const coreFloat&                GetTime         (const coreInt8&  iID)const {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const coreFloat&                GetTimeSpeed    (const coreUintW& iID)const {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
-    inline const coreUint32&               GetCurFrame     ()const                     {return m_iCurFrame;}
-    inline const coreDouble&               GetPerfFrequency()const                     {return m_dPerfFrequency;}
-    inline const coreUint64&               GetPerfTime     ()const                     {return m_iPerfTime;}
+    inline       SDL_Window*               GetWindow       ()const                    {return m_pWindow;}
+    inline const coreVector2&              GetResolution   ()const                    {return m_vResolution;}
+    inline const coreUint8&                GetFullscreen   ()const                    {return m_iFullscreen;}
+    inline const coreBool&                 GetMinimized    ()const                    {return m_bMinimized;}
+    inline const std::vector<coreVector2>& GetAvailableRes ()const                    {return m_avAvailableRes;}
+    inline const coreVector2&              GetDesktopRes   ()const                    {return m_vDesktopRes;}
+    inline const coreDouble&               GetTotalTime    ()const                    {return m_dTotalTime;}
+    inline const coreFloat&                GetTime         ()const                    {return m_fLastTime;}
+    inline const coreFloat&                GetTime         (const coreInt8  iID)const {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const coreFloat&                GetTimeSpeed    (const coreUintW iID)const {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
+    inline const coreUint32&               GetCurFrame     ()const                    {return m_iCurFrame;}
+    inline const coreDouble&               GetPerfFrequency()const                    {return m_dPerfFrequency;}
+    inline const coreUint64&               GetPerfTime     ()const                    {return m_iPerfTime;}
     //! @}
 
 

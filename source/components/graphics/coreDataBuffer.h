@@ -69,20 +69,20 @@ public:
 
     //! control the data buffer object
     //! @{
-    void Create(const GLenum& iTarget, const coreUint32& iSize, const void* pData, const coreDataBufferStorage& iStorageType);
+    void Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage iStorageType);
     void Delete();
     //! @}
 
     //! bind and unbind the data buffer object
     //! @{
-    inline void Bind()const                                                 {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
-    static inline void Bind  (const GLenum& iTarget, const GLuint& iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
-    static inline void Unbind(const GLenum& iTarget, const coreBool& bFull) {if(bFull) coreDataBuffer::Bind(iTarget, 0u); else s_aiBound[iTarget] = 0u;}
+    inline void Bind()const                                               {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
+    static inline void Bind  (const GLenum iTarget, const GLuint iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
+    static inline void Unbind(const GLenum iTarget, const coreBool bFull) {if(bFull) coreDataBuffer::Bind(iTarget, 0u); else s_aiBound[iTarget] = 0u;}
     //! @}
 
     //! modify buffer memory
     //! @{
-    template <typename T> RETURN_RESTRICT T* Map  (const coreUint32& iOffset, const coreUint32& iLength, const coreDataBufferMap& iMapType);
+    template <typename T> RETURN_RESTRICT T* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType);
     template <typename T> void               Unmap(T* ptPointer);
     //! @}
 
@@ -101,7 +101,7 @@ public:
 
     //! access buffer directly
     //! @{
-    inline operator const GLuint& ()const {return m_iDataBuffer;}
+    inline operator GLuint ()const {return m_iDataBuffer;}
     //! @}
 
     //! get object properties
@@ -147,15 +147,15 @@ public:
 
     //! control the vertex buffer object
     //! @{
-    void Create(const coreUint32& iNumVertices, const coreUint8& iVertexSize, const void* pVertexData, const coreDataBufferStorage& iStorageType);
+    void Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType);
     void Delete();
     //! @}
 
     //! define and activate the vertex structure
     //! @{
-    void DefineAttribute(const coreUint8& iLocation, const coreUint8& iComponents, const GLenum& iType, const coreBool& bInteger, const coreUint8& iOffset);
-    void Activate       (const coreUint8& iBinding);
-    void ActivateDivided(const coreUint8& iBinding, const coreUint8& iDivisor);
+    void DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreBool bInteger, const coreUint8 iOffset);
+    void Activate       (const coreUint8 iBinding);
+    void ActivateDivided(const coreUint8 iBinding, const coreUint8 iDivisor);
     //! @}
 
     //! get object properties
@@ -195,7 +195,7 @@ inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 
 // ****************************************************************
 // map buffer memory for writing operations
-template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32& iOffset, const coreUint32& iLength, const coreDataBufferMap& iMapType)
+template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType)
 {
     ASSERT(m_iDataBuffer && this->IsWritable() && (iOffset+iLength <= m_iSize))
 

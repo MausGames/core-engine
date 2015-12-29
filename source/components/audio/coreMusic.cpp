@@ -221,7 +221,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 
 // ****************************************************************
 // read from music stream and update sound buffer
-coreBool coreMusic::__Stream(const ALuint& iBuffer)
+coreBool coreMusic::__Stream(const ALuint iBuffer)
 {
     coreChar acData[4u * CORE_MUSIC_CHUNK];
 
@@ -403,7 +403,7 @@ coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreCha
 
 // ****************************************************************
 // remove music object
-coreStatus coreMusicPlayer::DeleteMusic(const coreUintW& iIndex)
+coreStatus coreMusicPlayer::DeleteMusic(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
 
@@ -443,7 +443,7 @@ void coreMusicPlayer::ClearMusic()
 
 // ****************************************************************
 // switch to specific music object
-void coreMusicPlayer::Select(const coreUintW& iIndex)
+void coreMusicPlayer::Select(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_apMusic.size())     return;
     if(m_pCurMusic == m_apSequence[iIndex]) return;

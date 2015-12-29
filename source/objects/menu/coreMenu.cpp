@@ -11,7 +11,7 @@
 
 // ****************************************************************
 // constructor
-coreMenu::coreMenu(const coreUint8& iNumSurfaces, const coreUint8& iStartSurface)noexcept
+coreMenu::coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)noexcept
 : coreObject2D   ()
 , m_papObject    (NULL)
 , m_pCurObject   (NULL)
@@ -121,7 +121,7 @@ void coreMenu::Move()
 
 // ****************************************************************
 // bind menu object
-void coreMenu::BindObject(const coreUintW& iSurface, coreObject2D* pObject)
+void coreMenu::BindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
     ASSERT(iSurface < m_iNumSurfaces)
 
@@ -141,7 +141,7 @@ void coreMenu::BindObject(const coreUintW& iSurface, coreObject2D* pObject)
 
 // ****************************************************************
 // unbind menu object
-void coreMenu::UnbindObject(const coreUintW& iSurface, coreObject2D* pObject)
+void coreMenu::UnbindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
     ASSERT(iSurface < m_iNumSurfaces)
 
@@ -160,7 +160,7 @@ void coreMenu::UnbindObject(const coreUintW& iSurface, coreObject2D* pObject)
 
 // ****************************************************************
 // change current surface
-coreBool coreMenu::ChangeSurface(const coreUint8& iNewSurface, const coreFloat& fSpeed)
+coreBool coreMenu::ChangeSurface(const coreUint8 iNewSurface, const coreFloat fSpeed)
 {
          if(iNewSurface == m_iCurSurface)  return false;
     WARN_IF(iNewSurface >= m_iNumSurfaces) return false;

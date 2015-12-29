@@ -111,7 +111,7 @@ void coreLog::DebugOpenGL()
 
 // ****************************************************************
 /* write text to the log file */
-void coreLog::__Write(const coreBool& bTime, std::string sText)
+void coreLog::__Write(const coreBool bTime, std::string sText)
 {
     coreLockRelease oRelease(m_iLock);
 

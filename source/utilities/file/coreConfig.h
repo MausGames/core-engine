@@ -66,22 +66,22 @@ public:
 
     /*! set configuration values */
     //! @{
-    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool&,  const coreBool&  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
-    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey,                   const coreBool&  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
-    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32&, const coreInt32& iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
-    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey,                   const coreInt32& iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
-    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat&, const coreFloat& fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
-    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey,                   const coreFloat& fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
-    inline void SetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar*,  const coreChar*  pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue);}
-    inline void SetString(const coreChar* pcSection, const coreChar* pcKey,                   const coreChar*  pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue);}
+    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool,  const coreBool  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
+    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey,                  const coreBool  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);}
+    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32, const coreInt32 iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
+    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey,                  const coreInt32 iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);}
+    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat, const coreFloat fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey,                  const coreFloat fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);}
+    inline void SetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar*, const coreChar* pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue);}
+    inline void SetString(const coreChar* pcSection, const coreChar* pcKey,                  const coreChar* pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue);}
     //! @}
 
     /*! get configuration values */
     //! @{
-    inline coreBool        GetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool&  bDefault)  {const coreBool  bReturn  =            m_Config.GetBoolValue  (pcSection, pcKey, bDefault);  if(bReturn  == bDefault)  this->SetBool  (pcSection, pcKey, bDefault);  return bReturn;}
-    inline coreInt32       GetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32& iDefault)  {const coreInt32 iReturn  = (coreInt32)m_Config.GetLongValue  (pcSection, pcKey, iDefault);  if(iReturn  == iDefault)  this->SetInt   (pcSection, pcKey, iDefault);  return iReturn;}
-    inline coreFloat       GetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat& fDefault)  {const coreFloat fReturn  = (coreFloat)m_Config.GetDoubleValue(pcSection, pcKey, fDefault);  if(fReturn  == fDefault)  this->SetFloat (pcSection, pcKey, fDefault);  return fReturn;}
-    inline const coreChar* GetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar*  pcDefault) {const coreChar* pcReturn =            m_Config.GetValue      (pcSection, pcKey, pcDefault); if(pcReturn == pcDefault) this->SetString(pcSection, pcKey, pcDefault); return pcReturn;}
+    inline coreBool        GetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool  bDefault)  {const coreBool  bReturn  =            m_Config.GetBoolValue  (pcSection, pcKey, bDefault);  if(bReturn  == bDefault)  this->SetBool  (pcSection, pcKey, bDefault);  return bReturn;}
+    inline coreInt32       GetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32 iDefault)  {const coreInt32 iReturn  = (coreInt32)m_Config.GetLongValue  (pcSection, pcKey, iDefault);  if(iReturn  == iDefault)  this->SetInt   (pcSection, pcKey, iDefault);  return iReturn;}
+    inline coreFloat       GetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat fDefault)  {const coreFloat fReturn  = (coreFloat)m_Config.GetDoubleValue(pcSection, pcKey, fDefault);  if(fReturn  == fDefault)  this->SetFloat (pcSection, pcKey, fDefault);  return fReturn;}
+    inline const coreChar* GetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar* pcDefault) {const coreChar* pcReturn =            m_Config.GetValue      (pcSection, pcKey, pcDefault); if(pcReturn == pcDefault) this->SetString(pcSection, pcKey, pcDefault); return pcReturn;}
     //! @}
 
     /*! get object properties */

@@ -136,7 +136,7 @@ coreFloat coreObjectManager::TestCollision(const coreObject3D* pObject, const co
 
 // ****************************************************************
 /* reset with the resource manager */
-void coreObjectManager::__Reset(const coreResourceReset& bInit)
+void coreObjectManager::__Reset(const coreResourceReset bInit)
 {
     if(bInit)
     {
@@ -212,7 +212,7 @@ void coreObjectManager::__UpdateObjects()
 
 // ****************************************************************
 /* bind 3d-object to type */
-void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32& iType)
+void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32 iType)
 {
     ASSERT(pObject && iType)
 
@@ -232,7 +232,7 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32& iTy
 
 // ****************************************************************
 /* unbind 3d-object from type */
-void coreObjectManager::__UnbindObject(coreObject3D* pObject, const coreInt32& iType)
+void coreObjectManager::__UnbindObject(coreObject3D* pObject, const coreInt32 iType)
 {
     ASSERT(pObject && iType)
 

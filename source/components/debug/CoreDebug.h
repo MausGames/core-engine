@@ -79,10 +79,10 @@ public:
     /*! inspect and display values during run-time */
     //! @{
     template <typename... A> void InspectValue(const coreChar* pcName, const coreChar* pcFormat, A&&... vArgs);
-    inline void InspectValue(const coreChar* pcName, const coreBool&    bValue) {this->InspectValue(pcName, bValue ? "true" : "false");}
-    inline void InspectValue(const coreChar* pcName, const coreInt32&   iValue) {this->InspectValue(pcName, "%d",                     iValue);}
-    inline void InspectValue(const coreChar* pcName, const coreUint32&  iValue) {this->InspectValue(pcName, "%u",                     iValue);}
-    inline void InspectValue(const coreChar* pcName, const coreFloat&   fValue) {this->InspectValue(pcName, "%.5f",                   fValue);}
+    inline void InspectValue(const coreChar* pcName, const coreBool     bValue) {this->InspectValue(pcName, bValue ? "true" : "false");}
+    inline void InspectValue(const coreChar* pcName, const coreInt32    iValue) {this->InspectValue(pcName, "%d",                     iValue);}
+    inline void InspectValue(const coreChar* pcName, const coreUint32   iValue) {this->InspectValue(pcName, "%u",                     iValue);}
+    inline void InspectValue(const coreChar* pcName, const coreFloat    fValue) {this->InspectValue(pcName, "%.5f",                   fValue);}
     inline void InspectValue(const coreChar* pcName, const coreVector2& vValue) {this->InspectValue(pcName, "%.5f, %.5f",             vValue.x, vValue.y);}
     inline void InspectValue(const coreChar* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
     inline void InspectValue(const coreChar* pcName, const coreVector4& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}

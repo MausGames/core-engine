@@ -45,40 +45,40 @@ public:
     void AddNode   (const T& tPosition, const T& tTangent);
     void AddNodes  (const T& tPosition, const T& tTangentIn, const T& tTangentOut);
     void AddLoop   ();
-    void DeleteNode(const coreUintW& iIndex);
+    void DeleteNode(const coreUintW iIndex);
     void ClearNodes();
     //! @}
 
     /*! edit node properties */
     //! @{
-    void EditNodePosition(const coreUintW& iIndex, const T& tNewPosition);
-    void EditNodeTangent (const coreUintW& iIndex, const T& tNewTangent);
+    void EditNodePosition(const coreUintW iIndex, const T& tNewPosition);
+    void EditNodeTangent (const coreUintW iIndex, const T& tNewTangent);
     //! @}
 
     /*! calculate position and direction */
     //! @{
-    void     CalcPosDir   (const coreFloat& fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const;
-    inline T CalcPosition (const coreFloat& fDistance)const {T tPos; this->CalcPosDir(fDistance, &tPos, NULL); return tPos;}
-    inline T CalcDirection(const coreFloat& fDistance)const {T tDir; this->CalcPosDir(fDistance, NULL, &tDir); return tDir;}
+    void     CalcPosDir   (const coreFloat fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const;
+    inline T CalcPosition (const coreFloat fDistance)const {T tPos; this->CalcPosDir(fDistance, &tPos, NULL); return tPos;}
+    inline T CalcDirection(const coreFloat fDistance)const {T tDir; this->CalcPosDir(fDistance, NULL, &tDir); return tDir;}
     //! @}
 
     /*! translate distance into relative node index and time */
     //! @{
-    void TranslateRelative(const coreFloat& fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const;
+    void TranslateRelative(const coreFloat fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const;
     //! @}
 
     /*! get object properties */
     //! @{
-    inline const coreNode&  GetNode         (const coreUintW& iIndex)const {return m_apNode.at(iIndex);}
-    inline       coreUintW  GetNumNodes     ()const                        {return m_apNode.size();}
-    inline const coreFloat& GetTotalDistance()const                        {return m_fTotalDistance;}
+    inline const coreNode&  GetNode         (const coreUintW iIndex)const {return m_apNode.at(iIndex);}
+    inline       coreUintW  GetNumNodes     ()const                       {return m_apNode.size();}
+    inline const coreFloat& GetTotalDistance()const                       {return m_fTotalDistance;}
     //! @}
 
 
 private:
     /*! calculate final position and direction */
     //! @{
-    static void __CalcPosDir(const coreFloat& fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection);
+    static void __CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection);
     //! @}
 };
 
@@ -151,7 +151,7 @@ template <typename T> void coreSpline<T>::AddLoop()
 
 // ****************************************************************
 /* remove node from spline */
-template <typename T> void coreSpline<T>::DeleteNode(const coreUintW& iIndex)
+template <typename T> void coreSpline<T>::DeleteNode(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_apNode.size()) return;
 
@@ -188,7 +188,7 @@ template <typename T> void coreSpline<T>::ClearNodes()
 
 // ****************************************************************
 /* edit node position */
-template <typename T> void coreSpline<T>::EditNodePosition(const coreUintW& iIndex, const T& tNewPosition)
+template <typename T> void coreSpline<T>::EditNodePosition(const coreUintW iIndex, const T& tNewPosition)
 {
     ASSERT(iIndex < m_apNode.size())
 
@@ -227,7 +227,7 @@ template <typename T> void coreSpline<T>::EditNodePosition(const coreUintW& iInd
 
 // ****************************************************************
 /* edit node tangent */
-template <typename T> void coreSpline<T>::EditNodeTangent(const coreUintW& iIndex, const T& tNewTangent)
+template <typename T> void coreSpline<T>::EditNodeTangent(const coreUintW iIndex, const T& tNewTangent)
 {
     ASSERT((iIndex < m_apNode.size()) && tNewTangent.IsNormalized())
 
@@ -238,7 +238,7 @@ template <typename T> void coreSpline<T>::EditNodeTangent(const coreUintW& iInde
 
 // ****************************************************************
 /* calculate position and direction */
-template <typename T> void coreSpline<T>::CalcPosDir(const coreFloat& fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const
+template <typename T> void coreSpline<T>::CalcPosDir(const coreFloat fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const
 {
     ASSERT(ptPosition || ptDirection)
 
@@ -262,7 +262,7 @@ template <typename T> void coreSpline<T>::CalcPosDir(const coreFloat& fDistance,
 
 // ****************************************************************
 /* translate distance into relative node index and time */
-template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat& fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const
+template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const
 {
     ASSERT(piRelIndex && pfRelTime && (m_apNode.size() >= 2u))
 
@@ -287,7 +287,7 @@ template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat& fDi
 
 // ****************************************************************
 /* calculate final position and direction */
-template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat& fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
+template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
 {
     // normal calculation:
     // *ptPosition  = (2.0f*X3 - 3.0f*X2 + 1.0f)*tP1 - (2.0f*X3 - 3.0f*X2)*tP2 + (     X3 - 2.0f*X2 +   X1)*tT1 + (     X3 -      X2)*tT2;

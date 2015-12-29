@@ -26,7 +26,7 @@ coreCheckBox::coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashS
     this->Construct(sIdleUnchecked, sBusyUnchecked, sIdleChecked, sBusyChecked);
 }
 
-coreCheckBox::coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline)noexcept
+coreCheckBox::coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept
 : coreCheckBox ()
 {
     // construct on creation
@@ -45,7 +45,7 @@ void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHas
     this->__Construct(sIdleChecked, sBusyChecked);
 }
 
-void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8& iHeight, const coreUint8& iOutline)
+void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)
 {
     // construct the button with label
     coreButton::Construct(sIdleUnchecked, sBusyUnchecked, sFont, iHeight, iOutline, 0u);
@@ -71,7 +71,7 @@ void coreCheckBox::Move()
 
 // ****************************************************************
 // set check status
-void coreCheckBox::SetCheck(const coreBool& bCheck)
+void coreCheckBox::SetCheck(const coreBool bCheck)
 {
     if(m_bCheck == bCheck) return;
 

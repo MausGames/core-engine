@@ -115,7 +115,7 @@ void CoreInput::DefineCursor(const coreChar* pcPath)
 
 // ****************************************************************
 // show or hide the mouse cursor
-void CoreInput::ShowCursor(const coreBool& bStatus)
+void CoreInput::ShowCursor(const coreBool bStatus)
 {
     if(m_bCursorVisible == bStatus) return;
 
@@ -130,7 +130,7 @@ void CoreInput::ShowCursor(const coreBool& bStatus)
 
 // ****************************************************************
 // control mouse with keyboard
-void CoreInput::UseMouseWithKeyboard(const coreInputKey& iLeft, const coreInputKey& iRight, const coreInputKey& iUp, const coreInputKey& iDown, const coreInputKey& iButton1, const coreInputKey& iButton2, const coreFloat& fSpeed)
+void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKey iRight, const coreInputKey iUp, const coreInputKey iDown, const coreInputKey iButton1, const coreInputKey iButton2, const coreFloat fSpeed)
 {
     // TODO: implement function
 }
@@ -138,7 +138,7 @@ void CoreInput::UseMouseWithKeyboard(const coreInputKey& iLeft, const coreInputK
 
 // ****************************************************************
 // control mouse with joystick
-void CoreInput::UseMouseWithJoystick(const coreUintW& iIndex, const coreUint8& iButton1, const coreUint8& iButton2, const coreFloat& fSpeed)
+void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iButton1, const coreUint8 iButton2, const coreFloat fSpeed)
 {
     if(iIndex >= m_aJoystick.size()) return;
 
@@ -161,7 +161,7 @@ void CoreInput::UseMouseWithJoystick(const coreUintW& iIndex, const coreUint8& i
 
 // ****************************************************************
 // forward d-pad input to stick input on joystick
-void CoreInput::ForwardDpadToStick(const coreUintW& iIndex)
+void CoreInput::ForwardDpadToStick(const coreUintW iIndex)
 {
     // check for d-pad buttons and invoke stick movement
          if(this->GetJoystickButton(iIndex, 11u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u,  1.0f);

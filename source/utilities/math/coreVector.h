@@ -28,7 +28,7 @@ public:
 
 public:
     coreVector2() = default;
-    constexpr coreVector2(const coreFloat& fx, const coreFloat& fy)noexcept : x (fx), y (fy) {}
+    constexpr coreVector2(const coreFloat fx, const coreFloat fy)noexcept : x (fx), y (fy) {}
 
     ENABLE_COPY(coreVector2)
 
@@ -52,16 +52,16 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreVector2 operator +  (const coreFloat& f)const                  {return coreVector2(x+f, y+f);}
-    constexpr        coreVector2 operator -  (const coreFloat& f)const                  {return coreVector2(x-f, y-f);}
-    constexpr        coreVector2 operator *  (const coreFloat& f)const                  {return coreVector2(x*f, y*f);}
-    inline           coreVector2 operator /  (const coreFloat& f)const                  {return  *this * RCP(f);}
-    inline           void        operator += (const coreFloat& f)                       {*this = *this + f;}
-    inline           void        operator -= (const coreFloat& f)                       {*this = *this - f;}
-    inline           void        operator *= (const coreFloat& f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat& f)                       {*this = *this / f;}
-    friend constexpr coreVector2 operator +  (const coreFloat& f, const coreVector2& v) {return v + f;}
-    friend constexpr coreVector2 operator *  (const coreFloat& f, const coreVector2& v) {return v * f;}
+    constexpr        coreVector2 operator +  (const coreFloat f)const                  {return coreVector2(x+f, y+f);}
+    constexpr        coreVector2 operator -  (const coreFloat f)const                  {return coreVector2(x-f, y-f);}
+    constexpr        coreVector2 operator *  (const coreFloat f)const                  {return coreVector2(x*f, y*f);}
+    inline           coreVector2 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
+    inline           void        operator += (const coreFloat f)                       {*this = *this + f;}
+    inline           void        operator -= (const coreFloat f)                       {*this = *this - f;}
+    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
+    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
+    friend constexpr coreVector2 operator +  (const coreFloat f, const coreVector2& v) {return v + f;}
+    friend constexpr coreVector2 operator *  (const coreFloat f, const coreVector2& v) {return v * f;}
     //! @}
 
     /*! matrix operations */
@@ -121,11 +121,11 @@ public:
     /*! static functions */
     //! @{
     static constexpr coreFloat   Dot      (const coreVector2& v1, const coreVector2& v2) {return (v1.x*v2.x + v1.y*v2.y);}
-    static inline    coreVector2 Direction(const coreFloat& fAngle)                      {return coreVector2(-SIN(fAngle), COS(fAngle));}
+    static inline    coreVector2 Direction(const coreFloat fAngle)                       {return coreVector2(-SIN(fAngle), COS(fAngle));}
     static inline    coreVector2 Rand     ();
-    static inline    coreVector2 Rand     (const coreFloat& fMax);
-    static inline    coreVector2 Rand     (const coreFloat& fMin,  const coreFloat& fMax);
-    static inline    coreVector2 Rand     (const coreFloat& fMinX, const coreFloat& fMaxX, const coreFloat& fMinY, const coreFloat& fMaxY);
+    static inline    coreVector2 Rand     (const coreFloat fMax);
+    static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax);
+    static inline    coreVector2 Rand     (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY);
     static inline    coreVector2 Reflect  (const coreVector2& vVelocity, const coreVector2& vNormal);
     //! @}
 
@@ -134,9 +134,9 @@ public:
     constexpr        coreUint32  PackUnorm2x16  ()const;
     constexpr        coreUint32  PackSnorm2x16  ()const;
     inline           coreUint32  PackFloat2x16  ()const;
-    static constexpr coreVector2 UnpackUnorm2x16(const coreUint32& iNumber);
-    static inline    coreVector2 UnpackSnorm2x16(const coreUint32& iNumber);
-    static inline    coreVector2 UnpackFloat2x16(const coreUint32& iNumber);
+    static constexpr coreVector2 UnpackUnorm2x16(const coreUint32 iNumber);
+    static inline    coreVector2 UnpackSnorm2x16(const coreUint32 iNumber);
+    static inline    coreVector2 UnpackFloat2x16(const coreUint32 iNumber);
     //! @}
 };
 
@@ -156,9 +156,9 @@ public:
 
 public:
     coreVector3() = default;
-    constexpr coreVector3(const coreVector2& v, const coreFloat& fz)noexcept                     : x (v.x), y (v.y), z (fz)  {}
-    constexpr coreVector3(const coreFloat& fx, const coreVector2& v)noexcept                     : x (fx),  y (v.x), z (v.y) {}
-    constexpr coreVector3(const coreFloat& fx, const coreFloat& fy, const coreFloat& fz)noexcept : x (fx),  y (fy),  z (fz)  {}
+    constexpr coreVector3(const coreVector2& v, const coreFloat fz)noexcept                   : x (v.x), y (v.y), z (fz)  {}
+    constexpr coreVector3(const coreFloat fx, const coreVector2& v)noexcept                   : x (fx),  y (v.x), z (v.y) {}
+    constexpr coreVector3(const coreFloat fx, const coreFloat fy, const coreFloat fz)noexcept : x (fx),  y (fy),  z (fz)  {}
 
     ENABLE_COPY(coreVector3)
 
@@ -182,16 +182,16 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreVector3 operator +  (const coreFloat& f)const                  {return coreVector3(x+f, y+f, z+f);}
-    constexpr        coreVector3 operator -  (const coreFloat& f)const                  {return coreVector3(x-f, y-f, z-f);}
-    constexpr        coreVector3 operator *  (const coreFloat& f)const                  {return coreVector3(x*f, y*f, z*f);}
-    inline           coreVector3 operator /  (const coreFloat& f)const                  {return  *this * RCP(f);}
-    inline           void        operator += (const coreFloat& f)                       {*this = *this + f;}
-    inline           void        operator -= (const coreFloat& f)                       {*this = *this - f;}
-    inline           void        operator *= (const coreFloat& f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat& f)                       {*this = *this / f;}
-    friend constexpr coreVector3 operator +  (const coreFloat& f, const coreVector3& v) {return v + f;}
-    friend constexpr coreVector3 operator *  (const coreFloat& f, const coreVector3& v) {return v * f;}
+    constexpr        coreVector3 operator +  (const coreFloat f)const                  {return coreVector3(x+f, y+f, z+f);}
+    constexpr        coreVector3 operator -  (const coreFloat f)const                  {return coreVector3(x-f, y-f, z-f);}
+    constexpr        coreVector3 operator *  (const coreFloat f)const                  {return coreVector3(x*f, y*f, z*f);}
+    inline           coreVector3 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
+    inline           void        operator += (const coreFloat f)                       {*this = *this + f;}
+    inline           void        operator -= (const coreFloat f)                       {*this = *this - f;}
+    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
+    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
+    friend constexpr coreVector3 operator +  (const coreFloat f, const coreVector3& v) {return v + f;}
+    friend constexpr coreVector3 operator *  (const coreFloat f, const coreVector3& v) {return v * f;}
     //! @}
 
     /*! matrix operations */
@@ -257,11 +257,11 @@ public:
     static constexpr coreFloat   Dot    (const coreVector3& v1, const coreVector3& v2) {return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);}
     static constexpr coreVector3 Cross  (const coreVector3& v1, const coreVector3& v2);
     static inline    coreVector3 Rand   ();
-    static inline    coreVector3 Rand   (const coreFloat& fMax);
-    static inline    coreVector3 Rand   (const coreFloat& fMin,  const coreFloat& fMax);
-    static inline    coreVector3 Rand   (const coreFloat& fMinX, const coreFloat& fMaxX, const coreFloat& fMinY, const coreFloat& fMaxY, const coreFloat& fMinZ, const coreFloat& fMaxZ);
+    static inline    coreVector3 Rand   (const coreFloat fMax);
+    static inline    coreVector3 Rand   (const coreFloat fMin,  const coreFloat fMax);
+    static inline    coreVector3 Rand   (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ);
     static inline    coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal);
-    static inline    coreBool    Visible(const coreVector3& vPosition, const coreFloat& fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection);
+    static inline    coreBool    Visible(const coreVector3& vPosition, const coreFloat fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection);
     //! @}
 
     /*! color functions */
@@ -288,13 +288,13 @@ public:
 
 public:
     coreVector4() = default;
-    constexpr coreVector4(const coreVector3& v, const coreFloat& fw)noexcept                                          : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
-    constexpr coreVector4(const coreFloat& fx, const coreVector3& v)noexcept                                          : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
-    constexpr coreVector4(const coreVector2& v, const coreFloat& fz, const coreFloat& fw)noexcept                     : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
-    constexpr coreVector4(const coreFloat& fx, const coreVector2& v, const coreFloat& fw)noexcept                     : x (fx),   y (v.x),  z (v.y),  w (fw)   {}
-    constexpr coreVector4(const coreFloat& fx, const coreFloat& fy, const coreVector2& v)noexcept                     : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
-    constexpr coreVector4(const coreVector2& v1, const coreVector2& v2)noexcept                                       : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
-    constexpr coreVector4(const coreFloat& fx, const coreFloat& fy, const coreFloat& fz, const coreFloat& fw)noexcept : x (fx),   y (fy),   z (fz),   w (fw)   {}
+    constexpr coreVector4(const coreVector3& v, const coreFloat fw)noexcept                                       : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
+    constexpr coreVector4(const coreFloat fx, const coreVector3& v)noexcept                                       : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
+    constexpr coreVector4(const coreVector2& v, const coreFloat fz, const coreFloat fw)noexcept                   : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
+    constexpr coreVector4(const coreFloat fx, const coreVector2& v, const coreFloat fw)noexcept                   : x (fx),   y (v.x),  z (v.y),  w (fw)   {}
+    constexpr coreVector4(const coreFloat fx, const coreFloat fy, const coreVector2& v)noexcept                   : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
+    constexpr coreVector4(const coreVector2& v1, const coreVector2& v2)noexcept                                   : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
+    constexpr coreVector4(const coreFloat fx, const coreFloat fy, const coreFloat fz, const coreFloat fw)noexcept : x (fx),   y (fy),   z (fz),   w (fw)   {}
 
     ENABLE_COPY(coreVector4)
 
@@ -318,16 +318,16 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreVector4 operator +  (const coreFloat& f)const                  {return coreVector4(x+f, y+f, z+f, w+f);}
-    constexpr        coreVector4 operator -  (const coreFloat& f)const                  {return coreVector4(x-f, y-f, z-f, w-f);}
-    constexpr        coreVector4 operator *  (const coreFloat& f)const                  {return coreVector4(x*f, y*f, z*f, w*f);}
-    inline           coreVector4 operator /  (const coreFloat& f)const                  {return  *this * RCP(f);}
-    inline           void        operator += (const coreFloat& f)                       {*this = *this + f;}
-    inline           void        operator -= (const coreFloat& f)                       {*this = *this - f;}
-    inline           void        operator *= (const coreFloat& f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat& f)                       {*this = *this / f;}
-    friend constexpr coreVector4 operator +  (const coreFloat& f, const coreVector4& v) {return v + f;}
-    friend constexpr coreVector4 operator *  (const coreFloat& f, const coreVector4& v) {return v * f;}
+    constexpr        coreVector4 operator +  (const coreFloat f)const                  {return coreVector4(x+f, y+f, z+f, w+f);}
+    constexpr        coreVector4 operator -  (const coreFloat f)const                  {return coreVector4(x-f, y-f, z-f, w-f);}
+    constexpr        coreVector4 operator *  (const coreFloat f)const                  {return coreVector4(x*f, y*f, z*f, w*f);}
+    inline           coreVector4 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
+    inline           void        operator += (const coreFloat f)                       {*this = *this + f;}
+    inline           void        operator -= (const coreFloat f)                       {*this = *this - f;}
+    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
+    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
+    friend constexpr coreVector4 operator +  (const coreFloat f, const coreVector4& v) {return v + f;}
+    friend constexpr coreVector4 operator *  (const coreFloat f, const coreVector4& v) {return v * f;}
     //! @}
 
     /*! matrix operations */
@@ -373,13 +373,13 @@ public:
     constexpr        coreUint64  PackUnorm4x16  ()const;
     constexpr        coreUint64  PackSnorm4x16  ()const;
     inline           coreUint64  PackFloat4x16  ()const;
-    static constexpr coreVector4 UnpackUnorm210 (const coreUint32& iNumber);
-    static inline    coreVector4 UnpackSnorm210 (const coreUint32& iNumber);
-    static constexpr coreVector4 UnpackUnorm4x8 (const coreUint32& iNumber);
-    static inline    coreVector4 UnpackSnorm4x8 (const coreUint32& iNumber);
-    static constexpr coreVector4 UnpackUnorm4x16(const coreUint64& iNumber);
-    static inline    coreVector4 UnpackSnorm4x16(const coreUint64& iNumber);
-    static inline    coreVector4 UnpackFloat4x16(const coreUint64& iNumber);
+    static constexpr coreVector4 UnpackUnorm210 (const coreUint32 iNumber);
+    static inline    coreVector4 UnpackSnorm210 (const coreUint32 iNumber);
+    static constexpr coreVector4 UnpackUnorm4x8 (const coreUint32 iNumber);
+    static inline    coreVector4 UnpackSnorm4x8 (const coreUint32 iNumber);
+    static constexpr coreVector4 UnpackUnorm4x16(const coreUint64 iNumber);
+    static inline    coreVector4 UnpackSnorm4x16(const coreUint64 iNumber);
+    static inline    coreVector4 UnpackFloat4x16(const coreUint64 iNumber);
     //! @}
 
     /*! quaternion functions */
@@ -401,19 +401,19 @@ inline coreVector2 coreVector2::Rand()
                        Core::Rand->Float(2.0f) - 1.0f).Normalize();
 }
 
-inline coreVector2 coreVector2::Rand(const coreFloat& fMax)
+inline coreVector2 coreVector2::Rand(const coreFloat fMax)
 {
     return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMax);
 }
 
-inline coreVector2 coreVector2::Rand(const coreFloat& fMin, const coreFloat& fMax)
+inline coreVector2 coreVector2::Rand(const coreFloat fMin, const coreFloat fMax)
 {
     return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
-inline coreVector2 coreVector2::Rand(const coreFloat& fMinX, const coreFloat& fMaxX, const coreFloat& fMinY, const coreFloat& fMaxY)
+inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY)
 {
     return coreVector2(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY));
@@ -458,7 +458,7 @@ inline coreUint32 coreVector2::PackFloat2x16()const
 
 // ****************************************************************
 /* uncompress YX packed uint into 0.0 to 1.0 vector */
-constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32& iNumber)
+constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32 iNumber)
 {
     return coreVector2(I_TO_F( iNumber         & 0xFFFFu),
                        I_TO_F((iNumber >> 16u) & 0xFFFFu)) * 1.525902189e-5f;
@@ -467,7 +467,7 @@ constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32& iNumber)
 
 // ****************************************************************
 /* uncompress YX packed uint into -1.0 to 1.0 vector */
-inline coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32& iNumber)
+inline coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32 iNumber)
 {
     const coreVector2 A = coreVector2(I_TO_F( iNumber         & 0xFFFFu),
                                       I_TO_F((iNumber >> 16u) & 0xFFFFu));
@@ -479,7 +479,7 @@ inline coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32& iNumber)
 
 // ****************************************************************
 /* uncompress YX packed uint into arbitrary vector */
-inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32& iNumber)
+inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 {
     return coreVector2(coreMath::Float16to32( iNumber         & 0xFFFFu),
                        coreMath::Float16to32((iNumber >> 16u) & 0xFFFFu));
@@ -505,21 +505,21 @@ inline coreVector3 coreVector3::Rand()
                        Core::Rand->Float(2.0f) - 1.0f).Normalize();
 }
 
-inline coreVector3 coreVector3::Rand(const coreFloat& fMax)
+inline coreVector3 coreVector3::Rand(const coreFloat fMax)
 {
     return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMax);
 }
 
-inline coreVector3 coreVector3::Rand(const coreFloat& fMin, const coreFloat& fMax)
+inline coreVector3 coreVector3::Rand(const coreFloat fMin, const coreFloat fMax)
 {
     return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMin, fMax);
 }
 
-inline coreVector3 coreVector3::Rand(const coreFloat& fMinX, const coreFloat& fMaxX, const coreFloat& fMinY, const coreFloat& fMaxY, const coreFloat& fMinZ, const coreFloat& fMaxZ)
+inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ)
 {
     return coreVector3(Core::Rand->Float(fMinX, fMaxX),
                        Core::Rand->Float(fMinY, fMaxY),
@@ -538,7 +538,7 @@ inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const core
 
 // ****************************************************************
 /* check if inside field-of-view */
-coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFloat& fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection)
+coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFloat fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection)
 {
     // calculate relative position and angle
     const coreVector3 vRelative = (vPosition - vViewPosition).Normalize();
@@ -675,7 +675,7 @@ inline coreUint64 coreVector4::PackFloat4x16()const
 
 // ****************************************************************
 /* uncompress 2_10_10_10_rev packed uint into 0.0 to 1.0 vector */
-constexpr coreVector4 coreVector4::UnpackUnorm210(const coreUint32& iNumber)
+constexpr coreVector4 coreVector4::UnpackUnorm210(const coreUint32 iNumber)
 {
     return coreVector4(coreVector3(I_TO_F( iNumber         & 0x3FFu),
                                    I_TO_F((iNumber >> 10u) & 0x3FFu),
@@ -686,7 +686,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm210(const coreUint32& iNumber)
 
 // ****************************************************************
 /* uncompress 2_10_10_10_rev packed uint into -1.0 to 1.0 vector */
-inline coreVector4 coreVector4::UnpackSnorm210(const coreUint32& iNumber)
+inline coreVector4 coreVector4::UnpackSnorm210(const coreUint32 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0x3FFu),
                                       I_TO_F((iNumber >> 10u) & 0x3FFu),
@@ -702,7 +702,7 @@ inline coreVector4 coreVector4::UnpackSnorm210(const coreUint32& iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint into 0.0 to 1.0 vector */
-constexpr coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32& iNumber)
+constexpr coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32 iNumber)
 {
     return coreVector4(I_TO_F( iNumber         & 0xFFu),
                        I_TO_F((iNumber >>  8u) & 0xFFu),
@@ -713,7 +713,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32& iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint into -1.0 to 1.0 vector */
-inline coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32& iNumber)
+inline coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0xFFu),
                                       I_TO_F((iNumber >>  8u) & 0xFFu),
@@ -729,7 +729,7 @@ inline coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32& iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint64 into 0.0 to 1.0 vector */
-constexpr coreVector4 coreVector4::UnpackUnorm4x16(const coreUint64& iNumber)
+constexpr coreVector4 coreVector4::UnpackUnorm4x16(const coreUint64 iNumber)
 {
     return coreVector4(I_TO_F( iNumber         & 0xFFFFu),
                        I_TO_F((iNumber >> 16u) & 0xFFFFu),
@@ -740,7 +740,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm4x16(const coreUint64& iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint64 into -1.0 to 1.0 vector */
-inline coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64& iNumber)
+inline coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0xFFFFu),
                                       I_TO_F((iNumber >> 16u) & 0xFFFFu),
@@ -756,7 +756,7 @@ inline coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64& iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint64 into arbitrary vector */
-inline coreVector4 coreVector4::UnpackFloat4x16(const coreUint64& iNumber)
+inline coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
 {
     return coreVector4(coreMath::Float16to32( iNumber         & 0xFFFFu),
                        coreMath::Float16to32((iNumber >> 16u) & 0xFFFFu),

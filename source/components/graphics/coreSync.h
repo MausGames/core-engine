@@ -49,7 +49,7 @@ public:
 
     /*! check for sync object status */
     //! @{
-    coreStatus Check(const coreUint64& iNanoWait, const coreSyncCheck& iCheck);
+    coreStatus Check(const coreUint64 iNanoWait, const coreSyncCheck iCheck);
     //! @}
 
     /*! invoke explicit synchronization */

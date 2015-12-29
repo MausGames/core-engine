@@ -38,7 +38,7 @@ private:
 
 public:
     explicit coreFile(const coreChar* pcPath)noexcept;
-    coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32& iSize)noexcept;
+    coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)noexcept;
     ~coreFile();
 
     FRIEND_CLASS(coreArchive)
@@ -88,18 +88,18 @@ public:
 
     //! manage file objects
     //! @{
-    coreStatus AddFile   (const coreChar*  pcPath);
-    coreStatus AddFile   (coreFile*        pFile);
-    coreStatus DeleteFile(const coreUintW& iIndex);
-    coreStatus DeleteFile(const coreChar*  pcPath);
-    coreStatus DeleteFile(coreFile*        pFile);
+    coreStatus AddFile   (const coreChar* pcPath);
+    coreStatus AddFile   (coreFile*       pFile);
+    coreStatus DeleteFile(const coreUintW iIndex);
+    coreStatus DeleteFile(const coreChar* pcPath);
+    coreStatus DeleteFile(coreFile*       pFile);
     void ClearFiles();
     //! @}
 
     //! access file objects
     //! @{
-    inline coreFile* GetFile(const coreUintW& iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex]    : NULL;}
-    inline coreFile* GetFile(const coreChar* pcPath)  {return (m_apFile.count(pcPath))   ? m_apFile.at(pcPath) : NULL;}
+    inline coreFile* GetFile(const coreUintW iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex]    : NULL;}
+    inline coreFile* GetFile(const coreChar* pcPath) {return (m_apFile.count(pcPath))   ? m_apFile.at(pcPath) : NULL;}
     //! @}
 
     //! get object properties

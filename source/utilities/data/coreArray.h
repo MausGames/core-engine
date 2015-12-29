@@ -29,9 +29,9 @@ public:
 
     /*! switch current item */
     //! @{
-    inline void select(const coreUintW& iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = iIndex;}
-    inline void next    ()                      {if(++m_iCurIndex >= iSize) m_iCurIndex = 0u;}
-    inline void previous()                      {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1u;}
+    inline void select(const coreUintW iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = iIndex;}
+    inline void next    ()                     {if(++m_iCurIndex >= iSize) m_iCurIndex = 0u;}
+    inline void previous()                     {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1u;}
     //! @}
 
     /*! access reference to current item */

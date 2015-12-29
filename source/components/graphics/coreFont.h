@@ -37,29 +37,29 @@ public:
 
     //! create solid text with the font
     //! @{
-    SDL_Surface* CreateText (const coreChar*   pcText, const coreUint8& iHeight);
-    SDL_Surface* CreateGlyph(const coreUint16& iGlyph, const coreUint8& iHeight);
+    SDL_Surface* CreateText (const coreChar*  pcText, const coreUint8 iHeight);
+    SDL_Surface* CreateGlyph(const coreUint16 iGlyph, const coreUint8 iHeight);
     //! @}
 
     //! create outlined text with the font
     //! @{
-    SDL_Surface* CreateTextOutline (const coreChar*   pcText, const coreUint8& iHeight, const coreUint8& iOutline);
-    SDL_Surface* CreateGlyphOutline(const coreUint16& iGlyph, const coreUint8& iHeight, const coreUint8& iOutline);
+    SDL_Surface* CreateTextOutline (const coreChar*  pcText, const coreUint8 iHeight, const coreUint8 iOutline);
+    SDL_Surface* CreateGlyphOutline(const coreUint16 iGlyph, const coreUint8 iHeight, const coreUint8 iOutline);
     //! @}
 
     //! retrieve font-related attributes
     //! @{
     inline const coreChar* RetrieveFamilyName() {ASSERT(!m_aapFont.empty()) return TTF_FontFaceFamilyName(m_aapFont.at(1u).at(0u));}
     inline const coreChar* RetrieveStyleName () {ASSERT(!m_aapFont.empty()) return TTF_FontFaceStyleName (m_aapFont.at(1u).at(0u));}
-    void      RetrieveGlyphMetrics(const coreUint16& iGlyph,      const coreUint8& iHeight, const coreUint8& iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
-    coreUint8 RetrieveGlyphMetrics(const coreChar*   pcMultiByte, const coreUint8& iHeight, const coreUint8& iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
+    void      RetrieveGlyphMetrics(const coreUint16 iGlyph,      const coreUint8 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
+    coreUint8 RetrieveGlyphMetrics(const coreChar*  pcMultiByte, const coreUint8 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
     //! @}
 
 
 private:
     //! init the font in a specific height
     //! @{
-    coreBool __InitHeight(const coreUint8& iHeight, const coreUint8& iOutline);
+    coreBool __InitHeight(const coreUint8 iHeight, const coreUint8 iOutline);
     //! @}
 };
 

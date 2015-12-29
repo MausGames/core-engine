@@ -39,7 +39,7 @@ private:
 
 
 public:
-    coreMenu(const coreUint8& iNumSurfaces, const coreUint8& iStartSurface)noexcept;
+    coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)noexcept;
     virtual ~coreMenu();
 
     DISABLE_COPY(coreMenu)
@@ -52,13 +52,13 @@ public:
 
     //! bind and unbind menu objects
     //! @{
-    void BindObject  (const coreUintW& iSurface, coreObject2D* pObject);
-    void UnbindObject(const coreUintW& iSurface, coreObject2D* pObject);
+    void BindObject  (const coreUintW iSurface, coreObject2D* pObject);
+    void UnbindObject(const coreUintW iSurface, coreObject2D* pObject);
     //! @}
 
     //! control surfaces
     //! @{
-    coreBool ChangeSurface(const coreUint8& iNewSurface, const coreFloat& fSpeed);
+    coreBool ChangeSurface(const coreUint8 iNewSurface, const coreFloat fSpeed);
     //! @}
 
     //! get object properties

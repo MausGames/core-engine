@@ -68,49 +68,49 @@ public:
     template <typename T, typename S, typename R>    static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
     template <typename T> static inline    T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
     template <typename T> static inline    T        Abs       (const T& x)                                          {return std::abs(x);}
-    template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat& s)          {return x + (y - x) * s;}
-    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat& s)          {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat s)           {return x + (y - x) * s;}
+    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)           {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)           {return LERP(x, y, SIN(s*PI*0.5f));}
     template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                  {return (x - c)*(x - c) <= r*r;}
     template <typename T> static constexpr coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */
     //! @{
-    template <coreUintW iBase> static inline coreFloat Log(const coreFloat& fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
-    static inline coreFloat Trunc(const coreFloat& fInput)                          {return std::trunc(fInput);}
-    static inline coreFloat Fract(const coreFloat& fInput)                          {return fInput - TRUNC(fInput);}
-    static inline coreFloat Sqrt (const coreFloat& fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
-    static inline coreFloat Rsqrt(const coreFloat& fInput);
-    static inline coreFloat Rcp  (const coreFloat& fInput);
+    template <coreUintW iBase> static inline coreFloat Log(const coreFloat fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
+    static inline coreFloat Trunc(const coreFloat fInput)                          {return std::trunc(fInput);}
+    static inline coreFloat Fract(const coreFloat fInput)                          {return fInput - TRUNC(fInput);}
+    static inline coreFloat Sqrt (const coreFloat fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
+    static inline coreFloat Rsqrt(const coreFloat fInput);
+    static inline coreFloat Rcp  (const coreFloat fInput);
     //! @}
 
     /*! trigonometric operations */
     //! @{
-    static inline coreFloat Sin (const coreFloat& fInput) {return std::sin (fInput);}
-    static inline coreFloat Cos (const coreFloat& fInput) {return std::cos (fInput);}
-    static inline coreFloat Tan (const coreFloat& fInput) {return std::tan (fInput);}
-    static inline coreFloat Asin(const coreFloat& fInput) {return std::asin(fInput);}
-    static inline coreFloat Acos(const coreFloat& fInput) {return std::acos(fInput);}
-    static inline coreFloat Atan(const coreFloat& fInput) {return std::atan(fInput);}
-    static inline coreFloat Cot (const coreFloat& fInput) {return TAN(PI*0.5f - fInput);}
+    static inline coreFloat Sin (const coreFloat fInput) {return std::sin (fInput);}
+    static inline coreFloat Cos (const coreFloat fInput) {return std::cos (fInput);}
+    static inline coreFloat Tan (const coreFloat fInput) {return std::tan (fInput);}
+    static inline coreFloat Asin(const coreFloat fInput) {return std::asin(fInput);}
+    static inline coreFloat Acos(const coreFloat fInput) {return std::acos(fInput);}
+    static inline coreFloat Atan(const coreFloat fInput) {return std::atan(fInput);}
+    static inline coreFloat Cot (const coreFloat fInput) {return TAN(PI*0.5f - fInput);}
     //! @}
 
     /*! rounding operations */
     //! @{
-    template <coreUintW iByte, typename T> static inline T CeilAlign (const T& iInput) {const T  k = iInput - 1; return k - (k % iByte) + iByte;}
-    template <coreUintW iByte, typename T> static inline T FloorAlign(const T& iInput) {const T& k = iInput;     return k - (k % iByte);}
-    template                  <typename T> static inline T CeilPOT   (const T& iInput) {T k = 2; while(k <  iInput) k <<= 1; return k;}
-    template                  <typename T> static inline T FloorPOT  (const T& iInput) {T k = 2; while(k <= iInput) k <<= 1; return k >> 1;}
-    static inline coreFloat Ceil (const coreFloat& fInput)                             {return std::ceil (fInput);}
-    static inline coreFloat Floor(const coreFloat& fInput)                             {return std::floor(fInput);}
-    static inline coreFloat Round(const coreFloat& fInput)                             {return std::round(fInput);}
+    template <coreUintW iByte, typename T> static inline T CeilAlign (const T& tInput) {const T  k = tInput - 1; return k - (k % iByte) + iByte;}
+    template <coreUintW iByte, typename T> static inline T FloorAlign(const T& tInput) {const T& k = tInput;     return k - (k % iByte);}
+    template                  <typename T> static inline T CeilPOT   (const T& tInput) {T k = 2; while(k <  tInput) k <<= 1; return k;}
+    template                  <typename T> static inline T FloorPOT  (const T& tInput) {T k = 2; while(k <= tInput) k <<= 1; return k >> 1;}
+    static inline coreFloat Ceil (const coreFloat fInput)                              {return std::ceil (fInput);}
+    static inline coreFloat Floor(const coreFloat fInput)                              {return std::floor(fInput);}
+    static inline coreFloat Round(const coreFloat fInput)                              {return std::round(fInput);}
     //! @}
 
     /*! converting operations */
     //! @{
-    static inline coreUint16 Float32to16(const coreFloat&  fInput);
-    static inline coreFloat  Float16to32(const coreUint16& iInput);
+    static inline coreUint16 Float32to16(const coreFloat  fInput);
+    static inline coreFloat  Float16to32(const coreUint16 iInput);
     //! @}
 };
 
@@ -132,13 +132,13 @@ public:
 
 #endif
 
-template <> inline coreFloat coreMath::Log< 2u>(const coreFloat& fInput) {return std::log2 (fInput);}
-template <> inline coreFloat coreMath::Log<10u>(const coreFloat& fInput) {return std::log10(fInput);}
+template <> inline coreFloat coreMath::Log< 2u>(const coreFloat fInput) {return std::log2 (fInput);}
+template <> inline coreFloat coreMath::Log<10u>(const coreFloat fInput) {return std::log10(fInput);}
 
 
 // ****************************************************************
 /* calculate inverse square root */
-inline coreFloat coreMath::Rsqrt(const coreFloat& fInput)
+inline coreFloat coreMath::Rsqrt(const coreFloat fInput)
 {
     ASSERT(fInput > 0.0f)
 
@@ -168,7 +168,7 @@ inline coreFloat coreMath::Rsqrt(const coreFloat& fInput)
 
 // ****************************************************************
 /* calculate approximate reciprocal */
-inline coreFloat coreMath::Rcp(const coreFloat& fInput)
+inline coreFloat coreMath::Rcp(const coreFloat fInput)
 {
     ASSERT(fInput)
 
@@ -198,7 +198,7 @@ inline coreFloat coreMath::Rcp(const coreFloat& fInput)
 
 // ****************************************************************
 /* convert single-precision float into half-precision */
-inline coreUint16 coreMath::Float32to16(const coreFloat& fInput)
+inline coreUint16 coreMath::Float32to16(const coreFloat fInput)
 {
     const coreUint32 A = *r_cast<const coreUint32*>(&fInput);
 
@@ -209,7 +209,7 @@ inline coreUint16 coreMath::Float32to16(const coreFloat& fInput)
 
 // ****************************************************************
 /* convert half-precision float into single-precision */
-inline coreFloat coreMath::Float16to32(const coreUint16& iInput)
+inline coreFloat coreMath::Float16to32(const coreUint16 iInput)
 {
     const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
                                                 (coreUint32(iInput & 0x8000u) << 16u)) : 0u;

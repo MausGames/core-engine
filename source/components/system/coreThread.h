@@ -47,7 +47,7 @@ public:
 
     /*! set object properties */
     //! @{
-    inline void SetExecutions(const coreUint8& iExecutions) {m_iExecutions = iExecutions;}
+    inline void SetExecutions(const coreUint8 iExecutions) {m_iExecutions = iExecutions;}
     //! @}
 
     /*! get object properties */

@@ -13,7 +13,7 @@ coreUint32 coreRand::s_iSeed = 0u;
 
 // ****************************************************************
 /* constructor */
-coreRand::coreRand(const coreUintW& iNumRandoms, const coreUint32 iSeed)noexcept
+coreRand::coreRand(const coreUintW iNumRandoms, const coreUint32 iSeed)noexcept
 : m_piRandom    (NULL)
 , m_iNumRandoms (iNumRandoms)
 , m_iCurRandom  (0u)
