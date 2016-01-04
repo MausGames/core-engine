@@ -57,7 +57,7 @@ protected:
 
 protected:
     coreObject()noexcept;
-    ~coreObject() {}
+    ~coreObject() = default;
 
 
 public:

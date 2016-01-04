@@ -18,7 +18,6 @@
 				</Compiler>
 				<Linker>
 					<Add library="MinGW32" />
-					<Add library="SDL2main" />
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />
 					<Add library="SDL2_image" />
@@ -69,7 +68,6 @@
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
 					<Add library="MinGW32" />
-					<Add library="SDL2main" />
 					<Add library="SDL2" />
 					<Add library="SDL2_ttf" />
 					<Add library="SDL2_image" />
@@ -109,17 +107,17 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-fno-exceptions -fno-rtti -msse4.1 -std=c++14" />
+			<Add option="-fno-exceptions -fno-rtti -msse2 -std=c++14" />
 			<Add directory="../../source" />
 			<Add directory="../../libraries/include" />
 		</Compiler>
 		<Unit filename="../../source/Core.cpp" />
 		<Unit filename="../../source/Core.h" />
-		<Unit filename="../../source/additional/android/SDL_android_main.c">
+		<Unit filename="../../source/additional/android/main.c">
 			<Option compilerVar="CC" />
-			<Option compile="0" />
-			<Option link="0" />
 		</Unit>
+		<Unit filename="../../source/additional/coreCPUID.cpp" />
+		<Unit filename="../../source/additional/coreCPUID.h" />
 		<Unit filename="../../source/additional/coreGL.cpp" />
 		<Unit filename="../../source/additional/coreGL.h" />
 		<Unit filename="../../source/additional/coreGLES.cpp">
@@ -127,12 +125,17 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../../source/additional/coreGLES.h" />
+		<Unit filename="../../source/additional/windows/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../source/components/audio/CoreAudio.cpp" />
 		<Unit filename="../../source/components/audio/CoreAudio.h" />
 		<Unit filename="../../source/components/audio/coreMusic.cpp" />
 		<Unit filename="../../source/components/audio/coreMusic.h" />
 		<Unit filename="../../source/components/audio/coreSound.cpp" />
 		<Unit filename="../../source/components/audio/coreSound.h" />
+		<Unit filename="../../source/components/debug/CoreDebug.cpp" />
+		<Unit filename="../../source/components/debug/CoreDebug.h" />
 		<Unit filename="../../source/components/graphics/CoreGraphics.cpp" />
 		<Unit filename="../../source/components/graphics/CoreGraphics.h" />
 		<Unit filename="../../source/components/graphics/coreDataBuffer.cpp" />
@@ -182,12 +185,15 @@
 		<Unit filename="../../source/objects/menu/coreSwitchBox.h" />
 		<Unit filename="../../source/objects/menu/coreTextBox.cpp" />
 		<Unit filename="../../source/objects/menu/coreTextBox.h" />
+		<Unit filename="../../source/utilities/data/coreArray.h" />
 		<Unit filename="../../source/utilities/data/coreData.cpp" />
 		<Unit filename="../../source/utilities/data/coreData.h" />
+		<Unit filename="../../source/utilities/data/coreHashString.h" />
 		<Unit filename="../../source/utilities/data/coreLookup.h" />
 		<Unit filename="../../source/utilities/data/coreRand.cpp" />
 		<Unit filename="../../source/utilities/data/coreRand.h" />
-		<Unit filename="../../source/utilities/data/coreSelect.h" />
+		<Unit filename="../../source/utilities/data/coreSet.h" />
+		<Unit filename="../../source/utilities/data/hash/CRC32.h" />
 		<Unit filename="../../source/utilities/file/coreArchive.cpp" />
 		<Unit filename="../../source/utilities/file/coreArchive.h" />
 		<Unit filename="../../source/utilities/file/coreConfig.cpp" />

@@ -23,6 +23,7 @@
     #extension GL_EXT_shadow_samplers : enable
 #else
     #extension GL_ARB_uniform_buffer_object : enable
+    #extension GL_ARB_enhanced_layouts      : enable
     #extension GL_ARB_shader_group_vote     : enable
     #extension GL_AMD_shader_trinary_minmax : enable
 #endif
@@ -107,6 +108,16 @@ struct coreLight
     #define coreMin3(a,b,c) (min(a, min(b, c)))
     #define coreMax3(a,b,c) (max(a, max(b, c)))
 #endif
+
+// modulo operator
+int coreMod(const in int a, const in int b)
+{
+#if (__VERSION__) >= 130
+    return (a % b);
+#else
+    return (a - (a / b) * b);
+#endif
+} 
 
 // color convert
 vec3 coreHSVtoRGB(const in vec3 v3HSV)

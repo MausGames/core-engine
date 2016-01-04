@@ -180,6 +180,8 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
         }
         else if(*pcTo == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {
+            ASSERT(!m_asStringList.count(sKey.c_str()))
+
             // extract language-string
             nAssignFunc(&m_asStringList[sKey.c_str()]);
             sKey.clear();

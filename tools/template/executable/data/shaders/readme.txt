@@ -106,6 +106,7 @@ bool  coreAnyInvocation       (in bool)            // condition across group of 
 bool  coreAllInvocations      (in bool)
 T     coreMin3                (in T, in T, in T)   // trinary minimum
 T     coreMax3                (in T, in T, in T)   // trinary maximum
+int   coreMod                 (in int, in int)     // modulo operator
 vec3  coreHSVtoRGB            (in vec3)            // HSV to RGB conversion
 vec3  coreRGBtoHSV            (in vec3)            // RGB to HSV conversion
 float coreLengthSq            (in vec2)            // vector square length

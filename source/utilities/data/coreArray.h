@@ -36,8 +36,8 @@ public:
 
     /*! access reference to current item */
     //! @{
-    inline       T&        current()      {return operator [] (m_iCurIndex);}
-    inline const T&        current()const {return operator [] (m_iCurIndex);}
+    inline       T&        current()      {return std::array<T, iSize>::operator [] (m_iCurIndex);}
+    inline const T&        current()const {return std::array<T, iSize>::operator [] (m_iCurIndex);}
     inline const coreUintW index  ()const {return m_iCurIndex;}
     //! @}
 };
@@ -46,8 +46,8 @@ public:
 // ****************************************************************
 /* constructor */
 template <typename T, coreUintW iSize> coreArray<T, iSize>::coreArray()noexcept
-: array       ()
-, m_iCurIndex (0u)
+: std::array<T, iSize> ()
+, m_iCurIndex          (0u)
 {
 }
 

@@ -50,7 +50,10 @@ CoreSystem::CoreSystem()noexcept
         {
             // retrieve display
             for(coreUintW i = 0u; i < iNumDisplays; ++i)
-                Core::Log->ListAdd(CORE_LOG_BOLD("%u:") " %s", i+1u, SDL_GetDisplayName(i));
+            {
+                coreFloat fDDPI; SDL_GetDisplayDPI(i, &fDDPI, NULL, NULL);
+                Core::Log->ListAdd(CORE_LOG_BOLD("%u:") " %s (%.1f DDPI)", i+1u, SDL_GetDisplayName(i), fDDPI);
+            }
         }
         Core::Log->ListEnd();
     }
@@ -255,6 +258,8 @@ coreBool CoreSystem::__UpdateEvents()
         // minimize application
         case SDL_APP_WILLENTERBACKGROUND:
         case SDL_APP_DIDENTERFOREGROUND:
+        case SDL_JOYDEVICEREMOVED:
+        case SDL_CONTROLLERDEVICEREMOVED:
             m_bMinimized = true;
             break;
 
@@ -282,7 +287,7 @@ void CoreSystem::__UpdateTime()
     const coreFloat  fNewLastTime = coreFloat(coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
     m_iPerfTime                   = iNewPerfTime;
 
-    if(m_iSkipFrame || fNewLastTime >= 0.25f)
+    if(m_iSkipFrame || (fNewLastTime >= 0.25f))
     {
         Core::Log->Warning("Skipped Frame (%u:%f:%f)", m_iCurFrame, m_dTotalTime, fNewLastTime);
 

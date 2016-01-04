@@ -220,8 +220,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // move mouse position
     case SDL_MOUSEMOTION:
-        if(oEvent.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x) ||
-           oEvent.motion.y != F_TO_SI(0.5f*Core::System->GetResolution().y))
+        if((oEvent.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x)) ||
+           (oEvent.motion.y != F_TO_SI(0.5f*Core::System->GetResolution().y)))
         {
             this->SetMousePosition(coreVector2(I_TO_F(oEvent.motion.x),    -I_TO_F(oEvent.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
             this->SetMouseRelative(coreVector2(I_TO_F(oEvent.motion.xrel), -I_TO_F(oEvent.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());

@@ -6,7 +6,10 @@
                    projectFiles="true">
       <logicalFolder name="additional" displayName="additional" projectFiles="true">
         <logicalFolder name="android" displayName="android" projectFiles="true">
-          <itemPath>../../source/additional/android/SDL_android_main.c</itemPath>
+          <itemPath>../../source/additional/android/main.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="windows" displayName="windows" projectFiles="true">
+          <itemPath>../../source/additional/windows/main.c</itemPath>
         </logicalFolder>
         <itemPath>../../source/additional/coreCPUID.cpp</itemPath>
         <itemPath>../../source/additional/coreCPUID.h</itemPath>
@@ -79,8 +82,6 @@
           <itemPath>../../source/objects/game/coreObject3D.h</itemPath>
           <itemPath>../../source/objects/game/coreParticle.cpp</itemPath>
           <itemPath>../../source/objects/game/coreParticle.h</itemPath>
-          <itemPath>../../source/objects/game/coreScene.cpp</itemPath>
-          <itemPath>../../source/objects/game/coreScene.h</itemPath>
         </logicalFolder>
         <logicalFolder name="menu" displayName="menu" projectFiles="true">
           <itemPath>../../source/objects/menu/coreButton.cpp</itemPath>
@@ -98,12 +99,17 @@
       </logicalFolder>
       <logicalFolder name="utilities" displayName="utilities" projectFiles="true">
         <logicalFolder name="data" displayName="data" projectFiles="true">
+          <logicalFolder name="hash" displayName="hash" projectFiles="true">
+            <itemPath>../../source/utilities/data/hash/CRC32.h</itemPath>
+          </logicalFolder>
+          <itemPath>../../source/utilities/data/coreArray.h</itemPath>
           <itemPath>../../source/utilities/data/coreData.cpp</itemPath>
           <itemPath>../../source/utilities/data/coreData.h</itemPath>
+          <itemPath>../../source/utilities/data/coreHashString.h</itemPath>
           <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
           <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
           <itemPath>../../source/utilities/data/coreRand.h</itemPath>
-          <itemPath>../../source/utilities/data/coreSelect.h</itemPath>
+          <itemPath>../../source/utilities/data/coreSet.h</itemPath>
         </logicalFolder>
         <logicalFolder name="file" displayName="file" projectFiles="true">
           <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
@@ -149,13 +155,24 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-msse2 -std=c11</commandLine>
+          <preprocessorList>
+            <Elem>_DEBUG</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
+        </cTool>
         <ccTool>
           <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -182,6 +199,11 @@
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/windows/main.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -407,16 +429,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/objects/game/coreScene.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/objects/game/coreScene.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -472,12 +484,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreArray.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreHashString.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -497,7 +519,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreSelect.h"
+      <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/CRC32.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -570,12 +597,23 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-msse2 -std=c11</commandLine>
+          <preprocessorList>
+            <Elem>_DEBUG</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
+        </cTool>
         <ccTool>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -602,6 +640,11 @@
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/windows/main.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -827,16 +870,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/objects/game/coreScene.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/objects/game/coreScene.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -892,12 +925,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreArray.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreHashString.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -917,7 +960,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreSelect.h"
+      <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/CRC32.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -990,12 +1038,23 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-msse2 -std=c11</commandLine>
+          <preprocessorList>
+            <Elem>_DEBUG</Elem>
+          </preprocessorList>
+          <warningLevel>2</warningLevel>
+        </cTool>
         <ccTool>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -1022,6 +1081,11 @@
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/windows/main.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -1247,16 +1311,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/objects/game/coreScene.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/objects/game/coreScene.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -1312,12 +1366,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreArray.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreHashString.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1337,7 +1401,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreSelect.h"
+      <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/CRC32.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1411,7 +1480,14 @@
       </toolsSet>
       <compileType>
         <cTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-msse2 -std=c11</commandLine>
+          <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>6</developmentMode>
@@ -1420,7 +1496,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1450,6 +1526,11 @@
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/windows/main.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -1675,16 +1756,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/objects/game/coreScene.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/objects/game/coreScene.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -1740,12 +1811,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreArray.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreHashString.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1765,7 +1846,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreSelect.h"
+      <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/CRC32.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1839,7 +1925,14 @@
       </toolsSet>
       <compileType>
         <cTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-msse2 -std=c11</commandLine>
+          <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>6</developmentMode>
@@ -1848,7 +1941,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
+          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1878,6 +1971,11 @@
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/windows/main.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -2103,16 +2201,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/objects/game/coreScene.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/objects/game/coreScene.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -2168,12 +2256,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreArray.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreHashString.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2193,7 +2291,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreSelect.h"
+      <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/CRC32.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2267,15 +2370,23 @@
       </toolsSet>
       <compileType>
         <cTool>
-          <developmentMode>5</developmentMode>
-        </cTool>
-        <ccTool>
           <developmentMode>6</developmentMode>
+          <stripSymbols>true</stripSymbols>
           <incDir>
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse4.1 -std=c++14</commandLine>
+          <commandLine>-msse2 -std=c11</commandLine>
+          <warningLevel>2</warningLevel>
+        </cTool>
+        <ccTool>
+          <developmentMode>6</developmentMode>
+          <stripSymbols>true</stripSymbols>
+          <incDir>
+            <pElem>../../source</pElem>
+            <pElem>../../libraries/include</pElem>
+          </incDir>
+          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -2305,6 +2416,11 @@
       <item path="../../source/additional/coreGL.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="../../source/additional/coreGL.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../source/additional/windows/main.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
       </item>
       <item path="../../source/components/audio/CoreAudio.cpp"
             ex="false"
@@ -2530,16 +2646,6 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/objects/game/coreScene.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="../../source/objects/game/coreScene.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
       <item path="../../source/objects/menu/coreButton.cpp"
             ex="false"
             tool="1"
@@ -2595,12 +2701,22 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreArray.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreData.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/coreData.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreHashString.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2620,7 +2736,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreSelect.h"
+      <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/CRC32.h"
             ex="false"
             tool="3"
             flavor2="0">

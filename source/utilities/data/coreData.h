@@ -27,7 +27,7 @@
 
 // ****************************************************************
 /* data utility collection */
-class coreData final
+class INTERFACE coreData final
 {
 private:
     static thread_local coreChar  m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings

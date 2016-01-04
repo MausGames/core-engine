@@ -26,7 +26,7 @@
 
 // ****************************************************************
 /* CPUID access class */
-class coreCPUID final
+class INTERFACE coreCPUID final
 {
 private:
     /*! CPUID data structure */

@@ -12,7 +12,7 @@
 //*------------------------------------------------------------------------------*//
 //| Core Engine v0.0.8a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
-//| Copyright (c) 2013-2015 Martin Mauersics                                     |//
+//| Copyright (c) 2013-2016 Martin Mauersics                                     |//
 //|                                                                              |//
 //| This software is provided 'as-is', without any express or implied            |//
 //| warranty. In no event will the authors be held liable for any damages        |//
@@ -44,7 +44,6 @@
 // TODO: remove this whole static pointer stuff, namespace for main-classes together with math and data ?
 // TODO: define standard-path (data/) were everything is loaded from
 // TODO: implement GL_KHR_robustness (performance penalties ?)
-// TODO: explicit flush control for context change (SDL?)
 // TODO: check for performance penalties and alternatives for thread_local
 // TODO: extend assertion-macro and add message to all assertions (warn_if ?)
 // TODO: reduce core-prefix ? (e.g. cr)
@@ -130,12 +129,13 @@
     #include <unistd.h>
 #endif
 #if defined(_CORE_SSE_)
-    #include <smmintrin.h>
+    #include <emmintrin.h>
 #endif
 #include <cstdlib>
 #include <cstdio>
 #include <cstdint>
 #include <cstring>
+#include <cfloat>
 #include <cmath>
 #include <ctime>
 #include <memory>
@@ -547,7 +547,6 @@ private:
 #include "manager/coreObject.h"
 #include "objects/game/coreObject2D.h"
 #include "objects/game/coreObject3D.h"
-#include "objects/game/coreScene.h"
 #include "objects/game/coreParticle.h"
 #include "objects/menu/coreLabel.h"
 #include "objects/menu/coreButton.h"

@@ -385,9 +385,9 @@ public:
     /*! quaternion functions */
     //! @{
     static constexpr coreVector4 QuatMultiply (const coreVector4& v1, const coreVector4& v2);
-    static constexpr coreVector4 QuatIdentity ()                          {return coreVector4(0.0f,0.0f,0.0f,1.0f);}
-    constexpr        coreVector4 QuatConjugate()const                     {return coreVector4(-x, -y, -z, w);}
-    inline           coreVector4 QuatInvert   ()const                     {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
+    static constexpr coreVector4 QuatIdentity ()      {return coreVector4(0.0f,0.0f,0.0f,1.0f);}
+    constexpr        coreVector4 QuatConjugate()const {return coreVector4(-x, -y, -z, w);}
+    inline           coreVector4 QuatInvert   ()const {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
     constexpr        coreVector3 QuatApply    (const coreVector3& v)const;
     //! @}
 };

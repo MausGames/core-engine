@@ -54,7 +54,7 @@
 
 // ****************************************************************
 /* math utility collection */
-class coreMath final
+class INTERFACE coreMath final
 {
 public:
     DISABLE_CONSTRUCTION(coreMath)

@@ -28,7 +28,7 @@
 #define STB_DXT_DITHER    1   // use dithering. dubious win. never use for normal maps and the like!
 #define STB_DXT_HIGHQUAL  2   // high quality mode, does two refinement steps instead of 1. ~30-40% slower.
 
-void stb_compress_dxt_block(unsigned char *dest, const unsigned char *src, int components, int mode);
+void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char* __restrict src, int components, int mode);
 #define STB_COMPRESS_DXT_BLOCK
 
 #define STB_DXT_IMPLEMENTATION
@@ -65,7 +65,7 @@ static int stb__Mul8Bit(int a, int b)
   return (t + (t >> 8)) >> 8;
 }
 
-static void stb__From16Bit(unsigned char *out, unsigned short v)
+static void stb__From16Bit(unsigned char* __restrict out, unsigned short v)
 {
    int rv = (v & 0xf800) >> 11;
    int gv = (v & 0x07e0) >>  5;
@@ -96,7 +96,7 @@ static int stb__Lerp13(int a, int b)
 }
 
 // lerp RGB color
-static void stb__Lerp13RGB(unsigned char *out, unsigned char *p1, unsigned char *p2)
+static void stb__Lerp13RGB(unsigned char* __restrict out, unsigned char* __restrict p1, unsigned char* __restrict p2)
 {
    out[0] = stb__Lerp13(p1[0], p2[0]);
    out[1] = stb__Lerp13(p1[1], p2[1]);
@@ -106,7 +106,7 @@ static void stb__Lerp13RGB(unsigned char *out, unsigned char *p1, unsigned char 
 /****************************************************************************/
 
 // compute table to reproduce constant colors as accurately as possible
-static void stb__PrepareOptTable(unsigned char *Table,const unsigned char *expand,int size)
+static void stb__PrepareOptTable(unsigned char* __restrict Table, const unsigned char* __restrict expand, int size)
 {
    int i,mn,mx;
    for (i=0;i<256;i++) {
@@ -134,7 +134,7 @@ static void stb__PrepareOptTable(unsigned char *Table,const unsigned char *expan
    }
 }
 
-static void stb__EvalColors(unsigned char *color,unsigned short c0,unsigned short c1)
+static void stb__EvalColors(unsigned char* __restrict color, unsigned short c0, unsigned short c1)
 {
    stb__From16Bit(color+ 0, c0);
    stb__From16Bit(color+ 4, c1);
@@ -144,7 +144,7 @@ static void stb__EvalColors(unsigned char *color,unsigned short c0,unsigned shor
 
 // Block dithering function. Simply dithers a block to 565 RGB.
 // (Floyd-Steinberg)
-static void stb__DitherBlock(unsigned char *dest, unsigned char *block)
+static void stb__DitherBlock(unsigned char* __restrict dest, unsigned char* __restrict block)
 {
   int err[8],*ep1 = err,*ep2 = err+4, *et;
   int ch,y;
@@ -171,7 +171,7 @@ static void stb__DitherBlock(unsigned char *dest, unsigned char *block)
 }
 
 // The color matching function
-static unsigned int stb__MatchColorsBlock(unsigned char *block, unsigned char *color,int dither)
+static unsigned int stb__MatchColorsBlock(unsigned char* __restrict block, unsigned char* __restrict color, int dither)
 {
    unsigned int mask = 0;
    int dirr = color[0*4+0] - color[1*4+0];
@@ -268,7 +268,7 @@ static unsigned int stb__MatchColorsBlock(unsigned char *block, unsigned char *c
 }
 
 // The color optimization function. (Clever code, part 1)
-static void stb__OptimizeColorsBlock(unsigned char *block, unsigned short *pmax16, unsigned short *pmin16)
+static void stb__OptimizeColorsBlock(unsigned char* __restrict block, unsigned short* __restrict pmax16, unsigned short* __restrict pmin16)
 {
   int mind = 0x7fffffff,maxd = -0x7fffffff;
   unsigned char *minp = NULL, *maxp = NULL;
@@ -383,7 +383,7 @@ static int stb__sclamp(float y, int p0, int p1)
 // The refinement function. (Clever code, part 2)
 // Tries to optimize colors to suit block contents better.
 // (By solving a least squares system via normal equations+Cramer's rule)
-static int stb__RefineBlock(unsigned char *block, unsigned short *pmax16, unsigned short *pmin16, unsigned int mask)
+static int stb__RefineBlock(unsigned char* __restrict block, unsigned short* __restrict pmax16, unsigned short* __restrict pmin16, unsigned int mask)
 {
    static const int w1Tab[4] = { 3,0,2,1 };
    static const int prods[4] = { 0x090000,0x000900,0x040102,0x010402 };
@@ -462,7 +462,7 @@ static int stb__RefineBlock(unsigned char *block, unsigned short *pmax16, unsign
 }
 
 // Color block compression
-static void stb__CompressColorBlock(unsigned char *dest, unsigned char *block, int mode)
+static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned char* __restrict block, int mode)
 {
    unsigned int mask;
    int i;
@@ -536,7 +536,7 @@ static void stb__CompressColorBlock(unsigned char *dest, unsigned char *block, i
 }
 
 // Alpha block compression (this is easy for a change)
-static void stb__CompressAlphaBlock(unsigned char *dest,unsigned char *src,int mode)
+static void stb__CompressAlphaBlock(unsigned char* __restrict dest, unsigned char* __restrict src, int mode)
 {
    int i,dist,bias,dist4,dist2,bits,mask;
 
@@ -608,7 +608,7 @@ static void stb__InitDXT()
    stb__PrepareOptTable(&stb__OMatch6[0][0],stb__Expand6,64);
 }
 
-void stb_compress_dxt_block(unsigned char *dest, const unsigned char *src, int components, int mode)
+void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char* __restrict src, int components, int mode)
 {
    static int init=1;
    if (init) {

@@ -56,7 +56,7 @@ private:
 
 private:
     constexpr coreParticle()noexcept;
-    ~coreParticle() {}
+    ~coreParticle() = default;
 
 
 public:

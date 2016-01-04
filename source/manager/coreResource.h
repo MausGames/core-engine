@@ -45,7 +45,7 @@ protected:
 
 public:
     coreResource()noexcept : m_sPath ("") {}
-    virtual ~coreResource()               {}
+    virtual ~coreResource() = default;
 
     ENABLE_COPY(coreResource)
 
@@ -223,7 +223,7 @@ public:
     //! @{
     template <typename T, typename... A>        coreResourceHandle* Load   (const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs);
     template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);}
-    template <typename T> void Free(coreResourcePtr<T>* pptResourcePtr);
+    template <typename T> void Free(coreResourcePtr<T>* OUTPUT pptResourcePtr);
     //! @}
 
     /*! get existing resource handle */
@@ -353,7 +353,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
 
 // ****************************************************************
 /* delete resource and resource handle */
-template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* pptResourcePtr)
+template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT pptResourcePtr)
 {
     ASSERT(pptResourcePtr)
 

@@ -171,10 +171,10 @@ public:
 
     /*! return original strings */
     //! @{
-    inline const coreChar* get_string(const coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
-    inline const coreChar* get_string(const coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStr<T>::coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStr<T>::coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStr<T>::coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStr<T>::coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
     //! @}
 };
 

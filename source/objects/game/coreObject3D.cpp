@@ -13,7 +13,7 @@
 /* constructor */
 coreObject3D::coreObject3D()noexcept
 : coreObject           ()
-, m_vPosition          (coreVector3(0.0f,0.0f,0.0f))
+, m_vPosition          (coreVector3(FLT_MAX,FLT_MAX,FLT_MAX))
 , m_vSize              (coreVector3(1.0f,1.0f,1.0f))
 , m_vDirection         (coreVector3(0.0f,1.0f,0.0f))
 , m_vOrientation       (coreVector3(0.0f,0.0f,1.0f))
@@ -471,6 +471,9 @@ void coreBatchList::BindObject(coreObject3D* pObject)
 
     // add object to list
     m_apObjectList.insert(pObject);
+
+    // set the update status
+    m_iUpdate = 3u;
 }
 
 
@@ -481,8 +484,8 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
     // remove object from list
     m_apObjectList.erase(pObject);
 
-    // clear on the last entry
-    if(m_apObjectList.empty()) this->Clear();
+    // set the update status
+    m_iUpdate = 3u;
 }
 
 

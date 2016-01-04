@@ -121,7 +121,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-fno-exceptions -fno-rtti -msse4.1 -std=c++14" />
+			<Add option="-fno-exceptions -fno-rtti -msse2 -std=c++14" />
 			<Add directory="../../../CoreEngine/source" />
 			<Add directory="../../../CoreEngine/libraries/include" />
 			<Add directory="../../source" />
