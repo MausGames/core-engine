@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+coreSet<coreObject2D*> coreObjectManager::s_apSpriteList = {};
+
 
 // ****************************************************************
 /* constructor */
@@ -29,7 +31,6 @@ coreObject::coreObject()noexcept
 coreObjectManager::coreObjectManager()noexcept
 : m_aapObjectList    {}
 , m_aObjectCollision {}
-, m_apSpriteList     {}
 , m_pLowModel        (NULL)
 , m_pBlitFallback    (NULL)
 {
@@ -166,7 +167,7 @@ void coreObjectManager::__Reset(const coreResourceReset bInit)
         }
 
         // force update of all existing 2d-objects
-        FOR_EACH(it, m_apSpriteList)
+        FOR_EACH(it, s_apSpriteList)
         {
             (*it)->m_iUpdate = CORE_OBJECT_UPDATE_ALL;
             (*it)->coreObject2D::Move();

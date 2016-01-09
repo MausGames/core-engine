@@ -32,7 +32,7 @@
 #define CORE_CONFIG_GRAPHICS_STENCILSIZE        "Graphics", "StencilSize",        (8)
 #define CORE_CONFIG_GRAPHICS_ALPHACHANNEL       "Graphics", "AlphaChannel",       (true)
 #define CORE_CONFIG_GRAPHICS_DOUBLEBUFFER       "Graphics", "DoubleBuffer",       (true)
-#define CORE_CONFIG_GRAPHICS_RESOURCECONTEXT    "Graphics", "ResourceContext",    (DEFINED(_CORE_ANDROID_) ? false : true)
+#define CORE_CONFIG_GRAPHICS_RESOURCECONTEXT    "Graphics", "ResourceContext",    (DEFINED(_CORE_PARALLEL_))
 #define CORE_CONFIG_GRAPHICS_FALLBACKMODE       "Graphics", "FallbackMode",       (false)
 
 #define CORE_CONFIG_AUDIO_SOURCES               "Audio",    "Sources",            (16)

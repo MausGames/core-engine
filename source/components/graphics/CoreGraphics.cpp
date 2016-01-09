@@ -120,7 +120,7 @@ CoreGraphics::CoreGraphics()noexcept
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT))
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) && DEFINED(_CORE_PARALLEL_))
     {
         // create resource context (after reset, because of flickering on Windows with fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
@@ -130,7 +130,6 @@ CoreGraphics::CoreGraphics()noexcept
         // re-assign render context to main window
         SDL_GL_MakeCurrent(Core::System->GetWindow(), m_pRenderContext);
     }
-    else m_pResourceContext = NULL;
 }
 
 

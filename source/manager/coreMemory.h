@@ -52,7 +52,7 @@ template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share
     // check for existing pointer
     if(m_apPointer.count(pcName))
     {
-        std::weak_ptr<void>& pPointer = m_apPointer.at(pcName);
+        const std::weak_ptr<void>& pPointer = m_apPointer.at(pcName);
 
         // check for valid pointer
         if(!pPointer.expired())

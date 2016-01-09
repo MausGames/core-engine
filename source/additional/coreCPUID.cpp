@@ -25,9 +25,9 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
 , i81ECX   (0)
 , i81EDX   (0)
 {
-    std::vector<std::array<coreInt32, 4>> aaiData;
-    std::vector<std::array<coreInt32, 4>> aaiDataEx;
-    std::array<coreInt32, 4> aiPage;
+    std::vector<std::array<coreInt32, 4u>> aaiData;
+    std::vector<std::array<coreInt32, 4u>> aaiDataEx;
+    std::array<coreInt32, 4u> aiPage;
 
     // get highest valid function IDs
     CORE_CPUID_EX(aiPage.data(), 0, 0)

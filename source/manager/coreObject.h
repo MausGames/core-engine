@@ -125,10 +125,10 @@ private:
     coreLookup<coreInt32, coreObjectList> m_aapObjectList;   //!< lists with pointers to registered 3d-objects <type, list>
     std::vector<coreObjectCollision> m_aObjectCollision;     //!< currently recorded collisions
 
-    coreSet<coreObject2D*> m_apSpriteList;                   //!< list with pointers to all existing 2d-objects
-
     coreModelPtr  m_pLowModel;                               //!< low-memory model object (4 bytes per vertex, simple square)
     coreObject2D* m_pBlitFallback;                           //!< 2d-object used for fallback-blitting onto the default frame buffer
+
+    static coreSet<coreObject2D*> s_apSpriteList;            //!< list with pointers to all existing 2d-objects
 
 
 private:
@@ -179,8 +179,8 @@ private:
 
     /*! bind and unbind 2d-objects */
     //! @{
-    inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!m_apSpriteList.count(pSprite)) m_apSpriteList.insert(pSprite);}
-    inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( m_apSpriteList.count(pSprite)) m_apSpriteList.erase (pSprite);}
+    inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!s_apSpriteList.count(pSprite)) s_apSpriteList.insert(pSprite);}
+    inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( s_apSpriteList.count(pSprite)) s_apSpriteList.erase (pSprite);}
     //! @}
 
     /*! handle and track new collisions */

@@ -28,9 +28,6 @@ void __coreInitOpenGLES()
     g_CoreContext.__bES3     = (g_CoreContext.__fVersion >= 3.0f);
     const coreBool& bES3     =  g_CoreContext.__bES3;
 
-    // implement GL_ARB_vertex_type_2_10_10_10_rev
-    __CORE_GLES_CHECK(GL_ARB_vertex_type_2_10_10_10_rev, bES3);
-
     // implement GL_EXT_discard_framebuffer
     if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))
     {
@@ -103,23 +100,14 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glGenVertexArrays,    OES, bES3)
     }
 
+    // implement GL_OES_vertex_type_2_10_10_10_rev
+    __CORE_GLES_CHECK(GL_OES_vertex_type_2_10_10_10_rev, bES3);
+
     // implement GL_OES_depth_texture
     __CORE_GLES_CHECK(GL_OES_depth_texture, false);
 
     // implement GL_OES_texture_stencil8
     __CORE_GLES_CHECK(GL_OES_texture_stencil8, false);
-
-    // implement GL_OES_rgb8_rgba8
-    if(__CORE_GLES_CHECK(GL_OES_rgb8_rgba8, false))
-    {
-        __CORE_GLES_VAR_SET(GL_RGB8,  0x8051)
-        __CORE_GLES_VAR_SET(GL_RGBA8, 0x8058)
-    }
-    else
-    {
-        __CORE_GLES_VAR_SET(GL_RGB8,  GL_RGB565)
-        __CORE_GLES_VAR_SET(GL_RGBA8, GL_RGBA4)
-    }
 }
 
 

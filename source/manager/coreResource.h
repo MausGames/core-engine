@@ -137,7 +137,7 @@ private:
 
 
 public:
-    constexpr explicit coreResourcePtr(std::nullptr_t p = NULL)noexcept;
+    constexpr coreResourcePtr(std::nullptr_t p = NULL)noexcept;
     coreResourcePtr(coreResourceHandle* pHandle)noexcept;
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;

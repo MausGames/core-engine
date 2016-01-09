@@ -51,7 +51,8 @@ CoreSystem::CoreSystem()noexcept
             // retrieve display
             for(coreUintW i = 0u; i < iNumDisplays; ++i)
             {
-                coreFloat fDDPI; SDL_GetDisplayDPI(i, &fDDPI, NULL, NULL);
+                coreFloat fDDPI;
+                SDL_GetDisplayDPI(i, &fDDPI, NULL, NULL);
                 Core::Log->ListAdd(CORE_LOG_BOLD("%u:") " %s (%.1f DDPI)", i+1u, SDL_GetDisplayName(i), fDDPI);
             }
         }
@@ -106,16 +107,16 @@ CoreSystem::CoreSystem()noexcept
     const coreUint32 iFlags  = SDL_WINDOW_OPENGL | (m_iFullscreen == 2u ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
 
     // configure the OpenGL context
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 Core::Config->GetBool(CORE_CONFIG_GRAPHICS_ALPHACHANNEL)    ? 8 : 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 Core::Config->GetInt (CORE_CONFIG_GRAPHICS_DEPTHSIZE));
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,               Core::Config->GetInt (CORE_CONFIG_GRAPHICS_STENCILSIZE));
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DOUBLEBUFFER)    ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING)    ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING));
-    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,         8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,          8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         Core::Config->GetBool(CORE_CONFIG_GRAPHICS_ALPHACHANNEL) ? 8 : 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_DEPTHSIZE));
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       Core::Config->GetInt (CORE_CONFIG_GRAPHICS_STENCILSIZE));
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DOUBLEBUFFER) ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING));
+    if(DEFINED(_CORE_PARALLEL_)) SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) ? 1 : 0);
 
     // check for core profile
     if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE) && !DEFINED(_CORE_GLES_))

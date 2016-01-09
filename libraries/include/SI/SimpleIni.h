@@ -2814,7 +2814,7 @@ public:
 #define SI_NoCase   SI_GenericNoCase
 
 #include <wchar.h>
-#include <ConvertUTF.h>
+#include "ConvertUTF.h"
 
 /**
  * Converts UTF-8 to a wchar_t (or equivalent) using the Unicode reference
@@ -2917,7 +2917,7 @@ public:
         }
 
         // convert to wchar_t
-        size_t retval = mbstowcs(a_pOutputData,
+        size_t retval = mbstowcs((wchar_t*)a_pOutputData,
             a_pInputData, a_uOutputDataSize);
         return retval != (size_t)(-1);
     }

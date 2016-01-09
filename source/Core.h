@@ -92,22 +92,27 @@
 
 // debug mode
 #if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_MINGW_)) && !defined(__OPTIMIZE__))
-    #define _CORE_DEBUG_ (1)
+    #define _CORE_DEBUG_    (1)
+#endif
+
+// parallel mode
+#if !defined(_CORE_ANDROID_)
+    #define _CORE_PARALLEL_ (1)
 #endif
 
 // x64 instruction set
 #if defined(_M_X64) || defined(__x86_64__)
-    #define _CORE_X64_   (1)
+    #define _CORE_X64_      (1)
 #endif
 
 // SSE2 instruction set
 #if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_ANDROID_)
-    #define _CORE_SSE_   (1)
+    #define _CORE_SSE_      (1)
 #endif
 
 // OpenGL ES
 #if defined(_CORE_ANDROID_)
-    #define _CORE_GLES_  (1)
+    #define _CORE_GLES_     (1)
 #endif
 
 
@@ -166,7 +171,7 @@
 #include <AL/alc.h>
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
-#include <SimpleIni.h>
+#include <SI/SimpleIni.h>
 
 
 // ****************************************************************
@@ -202,6 +207,12 @@
     #define CONSTEXPR inline
 #else
     #define CONSTEXPR constexpr
+#endif
+
+#if !defined(_CORE_PARALLEL_)
+    #define thread_local
+    #define SDL_AtomicLock(x)
+    #define SDL_AtomicUnlock(x)
 #endif
 
 #if defined(_CORE_MSVC_)

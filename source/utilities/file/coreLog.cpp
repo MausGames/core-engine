@@ -59,7 +59,7 @@ coreLog::~coreLog()
     this->__Write(false, "<hr />");
 
     // close log file
-    std::fclose(m_pFile);
+    if(m_pFile) std::fclose(m_pFile);
 }
 
 
@@ -118,7 +118,7 @@ void coreLog::__Write(const coreBool bTime, std::string sText)
 #if defined(_CORE_ANDROID_) || defined(_CORE_DEBUG_)
 
     // also write text to the standard output
-    SDL_Log(sText.substr(0, SDL_MAX_LOG_MESSAGE - 1u).c_str());
+    SDL_Log("%s", sText.substr(0, SDL_MAX_LOG_MESSAGE - 1u).c_str());
 
 #endif
 

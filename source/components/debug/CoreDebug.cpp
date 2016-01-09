@@ -51,8 +51,8 @@ CoreDebug::CoreDebug()noexcept
     m_pOverall->oOutput.SetColor3(COLOR_WHITE);
 
     // create background object
-    m_Background.DefineProgram("default_2d_program");
     m_Background.DefineTexture(0, "default_black.png");
+    m_Background.DefineProgram("default_2d_program");
     m_Background.SetPosition  (coreVector2( 0.0f, 0.0f));
     m_Background.SetCenter    (coreVector2(-0.5f, 0.5f));
     m_Background.SetAlignment (coreVector2( 1.0f,-1.0f));

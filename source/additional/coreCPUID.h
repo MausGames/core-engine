@@ -20,7 +20,7 @@
         #define CORE_CPUID_EX(x,a,c) {asm volatile("cpuid" : "=a" (x[0]), "=b" (x[1]), "=c" (x[2]), "=d" (x[3]) : "a" (a), "c" (c));}
     #endif
 #else
-    #define CORE_CPUID_EX(x,a,c) {std::memset(x, 0, sizeof(x));}
+    #define CORE_CPUID_EX(x,a,c) {std::memset(x, 0, 4u*sizeof(coreInt32));}
 #endif
 
 
