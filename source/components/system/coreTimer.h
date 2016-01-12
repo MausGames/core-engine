@@ -45,8 +45,8 @@ private:
 
 
 public:
-    CONSTEXPR coreTimer()noexcept;
-    CONSTEXPR coreTimer(const coreFloat fEnd, const coreFloat fSpeed, const coreUint16 iLoops)noexcept;
+    constexpr coreTimer(const coreFloat fEnd, const coreFloat fSpeed, const coreUint16 iLoops)noexcept;
+    constexpr coreTimer()noexcept;
 
     ENABLE_COPY(coreTimer)
 
@@ -121,12 +121,7 @@ public:
 
 // ****************************************************************
 /* constructor */
-CONSTEXPR coreTimer::coreTimer()noexcept
-: coreTimer (1.0f, 1.0f, 0u)
-{
-}
-
-CONSTEXPR coreTimer::coreTimer(const coreFloat fEnd, const coreFloat fSpeed, const coreUint16 iLoops)noexcept
+constexpr coreTimer::coreTimer(const coreFloat fEnd, const coreFloat fSpeed, const coreUint16 iLoops)noexcept
 : m_fValue    (0.0f)
 , m_fEnd      (fEnd)
 , m_fSpeed    (fSpeed)
@@ -134,6 +129,11 @@ CONSTEXPR coreTimer::coreTimer(const coreFloat fEnd, const coreFloat fSpeed, con
 , m_iCurLoops (0u)
 , m_iTimeID   (-1)
 , m_bStatus   (false)
+{
+}
+
+constexpr coreTimer::coreTimer()noexcept
+: coreTimer (1.0f, 1.0f, 0u)
 {
 }
 

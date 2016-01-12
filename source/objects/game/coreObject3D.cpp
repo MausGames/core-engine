@@ -145,8 +145,7 @@ coreBool coreObject3D::Prepare(const coreProgramPtr& pProgram)
     pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,    coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
-        if(m_apTexture[i].IsUsable()) m_apTexture[i]->Enable(i);
+    coreTexture::EnableAll(m_apTexture);
 
     // enable the model
     m_pModel->Enable();
@@ -294,8 +293,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         if(!pProgramInstanced->Enable())  return;
 
         // enable all active textures
-        for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
-            if(pFirst->GetTexture(i).IsUsable()) pFirst->GetTexture(i)->Enable(i);
+        coreTexture::EnableAll(&pFirst->GetTexture(0));
 
         if(CONTAINS_BIT(m_iUpdate, 0u))
         {

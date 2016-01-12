@@ -3,15 +3,22 @@ package at.mausgames.app;
 import org.libsdl.app.SDLActivity;
 import android.os.*;
 
+
 public class CoreApp extends SDLActivity
 {
-    protected void onCreate(Bundle savedInstanceState)
+    @Override
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
     }
 
-    protected void onDestroy()
+    @Override
+    public void onDestroy()
     {
         super.onDestroy();
+        
+        // fully kill application to force library reloading
+        System.runFinalizersOnExit(true);
+        System.exit(0);
     }
 }

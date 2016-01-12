@@ -134,9 +134,10 @@ public:
 
     //! enable and disable the texture
     //! @{
-    inline        void Enable (const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iTexture)}
-    static inline void Disable(const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
-    static inline void DisableAll()                   {for(coreUintW i = CORE_TEXTURE_UNITS; i--; ) coreTexture::Disable(i);}
+    inline        void Enable    (const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iTexture)}
+    static inline void Disable   (const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
+    static        void EnableAll (const coreResourcePtr<coreTexture>* ppTextureArray);
+    static        void DisableAll();
     //! @}
 
     //! reset content of the texture

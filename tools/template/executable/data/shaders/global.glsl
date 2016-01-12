@@ -403,9 +403,9 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #endif
 
     // low-memory attributes
-    vec2 a_v2LowPosition = a_v3RawPosition.xy;
-    vec2 a_v2LowTexCoord = vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y);
-
+    vec2 a_v2LowPosition;
+    vec2 a_v2LowTexCoord;
+        
     // remapped variables
     #if defined(_CORE_OPTION_INSTANCING_)
         #define u_v3Position  (a_v3DivPosition)
@@ -430,6 +430,8 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         v_v4VarColor = a_v4DivColor;
     #endif
     
+        a_v2LowPosition = a_v3RawPosition.xy;
+        a_v2LowTexCoord = vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y);
         VertexMain();
     }
 
@@ -515,7 +517,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #endif
 
     // pre-calculated view direction
-    vec3 v_v3ViewDir = v_v3TangentCam - v_v3TangentPos;
+    vec3 v_v3ViewDir;
     
     // remapped variables
     #if defined(_CORE_OPTION_INSTANCING_)
@@ -528,6 +530,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     void FragmentMain();
     void main()
     {
+        v_v3ViewDir = v_v3TangentCam - v_v3TangentPos;
         FragmentMain();
     }
 

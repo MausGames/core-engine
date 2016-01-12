@@ -337,6 +337,76 @@ void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const
 
 
 // ****************************************************************
+// enable default array of textures
+void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
+{
+    if(CORE_GL_SUPPORT(ARB_multi_bind))
+    {
+        coreInt8 iStart = -1;
+        coreInt8 iEnd   = -1;
+
+        // loop through all textures
+        for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
+        {
+            if(ppTextureArray[i].IsUsable())
+            {
+                coreTexture* pTexture = s_cast<coreTexture*>(ppTextureArray[i].GetHandle()->GetResource());
+
+                // check texture binding
+                if(s_apBound[i] == pTexture) continue;
+                s_apBound[i] = pTexture;
+
+                // set range of texture units
+                if(iStart < 0) iStart = i;
+                iEnd = i;
+            }
+        }
+
+        if(iStart >= 0)
+        {
+            GLuint aiIdentifier[CORE_TEXTURE_UNITS] = {};
+
+            // prepare tight traversal
+            const coreUintW iCount = iEnd - iStart + 1u;
+            ppTextureArray += iStart;
+
+            // arrange texture identifiers
+            for(coreUintW i = 0; i < iCount; ++i)
+                if(ppTextureArray[i].IsUsable()) aiIdentifier[i] = ppTextureArray[i]->GetTexture();
+
+            // enable all at once
+            glBindTextures(iStart, iCount, aiIdentifier);
+        }
+    }
+    else
+    {
+        // enable all separately
+        for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
+            if(ppTextureArray[i].IsUsable()) ppTextureArray[i]->Enable(i);
+    }
+}
+
+
+// ****************************************************************
+// disable all textures
+void coreTexture::DisableAll()
+{
+    if(CORE_GL_SUPPORT(ARB_multi_bind))
+    {
+        // disable all at once
+        std::memset(s_apBound, 0, sizeof(s_apBound));
+        glBindTextures(0u, CORE_TEXTURE_UNITS, NULL);
+    }
+    else
+    {
+        // disable all separately
+        for(coreUintW i = CORE_TEXTURE_UNITS; i--; )
+            coreTexture::Disable(i);
+    }
+}
+
+
+// ****************************************************************
 // clear content of the texture
 void coreTexture::Clear(const coreUint8 iLevel)
 {

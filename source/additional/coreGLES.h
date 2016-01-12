@@ -22,6 +22,7 @@
 #define CORE_GL_ARB_direct_state_access      false
 #define CORE_GL_ARB_geometry_shader4         false
 #define CORE_GL_ARB_half_float_vertex        false   // different token value in OES_vertex_half_float
+#define CORE_GL_ARB_multi_bind               false
 #define CORE_GL_ARB_program_interface_query  false
 #define CORE_GL_ARB_shader_image_load_store  false
 #define CORE_GL_ARB_sync                     false
@@ -212,6 +213,7 @@ typedef uint64_t GLuint64;
 #define glBindFragDataLocation(...)
 #define glBindImageTexture(...)
 #define glBindMultiTextureEXT(...)
+#define glBindTextures(...)
 #define glBindTextureUnit(...)
 #define glBindVertexBuffer(...)
 #define glBlitNamedFramebuffer(...)

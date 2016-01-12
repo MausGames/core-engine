@@ -54,6 +54,7 @@ LOCAL_SRC_FILES := $(V_SRC_PATH)/main.cpp                                \
                    $(V_SRC_PATH)/application.cpp                         \
                    $(V_ENG_PATH)/Core.cpp                                \
                    $(V_ENG_PATH)/additional/android/main.c               \
+                   $(V_ENG_PATH)/additional/coreCPUID.cpp                \
                    $(V_ENG_PATH)/additional/coreGLES.cpp                 \
                    $(V_ENG_PATH)/components/audio/CoreAudio.cpp          \
                    $(V_ENG_PATH)/components/audio/coreMusic.cpp          \
@@ -90,7 +91,7 @@ LOCAL_SRC_FILES := $(V_SRC_PATH)/main.cpp                                \
                    $(V_ENG_PATH)/utilities/file/coreLog.cpp
 
 LOCAL_SHARED_LIBRARIES := SDL2 SDL2_ttf SDL2_image OpenAL Ogg Vorbis VorbisFile
-LOCAL_LDLIBS           := -ldl -llog -landroid -lGLESv2 -lEGL
+LOCAL_LDLIBS           := -ldl -llog -latomic -lz -landroid -lGLESv2 -lEGL
 LOCAL_CPPFLAGS         := -std=c++14 -O3 -fno-exceptions -fno-rtti
 
 include $(BUILD_SHARED_LIBRARY)
