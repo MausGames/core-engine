@@ -82,6 +82,14 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 // load file data
 coreStatus coreFile::LoadData()
 {
+#if defined(_CORE_DEBUG_)
+
+    // for correct hot-reloading (not in release)
+    if(!m_sPath.empty()) m_iSize = coreData::FileSize(m_sPath.c_str());
+
+#endif
+
+    // check file data
     if(m_pData || !m_iSize || !m_iArchivePos) return CORE_INVALID_CALL;
 
     SDL_RWops* pFile;

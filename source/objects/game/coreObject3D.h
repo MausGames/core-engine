@@ -129,7 +129,7 @@ private:
 
 public:
     explicit coreBatchList(const coreUint32 iStartCapacity = 0u)noexcept;
-    ~coreBatchList();
+    ~coreBatchList()override;
 
     DISABLE_COPY(coreBatchList)
 

@@ -48,7 +48,7 @@ private:
     SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
     SDL_SpinLock m_iLock;         //!< spinlock to prevent asynchronous log access
 
-    coreBool m_bListStatus;       //!< currently writing a list
+    coreByte m_iListStatus;       //!< currently writing a list
 
 
 public:
@@ -67,10 +67,11 @@ public:
     /*! special functions */
     //! @{
     template <typename... A> inline void Header          (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
-    template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); m_bListStatus = true;}}
-    template <typename... A> inline void ListAdd         (const coreChar* pcText, A&&... vArgs) {if(m_bListStatus)                                     this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
-    inline                          void ListEnd         ()                                     {if(m_bListStatus)                                    {this->__Write(false, "</ul>"); m_bListStatus = false;}}
+    template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
+    template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_VALUE(m_iLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
+    template <typename... A> inline void ListDeeper      (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                    {this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li><ul>");   ++m_iListStatus;}}
+    template <typename... A> inline void ListAdd         (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                     this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
+    inline                          void ListEnd         ()                                     {if(m_iListStatus)                                    {this->__Write(false, "</ul>"); --m_iListStatus;}}
     //! @}
 
     /*! handle OpenGL debug output */

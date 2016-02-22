@@ -56,7 +56,7 @@ private:
 public:
     coreLabel()noexcept;
     coreLabel(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
-    ~coreLabel();
+    ~coreLabel()override;
 
     DISABLE_COPY(coreLabel)
 

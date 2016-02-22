@@ -51,7 +51,7 @@ private:
 
 public:
     coreSound()noexcept;
-    ~coreSound();
+    ~coreSound()override;
 
     DISABLE_COPY(coreSound)
 

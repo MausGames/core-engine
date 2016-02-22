@@ -116,7 +116,7 @@ void coreLabel::Move()
 // change the current text
 coreBool coreLabel::SetText(const coreChar* pcText)
 {
-    ASSERT(!m_iLength || std::strlen(pcText) <= m_iLength)
+    ASSERT(!m_iLength || (std::strlen(pcText) <= m_iLength))
 
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
@@ -124,7 +124,7 @@ coreBool coreLabel::SetText(const coreChar* pcText)
         ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
-        if(m_iLength) m_sText.assign(pcText, m_iLength);
+        if(m_iLength) m_sText.assign(pcText, MIN(std::strlen(pcText), m_iLength));
                  else m_sText.assign(pcText);
         return true;
     }
@@ -133,16 +133,16 @@ coreBool coreLabel::SetText(const coreChar* pcText)
 
 coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
 {
-    ASSERT(!m_iLength || iNum <= m_iLength)
+    ASSERT(!m_iLength || (iNum <= m_iLength))
 
     // check for new text
-    if(iNum != m_sText.length() || std::strcmp(m_sText.c_str(), pcText))
+    if((iNum != m_sText.length()) || std::strcmp(m_sText.c_str(), pcText))
     {
         ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
-        if(m_iLength) m_sText.assign(pcText, MIN(iNum, m_iLength));
-                 else m_sText.assign(pcText, iNum);
+        if(m_iLength) m_sText.assign(pcText, MIN(iNum, std::strlen(pcText), m_iLength));
+                 else m_sText.assign(pcText, MIN(iNum, std::strlen(pcText)));
         return true;
     }
     return false;

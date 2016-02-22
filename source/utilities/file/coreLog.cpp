@@ -17,7 +17,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_iLevel      (CORE_LOG_LEVEL_ALL)
 , m_iMainThread (0u)
 , m_iLock       (0)
-, m_bListStatus (false)
+, m_iListStatus (0u)
 {
     // open and reset log file
     m_pFile = std::fopen(m_sPath.c_str(), "w");

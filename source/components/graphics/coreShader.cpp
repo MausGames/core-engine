@@ -459,6 +459,27 @@ void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iG
 
 
 // ****************************************************************
+// send new uniform 2x2-matrix
+void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix2& mMatrix, const coreBool bTranspose)
+{
+    // retrieve uniform location
+    const coreInt8 iLocation = this->RetrieveUniform(pcName);
+    if(iLocation >= 0)
+    {
+        if(this->CheckCache(iLocation, coreVector4(mMatrix[0], mMatrix[1], mMatrix[2], mMatrix[3])))
+        {
+            // send new value
+#if defined(_CORE_GLES_)
+            glUniformMatrix2fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
+#else
+            glUniformMatrix2fv(iLocation, 1, bTranspose, mMatrix);
+#endif
+        }
+    }
+}
+
+
+// ****************************************************************
 // send new uniform 3x3-matrix
 void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool bTranspose)
 {
@@ -546,7 +567,7 @@ void coreProgram::__WriteInterface()const
             glGetProgramInterfaceiv(m_iProgram, GL_UNIFORM,       GL_ACTIVE_RESOURCES, &iNumUniform);
 
             // write active vertex attributes (name, location)
-            Core::Log->ListAdd(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
+            Core::Log->ListDeeper(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
             for(coreUintW i = 0u, ie = iNumInput; i < ie; ++i)
             {
                 glGetProgramResourceName(m_iProgram, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
@@ -554,9 +575,10 @@ void coreProgram::__WriteInterface()const
 
                 Core::Log->ListAdd("%s:%i", acName, aiValue[0]);
             }
+            Core::Log->ListEnd();
 
             // write active uniforms (name, location, block offset)
-            Core::Log->ListAdd(CORE_LOG_BOLD("Uniforms:") " %d", iNumUniform);
+            Core::Log->ListDeeper(CORE_LOG_BOLD("Uniforms:") " %d", iNumUniform);
             for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
             {
                 glGetProgramResourceName(m_iProgram, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
@@ -564,6 +586,7 @@ void coreProgram::__WriteInterface()const
 
                 Core::Log->ListAdd("%s:%i:%i", acName, aiValue[0], aiValue[1]);
             }
+            Core::Log->ListEnd();
         }
         else
         {

@@ -106,7 +106,7 @@ private:
 public:
     coreShader()noexcept;
     explicit coreShader(const coreChar* pcCustomCode)noexcept;
-    ~coreShader();
+    ~coreShader()override;
 
     DISABLE_COPY(coreShader)
 
@@ -164,7 +164,7 @@ private:
 
 public:
     coreProgram()noexcept;
-    ~coreProgram();
+    ~coreProgram()override;
 
     DISABLE_COPY(coreProgram)
 
@@ -201,6 +201,7 @@ public:
     inline void SendUniform(const coreChar* pcName, const coreVector2& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
     inline void SendUniform(const coreChar* pcName, const coreVector3& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f)))             glUniform3fv(iLocation, 1, vVector);}
     inline void SendUniform(const coreChar* pcName, const coreVector4& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, vVector))                                     glUniform4fv(iLocation, 1, vVector);}
+    void        SendUniform(const coreChar* pcName, const coreMatrix2& mMatrix, const coreBool bTranspose);
     void        SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool bTranspose);
     void        SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool bTranspose);
     //! @}

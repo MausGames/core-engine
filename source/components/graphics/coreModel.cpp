@@ -275,14 +275,14 @@ void coreModel::DrawElements()const
 void coreModel::DrawArraysInstanced(const coreUint32 iCount)const
 {
     // check and draw the model instanced
-    ASSERT(s_pCurrent == this || !s_pCurrent)
+    ASSERT((s_pCurrent == this) || !s_pCurrent)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
 void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
 {
     // check and draw the model instanced
-    ASSERT((s_pCurrent == this || !s_pCurrent) && m_IndexBuffer)
+    ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer)
     glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, NULL, iCount);
 }
 

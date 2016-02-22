@@ -17,6 +17,7 @@
 
 // ****************************************************************
 /* configuration definitions */
+#define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (800)
 #define CORE_CONFIG_SYSTEM_HEIGHT               "System",   "Height",             (600)
 #define CORE_CONFIG_SYSTEM_FULLSCREEN           "System",   "Fullscreen",         (0)

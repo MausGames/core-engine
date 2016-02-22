@@ -80,7 +80,7 @@ private:
 
 public:
     coreModel()noexcept;
-    ~coreModel();
+    ~coreModel()override;
 
     DISABLE_COPY(coreModel)
 

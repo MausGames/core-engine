@@ -50,6 +50,7 @@
 // TODO: unique pointers and move semantics for functions taking ownership of a pointer
 // TODO: video class, string class, path/url class, pool+stack-allocator
 // TODO: fix constexpr msvc bug (not compiler-setting?) (constexpr-results not saved after compilation, functions often re-evaluated at run-time)
+// TODO: disallow two instances of the same application (also in launcher)
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 

@@ -45,7 +45,7 @@ public:
     coreSwitchBox()noexcept;
     coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
     coreSwitchBox(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
-    ~coreSwitchBox();
+    ~coreSwitchBox()override;
 
     DISABLE_COPY(coreSwitchBox)
 
@@ -188,8 +188,18 @@ template <typename T> void coreSwitchBox<T>::Render()
     //m_aArrow[1].SetAlpha(this->GetAlpha());
 
     // render selection arrows
-    m_aArrow[0].Render();
-    m_aArrow[1].Render();
+    //m_aArrow[0].Render();
+    //m_aArrow[1].Render();
+
+    // render selection arrows
+    if(m_aArrow[0].GetTexture(0u)) m_aArrow[0].coreObject2D::Render();
+    if(m_aArrow[1].GetTexture(0u)) m_aArrow[1].coreObject2D::Render();
+
+    m_aArrow[0].GetCaption()->SetAlpha(m_aArrow[0].GetAlpha());
+    m_aArrow[0].GetCaption()->Render();
+
+    m_aArrow[1].GetCaption()->SetAlpha(m_aArrow[1].GetAlpha());
+    m_aArrow[1].GetCaption()->Render();
 
     // render the label
     m_Caption.SetAlpha(this->GetAlpha());

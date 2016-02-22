@@ -40,7 +40,7 @@ private:
 
 public:
     coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)noexcept;
-    virtual ~coreMenu();
+    virtual ~coreMenu()override;
 
     DISABLE_COPY(coreMenu)
 

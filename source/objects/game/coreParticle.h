@@ -141,7 +141,7 @@ private:
 
 public:
     explicit coreParticleSystem(const coreUint32 iNumParticles)noexcept;
-    ~coreParticleSystem();
+    ~coreParticleSystem()override;
 
     DISABLE_COPY(coreParticleSystem)
 

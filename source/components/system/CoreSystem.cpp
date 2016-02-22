@@ -13,12 +13,12 @@
 // constructor
 CoreSystem::CoreSystem()noexcept
 : m_pWindow        (NULL)
+, m_aDisplayData   {}
+, m_iDisplayIndex  (Core::Config->GetInt(CORE_CONFIG_SYSTEM_DISPLAY))
 , m_vResolution    (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
 , m_iFullscreen    (Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
 , m_bMinimized     (false)
 , m_bTerminated    (false)
-, m_avAvailableRes {}
-, m_vDesktopRes    (coreVector2(0.0f,0.0f))
 , m_dTotalTime     (0.0f)
 , m_fLastTime      (0.0f)
 , m_afTime         {}
@@ -51,60 +51,66 @@ CoreSystem::CoreSystem()noexcept
             // retrieve display
             for(coreUintW i = 0u; i < iNumDisplays; ++i)
             {
+                m_aDisplayData.emplace_back();
+                coreDisplay& oDisplayData = m_aDisplayData.back();
+
+                // retrieve display DDPI
                 coreFloat fDDPI;
                 SDL_GetDisplayDPI(i, &fDDPI, NULL, NULL);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%u:") " %s (%.1f DDPI)", i+1u, SDL_GetDisplayName(i), fDDPI);
+
+                // retrieve desktop resolution
+                SDL_DisplayMode oDesktop;
+                SDL_GetDesktopDisplayMode(i, &oDesktop);
+                oDisplayData.vDesktopRes = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
+
+                // load all available screen resolutions
+                const coreUintW iNumModes = SDL_GetNumDisplayModes(i);
+                if(iNumModes)
+                {
+                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%.1f DDPI)", i+1u, SDL_GetDisplayName(i), fDDPI);
+                    {
+                        for(coreUintW j = 0u; j < iNumModes; ++j)
+                        {
+                            // retrieve resolution
+                            SDL_DisplayMode oMode;
+                            SDL_GetDisplayMode(i, j, &oMode);
+                            const coreVector2 vMode = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
+
+                            coreUintW k = 0u, ke = oDisplayData.avAvailableRes.size();
+                            for(; k < ke; ++k)
+                            {
+                                // check for already added resolutions
+                                if(oDisplayData.avAvailableRes[k] == vMode)
+                                    break;
+                            }
+                            if(k == ke)
+                            {
+                                // add new resolution
+                                oDisplayData.avAvailableRes.push_back(vMode);
+                                Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vMode == oDisplayData.vDesktopRes) ? " (Desktop)" : "");
+                            }
+                        }
+                    }
+                    Core::Log->ListEnd();
+                }
+                else Core::Log->Warning("Could not get available screen resolutions (SDL: %s)", SDL_GetError());
             }
         }
         Core::Log->ListEnd();
-    }
-    else Core::Log->Warning("Could not get available displays (SDL: %s)", SDL_GetError());
 
-    // retrieve desktop resolution
-    SDL_DisplayMode oDesktop;
-    SDL_GetDesktopDisplayMode(0, &oDesktop);
-    m_vDesktopRes = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
+        // clamp display index and resolution
+        if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
+        coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
 
-    // load all available screen resolutions
-    const coreUintW iNumModes = SDL_GetNumDisplayModes(0);
-    if(iNumModes)
-    {
-        Core::Log->ListStartInfo("Available Screen Resolutions");
-        {
-            for(coreUintW i = 0u; i < iNumModes; ++i)
-            {
-                // retrieve resolution
-                SDL_DisplayMode oMode;
-                SDL_GetDisplayMode(0, i, &oMode);
-                const coreVector2 vMode = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
-
-                coreUintW j = 0u, je = m_avAvailableRes.size();
-                for(; j < je; ++j)
-                {
-                    // check for already added resolutions
-                    if(m_avAvailableRes[j] == vMode)
-                        break;
-                }
-                if(j == je)
-                {
-                    // add new resolution
-                    m_avAvailableRes.push_back(vMode);
-                    Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vMode == m_vDesktopRes) ? " (Desktop)" : "");
-                }
-            }
-        }
-        Core::Log->ListEnd();
+        m_vResolution.x = CLAMP(m_vResolution.x, 0.0f, oPrimary.vDesktopRes.x);
+        m_vResolution.y = CLAMP(m_vResolution.y, 0.0f, oPrimary.vDesktopRes.y);
 
         // override screen resolution
-        if(m_avAvailableRes.size() == 1u) m_vResolution = m_avAvailableRes.back();
-        if(!m_vResolution.x) m_vResolution.x = m_vDesktopRes.x;
-        if(!m_vResolution.y) m_vResolution.y = m_vDesktopRes.y;
+        if(oPrimary.avAvailableRes.size() == 1u) m_vResolution = oPrimary.avAvailableRes.back();
+        if(!m_vResolution.x) m_vResolution.x = oPrimary.vDesktopRes.x;
+        if(!m_vResolution.y) m_vResolution.y = oPrimary.vDesktopRes.y;
     }
-    else Core::Log->Warning("Could not get available screen resolutions (SDL: %s)", SDL_GetError());
-
-    // configure the SDL window
-    const coreUint32 iCenter = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0u : SDL_WINDOWPOS_CENTERED;
-    const coreUint32 iFlags  = SDL_WINDOW_OPENGL | (m_iFullscreen == 2u ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
+    else Core::Log->Warning("Could not get available displays (SDL: %s)", SDL_GetError());
 
     // configure the OpenGL context
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
@@ -145,8 +151,17 @@ CoreSystem::CoreSystem()noexcept
     if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
+    // configure the SDL window
+    SDL_Rect oBounds;
+    SDL_GetDisplayBounds(m_iDisplayIndex, &oBounds);
+    const coreInt32  iSizeX = F_TO_SI(m_vResolution.x);
+    const coreInt32  iSizeY = F_TO_SI(m_vResolution.y);
+    const coreInt32  iPosX  = ((Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0u : (oBounds.w - iSizeX) / 2) + oBounds.x;
+    const coreInt32  iPosY  = ((Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0u : (oBounds.h - iSizeY) / 2) + oBounds.y;
+    const coreUint32 iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2u ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
+
     // create main window object
-    m_pWindow = SDL_CreateWindow(coreData::AppName(), iCenter, iCenter, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
+    m_pWindow = SDL_CreateWindow(coreData::AppName(), iPosX, iPosY, iSizeX, iSizeY, iFlags);
     if(!m_pWindow)
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
@@ -157,7 +172,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
         // create another main window object
-        m_pWindow = SDL_CreateWindow(coreData::AppName(), iCenter, iCenter, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), iFlags);
+        m_pWindow = SDL_CreateWindow(coreData::AppName(), iPosX, iPosY, iSizeX, iSizeY, iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
@@ -195,7 +210,7 @@ CoreSystem::CoreSystem()noexcept
 CoreSystem::~CoreSystem()
 {
     // clear memory
-    m_avAvailableRes.clear();
+    m_aDisplayData.clear();
 
     // delete main window object
     SDL_DestroyWindow(m_pWindow);

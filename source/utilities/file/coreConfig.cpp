@@ -33,15 +33,19 @@ coreConfig::coreConfig(const coreChar* pcPath)noexcept
 
         FOR_EACH(pSection, apSection)
         {
-            // retrieve all keys per section
-            CSimpleIni::TNamesDepend apKey;
-            m_Config.GetAllKeys(pSection->pItem, apKey);
-
-            FOR_EACH(pKey, apKey)
+            Core::Log->ListDeeper(CORE_LOG_BOLD("%s"), pSection->pItem);
             {
-                // write specific configuration value
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s") ".%s: %s", pSection->pItem, pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
+                // retrieve all keys per section
+                CSimpleIni::TNamesDepend apKey;
+                m_Config.GetAllKeys(pSection->pItem, apKey);
+
+                FOR_EACH(pKey, apKey)
+                {
+                    // write specific configuration value
+                    Core::Log->ListAdd("%s: %s", pKey->pItem, m_Config.GetValue(pSection->pItem, pKey->pItem));
+                }
             }
+            Core::Log->ListEnd();
         }
     }
     Core::Log->ListEnd();

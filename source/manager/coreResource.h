@@ -204,7 +204,7 @@ private:
 
 private:
     coreResourceManager()noexcept;
-    ~coreResourceManager();
+    ~coreResourceManager()override;
 
 
 public:

@@ -37,6 +37,11 @@ public:
 
     ENABLE_COPY(coreMatrix2)
 
+    /*! convert matrix */
+    //! @{
+    constexpr operator const coreFloat* ()const {return arr[0];}
+    //! @}
+
     /*! transpose matrix */
     //! @{
     inline coreMatrix2& Transpose ();

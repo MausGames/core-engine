@@ -192,8 +192,16 @@ void CoreDebug::__UpdateOutput()
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F8), CORE_INPUT_PRESS))
         SDL_TriggerBreakpoint();
 
-    // reset engine
+    // reset resources
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F9), CORE_INPUT_PRESS))
+    {
+        Core::Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
+        Core::Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
+        return;
+    }
+
+    // reset engine
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F10), CORE_INPUT_PRESS))
     {
         Core::Reset();
         return;

@@ -25,7 +25,7 @@ private:
 
 public:
     coreFont()noexcept;
-    ~coreFont();
+    ~coreFont()override;
 
     DISABLE_COPY(coreFont)
 

@@ -105,7 +105,7 @@ private:
 public:
     coreTexture()noexcept;
     explicit coreTexture(const coreBool bLoadCompressed)noexcept;
-    ~coreTexture();
+    ~coreTexture()override;
 
     DISABLE_COPY(coreTexture)
 

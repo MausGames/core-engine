@@ -55,6 +55,7 @@ Core::Core()noexcept
     Log->Header("Application Init");
     Application = new CoreApp();
     Manager::Resource->UpdateResources();
+    Manager::Resource->UpdateFunctions();
     Log->Header("Application Run");
 }
 
