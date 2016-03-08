@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-ENTRY_POINT coreInt32 coreThreadMain(void* pData);
+ENTRY_POINT coreInt32 SDLCALL coreThreadMain(void* pData);
 
 
 // ****************************************************************
@@ -142,7 +142,7 @@ coreStatus coreThread::__Main()
 
 // ****************************************************************
 /* entry-point function */
-ENTRY_POINT coreInt32 coreThreadMain(void* pData)
+ENTRY_POINT coreInt32 SDLCALL coreThreadMain(void* pData)
 {
     // retrieve thread object
     coreThread* pThread = s_cast<coreThread*>(pData);

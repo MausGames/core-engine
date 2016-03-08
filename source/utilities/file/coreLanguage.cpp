@@ -199,7 +199,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
         std::string& sString = (*it);
 
         // assign key as value to possible empty language-string
-        if(sString.empty()) sString.assign(m_asStringList.get_string(it));
+        if(sString.empty()) sString.assign(PRINT(CORE_LANGUAGE_KEY "%s", m_asStringList.get_string(it)));
         sString.shrink_to_fit();
     }
     m_asStringList.shrink_to_fit();
@@ -220,7 +220,7 @@ void coreLanguage::BindForeign(std::string* psForeign, const coreHashString& sKe
     ASSERT(psForeign && sKey)
 
     // assign key as value to possible new language-string
-    if(!m_asStringList.count(sKey)) m_asStringList[sKey].assign(sKey.GetString());
+    if(!m_asStringList.count(sKey)) m_asStringList[sKey].assign(PRINT(CORE_LANGUAGE_KEY "%s", sKey.GetString()));
 
     // save foreign string pointer and key
     m_apsForeign[psForeign].assign(sKey.GetString());

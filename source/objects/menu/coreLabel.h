@@ -104,7 +104,7 @@ private:
 
     //! generate the texture
     //! @{
-    void __Generate(const coreChar* pcText, const coreBool bSub);
+    void __Generate(const coreChar* pcText, const coreInt8 iSub);
     //! @}
 };
 

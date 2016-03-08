@@ -12,6 +12,7 @@
 
 // TODO: fullscreen enumeration
 // TODO: available resolutions are currently only retrieved from the first display (though some drivers may "merge" displays)
+// TODO: handle display hot-plugging
 
 
 // ****************************************************************

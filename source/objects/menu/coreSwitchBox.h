@@ -71,9 +71,11 @@ public:
 
     //! switch current entry
     //! @{
-    void     SelectIndex(const coreUintW iIndex);
-    coreBool SelectText (const coreChar* pcText);
-    coreBool SelectValue(const T&        tValue);
+    void        SelectIndex(const coreUintW iIndex);
+    coreBool    SelectText (const coreChar* pcText);
+    coreBool    SelectValue(const T&        tValue);
+    inline void SelectFirst() {if(!m_aEntry.empty()) this->SelectIndex(0u);}
+    inline void SelectLast () {if(!m_aEntry.empty()) this->SelectIndex(m_aEntry.size() - 1u);}
     void Next    ();
     void Previous();
     //! @}

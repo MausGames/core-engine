@@ -82,7 +82,7 @@ void coreLabel::Render()
         if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_TEXTURE))
         {
             // generate the texture
-            this->__Generate(m_sText.c_str(), m_iLength ? true : false);
+            this->__Generate(m_sText.c_str(), m_iLength ? 1 : 0);
         }
         if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
         {
@@ -167,7 +167,7 @@ void coreLabel::__Reset(const coreResourceReset bInit)
 
 // ****************************************************************
 // generate the texture
-void coreLabel::__Generate(const coreChar* pcText, const coreBool bSub)
+void coreLabel::__Generate(const coreChar* pcText, const coreInt8 iSub)
 {
     SDL_Surface* pSolid   = NULL;
     SDL_Surface* pOutline = NULL;
@@ -227,10 +227,10 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool bSub)
     }
     else pData = s_cast<coreByte*>(pSolid->pixels);
 
-    if(bSub)
+    if(iSub > 0)
     {
         // create static texture
-        if(!m_vResolution.x) this->__Generate((std::string(m_iLength, 'W') + "gjy])").c_str(), false);
+        if(!m_vResolution.x) this->__Generate((std::string(m_iLength, 'W') + "gjy])").c_str(), -1);
 
         // update only a specific area of the texture
         m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
@@ -242,14 +242,14 @@ void coreLabel::__Generate(const coreChar* pcText, const coreBool bSub)
 
         // create new texture
         m_apTexture[1]->Create(iPitch, iHeight, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), CORE_TEXTURE_MODE_DEFAULT);
-        m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
+        if(!iSub) m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
 
         // save new texture resolution
         m_vResolution = coreVector2(I_TO_F(iPitch), I_TO_F(iHeight));
     }
 
     // display only visible texture area
-    this->SetTexSize(coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) / m_vResolution);
+    this->SetTexSize(coreVector2(I_TO_F(iWidth) - 0.5f, I_TO_F(iHeight)) / m_vResolution);
     ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
 
     // delete text surface data

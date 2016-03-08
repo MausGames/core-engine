@@ -188,12 +188,12 @@ void CoreDebug::__UpdateOutput()
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_HOLD))
         Core::System->SkipFrame();
 
-    // trigger breakpoint
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F8), CORE_INPUT_PRESS))
-        SDL_TriggerBreakpoint();
+    // reset language
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F9), CORE_INPUT_PRESS))
+        Core::Language->Load(Core::Language->GetPath());
 
     // reset resources
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F9), CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F10), CORE_INPUT_PRESS))
     {
         Core::Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
         Core::Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
@@ -201,7 +201,7 @@ void CoreDebug::__UpdateOutput()
     }
 
     // reset engine
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F10), CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F11), CORE_INPUT_PRESS))
     {
         Core::Reset();
         return;
