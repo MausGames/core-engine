@@ -43,6 +43,7 @@ public:
     //! @{
     void AddNode   (const T& tPosition, const T& tTangent);
     void AddNodes  (const T& tPosition, const T& tTangentIn, const T& tTangentOut);
+    void AddStop   (const T& tPosition);
     void AddLoop   ();
     void DeleteNode(const coreUintW iIndex);
     void ClearNodes();
@@ -54,7 +55,7 @@ public:
     void EditNodeTangent (const coreUintW iIndex, const T& tNewTangent);
     //! @}
 
-    /*! refine current nodes for improved interpolation */
+    /*! refine existing nodes for improved interpolation */
     //! @{
     void Refine();
     //! @}
@@ -73,7 +74,7 @@ public:
 
     /*! get object properties */
     //! @{
-    inline const coreNode&  GetNode         (const coreUintW iIndex)const {return m_apNode.at(iIndex);}
+    inline const coreNode&  GetNode         (const coreUintW iIndex)const {ASSERT(iIndex < m_apNode.size()) return m_apNode[iIndex];}
     inline       coreUintW  GetNumNodes     ()const                       {return m_apNode.size();}
     inline const coreFloat& GetTotalDistance()const                       {return m_fTotalDistance;}
     //! @}
@@ -136,6 +137,15 @@ template <typename T> void coreSpline<T>::AddNodes(const T& tPosition, const T& 
     // actually add two nodes at the same position
     this->AddNode(tPosition, tTangentIn);
     this->AddNode(tPosition, tTangentOut);
+}
+
+
+// ****************************************************************
+/* add stopping node to spline */
+template <typename T> void coreSpline<T>::AddStop(const T& tPosition)
+{
+    // actually add node with zero-length tangent
+    this->AddNode(tPosition, T::Null() + CORE_MATH_PRECISION);
 }
 
 
@@ -239,7 +249,7 @@ template <typename T> void coreSpline<T>::EditNodeTangent(const coreUintW iIndex
 
 
 // ****************************************************************
-/* refine current nodes for improved interpolation */
+/* refine existing nodes for improved interpolation */
 template <typename T> void coreSpline<T>::Refine()
 {
     ASSERT(!m_apNode.empty())

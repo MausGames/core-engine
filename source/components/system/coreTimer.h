@@ -105,7 +105,7 @@ public:
 
     ENABLE_COPY(coreFlow)
 
-    /*! access current value */
+    /*! access the flowing value */
     //! @{
     inline    operator       coreFloat& ()      {return m_fValue;}
     constexpr operator const coreFloat& ()const {return m_fValue;}

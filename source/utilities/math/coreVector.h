@@ -120,6 +120,7 @@ public:
 
     /*! static functions */
     //! @{
+    static constexpr coreVector2 Null     ()                                             {return coreVector2(0.0f,0.0f);}
     static constexpr coreFloat   Dot      (const coreVector2& v1, const coreVector2& v2) {return (v1.x*v2.x + v1.y*v2.y);}
     static inline    coreVector2 Direction(const coreFloat fAngle)                       {return coreVector2(-SIN(fAngle), COS(fAngle));}
     static inline    coreVector2 Rand     ();
@@ -254,6 +255,7 @@ public:
 
     /*! static functions */
     //! @{
+    static constexpr coreVector3 Null   ()                                             {return coreVector3(0.0f,0.0f,0.0f);}
     static constexpr coreFloat   Dot    (const coreVector3& v1, const coreVector3& v2) {return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);}
     static constexpr coreVector3 Cross  (const coreVector3& v1, const coreVector3& v2);
     static inline    coreVector3 Rand   ();
@@ -362,6 +364,11 @@ public:
     inline    coreFloat Min     ()const {return MIN(x, y, z, w);}
     inline    coreFloat Max     ()const {return MAX(x, y, z, w);}
     constexpr coreBool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    //! @}
+
+    /*! static functions */
+    //! @{
+    static constexpr coreVector4 Null() {return coreVector4(0.0f,0.0f,0.0f,0.0f);}
     //! @}
 
     /*! packing functions */

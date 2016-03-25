@@ -45,6 +45,7 @@
 #define CORE_TEXTURE_SPEC_RGBA16F          (coreTextureSpec(GL_RGBA16F,           GL_RGBA,            GL_HALF_FLOAT))                     //!< ARB_texture_float
 #define CORE_TEXTURE_SPEC_R11F_G11F_B10F   (coreTextureSpec(GL_R11F_G11F_B10F,    GL_RGB,             GL_UNSIGNED_INT_10F_11F_11F_REV))   //!< EXT_packed_float
 #define CORE_TEXTURE_SPEC_DEPTH16          (coreTextureSpec(GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT))                 //!< -
+#define CORE_TEXTURE_SPEC_DEPTH32          (coreTextureSpec(GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT))                   //!< -
 #define CORE_TEXTURE_SPEC_STENCIL8         (coreTextureSpec(GL_STENCIL_INDEX8,    GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE))                  //!< ARB_texture_stencil8
 #define CORE_TEXTURE_SPEC_DEPTH24_STENCIL8 (coreTextureSpec(GL_DEPTH24_STENCIL8,  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8))              //!< -
 

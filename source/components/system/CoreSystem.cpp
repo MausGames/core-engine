@@ -152,16 +152,13 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
     // configure the SDL window
-    SDL_Rect oBounds;
-    SDL_GetDisplayBounds(m_iDisplayIndex, &oBounds);
+    const coreInt32  iPos   = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
     const coreInt32  iSizeX = F_TO_SI(m_vResolution.x);
     const coreInt32  iSizeY = F_TO_SI(m_vResolution.y);
-    const coreInt32  iPosX  = ((Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0u : (oBounds.w - iSizeX) / 2) + oBounds.x;
-    const coreInt32  iPosY  = ((Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0u : (oBounds.h - iSizeY) / 2) + oBounds.y;
-    const coreUint32 iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2u ? SDL_WINDOW_FULLSCREEN : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
+    const coreUint32 iFlags = SDL_WINDOW_OPENGL | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
 
     // create main window object
-    m_pWindow = SDL_CreateWindow(coreData::AppName(), iPosX, iPosY, iSizeX, iSizeY, iFlags);
+    m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
     if(!m_pWindow)
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
@@ -172,16 +169,13 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
         // create another main window object
-        m_pWindow = SDL_CreateWindow(coreData::AppName(), iPosX, iPosY, iSizeX, iSizeY, iFlags);
+        m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
     // disable screen saver
     SDL_DisableScreenSaver();
-
-    // grab mouse on fullscreen
-    if(m_iFullscreen == 2u) SDL_SetWindowGrab(m_pWindow, SDL_TRUE);
 
     // init high-precision time
     m_dPerfFrequency = 1.0 / coreDouble(SDL_GetPerformanceFrequency());

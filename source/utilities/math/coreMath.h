@@ -107,6 +107,13 @@ public:
     static inline coreFloat Round(const coreFloat fInput)                              {return std::round(fInput);}
     //! @}
 
+    /*! bit operations */
+    //! @{
+    static inline coreUint32 PopCount  (coreUint32 iInput);
+    static inline coreUint32 BitScanFwd(coreUint32 iInput);
+    static inline coreUint32 BitScanRev(coreUint32 iInput);
+    //! @}
+
     /*! converting operations */
     //! @{
     static inline coreUint16 Float32to16(const coreFloat  fInput);
@@ -152,16 +159,6 @@ inline coreFloat coreMath::Rsqrt(const coreFloat fInput)
     // normal calculation
     return 1.0f / std::sqrt(fInput);
 
-    // old approximation
-    /*
-        const float fHalfValue = fInput*0.5f;
-        uint* piPointer        = r_cast<uint*>(&fInput);
-        *piPointer             = 0x5F3759DFu - (*piPointer >> 1u);
-
-        fInput *= 1.5f - fInput*fInput*fHalfValue;
-        fInput *= 1.5f - fInput*fInput*fHalfValue;
-    */
-
 #endif
 }
 
@@ -182,15 +179,68 @@ inline coreFloat coreMath::Rcp(const coreFloat fInput)
     // normal calculation
     return 1.0f / fInput;
 
-    // old approximation
-    /*
-        const float fValue = fInput;
-        uint* piPointer    = r_cast<uint*>(&fInput);
-        *piPointer         = 0x7EEEEEEEu - *piPointer;
+#endif
+}
 
-        fInput *= 2.0f - fInput*fValue;
-        fInput *= 2.0f - fInput*fValue;
-    */
+
+// ****************************************************************
+/* count the number of one-bits (population count) */
+inline coreUint32 coreMath::PopCount(coreUint32 iInput)
+{
+#if defined(_CORE_SSE_)
+
+    if(coreCPUID::POPCNT())
+    {
+        // optimized calculation with POPCNT
+        return __popcnt(iInput);
+    }
+
+#endif
+
+    // normal calculation
+    iInput = (iInput)               - ((iInput >> 1u) & 0x55555555u);
+    iInput = (iInput & 0x33333333u) + ((iInput >> 2u) & 0x33333333u);
+    return (((iInput + (iInput >> 4u)) & 0xF0F0F0Fu) * 0x1010101u) >> 24u;
+}
+
+
+// ****************************************************************
+/* get index of the least significant one-bit */
+inline coreUint32 coreMath::BitScanFwd(coreUint32 iInput)
+{
+    if(!iInput) return 32u;
+
+#if defined(_CORE_MSVC_)
+
+    // calculation with MSVC intrinsic
+    DWORD iOutput; _BitScanForward(&iOutput, iInput);
+    return iOutput;
+
+#else
+
+    // calculation with GCC/Clang intrinsic
+    return __builtin_ffs(iInput) - 1u;
+
+#endif
+}
+
+
+// ****************************************************************
+/* get index of the most significant one-bit */
+inline coreUint32 coreMath::BitScanRev(coreUint32 iInput)
+{
+    if(!iInput) return 32u;
+
+#if defined(_CORE_MSVC_)
+
+    // calculation with MSVC intrinsic
+    DWORD iOutput; _BitScanReverse(&iOutput, iInput);
+    return iOutput;
+
+#else
+
+    // calculation with GCC/Clang intrinsic
+    return 31u - __builtin_clz(iInput);
 
 #endif
 }
@@ -200,8 +250,18 @@ inline coreFloat coreMath::Rcp(const coreFloat fInput)
 /* convert single-precision float into half-precision */
 inline coreUint16 coreMath::Float32to16(const coreFloat fInput)
 {
-    const coreUint32 A = *r_cast<const coreUint32*>(&fInput);
+#if defined(_CORE_SSE_)
 
+    if(coreCPUID::F16C())
+    {
+        // optimized calculation with F16C
+        return _mm_cvtsi128_si32(_mm_cvtps_ph(_mm_set_ss(fInput), 0));
+    }
+
+#endif
+
+    // normal calculation
+    const coreUint32 A = *r_cast<const coreUint32*>(&fInput);
     return ((A & 0x7FFFFFFFu) > 0x38000000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x0001C000u) |
                                                  ((A & 0x80000000u) >> 16u)) & 0xFFFFu : 0u;
 };
@@ -211,9 +271,19 @@ inline coreUint16 coreMath::Float32to16(const coreFloat fInput)
 /* convert half-precision float into single-precision */
 inline coreFloat coreMath::Float16to32(const coreUint16 iInput)
 {
+#if defined(_CORE_SSE_)
+
+    if(coreCPUID::F16C())
+    {
+        // optimized calculation with F16C
+        return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(iInput)));
+    }
+
+#endif
+
+    // normal calculation
     const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
                                                 (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
-
     return *r_cast<const coreFloat*>(&A);
 };
 
