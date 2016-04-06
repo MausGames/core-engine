@@ -147,6 +147,9 @@ ENTRY_POINT coreInt32 SDLCALL coreThreadMain(void* pData)
     // retrieve thread object
     coreThread* pThread = s_cast<coreThread*>(pData);
 
+    // disable denormals
+    coreMath::DisableDenormals();
+
     // execute the thread
     return pThread->__Main();
 }

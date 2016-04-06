@@ -313,12 +313,12 @@ template <typename T> void coreSpline<T>::CalcPosDir(const coreFloat fDistance, 
 /* translate distance into relative node index and time */
 template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const
 {
-    ASSERT(piRelIndex && pfRelTime && (m_apNode.size() >= 2u))
+    ASSERT((fDistance >= 0.0f) && (fDistance <= m_fTotalDistance) && piRelIndex && pfRelTime && (m_apNode.size() >= 2u))
 
     coreUintW       iCurIndex    = 0u;
     coreFloat       fCurDistance = 0.0f;
     const coreUintW iMaxIndex    = m_apNode.size() - 2u;
-    const coreFloat fMaxDistance = CLAMP(fDistance, 0.0f, m_fTotalDistance);
+    const coreFloat fMaxDistance = fDistance;
 
     // search for first relative node
     coreFloat fNewDistance;

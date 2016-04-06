@@ -48,6 +48,9 @@ vec3 a_v3RawPosition     // raw vertex position
 vec2 a_v2RawTexCoord     // raw texture coordinate
 vec3 a_v3RawNormal       // normal vector 
 vec4 a_v4RawTangent      // tangent vector (xyz = tangent, w = binormal sign)
+vec3 u_v3Position        // position offset
+vec3 u_v3Size            // non-uniform size factor
+vec4 u_v4Rotation        // rotation quaternion (can also be used for normal rotation)
 vec2 u_v2TexSize         // texture size
 vec2 u_v2TexOffset       // texture offset
 vec2 (a_v2LowPosition)   // raw vertex position    (only with low-memory model, recommended)
@@ -56,6 +59,7 @@ vec2 (a_v2LowTexCoord)   // raw texture coordinate (only with low-memory model, 
 // object2D attributes
 vec2 a_v2LowPosition     // raw vertex position
 vec2 a_v2LowTexCoord     // raw texture coordinate
+mat3 u_m3ScreenView      // full screen-view matrix
 vec2 u_v2TexSize         // texture size
 vec2 u_v2TexOffset       // texture offset
 
@@ -92,8 +96,12 @@ vec3 v_v3TangentCam
 
 vec3 v_v3ViewDir       // pre-calculated view direction (not normalized)
 
-vec2 (u_v2TexSize)     // texture size   (not with particles or on instancing)
-vec2 (u_v2TexOffset)   // texture offset (not with particles or on instancing)
+// not with particles or on instancing
+vec3 (u_v3Position)    // position offset
+vec3 (u_v3Size)        // non-uniform size factor
+vec4 (u_v4Rotation)    // rotation quaternion (can also be used for normal rotation)
+vec2 (u_v2TexSize)     // texture size
+vec2 (u_v2TexOffset)   // texture offset
 
 
 // ****************************************************************
@@ -149,11 +157,3 @@ struct
     vec4 v4Direction
     vec4 v4Value
 } u_aLight[CORE_NUM_LIGHTS]   // light data directly from the application
-
-// object3D attributes
-vec3 u_v3Position             // position offset
-vec3 u_v3Size                 // non-uniform size factor
-vec4 u_v4Rotation             // rotation quaternion (can also be used for normal rotation)
-
-// object2D attributes
-mat3 u_m3ScreenView           // full screen-view matrix

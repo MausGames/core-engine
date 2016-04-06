@@ -122,6 +122,7 @@
 #define _HAS_EXCEPTIONS (0)
 #define _CRT_SECURE_NO_WARNINGS
 #define _ALLOW_KEYWORD_MACROS
+#define _ALLOW_RTCc_IN_STL
 #define  WIN32_LEAN_AND_MEAN
 #if defined(_CORE_MINGW_)
     #define  WINVER (0x0500)
@@ -178,6 +179,7 @@
 // ****************************************************************
 /* compiler definitions */
 #if defined(_CORE_MSVC_)
+    #define UNUSED          __pragma(warning(suppress : 4100 4101 4189))
     #define OUTPUT          __restrict             //!< output parameter without aliasing (never)
     #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
     #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
@@ -187,6 +189,7 @@
     #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use (read and write) first-level indirections
     #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates (e.g. with exit(3) or abort(3))
 #else
+    #define UNUSED          __attribute__((unused))
     #define OUTPUT          __restrict__
     #define INTERFACE
     #define RETURN_RESTRICT __attribute__((malloc))
@@ -222,14 +225,14 @@
     #pragma warning(disable : 4100)   //!< unreferenced formal parameter
     #pragma warning(disable : 4127)   //!< constant conditional expression
     #pragma warning(disable : 4201)   //!< nameless struct or union
-    #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
     #pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision
+    #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
 
     // enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
     #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4738 4826 4837 4928 4946)
 
-    // #pragma warning(default : 4820)             //!< byte padding
     // #pragma warning(default : 4242 4244 4365)   //!< loss of precision
+    // #pragma warning(default : 4820)             //!< byte padding
 
 #endif
 

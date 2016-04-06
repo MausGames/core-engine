@@ -13,6 +13,7 @@
 // TODO: SIN and COS with MacLaurin or Taylor series (no lookup-table, because memory access may be equally slow)
 // TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4) ?
 // TODO: FUNC_CONST on every function in this class ?
+// TODO: add fmod, pow, integer-log
 
 
 // ****************************************************************
@@ -118,6 +119,11 @@ public:
     //! @{
     static inline coreUint16 Float32to16(const coreFloat  fInput);
     static inline coreFloat  Float16to32(const coreUint16 iInput);
+    //! @}
+
+    /*! miscellaneous functions */
+    //! @{
+    static inline void DisableDenormals();
     //! @}
 };
 
@@ -286,6 +292,22 @@ inline coreFloat coreMath::Float16to32(const coreUint16 iInput)
                                                 (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
     return *r_cast<const coreFloat*>(&A);
 };
+
+
+// ****************************************************************
+/* disable denormals in the MXCSR control register (per thread) */
+inline void coreMath::DisableDenormals()
+{
+#if defined(_CORE_SSE_)
+
+    // prevent denormal calculation results
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+
+    // prevent denormal instruction inputs
+    if(coreCPUID::SSE3()) _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+
+#endif
+}
 
 
 #endif /* _CORE_GUARD_MATH_H_ */
