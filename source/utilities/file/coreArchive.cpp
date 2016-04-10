@@ -201,7 +201,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
         coreFile* pNewFile      = new coreFile(acPath, NULL, iSize);
         pNewFile->m_pArchive    = this;
         pNewFile->m_iArchivePos = iArchivePos;
-        m_apFile[acPath]        = pNewFile;
+        m_apFile.emplace(acPath, pNewFile);
     }
 
     // close archive
@@ -305,7 +305,7 @@ coreStatus coreArchive::AddFile(coreFile* pFile)
     pFile->LoadData();
 
     // add new file object
-    m_apFile[pFile->GetPath()] = pFile;
+    m_apFile.emplace(pFile->GetPath(), pFile);
 
     // associate archive
     pFile->m_pArchive    = this;
@@ -333,7 +333,7 @@ coreStatus coreArchive::DeleteFile(const coreChar* pcPath)
     if(!m_apFile.count(pcPath)) return CORE_INVALID_INPUT;
 
     // remove and delete file object
-    SAFE_DELETE(m_apFile[pcPath])
+    SAFE_DELETE(m_apFile.at(pcPath))
     m_apFile.erase(pcPath);
 
     return CORE_OK;

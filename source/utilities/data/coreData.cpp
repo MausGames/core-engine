@@ -190,7 +190,7 @@ const coreChar* coreData::GetCurDir()
 coreStatus coreData::OpenURL(const coreChar* pcURL)
 {
 #if defined(_CORE_WINDOWS_)
-    if(P_TO_I(ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
+    if(P_TO_SI(ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
 #elif defined(_CORE_LINUX_)
     if(system(NULL)) if(!system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
 #else

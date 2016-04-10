@@ -90,7 +90,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
     {
         // create new measure object
         coreMeasure* pNewMeasure = new coreMeasure();
-        m_apMeasure[pcName] = pNewMeasure;
+        m_apMeasure.emplace(pcName, pNewMeasure);
 
         if(CORE_GL_SUPPORT(ARB_timer_query))
         {

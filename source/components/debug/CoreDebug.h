@@ -110,7 +110,7 @@ template <typename... A> void CoreDebug::InspectValue(const coreChar* pcName, co
     {
         // create new inspect object
         coreInspect* pNewInspect = new coreInspect();
-        m_apInspect[pcName] = pNewInspect;
+        m_apInspect.emplace(pcName, pNewInspect);
 
         // configure output label
         coreLabel& oOutput = pNewInspect->oOutput;

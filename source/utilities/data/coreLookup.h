@@ -14,7 +14,6 @@
 // TODO: measure performance with high amount of entries (>200), but should not be as good as (unordered_)map
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
 // TODO: check for detection of inconsistent vector-manipulation (changing value-ordering through iterator, without changing the key-ordering)
-// TODO: string hashing
 
 
 // ****************************************************************
@@ -51,8 +50,9 @@ public:
 
     /*! access specific entry */
     //! @{
-    const T&    at (const I& tKey)const;
     T& operator [] (const I& tKey);
+    T&          at (const I& tKey);
+    const T&    at (const I& tKey)const;
     //! @}
 
     /*! check number of existing entries */
@@ -75,6 +75,11 @@ public:
     inline void sort_asc () {this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
     inline void sort_desc() {this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
     inline void reverse  () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
+    //! @}
+
+    /*! create new entry */
+    //! @{
+    template <typename... A> void emplace(const I& tKey, A&&... vArgs);
     //! @}
 
     /*! remove existing entry */
@@ -159,22 +164,34 @@ public:
 
     /*! access specific entry */
     //! @{
-    inline T& operator [] (const coreHashString& sKey)   {if(!m_asStringList.count(sKey)) m_asStringList[sKey].assign(sKey.GetString()); return coreLookupGen<coreUint32, coreHashString, T>::operator [] (sKey);}
+    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return coreLookupGen<coreUint32, coreHashString, T>::operator [] (sKey);}
     inline T& operator [] (const coreUintW       iIndex) {return this->m_atValueList[iIndex];}
     //! @}
 
-    /*! remove existing entries */
+    /*! create new entry */
+    //! @{
+    template <typename... A> inline void emplace(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); coreLookupGen<coreUint32, coreHashString, T>::emplace(sKey, std::forward<A>(vArgs)...);}
+    //! @}
+
+    /*! remove existing entry */
     //! @{
     using coreLookupGen<coreUint32, coreHashString, T>::erase;
     inline typename coreLookupStr<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 
-    /*! return original strings */
+    /*! return original string */
     //! @{
     inline const coreChar* get_string(const typename coreLookupStr<T>::coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
     inline const coreChar* get_string(const typename coreLookupStr<T>::coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
     inline const coreChar* get_string(const typename coreLookupStr<T>::coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
     inline const coreChar* get_string(const typename coreLookupStr<T>::coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
+    //! @}
+
+
+private:
+    /*! save original string */
+    //! @{
+    inline void __save_string(const coreHashString& sKey) {if(!m_asStringList.count(sKey)) m_asStringList.emplace(sKey, sKey.GetString());}
     //! @}
 };
 
@@ -224,21 +241,6 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookup
 
 
 // ****************************************************************
-/* access specific entry */
-template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& tKey)const
-{
-    // check for cached entry
-    if(this->_cache_try(tKey)) return *m_ptValueCache;
-
-    // lookup entry by key
-    auto it = this->_retrieve(tKey);
-    ASSERT(this->_check(it))
-
-    return *this->get_value(it);
-}
-
-
-// ****************************************************************
 /* access specific entry and create it if necessary */
 template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operator [] (const I& tKey)
 {
@@ -259,6 +261,48 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
     }
 
     return *this->get_value(it);
+}
+
+
+// ****************************************************************
+/* access specific entry */
+template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at(const I& tKey)
+{
+    // check for cached entry
+    if(this->_cache_try(tKey)) return *m_ptValueCache;
+
+    // lookup entry by key
+    auto it = this->_retrieve(tKey);
+    ASSERT(this->_check(it))
+
+    return *this->get_value(it);
+}
+
+template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& tKey)const
+{
+    // check for cached entry
+    if(this->_cache_try(tKey)) return *m_ptValueCache;
+
+    // lookup entry by key
+    auto it = this->_retrieve(tKey);
+    ASSERT(this->_check(it))
+
+    return *this->get_value(it);
+}
+
+
+// ****************************************************************
+/* create new entry */
+template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace(const I& tKey, A&&... vArgs)
+{
+    ASSERT(!this->count(tKey))
+
+    // create new entry
+    m_atValueList.emplace_back(std::forward<A>(vArgs)...);
+    m_atKeyList  .push_back(tKey);
+
+    // cache current entry
+    this->_cache_set(&m_atValueList.back(), &m_atKeyList.back());
 }
 
 

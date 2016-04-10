@@ -307,7 +307,11 @@
     void* operator new[]    (std::size_t, void*) = delete;
 #define DISABLE_DELETE                                     \
     void  operator delete   (void*)              = delete; \
-    void  operator delete[] (void*)              = delete;
+    void  operator delete   (void*, void*)       = delete; \
+    void  operator delete   (void*, std::size_t) = delete; \
+    void  operator delete[] (void*)              = delete; \
+    void  operator delete[] (void*, void*)       = delete; \
+    void  operator delete[] (void*, std::size_t) = delete;
 
 // enable bitwise-operations with the defined enumeration
 #define ENABLE_BITWISE(e)                                                                                                                                     \
@@ -329,11 +333,12 @@
 #define c_cast const_cast
 
 // type conversion macros
-#define F_TO_SI(x) ((int)                 (x))   //!< float to signed int
-#define F_TO_UI(x) ((unsigned)(int)       (x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
-#define I_TO_F(x)  ((float)(int)          (x))   //!< int to float          (force [_mm_cvtepi32_ps])
-#define P_TO_I(x)  ((std::intptr_t)(void*)(x))   //!< pointer to int
-#define I_TO_P(x)  ((void*)(std::intptr_t)(x))   //!< int to pointer
+#define F_TO_SI(x) ((int)                  (x))   //!< float to signed int
+#define F_TO_UI(x) ((unsigned)(int)        (x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
+#define I_TO_F(x)  ((float)(int)           (x))   //!< int to float          (force [_mm_cvtepi32_ps])
+#define P_TO_SI(x) ((std::intptr_t)(void*) (x))   //!< pointer to signed int
+#define P_TO_UI(x) ((std::uintptr_t)(void*)(x))   //!< pointer to unsigned int
+#define I_TO_P(x)  ((void*)(std::intptr_t) (x))   //!< int to pointer
 
 // type definitions
 using coreInt8   = std::int8_t;
@@ -486,7 +491,7 @@ public:
     static CoreInput*    Input;      //!< main input component
     static CoreDebug*    Debug;      //!< main debug component
 
-    struct Manager
+    struct INTERFACE Manager
     {
         static coreMemoryManager*   Memory;     //!< memory manager
         static coreResourceManager* Resource;   //!< resource manager
@@ -570,6 +575,13 @@ private:
 #include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreMenu.h"
 #include "components/debug/CoreDebug.h"
+
+
+// ****************************************************************
+/* additional debug definition */
+#if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
+    #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
 
 
 #endif /* _CORE_GUARD_H_ */

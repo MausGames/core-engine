@@ -141,7 +141,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 
     // load new archive
     coreArchive* pNewArchive = new coreArchive(sPath.GetString());
-    m_apArchive[sPath] = pNewArchive;
+    m_apArchive.emplace(sPath, pNewArchive);
 
     ASSERT(pNewArchive->GetNumFiles())
     return pNewArchive;
@@ -173,7 +173,7 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
     // load new direct resource file
     coreFile* pNewFile = new coreFile(sPath.GetString());
-    m_apDirectFile[sPath] = pNewFile;
+    m_apDirectFile.emplace(sPath, pNewFile);
 
     return pNewFile;
 }

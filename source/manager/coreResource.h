@@ -221,8 +221,8 @@ public:
 
     /*! create and delete resource and resource handle */
     //! @{
-    template <typename T, typename... A>        coreResourceHandle* Load   (const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs);
-    template <typename T, typename... A> inline coreResourceHandle* LoadNew(A&&... vArgs)const {return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);}
+    template <typename T, typename... A>                 coreResourceHandle* Load   (const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs);
+    template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew(A&&... vArgs)const;
     template <typename T> void Free(coreResourcePtr<T>* OUTPUT pptResourcePtr);
     //! @}
 
@@ -343,11 +343,17 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     SDL_AtomicLock(&m_iResourceLock);
     {
         // add resource handle to manager
-        m_apHandle[sName] = pNewHandle;
+        m_apHandle.emplace(sName, pNewHandle);
     }
     SDL_AtomicUnlock(&m_iResourceLock);
 
     return pNewHandle;
+}
+
+template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadNew(A&&... vArgs)const
+{
+    // create unique unmanaged resource handle
+    return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);
 }
 
 

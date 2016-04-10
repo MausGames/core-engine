@@ -13,7 +13,6 @@
 
 #include <SDL2/SDL_main.h>
 #include <windows.h>
-#include <stdlib.h>
 
 
 // ****************************************************************

@@ -181,6 +181,6 @@ coreBool coreFont::__InitHeight(const coreUint8 iHeight, const coreUint8 iOutlin
     if(iOutline) TTF_SetFontOutline(pNewFont, iOutline);
 
     // save sub-font
-    m_aapFont[iHeight][iOutline] = pNewFont;
+    m_aapFont[iHeight].emplace(iOutline, pNewFont);
     return true;
 }
