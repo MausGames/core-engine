@@ -102,8 +102,11 @@ CoreSystem::CoreSystem()noexcept
         if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
         coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
 
-        m_vResolution.x = CLAMP(m_vResolution.x, 0.0f, oPrimary.vDesktopRes.x);
-        m_vResolution.y = CLAMP(m_vResolution.y, 0.0f, oPrimary.vDesktopRes.y);
+        if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
+        {
+            m_vResolution.x = CLAMP(m_vResolution.x, 0.0f, oPrimary.vDesktopRes.x);
+            m_vResolution.y = CLAMP(m_vResolution.y, 0.0f, oPrimary.vDesktopRes.y);
+        }
 
         // override screen resolution
         if(oPrimary.avAvailableRes.size() == 1u) m_vResolution = oPrimary.avAvailableRes.back();

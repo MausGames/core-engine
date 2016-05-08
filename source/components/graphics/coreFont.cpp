@@ -141,7 +141,7 @@ coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const core
     if(*pcMultiByte < 0)
     {
         // count number of bytes
-        iBytes = 2u + CONTAINS_VALUE(*pcMultiByte, 0xE0u) + CONTAINS_VALUE(*pcMultiByte, 0xF0u);
+        iBytes = 2u + CONTAINS_FLAG(*pcMultiByte, 0xE0u) + CONTAINS_FLAG(*pcMultiByte, 0xF0u);
         ASSERT(iBytes < 4u)
 
         // convert characters (with foreign library)

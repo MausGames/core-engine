@@ -13,7 +13,7 @@
 // TODO: SIN and COS with MacLaurin or Taylor series (no lookup-table, because memory access may be equally slow)
 // TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4) ?
 // TODO: FUNC_CONST on every function in this class ?
-// TODO: add fmod, pow, integer-log
+// TODO: add integer-log (macro)
 
 
 // ****************************************************************
@@ -36,6 +36,8 @@
 #define LERP  coreMath::Lerp
 #define LERPS coreMath::LerpSmooth
 #define LERPB coreMath::LerpBreak
+#define POW   coreMath::Pow
+#define FMOD  coreMath::Fmod
 #define TRUNC coreMath::Trunc
 #define FRACT coreMath::Fract
 #define SQRT  coreMath::Sqrt
@@ -78,7 +80,9 @@ public:
 
     /*! elementary operations */
     //! @{
-    template <coreUintW iBase> static inline coreFloat Log(const coreFloat fInput) {return std::log(fInput) / std::log(I_TO_F(iBase));}
+    template <coreUintW iBase> static inline coreFloat Log(const coreFloat fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
+    static inline coreFloat Pow  (const coreFloat fInput,  const coreInt32 iExp)   {return std::pow  (fInput, iExp);}
+    static inline coreFloat Fmod (const coreFloat fInput,  const coreFloat fDenom) {return std::fmod (fInput, fDenom);}
     static inline coreFloat Trunc(const coreFloat fInput)                          {return std::trunc(fInput);}
     static inline coreFloat Fract(const coreFloat fInput)                          {return fInput - TRUNC(fInput);}
     static inline coreFloat Sqrt (const coreFloat fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}

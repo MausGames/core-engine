@@ -857,6 +857,26 @@ constexpr coreVector4 coreVector4::operator * (const coreMatrix4& m)const
 
 
 // ****************************************************************
+/* convert YIQ-color (NTSC) to RGB-color */
+constexpr coreVector3 coreVector3::YIQtoRGB()const
+{
+    return *this * coreMatrix3(1.000f,  0.956f,  0.620f,
+                               1.000f, -0.272f, -0.647f,
+                               1.000f, -1.108f,  1.705f);
+}
+
+
+// ****************************************************************
+/* convert RGB-color to YIQ-color (NTSC) */
+constexpr coreVector3 coreVector3::RGBtoYIQ()const
+{
+    return *this * coreMatrix3(0.299f,  0.587f,  0.114f,
+                               0.596f, -0.275f, -0.321f,
+                               0.212f, -0.523f,  0.311f);
+}
+
+
+// ****************************************************************
 /* additional checks */
 STATIC_ASSERT(std::is_pod<coreMatrix2>::value == true)
 STATIC_ASSERT(std::is_pod<coreMatrix3>::value == true)

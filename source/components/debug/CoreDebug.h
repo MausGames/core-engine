@@ -33,8 +33,8 @@ private:
     {
         coreUint64 iPerfTime;                                //!< high-precision CPU time value at start
         coreArray<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
-        coreFloat fCurrentCPU;                               //!< current CPU performance value
-        coreFloat fCurrentGPU;                               //!< current GPU performance value
+        coreFloat afCurrentCPU[3];                           //!< current CPU performance values (avg, min, max)
+        coreFloat afCurrentGPU[3];                           //!< current GPU performance values (avg, min, max)
         coreLabel oOutput;                                   //!< label for displaying output
 
         coreMeasure()noexcept;

@@ -163,7 +163,7 @@ void coreObject2D::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
-    if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+    if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
     {
         // calculate resolution-modified transformation parameters
         const coreVector2& vResolution     = Core::System->GetResolution();

@@ -164,6 +164,18 @@ vec3 coreRGBtoHSV(const in vec3 v3RGB)
     if(G == v) return vec3((2.0 + (B - R) / d) / 6.0, s, v);
                return vec3((4.0 + (R - G) / d) / 6.0, s, v);
 }
+vec3 coreYIQtoRGB(const in vec3 v3YIQ)
+{
+    return mat3(1.000,  0.956,  0.620,
+                1.000, -0.272, -0.647,
+                1.000, -1.108,  1.705) * v3YIQ;
+}
+vec3 coreRGBtoYIQ(const in vec3 v3RGB)
+{
+    return mat3(0.299,  0.587,  0.114,
+                0.596, -0.275, -0.321,
+                0.212, -0.523,  0.311) * v3RGB;
+}
 
 // vector square length
 float coreLengthSq(const in vec2 v) {return dot(v, v);}

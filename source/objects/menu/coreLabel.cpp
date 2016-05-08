@@ -79,12 +79,12 @@ void coreLabel::Render()
         // check if requested font is loaded
         if(!m_pFont.GetHandle()->IsLoaded()) return;
 
-        if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_TEXTURE))
+        if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_TEXTURE))
         {
             // generate the texture
             this->__Generate(m_sText.c_str(), m_iLength ? 1 : 0);
         }
-        if(CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
+        if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
         {
             // update the object size
             this->SetSize(m_vTexSize * m_vResolution * (CORE_LABEL_SIZE_FACTOR * m_fScale));
@@ -108,7 +108,7 @@ void coreLabel::Move()
     if(m_sText.empty()) return;
 
     // move the 2d-object
-    if(!CONTAINS_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE)) coreObject2D::Move();
+    if(!CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE)) coreObject2D::Move();
 }
 
 
@@ -121,7 +121,7 @@ coreBool coreLabel::SetText(const coreChar* pcText)
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
-        ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
+        ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
         if(m_iLength) m_sText.assign(pcText, MIN(std::strlen(pcText), m_iLength));
@@ -138,7 +138,7 @@ coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
     // check for new text
     if((iNum != m_sText.length()) || std::strcmp(m_sText.c_str(), pcText))
     {
-        ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
+        ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
         if(m_iLength) m_sText.assign(pcText, MIN(iNum, std::strlen(pcText), m_iLength));
@@ -159,7 +159,7 @@ void coreLabel::__Reset(const coreResourceReset bInit)
     {
         // invoke texture generation
         m_vResolution = coreVector2(0.0f,0.0f);
-        ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)
+        ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)
     }
     else m_apTexture[1]->Unload();
 }

@@ -16,6 +16,7 @@
 // TODO: memory-pool: usable with std::vector & co
 // TODO: memory-pool: support polymorphism
 // TODO: memory-pool: 1 block for multiple objects
+// TODO: add interface for reusing big memory-blocks (free when?)
 
 
 // ****************************************************************
@@ -167,8 +168,6 @@ template <typename T, typename... A> RETURN_RESTRICT T* coreMemoryManager::New(A
 // destruct and return object to internal memory-pool
 template <typename T> void coreMemoryManager::Delete(T** OUTPUT pptPointer)
 {
-    ASSERT(m_aMemoryPool.count(sizeof(T)))
-
     // forward request to internal memory-pool
     m_aMemoryPool.at(sizeof(T)).Delete<T>(pptPointer);
 }

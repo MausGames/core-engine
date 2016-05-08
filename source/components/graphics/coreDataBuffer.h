@@ -94,9 +94,9 @@ public:
 
     //! check for current buffer status
     //! @{
-    inline coreBool IsWritable  ()const {return CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
-    inline coreBool IsPersistent()const {return m_pPersistentBuffer                                            ?  true : false;}
-    inline coreBool IsMapped    ()const {return m_iMapLength                                                   ?  true : false;}
+    inline coreBool IsWritable  ()const {return CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
+    inline coreBool IsPersistent()const {return m_pPersistentBuffer                                           ?  true : false;}
+    inline coreBool IsMapped    ()const {return m_iMapLength                                                  ?  true : false;}
     //! @}
 
     //! access buffer directly
@@ -204,7 +204,7 @@ template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32 iO
     m_iMapLength = iLength;
 
     // check for sync object status
-    if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
         m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
 
     // return persistent mapped buffer
@@ -296,7 +296,7 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
     }
 
     // create sync object
-    if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
         m_Sync.Create();
 
     // reset mapping attributes

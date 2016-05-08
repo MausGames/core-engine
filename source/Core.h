@@ -51,6 +51,8 @@
 // TODO: video class, string class, path/url class, pool+stack-allocator
 // TODO: fix constexpr msvc bug (not compiler-setting?) (constexpr-results not saved after compilation, functions often re-evaluated at run-time)
 // TODO: disallow two instances of the same application (also in launcher)
+// TODO: #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+// TODO: check out NVAPI and ADL/AGS
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -253,13 +255,16 @@
 
 #define BIT(n)               (1u << (n))   // starts with 0
 #define BITLINE(n)           (BIT(n) - 1u)
-#define ADD_BIT(o,n)         { (o) |=     BIT(n);}
-#define ADD_VALUE(o,n)       { (o) |=        (n);}
-#define REMOVE_BIT(o,n)      { (o) &=    ~BIT(n);}
-#define REMOVE_VALUE(o,n)    { (o) &=       ~(n);}
-#define CONTAINS_BIT(o,n)    (((o) &      BIT(n)) ? true : false)
-#define CONTAINS_VALUE(o,n)  (((o) & (n)) == (n))
-#define SET_BIT(o,n,t)       { (o) ^= ((o) ^ -int(t)) & BIT(n);}
+#define ADD_BIT(o,n)         { (o) |=  BIT(n);}
+#define ADD_FLAG(o,n)        { (o) |=     (n);}
+#define REMOVE_BIT(o,n)      { (o) &= ~BIT(n);}
+#define REMOVE_FLAG(o,n)     { (o) &=    ~(n);}
+#define TOGGLE_BIT(o,n)      { (o) ^=  BIT(n);}
+#define TOGGLE_FLAG(o,n)     { (o) ^=     (n);}
+#define SET_BIT(o,n,t)       { (o) ^=  BIT(n) & ((o) ^ -int(!!(t)));}
+#define SET_FLAG(o,n,t)      { (o) ^=     (n) & ((o) ^ -int(!!(t)));}
+#define CONTAINS_BIT(o,n)    (((o) &   BIT(n)) ? true : false)
+#define CONTAINS_FLAG(o,n)   (((o) &      (n)) == (n))
 
 #define FOR_EACH(i,c)        for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
 #define FOR_EACH_REV(i,c)    for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
@@ -575,13 +580,6 @@ private:
 #include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreMenu.h"
 #include "components/debug/CoreDebug.h"
-
-
-// ****************************************************************
-/* additional debug definition */
-#if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
-    #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#endif
 
 
 #endif /* _CORE_GUARD_H_ */

@@ -94,14 +94,22 @@ coreStatus coreShader::Load(coreFile* pFile)
     const coreChar* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobalCode();
 
+    // reduce shader code size
+    std::string sMainCode(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
+    coreShader::__ReduceCodeSize(&sMainCode);
+
     // assemble the shader
-    const coreChar* apcData[6] = {          s_asGlobalCode[0].c_str(),                         pcTypeDef,                         pcQualityDef,             m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),   r_cast<const coreChar*>(pFile->GetData())};
-    const coreInt32 aiSize [6] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()),               coreInt32(pFile->GetSize())};
+    const coreInt32 iSize  = 6 + s_asGlobalCode[0].length() + std::strlen(pcTypeDef) + std::strlen(pcQualityDef) + m_sCustomCode.length() + s_asGlobalCode[1].length() + sMainCode.length();
+    coreChar*       pcData = new coreChar[iSize];
+    std::sprintf(pcData, "%s\n%s\n%s\n%s\n%s\n%s", s_asGlobalCode[0].c_str(), pcTypeDef, pcQualityDef, m_sCustomCode.c_str(), s_asGlobalCode[1].c_str(), sMainCode.c_str());
 
     // create and compile the shader
     m_iShader = glCreateShader(m_iType);
-    glShaderSource (m_iShader, 6, apcData, aiSize);
+    glShaderSource (m_iShader, 1, &pcData, &iSize);
     glCompileShader(m_iShader);
+
+    // free required shader memory
+    SAFE_DELETE_ARRAY(pcData)
 
     // save properties
     m_sPath = pFile->GetPath();
@@ -183,9 +191,25 @@ void coreShader::__LoadGlobalCode()
     nRetrieveFunc("data/shaders/global.glsl");
     nRetrieveFunc("data/shaders/custom.glsl");
 
+    // reduce shader code size
+    coreShader::__ReduceCodeSize(&s_asGlobalCode[1]);
+
     // reduce memory consumption
     s_asGlobalCode[0].shrink_to_fit();
     s_asGlobalCode[1].shrink_to_fit();
+}
+
+
+// ****************************************************************
+// reduce shader code size
+void coreShader::__ReduceCodeSize(std::string* OUTPUT psCode)
+{
+    // remove code comments
+    for(coreUintW i = 0u; (i = psCode->find("//", i)) != std::string::npos; )
+        psCode->erase(i, psCode->find_first_of('\n', i) - i);
+
+    // remove redundant whitespaces
+    coreData::StrReplace(psCode, "    ", " ");
 }
 
 

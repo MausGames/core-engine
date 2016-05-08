@@ -278,6 +278,8 @@ public:
     //! @{
     inline    coreVector3 HSVtoRGB ()const;
     inline    coreVector3 RGBtoHSV ()const;
+    constexpr coreVector3 YIQtoRGB ()const;
+    constexpr coreVector3 RGBtoYIQ ()const;
     constexpr coreFloat   Luminance()const {return coreVector3::Dot(*this, coreVector3(0.212671f, 0.715160f, 0.072169f));}
     //! @}
 };

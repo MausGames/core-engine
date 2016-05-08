@@ -76,7 +76,7 @@ public:
     coreBool    SetText        (const coreChar*       pcText);
     coreBool    SetText        (const coreChar*       pcText, const coreUint8 iNum);
     inline void SetTextLanguage(const coreHashString& sKey)   {this->_BindString(&m_sText, sKey);}
-    inline void SetScale       (const coreFloat       fScale) {if(m_fScale != fScale) {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
+    inline void SetScale       (const coreFloat       fScale) {if(m_fScale != fScale) {ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
     //! @}
 
     //! get object properties
@@ -99,7 +99,7 @@ private:
 
     //! update object after modification
     //! @{
-    inline void __Update()override {ADD_VALUE(m_iUpdate, CORE_LABEL_UPDATE_ALL)}
+    inline void __Update()override {ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)}
     //! @}
 
     //! generate the texture

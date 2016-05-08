@@ -187,12 +187,12 @@ void coreObject3D::Move()
     // check current update status
     if(m_iUpdate)
     {
-        if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+        if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
         {
             // update rotation quaternion
             m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().Quat();
         }
-        if(CONTAINS_VALUE(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION))
+        if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {
             // cancel update without valid model
             if(!m_pModel.IsUsable()) return;
@@ -300,6 +300,9 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             // switch to next available array and buffer
             m_aiVertexArray  .next();
             m_aInstanceBuffer.next();
+
+            // re-determine render-count (may have changed between move and render)
+            m_iCurEnabled = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
 
             // map required area of the instance data buffer
             coreByte* pRange  = m_aInstanceBuffer.current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);

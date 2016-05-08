@@ -134,6 +134,11 @@ private:
     //! @{
     static void __LoadGlobalCode();
     //! @}
+
+    //! reduce shader code size
+    //! @{
+    static void __ReduceCodeSize(std::string* OUTPUT psCode);
+    //! @}
 };
 
 

@@ -31,7 +31,7 @@ CoreAudio::CoreAudio()noexcept
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
-        Core::Log->Error("OpenAL context could not be created (ALC Error Code: 0x%04X)", alcGetError(m_pDevice));
+        Core::Log->Warning("OpenAL context could not be created (ALC Error Code: 0x%04X)", alcGetError(m_pDevice));
     else Core::Log->Info("OpenAL context created");
 
     // generate sound sources
@@ -45,7 +45,7 @@ CoreAudio::CoreAudio()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
         Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
-        Core::Log->ListAdd(r_cast<const coreChar*>(alGetString(AL_EXTENSIONS)));
+        if(m_pContext) Core::Log->ListAdd(r_cast<const coreChar*>(alGetString(AL_EXTENSIONS)));
     }
     Core::Log->ListEnd();
 

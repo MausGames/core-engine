@@ -12,11 +12,11 @@
 // ****************************************************************
 /* constructor */
 CoreDebug::coreMeasure::coreMeasure()noexcept
-: iPerfTime   (0u)
-, aaiQuery    {}
-, fCurrentCPU (0.0f)
-, fCurrentGPU (0.0f)
-, oOutput     ()
+: iPerfTime    (0u)
+, aaiQuery     {}
+, afCurrentCPU {}
+, afCurrentGPU {}
+, oOutput      ()
 {
 }
 
@@ -108,7 +108,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
 
         // configure output label
         coreLabel& oOutput = pNewMeasure->oOutput;
-        oOutput.Construct   ("default.ttf", 16u, 0u, 64u);
+        oOutput.Construct   ("default.ttf", 16u, 0u, 128u);
         oOutput.SetCenter   (coreVector2(-0.5f, 0.5f));
         oOutput.SetAlignment(coreVector2( 1.0f,-1.0f));
         oOutput.SetColor3   (COLOR_BLUE);
@@ -134,7 +134,9 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
 
     // fetch second CPU time value and update CPU performance value
     const coreFloat fDifferenceCPU = coreFloat(coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
-    pMeasure->fCurrentCPU = pMeasure->fCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
+    pMeasure->afCurrentCPU[0] = pMeasure->afCurrentCPU[0] * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
+    pMeasure->afCurrentCPU[1] = MIN(pMeasure->afCurrentCPU[1], pMeasure->afCurrentCPU[0]);
+    pMeasure->afCurrentCPU[2] = MAX(pMeasure->afCurrentCPU[2], pMeasure->afCurrentCPU[0]);
 
     if(pMeasure->aaiQuery[0][0])
     {
@@ -152,18 +154,22 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
 
         // update GPU performance value
         const coreFloat fDifferenceGPU = coreFloat(coreDouble(aiResult[1] - aiResult[0]) / 1.0e06);
-        pMeasure->fCurrentGPU = pMeasure->fCurrentGPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceGPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
+        pMeasure->afCurrentGPU[0] = pMeasure->afCurrentGPU[0] * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceGPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
+        pMeasure->afCurrentGPU[1] = MIN(pMeasure->afCurrentGPU[1], pMeasure->afCurrentGPU[0]);
+        pMeasure->afCurrentGPU[2] = MAX(pMeasure->afCurrentGPU[2], pMeasure->afCurrentGPU[0]);
     }
 
     if(pMeasure == m_pOverall)
     {
         // add additional performance information (framerate and process memory)
         const coreFloat& fTime = Core::System->GetTime();
-        if(fTime) pcName = PRINT("%s%s %.1f, %.2fMiB", pcName, SDL_GL_GetSwapInterval() ? "*" : "", RCP(fTime), coreDouble(coreData::AppMemory()) / 1048576.0);
+        if(fTime) pcName = PRINT("%s %.1fFPS%s %.2fMiB", pcName, RCP(fTime), SDL_GL_GetSwapInterval() ? "*" : "", coreDouble(coreData::AppMemory()) / 1048576.0);
     }
 
     // write formatted values to output label
-    pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms, GPU %.2fms)", pcName, pMeasure->fCurrentCPU, pMeasure->fCurrentGPU));
+    pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms - %.2f %.2f / GPU %.2fms - %.2f %.2f)", pcName,
+                                    pMeasure->afCurrentCPU[0], pMeasure->afCurrentCPU[1], pMeasure->afCurrentCPU[2],
+                                    pMeasure->afCurrentGPU[0], pMeasure->afCurrentGPU[1], pMeasure->afCurrentGPU[2]));
 }
 
 
@@ -184,8 +190,20 @@ void CoreDebug::__UpdateOutput()
         else if(SDL_GL_SetSwapInterval(-1)) SDL_GL_SetSwapInterval(1);
     }
 
+    // reset min and max performance values
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_PRESS))
+    {
+        FOR_EACH(it, m_apMeasure)
+        {
+            coreMeasure* pMeasure = (*it);
+
+            pMeasure->afCurrentCPU[1] = pMeasure->afCurrentGPU[1] = FLT_MAX;
+            pMeasure->afCurrentCPU[2] = pMeasure->afCurrentGPU[2] = 0.0f;
+        }
+    }
+
     // hold screen
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_HOLD))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F4), CORE_INPUT_HOLD))
         Core::System->SkipFrame();
 
     // reset language

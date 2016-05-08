@@ -43,7 +43,7 @@ public:
     //! @{
     void AddNode   (const T& tPosition, const T& tTangent);
     void AddNodes  (const T& tPosition, const T& tTangentIn, const T& tTangentOut);
-    void AddStop   (const T& tPosition);
+    void AddStop   (const T& tPosition, const T& tTangent = T::Null() + 1.0f);
     void AddLoop   ();
     void DeleteNode(const coreUintW iIndex);
     void ClearNodes();
@@ -67,9 +67,10 @@ public:
     inline T CalcDirection(const coreFloat fDistance)const {T tDir; this->CalcPosDir(fDistance, NULL, &tDir); return tDir;}
     //! @}
 
-    /*! translate distance into relative node index and time */
+    /*! translate between distance and relative node index and time */
     //! @{
-    void TranslateRelative(const coreFloat fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const;
+    void      TranslateRelative(const coreFloat fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const;
+    coreFloat TranslateDistance(const coreUintW iRelIndex, const coreFloat fRelTime)const;
     //! @}
 
     /*! get object properties */
@@ -142,10 +143,10 @@ template <typename T> void coreSpline<T>::AddNodes(const T& tPosition, const T& 
 
 // ****************************************************************
 /* add stopping node to spline */
-template <typename T> void coreSpline<T>::AddStop(const T& tPosition)
+template <typename T> void coreSpline<T>::AddStop(const T& tPosition, const T& tTangent)
 {
     // actually add node with zero-length tangent
-    this->AddNode(tPosition, T::Null() + CORE_MATH_PRECISION);
+    this->AddNode(tPosition, tTangent * CORE_MATH_PRECISION);
 }
 
 
@@ -331,6 +332,21 @@ template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat fDis
     // save index and calculate relative time to the next node (normalized linear difference)
     *piRelIndex =  iCurIndex;
     *pfRelTime  = (fMaxDistance - fCurDistance) * RCP(m_apNode[iCurIndex].fDistance);
+}
+
+
+// ****************************************************************
+/* translate relative node index and time into distance */
+template <typename T> coreFloat coreSpline<T>::TranslateDistance(const coreUintW iRelIndex, const coreFloat fRelTime)const
+{
+    ASSERT((iRelIndex < m_apNode.size()) && (fRelTime >= 0.0f) && (fRelTime <= 1.0f))
+
+    // find total distance to relative node
+    coreFloat fOutput = 0.0f;
+    for(coreUintW i = 0u; i < iRelIndex; ++i) fOutput += m_apNode[i].fDistance;
+
+    // add scaled distance to next node
+    return fOutput + (m_apNode[iRelIndex].fDistance * fRelTime);
 }
 
 

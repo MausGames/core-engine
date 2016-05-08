@@ -53,7 +53,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     glBindBuffer(m_iTarget, m_iDataBuffer);
     s_aiBound[m_iTarget] = m_iDataBuffer;
 
-    if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_STREAM))
+    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STREAM))
     {
         // always allocate normal when streaming
         glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
@@ -64,8 +64,8 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
         GLenum iFlags = 0u;
         switch(m_iStorageType & 0xFFu)
         {
-        case CORE_DATABUFFER_STORAGE_PERSISTENT: ADD_VALUE(iFlags, GL_MAP_PERSISTENT_BIT)
-        case CORE_DATABUFFER_STORAGE_DYNAMIC:    ADD_VALUE(iFlags, GL_MAP_WRITE_BIT)
+        case CORE_DATABUFFER_STORAGE_PERSISTENT: ADD_FLAG(iFlags, GL_MAP_PERSISTENT_BIT)
+        case CORE_DATABUFFER_STORAGE_DYNAMIC:    ADD_FLAG(iFlags, GL_MAP_WRITE_BIT)
         default: break;
         }
 
@@ -73,7 +73,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
         glBufferStorage(m_iTarget, m_iSize, pData, iFlags);
 
         // map persistent mapped buffer
-        if(CONTAINS_VALUE(m_iStorageType, CORE_DATABUFFER_STORAGE_PERSISTENT))
+        if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_PERSISTENT))
             m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
     }
     else

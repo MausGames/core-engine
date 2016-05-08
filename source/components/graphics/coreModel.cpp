@@ -94,14 +94,6 @@ coreStatus coreModel::Load(coreFile* pFile)
     }
     m_fBoundingRadius = SQRT(m_fBoundingRadius);
 
-#if defined(_CORE_DEBUG_)
-
-    // ignore optimizations to improve loading times
-    coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
-    std::memcpy(piOptimizedData, oImport.aiIndexData.data(), m_iNumIndices * sizeof(coreUint16));
-
-#else
-
     // prepare index-map (for deferred remapping)
     coreUint16 aiMap[0xFFFFu];
     for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) aiMap[i] = i & 0xFFFFu;
@@ -139,8 +131,6 @@ coreStatus coreModel::Load(coreFile* pFile)
     // remap all indices
     for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
         piOptimizedData[i] = aiMap[piOptimizedData[i]];
-
-#endif
 
     if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev) && CORE_GL_SUPPORT(ARB_half_float_vertex))
     {
