@@ -17,7 +17,7 @@
 // TODO: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
 // TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
 // TODO: last few compressed mipmap levels contain only garbage
-// TODO: replace box filter in mipmap generation with better filter (e.g. gaussian, lanczos), check for border (repeat or clamp depending on sampling)
+// TODO: replace box filter in mipmap generation with better filter (e.g. gaussian, lanczos), check for border (repeat or clamp depending on sampling), consider overflow
 // TODO: specialized mipmap generation for normal maps
 // TODO: use DXT5 for normal maps (g and a channel (max precision) for x and y -> reconstruct z in shader)
 // TODO: check out AMD compress library, when other formats are required (e.g. for Android)
@@ -72,7 +72,7 @@ ENABLE_BITWISE(coreTextureMode)
 
 // ****************************************************************
 // texture specification structure
-struct coreTextureSpec
+struct coreTextureSpec final
 {
     GLenum iInternal;   //!< internal memory format (e.g. GL_RGBA8)
     GLenum iFormat;     //!< pixel data format (e.g. GL_RGBA)
@@ -106,14 +106,14 @@ private:
 public:
     coreTexture()noexcept;
     explicit coreTexture(const coreBool bLoadCompressed)noexcept;
-    ~coreTexture()override;
+    ~coreTexture()final;
 
     DISABLE_COPY(coreTexture)
 
     //! load and unload texture resource data
     //! @{
-    coreStatus Load(coreFile* pFile)override;
-    coreStatus Unload()override;
+    coreStatus Load(coreFile* pFile)final;
+    coreStatus Unload()final;
     //! @}
 
     //! handle texture memory

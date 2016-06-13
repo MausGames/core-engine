@@ -109,11 +109,12 @@ public:
 
     /*! operate between values and keys */
     //! @{
-    inline coreValueIterator      get_value  (const coreKeyIterator&        it)      {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
-    inline coreValueConstIterator get_value  (const coreKeyConstIterator&   it)const {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
-    inline coreKeyIterator        get_key    (const coreValueIterator&      it)      {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
-    inline coreKeyConstIterator   get_key    (const coreValueConstIterator& it)const {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
-    inline const coreKeyList&     get_keylist()const                                 {return m_atKeyList;}
+    inline coreValueIterator      get_value    (const coreKeyIterator&        it)      {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
+    inline coreValueConstIterator get_value    (const coreKeyConstIterator&   it)const {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
+    inline coreKeyIterator        get_key      (const coreValueIterator&      it)      {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
+    inline coreKeyConstIterator   get_key      (const coreValueConstIterator& it)const {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
+    inline const coreValueList&   get_valuelist()const                                 {return m_atValueList;}
+    inline const coreKeyList&     get_keylist  ()const                                 {return m_atKeyList;}
     //! @}
 
 
@@ -191,7 +192,7 @@ public:
 private:
     /*! save original string */
     //! @{
-    inline void __save_string(const coreHashString& sKey) {if(!m_asStringList.count(sKey)) m_asStringList.emplace(sKey, sKey.GetString());}
+    inline void __save_string(const coreHashString& sKey) {if(!m_asStringList.count(sKey)) m_asStringList.emplace(sKey, sKey.GetString()); else WARN_IF(sKey.GetString() != m_asStringList.at(sKey)) {}}
     //! @}
 };
 
@@ -204,7 +205,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 , m_ptValueCache (NULL)
 , m_ptKeyCache   (NULL)
 {
-    constexpr coreUintW iSize = MAX(64u / sizeof(T), 2u);
+    constexpr coreUintW iSize = MAX(64u / MAX(sizeof(K), sizeof(T)), 2u);
 
     // pre-allocate some memory
     m_atValueList.reserve(iSize);

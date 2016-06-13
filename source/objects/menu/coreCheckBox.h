@@ -37,7 +37,7 @@ public:
 
     //! move the check-box
     //! @{
-    void Move()override;
+    void Move()final;
     //! @}
 
     //! set object properties

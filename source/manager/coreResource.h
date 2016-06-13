@@ -204,7 +204,7 @@ private:
 
 private:
     coreResourceManager()noexcept;
-    ~coreResourceManager()override;
+    ~coreResourceManager()final;
 
 
 public:
@@ -246,9 +246,9 @@ public:
 private:
     /*! resource thread implementations */
     //! @{
-    coreStatus __InitThread()override;
-    coreStatus __RunThread ()override;
-    void       __ExitThread()override;
+    coreStatus __InitThread()final;
+    coreStatus __RunThread ()final;
+    void       __ExitThread()final;
     //! @}
 
     /*! load all relevant default resource */

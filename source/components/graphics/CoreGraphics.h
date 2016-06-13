@@ -35,7 +35,7 @@ class CoreGraphics final
 {
 private:
     //! light structure
-    struct coreLight
+    struct coreLight final
     {
         coreVector4 vPosition;    //!< position of the light
         coreVector4 vDirection;   //!< direction and range of the light

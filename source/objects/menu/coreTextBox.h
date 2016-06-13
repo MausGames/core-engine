@@ -46,7 +46,7 @@ public:
 
     //! move the text-box
     //! @{
-    void Move()override;
+    void Move()final;
     //! @}
 
     //! check for finished text-input

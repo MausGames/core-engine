@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* MD3-header structure */
-struct md3Header
+struct md3Header final
 {
     coreChar  acIdentity[4];     //!< magic number (IDP3)
     coreInt32 iVersion;          //!< version number (15)
@@ -35,7 +35,7 @@ struct md3Header
 
 // ****************************************************************
 /* MD3-frame structure */
-struct md3Frame
+struct md3Frame final
 {
     coreVector3 vMinBounds;   //!< first corner of the bounding box
     coreVector3 vMaxBounds;   //!< second corner of the bounding box
@@ -48,7 +48,7 @@ struct md3Frame
 
 // ****************************************************************
 /* MD3-tag structure */
-struct md3Tag
+struct md3Tag final
 {
     coreChar acName[64];   //!< tag name
 
@@ -59,7 +59,7 @@ struct md3Tag
 
 // ****************************************************************
 /* MD3-mesh structure */
-struct md3Mesh
+struct md3Mesh final
 {
     coreChar acIdentity[4];        //!< magic number (IDP3)
 
@@ -81,7 +81,7 @@ struct md3Mesh
 
 // ****************************************************************
 /* MD3-shader structure */
-struct md3Shader
+struct md3Shader final
 {
     coreChar  acName[64];     //!< shader name
     coreInt32 iShaderIndex;   //!< shader index number
@@ -90,7 +90,7 @@ struct md3Shader
 
 // ****************************************************************
 /* MD3-triangle structure */
-struct md3Triangle
+struct md3Triangle final
 {
     coreUint32 aiIndex[3];   //!< triangle indices
 };
@@ -98,7 +98,7 @@ struct md3Triangle
 
 // ****************************************************************
 /* MD3-texture structure */
-struct md3Texture
+struct md3Texture final
 {
     coreVector2 vCoord;   //!< texture coordinates
 };
@@ -106,7 +106,7 @@ struct md3Texture
 
 // ****************************************************************
 /* MD3-vertex structure */
-struct md3Vertex
+struct md3Vertex final
 {
     coreInt16 asCoord [3];   //!< compressed vertex coordinates (1:64)
     coreUint8 aiNormal[2];   //!< compressed normal zenith and azimuth
@@ -115,7 +115,7 @@ struct md3Vertex
 
 // ****************************************************************
 /* MD3-surface structure */
-struct md3Surface
+struct md3Surface final
 {
     md3Mesh      oMesh;       //!< mesh object (surface description)
     md3Shader*   pShader;     //!< pointer to shader data
@@ -127,7 +127,7 @@ struct md3Surface
 
 // ****************************************************************
 /* MD3-file structure */
-struct md3File
+struct md3File final
 {
     md3Header   oHeader;    //!< header object (file description)
     md3Frame*   pFrame;     //!< pointer to frame data

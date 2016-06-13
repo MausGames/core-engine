@@ -33,7 +33,7 @@ template <coreChar cDelimiter> static void SkipComments(const coreChar** ppcInpu
 
 // ****************************************************************
 /* MD5-joint structure */
-struct md5Joint
+struct md5Joint final
 {
     coreInt32   iParent;        //!< index of the parent joint (-1 = root joint)
     coreVector3 vPosition;      //!< position of the joint
@@ -56,7 +56,7 @@ struct md5Joint
 
 // ****************************************************************
 /* MD5-vertex structure */
-struct md5Vertex
+struct md5Vertex final
 {
     coreVector2 vTexture;       //!< texture coordinates
     coreUint16  iWeightStart;   //!< index of the first associated weight
@@ -73,7 +73,7 @@ struct md5Vertex
 
 // ****************************************************************
 /* MD5-triangle structure */
-struct md5Triangle
+struct md5Triangle final
 {
     coreUint16 aiVertex[3];   //!< indexes of the defining vertices
 
@@ -87,7 +87,7 @@ struct md5Triangle
 
 // ****************************************************************
 /* MD5-weight structure */
-struct md5Weight
+struct md5Weight final
 {
     coreInt32   iJoint;      //!< index of the associated joint
     coreFloat   fBias;       //!< contribution factor
@@ -104,7 +104,7 @@ struct md5Weight
 
 // ****************************************************************
 /* MD5-mesh structure */
-struct md5Mesh
+struct md5Mesh final
 {
     std::vector<md5Vertex>   aVertex;     //!< vertex list
     std::vector<md5Triangle> aTriangle;   //!< triangle list
@@ -138,7 +138,7 @@ struct md5Mesh
 
 // ****************************************************************
 /* MD5-file structure */
-struct md5File
+struct md5File final
 {
     std::vector<md5Joint> aJoint;   //!< joint list
     std::vector<md5Mesh>  aMesh;    //!< mesh list

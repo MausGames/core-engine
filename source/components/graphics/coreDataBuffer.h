@@ -120,7 +120,7 @@ class coreVertexBuffer final : public coreDataBuffer
 {
 private:
     //! vertex attribute array structure
-    struct coreAttribute
+    struct coreAttribute final
     {
         coreUint8 iLocation;     //!< attribute location
         coreUint8 iComponents;   //!< number of components

@@ -45,7 +45,7 @@ public:
     coreSwitchBox()noexcept;
     coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
     coreSwitchBox(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
-    ~coreSwitchBox()override;
+    ~coreSwitchBox()final;
 
     DISABLE_COPY(coreSwitchBox)
 
@@ -57,8 +57,8 @@ public:
 
     //! render and move the switch-box
     //! @{
-    void Render()override;
-    void Move  ()override;
+    void Render()final;
+    void Move  ()final;
     //! @}
 
     //! manage entries
@@ -111,7 +111,7 @@ public:
 private:
     //! update object after modification
     //! @{
-    inline void __Update()override {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first->c_str());}
+    inline void __Update()final {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first->c_str());}
     //! @}
 };
 

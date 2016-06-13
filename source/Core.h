@@ -53,6 +53,7 @@
 // TODO: disallow two instances of the same application (also in launcher)
 // TODO: #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 // TODO: check out NVAPI and ADL/AGS
+// TODO: cast unused returns to (void)?
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -381,11 +382,11 @@ template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iS
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
 
 // retrieve compile-time function and lambda properties
-template <typename T>                            struct function_traits                     : public function_traits<decltype(&T::operator())> {};
-template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                  {};
-template <typename R, typename C, typename... A> struct function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                  {};
-template <typename R,             typename... A> struct function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
-template <typename R,             typename... A> struct function_traits<R      (A...)>
+template <typename T>                            struct INTERFACE function_traits final               : public function_traits<decltype(&T::operator())> {};
+template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                  {};
+template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                  {};
+template <typename R,             typename... A> struct INTERFACE function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
+template <typename R,             typename... A> struct INTERFACE function_traits<R      (A...)>
 {
     using return_type = R;                                                                                      //!< return type
     template <coreUintW iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   //!< argument types
@@ -496,7 +497,7 @@ public:
     static CoreInput*    Input;      //!< main input component
     static CoreDebug*    Debug;      //!< main debug component
 
-    struct INTERFACE Manager
+    struct INTERFACE Manager final
     {
         static coreMemoryManager*   Memory;     //!< memory manager
         static coreResourceManager* Resource;   //!< resource manager
@@ -540,6 +541,7 @@ private:
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
 #include "utilities/data/hash/CRC32.h" // ###
+#include "utilities/data/hash/FNV1.h"  // ###
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreArray.h"
 #include "utilities/data/coreSet.h"

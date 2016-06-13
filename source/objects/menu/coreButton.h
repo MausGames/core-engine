@@ -39,7 +39,7 @@ public:
 
     //! render and move the button
     //! @{
-    virtual void Render()override;
+    void         Render()final;
     virtual void Move  ()override;
     //! @}
 

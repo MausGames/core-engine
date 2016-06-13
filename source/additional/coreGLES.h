@@ -261,7 +261,7 @@ typedef uint64_t GLuint64;
 
 // ****************************************************************
 /* context structure */
-struct coreContext
+struct coreContext final
 {
     coreFloat __fVersion;
     coreBool  __bES3;

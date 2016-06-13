@@ -26,7 +26,7 @@ class CoreSystem final
 {
 private:
     //! display structure
-    struct coreDisplay
+    struct coreDisplay final
     {
         std::vector<coreVector2> avAvailableRes;   //!< all available screen resolutions
         coreVector2              vDesktopRes;      //!< desktop resolution
@@ -75,7 +75,7 @@ public:
     //! control time
     //! @{
     inline void SetTimeSpeed(const coreUintW iID, const coreFloat fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
-    inline void SkipFrame()                                                   {m_iSkipFrame = 2u;}
+    inline void SkipFrame()                                                   {m_iSkipFrame = 1u;}
     //! @}
 
     //! terminate the application

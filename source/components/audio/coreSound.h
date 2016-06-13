@@ -28,7 +28,7 @@ class coreSound final : public coreResource
 {
 public:
     //! WAVE-format structure
-    struct coreWaveFormat
+    struct coreWaveFormat final
     {
         coreUint16 iAudioFormat;     //!< internal audio format (1 = PCM)
         coreUint16 iNumChannels;     //!< number of sound channels (1 = mono | 2 = stereo)
@@ -51,14 +51,14 @@ private:
 
 public:
     coreSound()noexcept;
-    ~coreSound()override;
+    ~coreSound()final;
 
     DISABLE_COPY(coreSound)
 
     //! load and unload sound resource data
     //! @{
-    coreStatus Load(coreFile* pFile)override;
-    coreStatus Unload()override;
+    coreStatus Load(coreFile* pFile)final;
+    coreStatus Unload()final;
     //! @}
 
     //! control playback

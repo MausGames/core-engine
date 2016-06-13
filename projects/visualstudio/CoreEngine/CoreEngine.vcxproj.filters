@@ -329,5 +329,8 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreHashString.h">
       <Filter>source\utilities\data</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\hash\FNV1.h">
+      <Filter>source\utilities\data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

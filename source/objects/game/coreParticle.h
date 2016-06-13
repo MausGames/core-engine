@@ -35,7 +35,7 @@ class coreParticle final
 {
 public:
     //! state structure
-    struct coreState
+    struct coreState final
     {
         coreVector3 vPosition;   //!< position of the particle
         coreFloat   fScale;      //!< scale-factor of the particle
@@ -141,7 +141,7 @@ private:
 
 public:
     explicit coreParticleSystem(const coreUint32 iNumParticles)noexcept;
-    ~coreParticleSystem()override;
+    ~coreParticleSystem()final;
 
     DISABLE_COPY(coreParticleSystem)
 
@@ -189,7 +189,7 @@ public:
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const coreResourceReset bInit)override;
+    void __Reset(const coreResourceReset bInit)final;
     //! @}
 };
 

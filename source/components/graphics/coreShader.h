@@ -106,14 +106,14 @@ private:
 public:
     coreShader()noexcept;
     explicit coreShader(const coreChar* pcCustomCode)noexcept;
-    ~coreShader()override;
+    ~coreShader()final;
 
     DISABLE_COPY(coreShader)
 
     //! load and unload shader resource data
     //! @{
-    coreStatus Load(coreFile* pFile)override;
-    coreStatus Unload()override;
+    coreStatus Load(coreFile* pFile)final;
+    coreStatus Unload()final;
     //! @}
 
     //! set object properties
@@ -169,14 +169,14 @@ private:
 
 public:
     coreProgram()noexcept;
-    ~coreProgram()override;
+    ~coreProgram()final;
 
     DISABLE_COPY(coreProgram)
 
     //! load and unload shader-program
     //! @{
-    coreStatus Load(coreFile* pFile)override;
-    coreStatus Unload()override;
+    coreStatus Load(coreFile* pFile)final;
+    coreStatus Unload()final;
     //! @}
 
     //! enable and disable the shader-program

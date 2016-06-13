@@ -51,7 +51,7 @@ class coreFrameBuffer final
 {
 private:
     //! render target structure
-    struct coreRenderTarget
+    struct coreRenderTarget final
     {
         coreTexturePtr  pTexture;   //!< render target texture (readable)
         GLuint          iBuffer;    //!< render target buffer (fast, multisampled)

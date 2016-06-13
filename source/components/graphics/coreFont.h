@@ -25,14 +25,14 @@ private:
 
 public:
     coreFont()noexcept;
-    ~coreFont()override;
+    ~coreFont()final;
 
     DISABLE_COPY(coreFont)
 
     //! load and unload font resource data
     //! @{
-    coreStatus Load(coreFile* pFile)override;
-    coreStatus Unload()override;
+    coreStatus Load(coreFile* pFile)final;
+    coreStatus Unload()final;
     //! @}
 
     //! create solid text with the font

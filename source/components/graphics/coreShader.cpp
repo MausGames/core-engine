@@ -14,7 +14,7 @@ coreProgram* coreProgram::s_pCurrent       = NULL;
 
 // ****************************************************************
 // create static string lists
-template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sStringList
+template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sStringList final
 {
     coreChar aacEntry[iNum][iLength];
 
@@ -597,7 +597,7 @@ void coreProgram::__WriteInterface()const
                 glGetProgramResourceName(m_iProgram, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
                 glGetProgramResourceiv  (m_iProgram, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
 
-                Core::Log->ListAdd("%s:%i", acName, aiValue[0]);
+                Core::Log->ListAdd("%s: %i", acName, aiValue[0]);
             }
             Core::Log->ListEnd();
 
@@ -608,7 +608,7 @@ void coreProgram::__WriteInterface()const
                 glGetProgramResourceName(m_iProgram, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
                 glGetProgramResourceiv  (m_iProgram, GL_UNIFORM, i, 2, aiProperty, 2,   NULL, aiValue);
 
-                Core::Log->ListAdd("%s:%i:%i", acName, aiValue[0], aiValue[1]);
+                Core::Log->ListAdd("%s: %i/%i", acName, aiValue[0], aiValue[1]);
             }
             Core::Log->ListEnd();
         }

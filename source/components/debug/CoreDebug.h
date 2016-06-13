@@ -29,7 +29,7 @@ class CoreDebug final
 {
 private:
     /*! measure structure */
-    struct coreMeasure
+    struct coreMeasure final
     {
         coreUint64 iPerfTime;                                //!< high-precision CPU time value at start
         coreArray<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
@@ -41,7 +41,7 @@ private:
     };
 
     /*! inspect structure */
-    struct coreInspect
+    struct coreInspect final
     {
         coreLabel oOutput;   //!< label for displaying output
 
@@ -59,6 +59,7 @@ private:
 
     coreBool m_bEnabled;                       //!< debug-monitor is enabled (debug-build or debug-context)
     coreBool m_bVisible;                       //!< output is visible on screen
+    coreBool m_bHolding;                       //!< holding the current frame
 
 
 private:

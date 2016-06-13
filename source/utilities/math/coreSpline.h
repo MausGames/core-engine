@@ -20,7 +20,7 @@ template <typename T> class coreSpline final
 {
 private:
     /*! node structure */
-    struct coreNode
+    struct coreNode final
     {
         T         tPosition;   //!< position of the node
         T         tTangent;    //!< tangent of the node

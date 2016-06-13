@@ -56,7 +56,7 @@ private:
 public:
     coreLabel()noexcept;
     coreLabel(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
-    ~coreLabel()override;
+    ~coreLabel()final;
 
     DISABLE_COPY(coreLabel)
 
@@ -67,8 +67,8 @@ public:
 
     //! render and move the label
     //! @{
-    void Render()override;
-    void Move  ()override;
+    void Render()final;
+    void Move  ()final;
     //! @}
 
     //! set object properties
@@ -94,12 +94,12 @@ public:
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const coreResourceReset bInit)override;
+    void __Reset(const coreResourceReset bInit)final;
     //! @}
 
     //! update object after modification
     //! @{
-    inline void __Update()override {ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)}
+    inline void __Update()final {ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)}
     //! @}
 
     //! generate the texture

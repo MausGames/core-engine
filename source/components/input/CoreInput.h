@@ -63,7 +63,7 @@ class CoreInput final
 {
 private:
     //! keyboard structure
-    struct coreKeyboard
+    struct coreKeyboard final
     {
         coreUint8     aiButton[CORE_INPUT_BUTTONS_KEYBOARD];   //!< status of the keyboard buttons
         coreInputKey  iLast;                                   //!< last pressed keyboard button
@@ -71,7 +71,7 @@ private:
     };
 
     //! mouse structure
-    struct coreMouse
+    struct coreMouse final
     {
         coreUint8   aiButton[CORE_INPUT_BUTTONS_MOUSE];   //!< status of the mouse buttons
         coreUint8   iLast;                                //!< last pressed mouse button
@@ -80,7 +80,7 @@ private:
     };
 
     //! joystick structure
-    struct coreJoystick
+    struct coreJoystick final
     {
         SDL_GameController* pController;                     //!< game controller handle
         SDL_Joystick*       pJoystick;                       //!< joystick device handle
@@ -92,7 +92,7 @@ private:
     };
 
     //! touch structure
-    struct coreTouch
+    struct coreTouch final
     {
         coreUint8   iButton;     //!< status of the finger
         coreVector2 vPosition;   //!< absolute position of the finger

@@ -17,6 +17,7 @@
 // TODO: memory-pool: support polymorphism
 // TODO: memory-pool: 1 block for multiple objects
 // TODO: add interface for reusing big memory-blocks (free when?)
+// TODO: __declspec(allocator)
 
 
 // ****************************************************************
@@ -119,7 +120,7 @@ template <typename T, typename... A> RETURN_RESTRICT T* coreMemoryPool::New(A&&.
 // destruct and return object
 template <typename T> void coreMemoryPool::Delete(T** OUTPUT pptPointer)
 {
-    ASSERT(std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage){return (P_TO_UI(*pptPointer) - P_TO_UI(pPage)) < (m_iBlockSize * m_iPageSize);}))
+    ASSERT(std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(*pptPointer) - P_TO_UI(pPage)) < (m_iBlockSize * m_iPageSize);}))
 
     // return object to the free-stack
     m_apFreeStack.push_back(*pptPointer);

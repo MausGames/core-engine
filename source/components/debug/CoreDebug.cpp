@@ -39,6 +39,7 @@ CoreDebug::CoreDebug()noexcept
 , m_Loading    ()
 , m_bEnabled   (false)
 , m_bVisible   (false)
+, m_bHolding   (false)
 {
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
@@ -202,8 +203,10 @@ void CoreDebug::__UpdateOutput()
         }
     }
 
-    // hold screen
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F4), CORE_INPUT_HOLD))
+    // hold and skip frame
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F5), CORE_INPUT_PRESS))
+        m_bHolding = !m_bHolding;
+    if(m_bHolding && !Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F6), CORE_INPUT_PRESS))
         Core::System->SkipFrame();
 
     // reset language

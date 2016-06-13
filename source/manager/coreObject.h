@@ -113,7 +113,7 @@ private:
     using coreObjectList = std::vector<coreObject3D*>;
 
     /*! object collision structure */
-    struct coreObjectCollision
+    struct coreObjectCollision final
     {
         const coreObject3D* pObject1;     //!< first 3d-object
         const coreObject3D* pObject2;     //!< second 3d-object

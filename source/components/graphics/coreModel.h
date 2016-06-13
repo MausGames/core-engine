@@ -27,7 +27,7 @@ class coreModel final : public coreResource
 {
 public:
     //! vertex structure
-    struct coreVertex
+    struct coreVertex final
     {
         coreVector3 vPosition;   //!< vertex position
         coreVector2 vTexCoord;   //!< texture coordinate
@@ -36,14 +36,14 @@ public:
     };
 
     //! compressed vertex structure
-    struct coreVertexPackedHigh
+    struct coreVertexPackedHigh final
     {
         coreUint64 iPosition;    //!< vertex position           (Float4x16)
         coreUint32 iTexCoord;    //!< texture coordinate        (Unorm2x16)
         coreUint32 iNormal;      //!< normal vector             (Snorm210)
         coreUint32 iTangent;     //!< additional tangent vector (Snorm210)
     };
-    struct coreVertexPackedLow
+    struct coreVertexPackedLow final
     {
         coreVector3 vPosition;   //!< vertex position
         coreUint32  iTexCoord;   //!< texture coordinate        (Unorm2x16)
@@ -52,7 +52,7 @@ public:
     };
 
     //! import structure
-    struct coreImport
+    struct coreImport final
     {
         std::vector<coreVertex> aVertexData;   //!< raw vertex data
         std::vector<coreUint16> aiIndexData;   //!< raw index data
@@ -80,14 +80,14 @@ private:
 
 public:
     coreModel()noexcept;
-    ~coreModel()override;
+    ~coreModel()final;
 
     DISABLE_COPY(coreModel)
 
     //! load and unload model resource data
     //! @{
-    coreStatus Load(coreFile* pFile)override;
-    coreStatus Unload()override;
+    coreStatus Load(coreFile* pFile)final;
+    coreStatus Unload()final;
     //! @}
 
     //! draw the model

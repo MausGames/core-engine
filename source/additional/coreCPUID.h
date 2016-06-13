@@ -30,7 +30,7 @@ class INTERFACE coreCPUID final
 {
 private:
     /*! CPUID data structure */
-    struct __coreCPUID
+    struct __coreCPUID final
     {
         coreChar  acVendor[13];
         coreChar  acBrand [49];
