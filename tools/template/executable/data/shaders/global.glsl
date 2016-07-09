@@ -49,7 +49,7 @@
 
 // layout qualifiers
 #if defined(_CORE_FRAGMENT_SHADER_)
-    #if defined(GL_ARB_shader_image_load_store) || (defined(GL_ES) && (__VERSION__) >= 310)
+    #if (defined(GL_ARB_shader_image_load_store) && (__VERSION__) >= 130) || (defined(GL_ES) && (__VERSION__) >= 310)
         layout(early_fragment_tests) in;
     #endif
     #if defined(GL_ARB_conservative_depth)
@@ -116,7 +116,7 @@ struct coreLight
 #else
     #define coreMin3(a,b,c) (min(a, min(b, c)))
     #define coreMax3(a,b,c) (max(a, max(b, c)))
-    #define coreMed3(a,b,c) (max(min(max(a, b), c), min(a, b)))
+    #define coreMed3(a,b,c) (max(min(max(a, b), c), min(a, b)))   // multi evaluation
 #endif
 
 // modulo operator

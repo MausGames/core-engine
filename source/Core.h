@@ -185,6 +185,7 @@
     #define UNUSED          __pragma(warning(suppress : 4100 4101 4189))
     #define OUTPUT          __restrict             //!< output parameter without aliasing (never)
     #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
+    #define FORCE_INLINE    __forceinline          //!< force function to be inlined (when optimizations are enabled)
     #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
     #define RETURN_NONNULL                         //!< returned pointer will not be null
     #define FUNC_PURE                              //!< function reads only parameters and non-volatile globals and returns a single value
@@ -195,6 +196,7 @@
     #define UNUSED          __attribute__((unused))
     #define OUTPUT          __restrict__
     #define INTERFACE
+    #define FORCE_INLINE    __attribute__((always_inline))
     #define RETURN_RESTRICT __attribute__((malloc))
     #define RETURN_NONNULL  __attribute__((returns_nonnull))
     #define FUNC_PURE       __attribute__((pure))
@@ -203,7 +205,7 @@
     #define FUNC_NORETURN   __attribute__((noreturn, cold))
 #endif
 
-#if defined(_CORE_MINGW_)
+#if defined(_CORE_MINGW_) && defined(_CORE_SSE_)
     #define ENTRY_POINT     __attribute__((force_align_arg_pointer))   //!< realign run-time stack (and fix SSE)
 #else
     #define ENTRY_POINT
@@ -542,6 +544,7 @@ private:
 #include "utilities/data/coreData.h"
 #include "utilities/data/hash/CRC32.h" // ###
 #include "utilities/data/hash/FNV1.h"  // ###
+#include "utilities/data/coreProtect.h"
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreArray.h"
 #include "utilities/data/coreSet.h"

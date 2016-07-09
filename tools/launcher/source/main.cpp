@@ -78,7 +78,7 @@ bool IsWow64()
 
 
 // ****************************************************************
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int iCmdShow)
+int WINAPI WinMain(HINSTANCE pInstance, HINSTANCE pPrevInstance, LPSTR pcCmdLine, int iCmdShow)
 {
     // change working directory
     if(!SetCurrentDirectory((IsWow64() && IsWindowsVistaOrHigher()) ? "bin\\windows\\x64\\" : "bin\\windows\\x86\\")) return -2;

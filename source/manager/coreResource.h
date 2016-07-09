@@ -145,7 +145,7 @@ public:
 
     DISABLE_NEW
 
-    /*! assignment operator */
+    /*! assignment operations */
     //! @{
     coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
     //! @}
@@ -322,7 +322,7 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 
 
 // ****************************************************************
-/* assignment operator */
+/* assignment operations */
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
 {
     std::swap(m_pHandle, o.m_pHandle);

@@ -30,6 +30,7 @@
 
 #define MIN   coreMath::Min
 #define MAX   coreMath::Max
+#define MED   coreMath::Med
 #define CLAMP coreMath::Clamp
 #define SIGN  coreMath::Sign
 #define ABS   coreMath::Abs
@@ -68,6 +69,7 @@ public:
     template <typename T, typename S, typename... A> static constexpr T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
     template <typename T, typename S>                static constexpr T Min  (const T& x, const S& y)               {return y ^ ((x ^ y) & -(x < y));}
     template <typename T, typename S>                static constexpr T Max  (const T& x, const S& y)               {return x ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S, typename R>    static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
     template <typename T, typename S, typename R>    static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
     template <typename T> static inline    T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
     template <typename T> static inline    T        Abs       (const T& x)                                          {return std::abs(x);}

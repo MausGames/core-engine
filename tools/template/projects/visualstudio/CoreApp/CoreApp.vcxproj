@@ -81,11 +81,9 @@
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86\msvc;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x86;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows\x86\</OutDir>
     <TargetName>$(ProjectName)_msvc_debug</TargetName>
-    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_msvc_debug</TargetName>
-    <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x64;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x64;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows\x64\</OutDir>
@@ -121,7 +119,7 @@
       <SubSystem>Windows</SubSystem>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>
@@ -146,7 +144,7 @@
       <SubSystem>Windows</SubSystem>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32mx.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib %(AdditionalOptions)</AdditionalOptions>
-      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <ProjectReference>

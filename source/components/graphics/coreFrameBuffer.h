@@ -20,6 +20,7 @@
 // TODO: check if rendering quad is faster than blitting (only on default frame buffer? what about depth-stencil? still needs blit for MSAA)
 // TODO: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)
 // TODO: change R and RG targets to RGB when not supported ?
+// TODO: INTEL_framebuffer_CMAA
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 

@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* CRC-32 lookup table */
-constexpr coreUint32 g_aiTableCRC32[256] =
+alignas(16) constexpr coreUint32 g_aiTableCRC32[256] =
 {
     0x00000000u, 0x04C11DB7u, 0x09823B6Eu, 0x0D4326D9u,
     0x130476DCu, 0x17C56B6Bu, 0x1A864DB2u, 0x1E475005u,

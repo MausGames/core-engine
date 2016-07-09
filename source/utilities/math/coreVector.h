@@ -11,6 +11,7 @@
 #define _CORE_GUARD_VECTOR_H_
 
 // TODO: check out Clang ext_vector_type
+// TODO: Abs and Sign are only returns (e.g. not like normalization)
 
 
 // ****************************************************************
@@ -115,7 +116,8 @@ public:
     constexpr coreFloat   LengthSq    ()const {return (x*x + y*y);}
     inline    coreFloat   Min         ()const {return MIN(x, y);}
     inline    coreFloat   Max         ()const {return MAX(x, y);}
-    inline    coreVector2 Abs         ()const {return coreVector2(ABS(x), ABS(y));}
+    inline    coreVector2 Abs         ()const {return coreVector2(ABS (x), ABS (y));}
+    inline    coreVector2 Sign        ()const {return coreVector2(SIGN(x), SIGN(y));}
     inline    coreFloat   AspectRatio ()const {return (x * RCP(y));}
     inline    coreFloat   Angle       ()const {return (-std::atan2(x, y));}
     constexpr coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
@@ -256,7 +258,8 @@ public:
     constexpr coreFloat   LengthSq    ()const {return (x*x + y*y + z*z);}
     inline    coreFloat   Min         ()const {return MIN(x, y, z);}
     inline    coreFloat   Max         ()const {return MAX(x, y, z);}
-    inline    coreVector3 Abs         ()const {return coreVector3(ABS(x), ABS(y), ABS(z));}
+    inline    coreVector3 Abs         ()const {return coreVector3(ABS (x), ABS (y), ABS (z));}
+    inline    coreVector3 Sign        ()const {return coreVector3(SIGN(x), SIGN(y), SIGN(z));}
     constexpr coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     constexpr coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
@@ -373,11 +376,13 @@ public:
 
     /*! direct functions */
     //! @{
-    inline    coreFloat Length  ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat LengthSq()const {return (x*x + y*y + z*z + w*w);}
-    inline    coreFloat Min     ()const {return MIN(x, y, z, w);}
-    inline    coreFloat Max     ()const {return MAX(x, y, z, w);}
-    constexpr coreBool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline    coreFloat   Length  ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat   LengthSq()const {return (x*x + y*y + z*z + w*w);}
+    inline    coreFloat   Min     ()const {return MIN(x, y, z, w);}
+    inline    coreFloat   Max     ()const {return MAX(x, y, z, w);}
+    inline    coreVector4 Abs     ()const {return coreVector4(ABS (x), ABS (y), ABS (z), ABS (w));}
+    inline    coreVector4 Sign    ()const {return coreVector4(SIGN(x), SIGN(y), SIGN(z), SIGN(w));}
+    constexpr coreBool    IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */

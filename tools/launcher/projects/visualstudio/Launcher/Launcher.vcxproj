@@ -50,7 +50,6 @@
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <OutDir>..\..\..\executable\</OutDir>
     <TargetName>$(ProjectName)_msvc_debug</TargetName>
-    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>

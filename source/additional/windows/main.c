@@ -16,11 +16,33 @@
 
 
 // ****************************************************************
+/* improve hardware utilization on NUMA systems */
+void ImproveNUMA(void)
+{
+    // get highest NUMA node number
+    ULONG iNumaNode;
+    if(GetNumaHighestNodeNumber(&iNumaNode))
+    {
+        // get all processors of the NUMA node
+        ULONGLONG iProcessMask;
+        if(GetNumaNodeProcessorMask((UCHAR)iNumaNode, &iProcessMask))
+        {
+            // change processor affinity mask
+            if(iProcessMask) SetProcessAffinityMask(GetCurrentProcess(), iProcessMask);
+        }
+    }
+}
+
+
+// ****************************************************************
 /* start up the application */
 int WINAPI WinMain(HINSTANCE pInstance, HINSTANCE pPrevInstance, LPSTR pcCmdLine, int iCmdShow)
 {
     // initialize the SDL library
     SDL_SetMainReady();
+
+    // improve hardware utilization on NUMA systems
+    ImproveNUMA();
 
     // run the application
     char* argv[2] = {"CoreApp", NULL};

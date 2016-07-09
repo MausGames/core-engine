@@ -11,7 +11,7 @@
 #define _CORE_GUARD_LOG_H_
 
 // TODO: define more log capturing spots, not only resource-loading/unloading and (few) errors
-// TODO: implement stack trace, described in OpenGL Insights (tested on MSVC, works only with available debug symbols)
+// TODO: implement stack trace, described in OpenGL Insights (tested on MSVC, works only with available debug symbols, and not with incremental linking or fast-linking)
 // TODO: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts, bacon
 // TODO: better specify, should it be possible to create many log files ? what about OpenGL debugging, console output and file header then ?
 
