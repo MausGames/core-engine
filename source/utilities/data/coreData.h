@@ -83,6 +83,12 @@ public:
     static inline const coreChar* TimeString() {return coreData::DateTimePrint("%H:%M:%S");}
     //! @}
 
+    /*! compress and decompress data */
+    //! @{
+    static coreStatus CompressDeflate  (const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt8 iCompression = Z_DEFAULT_COMPRESSION);
+    static coreStatus DecompressDeflate(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize);
+    //! @}
+
     /*! operate with string data */
     //! @{
     template <typename F> static const coreChar* StrProcess(const coreChar* pcInput, F&& nFunction);   //!< [](const coreChar cChar) -> coreChar
@@ -122,7 +128,7 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 #else
 
     // assemble string
-    const coreInt32 iReturn = snprintf(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
+    const coreInt32 iReturn = std::snprintf(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
 
 #endif
 

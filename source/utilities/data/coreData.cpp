@@ -394,6 +394,100 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat)
 
 
 // ****************************************************************
+/* compress data with deflate algorithm */
+coreStatus coreData::CompressDeflate(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt8 iCompression)
+{
+    ASSERT(pInput && iInputSize && ppOutput && piOutputSize)
+
+    // set input parameters
+    z_stream oStream = {};
+    oStream.next_in  = pInput;
+    oStream.avail_in = iInputSize;
+
+    // initialize compression
+    coreInt32 iError = deflateInit(&oStream, iCompression);
+    if(iError != Z_OK)
+    {
+        Core::Log->Warning("Error initializing compression with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
+        return CORE_INVALID_DATA;
+    }
+
+    // retrieve required output size
+    const coreUint32 iBound  = deflateBound(&oStream, iInputSize);
+    coreByte*        pBuffer = new coreByte[iBound + sizeof(coreUint32)];
+
+    // set output parameters
+    oStream.next_out  = pBuffer + sizeof(coreUint32);
+    oStream.avail_out = iBound;
+
+    // compress data
+    iError = deflate(&oStream, Z_FINISH);
+    if(iError != Z_STREAM_END)
+    {
+        Core::Log->Warning("Error compressing data with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
+        SAFE_DELETE_ARRAY(pBuffer)
+        deflateEnd(&oStream);
+        return CORE_INVALID_INPUT;
+    }
+
+    // store original size and return compressed data
+    (*r_cast<coreUint32*>(pBuffer)) = oStream.total_out;
+    (*ppOutput)     = pBuffer;
+    (*piOutputSize) = oStream.total_out + sizeof(coreUint32);
+
+    // compression finished
+    deflateEnd(&oStream);
+    return CORE_OK;
+}
+
+
+// ****************************************************************
+/* decompress data with deflate algorithm */
+coreStatus coreData::DecompressDeflate(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
+{
+    ASSERT(pInput && iInputSize && ppOutput && piOutputSize)
+
+    // retrieve original size
+    const coreUint32 iBound  = (*r_cast<const coreUint32*>(pInput));
+    coreByte*        pBuffer = new coreByte[iBound];
+
+    // set input and output parameters
+    z_stream oStream  = {};
+    oStream.next_in   = pInput     + sizeof(coreUint32);
+    oStream.avail_in  = iInputSize - sizeof(coreUint32);
+    oStream.next_out  = pBuffer;
+    oStream.avail_out = iBound;
+
+    // initialize decompression
+    coreInt32 iError = inflateInit(&oStream);
+    if(iError != Z_OK)
+    {
+        Core::Log->Warning("Error initializing decompression with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
+        SAFE_DELETE_ARRAY(pBuffer)
+        return CORE_INVALID_DATA;
+    }
+
+    // decompress data
+    iError = inflate(&oStream, Z_FINISH);
+    if(iError != Z_STREAM_END)
+    {
+        Core::Log->Warning("Error decompressing data with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
+        SAFE_DELETE_ARRAY(pBuffer)
+        inflateEnd(&oStream);
+        return CORE_INVALID_INPUT;
+    }
+
+    // return decompressed data
+    (*ppOutput)     = pBuffer;
+    (*piOutputSize) = iBound;
+
+    // decompression finished
+    inflateEnd(&oStream);
+    return CORE_OK;
+}
+
+
+// ****************************************************************
 /* safely get last characters of a string */
 const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW iNum)
 {
@@ -441,7 +535,7 @@ void coreData::StrTrim(std::string* OUTPUT psInput)
 
 
 // ****************************************************************
-/* replace all occurrences of a sub-string with another one*/
+/* replace all occurrences of a sub-string with another one */
 void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew)
 {
     coreUintW iPos = 0u;

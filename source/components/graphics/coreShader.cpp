@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::string  coreShader::s_asGlobalCode[2] = {"", ""};
-coreProgram* coreProgram::s_pCurrent       = NULL;
+std::string  coreShader ::s_asGlobalCode[2] = {"", ""};
+coreProgram* coreProgram::s_pCurrent        = NULL;
 
 
 // ****************************************************************

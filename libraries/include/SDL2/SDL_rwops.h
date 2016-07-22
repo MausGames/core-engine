@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
@@ -106,7 +109,7 @@ typedef struct SDL_RWops
             long offset;
             int fd;
         } androidio;
-#elif defined(__WIN32__)
+#elif defined(__WIN32__) && 0
         struct
         {
             SDL_bool append;

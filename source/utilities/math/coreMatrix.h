@@ -857,7 +857,17 @@ constexpr coreVector4 coreVector4::operator * (const coreMatrix4& m)const
 
 
 // ****************************************************************
-/* convert YIQ-color (NTSC) to RGB-color */
+/* convert RGB-color to YIQ-color (BT.601, NTSC) */
+constexpr coreVector3 coreVector3::RGBtoYIQ()const
+{
+    return *this * coreMatrix3(0.299f,  0.587f,  0.114f,
+                               0.596f, -0.275f, -0.321f,
+                               0.212f, -0.523f,  0.311f);
+}
+
+
+// ****************************************************************
+/* convert YIQ-color (BT.601, NTSC) to RGB-color */
 constexpr coreVector3 coreVector3::YIQtoRGB()const
 {
     return *this * coreMatrix3(1.000f,  0.956f,  0.620f,
@@ -867,12 +877,42 @@ constexpr coreVector3 coreVector3::YIQtoRGB()const
 
 
 // ****************************************************************
-/* convert RGB-color to YIQ-color (NTSC) */
-constexpr coreVector3 coreVector3::RGBtoYIQ()const
+/* convert RGB-color to YUV-color (BT.709) */
+constexpr coreVector3 coreVector3::RGBtoYUV()const
 {
-    return *this * coreMatrix3(0.299f,  0.587f,  0.114f,
-                               0.596f, -0.275f, -0.321f,
-                               0.212f, -0.523f,  0.311f);
+    return *this * coreMatrix3( 0.21260f,  0.71520f,  0.07220f,
+                               -0.09991f, -0.33609f,  0.43600f,
+                                0.61500f, -0.55861f, -0.05639f);
+}
+
+
+// ****************************************************************
+/* convert YUV-color (BT.709) to RGB-color */
+constexpr coreVector3 coreVector3::YUVtoRGB()const
+{
+    return *this * coreMatrix3(1.00000f,  0.00000f,  1.28033f,
+                               1.00000f, -0.21482f, -0.38059f,
+                               1.00000f,  2.12798f,  0.00000f);
+}
+
+
+// ****************************************************************
+/* convert RGB-color to YCbCr-color (BT.601, JPEG) */
+constexpr coreVector3 coreVector3::RGBtoYCbCr()const
+{
+    return *this * coreMatrix3( 0.299000f,  0.587000f,  0.114000f,
+                               -0.168736f, -0.331264f,  0.500000f,
+                                0.500000f, -0.418688f, -0.081312f) + coreVector3(0.0f,0.5f,0.5f);
+}
+
+
+// ****************************************************************
+/* convert YCbCr-color (BT.601, JPEG) to RGB-color */
+constexpr coreVector3 coreVector3::YCbCrtoRGB()const
+{
+    return (*this - coreVector3(0.0f,0.5f,0.5f)) * coreMatrix3(1.00000f,  0.00000f,  1.40200f,
+                                                               1.00000f, -0.34414f, -0.71414f,
+                                                               1.00000f,  1.77200f,  0.00000f);
 }
 
 

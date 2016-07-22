@@ -28,7 +28,7 @@ CoreApp*             Core::Application       = NULL;
 Core::Core()noexcept
 {
     // init utilities
-    Log    = new coreLog("logfile.html");
+    Log    = new coreLog("log.html");
     Log->Header("Utilities");
     Config = new coreConfig("config.ini");
     Rand   = new coreRand(2048u);

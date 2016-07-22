@@ -54,6 +54,7 @@
 // TODO: #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 // TODO: check out NVAPI and ADL/AGS
 // TODO: cast unused returns to (void)?
+// TODO: remove SSE from 32-bit binaries ? (compatibility binaries) _USING_V110_SDK71_
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -162,6 +163,8 @@
 #define GLEW_MX
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
+#define ZLIB_CONST
+#define ZLIB_DLL
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -176,6 +179,7 @@
 #include <AL/alc.h>
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
+#include <zlib/zlib.h>
 #include <SI/SimpleIni.h>
 
 

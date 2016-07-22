@@ -131,7 +131,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     // check for errors
     if(iError != GL_FRAMEBUFFER_COMPLETE)
     {
-        Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: 0x%04X)", iError);
+        Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: 0x%08X)", iError);
         this->Delete();
     }
 }

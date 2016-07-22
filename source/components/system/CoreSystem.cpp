@@ -199,6 +199,9 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MiB",                                         SDL_GetSystemRAM());
     }
     Core::Log->ListEnd();
+
+    // log zlib library version
+    Core::Log->Info("zlib initialized (%s 0x%08X)", zlibVersion(), zlibCompileFlags());
 }
 
 

@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
@@ -205,7 +208,6 @@ typedef unsigned int uintptr_t;
 #ifndef SDL_VIDEO_OPENGL_EGL
 #define SDL_VIDEO_OPENGL_EGL 0
 #endif
-
 
 /* Enable system power support */
 #define SDL_POWER_WINDOWS 1

@@ -28,7 +28,7 @@ void ImproveNUMA(void)
         if(GetNumaNodeProcessorMask((UCHAR)iNumaNode, &iProcessMask))
         {
             // change processor affinity mask
-            if(iProcessMask) SetProcessAffinityMask(GetCurrentProcess(), iProcessMask);
+            if(iProcessMask) SetProcessAffinityMask(GetCurrentProcess(), (DWORD_PTR)iProcessMask);
         }
     }
 }

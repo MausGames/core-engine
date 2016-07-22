@@ -17,9 +17,8 @@
 
 // ****************************************************************
 // file definitions
-#define CORE_FILE_MAGIC     (0x012F5B66u)   //!< magic number of core-archives
-#define CORE_FILE_VERSION   (0x00000001u)   //!< current file version of core-archives
-#define CORE_FILE_EXTENSION "cfa"           //!< extension of core-archives
+#define CORE_FILE_MAGIC     (coreUint32('CFA'))   //!< magic number of core-archives
+#define CORE_FILE_VERSION   (0x00000001u)         //!< current file version of core-archives
 
 
 // ****************************************************************
@@ -46,7 +45,13 @@ public:
 
     //! save file
     //! @{
-    coreStatus Save(const coreChar* pcPath);
+    coreStatus Save(const coreChar* pcPath = NULL);
+    //! @}
+
+    //! compress and decompress file data
+    //! @{
+    coreStatus Compress(const coreInt8 iCompression = Z_DEFAULT_COMPRESSION);
+    coreStatus Decompress();
     //! @}
 
     //! load and unload file data

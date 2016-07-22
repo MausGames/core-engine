@@ -104,7 +104,7 @@ coreStatus coreSound::Load(coreFile* pFile)
     const ALenum iError = alGetError();
     if(iError != AL_NO_ERROR)
     {
-        Core::Log->Warning("Sound (%s) could not be loaded (AL Error Code: 0x%04X)", pFile->GetPath(), iError);
+        Core::Log->Warning("Sound (%s) could not be loaded (AL Error Code: 0x%08X)", pFile->GetPath(), iError);
         return CORE_INVALID_DATA;
     }
 

@@ -145,7 +145,7 @@ struct md5File final
 
     explicit md5File(const coreChar** ppcData)noexcept
     {
-        coreChar  acIdentifier[16] = "";
+        coreChar  acIdentifier[16] = {};
         coreInt32 iVersion         = 0;
         coreUintW iNumJoints       = 0u;
         coreUintW iNumMeshes       = 0u;

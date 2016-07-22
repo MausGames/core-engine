@@ -52,7 +52,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     if(!iError) iError = ov_test_open(&m_Stream);
     if( iError)
     {
-        Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: 0x%04X)", pFile->GetPath(), iError);
+        Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: 0x%08X)", pFile->GetPath(), iError);
         ov_clear(&m_Stream);
         SAFE_DELETE(m_pFile)
 

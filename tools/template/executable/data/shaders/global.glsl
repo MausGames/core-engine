@@ -130,6 +130,23 @@ int coreMod(const in int a, const in int b)
 } 
 
 // color convert
+vec3 coreRGBtoHSV(const in vec3 v3RGB)
+{
+    float R = v3RGB.r;
+    float G = v3RGB.g;
+    float B = v3RGB.b;
+
+    float v = coreMax3(R, G, B);
+    float d = v - coreMin3(R, G, B);
+
+    if(d == 0.0) return vec3(0.0, 0.0, v);
+
+    float s = d / v;
+
+    if(R == v) return vec3((0.0 + (G - B) / d) / 6.0, s, v);
+    if(G == v) return vec3((2.0 + (B - R) / d) / 6.0, s, v);
+               return vec3((4.0 + (R - G) / d) / 6.0, s, v);
+}
 vec3 coreHSVtoRGB(const in vec3 v3HSV)
 {
     float H = v3HSV.x * 6.0;
@@ -149,22 +166,11 @@ vec3 coreHSVtoRGB(const in vec3 v3HSV)
     if(h == 5.0) return vec3(V,     p,     V - t);
                  return vec3(V,     p + t, p);
 }
-vec3 coreRGBtoHSV(const in vec3 v3RGB)
+vec3 coreRGBtoYIQ(const in vec3 v3RGB)
 {
-    float R = v3RGB.r;
-    float G = v3RGB.g;
-    float B = v3RGB.b;
-
-    float v = coreMax3(R, G, B);
-    float d = v - coreMin3(R, G, B);
-
-    if(d == 0.0) return vec3(0.0, 0.0, v);
-
-    float s = d / v;
-
-    if(R == v) return vec3((0.0 + (G - B) / d) / 6.0, s, v);
-    if(G == v) return vec3((2.0 + (B - R) / d) / 6.0, s, v);
-               return vec3((4.0 + (R - G) / d) / 6.0, s, v);
+    return mat3(0.299,  0.587,  0.114,
+                0.596, -0.275, -0.321,
+                0.212, -0.523,  0.311) * v3RGB;
 }
 vec3 coreYIQtoRGB(const in vec3 v3YIQ)
 {
@@ -172,11 +178,33 @@ vec3 coreYIQtoRGB(const in vec3 v3YIQ)
                 1.000, -0.272, -0.647,
                 1.000, -1.108,  1.705) * v3YIQ;
 }
-vec3 coreRGBtoYIQ(const in vec3 v3RGB)
+vec3 coreRGBtoYUV(const in vec3 v3RGB)
 {
-    return mat3(0.299,  0.587,  0.114,
-                0.596, -0.275, -0.321,
-                0.212, -0.523,  0.311) * v3RGB;
+    return mat3( 0.21260,  0.71520,  0.07220,
+                -0.09991, -0.33609,  0.43600,
+                 0.61500, -0.55861, -0.05639) * v3RGB;
+}
+vec3 coreYUVtoRGB(const in vec3 v3YUV)
+{
+    return mat3(1.00000,  0.00000,  1.28033,
+                1.00000, -0.21482, -0.38059,
+                1.00000,  2.12798,  0.00000) * v3YUV;
+}
+vec3 coreRGBtoYCbCr(const in vec3 v3RGB)
+{
+    return mat3( 0.299000,  0.587000,  0.114000,
+                -0.168736, -0.331264,  0.500000,
+                 0.500000, -0.418688, -0.081312) * v3RGB + vec3(0.0,0.5,0.5);
+}
+vec3 coreYCbCrtoRGB(const in vec3 v3YCbCr)
+{
+    return mat3(1.00000,  0.00000,  1.40200,
+                1.00000, -0.34414, -0.71414,
+                1.00000,  1.77200,  0.00000) * (v3YCbCr - vec3(0.0,0.5,0.5));
+}
+float coreLuminance(const in vec3 v3RGB)
+{
+    return dot(v3RGB, vec3(0.212671, 0.715160, 0.072169));
 }
 
 // vector square length

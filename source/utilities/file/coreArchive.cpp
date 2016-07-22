@@ -57,7 +57,8 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
 
     // save path
-    m_sPath = pcPath;
+    if(pcPath) m_sPath = pcPath;
+    ASSERT(!m_sPath.empty())
 
     // open file
     SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "wb");
@@ -79,18 +80,72 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
 
 // ****************************************************************
+// compress file data
+coreStatus coreFile::Compress(const coreInt8 iCompression)
+{
+    // check file data
+    this->LoadData();
+    if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
+
+    // compress data with deflate algorithm
+    coreByte*  pNewData;
+    coreUint32 iNewSize;
+    const coreStatus iError = coreData::CompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize, iCompression);
+
+    if(iError == CORE_OK)
+    {
+        // delete old data
+        SAFE_DELETE_ARRAY(m_pData)
+
+        // save new data
+        m_pData = pNewData;
+        m_iSize = iNewSize;
+    }
+
+    return iError;
+}
+
+
+// ****************************************************************
+// decompress file data
+coreStatus coreFile::Decompress()
+{
+    // check file data
+    this->LoadData();
+    if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
+
+    // decompress data with deflate algorithm
+    coreByte*  pNewData;
+    coreUint32 iNewSize;
+    const coreStatus iError = coreData::DecompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize);
+
+    if(iError == CORE_OK)
+    {
+        // delete old data
+        SAFE_DELETE_ARRAY(m_pData)
+
+        // save new data
+        m_pData = pNewData;
+        m_iSize = iNewSize;
+    }
+
+    return iError;
+}
+
+
+// ****************************************************************
 // load file data
 coreStatus coreFile::LoadData()
 {
+    // check file data
+    if(m_pData || !m_iSize || !m_iArchivePos) return CORE_INVALID_CALL;
+
 #if defined(_CORE_DEBUG_)
 
     // for correct hot-reloading (not in release)
     if(!m_sPath.empty()) m_iSize = coreData::FileSize(m_sPath.c_str());
 
 #endif
-
-    // check file data
-    if(m_pData || !m_iSize || !m_iArchivePos) return CORE_INVALID_CALL;
 
     SDL_RWops* pFile;
     if(m_pArchive)
@@ -225,7 +280,8 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     if(m_apFile.empty()) return CORE_INVALID_CALL;
 
     // save path
-    m_sPath = PRINT(std::strcmp(coreData::StrExtension(pcPath), CORE_FILE_EXTENSION) ? "%s." CORE_FILE_EXTENSION : "%s", pcPath);
+    if(pcPath) m_sPath = pcPath;
+    ASSERT(!m_sPath.empty())
 
     // open archive
     SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "wb");

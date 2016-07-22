@@ -279,11 +279,15 @@ public:
 
     /*! color functions */
     //! @{
-    inline    coreVector3 HSVtoRGB ()const;
-    inline    coreVector3 RGBtoHSV ()const;
-    constexpr coreVector3 YIQtoRGB ()const;
-    constexpr coreVector3 RGBtoYIQ ()const;
-    constexpr coreFloat   Luminance()const {return coreVector3::Dot(*this, coreVector3(0.212671f, 0.715160f, 0.072169f));}
+    inline    coreVector3 RGBtoHSV  ()const;
+    inline    coreVector3 HSVtoRGB  ()const;
+    constexpr coreVector3 RGBtoYIQ  ()const;
+    constexpr coreVector3 YIQtoRGB  ()const;
+    constexpr coreVector3 RGBtoYUV  ()const;
+    constexpr coreVector3 YUVtoRGB  ()const;
+    constexpr coreVector3 RGBtoYCbCr()const;
+    constexpr coreVector3 YCbCrtoRGB()const;
+    constexpr coreFloat   Luminance ()const {return coreVector3::Dot(*this, coreVector3(0.212671f, 0.715160f, 0.072169f));}
     //! @}
 };
 
@@ -576,6 +580,27 @@ coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFloat fFOV
 
 
 // ****************************************************************
+/* convert RGB-color to HSV-color */
+inline coreVector3 coreVector3::RGBtoHSV()const
+{
+    const coreFloat& R = r;
+    const coreFloat& G = g;
+    const coreFloat& B = b;
+
+    const coreFloat v = this->Max();
+    const coreFloat d = v - this->Min();
+
+    if(!d) return coreVector3(0.0f, 0.0f, v);
+
+    const coreFloat s = d * RCP(v);
+
+    if(R == v) return coreVector3((0.0f + (G - B) * RCP(d)) / 6.0f, s, v);
+    if(G == v) return coreVector3((2.0f + (B - R) * RCP(d)) / 6.0f, s, v);
+               return coreVector3((4.0f + (R - G) * RCP(d)) / 6.0f, s, v);
+}
+
+
+// ****************************************************************
 /* convert HSV-color to RGB-color */
 inline coreVector3 coreVector3::HSVtoRGB()const
 {
@@ -598,27 +623,6 @@ inline coreVector3 coreVector3::HSVtoRGB()const
     case 5:  return coreVector3(V,     p,     V - t);
     default: return coreVector3(V,     p + t, p);
     }
-}
-
-
-// ****************************************************************
-/* convert RGB-color to HSV-color */
-inline coreVector3 coreVector3::RGBtoHSV()const
-{
-    const coreFloat& R = r;
-    const coreFloat& G = g;
-    const coreFloat& B = b;
-
-    const coreFloat v = this->Max();
-    const coreFloat d = v - this->Min();
-
-    if(!d) return coreVector3(0.0f, 0.0f, v);
-
-    const coreFloat s = d * RCP(v);
-
-    if(R == v) return coreVector3((0.0f + (G - B) * RCP(d)) / 6.0f, s, v);
-    if(G == v) return coreVector3((2.0f + (B - R) * RCP(d)) / 6.0f, s, v);
-               return coreVector3((4.0f + (R - G) * RCP(d)) / 6.0f, s, v);
 }
 
 
