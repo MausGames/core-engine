@@ -27,6 +27,6 @@ projects/android/project/bin/
 projects/android/project/gen/
 projects/android/project/libs/
 projects/android/project/obj/
-executable/logfile.html
+executable/log.html
 executable/bin/**/CoreApp*
 executable/screenshots/

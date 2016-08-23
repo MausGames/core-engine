@@ -101,7 +101,7 @@ coreStatus coreShader::Load(coreFile* pFile)
     // assemble the shader
     const coreInt32 iSize  = 6 + s_asGlobalCode[0].length() + std::strlen(pcTypeDef) + std::strlen(pcQualityDef) + m_sCustomCode.length() + s_asGlobalCode[1].length() + sMainCode.length();
     coreChar*       pcData = new coreChar[iSize];
-    std::sprintf(pcData, "%s\n%s\n%s\n%s\n%s\n%s", s_asGlobalCode[0].c_str(), pcTypeDef, pcQualityDef, m_sCustomCode.c_str(), s_asGlobalCode[1].c_str(), sMainCode.c_str());
+    std::snprintf(pcData, iSize, "%s\n%s\n%s\n%s\n%s\n%s", s_asGlobalCode[0].c_str(), pcTypeDef, pcQualityDef, m_sCustomCode.c_str(), s_asGlobalCode[1].c_str(), sMainCode.c_str());
 
     // create and compile the shader
     m_iShader = glCreateShader(m_iType);

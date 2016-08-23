@@ -8,8 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-thread_local GLEWContext g_GlewContext = {};
-
 
 // ****************************************************************
 /* init OpenGL */
@@ -54,11 +52,11 @@ void __coreInitOpenGL()
     else if(GLEW_ARB_framebuffer_object)
     {
         // force extension status
-        GLEW_EXT_framebuffer_object      = true;
-        GLEW_EXT_framebuffer_blit        = true;
-        GLEW_EXT_framebuffer_multisample = true;
-        GLEW_EXT_texture_array           = true;
-        GLEW_EXT_packed_depth_stencil    = true;
+        __GLEW_EXT_framebuffer_object      = true;
+        __GLEW_EXT_framebuffer_blit        = true;
+        __GLEW_EXT_framebuffer_multisample = true;
+        __GLEW_EXT_texture_array           = true;
+        __GLEW_EXT_packed_depth_stencil    = true;
     }
 
     // improve instancing compatibility
@@ -72,14 +70,14 @@ void __coreInitOpenGL()
     else if(GLEW_VERSION_3_3)
     {
         // force extension status
-        GLEW_ARB_instanced_arrays = true;
+        __GLEW_ARB_instanced_arrays = true;
     }
 
     // force additional extension status
-    if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object) GLEW_ARB_pixel_buffer_object = true;
-    if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)    GLEW_ARB_geometry_shader4    = true;
+    if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object) __GLEW_ARB_pixel_buffer_object = true;
+    if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)    __GLEW_ARB_geometry_shader4    = true;
     if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE))
-        GLEW_ARB_uniform_buffer_object = false;
+        __GLEW_ARB_uniform_buffer_object = false;
 
     // try to support old OpenGL versions
     if(!GLEW_VERSION_2_0)

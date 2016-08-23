@@ -16,18 +16,15 @@
 
 // ****************************************************************
 /* 2x2-matrix class */
-class coreMatrix2 final
+union coreMatrix2 final
 {
 public:
-    union
+    struct
     {
-        struct
-        {
-            coreFloat _11, _12;
-            coreFloat _21, _22;
-        };
-        coreFloat arr[2][2];
+        coreFloat _11, _12;
+        coreFloat _21, _22;
     };
+    coreFloat arr[2][2];
 
 
 public:
@@ -57,19 +54,16 @@ public:
 
 // ****************************************************************
 /* 3x3-matrix class */
-class coreMatrix3 final
+union coreMatrix3 final
 {
 public:
-    union
+    struct
     {
-        struct
-        {
-            coreFloat _11, _12, _13;
-            coreFloat _21, _22, _23;
-            coreFloat _31, _32, _33;
-        };
-        coreFloat arr[3][3];
+        coreFloat _11, _12, _13;
+        coreFloat _21, _22, _23;
+        coreFloat _31, _32, _33;
     };
+    coreFloat arr[3][3];
 
 
 public:
@@ -99,11 +93,10 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreMatrix3 operator *  (const coreFloat f)const;
-    inline           coreMatrix3 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
-    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
-    friend CONSTEXPR coreMatrix3 operator *  (const coreFloat f, const coreMatrix3& m) {return m * f;}
+    constexpr coreMatrix3 operator *  (const coreFloat f)const;
+    inline    coreMatrix3 operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
+    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
     //! @}
 
     /*! convert matrix */
@@ -145,20 +138,17 @@ public:
 
 // ****************************************************************
 /* 4x4-matrix class */
-class coreMatrix4 final
+union coreMatrix4 final
 {
 public:
-    union
+    struct
     {
-        struct
-        {
-            coreFloat _11, _12, _13, _14;
-            coreFloat _21, _22, _23, _24;
-            coreFloat _31, _32, _33, _34;
-            coreFloat _41, _42, _43, _44;
-        };
-        coreFloat arr[4][4];
+        coreFloat _11, _12, _13, _14;
+        coreFloat _21, _22, _23, _24;
+        coreFloat _31, _32, _33, _34;
+        coreFloat _41, _42, _43, _44;
     };
+    coreFloat arr[4][4];
 
 
 public:
@@ -190,11 +180,10 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreMatrix4 operator *  (const coreFloat f)const;
-    inline           coreMatrix4 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
-    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
-    friend CONSTEXPR coreMatrix4 operator *  (const coreFloat f, const coreMatrix4& m) {return m * f;}
+    constexpr coreMatrix4 operator *  (const coreFloat f)const;
+    inline    coreMatrix4 operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
+    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
     //! @}
 
     /*! convert matrix */
@@ -242,6 +231,12 @@ public:
     static inline    coreMatrix4 Camera      (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
     //! @}
 };
+
+
+// ****************************************************************
+/* global scalar operations */
+CONSTEXPR coreMatrix3 operator * (const coreFloat f, const coreMatrix3& m) {return m * f;}
+CONSTEXPR coreMatrix4 operator * (const coreFloat f, const coreMatrix4& m) {return m * f;}
 
 
 // ****************************************************************

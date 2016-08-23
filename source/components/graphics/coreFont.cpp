@@ -38,8 +38,12 @@ coreStatus coreFont::Load(coreFile* pFile)
     // copy the input file for later font creations
     m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
 
+#if defined(_CORE_DEBUG_)
+
     // create test font
-    if(!this->__InitHeight(1u, 0u)) return CORE_INVALID_DATA;
+    WARN_IF(!this->__InitHeight(1u, 0u)) return CORE_INVALID_DATA;
+
+#endif
 
     // save properties
     m_sPath = pFile->GetPath();

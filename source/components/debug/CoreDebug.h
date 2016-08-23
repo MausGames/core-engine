@@ -28,13 +28,22 @@
 class CoreDebug final
 {
 private:
+    /*! display structure */
+    struct coreDisplay final
+    {
+        coreUint32   iCurFrame;   //!< current frame to render
+        coreObject2D oOutput;     //!< object for displaying output
+
+        coreDisplay()noexcept;
+    };
+
     /*! measure structure */
     struct coreMeasure final
     {
         coreUint64 iPerfTime;                                //!< high-precision CPU time value at start
         coreArray<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
-        coreFloat afCurrentCPU[3];                           //!< current CPU performance values (avg, min, max)
-        coreFloat afCurrentGPU[3];                           //!< current GPU performance values (avg, min, max)
+        coreFloat fCurrentCPU;                               //!< current CPU performance values
+        coreFloat fCurrentGPU;                               //!< current GPU performance values
         coreLabel oOutput;                                   //!< label for displaying output
 
         coreMeasure()noexcept;
@@ -50,16 +59,17 @@ private:
 
 
 private:
-    coreLookupStr<coreMeasure*> m_apMeasure;   //!< measure objects to display CPU and GPU performance values
-    coreLookupStr<coreInspect*> m_apInspect;   //!< inspect objects to display current values during run-time
-    coreMeasure* m_pOverall;                   //!< pointer to overall performance output object
+    coreLookup<coreTexture*, coreDisplay*> m_apDisplay;   //!< display objects to render textures directly on screen
+    coreLookupStr<coreMeasure*> m_apMeasure;              //!< measure objects to display CPU and GPU performance values
+    coreLookupStr<coreInspect*> m_apInspect;              //!< inspect objects to display current values during run-time
+    coreMeasure* m_pOverall;                              //!< pointer to overall performance output object
 
-    coreObject2D m_Background;                 //!< background object to increase output readability
-    coreLabel    m_Loading;                    //!< resource manager loading indicator
+    coreObject2D m_Background;                            //!< background object to increase output readability
+    coreLabel    m_Loading;                               //!< resource manager loading indicator
 
-    coreBool m_bEnabled;                       //!< debug-monitor is enabled (debug-build or debug-context)
-    coreBool m_bVisible;                       //!< output is visible on screen
-    coreBool m_bHolding;                       //!< holding the current frame
+    coreBool m_bEnabled;                                  //!< debug-monitor is enabled (debug-build or debug-context)
+    coreBool m_bVisible;                                  //!< output is visible on screen
+    coreBool m_bHolding;                                  //!< holding the current frame
 
 
 private:
@@ -70,6 +80,11 @@ private:
 public:
     FRIEND_CLASS(Core)
     DISABLE_COPY(CoreDebug)
+
+    /*! render textures directly on screen */
+    //! @{
+    void DisplayTexture(const coreTexturePtr& pTexture, const coreVector2& vSize = coreVector2(0.2f,0.2f));
+    //! @}
 
     /*! measure performance between specific points */
     //! @{

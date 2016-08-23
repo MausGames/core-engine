@@ -160,7 +160,6 @@
 // ****************************************************************
 /* specific libraries */
 #define HAVE_LIBC (1)
-#define GLEW_MX
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #define ZLIB_CONST
@@ -173,7 +172,6 @@
     #include <GLES2/gl2.h>
 #else
     #include <GL/glew.h>
-    #include <GL/gl.h>
 #endif
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -291,7 +289,14 @@
         #define ASSERT(c)    {if(!(c)) __builtin_unreachable();}
     #endif
 #endif
-#define WARN_IF(c)           {SDL_assert(!(c));} if(c)
+
+#if defined(_CORE_DEBUG_)
+    thread_local static bool __bLastWarnIf = false;
+    #define WARN_IF(c)       __bLastWarnIf = !!(c); ASSERT(!__bLastWarnIf); if(__bLastWarnIf)
+#else
+    #define WARN_IF(c)       if(c)
+#endif
+
 #define STATIC_ASSERT(c)     static_assert(c, "Static Assertion [" #c "]");
 
 // disable constructor and destructor of the defined class
@@ -431,12 +436,12 @@ enum coreStatus : coreInt8
 
 // ****************************************************************
 /* forward declarations */
-class  coreVector2;
-class  coreVector3;
-class  coreVector4;
-class  coreMatrix2;
-class  coreMatrix3;
-class  coreMatrix4;
+union  coreVector2;
+union  coreVector3;
+union  coreVector4;
+union  coreMatrix2;
+union  coreMatrix3;
+union  coreMatrix4;
 class  coreFile;
 class  coreArchive;
 class  coreObject2D;
@@ -546,8 +551,9 @@ private:
 #include "additional/coreCPUID.h"
 #include "utilities/math/coreMath.h"
 #include "utilities/data/coreData.h"
-#include "utilities/data/hash/CRC32.h" // ###
-#include "utilities/data/hash/FNV1.h"  // ###
+#include "utilities/data/hash/CRC32.h"
+#include "utilities/data/hash/FNV1.h"
+#include "utilities/data/hash/Murmur2.h"
 #include "utilities/data/coreProtect.h"
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreArray.h"

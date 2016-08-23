@@ -30,8 +30,8 @@
 class INTERFACE coreData final
 {
 private:
-    static thread_local coreChar  m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings
-    static thread_local coreUintW m_iCurString;                                              //!< current return-string
+    static thread_local coreChar  s_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings
+    static thread_local coreUintW s_iCurString;                                              //!< current return-string
 
 
 public:
@@ -77,7 +77,7 @@ public:
 
     /*! retrieve current date and time */
     //! @{
-    static void            DateTimeValue(coreUint32* OUTPUT piYea, coreUint32* OUTPUT piMon, coreUint32* OUTPUT piDay, coreUint32* OUTPUT piHou, coreUint32* OUTPUT piMin, coreUint32* OUTPUT piSec);
+    static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec);
     static const coreChar* DateTimePrint(const coreChar* pcFormat);
     static inline const coreChar* DateString() {return coreData::DateTimePrint("%Y-%m-%d");}
     static inline const coreChar* TimeString() {return coreData::DateTimePrint("%H:%M:%S");}
@@ -108,7 +108,7 @@ public:
 private:
     /*! access next return-string */
     //! @{
-    static inline RETURN_RESTRICT coreChar* __NextString() {if(++m_iCurString >= CORE_DATA_STRING_NUM) m_iCurString = 0u; return m_aacString[m_iCurString];}
+    static inline RETURN_RESTRICT coreChar* __NextString() {if(++s_iCurString >= CORE_DATA_STRING_NUM) s_iCurString = 0u; return s_aacString[s_iCurString];}
     //! @}
 };
 
@@ -132,7 +132,7 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 
 #endif
 
-    ASSERT(-1 < iReturn && iReturn < coreInt32(CORE_DATA_STRING_LEN))
+    ASSERT((-1 < iReturn) && (iReturn < coreInt32(CORE_DATA_STRING_LEN)))
     return pcString;
 }
 

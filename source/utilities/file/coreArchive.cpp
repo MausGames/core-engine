@@ -142,8 +142,8 @@ coreStatus coreFile::LoadData()
 
 #if defined(_CORE_DEBUG_)
 
-    // for correct hot-reloading (not in release)
-    if(!m_sPath.empty()) m_iSize = coreData::FileSize(m_sPath.c_str());
+    // for correct hot-reloading (not in release, not in archive)
+    if(!m_sPath.empty() && !m_pArchive) m_iSize = coreData::FileSize(m_sPath.c_str());
 
 #endif
 
@@ -251,6 +251,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
         SDL_RWread(pArchive, acPath,       sizeof(coreChar),   iPathLen);
         SDL_RWread(pArchive, &iSize,       sizeof(coreUint32), 1u);
         SDL_RWread(pArchive, &iArchivePos, sizeof(coreUint32), 1u);
+        acPath[iPathLen] = '\0';
 
         // add new file object
         coreFile* pNewFile      = new coreFile(acPath, NULL, iSize);

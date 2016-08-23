@@ -11,12 +11,21 @@
 
 // ****************************************************************
 /* constructor */
+CoreDebug::coreDisplay::coreDisplay()noexcept
+: iCurFrame (0u)
+, oOutput   ()
+{
+}
+
+
+// ****************************************************************
+/* constructor */
 CoreDebug::coreMeasure::coreMeasure()noexcept
-: iPerfTime    (0u)
-, aaiQuery     {}
-, afCurrentCPU {}
-, afCurrentGPU {}
-, oOutput      ()
+: iPerfTime   (0u)
+, aaiQuery    {}
+, fCurrentCPU (0.0f)
+, fCurrentGPU (0.0f)
+, oOutput     ()
 {
 }
 
@@ -32,7 +41,8 @@ CoreDebug::coreInspect::coreInspect()noexcept
 // ****************************************************************
 /* constructor */
 CoreDebug::CoreDebug()noexcept
-: m_apMeasure  {}
+: m_apDisplay  {}
+, m_apMeasure  {}
 , m_apInspect  {}
 , m_pOverall   (NULL)
 , m_Background ()
@@ -71,13 +81,40 @@ CoreDebug::CoreDebug()noexcept
 /* destructor */
 CoreDebug::~CoreDebug()
 {
-    // delete all measure and inspect objects
+    // delete all display, measure and inspect objects
+    FOR_EACH(it, m_apDisplay) SAFE_DELETE(*it)
     FOR_EACH(it, m_apMeasure) SAFE_DELETE(*it)
     FOR_EACH(it, m_apInspect) SAFE_DELETE(*it)
 
     // clear memory
+    m_apDisplay.clear();
     m_apMeasure.clear();
     m_apInspect.clear();
+}
+
+
+// ****************************************************************
+/* render texture directly on screen */
+void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreVector2& vSize)
+{
+    if(!m_bEnabled) return;
+
+    if(!m_apDisplay.count(&(*pTexture)))
+    {
+        // create new display object
+        coreDisplay* pNewDisplay = new coreDisplay();
+        m_apDisplay.emplace(&(*pTexture), pNewDisplay);
+
+        // configure output object
+        coreObject2D& oOutput = pNewDisplay->oOutput;
+        oOutput.DefineProgram("default_2d_program");
+        oOutput.SetSize      (vSize);
+        oOutput.SetCenter    (coreVector2(-0.5f,-0.5f));
+        oOutput.SetAlignment (coreVector2( 1.0f, 1.0f));
+    }
+
+    // save current frame (only render once, to prevent invalid access)
+    m_apDisplay.at(&(*pTexture))->iCurFrame = Core::System->GetCurFrame();
 }
 
 
@@ -135,9 +172,7 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
 
     // fetch second CPU time value and update CPU performance value
     const coreFloat fDifferenceCPU = coreFloat(coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
-    pMeasure->afCurrentCPU[0] = pMeasure->afCurrentCPU[0] * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
-    pMeasure->afCurrentCPU[1] = MIN(pMeasure->afCurrentCPU[1], pMeasure->afCurrentCPU[0]);
-    pMeasure->afCurrentCPU[2] = MAX(pMeasure->afCurrentCPU[2], pMeasure->afCurrentCPU[0]);
+    pMeasure->fCurrentCPU = pMeasure->fCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
 
     if(pMeasure->aaiQuery[0][0])
     {
@@ -155,9 +190,7 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
 
         // update GPU performance value
         const coreFloat fDifferenceGPU = coreFloat(coreDouble(aiResult[1] - aiResult[0]) / 1.0e06);
-        pMeasure->afCurrentGPU[0] = pMeasure->afCurrentGPU[0] * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceGPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
-        pMeasure->afCurrentGPU[1] = MIN(pMeasure->afCurrentGPU[1], pMeasure->afCurrentGPU[0]);
-        pMeasure->afCurrentGPU[2] = MAX(pMeasure->afCurrentGPU[2], pMeasure->afCurrentGPU[0]);
+        pMeasure->fCurrentGPU = pMeasure->fCurrentGPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceGPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
     }
 
     if(pMeasure == m_pOverall)
@@ -168,9 +201,7 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
     }
 
     // write formatted values to output label
-    pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms - %.2f %.2f / GPU %.2fms - %.2f %.2f)", pcName,
-                                    pMeasure->afCurrentCPU[0], pMeasure->afCurrentCPU[1], pMeasure->afCurrentCPU[2],
-                                    pMeasure->afCurrentGPU[0], pMeasure->afCurrentGPU[1], pMeasure->afCurrentGPU[2]));
+    pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->fCurrentCPU, pMeasure->fCurrentGPU));
 }
 
 
@@ -189,18 +220,6 @@ void CoreDebug::__UpdateOutput()
     {
              if(SDL_GL_GetSwapInterval())   SDL_GL_SetSwapInterval(0);
         else if(SDL_GL_SetSwapInterval(-1)) SDL_GL_SetSwapInterval(1);
-    }
-
-    // reset min and max performance values
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_PRESS))
-    {
-        FOR_EACH(it, m_apMeasure)
-        {
-            coreMeasure* pMeasure = (*it);
-
-            pMeasure->afCurrentCPU[1] = pMeasure->afCurrentGPU[1] = FLT_MAX;
-            pMeasure->afCurrentCPU[2] = pMeasure->afCurrentGPU[2] = 0.0f;
-        }
     }
 
     // hold and skip frame
@@ -265,6 +284,28 @@ void CoreDebug::__UpdateOutput()
         m_Loading.Move();
     }
 
+    // move display objects
+    coreFloat fOffsetX = 0.0f;
+    FOR_EACH_DYN(it, m_apDisplay)
+    {
+        coreDisplay* pDisplay = (*it);
+
+        // remove old entries
+        if(pDisplay->iCurFrame != Core::System->GetCurFrame())
+        {
+            SAFE_DELETE(*it)
+            DYN_REMOVE(it, m_apDisplay)
+        }
+        else
+        {
+            pDisplay->oOutput.SetPosition(coreVector2(fOffsetX, 0.0f));
+            pDisplay->oOutput.Move();
+
+            fOffsetX += pDisplay->oOutput.GetSize().x;
+            DYN_KEEP(it)
+        }
+    }
+
     // move background object (adjust size automatically)
     m_Background.SetSize(coreVector2(fNewSizeX, I_TO_F(1-iCurLine)*0.023f + 0.005f));
     m_Background.Move();
@@ -274,7 +315,14 @@ void CoreDebug::__UpdateOutput()
     {
         glDisable(GL_DEPTH_TEST);
         {
-            // render full output
+            // render image output
+            FOR_EACH(it, m_apDisplay)
+            {
+                (*m_apDisplay.get_key(it))->Enable(0u);
+                (*it)->oOutput.Render();
+            }
+
+            // render text output
             m_Background.Render();
             FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
             FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();

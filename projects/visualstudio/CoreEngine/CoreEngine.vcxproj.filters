@@ -335,5 +335,8 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreProtect.h">
       <Filter>source\utilities\data</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\hash\Murmur2.h">
+      <Filter>source\utilities\data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

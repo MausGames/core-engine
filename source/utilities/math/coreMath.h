@@ -20,8 +20,9 @@
 /* math definitions */
 #define CORE_MATH_PRECISION (0.001f)                               //!< default floating-point precision
 
-#define PI (3.1415926535897932384626433832795f)                    //!< Archimedes' constant
-#define EU (2.7182818284590452353602874713527f)                    //!< Euler's number
+#define PI    (3.1415926535897932384626433832795f)                 //!< Archimedes' constant
+#define EU    (2.7182818284590452353602874713527f)                 //!< Euler's number
+#define SQRT2 (1.4142135623730950488016887242097f)                 //!< principal square root of 2
 
 #define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degrees to radians
 #define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radians to degrees

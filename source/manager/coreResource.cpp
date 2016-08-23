@@ -225,9 +225,6 @@ coreStatus coreResourceManager::__InitThread()
         Core::Log->Error("Resource context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
     else Core::Log->Info("Resource context assigned to resource thread");
 
-    // init OpenGL
-    coreInitOpenGL();
-
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 

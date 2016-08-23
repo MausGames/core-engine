@@ -22,26 +22,25 @@
     #include <sys/system_properties.h>
 #endif
 
-thread_local coreChar  coreData::m_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN] = {{}};
-thread_local coreUintW coreData::m_iCurString                                            = 0u;
+thread_local coreChar  coreData::s_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN] = {{}};
+thread_local coreUintW coreData::s_iCurString                                            = 0u;
+
+#if defined(_CORE_WINDOWS_) && !defined(_CORE_X64_)
+    #pragma comment(lib, "psapi.lib")
+#endif
 
 
 // ****************************************************************
 /* get amount of memory physically mapped to the application */
 coreUint64 coreData::AppMemory()
 {
-#if defined(_CORE_WINDOWS_) && defined(_CORE_X64_)
+#if defined(_CORE_WINDOWS_)
 
-    // get process handle
-    HANDLE pProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, GetCurrentProcessId());
-    if(pProcess)
+    PROCESS_MEMORY_COUNTERS oMemory;
+
+    // retrieve memory usage information
+    if(GetProcessMemoryInfo(GetCurrentProcess(), &oMemory, sizeof(oMemory)))
     {
-        PROCESS_MEMORY_COUNTERS oMemory;
-
-        // retrieve memory usage information
-        GetProcessMemoryInfo(pProcess, &oMemory, sizeof(oMemory));
-        CloseHandle(pProcess);
-
         // return current working set size
         return oMemory.WorkingSetSize;
     }
@@ -285,7 +284,7 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     pFolder = FindFirstFile(PRINT("%s/%s", pcPath, pcFilter), &oFile);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
-        Core::Log->Warning("Folder (%s) could not be opened", pcPath);
+        Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
         return CORE_ERROR_FILE;
     }
 
@@ -313,7 +312,7 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     #endif
     if(!pDir)
     {
-        Core::Log->Warning("Folder (%s) could not be opened", pcPath);
+        Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
         return CORE_ERROR_FILE;
     }
 
@@ -359,11 +358,11 @@ void coreData::CreateFolder(const std::string& sPath)
 
 // ****************************************************************
 /* retrieve current date and time as values */
-void coreData::DateTimeValue(coreUint32* OUTPUT piYea, coreUint32* OUTPUT piMon, coreUint32* OUTPUT piDay, coreUint32* OUTPUT piHou, coreUint32* OUTPUT piMin, coreUint32* OUTPUT piSec)
+void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec)
 {
     // format current time
-    const std::time_t iTime = std::time(NULL);
-    std::tm* pLocal = std::localtime(&iTime);
+    const std::time_t iTime  = std::time(NULL);
+    const std::tm*    pLocal = std::localtime(&iTime);
 
     // forward values
     if(piYea) *piYea = pLocal->tm_year + 1900u;
@@ -382,8 +381,8 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat)
     coreChar* pcString = coreData::__NextString();
 
     // format current time
-    const std::time_t iTime = std::time(NULL);
-    std::tm* pLocal = std::localtime(&iTime);
+    const std::time_t iTime  = std::time(NULL);
+    const std::tm*    pLocal = std::localtime(&iTime);
 
     // assemble string
     const coreUintW iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
@@ -431,7 +430,7 @@ coreStatus coreData::CompressDeflate(const coreByte* pInput, const coreUint32 iI
     }
 
     // store original size and return compressed data
-    (*r_cast<coreUint32*>(pBuffer)) = oStream.total_out;
+    (*r_cast<coreUint32*>(pBuffer)) = oStream.total_in;
     (*ppOutput)     = pBuffer;
     (*piOutputSize) = oStream.total_out + sizeof(coreUint32);
 

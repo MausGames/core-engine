@@ -9,7 +9,7 @@
 #define _HAS_EXCEPTIONS (0)
 #define WIN32_LEAN_AND_MEAN
 
-#pragma warning(disable : 4100)
+#pragma warning(disable : 4100 4127)
 
 #include <windows.h>
 #include <shellapi.h>
@@ -63,6 +63,12 @@ bool IsWindowsVistaOrHigher()
 bool IsWow64()
 {
     int iStatus = 0;
+    
+    // check for pointer-size (compile-time)
+    if(sizeof(void*) == 8u)
+    {
+        return true;
+    }
 
     // get function pointer from kernel library
     LPFN_ISWOW64PROCESS nIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(GetModuleHandle("kernel32"), "IsWow64Process");

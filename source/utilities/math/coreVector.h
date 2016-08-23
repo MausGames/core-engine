@@ -16,15 +16,12 @@
 
 // ****************************************************************
 /* 2d-vector class */
-class coreVector2 final
+union coreVector2 final
 {
 public:
-    union
-    {
-        struct {coreFloat x, y;};
-        struct {coreFloat r, g;};
-        coreFloat arr[2];
-    };
+    struct {coreFloat x, y;};
+    struct {coreFloat r, g;};
+    coreFloat arr[2];
 
 
 public:
@@ -57,16 +54,14 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreVector2 operator +  (const coreFloat f)const                  {return coreVector2(x+f, y+f);}
-    constexpr        coreVector2 operator -  (const coreFloat f)const                  {return coreVector2(x-f, y-f);}
-    constexpr        coreVector2 operator *  (const coreFloat f)const                  {return coreVector2(x*f, y*f);}
-    inline           coreVector2 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
-    inline           void        operator += (const coreFloat f)                       {*this = *this + f;}
-    inline           void        operator -= (const coreFloat f)                       {*this = *this - f;}
-    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
-    friend constexpr coreVector2 operator +  (const coreFloat f, const coreVector2& v) {return v + f;}
-    friend constexpr coreVector2 operator *  (const coreFloat f, const coreVector2& v) {return v * f;}
+    constexpr coreVector2 operator +  (const coreFloat f)const {return coreVector2(x+f, y+f);}
+    constexpr coreVector2 operator -  (const coreFloat f)const {return coreVector2(x-f, y-f);}
+    constexpr coreVector2 operator *  (const coreFloat f)const {return coreVector2(x*f, y*f);}
+    inline    coreVector2 operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    void        operator += (const coreFloat f)      {*this = *this + f;}
+    inline    void        operator -= (const coreFloat f)      {*this = *this - f;}
+    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
+    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
     //! @}
 
     /*! matrix operations */
@@ -150,15 +145,12 @@ public:
 
 // ****************************************************************
 /* 3d-vector class */
-class coreVector3 final
+union coreVector3 final
 {
 public:
-    union
-    {
-        struct {coreFloat x, y, z;};
-        struct {coreFloat r, g, b;};
-        coreFloat arr[3];
-    };
+    struct {coreFloat x, y, z;};
+    struct {coreFloat r, g, b;};
+    coreFloat arr[3];
 
 
 public:
@@ -193,16 +185,14 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreVector3 operator +  (const coreFloat f)const                  {return coreVector3(x+f, y+f, z+f);}
-    constexpr        coreVector3 operator -  (const coreFloat f)const                  {return coreVector3(x-f, y-f, z-f);}
-    constexpr        coreVector3 operator *  (const coreFloat f)const                  {return coreVector3(x*f, y*f, z*f);}
-    inline           coreVector3 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
-    inline           void        operator += (const coreFloat f)                       {*this = *this + f;}
-    inline           void        operator -= (const coreFloat f)                       {*this = *this - f;}
-    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
-    friend constexpr coreVector3 operator +  (const coreFloat f, const coreVector3& v) {return v + f;}
-    friend constexpr coreVector3 operator *  (const coreFloat f, const coreVector3& v) {return v * f;}
+    constexpr coreVector3 operator +  (const coreFloat f)const {return coreVector3(x+f, y+f, z+f);}
+    constexpr coreVector3 operator -  (const coreFloat f)const {return coreVector3(x-f, y-f, z-f);}
+    constexpr coreVector3 operator *  (const coreFloat f)const {return coreVector3(x*f, y*f, z*f);}
+    inline    coreVector3 operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    void        operator += (const coreFloat f)      {*this = *this + f;}
+    inline    void        operator -= (const coreFloat f)      {*this = *this - f;}
+    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
+    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
     //! @}
 
     /*! matrix operations */
@@ -294,15 +284,12 @@ public:
 
 // ****************************************************************
 /* 4d-vector and quaternion class */
-class coreVector4 final
+union coreVector4 final
 {
 public:
-    union
-    {
-        struct {coreFloat x, y, z, w;};
-        struct {coreFloat r, g, b, a;};
-        coreFloat arr[4];
-    };
+    struct {coreFloat x, y, z, w;};
+    struct {coreFloat r, g, b, a;};
+    coreFloat arr[4];
 
 
 public:
@@ -341,16 +328,14 @@ public:
 
     /*! scalar operations */
     //! @{
-    constexpr        coreVector4 operator +  (const coreFloat f)const                  {return coreVector4(x+f, y+f, z+f, w+f);}
-    constexpr        coreVector4 operator -  (const coreFloat f)const                  {return coreVector4(x-f, y-f, z-f, w-f);}
-    constexpr        coreVector4 operator *  (const coreFloat f)const                  {return coreVector4(x*f, y*f, z*f, w*f);}
-    inline           coreVector4 operator /  (const coreFloat f)const                  {return  *this * RCP(f);}
-    inline           void        operator += (const coreFloat f)                       {*this = *this + f;}
-    inline           void        operator -= (const coreFloat f)                       {*this = *this - f;}
-    inline           void        operator *= (const coreFloat f)                       {*this = *this * f;}
-    inline           void        operator /= (const coreFloat f)                       {*this = *this / f;}
-    friend constexpr coreVector4 operator +  (const coreFloat f, const coreVector4& v) {return v + f;}
-    friend constexpr coreVector4 operator *  (const coreFloat f, const coreVector4& v) {return v * f;}
+    constexpr coreVector4 operator +  (const coreFloat f)const {return coreVector4(x+f, y+f, z+f, w+f);}
+    constexpr coreVector4 operator -  (const coreFloat f)const {return coreVector4(x-f, y-f, z-f, w-f);}
+    constexpr coreVector4 operator *  (const coreFloat f)const {return coreVector4(x*f, y*f, z*f, w*f);}
+    inline    coreVector4 operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    void        operator += (const coreFloat f)      {*this = *this + f;}
+    inline    void        operator -= (const coreFloat f)      {*this = *this - f;}
+    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
+    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
     //! @}
 
     /*! matrix operations */
@@ -421,6 +406,16 @@ public:
     constexpr        coreVector3 QuatApply    (const coreVector3& v)const;
     //! @}
 };
+
+
+// ****************************************************************
+/* global scalar operations */
+constexpr coreVector2 operator + (const coreFloat f, const coreVector2& v) {return v + f;}
+constexpr coreVector2 operator * (const coreFloat f, const coreVector2& v) {return v * f;}
+constexpr coreVector3 operator + (const coreFloat f, const coreVector3& v) {return v + f;}
+constexpr coreVector3 operator * (const coreFloat f, const coreVector3& v) {return v * f;}
+constexpr coreVector4 operator + (const coreFloat f, const coreVector4& v) {return v + f;}
+constexpr coreVector4 operator * (const coreFloat f, const coreVector4& v) {return v * f;}
 
 
 // ****************************************************************
@@ -583,9 +578,9 @@ coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFloat fFOV
 /* convert RGB-color to HSV-color */
 inline coreVector3 coreVector3::RGBtoHSV()const
 {
-    const coreFloat& R = r;
-    const coreFloat& G = g;
-    const coreFloat& B = b;
+    const coreFloat& R = x;
+    const coreFloat& G = y;
+    const coreFloat& B = z;
 
     const coreFloat v = this->Max();
     const coreFloat d = v - this->Min();
@@ -604,9 +599,9 @@ inline coreVector3 coreVector3::RGBtoHSV()const
 /* convert HSV-color to RGB-color */
 inline coreVector3 coreVector3::HSVtoRGB()const
 {
-    const coreFloat  H = r * 6.0f;
-    const coreFloat& S = g;
-    const coreFloat& V = b;
+    const coreFloat  H = x * 6.0f;
+    const coreFloat& S = y;
+    const coreFloat& V = z;
 
     const coreFloat h = FLOOR(H);
 

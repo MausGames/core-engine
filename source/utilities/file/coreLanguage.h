@@ -102,6 +102,12 @@ public:
     inline       coreUintW GetNumStrings()const {return m_asStringList.size();}
     //! @}
 
+    /*! get list with all available languages <name, path> */
+    //! @{
+    static void GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreLookup<std::string, std::string>* OUTPUT pasOutput);
+    static void GetAvailableLanguages(coreLookup<std::string, std::string>* OUTPUT pasOutput);
+    //! @}
+
 
 private:
     /*! bind and unbind translation objects */

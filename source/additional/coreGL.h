@@ -15,12 +15,6 @@
 
 
 // ****************************************************************
-/* GLEW context structure */
-extern thread_local GLEWContext g_GlewContext;
-#define glewGetContext() (g_GlewContext)
-
-
-// ****************************************************************
 /* init OpenGL */
 extern void __coreInitOpenGL();
 #define coreInitOpenGL __coreInitOpenGL
