@@ -26,17 +26,17 @@
 
 VERSIONHELPERAPI IsWindowsVersionOrGreater(DWORD dwMajorVersion, DWORD dwMinorVersion, WORD wServicePackMajor)
 {
-    OSVERSIONINFOEX oVersionInfo   = {sizeof(oVersionInfo), 0, 0, 0, 0, {0}, 0, 0};
+    OSVERSIONINFOEX oVersionInfo   = {sizeof(oVersionInfo)};
     oVersionInfo.dwMajorVersion    = dwMajorVersion;
     oVersionInfo.dwMinorVersion    = dwMinorVersion;
     oVersionInfo.wServicePackMajor = wServicePackMajor;
 
-    const DWORDLONG iConditionMask = VerSetConditionMask(VerSetConditionMask(VerSetConditionMask(0,
+    const DWORDLONG iConditionMask = VerSetConditionMask(VerSetConditionMask(VerSetConditionMask(0u,
                                      VER_MAJORVERSION,     VER_GREATER_EQUAL),
                                      VER_MINORVERSION,     VER_GREATER_EQUAL),
                                      VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
 
-    return (VerifyVersionInfo(&oVersionInfo, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, iConditionMask) != FALSE);
+    return (VerifyVersionInfo(&oVersionInfo, (VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR), iConditionMask) != FALSE);
 }
 
 

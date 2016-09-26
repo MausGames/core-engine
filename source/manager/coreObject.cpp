@@ -84,18 +84,16 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
 
     // calculate relative transformation matrix (with absolute values to check only for maximums)
     const coreMatrix3 M = coreMatrix3::Quat(coreVector4::QuatMultiply(vRevRotation2, vRotation1));
-    const coreMatrix3 S = coreMatrix3(ABS(M._11), ABS(M._12), ABS(M._13),
-                                      ABS(M._21), ABS(M._22), ABS(M._23),
-                                      ABS(M._31), ABS(M._32), ABS(M._33));
+    const coreMatrix3 S = M.Processed(ABS);
 
     // rotate and move first object relative to second (but distance only with single rotation)
     const coreVector3 D1 = vRevRotation2.QuatApply(vDiff);
     const coreVector3 R1 = vRange1 * S;
 
     // check for first boundary intersection
-    if(ABS(D1.x) > R1.x + vRange2.x) return false;
-    if(ABS(D1.y) > R1.y + vRange2.y) return false;
-    if(ABS(D1.z) > R1.z + vRange2.z) return false;
+    if(ABS(D1.x) > (R1.x + vRange2.x)) return false;
+    if(ABS(D1.y) > (R1.y + vRange2.y)) return false;
+    if(ABS(D1.z) > (R1.z + vRange2.z)) return false;
 
     // revert first rotation
     const coreVector4 vRevRotation1 = vRotation1.QuatConjugate();
@@ -105,9 +103,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     const coreVector3 R2 = vRange2 * S.Transposed();
 
     // check for second boundary intersection
-    if(ABS(D2.x) > vRange1.x + R2.x) return false;
-    if(ABS(D2.y) > vRange1.y + R2.y) return false;
-    if(ABS(D2.z) > vRange1.z + R2.z) return false;
+    if(ABS(D2.x) > (vRange1.x + R2.x)) return false;
+    if(ABS(D2.y) > (vRange1.y + R2.y)) return false;
+    if(ABS(D2.z) > (vRange1.z + R2.z)) return false;
 
     return true;
 }

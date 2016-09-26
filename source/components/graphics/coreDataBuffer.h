@@ -84,6 +84,7 @@ public:
     //! @{
     template <typename T> RETURN_RESTRICT T* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType);
     template <typename T> void               Unmap(T* ptPointer);
+    void Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
     //! @}
 
     //! reset content of the data buffer object
@@ -197,7 +198,7 @@ inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 // map buffer memory for writing operations
 template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType)
 {
-    ASSERT(m_iDataBuffer && this->IsWritable() && (iOffset+iLength <= m_iSize))
+    ASSERT(m_iDataBuffer && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
 
     // save mapping attributes
     m_iMapOffset = iOffset;

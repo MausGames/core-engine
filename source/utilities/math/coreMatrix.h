@@ -120,6 +120,14 @@ public:
     inline coreMatrix3  Inverted()const {return coreMatrix3(*this).Invert();}
     //! @}
 
+    /*! process matrix */
+    //! @{
+    template <typename... A> inline coreMatrix3& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreMatrix3& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreMatrix3  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreMatrix3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreMatrix3  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreMatrix3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    //! @}
+
     /*! direct functions */
     //! @{
     constexpr coreFloat Determinant()const;
@@ -205,6 +213,14 @@ public:
     //! @{
     inline coreMatrix4& Invert  ();
     inline coreMatrix4  Inverted()const {return coreMatrix4(*this).Invert();}
+    //! @}
+
+    /*! process matrix */
+    //! @{
+    template <typename... A> inline coreMatrix4& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreMatrix4& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreMatrix4  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreMatrix4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreMatrix4  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreMatrix4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
     //! @}
 
     /*! direct functions */

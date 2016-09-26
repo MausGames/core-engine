@@ -476,9 +476,11 @@ void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iG
 {
     ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this)
 
-    // launch one or more compute work groups
     if(CORE_GL_SUPPORT(ARB_compute_shader))
+    {
+        // launch one or more compute work groups
         glDispatchCompute(iGroupsX, iGroupsY, iGroupsZ);
+    }
 }
 
 

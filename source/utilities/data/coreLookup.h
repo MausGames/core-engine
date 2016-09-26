@@ -101,10 +101,12 @@ public:
 
     /*! return internal iterator */
     //! @{
-    inline coreValueIterator      begin()      {return m_atValueList.begin();}
-    inline coreValueConstIterator begin()const {return m_atValueList.begin();}
-    inline coreValueIterator      end  ()      {return m_atValueList.end  ();}
-    inline coreValueConstIterator end  ()const {return m_atValueList.end  ();}
+    inline coreValueIterator      begin()                   {return m_atValueList.begin();}
+    inline coreValueConstIterator begin()const              {return m_atValueList.begin();}
+    inline coreValueIterator      end  ()                   {return m_atValueList.end  ();}
+    inline coreValueConstIterator end  ()const              {return m_atValueList.end  ();}
+    inline coreValueIterator      find (const I& tKey)      {return this->get_value(this->_retrieve(tKey));}
+    inline coreValueConstIterator find (const I& tKey)const {return this->get_value(this->_retrieve(tKey));}
     //! @}
 
     /*! operate between values and keys */

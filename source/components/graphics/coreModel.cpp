@@ -100,7 +100,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // apply post-transform vertex cache optimization to index data
     coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
-    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 32u);
+    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 64u);
 
     // apply pre-transform vertex cache optimization to vertex data
     coreUint16 iCurIndex = 0u;
@@ -296,6 +296,9 @@ void coreModel::Enable()
             // create vertex array object
             glGenVertexArrays(1, &m_iVertexArray);
             glBindVertexArray(m_iVertexArray);
+
+            // force binding of index data
+            coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
         }
 
         // set vertex data
@@ -372,8 +375,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const
     coreModel::Disable(true);
 
     // create index buffer
-    m_IndexBuffer  .Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iStorageType);
-    coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
+    m_IndexBuffer.Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iStorageType);
 
     return &m_IndexBuffer;
 }

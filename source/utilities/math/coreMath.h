@@ -131,6 +131,7 @@ public:
     /*! miscellaneous functions */
     //! @{
     static inline void DisableDenormals();
+    static inline void EnableExceptions();
     //! @}
 };
 
@@ -302,16 +303,50 @@ inline coreFloat coreMath::Float16to32(const coreUint16 iInput)
 
 
 // ****************************************************************
-/* disable denormals in the MXCSR control register (per thread) */
+/* disable denormal results and inputs (per thread) */
 inline void coreMath::DisableDenormals()
 {
 #if defined(_CORE_SSE_)
 
-    // prevent denormal calculation results
-    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+    // disable in the MXCSR control register (only for SSE)
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);                                 // calculation results
+    if(coreCPUID::SSE3()) _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);   // instruction inputs
 
-    // prevent denormal instruction inputs
-    if(coreCPUID::SSE3()) _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+#endif
+
+#if defined(_CORE_WINDOWS_)
+
+    // disable with Windows intrinsic (both for x87 and SSE)
+    _set_controlfp(_DN_FLUSH, _MCW_DN);
+
+#endif
+}
+
+
+// ****************************************************************
+/* enable relevant floating-point exceptions (per thread) */
+inline void coreMath::EnableExceptions()
+{
+#if defined(_CORE_DEBUG_)
+
+    #if defined(_CORE_SSE_)
+
+        // enable in the MXCSR control register (only for SSE)
+        _MM_SET_EXCEPTION_MASK(~(_MM_MASK_OVERFLOW | _MM_MASK_DIV_ZERO | _MM_MASK_INVALID) & _MM_MASK_MASK);
+
+    #endif
+
+    #if defined(_CORE_WINDOWS_)
+
+        // enable with Windows intrinsic (both for x87 and SSE)
+        _set_controlfp(~(_EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID) & _MCW_EM, _MCW_EM);
+
+    #elif defined(_CORE_LINUX_) || defined(_CORE_ANDROID_)
+
+        // enable with Linux/Android intrinsic (both for x87 and SSE)
+        feenableexcept(FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
+
+    #endif
 
 #endif
 }

@@ -67,10 +67,10 @@ coreStatus coreTexture::Load(coreFile* pFile)
     const coreUint32 iDataSize = pData->w * pData->h * pData->format->BytesPerPixel;
 
     // check for compression capability
-    const coreTextureMode bCompress = (coreMath::IsPOT(pData->w) && coreMath::IsPOT(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
+    const coreTextureMode iCompress = (coreMath::IsPOT(pData->w) && coreMath::IsPOT(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
 
     // create texture
-    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(pData->format->BytesPerPixel), bCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
+    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(pData->format->BytesPerPixel), iCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
     this->Modify(0u, 0u, pData->w, pData->h, iDataSize, s_cast<coreByte*>(pData->pixels));
 
     // save properties
@@ -164,6 +164,8 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  m_iLevels - 1);
     if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER)));
 
     if(CORE_GL_SUPPORT(ARB_texture_storage))
@@ -304,6 +306,49 @@ void coreTexture::CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY
     }
 }
 
+void coreTexture::CopyFrameBuffer()
+{
+    this->CopyFrameBuffer(0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
+}
+
+
+// ****************************************************************
+// bind texture level to image unit
+void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess)
+{
+    ASSERT(m_iTexture && (iLevel < m_iLevels))
+
+    if(CORE_GL_SUPPORT(ARB_shader_image_load_store))
+    {
+        // bind directly without layering
+        glBindImageTexture(iUnit, m_iTexture, iLevel, false, 0, iAccess, m_Spec.iInternal);
+    }
+}
+
+
+// ****************************************************************
+// copy image data to another image
+void coreTexture::CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
+{
+    ASSERT(m_iTexture)
+    ASSERT((iSrcLevel < m_iLevels) && (iDstLevel < pDestination->GetLevels()) &&
+           ((iSrcX + iWidth) <= F_TO_UI(m_vResolution                .x)) && ((iSrcY + iHeight) <= F_TO_UI(m_vResolution                .y)) &&
+           ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x)) && ((iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y)))
+
+    if(CORE_GL_SUPPORT(ARB_copy_image))
+    {
+        // copy directly to another texture unit
+        glCopyImageSubData(m_iTexture,                 GL_TEXTURE_2D, iSrcLevel, iSrcX, iSrcY, 0,
+                           pDestination->GetTexture(), GL_TEXTURE_2D, iDstLevel, iDstX, iDstY, 0,
+                           iWidth, iHeight, 0);
+    }
+}
+
+void coreTexture::CopyImage(coreTexture* OUTPUT pDestination)const
+{
+    this->CopyImage(pDestination, 0u, 0u, 0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
+}
+
 
 // ****************************************************************
 // configure shadow sampling
@@ -321,18 +366,6 @@ void coreTexture::ShadowSampling(const coreBool bStatus)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_GEQUAL);
     }
     else glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-}
-
-
-// ****************************************************************
-// bind texture level to image unit
-void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess)
-{
-    ASSERT(m_iTexture && (iLevel < m_iLevels))
-
-    // bind directly without layering
-    if(CORE_GL_SUPPORT(ARB_shader_image_load_store))
-        glBindImageTexture(iUnit, m_iTexture, iLevel, false, 0, iAccess, m_Spec.iInternal);
 }
 
 
@@ -414,14 +447,8 @@ void coreTexture::Clear(const coreUint8 iLevel)
 
     if(CORE_GL_SUPPORT(ARB_clear_texture))
     {
-        // clear content directly
+        // clear the whole texture
         glClearTexImage(m_iTexture, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
-    }
-    else
-    {
-        // bind and clear content (with fallback method)
-        this->Enable(0u);
-        glTexSubImage2D(GL_TEXTURE_2D, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_Spec.iFormat, m_Spec.iType, NULL);
     }
 }
 
@@ -432,9 +459,11 @@ void coreTexture::Invalidate(const coreUint8 iLevel)
 {
     ASSERT(m_iTexture && (iLevel < m_iLevels))
 
-    // invalidate the whole texture
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
+    {
+        // invalidate the whole texture
         glInvalidateTexImage(m_iTexture, iLevel);
+    }
 }
 
 

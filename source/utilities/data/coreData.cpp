@@ -280,8 +280,11 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     HANDLE pFolder;
     WIN32_FIND_DATA oFile;
 
+    // improve performance if possible
+    const FINDEX_INFO_LEVELS iInfoLevel = IsWindowsVersionOrGreater(6u, 1u, 0u) ? FindExInfoBasic : FindExInfoStandard;
+
     // open folder
-    pFolder = FindFirstFile(PRINT("%s/%s", pcPath, pcFilter), &oFile);
+    pFolder = FindFirstFileEx(PRINT("%s/%s", pcPath, pcFilter), iInfoLevel, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);

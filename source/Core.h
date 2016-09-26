@@ -147,6 +147,7 @@
 #include <cstdint>
 #include <cstring>
 #include <cfloat>
+#include <cfenv>
 #include <cmath>
 #include <ctime>
 #include <memory>
@@ -294,7 +295,11 @@
     thread_local static bool __bLastWarnIf = false;
     #define WARN_IF(c)       __bLastWarnIf = !!(c); ASSERT(!__bLastWarnIf); if(__bLastWarnIf)
 #else
-    #define WARN_IF(c)       if(c)
+    #if defined(_CORE_MSVC_)
+        #define WARN_IF(c)   if(c)
+    #else
+        #define WARN_IF(c)   if(__builtin_expect(c, 0))
+    #endif
 #endif
 
 #define STATIC_ASSERT(c)     static_assert(c, "Static Assertion [" #c "]");

@@ -293,7 +293,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
         if(!pProgramInstanced->Enable())  return;
 
         // enable all active textures
-        coreTexture::EnableAll(&pFirst->GetTexture(0));
+        coreTexture::EnableAll(&pFirst->GetTexture(0u));
 
         if(CONTAINS_BIT(m_iUpdate, 0u))
         {
@@ -320,7 +320,8 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
                     const coreUint64 iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
                     const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
                     const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
-                    ASSERT(pObject->GetColor4().Min() >= 0.0f && pObject->GetColor4().Max() <= 1.0f)
+                    ASSERT((pObject->GetColor4   ().Min() >=  0.0f)  && (pObject->GetColor4   ().Max() <= 1.0f))
+                    ASSERT((pObject->GetTexOffset().Min() >= -50.0f) && (pObject->GetTexOffset().Max() <= 50.0f))
 
                     // write data to the buffer
                     std::memcpy(pCursor,                                                &pObject->GetPosition(), sizeof(coreVector3));

@@ -78,7 +78,7 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
 
 #define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%u]"
-#define CORE_SHADER_OUTPUT_COLORS               (4u)
+#define CORE_SHADER_OUTPUT_COLORS               (2u)
 
 #define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_  (1) \n"
 #define CORE_SHADER_OPTION_NO_ROTATION          "#define _CORE_OPTION_NO_ROTATION_ (1) \n"

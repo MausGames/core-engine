@@ -144,9 +144,9 @@ vec4  coreUnpackUnorm4x8      (in uint)            // value unpack (1x 32bit uin
 vec4  coreTexture2D    (in int v1Unit, in vec2 v2TexCoord)    // normal texture lookup
 float coreTextureShadow(in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures
 
-#define PI (3.1415926535897932384626433832795)
-#define EU (2.7182818284590452353602874713527)
-
+#define PI    (3.1415926535897932384626433832795)
+#define EU    (2.7182818284590452353602874713527)
+#define SQRT2 (1.4142135623730950488016887242097)
 
 ## In ##
 

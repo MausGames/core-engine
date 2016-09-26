@@ -13,6 +13,7 @@
 // TODO: make archive a file
 // TODO: implement Unload into coreFile, so the unload is better
 // TODO: check sum
+// TODO: allocate page-size aligned
 
 
 // ****************************************************************

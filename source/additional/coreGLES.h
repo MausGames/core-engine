@@ -19,6 +19,8 @@
 #define CORE_GL_ARB_clear_buffer_object      false
 #define CORE_GL_ARB_clear_texture            false
 #define CORE_GL_ARB_compute_shader           false
+#define CORE_GL_ARB_copy_buffer              false
+#define CORE_GL_ARB_copy_image               false
 #define CORE_GL_ARB_direct_state_access      false
 #define CORE_GL_ARB_geometry_shader4         false
 #define CORE_GL_ARB_half_float_vertex        false   // different token value in OES_vertex_half_float

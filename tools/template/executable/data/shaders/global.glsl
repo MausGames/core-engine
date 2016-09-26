@@ -88,8 +88,9 @@
 
 
 // ****************************************************************
-#define PI (3.1415926535897932384626433832795)
-#define EU (2.7182818284590452353602874713527)
+#define PI    (3.1415926535897932384626433832795)
+#define EU    (2.7182818284590452353602874713527)
+#define SQRT2 (1.4142135623730950488016887242097)
 
 // light structure
 struct coreLight
@@ -127,7 +128,7 @@ int coreMod(const in int a, const in int b)
 #else
     return (a - (a / b) * b);
 #endif
-} 
+}
 
 // color convert
 vec3 coreRGBtoHSV(const in vec3 v3RGB)
@@ -216,7 +217,7 @@ vec2 corePackNormalSphere(const in vec3 v)
 {
     float A = inversesqrt(v.z * 8.0 + 8.0);
     return v.xy * A + 0.5;
-} 
+}
 vec3 coreUnpackNormalSphere(const in vec2 v)
 {
     vec2  A = v * 4.0 - 2.0;
@@ -553,6 +554,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
         // shader output
         out vec4 o_av4OutColor[CORE_NUM_OUTPUTS];
+        #define gl_FragColor o_av4OutColor[0]
 
     #else
 

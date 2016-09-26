@@ -105,18 +105,24 @@ public:
     inline coreVector2  Normalized()const {return coreVector2(*this).Normalize();}
     //! @}
 
+    /*! process vector */
+    //! @{
+    template <typename... A> inline coreVector2& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreVector2& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreVector2  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector2(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreVector2  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector2(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    //! @}
+
     /*! direct functions */
     //! @{
-    inline    coreFloat   Length      ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat   LengthSq    ()const {return (x*x + y*y);}
-    inline    coreFloat   Min         ()const {return MIN(x, y);}
-    inline    coreFloat   Max         ()const {return MAX(x, y);}
-    inline    coreVector2 Abs         ()const {return coreVector2(ABS (x), ABS (y));}
-    inline    coreVector2 Sign        ()const {return coreVector2(SIGN(x), SIGN(y));}
-    inline    coreFloat   AspectRatio ()const {return (x * RCP(y));}
-    inline    coreFloat   Angle       ()const {return (-std::atan2(x, y));}
-    constexpr coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
-    constexpr coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat LengthSq    ()const {return (x*x + y*y);}
+    inline    coreFloat Min         ()const {return MIN(x, y);}
+    inline    coreFloat Max         ()const {return MAX(x, y);}
+    inline    coreFloat AspectRatio ()const {return (x * RCP(y));}
+    inline    coreFloat Angle       ()const {return (-std::atan2(x, y));}
+    constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    constexpr coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -242,16 +248,22 @@ public:
     inline coreVector3  Normalized()const {return coreVector3(*this).Normalize();}
     //! @}
 
+    /*! process vector */
+    //! @{
+    template <typename... A> inline coreVector3& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreVector3& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreVector3  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreVector3  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    //! @}
+
     /*! direct functions */
     //! @{
-    inline    coreFloat   Length      ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat   LengthSq    ()const {return (x*x + y*y + z*z);}
-    inline    coreFloat   Min         ()const {return MIN(x, y, z);}
-    inline    coreFloat   Max         ()const {return MAX(x, y, z);}
-    inline    coreVector3 Abs         ()const {return coreVector3(ABS (x), ABS (y), ABS (z));}
-    inline    coreVector3 Sign        ()const {return coreVector3(SIGN(x), SIGN(y), SIGN(z));}
-    constexpr coreBool    IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
-    constexpr coreBool    IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z);}
+    inline    coreFloat Min         ()const {return MIN(x, y, z);}
+    inline    coreFloat Max         ()const {return MAX(x, y, z);}
+    constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    constexpr coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */
@@ -363,15 +375,21 @@ public:
     constexpr coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
     //! @}
 
+    /*! process vector */
+    //! @{
+    template <typename... A> inline coreVector4& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); w = nFunction(w, std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreVector4& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); w = nFunction(w, std::forward<A>(vArgs)...); return *this;}
+    template <typename... A> inline coreVector4  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreVector4  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    //! @}
+
     /*! direct functions */
     //! @{
-    inline    coreFloat   Length  ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat   LengthSq()const {return (x*x + y*y + z*z + w*w);}
-    inline    coreFloat   Min     ()const {return MIN(x, y, z, w);}
-    inline    coreFloat   Max     ()const {return MAX(x, y, z, w);}
-    inline    coreVector4 Abs     ()const {return coreVector4(ABS (x), ABS (y), ABS (z), ABS (w));}
-    inline    coreVector4 Sign    ()const {return coreVector4(SIGN(x), SIGN(y), SIGN(z), SIGN(w));}
-    constexpr coreBool    IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline    coreFloat Length  ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat LengthSq()const {return (x*x + y*y + z*z + w*w);}
+    inline    coreFloat Min     ()const {return MIN(x, y, z, w);}
+    inline    coreFloat Max     ()const {return MAX(x, y, z, w);}
+    constexpr coreBool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
 
     /*! static functions */

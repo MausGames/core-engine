@@ -121,16 +121,19 @@ public:
     void Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode iMode);
     void Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData);
     void CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight);
+    void CopyFrameBuffer();
+    //! @}
+
+    //! handle texture levels and images
+    //! @{
+    void BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess);
+    void CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;
+    void CopyImage(coreTexture* OUTPUT pDestination)const;
     //! @}
 
     //! configure shadow sampling
     //! @{
     void ShadowSampling(const coreBool bStatus);
-    //! @}
-
-    //! bind texture level to image unit
-    //! @{
-    void BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess);
     //! @}
 
     //! enable and disable the texture

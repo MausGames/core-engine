@@ -112,6 +112,35 @@ void coreDataBuffer::Delete()
 
 
 // ****************************************************************
+// copy content of the data buffer object
+void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const
+{
+    ASSERT(m_iDataBuffer && ((iReadOffset + iLength) <= m_iSize) && ((iWriteOffset + iLength) <= pDestination->GetSize()))
+
+    if(CORE_GL_SUPPORT(ARB_copy_buffer))
+    {
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // copy content directly (new)
+            glCopyNamedBufferSubData(m_iDataBuffer, pDestination->GetDataBuffer(), iReadOffset, iWriteOffset, iLength);
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // copy content directly (old)
+            glNamedCopyBufferSubDataEXT(m_iDataBuffer, pDestination->GetDataBuffer(), iReadOffset, iWriteOffset, iLength);
+        }
+        else
+        {
+            // bind and copy content
+            coreDataBuffer::Bind(GL_COPY_READ_BUFFER,  m_iDataBuffer);
+            coreDataBuffer::Bind(GL_COPY_WRITE_BUFFER, pDestination->GetDataBuffer());
+            glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, iReadOffset, iWriteOffset, iLength);
+        }
+    }
+}
+
+
+// ****************************************************************
 // clear content of the data buffer object
 void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pData)
 {
@@ -145,9 +174,11 @@ void coreDataBuffer::Invalidate()
 {
     ASSERT(m_iDataBuffer && this->IsWritable())
 
-    // invalidate the whole buffer
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
+    {
+        // invalidate the whole buffer
         glInvalidateBufferData(m_iDataBuffer);
+    }
 }
 
 

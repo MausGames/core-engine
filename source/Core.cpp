@@ -159,8 +159,9 @@ ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar** argv)
     // set new working directory (bin/<OS>/<ARCH>)
     coreData::SetCurDir("../../..");
 
-    // disable denormals
+    // disable denormals and enable exceptions
     coreMath::DisableDenormals();
+    coreMath::EnableExceptions();
 
     // run engine
     return Core::Run();

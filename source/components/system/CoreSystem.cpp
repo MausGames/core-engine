@@ -100,7 +100,7 @@ CoreSystem::CoreSystem()noexcept
 
         // clamp display index and resolution
         if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
-        coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
+        const coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
 
         if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
         {
@@ -125,7 +125,6 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DOUBLEBUFFER) ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING));
-    if(DEFINED(_CORE_PARALLEL_)) SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) ? 1 : 0);
 
     // check for core profile
     if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE) && !DEFINED(_CORE_GLES_))
@@ -134,7 +133,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindow("OpenGL Test", -32, -32, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if(m_pWindow)
         {
-            SDL_GLContext pContext = SDL_GL_CreateContext(m_pWindow);
+            const SDL_GLContext pContext = SDL_GL_CreateContext(m_pWindow);
             if(pContext)
             {
                 // get highest OpenGL version
@@ -145,10 +144,17 @@ CoreSystem::CoreSystem()noexcept
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, F_TO_SI(fVersion));
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, F_TO_SI(fVersion*10.0f) % 10);
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_CORE);
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,         SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,         SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);   // not with debug context
             }
             SDL_DestroyWindow(m_pWindow);
         }
+    }
+
+    // check for shared context
+    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) && DEFINED(_CORE_PARALLEL_))
+    {
+        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
     }
 
     // check for debug context
