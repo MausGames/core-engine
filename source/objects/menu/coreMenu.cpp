@@ -18,8 +18,8 @@ coreMenu::coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)n
 , m_iNumSurfaces (iNumSurfaces)
 , m_iCurSurface  (iStartSurface)
 , m_iOldSurface  (iStartSurface)
-, m_aapRender    {}
 , m_Transition   (coreTimer(1.0f, 1.0f, 1u))
+, m_aapRender    {}
 {
     // create surfaces
     m_papObject = new std::vector<coreObject2D*>[m_iNumSurfaces];

@@ -116,6 +116,12 @@ public:
     inline void Update(const coreFloat fSpeed)                         {m_fValue += fSpeed * Core::System->GetTime();}
     inline void Update(const coreFloat fSpeed, const coreInt8 iTimeID) {m_fValue += fSpeed * Core::System->GetTime(iTimeID);}
     //! @}
+
+    /*! update the flowing value with modulo operation */
+    //! @{
+    inline void UpdateMod(const coreFloat fSpeed, const coreFloat fMod)                         {m_fValue = FMOD(m_fValue + fSpeed * Core::System->GetTime(),        fMod);}
+    inline void UpdateMod(const coreFloat fSpeed, const coreFloat fMod, const coreInt8 iTimeID) {m_fValue = FMOD(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMod);}
+    //! @}
 };
 
 

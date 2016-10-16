@@ -22,7 +22,14 @@
     #define CORE_DATA_SLASH "/"
 #endif
 
-#define PRINT coreData::Print
+#if defined(_CORE_DEBUG_)
+    #define PRINT(...)   ([&]() {if(false) std::printf(__VA_ARGS__); return coreData::Print(__VA_ARGS__);}())   //!< enable format-specifier checking
+#else
+    #define PRINT(...)   (coreData::Print(__VA_ARGS__))
+#endif
+
+#define TIMEMAP_LOCAL(t) ([](const std::time_t iValue) {return std::localtime(&iValue);}(t))
+#define TIMEMAP_GM(t)    ([](const std::time_t iValue) {return std::gmtime   (&iValue);}(t))
 
 
 // ****************************************************************
@@ -75,12 +82,12 @@ public:
     static void       CreateFolder(const std::string& sPath);
     //! @}
 
-    /*! retrieve current date and time */
+    /*! retrieve date and time */
     //! @{
-    static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec);
-    static const coreChar* DateTimePrint(const coreChar* pcFormat);
-    static inline const coreChar* DateString() {return coreData::DateTimePrint("%Y-%m-%d");}
-    static inline const coreChar* TimeString() {return coreData::DateTimePrint("%H:%M:%S");}
+    static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = NULL);
+    static const coreChar* DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap = NULL);
+    static inline const coreChar* DateString(const std::tm* pTimeMap = NULL) {return coreData::DateTimePrint("%Y-%m-%d", pTimeMap);}
+    static inline const coreChar* TimeString(const std::tm* pTimeMap = NULL) {return coreData::DateTimePrint("%H:%M:%S", pTimeMap);}
     //! @}
 
     /*! compress and decompress data */

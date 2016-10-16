@@ -41,17 +41,17 @@ private:
     ALuint m_aiBuffer[2];         //!< sound buffers for streaming
     ALuint m_iSource;             //!< currently used sound source
 
+    coreFloat m_fVolume;          //!< current volume
+    coreFloat m_fPitch;           //!< current playback speed
+    coreBool  m_bLoop;            //!< loop status
+    coreBool  m_bStatus;          //!< playback status
+
     coreFile*      m_pFile;       //!< file object with streaming data
     OggVorbis_File m_Stream;      //!< music stream object
 
     vorbis_info*    m_pInfo;      //!< format of the music file
     vorbis_comment* m_pComment;   //!< meta-information
     coreDouble      m_dMaxTime;   //!< length of the music track in seconds
-
-    coreFloat m_fVolume;          //!< current volume
-    coreFloat m_fPitch;           //!< current playback speed
-    coreBool  m_bLoop;            //!< loop status
-    coreBool  m_bStatus;          //!< playback status
 
 
 public:
@@ -132,11 +132,11 @@ private:
     std::vector<coreMusic*> m_apSequence;   //!< playback sequence
     coreMusicRepeat m_iRepeat;              //!< repeat behavior
 
-    coreMusic* m_pCurMusic;                 //!< current music object
-    coreUintW  m_iCurIndex;                 //!< sequence-index of the current music object
-
     coreTimer  m_FadeTimer;                 //!< timer for a transition between two music objects
     coreMusic* m_pFadePrevious;             //!< previous music object during a transition
+
+    coreMusic* m_pCurMusic;                 //!< current music object
+    coreUintW  m_iCurIndex;                 //!< sequence-index of the current music object
 
 
 public:

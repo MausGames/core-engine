@@ -12,8 +12,12 @@
 
 // TODO: SIN and COS with MacLaurin or Taylor series (no lookup-table, because memory access may be equally slow)
 // TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4) ?
-// TODO: FUNC_CONST on every function in this class ?
+// TODO: FUNC_CONST and FORCEINLINE on every function in this class ?
 // TODO: add integer-log (macro)
+// TODO: use std::common_type for return values
+// TODO: CeilPOT and FloorPOT with BitScan
+
+// NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 
 
 // ****************************************************************
@@ -68,8 +72,8 @@ public:
     //! @{
     template <typename T, typename S, typename... A> static constexpr T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
     template <typename T, typename S, typename... A> static constexpr T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S>                static constexpr T Min  (const T& x, const S& y)               {return y ^ ((x ^ y) & -(x < y));}
-    template <typename T, typename S>                static constexpr T Max  (const T& x, const S& y)               {return x ^ ((x ^ y) & -(x < y));}
+    template <typename T, typename S>                static constexpr T Min  (const T& x, const S& y)               {return (x < y) ? x : y;}
+    template <typename T, typename S>                static constexpr T Max  (const T& x, const S& y)               {return (x > y) ? x : y;}
     template <typename T, typename S, typename R>    static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
     template <typename T, typename S, typename R>    static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
     template <typename T> static inline    T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
@@ -88,7 +92,7 @@ public:
     static inline coreFloat Fmod (const coreFloat fInput,  const coreFloat fDenom) {return std::fmod (fInput, fDenom);}
     static inline coreFloat Trunc(const coreFloat fInput)                          {return std::trunc(fInput);}
     static inline coreFloat Fract(const coreFloat fInput)                          {return fInput - TRUNC(fInput);}
-    static inline coreFloat Sqrt (const coreFloat fInput)                          {return fInput ? (fInput * RSQRT(fInput)) : 0.0f;}
+    static inline coreFloat Sqrt (const coreFloat fInput);
     static inline coreFloat Rsqrt(const coreFloat fInput);
     static inline coreFloat Rcp  (const coreFloat fInput);
     //! @}
@@ -106,10 +110,10 @@ public:
 
     /*! rounding operations */
     //! @{
-    template <coreUintW iByte, typename T> static inline T CeilAlign (const T& tInput) {const T  k = tInput - 1; return k - (k % iByte) + iByte;}
-    template <coreUintW iByte, typename T> static inline T FloorAlign(const T& tInput) {const T& k = tInput;     return k - (k % iByte);}
-    template                  <typename T> static inline T CeilPOT   (const T& tInput) {T k = 2; while(k <  tInput) k <<= 1; return k;}
-    template                  <typename T> static inline T FloorPOT  (const T& tInput) {T k = 2; while(k <= tInput) k <<= 1; return k >> 1;}
+    template <coreUintW iByte, typename T> static inline T CeilAlign (const T& tInput) {const T  k = tInput - T(1); return k - (k % iByte) + iByte;}
+    template <coreUintW iByte, typename T> static inline T FloorAlign(const T& tInput) {const T& k = tInput;        return k - (k % iByte);}
+    template                  <typename T> static inline T CeilPOT   (const T& tInput) {T k = T(2); while(k <  tInput) k <<= T(1); return k;}
+    template                  <typename T> static inline T FloorPOT  (const T& tInput) {T k = T(2); while(k <= tInput) k <<= T(1); return k >> T(1);}
     static inline coreFloat Ceil (const coreFloat fInput)                              {return std::ceil (fInput);}
     static inline coreFloat Floor(const coreFloat fInput)                              {return std::floor(fInput);}
     static inline coreFloat Round(const coreFloat fInput)                              {return std::round(fInput);}
@@ -138,23 +142,37 @@ public:
 
 // ****************************************************************
 /* template specializations */
-#if defined(_CORE_SSE_)
+#if !defined(_CORE_MSVC_) && defined(_CORE_SSE_)
 
     // optimized calculation with SSE
     template <> inline coreFloat coreMath::Min  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_min_ss(_mm_set_ss(x), _mm_set_ss(y)));}
     template <> inline coreFloat coreMath::Max  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(y)));}
     template <> inline coreFloat coreMath::Clamp(const coreFloat& x, const coreFloat& a, const coreFloat& b) {return _mm_cvtss_f32(_mm_min_ss(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(a)), _mm_set_ss(b)));}
 
-#else
-
-    // normal calculation
-    template <> constexpr coreFloat coreMath::Min(const coreFloat& x, const coreFloat& y) {return (x < y) ? x : y;}
-    template <> constexpr coreFloat coreMath::Max(const coreFloat& x, const coreFloat& y) {return (x > y) ? x : y;}
-
 #endif
 
 template <> inline coreFloat coreMath::Log< 2u>(const coreFloat fInput) {return std::log2 (fInput);}
 template <> inline coreFloat coreMath::Log<10u>(const coreFloat fInput) {return std::log10(fInput);}
+
+
+// ****************************************************************
+/* calculate square root */
+inline coreFloat coreMath::Sqrt(const coreFloat fInput)
+{
+    ASSERT(fInput >= 0.0f)
+
+#if defined(_CORE_SSE_)
+
+    // optimized calculation with SSE2
+    return fInput ? (fInput * RSQRT(fInput)) : 0.0f;
+
+#else
+
+    // normal calculation
+    return std::sqrt(fInput);
+
+#endif
+}
 
 
 // ****************************************************************

@@ -15,9 +15,10 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 : m_pFile       (NULL)
 , m_sPath       (pcPath)
 , m_iLevel      (CORE_LOG_LEVEL_ALL)
+, m_iListStatus (0u)
+, m_iStartTime  (std::time(NULL))
 , m_iMainThread (0u)
 , m_iLock       (0)
-, m_iListStatus (0u)
 {
     // open and reset log file
     m_pFile = std::fopen(m_sPath.c_str(), "w");
@@ -39,8 +40,8 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fputs("</style>                                        \n", m_pFile);
 
         // write application data and timestamp
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s/%s %s %s <br />\n", DEFINED(_CORE_X64_) ? "x64" : "x86", coreData::AppName(), __DATE__, __TIME__);
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s       <br />\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s/%s (%s %s 0x%08X) <br />\n", DEFINED(_CORE_X64_) ? "x64" : "x86", coreData::AppName(), __DATE__, __TIME__, CORE_RAND_COMPILE);
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s                <br />\n", coreData::DateString(), coreData::TimeString());
 
         // flush log file
         std::fflush(m_pFile);
@@ -105,13 +106,23 @@ void coreLog::DebugOpenGL()
         // set callback function and filter
         glDebugMessageCallback(&WriteOpenGL, this);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+
+        // disable certain messages
+        constexpr GLuint aiID[] = {131169u, 131185u, 131204u, 131222u};
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+
+        // 131169: Framebuffer detailed info: The driver allocated multisample storage for renderbuffer #.
+        // 131185: Buffer detailed info: Buffer object # (bound to #, usage hint is #) will use # memory as the source for buffer object operations.
+        // 131204: Texture state usage warning: Texture # is base level inconsistent. Check texture size.
+        // 131222: Program undefined behavior warning: Sampler object # is bound to non-depth texture #, yet it is used with a program that uses a shadow sampler. This is undefined behavior.
     }
 }
 
 
 // ****************************************************************
 /* write text to the log file */
-void coreLog::__Write(const coreBool bTime, std::string sText)
+void coreLog::__Write(const coreBool bTimeStamp, std::string sText)
 {
     coreLockRelease oRelease(m_iLock);
 
@@ -130,14 +141,15 @@ void coreLog::__Write(const coreBool bTime, std::string sText)
         coreData::StrReplace(&sText, ")",  ")</span>");
         coreData::StrReplace(&sText, "\n", "<br />");
 
-        if(bTime)
+        if(bTimeStamp)
         {
-            // get thread-ID
+            // get time and thread-ID
+            const std::time_t  iTime   = std::time(NULL) - m_iStartTime;
             const SDL_threadID iThread = SDL_ThreadID() % 10000u;
 
-            // write timestamp and thread-ID
+            // write time and thread-ID
             std::fprintf(m_pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
-                         coreData::TimeString(), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
+                         coreData::TimeString(TIMEMAP_GM(iTime)), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
         }
 
         // write text

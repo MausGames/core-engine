@@ -15,8 +15,8 @@ coreSound::coreSound()noexcept
 : coreResource ()
 , m_iBuffer    (0u)
 , m_Format     {}
-, m_aiSource   {}
 , m_iCurSource (0u)
+, m_aiSource   {}
 , m_pCurRef    (NULL)
 {
 }

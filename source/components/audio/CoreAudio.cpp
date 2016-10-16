@@ -20,8 +20,8 @@ CoreAudio::CoreAudio()noexcept
 , m_pSource     (NULL)
 , m_iNumSources (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
 , m_iCurSource  (0u)
-, m_aiBuffer    {}
 , m_fVolume     (-1.0f)
+, m_aiBuffer    {}
 {
     Core::Log->Header("Audio Interface");
 

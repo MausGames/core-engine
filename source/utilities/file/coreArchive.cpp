@@ -15,8 +15,8 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_pData       (NULL)
 , m_iSize       (0u)
-, m_pArchive    (NULL)
 , m_iArchivePos (1u)
+, m_pArchive    (NULL)
 {
     if(m_sPath.empty()) return;
 
@@ -33,8 +33,8 @@ coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSi
 : m_sPath       (pcPath)
 , m_pData       (pData)
 , m_iSize       (iSize)
-, m_pArchive    (NULL)
 , m_iArchivePos (0u)
+, m_pArchive    (NULL)
 {
 }
 

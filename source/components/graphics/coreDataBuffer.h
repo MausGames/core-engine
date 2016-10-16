@@ -123,9 +123,9 @@ private:
     //! vertex attribute array structure
     struct coreAttribute final
     {
+        GLenum    iType;         //!< component type (e.g. GL_FLOAT)
         coreUint8 iLocation;     //!< attribute location
         coreUint8 iComponents;   //!< number of components
-        GLenum    iType;         //!< component type (e.g. GL_FLOAT)
         coreBool  bInteger;      //!< pure integer attribute
         coreUint8 iOffset;       //!< offset within the vertex
     };

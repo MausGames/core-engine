@@ -26,8 +26,8 @@ coreTexture::coreTexture(const coreBool bLoadCompressed)noexcept
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
 , m_iCompressed (bLoadCompressed ? 0 : -1)
-, m_Spec        (coreTextureSpec(0u, 0u, 0u))
 , m_iMode       (CORE_TEXTURE_MODE_DEFAULT)
+, m_Spec        (coreTextureSpec(0u, 0u, 0u))
 , m_Sync        ()
 {
 }
@@ -107,8 +107,8 @@ coreStatus coreTexture::Unload()
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
     m_iCompressed = MIN(m_iCompressed, 0);
-    m_Spec        = coreTextureSpec(0u, 0u, 0u);
     m_iMode       = CORE_TEXTURE_MODE_DEFAULT;
+    m_Spec        = coreTextureSpec(0u, 0u, 0u);
 
     return CORE_OK;
 }
@@ -128,8 +128,8 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
     m_iLevels     = bMipMap ? F_TO_UI(coreMath::Log<2u>(m_vResolution.Max())) + 1u : 1u;
-    m_Spec        = oSpec;
     m_iMode       = iMode;
+    m_Spec        = oSpec;
 
     // set wrap mode
     const GLenum iWrapMode = CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;

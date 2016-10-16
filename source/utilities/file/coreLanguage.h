@@ -13,6 +13,7 @@
 // TODO: save current main language file to config
 // TODO: currently key-identifier $ may cause problems in normal text
 // TODO: reduce memory consumption with all the redundant keys in containers
+// TODO: determine number of entries and call reserve(x)
 
 
 // ****************************************************************
@@ -88,6 +89,7 @@ public:
     //! @{
     coreStatus Load(const coreChar* pcPath);
     inline const coreChar* GetString(const coreHashString& sKey)const {return m_asStringList.count(sKey) ? m_asStringList.at(sKey).c_str() : sKey.GetString();}
+    inline bool            HasString(const coreHashString& sKey)const {return m_asStringList.count(sKey);}
     //! @}
 
     /*! bind and unbind foreign string pointers */

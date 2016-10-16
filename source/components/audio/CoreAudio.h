@@ -27,9 +27,9 @@ private:
     coreUint8 m_iNumSources;                 //!< number of sound sources
     coreUint8 m_iCurSource;                  //!< current sound source
 
-    coreLookup<ALuint, ALuint> m_aiBuffer;   //!< sound buffers currently bound to sound sources <source, buffer>
-
     coreFloat m_fVolume;                     //!< global volume
+
+    coreLookup<ALuint, ALuint> m_aiBuffer;   //!< sound buffers currently bound to sound sources <source, buffer>
 
 
 private:

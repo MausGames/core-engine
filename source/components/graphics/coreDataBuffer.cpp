@@ -262,9 +262,9 @@ void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint
 
     // create new vertex attribute array definition
     coreAttribute oNewAttribute;
+    oNewAttribute.iType       = iType;
     oNewAttribute.iLocation   = iLocation;
     oNewAttribute.iComponents = iComponents;
-    oNewAttribute.iType       = iType;
     oNewAttribute.bInteger    = bInteger;
     oNewAttribute.iOffset     = iOffset;
 

@@ -237,7 +237,7 @@
     #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
 
     // enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
-    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4738 4826 4837 4928 4946)
+    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4738 4777 4826 4837 4928 4946)
 
     // #pragma warning(default : 4242 4244 4365)   //!< loss of precision
     // #pragma warning(default : 4820)             //!< byte padding
@@ -292,8 +292,7 @@
 #endif
 
 #if defined(_CORE_DEBUG_)
-    thread_local static bool __bLastWarnIf = false;
-    #define WARN_IF(c)       __bLastWarnIf = !!(c); ASSERT(!__bLastWarnIf); if(__bLastWarnIf)
+    #define WARN_IF(c)       if([](const coreBool bWarnIf) {ASSERT(!bWarnIf); return bWarnIf;}(!!(c)))
 #else
     #if defined(_CORE_MSVC_)
         #define WARN_IF(c)   if(c)

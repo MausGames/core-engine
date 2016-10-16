@@ -30,15 +30,15 @@ coreMusic::coreMusic(const coreChar* pcPath)noexcept
 coreMusic::coreMusic(coreFile* pFile)noexcept
 : m_aiBuffer {0u, 0u}
 , m_iSource  (0u)
+, m_fVolume  (1.0f)
+, m_fPitch   (1.0f)
+, m_bLoop    (false)
+, m_bStatus  (false)
 , m_pFile    (NULL)
 , m_Stream   {}
 , m_pInfo    (NULL)
 , m_pComment (NULL)
 , m_dMaxTime (0.0)
-, m_fVolume  (1.0f)
-, m_fPitch   (1.0f)
-, m_bLoop    (false)
-, m_bStatus  (false)
 {
     if(!pFile)            return;
     if(!pFile->GetData()) return;
@@ -254,10 +254,10 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 , m_pEmptyMusic   (NULL)
 , m_apSequence    {}
 , m_iRepeat       (CORE_MUSIC_ALL_REPEAT)
-, m_pCurMusic     (NULL)
-, m_iCurIndex     (0u)
 , m_FadeTimer     (coreTimer(1.0f, 0.0f, 1u))
 , m_pFadePrevious (NULL)
+, m_pCurMusic     (NULL)
+, m_iCurIndex     (0u)
 {
     // create empty music object
     m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0x00));

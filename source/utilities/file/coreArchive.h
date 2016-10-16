@@ -32,8 +32,8 @@ private:
     coreByte*  m_pData;           //!< file data
     coreUint32 m_iSize;           //!< size of the file
 
-    coreArchive* m_pArchive;      //!< associated archive
     coreUint32   m_iArchivePos;   //!< absolute data position in the associated archive (0 = file doesn't exist physically)
+    coreArchive* m_pArchive;      //!< associated archive
 
 
 public:

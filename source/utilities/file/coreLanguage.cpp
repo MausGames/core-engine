@@ -241,6 +241,7 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
     coreData::ScanFolder(pcPath, pcFilter, &asFile);
 
     // reserve some memory
+    pasOutput->clear();
     pasOutput->reserve(asFile.size());
 
     FOR_EACH(it, asFile)

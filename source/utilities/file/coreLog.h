@@ -45,10 +45,11 @@ private:
     std::string  m_sPath;         //!< relative path of the file
     coreLogLevel m_iLevel;        //!< logging level
 
+    coreByte m_iListStatus;       //!< currently writing a list
+
+    std::time_t  m_iStartTime;    //!< base-value for relative time-stamps
     SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
     SDL_SpinLock m_iLock;         //!< spinlock to prevent asynchronous log access
-
-    coreByte m_iListStatus;       //!< currently writing a list
 
 
 public:
@@ -95,7 +96,7 @@ public:
 private:
     /*! write text to the log file */
     //! @{
-    void __Write(const coreBool bTime, std::string sText);
+    void __Write(const coreBool bTimeStamp, std::string sText);
     //! @}
 };
 

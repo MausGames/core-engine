@@ -172,10 +172,10 @@ void coreShader::__LoadGlobalCode()
 
     // set global shader definitions
     s_asGlobalCode[0].assign(PRINT("#version %.0f \n", CORE_GL_SUPPORT(ARB_uniform_buffer_object) ? Core::Graphics->VersionGLSL()*100.0f : (DEFINED(_CORE_GLES_) ? 100.0f : 110.0f)));
-    s_asGlobalCode[1].assign(PRINT("#define CORE_NUM_TEXTURES_2D     (%d) \n", CORE_TEXTURE_UNITS_2D));
-    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_TEXTURES_SHADOW (%d) \n", CORE_TEXTURE_UNITS_SHADOW));
-    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS          (%d) \n", CORE_GRAPHICS_LIGHTS));
-    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS         (%d) \n", CORE_SHADER_OUTPUT_COLORS));
+    s_asGlobalCode[1].assign(PRINT("#define CORE_NUM_TEXTURES_2D     (%u) \n", CORE_TEXTURE_UNITS_2D));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_TEXTURES_SHADOW (%u) \n", CORE_TEXTURE_UNITS_SHADOW));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS          (%u) \n", CORE_GRAPHICS_LIGHTS));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS         (%u) \n", CORE_SHADER_OUTPUT_COLORS));
 
     auto nRetrieveFunc = [&](const coreChar* pcPath)
     {

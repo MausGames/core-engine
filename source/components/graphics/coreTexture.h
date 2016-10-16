@@ -94,8 +94,8 @@ private:
     coreUint8   m_iLevels;                               //!< number of texture levels
     coreInt8    m_iCompressed;                           //!< compression status
 
-    coreTextureSpec m_Spec;                              //!< texture specification (format)
     coreTextureMode m_iMode;                             //!< texture mode (sampling)
+    coreTextureSpec m_Spec;                              //!< texture specification (format)
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
 
@@ -161,8 +161,8 @@ public:
     inline const GLuint&          GetTexture   ()const {return m_iTexture;}
     inline const coreVector2&     GetResolution()const {return m_vResolution;}
     inline const coreUint8&       GetLevels    ()const {return m_iLevels;}
-    inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
     inline const coreTextureMode& GetMode      ()const {return m_iMode;}
+    inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
     //! @}
 
 

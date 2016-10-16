@@ -18,8 +18,8 @@ coreThread::coreThread(const coreChar* pcName)noexcept
 , m_sName       (pcName)
 , m_iExecutions (1u)
 , m_bActive     (false)
-, m_anFunction  {}
 , m_iLock       (0)
+, m_anFunction  {}
 {
 }
 

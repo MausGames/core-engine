@@ -43,8 +43,8 @@ private:
     ALuint m_iBuffer;                             //!< sound buffer identifier
     coreWaveFormat m_Format;                      //!< format of the sound file
 
-    coreLookup<const void*, ALuint> m_aiSource;   //!< currently used sound sources
     ALuint m_iCurSource;                          //!< active sound source
+    coreLookup<const void*, ALuint> m_aiSource;   //!< currently used sound sources
 
     const void* m_pCurRef;                        //!< reference pointer to active sound source
 

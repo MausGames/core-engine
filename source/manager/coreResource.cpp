@@ -16,8 +16,8 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 , m_pFile      (pFile)
 , m_sName      (pcName)
 , m_bAutomatic (bAutomatic)
-, m_iRefCount  (0)
 , m_iStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
+, m_iRefCount  (0)
 {
 }
 

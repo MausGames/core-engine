@@ -275,6 +275,9 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
 {
     WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
+    // always reset output
+    pasOutput->clear();
+
 #if defined(_CORE_WINDOWS_)
 
     HANDLE pFolder;
@@ -360,35 +363,41 @@ void coreData::CreateFolder(const std::string& sPath)
 
 
 // ****************************************************************
-/* retrieve current date and time as values */
-void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec)
+/* retrieve date and time as values */
+void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap)
 {
-    // format current time
-    const std::time_t iTime  = std::time(NULL);
-    const std::tm*    pLocal = std::localtime(&iTime);
+    if(!pTimeMap)
+    {
+        // get current time
+        const std::time_t iTime = std::time(NULL);
+        pTimeMap = std::localtime(&iTime);
+    }
 
     // forward values
-    if(piYea) *piYea = pLocal->tm_year + 1900u;
-    if(piMon) *piMon = pLocal->tm_mon  + 1u;
-    if(piDay) *piDay = pLocal->tm_mday;
-    if(piHou) *piHou = pLocal->tm_hour;
-    if(piMin) *piMin = pLocal->tm_min;
-    if(piSec) *piSec = pLocal->tm_sec;
+    if(piYea) *piYea = pTimeMap->tm_year + 1900u;
+    if(piMon) *piMon = pTimeMap->tm_mon  + 1u;
+    if(piDay) *piDay = pTimeMap->tm_mday;
+    if(piHou) *piHou = pTimeMap->tm_hour;
+    if(piMin) *piMin = pTimeMap->tm_min;
+    if(piSec) *piSec = pTimeMap->tm_sec;
 }
 
 
 // ****************************************************************
-/* retrieve current date and time as formatted string */
-const coreChar* coreData::DateTimePrint(const coreChar* pcFormat)
+/* retrieve date and time as formatted string */
+const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap)
 {
     coreChar* pcString = coreData::__NextString();
 
-    // format current time
-    const std::time_t iTime  = std::time(NULL);
-    const std::tm*    pLocal = std::localtime(&iTime);
+    if(!pTimeMap)
+    {
+        // get current time
+        const std::time_t iTime = std::time(NULL);
+        pTimeMap = std::localtime(&iTime);
+    }
 
     // assemble string
-    const coreUintW iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pLocal);
+    const coreUintW iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pTimeMap);
 
     ASSERT(iReturn)
     return iReturn ? pcString : pcFormat;

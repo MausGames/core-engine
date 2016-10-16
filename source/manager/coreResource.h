@@ -73,8 +73,8 @@ private:
     std::string m_sName;         //!< identifier of this resource handle
     coreBool m_bAutomatic;       //!< updated automatically by the resource manager
 
-    coreInt32  m_iRefCount;      //!< simple reference-counter
     coreStatus m_iStatus;        //!< current resource status
+    coreInt32  m_iRefCount;      //!< simple reference-counter
 
 
 private:
@@ -115,8 +115,8 @@ public:
     /*! get object properties */
     //! @{
     inline const coreChar*   GetName    ()const {return m_sName.c_str();}
-    inline const coreInt32&  GetRefCount()const {return m_iRefCount;}
     inline const coreStatus& GetStatus  ()const {return m_iStatus;}
+    inline const coreInt32&  GetRefCount()const {return m_iRefCount;}
     //! @}
 
 

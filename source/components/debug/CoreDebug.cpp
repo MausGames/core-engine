@@ -81,6 +81,13 @@ CoreDebug::CoreDebug()noexcept
 /* destructor */
 CoreDebug::~CoreDebug()
 {
+    // delete timer-query objects
+    FOR_EACH(it, m_apMeasure)
+    {
+        glDeleteQueries(CORE_DEBUG_QUERIES, (*it)->aaiQuery[0].data());
+        glDeleteQueries(CORE_DEBUG_QUERIES, (*it)->aaiQuery[1].data());
+    }
+
     // delete all display, measure and inspect objects
     FOR_EACH(it, m_apDisplay) SAFE_DELETE(*it)
     FOR_EACH(it, m_apMeasure) SAFE_DELETE(*it)
@@ -280,7 +287,7 @@ void CoreDebug::__UpdateOutput()
     if(iLoadingNum)
     {
         m_Loading.SetPosition(coreVector2(0.0f, I_TO_F(--iCurLine)*0.023f));
-        m_Loading.SetText(PRINT("Loading (%d)", iLoadingNum));
+        m_Loading.SetText(PRINT("Loading (%zu)", iLoadingNum));
         m_Loading.Move();
     }
 
