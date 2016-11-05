@@ -35,6 +35,7 @@
 #define CORE_GL_ARB_vertex_attrib_binding    false
 #define CORE_GL_KHR_debug                    false
 #define CORE_GL_EXT_direct_state_access      false
+#define CORE_GL_EXT_gpu_shader4              false
 #define CORE_GL_EXT_texture_compression_rgtc false
 #define CORE_GL_EXT_framebuffer_object       true
 

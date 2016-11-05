@@ -48,7 +48,7 @@ constexpr coreHashString::coreHashString(std::nullptr_t)noexcept
 }
 
 constexpr coreHashString::coreHashString(const coreChar* pcString)noexcept
-: m_iHash    (pcString ? coreHashCompileFNV1(pcString) : 0u)
+: m_iHash    (pcString ? coreHashFNV1(pcString) : 0u)
 , m_pcString (pcString)
 {
 }

@@ -36,6 +36,7 @@ public:
     };
 
     //! compressed vertex structure
+    #pragma pack(push, 4)
     struct coreVertexPackedHigh final
     {
         coreUint64 iPosition;    //!< vertex position           (Float4x16)
@@ -50,6 +51,7 @@ public:
         coreUint32  iNormal;     //!< normal vector             (Snorm4x8)
         coreUint32  iTangent;    //!< additional tangent vector (Snorm4x8)
     };
+    #pragma pack(pop)
 
     //! import structure
     struct coreImport final

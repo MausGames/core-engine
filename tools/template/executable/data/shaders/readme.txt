@@ -138,6 +138,7 @@ mat3  coreInvert              (in mat3)            // matrix invert
 mat4  coreInvert              (in mat4)
 mat3  coreMat4to3             (in mat4)            // matrix convert
 mat2  coreMat3to2             (in mat3)
+mat2  coreMat4to2             (in mat4)
 uint  corePackUnorm4x8        (in vec4)            // value pack   (4x 8bit float -> 1x 32bit uint)
 vec4  coreUnpackUnorm4x8      (in uint)            // value unpack (1x 32bit uint -> 4x 8bit float)
 

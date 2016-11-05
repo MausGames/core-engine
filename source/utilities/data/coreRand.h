@@ -21,7 +21,7 @@
 #define CORE_RAND_MAX     (0x7FFFu)                                                    //!< max raw random number (15 bit)
 #define CORE_RAND_TIME    (DEFINED(_CORE_DEBUG_) ? 0u : coreUint32(std::time(NULL)))   //!< use current time to seed the generator (not on debug mode)
 
-#define CORE_RAND_COMPILE (coreHashCompileFNV1(__DATE__ __TIME__))
+#define CORE_RAND_COMPILE (coreHashFNV1(__DATE__ __TIME__))
 
 
 // ****************************************************************

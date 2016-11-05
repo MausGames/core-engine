@@ -310,7 +310,7 @@ void coreVertexBuffer::Activate(const coreUint8 iBinding)
             glEnableVertexAttribArray(it->iLocation);
 
             // specify the vertex format
-            if(it->bInteger) glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType, m_iVertexSize, I_TO_P(it->iOffset));
+            if(it->bInteger && CORE_GL_SUPPORT(EXT_gpu_shader4)) glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType, m_iVertexSize, I_TO_P(it->iOffset));
             else
             {
                 const coreBool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);

@@ -12,8 +12,8 @@
 
 
 // ****************************************************************
-/* run-time Murmur2 hash function */
-inline FUNC_NOALIAS coreUint32 coreHashRunMurmur2(const coreByte* pData, coreUint32 iLength)
+/* Murmur2 hash function */
+inline FUNC_PURE FUNC_NOALIAS coreUint32 coreHashMurmur2(const coreByte* pData, coreUint32 iLength)
 {
     constexpr coreUint32 s = 0xC58F1A7Bu;
     constexpr coreUint32 m = 0x5BD1E995u;
@@ -23,7 +23,7 @@ inline FUNC_NOALIAS coreUint32 coreHashRunMurmur2(const coreByte* pData, coreUin
 
     while(iLength >= 4u)
     {
-      coreUint32 k = *r_cast<const coreUint32*>(pData);
+      coreUint32 k = (*r_cast<const coreUint32*>(pData));
 
       k *= m;
       k ^= k >> r;

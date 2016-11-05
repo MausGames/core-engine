@@ -20,7 +20,7 @@
 
 // compiler configuration
 #if defined(GL_ES)
-    #extension GL_EXT_shadow_samplers : enable
+    #extension GL_EXT_shadow_samplers          : enable
 #else
     #extension GL_AMD_shader_trinary_minmax    : enable
     #extension GL_ARB_conservative_depth       : enable
@@ -29,6 +29,7 @@
     #extension GL_ARB_shader_image_load_store  : enable
     #extension GL_ARB_shading_language_packing : enable
     #extension GL_ARB_uniform_buffer_object    : enable
+    #extension GL_EXT_gpu_shader4              : enable
 #endif
 #pragma optimize(on)
 #pragma debug(off)
@@ -48,7 +49,7 @@
 #endif
 
 // layout qualifiers
-#if defined(_CORE_FRAGMENT_SHADER_)
+#if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_)
     #if (defined(GL_ARB_shader_image_load_store) && (__VERSION__) >= 130) || (defined(GL_ES) && (__VERSION__) >= 310)
         layout(early_fragment_tests) in;
     #endif
@@ -68,7 +69,7 @@
         #define shadow2DProj(t,v) (shadow2DProjEXT(t, v))
     #else
         #define sampler2DShadow   sampler2D
-        #define shadow2DProj(t,v) ((texture2DProj(t, v).r < (v.z/v.w)) ? 1.0 : 0.0)
+        #define shadow2DProj(t,v) ((texture2DProj(t, v).r < (v.z / v.w)) ? 1.0 : 0.0)
     #endif
 #endif
 #if (__VERSION__) >= 130
@@ -84,6 +85,12 @@
     #define flat
     #define noperspective
     #define smooth
+#endif
+#if !defined(GL_EXT_gpu_shader4)
+    #define uint  int
+    #define uvec2 ivec2
+    #define uvec3 ivec3
+    #define uvec4 ivec4
 #endif
 
 
@@ -123,7 +130,7 @@ struct coreLight
 // modulo operator
 int coreMod(const in int a, const in int b)
 {
-#if (__VERSION__) >= 130
+#if defined(GL_EXT_gpu_shader4)
     return (a % b);
 #else
     return (a - (a / b) * b);
@@ -195,13 +202,13 @@ vec3 coreRGBtoYCbCr(const in vec3 v3RGB)
 {
     return mat3( 0.299000,  0.587000,  0.114000,
                 -0.168736, -0.331264,  0.500000,
-                 0.500000, -0.418688, -0.081312) * v3RGB + vec3(0.0,0.5,0.5);
+                 0.500000, -0.418688, -0.081312) * v3RGB + vec3(0.0, 0.5, 0.5);
 }
 vec3 coreYCbCrtoRGB(const in vec3 v3YCbCr)
 {
     return mat3(1.00000,  0.00000,  1.40200,
                 1.00000, -0.34414, -0.71414,
-                1.00000,  1.77200,  0.00000) * (v3YCbCr - vec3(0.0,0.5,0.5));
+                1.00000,  1.77200,  0.00000) * (v3YCbCr - vec3(0.0, 0.5, 0.5));
 }
 float coreLuminance(const in vec3 v3RGB)
 {
@@ -315,9 +322,10 @@ mat4 coreInvert(const in mat4 m)
     #define coreMat4to3(m) mat3(m[0].xyz, m[1].xyz, m[2].xyz)
     #define coreMat3to2(m) mat2(m[0].xy,  m[1].xy)
 #endif
+#define coreMat4to2(m) coreMat4to3(m)
 
 // value pack and unpack
-#if (__VERSION__) >= 130
+#if defined(GL_EXT_gpu_shader4)
 
     uint corePackUnorm4x8(const in vec4 x)
     {
@@ -482,7 +490,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #endif
 
         a_v2LowPosition = a_v3RawPosition.xy;
-        a_v2LowTexCoord = vec2(0.5+a_v3RawPosition.x, 0.5-a_v3RawPosition.y);
+        a_v2LowTexCoord = vec2(0.5 + a_v3RawPosition.x, 0.5 - a_v3RawPosition.y);
         VertexMain();
     }
 

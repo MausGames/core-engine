@@ -130,7 +130,7 @@ CoreSystem::CoreSystem()noexcept
     if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE) && !DEFINED(_CORE_GLES_))
     {
         // create quick test-window and -context
-        m_pWindow = SDL_CreateWindow("OpenGL Test", -32, -32, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        m_pWindow = SDL_CreateWindow("OpenGL Test", 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if(m_pWindow)
         {
             const SDL_GLContext pContext = SDL_GL_CreateContext(m_pWindow);

@@ -83,55 +83,25 @@ alignas(16) constexpr coreUint32 g_aiTableCRC32[256] =
 
 
 // ****************************************************************
-/* compile-time CRC-32 hash function */
-constexpr FUNC_PURE coreUint32 coreHashCompileCRC32(const coreByte* pData, const coreUintW iLength, const coreUint32 iCode)
+/* CRC-32 hash function */
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, const coreUintW iLength, const coreUint32 iCode)
 {
-    return iLength ? coreHashCompileCRC32(pData + 1u, iLength - 1u, g_aiTableCRC32[(*pData) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
+    return iLength ? coreHashCRC32(pData + 1u, iLength - 1u, g_aiTableCRC32[(*pData) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
 }
 
-constexpr FUNC_PURE coreUint32 coreHashCompileCRC32(const coreByte* pData, const coreUintW iLength)
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, const coreUintW iLength)
 {
-    return coreHashCompileCRC32(pData, iLength, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
+    return coreHashCRC32(pData, iLength, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
 }
 
-constexpr FUNC_PURE coreUint32 coreHashCompileCRC32(const coreChar* pcString, const coreUint32 iCode)
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString, const coreUint32 iCode)
 {
-    return *pcString ? coreHashCompileCRC32(pcString + 1u, g_aiTableCRC32[(*pcString) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
+    return (*pcString) ? coreHashCRC32(pcString + 1u, g_aiTableCRC32[(*pcString) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
 }
 
-constexpr FUNC_PURE coreUint32 coreHashCompileCRC32(const coreChar* pcString)
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
 {
-    return coreHashCompileCRC32(pcString, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
-}
-
-
-// ****************************************************************
-/* run-time CRC-32 hash function */
-inline FUNC_PURE coreUint32 coreHashRunCRC32(const coreByte* pData, coreUintW iLength)
-{
-    coreUint32 iHash = 0xFFFFFFFFu;
-
-    while(iLength)
-    {
-        iHash = g_aiTableCRC32[(*pData) ^ ((iHash >> 24u) & 0xFFu)] ^ (iHash << 8u);
-        ++pData;
-        --iLength;
-    }
-
-    return iHash ^ 0xFFFFFFFFu;
-}
-
-inline FUNC_PURE coreUint32 coreHashRunCRC32(const coreChar* pcString)
-{
-    coreUint32 iHash = 0xFFFFFFFFu;
-
-    while(*pcString)
-    {
-        iHash = g_aiTableCRC32[(*pcString) ^ ((iHash >> 24u) & 0xFFu)] ^ (iHash << 8u);
-        ++pcString;
-    }
-
-    return iHash ^ 0xFFFFFFFFu;
+    return coreHashCRC32(pcString, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
 }
 
 

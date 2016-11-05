@@ -73,6 +73,27 @@ void __coreInitOpenGL()
         __GLEW_ARB_instanced_arrays = true;
     }
 
+    // improve shader integer compatibility
+    if(!GLEW_VERSION_3_0 && GL_EXT_gpu_shader4)
+    {
+        // remap GL_EXT_gpu_shader4
+        glBindFragDataLocation = glBindFragDataLocationEXT;
+        glUniform1ui           = glUniform1uiEXT;
+        glUniform1uiv          = glUniform1uivEXT;
+        glUniform2ui           = glUniform2uiEXT;
+        glUniform2uiv          = glUniform2uivEXT;
+        glUniform3ui           = glUniform3uiEXT;
+        glUniform3uiv          = glUniform3uivEXT;
+        glUniform4ui           = glUniform4uiEXT;
+        glUniform4uiv          = glUniform4uivEXT;
+        glVertexAttribIPointer = glVertexAttribIPointerEXT;
+    }
+    else if(GLEW_VERSION_3_0)
+    {
+        // force extension status
+        __GLEW_EXT_gpu_shader4 = true;
+    }
+
     // force additional extension status
     if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object) __GLEW_ARB_pixel_buffer_object = true;
     if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)    __GLEW_ARB_geometry_shader4    = true;
@@ -154,13 +175,13 @@ void coreExtensions(std::string* OUTPUT sOutput)
         glGetIntegerv(GL_NUM_EXTENSIONS, &iNumExtensions);
 
         // reserve some memory
-        sOutput->reserve(iNumExtensions * 64u);
+        sOutput->reserve(iNumExtensions * 32u);
 
         // concatenate all extensions to a single string
         for(coreUintW i = 0u, ie = iNumExtensions; i < ie; ++i)
         {
-            *sOutput += r_cast<const coreChar*>(glGetStringi(GL_EXTENSIONS, i));
-            *sOutput += ' ';
+            (*sOutput) += r_cast<const coreChar*>(glGetStringi(GL_EXTENSIONS, i));
+            (*sOutput) += ' ';
         }
 
         // reduce output size
@@ -170,6 +191,6 @@ void coreExtensions(std::string* OUTPUT sOutput)
     else
     {
         // get full extension string
-        *sOutput = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
+        (*sOutput) = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
     }
 }

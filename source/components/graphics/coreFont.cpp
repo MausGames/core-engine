@@ -123,6 +123,27 @@ SDL_Surface* coreFont::CreateGlyphOutline(const coreUint16 iGlyph, const coreUin
 
 
 // ****************************************************************
+// check if a glyph if provided by the font
+coreBool coreFont::IsGlyphProvided(const coreUint16 iGlyph)
+{
+    ASSERT(!m_aapFont.empty())
+
+    // check for the glyph with first available sub-font
+    return TTF_GlyphIsProvided(m_aapFont.front().front(), iGlyph) ? true : false;
+}
+
+coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
+{
+    // convert multibyte character to UTF-8 glyph
+    coreUint16 iGlyph;
+    coreFont::__ConvertToGlyph(pcMultiByte, &iGlyph);
+
+    // check for the glyph
+    return this->IsGlyphProvided(iGlyph);
+}
+
+
+// ****************************************************************
 // retrieve the dimensions of a glyph
 void coreFont::RetrieveGlyphMetrics(const coreUint16 iGlyph, const coreUint8 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
@@ -130,29 +151,15 @@ void coreFont::RetrieveGlyphMetrics(const coreUint16 iGlyph, const coreUint8 iHe
     if(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
         this->__InitHeight(iHeight, iOutline);
 
-    // retrieve the dimensions of a glyph
+    // retrieve dimensions
     TTF_GlyphMetrics(m_aapFont.at(iHeight).at(iOutline), iGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
 }
 
 coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint8 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
-    ASSERT(pcMultiByte)
-
-    coreUint16 iGlyph = 0u;
-    coreUint8  iBytes = 1u;
-
-    // handle multibyte UTF-8 encoding
-    if(*pcMultiByte < 0)
-    {
-        // count number of bytes
-        iBytes = 2u + CONTAINS_FLAG(*pcMultiByte, 0xE0u) + CONTAINS_FLAG(*pcMultiByte, 0xF0u);
-        ASSERT(iBytes < 4u)
-
-        // convert characters (with foreign library)
-        SI_ConvertW<coreUint16> oConvert(true);
-        oConvert.ConvertFromStore(pcMultiByte, iBytes, &iGlyph, 1u);
-    }
-    else iGlyph = *pcMultiByte;
+    // convert multibyte character to UTF-8 glyph
+    coreUint16 iGlyph;
+    const coreUint8 iBytes = coreFont::__ConvertToGlyph(pcMultiByte, &iGlyph);
 
     // retrieve dimensions and return number of bytes
     this->RetrieveGlyphMetrics(iGlyph, iHeight, iOutline, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
@@ -187,4 +194,29 @@ coreBool coreFont::__InitHeight(const coreUint8 iHeight, const coreUint8 iOutlin
     // save sub-font
     m_aapFont[iHeight].emplace(iOutline, pNewFont);
     return true;
+}
+
+
+// ****************************************************************
+// convert multibyte character to UTF-8 glyph
+coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OUTPUT piGlyph)
+{
+    ASSERT(pcMultiByte && piGlyph)
+
+    // handle multibyte UTF-8 encoding
+    if((*pcMultiByte) < 0)
+    {
+        // count number of bytes
+        const coreUint8 iBytes = 2u + CONTAINS_FLAG((*pcMultiByte), 0xE0u) + CONTAINS_FLAG((*pcMultiByte), 0xF0u);
+        ASSERT(iBytes < 4u)
+
+        // convert characters (with foreign library)
+        SI_ConvertW<coreUint16> oConvert(true);
+        oConvert.ConvertFromStore(pcMultiByte, iBytes, piGlyph, 1u);
+        return iBytes;
+    }
+
+    // just forward the character
+    (*piGlyph) = (*pcMultiByte);
+    return 1u;
 }

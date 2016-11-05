@@ -25,7 +25,7 @@
 thread_local coreChar  coreData::s_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN] = {{}};
 thread_local coreUintW coreData::s_iCurString                                            = 0u;
 
-#if defined(_CORE_WINDOWS_) && !defined(_CORE_X64_)
+#if defined(_CORE_WINXP_)
     #pragma comment(lib, "psapi.lib")
 #endif
 
@@ -275,9 +275,6 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
 {
     WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
-    // always reset output
-    pasOutput->clear();
-
 #if defined(_CORE_WINDOWS_)
 
     HANDLE pFolder;
@@ -348,7 +345,7 @@ void coreData::CreateFolder(const std::string& sPath)
     coreUintW iPos = 0u;
 
     // loop through path
-    while((iPos = sPath.find_first_of("/\\", iPos+2u)) != std::string::npos)
+    while((iPos = sPath.find_first_of("/\\", iPos + 2u)) != std::string::npos)
     {
         const std::string sSubFolder = sPath.substr(0u, iPos);
 
@@ -510,13 +507,25 @@ const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW iNum
 
 
 // ****************************************************************
+/* safely get file name from path */
+const coreChar* coreData::StrFilename(const coreChar* pcInput)
+{
+    WARN_IF(!pcInput) return "";
+
+    const coreChar* pcSlash = std::strrchr(pcInput, '\\');
+    if(!pcSlash)    pcSlash = std::strrchr(pcInput, '/');
+    return pcSlash ? (pcSlash + 1u) : pcInput;
+}
+
+
+// ****************************************************************
 /* safely get file extension */
 const coreChar* coreData::StrExtension(const coreChar* pcInput)
 {
     WARN_IF(!pcInput) return "";
 
     const coreChar* pcDot = std::strrchr(pcInput, '.');
-    return pcDot ? pcDot+1u : pcInput;
+    return pcDot ? (pcDot + 1u) : pcInput;
 }
 
 
@@ -527,7 +536,7 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
     WARN_IF(!pcInput) return 0.0f;
 
     const coreChar* pcDot = std::strchr(pcInput, '.');
-    return pcDot ? (I_TO_F((pcDot-1u)[0] - '0') + 0.1f * I_TO_F((pcDot+1u)[0] - '0')) : 0.0f;
+    return pcDot ? (I_TO_F((pcDot - 1u)[0] - '0') + 0.1f * I_TO_F((pcDot + 1u)[0] - '0')) : 0.0f;
 }
 
 
@@ -537,7 +546,7 @@ void coreData::StrTrim(std::string* OUTPUT psInput)
 {
     // trim right
     const coreUintW iLast = psInput->find_last_not_of(" \n\r\t");
-    if(iLast != std::string::npos) psInput->erase(iLast+1u);
+    if(iLast != std::string::npos) psInput->erase(iLast + 1u);
 
     // trim left
     const coreUintW iFirst = psInput->find_first_not_of(" \n\r\t");
@@ -556,7 +565,7 @@ void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, co
     const coreUintW iNewLen = std::strlen(pcNew);
 
     // loop only once and replace all findings
-    while((iPos = psInput->find(pcOld, iPos)) != std::string::npos)
+    while((iPos = psInput->find(pcOld, iPos, iOldLen)) != std::string::npos)
     {
         psInput->replace(iPos, iOldLen, pcNew);
         iPos += iNewLen;

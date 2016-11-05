@@ -55,6 +55,7 @@
 // TODO: check out NVAPI and ADL/AGS
 // TODO: cast unused returns to (void)?
 // TODO: remove SSE from 32-bit binaries ? (compatibility binaries) _USING_V110_SDK71_
+// TODO: enable MSVC warnings 4244, 4267 again
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -73,7 +74,7 @@
 #if defined(__clang__)
     #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
 #endif
-#if ((_CORE_MSVC_) < 1800) && ((_CORE_GCC_) < 40800) && ((_CORE_MINGW_) < 40800) && ((_CORE_CLANG_) < 30300)
+#if ((_CORE_MSVC_) < 1900) && ((_CORE_GCC_) < 40800) && ((_CORE_MINGW_) < 40800) && ((_CORE_CLANG_) < 30300)
     #warning "Compiler not supported!"
 #endif
 
@@ -115,6 +116,11 @@
     #define _CORE_SSE_      (1)
 #endif
 
+// Windows XP compatibility
+#if (defined(_USING_V110_SDK71_) || defined(_CORE_MINGW_)) && defined(_CORE_WINDOWS_)
+    #define _CORE_WINXP_    (1)
+#endif
+
 // OpenGL ES
 #if defined(_CORE_ANDROID_)
     #define _CORE_GLES_     (1)
@@ -129,8 +135,14 @@
 #define _ALLOW_RTCc_IN_STL
 #define  WIN32_LEAN_AND_MEAN
 #if defined(_CORE_MINGW_)
-    #define  WINVER (0x0500)
     #undef __STRICT_ANSI__
+#endif
+#if defined(_CORE_WINXP_)
+    #define _WIN32_WINNT _WIN32_WINNT_WINXP
+    #define  WINVER      _WIN32_WINNT_WINXP
+#else
+    #define _WIN32_WINNT _WIN32_WINNT_WIN7
+    #define  WINVER      _WIN32_WINNT_WIN7
 #endif
 
 #if defined(_CORE_WINDOWS_)
@@ -476,6 +488,7 @@ private:
     ~CoreApp()        {this->Exit();}
 
     FRIEND_CLASS(Core)
+    DISABLE_COPY(CoreApp)
 
     /*! auto-generated setup function */
     //! @{

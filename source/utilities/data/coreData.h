@@ -105,6 +105,7 @@ public:
     static inline const coreChar*   StrUpper    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, toupper);}
     static inline const coreChar*   StrLower    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, tolower);}
     static const coreChar*          StrRight    (const coreChar* pcInput, const coreUintW iNum);
+    static const coreChar*          StrFilename (const coreChar* pcInput);
     static const coreChar*          StrExtension(const coreChar* pcInput);
     static coreFloat                StrVersion  (const coreChar* pcInput);
     static void                     StrTrim     (std::string* OUTPUT psInput);
