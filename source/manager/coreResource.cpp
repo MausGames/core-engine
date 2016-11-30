@@ -64,6 +64,7 @@ coreResourceManager::coreResourceManager()noexcept
 , m_apHandle      {}
 , m_apArchive     {}
 , m_apDirectFile  {}
+, m_apProxy       {}
 , m_apRelation    {}
 , m_iResourceLock (0)
 , m_iFileLock     (0)
@@ -87,6 +88,9 @@ coreResourceManager::~coreResourceManager()
 
     // shut down the resource manager
     this->Reset(CORE_RESOURCE_RESET_EXIT);
+
+    // reset resource proxies
+    FOR_EACH(it, m_apProxy.get_keylist()) this->AssignProxy(*it, NULL);
 
     // delete resource handles
     FOR_EACH(it, m_apHandle) SAFE_DELETE(*it)
@@ -114,7 +118,7 @@ void coreResourceManager::UpdateResources()
     {
         SDL_AtomicLock(&m_iResourceLock);
         {
-            for(coreUintW i = 0u; i < m_apHandle.size(); ++i)
+            for(coreUintW i = 0u; i < m_apHandle.size(); ++i)   // # size may change
             {
                 // update resource handle
                 if(m_apHandle[i]->__AutoUpdate())
@@ -180,6 +184,36 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
 
 // ****************************************************************
+/* point resource proxy to foreign handle */
+void coreResourceManager::AssignProxy(coreResourceHandle* OUTPUT pProxy, coreResourceHandle* OUTPUT pForeign)
+{
+    ASSERT(m_apProxy.count(pProxy) && (pProxy != pForeign))
+
+    if(pProxy->m_pResource)
+    {
+        // decrease old reference-counter
+        m_apProxy.at(pProxy)->RefDecrease();
+    }
+
+    // point resource proxy to foreign handle
+    pProxy->m_pResource = pForeign ? pForeign->m_pResource : NULL;
+
+    if(pProxy->m_pResource)
+    {
+        // increase new reference-counter
+        pForeign->RefIncrease();
+
+        // forward status of the foreign handle
+        pProxy->m_iStatus = CORE_BUSY;
+        pForeign->OnLoadOnce([=]() {pProxy->m_iStatus = pForeign->m_iStatus;});
+    }
+
+    // save new foreign handle
+    m_apProxy.at(pProxy) = pForeign;
+}
+
+
+// ****************************************************************
 /* reset all resources and relation-objects */
 void coreResourceManager::Reset(const coreResourceReset bInit)
 {
@@ -191,6 +225,10 @@ void coreResourceManager::Reset(const coreResourceReset bInit)
 
     if(m_bActive)
     {
+        // reload resource proxies
+        FOR_EACH(it, m_apProxy)
+            this->AssignProxy(*m_apProxy.get_key(it), *it);
+
         // start up relation-objects
         for(coreUintW i = 0u; i < m_apRelation.size(); ++i)
             m_apRelation[i]->__Reset(CORE_RESOURCE_RESET_INIT);

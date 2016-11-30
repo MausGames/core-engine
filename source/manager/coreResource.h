@@ -63,6 +63,19 @@ public:
 
 
 // ****************************************************************
+/* resource dummy class */
+class coreResourceDummy final : public coreResource
+{
+public:
+    /*! load and unload resource data (without any effect) */
+    //! @{
+    coreStatus Load(coreFile* pFile)final {return CORE_OK;}
+    coreStatus Unload()final              {return CORE_OK;}
+    //! @}
+};
+
+
+// ****************************************************************
 /* resource handle class */
 class coreResourceHandle final
 {
@@ -190,16 +203,18 @@ private:
 class coreResourceManager final : public coreThread
 {
 private:
-    coreLookupStr<coreResourceHandle*> m_apHandle;   //!< resource handles
+    coreLookupStr<coreResourceHandle*> m_apHandle;                    //!< resource handles
 
-    coreLookupStr<coreArchive*> m_apArchive;         //!< archives with resource files
-    coreLookupStr<coreFile*> m_apDirectFile;         //!< direct resource files
+    coreLookupStr<coreArchive*> m_apArchive;                          //!< archives with resource files
+    coreLookupStr<coreFile*> m_apDirectFile;                          //!< direct resource files
 
-    coreSet<coreResourceRelation*> m_apRelation;     //!< objects to reset with the resource manager
+    coreLookup<coreResourceHandle*, coreResourceHandle*> m_apProxy;   //!< resource proxies pointing to foreign handles <proxy, foreign>
 
-    SDL_SpinLock m_iResourceLock;                    //!< spinlock to prevent invalid resource handle access
-    SDL_SpinLock m_iFileLock;                        //!< spinlock to prevent invalid resource file access
-    coreBool m_bActive;                              //!< current management status
+    coreSet<coreResourceRelation*> m_apRelation;                      //!< objects to reset with the resource manager
+
+    SDL_SpinLock m_iResourceLock;                                     //!< spinlock to prevent invalid resource handle access
+    SDL_SpinLock m_iFileLock;                                         //!< spinlock to prevent invalid resource file access
+    coreBool m_bActive;                                               //!< current management status
 
 
 private:
@@ -221,8 +236,9 @@ public:
 
     /*! create and delete resource and resource handle */
     //! @{
-    template <typename T, typename... A>                 coreResourceHandle* Load   (const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs);
-    template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew(A&&... vArgs)const;
+    template <typename T, typename... A>                 coreResourceHandle* Load     (const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs);
+    template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew  (A&&... vArgs)const;
+    inline                                               coreResourceHandle* LoadProxy(const coreHashString& sName);
     template <typename T> void Free(coreResourcePtr<T>* OUTPUT pptResourcePtr);
     //! @}
 
@@ -235,6 +251,14 @@ public:
     //! @{
     coreArchive* RetrieveArchive(const coreHashString& sPath);
     coreFile*    RetrieveFile   (const coreHashString& sPath);
+    //! @}
+
+    /*! point resource proxy to foreign handle */
+    //! @{
+    void        AssignProxy(coreResourceHandle* OUTPUT pProxy, coreResourceHandle* OUTPUT pForeign);
+    inline void AssignProxy(coreResourceHandle* OUTPUT pProxy, const coreHashString&      sForeign) {this->AssignProxy(pProxy,                               this->Get<coreResourceDummy>(sForeign));}
+    inline void AssignProxy(const coreHashString&      sProxy, coreResourceHandle* OUTPUT pForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), pForeign);}
+    inline void AssignProxy(const coreHashString&      sProxy, const coreHashString&      sForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), this->Get<coreResourceDummy>(sForeign));}
     //! @}
 
     /*! reset all resources and relation-objects */
@@ -356,6 +380,25 @@ template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreRes
     return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);
 }
 
+inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& sName)
+{
+    // check for existing resource proxy
+    if(m_apHandle.count(sName))
+    {
+        ASSERT(m_apProxy.count(m_apHandle.at(sName)))
+        return m_apHandle.at(sName);
+    }
+
+    // create new resource proxy without own resource
+    coreResourceHandle* pNewProxy = this->Load<coreResourceDummy>(sName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
+    SAFE_DELETE(pNewProxy->m_pResource)
+
+    // add resource proxy to manager
+    m_apProxy.emplace(pNewProxy, NULL);
+
+    return pNewProxy;
+}
+
 
 // ****************************************************************
 /* delete resource and resource handle */
@@ -380,6 +423,9 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
             }
         }
         SDL_AtomicUnlock(&m_iResourceLock);
+
+        // delete possible resource proxy
+        m_apProxy.erase(pHandle);
 
         // delete resource handle
         *pptResourcePtr = NULL;

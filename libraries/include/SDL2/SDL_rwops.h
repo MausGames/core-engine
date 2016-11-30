@@ -1,6 +1,3 @@
-// Modified version for Core Engine
-// Please use the original library from https://www.libsdl.org/
-
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
@@ -42,12 +39,12 @@ extern "C" {
 #endif
 
 /* RWops Types */
-#define SDL_RWOPS_UNKNOWN   0   /* Unknown stream type */
-#define SDL_RWOPS_WINFILE   1   /* Win32 file */
-#define SDL_RWOPS_STDFILE   2   /* Stdio file */
-#define SDL_RWOPS_JNIFILE   3   /* Android asset */
-#define SDL_RWOPS_MEMORY    4   /* Memory stream */
-#define SDL_RWOPS_MEMORY_RO 5   /* Read-Only memory stream */
+#define SDL_RWOPS_UNKNOWN   0U  /* Unknown stream type */
+#define SDL_RWOPS_WINFILE   1U  /* Win32 file */
+#define SDL_RWOPS_STDFILE   2U  /* Stdio file */
+#define SDL_RWOPS_JNIFILE   3U  /* Android asset */
+#define SDL_RWOPS_MEMORY    4U  /* Memory stream */
+#define SDL_RWOPS_MEMORY_RO 5U  /* Read-Only memory stream */
 
 /**
  * This is the read/write operation structure -- very basic.
@@ -109,7 +106,7 @@ typedef struct SDL_RWops
             long offset;
             int fd;
         } androidio;
-#elif defined(__WIN32__) && 0
+#elif defined(__WIN32__)
         struct
         {
             SDL_bool append;

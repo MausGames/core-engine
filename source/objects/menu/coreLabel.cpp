@@ -212,7 +212,12 @@ void coreLabel::__Generate(const coreChar* pcText, const coreInt8 iSub)
             const coreUintW a = j * pOutline->pitch * iComponents + iOffset;
 
             for(coreUintW i = 0u, ie = pSolid->pitch; i < ie; ++i)
-                pData[a + i * iComponents] = pInput1[b + i];
+            {
+                const coreUintW iIndex = a + i * iComponents;
+
+                ASSERT(iIndex < iSize)
+                pData[iIndex] = pInput1[b + i];
+            }
         }
 
         // insert outlined pixels
@@ -222,7 +227,12 @@ void coreLabel::__Generate(const coreChar* pcText, const coreInt8 iSub)
             const coreUintW a = b * iComponents + 1u;
 
             for(coreUintW i = 0u, ie = pOutline->pitch; i < ie; ++i)
-                pData[a + i * iComponents] = pInput2[b + i];
+            {
+                const coreUintW iIndex = a + i * iComponents;
+
+                ASSERT(iIndex < iSize)
+                pData[iIndex] = pInput2[b + i];
+            }
         }
     }
     else pData = s_cast<coreByte*>(pSolid->pixels);
@@ -230,7 +240,7 @@ void coreLabel::__Generate(const coreChar* pcText, const coreInt8 iSub)
     if(iSub > 0)
     {
         // create static texture
-        if(!m_vResolution.x) this->__Generate((std::string(m_iLength, 'W') + "gjy])").c_str(), -1);
+        if(!m_vResolution.x) this->__Generate((std::string(MAX(m_iLength, 3u) - 3u, 'W') + "gjy])").c_str(), -1);
 
         // update only a specific area of the texture
         m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);

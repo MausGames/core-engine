@@ -148,14 +148,6 @@ void Core::Reset()
 /* main function */
 ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar** argv)
 {
-#if defined(_CORE_MSVC_) && defined(_CORE_DEBUG_)
-
-    // activate memory debugging on MSVC
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    _CrtSetBreakAlloc(0);
-
-#endif
-
     // set new working directory (bin/<OS>/<ARCH>)
     coreData::SetCurDir("../../..");
 

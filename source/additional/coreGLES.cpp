@@ -9,8 +9,8 @@
 #include "Core.h"
 #include <EGL/egl.h>
 
-std::string              g_sExtensions = "";
-thread_local coreContext g_CoreContext = {};
+std::string g_sExtensions = "";
+coreContext g_CoreContext = {};
 
 
 // ****************************************************************
@@ -113,8 +113,8 @@ void __coreInitOpenGLES()
 
 // ****************************************************************
 /* get extension string */
-void coreExtensions(std::string* OUTPUT sOutput)
+void coreExtensions(std::string* OUTPUT psOutput)
 {
     // copy saved extension string
-    *sOutput = g_sExtensions;
+    (*psOutput) = g_sExtensions;
 }

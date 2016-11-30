@@ -207,11 +207,6 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 , m_ptValueCache (NULL)
 , m_ptKeyCache   (NULL)
 {
-    constexpr coreUintW iSize = MAX(64u / MAX(sizeof(K), sizeof(T)), 2u);
-
-    // pre-allocate some memory
-    m_atValueList.reserve(iSize);
-    m_atKeyList  .reserve(iSize);
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept

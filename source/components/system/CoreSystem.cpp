@@ -31,13 +31,22 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->Header("System Interface");
 
     // get SDL version
-    SDL_version oVersion;
-    SDL_GetVersion(&oVersion);
+    SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
+    const SDL_version* pVersionTTF = TTF_Linked_Version();
+    const SDL_version* pVersionIMG = IMG_Linked_Version();
 
     // init SDL libraries
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
+    {
         Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("SDL initialized (%d.%d.%d %s)", oVersion.major, oVersion.minor, oVersion.patch, SDL_GetRevision());
+    }
+    else
+    {
+        Core::Log->Info("SDL initialized (%d.%d.%d %s, TTF %d.%d.%d, IMG %d.%d.%d)",
+                        oVersionSDL .major, oVersionSDL .minor, oVersionSDL .patch, SDL_GetRevision(),
+                        pVersionTTF->major, pVersionTTF->minor, pVersionTTF->patch,
+                        pVersionIMG->major, pVersionIMG->minor, pVersionIMG->patch);
+    }
 
     // automatically shut down SDL libraries on exit
     std::atexit([]() {IMG_Quit(); TTF_Quit(); SDL_Quit();});
@@ -144,7 +153,7 @@ CoreSystem::CoreSystem()noexcept
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, F_TO_SI(fVersion));
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, F_TO_SI(fVersion*10.0f) % 10);
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_CORE);
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,         SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);   // not with debug context
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,         SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);   // overwritten by debug context
             }
             SDL_DestroyWindow(m_pWindow);
         }

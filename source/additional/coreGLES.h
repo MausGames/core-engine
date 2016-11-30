@@ -11,6 +11,7 @@
 #define	_CORE_GLES_H_
 
 // TODO: __CORE_GLES_CHECK does not handle sub-strings
+// TODO: add name-pooling to OpenGL ES
 
 
 // ****************************************************************
@@ -48,7 +49,7 @@
 #define GL_DEPTH   0x1801
 #define GL_STENCIL 0x1802
 
-typedef void (GL_APIENTRY * PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsizei numAttachments, const GLenum *attachments);
+typedef void (GL_APIENTRY *PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
 #define glInvalidateBufferData(x)
 #define glInvalidateFramebuffer __CORE_GLES_FUNC(glDiscardFramebufferEXT)
 #define glInvalidateTexImage(x,y)
@@ -58,7 +59,7 @@ typedef void (GL_APIENTRY * PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsi
 /* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage) */
 #define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
 
-typedef void (GL_APIENTRY * PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (GL_APIENTRY *PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 #define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2DEXT)
 
 
@@ -71,8 +72,8 @@ typedef void (GL_APIENTRY * PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei le
 #define GL_MAP_INVALIDATE_BUFFER_BIT 0x0008
 #define GL_MAP_UNSYNCHRONIZED_BIT    0x0020
 
-typedef GLvoid*   (GL_APIENTRY * PFNGLMAPBUFFERRANGEEXTPROC) (GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
-typedef GLboolean (GL_APIENTRY * PFNGLUNMAPBUFFEROESPROC)    (GLenum target);
+typedef GLvoid*   (GL_APIENTRY *PFNGLMAPBUFFERRANGEEXTPROC) (GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
+typedef GLboolean (GL_APIENTRY *PFNGLUNMAPBUFFEROESPROC)    (GLenum target);
 #define glMapBufferRange __CORE_GLES_FUNC(glMapBufferRangeEXT)
 #define glUnmapBuffer    __CORE_GLES_FUNC(glUnmapBufferOES)
 
@@ -81,9 +82,9 @@ typedef GLboolean (GL_APIENTRY * PFNGLUNMAPBUFFEROESPROC)    (GLenum target);
 /* GL_EXT_instanced_arrays (mapped on GL_ARB_instanced_arrays) */
 #define CORE_GL_ARB_instanced_arrays __CORE_GLES_VAR(GL_EXT_instanced_arrays)
 
-typedef void (GL_APIENTRY * PFNGLDRAWARRAYSINSTANCEDEXTPROC)   (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
-typedef void (GL_APIENTRY * PFNGLDRAWELEMENTSINSTANCEDEXTPROC) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount);
-typedef void (GL_APIENTRY * PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GLuint divisor);
+typedef void (GL_APIENTRY *PFNGLDRAWARRAYSINSTANCEDEXTPROC)   (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
+typedef void (GL_APIENTRY *PFNGLDRAWELEMENTSINSTANCEDEXTPROC) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount);
+typedef void (GL_APIENTRY *PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GLuint divisor);
 #define glDrawArraysInstanced   __CORE_GLES_FUNC(glDrawArraysInstancedEXT)
 #define glDrawElementsInstanced __CORE_GLES_FUNC(glDrawElementsInstancedEXT)
 #define glVertexAttribDivisor   __CORE_GLES_FUNC(glVertexAttribDivisorEXT)
@@ -119,7 +120,7 @@ typedef void (GL_APIENTRY * PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GL
 #define GL_READ_FRAMEBUFFER __CORE_GLES_VAR(GL_READ_FRAMEBUFFER)
 #define GL_DRAW_FRAMEBUFFER __CORE_GLES_VAR(GL_DRAW_FRAMEBUFFER)
 
-typedef void (GL_APIENTRY * PFNGLBLITFRAMEBUFFERNVPROC) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+typedef void (GL_APIENTRY *PFNGLBLITFRAMEBUFFERNVPROC) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 #define glBlitFramebuffer __CORE_GLES_FUNC(glBlitFramebufferNV)
 
 
@@ -127,7 +128,7 @@ typedef void (GL_APIENTRY * PFNGLBLITFRAMEBUFFERNVPROC) (GLint srcX0, GLint srcY
 /* GL_NV_framebuffer_multisample (mapped on GL_EXT_framebuffer_multisample) */
 #define CORE_GL_EXT_framebuffer_multisample __CORE_GLES_VAR(GL_NV_framebuffer_multisample)
 
-typedef void (GL_APIENTRY * PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (GL_APIENTRY *PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
 #define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisampleNV)
 
 
@@ -135,9 +136,9 @@ typedef void (GL_APIENTRY * PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC) (GLenum t
 /* GL_OES_vertex_array_object (mapped on GL_ARB_vertex_array_object) */
 #define CORE_GL_ARB_vertex_array_object __CORE_GLES_VAR(GL_OES_vertex_array_object)
 
-typedef void (GL_APIENTRY * PFNGLBINDVERTEXARRAYOESPROC)    (GLuint array);
-typedef void (GL_APIENTRY * PFNGLDELETEVERTEXARRAYSOESPROC) (GLsizei n, const GLuint *arrays);
-typedef void (GL_APIENTRY * PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint *arrays);
+typedef void (GL_APIENTRY *PFNGLBINDVERTEXARRAYOESPROC)    (GLuint array);
+typedef void (GL_APIENTRY *PFNGLDELETEVERTEXARRAYSOESPROC) (GLsizei n, const GLuint* arrays);
+typedef void (GL_APIENTRY *PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint* arrays);
 #define glBindVertexArray    __CORE_GLES_FUNC(glBindVertexArrayOES)
 #define glDeleteVertexArrays __CORE_GLES_FUNC(glDeleteVertexArraysOES)
 #define glGenVertexArrays    __CORE_GLES_FUNC(glGenVertexArraysOES)
@@ -301,8 +302,8 @@ struct coreContext final
     PFNGLGENVERTEXARRAYSOESPROC               __glGenVertexArraysOES;
 };
 
-extern std::string              g_sExtensions;   //!< full extension string
-extern thread_local coreContext g_CoreContext;   //!< thread local context structure
+extern std::string g_sExtensions;   //!< full extension string
+extern coreContext g_CoreContext;   //!< thread local context structure
 
 #define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x) != std::string::npos) || b))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
@@ -312,14 +313,22 @@ extern thread_local coreContext g_CoreContext;   //!< thread local context struc
 
 
 // ****************************************************************
-/* init OpenGL ES */
+/* init and exit OpenGL ES */
 extern void __coreInitOpenGLES();
 #define coreInitOpenGL __coreInitOpenGLES
+#define coreExitOpenGL []{}
+
+
+// ****************************************************************
+/* generate resource names */
+#define coreGenTextures2D   glGenTextures
+#define coreGenBuffers      glGenBuffers
+#define coreGenVertexArrays glGenVertexArrays
 
 
 // ****************************************************************
 /* check for extensions */
-extern void coreExtensions(std::string* OUTPUT sOutput);
+extern void coreExtensions(std::string* OUTPUT psOutput);
 #define CORE_GL_SUPPORT(e) (CORE_GL_ ## e)
 
 

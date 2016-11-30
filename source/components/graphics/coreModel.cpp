@@ -294,7 +294,7 @@ void coreModel::Enable()
         if(CORE_GL_SUPPORT(ARB_vertex_array_object))
         {
             // create vertex array object
-            glGenVertexArrays(1, &m_iVertexArray);
+            coreGenVertexArrays(1u, &m_iVertexArray);
             glBindVertexArray(m_iVertexArray);
 
             // force binding of index data

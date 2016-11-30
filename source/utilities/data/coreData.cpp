@@ -74,7 +74,7 @@ const coreChar* coreData::AppPath()
     coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
-    GetModuleFileName(NULL, pcString, CORE_DATA_STRING_LEN);
+    GetModuleFileNameA(NULL, pcString, CORE_DATA_STRING_LEN);
 #elif defined(_CORE_LINUX_)
     const coreInt32 iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1u);
     pcString[MAX(iLen, 0)] = '\0';
@@ -157,7 +157,7 @@ const coreChar* coreData::SystemName()
 coreStatus coreData::SetCurDir(const coreChar* pcPath)
 {
 #if defined(_CORE_WINDOWS_)
-    if(SetCurrentDirectory(pcPath)) return CORE_OK;
+    if(SetCurrentDirectoryA(pcPath)) return CORE_OK;
 #elif !defined(_CORE_ANDROID_)
     if(!chdir(pcPath)) return CORE_OK;
 #endif
@@ -173,7 +173,7 @@ const coreChar* coreData::GetCurDir()
     coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
-    GetCurrentDirectory(CORE_DATA_STRING_LEN - 1u, pcString);
+    GetCurrentDirectoryA(CORE_DATA_STRING_LEN - 1u, pcString);
 #elif !defined(_CORE_ANDROID_)
     getcwd(pcString, CORE_DATA_STRING_LEN - 1u);
 #else
@@ -189,7 +189,7 @@ const coreChar* coreData::GetCurDir()
 coreStatus coreData::OpenURL(const coreChar* pcURL)
 {
 #if defined(_CORE_WINDOWS_)
-    if(P_TO_SI(ShellExecute(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
+    if(P_TO_SI(ShellExecuteA(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
 #elif defined(_CORE_LINUX_)
     if(system(NULL)) if(!system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
 #else
@@ -207,7 +207,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 #if defined(_CORE_WINDOWS_)
 
     // quick Windows check
-    return (GetFileAttributes(pcPath) == INVALID_FILE_ATTRIBUTES) ? false : true;
+    return (GetFileAttributesA(pcPath) == INVALID_FILE_ATTRIBUTES) ? false : true;
 
 #elif defined(_CORE_LINUX_)
 
@@ -239,7 +239,7 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
 
     // get extended file attributes
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
-    if(!GetFileAttributesEx(pcPath, GetFileExInfoStandard, &oAttributes)) return -1;
+    if(!GetFileAttributesExA(pcPath, GetFileExInfoStandard, &oAttributes)) return -1;
 
     // return combined size
     return (coreInt64(oAttributes.nFileSizeHigh) << 32u) |
@@ -278,13 +278,13 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
 #if defined(_CORE_WINDOWS_)
 
     HANDLE pFolder;
-    WIN32_FIND_DATA oFile;
+    WIN32_FIND_DATAA oFile;
 
     // improve performance if possible
     const FINDEX_INFO_LEVELS iInfoLevel = IsWindowsVersionOrGreater(6u, 1u, 0u) ? FindExInfoBasic : FindExInfoStandard;
 
     // open folder
-    pFolder = FindFirstFileEx(PRINT("%s/%s", pcPath, pcFilter), iInfoLevel, &oFile, FindExSearchNameMatch, NULL, 0u);
+    pFolder = FindFirstFileExA(PRINT("%s/%s", pcPath, pcFilter), iInfoLevel, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
@@ -297,7 +297,7 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
         if(oFile.cFileName[0] != '.')
             pasOutput->push_back(PRINT("%s/%s", pcPath, oFile.cFileName));
     }
-    while(FindNextFile(pFolder, &oFile));
+    while(FindNextFileA(pFolder, &oFile));
 
     // close folder
     FindClose(pFolder);
@@ -351,7 +351,7 @@ void coreData::CreateFolder(const std::string& sPath)
 
         // create sub-folder
 #if defined(_CORE_WINDOWS_)
-        CreateDirectory(sSubFolder.c_str(), NULL);
+        CreateDirectoryA(sSubFolder.c_str(), NULL);
 #else
         mkdir(sSubFolder.c_str(), S_IRWXU);
 #endif

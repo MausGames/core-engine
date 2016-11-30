@@ -52,7 +52,7 @@ CoreInput::CoreInput()noexcept
                 m_aJoystick.push_back(oJoystick);
                 Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s / %s)", oJoystick.pController ? "Gamepad" : "Joystick",
                                                                          this->GetJoystickName(i), this->GetJoystickGUID(i),
-                                                                         oJoystick.pHaptic ? "haptic" : "no haptic");
+                                                                         oJoystick.pHaptic ? "haptic" : "not haptic");
             }
         }
         Core::Log->ListEnd();
@@ -208,6 +208,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         this->SetKeyboardButton(oEvent.key.keysym.scancode, false);
         break;
 
+#if !defined(_CORE_MOBILE_)
+
     // press mouse button
     case SDL_MOUSEBUTTONDOWN:
         this->SetMouseButton(oEvent.button.button, true);
@@ -232,6 +234,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     case SDL_MOUSEWHEEL:
         this->SetMouseWheel(I_TO_F(oEvent.wheel.y));
         break;
+
+#endif
 
     // press joystick button
     case SDL_JOYBUTTONDOWN:
@@ -259,6 +263,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         }
         break;
 
+#if defined(_CORE_MOBILE_)
+
     // press finger
     case SDL_FINGERDOWN:
         this->SetTouchButton  (coreUintW(oEvent.tfinger.fingerId), true);
@@ -276,6 +282,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         this->SetTouchRelative(coreUintW(oEvent.tfinger.fingerId), coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(coreUintW(oEvent.tfinger.fingerId)));
         this->SetTouchPressure(coreUintW(oEvent.tfinger.fingerId), oEvent.tfinger.pressure);
         break;
+
+#endif
     }
 
     return true;
@@ -293,12 +301,16 @@ void CoreInput::__UpdateButtons()
                                                 else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[i])
     }
 
+#if !defined(_CORE_MOBILE_)
+
     // process mouse inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
         if(CONTAINS_BIT(m_Mouse.aiButton[i], 0u)) __CORE_INPUT_PRESS  (m_Mouse.aiButton[i])
                                              else __CORE_INPUT_RELEASE(m_Mouse.aiButton[i])
     }
+
+#endif
 
     // process joystick inputs
     FOR_EACH(it, m_aJoystick)
@@ -310,12 +322,16 @@ void CoreInput::__UpdateButtons()
         }
     }
 
+#if defined(_CORE_MOBILE_)
+
     // process touch inputs
     for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
     {
         if(CONTAINS_BIT(m_aTouch[i].iButton, 0u)) __CORE_INPUT_PRESS  (m_aTouch[i].iButton)
                                              else __CORE_INPUT_RELEASE(m_aTouch[i].iButton)
     }
+
+#endif
 
 #if defined(_CORE_LINUX_)
 

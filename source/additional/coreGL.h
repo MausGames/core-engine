@@ -15,14 +15,23 @@
 
 
 // ****************************************************************
-/* init OpenGL */
+/* init and exit OpenGL */
 extern void __coreInitOpenGL();
+extern void __coreExitOpenGL();
 #define coreInitOpenGL __coreInitOpenGL
+#define coreExitOpenGL __coreExitOpenGL
+
+
+// ****************************************************************
+/* generate resource names */
+extern void coreGenTextures2D  (coreUintW iCount, GLuint* OUTPUT pNames);
+extern void coreGenBuffers     (coreUintW iCount, GLuint* OUTPUT pNames);
+extern void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames);
 
 
 // ****************************************************************
 /* check for extensions */
-extern void coreExtensions(std::string* OUTPUT sOutput);
+extern void coreExtensions(std::string* OUTPUT psOutput);
 #define CORE_GL_SUPPORT(e) ((GLEW_ ## e) ? true : false)
 
 

@@ -26,7 +26,7 @@
 
 VERSIONHELPERAPI IsWindowsVersionOrGreater(DWORD dwMajorVersion, DWORD dwMinorVersion, WORD wServicePackMajor)
 {
-    OSVERSIONINFOEX oVersionInfo   = {sizeof(oVersionInfo)};
+    OSVERSIONINFOEXA oVersionInfo  = {sizeof(oVersionInfo)};
     oVersionInfo.dwMajorVersion    = dwMajorVersion;
     oVersionInfo.dwMinorVersion    = dwMinorVersion;
     oVersionInfo.wServicePackMajor = wServicePackMajor;
@@ -36,7 +36,7 @@ VERSIONHELPERAPI IsWindowsVersionOrGreater(DWORD dwMajorVersion, DWORD dwMinorVe
                                      VER_MINORVERSION,     VER_GREATER_EQUAL),
                                      VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
 
-    return (VerifyVersionInfo(&oVersionInfo, (VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR), iConditionMask) != FALSE);
+    return (VerifyVersionInfoA(&oVersionInfo, (VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR), iConditionMask) != FALSE);
 }
 
 

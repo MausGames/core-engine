@@ -49,7 +49,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     m_iSize        = iSize;
 
     // generate buffer
-    glGenBuffers(1, &m_iDataBuffer);
+    coreGenBuffers(1u, &m_iDataBuffer);
     glBindBuffer(m_iTarget, m_iDataBuffer);
     s_aiBound[m_iTarget] = m_iDataBuffer;
 

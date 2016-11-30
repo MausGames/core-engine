@@ -8,16 +8,26 @@
 //////////////////////////////////////////////////////////
 #if defined(_WIN32)
 
-#define WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
+#define  WINVER      _WIN32_WINNT_WINXP
+#define  WIN32_LEAN_AND_MEAN
+
 #pragma warning(disable : 4100)
 
 #include <SDL2/SDL_main.h>
 #include <windows.h>
+#include <crtdbg.h>
+
+
+// ****************************************************************
+/* always use the discrete high-performance graphics device */
+_declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001u;
+_declspec(dllexport) DWORD NvOptimusEnablement                  = 0x00000001u;
 
 
 // ****************************************************************
 /* improve hardware utilization on NUMA systems */
-void ImproveNUMA(void)
+static void ImproveNUMA(void)
 {
     // get highest NUMA node number
     ULONG iNumaNode;
@@ -36,19 +46,25 @@ void ImproveNUMA(void)
 
 // ****************************************************************
 /* start up the application */
-int WINAPI WinMain(HINSTANCE pInstance, HINSTANCE pPrevInstance, LPSTR pcCmdLine, int iCmdShow)
+extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPSTR pcCmdLine, _In_ int iCmdShow)
 {
-    // initialize the SDL library
-    SDL_SetMainReady();
+#if defined(_DEBUG)
+
+    // activate memory debugging in MSVC
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    _CrtSetBreakAlloc(0);
+
+#endif
 
     // improve hardware utilization on NUMA systems
     ImproveNUMA();
 
-    // run the application
-    char* argv[2] = {"CoreApp", NULL};
-    SDL_main(1, argv);
+    // initialize the SDL library
+    SDL_SetMainReady();
 
-    return 0;
+    // run the application
+    char* argv[] = {"CoreApp", NULL};
+    return SDL_main(__crt_countof(argv) - 1, argv);
 }
 
 

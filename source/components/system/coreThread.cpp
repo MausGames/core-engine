@@ -18,7 +18,7 @@ coreThread::coreThread(const coreChar* pcName)noexcept
 , m_sName       (pcName)
 , m_iExecutions (1u)
 , m_bActive     (false)
-, m_iLock       (0)
+, m_iFuncLock   (0)
 , m_anFunction  {}
 {
 }
@@ -77,7 +77,7 @@ void coreThread::UpdateFunctions()
 {
     if(m_anFunction.empty()) return;
 
-    SDL_AtomicLock(&m_iLock);
+    SDL_AtomicLock(&m_iFuncLock);
     {
         // loop trough all functions
         FOR_EACH_DYN(it, m_anFunction)
@@ -87,7 +87,7 @@ void coreThread::UpdateFunctions()
                    else DYN_REMOVE(it, m_anFunction)
         }
     }
-    SDL_AtomicUnlock(&m_iLock);
+    SDL_AtomicUnlock(&m_iFuncLock);
 }
 
 

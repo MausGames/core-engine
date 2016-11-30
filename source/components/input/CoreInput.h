@@ -27,7 +27,7 @@
 #define CORE_INPUT_BUTTONS_KEYBOARD (284u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    (16u)    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK (32u)    //!< number of regarded joystick buttons
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
     #define CORE_INPUT_FINGERS      (5u)     //!< maximum number of simultaneous fingers
 #else
     #define CORE_INPUT_FINGERS      (1u)

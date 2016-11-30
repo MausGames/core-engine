@@ -105,8 +105,7 @@ private:
 
 
 public:
-    coreShader()noexcept;
-    explicit coreShader(const coreChar* pcCustomCode)noexcept;
+    explicit coreShader(const coreChar* pcCustomCode = "")noexcept;
     ~coreShader()final;
 
     DISABLE_COPY(coreShader)

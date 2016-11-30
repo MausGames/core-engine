@@ -21,7 +21,7 @@ coreObject2D::coreObject2D()noexcept
 , m_mTransform     (coreMatrix3::Identity())
 , m_bFocused       (false)
 , m_vFocusModifier (coreVector2(1.0f,1.0f))
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
 , m_iFinger        (0u)
 #endif
 {
@@ -39,7 +39,7 @@ coreObject2D::coreObject2D(const coreObject2D& c)noexcept
 , m_mTransform     (c.m_mTransform)
 , m_bFocused       (c.m_bFocused)
 , m_vFocusModifier (c.m_vFocusModifier)
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
 , m_iFinger        (c.m_iFinger)
 #endif
 {
@@ -57,7 +57,7 @@ coreObject2D::coreObject2D(coreObject2D&& m)noexcept
 , m_mTransform     (m.m_mTransform)
 , m_bFocused       (m.m_bFocused)
 , m_vFocusModifier (m.m_vFocusModifier)
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
 , m_iFinger        (m.m_iFinger)
 #endif
 {
@@ -89,7 +89,7 @@ coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
     m_mTransform     = c.m_mTransform;
     m_bFocused       = c.m_bFocused;
     m_vFocusModifier = c.m_vFocusModifier;
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
     m_iFinger        = c.m_iFinger;
 #endif
 
@@ -108,7 +108,7 @@ coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
     m_mTransform     = m.m_mTransform;
     m_bFocused       = m.m_bFocused;
     m_vFocusModifier = m.m_vFocusModifier;
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
     m_iFinger        = m.m_iFinger;
 #endif
 
@@ -193,7 +193,7 @@ void coreObject2D::Interact()
     const coreVector2 vScreenPosition = coreVector2(    m_mTransform._31,      m_mTransform._32);
     const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22)) * 0.5f * m_vFocusModifier;
 
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
 
     // reset interaction status
     m_bFocused = false;
@@ -230,7 +230,7 @@ void coreObject2D::Interact()
 // check for direct input
 coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType iType)const
 {
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
 
     // check for general intersection status
     if(m_bFocused)

@@ -10,6 +10,80 @@
 
 
 // ****************************************************************
+/* pool definitions */
+#define CORE_GL_POOL_SIZE (512u)   //!< number of resource names generated and pooled at the same time
+
+#define CORE_GL_POOL_GENERATE(n,c,g)                                               \
+{                                                                                  \
+    ASSERT(iCount && pNames && (iCount < CORE_GL_POOL_SIZE))                       \
+                                                                                   \
+    const coreUintW iRemaining = CORE_GL_POOL_SIZE - (n).iNext;                    \
+    if(iCount > iRemaining)                                                        \
+    {                                                                              \
+        std::memcpy(pNames, &(n).aiArray[(n).iNext], sizeof(GLuint) * iRemaining); \
+        iCount -= iRemaining;                                                      \
+        pNames += iRemaining;                                                      \
+                                                                                   \
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))                               \
+             (c)(CORE_GL_POOL_SIZE, (n).aiArray);                                  \
+        else (g)(CORE_GL_POOL_SIZE, (n).aiArray);                                  \
+        (n).iNext = 0u;                                                            \
+    }                                                                              \
+                                                                                   \
+    std::memcpy(pNames, &(n).aiArray[(n).iNext], sizeof(GLuint) * iCount);         \
+    (n).iNext += iCount;                                                           \
+}
+
+#define CORE_GL_POOL_RESET(n,d)                                                    \
+{                                                                                  \
+    const coreUintW iRemaining = CORE_GL_POOL_SIZE - (n).iNext;                    \
+    (d)(iRemaining, &(n).aiArray[(n).iNext]);                                      \
+                                                                                   \
+    (n).iNext = CORE_GL_POOL_SIZE;                                                 \
+}
+
+
+// ****************************************************************
+/* pool structure */
+struct coreNamePool final
+{
+    SDL_SpinLock iLock = 0;                    //!< spinlock to allow multiple threads accessing the pool
+    coreUintW    iNext = CORE_GL_POOL_SIZE;    //!< next unused resource name in the pool
+    GLuint       aiArray[CORE_GL_POOL_SIZE];   //!< actual pool holding all pre-generated resource names
+};
+
+static coreNamePool g_PoolTextures2D;
+static coreNamePool g_PoolBuffers;
+static coreNamePool g_PoolVertexArrays;
+
+
+// ****************************************************************
+/* generate resource names */
+void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
+{
+    // wrap function for consistent interface
+    auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
+
+    // generate 2D texture names
+    coreLockRelease oRelease(g_PoolTextures2D.iLock);
+    CORE_GL_POOL_GENERATE(g_PoolTextures2D, nCreateFunc, glGenTextures)
+}
+
+void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
+{
+    // generate data buffer names
+    coreLockRelease oRelease(g_PoolBuffers.iLock);
+    CORE_GL_POOL_GENERATE(g_PoolBuffers, glCreateBuffers, glGenBuffers)
+}
+
+void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames)
+{
+    // generate vertex array names (without lock, because only executed on main-thread)
+    CORE_GL_POOL_GENERATE(g_PoolVertexArrays, glCreateVertexArrays, glGenVertexArrays)
+}
+
+
+// ****************************************************************
 /* init OpenGL */
 void __coreInitOpenGL()
 {
@@ -165,8 +239,19 @@ void __coreInitOpenGL()
 
 
 // ****************************************************************
+/* exit OpenGL */
+void __coreExitOpenGL()
+{
+    // delete remaining resource names from the pools
+    CORE_GL_POOL_RESET(g_PoolTextures2D,   glDeleteTextures)
+    CORE_GL_POOL_RESET(g_PoolBuffers,      glDeleteBuffers)
+    CORE_GL_POOL_RESET(g_PoolVertexArrays, glDeleteTextures)
+}
+
+
+// ****************************************************************
 /* get extension string */
-void coreExtensions(std::string* OUTPUT sOutput)
+void coreExtensions(std::string* OUTPUT psOutput)
 {
     if(GLEW_VERSION_3_0)
     {
@@ -175,22 +260,22 @@ void coreExtensions(std::string* OUTPUT sOutput)
         glGetIntegerv(GL_NUM_EXTENSIONS, &iNumExtensions);
 
         // reserve some memory
-        sOutput->reserve(iNumExtensions * 32u);
+        psOutput->reserve(iNumExtensions * 32u);
 
         // concatenate all extensions to a single string
         for(coreUintW i = 0u, ie = iNumExtensions; i < ie; ++i)
         {
-            (*sOutput) += r_cast<const coreChar*>(glGetStringi(GL_EXTENSIONS, i));
-            (*sOutput) += ' ';
+            (*psOutput) += r_cast<const coreChar*>(glGetStringi(GL_EXTENSIONS, i));
+            (*psOutput) += ' ';
         }
 
         // reduce output size
-        sOutput->pop_back();
-        sOutput->shrink_to_fit();
+        psOutput->pop_back();
+        psOutput->shrink_to_fit();
     }
     else
     {
         // get full extension string
-        (*sOutput) = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
+        (*psOutput) = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
     }
 }

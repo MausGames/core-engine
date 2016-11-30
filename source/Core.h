@@ -106,13 +106,18 @@
     #define _CORE_PARALLEL_ (1)
 #endif
 
+// mobile mode
+#if defined(_CORE_ANDROID_)
+    #define _CORE_MOBILE_   (1)
+#endif
+
 // x64 instruction set
 #if defined(_M_X64) || defined(__x86_64__)
     #define _CORE_X64_      (1)
 #endif
 
 // SSE2 instruction set
-#if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_ANDROID_)
+#if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_MOBILE_)
     #define _CORE_SSE_      (1)
 #endif
 
@@ -122,7 +127,7 @@
 #endif
 
 // OpenGL ES
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
     #define _CORE_GLES_     (1)
 #endif
 

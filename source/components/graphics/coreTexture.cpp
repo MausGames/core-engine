@@ -15,11 +15,6 @@ coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS] = {};
 
 // ****************************************************************
 // constructor
-coreTexture::coreTexture()noexcept
-: coreTexture (true)
-{
-}
-
 coreTexture::coreTexture(const coreBool bLoadCompressed)noexcept
 : coreResource  ()
 , m_iTexture    (0u)
@@ -155,7 +150,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     }
 
     // generate texture
-    glGenTextures(1, &m_iTexture);
+    coreGenTextures2D(1u, &m_iTexture);
     glBindTexture(GL_TEXTURE_2D, m_iTexture);
     s_apBound[s_iActiveUnit] = NULL;
 

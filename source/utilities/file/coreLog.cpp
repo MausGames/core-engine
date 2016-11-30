@@ -126,7 +126,7 @@ void coreLog::__Write(const coreBool bTimeStamp, std::string sText)
 {
     coreLockRelease oRelease(m_iLock);
 
-#if defined(_CORE_ANDROID_) || defined(_CORE_DEBUG_)
+#if defined(_CORE_MOBILE_) || defined(_CORE_DEBUG_)
 
     // also write text to the standard output
     SDL_Log("%s", sText.substr(0, SDL_MAX_LOG_MESSAGE - 1u).c_str());

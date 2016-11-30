@@ -11,10 +11,12 @@
 
 // ****************************************************************
 // constructor
-coreFont::coreFont()noexcept
+coreFont::coreFont(const coreUint8 iHinting, const coreBool bKerning)noexcept
 : coreResource ()
 , m_aapFont    {}
 , m_pFile      (NULL)
+, m_iHinting   (iHinting)
+, m_bKerning   (bKerning)
 {
 }
 
@@ -184,9 +186,9 @@ coreBool coreFont::__InitHeight(const coreUint8 iHeight, const coreUint8 iOutlin
         return false;
     }
 
-    // enable font kerning and hinting
-    TTF_SetFontKerning(pNewFont, 1);
-    TTF_SetFontHinting(pNewFont, TTF_HINTING_MONO);
+    // enable font hinting and kerning
+    TTF_SetFontHinting(pNewFont, m_iHinting);
+    TTF_SetFontKerning(pNewFont, m_bKerning ? 1 : 0);
 
     // enable outlining
     if(iOutline) TTF_SetFontOutline(pNewFont, iOutline);

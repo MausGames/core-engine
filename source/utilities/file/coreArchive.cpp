@@ -166,7 +166,8 @@ coreStatus coreFile::LoadData()
 
     // cache file data
     m_pData = new coreByte[m_iSize];
-    SDL_RWread(pFile, m_pData, sizeof(coreByte), m_iSize);
+    const coreUintW iRead = SDL_RWread(pFile, m_pData, sizeof(coreByte), m_iSize);
+    ASSERT(iRead == m_iSize)
 
     // close file
     SDL_RWclose(pFile);

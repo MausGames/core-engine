@@ -544,7 +544,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
             FOR_EACH(it, m_aInstanceBuffer)
             {
                 // create vertex array object
-                glGenVertexArrays(1, &m_aiVertexArray.current());
+                coreGenVertexArrays(1u, &m_aiVertexArray.current());
                 glBindVertexArray(m_aiVertexArray.current());
                 m_aiVertexArray.next();
 

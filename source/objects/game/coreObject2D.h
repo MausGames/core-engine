@@ -35,7 +35,7 @@ protected:
     coreBool    m_bFocused;         //!< interaction status
     coreVector2 m_vFocusModifier;   //!< size-modifier for interaction handling
 
-#if defined(_CORE_ANDROID_)
+#if defined(_CORE_MOBILE_)
     coreUint32 m_iFinger;           //!< separate finger interaction status (bitwise)
 #endif
 

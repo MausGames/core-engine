@@ -22,9 +22,12 @@ private:
     coreLookup<coreUint8, coreLookup<coreUint8, TTF_Font*>> m_aapFont;   //!< list with sub-fonts in different heights <height, <outline> >
     coreFile* m_pFile;                                                   //!< file object with resource data
 
+    coreUint8 m_iHinting;                                                //!< hinting-algorithm to use (NORMAL, LIGHT, MONO, NONE)
+    coreBool  m_bKerning;                                                //!< apply kerning if available
+
 
 public:
-    coreFont()noexcept;
+    coreFont(const coreUint8 iHinting = TTF_HINTING_NORMAL, const coreBool bKerning = true)noexcept;
     ~coreFont()final;
 
     DISABLE_COPY(coreFont)

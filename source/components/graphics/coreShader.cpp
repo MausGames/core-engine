@@ -36,11 +36,6 @@ STRING_ARRAY(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avO
 
 // ****************************************************************
 // constructor
-coreShader::coreShader()noexcept
-: coreShader ("")
-{
-}
-
 coreShader::coreShader(const coreChar* pcCustomCode)noexcept
 : coreResource  ()
 , m_iShader     (0u)
@@ -177,7 +172,7 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS          (%u) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS         (%u) \n", CORE_SHADER_OUTPUT_COLORS));
 
-    auto nRetrieveFunc = [&](const coreChar* pcPath)
+    auto nRetrieveFunc = [](const coreChar* pcPath)
     {
         // retrieve shader file
         coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);

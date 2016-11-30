@@ -6,8 +6,9 @@
 //| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
-#define _HAS_EXCEPTIONS (0)
-#define WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
+#define  WINVER      _WIN32_WINNT_WINXP
+#define  WIN32_LEAN_AND_MEAN
 
 #pragma warning(disable : 4100 4127)
 
@@ -21,49 +22,39 @@ typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
 
 // ****************************************************************
-int ScanFolder(const char* pcPath, std::vector<std::string>* pasOutput)
+static bool ScanFolder(const wchar_t* pcPath, std::vector<std::wstring>* __restrict pasOutput)
 {
     HANDLE pFolder;
-    WIN32_FIND_DATA oFile;
+    WIN32_FIND_DATAW oFile;
 
     // open folder
-    pFolder = FindFirstFile(pcPath, &oFile);
-    if(pFolder == INVALID_HANDLE_VALUE) return 1;
+    pFolder = FindFirstFileW(pcPath, &oFile);
+    if(pFolder == INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
 
     do
     {
         // check and add file path
         if(oFile.cFileName[0] != '.')
+        {
             pasOutput->push_back(oFile.cFileName);
+        }
     }
-    while(FindNextFile(pFolder, &oFile));
+    while(FindNextFileW(pFolder, &oFile));
 
     // close folder
     FindClose(pFolder);
-    return 0;
+    return true;
 }
 
 
 // ****************************************************************
-bool IsWindowsVistaOrHigher()
-{
-    OSVERSIONINFO iOS;
-    std::memset(&iOS, 0, sizeof(iOS));
-    iOS.dwOSVersionInfoSize = sizeof(iOS);
-
-    // get operating system version
-    GetVersionEx(&iOS);
-
-    // check for Windows Vista or higher
-    return (iOS.dwMajorVersion >= 6) ? true : false;
-}
-
-
-// ****************************************************************
-bool IsWow64()
+static bool IsWow64()
 {
     int iStatus = 0;
-    
+
     // check for pointer-size (compile-time)
     if(sizeof(void*) == 8u)
     {
@@ -71,12 +62,14 @@ bool IsWow64()
     }
 
     // get function pointer from kernel library
-    LPFN_ISWOW64PROCESS nIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(GetModuleHandle("kernel32"), "IsWow64Process");
+    const LPFN_ISWOW64PROCESS nIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(GetModuleHandleW(L"kernel32"), "IsWow64Process");
     if(nIsWow64Process)
     {
         // check for 64-bit operating system
         if(!nIsWow64Process(GetCurrentProcess(), &iStatus))
+        {
             iStatus = 0;
+        }
     }
 
     return iStatus ? true : false;
@@ -84,15 +77,38 @@ bool IsWow64()
 
 
 // ****************************************************************
-int WINAPI WinMain(HINSTANCE pInstance, HINSTANCE pPrevInstance, LPSTR pcCmdLine, int iCmdShow)
+static bool IsWindowsVistaOrHigher()
 {
-    // change working directory
-    if(!SetCurrentDirectory((IsWow64() && IsWindowsVistaOrHigher()) ? "bin\\windows\\x64\\" : "bin\\windows\\x86\\")) return -2;
+    OSVERSIONINFOW iOS = {};
+    iOS.dwOSVersionInfoSize = sizeof(iOS);
 
-    // get executable name
-    std::vector<std::string> asFile;
-    ScanFolder("*_msvc.exe", &asFile);
+    // get operating system version
+    GetVersionExW(&iOS);
+
+    // check for Windows Vista or higher
+    return (iOS.dwMajorVersion >= 6u);
+}
+
+
+// ****************************************************************
+extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPWSTR pcCmdLine, _In_ int iCmdShow)
+{
+    // set working directory
+    const wchar_t* pcDirectory = (IsWow64() && IsWindowsVistaOrHigher()) ? L"bin\\windows\\x64\\" : L"bin\\windows\\x86\\";
+    if(!SetCurrentDirectoryW(pcDirectory))
+    {
+        MessageBoxW(NULL, L"Could not set working directory!", NULL, MB_OK | MB_ICONERROR);
+        return -2;
+    }
+
+    // find executable name
+    std::vector<std::wstring> asFile;
+    if(!ScanFolder(L"*_msvc.exe", &asFile) || asFile.empty())
+    {
+        MessageBoxW(NULL, L"Could not find executable!", NULL, MB_OK | MB_ICONERROR);
+        return -1;
+    }
 
     // start real application
-    return asFile.empty() ? -1 : (int)ShellExecute(NULL, "open", asFile[0].c_str(), NULL, NULL, SW_SHOWNORMAL);
+    return (int)ShellExecuteW(NULL, L"open", asFile[0].c_str(), pcCmdLine, NULL, SW_SHOWNORMAL);
 }

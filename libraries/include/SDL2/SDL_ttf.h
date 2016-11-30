@@ -1,6 +1,6 @@
 /*
   SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts
-  Copyright (C) 2001-2013 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 2001-2016 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -39,7 +39,7 @@ extern "C" {
 */
 #define SDL_TTF_MAJOR_VERSION   2
 #define SDL_TTF_MINOR_VERSION   0
-#define SDL_TTF_PATCHLEVEL      12
+#define SDL_TTF_PATCHLEVEL      13
 
 /* This macro can be used to fill a version structure with the compile-time
  * version of the SDL_ttf library.
@@ -248,7 +248,7 @@ extern DECLSPEC void SDLCALL TTF_Quit(void);
 extern DECLSPEC int SDLCALL TTF_WasInit(void);
 
 /* Get the kerning size of two glyphs */
-extern DECLSPEC int TTF_GetFontKerningSize(TTF_Font *font, int prev_index, int index);
+extern DECLSPEC int TTF_GetFontKerningSize(TTF_Font *font, Uint16 previous_ch, Uint16 ch);
 
 /* We'll use SDL for reporting errors */
 #define TTF_SetError    SDL_SetError

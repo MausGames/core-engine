@@ -141,6 +141,9 @@ CoreGraphics::~CoreGraphics()
     m_TransformBuffer.Delete();
     m_AmbientBuffer  .Delete();
 
+    // exit OpenGL
+    coreExitOpenGL();
+
     // disable vertical synchronization
     SDL_GL_SetSwapInterval(0);
 

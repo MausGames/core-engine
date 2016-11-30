@@ -22,7 +22,7 @@ private:
     coreUint8 m_iExecutions;                                 //!< max number of executions per frame (0 = unshackled)
     coreBool  m_bActive;                                     //!< active and currently not forced to shut down
 
-    SDL_SpinLock m_iLock;                                    //!< spinlock to prevent invalid function access
+    SDL_SpinLock m_iFuncLock;                                //!< spinlock to prevent invalid function access
     std::vector<std::function<coreStatus()>> m_anFunction;   //!< custom functions being executed by the thread
 
 
@@ -42,7 +42,7 @@ public:
     /*! run custom functions within the thread */
     //! @{
     void UpdateFunctions();
-    template <typename F> inline void AttachFunction(F&& nFunction) {ASSERT(m_anFunction.size() < 60u) SDL_AtomicLock(&m_iLock); m_anFunction.push_back(nFunction); SDL_AtomicUnlock(&m_iLock);}   //!< [](void) -> coreError (CORE_OK, CORE_BUSY)
+    template <typename F> inline void AttachFunction(F&& nFunction) {ASSERT(m_anFunction.size() < 60u) SDL_AtomicLock(&m_iFuncLock); m_anFunction.push_back(nFunction); SDL_AtomicUnlock(&m_iFuncLock);}   //!< [](void) -> coreError (CORE_OK, CORE_BUSY)
     //! @}
 
     /*! set object properties */
