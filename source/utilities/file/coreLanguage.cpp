@@ -231,6 +231,56 @@ void coreLanguage::BindForeign(std::string* psForeign, const coreHashString& sKe
 
 
 // ****************************************************************
+/* find and read string from language file directly */
+coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey, std::string* OUTPUT psOutput)
+{
+    ASSERT(psOutput)
+
+    coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+
+    // get file data
+    const coreChar* pcData = r_cast<const coreChar*>(pFile->GetData());
+    if(!pcData) return false;
+
+    // save key length (file data not null-terminated)
+    const coreUintW iKeyLen = std::strlen(pcKey);
+
+    // prepare range pointers (from, to) and end pointer (out of bound)
+    const coreChar* pcFrom = pcData + 1u;
+    const coreChar* pcTo   = pcFrom;
+    const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1u;
+
+    coreBool bFound = false;
+    while(pcTo != pcEnd)
+    {
+        if(*pcTo == CORE_LANGUAGE_ASSIGN[0])
+        {
+            // search for key
+            if(!std::strncmp(pcFrom, pcKey, iKeyLen)) bFound = true;
+            pcFrom = pcTo + 1u;
+        }
+        else if(*pcTo == CORE_LANGUAGE_KEY[0])
+        {
+            // stop searching
+            if(bFound) break;
+            pcFrom = pcTo + 1u;
+        }
+
+        ++pcTo;
+    }
+    if(bFound)
+    {
+        // extract language-string
+        psOutput->assign(pcFrom, pcTo - pcFrom);
+        coreData::StrTrim(psOutput);
+    }
+
+    pFile->UnloadData();
+    return bFound;
+}
+
+
+// ****************************************************************
 /* get list with all available languages <name, path> */
 void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreLookup<std::string, std::string>* OUTPUT pasOutput)
 {
@@ -245,46 +295,16 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
 
     FOR_EACH(it, asFile)
     {
-        coreFile* pFile = Core::Manager::Resource->RetrieveFile(it->c_str());
-
-        // get file data
-        const coreChar* pcData = r_cast<const coreChar*>(pFile->GetData());
-        if(!pcData) continue;
-
-        // prepare range pointers (from, to) and end pointer (out of bound)
-        const coreChar* pcFrom = pcData + 1u;
-        const coreChar* pcTo   = pcFrom;
-        const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1u;
-
-        coreBool bFound = false;
-        while(pcTo != pcEnd)
+        // find and read language-name
+        std::string sName;
+        if(!coreLanguage::FindString(it->c_str(), "LANGUAGE", &sName))
         {
-            if(*pcTo == CORE_LANGUAGE_ASSIGN[0])
-            {
-                // search for language-name key
-                if(!std::strncmp(pcFrom, "LANGUAGE", 8u)) bFound = true;
-                pcFrom = pcTo + 1u;
-            }
-            else if(*pcTo == CORE_LANGUAGE_KEY[0])
-            {
-                // stop searching
-                if(bFound) break;
-                pcFrom = pcTo + 1u;
-            }
-
-            ++pcTo;
-        }
-        if(bFound)
-        {
-            // extract language-name
-            std::string sName(pcFrom, pcTo - pcFrom);
-            coreData::StrTrim(&sName);
-
-            // save language-name with file-path
-            pasOutput->emplace(std::move(sName), std::move(*it));
+            Core::Log->Warning("Language (%s) does not contain a valid LANGUAGE key", it->c_str());
+            sName = coreData::StrFilename(it->c_str());
         }
 
-        pFile->UnloadData();
+        // save language-name with file-path
+        pasOutput->emplace(std::move(sName), std::move(*it));
     }
 }
 
@@ -294,5 +314,5 @@ void coreLanguage::GetAvailableLanguages(coreLookup<std::string, std::string>* O
     coreLanguage::GetAvailableLanguages("data/languages", "*.lng", pasOutput);
 
     // check for success (# something has to be available in this location)
-    if(pasOutput->empty()) Core::Log->Error("No language files found (data/languages/*.lng)");
+    WARN_IF(pasOutput->empty()) Core::Log->Warning("No language files found (data/languages/*.lng)");
 }

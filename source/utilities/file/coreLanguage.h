@@ -104,8 +104,9 @@ public:
     inline       coreUintW GetNumStrings()const {return m_asStringList.size();}
     //! @}
 
-    /*! get list with all available languages <name, path> */
+    /*! access language files directly */
     //! @{
+    static coreBool FindString(const coreChar* pcPath, const coreChar* pcKey, std::string* OUTPUT psOutput);
     static void GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreLookup<std::string, std::string>* OUTPUT pasOutput);
     static void GetAvailableLanguages(coreLookup<std::string, std::string>* OUTPUT pasOutput);
     //! @}

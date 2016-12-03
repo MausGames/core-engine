@@ -108,9 +108,9 @@ extern DECLSPEC SDL_bool SDLCALL SDL_AtomicTryLock(SDL_SpinLock *lock);
 #ifndef _WIN32
     extern DECLSPEC void SDLCALL SDL_AtomicLock(SDL_SpinLock* lock);
 #else
-    inline void SDL_AtomicLock(SDL_SpinLock* lock)
+    __forceinline void SDL_AtomicLock(SDL_SpinLock* lock)
     {
-        while(!InterlockedExchange((long*)lock, 1)) {}
+        while(InterlockedExchange((long*)lock, 1)) {}
     }
 #endif
 
@@ -122,7 +122,7 @@ extern DECLSPEC SDL_bool SDLCALL SDL_AtomicTryLock(SDL_SpinLock *lock);
 #ifndef _WIN32
     extern DECLSPEC void SDLCALL SDL_AtomicUnlock(SDL_SpinLock* lock);
 #else
-    inline void SDL_AtomicUnlock(SDL_SpinLock* lock)
+    __forceinline void SDL_AtomicUnlock(SDL_SpinLock* lock)
     {
         _ReadWriteBarrier();
         (*lock) = 0;

@@ -14,6 +14,7 @@
 coreConfig::coreConfig(const coreChar* pcPath)noexcept
 : m_sPath  (pcPath)
 , m_Config ()
+, m_bDirty (false)
 {
     // define interface behavior
     m_Config.SetUnicode  (true);
@@ -71,6 +72,7 @@ coreStatus coreConfig::Load()
         Core::Log->Warning("Configuration (%s) could not be loaded", m_sPath.c_str());
         return CORE_ERROR_FILE;
     }
+    m_bDirty = false;
 
     Core::Log->Info("Configuration (%s) loaded", m_sPath.c_str());
     return CORE_OK;
@@ -79,14 +81,18 @@ coreStatus coreConfig::Load()
 
 // ****************************************************************
 /* save configuration file */
-coreStatus coreConfig::Save()const
+coreStatus coreConfig::Save()
 {
+    // check for pending changes
+    if(!m_bDirty) return CORE_BUSY;
+
     // save configuration file
     if(m_Config.SaveFile(m_sPath.c_str()) < 0)
     {
         Core::Log->Warning("Configuration (%s) could not be saved", m_sPath.c_str());
         return CORE_ERROR_FILE;
     }
+    m_bDirty = false;
 
     Core::Log->Info("Configuration (%s) saved", m_sPath.c_str());
     return CORE_OK;
