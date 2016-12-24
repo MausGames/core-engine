@@ -43,7 +43,7 @@ public:
     //! @{
     void AddNode   (const T& tPosition, const T& tTangent);
     void AddNodes  (const T& tPosition, const T& tTangentIn, const T& tTangentOut);
-    void AddStop   (const T& tPosition, const T& tTangent = T::Null() + 1.0f);
+    void AddStop   (const T& tPosition, const T& tTangent = T({}) + 1.0f);
     void AddLoop   ();
     void DeleteNode(const coreUintW iIndex);
     void ClearNodes();
@@ -355,8 +355,8 @@ template <typename T> coreFloat coreSpline<T>::TranslateDistance(const coreUintW
 template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
 {
     // normal calculation:
-    // *ptPosition  = (2.0f*X3 - 3.0f*X2 + 1.0f)*tP1 - (2.0f*X3 - 3.0f*X2)*tP2 + (     X3 - 2.0f*X2 +   X1)*tT1 + (     X3 -      X2)*tT2;
-    // *ptDirection = (6.0f*X2 - 6.0f*X1       )*tP1 - (6.0f*X2 - 6.0f*X1)*tP2 + (3.0f*X2 - 4.0f*X1 + 1.0f)*tT1 + (3.0f*X2 - 2.0f*X1)*tT2;
+    // (*ptPosition)  = (2.0f*X3 - 3.0f*X2 + 1.0f)*tP1 - (2.0f*X3 - 3.0f*X2)*tP2 + (     X3 - 2.0f*X2 +   X1)*tT1 + (     X3 -      X2)*tT2;
+    // (*ptDirection) = (6.0f*X2 - 6.0f*X1       )*tP1 - (6.0f*X2 - 6.0f*X1)*tP2 + (3.0f*X2 - 4.0f*X1 + 1.0f)*tT1 + (3.0f*X2 - 2.0f*X1)*tT2;
 
     const coreFloat& X1 = fTime;
     const coreFloat  X2 =   X1 *  X1;
@@ -369,7 +369,7 @@ template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat fTime, co
         // use default cubic Hermite interpolation
         const coreFloat X3 = X2 * X1;
         const coreFloat A  = X3 - X2;
-        *ptPosition = (2.0f * X3 - D)*PP + tP1 + (A - E)*tT1 + (A)*tT2;
+        (*ptPosition) = (2.0f * X3 - D)*PP + tP1 + (A - E)*tT1 + (A)*tT2;
     }
 
     if(ptDirection)
@@ -377,7 +377,7 @@ template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat fTime, co
         // use first derivation to get tangent value (and normalize it)
         const coreFloat B = 2.0f * X1;
         const coreFloat C =    D -  B;
-        *ptDirection = ((6.0f * E)*PP + (C - B + 1.0f)*tT1 + (C)*tT2).Normalize();
+        (*ptDirection) = ((6.0f * E)*PP + (C - B + 1.0f)*tT1 + (C)*tT2).Normalized();
     }
 }
 

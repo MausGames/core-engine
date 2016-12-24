@@ -13,6 +13,12 @@
 // TODO: do not multiply always full matrices, implement "modifying" functions
 // TODO: implement "Rotation from One Vector to Another" matrix
 
+#if defined(_CORE_MSVC_)
+    #define CONSTEXPR inline
+#else
+    #define CONSTEXPR constexpr
+#endif
+
 
 // ****************************************************************
 /* 2x2-matrix class */
@@ -41,8 +47,7 @@ public:
 
     /*! transpose matrix */
     //! @{
-    inline coreMatrix2& Transpose ();
-    inline coreMatrix2  Transposed()const {return coreMatrix2(*this).Transpose();}
+    constexpr coreMatrix2 Transposed()const;
     //! @}
 
     /*! static functions */
@@ -107,25 +112,22 @@ public:
     CONSTEXPR     coreMatrix2 m23 ()const           {return coreMatrix2(_22, _23, _32, _33);}
     inline        coreVector4 Quat()const;
     static inline coreMatrix3 Quat(const coreVector4& v);
+    //! @}
 
     /*! transpose matrix */
     //! @{
-    inline coreMatrix3& Transpose ();
-    inline coreMatrix3  Transposed()const {return coreMatrix3(*this).Transpose();}
+    constexpr coreMatrix3 Transposed()const;
     //! @}
 
     /*! invert matrix */
     //! @{
-    inline coreMatrix3& Invert  ();
-    inline coreMatrix3  Inverted()const {return coreMatrix3(*this).Invert();}
+    inline coreMatrix3 Inverted()const;
     //! @}
 
     /*! process matrix */
     //! @{
-    template <typename... A> inline coreMatrix3& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreMatrix3& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreMatrix3  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreMatrix3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
-    template <typename... A> inline coreMatrix3  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreMatrix3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {coreMatrix3 B; for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
+    template <typename... A> inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {coreMatrix3 B; for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
     //! @}
 
     /*! direct functions */
@@ -205,22 +207,18 @@ public:
 
     /*! transpose matrix */
     //! @{
-    inline coreMatrix4& Transpose ();
-    inline coreMatrix4  Transposed()const {return coreMatrix4(*this).Transpose();}
+    constexpr coreMatrix4 Transposed()const;
     //! @}
 
     /*! invert matrix */
     //! @{
-    inline coreMatrix4& Invert  ();
-    inline coreMatrix4  Inverted()const {return coreMatrix4(*this).Invert();}
+    inline coreMatrix4 Inverted()const;
     //! @}
 
     /*! process matrix */
     //! @{
-    template <typename... A> inline coreMatrix4& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreMatrix4& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(arr[0])[i] = nFunction(s_cast<coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreMatrix4  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreMatrix4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
-    template <typename... A> inline coreMatrix4  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreMatrix4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {coreMatrix4 B; for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
+    template <typename... A> inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {coreMatrix4 B; for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
     //! @}
 
     /*! direct functions */
@@ -267,12 +265,10 @@ constexpr coreMatrix2::coreMatrix2(const coreFloat f11, const coreFloat f12,
 
 // ****************************************************************
 /* transpose matrix */
-inline coreMatrix2& coreMatrix2::Transpose()
+constexpr coreMatrix2 coreMatrix2::Transposed()const
 {
-    *this = coreMatrix2(_11, _21,
-                        _12, _22);
-
-    return *this;
+    return coreMatrix2(_11, _21,
+                       _12, _22);
 }
 
 
@@ -410,30 +406,26 @@ inline coreMatrix3 coreMatrix3::Quat(const coreVector4& v)
 
 // ****************************************************************
 /* transpose matrix */
-inline coreMatrix3& coreMatrix3::Transpose()
+constexpr coreMatrix3 coreMatrix3::Transposed()const
 {
-    *this = coreMatrix3(_11, _21, _31,
-                        _12, _22, _32,
-                        _13, _23, _33);
-
-    return *this;
+    return coreMatrix3(_11, _21, _31,
+                       _12, _22, _32,
+                       _13, _23, _33);
 }
 
 
 // ****************************************************************
 /* invert matrix */
-inline coreMatrix3& coreMatrix3::Invert()
+inline coreMatrix3 coreMatrix3::Inverted()const
 {
     const coreFloat A = _22*_33 - _23*_32;
     const coreFloat B = _23*_31 - _21*_33;
     const coreFloat C = _21*_32 - _22*_31;
 
-    *this = coreMatrix3(A, _13*_32 - _12*_33, _12*_23 - _13*_22,
-                        B, _11*_33 - _13*_31, _13*_21 - _11*_23,
-                        C, _12*_31 - _11*_32, _11*_22 - _12*_21)
-                        / (_11*A + _12*B + _13*C);
-
-    return *this;
+    return coreMatrix3(A, _13*_32 - _12*_33, _12*_23 - _13*_22,
+                       B, _11*_33 - _13*_31, _13*_21 - _11*_23,
+                       C, _12*_31 - _11*_32, _11*_22 - _12*_21)
+                       / (_11*A + _12*B + _13*C);
 }
 
 
@@ -571,20 +563,18 @@ constexpr coreMatrix4 coreMatrix4::operator * (const coreFloat f)const
 
 // ****************************************************************
 /* transpose matrix */
-inline coreMatrix4& coreMatrix4::Transpose()
+constexpr coreMatrix4 coreMatrix4::Transposed()const
 {
-    *this = coreMatrix4(_11, _21, _31, _41,
-                        _12, _22, _32, _42,
-                        _13, _23, _33, _43,
-                        _14, _24, _34, _44);
-
-    return *this;
+    return coreMatrix4(_11, _21, _31, _41,
+                       _12, _22, _32, _42,
+                       _13, _23, _33, _43,
+                       _14, _24, _34, _44);
 }
 
 
 // ****************************************************************
 /* invert matrix */
-inline coreMatrix4& coreMatrix4::Invert()
+inline coreMatrix4 coreMatrix4::Inverted()const
 {
     const coreFloat A = _11*_22 - _12*_21;
     const coreFloat B = _11*_23 - _13*_21;
@@ -599,13 +589,11 @@ inline coreMatrix4& coreMatrix4::Invert()
     const coreFloat K = _32*_44 - _34*_42;
     const coreFloat L = _33*_44 - _34*_43;
 
-    *this = coreMatrix4(_22*L - _23*K + _24*J, _13*K - _12*L - _14*J, _42*F - _43*E + _44*D, _33*E - _32*F - _34*D,
-                        _23*I - _21*L - _24*H, _11*L - _13*I + _14*H, _43*C - _41*F - _44*B, _31*F - _33*C + _34*B,
-                        _21*K - _22*I + _24*G, _12*I - _11*K - _14*G, _41*E - _42*C + _44*A, _32*C - _31*E - _34*A,
-                        _22*H - _21*J - _23*G, _11*J - _12*H + _13*G, _42*B - _41*D - _43*A, _31*D - _32*B + _33*A)
-                        / (A*L - B*K + C*J + D*I - E*H + F*G);
-
-    return *this;
+    return coreMatrix4(_22*L - _23*K + _24*J, _13*K - _12*L - _14*J, _42*F - _43*E + _44*D, _33*E - _32*F - _34*D,
+                       _23*I - _21*L - _24*H, _11*L - _13*I + _14*H, _43*C - _41*F - _44*B, _31*F - _33*C + _34*B,
+                       _21*K - _22*I + _24*G, _12*I - _11*K - _14*G, _41*E - _42*C + _44*A, _32*C - _31*E - _34*A,
+                       _22*H - _21*J - _23*G, _11*J - _12*H + _13*G, _42*B - _41*D - _43*A, _31*D - _32*B + _33*A)
+                       / (A*L - B*K + C*J + D*I - E*H + F*G);
 }
 
 
@@ -738,8 +726,8 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 
     const coreVector3& D = vDirection;
     const coreVector3& O = vOrientation;
-    const coreVector3  S = coreVector3::Cross(D, O).Normalize();
-    const coreVector3  U = coreVector3::Cross(S, D).Normalize();
+    const coreVector3  S = coreVector3::Cross(D, O).Normalized();
+    const coreVector3  U = coreVector3::Cross(S, D).Normalized();
 
     return coreMatrix4( S.x,  S.y,  S.z, 0.0f,
                         D.x,  D.y,  D.z, 0.0f,
@@ -811,7 +799,7 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
     mCamera._24 = -mCamera._21*vPosition.x - mCamera._22*vPosition.y - mCamera._23*vPosition.z;
     mCamera._34 = -mCamera._31*vPosition.x - mCamera._32*vPosition.y - mCamera._33*vPosition.z;
 
-    return mCamera.Transpose();
+    return mCamera.Transposed();
 }
 
 
@@ -871,9 +859,9 @@ constexpr coreVector4 coreVector4::operator * (const coreMatrix4& m)const
 /* convert RGB-color to YIQ-color (BT.601, NTSC) */
 constexpr coreVector3 coreVector3::RGBtoYIQ()const
 {
-    return *this * coreMatrix3(0.299f,  0.587f,  0.114f,
-                               0.596f, -0.275f, -0.321f,
-                               0.212f, -0.523f,  0.311f);
+    return (*this) * coreMatrix3(0.299f,  0.587f,  0.114f,
+                                 0.596f, -0.275f, -0.321f,
+                                 0.212f, -0.523f,  0.311f);
 }
 
 
@@ -881,9 +869,9 @@ constexpr coreVector3 coreVector3::RGBtoYIQ()const
 /* convert YIQ-color (BT.601, NTSC) to RGB-color */
 constexpr coreVector3 coreVector3::YIQtoRGB()const
 {
-    return *this * coreMatrix3(1.000f,  0.956f,  0.620f,
-                               1.000f, -0.272f, -0.647f,
-                               1.000f, -1.108f,  1.705f);
+    return (*this) * coreMatrix3(1.000f,  0.956f,  0.620f,
+                                 1.000f, -0.272f, -0.647f,
+                                 1.000f, -1.108f,  1.705f);
 }
 
 
@@ -891,9 +879,9 @@ constexpr coreVector3 coreVector3::YIQtoRGB()const
 /* convert RGB-color to YUV-color (BT.709) */
 constexpr coreVector3 coreVector3::RGBtoYUV()const
 {
-    return *this * coreMatrix3( 0.21260f,  0.71520f,  0.07220f,
-                               -0.09991f, -0.33609f,  0.43600f,
-                                0.61500f, -0.55861f, -0.05639f);
+    return (*this) * coreMatrix3( 0.21260f,  0.71520f,  0.07220f,
+                                 -0.09991f, -0.33609f,  0.43600f,
+                                  0.61500f, -0.55861f, -0.05639f);
 }
 
 
@@ -901,9 +889,9 @@ constexpr coreVector3 coreVector3::RGBtoYUV()const
 /* convert YUV-color (BT.709) to RGB-color */
 constexpr coreVector3 coreVector3::YUVtoRGB()const
 {
-    return *this * coreMatrix3(1.00000f,  0.00000f,  1.28033f,
-                               1.00000f, -0.21482f, -0.38059f,
-                               1.00000f,  2.12798f,  0.00000f);
+    return (*this) * coreMatrix3(1.00000f,  0.00000f,  1.28033f,
+                                 1.00000f, -0.21482f, -0.38059f,
+                                 1.00000f,  2.12798f,  0.00000f);
 }
 
 
@@ -911,9 +899,9 @@ constexpr coreVector3 coreVector3::YUVtoRGB()const
 /* convert RGB-color to YCbCr-color (BT.601, JPEG) */
 constexpr coreVector3 coreVector3::RGBtoYCbCr()const
 {
-    return *this * coreMatrix3( 0.299000f,  0.587000f,  0.114000f,
-                               -0.168736f, -0.331264f,  0.500000f,
-                                0.500000f, -0.418688f, -0.081312f) + coreVector3(0.0f,0.5f,0.5f);
+    return (*this) * coreMatrix3( 0.299000f,  0.587000f,  0.114000f,
+                                 -0.168736f, -0.331264f,  0.500000f,
+                                  0.500000f, -0.418688f, -0.081312f) + coreVector3(0.0f,0.5f,0.5f);
 }
 
 
@@ -921,9 +909,9 @@ constexpr coreVector3 coreVector3::RGBtoYCbCr()const
 /* convert YCbCr-color (BT.601, JPEG) to RGB-color */
 constexpr coreVector3 coreVector3::YCbCrtoRGB()const
 {
-    return (*this - coreVector3(0.0f,0.5f,0.5f)) * coreMatrix3(1.00000f,  0.00000f,  1.40200f,
-                                                               1.00000f, -0.34414f, -0.71414f,
-                                                               1.00000f,  1.77200f,  0.00000f);
+    return ((*this) - coreVector3(0.0f,0.5f,0.5f)) * coreMatrix3(1.00000f,  0.00000f,  1.40200f,
+                                                                 1.00000f, -0.34414f, -0.71414f,
+                                                                 1.00000f,  1.77200f,  0.00000f);
 }
 
 

@@ -19,6 +19,7 @@
 // TODO: different names for camera, view, lights
 // TODO: defer uniform-push to next shader-enable
 // TODO: improve screenshot with pixel-pack-buffer
+// TODO: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision, breaks depth-dependent rendering (water, shadow) in Project One
 
 
 // ****************************************************************

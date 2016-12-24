@@ -18,7 +18,7 @@ coreContext g_CoreContext = {};
 void __coreInitOpenGLES()
 {
     // reset context structure
-    std::memset(&g_CoreContext, 0, sizeof(coreContext));
+    std::memset(&g_CoreContext, 0, sizeof(g_CoreContext));
 
     // get full extension string
     if(g_sExtensions.empty()) g_sExtensions = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));

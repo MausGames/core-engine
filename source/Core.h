@@ -56,6 +56,8 @@
 // TODO: cast unused returns to (void)?
 // TODO: remove SSE from 32-bit binaries ? (compatibility binaries) _USING_V110_SDK71_
 // TODO: enable MSVC warnings 4244, 4267 again
+// TODO: #pragma warning(default : 4242 4244 4365) // loss of precision
+// TODO: #pragma warning(default : 4820)           // byte padding
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -111,19 +113,19 @@
     #define _CORE_MOBILE_   (1)
 #endif
 
+// Windows XP compatibility
+#if (defined(_USING_V110_SDK71_) || defined(_CORE_MINGW_)) && defined(_CORE_WINDOWS_)
+    #define _CORE_WINXP_    (1)
+#endif
+
 // x64 instruction set
 #if defined(_M_X64) || defined(__x86_64__)
     #define _CORE_X64_      (1)
 #endif
 
 // SSE2 instruction set
-#if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_MOBILE_)
+#if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_MOBILE_) && !defined(_CORE_WINXP_)
     #define _CORE_SSE_      (1)
-#endif
-
-// Windows XP compatibility
-#if (defined(_USING_V110_SDK71_) || defined(_CORE_MINGW_)) && defined(_CORE_WINDOWS_)
-    #define _CORE_WINXP_    (1)
 #endif
 
 // OpenGL ES
@@ -232,19 +234,8 @@
 #endif
 
 #if defined(_CORE_MSVC_)
-    #define noexcept  throw()   //!< exceptions disabled
-    #define CONSTEXPR inline
-#else
-    #define CONSTEXPR constexpr
-#endif
 
-#if !defined(_CORE_PARALLEL_)
-    #define thread_local
-    #define SDL_AtomicLock(x)
-    #define SDL_AtomicUnlock(x)
-#endif
-
-#if defined(_CORE_MSVC_)
+    #define noexcept _NOEXCEPT
 
     // disable unwanted compiler warnings (with /W4)
     #pragma warning(disable : 4100)   //!< unreferenced formal parameter
@@ -254,10 +245,14 @@
     #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
 
     // enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
-    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4738 4777 4826 4837 4928 4946)
+    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4777 4826 4837 4928 4946)
 
-    // #pragma warning(default : 4242 4244 4365)   //!< loss of precision
-    // #pragma warning(default : 4820)             //!< byte padding
+    // check for floating-point results stored in memory, causing performance loss
+    #if defined(_CORE_WINXP_)
+        #pragma warning(disable : 4738)
+    #else
+        #pragma warning(default : 4738)
+    #endif
 
 #endif
 
@@ -273,6 +268,7 @@
 #define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
 #define DEFINED(a)           (__DEFINED(a, #a))
 
+#define ZERO_NEW(t,c)        ([](const coreUintW iCount) {return new(std::calloc(iCount, sizeof(t))) t[iCount];}(c))
 #define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
 
@@ -284,8 +280,8 @@
 #define REMOVE_FLAG(o,n)     { (o) &=    ~(n);}
 #define TOGGLE_BIT(o,n)      { (o) ^=  BIT(n);}
 #define TOGGLE_FLAG(o,n)     { (o) ^=     (n);}
-#define SET_BIT(o,n,t)       { (o) ^=  BIT(n) & ((o) ^ -int(!!(t)));}
-#define SET_FLAG(o,n,t)      { (o) ^=     (n) & ((o) ^ -int(!!(t)));}
+#define SET_BIT(o,n,t)       { (o) ^=  BIT(n) & ((o) ^ -coreInt32(!!(t)));}
+#define SET_FLAG(o,n,t)      { (o) ^=     (n) & ((o) ^ -coreInt32(!!(t)));}
 #define CONTAINS_BIT(o,n)    (((o) &   BIT(n)) ? true : false)
 #define CONTAINS_FLAG(o,n)   (((o) &      (n)) == (n))
 
@@ -371,9 +367,9 @@
 #define c_cast const_cast
 
 // type conversion macros
-#define F_TO_SI(x) ((int)                  (x))   //!< float to signed int
-#define F_TO_UI(x) ((unsigned)(int)        (x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
-#define I_TO_F(x)  ((float)(int)           (x))   //!< int to float          (force [_mm_cvtepi32_ps])
+#define F_TO_SI(x) ((coreInt32)            (x))   //!< float to signed int
+#define F_TO_UI(x) ((coreUint32)(coreInt32)(x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
+#define I_TO_F(x)  ((coreFloat)(coreInt32) (x))   //!< int to float          (force [_mm_cvtepi32_ps])
 #define P_TO_SI(x) ((std::intptr_t)(void*) (x))   //!< pointer to signed int
 #define P_TO_UI(x) ((std::uintptr_t)(void*)(x))   //!< pointer to unsigned int
 #define I_TO_P(x)  ((void*)(std::intptr_t) (x))   //!< int to pointer
@@ -403,7 +399,7 @@ inline coreBool operator == (const coreChar*    a, const std::string& b) {return
 inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
 
 // override integer swap function (without temporary variable)
-#define __SWAP(t) namespace std{inline void swap(t& a, t& b)noexcept {(a ^ b) && (b ^= a ^= b, a ^= b);}}
+#define __SWAP(t) namespace std {inline void swap(t& a, t& b)noexcept {(a ^ b) && (a ^= b ^= a ^= b);}}
     __SWAP(coreInt8)  __SWAP(coreInt16)  __SWAP(coreInt32)  __SWAP(coreInt64)
     __SWAP(coreUint8) __SWAP(coreUint16) __SWAP(coreUint32) __SWAP(coreUint64)
     __SWAP(coreBool)  __SWAP(coreChar)
@@ -453,6 +449,50 @@ enum coreStatus : coreInt8
     CORE_INVALID_INPUT = -12,   //!< function parameters are invalid
     CORE_INVALID_DATA  = -13    //!< depending objects contain wrong data
 };
+
+
+// ****************************************************************
+/* multi-threading adjustments */
+#if defined(_CORE_PARALLEL_)
+
+    // acquire the spinlock
+    FORCE_INLINE void coreAtomicLock(SDL_SpinLock* OUTPUT piLock)
+    {
+    #if defined(_CORE_WINDOWS_)
+        while(InterlockedExchange((long*)piLock, 1))
+    #else
+        while(!SDL_AtomicTryLock(piLock))
+    #endif
+    #if defined(_CORE_SSE_)
+        _mm_pause();     // processor level spinning
+    #else
+        SDL_Delay(0u);   // OS level spinning
+    #endif
+    }
+
+    // release the spinlock
+    FORCE_INLINE void coreAtomicUnlock(SDL_SpinLock* OUTPUT piLock)
+    {
+    #if defined(_CORE_WINDOWS_)
+        _ReadWriteBarrier();
+        (*piLock) = 0;
+    #else
+        SDL_AtomicUnlock(piLock);
+    #endif
+    }
+
+    // prevent default spinlock functions
+    #define SDL_AtomicLock(x)   (error)
+    #define SDL_AtomicUnlock(x) (error)
+
+#else
+
+    // disable multi-threading
+    #define thread_local
+    #define coreAtomicLock(x)
+    #define coreAtomicUnlock(x)
+
+#endif
 
 
 // ****************************************************************

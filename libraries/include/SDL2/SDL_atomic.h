@@ -1,6 +1,3 @@
-// Modified version for Core Engine
-// Please use the original library from https://www.libsdl.org/
-
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
@@ -105,29 +102,14 @@ extern DECLSPEC SDL_bool SDLCALL SDL_AtomicTryLock(SDL_SpinLock *lock);
  *
  * \param lock Points to the lock.
  */
-#ifndef _WIN32
-    extern DECLSPEC void SDLCALL SDL_AtomicLock(SDL_SpinLock* lock);
-#else
-    __forceinline void SDL_AtomicLock(SDL_SpinLock* lock)
-    {
-        while(InterlockedExchange((long*)lock, 1)) {}
-    }
-#endif
+extern DECLSPEC void SDLCALL SDL_AtomicLock(SDL_SpinLock *lock);
 
 /**
  * \brief Unlock a spin lock by setting it to 0. Always returns immediately
  *
  * \param lock Points to the lock.
  */
-#ifndef _WIN32
-    extern DECLSPEC void SDLCALL SDL_AtomicUnlock(SDL_SpinLock* lock);
-#else
-    __forceinline void SDL_AtomicUnlock(SDL_SpinLock* lock)
-    {
-        _ReadWriteBarrier();
-        (*lock) = 0;
-    }
-#endif
+extern DECLSPEC void SDLCALL SDL_AtomicUnlock(SDL_SpinLock *lock);
 
 /* @} *//* SDL AtomicLock */
 

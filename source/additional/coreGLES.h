@@ -27,6 +27,7 @@
 #define CORE_GL_ARB_half_float_vertex        false   // different token value in OES_vertex_half_float
 #define CORE_GL_ARB_multi_bind               false
 #define CORE_GL_ARB_program_interface_query  false
+#define CORE_GL_ARB_sample_shading           false
 #define CORE_GL_ARB_shader_image_load_store  false
 #define CORE_GL_ARB_sync                     false
 #define CORE_GL_ARB_tessellation_shader      false
@@ -171,7 +172,7 @@ typedef void (GL_APIENTRY *PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint* a
 
 // ****************************************************************
 /* unused definitions and functions */
-typedef int*     GLsync;
+typedef int32_t* GLsync;
 typedef uint64_t GLuint64;
 
 #define GL_ACTIVE_RESOURCES               0x92F5
@@ -250,6 +251,7 @@ typedef uint64_t GLuint64;
 #define glInvalidateNamedFramebufferData(...)
 #define glMapNamedBufferRange(...) (NULL)
 #define glMapNamedBufferRangeEXT(...) (NULL)
+#define glMinSampleShading(...)
 #define glQueryCounter(...)
 #define glTextureSubImage2D(...)
 #define glTextureSubImage2DEXT(...)

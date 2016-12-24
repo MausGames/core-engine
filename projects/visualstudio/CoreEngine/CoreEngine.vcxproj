@@ -103,7 +103,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
@@ -158,7 +158,7 @@
       <EnablePREfast>false</EnablePREfast>
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <AdditionalOptions>/Gw /Zc:strictStrings /Qfast_transcendentals /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
       <FunctionLevelLinking>true</FunctionLevelLinking>

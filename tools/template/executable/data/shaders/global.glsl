@@ -25,11 +25,16 @@
     #extension GL_AMD_shader_trinary_minmax    : enable
     #extension GL_ARB_conservative_depth       : enable
     #extension GL_ARB_enhanced_layouts         : enable
+    #extension GL_ARB_sample_shading           : enable
     #extension GL_ARB_shader_group_vote        : enable
     #extension GL_ARB_shader_image_load_store  : enable
     #extension GL_ARB_shading_language_packing : enable
     #extension GL_ARB_uniform_buffer_object    : enable
     #extension GL_EXT_gpu_shader4              : enable
+#endif
+#if (__VERSION__) < 130
+    #undef GL_ARB_conservative_depth
+    #undef GL_ARB_shader_image_load_store
 #endif
 #pragma optimize(on)
 #pragma debug(off)
@@ -50,11 +55,11 @@
 
 // layout qualifiers
 #if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_)
-    #if (defined(GL_ARB_shader_image_load_store) && (__VERSION__) >= 130) || (defined(GL_ES) && (__VERSION__) >= 310)
-        layout(early_fragment_tests) in;
-    #endif
     #if defined(GL_ARB_conservative_depth)
         layout(depth_unchanged) out float gl_FragDepth;
+    #endif
+    #if defined(GL_ARB_shader_image_load_store) || (defined(GL_ES) && (__VERSION__) >= 310)
+        layout(early_fragment_tests) in;
     #endif
 #endif
 #if defined(GL_ARB_enhanced_layouts)
@@ -107,13 +112,11 @@ struct coreLight
     vec4 v4Value;
 };
 
-// condition across group of shader invocations
-#if defined(GL_ARB_shader_group_vote)
-    #define coreAnyInvocation(x)  (anyInvocationARB (x))
-    #define coreAllInvocations(x) (allInvocationsARB(x))
+// evaluate shader per sample
+#if defined(GL_ARB_sample_shading)
+    #define CORE_SAMPLE_SHADING {gl_SampleID;}
 #else
-    #define coreAnyInvocation(x)  (x)
-    #define coreAllInvocations(x) (x)
+    #define CORE_SAMPLE_SHADING
 #endif
 
 // trinary min and max
@@ -125,6 +128,15 @@ struct coreLight
     #define coreMin3(a,b,c) (min(a, min(b, c)))
     #define coreMax3(a,b,c) (max(a, max(b, c)))
     #define coreMed3(a,b,c) (max(min(max(a, b), c), min(a, b)))   // multi evaluation
+#endif
+
+// condition across group of shader invocations
+#if defined(GL_ARB_shader_group_vote)
+    #define coreAnyInvocation(x)  (anyInvocationARB (x))
+    #define coreAllInvocations(x) (allInvocationsARB(x))
+#else
+    #define coreAnyInvocation(x)  (x)
+    #define coreAllInvocations(x) (x)
 #endif
 
 // modulo operator
@@ -322,7 +334,7 @@ mat4 coreInvert(const in mat4 m)
     #define coreMat4to3(m) mat3(m[0].xyz, m[1].xyz, m[2].xyz)
     #define coreMat3to2(m) mat2(m[0].xy,  m[1].xy)
 #endif
-#define coreMat4to2(m) coreMat4to3(m)
+#define coreMat4to2(m) coreMat3to2(m)
 
 // value pack and unpack
 #if defined(GL_EXT_gpu_shader4)

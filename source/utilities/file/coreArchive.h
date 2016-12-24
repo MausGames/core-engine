@@ -150,8 +150,8 @@ private:
 
 
 public:
-    explicit coreLockRelease(SDL_SpinLock& iLock)noexcept : m_iLock (iLock) {SDL_AtomicLock  (&m_iLock);}
-    ~coreLockRelease()                                                      {SDL_AtomicUnlock(&m_iLock);}
+    explicit coreLockRelease(SDL_SpinLock& iLock)noexcept : m_iLock (iLock) {coreAtomicLock  (&m_iLock);}
+    ~coreLockRelease()                                                      {coreAtomicUnlock(&m_iLock);}
 
     DISABLE_COPY(coreLockRelease)
     DISABLE_NEW

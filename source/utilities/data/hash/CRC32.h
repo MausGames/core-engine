@@ -82,8 +82,44 @@ alignas(16) constexpr coreUint32 g_aiTableCRC32[256] =
 };
 
 
+#if defined(_CORE_DEBUG_)
+
+
 // ****************************************************************
-/* CRC-32 hash function */
+/* run-time CRC-32 hash function */
+inline FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, coreUintW iLength)
+{
+    coreUint32 iHash = 0xFFFFFFFFu;
+
+    while(iLength)
+    {
+        iHash = g_aiTableCRC32[(*pData) ^ ((iHash >> 24u) & 0xFFu)] ^ (iHash << 8u);
+        ++pData;
+        --iLength;
+    }
+
+    return iHash ^ 0xFFFFFFFFu;
+}
+
+inline FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
+{
+    coreUint32 iHash = 0xFFFFFFFFu;
+
+    while(*pcString)
+    {
+        iHash = g_aiTableCRC32[(*pcString) ^ ((iHash >> 24u) & 0xFFu)] ^ (iHash << 8u);
+        ++pcString;
+    }
+
+    return iHash ^ 0xFFFFFFFFu;
+}
+
+
+#else
+
+
+// ****************************************************************
+/* compile-time CRC-32 hash function */
 constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, const coreUintW iLength, const coreUint32 iCode)
 {
     return iLength ? coreHashCRC32(pData + 1u, iLength - 1u, g_aiTableCRC32[(*pData) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
@@ -103,6 +139,9 @@ constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
 {
     return coreHashCRC32(pcString, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
 }
+
+
+#endif
 
 
 #endif /* _CORE_GUARD_CRC32_H_ */

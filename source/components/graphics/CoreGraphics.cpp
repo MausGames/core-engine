@@ -100,6 +100,10 @@ CoreGraphics::CoreGraphics()noexcept
     glColorMask(true, true, true, true);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    // set sample shading rate to the maximum value
+    if(CORE_GL_SUPPORT(ARB_sample_shading))
+        glMinSampleShading(1.0f);
+
     // create uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {

@@ -399,8 +399,11 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
             ppTextureArray += iStart;
 
             // arrange texture identifiers
-            for(coreUintW i = 0; i < iCount; ++i)
+            for(coreUintW i = 0u; i < iCount; ++i)
+            {
                 if(ppTextureArray[i].IsUsable()) aiIdentifier[i] = ppTextureArray[i]->GetTexture();
+                else s_apBound[i] = NULL;
+            }
 
             // enable all at once
             glBindTextures(iStart, iCount, aiIdentifier);

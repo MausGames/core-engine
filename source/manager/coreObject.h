@@ -200,7 +200,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
-    for(coreUintW i = 0, ie = oList.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = oList.size(); i < ie; ++i)
     {
         coreObject3D* pObject1 = oList[i];
         if(!pObject1) continue;
@@ -236,12 +236,12 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     const coreObjectList& oList2 = m_aapObjectList.at(iType2);
 
     // loop through all objects
-    for(coreUintW i = 0, ie = oList1.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = oList1.size(); i < ie; ++i)
     {
         coreObject3D* pObject1 = oList1[i];
         if(!pObject1) continue;
 
-        for(coreUintW j = 0, je = oList2.size(); j < je; ++j)
+        for(coreUintW j = 0u, je = oList2.size(); j < je; ++j)
         {
             coreObject3D* pObject2 = oList2[j];
             if(!pObject2) continue;
@@ -268,7 +268,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
-    for(coreUintW i = 0, ie = oList.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = oList.size(); i < ie; ++i)
     {
         coreObject3D* pCurObject = oList[i];
         if(!pCurObject) continue;
@@ -293,7 +293,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     const coreObjectList& oList = m_aapObjectList[iType];
 
     // loop through all objects
-    for(coreUintW i = 0, ie = oList.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = oList.size(); i < ie; ++i)
     {
         coreObject3D* pCurObject = oList[i];
         if(!pCurObject) continue;

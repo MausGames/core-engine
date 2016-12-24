@@ -77,7 +77,7 @@ void coreThread::UpdateFunctions()
 {
     if(m_anFunction.empty()) return;
 
-    SDL_AtomicLock(&m_iFuncLock);
+    coreAtomicLock(&m_iFuncLock);
     {
         // loop trough all functions
         FOR_EACH_DYN(it, m_anFunction)
@@ -87,7 +87,7 @@ void coreThread::UpdateFunctions()
                    else DYN_REMOVE(it, m_anFunction)
         }
     }
-    SDL_AtomicUnlock(&m_iFuncLock);
+    coreAtomicUnlock(&m_iFuncLock);
 }
 
 

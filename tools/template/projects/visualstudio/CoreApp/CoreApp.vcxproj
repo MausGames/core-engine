@@ -109,7 +109,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <MinimalRebuild>false</MinimalRebuild>
       <SmallerTypeCheck>true</SmallerTypeCheck>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
@@ -163,7 +163,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
@@ -176,7 +176,6 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <AdditionalOptions>CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib zlib.lib %(AdditionalOptions)</AdditionalOptions>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <OptimizeReferences>true</OptimizeReferences>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
@@ -214,7 +213,6 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <AdditionalOptions>CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib zlib.lib %(AdditionalOptions)</AdditionalOptions>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>

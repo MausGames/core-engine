@@ -133,6 +133,18 @@ void __coreInitOpenGL()
         __GLEW_EXT_packed_depth_stencil    = true;
     }
 
+    // improve sample shading compatibility
+    if(!GLEW_VERSION_4_0 && GLEW_ARB_sample_shading)
+    {
+        // remap GL_ARB_sample_shading
+        glMinSampleShading = glMinSampleShadingARB;
+    }
+    else
+    {
+        // force extension status
+        __GLEW_ARB_sample_shading = true;
+    }
+
     // improve instancing compatibility
     if(!GLEW_VERSION_3_3 && GLEW_ARB_instanced_arrays)
     {

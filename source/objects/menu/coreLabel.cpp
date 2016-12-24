@@ -201,8 +201,7 @@ void coreLabel::__Generate(const coreChar* pcText, const coreInt8 iSub)
         coreByte* pInput2 = s_cast<coreByte*>(pOutline->pixels);
 
         // allocate buffer to merge solid and outlined pixels
-        pData = new coreByte[iSize];
-        std::memset(pData, 0, iSize);
+        pData = ZERO_NEW(coreByte, iSize);
 
         // insert solid pixels
         const coreUintW iOffset = (pOutline->pitch + 1u) * iComponents * m_iOutline;

@@ -364,12 +364,12 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     // create new resource handle
     coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), bUpdate ? true : false);
 
-    SDL_AtomicLock(&m_iResourceLock);
+    coreAtomicLock(&m_iResourceLock);
     {
         // add resource handle to manager
         m_apHandle.emplace(sName, pNewHandle);
     }
-    SDL_AtomicUnlock(&m_iResourceLock);
+    coreAtomicUnlock(&m_iResourceLock);
 
     return pNewHandle;
 }
@@ -410,7 +410,7 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
     coreResourceHandle* pHandle = pptResourcePtr->GetHandle();
     if(pHandle)
     {
-        SDL_AtomicLock(&m_iResourceLock);
+        coreAtomicLock(&m_iResourceLock);
         {
             // remove resource handle from manager
             FOR_EACH(it, m_apHandle)
@@ -422,7 +422,7 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
                 }
             }
         }
-        SDL_AtomicUnlock(&m_iResourceLock);
+        coreAtomicUnlock(&m_iResourceLock);
 
         // delete possible resource proxy
         m_apProxy.erase(pHandle);

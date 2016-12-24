@@ -116,7 +116,7 @@ void coreResourceManager::UpdateResources()
     // check for current status
     if(m_bActive)
     {
-        SDL_AtomicLock(&m_iResourceLock);
+        coreAtomicLock(&m_iResourceLock);
         {
             for(coreUintW i = 0u; i < m_apHandle.size(); ++i)   // # size may change
             {
@@ -124,12 +124,12 @@ void coreResourceManager::UpdateResources()
                 if(m_apHandle[i]->__AutoUpdate())
                 {
                     // allow changes during iteration
-                    SDL_AtomicUnlock(&m_iResourceLock);
-                    SDL_AtomicLock  (&m_iResourceLock);
+                    coreAtomicUnlock(&m_iResourceLock);
+                    coreAtomicLock  (&m_iResourceLock);
                 }
             }
         }
-        SDL_AtomicUnlock(&m_iResourceLock);
+        coreAtomicUnlock(&m_iResourceLock);
     }
 }
 

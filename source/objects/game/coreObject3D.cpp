@@ -198,8 +198,9 @@ void coreObject3D::Move()
             if(!m_pModel.IsUsable()) return;
 
             // update collision range and radius
-            m_vCollisionRange  = m_pModel->GetBoundingRange () * this->GetSize()       * m_vCollisionModifier;
-            m_fCollisionRadius = m_pModel->GetBoundingRadius() * this->GetSize().Max() * m_vCollisionModifier.Max();
+            const coreVector3 vExtend = this->GetSize() * m_vCollisionModifier;
+            m_vCollisionRange  = m_pModel->GetBoundingRange () * vExtend;
+            m_fCollisionRadius = m_pModel->GetBoundingRadius() * vExtend.Max();
         }
 
         // reset the update status

@@ -11,7 +11,6 @@
 #define _CORE_GUARD_VECTOR_H_
 
 // TODO: check out Clang ext_vector_type
-// TODO: Abs and Sign are only returns (e.g. not like normalization)
 
 
 // ****************************************************************
@@ -82,35 +81,27 @@ public:
 
     /*! invert vector */
     //! @{
-    constexpr coreVector2  operator - ()const {return coreVector2(-x, -y);}
-    inline    coreVector2& InvertX    ()      {x = -x; return *this;}
-    inline    coreVector2& InvertY    ()      {y = -y; return *this;}
-    constexpr coreVector2  InvertedX  ()const {return coreVector2(-x,  y);}
-    constexpr coreVector2  InvertedY  ()const {return coreVector2( x, -y);}
+    constexpr coreVector2 operator - ()const {return coreVector2(-x, -y);}
+    constexpr coreVector2 InvertedX  ()const {return coreVector2(-x,  y);}
+    constexpr coreVector2 InvertedY  ()const {return coreVector2( x, -y);}
     //! @}
 
     /*! rotate vector */
     //! @{
-    inline    coreVector2& Rotate90  ()      {*this = coreVector2(  y,  -x);                   return *this;}
-    inline    coreVector2& Rotate45  ()      {*this = coreVector2(x+y, y-x) * 7.071067812e-1f; return *this;}
-    inline    coreVector2& Rotate135 ()      {*this = coreVector2(y-x,-x-y) * 7.071067812e-1f; return *this;}
-    constexpr coreVector2  Rotated90 ()const {return  coreVector2(  y,  -x);}
-    constexpr coreVector2  Rotated45 ()const {return  coreVector2(x+y, y-x) * 7.071067812e-1f;}
-    constexpr coreVector2  Rotated135()const {return  coreVector2(y-x,-x-y) * 7.071067812e-1f;}
+    constexpr coreVector2 Rotated90 ()const {return coreVector2(  y,   -x);}
+    constexpr coreVector2 Rotated45 ()const {return coreVector2(x+y,  y-x) * (1.0f / SQRT2);}
+    constexpr coreVector2 Rotated135()const {return coreVector2(y-x, -x-y) * (1.0f / SQRT2);}
     //! @}
 
     /*! normalize vector */
     //! @{
-    inline coreVector2& Normalize ()      {*this *= RSQRT(this->LengthSq()); return *this;}
-    inline coreVector2  Normalized()const {return coreVector2(*this).Normalize();}
+    inline coreVector2 Normalized()const {return coreVector2(x, y) * RSQRT(this->LengthSq());}
     //! @}
 
     /*! process vector */
     //! @{
-    template <typename... A> inline coreVector2& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreVector2& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreVector2  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector2(*this).Process(nFunction, std::forward<A>(vArgs)...);}
-    template <typename... A> inline coreVector2  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector2(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
+    template <typename... A> inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
     //! @}
 
     /*! direct functions */
@@ -127,9 +118,8 @@ public:
 
     /*! static functions */
     //! @{
-    static constexpr coreVector2 Null     ()                                             {return coreVector2(0.0f,0.0f);}
-    static constexpr coreFloat   Dot      (const coreVector2& v1, const coreVector2& v2) {return (v1.x*v2.x + v1.y*v2.y);}
-    static inline    coreVector2 Direction(const coreFloat fAngle)                       {return coreVector2(-SIN(fAngle), COS(fAngle));}
+    static constexpr coreFloat   Dot      (const coreVector2& v1, const coreVector2& v2);
+    static inline    coreVector2 Direction(const coreFloat fAngle);
     static inline    coreVector2 Rand     ();
     static inline    coreVector2 Rand     (const coreFloat fMax);
     static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax);
@@ -233,27 +223,34 @@ public:
 
     /*! invert vector */
     //! @{
-    constexpr coreVector3  operator - ()const {return coreVector3(-x, -y, -z);}
-    inline    coreVector3& InvertX    ()      {x = -x; return *this;}
-    inline    coreVector3& InvertY    ()      {y = -y; return *this;}
-    inline    coreVector3& InvertZ    ()      {z = -z; return *this;}
-    constexpr coreVector3  InvertedX  ()const {return coreVector3(-x,  y,  z);}
-    constexpr coreVector3  InvertedY  ()const {return coreVector3( x, -y,  z);}
-    constexpr coreVector3  InvertedZ  ()const {return coreVector3( x,  y, -z);}
+    constexpr coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
+    constexpr coreVector3 InvertedX  ()const {return coreVector3(-x,  y,  z);}
+    constexpr coreVector3 InvertedY  ()const {return coreVector3( x, -y,  z);}
+    constexpr coreVector3 InvertedZ  ()const {return coreVector3( x,  y, -z);}
+    //! @}
+
+    /*! rotate vector */
+    //! @{
+    constexpr coreVector3 RotatedX90 ()const {return coreVector3(x, this->yz().Rotated90 ());}
+    constexpr coreVector3 RotatedX45 ()const {return coreVector3(x, this->yz().Rotated45 ());}
+    constexpr coreVector3 RotatedX135()const {return coreVector3(x, this->yz().Rotated135());}
+    constexpr coreVector3 RotatedY90 ()const {return coreVector3(this->xz().Rotated90 (), y).xzy();}
+    constexpr coreVector3 RotatedY45 ()const {return coreVector3(this->xz().Rotated45 (), y).xzy();}
+    constexpr coreVector3 RotatedY135()const {return coreVector3(this->xz().Rotated135(), y).xzy();}
+    constexpr coreVector3 RotatedZ90 ()const {return coreVector3(this->xy().Rotated90 (), z);}
+    constexpr coreVector3 RotatedZ45 ()const {return coreVector3(this->xy().Rotated45 (), z);}
+    constexpr coreVector3 RotatedZ135()const {return coreVector3(this->xy().Rotated135(), z);}
     //! @}
 
     /*! normalize vector */
     //! @{
-    inline coreVector3& Normalize ()      {*this *= RSQRT(this->LengthSq()); return *this;}
-    inline coreVector3  Normalized()const {return coreVector3(*this).Normalize();}
+    inline coreVector3 Normalized()const {return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
     //! @}
 
     /*! process vector */
     //! @{
-    template <typename... A> inline coreVector3& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreVector3& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreVector3  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
-    template <typename... A> inline coreVector3  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector3(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
+    template <typename... A> inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
     //! @}
 
     /*! direct functions */
@@ -268,8 +265,7 @@ public:
 
     /*! static functions */
     //! @{
-    static constexpr coreVector3 Null   ()                                             {return coreVector3(0.0f,0.0f,0.0f);}
-    static constexpr coreFloat   Dot    (const coreVector3& v1, const coreVector3& v2) {return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);}
+    static constexpr coreFloat   Dot    (const coreVector3& v1, const coreVector3& v2);
     static constexpr coreVector3 Cross  (const coreVector3& v1, const coreVector3& v2);
     static inline    coreVector3 Rand   ();
     static inline    coreVector3 Rand   (const coreFloat fMax);
@@ -359,7 +355,7 @@ public:
     /*! convert vector */
     //! @{
     constexpr operator const coreFloat* ()const {return arr;}
-    constexpr coreVector3 xyzw()const           {return coreVector3(x, y, z)*w;}
+    constexpr coreVector3 xyzw()const           {return coreVector3(x, y, z) * w;}
     constexpr coreVector3 xyz ()const           {return coreVector3(x, y, z);}
     constexpr coreVector2 xy  ()const           {return coreVector2(x, y);}
     constexpr coreVector2 yz  ()const           {return coreVector2(y, z);}
@@ -373,14 +369,16 @@ public:
     /*! invert vector */
     //! @{
     constexpr coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
+    constexpr coreVector4 InvertedX  ()const {return coreVector4(-x,  y,  z,  w);}
+    constexpr coreVector4 InvertedY  ()const {return coreVector4( x, -y,  z,  w);}
+    constexpr coreVector4 InvertedZ  ()const {return coreVector4( x,  y, -z,  w);}
+    constexpr coreVector4 InvertedW  ()const {return coreVector4( x,  y,  z, -w);}
     //! @}
 
     /*! process vector */
     //! @{
-    template <typename... A> inline coreVector4& Process  (coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); w = nFunction(w, std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreVector4& Process  (coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)      {x = nFunction(x, std::forward<A>(vArgs)...); y = nFunction(y, std::forward<A>(vArgs)...); z = nFunction(z, std::forward<A>(vArgs)...); w = nFunction(w, std::forward<A>(vArgs)...); return *this;}
-    template <typename... A> inline coreVector4  Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
-    template <typename... A> inline coreVector4  Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector4(*this).Process(nFunction, std::forward<A>(vArgs)...);}
+    template <typename... A> inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
+    template <typename... A> inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
     //! @}
 
     /*! direct functions */
@@ -390,11 +388,6 @@ public:
     inline    coreFloat Min     ()const {return MIN(x, y, z, w);}
     inline    coreFloat Max     ()const {return MAX(x, y, z, w);}
     constexpr coreBool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
-    //! @}
-
-    /*! static functions */
-    //! @{
-    static constexpr coreVector4 Null() {return coreVector4(0.0f,0.0f,0.0f,0.0f);}
     //! @}
 
     /*! packing functions */
@@ -437,23 +430,39 @@ constexpr coreVector4 operator * (const coreFloat f, const coreVector4& v) {retu
 
 
 // ****************************************************************
+/* calculate dot product */
+constexpr coreFloat coreVector2::Dot(const coreVector2& v1, const coreVector2& v2)
+{
+    return (v1.x*v2.x + v1.y*v2.y);
+}
+
+
+// ****************************************************************
+/* calculate direction vector */
+inline coreVector2 coreVector2::Direction(const coreFloat fAngle)
+{
+    return coreVector2(-SIN(fAngle), COS(fAngle));
+}
+
+
+// ****************************************************************
 /* generate random vector */
 inline coreVector2 coreVector2::Rand()
 {
     return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalize();
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized();
 }
 
 inline coreVector2 coreVector2::Rand(const coreFloat fMax)
 {
     return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMax);
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMax);
 }
 
 inline coreVector2 coreVector2::Rand(const coreFloat fMin, const coreFloat fMax)
 {
     return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMin, fMax);
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMin, fMax);
 }
 
 inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY)
@@ -530,6 +539,14 @@ inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 
 
 // ****************************************************************
+/* calculate dot product */
+constexpr coreFloat coreVector3::Dot(const coreVector3& v1, const coreVector3& v2)
+{
+    return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
+}
+
+
+// ****************************************************************
 /* calculate cross product */
 constexpr coreVector3 coreVector3::Cross(const coreVector3& v1, const coreVector3& v2)
 {
@@ -545,21 +562,21 @@ inline coreVector3 coreVector3::Rand()
 {
     return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalize();
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized();
 }
 
 inline coreVector3 coreVector3::Rand(const coreFloat fMax)
 {
     return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMax);
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMax);
 }
 
 inline coreVector3 coreVector3::Rand(const coreFloat fMin, const coreFloat fMax)
 {
     return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
                        Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalize() * Core::Rand->Float(fMin, fMax);
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMin, fMax);
 }
 
 inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ)
@@ -581,10 +598,10 @@ inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const core
 
 // ****************************************************************
 /* check if inside field-of-view */
-coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFloat fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection)
+inline coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFloat fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection)
 {
     // calculate relative position and angle
-    const coreVector3 vRelative = (vPosition - vViewPosition).Normalize();
+    const coreVector3 vRelative = (vPosition - vViewPosition).Normalized();
     const coreFloat   fDot      = coreVector3::Dot(vRelative, vViewDirection);
 
     // check result
