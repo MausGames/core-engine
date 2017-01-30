@@ -26,6 +26,7 @@
 #define CORE_GL_ARB_geometry_shader4         false
 #define CORE_GL_ARB_half_float_vertex        false   // different token value in OES_vertex_half_float
 #define CORE_GL_ARB_multi_bind               false
+#define CORE_GL_ARB_parallel_shader_compile  false
 #define CORE_GL_ARB_program_interface_query  false
 #define CORE_GL_ARB_sample_shading           false
 #define CORE_GL_ARB_shader_image_load_store  false

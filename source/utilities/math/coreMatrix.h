@@ -12,6 +12,7 @@
 
 // TODO: do not multiply always full matrices, implement "modifying" functions
 // TODO: implement "Rotation from One Vector to Another" matrix
+// TODO: the mXXX() conversion functions create a lot of move instructions
 
 #if defined(_CORE_MSVC_)
     #define CONSTEXPR inline
@@ -727,7 +728,7 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
     const coreVector3& D = vDirection;
     const coreVector3& O = vOrientation;
     const coreVector3  S = coreVector3::Cross(D, O).Normalized();
-    const coreVector3  U = coreVector3::Cross(S, D).Normalized();
+    const coreVector3  U = coreVector3::Cross(S, D);
 
     return coreMatrix4( S.x,  S.y,  S.z, 0.0f,
                         D.x,  D.y,  D.z, 0.0f,
@@ -795,9 +796,9 @@ inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreV
     fTemp = mCamera._22; mCamera._22 = mCamera._32; mCamera._32 = -fTemp;
     fTemp = mCamera._23; mCamera._23 = mCamera._33; mCamera._33 = -fTemp;
 
-    mCamera._14 = -mCamera._11*vPosition.x - mCamera._12*vPosition.y - mCamera._13*vPosition.z;
-    mCamera._24 = -mCamera._21*vPosition.x - mCamera._22*vPosition.y - mCamera._23*vPosition.z;
-    mCamera._34 = -mCamera._31*vPosition.x - mCamera._32*vPosition.y - mCamera._33*vPosition.z;
+    mCamera._14 = -(mCamera._11*vPosition.x + mCamera._12*vPosition.y + mCamera._13*vPosition.z);
+    mCamera._24 = -(mCamera._21*vPosition.x + mCamera._22*vPosition.y + mCamera._23*vPosition.z);
+    mCamera._34 = -(mCamera._31*vPosition.x + mCamera._32*vPosition.y + mCamera._33*vPosition.z);
 
     return mCamera.Transposed();
 }
@@ -813,16 +814,16 @@ constexpr coreVector2 coreVector2::operator * (const coreMatrix2& m)const
 
 inline coreVector2 coreVector2::operator * (const coreMatrix3& m)const
 {
-    const coreFloat w = RCP(x*m._13 + y*m._23 +   m._33);
-    return      coreVector2(x*m._11 + y*m._21 + w*m._31,
-                            x*m._12 + y*m._22 + w*m._32);
+    return coreVector2(x*m._11 + y*m._21 + m._31,
+                       x*m._12 + y*m._22 + m._32) /
+                      (x*m._13 + y*m._23 + m._33);
 }
 
 inline coreVector2 coreVector2::operator * (const coreMatrix4& m)const
 {
-    const coreFloat w = RCP(x*m._14 + y*m._24 +   m._44);
-    return      coreVector2(x*m._11 + y*m._21 + w*m._41,
-                            x*m._12 + y*m._22 + w*m._42);
+    return coreVector2(x*m._11 + y*m._21 + m._41,
+                       x*m._12 + y*m._22 + m._42) /
+                      (x*m._14 + y*m._24 + m._44);
 }
 
 
@@ -837,10 +838,10 @@ constexpr coreVector3 coreVector3::operator * (const coreMatrix3& m)const
 
 inline coreVector3 coreVector3::operator * (const coreMatrix4& m)const
 {
-    const coreFloat w = RCP(x*m._14 + y*m._24 + z*m._34 +   m._44);
-    return      coreVector3(x*m._11 + y*m._21 + z*m._31 + w*m._41,
-                            x*m._12 + y*m._22 + z*m._32 + w*m._42,
-                            x*m._13 + y*m._23 + z*m._33 + w*m._43);
+    return coreVector3(x*m._11 + y*m._21 + z*m._31 + m._41,
+                       x*m._12 + y*m._22 + z*m._32 + m._42,
+                       x*m._13 + y*m._23 + z*m._33 + m._43) /
+                      (x*m._14 + y*m._24 + z*m._34 + m._44);
 }
 
 
@@ -857,7 +858,7 @@ constexpr coreVector4 coreVector4::operator * (const coreMatrix4& m)const
 
 // ****************************************************************
 /* convert RGB-color to YIQ-color (BT.601, NTSC) */
-constexpr coreVector3 coreVector3::RGBtoYIQ()const
+constexpr coreVector3 coreVector3::RgbToYiq()const
 {
     return (*this) * coreMatrix3(0.299f,  0.587f,  0.114f,
                                  0.596f, -0.275f, -0.321f,
@@ -867,7 +868,7 @@ constexpr coreVector3 coreVector3::RGBtoYIQ()const
 
 // ****************************************************************
 /* convert YIQ-color (BT.601, NTSC) to RGB-color */
-constexpr coreVector3 coreVector3::YIQtoRGB()const
+constexpr coreVector3 coreVector3::YiqToRgb()const
 {
     return (*this) * coreMatrix3(1.000f,  0.956f,  0.620f,
                                  1.000f, -0.272f, -0.647f,
@@ -877,7 +878,7 @@ constexpr coreVector3 coreVector3::YIQtoRGB()const
 
 // ****************************************************************
 /* convert RGB-color to YUV-color (BT.709) */
-constexpr coreVector3 coreVector3::RGBtoYUV()const
+constexpr coreVector3 coreVector3::RgbToYuv()const
 {
     return (*this) * coreMatrix3( 0.21260f,  0.71520f,  0.07220f,
                                  -0.09991f, -0.33609f,  0.43600f,
@@ -887,7 +888,7 @@ constexpr coreVector3 coreVector3::RGBtoYUV()const
 
 // ****************************************************************
 /* convert YUV-color (BT.709) to RGB-color */
-constexpr coreVector3 coreVector3::YUVtoRGB()const
+constexpr coreVector3 coreVector3::YuvToRgb()const
 {
     return (*this) * coreMatrix3(1.00000f,  0.00000f,  1.28033f,
                                  1.00000f, -0.21482f, -0.38059f,
@@ -897,7 +898,7 @@ constexpr coreVector3 coreVector3::YUVtoRGB()const
 
 // ****************************************************************
 /* convert RGB-color to YCbCr-color (BT.601, JPEG) */
-constexpr coreVector3 coreVector3::RGBtoYCbCr()const
+constexpr coreVector3 coreVector3::RgbToYcbcr()const
 {
     return (*this) * coreMatrix3( 0.299000f,  0.587000f,  0.114000f,
                                  -0.168736f, -0.331264f,  0.500000f,
@@ -907,7 +908,7 @@ constexpr coreVector3 coreVector3::RGBtoYCbCr()const
 
 // ****************************************************************
 /* convert YCbCr-color (BT.601, JPEG) to RGB-color */
-constexpr coreVector3 coreVector3::YCbCrtoRGB()const
+constexpr coreVector3 coreVector3::YcbcrToRgb()const
 {
     return ((*this) - coreVector3(0.0f,0.5f,0.5f)) * coreMatrix3(1.00000f,  0.00000f,  1.40200f,
                                                                  1.00000f, -0.34414f, -0.71414f,

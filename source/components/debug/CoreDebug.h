@@ -102,6 +102,7 @@ public:
     inline void InspectValue(const coreChar* pcName, const coreVector2& vValue) {this->InspectValue(pcName, "%.5f, %.5f",             vValue.x, vValue.y);}
     inline void InspectValue(const coreChar* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
     inline void InspectValue(const coreChar* pcName, const coreVector4& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
+    inline void InspectValue(const coreChar* pcName, const void*        pValue) {this->InspectValue(pcName, "0x%08X",                 pValue);}
     //! @}
 
     /*! check for debug-monitor status */

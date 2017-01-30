@@ -223,7 +223,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 // read from music stream and update sound buffer
 coreBool coreMusic::__Stream(const ALuint iBuffer)
 {
-    coreChar acData[4u * CORE_MUSIC_CHUNK];
+    BIG_STATIC coreChar acData[4u * CORE_MUSIC_CHUNK];
 
     const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4u * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;

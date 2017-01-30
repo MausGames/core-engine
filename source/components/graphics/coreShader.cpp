@@ -274,7 +274,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     // check for duplicate attribute locations
     FOR_EACH(it, m_aiAttribute)
         FOR_EACH_SET(et, it+1u, m_aiAttribute)
-            ASSERT((*it) != (*et) && (*it) >= 0)
+            ASSERT(((*it) != (*et)) && ((*it) >= 0))
 
 #endif
 
@@ -340,7 +340,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     FOR_EACH(it, m_apShader)
     {
         m_sPath += (*it).GetHandle()->GetName();
-        m_sPath += ":";
+        m_sPath += ':';
     }
     m_sPath.pop_back();
 

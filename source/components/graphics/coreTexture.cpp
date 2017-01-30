@@ -54,7 +54,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
-        Core::Log->Warning("Texture (%s) could not be loaded", pFile->GetPath());
+        Core::Log->Warning("Texture (%s) could not be loaded (SDL: %s)", pFile->GetPath(), SDL_GetError());
         return CORE_INVALID_DATA;
     }
 

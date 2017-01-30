@@ -39,6 +39,8 @@
 #define CLAMP coreMath::Clamp
 #define SIGN  coreMath::Sign
 #define ABS   coreMath::Abs
+#define POW2  coreMath::Pow2
+#define POW3  coreMath::Pow3
 #define LERP  coreMath::Lerp
 #define LERPS coreMath::LerpSmooth
 #define LERPB coreMath::LerpBreak
@@ -78,10 +80,12 @@ public:
     template <typename T, typename S, typename R>    static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
     template <typename T> static inline    T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
     template <typename T> static inline    T        Abs       (const T& x)                                          {return std::abs(x);}
+    template <typename T> static constexpr T        Pow2      (const T& x)                                          {return x * x;}
+    template <typename T> static constexpr T        Pow3      (const T& x)                                          {return x * x * x;}
     template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat s)           {return x + (y - x) * s;}
     template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)           {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
     template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)           {return LERP(x, y, SIN(s*PI*0.5f));}
-    template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                  {return (x - c)*(x - c) <= r*r;}
+    template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                  {return POW2(x - c) <= POW2(r);}
     template <typename T> static constexpr coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
     //! @}
 
@@ -128,8 +132,10 @@ public:
 
     /*! converting operations */
     //! @{
-    static inline coreUint16 Float32to16(const coreFloat  fInput);
-    static inline coreFloat  Float16to32(const coreUint16 iInput);
+    static inline coreUint32 FloatToBits(const coreFloat  fInput);
+    static inline coreFloat  BitsToFloat(const coreUint32 iInput);
+    static inline coreUint16 Float32To16(const coreFloat  fInput);
+    static inline coreFloat  Float16To32(const coreUint16 iInput);
     //! @}
 
     /*! miscellaneous functions */
@@ -279,21 +285,39 @@ inline coreUint32 coreMath::BitScanRev(coreUint32 iInput)
 
 
 // ****************************************************************
+/* safely convert float into bit-representation */
+inline coreUint32 coreMath::FloatToBits(const coreFloat fInput)
+{
+    coreUint32 iOutput; std::memcpy(&iOutput, &fInput, sizeof(coreUint32));
+    return iOutput;
+}
+
+
+// ****************************************************************
+/* safely convert bit-representation into float */
+inline coreFloat coreMath::BitsToFloat(const coreUint32 iInput)
+{
+    coreFloat fOutput; std::memcpy(&fOutput, &iInput, sizeof(coreFloat));
+    return fOutput;
+}
+
+
+// ****************************************************************
 /* convert single-precision float into half-precision */
-inline coreUint16 coreMath::Float32to16(const coreFloat fInput)
+inline coreUint16 coreMath::Float32To16(const coreFloat fInput)
 {
 #if defined(_CORE_SSE_)
 
     if(coreCPUID::F16C())
     {
         // optimized calculation with F16C
-        return _mm_cvtsi128_si32(_mm_cvtps_ph(_mm_set_ss(fInput), 0));
+        return _mm_cvtsi128_si32(_mm_cvtps_ph(_mm_set_ss(fInput), _MM_FROUND_CUR_DIRECTION));
     }
 
 #endif
 
     // normal calculation
-    const coreUint32 A = *r_cast<const coreUint32*>(&fInput);
+    const coreUint32 A = coreMath::FloatToBits(fInput);
     return ((A & 0x7FFFFFFFu) > 0x38000000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x0001C000u) |
                                                  ((A & 0x80000000u) >> 16u)) & 0xFFFFu : 0u;
 };
@@ -301,7 +325,7 @@ inline coreUint16 coreMath::Float32to16(const coreFloat fInput)
 
 // ****************************************************************
 /* convert half-precision float into single-precision */
-inline coreFloat coreMath::Float16to32(const coreUint16 iInput)
+inline coreFloat coreMath::Float16To32(const coreUint16 iInput)
 {
 #if defined(_CORE_SSE_)
 
@@ -316,7 +340,7 @@ inline coreFloat coreMath::Float16to32(const coreUint16 iInput)
     // normal calculation
     const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
                                                 (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
-    return *r_cast<const coreFloat*>(&A);
+    return coreMath::BitsToFloat(A);
 };
 
 

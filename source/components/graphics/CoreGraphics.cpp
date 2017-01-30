@@ -100,9 +100,13 @@ CoreGraphics::CoreGraphics()noexcept
     glColorMask(true, true, true, true);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    // set sample shading rate to the maximum value
+    // enable maximum sample shading rate
     if(CORE_GL_SUPPORT(ARB_sample_shading))
         glMinSampleShading(1.0f);
+
+    // disable parallel shader compilation
+    if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
+        glMaxShaderCompilerThreadsARB(0u);
 
     // create uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
@@ -349,7 +353,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
         if(pSurface)
         {
             // create folder hierarchy
-            const coreChar* pcFullPath = PRINT(std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? "%s.png" : "%s", sPathCopy.c_str());
+            const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? PRINT("%s.png", sPathCopy.c_str()) : sPathCopy.c_str();
             coreData::CreateFolder(pcFullPath);
 
             // save the surface as PNG image

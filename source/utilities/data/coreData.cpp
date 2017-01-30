@@ -207,13 +207,14 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 #if defined(_CORE_WINDOWS_)
 
     // quick Windows check
-    return (GetFileAttributesA(pcPath) == INVALID_FILE_ATTRIBUTES) ? false : true;
+    if(GetFileAttributesA(pcPath) != INVALID_FILE_ATTRIBUTES) return true;
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
 
-    // quick Linux check (with POSIX)
     struct stat oBuffer;
-    return stat(pcPath, &oBuffer) ? false : true;
+
+    // quick POSIX check
+    if(!stat(pcPath, &oBuffer) return true;
 
 #else
 
@@ -225,9 +226,10 @@ coreBool coreData::FileExists(const coreChar* pcPath)
         SDL_RWclose(pFile);
         return true;
     }
-    return false;
 
 #endif
+
+    return false;
 }
 
 
@@ -237,19 +239,26 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
 {
 #if defined(_CORE_WINDOWS_)
 
-    // get extended file attributes
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
-    if(!GetFileAttributesExA(pcPath, GetFileExInfoStandard, &oAttributes)) return -1;
 
-    // return combined size
-    return (coreInt64(oAttributes.nFileSizeHigh) << 32u) |
-           (coreInt64(oAttributes.nFileSizeLow));
+    // get extended file attributes
+    if(GetFileAttributesExA(pcPath, GetFileExInfoStandard, &oAttributes))
+    {
+        // return combined file size
+        return (coreInt64(oAttributes.nFileSizeHigh) << 32u) |
+               (coreInt64(oAttributes.nFileSizeLow));
+    }
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
 
-    // quick Linux check (with POSIX)
     struct stat oBuffer;
-    return stat(pcPath, &oBuffer) ? -1 : oBuffer.st_size;
+
+    // get POSIX file info
+    if(!stat(pcPath, &oBuffer))
+    {
+        // return file size
+        return oBuffer.st_size;
+    }
 
 #else
 
@@ -263,9 +272,42 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
 
         return iSize;
     }
-    return -1;
 
 #endif
+
+    return -1;
+}
+
+
+// ****************************************************************
+/* retrieve file write time */
+std::time_t coreData::FileWriteTime(const coreChar* pcPath)
+{
+#if defined(_CORE_WINDOWS_)
+
+    WIN32_FILE_ATTRIBUTE_DATA oAttributes;
+
+    // get extended file attributes
+    if(GetFileAttributesExA(pcPath, GetFileExInfoStandard, &oAttributes))
+    {
+        // return converted file write time
+        return r_cast<coreUint64&>(oAttributes.ftLastWriteTime) / 10000000ull - 11644473600ull;
+    }
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+
+    struct stat oBuffer;
+
+    // get POSIX file info
+    if(!stat(pcPath, &oBuffer))
+    {
+        // return file write time
+        return oBuffer.st_mtime;
+    }
+
+#endif
+
+    return -1;
 }
 
 
@@ -281,10 +323,10 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     WIN32_FIND_DATAA oFile;
 
     // improve performance if possible
-    const FINDEX_INFO_LEVELS iInfoLevel = IsWindowsVersionOrGreater(6u, 1u, 0u) ? FindExInfoBasic : FindExInfoStandard;
+    static const FINDEX_INFO_LEVELS s_iInfoLevel = IsWindowsVersionOrGreater(6u, 1u, 0u) ? FindExInfoBasic : FindExInfoStandard;
 
     // open folder
-    pFolder = FindFirstFileExA(PRINT("%s/%s", pcPath, pcFilter), iInfoLevel, &oFile, FindExSearchNameMatch, NULL, 0u);
+    pFolder = FindFirstFileExA(PRINT("%s/%s", pcPath, pcFilter), s_iInfoLevel, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
@@ -363,20 +405,13 @@ void coreData::CreateFolder(const std::string& sPath)
 /* retrieve date and time as values */
 void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap)
 {
-    if(!pTimeMap)
-    {
-        // get current time
-        const std::time_t iTime = std::time(NULL);
-        pTimeMap = std::localtime(&iTime);
-    }
-
     // forward values
-    if(piYea) *piYea = pTimeMap->tm_year + 1900u;
-    if(piMon) *piMon = pTimeMap->tm_mon  + 1u;
-    if(piDay) *piDay = pTimeMap->tm_mday;
-    if(piHou) *piHou = pTimeMap->tm_hour;
-    if(piMin) *piMin = pTimeMap->tm_min;
-    if(piSec) *piSec = pTimeMap->tm_sec;
+    if(piYea) (*piYea) = pTimeMap->tm_year + 1900u;
+    if(piMon) (*piMon) = pTimeMap->tm_mon  + 1u;
+    if(piDay) (*piDay) = pTimeMap->tm_mday;
+    if(piHou) (*piHou) = pTimeMap->tm_hour;
+    if(piMin) (*piMin) = pTimeMap->tm_min;
+    if(piSec) (*piSec) = pTimeMap->tm_sec;
 }
 
 
@@ -386,18 +421,9 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm*
 {
     coreChar* pcString = coreData::__NextString();
 
-    if(!pTimeMap)
-    {
-        // get current time
-        const std::time_t iTime = std::time(NULL);
-        pTimeMap = std::localtime(&iTime);
-    }
-
     // assemble string
-    const coreUintW iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pTimeMap);
-
-    ASSERT(iReturn)
-    return iReturn ? pcString : pcFormat;
+    WARN_IF(!std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pTimeMap)) return pcFormat;
+    return pcString;
 }
 
 

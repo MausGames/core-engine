@@ -340,8 +340,18 @@ coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 , m_iTimeID   (-1)
 , m_pOrigin   (NULL)
 , m_pSystem   (pSystem)
-, m_pThis     (pSystem->GetDefaultEffect())
+, m_pThis     (pSystem ? pSystem->GetDefaultEffect() : NULL)
 {
+}
+
+coreParticleEffect::coreParticleEffect(const coreParticleEffect& c)noexcept
+: m_fCreation (c.m_fCreation)
+, m_iTimeID   (c.m_iTimeID)
+, m_pOrigin   (c.m_pOrigin)
+, m_pSystem   (c.m_pSystem)
+, m_pThis     (NULL)
+{
+    m_pThis = c.IsDynamic() ? this : c.m_pThis;
 }
 
 
@@ -356,18 +366,35 @@ coreParticleEffect::~coreParticleEffect()
 
 
 // ****************************************************************
+// assignment operations
+coreParticleEffect& coreParticleEffect::operator = (const coreParticleEffect& c)noexcept
+{
+    // unbind all dynamic particles (if necessary)
+    if(this->IsDynamic() && (m_pSystem != c.m_pSystem))
+        m_pSystem->Unbind(this);
+
+    // copy remaining properties
+    m_fCreation = c.m_fCreation;
+    m_iTimeID   = c.m_iTimeID;
+    m_pOrigin   = c.m_pOrigin;
+    m_pSystem   = c.m_pSystem;
+    m_pThis     = c.IsDynamic() ? this : c.m_pThis;
+
+    return *this;
+}
+
+
+// ****************************************************************
 // change associated particle system object
 void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBool bUnbind)
 {
-    ASSERT(pSystem)
-
     // check for dynamic behavior
     if(this->IsDynamic())
     {
-        // unbind old particles (not unbining them may cause crash if not handled)
+        // unbind old particles (not unbinding them may cause crash if not handled)
         if(bUnbind) m_pSystem->Unbind(this);
     }
-    else m_pThis = pSystem->GetDefaultEffect();
+    else m_pThis = pSystem ? pSystem->GetDefaultEffect() : NULL;
 
     // set new particle system object
     m_pSystem = pSystem;

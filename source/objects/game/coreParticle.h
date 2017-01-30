@@ -209,11 +209,16 @@ private:
 
 
 public:
-    explicit coreParticleEffect(coreParticleSystem* pSystem)noexcept;
+    explicit coreParticleEffect(coreParticleSystem* pSystem = NULL)noexcept;
+    coreParticleEffect(const coreParticleEffect& c)noexcept;
     ~coreParticleEffect();
 
     FRIEND_CLASS(coreParticleSystem)
-    DISABLE_COPY(coreParticleEffect)
+
+    //! assignment operations
+    //! @{
+    coreParticleEffect& operator = (const coreParticleEffect& c)noexcept;
+    //! @}
 
     //! create new particles
     //! @{
@@ -288,10 +293,11 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
     if(m_fCreation >= 1.0f)
     {
         // adjust status value
-        m_fCreation -= FLOOR(m_fCreation);
+        const coreUintW iComp = MIN(F_TO_UI(m_fCreation), 3u);
+        m_fCreation = TRUNC(m_fCreation);
 
         // create particles and call function
-        for(coreUintW i = iNum; i--; )
+        for(coreUintW i = iNum * iComp; i--; )
             nFunction(this->CreateParticle());
     }
 }

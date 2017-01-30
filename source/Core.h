@@ -12,7 +12,7 @@
 //*------------------------------------------------------------------------------*//
 //| Core Engine v0.0.8a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
-//| Copyright (c) 2013-2016 Martin Mauersics                                     |//
+//| Copyright (c) 2013-2017 Martin Mauersics                                     |//
 //|                                                                              |//
 //| This software is provided 'as-is', without any express or implied            |//
 //| warranty. In no event will the authors be held liable for any damages        |//
@@ -268,7 +268,8 @@
 #define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
 #define DEFINED(a)           (__DEFINED(a, #a))
 
-#define ZERO_NEW(t,c)        ([](const coreUintW iCount) {return new(std::calloc(iCount, sizeof(t))) t[iCount];}(c))
+#define ZERO_NEW(t,c)        ([](const coreUintW iCount) {return new(std::calloc(iCount,  sizeof(t))) t[iCount];}(c))
+#define STACK_NEW(t,c)       ([](const coreUintW iCount) {return new(std::alloca(iCount * sizeof(t))) t[iCount];}(c))
 #define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
 
@@ -292,6 +293,7 @@
 #define DYN_KEEP(i)          {++i;}
 #define DYN_REMOVE(i,c)      {i = (c).erase(i); i ## __e = (c).end();}
 
+#define BIG_STATIC           static
 #define FRIEND_CLASS(c)      friend class c;
 
 #if defined(_CORE_DEBUG_)
@@ -487,7 +489,7 @@ enum coreStatus : coreInt8
 
 #else
 
-    // disable multi-threading
+    // disable multi-threading utilities
     #define thread_local
     #define coreAtomicLock(x)
     #define coreAtomicUnlock(x)

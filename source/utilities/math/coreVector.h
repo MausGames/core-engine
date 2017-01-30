@@ -110,6 +110,8 @@ public:
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y);}
     inline    coreFloat Min         ()const {return MIN(x, y);}
     inline    coreFloat Max         ()const {return MAX(x, y);}
+    constexpr coreUintW MinDimension()const {return (x < y) ? 0u : 1u;}
+    constexpr coreUintW MaxDimension()const {return (x > y) ? 0u : 1u;}
     inline    coreFloat AspectRatio ()const {return (x * RCP(y));}
     inline    coreFloat Angle       ()const {return (-std::atan2(x, y));}
     constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
@@ -119,6 +121,7 @@ public:
     /*! static functions */
     //! @{
     static constexpr coreFloat   Dot      (const coreVector2& v1, const coreVector2& v2);
+    static inline    coreFloat   Angle    (const coreVector2& v1, const coreVector2& v2);
     static inline    coreVector2 Direction(const coreFloat fAngle);
     static inline    coreVector2 Rand     ();
     static inline    coreVector2 Rand     (const coreFloat fMax);
@@ -259,6 +262,8 @@ public:
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z);}
     inline    coreFloat Min         ()const {return MIN(x, y, z);}
     inline    coreFloat Max         ()const {return MAX(x, y, z);}
+    constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
+    constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
     constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
     constexpr coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
     //! @}
@@ -267,6 +272,7 @@ public:
     //! @{
     static constexpr coreFloat   Dot    (const coreVector3& v1, const coreVector3& v2);
     static constexpr coreVector3 Cross  (const coreVector3& v1, const coreVector3& v2);
+    static inline    coreFloat   Angle  (const coreVector3& v1, const coreVector3& v2);
     static inline    coreVector3 Rand   ();
     static inline    coreVector3 Rand   (const coreFloat fMax);
     static inline    coreVector3 Rand   (const coreFloat fMin,  const coreFloat fMax);
@@ -277,14 +283,14 @@ public:
 
     /*! color functions */
     //! @{
-    inline    coreVector3 RGBtoHSV  ()const;
-    inline    coreVector3 HSVtoRGB  ()const;
-    constexpr coreVector3 RGBtoYIQ  ()const;
-    constexpr coreVector3 YIQtoRGB  ()const;
-    constexpr coreVector3 RGBtoYUV  ()const;
-    constexpr coreVector3 YUVtoRGB  ()const;
-    constexpr coreVector3 RGBtoYCbCr()const;
-    constexpr coreVector3 YCbCrtoRGB()const;
+    inline    coreVector3 RgbToHsv  ()const;
+    inline    coreVector3 HsvToRgb  ()const;
+    constexpr coreVector3 RgbToYiq  ()const;
+    constexpr coreVector3 YiqToRgb  ()const;
+    constexpr coreVector3 RgbToYuv  ()const;
+    constexpr coreVector3 YuvToRgb  ()const;
+    constexpr coreVector3 RgbToYcbcr()const;
+    constexpr coreVector3 YcbcrToRgb()const;
     constexpr coreFloat   Luminance ()const {return coreVector3::Dot(*this, coreVector3(0.212671f, 0.715160f, 0.072169f));}
     //! @}
 };
@@ -375,6 +381,11 @@ public:
     constexpr coreVector4 InvertedW  ()const {return coreVector4( x,  y,  z, -w);}
     //! @}
 
+    /*! normalize vector */
+    //! @{
+    inline coreVector4 Normalized()const {return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
+    //! @}
+
     /*! process vector */
     //! @{
     template <typename... A> inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
@@ -383,11 +394,23 @@ public:
 
     /*! direct functions */
     //! @{
-    inline    coreFloat Length  ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat LengthSq()const {return (x*x + y*y + z*z + w*w);}
-    inline    coreFloat Min     ()const {return MIN(x, y, z, w);}
-    inline    coreFloat Max     ()const {return MAX(x, y, z, w);}
-    constexpr coreBool  IsNull  ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z + w*w);}
+    inline    coreFloat Min         ()const {return MIN(x, y, z, w);}
+    inline    coreFloat Max         ()const {return MAX(x, y, z, w);}
+    constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
+    constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
+    constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
+    constexpr coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    //! @}
+
+    /*! static functions */
+    //! @{
+    static constexpr coreFloat   Dot (const coreVector4& v1, const coreVector4& v2);
+    static inline    coreVector4 Rand();
+    static inline    coreVector4 Rand(const coreFloat fMax);
+    static inline    coreVector4 Rand(const coreFloat fMin,  const coreFloat fMax);
+    static inline    coreVector4 Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, const coreFloat fMinW, const coreFloat fMaxW);
     //! @}
 
     /*! packing functions */
@@ -411,6 +434,7 @@ public:
     /*! quaternion functions */
     //! @{
     static constexpr coreVector4 QuatMultiply (const coreVector4& v1, const coreVector4& v2);
+    static inline    coreVector4 QuatSlerp    (const coreVector4& v1, const coreVector4& v2, const coreFloat t);
     static constexpr coreVector4 QuatIdentity ()      {return coreVector4(0.0f,0.0f,0.0f,1.0f);}
     constexpr        coreVector4 QuatConjugate()const {return coreVector4(-x, -y, -z, w);}
     inline           coreVector4 QuatInvert   ()const {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
@@ -434,6 +458,14 @@ constexpr coreVector4 operator * (const coreFloat f, const coreVector4& v) {retu
 constexpr coreFloat coreVector2::Dot(const coreVector2& v1, const coreVector2& v2)
 {
     return (v1.x*v2.x + v1.y*v2.y);
+}
+
+
+// ****************************************************************
+/* calculate angle between two vectors */
+inline coreFloat coreVector2::Angle(const coreVector2& v1, const coreVector2& v2)
+{
+    return ACOS(coreVector2::Dot(v1, v2));
 }
 
 
@@ -477,7 +509,7 @@ inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMax
 inline coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
 {
     const coreFloat fDot = coreVector2::Dot(vVelocity, vNormal);
-    return (fDot > 0.0f) ? vVelocity : (vVelocity - 2.0f*vNormal*fDot);
+    return (fDot > 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
 }
 
 
@@ -503,8 +535,8 @@ constexpr coreUint32 coreVector2::PackSnorm2x16()const
 /* compress arbitrary vector into YX packed uint */
 inline coreUint32 coreVector2::PackFloat2x16()const
 {
-    return (coreUint32(coreMath::Float32to16(y)) << 16u) |
-           (coreUint32(coreMath::Float32to16(x)));
+    return (coreUint32(coreMath::Float32To16(y)) << 16u) |
+           (coreUint32(coreMath::Float32To16(x)));
 }
 
 
@@ -533,8 +565,8 @@ inline coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32 iNumber)
 /* uncompress YX packed uint into arbitrary vector */
 inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 {
-    return coreVector2(coreMath::Float16to32( iNumber         & 0xFFFFu),
-                       coreMath::Float16to32((iNumber >> 16u) & 0xFFFFu));
+    return coreVector2(coreMath::Float16To32( iNumber         & 0xFFFFu),
+                       coreMath::Float16To32((iNumber >> 16u) & 0xFFFFu));
 }
 
 
@@ -553,6 +585,14 @@ constexpr coreVector3 coreVector3::Cross(const coreVector3& v1, const coreVector
     return coreVector3(v1.y*v2.z - v1.z*v2.y,
                        v1.z*v2.x - v1.x*v2.z,
                        v1.x*v2.y - v1.y*v2.x);
+}
+
+
+// ****************************************************************
+/* calculate angle between two vectors */
+inline coreFloat coreVector3::Angle(const coreVector3& v1, const coreVector3& v2)
+{
+    return ACOS(coreVector3::Dot(v1, v2));
 }
 
 
@@ -592,7 +632,7 @@ inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMax
 inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
 {
     const coreFloat fDot = coreVector3::Dot(vVelocity, vNormal);
-    return (fDot > 0.0f) ? vVelocity : (vVelocity - 2.0f*vNormal*fDot);
+    return (fDot > 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
 }
 
 
@@ -611,7 +651,7 @@ inline coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFlo
 
 // ****************************************************************
 /* convert RGB-color to HSV-color */
-inline coreVector3 coreVector3::RGBtoHSV()const
+inline coreVector3 coreVector3::RgbToHsv()const
 {
     const coreFloat& R = x;
     const coreFloat& G = y;
@@ -632,7 +672,7 @@ inline coreVector3 coreVector3::RGBtoHSV()const
 
 // ****************************************************************
 /* convert HSV-color to RGB-color */
-inline coreVector3 coreVector3::HSVtoRGB()const
+inline coreVector3 coreVector3::HsvToRgb()const
 {
     const coreFloat  H = x * 6.0f;
     const coreFloat& S = y;
@@ -653,6 +693,49 @@ inline coreVector3 coreVector3::HSVtoRGB()const
     case 5:  return coreVector3(V,     p,     V - t);
     default: return coreVector3(V,     p + t, p);
     }
+}
+
+
+// ****************************************************************
+/* calculate dot product */
+constexpr coreFloat coreVector4::Dot(const coreVector4& v1, const coreVector4& v2)
+{
+    return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z + v1.w*v2.w);
+}
+
+
+// ****************************************************************
+/* generate random vector */
+inline coreVector4 coreVector4::Rand()
+{
+    return coreVector4(Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized();
+}
+
+inline coreVector4 coreVector4::Rand(const coreFloat fMax)
+{
+    return coreVector4(Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMax);
+}
+
+inline coreVector4 coreVector4::Rand(const coreFloat fMin, const coreFloat fMax)
+{
+    return coreVector4(Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f,
+                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMin, fMax);
+}
+
+inline coreVector4 coreVector4::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, const coreFloat fMinW, const coreFloat fMaxW)
+{
+    return coreVector4(Core::Rand->Float(fMinX, fMaxX),
+                       Core::Rand->Float(fMinY, fMaxY),
+                       Core::Rand->Float(fMinZ, fMaxZ),
+                       Core::Rand->Float(fMinW, fMaxW));
 }
 
 
@@ -726,10 +809,10 @@ constexpr coreUint64 coreVector4::PackSnorm4x16()const
 /* compress arbitrary vector into WZYX packed uint64 */
 inline coreUint64 coreVector4::PackFloat4x16()const
 {
-    return (coreUint64(coreMath::Float32to16(w)) << 48u) |
-           (coreUint64(coreMath::Float32to16(z)) << 32u) |
-           (coreUint64(coreMath::Float32to16(y)) << 16u) |
-           (coreUint64(coreMath::Float32to16(x)));
+    return (coreUint64(coreMath::Float32To16(w)) << 48u) |
+           (coreUint64(coreMath::Float32To16(z)) << 32u) |
+           (coreUint64(coreMath::Float32To16(y)) << 16u) |
+           (coreUint64(coreMath::Float32To16(x)));
 }
 
 
@@ -818,10 +901,10 @@ inline coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64 iNumber)
 /* uncompress WZYX packed uint64 into arbitrary vector */
 inline coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
 {
-    return coreVector4(coreMath::Float16to32( iNumber         & 0xFFFFu),
-                       coreMath::Float16to32((iNumber >> 16u) & 0xFFFFu),
-                       coreMath::Float16to32((iNumber >> 32u) & 0xFFFFu),
-                       coreMath::Float16to32((iNumber >> 48u) & 0xFFFFu));
+    return coreVector4(coreMath::Float16To32( iNumber         & 0xFFFFu),
+                       coreMath::Float16To32((iNumber >> 16u) & 0xFFFFu),
+                       coreMath::Float16To32((iNumber >> 32u) & 0xFFFFu),
+                       coreMath::Float16To32((iNumber >> 48u) & 0xFFFFu));
 }
 
 
@@ -833,6 +916,20 @@ constexpr coreVector4 coreVector4::QuatMultiply(const coreVector4& v1, const cor
                        v1.y*v2.w + v1.w*v2.y + v1.z*v2.x - v1.x*v2.z,
                        v1.z*v2.w + v1.w*v2.z + v1.x*v2.y - v1.y*v2.x,
                        v1.w*v2.w - v1.x*v2.x - v1.y*v2.y - v1.z*v2.z);
+}
+
+
+// ****************************************************************
+/* spherical linear interpolate between two quaternions */
+inline coreVector4 coreVector4::QuatSlerp(const coreVector4& v1, const coreVector4& v2, const coreFloat t)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+
+    const coreFloat   A = coreVector4::Dot(v1, v2);
+    const coreFloat   B = ACOS(A) * t;
+    const coreVector4 P = (v2 - v1 * A).Normalized();
+
+    return v1 * COS(B) + P * SIN(B);
 }
 
 

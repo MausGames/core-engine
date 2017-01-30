@@ -30,6 +30,7 @@
 
 #define TIMEMAP_LOCAL(t) ([](const std::time_t iValue) {return std::localtime(&iValue);}(t))
 #define TIMEMAP_GM(t)    ([](const std::time_t iValue) {return std::gmtime   (&iValue);}(t))
+#define TIMEMAP_CURRENT  (TIMEMAP_LOCAL(std::time(NULL)))
 
 
 // ****************************************************************
@@ -76,18 +77,19 @@ public:
 
     /*! handle physical files and folders */
     //! @{
-    static coreBool   FileExists  (const coreChar* pcPath);
-    static coreInt64  FileSize    (const coreChar* pcPath);
-    static coreStatus ScanFolder  (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
-    static void       CreateFolder(const std::string& sPath);
+    static coreBool    FileExists   (const coreChar* pcPath);
+    static coreInt64   FileSize     (const coreChar* pcPath);
+    static std::time_t FileWriteTime(const coreChar* pcPath);
+    static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
+    static void        CreateFolder (const std::string& sPath);
     //! @}
 
     /*! retrieve date and time */
     //! @{
-    static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = NULL);
-    static const coreChar* DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap = NULL);
-    static inline const coreChar* DateString(const std::tm* pTimeMap = NULL) {return coreData::DateTimePrint("%Y-%m-%d", pTimeMap);}
-    static inline const coreChar* TimeString(const std::tm* pTimeMap = NULL) {return coreData::DateTimePrint("%H:%M:%S", pTimeMap);}
+    static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = TIMEMAP_CURRENT);
+    static const coreChar* DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap = TIMEMAP_CURRENT);
+    static inline const coreChar* DateString(const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%Y-%m-%d", pTimeMap);}
+    static inline const coreChar* TimeString(const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%H:%M:%S", pTimeMap);}
     //! @}
 
     /*! compress and decompress data */
