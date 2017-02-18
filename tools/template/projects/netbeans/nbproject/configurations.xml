@@ -38,7 +38,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -51,7 +51,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -fno-rtti</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -72,11 +72,13 @@
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
             <linkerLibLibItem>OpenGL32</linkerLibLibItem>
-            <linkerLibLibItem>glew32mx</linkerLibLibItem>
+            <linkerLibLibItem>glew32</linkerLibLibItem>
             <linkerLibLibItem>OpenAL32</linkerLibLibItem>
             <linkerLibLibItem>ogg</linkerLibLibItem>
             <linkerLibLibItem>vorbis</linkerLibLibItem>
             <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>zlib</linkerLibLibItem>
+            <linkerLibLibItem>psapi</linkerLibLibItem>
           </linkerLibItems>
           <commandLine>-mwindows</commandLine>
         </linkerTool>
@@ -113,7 +115,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -125,7 +127,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -144,11 +146,12 @@
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>GLEW</linkerLibLibItem>
             <linkerLibLibItem>openal</linkerLibLibItem>
             <linkerLibLibItem>ogg</linkerLibLibItem>
             <linkerLibLibItem>vorbis</linkerLibLibItem>
             <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>zlib</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>
@@ -184,7 +187,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -196,7 +199,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -215,11 +218,12 @@
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>GLEW</linkerLibLibItem>
             <linkerLibLibItem>openal</linkerLibLibItem>
             <linkerLibLibItem>ogg</linkerLibLibItem>
             <linkerLibLibItem>vorbis</linkerLibLibItem>
             <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>zlib</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>
@@ -257,7 +261,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
@@ -268,7 +272,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -fno-rtti -fno-exceptions</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -293,11 +297,13 @@
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
             <linkerLibLibItem>OpenGL32</linkerLibLibItem>
-            <linkerLibLibItem>glew32mx</linkerLibLibItem>
+            <linkerLibLibItem>glew32</linkerLibLibItem>
             <linkerLibLibItem>OpenAL32</linkerLibLibItem>
             <linkerLibLibItem>ogg</linkerLibLibItem>
             <linkerLibLibItem>vorbis</linkerLibLibItem>
             <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>zlib</linkerLibLibItem>
+            <linkerLibLibItem>psapi</linkerLibLibItem>
           </linkerLibItems>
           <commandLine>-static-libgcc -static-libstdc++ -mwindows</commandLine>
         </linkerTool>
@@ -336,7 +342,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
@@ -347,7 +353,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti -fno-exceptions</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -370,11 +376,12 @@
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>GLEW</linkerLibLibItem>
             <linkerLibLibItem>openal</linkerLibLibItem>
             <linkerLibLibItem>ogg</linkerLibLibItem>
             <linkerLibLibItem>vorbis</linkerLibLibItem>
             <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>zlib</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>
@@ -412,7 +419,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
@@ -423,7 +430,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti -fno-exceptions</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -446,11 +453,12 @@
             <linkerLibLibItem>SDL2</linkerLibLibItem>
             <linkerLibLibItem>SDL2_ttf</linkerLibLibItem>
             <linkerLibLibItem>SDL2_image</linkerLibLibItem>
-            <linkerLibLibItem>GLEWmx</linkerLibLibItem>
+            <linkerLibLibItem>GLEW</linkerLibLibItem>
             <linkerLibLibItem>openal</linkerLibLibItem>
             <linkerLibLibItem>ogg</linkerLibLibItem>
             <linkerLibLibItem>vorbis</linkerLibLibItem>
             <linkerLibLibItem>vorbisfile</linkerLibLibItem>
+            <linkerLibLibItem>zlib</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
         <requiredProjects>

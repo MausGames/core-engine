@@ -25,10 +25,6 @@
 thread_local coreChar  coreData::s_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN] = {{}};
 thread_local coreUintW coreData::s_iCurString                                            = 0u;
 
-#if defined(_CORE_WINXP_)
-    #pragma comment(lib, "psapi.lib")
-#endif
-
 
 // ****************************************************************
 /* get amount of memory physically mapped to the application */
@@ -71,21 +67,41 @@ coreUint64 coreData::AppMemory()
 /* get full application path */
 const coreChar* coreData::AppPath()
 {
-    coreChar* pcString = coreData::__NextString();
+    UNUSED coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
-    GetModuleFileNameA(NULL, pcString, CORE_DATA_STRING_LEN);
+
+    // get path of the current executable
+    if(GetModuleFileNameA(NULL, pcString, CORE_DATA_STRING_LEN))
+    {
+        // return path
+        return pcString;
+    }
+
 #elif defined(_CORE_LINUX_)
+
+    // get content of the symbolic link
     const coreInt32 iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1u);
-    pcString[MAX(iLen, 0)] = '\0';
+    if(iLen >= 0)
+    {
+        // add missing null-terminator and return
+        pcString[iLen] = '\0';
+        return pcString;
+    }
+
 #elif defined(_CORE_OSX_)
+
+    // get path of the current executable
     coreUint32 iLen = CORE_DATA_STRING_LEN;
-    _NSGetExecutablePath(pcString, &iLen);
-#else
-    return "";
+    if(!_NSGetExecutablePath(pcString, &iLen))
+    {
+        // return path
+        return pcString;
+    }
+
 #endif
 
-    return pcString;
+    return "";
 }
 
 
@@ -157,9 +173,13 @@ const coreChar* coreData::SystemName()
 coreStatus coreData::SetCurDir(const coreChar* pcPath)
 {
 #if defined(_CORE_WINDOWS_)
+
     if(SetCurrentDirectoryA(pcPath)) return CORE_OK;
-#elif !defined(_CORE_ANDROID_)
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+
     if(!chdir(pcPath)) return CORE_OK;
+
 #endif
 
     return CORE_ERROR_SYSTEM;
@@ -170,17 +190,31 @@ coreStatus coreData::SetCurDir(const coreChar* pcPath)
 /* get current working directory */
 const coreChar* coreData::GetCurDir()
 {
-    coreChar* pcString = coreData::__NextString();
+    UNUSED coreChar* pcString = coreData::__NextString();
 
 #if defined(_CORE_WINDOWS_)
-    GetCurrentDirectoryA(CORE_DATA_STRING_LEN - 1u, pcString);
-#elif !defined(_CORE_ANDROID_)
-    getcwd(pcString, CORE_DATA_STRING_LEN - 1u);
-#else
-    return "";
+
+    // get raw working directory
+    const coreUint32 iLen = GetCurrentDirectoryA(CORE_DATA_STRING_LEN - 1u, pcString);
+    if(iLen)
+    {
+        // add path delimiter and return (with known length)
+        std::memcpy(pcString + iLen, CORE_DATA_SLASH, ARRAY_SIZE(CORE_DATA_SLASH));
+        return pcString;
+    }
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+
+    // get raw working directory
+    if(getcwd(pcString, CORE_DATA_STRING_LEN - 1u))
+    {
+        // add path delimiter and return
+        return std::strcat(pcString, CORE_DATA_SLASH);
+    }
+
 #endif
 
-    return std::strcat(pcString, CORE_DATA_SLASH);
+    return "";
 }
 
 
@@ -189,11 +223,20 @@ const coreChar* coreData::GetCurDir()
 coreStatus coreData::OpenURL(const coreChar* pcURL)
 {
 #if defined(_CORE_WINDOWS_)
+
+    // delegate request to the Windows Shell
     if(P_TO_SI(ShellExecuteA(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
+
 #elif defined(_CORE_LINUX_)
-    if(system(NULL)) if(!system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
-#else
-    if(system(NULL)) if(!system(PRINT("open %s",     pcURL))) return CORE_OK;
+
+    // delegate request to the Linux command processor (/bin/sh)
+    if(std::system(NULL) && !std::system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
+
+#else defined(_CORE_OSX_)
+
+    // delegate request to the OSX command processor
+    if(std::system(NULL) && !std::system(PRINT("open %s", pcURL))) return CORE_OK;
+
 #endif
 
     return CORE_ERROR_SYSTEM;

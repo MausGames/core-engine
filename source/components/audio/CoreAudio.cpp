@@ -152,7 +152,7 @@ void CoreAudio::ClearSources(const ALuint iBuffer)
     {
         if((*it) == iBuffer)
         {
-            const GLenum iSource = *m_aiBuffer.get_key(it);
+            const GLenum iSource = (*m_aiBuffer.get_key(it));
 
 #if defined(_CORE_DEBUG_)
 

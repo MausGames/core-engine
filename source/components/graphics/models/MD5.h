@@ -20,15 +20,15 @@ template <coreChar cDelimiter> static void SkipComments(const coreChar** ppcInpu
     ASSERT(*ppcInput)
 
     // check for line-comments
-    while(**ppcInput == cDelimiter)
+    while((**ppcInput) == cDelimiter)
     {
         // skip them
         coreInt32 n = 0;
-        std::sscanf(*ppcInput, "%*[^\n] %n", &n);
-        *ppcInput += n;
+        std::sscanf((*ppcInput), "%*[^\n] %n", &n);
+        (*ppcInput) += n;
     }
 }
-#define MD5_SCAN(s,f,...) {coreInt32 __n = 0; std::sscanf(s, f " %n", ##__VA_ARGS__, &__n); s += __n; SkipComments<'/'>(&(s));}
+#define MD5_SCAN(s,f,...) {coreInt32 __n = 0; std::sscanf((*s), f " %n", ##__VA_ARGS__, &__n); (*s) += __n; SkipComments<'/'>(s);}
 
 
 // ****************************************************************
@@ -41,7 +41,7 @@ struct md5Joint final
 
     explicit md5Joint(const coreChar** ppcData)noexcept
     {
-        MD5_SCAN(*ppcData, "%*s %d %*s %f %f %f %*s %*s %f %f %f %*s",
+        MD5_SCAN(ppcData, "%*s %d %*s %f %f %f %*s %*s %f %f %f %*s",
                  &iParent,
                  &vPosition.x,    &vPosition.y,    &vPosition.z,
                  &vOrientation.x, &vOrientation.y, &vOrientation.z)
@@ -64,7 +64,7 @@ struct md5Vertex final
 
     explicit md5Vertex(const coreChar** ppcData)noexcept
     {
-        MD5_SCAN(*ppcData, "%*s %*d %*s %f %f %*s %hu %hu",
+        MD5_SCAN(ppcData, "%*s %*d %*s %f %f %*s %hu %hu",
                  &vTexture.x,   &vTexture.y,
                  &iWeightStart, &iWeightCount)
     }
@@ -79,7 +79,7 @@ struct md5Triangle final
 
     explicit md5Triangle(const coreChar** ppcData)noexcept
     {
-        MD5_SCAN(*ppcData, "%*s %*d %hu %hu %hu",
+        MD5_SCAN(ppcData, "%*s %*d %hu %hu %hu",
                  &aiVertex[0], &aiVertex[2], &aiVertex[1])
     }
 };
@@ -95,7 +95,7 @@ struct md5Weight final
 
     explicit md5Weight(const coreChar** ppcData)noexcept
     {
-        MD5_SCAN(*ppcData, "%*s %*d %d %f %*s %f %f %f %*s",
+        MD5_SCAN(ppcData, "%*s %*d %d %f %*s %f %f %f %*s",
                  &iJoint,      &fBias,
                  &vPosition.x, &vPosition.y, &vPosition.z)
     }
@@ -114,15 +114,15 @@ struct md5Mesh final
     {
         coreUintW iNum = 0u;
 
-        MD5_SCAN(*ppcData, "%*s %*s %*s %zu", &iNum)
+        MD5_SCAN(ppcData, "%*s %*s %*s %zu", &iNum)
         aVertex.reserve(iNum);
         for(coreUintW i = iNum; i--; ) aVertex.emplace_back(ppcData);
 
-        MD5_SCAN(*ppcData, "%*s %zu", &iNum)
+        MD5_SCAN(ppcData, "%*s %zu", &iNum)
         aTriangle.reserve(iNum);
         for(coreUintW i = iNum; i--; ) aTriangle.emplace_back(ppcData);
 
-        MD5_SCAN(*ppcData, "%*s %zu", &iNum)
+        MD5_SCAN(ppcData, "%*s %zu", &iNum)
         aWeight.reserve(iNum);
         for(coreUintW i = iNum; i--; ) aWeight.emplace_back(ppcData);
     }
@@ -151,27 +151,27 @@ struct md5File final
         coreUintW iNumMeshes       = 0u;
 
         // check for correct file type
-        MD5_SCAN(*ppcData, "")
-        MD5_SCAN(*ppcData, "%15s %d", r_cast<coreChar*>(&acIdentifier), &iVersion)
+        MD5_SCAN(ppcData, "")
+        MD5_SCAN(ppcData, "%15s %d", r_cast<coreChar*>(&acIdentifier), &iVersion)
         if(std::strncmp(acIdentifier, "MD5Version", 10u) || iVersion != 10) return;
 
         // read number of objects
-        MD5_SCAN(*ppcData, "%*s %*s")
-        MD5_SCAN(*ppcData, "%*s %zu", &iNumJoints)
-        MD5_SCAN(*ppcData, "%*s %zu", &iNumMeshes)
+        MD5_SCAN(ppcData, "%*s %*s")
+        MD5_SCAN(ppcData, "%*s %zu", &iNumJoints)
+        MD5_SCAN(ppcData, "%*s %zu", &iNumMeshes)
         aJoint.reserve(iNumJoints);
         aMesh .reserve(iNumMeshes);
 
         // read joint and mesh data
         for(coreUintW i = 0u, ie = (iNumMeshes + 1u); i < ie; ++i)
         {
-            MD5_SCAN(*ppcData, "%*s")
-            MD5_SCAN(*ppcData, "%*s")
+            MD5_SCAN(ppcData, "%*s")
+            MD5_SCAN(ppcData, "%*s")
 
             if(i) aMesh.emplace_back(ppcData);
             else for(coreUintW j = iNumJoints; j--; ) aJoint.emplace_back(ppcData);
 
-            if(i != iNumMeshes) MD5_SCAN(*ppcData, "%*s")   // # ignore last symbol, because there is no 0-delimiter
+            if(i != iNumMeshes) MD5_SCAN(ppcData, "%*s")   // # ignore last symbol, because there is no 0-delimiter
         }
     }
 

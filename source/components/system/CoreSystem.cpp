@@ -12,21 +12,22 @@
 // ****************************************************************
 // constructor
 CoreSystem::CoreSystem()noexcept
-: m_pWindow        (NULL)
-, m_aDisplayData   {}
-, m_iDisplayIndex  (Core::Config->GetInt(CORE_CONFIG_SYSTEM_DISPLAY))
-, m_vResolution    (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
-, m_iFullscreen    (Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
-, m_bMinimized     (false)
-, m_bTerminated    (false)
-, m_dTotalTime     (0.0f)
-, m_fLastTime      (0.0f)
-, m_afTime         {}
-, m_afTimeSpeed    {}
-, m_iCurFrame      (0u)
-, m_iSkipFrame     (1u)
-, m_dPerfFrequency (0.0)
-, m_iPerfTime      (0u)
+: m_pWindow          (NULL)
+, m_aDisplayData     {}
+, m_iDisplayIndex    (Core::Config->GetInt(CORE_CONFIG_SYSTEM_DISPLAY))
+, m_vResolution      (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
+, m_iFullscreen      (Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
+, m_bMinimized       (false)
+, m_bTerminated      (false)
+, m_dTotalTime       (0.0)
+, m_dTotalTimeBefore (0.0)
+, m_fLastTime        (0.0f)
+, m_afTime           {}
+, m_afTimeSpeed      {}
+, m_iCurFrame        (0u)
+, m_iSkipFrame       (1u)
+, m_dPerfFrequency   (0.0)
+, m_iPerfTime        (0u)
 {
     Core::Log->Header("System Interface");
 
@@ -329,6 +330,9 @@ void CoreSystem::__UpdateTime()
     }
     else
     {
+        // save total time of the previous frame
+        m_dTotalTimeBefore = m_dTotalTime;
+
         // smooth last frame time and increase total time
         m_fLastTime   = 0.85f * m_fLastTime + 0.15f * fNewLastTime;
         m_dTotalTime += coreDouble(m_fLastTime);

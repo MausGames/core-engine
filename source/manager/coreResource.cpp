@@ -93,16 +93,17 @@ coreResourceManager::~coreResourceManager()
     FOR_EACH(it, m_apProxy.get_keylist()) this->AssignProxy(*it, NULL);
 
     // delete resource handles
-    FOR_EACH(it, m_apHandle) SAFE_DELETE(*it)
+    FOR_EACH(it, m_apHandle) MANAGED_DELETE(coreResourceHandle, *it)
 
     // delete resource files
-    FOR_EACH(it, m_apArchive)    SAFE_DELETE(*it)
-    FOR_EACH(it, m_apDirectFile) SAFE_DELETE(*it)
+    FOR_EACH(it, m_apArchive)    MANAGED_DELETE(coreArchive, *it)
+    FOR_EACH(it, m_apDirectFile) MANAGED_DELETE(coreFile,    *it)
 
     // clear memory
     m_apHandle    .clear();
     m_apArchive   .clear();
     m_apDirectFile.clear();
+    m_apProxy     .clear();
     m_apRelation  .clear();
 
     Core::Log->Info(CORE_LOG_BOLD("Resource Manager destroyed"));
@@ -144,7 +145,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
     if(m_apArchive.count(sPath)) return m_apArchive.at(sPath);
 
     // load new archive
-    coreArchive* pNewArchive = new coreArchive(sPath.GetString());
+    coreArchive* pNewArchive = MANAGED_NEW(coreArchive, sPath.GetString());
     m_apArchive.emplace(sPath, pNewArchive);
 
     ASSERT(pNewArchive->GetNumFiles())
@@ -176,7 +177,7 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
     if(m_apDirectFile.count(sPath)) return m_apDirectFile.at(sPath);
 
     // load new direct resource file
-    coreFile* pNewFile = new coreFile(sPath.GetString());
+    coreFile* pNewFile = MANAGED_NEW(coreFile, sPath.GetString());
     m_apDirectFile.emplace(sPath, pNewFile);
 
     return pNewFile;
@@ -227,7 +228,7 @@ void coreResourceManager::Reset(const coreResourceReset bInit)
     {
         // reload resource proxies
         FOR_EACH(it, m_apProxy)
-            this->AssignProxy(*m_apProxy.get_key(it), *it);
+            this->AssignProxy((*m_apProxy.get_key(it)), (*it));
 
         // start up relation-objects
         for(coreUintW i = 0u; i < m_apRelation.size(); ++i)

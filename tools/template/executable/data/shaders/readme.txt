@@ -115,15 +115,14 @@ T     coreMax3                (in T, in T, in T)   // trinary maximum
 T     coreMed3                (in T, in T, in T)   // trinary median
 bool  coreAnyInvocation       (in bool)            // condition across group of shader invocations
 bool  coreAllInvocations      (in bool)
-int   coreMod                 (in int, in int)     // modulo operator
-vec3  coreRGBtoHSV            (in vec3)            // RGB to HSV conversion
-vec3  coreHSVtoRGB            (in vec3)            // HSV to RGB conversion
-vec3  coreRGBtoYIQ            (in vec3)            // RGB to YIQ conversion   (BT.601, NTSC)
-vec3  coreYIQtoRGB            (in vec3)            // YIQ to RGB conversion   (BT.601, NTSC)
-vec3  coreRGBtoYUV            (in vec3)            // RGB to YUV conversion   (BT.709)
-vec3  coreYUVtoRGB            (in vec3)            // YUV to RGB conversion   (BT.709)
-vec3  coreRGBtoYCbCr          (in vec3)            // RGB to YCbCr conversion (BT.601, JPEG)
-vec3  coreYCbCrtoRGB          (in vec3)            // YCbCr to RGB conversion (BT.601, JPEG)
+vec3  coreRgbToHsv            (in vec3)            // RGB to HSV conversion
+vec3  coreHsvToRgb            (in vec3)            // HSV to RGB conversion
+vec3  coreRgbToYiq            (in vec3)            // RGB to YIQ conversion   (BT.601, NTSC)
+vec3  coreYiqToRgb            (in vec3)            // YIQ to RGB conversion   (BT.601, NTSC)
+vec3  coreRgbToYuv            (in vec3)            // RGB to YUV conversion   (BT.709)
+vec3  coreYuvToRgb            (in vec3)            // YUV to RGB conversion   (BT.709)
+vec3  coreRgbToYcbcr          (in vec3)            // RGB to YCbCr conversion (BT.601, JPEG)
+vec3  coreYcbcrToRgb          (in vec3)            // YCbCr to RGB conversion (BT.601, JPEG)
 float coreLuminance           (in vec3)            // luminance value         (BT.709)
 float coreLengthSq            (in vec2)            // vector square length
 float coreLengthSq            (in vec3)

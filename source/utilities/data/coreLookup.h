@@ -14,6 +14,7 @@
 // TODO: measure performance with high amount of entries (>200), but should not be as good as (unordered_)map
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
 // TODO: check for detection of inconsistent vector-manipulation (changing value-ordering through iterator, without changing the key-ordering)
+// TODO: TryGet function ?
 
 
 // ****************************************************************
@@ -243,7 +244,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookup
 template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operator [] (const I& tKey)
 {
     // check for cached entry
-    if(this->_cache_try(tKey)) return *m_ptValueCache;
+    if(this->_cache_try(tKey)) return (*m_ptValueCache);
 
     // lookup entry by key
     auto it = this->_retrieve(tKey);
@@ -258,7 +259,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
         return m_atValueList.back();
     }
 
-    return *this->get_value(it);
+    return (*this->get_value(it));
 }
 
 
@@ -267,25 +268,25 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
 template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at(const I& tKey)
 {
     // check for cached entry
-    if(this->_cache_try(tKey)) return *m_ptValueCache;
+    if(this->_cache_try(tKey)) return (*m_ptValueCache);
 
     // lookup entry by key
     auto it = this->_retrieve(tKey);
     ASSERT(this->_check(it))
 
-    return *this->get_value(it);
+    return (*this->get_value(it));
 }
 
 template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& tKey)const
 {
     // check for cached entry
-    if(this->_cache_try(tKey)) return *m_ptValueCache;
+    if(this->_cache_try(tKey)) return (*m_ptValueCache);
 
     // lookup entry by key
     auto it = this->_retrieve(tKey);
     ASSERT(this->_check(it))
 
-    return *this->get_value(it);
+    return (*this->get_value(it));
 }
 
 

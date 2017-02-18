@@ -18,9 +18,15 @@
 
 // ****************************************************************
 /* debug definitions */
-#define CORE_DEBUG_QUERIES       (4u)        //!< number of GPU timer-query pairs used for each measure object
-#define CORE_DEBUG_SMOOTH_FACTOR (0.98f)     //!< factor used to smooth-out time values and reduce flickering (higher = smoother, but slower)
-#define CORE_DEBUG_OVERALL_NAME  "Overall"   //!< name for the overall performance output object
+#define CORE_DEBUG_QUERIES         (4u)        //!< number of GPU timer-query pairs used for each measure object
+#define CORE_DEBUG_SMOOTH_FACTOR   (0.98f)     //!< factor used to smooth-out time values and reduce flickering (higher = smoother, but slower)
+#define CORE_DEBUG_OVERALL_NAME    "Overall"   //!< name for the overall performance output object
+
+#define CORE_DEBUG_STAT_PRIMITIVES (0u)        //!< number of submitted primitives
+#define CORE_DEBUG_STAT_CLIPPING   (1u)        //!< number of primitives output by the clipping stage
+#define CORE_DEBUG_STAT_VERTEX     (2u)        //!< number of vertex shader invocations
+#define CORE_DEBUG_STAT_FRAGMENT   (3u)        //!< number of fragment shader invocations
+#define CORE_DEBUG_STATS           (4u)        //!< total number of pipeline statistics
 
 
 // ****************************************************************
@@ -42,8 +48,8 @@ private:
     {
         coreUint64 iPerfTime;                                //!< high-precision CPU time value at start
         coreArray<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
-        coreFloat fCurrentCPU;                               //!< current CPU performance values
-        coreFloat fCurrentGPU;                               //!< current GPU performance values
+        coreFloat fCurrentCPU;                               //!< current CPU performance value
+        coreFloat fCurrentGPU;                               //!< current GPU performance value
         coreLabel oOutput;                                   //!< label for displaying output
 
         coreMeasure()noexcept;
@@ -57,6 +63,17 @@ private:
         coreInspect()noexcept;
     };
 
+    /*! statistic structure */
+    struct coreStat final
+    {
+        GLuint     iQuery;    //!< asynchronous GPU pipeline-query object
+        GLenum     iTarget;   //!< pipeline-query target (e.g. GL_PRIMITIVES_SUBMITTED_ARB)
+        coreUint32 iResult;   //!< pipeline-query result
+        coreUint8  iStatus;   //!< current processing status (0 = new | 1 = running | 2 = finished)
+
+        coreStat()noexcept;
+    };
+
 
 private:
     coreLookup<coreTexture*, coreDisplay*> m_apDisplay;   //!< display objects to render textures directly on screen
@@ -66,6 +83,9 @@ private:
 
     coreObject2D m_Background;                            //!< background object to increase output readability
     coreLabel    m_Loading;                               //!< resource manager loading indicator
+
+    coreArray<coreStat, CORE_DEBUG_STATS> m_aStat;        //!< statistic objects to retrieve various pipeline statistics
+    coreLabel m_aStatOutput[3];                           //!< labels for displaying statistic output
 
     coreBool m_bEnabled;                                  //!< debug-monitor is enabled (debug-build or debug-context)
     coreBool m_bVisible;                                  //!< output is visible on screen
@@ -102,14 +122,22 @@ public:
     inline void InspectValue(const coreChar* pcName, const coreVector2& vValue) {this->InspectValue(pcName, "%.5f, %.5f",             vValue.x, vValue.y);}
     inline void InspectValue(const coreChar* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
     inline void InspectValue(const coreChar* pcName, const coreVector4& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
-    inline void InspectValue(const coreChar* pcName, const void*        pValue) {this->InspectValue(pcName, "0x%08X",                 pValue);}
+    inline void InspectValue(const coreChar* pcName, const void*        pValue) {this->InspectValue(pcName, "0x%08X",                 P_TO_UI(pValue));}
     //! @}
 
     /*! check for debug-monitor status */
+    //! @{
     inline const coreBool& IsEnabled()const {return m_bEnabled;}
+    //! @}
 
 
 private:
+    /*! retrieve various pipeline statistics */
+    //! @{
+    void __StatStart();
+    void __StatEnd();
+    //! @}
+
     /*! update and display debug output */
     //! @{
     void __UpdateOutput();

@@ -21,8 +21,8 @@
 
 // ****************************************************************
 /* always use the discrete high-performance graphics device */
-_declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001u;
-_declspec(dllexport) DWORD NvOptimusEnablement                  = 0x00000001u;
+__declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001u;
+__declspec(dllexport) DWORD NvOptimusEnablement                  = 0x00000001u;
 
 
 // ****************************************************************
@@ -64,7 +64,7 @@ extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInst
 
     // run the application
     char* argv[] = {"CoreApp", NULL};
-    return SDL_main(__crt_countof(argv) - 1, argv);
+    return SDL_main(sizeof(argv) / sizeof(argv[0]) - 1, argv);
 }
 
 

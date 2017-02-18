@@ -136,10 +136,11 @@
 
 // ****************************************************************
 /* base libraries */
+#define _GNU_SOURCE     (1)
 #define _HAS_EXCEPTIONS (0)
-#define _CRT_SECURE_NO_WARNINGS
 #define _ALLOW_KEYWORD_MACROS
 #define _ALLOW_RTCc_IN_STL
+#define _CRT_SECURE_NO_WARNINGS
 #define  WIN32_LEAN_AND_MEAN
 #if defined(_CORE_MINGW_)
     #undef __STRICT_ANSI__
@@ -218,7 +219,7 @@
     #define UNUSED          __attribute__((unused))
     #define OUTPUT          __restrict__
     #define INTERFACE
-    #define FORCE_INLINE    __attribute__((always_inline))
+    #define FORCE_INLINE    __attribute__((always_inline)) inline
     #define RETURN_RESTRICT __attribute__((malloc))
     #define RETURN_NONNULL  __attribute__((returns_nonnull))
     #define FUNC_PURE       __attribute__((pure))
@@ -253,6 +254,11 @@
     #else
         #pragma warning(default : 4738)
     #endif
+
+#elif defined(_CORE_GCC_) || defined(_CORE_MINGW_)
+
+    // disable unwanted compiler warnings (with -Wall)
+    #pragma GCC diagnostic ignored "-Wmisleading-indentation"
 
 #endif
 
@@ -401,7 +407,7 @@ inline coreBool operator == (const coreChar*    a, const std::string& b) {return
 inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
 
 // override integer swap function (without temporary variable)
-#define __SWAP(t) namespace std {inline void swap(t& a, t& b)noexcept {(a ^ b) && (a ^= b ^= a ^= b);}}
+#define __SWAP(t) namespace std {inline void swap(t& a, t& b)noexcept {(a ^ b) && (b ^= a ^= b, a ^= b);}}
     __SWAP(coreInt8)  __SWAP(coreInt16)  __SWAP(coreInt32)  __SWAP(coreInt64)
     __SWAP(coreUint8) __SWAP(coreUint16) __SWAP(coreUint32) __SWAP(coreUint64)
     __SWAP(coreBool)  __SWAP(coreChar)

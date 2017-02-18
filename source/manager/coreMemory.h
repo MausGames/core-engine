@@ -18,12 +18,19 @@
 // TODO: memory-pool: 1 block for multiple objects
 // TODO: add interface for reusing big memory-blocks (free when?)
 // TODO: __declspec(allocator)
+// TODO: consider allocation granularity 64kb
 
 
 // ****************************************************************
 // memory definitions
-#define CORE_MEMORY_SHARED PRINT("!%s:%d",    coreData::StrRight(__FILE__, 8u), __LINE__)
-#define CORE_MEMORY_UNIQUE PRINT("!%s:%d:%p", coreData::StrRight(__FILE__, 8u), __LINE__, this)
+#define CORE_MEMORY_SHARED   (STRING(__FILE__) ":" STRING(__LINE__))
+#define CORE_MEMORY_UNIQUE   (PRINT("%s:%p", CORE_MEMORY_SHARED, this))
+
+#define MANAGED_NEW(t,...)   (new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__))
+#define MANAGED_DELETE(t,p)  {(p)->~t(); Core::Manager::Memory->Free(sizeof(t), r_cast<void**>(&(p)));}
+
+#define CUSTOM_NEW(m,t,...)  (new((m).Allocate()) t(__VA_ARGS__))
+#define CUSTOM_DELETE(m,t,p) {(p)->~t(); (m).Free(r_cast<void**>(&(p)));}
 
 
 // ****************************************************************
@@ -51,10 +58,10 @@ public:
     void Clear();
     //! @}
 
-    //! construct and destruct object
+    //! get and return memory-blocks
     //! @{
-    template <typename T, typename... A> RETURN_RESTRICT T* New(A&&... vArgs);
-    template <typename T> void Delete(T** OUTPUT pptPointer);
+    RETURN_RESTRICT void* Allocate();
+    void Free(void** OUTPUT pptPointer);
     //! @}
 
 
@@ -74,6 +81,8 @@ private:
     coreLookupStr<std::weak_ptr<void>>     m_apPointer;     //!< list with weak shared memory pointer
     coreLookup<coreUint16, coreMemoryPool> m_aMemoryPool;   //!< internal memory-pools (each for a different block-size)
 
+    SDL_SpinLock m_iPoolLock;                               //!< spinlock to prevent invalid memory-pool access
+
 
 private:
     coreMemoryManager()noexcept;
@@ -89,46 +98,12 @@ public:
     template <typename T, typename... A> std::shared_ptr<T> Share(const coreHashString& sName, A&&... vArgs);
     //! @}
 
-    //! construct and destruct object in internal memory-pool
+    //! get and return memory-blocks through internal memory-pools
     //! @{
-    template <typename T, typename... A> RETURN_RESTRICT T* New(A&&... vArgs);
-    template <typename T> void Delete(T** OUTPUT pptPointer);
+    RETURN_RESTRICT void* Allocate(const coreUintW iSize);
+    void Free(const coreUintW iSize, void** OUTPUT pptPointer);
     //! @}
 };
-
-
-// ****************************************************************
-// construct object
-template <typename T, typename... A> RETURN_RESTRICT T* coreMemoryPool::New(A&&... vArgs)
-{
-    ASSERT(sizeof(T) <= m_iBlockSize)
-
-    // check for free memory-block
-    if(m_apFreeStack.empty()) this->__AddPage();
-    ASSERT(!m_apFreeStack.empty())
-
-    // get object from the free-stack
-    void* pMemory = m_apFreeStack.back();
-    m_apFreeStack.pop_back();
-
-    // call constructor
-    return new(pMemory) T(std::forward<A>(vArgs)...);
-}
-
-
-// ****************************************************************
-// destruct and return object
-template <typename T> void coreMemoryPool::Delete(T** OUTPUT pptPointer)
-{
-    ASSERT(std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(*pptPointer) - P_TO_UI(pPage)) < (m_iBlockSize * m_iPageSize);}))
-
-    // return object to the free-stack
-    m_apFreeStack.push_back(*pptPointer);
-
-    // call destructor and remove pointer
-    (*pptPointer)->~T();
-    (*pptPointer) = NULL;
-}
 
 
 // ****************************************************************
@@ -150,27 +125,6 @@ template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share
     m_apPointer[sName] = pNewPointer;
 
     return pNewPointer;
-}
-
-
-// ****************************************************************
-// construct object from internal memory-pool
-template <typename T, typename... A> RETURN_RESTRICT T* coreMemoryManager::New(A&&... vArgs)
-{
-    // check and create memory-pool
-    if(!m_aMemoryPool.count(sizeof(T))) m_aMemoryPool.emplace(sizeof(T), sizeof(T), 128u);
-
-    // forward request to internal memory-pool
-    return m_aMemoryPool.at(sizeof(T)).New<T>(std::forward<A>(vArgs)...);
-}
-
-
-// ****************************************************************
-// destruct and return object to internal memory-pool
-template <typename T> void coreMemoryManager::Delete(T** OUTPUT pptPointer)
-{
-    // forward request to internal memory-pool
-    m_aMemoryPool.at(sizeof(T)).Delete<T>(pptPointer);
 }
 
 

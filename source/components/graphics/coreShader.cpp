@@ -309,7 +309,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     FOR_EACH(it, m_aiAttribute)
     {
         if((*it) >= 0)
-            glBindAttribLocation(m_iProgram, (*it), *m_aiAttribute.get_key(it));
+            glBindAttribLocation(m_iProgram, (*it), (*m_aiAttribute.get_key(it)));
     }
 
     // bind output locations

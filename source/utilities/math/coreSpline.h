@@ -330,8 +330,8 @@ template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat fDis
     }
 
     // save index and calculate relative time to the next node (normalized linear difference)
-    *piRelIndex =  iCurIndex;
-    *pfRelTime  = (fMaxDistance - fCurDistance) * RCP(m_apNode[iCurIndex].fDistance);
+    (*piRelIndex) =  iCurIndex;
+    (*pfRelTime)  = (fMaxDistance - fCurDistance) * RCP(m_apNode[iCurIndex].fDistance);
 }
 
 

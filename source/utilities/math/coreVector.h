@@ -526,8 +526,8 @@ constexpr coreUint32 coreVector2::PackUnorm2x16()const
 /* compress -1.0 to 1.0 vector into YX packed uint */
 constexpr coreUint32 coreVector2::PackSnorm2x16()const
 {
-    return (F_TO_UI((y < 0.0f) ? (65536.0f + y*32768.0f) : y*32767.0f) << 16u) |
-           (F_TO_UI((x < 0.0f) ? (65536.0f + x*32768.0f) : x*32767.0f));
+    return (F_TO_UI((y < 0.0f) ? (65536.0f + y*32768.0f) : (y*32767.0f)) << 16u) |
+           (F_TO_UI((x < 0.0f) ? (65536.0f + x*32768.0f) : (x*32767.0f)));
 };
 
 
@@ -754,10 +754,10 @@ constexpr coreUint32 coreVector4::PackUnorm210()const
 /* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint */
 constexpr coreUint32 coreVector4::PackSnorm210()const
 {
-    return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : w*  1.0f) << 30u) |
-           (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : z*511.0f) << 20u) |
-           (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : y*511.0f) << 10u) |
-           (F_TO_UI((x < 0.0f) ? (1024.0f + x*512.0f) : x*511.0f));
+    return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : (w*  1.0f)) << 30u) |
+           (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : (z*511.0f)) << 20u) |
+           (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : (y*511.0f)) << 10u) |
+           (F_TO_UI((x < 0.0f) ? (1024.0f + x*512.0f) : (x*511.0f)));
 };
 
 
@@ -776,10 +776,10 @@ constexpr coreUint32 coreVector4::PackUnorm4x8()const
 /* compress -1.0 to 1.0 vector into WZYX packed uint */
 constexpr coreUint32 coreVector4::PackSnorm4x8()const
 {
-    return (F_TO_UI((w < 0.0f) ? (256.0f + w*128.0f) : w*127.0f) << 24u) |
-           (F_TO_UI((z < 0.0f) ? (256.0f + z*128.0f) : z*127.0f) << 16u) |
-           (F_TO_UI((y < 0.0f) ? (256.0f + y*128.0f) : y*127.0f) <<  8u) |
-           (F_TO_UI((x < 0.0f) ? (256.0f + x*128.0f) : x*127.0f));
+    return (F_TO_UI((w < 0.0f) ? (256.0f + w*128.0f) : (w*127.0f)) << 24u) |
+           (F_TO_UI((z < 0.0f) ? (256.0f + z*128.0f) : (z*127.0f)) << 16u) |
+           (F_TO_UI((y < 0.0f) ? (256.0f + y*128.0f) : (y*127.0f)) <<  8u) |
+           (F_TO_UI((x < 0.0f) ? (256.0f + x*128.0f) : (x*127.0f)));
 };
 
 
@@ -798,10 +798,10 @@ constexpr coreUint64 coreVector4::PackUnorm4x16()const
 /* compress -1.0 to 1.0 vector into WZYX packed uint64 */
 constexpr coreUint64 coreVector4::PackSnorm4x16()const
 {
-    return (coreUint64((w < 0.0f) ? (65536.0f + w*32768.0f) : w*32767.0f) << 48u) |
-           (coreUint64((z < 0.0f) ? (65536.0f + z*32768.0f) : z*32767.0f) << 32u) |
-           (coreUint64((y < 0.0f) ? (65536.0f + y*32768.0f) : y*32767.0f) << 16u) |
-           (coreUint64((x < 0.0f) ? (65536.0f + x*32768.0f) : x*32767.0f));
+    return (coreUint64((w < 0.0f) ? (65536.0f + w*32768.0f) : (w*32767.0f)) << 48u) |
+           (coreUint64((z < 0.0f) ? (65536.0f + z*32768.0f) : (z*32767.0f)) << 32u) |
+           (coreUint64((y < 0.0f) ? (65536.0f + y*32768.0f) : (y*32767.0f)) << 16u) |
+           (coreUint64((x < 0.0f) ? (65536.0f + x*32768.0f) : (x*32767.0f)));
 };
 
 

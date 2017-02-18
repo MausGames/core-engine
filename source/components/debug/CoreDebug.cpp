@@ -40,16 +40,29 @@ CoreDebug::coreInspect::coreInspect()noexcept
 
 // ****************************************************************
 /* constructor */
+CoreDebug::coreStat::coreStat()noexcept
+: iQuery  (0u)
+, iTarget (0u)
+, iResult (0u)
+, iStatus (0u)
+{
+}
+
+
+// ****************************************************************
+/* constructor */
 CoreDebug::CoreDebug()noexcept
-: m_apDisplay  {}
-, m_apMeasure  {}
-, m_apInspect  {}
-, m_pOverall   (NULL)
-, m_Background ()
-, m_Loading    ()
-, m_bEnabled   (false)
-, m_bVisible   (false)
-, m_bHolding   (false)
+: m_apDisplay   {}
+, m_apMeasure   {}
+, m_apInspect   {}
+, m_pOverall    (NULL)
+, m_Background  ()
+, m_Loading     ()
+, m_aStat       {}
+, m_aStatOutput ()
+, m_bEnabled    (false)
+, m_bVisible    (false)
+, m_bHolding    (false)
 {
     if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
@@ -74,6 +87,25 @@ CoreDebug::CoreDebug()noexcept
     m_Loading.SetCenter   (coreVector2(-0.5f, 0.5f));
     m_Loading.SetAlignment(coreVector2( 1.0f,-1.0f));
     m_Loading.SetColor3   (COLOR_ORANGE);
+
+    if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+    {
+        // create pipeline-query objects
+        FOR_EACH(it, m_aStat) glGenQueries(1u, &it->iQuery);
+        m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iTarget = GL_PRIMITIVES_SUBMITTED_ARB;
+        m_aStat[CORE_DEBUG_STAT_CLIPPING]  .iTarget = GL_CLIPPING_OUTPUT_PRIMITIVES_ARB;
+        m_aStat[CORE_DEBUG_STAT_VERTEX]    .iTarget = GL_VERTEX_SHADER_INVOCATIONS_ARB;
+        m_aStat[CORE_DEBUG_STAT_FRAGMENT]  .iTarget = GL_FRAGMENT_SHADER_INVOCATIONS_ARB;
+
+        // configure statistic output labels
+        for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
+        {
+            m_aStatOutput[i].Construct   ("default.ttf", 16u, 0u, 64u);
+            m_aStatOutput[i].SetCenter   (coreVector2(-0.5f, 0.5f));
+            m_aStatOutput[i].SetAlignment(coreVector2( 1.0f,-1.0f));
+            m_aStatOutput[i].SetColor3   (COLOR_PURPLE);
+        }
+    }
 }
 
 
@@ -81,11 +113,21 @@ CoreDebug::CoreDebug()noexcept
 /* destructor */
 CoreDebug::~CoreDebug()
 {
-    // delete timer-query objects
-    FOR_EACH(it, m_apMeasure)
+    if(CORE_GL_SUPPORT(ARB_timer_query))
     {
-        glDeleteQueries(CORE_DEBUG_QUERIES, (*it)->aaiQuery[0].data());
-        glDeleteQueries(CORE_DEBUG_QUERIES, (*it)->aaiQuery[1].data());
+        // delete timer-query objects
+        FOR_EACH(it, m_apMeasure)
+        {
+            glDeleteQueries(CORE_DEBUG_QUERIES, (*it)->aaiQuery[0].data());
+            glDeleteQueries(CORE_DEBUG_QUERIES, (*it)->aaiQuery[1].data());
+        }
+    }
+
+    if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+    {
+        // delete pipeline-query objects (also finish the last query, or it may crash)
+        this->__StatEnd();
+        FOR_EACH(it, m_aStat) glDeleteQueries(1u, &it->iQuery);
     }
 
     // delete all display, measure and inspect objects
@@ -161,6 +203,9 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
 
     coreMeasure* pMeasure = m_apMeasure.at(pcName);
 
+    // start pipeline statistics
+    if(pMeasure == m_pOverall) this->__StatStart();
+
     // fetch first CPU time value and start GPU performance measurement
     pMeasure->iPerfTime = SDL_GetPerformanceCounter();
     if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].current(), GL_TIMESTAMP);
@@ -202,13 +247,77 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
 
     if(pMeasure == m_pOverall)
     {
+        // end pipeline statistics
+        this->__StatEnd();
+
         // add additional performance information (framerate and process memory)
         const coreFloat& fTime = Core::System->GetTime();
-        if(fTime) pcName = PRINT("%s %.1fFPS%s %.2fMiB", pcName, RCP(fTime), SDL_GL_GetSwapInterval() ? "*" : "", coreDouble(coreData::AppMemory()) / 1048576.0);
+        if(fTime) pcName = PRINT("%s %.1fFPS%s %.2lfMiB", pcName, RCP(fTime), SDL_GL_GetSwapInterval() ? "*" : "", coreDouble(coreData::AppMemory()) / (1024.0*1024.0));
     }
 
     // write formatted values to output label
     pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->fCurrentCPU, pMeasure->fCurrentGPU));
+}
+
+
+// ****************************************************************
+/* start pipeline statistics */
+void CoreDebug::__StatStart()
+{
+    if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+    {
+        // limit the processing frequency (because of high performance impact)
+        if(SDL_GL_GetSwapInterval() || (F_TO_UI(Core::System->GetTotalTime() * 4.0) % m_aStat.size() != m_aStat.index()))
+        {
+            // switch to next statistic object (only process one at a time, or it may crash)
+            m_aStat.next();
+
+            if(m_aStat.current().iStatus == 2u)
+            {
+                // fetch result from the pipeline-query
+                glGetQueryObjectuiv(m_aStat.current().iQuery, GL_QUERY_RESULT, &m_aStat.current().iResult);
+
+                // write primitive statistics
+                if(((m_aStat.index() == CORE_DEBUG_STAT_PRIMITIVES) ||
+                    (m_aStat.index() == CORE_DEBUG_STAT_CLIPPING))  &&
+                    (m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))
+                {
+                    m_aStatOutput[0].SetText(PRINT("Primitives: %u (%.1f%% clipped)", m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult, (1.0f - I_TO_F(m_aStat[CORE_DEBUG_STAT_CLIPPING].iResult) * RCP(I_TO_F(m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))) * 100.0f));
+                }
+
+                // write vertex statistics
+                if(((m_aStat.index() == CORE_DEBUG_STAT_VERTEX)      ||
+                    (m_aStat.index() == CORE_DEBUG_STAT_PRIMITIVES)) &&
+                    (m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))
+                {
+                    m_aStatOutput[1].SetText(PRINT("Vertex Invocations: %u (%.2f per primitive)", m_aStat[CORE_DEBUG_STAT_VERTEX].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_VERTEX].iResult) * RCP(I_TO_F(m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))));
+                }
+
+                // write fragment statistics
+                if(m_aStat.index() == CORE_DEBUG_STAT_FRAGMENT)
+                {
+                    m_aStatOutput[2].SetText(PRINT("Fragment Invocations: %u (%.2f per pixel)", m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult) * RCP(Core::System->GetResolution().x * Core::System->GetResolution().y)));
+                }
+            }
+
+            // start GPU pipeline-query processing
+            glBeginQuery(m_aStat.current().iTarget, m_aStat.current().iQuery);
+            m_aStat.current().iStatus = 1u;
+        }
+    }
+}
+
+
+// ****************************************************************
+/* end pipeline statistics */
+void CoreDebug::__StatEnd()
+{
+    if(m_aStat.current().iStatus == 1u)
+    {
+        // end GPU pipeline-query processing
+        glEndQuery(m_aStat.current().iTarget);
+        m_aStat.current().iStatus = 2u;
+    }
 }
 
 
@@ -282,6 +391,16 @@ void CoreDebug::__UpdateOutput()
         fNewSizeX = MAX(fNewSizeX, pInspect->oOutput.GetSize().x + 0.005f);
     }
 
+    // move statistic output labels
+    if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+    {
+        for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
+        {
+            m_aStatOutput[i].SetPosition(coreVector2(0.0f, I_TO_F(--iCurLine)*0.023f));
+            m_aStatOutput[i].Move();
+        }
+    }
+
     // move loading indicator
     const coreUintW iLoadingNum = Core::Manager::Resource->IsLoadingNum();
     if(iLoadingNum)
@@ -334,6 +453,13 @@ void CoreDebug::__UpdateOutput()
             FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
             FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
             if(iLoadingNum) m_Loading.Render();
+
+            // render statistic text output
+            if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+            {
+                for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
+                    m_aStatOutput[i].Render();
+            }
         }
         glEnable(GL_DEPTH_TEST);
     }

@@ -1,3 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+    <Type Name="coreLookupGen&lt;*,*,*&gt;">
+
+        <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
+        <Expand>
+
+            <Item Name="[capacity]" ExcludeView="simple">m_atValueList._Mypair._Myval2._Myend - m_atValueList._Mypair._Myval2._Myfirst</Item>
+            <CustomListItems MaxItemsPerView="1000">
+
+                <Variable Name="i" InitialValue="0" />
+                <Variable Name="maxSize" InitialValue="m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst" />
+
+                <Size>maxSize</Size>
+                <Loop Condition="i != maxSize">
+
+                    <Item Name="[{i}] {m_atKeyList._Mypair._Myval2._Myfirst[i]}">m_atValueList._Mypair._Myval2._Myfirst[i]</Item>
+                    <Exec>++i</Exec>
+
+                </Loop>
+
+            </CustomListItems>
+
+        </Expand>
+
+    </Type>
+
+    <Type Name="coreLookupStr&lt;*&gt;">
+
+        <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
+        <Expand>
+
+            <Item Name="[capacity]" ExcludeView="simple">m_atValueList._Mypair._Myval2._Myend - m_atValueList._Mypair._Myval2._Myfirst</Item>
+            <CustomListItems MaxItemsPerView="1000">
+
+                <Variable Name="i" InitialValue="0" />
+                <Variable Name="k" InitialValue="0" />
+                <Variable Name="maxSize" InitialValue="m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst" />
+
+                <Size>maxSize</Size>
+                <Loop Condition="i != maxSize">
+
+                    <Exec>k = 0</Exec>
+                    <Loop Condition="m_asStringList.m_atKeyList._Mypair._Myval2._Myfirst[k] != m_atKeyList._Mypair._Myval2._Myfirst[i]">
+                        <Exec>++k</Exec>
+                    </Loop>
+
+                    <Item Name="[{i}] {m_asStringList.m_atValueList._Mypair._Myval2._Myfirst[k]}">m_atValueList._Mypair._Myval2._Myfirst[i]</Item>
+                    <Exec>++i</Exec>
+
+                </Loop>
+
+            </CustomListItems>
+
+        </Expand>
+
+    </Type>
+
+    <Type Name="coreVector2">
+        <DisplayString>{{x={x} y={y}}}</DisplayString>
+    </Type>
+
+    <Type Name="coreVector3">
+        <DisplayString>{{x={x} y={y} z={z}}}</DisplayString>
+    </Type>
+
+    <Type Name="coreVector4">
+        <DisplayString>{{x={x} y={y} z={z} w={w}}}</DisplayString>
+    </Type>
+
 </AutoVisualizer>

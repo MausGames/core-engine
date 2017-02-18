@@ -101,12 +101,15 @@
         <logicalFolder name="data" displayName="data" projectFiles="true">
           <logicalFolder name="hash" displayName="hash" projectFiles="true">
             <itemPath>../../source/utilities/data/hash/CRC32.h</itemPath>
+            <itemPath>../../source/utilities/data/hash/FNV1.h</itemPath>
+            <itemPath>../../source/utilities/data/hash/Murmur2.h</itemPath>
           </logicalFolder>
           <itemPath>../../source/utilities/data/coreArray.h</itemPath>
           <itemPath>../../source/utilities/data/coreData.cpp</itemPath>
           <itemPath>../../source/utilities/data/coreData.h</itemPath>
           <itemPath>../../source/utilities/data/coreHashString.h</itemPath>
           <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
+          <itemPath>../../source/utilities/data/coreProtect.h</itemPath>
           <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
           <itemPath>../../source/utilities/data/coreRand.h</itemPath>
           <itemPath>../../source/utilities/data/coreSet.h</itemPath>
@@ -160,7 +163,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -172,7 +175,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -fno-rtti</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -509,6 +512,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreProtect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
@@ -525,6 +533,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/hash/CRC32.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/FNV1.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/Murmur2.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -602,7 +620,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -613,7 +631,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -950,6 +968,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreProtect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
@@ -966,6 +989,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/hash/CRC32.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/FNV1.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/Murmur2.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1043,7 +1076,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -1054,7 +1087,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -1391,6 +1424,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreProtect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
@@ -1407,6 +1445,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/hash/CRC32.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/FNV1.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/Murmur2.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1486,7 +1534,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
@@ -1496,7 +1544,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -fno-rtti -fno-exceptions</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -1836,6 +1884,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreProtect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
@@ -1852,6 +1905,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/hash/CRC32.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/FNV1.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/Murmur2.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1931,7 +1994,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
@@ -1941,7 +2004,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti -fno-exceptions</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -2281,6 +2344,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreProtect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
@@ -2297,6 +2365,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/hash/CRC32.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/FNV1.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/Murmur2.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2376,7 +2454,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-msse2 -std=c11</commandLine>
+          <commandLine>-std=c11 -msse2</commandLine>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
@@ -2386,7 +2464,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-fno-exceptions -fno-rtti -msse2 -std=c++14</commandLine>
+          <commandLine>-std=c++14 -msse2 -fno-rtti -fno-exceptions</commandLine>
           <warningLevel>2</warningLevel>
         </ccTool>
         <fortranCompilerTool>
@@ -2726,6 +2804,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreProtect.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreRand.cpp"
             ex="false"
             tool="1"
@@ -2742,6 +2825,16 @@
             flavor2="0">
       </item>
       <item path="../../source/utilities/data/hash/CRC32.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/FNV1.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/hash/Murmur2.h"
             ex="false"
             tool="3"
             flavor2="0">

@@ -172,13 +172,13 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     std::string sKey = "";
     while(pcTo != pcEnd)
     {
-        if(*pcTo == CORE_LANGUAGE_ASSIGN[0] && sKey.empty())
+        if((*pcTo) == CORE_LANGUAGE_ASSIGN[0] && sKey.empty())
         {
             // extract key
             nAssignFunc(&sKey);
             WARN_IF(sKey.empty()) sKey.assign(1u, ' ');
         }
-        else if(*pcTo == CORE_LANGUAGE_KEY[0] && !sKey.empty())
+        else if((*pcTo) == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {
             // extract language-string
             nAssignFunc(&m_asStringList[sKey.c_str()]);
@@ -253,13 +253,13 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
     coreBool bFound = false;
     while(pcTo != pcEnd)
     {
-        if(*pcTo == CORE_LANGUAGE_ASSIGN[0])
+        if((*pcTo) == CORE_LANGUAGE_ASSIGN[0])
         {
             // search for key
             if(!std::strncmp(pcFrom, pcKey, iKeyLen)) bFound = true;
             pcFrom = pcTo + 1u;
         }
-        else if(*pcTo == CORE_LANGUAGE_KEY[0])
+        else if((*pcTo) == CORE_LANGUAGE_KEY[0])
         {
             // stop searching
             if(bFound) break;

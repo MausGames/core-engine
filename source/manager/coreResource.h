@@ -362,7 +362,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     if(m_apHandle.count(sName)) return m_apHandle.at(sName);
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = new coreResourceHandle(new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), bUpdate ? true : false);
+    coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), bUpdate ? true : false);
 
     coreAtomicLock(&m_iResourceLock);
     {
@@ -377,7 +377,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
 template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadNew(A&&... vArgs)const
 {
     // create unique unmanaged resource handle
-    return new coreResourceHandle(new T(std::forward<A>(vArgs)...), NULL, "", false);
+    return MANAGED_NEW(coreResourceHandle, new T(std::forward<A>(vArgs)...), NULL, "", false);
 }
 
 inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& sName)
@@ -428,8 +428,8 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
         m_apProxy.erase(pHandle);
 
         // delete resource handle
-        *pptResourcePtr = NULL;
-        SAFE_DELETE(pHandle)
+        (*pptResourcePtr) = NULL;
+        MANAGED_DELETE(coreResourceHandle, pHandle)
     }
 }
 

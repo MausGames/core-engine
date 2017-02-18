@@ -11,26 +11,6 @@
 
 // ****************************************************************
 // constructor
-coreMemoryManager::coreMemoryManager()noexcept
-: m_apPointer {}
-{
-    Core::Log->Info(CORE_LOG_BOLD("Memory Manager created"));
-}
-
-
-// ****************************************************************
-// destructor
-coreMemoryManager::~coreMemoryManager()
-{
-    // clear memory
-    m_apPointer.clear();
-
-    Core::Log->Info(CORE_LOG_BOLD("Memory Manager destroyed"));
-}
-
-
-// ****************************************************************
-// constructor
 coreMemoryPool::coreMemoryPool()noexcept
 : m_apPageList  {}
 , m_apFreeStack {}
@@ -90,6 +70,36 @@ void coreMemoryPool::Clear()
 
 
 // ****************************************************************
+// get memory-block
+RETURN_RESTRICT void* coreMemoryPool::Allocate()
+{
+    // check for free memory-block
+    if(m_apFreeStack.empty()) this->__AddPage();
+    ASSERT(!m_apFreeStack.empty())
+
+    // get pointer from the free-stack
+    void* pMemory = m_apFreeStack.back();
+    m_apFreeStack.pop_back();
+
+    return pMemory;
+}
+
+
+// ****************************************************************
+// return memory-block
+void coreMemoryPool::Free(void** OUTPUT pptPointer)
+{
+    ASSERT(std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(*pptPointer) - P_TO_UI(pPage)) < (m_iBlockSize * m_iPageSize);}))
+
+    // return pointer to the free-stack
+    m_apFreeStack.push_back(*pptPointer);
+
+    // remove reference
+    (*pptPointer) = NULL;
+}
+
+
+// ****************************************************************
 // add new memory-page to memory-pool
 void coreMemoryPool::__AddPage()
 {
@@ -100,4 +110,52 @@ void coreMemoryPool::__AddPage()
     // add all containing memory-blocks to the free-stack
     for(coreUintW i = m_iPageSize; i--; )
         m_apFreeStack.push_back(pNewPage + (m_iBlockSize * i));
+}
+
+
+// ****************************************************************
+// constructor
+coreMemoryManager::coreMemoryManager()noexcept
+: m_apPointer   {}
+, m_aMemoryPool {}
+, m_iPoolLock   (0)
+{
+    Core::Log->Info(CORE_LOG_BOLD("Memory Manager created"));
+}
+
+
+// ****************************************************************
+// destructor
+coreMemoryManager::~coreMemoryManager()
+{
+    // clear memory
+    m_apPointer  .clear();
+    m_aMemoryPool.clear();
+
+    Core::Log->Info(CORE_LOG_BOLD("Memory Manager destroyed"));
+}
+
+
+// ****************************************************************
+// get memory-block from internal memory-pool
+RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
+{
+    coreLockRelease oRelease(m_iPoolLock);
+
+    // check and create memory-pool
+    if(!m_aMemoryPool.count(iSize)) m_aMemoryPool.emplace(iSize, iSize, 128u);
+
+    // forward request to internal memory-pool
+    return m_aMemoryPool.at(iSize).Allocate();
+}
+
+
+// ****************************************************************
+// return memory-block to internal memory-pool
+void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT pptPointer)
+{
+    coreLockRelease oRelease(m_iPoolLock);
+
+    // forward request to internal memory-pool
+    m_aMemoryPool.at(iSize).Free(pptPointer);
 }

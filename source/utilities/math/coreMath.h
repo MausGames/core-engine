@@ -148,15 +148,6 @@ public:
 
 // ****************************************************************
 /* template specializations */
-#if !defined(_CORE_MSVC_) && defined(_CORE_SSE_)
-
-    // optimized calculation with SSE
-    template <> inline coreFloat coreMath::Min  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_min_ss(_mm_set_ss(x), _mm_set_ss(y)));}
-    template <> inline coreFloat coreMath::Max  (const coreFloat& x, const coreFloat& y)                     {return _mm_cvtss_f32(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(y)));}
-    template <> inline coreFloat coreMath::Clamp(const coreFloat& x, const coreFloat& a, const coreFloat& b) {return _mm_cvtss_f32(_mm_min_ss(_mm_max_ss(_mm_set_ss(x), _mm_set_ss(a)), _mm_set_ss(b)));}
-
-#endif
-
 template <> inline coreFloat coreMath::Log< 2u>(const coreFloat fInput) {return std::log2 (fInput);}
 template <> inline coreFloat coreMath::Log<10u>(const coreFloat fInput) {return std::log10(fInput);}
 
@@ -256,7 +247,7 @@ inline coreUint32 coreMath::BitScanFwd(coreUint32 iInput)
 
 #else
 
-    // calculation with GCC/Clang intrinsic
+    // calculation with other intrinsic
     return __builtin_ffs(iInput) - 1u;
 
 #endif
@@ -277,7 +268,7 @@ inline coreUint32 coreMath::BitScanRev(coreUint32 iInput)
 
 #else
 
-    // calculation with GCC/Clang intrinsic
+    // calculation with other intrinsic
     return 31u - __builtin_clz(iInput);
 
 #endif
@@ -358,8 +349,8 @@ inline void coreMath::DisableDenormals()
 
 #if defined(_CORE_WINDOWS_)
 
-    // disable with Windows intrinsic (both for x87 and SSE)
-    _set_controlfp(_DN_FLUSH, _MCW_DN);
+    // disable with Windows function (both for x87 and SSE)
+    _controlfp(_DN_FLUSH, _MCW_DN);
 
 #endif
 }
@@ -380,12 +371,14 @@ inline void coreMath::EnableExceptions()
 
     #if defined(_CORE_WINDOWS_)
 
-        // enable with Windows intrinsic (both for x87 and SSE)
-        _set_controlfp(~(_EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID) & _MCW_EM, _MCW_EM);
+        // enable with Windows function (both for x87 and SSE)
+        _controlfp(~(_EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID) & _MCW_EM, _MCW_EM);
 
-    #elif defined(_CORE_LINUX_) || defined(_CORE_ANDROID_)
+    #endif
 
-        // enable with Linux/Android intrinsic (both for x87 and SSE)
+    #if defined(_CORE_GCC_)
+
+        // enable with GCC function (both for x87 and SSE)
         feenableexcept(FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
 
     #endif

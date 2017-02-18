@@ -3,8 +3,8 @@
 IDI_ICON ICON DISCARDABLE "icon.ico"
 
 VS_VERSION_INFO VERSIONINFO
+    PRODUCTVERSION  1,0,0,0
     FILEVERSION     1,0,0,0
-    PRODUCTVERSION  0,0,0,0
     FILEFLAGSMASK   0x3F
     FILEFLAGS       0x00
     FILEOS          VOS_NT_WINDOWS32
@@ -19,6 +19,7 @@ BEGIN
             VALUE "CompanyName",     "Maus Games (www.maus-games.at)"
             VALUE "ProductName",     "Launcher"
             VALUE "ProductVersion",  "1.0.0.0"
+            VALUE "FileDescription", "Launcher"
             VALUE "FileVersion",     "1.0.0.0"
         END
     END
