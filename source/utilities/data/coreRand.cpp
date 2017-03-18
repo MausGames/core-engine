@@ -22,7 +22,7 @@ coreRand::coreRand(const coreUintW iNumRandoms, const coreUint32 iSeed)noexcept
     coreRand::Seed(iSeed);
 
     // pre-generate random numbers
-    m_piRandom = new coreInt16[m_iNumRandoms];
+    m_piRandom = ALIGNED_NEW(coreInt16, m_iNumRandoms, ALIGNMENT_CACHE);
     for(coreUintW i = 0u; i < m_iNumRandoms; ++i)
         m_piRandom[i] = coreRand::Rand();
 
@@ -35,7 +35,7 @@ coreRand::coreRand(const coreRand& c)noexcept
 , m_iCurRandom  (c.m_iCurRandom)
 {
     // copy random numbers
-    m_piRandom = new coreInt16[m_iNumRandoms];
+    m_piRandom = ALIGNED_NEW(coreInt16, m_iNumRandoms, ALIGNMENT_CACHE);
     std::memcpy(m_piRandom, c.m_piRandom, m_iNumRandoms * sizeof(coreUint16));
 }
 
@@ -53,7 +53,7 @@ coreRand::coreRand(coreRand&& m)noexcept
 coreRand::~coreRand()
 {
     // delete random numbers
-    SAFE_DELETE_ARRAY(m_piRandom)
+    ALIGNED_DELETE(m_piRandom)
 }
 
 

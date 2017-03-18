@@ -809,6 +809,17 @@ constexpr coreUint64 coreVector4::PackSnorm4x16()const
 /* compress arbitrary vector into WZYX packed uint64 */
 inline coreUint64 coreVector4::PackFloat4x16()const
 {
+#if defined(_CORE_SSE_)
+
+    if(coreCPUID::F16C())
+    {
+        // optimized calculation with F16C
+        return _mm_cvtsi128_si64(_mm_cvtps_ph(_mm_loadu_ps(arr), _MM_FROUND_CUR_DIRECTION));
+    }
+
+#endif
+
+    // normal calculation
     return (coreUint64(coreMath::Float32To16(w)) << 48u) |
            (coreUint64(coreMath::Float32To16(z)) << 32u) |
            (coreUint64(coreMath::Float32To16(y)) << 16u) |
@@ -901,6 +912,18 @@ inline coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64 iNumber)
 /* uncompress WZYX packed uint64 into arbitrary vector */
 inline coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
 {
+#if defined(_CORE_SSE_)
+
+    if(coreCPUID::F16C())
+    {
+        // optimized calculation with F16C
+        coreVector4 vOutput; _mm_storeu_ps(vOutput.arr, _mm_cvtph_ps(_mm_set_epi64x(0u, iNumber)));
+        return vOutput;
+    }
+
+#endif
+
+    // normal calculation
     return coreVector4(coreMath::Float16To32( iNumber         & 0xFFFFu),
                        coreMath::Float16To32((iNumber >> 16u) & 0xFFFFu),
                        coreMath::Float16To32((iNumber >> 32u) & 0xFFFFu),

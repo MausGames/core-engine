@@ -75,6 +75,7 @@
 #endif
 #if defined(__clang__)
     #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
+    #undef  _CORE_GCC_
 #endif
 #if ((_CORE_MSVC_) < 1900) && ((_CORE_GCC_) < 40800) && ((_CORE_MINGW_) < 40800) && ((_CORE_CLANG_) < 30300)
     #warning "Compiler not supported!"
@@ -131,6 +132,79 @@
 // OpenGL ES
 #if defined(_CORE_MOBILE_)
     #define _CORE_GLES_     (1)
+#endif
+
+
+// ****************************************************************
+/* compiler definitions */
+#if defined(_CORE_MSVC_)
+    #define UNUSED          __pragma(warning(suppress : 4100 4101 4189))
+    #define OUTPUT          __restrict             //!< output parameter without aliasing (never)
+    #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
+    #define FORCE_INLINE    __forceinline          //!< always inline the function (when optimizations are enabled)
+    #define DONT_INLINE     __declspec(noinline)   //!< never inline the function
+    #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
+    #define RETURN_NONNULL                         //!< returned pointer will not be null
+    #define FUNC_PURE                              //!< function reads only parameters and non-volatile globals and returns a single value
+    #define FUNC_CONST      __declspec(noalias)    //!< function reads only parameters without indirections and returns a single value
+    #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use (read and write) first-level indirections
+    #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates (e.g. with exit(3) or abort(3))
+#else
+    #define UNUSED          __attribute__((unused))
+    #define OUTPUT          __restrict__
+    #define INTERFACE
+    #define FORCE_INLINE    __attribute__((always_inline)) inline
+    #define DONT_INLINE     __attribute__((noinline))
+    #define RETURN_RESTRICT __attribute__((malloc))
+    #define RETURN_NONNULL  __attribute__((returns_nonnull))
+    #define FUNC_PURE       __attribute__((pure))
+    #define FUNC_CONST      __attribute__((const))
+    #define FUNC_NOALIAS
+    #define FUNC_NORETURN   __attribute__((noreturn, cold))
+#endif
+
+#if defined(_CORE_MINGW_) && defined(_CORE_SSE_)
+    #define ENTRY_POINT     __attribute__((force_align_arg_pointer))   //!< realign run-time stack (and fix SSE)
+#else
+    #define ENTRY_POINT
+#endif
+
+#if defined(_CORE_MSVC_)
+
+    #define noexcept _NOEXCEPT
+
+    // disable unwanted compiler warnings (with /W4)
+    #pragma warning(disable : 4100)   //!< unreferenced formal parameter
+    #pragma warning(disable : 4127)   //!< constant conditional expression
+    #pragma warning(disable : 4201)   //!< nameless struct or union
+    #pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision
+    #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
+
+    // enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
+    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4777 4826 4837 4928 4946)
+
+    // check for floating-point results stored in memory, causing performance loss
+    #if defined(_CORE_WINXP_)
+        #pragma warning(disable : 4738)
+    #else
+        #pragma warning(default : 4738)
+    #endif
+
+#elif defined(_CORE_GCC_) || defined(_CORE_MINGW_)
+
+    // disable unwanted compiler warnings (with -Wall)
+    #pragma GCC diagnostic ignored "-Wmisleading-indentation"
+
+#endif
+
+#if !defined(_CORE_DEBUG_)
+    #if defined(_CORE_MSVC_)
+        #pragma fenv_access (off)   //!< ignore access to the floating-point environment
+        #pragma fp_contract (on)    //!< allow contracting of floating-point expressions
+    #else
+        #pragma STDC FENV_ACCESS OFF
+        #pragma STDC FP_CONTRACT ON
+    #endif
 #endif
 
 
@@ -203,67 +277,6 @@
 
 
 // ****************************************************************
-/* compiler definitions */
-#if defined(_CORE_MSVC_)
-    #define UNUSED          __pragma(warning(suppress : 4100 4101 4189))
-    #define OUTPUT          __restrict             //!< output parameter without aliasing (never)
-    #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
-    #define FORCE_INLINE    __forceinline          //!< force function to be inlined (when optimizations are enabled)
-    #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
-    #define RETURN_NONNULL                         //!< returned pointer will not be null
-    #define FUNC_PURE                              //!< function reads only parameters and non-volatile globals and returns a single value
-    #define FUNC_CONST      __declspec(noalias)    //!< function reads only parameters without indirections and returns a single value
-    #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use (read and write) first-level indirections
-    #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates (e.g. with exit(3) or abort(3))
-#else
-    #define UNUSED          __attribute__((unused))
-    #define OUTPUT          __restrict__
-    #define INTERFACE
-    #define FORCE_INLINE    __attribute__((always_inline)) inline
-    #define RETURN_RESTRICT __attribute__((malloc))
-    #define RETURN_NONNULL  __attribute__((returns_nonnull))
-    #define FUNC_PURE       __attribute__((pure))
-    #define FUNC_CONST      __attribute__((const))
-    #define FUNC_NOALIAS
-    #define FUNC_NORETURN   __attribute__((noreturn, cold))
-#endif
-
-#if defined(_CORE_MINGW_) && defined(_CORE_SSE_)
-    #define ENTRY_POINT     __attribute__((force_align_arg_pointer))   //!< realign run-time stack (and fix SSE)
-#else
-    #define ENTRY_POINT
-#endif
-
-#if defined(_CORE_MSVC_)
-
-    #define noexcept _NOEXCEPT
-
-    // disable unwanted compiler warnings (with /W4)
-    #pragma warning(disable : 4100)   //!< unreferenced formal parameter
-    #pragma warning(disable : 4127)   //!< constant conditional expression
-    #pragma warning(disable : 4201)   //!< nameless struct or union
-    #pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision
-    #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
-
-    // enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
-    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4777 4826 4837 4928 4946)
-
-    // check for floating-point results stored in memory, causing performance loss
-    #if defined(_CORE_WINXP_)
-        #pragma warning(disable : 4738)
-    #else
-        #pragma warning(default : 4738)
-    #endif
-
-#elif defined(_CORE_GCC_) || defined(_CORE_MINGW_)
-
-    // disable unwanted compiler warnings (with -Wall)
-    #pragma GCC diagnostic ignored "-Wmisleading-indentation"
-
-#endif
-
-
-// ****************************************************************
 /* general definitions */
 #undef  NULL
 #define NULL nullptr
@@ -274,8 +287,6 @@
 #define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
 #define DEFINED(a)           (__DEFINED(a, #a))
 
-#define ZERO_NEW(t,c)        ([](const coreUintW iCount) {return new(std::calloc(iCount,  sizeof(t))) t[iCount];}(c))
-#define STACK_NEW(t,c)       ([](const coreUintW iCount) {return new(std::alloca(iCount * sizeof(t))) t[iCount];}(c))
 #define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
 
@@ -407,7 +418,7 @@ inline coreBool operator == (const coreChar*    a, const std::string& b) {return
 inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
 
 // override integer swap function (without temporary variable)
-#define __SWAP(t) namespace std {inline void swap(t& a, t& b)noexcept {(a ^ b) && (b ^= a ^= b, a ^= b);}}
+#define __SWAP(t) namespace std {inline void swap(t& OUTPUT a, t& OUTPUT b)noexcept {ASSERT(&a != &b) a ^= b; b ^= a; a ^= b;}}
     __SWAP(coreInt8)  __SWAP(coreInt16)  __SWAP(coreInt32)  __SWAP(coreInt64)
     __SWAP(coreUint8) __SWAP(coreUint16) __SWAP(coreUint32) __SWAP(coreUint64)
     __SWAP(coreBool)  __SWAP(coreChar)
@@ -443,6 +454,12 @@ template <typename R,             typename... A> struct INTERFACE function_trait
 #define COLOR_BRONZE (coreVector3(0.925f, 0.663f, 0.259f))
 #define COLOR_SILVER (coreVector3(0.855f, 0.855f, 0.878f))
 #define COLOR_GOLD   (coreVector3(1.000f, 0.859f, 0.000f))
+
+// default alignment values
+#define ALIGNMENT_SSE   (16u)
+#define ALIGNMENT_CACHE (64u)
+#define ALIGNMENT_PAGE  (4096u)
+#define ALIGNMENT_ALLOC (65536u)
 
 enum coreStatus : coreInt8
 {

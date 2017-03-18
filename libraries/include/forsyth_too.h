@@ -296,7 +296,11 @@ namespace Forsyth
                 uint* end = &activeFaceList[vertexData.activeFaceListStart + vertexData.activeFaceListSize]; // # overflow
                 uint* it = std::find(begin, end, bestFace);
                 assert(it != end);
-                std::swap(*it, *(end-1));
+
+                uint temp = *it;
+                *it = *(end-1);
+                *(end-1) = temp;
+
                 --vertexData.activeFaceListSize;
                 vertexData.score = FindVertexScore(vertexData.activeFaceListSize, vertexData.cachePos1, lruCacheSize);
 

@@ -306,7 +306,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             m_iCurEnabled = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aInstanceBuffer.current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aInstanceBuffer.current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)

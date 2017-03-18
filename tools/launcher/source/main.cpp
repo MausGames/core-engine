@@ -10,7 +10,8 @@
 #define  WINVER      _WIN32_WINNT_WINXP
 #define  WIN32_LEAN_AND_MEAN
 
-#pragma warning(disable : 4100 4127)
+#pragma warning(disable : 4100)   // unreferenced formal parameter
+#pragma warning(disable : 4127)   // constant conditional expression
 
 #include <windows.h>
 #include <shellapi.h>

@@ -27,7 +27,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
     ASSERT(iNumParticles)
 
     // pre-allocate particles
-    m_pParticle = new coreParticle[m_iNumParticles];
+    m_pParticle = ALIGNED_NEW(coreParticle, m_iNumParticles, ALIGNMENT_CACHE);
 
     // create default particle effect object
     m_pDefaultEffect = new coreParticleEffect(this);
@@ -45,7 +45,7 @@ coreParticleSystem::~coreParticleSystem()
 {
     // delete particles
     this->ClearAll();
-    SAFE_DELETE_ARRAY(m_pParticle)
+    ALIGNED_DELETE(m_pParticle)
 
     // delete default particle effect object
     SAFE_DELETE(m_pDefaultEffect)
@@ -87,7 +87,7 @@ void coreParticleSystem::Render()
             m_aiInstanceBuffer.next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.current().Map<coreByte>(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+            coreByte* pRange  = m_aiInstanceBuffer.current().Map<coreByte>(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
             coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)

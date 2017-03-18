@@ -61,7 +61,7 @@ void coreMemoryPool::Clear()
 
     // delete all memory-pages
     FOR_EACH(it, m_apPageList)
-        SAFE_DELETE_ARRAY(*it)
+        ALIGNED_DELETE(*it)
 
     // clear memory
     m_apPageList .clear();
@@ -70,7 +70,7 @@ void coreMemoryPool::Clear()
 
 
 // ****************************************************************
-// get memory-block
+// create memory-block
 RETURN_RESTRICT void* coreMemoryPool::Allocate()
 {
     // check for free memory-block
@@ -86,7 +86,7 @@ RETURN_RESTRICT void* coreMemoryPool::Allocate()
 
 
 // ****************************************************************
-// return memory-block
+// remove memory-block
 void coreMemoryPool::Free(void** OUTPUT pptPointer)
 {
     ASSERT(std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(*pptPointer) - P_TO_UI(pPage)) < (m_iBlockSize * m_iPageSize);}))
@@ -104,7 +104,7 @@ void coreMemoryPool::Free(void** OUTPUT pptPointer)
 void coreMemoryPool::__AddPage()
 {
     // create new memory-page
-    coreByte* pNewPage = new coreByte[m_iBlockSize * m_iPageSize];
+    coreByte* pNewPage = ALIGNED_NEW(coreByte, m_iBlockSize * m_iPageSize, ALIGNMENT_CACHE);
     m_apPageList.push_back(pNewPage);
 
     // add all containing memory-blocks to the free-stack
@@ -137,7 +137,7 @@ coreMemoryManager::~coreMemoryManager()
 
 
 // ****************************************************************
-// get memory-block from internal memory-pool
+// create memory-block from internal memory-pool
 RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 {
     coreLockRelease oRelease(m_iPoolLock);
@@ -151,7 +151,7 @@ RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 
 
 // ****************************************************************
-// return memory-block to internal memory-pool
+// remove memory-block to internal memory-pool
 void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT pptPointer)
 {
     coreLockRelease oRelease(m_iPoolLock);

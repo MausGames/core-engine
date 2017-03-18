@@ -12,17 +12,31 @@
 #define  WINVER      _WIN32_WINNT_WINXP
 #define  WIN32_LEAN_AND_MEAN
 
-#pragma warning(disable : 4100)
+#pragma warning(disable : 4100)   // unreferenced formal parameter
 
 #include <SDL2/SDL_main.h>
 #include <windows.h>
 #include <crtdbg.h>
+#include <stdlib.h>
 
 
 // ****************************************************************
 /* always use the discrete high-performance graphics device */
 __declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001u;
 __declspec(dllexport) DWORD NvOptimusEnablement                  = 0x00000001u;
+
+
+// ****************************************************************
+/* handle pure virtual function calls and invalid arguments */
+static void HandlePurecall(void)
+{
+    DebugBreak();
+}
+
+static void HandleInvalidParameter(const wchar_t* pcExpression, const wchar_t* pcFunction,  const wchar_t* pcFile, const unsigned int iLine, const uintptr_t iReserved)
+{
+    DebugBreak();
+}
 
 
 // ****************************************************************
@@ -53,6 +67,10 @@ extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInst
     // activate memory debugging in MSVC
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     _CrtSetBreakAlloc(0);
+
+    // handle pure virtual function calls and invalid arguments
+    _set_purecall_handler(HandlePurecall);
+    _set_invalid_parameter_handler(HandleInvalidParameter);
 
 #endif
 

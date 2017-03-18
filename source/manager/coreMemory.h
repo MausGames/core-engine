@@ -32,6 +32,18 @@
 #define CUSTOM_NEW(m,t,...)  (new((m).Allocate()) t(__VA_ARGS__))
 #define CUSTOM_DELETE(m,t,p) {(p)->~t(); (m).Free(r_cast<void**>(&(p)));}
 
+#define ALIGNED_NEW(t,c,a)   (r_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
+#define ALIGNED_DELETE(p)    {_aligned_free(p); (p) = NULL;}
+
+#define ZERO_NEW(t,c)        (r_cast<t*>(std::calloc((c),  sizeof(t))))
+#define STACK_NEW(t,c)       (r_cast<t*>(std::alloca((c) * sizeof(t))))
+#define RESIZE_ARRAY(a,t,c)  {(a) = r_cast<t*>(std::realloc((a), (c) * sizeof(t)));}
+
+#if !defined(_CORE_WINDOWS_)
+    #define _aligned_malloc(c,a) std::aligned_alloc(a, c)
+    #define _aligned_free(p)     std::free(p)
+#endif
+
 
 // ****************************************************************
 // memory-pool class
@@ -58,7 +70,7 @@ public:
     void Clear();
     //! @}
 
-    //! get and return memory-blocks
+    //! create and remove memory-blocks
     //! @{
     RETURN_RESTRICT void* Allocate();
     void Free(void** OUTPUT pptPointer);
@@ -98,7 +110,7 @@ public:
     template <typename T, typename... A> std::shared_ptr<T> Share(const coreHashString& sName, A&&... vArgs);
     //! @}
 
-    //! get and return memory-blocks through internal memory-pools
+    //! create and remove memory-blocks through internal memory-pools
     //! @{
     RETURN_RESTRICT void* Allocate(const coreUintW iSize);
     void Free(const coreUintW iSize, void** OUTPUT pptPointer);

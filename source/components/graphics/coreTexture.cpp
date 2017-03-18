@@ -62,7 +62,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     const coreUint32 iDataSize = pData->w * pData->h * pData->format->BytesPerPixel;
 
     // check for compression capability
-    const coreTextureMode iCompress = (coreMath::IsPOT(pData->w) && coreMath::IsPOT(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
+    const coreTextureMode iCompress = (coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
 
     // create texture
     this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(pData->format->BytesPerPixel), iCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
@@ -132,7 +132,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     // set compression
     if(bCompress)
     {
-        WARN_IF(!coreMath::IsPOT(iWidth) || !coreMath::IsPOT(iHeight)) {}
+        WARN_IF(!coreMath::IsPot(iWidth) || !coreMath::IsPot(iHeight)) {}
         else
         {
             // overwrite with appropriate compressed texture format (RGTC or S3TC)
@@ -469,8 +469,8 @@ void coreTexture::Invalidate(const coreUint8 iLevel)
 // create next level-of-detail image
 void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
 {
-    ASSERT(coreMath::IsPOT(iInWidth)  && (iInWidth  >= 2u) &&
-           coreMath::IsPOT(iInHeight) && (iInHeight >= 2u) &&
+    ASSERT(coreMath::IsPot(iInWidth)  && (iInWidth  >= 2u) &&
+           coreMath::IsPot(iInHeight) && (iInHeight >= 2u) &&
            (iComponents <= 4u) && pInput && pOutput)
 
     // save output texture size
@@ -511,8 +511,8 @@ void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInH
 // create compressed image
 void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
 {
-    ASSERT(coreMath::IsPOT(iInWidth)  && (iInWidth  >= 4u) &&
-           coreMath::IsPOT(iInHeight) && (iInHeight >= 4u) &&
+    ASSERT(coreMath::IsPot(iInWidth)  && (iInWidth  >= 4u) &&
+           coreMath::IsPot(iInHeight) && (iInHeight >= 4u) &&
            (iComponents <= 4u) && pInput && pOutput)
 
     // save memory offsets and alpha status

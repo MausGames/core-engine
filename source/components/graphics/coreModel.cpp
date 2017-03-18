@@ -95,7 +95,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     m_fBoundingRadius = SQRT(m_fBoundingRadius);
 
     // prepare index-map (for deferred remapping)
-    BIG_STATIC coreUint16 aiMap[0xFFFFu];
+    alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 aiMap[0xFFFFu];
     for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) aiMap[i] = i & 0xFFFFu;
 
     // apply post-transform vertex cache optimization to index data

@@ -146,7 +146,7 @@ void coreObjectManager::__Reset(const coreResourceReset bInit)
 
         // create low-memory model object
         m_pLowModel->SetBoundingRange (coreVector3(0.5f,0.5f,0.0f));
-        m_pLowModel->SetBoundingRadius(0.7071f);
+        m_pLowModel->SetBoundingRadius(1.0f / SQRT2);
         m_pLowModel->SetPrimitiveType (GL_TRIANGLE_STRIP);
 
         // define vertex data

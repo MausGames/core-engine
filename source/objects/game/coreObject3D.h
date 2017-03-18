@@ -237,7 +237,7 @@ template <typename F> void coreBatchList::UpdateCustom(F&& nUpdateDataFunc)
     if(CONTAINS_BIT(m_iUpdate, 0u)) m_paCustomBuffer->next();
 
     // map required area of the custom attribute buffer
-    coreByte* pRange  = m_paCustomBuffer->current().Map<coreByte>(0u, m_iCurEnabled * iVertexSize, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+    coreByte* pRange  = m_paCustomBuffer->current().Map<coreByte>(0u, m_iCurEnabled * iVertexSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
     coreByte* pCursor = pRange;
 
     FOR_EACH(it, m_apObjectList)

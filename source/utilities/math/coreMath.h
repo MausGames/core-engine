@@ -15,7 +15,7 @@
 // TODO: FUNC_CONST and FORCEINLINE on every function in this class ?
 // TODO: add integer-log (macro)
 // TODO: use std::common_type for return values
-// TODO: CeilPOT and FloorPOT with BitScan
+// TODO: CeilPot and FloorPot with BitScan
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 
@@ -46,6 +46,7 @@
 #define LERPB coreMath::LerpBreak
 #define POW   coreMath::Pow
 #define FMOD  coreMath::Fmod
+#define EXP2  coreMath::Exp2
 #define TRUNC coreMath::Trunc
 #define FRACT coreMath::Fract
 #define SQRT  coreMath::Sqrt
@@ -78,7 +79,7 @@ public:
     template <typename T, typename S>                static constexpr T Max  (const T& x, const S& y)               {return (x > y) ? x : y;}
     template <typename T, typename S, typename R>    static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
     template <typename T, typename S, typename R>    static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
-    template <typename T> static inline    T        Sign      (const T& x)                                          {return std::copysign(T(1), x);}
+    template <typename T> static constexpr T        Sign      (const T& x)                                          {return (x < T(0)) ? T(-1) : T(1);}
     template <typename T> static inline    T        Abs       (const T& x)                                          {return std::abs(x);}
     template <typename T> static constexpr T        Pow2      (const T& x)                                          {return x * x;}
     template <typename T> static constexpr T        Pow3      (const T& x)                                          {return x * x * x;}
@@ -86,14 +87,15 @@ public:
     template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)           {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
     template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)           {return LERP(x, y, SIN(s*PI*0.5f));}
     template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                  {return POW2(x - c) <= POW2(r);}
-    template <typename T> static constexpr coreBool IsPOT     (const T& x)                                          {return !(x & (x - T(1)));}
+    template <typename T> static constexpr coreBool IsPot     (const T& x)                                          {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */
     //! @{
     template <coreUintW iBase> static inline coreFloat Log(const coreFloat fInput) {return std::log  (fInput) / std::log(I_TO_F(iBase));}
-    static inline coreFloat Pow  (const coreFloat fInput,  const coreInt32 iExp)   {return std::pow  (fInput, iExp);}
-    static inline coreFloat Fmod (const coreFloat fInput,  const coreFloat fDenom) {return std::fmod (fInput, fDenom);}
+    static inline coreFloat Pow  (const coreFloat fBase,   const coreFloat fExp)   {return std::pow  (fBase, fExp);}
+    static inline coreFloat Fmod (const coreFloat fNum,    const coreFloat fDenom) {return std::fmod (fNum, fDenom);}
+    static inline coreFloat Exp2 (const coreFloat fInput)                          {return std::exp2 (fInput);}
     static inline coreFloat Trunc(const coreFloat fInput)                          {return std::trunc(fInput);}
     static inline coreFloat Fract(const coreFloat fInput)                          {return fInput - TRUNC(fInput);}
     static inline coreFloat Sqrt (const coreFloat fInput);
@@ -148,7 +150,7 @@ public:
 
 // ****************************************************************
 /* template specializations */
-template <> inline coreFloat coreMath::Log< 2u>(const coreFloat fInput) {return std::log2 (fInput);}
+template <> inline coreFloat coreMath::Log<2u> (const coreFloat fInput) {return std::log2 (fInput);}
 template <> inline coreFloat coreMath::Log<10u>(const coreFloat fInput) {return std::log10(fInput);}
 
 

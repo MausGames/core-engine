@@ -35,7 +35,7 @@ CoreAudio::CoreAudio()noexcept
     else Core::Log->Info("OpenAL context created");
 
     // generate sound sources
-    m_pSource = new ALuint[m_iNumSources];
+    m_pSource = ALIGNED_NEW(ALuint, m_iNumSources, ALIGNMENT_CACHE);
     alGenSources(m_iNumSources, m_pSource);
 
     // log audio device information
@@ -75,7 +75,7 @@ CoreAudio::~CoreAudio()
 
     // delete sound sources
     alDeleteSources(m_iNumSources, m_pSource);
-    SAFE_DELETE_ARRAY(m_pSource)
+    ALIGNED_DELETE(m_pSource)
 
     // delete OpenAL context and close audio device
     alcMakeContextCurrent(NULL);
