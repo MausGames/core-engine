@@ -24,14 +24,8 @@ ECHO Renaming...
 SET TOOL_REPLACE="%PRJ_CUR%\..\scripts\replace_text.bat"
 SET TOOL_NAME=CoreApp
 
-SET PATH_CODEBLOCKS=%PRJ_TARGET%\projects\codeblocks
 SET PATH_NETBEANS=%PRJ_TARGET%\projects\netbeans\nbproject
-SET PATH_VISUAL=%PRJ_TARGET%\projects\visualstudio
-
-
-CD "%PATH_CODEBLOCKS%"
-CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% %TOOL_NAME%.cbp > %PRJ_NAME%.cbp
-CALL DEL %TOOL_NAME%.cbp
+SET PATH_VISUALSTUDIO=%PRJ_TARGET%\projects\visualstudio
 
 
 CD "%PATH_NETBEANS%"
@@ -44,11 +38,11 @@ CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% project_temp.xml > project.xml
 CALL DEL project_temp.xml
 
 
-CD "%PATH_VISUAL%\%TOOL_NAME%"
+CD "%PATH_VISUALSTUDIO%\%TOOL_NAME%"
 CALL RENAME %TOOL_NAME%.vcxproj %PRJ_NAME%.vcxproj
 CALL RENAME %TOOL_NAME%.vcxproj.user %PRJ_NAME%.vcxproj.user
 
-CD "%PATH_VISUAL%"
+CD "%PATH_VISUALSTUDIO%"
 CALL RENAME %TOOL_NAME% %PRJ_NAME%
 CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% %TOOL_NAME%.sln > %PRJ_NAME%.sln
 CALL DEL %TOOL_NAME%.sln

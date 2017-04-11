@@ -14,6 +14,7 @@
 // TODO: implement Unload into coreFile, so the unload is better
 // TODO: check sum
 // TODO: allocate page-size aligned
+// TODO: static and dynamic archives (with fixed-size array for renaming)
 
 
 // ****************************************************************

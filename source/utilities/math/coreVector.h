@@ -108,8 +108,8 @@ public:
     //! @{
     inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y);}
-    inline    coreFloat Min         ()const {return MIN(x, y);}
-    inline    coreFloat Max         ()const {return MAX(x, y);}
+    constexpr coreFloat Min         ()const {return MIN(x, y);}
+    constexpr coreFloat Max         ()const {return MAX(x, y);}
     constexpr coreUintW MinDimension()const {return (x < y) ? 0u : 1u;}
     constexpr coreUintW MaxDimension()const {return (x > y) ? 0u : 1u;}
     inline    coreFloat AspectRatio ()const {return (x * RCP(y));}
@@ -127,7 +127,7 @@ public:
     static inline    coreVector2 Rand     (const coreFloat fMax);
     static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax);
     static inline    coreVector2 Rand     (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY);
-    static inline    coreVector2 Reflect  (const coreVector2& vVelocity, const coreVector2& vNormal);
+    static constexpr coreVector2 Reflect  (const coreVector2& vVelocity, const coreVector2& vNormal);
     //! @}
 
     /*! packing functions */
@@ -136,7 +136,7 @@ public:
     constexpr        coreUint32  PackSnorm2x16  ()const;
     inline           coreUint32  PackFloat2x16  ()const;
     static constexpr coreVector2 UnpackUnorm2x16(const coreUint32 iNumber);
-    static inline    coreVector2 UnpackSnorm2x16(const coreUint32 iNumber);
+    static constexpr coreVector2 UnpackSnorm2x16(const coreUint32 iNumber);
     static inline    coreVector2 UnpackFloat2x16(const coreUint32 iNumber);
     //! @}
 };
@@ -260,8 +260,8 @@ public:
     //! @{
     inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z);}
-    inline    coreFloat Min         ()const {return MIN(x, y, z);}
-    inline    coreFloat Max         ()const {return MAX(x, y, z);}
+    constexpr coreFloat Min         ()const {return MIN(x, y, z);}
+    constexpr coreFloat Max         ()const {return MAX(x, y, z);}
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
     constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
@@ -277,8 +277,16 @@ public:
     static inline    coreVector3 Rand   (const coreFloat fMax);
     static inline    coreVector3 Rand   (const coreFloat fMin,  const coreFloat fMax);
     static inline    coreVector3 Rand   (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ);
-    static inline    coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal);
+    static constexpr coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal);
     static inline    coreBool    Visible(const coreVector3& vPosition, const coreFloat fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection);
+    //! @}
+
+    /*! packing functions */
+    //! @{
+    constexpr        coreUint32  PackUnorm011  ()const;
+    constexpr        coreUint32  PackSnorm011  ()const;
+    static constexpr coreVector3 UnpackUnorm011(const coreUint32 iNumber);
+    static constexpr coreVector3 UnpackSnorm011(const coreUint32 iNumber);
     //! @}
 
     /*! color functions */
@@ -396,8 +404,8 @@ public:
     //! @{
     inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z + w*w);}
-    inline    coreFloat Min         ()const {return MIN(x, y, z, w);}
-    inline    coreFloat Max         ()const {return MAX(x, y, z, w);}
+    constexpr coreFloat Min         ()const {return MIN(x, y, z, w);}
+    constexpr coreFloat Max         ()const {return MAX(x, y, z, w);}
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
     constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
@@ -423,11 +431,11 @@ public:
     constexpr        coreUint64  PackSnorm4x16  ()const;
     inline           coreUint64  PackFloat4x16  ()const;
     static constexpr coreVector4 UnpackUnorm210 (const coreUint32 iNumber);
-    static inline    coreVector4 UnpackSnorm210 (const coreUint32 iNumber);
+    static constexpr coreVector4 UnpackSnorm210 (const coreUint32 iNumber);
     static constexpr coreVector4 UnpackUnorm4x8 (const coreUint32 iNumber);
-    static inline    coreVector4 UnpackSnorm4x8 (const coreUint32 iNumber);
+    static constexpr coreVector4 UnpackSnorm4x8 (const coreUint32 iNumber);
     static constexpr coreVector4 UnpackUnorm4x16(const coreUint64 iNumber);
-    static inline    coreVector4 UnpackSnorm4x16(const coreUint64 iNumber);
+    static constexpr coreVector4 UnpackSnorm4x16(const coreUint64 iNumber);
     static inline    coreVector4 UnpackFloat4x16(const coreUint64 iNumber);
     //! @}
 
@@ -506,7 +514,7 @@ inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMax
 
 // ****************************************************************
 /* calculate reflected vector */
-inline coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
+constexpr coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
 {
     const coreFloat fDot = coreVector2::Dot(vVelocity, vNormal);
     return (fDot > 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
@@ -551,7 +559,7 @@ constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32 iNumber)
 
 // ****************************************************************
 /* uncompress YX packed uint into -1.0 to 1.0 vector */
-inline coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32 iNumber)
+constexpr coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32 iNumber)
 {
     const coreVector2 A = coreVector2(I_TO_F( iNumber         & 0xFFFFu),
                                       I_TO_F((iNumber >> 16u) & 0xFFFFu));
@@ -629,7 +637,7 @@ inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMax
 
 // ****************************************************************
 /* calculate reflected vector */
-inline coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
+constexpr coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
 {
     const coreFloat fDot = coreVector3::Dot(vVelocity, vNormal);
     return (fDot > 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
@@ -646,6 +654,50 @@ inline coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFlo
 
     // check result
     return (fDot < 0.0f) ? false : (fDot > COS(fFOV));
+}
+
+
+// ****************************************************************
+/* compress 0.0 to 1.0 vector into (own) 10_11_11_rev packed uint */
+constexpr coreUint32 coreVector3::PackUnorm011()const
+{
+    return (F_TO_UI(z * 1023.0f) << 22u) |
+           (F_TO_UI(y * 2047.0f) << 11u) |
+           (F_TO_UI(x * 2047.0f));
+};
+
+
+// ****************************************************************
+/* compress -1.0 to 1.0 vector into (own) 10_11_11_rev packed uint */
+constexpr coreUint32 coreVector3::PackSnorm011()const
+{
+    return (F_TO_UI((z < 0.0f) ? (1024.0f + z* 512.0f) : (z* 511.0f)) << 22u) |
+           (F_TO_UI((y < 0.0f) ? (2048.0f + y*1024.0f) : (y*1023.0f)) << 11u) |
+           (F_TO_UI((x < 0.0f) ? (2048.0f + x*1024.0f) : (x*1023.0f)));
+};
+
+
+// ****************************************************************
+/* uncompress (own) 10_11_11_rev packed uint into 0.0 to 1.0 vector */
+constexpr coreVector3 coreVector3::UnpackUnorm011(const coreUint32 iNumber)
+{
+    return coreVector3(coreVector2(I_TO_F( iNumber         & 0x7FFu),
+                                   I_TO_F((iNumber >> 11u) & 0x7FFu)) * 4.885197850e-4f,
+                                   I_TO_F((iNumber >> 22u) & 0x3FFu)  * 9.775171065e-4f);
+}
+
+
+// ****************************************************************
+/* uncompress (own) 10_11_11_rev packed uint into -1.0 to 1.0 vector */
+constexpr coreVector3 coreVector3::UnpackSnorm011(const coreUint32 iNumber)
+{
+    const coreVector3 A = coreVector3(I_TO_F( iNumber         & 0x7FFu),
+                                      I_TO_F((iNumber >> 11u) & 0x7FFu),
+                                      I_TO_F((iNumber >> 22u) & 0x3FFu));
+
+    return coreVector3((A.x >= 1024.0f) ? ((A.x - 2048.0f)/1024.0f) : (A.x/1023.0f),
+                       (A.y >= 1024.0f) ? ((A.y - 2048.0f)/1024.0f) : (A.y/1023.0f),
+                       (A.z >=  512.0f) ? ((A.z - 1024.0f)/ 512.0f) : (A.z/ 511.0f));
 }
 
 
@@ -840,7 +892,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm210(const coreUint32 iNumber)
 
 // ****************************************************************
 /* uncompress 2_10_10_10_rev packed uint into -1.0 to 1.0 vector */
-inline coreVector4 coreVector4::UnpackSnorm210(const coreUint32 iNumber)
+constexpr coreVector4 coreVector4::UnpackSnorm210(const coreUint32 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0x3FFu),
                                       I_TO_F((iNumber >> 10u) & 0x3FFu),
@@ -867,7 +919,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32 iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint into -1.0 to 1.0 vector */
-inline coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32 iNumber)
+constexpr coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0xFFu),
                                       I_TO_F((iNumber >>  8u) & 0xFFu),
@@ -894,7 +946,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm4x16(const coreUint64 iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint64 into -1.0 to 1.0 vector */
-inline coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64 iNumber)
+constexpr coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0xFFFFu),
                                       I_TO_F((iNumber >> 16u) & 0xFFFFu),

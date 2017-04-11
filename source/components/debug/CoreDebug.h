@@ -22,10 +22,10 @@
 #define CORE_DEBUG_SMOOTH_FACTOR   (0.98f)     //!< factor used to smooth-out time values and reduce flickering (higher = smoother, but slower)
 #define CORE_DEBUG_OVERALL_NAME    "Overall"   //!< name for the overall performance output object
 
-#define CORE_DEBUG_STAT_PRIMITIVES (0u)        //!< number of submitted primitives
-#define CORE_DEBUG_STAT_CLIPPING   (1u)        //!< number of primitives output by the clipping stage
-#define CORE_DEBUG_STAT_VERTEX     (2u)        //!< number of vertex shader invocations
-#define CORE_DEBUG_STAT_FRAGMENT   (3u)        //!< number of fragment shader invocations
+#define CORE_DEBUG_STAT_PRIMITIVES (0u)        //!< submitted primitives
+#define CORE_DEBUG_STAT_CLIPPING   (1u)        //!< primitives output by the clipping stage
+#define CORE_DEBUG_STAT_VERTEX     (2u)        //!< vertex shader invocations
+#define CORE_DEBUG_STAT_FRAGMENT   (3u)        //!< fragment shader invocations
 #define CORE_DEBUG_STATS           (4u)        //!< total number of pipeline statistics
 
 

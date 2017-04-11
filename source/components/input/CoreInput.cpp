@@ -351,9 +351,9 @@ void CoreInput::__UpdateButtons()
 void CoreInput::__ClearButtons()
 {
     // clear all last pressed buttons
-    m_Keyboard.iLast = CORE_INPUT_KEY(UNKNOWN);
-    m_Mouse.iLast    = 0xFFu;
-    FOR_EACH(it, m_aJoystick) it->iLast = 0xFFu;
+    m_Keyboard.iLast = CORE_INPUT_INVALID_KEYBOARD;
+    m_Mouse   .iLast = CORE_INPUT_INVALID_MOUSE;
+    FOR_EACH(it, m_aJoystick) it->iLast = CORE_INPUT_INVALID_JOYSTICK;
 
     // reset all relative movements
     m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);

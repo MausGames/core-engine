@@ -38,6 +38,7 @@ private:
     coreUintW m_iCurIndex;             //!< index of the current entry
 
     coreBool  m_bEndless;              //!< endless repeat behavior
+    coreInt8  m_iOverride;             //!< override for selection arrows (0 = normal | 1 = always busy | -1 = always idle)
     coreTimer m_Automatic;             //!< automatic forward behavior
 
 
@@ -94,8 +95,9 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetEndless  (const coreBool  bEndless) {m_bEndless = bEndless;}
-    inline void SetAutomatic(const coreFloat fSpeed)   {m_Automatic.SetSpeed(fSpeed);}
+    inline void SetEndless  (const coreBool  bEndless)  {m_bEndless  = bEndless;}
+    inline void SetOverride (const coreInt8  iOverride) {m_iOverride = iOverride;}
+    inline void SetAutomatic(const coreFloat fSpeed)    {m_Automatic.SetSpeed(fSpeed);}
     //! @}
 
     //! get object properties
@@ -105,6 +107,7 @@ public:
     inline       coreUintW   GetNumEntries()const                  {return m_aEntry.size();}
     inline const coreUintW&  GetCurIndex  ()const                  {return m_iCurIndex;}
     inline const coreBool&   GetEndless   ()const                  {return m_bEndless;}
+    inline const coreInt8&   GetOverride  ()const                  {return m_iOverride;}
     //! @}
 
 
@@ -124,8 +127,9 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 , m_aArrow      ()
 , m_Caption     ()
 , m_aEntry      {}
-, m_iCurIndex   (0)
+, m_iCurIndex   (0u)
 , m_bEndless    (false)
+, m_iOverride   (0)
 , m_Automatic   (coreTimer(1.0f, 10.0f, 1u))
 {
 }
@@ -213,7 +217,14 @@ template <typename T> void coreSwitchBox<T>::Render()
 // move the switch-box
 template <typename T> void coreSwitchBox<T>::Move()
 {
-    // forward object interaction
+    // override focus status
+    if(m_iOverride < 0) this->SetFocus(false);
+
+    // forward override
+    m_aArrow[0].SetOverride(m_iOverride);
+    m_aArrow[1].SetOverride(m_iOverride);
+
+    // forward interaction
     if(this->IsFocused())
     {
         m_aArrow[0].Interact();
@@ -258,7 +269,7 @@ template <typename T> void coreSwitchBox<T>::Move()
         ASSERT(this->GetSize().x > 2.0f*this->GetSize().y)
 
         const coreVector2 vPosition = this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment();
-        const coreVector2 vSize     = coreVector2(this->GetSize().y, this->GetSize().y);
+        const coreVector2 vSize     = coreVector2(1.0f,1.0f) * this->GetSize().y;
         const coreVector2 vOffset   = coreVector2((this->GetSize().x - this->GetSize().y)*0.5f, 0.0f);
 
         // update left selection arrow

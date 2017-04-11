@@ -77,7 +77,7 @@ void coreLabel::Render()
     if(m_iUpdate)
     {
         // check if requested font is loaded
-        if(!m_pFont.GetHandle()->IsLoaded()) return;
+        if(!m_pFont.IsUsable()) return;
 
         if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_TEXTURE))
         {
@@ -109,6 +109,27 @@ void coreLabel::Move()
 
     // move the 2d-object
     if(!CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE)) coreObject2D::Move();
+}
+
+
+// ****************************************************************
+// retrieve desired size without rendering
+coreVector2 coreLabel::RetrieveDesiredSize()const
+{
+    if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
+    {
+        // check if requested font is loaded
+        WARN_IF(!m_pFont.IsUsable()) return coreVector2(0.0f,0.0f);
+
+        // get relative font height
+        const coreUint8 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+
+        // return the dimensions of the current text (may differ a bit)
+        return m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, m_iOutline) * (CORE_LABEL_SIZE_FACTOR * m_fScale);
+    }
+
+    // return actual size
+    return this->GetSize();
 }
 
 

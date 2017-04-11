@@ -82,12 +82,9 @@ alignas(ALIGNMENT_CACHE) constexpr coreUint32 g_aiTableCRC32[256] =
 };
 
 
-#if defined(_CORE_DEBUG_)
-
-
 // ****************************************************************
-/* run-time CRC-32 hash function */
-inline FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, coreUintW iLength)
+/* CRC-32 hash function */
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, coreUintW iLength)
 {
     coreUint32 iHash = 0xFFFFFFFFu;
 
@@ -101,7 +98,7 @@ inline FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, coreUintW iLeng
     return iHash ^ 0xFFFFFFFFu;
 }
 
-inline FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
+constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
 {
     coreUint32 iHash = 0xFFFFFFFFu;
 
@@ -113,35 +110,6 @@ inline FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
 
     return iHash ^ 0xFFFFFFFFu;
 }
-
-
-#else
-
-
-// ****************************************************************
-/* compile-time CRC-32 hash function */
-constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, const coreUintW iLength, const coreUint32 iCode)
-{
-    return iLength ? coreHashCRC32(pData + 1u, iLength - 1u, g_aiTableCRC32[(*pData) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
-}
-
-constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, const coreUintW iLength)
-{
-    return coreHashCRC32(pData, iLength, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
-}
-
-constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString, const coreUint32 iCode)
-{
-    return (*pcString) ? coreHashCRC32(pcString + 1u, g_aiTableCRC32[(*pcString) ^ ((iCode >> 24u) & 0xFFu)] ^ (iCode << 8u)) : iCode;
-}
-
-constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
-{
-    return coreHashCRC32(pcString, 0xFFFFFFFFu) ^ 0xFFFFFFFFu;
-}
-
-
-#endif
 
 
 #endif /* _CORE_GUARD_CRC32_H_ */

@@ -47,7 +47,7 @@ private:
 
     coreByte m_iListStatus;       //!< currently writing a list
 
-    std::time_t  m_iStartTime;    //!< base-value for relative time-stamps
+    coreUint32   m_iLastTime;     //!< last time-value for duration approximations
     SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
     SDL_SpinLock m_iLock;         //!< spinlock to prevent asynchronous log access
 

@@ -16,7 +16,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_sPath       (pcPath)
 , m_iLevel      (CORE_LOG_LEVEL_ALL)
 , m_iListStatus (0u)
-, m_iStartTime  (std::time(NULL))
+, m_iLastTime   (0u)
 , m_iMainThread (0u)
 , m_iLock       (0)
 {
@@ -28,7 +28,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fputs("<!DOCTYPE html>                                 \n", m_pFile);
         std::fputs("<style type=\"text/css\">                       \n", m_pFile);
         std::fputs("  body    {font: 0.95em courier new;}           \n", m_pFile);
-        std::fputs(" .time    {color: #AAA;}                        \n", m_pFile);
+        std::fputs(" .time    {color: #AAA; white-space: pre}       \n", m_pFile);
         std::fputs(" .thread1 {color: green;}                       \n", m_pFile);
         std::fputs(" .thread2 {color: olive;}                       \n", m_pFile);
         std::fputs(" .data    {color: teal;}                        \n", m_pFile);
@@ -46,8 +46,11 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         // flush log file
         std::fflush(m_pFile);
 
+        // save first time-value (and init tick-counter)
+        m_iLastTime = SDL_GetTicks();
+
         // save thread-ID from the creator
-        m_iMainThread = SDL_ThreadID() % 10000u;
+        m_iMainThread = SDL_ThreadID();
     }
 }
 
@@ -143,13 +146,17 @@ void coreLog::__Write(const coreBool bTimeStamp, std::string sText)
 
         if(bTimeStamp)
         {
-            // get time and thread-ID
-            const std::time_t  iTime   = std::time(NULL) - m_iStartTime;
-            const SDL_threadID iThread = SDL_ThreadID() % 10000u;
+            // get time-value and thread-ID
+            const coreUint32   iTime   = SDL_GetTicks();
+            const SDL_threadID iThread = SDL_ThreadID();
 
-            // write time and thread-ID
-            std::fprintf(m_pFile, "<span class=\"time\">[%s]</span> <span class=\"%s\">[%04lu]</span> ",
-                         coreData::TimeString(TIMEMAP_GM(iTime)), (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
+            // write time-value and thread-ID
+            std::fprintf(m_pFile, "<span class=\"time\">[%02u:%02u.%03u - %3u]</span> <span class=\"%s\">[%04lX]</span> ",
+                         (iTime / (60u * 1000u)), (iTime / 1000u) % 60u, (iTime) % 1000u, MIN(iTime - m_iLastTime, 999u),
+                         (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
+
+            // save time-value (for duration approximations)
+            m_iLastTime = iTime;
         }
 
         // write text

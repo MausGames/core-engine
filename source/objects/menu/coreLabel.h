@@ -71,6 +71,11 @@ public:
     void Move  ()final;
     //! @}
 
+    //! retrieve desired size without rendering
+    //! @{
+    coreVector2 RetrieveDesiredSize()const;
+    //! @}
+
     //! set object properties
     //! @{
     coreBool    SetText        (const coreChar*       pcText);

@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+// TODO: maybe add pools for renderbuffer, framebuffer, program, shader, sync, queries
+
 
 // ****************************************************************
 /* pool definitions */

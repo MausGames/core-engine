@@ -24,7 +24,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sS
 
 #define STRING_ARRAY(s,n,v)               \
     extern const coreChar v ## __a[] = s; \
-    const sStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
+    static const sStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
 
 STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
 STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      avLightDirection)

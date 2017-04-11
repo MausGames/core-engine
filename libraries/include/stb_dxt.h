@@ -588,7 +588,7 @@ static void stb__CompressAlphaBlock(unsigned char* __restrict dest, unsigned cha
    }
 }
 
-static void stb__InitDXT()
+static int stb__InitDXT()
 {
    int i;
    for(i=0;i<32;i++)
@@ -606,29 +606,20 @@ static void stb__InitDXT()
 
    stb__PrepareOptTable(&stb__OMatch5[0][0],stb__Expand5,32);
    stb__PrepareOptTable(&stb__OMatch6[0][0],stb__Expand6,64);
+
+   return 1;
 }
+
+static const int init = stb__InitDXT();
 
 void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char* __restrict src, int components, int mode)
 {
-   static int init=1;
-   if (init) {
-      stb__InitDXT();
-      init=0;
-   }
-
    switch(components)
    {
-   case 4:
-      stb__CompressAlphaBlock(dest,  (unsigned char*) src,  mode);
-      dest += 8;
-   case 3:
-      stb__CompressColorBlock(dest,  (unsigned char*) src,  mode);
-      break;
-   case 2:
-      stb__CompressAlphaBlock(dest+8,(unsigned char*) src-2,mode);
-   case 1:
-      stb__CompressAlphaBlock(dest,  (unsigned char*) src-3,mode);
-      break;
+   case 4: stb__CompressAlphaBlock(dest,     (unsigned char*)src,     mode); dest += 8;
+   case 3: stb__CompressColorBlock(dest,     (unsigned char*)src,     mode); break;
+   case 2: stb__CompressAlphaBlock(dest + 8, (unsigned char*)src - 2, mode);
+   case 1: stb__CompressAlphaBlock(dest,     (unsigned char*)src - 3, mode); break;
    }
 }
 

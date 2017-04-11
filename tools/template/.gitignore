@@ -11,9 +11,6 @@ projects/visualstudio/.vs/
 projects/visualstudio/ipch/
 projects/visualstudio/Debug/
 projects/visualstudio/Release/
-projects/codeblocks/obj/
-projects/codeblocks/CoreApp.depend
-projects/codeblocks/CoreApp.layout
 projects/netbeans/nbproject/*.mk
 projects/netbeans/nbproject/*.bash
 projects/netbeans/nbproject/private/*.mk

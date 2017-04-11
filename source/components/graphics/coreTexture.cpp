@@ -525,7 +525,7 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
     {
         for(coreUintW x = 0u; x < iInWidth; x += 4u)
         {
-            coreByte aBlock[64];
+            alignas(ALIGNMENT_CACHE) coreByte aBlock[64];
 
             // copy data into 4x4 RGBA block
             for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i)       * 4u, pInput + (i)               * iComponents, iComponents);

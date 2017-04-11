@@ -15,6 +15,12 @@
 
 
 // ****************************************************************
+// font definitions
+#define CORE_FONT_COLOR_FRONT (SDL_Color {0xFFu, 0xFFu, 0xFFu, 0xFFu})
+#define CORE_FONT_COLOR_BACK  (SDL_Color {0x00u, 0x00u, 0x00u, 0xFFu})
+
+
+// ****************************************************************
 // font class
 class coreFont final : public coreResource
 {
@@ -50,6 +56,11 @@ public:
     SDL_Surface* CreateGlyphOutline(const coreUint16 iGlyph, const coreUint8 iHeight, const coreUint8 iOutline);
     //! @}
 
+    //! retrieve text-related attributes
+    //! @{
+    coreVector2 RetrieveTextDimensions(const coreChar* pcText, const coreUint8 iHeight, const coreUint8 iOutline);
+    //! @}
+
     //! retrieve glyph-related attributes
     //! @{
     coreBool  IsGlyphProvided     (const coreUint16 iGlyph);
@@ -66,9 +77,10 @@ public:
 
 
 private:
-    //! init the font in a specific height
+    //! handle font with specific properties
     //! @{
-    coreBool __InitHeight(const coreUint8 iHeight, const coreUint8 iOutline);
+    coreBool __InitHeight  (const coreUint8 iHeight, const coreUint8 iOutline);
+    coreBool __EnsureHeight(const coreUint8 iHeight, const coreUint8 iOutline);
     //! @}
 
     //! convert multibyte character to UTF-8 glyph

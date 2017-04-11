@@ -116,13 +116,13 @@ public:
 
     /*! rounding operations */
     //! @{
-    template <coreUintW iByte, typename T> static inline T CeilAlign (const T& tInput) {const T  k = tInput - T(1); return k - (k % iByte) + iByte;}
-    template <coreUintW iByte, typename T> static inline T FloorAlign(const T& tInput) {const T& k = tInput;        return k - (k % iByte);}
-    template                  <typename T> static inline T CeilPOT   (const T& tInput) {T k = T(2); while(k <  tInput) k <<= T(1); return k;}
-    template                  <typename T> static inline T FloorPOT  (const T& tInput) {T k = T(2); while(k <= tInput) k <<= T(1); return k >> T(1);}
-    static inline coreFloat Ceil (const coreFloat fInput)                              {return std::ceil (fInput);}
-    static inline coreFloat Floor(const coreFloat fInput)                              {return std::floor(fInput);}
-    static inline coreFloat Round(const coreFloat fInput)                              {return std::round(fInput);}
+    template <coreUintW iByte, typename T> static constexpr T CeilAlign (const T& tInput) {const T  k = tInput - T(1); return k - (k % iByte) + iByte;}
+    template <coreUintW iByte, typename T> static constexpr T FloorAlign(const T& tInput) {const T& k = tInput;        return k - (k % iByte);}
+    template                  <typename T> static constexpr T CeilPot   (const T& tInput) {T k = T(2); while(k <  tInput) k <<= T(1); return k;}
+    template                  <typename T> static constexpr T FloorPot  (const T& tInput) {T k = T(2); while(k <= tInput) k <<= T(1); return k >> T(1);}
+    static inline coreFloat Ceil (const coreFloat fInput)                                 {return std::ceil (fInput);}
+    static inline coreFloat Floor(const coreFloat fInput)                                 {return std::floor(fInput);}
+    static inline coreFloat Round(const coreFloat fInput)                                 {return std::round(fInput);}
     //! @}
 
     /*! bit operations */
