@@ -127,8 +127,10 @@ public:
 
     /*! process matrix */
     //! @{
-    template <typename... A> inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {coreMatrix3 B; for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
-    template <typename... A> inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {coreMatrix3 B; for(coreUintW i = 0u; i < 9u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
+    template <typename F, typename... A> inline coreMatrix3 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i], std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i]);                            return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1);                        return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1, f2);                    return M;}
     //! @}
 
     /*! direct functions */
@@ -218,8 +220,10 @@ public:
 
     /*! process matrix */
     //! @{
-    template <typename... A> inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {coreMatrix4 B; for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
-    template <typename... A> inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {coreMatrix4 B; for(coreUintW i = 0u; i < 16u; ++i) s_cast<coreFloat*>(B.arr[0])[i] = nFunction(s_cast<const coreFloat*>(arr[0])[i], std::forward<A>(vArgs)...); return B;}
+    template <typename F, typename... A> inline coreMatrix4 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i], std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i]);                            return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1);                        return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1, f2);                    return M;}
     //! @}
 
     /*! direct functions */

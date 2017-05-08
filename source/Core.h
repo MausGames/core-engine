@@ -247,6 +247,7 @@
 #include <memory>
 #include <functional>
 #include <random>
+#include <string>
 #include <array>
 #include <vector>
 #include <list>
@@ -535,18 +536,18 @@ class  coreObject3D;
 class  coreParticleEffect;
 struct coreTextureSpec;
 
-class coreLog;
-class coreConfig;
-class coreLanguage;
-class coreRand;
-class CoreSystem;
-class CoreGraphics;
-class CoreAudio;
-class CoreInput;
-class CoreDebug;
-class coreMemoryManager;
-class coreResourceManager;
-class coreObjectManager;
+class  coreLog;
+class  coreConfig;
+class  coreLanguage;
+class  coreRand;
+class  CoreSystem;
+class  CoreGraphics;
+class  CoreAudio;
+class  CoreInput;
+class  CoreDebug;
+class  coreMemoryManager;
+class  coreResourceManager;
+class  coreObjectManager;
 
 
 // ****************************************************************

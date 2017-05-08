@@ -16,6 +16,7 @@
 // TODO: add integer-log (macro)
 // TODO: use std::common_type for return values
 // TODO: CeilPot and FloorPot with BitScan
+// TODO: BSWAP, __builtin_bswap16, __builtin_bswap32, __builtin_bswap64
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 
@@ -73,21 +74,21 @@ public:
 
     /*! special operations */
     //! @{
-    template <typename T, typename S, typename... A> static constexpr T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S, typename... A> static constexpr T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S>                static constexpr T Min  (const T& x, const S& y)               {return (x < y) ? x : y;}
-    template <typename T, typename S>                static constexpr T Max  (const T& x, const S& y)               {return (x > y) ? x : y;}
-    template <typename T, typename S, typename R>    static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
-    template <typename T, typename S, typename R>    static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr T        Sign      (const T& x)                                          {return (x < T(0)) ? T(-1) : T(1);}
-    template <typename T> static inline    T        Abs       (const T& x)                                          {return std::abs(x);}
-    template <typename T> static constexpr T        Pow2      (const T& x)                                          {return x * x;}
-    template <typename T> static constexpr T        Pow3      (const T& x)                                          {return x * x * x;}
-    template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat s)           {return x + (y - x) * s;}
-    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)           {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)           {return LERP(x, y, SIN(s*PI*0.5f));}
-    template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                  {return POW2(x - c) <= POW2(r);}
-    template <typename T> static constexpr coreBool IsPot     (const T& x)                                          {return !(x & (x - T(1)));}
+    template <typename T, typename S, typename... A>      static constexpr T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S, typename... A>      static constexpr T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S = T>                 static constexpr T Min  (const T& x, const S& y)               {return (x < y) ? x : y;}
+    template <typename T, typename S = T>                 static constexpr T Max  (const T& x, const S& y)               {return (x > y) ? x : y;}
+    template <typename T, typename S = T, typename R = T> static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
+    template <typename T, typename S = T, typename R = T> static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
+    template <typename T> static constexpr T        Sign      (const T& x)                                               {return (x < T(0)) ? T(-1) : T(1);}
+    template <typename T> static inline    T        Abs       (const T& x)                                               {return std::abs(x);}
+    template <typename T> static constexpr T        Pow2      (const T& x)                                               {return x * x;}
+    template <typename T> static constexpr T        Pow3      (const T& x)                                               {return x * x * x;}
+    template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat s)                {return x + (y - x) * s;}
+    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
+    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                       {return POW2(x - c) <= POW2(r);}
+    template <typename T> static constexpr coreBool IsPot     (const T& x)                                               {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */
@@ -127,9 +128,13 @@ public:
 
     /*! bit operations */
     //! @{
-    static inline coreUint32 PopCount  (coreUint32 iInput);
-    static inline coreUint32 BitScanFwd(coreUint32 iInput);
-    static inline coreUint32 BitScanRev(coreUint32 iInput);
+    static inline    coreUint32 PopCount     (coreUint32 iInput);
+    static inline    coreUint32 BitScanFwd   (coreUint32 iInput);
+    static inline    coreUint32 BitScanRev   (coreUint32 iInput);
+    static constexpr coreUint8  ReverseBits8 (coreUint8  iInput);
+    static constexpr coreUint16 ReverseBits16(coreUint16 iInput);
+    static constexpr coreUint32 ReverseBits32(coreUint32 iInput);
+    static constexpr coreUint64 ReverseBits64(coreUint64 iInput);
     //! @}
 
     /*! converting operations */
@@ -272,6 +277,96 @@ inline coreUint32 coreMath::BitScanRev(coreUint32 iInput)
 
     // calculation with other intrinsic
     return 31u - __builtin_clz(iInput);
+
+#endif
+}
+
+
+// ****************************************************************
+/* reverse bit-order of a 8-bit sequence */
+constexpr coreUint8 coreMath::ReverseBits8(coreUint8 iInput)
+{
+#if defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse8(iInput);
+
+#else
+
+    // normal calculation
+    iInput = ((iInput >> 4u) & 0x0Fu) | ((iInput << 4u) & 0xF0u);
+    iInput = ((iInput >> 2u) & 0x33u) | ((iInput << 2u) & 0xCCu);
+    iInput = ((iInput >> 1u) & 0x55u) | ((iInput << 1u) & 0xAAu);
+    return iInput;
+
+#endif
+}
+
+
+// ****************************************************************
+/* reverse bit-order of a 16-bit sequence */
+constexpr coreUint16 coreMath::ReverseBits16(coreUint16 iInput)
+{
+#if defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse16(iInput);
+
+#else
+
+    // normal calculation
+    iInput = ((iInput >> 8u) & 0x00FFu) | ((iInput << 8u) & 0xFF00u);
+    iInput = ((iInput >> 4u) & 0x0F0Fu) | ((iInput << 4u) & 0xF0F0u);
+    iInput = ((iInput >> 2u) & 0x3333u) | ((iInput << 2u) & 0xCCCCu);
+    iInput = ((iInput >> 1u) & 0x5555u) | ((iInput << 1u) & 0xAAAAu);
+    return iInput;
+
+#endif
+}
+
+
+// ****************************************************************
+/* reverse bit-order of a 32-bit sequence */
+constexpr coreUint32 coreMath::ReverseBits32(coreUint32 iInput)
+{
+#if defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse32(iInput);
+
+#else
+
+    // normal calculation
+    iInput = ((iInput >> 16u) & 0x0000FFFFu) | ((iInput << 16u) & 0xFFFF0000u);
+    iInput = ((iInput >>  8u) & 0x00FF00FFu) | ((iInput <<  8u) & 0xFF00FF00u);
+    iInput = ((iInput >>  4u) & 0x0F0F0F0Fu) | ((iInput <<  4u) & 0xF0F0F0F0u);
+    iInput = ((iInput >>  2u) & 0x33333333u) | ((iInput <<  2u) & 0xCCCCCCCCu);
+    iInput = ((iInput >>  1u) & 0x55555555u) | ((iInput <<  1u) & 0xAAAAAAAAu);
+    return iInput;
+
+#endif
+}
+
+
+// ****************************************************************
+/* reverse bit-order of a 64-bit sequence */
+constexpr coreUint64 coreMath::ReverseBits64(coreUint64 iInput)
+{
+#if defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse64(iInput);
+
+#else
+
+    // normal calculation
+    iInput = ((iInput >> 32u) & 0x00000000FFFFFFFFu) | ((iInput << 32u) & 0xFFFFFFFF00000000u);
+    iInput = ((iInput >> 16u) & 0x0000FFFF0000FFFFu) | ((iInput << 16u) & 0xFFFF0000FFFF0000u);
+    iInput = ((iInput >>  8u) & 0x00FF00FF00FF00FFu) | ((iInput <<  8u) & 0xFF00FF00FF00FF00u);
+    iInput = ((iInput >>  4u) & 0x0F0F0F0F0F0F0F0Fu) | ((iInput <<  4u) & 0xF0F0F0F0F0F0F0F0u);
+    iInput = ((iInput >>  2u) & 0x3333333333333333u) | ((iInput <<  2u) & 0xCCCCCCCCCCCCCCCCu);
+    iInput = ((iInput >>  1u) & 0x5555555555555555u) | ((iInput <<  1u) & 0xAAAAAAAAAAAAAAAAu);
+    return iInput;
 
 #endif
 }

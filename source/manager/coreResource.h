@@ -120,9 +120,9 @@ public:
     inline coreBool Nullify() {if( this->IsLoaded())                {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
     //! @}
 
-    /*! insert asynchronous functions */
+    /*! attach asynchronous callbacks */
     //! @{
-    template <typename F> void OnLoadOnce(F&& nFunction)const;   //!< [](void) -> void
+    template <typename F> void OnLoadedOnce(F&& nFunction)const;   //!< [](void) -> void
     //! @}
 
     /*! get object properties */
@@ -174,6 +174,11 @@ public:
     /*! check for usable resource object */
     //! @{
     inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded()) ? true : false;}
+    //! @}
+
+    /*! attach asynchronous callbacks */
+    //! @{
+    template <typename F> void OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) m_pHandle->OnLoadedOnce(std::move(nFunction));}   //!< [](void) -> void
     //! @}
 };
 
@@ -289,8 +294,8 @@ private:
 
 
 // ****************************************************************
-/* insert asynchronous functions */
-template <typename F> void coreResourceHandle::OnLoadOnce(F&& nFunction)const
+/* attach asynchronous callbacks */
+template <typename F> void coreResourceHandle::OnLoadedOnce(F&& nFunction)const
 {
     // call function immediately
     if(this->IsLoaded()) nFunction();

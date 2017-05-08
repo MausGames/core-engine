@@ -206,7 +206,7 @@ void coreResourceManager::AssignProxy(coreResourceHandle* OUTPUT pProxy, coreRes
 
         // forward status of the foreign handle
         pProxy->m_iStatus = CORE_BUSY;
-        pForeign->OnLoadOnce([=]() {pProxy->m_iStatus = pForeign->m_iStatus;});
+        pForeign->OnLoadedOnce([=]() {pProxy->m_iStatus = pForeign->m_iStatus;});
     }
 
     // save new foreign handle

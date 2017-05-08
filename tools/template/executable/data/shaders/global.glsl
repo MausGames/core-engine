@@ -22,6 +22,7 @@
 #if defined(GL_ES)
     #extension GL_EXT_shadow_samplers          : enable
 #else
+    #extension GL_AMD_gpu_shader_half_float    : enable
     #extension GL_AMD_shader_trinary_minmax    : enable
     #extension GL_ARB_conservative_depth       : enable
     #extension GL_ARB_enhanced_layouts         : enable
@@ -31,6 +32,7 @@
     #extension GL_ARB_shading_language_packing : enable
     #extension GL_ARB_uniform_buffer_object    : enable
     #extension GL_EXT_gpu_shader4              : enable
+    #extension GL_NV_gpu_shader5               : enable
 #endif
 #if (__VERSION__) < 130
     #undef GL_ARB_conservative_depth
@@ -97,6 +99,17 @@
     #define uvec3 ivec3
     #define uvec4 ivec4
 #endif
+#if defined(GL_AMD_gpu_shader_half_float) || defined(GL_NV_gpu_shader5)
+    #define half  float16_t
+    #define hvec2 f16vec2
+    #define hvec3 f16vec3
+    #define hvec4 f16vec4
+#else
+    #define half  float
+    #define hvec2 vec2
+    #define hvec3 vec3
+    #define hvec4 vec4
+#endif
 
 
 // ****************************************************************
@@ -127,10 +140,10 @@ struct coreLight
 #else
     #define coreMin3(a,b,c) (min(a, min(b, c)))
     #define coreMax3(a,b,c) (max(a, max(b, c)))
-    float coreMed3(const in float a, const in float b, const in float c) {return max(min(max(a, b), c), min(a, b));}
-    vec2  coreMed3(const in vec2  a, const in vec2  b, const in vec2  c) {return max(min(max(a, b), c), min(a, b));}
-    vec3  coreMed3(const in vec3  a, const in vec3  b, const in vec3  c) {return max(min(max(a, b), c), min(a, b));}
-    vec4  coreMed3(const in vec4  a, const in vec4  b, const in vec4  c) {return max(min(max(a, b), c), min(a, b));}
+    float   coreMed3(const in float a, const in float b, const in float c) {return max(min(max(a, b), c), min(a, b));}
+    vec2    coreMed3(const in vec2  a, const in vec2  b, const in vec2  c) {return max(min(max(a, b), c), min(a, b));}
+    vec3    coreMed3(const in vec3  a, const in vec3  b, const in vec3  c) {return max(min(max(a, b), c), min(a, b));}
+    vec4    coreMed3(const in vec4  a, const in vec4  b, const in vec4  c) {return max(min(max(a, b), c), min(a, b));}
 #endif
 
 // condition across group of shader invocations

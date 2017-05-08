@@ -98,18 +98,18 @@ void Core::Reset()
     Log->Warning("Reset started");
 
     // save current state
-    const coreDouble  dTotalTime      = System->m_dTotalTime;
-    const coreUint32  iCurFrame       = System->m_iCurFrame;
+    const coreDouble  dTotalTime      = System  ->m_dTotalTime;
+    const coreUint32  iCurFrame       = System  ->m_iCurFrame;
     const coreFloat   fFOV            = Graphics->m_fFOV;
     const coreFloat   fNearClip       = Graphics->m_fNearClip;
     const coreFloat   fFarClip        = Graphics->m_fFarClip;
     const coreVector3 vCamPosition    = Graphics->m_vCamPosition;
     const coreVector3 vCamDirection   = Graphics->m_vCamDirection;
     const coreVector3 vCamOrientation = Graphics->m_vCamOrientation;
-    coreFloat               afTimeSpeed[CORE_SYSTEM_TIMES];    std::memcpy(afTimeSpeed, System->m_afTimeSpeed, sizeof(afTimeSpeed));
-    CoreGraphics::coreLight aLight     [CORE_GRAPHICS_LIGHTS]; std::memcpy(aLight,      Graphics->m_aLight,    sizeof(aLight));
+    coreFloat               afTimeSpeed[CORE_SYSTEM_TIMES];    std::memcpy(afTimeSpeed, System  ->m_afTimeSpeed, sizeof(afTimeSpeed));
+    CoreGraphics::coreLight aLight     [CORE_GRAPHICS_LIGHTS]; std::memcpy(aLight,      Graphics->m_aLight,      sizeof(aLight));
 
-    // shut down resource manager
+    // shut down managers
     Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
     Manager::Object->__Reset(CORE_RESOURCE_RESET_EXIT);
 
@@ -128,7 +128,7 @@ void Core::Reset()
     // setup the application
     Application->Setup();
 
-    // start up resource manager
+    // start up managers
     Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
     Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
 

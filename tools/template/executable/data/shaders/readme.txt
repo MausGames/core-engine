@@ -144,7 +144,9 @@ vec4  coreUnpackUnorm4x8      (in uint)            // value unpack (1x 32bit uin
 vec4  coreTexture2D    (in int v1Unit, in vec2 v2TexCoord)    // normal texture lookup
 float coreTextureShadow(in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures
 
-CORE_SAMPLE_SHADING   // evaluate shader per sample (just place it somewhere in FragmentMain)
+half, hvec2, hvec3, hvec4     // 16-bit floating point types (32-bit, if not supported)
+
+#define CORE_SAMPLE_SHADING   // evaluate shader per sample (just place it somewhere in FragmentMain)
 
 #define PI    (3.1415926535897932384626433832795)
 #define EU    (2.7182818284590452353602874713527)

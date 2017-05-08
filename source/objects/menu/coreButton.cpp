@@ -49,8 +49,8 @@ coreButton::~coreButton()
 void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)
 {
     // create the label
-    if(m_pCaption) SAFE_DELETE(m_pCaption)
-    m_pCaption = new coreLabel(sFont, iHeight, iOutline, iLength);
+    if(!m_pCaption) m_pCaption = new coreLabel();
+    m_pCaption->Construct(sFont, iHeight, iOutline, iLength);
 
     // construct remaining object
     this->Construct(sIdle, sBusy);
@@ -72,6 +72,8 @@ void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sB
 // render the button
 void coreButton::Render()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
+
     // render the 2d-object
     if(m_apTexture[0]) coreObject2D::Render();
 
@@ -88,6 +90,8 @@ void coreButton::Render()
 // move the button
 void coreButton::Move()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
+
     // override focus status
     if(m_iOverride < 0) this->SetFocus(false);
 

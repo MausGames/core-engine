@@ -73,7 +73,7 @@ public:
 
     //! retrieve desired size without rendering
     //! @{
-    coreVector2 RetrieveDesiredSize()const;
+    template <typename F> void RetrieveDesiredSize(F&& nRetrieveFunc)const;   //!< [](const coreVector2& vSize) -> void
     //! @}
 
     //! set object properties
@@ -114,4 +114,28 @@ private:
 };
 
 
-#endif // _CORE_GUARD_LABEL_H_
+// ****************************************************************
+/* retrieve desired size without rendering */
+template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)const
+{
+    if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
+    {
+        // check if requested font is loaded
+        m_pFont.OnUsableOnce([=]()
+        {
+            // get relative font height
+            const coreUint8 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+
+            // return the dimensions of the current text (may differ a bit)
+            nRetrieveFunc(m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, m_iOutline) * (CORE_LABEL_SIZE_FACTOR * m_fScale));
+        });
+    }
+    else
+    {
+        // return actual size
+        nRetrieveFunc(this->GetSize());
+    }
+}
+
+
+#endif /* _CORE_GUARD_LABEL_H_ */

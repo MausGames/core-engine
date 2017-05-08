@@ -36,11 +36,12 @@
 #define CORE_GL_ARB_timer_query              false
 #define CORE_GL_ARB_uniform_buffer_object    false   // controls shader-handling
 #define CORE_GL_ARB_vertex_attrib_binding    false
-#define CORE_GL_KHR_debug                    false
 #define CORE_GL_EXT_direct_state_access      false
+#define CORE_GL_EXT_framebuffer_object       true
 #define CORE_GL_EXT_gpu_shader4              false
 #define CORE_GL_EXT_texture_compression_rgtc false
-#define CORE_GL_EXT_framebuffer_object       true
+#define CORE_GL_KHR_debug                    false
+#define CORE_GL_NV_shader_buffer_load        false
 
 
 // ****************************************************************

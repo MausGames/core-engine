@@ -16,8 +16,10 @@ CoreInput::CoreInput()noexcept
 , m_Mouse          {}
 , m_aJoystick      {}
 , m_aTouch         {{}}
+, m_aiTouchCount   {}
 , m_pCursor        (NULL)
 , m_bCursorVisible (true)
+, m_iAnyButton     (0u)
 {
     Core::Log->Header("Input Interface");
 
@@ -48,11 +50,14 @@ CoreInput::CoreInput()noexcept
                     }
                 }
 
+                // get supported haptic device features
+                const coreUint32 iQuery = SDL_HapticQuery(oJoystick.pHaptic);
+
                 // save joystick object
                 m_aJoystick.push_back(oJoystick);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s / %s)", oJoystick.pController ? "Gamepad" : "Joystick",
-                                                                         this->GetJoystickName(i), this->GetJoystickGUID(i),
-                                                                         oJoystick.pHaptic ? "haptic" : "not haptic");
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s / %s 0x%04X)", oJoystick.pController ? "Gamepad" : "Joystick",
+                                                                                this->GetJoystickName(i), this->GetJoystickGUID(i),
+                                                                                oJoystick.pHaptic ? "haptic" : "not haptic", iQuery);
             }
         }
         Core::Log->ListEnd();
@@ -185,7 +190,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     {
     // set text-input character
     case SDL_TEXTINPUT:
-        Core::Input->SetKeyboardChar(oEvent.text.text[0]);
+        this->SetKeyboardChar(oEvent.text.text[0]);
         break;
 
     // press keyboard button
@@ -257,8 +262,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     case SDL_CONTROLLERAXISMOTION:
         if(oEvent.jaxis.axis < 2u)
         {
-            if(ABS(coreInt32(oEvent.jaxis.value)) > CORE_INPUT_JOYSTICK_DEAD)
-                 this->SetJoystickRelative(oEvent.jaxis.which, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) / I_TO_F(CORE_INPUT_JOYSTICK_MAX) * (oEvent.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
+            if(ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD))
+                 this->SetJoystickRelative(oEvent.jaxis.which, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX))) * (oEvent.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
             else this->SetJoystickRelative(oEvent.jaxis.which, oEvent.jaxis.axis, 0.0f);
         }
         break;
@@ -299,6 +304,7 @@ void CoreInput::__UpdateButtons()
     {
         if(CONTAINS_BIT(m_Keyboard.aiButton[i], 0u)) __CORE_INPUT_PRESS  (m_Keyboard.aiButton[i])
                                                 else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[i])
+        __CORE_INPUT_COUNT(m_Keyboard.aiButton[i], m_Keyboard.aiCount)
     }
 
 #if !defined(_CORE_MOBILE_)
@@ -308,6 +314,7 @@ void CoreInput::__UpdateButtons()
     {
         if(CONTAINS_BIT(m_Mouse.aiButton[i], 0u)) __CORE_INPUT_PRESS  (m_Mouse.aiButton[i])
                                              else __CORE_INPUT_RELEASE(m_Mouse.aiButton[i])
+        __CORE_INPUT_COUNT(m_Mouse.aiButton[i], m_Mouse.aiCount)
     }
 
 #endif
@@ -319,6 +326,7 @@ void CoreInput::__UpdateButtons()
         {
             if(CONTAINS_BIT(it->aiButton[i], 0u)) __CORE_INPUT_PRESS  (it->aiButton[i])
                                              else __CORE_INPUT_RELEASE(it->aiButton[i])
+            __CORE_INPUT_COUNT(it->aiButton[i], it->aiCount)
         }
     }
 
@@ -329,6 +337,7 @@ void CoreInput::__UpdateButtons()
     {
         if(CONTAINS_BIT(m_aTouch[i].iButton, 0u)) __CORE_INPUT_PRESS  (m_aTouch[i].iButton)
                                              else __CORE_INPUT_RELEASE(m_aTouch[i].iButton)
+        __CORE_INPUT_COUNT(m_aTouch[i].iButton, m_aiTouchCount)
     }
 
 #endif
@@ -350,16 +359,25 @@ void CoreInput::__UpdateButtons()
 // clear the input button interface
 void CoreInput::__ClearButtons()
 {
-    // clear all last pressed buttons
+    // clear all numbers of input buttons with same status
+    std::memset(m_Keyboard.aiCount, 0, sizeof(m_Keyboard.aiCount));
+    std::memset(m_Mouse   .aiCount, 0, sizeof(m_Mouse   .aiCount));
+    FOR_EACH(it, m_aJoystick) std::memset(it->aiCount, 0, sizeof(it->aiCount));
+    std::memset(m_aiTouchCount,     0, sizeof(m_aiTouchCount));
+
+    // clear all last pressed input buttons
     m_Keyboard.iLast = CORE_INPUT_INVALID_KEYBOARD;
     m_Mouse   .iLast = CORE_INPUT_INVALID_MOUSE;
     FOR_EACH(it, m_aJoystick) it->iLast = CORE_INPUT_INVALID_JOYSTICK;
 
-    // reset all relative movements
+    // clear all relative movements
     m_Mouse.vRelative = coreVector3(0.0f,0.0f,0.0f);
     for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
         m_aTouch[i].vRelative = coreVector2(0.0f,0.0f);
 
     // clear current text-input character
     m_Keyboard.iChar = CORE_INPUT_CHAR(UNKNOWN);
+
+    // clear status of any available button
+    m_iAnyButton = 0u;
 }

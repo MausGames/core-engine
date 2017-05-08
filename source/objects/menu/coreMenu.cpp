@@ -43,6 +43,8 @@ coreMenu::~coreMenu()
 // render the menu
 void coreMenu::Render()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
+
     if(m_Transition.GetStatus())
     {
         // render transition between surfaces
@@ -65,6 +67,8 @@ void coreMenu::Render()
 // move the menu
 void coreMenu::Move()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
+
     // reset current object
     m_pCurObject = NULL;
 

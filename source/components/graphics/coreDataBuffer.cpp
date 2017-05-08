@@ -81,6 +81,13 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
         // allocate normal buffer memory
         glBufferData(m_iTarget, m_iSize, pData, this->IsWritable() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     }
+
+    if(CORE_GL_SUPPORT(NV_shader_buffer_load))
+    {
+        // make sure static buffers are in GPU memory
+        if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+            glMakeBufferResidentNV(m_iTarget, GL_READ_ONLY);
+    }
 }
 
 

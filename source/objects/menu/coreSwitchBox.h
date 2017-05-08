@@ -188,23 +188,14 @@ template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sFo
 // render the switch-box
 template <typename T> void coreSwitchBox<T>::Render()
 {
-    // forward transparency
-    // TODO: check implementation
-    //m_aArrow[0].SetAlpha(this->GetAlpha());
-    //m_aArrow[1].SetAlpha(this->GetAlpha());
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
 
-    // render selection arrows
-    //m_aArrow[0].Render();
-    //m_aArrow[1].Render();
-
-    // render selection arrows
+    // render selection arrows (separately, to reduce shader changes)
     if(m_aArrow[0].GetTexture(0u)) m_aArrow[0].coreObject2D::Render();
     if(m_aArrow[1].GetTexture(0u)) m_aArrow[1].coreObject2D::Render();
-
     m_aArrow[0].GetCaption()->SetAlpha(m_aArrow[0].GetAlpha());
-    m_aArrow[0].GetCaption()->Render();
-
     m_aArrow[1].GetCaption()->SetAlpha(m_aArrow[1].GetAlpha());
+    m_aArrow[0].GetCaption()->Render();
     m_aArrow[1].GetCaption()->Render();
 
     // render the label
@@ -217,12 +208,18 @@ template <typename T> void coreSwitchBox<T>::Render()
 // move the switch-box
 template <typename T> void coreSwitchBox<T>::Move()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
+
     // override focus status
     if(m_iOverride < 0) this->SetFocus(false);
 
+    // forward transparency
+    m_aArrow[0].SetAlpha(this->GetAlpha());
+    m_aArrow[1].SetAlpha(this->GetAlpha());
+
     // forward override
-    m_aArrow[0].SetOverride(m_iOverride);
-    m_aArrow[1].SetOverride(m_iOverride);
+    m_aArrow[0].SetOverride(this->GetOverride());
+    m_aArrow[1].SetOverride(this->GetOverride());
 
     // forward interaction
     if(this->IsFocused())
@@ -369,7 +366,6 @@ template <typename T> void coreSwitchBox<T>::SelectIndex(const coreUintW iIndex)
     // update text
     this->__Update();
 }
-
 
 template <typename T> coreBool coreSwitchBox<T>::SelectText(const coreChar* pcText)
 {

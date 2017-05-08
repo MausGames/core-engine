@@ -56,8 +56,7 @@ void coreLabel::Construct(const coreHashString& sFont, const coreUint8 iHeight, 
     m_pFont = Core::Manager::Resource->Get<coreFont>(sFont);
 
     // allocate own texture to display text
-    if(m_apTexture[1]) Core::Manager::Resource->Free(&m_apTexture[1]);
-    m_apTexture[1] = Core::Manager::Resource->LoadNew<coreTexture>();
+    if(!m_apTexture[1]) m_apTexture[1] = Core::Manager::Resource->LoadNew<coreTexture>();
 
     // load shader-program
     this->DefineProgram(iOutline ? "default_label_sharp_program" : "default_label_smooth_program");
@@ -71,6 +70,8 @@ void coreLabel::Construct(const coreHashString& sFont, const coreUint8 iHeight, 
 // render the label
 void coreLabel::Render()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
+
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
@@ -104,32 +105,13 @@ void coreLabel::Render()
 // move the label
 void coreLabel::Move()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
+
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
     // move the 2d-object
     if(!CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE)) coreObject2D::Move();
-}
-
-
-// ****************************************************************
-// retrieve desired size without rendering
-coreVector2 coreLabel::RetrieveDesiredSize()const
-{
-    if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
-    {
-        // check if requested font is loaded
-        WARN_IF(!m_pFont.IsUsable()) return coreVector2(0.0f,0.0f);
-
-        // get relative font height
-        const coreUint8 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
-
-        // return the dimensions of the current text (may differ a bit)
-        return m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, m_iOutline) * (CORE_LABEL_SIZE_FACTOR * m_fScale);
-    }
-
-    // return actual size
-    return this->GetSize();
 }
 
 
@@ -263,6 +245,7 @@ void coreLabel::__Generate(const coreChar* pcText, const coreInt8 iSub)
         if(!m_vResolution.x) this->__Generate((std::string(MAX(m_iLength, 3u) - 3u, 'W') + "gjy])").c_str(), -1);
 
         // update only a specific area of the texture
+        m_apTexture[1]->Invalidate(0u);
         m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
     }
     else

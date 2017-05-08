@@ -61,6 +61,8 @@ void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHas
 // move the check-box
 void coreCheckBox::Move()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
+
     // move the button
     coreButton::Move();
 

@@ -37,7 +37,7 @@ CoreSystem::CoreSystem()noexcept
     const SDL_version* pVersionIMG = IMG_Linked_Version();
 
     // init SDL libraries
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | (Core::Config->GetBool(CORE_CONFIG_INPUT_HAPTIC) ? SDL_INIT_HAPTIC : 0u)) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
     {
         Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
     }

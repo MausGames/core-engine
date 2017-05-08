@@ -100,8 +100,10 @@ public:
 
     /*! process vector */
     //! @{
-    template <typename... A> inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
-    template <typename... A> inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
+    template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
+    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {return coreVector2(nFunction(x),                            nFunction(y));}
+    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {return coreVector2(nFunction(x, f1),                        nFunction(y, f1));}
+    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector2(nFunction(x, f1, f2),                    nFunction(y, f1, f2));}
     //! @}
 
     /*! direct functions */
@@ -252,8 +254,10 @@ public:
 
     /*! process vector */
     //! @{
-    template <typename... A> inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
-    template <typename... A> inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
+    template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
+    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {return coreVector3(nFunction(x),                            nFunction(y),                            nFunction(z));}
+    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {return coreVector3(nFunction(x, f1),                        nFunction(y, f1),                        nFunction(z, f1));}
+    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector3(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2));}
     //! @}
 
     /*! direct functions */
@@ -396,8 +400,10 @@ public:
 
     /*! process vector */
     //! @{
-    template <typename... A> inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat,  A...), A&&... vArgs)const {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
-    template <typename... A> inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, A...), A&&... vArgs)const {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
+    template <typename F, typename... A> inline coreVector4 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
+    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {return coreVector4(nFunction(x),                            nFunction(y),                            nFunction(z),                            nFunction(w));}
+    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {return coreVector4(nFunction(x, f1),                        nFunction(y, f1),                        nFunction(z, f1),                        nFunction(w, f1));}
+    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector4(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2),                    nFunction(w, f1, f2));}
     //! @}
 
     /*! direct functions */

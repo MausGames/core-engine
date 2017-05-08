@@ -52,6 +52,8 @@ void coreTextBox::Construct(const coreHashString& sIdle, const coreHashString& s
 // move the text-box
 void coreTextBox::Move()
 {
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
+
     // move the button
     coreButton::Move();
 

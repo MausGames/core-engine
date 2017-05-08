@@ -164,8 +164,8 @@ public:
 
     /*! control custom vertex attributes */
     //! @{
-    template <typename F> void CreateCustom(const coreUintW iVertexSize, F&& nDefineBufferFunc);   //!< [](coreVertexBuffer* OUTPUT pBuffer) -> void
-    template <typename F> void UpdateCustom(F&& nUpdateDataFunc);                                  //!< [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void
+    template <typename F>             void CreateCustom(const coreUintW iVertexSize, F&& nDefineBufferFunc);   //!< [](coreVertexBuffer* OUTPUT pBuffer) -> void
+    template <typename F, typename G> void RenderCustom(F&& nUpdateDataFunc, G&& nUpdateShaderFunc);           //!< [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void, [](const coreObject3D* pObject) -> void
     //! @}
 
     /*! check for instancing status */
@@ -223,42 +223,67 @@ template <typename F> void coreBatchList::CreateCustom(const coreUintW iVertexSi
 
 
 // ****************************************************************
-/* update custom vertex attributes per active object */
-template <typename F> void coreBatchList::UpdateCustom(F&& nUpdateDataFunc)
+/* render with custom vertex attributes per active object */
+template <typename F, typename G> void coreBatchList::RenderCustom(F&& nUpdateDataFunc, G&& nUpdateShaderFunc)
 {
     ASSERT(m_paCustomBuffer)
-    if(!this->IsInstanced() || !CONTAINS_BIT(m_iUpdate, 1u)) return;
 
-    // get vertex size
-    const coreUintW iVertexSize = (*m_paCustomBuffer)[0].GetVertexSize();
-
-    // switch to next available buffer
-    m_paCustomBuffer->select(m_aInstanceBuffer.index());
-    if(CONTAINS_BIT(m_iUpdate, 0u)) m_paCustomBuffer->next();
-
-    // map required area of the custom attribute buffer
-    coreByte* pRange  = m_paCustomBuffer->current().Map<coreByte>(0u, m_iCurEnabled * iVertexSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
-    coreByte* pCursor = pRange;
-
-    FOR_EACH(it, m_apObjectList)
+    if(this->IsInstanced())
     {
-        coreObject3D* pObject = (*it);
-
-        // render only enabled objects
-        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+        if(CONTAINS_BIT(m_iUpdate, 1u))
         {
-            // write data to the buffer
-            nUpdateDataFunc(r_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCursor),
-                            s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject));
-            pCursor += iVertexSize;
+            // get vertex size
+            const coreUintW iVertexSize = (*m_paCustomBuffer)[0].GetVertexSize();
+
+            // switch to next available buffer
+            m_paCustomBuffer->select(m_aInstanceBuffer.index());
+            if(CONTAINS_BIT(m_iUpdate, 0u)) m_paCustomBuffer->next();
+
+            // map required area of the custom attribute buffer
+            coreByte* pRange  = m_paCustomBuffer->current().Map<coreByte>(0u, m_iCurEnabled * iVertexSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pCursor = pRange;
+
+            FOR_EACH(it, m_apObjectList)
+            {
+                coreObject3D* pObject = (*it);
+
+                // render only enabled objects
+                if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+                {
+                    // write data to the buffer
+                    nUpdateDataFunc(r_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCursor),
+                                    s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject));
+                    pCursor += iVertexSize;
+                }
+            }
+
+            // unmap buffer
+            m_paCustomBuffer->current().Unmap(pRange);
+
+            // reset the update status
+            REMOVE_BIT(m_iUpdate, 1u)
+        }
+
+        // render the batch list
+        this->Render();
+    }
+    else
+    {
+        FOR_EACH(it, m_apObjectList)
+        {
+            coreObject3D* pObject = (*it);
+
+            // render only enabled objects
+            if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            {
+                // update shader manually
+                nUpdateShaderFunc(s_cast<typename TRAIT_ARG_TYPE(G, 0u)>(pObject));
+
+                // draw without instancing (no inheritance)
+                pObject->coreObject3D::Render();
+            }
         }
     }
-
-    // unmap buffer
-    m_paCustomBuffer->current().Unmap(pRange);
-
-    // reset the update status
-    REMOVE_BIT(m_iUpdate, 1u)
 }
 
 
