@@ -386,6 +386,7 @@ template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat fTime, co
 /* default spline types */
 using coreSpline2 = coreSpline<coreVector2>;
 using coreSpline3 = coreSpline<coreVector3>;
+using coreSpline4 = coreSpline<coreVector4>;
 
 
 #endif /* _CORE_GUARD_SPLINE_H_ */

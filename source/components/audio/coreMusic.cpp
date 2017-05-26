@@ -269,6 +269,7 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 // destructor
 coreMusicPlayer::~coreMusicPlayer()
 {
+    // remove all music objects
     this->ClearMusic();
 
     // delete empty music object

@@ -18,6 +18,7 @@
 // TODO: check for resource context, with OGL spec 5.1.3: [gets not deleted when] the object is bound to a context bind point in any context
 // TODO: extend OnLoad interface with new functions, call directly after load instead of threaded ?
 // TODO: resources exist only within handles, redefine all interfaces
+// TODO: investigate possible GPU memory fragmentation when streaming in and out lots of resources
 
 
 // ****************************************************************

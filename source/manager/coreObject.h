@@ -11,10 +11,10 @@
 #define _CORE_GUARD_OBJECT_H_
 
 // TODO: re-implement relative object behavior (additional classes?)
-// TODO: new collisions with lines are not saved correctly (no line identification)
 // TODO: GL_NV_fill_rectangle for low-memory model (state-tracking for polygon-mode ?)
 // TODO: single triangle for fullscreen processing ?
 // TODO: fix resource-manager reset, change location of global resources/objects (incl. single triangle)
+// TODO: add pre-registering interface to object manager ? accessing a non-existing list can cause issues
 
 
 // ****************************************************************
@@ -144,12 +144,12 @@ public:
 
     /*! test collision between different structures */
     //! @{
-    template <typename F> void TestCollision(const coreInt32     iType,                                                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA,     coreObject3D* OUTPUT pObjectB,     const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32     iType2,                                F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectType1, coreObject3D* OUTPUT pObjectType2, const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType,    const coreObject3D* pObject,                               F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3&  vLinePos, const coreVector3& vLineDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreBool bFirstHit) -> void
-    static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
-    static coreFloat           TestCollision(const coreObject3D* pObject,  const coreVector3&  vLinePos, const coreVector3& vLineDir);
+    template <typename F> void TestCollision(const coreInt32     iType,                                                             F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA,     coreObject3D* OUTPUT pObjectB,     const coreVector3& vIntersection, const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32     iType2,                              F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectType1, coreObject3D* OUTPUT pObjectType2, const coreVector3& vIntersection, const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    const coreObject3D* pObject,                             F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreVector3& vIntersection, const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3&  vRayPos, const coreVector3& vRayDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreFloat    fDistance,     const coreBool bFirstHit) -> void
+    static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2,                            coreVector3* OUTPUT pvIntersection);
+    static coreBool            TestCollision(const coreObject3D* pObject,  const coreVector3&  vRayPos, const coreVector3& vRayDir, coreFloat*   OUTPUT pfDistance);
     //! @}
 
     /*! get manager properties */
@@ -211,11 +211,12 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
             if(!pObject2) continue;
 
             // test collision and call function
-            if(coreObjectManager::TestCollision(pObject1, pObject2))
+            coreVector3 vIntersection;
+            if(coreObjectManager::TestCollision(pObject1, pObject2, &vIntersection))
             {
                 nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
                           s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
-                          this->__NewCollision(pObject1, pObject2));
+                          vIntersection, this->__NewCollision(pObject1, pObject2));
             }
         }
     }
@@ -228,7 +229,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
 {
     ASSERT(iType1 && iType2 && (iType1 != iType2))
 
-    // make sure both lists are available
+    // make sure both lists are available (first reference may get invalid otherwise)
     m_aapObjectList[iType2]; m_aapObjectList[iType1];
 
     // get requested lists
@@ -247,11 +248,12 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
             if(!pObject2) continue;
 
             // test collision and call function
-            if(coreObjectManager::TestCollision(pObject1, pObject2))
+            coreVector3 vIntersection;
+            if(coreObjectManager::TestCollision(pObject1, pObject2, &vIntersection))
             {
                 nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
                           s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
-                          this->__NewCollision(pObject1, pObject2));
+                          vIntersection, this->__NewCollision(pObject1, pObject2));
             }
         }
     }
@@ -274,18 +276,19 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
         if(!pCurObject) continue;
 
         // test collision and call function
-        if(coreObjectManager::TestCollision(pCurObject, pObject))
+        coreVector3 vIntersection;
+        if(coreObjectManager::TestCollision(pCurObject, pObject, &vIntersection))
         {
             nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
-                      this->__NewCollision(pCurObject, pObject));
+                      vIntersection, this->__NewCollision(pCurObject, pObject));
         }
     }
 }
 
 
 // ****************************************************************
-/* test collision between list and line */
-template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, const coreVector3& vLinePos, const coreVector3& vLineDir, F&& nCallback)
+/* test collision between list and ray */
+template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, const coreVector3& vRayPos, const coreVector3& vRayDir, F&& nCallback)
 {
     ASSERT(iType)
 
@@ -299,11 +302,11 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
         if(!pCurObject) continue;
 
         // test collision and call function
-        const coreFloat fDistance = coreObjectManager::TestCollision(pCurObject, vLinePos, vLineDir);
-        if(fDistance)
+        coreFloat fDistance;
+        if(coreObjectManager::TestCollision(pCurObject, vRayPos, vRayDir, &fDistance))
         {
-            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject), fDistance,
-                      this->__NewCollision(pCurObject, NULL));
+            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
+                      fDistance, this->__NewCollision(pCurObject, r_cast<coreObject3D*>(&nCallback)));
         }
     }
 }

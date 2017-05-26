@@ -16,18 +16,24 @@ coreModel* coreModel::s_pCurrent = NULL;
 
 // ****************************************************************
 // constructor
-coreModel::coreModel()noexcept
-: coreResource      ()
-, m_iVertexArray    (0u)
-, m_aVertexBuffer   {}
-, m_IndexBuffer     ()
-, m_iNumVertices    (0u)
-, m_iNumIndices     (0u)
-, m_vBoundingRange  (coreVector3(0.0f,0.0f,0.0f))
-, m_fBoundingRadius (0.0f)
-, m_iPrimitiveType  (GL_TRIANGLES)
-, m_iIndexType      (0u)
-, m_Sync            ()
+coreModel::coreModel(const coreBool bCreateClusters)noexcept
+: coreResource          ()
+, m_iVertexArray        (0u)
+, m_aVertexBuffer       {}
+, m_IndexBuffer         ()
+, m_iNumVertices        (0u)
+, m_iNumIndices         (0u)
+, m_iNumClusters        (0u)
+, m_vBoundingRange      (coreVector3(0.0f,0.0f,0.0f))
+, m_fBoundingRadius     (0.0f)
+, m_pvVertexPosition    (bCreateClusters ? NULL : r_cast<coreVector3*>(~0x00))
+, m_ppiClusterIndex     (NULL)
+, m_piClusterNumIndices (NULL)
+, m_pvClusterPosition   (NULL)
+, m_pfClusterRadius     (NULL)
+, m_iPrimitiveType      (GL_TRIANGLES)
+, m_iIndexType          (0u)
+, m_Sync                ()
 {
 }
 
@@ -78,21 +84,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     m_iNumVertices = oImport.aVertexData.size();
     m_iNumIndices  = oImport.aiIndexData.size();
     m_sPath        = pFile->GetPath();
-
-    FOR_EACH(it, oImport.aVertexData)
-    {
-        // check for valid vertex attributes
-        ASSERT((0.0f <= it->vTexCoord.x)    && (it->vTexCoord.x <= 1.0f) &&
-               (0.0f <= it->vTexCoord.y)    && (it->vTexCoord.y <= 1.0f) &&
-               (it->vNormal.IsNormalized()) && (it->vTangent.xyz().IsNormalized()))
-
-        // find maximum distance from the model center
-        m_vBoundingRange.x = MAX(m_vBoundingRange.x, ABS(it->vPosition.x));
-        m_vBoundingRange.y = MAX(m_vBoundingRange.y, ABS(it->vPosition.y));
-        m_vBoundingRange.z = MAX(m_vBoundingRange.z, ABS(it->vPosition.z));
-        m_fBoundingRadius  = MAX(it->vPosition.LengthSq(), m_fBoundingRadius);
-    }
-    m_fBoundingRadius = SQRT(m_fBoundingRadius);
+    ASSERT(m_iNumVertices <= 0xFFFFu)
 
     // prepare index-map (for deferred remapping)
     alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 aiMap[0xFFFFu];
@@ -131,6 +123,132 @@ coreStatus coreModel::Load(coreFile* pFile)
     // remap all indices
     for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
         piOptimizedData[i] = aiMap[piOptimizedData[i]];
+
+    // analyze all vertices
+    coreVector3 vRangeMin = coreVector3( FLT_MAX, FLT_MAX, FLT_MAX);
+    coreVector3 vRangeMax = coreVector3(-FLT_MAX,-FLT_MAX,-FLT_MAX);
+    FOR_EACH(it, oImport.aVertexData)
+    {
+        // check for valid vertex attributes
+        ASSERT((0.0f <= it->vTexCoord.x)    && (it->vTexCoord.x <= 1.0f) &&
+               (0.0f <= it->vTexCoord.y)    && (it->vTexCoord.y <= 1.0f) &&
+               (it->vNormal.IsNormalized()) && (it->vTangent.xyz().IsNormalized()))
+
+        // find maximum distances from the model center
+        vRangeMin.x       = MIN(vRangeMin.x,       it->vPosition.x);
+        vRangeMin.y       = MIN(vRangeMin.y,       it->vPosition.y);
+        vRangeMin.z       = MIN(vRangeMin.z,       it->vPosition.z);
+        vRangeMax.x       = MAX(vRangeMax.x,       it->vPosition.x);
+        vRangeMax.y       = MAX(vRangeMax.y,       it->vPosition.y);
+        vRangeMax.z       = MAX(vRangeMax.z,       it->vPosition.z);
+        m_fBoundingRadius = MAX(m_fBoundingRadius, it->vPosition.LengthSq());
+    }
+    m_vBoundingRange.x = MAX(ABS(vRangeMin.x), ABS(vRangeMax.x));
+    m_vBoundingRange.y = MAX(ABS(vRangeMin.y), ABS(vRangeMax.y));
+    m_vBoundingRange.z = MAX(ABS(vRangeMin.z), ABS(vRangeMax.z));
+    m_fBoundingRadius  = SQRT(m_fBoundingRadius);
+
+    if(!m_pvVertexPosition)
+    {
+        // store vertex positions
+        m_pvVertexPosition = ALIGNED_NEW(coreVector3, m_iNumVertices, ALIGNMENT_CACHE);
+        for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) m_pvVertexPosition[i] = oImport.aVertexData[i].vPosition;
+
+        // get range factor for target cluster calculations
+        const coreVector3 vRangeDiff = coreVector3(1.0f,1.0f,1.0f) / (vRangeMax - vRangeMin);
+
+        // assign triangles to different clusters based on their vertex positions (uniform grid)
+        std::vector<coreUint16> aiTempIndex[CORE_MODEL_CLUSTERS_MAX];
+        for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; i += 3u)
+        {
+            // calculate triangle center
+            const coreVector3 vCenterPos = (m_pvVertexPosition[piOptimizedData[i]]    +
+                                            m_pvVertexPosition[piOptimizedData[i+1u]] +
+                                            m_pvVertexPosition[piOptimizedData[i+2u]]) / 3.0f;
+
+            // calculate target cluster
+            const coreVector3 vRangePos = ((vCenterPos - vRangeMin) * vRangeDiff).Processed(CLAMP, 0.0f, 1.0f - CORE_MATH_PRECISION) * I_TO_F(CORE_MODEL_CLUSTERS_AXIS);
+            const coreUintW   iIndex    = (F_TO_UI(vRangePos.x) * CORE_MODEL_CLUSTERS_AXIS * CORE_MODEL_CLUSTERS_AXIS) +
+                                          (F_TO_UI(vRangePos.y) * CORE_MODEL_CLUSTERS_AXIS)                            +
+                                          (F_TO_UI(vRangePos.z));
+
+            // reserve memory only for occupied clusters
+            ASSERT(iIndex < CORE_MODEL_CLUSTERS_MAX)
+            aiTempIndex[iIndex].reserve(m_iNumIndices >> 4);
+
+            // assign triangle indices to target cluster
+            aiTempIndex[iIndex].push_back(piOptimizedData[i]);
+            aiTempIndex[iIndex].push_back(piOptimizedData[i+1u]);
+            aiTempIndex[iIndex].push_back(piOptimizedData[i+2u]);
+        }
+
+        // reorder clusters to compact list
+        coreUintW iFront = 0u;
+        coreUintW iBack  = CORE_MODEL_CLUSTERS_MAX - 1u;
+        for(; iFront < iBack; ++iFront)
+        {
+            if(aiTempIndex[iFront].empty())
+            {
+                for(; iFront < iBack; --iBack)
+                {
+                    if(!aiTempIndex[iBack].empty())
+                    {
+                        // move occupied cluster (in back) into empty space (in front)
+                        aiTempIndex[iFront] = std::move(aiTempIndex[iBack--]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // save number of clusters
+        m_iNumClusters = aiTempIndex[iBack].empty() ? iBack : (iBack + 1u);
+        ASSERT((m_iNumClusters == CORE_MODEL_CLUSTERS_MAX || aiTempIndex[m_iNumClusters].empty()) && !aiTempIndex[m_iNumClusters - 1u].empty())
+
+        // allocate cluster memory
+        coreByte* pIndexMemory = ALIGNED_NEW(coreByte,    m_iNumClusters * sizeof(coreUint16*) + m_iNumIndices * sizeof(coreUint16), ALIGNMENT_CACHE);
+        m_piClusterNumIndices  = ALIGNED_NEW(coreUint16,  m_iNumClusters,                                                            ALIGNMENT_CACHE);
+        m_pvClusterPosition    = ALIGNED_NEW(coreVector3, m_iNumClusters,                                                            ALIGNMENT_CACHE);
+        m_pfClusterRadius      = ALIGNED_NEW(coreFloat,   m_iNumClusters,                                                            ALIGNMENT_CACHE);
+
+        // prepare index pointers to use only single allocation (also to keep indirections as near as possible)
+        m_ppiClusterIndex    = r_cast<coreUint16**>(pIndexMemory);
+        m_ppiClusterIndex[0] = r_cast<coreUint16*> (pIndexMemory + m_iNumClusters * sizeof(coreUint16*));
+        for(coreUintW i = 1u, ie = m_iNumClusters; i < ie; ++i) m_ppiClusterIndex[i] = m_ppiClusterIndex[0];
+
+        for(coreUintW i = 0u, ie = m_iNumClusters; i < ie; ++i)
+        {
+            // save number of indices
+            m_piClusterNumIndices[i] = aiTempIndex[i].size();
+
+            // adjust index pointers and store indices
+            for(coreUintW j = i + 1u, je = m_iNumClusters; j < je; ++j) m_ppiClusterIndex[j] += m_piClusterNumIndices[i];
+            std::memcpy(m_ppiClusterIndex[i], aiTempIndex[i].data(), m_piClusterNumIndices[i] * sizeof(coreUint16));
+
+            // find the cluster center
+            coreVector3 vClusterMin = coreVector3( FLT_MAX, FLT_MAX, FLT_MAX);
+            coreVector3 vClusterMax = coreVector3(-FLT_MAX,-FLT_MAX,-FLT_MAX);
+            for(coreUintW j = 0u, je = m_piClusterNumIndices[i]; j < je; ++j)
+            {
+                const coreVector3& vPosition = m_pvVertexPosition[m_ppiClusterIndex[i][j]];
+
+                vClusterMin.x = MIN(vClusterMin.x, vPosition.x);
+                vClusterMin.y = MIN(vClusterMin.y, vPosition.y);
+                vClusterMin.z = MIN(vClusterMin.z, vPosition.z);
+                vClusterMax.x = MAX(vClusterMax.x, vPosition.x);
+                vClusterMax.y = MAX(vClusterMax.y, vPosition.y);
+                vClusterMax.z = MAX(vClusterMax.z, vPosition.z);
+            }
+            m_pvClusterPosition[i] = (vClusterMax + vClusterMin) * 0.5f;
+
+            // find maximum distance from the cluster center
+            for(coreUintW j = 0u, je = m_piClusterNumIndices[i]; j < je; ++j)
+            {
+                m_pfClusterRadius[i] = MAX(m_pfClusterRadius[i], (m_pvVertexPosition[m_ppiClusterIndex[i][j]] - m_pvClusterPosition[i]).LengthSq());
+            }
+            m_pfClusterRadius[i] = SQRT(m_pfClusterRadius[i]);
+        }
+    }
 
     if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev) && CORE_GL_SUPPORT(ARB_half_float_vertex))
     {
@@ -222,6 +340,16 @@ coreStatus coreModel::Unload()
     m_aVertexBuffer.clear();
     m_IndexBuffer.Delete();
 
+    // free cluster memory
+    if(m_iNumClusters)
+    {
+        ALIGNED_DELETE(m_pvVertexPosition)
+        ALIGNED_DELETE(m_ppiClusterIndex)
+        ALIGNED_DELETE(m_piClusterNumIndices)
+        ALIGNED_DELETE(m_pvClusterPosition)
+        ALIGNED_DELETE(m_pfClusterRadius)
+    }
+
     // delete vertex array object
     if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
     if(!m_sPath.empty()) Core::Log->Info("Model (%s) unloaded", m_sPath.c_str());
@@ -234,6 +362,7 @@ coreStatus coreModel::Unload()
     m_iVertexArray    = 0u;
     m_iNumVertices    = 0u;
     m_iNumIndices     = 0u;
+    m_iNumClusters    = 0u;
     m_vBoundingRange  = coreVector3(0.0f,0.0f,0.0f);
     m_fBoundingRadius = 0.0f;
     m_iPrimitiveType  = GL_TRIANGLES;

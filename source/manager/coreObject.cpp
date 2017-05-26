@@ -60,18 +60,19 @@ coreObjectManager::~coreObjectManager()
 
 // ****************************************************************
 /* test collision between two 3d-objects */
-coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
+coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2, coreVector3* OUTPUT pvIntersection)
 {
-    ASSERT(pObject1 && pObject2)
+    ASSERT(pObject1 && pObject2 && pvIntersection)
+
+    // calculate difference between both objects
+    const coreVector3 vDiff = pObject1->GetPosition() - pObject2->GetPosition();
 
     // get collision radius
     const coreFloat fTotalRadius = pObject1->GetCollisionRadius() + pObject2->GetCollisionRadius();
 
-    // calculate distance between both objects
-    const coreVector3 vDiff = pObject1->GetPosition() - pObject2->GetPosition();
-
     // check for sphere intersection
-    if(vDiff.LengthSq() > fTotalRadius * fTotalRadius) return false;
+    if(vDiff.LengthSq() > POW2(fTotalRadius))
+        return false;
 
     // get collision range and rotation
     const coreVector3& vRange1    = pObject1->GetCollisionRange();
@@ -83,10 +84,11 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     const coreVector4 vRevRotation2 = vRotation2.QuatConjugate();
 
     // calculate relative transformation matrix (with absolute values to check only for maximums)
-    const coreMatrix3 M = coreMatrix3::Quat(coreVector4::QuatMultiply(vRevRotation2, vRotation1));
+    const coreVector4 Q = coreVector4::QuatMultiply(vRevRotation2, vRotation1);
+    const coreMatrix3 M = coreMatrix3::Quat(Q);
     const coreMatrix3 S = M.Processed(ABS);
 
-    // rotate and move first object relative to second (but distance only with single rotation)
+    // rotate and move first object relative to second (but difference only with single rotation)
     const coreVector3 D1 = vRevRotation2.QuatApply(vDiff);
     const coreVector3 R1 = vRange1 * S;
 
@@ -99,7 +101,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     const coreVector4 vRevRotation1 = vRotation1.QuatConjugate();
 
     // rotate and move second object relative to first
-    const coreVector3 D2 = vRevRotation1.QuatApply(vDiff);
+    const coreVector3 D2 = vRevRotation1.QuatApply(-vDiff);
     const coreVector3 R2 = vRange2 * S.Transposed();
 
     // check for second boundary intersection
@@ -107,29 +109,269 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     if(ABS(D2.y) > (vRange1.y + R2.y)) return false;
     if(ABS(D2.z) > (vRange1.z + R2.z)) return false;
 
-    return true;
+    // check if clusters are available for precise collision detection
+    const coreBool bPrecise1 = pObject1->GetModel().IsUsable() && pObject1->GetModel()->GetNumClusters();
+    const coreBool bPrecise2 = pObject2->GetModel().IsUsable() && pObject2->GetModel()->GetNumClusters();
+
+    // return intersection between two simple models
+    if(!bPrecise1 && !bPrecise2)
+    {
+        (*pvIntersection) = pObject2->GetPosition() + vDiff * (pObject2->GetCollisionRadius() * RCP(fTotalRadius));
+        return true;
+    }
+
+    // move less complex object to the first position (to improve re-use of transformed data when iterating through clusters of both models)
+    const coreBool bSwap = (!bPrecise2 || (bPrecise1 && pObject1->GetModel()->GetNumIndices() > pObject2->GetModel()->GetNumIndices()));
+    if(bSwap) std::swap(pObject1, pObject2);
+
+    // prepare relative transformation (only first object will be transformed)
+    const coreVector3 vRelPosition = bSwap ? D2                : D1;
+    const coreVector4 vRelRotation = bSwap ? Q.QuatConjugate() : Q;
+
+    // get models and object sizes (precise collision detection does not use size-modifiers)
+    const coreModelPtr& pModel1   = pObject1->GetModel();
+    const coreModelPtr& pModel2   = pObject2->GetModel();
+    const coreVector3&  vSize1    = pObject1->GetSize();
+    const coreVector3&  vSize2    = pObject2->GetSize();
+    const coreFloat     vSizeMax1 = vSize1.Max();
+    const coreFloat     vSizeMax2 = vSize2.Max();
+
+    // calculate collision between precise and simple model
+    if(!bPrecise1 || !bPrecise2)
+    {
+        const coreVector3& vPosition1 = vRelPosition;
+        const coreFloat&   fRadius1   = pObject1->GetCollisionRadius();
+
+        for(coreUintW m = 0u, me = pModel2->GetNumClusters(); m < me; ++m)
+        {
+            const coreVector3 vPosition2 = vSize2 * pModel2->GetClusterPosition(m);
+            const coreFloat   fRadius2   = pModel2->GetClusterRadius(m) * vSizeMax2;
+
+            const coreVector3 vClusterDiff   = vPosition1 - vPosition2;
+            const coreFloat   fClusterRadius = fRadius1 + fRadius2;
+
+            if(vClusterDiff.LengthSq() > POW2(fClusterRadius))
+                continue;
+
+            (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply(vPosition2 + vClusterDiff * (fRadius2 * RCP(fClusterRadius)));
+            return true;
+        }
+
+        return false;
+    }
+
+    // calculate collision between two precise models (Moeller97b)
+    for(coreUintW k = 0u, ke = pModel1->GetNumClusters(); k < ke; ++k)
+    {
+        const coreVector3 vPosition1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetClusterPosition(k));
+        const coreFloat   fRadius1   = pModel1->GetClusterRadius(k) * vSizeMax1;
+        const coreFloat   fRadius1Sq = POW2(fRadius1);
+
+        for(coreUintW m = 0u, me = pModel2->GetNumClusters(); m < me; ++m)
+        {
+            const coreVector3 vPosition2 = vSize2 * pModel2->GetClusterPosition(m);
+            const coreFloat   fRadius2   = pModel2->GetClusterRadius(m) * vSizeMax2;
+            const coreFloat   fRadius2Sq = POW2(fRadius2);
+
+            const coreVector3 vClusterDiff   = vPosition1 - vPosition2;
+            const coreFloat   fClusterRadius = fRadius1 + fRadius2;
+
+            if(vClusterDiff.LengthSq() > POW2(fClusterRadius))
+                continue;
+
+            for(coreUintW i = 0u, ie = pModel1->GetClusterNumIndices(k); i < ie; i += 3u)
+            {
+                coreVector3 A1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i]]);
+                coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i+1u]]);
+                coreVector3 A3 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i+2u]]);
+
+                if(((A1 - vPosition2).LengthSq() > fRadius2Sq) &&
+                   ((A2 - vPosition2).LengthSq() > fRadius2Sq) &&
+                   ((A3 - vPosition2).LengthSq() > fRadius2Sq))
+                    continue;
+
+                const coreVector3 vCross1 = coreVector3::Cross(A2 - A1, A3 - A1);
+
+                for(coreUintW j = 0u, je = pModel2->GetClusterNumIndices(m); j < je; j += 3u)
+                {
+                    coreVector3 B1 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j]];
+                    coreVector3 B2 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j+1u]];
+                    coreVector3 B3 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j+2u]];
+
+                    if(((B1 - vPosition1).LengthSq() > fRadius1Sq) &&
+                       ((B2 - vPosition1).LengthSq() > fRadius1Sq) &&
+                       ((B3 - vPosition1).LengthSq() > fRadius1Sq))
+                        continue;
+
+                    coreUint32 F1 = (coreVector3::Dot(B1 - A1, vCross1) >= 0.0f) ? 1u : 0u;
+                    coreUint32 F2 = (coreVector3::Dot(B2 - A1, vCross1) >= 0.0f) ? 1u : 0u;
+                    coreUint32 F3 = (coreVector3::Dot(B3 - A1, vCross1) >= 0.0f) ? 1u : 0u;
+
+                    if((F1 == F2) && (F1 == F3))
+                        continue;
+
+                    const coreVector3 vCross2 = coreVector3::Cross(B2 - B1, B3 - B1);
+
+                    coreUint32 G1 = (coreVector3::Dot(A1 - B1, vCross2) >= 0.0f) ? 1u : 0u;
+                    coreUint32 G2 = (coreVector3::Dot(A2 - B1, vCross2) >= 0.0f) ? 1u : 0u;
+                    coreUint32 G3 = (coreVector3::Dot(A3 - B1, vCross2) >= 0.0f) ? 1u : 0u;
+
+                    if((G1 == G2) && (G1 == G3))
+                        continue;
+
+                    if(F2 != F3)
+                    {
+                        if(F1 != F2)
+                        {
+                            std::swap(B1, B2);
+                            std::swap(F1, F2);
+                        }
+                        else if(F1 != F3)
+                        {
+                            std::swap(B1, B3);
+                            std::swap(F1, F3);
+                        }
+                    }
+
+                    if(G2 != G3)
+                    {
+                        if(G1 != G2)
+                        {
+                            std::swap(A1, A2);
+                            std::swap(G1, G2);
+                        }
+                        else if(G1 != G3)
+                        {
+                            std::swap(A1, A3);
+                            std::swap(G1, G3);
+                        }
+                    }
+
+                    if(F1 > 0u) std::swap(A2, A3);
+                    if(G1 > 0u) std::swap(B2, B3);
+
+                    if((coreVector3::Dot(A2 - B1, coreVector3::Cross(B2 - B1, A1 - B1)) <= 0.0f) &&
+                       (coreVector3::Dot(A1 - B1, coreVector3::Cross(B3 - B1, A3 - B1)) <= 0.0f))
+                    {
+                        (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply((B1 + B2 + B3) * 0.333f);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 
 // ****************************************************************
-/* test collision between 3d-object and line */
-coreFloat coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vLinePos, const coreVector3& vLineDir)
+/* test collision between 3d-object and ray */
+coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vRayPos, const coreVector3& vRayDir, coreFloat* OUTPUT pfDistance)
 {
-    ASSERT(pObject && vLineDir.IsNormalized())
+    ASSERT(pObject && vRayDir.IsNormalized() && pfDistance)
 
-    // get collision radius
-    const coreFloat& fRadius = pObject->GetCollisionRadius();
+    // calculate difference between ray and object
+    const coreVector3 vDiff = pObject->GetPosition() - vRayPos;
 
-    // calculate distance between both objects
-    const coreVector3 vDiff = pObject->GetPosition() - vLinePos;
+    // get closest point on ray
+    const coreFloat fAdjacent = coreVector3::Dot(vDiff, vRayDir);
 
-    // calculate range parameters
-    const coreFloat fAdjacent   = coreVector3::Dot(vDiff, vLineDir);
-    const coreFloat fOppositeSq = vDiff.LengthSq() - fAdjacent * fAdjacent;
-    const coreFloat fRadiusSq   = fRadius * fRadius;
+    // check if ray moves away from object
+    if(fAdjacent < 0.0f)
+        return false;
 
-    // check for sphere intersection (return distance from line position to intersection point on success)
-    return (fOppositeSq <= fRadiusSq) ? (fAdjacent - SQRT(fRadiusSq - fOppositeSq)) : 0.0f;
+    // get ray distance and collision radius
+    const coreFloat fOppositeSq = vDiff.LengthSq() - POW2(fAdjacent);
+    const coreFloat fRadiusSq   = POW2(pObject->GetCollisionRadius());
+
+    // check for sphere intersection
+    if(fOppositeSq > fRadiusSq)
+        return false;
+
+    // check if clusters are available for precise collision detection
+    const coreBool bPrecise = pObject->GetModel().IsUsable() && pObject->GetModel()->GetNumClusters();
+
+    // return intersection with simple model
+    if(!bPrecise)
+    {
+        (*pfDistance) = fAdjacent - SQRT(fRadiusSq - fOppositeSq);
+        return true;
+    }
+
+    // transform ray instead of whole object
+    const coreVector4 vRevRotation = pObject->GetRotation().QuatConjugate();
+    const coreVector3 vRelRayPos   = vRevRotation.QuatApply(vRayPos - pObject->GetPosition());
+    const coreVector3 vRelRayDir   = vRevRotation.QuatApply(vRayDir);
+
+    // get model and object size (precise collision detection does not use size-modifiers)
+    const coreModelPtr& pModel   = pObject->GetModel();
+    const coreVector3&  vSize    = pObject->GetSize();
+    const coreFloat     vSizeMax = vSize.Max();
+
+    // calculate collision with precise model (MoellerTrumbore97)
+    if(bPrecise)
+    {
+        coreBool  bHasHit      = false;
+        coreFloat fMinDistance = FLT_MAX;
+
+        for(coreUintW m = 0u, me = pModel->GetNumClusters(); m < me; ++m)
+        {
+            const coreVector3 vClusterPos  = vSize * pModel->GetClusterPosition(m);
+            const coreVector3 vClusterDiff = vClusterPos - vRelRayPos;
+
+            const coreFloat fAdjacent2 = coreVector3::Dot(vClusterDiff, vRelRayDir);
+
+            if(fAdjacent2 < 0.0f)
+                continue;
+
+            const coreFloat fOppositeSq2 = vClusterDiff.LengthSq() - POW2(fAdjacent2);
+            const coreFloat fRadiusSq2   = POW2(pModel->GetClusterRadius(m) * vSizeMax);
+
+            if(fOppositeSq2 > fRadiusSq2)
+                continue;
+
+            for(coreUintW j = 0u, je = pModel->GetClusterNumIndices(m); j < je; j += 3u)
+            {
+                const coreVector3 V1 = vSize * pModel->GetVertexPosition()[pModel->GetClusterIndex(m)[j]];
+                const coreVector3 V2 = vSize * pModel->GetVertexPosition()[pModel->GetClusterIndex(m)[j+1u]];
+                const coreVector3 V3 = vSize * pModel->GetVertexPosition()[pModel->GetClusterIndex(m)[j+2u]];
+
+                const coreVector3 W1 = V2 - V1;
+                const coreVector3 W2 = V3 - V1;
+
+                const coreVector3 A = coreVector3::Cross(vRelRayDir, W2);
+                const coreFloat   B = coreVector3::Dot(W1, A);
+
+                if(coreMath::InRange(B, 0.0f, CORE_MATH_PRECISION))
+                    continue;
+
+                const coreFloat   C = RCP(B);
+                const coreVector3 D = vRelRayPos - V1;
+                const coreFloat   E = coreVector3::Dot(D, A) * C;
+
+                if((E < 0.0f) || (E > 1.0f))
+                    continue;
+
+                const coreVector3 F = coreVector3::Cross(D, W1);
+                const coreFloat   G = coreVector3::Dot(vRelRayDir, F) * C;
+
+                if((G < 0.0f) || (G + E > 1.0f))
+                    continue;
+
+                bHasHit      = true;
+                fMinDistance = MIN(fMinDistance, coreVector3::Dot(W2, F) * C);
+            }
+        }
+
+        if(bHasHit)
+        {
+            (*pfDistance) = fMinDistance;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
@@ -155,9 +397,9 @@ void coreObjectManager::__Reset(const coreResourceReset bInit)
 
         Core::Log->Info("Low-memory model object created");
 
+        // create frame buffer fallback
         if(!CORE_GL_SUPPORT(EXT_framebuffer_blit))
         {
-            // create frame buffer fallback
             m_pBlitFallback = new coreObject2D();
             m_pBlitFallback->DefineProgram("default_2d_program");
 

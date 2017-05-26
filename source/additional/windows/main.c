@@ -13,6 +13,9 @@
 #define  WIN32_LEAN_AND_MEAN
 
 #pragma warning(disable : 4100)   // unreferenced formal parameter
+#pragma warning(disable : 4255)   // function prototype missing
+#pragma warning(disable : 4668)   // preprocessor macro not defined
+#pragma warning(disable : 4820)   // padding after data member
 
 #include <SDL2/SDL_main.h>
 #include <windows.h>
@@ -33,7 +36,7 @@ static void HandlePurecall(void)
     DebugBreak();
 }
 
-static void HandleInvalidParameter(const wchar_t* pcExpression, const wchar_t* pcFunction,  const wchar_t* pcFile, const unsigned int iLine, const uintptr_t iReserved)
+static void HandleInvalidParameter(const wchar_t* pcExpression, const wchar_t* pcFunction, const wchar_t* pcFile, const unsigned int iLine, const uintptr_t iReserved)
 {
     DebugBreak();
 }

@@ -271,6 +271,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 // destructor
 coreArchive::~coreArchive()
 {
+    // remove all file objects
     this->ClearFiles();
 }
 

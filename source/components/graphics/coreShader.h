@@ -213,8 +213,8 @@ public:
 
     //! retrieve uniform and attribute locations
     //! @{
-    inline const coreInt8& RetrieveUniform  (const coreChar* pcName) {if(!m_aiUniform  .count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  .emplace(pcName, glGetUniformLocation(m_iProgram, pcName));} return m_aiUniform  .at(pcName);}
-    inline const coreInt8& RetrieveAttribute(const coreChar* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(pcName, glGetAttribLocation (m_iProgram, pcName));} return m_aiAttribute.at(pcName);}
+    inline const coreInt8& RetrieveUniform  (const coreChar* pcName) {if(!m_aiUniform  .count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  .emplace(pcName, glGetUniformLocation(m_iProgram, pcName));} ASSERT(m_aiUniform  .at(pcName) >= -1) return m_aiUniform  .at(pcName);}
+    inline const coreInt8& RetrieveAttribute(const coreChar* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(pcName, glGetAttribLocation (m_iProgram, pcName));} ASSERT(m_aiAttribute.at(pcName) >= -1) return m_aiAttribute.at(pcName);}
     //! @}
 
     //! check for cached uniform values

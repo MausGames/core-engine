@@ -14,11 +14,17 @@
 // TODO: add animation
 // TODO: enable shared vertex buffers mixed with unique
 // TODO: check out (Multi)Draw(Array|Elements)Indirect
-// TODO: reorder indices/vertices in memory to improve post-transform caching (maybe in model-file, nvTriStrip)
 // TODO: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
 // TODO: compress texture-coords, 32bit is too much, but still need coords <0.0 >1.0 (probably to -1.0 2.0)
 // TODO: index buffer ignore as constructor parameter ? (resource manager load)
 // TODO: currently radius and range can change, but they should not... implement more strict interface
+// TODO: de-interleaved vertex data
+
+
+// ****************************************************************
+// model definitions
+#define CORE_MODEL_CLUSTERS_AXIS (5u)                               //!< number of clusters per axis
+#define CORE_MODEL_CLUSTERS_MAX  (POW3(CORE_MODEL_CLUSTERS_AXIS))   //!< maximum number of clusters per model
 
 
 // ****************************************************************
@@ -67,10 +73,19 @@ private:
     std::vector<coreVertexBuffer> m_aVertexBuffer;   //!< vertex buffers
     coreDataBuffer                m_IndexBuffer;     //!< index buffer
 
-    coreUint32  m_iNumVertices;                      //!< number of vertices
-    coreUint32  m_iNumIndices;                       //!< number of indices
+    coreUint32 m_iNumVertices;                       //!< number of vertices
+    coreUint32 m_iNumIndices;                        //!< number of indices
+    coreUint8  m_iNumClusters;                       //!< number of clusters
+
     coreVector3 m_vBoundingRange;                    //!< maximum per-axis distance from the model center
     coreFloat   m_fBoundingRadius;                   //!< maximum direct distance from the model center
+
+    coreVector3* m_pvVertexPosition;                 //!< vertex positions for clusters and precise collision detection
+
+    coreUint16** m_ppiClusterIndex;                  //!< pointer to indices per cluster (single allocation)
+    coreUint16*  m_piClusterNumIndices;              //!< number of indices per cluster
+    coreVector3* m_pvClusterPosition;                //!< relative cluster center
+    coreFloat*   m_pfClusterRadius;                  //!< maximum direct distance from the cluster center
 
     GLenum m_iPrimitiveType;                         //!< primitive type for draw calls (e.g. GL_TRIANGLES)
     GLenum m_iIndexType;                             //!< index type for draw calls (e.g. GL_UNSIGNED_SHORT)
@@ -81,7 +96,7 @@ private:
 
 
 public:
-    coreModel()noexcept;
+    explicit coreModel(const coreBool bCreateClusters = true)noexcept;
     ~coreModel()final;
 
     DISABLE_COPY(coreModel)
@@ -129,13 +144,19 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint&      GetVertexArray   ()const {return m_iVertexArray;}
-    inline const coreUint32&  GetNumVertices   ()const {return m_iNumVertices;}
-    inline const coreUint32&  GetNumIndices    ()const {return m_iNumIndices;}
-    inline const coreVector3& GetBoundingRange ()const {return m_vBoundingRange;}
-    inline const coreFloat&   GetBoundingRadius()const {return m_fBoundingRadius;}
-    inline const GLenum&      GetPrimitiveType ()const {return m_iPrimitiveType;}
-    inline const GLenum&      GetIndexType     ()const {return m_iIndexType;}
+    inline const GLuint&      GetVertexArray      ()const                       {return m_iVertexArray;}
+    inline const coreUint32&  GetNumVertices      ()const                       {return m_iNumVertices;}
+    inline const coreUint32&  GetNumIndices       ()const                       {return m_iNumIndices;}
+    inline const coreUint8&   GetNumClusters      ()const                       {return m_iNumClusters;}
+    inline const coreVector3& GetBoundingRange    ()const                       {return m_vBoundingRange;}
+    inline const coreFloat&   GetBoundingRadius   ()const                       {return m_fBoundingRadius;}
+    inline const coreVector3* GetVertexPosition   ()const                       {return m_pvVertexPosition;}
+    inline const coreUint16*  GetClusterIndex     (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_ppiClusterIndex    [iIndex];}
+    inline const coreUint16&  GetClusterNumIndices(const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_piClusterNumIndices[iIndex];}
+    inline const coreVector3& GetClusterPosition  (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_pvClusterPosition  [iIndex];}
+    inline const coreFloat&   GetClusterRadius    (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_pfClusterRadius    [iIndex];}
+    inline const GLenum&      GetPrimitiveType    ()const                       {return m_iPrimitiveType;}
+    inline const GLenum&      GetIndexType        ()const                       {return m_iIndexType;}
     //! @}
 
     //! get currently active model object

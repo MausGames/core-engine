@@ -26,8 +26,12 @@
 template <typename T> class coreSwitchBox final : public coreObject2D, public coreTranslate
 {
 public:
-    //! internal type
-    using coreEntry = std::pair<std::string*, T>;
+    //! entry structure
+    struct coreEntry final
+    {
+        std::string* psText;   //!< visible text
+        T            tValue;   //!< associated value
+    };
 
 
 private:
@@ -114,7 +118,7 @@ public:
 private:
     //! update object after modification
     //! @{
-    inline void __Update()final {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].first->c_str());}
+    inline void __Update()final {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].psText->c_str());}
     //! @}
 };
 
@@ -299,7 +303,12 @@ template <typename T> void coreSwitchBox<T>::Move()
 template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, const T& tValue)
 {
     // create new entry
-    m_aEntry.emplace_back(new std::string(pcText), tValue);
+    coreEntry oNewEntry;
+    oNewEntry.psText = new std::string(pcText);
+    oNewEntry.tValue = tValue;
+
+    // add entry to the list
+    m_aEntry.push_back(oNewEntry);
 
     // update text
     if(m_aEntry.size() == 1u) this->__Update();
@@ -309,7 +318,7 @@ template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreHashStri
 {
     // create and bind new entry
     this->AddEntry("", tValue);
-    this->_BindString(m_aEntry.back().first, sKey);
+    this->_BindString(m_aEntry.back().psText, sKey);
 }
 
 
@@ -321,8 +330,8 @@ template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUintW iIndex)
     auto it = m_aEntry.begin() + iIndex;
 
     // unbind entry
-    this->_UnbindString(it->first);
-    SAFE_DELETE(it->first)
+    this->_UnbindString(it->psText);
+    SAFE_DELETE(it->psText)
 
     // remove entry and update index
     m_aEntry.erase(it);
@@ -340,8 +349,8 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
     // unbind all entries
     FOR_EACH(it, m_aEntry)
     {
-        this->_UnbindString(it->first);
-        SAFE_DELETE(it->first)
+        this->_UnbindString(it->psText);
+        SAFE_DELETE(it->psText)
     }
 
     // remove all entries and reset index
@@ -373,7 +382,7 @@ template <typename T> coreBool coreSwitchBox<T>::SelectText(const coreChar* pcTe
     for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
     {
         // search and select specific text
-        if(!std::strcmp(m_aEntry[i].first->c_str(), pcText))
+        if(!std::strcmp(m_aEntry[i].psText->c_str(), pcText))
         {
             this->SelectIndex(i);
             return true;
@@ -390,7 +399,7 @@ template <typename T> coreBool coreSwitchBox<T>::SelectValue(const T& tValue)
     for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
     {
         // search and select specific value
-        if(m_aEntry[i].second == tValue)
+        if(m_aEntry[i].tValue == tValue)
         {
             this->SelectIndex(i);
             return true;

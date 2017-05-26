@@ -195,12 +195,15 @@ void coreObject3D::Move()
         if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {
             // cancel update without valid model
-            if(!m_pModel.IsUsable()) return;
+            if(!m_pModel.IsUsable() || !m_pModel->GetBoundingRadius()) return;
+
+            // calculate extend and correction (resizing short range-axis should have low effect on radius)
+            const coreVector3 vExtend     = this->GetSize() * m_vCollisionModifier;
+            const coreVector3 vCorrection = m_pModel->GetBoundingRange() * RCP(m_pModel->GetBoundingRadius());
 
             // update collision range and radius
-            const coreVector3 vExtend = this->GetSize() * m_vCollisionModifier;
-            m_vCollisionRange  = m_pModel->GetBoundingRange () * vExtend;
-            m_fCollisionRadius = m_pModel->GetBoundingRadius() * vExtend.Max();
+            m_vCollisionRange  = m_pModel->GetBoundingRange () * (vExtend);
+            m_fCollisionRadius = m_pModel->GetBoundingRadius() * (vExtend * (vCorrection * RCP(vCorrection.Max()))).Max();
         }
 
         // reset the update status

@@ -10,7 +10,7 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//| Core Engine v0.0.8a (http://www.maus-games.at)                               |//
+//| Core Engine v0.0.9a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
 //| Copyright (c) 2013-2017 Martin Mauersics                                     |//
 //|                                                                              |//
@@ -164,7 +164,7 @@
 #endif
 
 #if defined(_CORE_MINGW_) && defined(_CORE_SSE_)
-    #define ENTRY_POINT     __attribute__((force_align_arg_pointer))   //!< realign run-time stack (and fix SSE)
+    #define ENTRY_POINT     __attribute__((force_align_arg_pointer))   //!< realign run-time stack (to fix SSE)
 #else
     #define ENTRY_POINT
 #endif
@@ -173,21 +173,35 @@
 
     #define noexcept _NOEXCEPT
 
-    // disable unwanted compiler warnings (with /W4)
+    // disable unwanted compiler warnings (with /Wall)
+    #pragma warning(disable : 4061)   //!< enumerator not handled in switch
     #pragma warning(disable : 4100)   //!< unreferenced formal parameter
     #pragma warning(disable : 4127)   //!< constant conditional expression
     #pragma warning(disable : 4201)   //!< nameless struct or union
-    #pragma warning(disable : 4244)   //!< implicit conversion to smaller integer precision
+    #pragma warning(disable : 4242)   //!< implicit conversion to different precision #1
+    #pragma warning(disable : 4244)   //!< implicit conversion to different precision #2
+    #pragma warning(disable : 4266)   //!< virtual function not overridden
     #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
-
-    // enable additional compiler warnings (https://msdn.microsoft.com/library/23k5d385)
-    #pragma warning(default : 4191 4264 4265 4287 4289 4296 4302 4311 4355 4388 4548 4555 4557 4777 4826 4837 4928 4946)
+    #pragma warning(disable : 4365)   //!< implicit conversion between signed and unsigned
+    #pragma warning(disable : 4557)   //!< __assume contains effect
+    #pragma warning(disable : 4623)   //!< default constructor implicitly deleted
+    #pragma warning(disable : 4625)   //!< copy constructor implicitly deleted
+    #pragma warning(disable : 4626)   //!< copy assignment operator implicitly deleted
+    #pragma warning(disable : 4647)   //!< behavior change of std::is_pod
+    #pragma warning(disable : 4668)   //!< preprocessor macro not defined
+    #pragma warning(disable : 4710)   //!< function not inlined
+    #pragma warning(disable : 4711)   //!< function automatically inlined
+    #pragma warning(disable : 4774)   //!< format string not a string literal
+    #pragma warning(disable : 4820)   //!< padding after data member
+    #pragma warning(disable : 4987)   //!< nonstandard extension throw(...)
+    #pragma warning(disable : 5026)   //!< move constructor implicitly deleted
+    #pragma warning(disable : 5027)   //!< move assignment operator implicitly deleted
 
     // check for floating-point results stored in memory, causing performance loss
-    #if defined(_CORE_WINXP_)
-        #pragma warning(disable : 4738)
+    #if defined(_CORE_X64_)
+        #pragma warning(error : 4738)
     #else
-        #pragma warning(default : 4738)
+        #pragma warning(disable : 4738)
     #endif
 
 #elif defined(_CORE_GCC_) || defined(_CORE_MINGW_)
@@ -368,14 +382,14 @@
     void  operator delete[] (void*, std::size_t) = delete;
 
 // enable bitwise-operations with the defined enumeration
-#define ENABLE_BITWISE(e)                                                                                                                                     \
-    constexpr e  operator ~  (const e a)            {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
-    constexpr e  operator |  (const e a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr e  operator &  (const e a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr e  operator ^  (const e a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
-    inline    e& operator |= (e&      a, const e b) {return (a = a | b);}                                                                                     \
-    inline    e& operator &= (e&      a, const e b) {return (a = a & b);}                                                                                     \
-    inline    e& operator ^= (e&      a, const e b) {return (a = a ^ b);}
+#define ENABLE_BITWISE(e)                                                                                                                                       \
+    constexpr e  operator ~  (const e   a)            {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
+    constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
+    inline    e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                                     \
+    inline    e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                                     \
+    inline    e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
 
 // shorter common keywords
 #define f_list forward_list

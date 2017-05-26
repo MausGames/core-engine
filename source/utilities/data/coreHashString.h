@@ -16,8 +16,8 @@
 class coreHashString final
 {
 private:
-    const coreUint32 m_iHash;      //!< calculated FNV-1a hash-value
-    const coreChar*  m_pcString;   //!< original string
+    coreUint32      m_iHash;      //!< calculated FNV-1a hash-value
+    const coreChar* m_pcString;   //!< original string
 
 
 public:
