@@ -296,7 +296,7 @@ public:
     /*! color functions */
     //! @{
     inline    coreVector3 RgbToHsv  ()const;
-    inline    coreVector3 HsvToRgb  ()const;
+    constexpr coreVector3 HsvToRgb  ()const;
     constexpr coreVector3 RgbToYiq  ()const;
     constexpr coreVector3 YiqToRgb  ()const;
     constexpr coreVector3 RgbToYuv  ()const;
@@ -730,19 +730,19 @@ inline coreVector3 coreVector3::RgbToHsv()const
 
 // ****************************************************************
 /* convert HSV-color to RGB-color */
-inline coreVector3 coreVector3::HsvToRgb()const
+constexpr coreVector3 coreVector3::HsvToRgb()const
 {
     const coreFloat  H = x * 6.0f;
     const coreFloat& S = y;
     const coreFloat& V = z;
 
-    const coreFloat h = FLOOR(H);
+    const coreInt32 h = F_TO_SI(H);
 
     const coreFloat s = V * S;
-    const coreFloat t = s * (H - h);
+    const coreFloat t = s * (H - I_TO_F(h));
     const coreFloat p = V - s;
 
-    switch(F_TO_SI(h))
+    switch(h)
     {
     case 1:  return coreVector3(V - t, V,     p);
     case 2:  return coreVector3(p,     V,     p + t);
