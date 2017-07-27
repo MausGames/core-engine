@@ -34,7 +34,7 @@ coreMemoryPool::coreMemoryPool(const coreUintW iBlockSize, const coreUintW iPage
 // destructor
 coreMemoryPool::~coreMemoryPool()
 {
-    this->Clear();
+    this->Reset();
 }
 
 
@@ -55,7 +55,7 @@ void coreMemoryPool::Configure(const coreUintW iBlockSize, const coreUintW iPage
 
 // ****************************************************************
 // reset memory-pool to its initial state
-void coreMemoryPool::Clear()
+void coreMemoryPool::Reset()
 {
     ASSERT(m_apFreeStack.size() == (m_apPageList.size() * m_iPageSize))
 

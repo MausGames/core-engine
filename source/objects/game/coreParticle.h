@@ -294,7 +294,7 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
     {
         // adjust status value
         const coreUintW iComp = MIN(F_TO_UI(m_fCreation), 3u);
-        m_fCreation = TRUNC(m_fCreation);
+        m_fCreation = FRACT(m_fCreation);
 
         // create particles and call function
         for(coreUintW i = iNum * iComp; i--; )

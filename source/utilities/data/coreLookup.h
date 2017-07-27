@@ -89,7 +89,7 @@ public:
     inline coreValueIterator erase(const coreValueIterator& it) {this->_cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}
     inline void              clear()                            {this->_cache_clear(); m_atValueList.clear();    m_atKeyList.clear();}
     inline void              pop_back ()                        {this->_cache_clear(); m_atValueList.pop_back(); m_atKeyList.pop_back();}
-    inline void              pop_front()                        {this->_cache_clear(); this->erase(this->front());}
+    inline void              pop_front()                        {this->_cache_clear(); this->erase(this->begin());}
     //! @}
 
     /*! return first and last entry */

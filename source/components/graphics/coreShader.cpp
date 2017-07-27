@@ -19,7 +19,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sS
     coreChar aacEntry[iNum][iLength];
 
     sStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) std::sprintf(aacEntry[i], pcString, i);}
-    inline const coreChar* operator [] (const coreUintW iIndex)const {return aacEntry[iIndex];}
+    inline const coreChar* operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return aacEntry[iIndex];}
 };
 
 #define STRING_ARRAY(s,n,v)               \

@@ -45,6 +45,7 @@
 #define LERP  coreMath::Lerp
 #define LERPS coreMath::LerpSmooth
 #define LERPB coreMath::LerpBreak
+#define LERPH coreMath::LerpHermit
 #define POW   coreMath::Pow
 #define FMOD  coreMath::Fmod
 #define EXP2  coreMath::Exp2
@@ -85,8 +86,9 @@ public:
     template <typename T> static constexpr T        Pow2      (const T& x)                                               {return x * x;}
     template <typename T> static constexpr T        Pow3      (const T& x)                                               {return x * x * x;}
     template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat s)                {return x + (y - x) * s;}
-    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, 0.5f - 0.5f * COS(s*PI));}
-    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, SIN(s*PI*0.5f));}
+    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
+    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, SIN(s * PI * 0.5f));}
+    template <typename T> static constexpr T        LerpHermit(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
     template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                       {return POW2(x - c) <= POW2(r);}
     template <typename T> static constexpr coreBool IsPot     (const T& x)                                               {return !(x & (x - T(1)));}
     //! @}

@@ -47,6 +47,8 @@
 #define CORE_CONFIG_INPUT_JOYSTICKDEAD          "Input",    "JoystickDead",       (0x2000)
 #define CORE_CONFIG_INPUT_JOYSTICKMAX           "Input",    "JoystickMax",        (0x7000)
 
+extern template CSimpleIniA;   //!< do not create template in every compilation unit
+
 
 // ****************************************************************
 /* configuration file class */

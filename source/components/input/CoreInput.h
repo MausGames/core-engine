@@ -227,14 +227,16 @@ public:
     inline void ClearKeyboardButtonAll()                                                {std::memset(m_Keyboard.aiButton,                    0, sizeof(m_Keyboard.aiButton));}
     inline void ClearMouseButtonAll   ()                                                {std::memset(m_Mouse   .aiButton,                    0, sizeof(m_Mouse   .aiButton));}
     inline void ClearJoystickButtonAll(const coreUintW iIndex)                          {std::memset(__CORE_INPUT_JOYSTICK(iIndex).aiButton, 0, sizeof(__CORE_INPUT_JOYSTICK(iIndex).aiButton));}
+    inline void ClearTouchButtonAll()                                                   {for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i) m_aTouch[i].iButton = 0u;}
+    void        ClearButtonAll();
     //! @}
 
 
 private:
-    //! update and clear the input button interface
+    //! update the input button interface
     //! @{
-    void __UpdateButtons();
-    void __ClearButtons();
+    void __UpdateButtonsStart();
+    void __UpdateButtonsEnd();
     //! @}
 };
 

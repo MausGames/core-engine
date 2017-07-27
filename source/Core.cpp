@@ -31,7 +31,7 @@ Core::Core()noexcept
     Log    = new coreLog("log.html");
     Log->Header("Utilities");
     Config = new coreConfig("config.ini");
-    Rand   = new coreRand(2048u);
+    Rand   = new coreRand();
 
     // init main components
     System   = new CoreSystem();
@@ -177,8 +177,8 @@ coreStatus Core::Run()
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())
     {
-        // update the input button interface
-        Core::Input->__UpdateButtons();
+        // update the input button interface   
+        Core::Input->__UpdateButtonsStart();
 
         // move and render the application
         Core::Application->Move();
@@ -189,9 +189,9 @@ coreStatus Core::Run()
 
         // update all remaining components
         Core::Debug   ->__UpdateOutput();
-        Core::Graphics->__UpdateScene();
+        Core::Graphics->__UpdateScene();   // # contains frame terminator
         Core::System  ->__UpdateTime();
-        Core::Input   ->__ClearButtons();
+        Core::Input   ->__UpdateButtonsEnd();
 
         // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())

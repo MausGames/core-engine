@@ -44,7 +44,7 @@ static void HandleInvalidParameter(const wchar_t* pcExpression, const wchar_t* p
 
 // ****************************************************************
 /* improve hardware utilization on NUMA systems */
-static void ImproveNUMA(void)
+static void ImproveNuma(void)
 {
     // get highest NUMA node number
     ULONG iNumaNode;
@@ -78,7 +78,7 @@ extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInst
 #endif
 
     // improve hardware utilization on NUMA systems
-    ImproveNUMA();
+    ImproveNuma();
 
     // initialize the SDL library
     SDL_SetMainReady();

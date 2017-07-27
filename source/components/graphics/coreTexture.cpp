@@ -210,7 +210,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
         }
 
         // process all available texture levels
-        for(coreUintW i = 0u; i < m_iLevels; ++i)
+        for(coreUintW i = 0u, ie = m_iLevels; i < ie; ++i)
         {
             const coreUint32 iCurWidth  = iWidth  >> i;
             const coreUint32 iCurHeight = iHeight >> i;

@@ -237,6 +237,24 @@ CoreSystem::~CoreSystem()
 
 
 // ****************************************************************
+// change the title of the window
+void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
+{
+#if defined(_CORE_DEBUG_)
+
+    // set the new title (with debug label)
+    SDL_SetWindowTitle(m_pWindow, PRINT("%s (Debug)", pcTitle));
+
+#else
+
+    // set the new title
+    SDL_SetWindowTitle(m_pWindow, pcTitle);
+
+#endif
+}
+
+
+// ****************************************************************
 // change the icon of the window
 void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 {
@@ -248,7 +266,7 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
     if(pData)
     {
         // create icon and free the texture
-        SDL_SetWindowIcon(Core::System->GetWindow(), pData);
+        SDL_SetWindowIcon(m_pWindow, pData);
         SDL_FreeSurface(pData);
     }
 }

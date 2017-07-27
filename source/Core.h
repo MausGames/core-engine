@@ -58,6 +58,7 @@
 // TODO: enable MSVC warnings 4244, 4267 again
 // TODO: #pragma warning(default : 4242 4244 4365) // loss of precision
 // TODO: #pragma warning(default : 4820)           // byte padding
+// TODO: unify const void* and const coreByte*
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -183,6 +184,7 @@
     #pragma warning(disable : 4266)   //!< virtual function not overridden
     #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
     #pragma warning(disable : 4365)   //!< implicit conversion between signed and unsigned
+    #pragma warning(disable : 4548)   //!< expression before comma has no effect
     #pragma warning(disable : 4557)   //!< __assume contains effect
     #pragma warning(disable : 4623)   //!< default constructor implicitly deleted
     #pragma warning(disable : 4625)   //!< copy constructor implicitly deleted
@@ -223,7 +225,7 @@
 
 
 // ****************************************************************
-/* base libraries */
+/* standard libraries */
 #define _GNU_SOURCE     (1)
 #define _HAS_EXCEPTIONS (0)
 #define _ALLOW_KEYWORD_MACROS
@@ -268,7 +270,7 @@
 
 
 // ****************************************************************
-/* specific libraries */
+/* external libraries */
 #define HAVE_LIBC (1)
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
@@ -293,28 +295,27 @@
 
 // ****************************************************************
 /* general definitions */
-#undef  NULL
-#define NULL nullptr
+#undef NULL
+#undef __STRING
 
-#undef  __STRING
+#define NULL                 nullptr
 #define __STRING(a)          #a
 #define STRING(a)            __STRING(a)
-#define __DEFINED(a,b)       (!coreData::StrCmpConst(#a, b))
-#define DEFINED(a)           (__DEFINED(a, #a))
+#define DEFINED(a)           (!coreData::StrCmpConst(STRING(a), #a))
 
 #define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
 
-#define BIT(n)               (1u << (n))   // starts with 0
-#define BITLINE(n)           (BIT(n) - 1u)
+#define BIT(n)               (1ull << (n))   // starts with 0
+#define BITLINE(n)           (BIT(n) - 1ull)
 #define ADD_BIT(o,n)         { (o) |=  BIT(n);}
 #define ADD_FLAG(o,n)        { (o) |=     (n);}
 #define REMOVE_BIT(o,n)      { (o) &= ~BIT(n);}
 #define REMOVE_FLAG(o,n)     { (o) &=    ~(n);}
 #define TOGGLE_BIT(o,n)      { (o) ^=  BIT(n);}
 #define TOGGLE_FLAG(o,n)     { (o) ^=     (n);}
-#define SET_BIT(o,n,t)       { (o) ^=  BIT(n) & ((o) ^ -coreInt32(!!(t)));}
-#define SET_FLAG(o,n,t)      { (o) ^=     (n) & ((o) ^ -coreInt32(!!(t)));}
+#define SET_BIT(o,n,t)       { (o) ^=  BIT(n) & ((o) ^ ((t) ? ~0ull : 0ull));}
+#define SET_FLAG(o,n,t)      { (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
 #define CONTAINS_BIT(o,n)    (((o) &   BIT(n)) ? true : false)
 #define CONTAINS_FLAG(o,n)   (((o) &      (n)) == (n))
 
@@ -444,10 +445,10 @@ template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iS
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
 
 // retrieve compile-time function and lambda properties
-template <typename T>                            struct INTERFACE function_traits final               : public function_traits<decltype(&T::operator())> {};
-template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                  {};
-template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                  {};
-template <typename R,             typename... A> struct INTERFACE function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                  {};
+template <typename T>                            struct INTERFACE function_traits final               : public function_traits<decltype(&std::remove_reference<T>::type::operator())> {};
+template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                                               {};
+template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                                               {};
+template <typename R,             typename... A> struct INTERFACE function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                                               {};
 template <typename R,             typename... A> struct INTERFACE function_traits<R      (A...)>
 {
     using return_type = R;                                                                                      //!< return type

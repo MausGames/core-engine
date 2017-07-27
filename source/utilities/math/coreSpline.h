@@ -283,6 +283,9 @@ template <typename T> void coreSpline<T>::Refine()
                               (B - A).Length()) * RCP((oNextNode.tTangent.Length() + oCurNode.tTangent.Length()) * 0.5f);
         m_fTotalDistance  += oCurNode.fDistance;
     }
+
+    // reduce memory consumption
+    m_apNode.shrink_to_fit();
 }
 
 

@@ -296,8 +296,20 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
 
 // ****************************************************************
-// update the input button interface
-void CoreInput::__UpdateButtons()
+// clear status of all input buttons
+void CoreInput::ClearButtonAll()
+{
+    // clear each available device
+    this->ClearKeyboardButtonAll();
+    this->ClearMouseButtonAll();
+    for(coreUintW i = 0u, ie = this->GetJoystickNum(); i < ie; ++i) this->ClearJoystickButtonAll(i);
+    this->ClearTouchButtonAll();
+}
+
+
+// ****************************************************************
+// update the input button interface (start)
+void CoreInput::__UpdateButtonsStart()
 {
     // process keyboard inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
@@ -356,8 +368,8 @@ void CoreInput::__UpdateButtons()
 
 
 // ****************************************************************
-// clear the input button interface
-void CoreInput::__ClearButtons()
+// update the input button interface (end)
+void CoreInput::__UpdateButtonsEnd()
 {
     // clear all numbers of input buttons with same status
     std::memset(m_Keyboard.aiCount, 0, sizeof(m_Keyboard.aiCount));

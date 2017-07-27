@@ -57,6 +57,8 @@ public:
         coreUint32  iNormal;     //!< normal vector             (Snorm4x8)
         coreUint32  iTangent;    //!< additional tangent vector (Snorm4x8)
     };
+    STATIC_ASSERT(sizeof(coreVertexPackedHigh) == 20u)
+    STATIC_ASSERT(sizeof(coreVertexPackedLow)  == 24u)
     #pragma pack(pop)
 
     //! import structure

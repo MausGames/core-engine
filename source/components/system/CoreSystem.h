@@ -69,8 +69,8 @@ public:
 
     //! control window
     //! @{
-    inline void SetWindowTitle(const coreChar* pcTitle) {SDL_SetWindowTitle(m_pWindow, pcTitle);}
-    void        SetWindowIcon (const coreChar* pcPath);
+    void SetWindowTitle(const coreChar* pcTitle);
+    void SetWindowIcon (const coreChar* pcPath);
     //! @}
 
     //! control time

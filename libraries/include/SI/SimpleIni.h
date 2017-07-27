@@ -166,7 +166,7 @@
       SI_NO_MBCS. This is defined automatically on Windows CE platforms.
 
     @section contrib CONTRIBUTIONS
-    
+
     - 2010/05/03: Tobias Gehrig: added GetDoubleValue()
 
     @section licence MIT LICENCE
@@ -279,13 +279,13 @@ enum SI_Error {
 # include <unicode/ustring.h>
 #endif
 
-#if defined(_WIN32)
-# define SI_HAS_WIDE_FILE
-# define SI_WCHAR_T     wchar_t
-#elif defined(SI_CONVERT_ICU)
-# define SI_HAS_WIDE_FILE
-# define SI_WCHAR_T     UChar
-#endif
+//#if defined(_WIN32)
+//# define SI_HAS_WIDE_FILE
+//# define SI_WCHAR_T     wchar_t
+//#elif defined(SI_CONVERT_ICU)
+//# define SI_HAS_WIDE_FILE
+//# define SI_WCHAR_T     UChar
+//#endif
 
 
 // ---------------------------------------------------------------------------
@@ -3215,7 +3215,9 @@ public:
 # endif
 #endif
 
-#include <Stringapiset.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
 #ifdef SI_NO_MBCS
 # define SI_NoCase   SI_GenericNoCase
 #else // !SI_NO_MBCS

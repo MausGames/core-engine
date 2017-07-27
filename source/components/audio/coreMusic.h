@@ -18,6 +18,8 @@
 // TODO: player: own thread
 // TODO: player: own (cached) parameters like volume, pitch - forwarded to music files
 // TODO: player: reorder properties, SwitchBox is similar
+// TODO: coreMusicFile.cpp, coreMusicPlayer.cpp
+// TODO: memory mapping
 
 
 // ****************************************************************

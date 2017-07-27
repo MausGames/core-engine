@@ -67,7 +67,7 @@ public:
     //! control state of the memory-pool
     //! @{
     void Configure(const coreUintW iBlockSize, const coreUintW iPageSize);
-    void Clear();
+    void Reset();
     //! @}
 
     //! create and remove memory-blocks
