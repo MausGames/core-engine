@@ -341,7 +341,7 @@ void coreMusicPlayer::Shuffle()
     m_apSequence = m_apMusic;
 
     // shuffle the list
-    std::shuffle(m_apSequence.begin(), m_apSequence.end(), std::default_random_engine(CORE_RAND_SEED));
+    coreData::Shuffle(m_apSequence.begin(), m_apSequence.end());
 
     // switch to first music object
     this->Select(0);

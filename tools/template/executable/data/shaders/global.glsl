@@ -140,10 +140,12 @@ struct coreLight
 #else
     #define coreMin3(a,b,c) (min(a, min(b, c)))
     #define coreMax3(a,b,c) (max(a, max(b, c)))
-    float   coreMed3(const in float a, const in float b, const in float c) {return max(min(max(a, b), c), min(a, b));}
-    vec2    coreMed3(const in vec2  a, const in vec2  b, const in vec2  c) {return max(min(max(a, b), c), min(a, b));}
-    vec3    coreMed3(const in vec3  a, const in vec3  b, const in vec3  c) {return max(min(max(a, b), c), min(a, b));}
-    vec4    coreMed3(const in vec4  a, const in vec4  b, const in vec4  c) {return max(min(max(a, b), c), min(a, b));}
+    #define __CORE_MED3(t) t coreMed3(const in t a, const in t b, const in t c) {return max(min(max(a, b), c), min(a, b));}
+        __CORE_MED3(float)
+        __CORE_MED3(vec2)
+        __CORE_MED3(vec3)
+        __CORE_MED3(vec4)
+    #undef __CORE_MED3
 #endif
 
 // condition across group of shader invocations
@@ -155,12 +157,20 @@ struct coreLight
     #define coreAllInvocations(x) (x)
 #endif
 
+// linear interpolation between 0.0 and 1.0
+#define __CORE_LINEAR_STEP(t) t coreLinearStep(const in float e0, const in float e1, const in t x) {return clamp((x - e0) / (e1 - e0), 0.0, 1.0);}
+    __CORE_LINEAR_STEP(float)
+    __CORE_LINEAR_STEP(vec2)
+    __CORE_LINEAR_STEP(vec3)
+    __CORE_LINEAR_STEP(vec4)
+#undef __CORE_LINEAR_STEP
+
 // color convert
-vec3 coreRgbToHsv(const in vec3 v3RGB)
+vec3 coreRgbToHsv(const in vec3 v3Rgb)
 {
-    float R = v3RGB.r;
-    float G = v3RGB.g;
-    float B = v3RGB.b;
+    float R = v3Rgb.r;
+    float G = v3Rgb.g;
+    float B = v3Rgb.b;
 
     float v = coreMax3(R, G, B);
     float d = v - coreMin3(R, G, B);
@@ -173,11 +183,11 @@ vec3 coreRgbToHsv(const in vec3 v3RGB)
     if(G == v) return vec3((2.0 + (B - R) / d) / 6.0, s, v);
                return vec3((4.0 + (R - G) / d) / 6.0, s, v);
 }
-vec3 coreHsvToRgb(const in vec3 v3HSV)
+vec3 coreHsvToRgb(const in vec3 v3Hsv)
 {
-    float H = v3HSV.x * 6.0;
-    float S = v3HSV.y;
-    float V = v3HSV.z;
+    float H = v3Hsv.x * 6.0;
+    float S = v3Hsv.y;
+    float V = v3Hsv.z;
 
     float h = floor(H);
 
@@ -192,45 +202,45 @@ vec3 coreHsvToRgb(const in vec3 v3HSV)
     if(h == 5.0) return vec3(V,     p,     V - t);
                  return vec3(V,     p + t, p);
 }
-vec3 coreRgbToYiq(const in vec3 v3RGB)
+vec3 coreRgbToYiq(const in vec3 v3Rgb)
 {
     return mat3(0.299,  0.587,  0.114,
                 0.596, -0.275, -0.321,
-                0.212, -0.523,  0.311) * v3RGB;
+                0.212, -0.523,  0.311) * v3Rgb;
 }
-vec3 coreYiqToRgb(const in vec3 v3YIQ)
+vec3 coreYiqToRgb(const in vec3 v3Yiq)
 {
     return mat3(1.000,  0.956,  0.620,
                 1.000, -0.272, -0.647,
-                1.000, -1.108,  1.705) * v3YIQ;
+                1.000, -1.108,  1.705) * v3Yiq;
 }
-vec3 coreRgbToYuv(const in vec3 v3RGB)
+vec3 coreRgbToYuv(const in vec3 v3Rgb)
 {
     return mat3( 0.21260,  0.71520,  0.07220,
                 -0.09991, -0.33609,  0.43600,
-                 0.61500, -0.55861, -0.05639) * v3RGB;
+                 0.61500, -0.55861, -0.05639) * v3Rgb;
 }
-vec3 coreYuvToRgb(const in vec3 v3YUV)
+vec3 coreYuvToRgb(const in vec3 v3Yuv)
 {
     return mat3(1.00000,  0.00000,  1.28033,
                 1.00000, -0.21482, -0.38059,
-                1.00000,  2.12798,  0.00000) * v3YUV;
+                1.00000,  2.12798,  0.00000) * v3Yuv;
 }
-vec3 coreRgbToYcbcr(const in vec3 v3RGB)
+vec3 coreRgbToYcbcr(const in vec3 v3Rgb)
 {
     return mat3( 0.299000,  0.587000,  0.114000,
                 -0.168736, -0.331264,  0.500000,
-                 0.500000, -0.418688, -0.081312) * v3RGB + vec3(0.0, 0.5, 0.5);
+                 0.500000, -0.418688, -0.081312) * v3Rgb + vec3(0.0, 0.5, 0.5);
 }
-vec3 coreYcbcrToRgb(const in vec3 v3YCbCr)
+vec3 coreYcbcrToRgb(const in vec3 v3Ycbcr)
 {
     return mat3(1.00000,  0.00000,  1.40200,
                 1.00000, -0.34414, -0.71414,
-                1.00000,  1.77200,  0.00000) * (v3YCbCr - vec3(0.0, 0.5, 0.5));
+                1.00000,  1.77200,  0.00000) * (v3Ycbcr - vec3(0.0, 0.5, 0.5));
 }
-float coreLuminance(const in vec3 v3RGB)
+float coreLuminance(const in vec3 v3Rgb)
 {
-    return dot(v3RGB, vec3(0.212671, 0.715160, 0.072169));
+    return dot(v3Rgb, vec3(0.212671, 0.715160, 0.072169));
 }
 
 // vector square length
@@ -268,6 +278,15 @@ vec3 coreQuatApply(const in vec4 q, const in vec3 v)
 }
 
 // matrix transpose
+mat2 coreTranspose(const in mat2 m)
+{
+#if (__VERSION__) >= 120
+    return transpose(m);
+#else
+    return mat2(m[0][0], m[1][0],
+                m[0][1], m[1][1]);
+#endif
+}
 mat3 coreTranspose(const in mat3 m)
 {
 #if (__VERSION__) >= 120

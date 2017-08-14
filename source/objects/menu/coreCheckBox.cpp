@@ -39,7 +39,7 @@ coreCheckBox::coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashS
 void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)
 {
     // construct the button
-    coreButton::Construct(sIdleUnchecked, sBusyUnchecked);
+    this->coreButton::Construct(sIdleUnchecked, sBusyUnchecked);
 
     // construct remaining object
     this->__Construct(sIdleChecked, sBusyChecked);
@@ -48,7 +48,7 @@ void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHas
 void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)
 {
     // construct the button with label
-    coreButton::Construct(sIdleUnchecked, sBusyUnchecked, sFont, iHeight, iOutline, 0u);
+    this->coreButton::Construct(sIdleUnchecked, sBusyUnchecked, sFont, iHeight, iOutline);
     this->GetCaption()->SetText   ("X");
     this->GetCaption()->SetEnabled(CORE_OBJECT_ENABLE_NOTHING);
 
@@ -64,7 +64,7 @@ void coreCheckBox::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // move the button
-    coreButton::Move();
+    this->coreButton::Move();
 
     // check for interaction
     if(this->IsClicked()) this->SetCheck(!m_bCheck);

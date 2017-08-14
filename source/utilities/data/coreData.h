@@ -114,6 +114,11 @@ public:
     static void                   StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
     //! @}
 
+    /*! operate with containers */
+    //! @{
+    template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
+    //! @}
+
 
 private:
     /*! access next return-string */

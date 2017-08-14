@@ -85,7 +85,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
 
     // calculate relative transformation matrix (with absolute values to check only for maximums)
     const coreVector4 Q = coreVector4::QuatMultiply(vRevRotation2, vRotation1);
-    const coreMatrix3 M = coreMatrix3::Quat(Q);
+    const coreMatrix3 M = coreMatrix3::FromQuat(Q);
     const coreMatrix3 S = M.Processed(ABS);
 
     // rotate and move first object relative to second (but difference only with single rotation)

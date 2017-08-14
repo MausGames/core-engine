@@ -11,7 +11,7 @@
 #define _CORE_GUARD_TEXTBOX_H_
 
 // TODO: enable text selection and clipboard copy/cut
-// TODO: enable clipboard paste
+// TODO: enable text-cursor positioning (mouse + arrow keys)
 
 
 // ****************************************************************
@@ -22,8 +22,9 @@ private:
     std::string m_sText;                //!< current text
     std::string m_sPrevious;            //!< previous text
 
-    coreChar m_cCursor;                 //!< cursor character
-    coreChar m_cReplace;                //!< replacement character for hidden text
+    coreUint8 m_iLength;                //!< max number of characters
+    coreChar  m_cCursor;                //!< cursor character
+    coreChar  m_cReplace;               //!< replacement character for hidden text
 
     coreBool m_bInput;                  //!< text-input status
     coreBool m_bDisplay;                //!< caption update status (dirty flag)
@@ -56,7 +57,7 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetText   (const coreChar* pcText)   {if(m_sText    != pcText)   {m_sText    = pcText;   m_bDisplay = true;}}
+    inline void SetText   (const coreChar* pcText)   {if(m_sText    != pcText)   {m_sText    = pcText;   m_bDisplay = true; ASSERT(m_sText.length() <= m_iLength)}}
     inline void SetCursor (const coreChar  cCursor)  {if(m_cCursor  != cCursor)  {m_cCursor  = cCursor;  m_bDisplay = true;}}
     inline void SetReplace(const coreChar  cReplace) {if(m_cReplace != cReplace) {m_cReplace = cReplace; m_bDisplay = true;}}
     void SetInput(const coreBool bInput);
@@ -64,7 +65,7 @@ public:
 
     //! get object properties
     //! @{
-    inline const coreChar* GetText   ()const {return m_sText.c_str();}
+    inline const coreChar* GetText   ()const {const coreChar* pcText = PRINT("%s", m_sText.c_str()); c_cast<coreChar*>(pcText)[m_iLength] = '\0'; return pcText;}
     inline const coreChar& GetCursor ()const {return m_cCursor;}
     inline const coreChar& GetReplace()const {return m_cReplace;}
     inline const coreBool& GetInput  ()const {return m_bInput;}

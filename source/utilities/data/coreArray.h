@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_ARRAY_H_
 #define _CORE_GUARD_ARRAY_H_
 
-// TODO: create a dynamic-sized version with std::vector ? (replacement in coreRand and coreParticleSystem)
+// TODO: create a dynamic-sized version with std::vector ? (replacement in coreParticleSystem)
 // TODO: rename functions to better and more obvious names
 
 
@@ -23,7 +23,7 @@ private:
 
 
 public:
-    coreArray()noexcept;
+    constexpr coreArray()noexcept;
 
     ENABLE_COPY(coreArray)
 
@@ -36,8 +36,8 @@ public:
 
     /*! access reference to current item */
     //! @{
-    inline       T&        current()      {return std::array<T, iSize>::operator [] (m_iCurIndex);}
-    inline const T&        current()const {return std::array<T, iSize>::operator [] (m_iCurIndex);}
+    inline       T&        current()      {return (*this)[m_iCurIndex];}
+    inline const T&        current()const {return (*this)[m_iCurIndex];}
     inline const coreUintW index  ()const {return m_iCurIndex;}
     //! @}
 };
@@ -45,7 +45,7 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T, coreUintW iSize> coreArray<T, iSize>::coreArray()noexcept
+template <typename T, coreUintW iSize> constexpr coreArray<T, iSize>::coreArray()noexcept
 : std::array<T, iSize> ()
 , m_iCurIndex          (0u)
 {

@@ -78,7 +78,7 @@ coreObject3D& coreObject3D::operator = (const coreObject3D& c)noexcept
     this->ChangeType(c.m_iType);
 
     // copy remaining properties
-    coreObject::operator = (c);
+    this->coreObject::operator = (c);
     m_vPosition          = c.m_vPosition;
     m_vSize              = c.m_vSize;
     m_vDirection         = c.m_vDirection;
@@ -98,7 +98,7 @@ coreObject3D& coreObject3D::operator = (coreObject3D&& m)noexcept
     this->ChangeType(m.m_iType);
 
     // move remaining properties
-    coreObject::operator = (std::move(m));
+    this->coreObject::operator = (std::move(m));
     m_vPosition          = m.m_vPosition;
     m_vSize              = m.m_vSize;
     m_vDirection         = m.m_vDirection;
@@ -155,7 +155,7 @@ coreBool coreObject3D::Prepare(const coreProgramPtr& pProgram)
 coreBool coreObject3D::Prepare()
 {
     // enable default shader-program
-    return coreObject3D::Prepare(m_pProgram);
+    return this->Prepare(m_pProgram);
 }
 
 
@@ -173,8 +173,8 @@ void coreObject3D::Render(const coreProgramPtr& pProgram)
 
 void coreObject3D::Render()
 {
-    // render with default shader-program
-    coreObject3D::Render(m_pProgram);
+    // render with default shader-program (no inheritance)
+    this->coreObject3D::Render(m_pProgram);
 }
 
 
@@ -190,7 +190,7 @@ void coreObject3D::Move()
         if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
         {
             // update rotation quaternion
-            m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().Quat();
+            m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().ToQuat();
         }
         if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {

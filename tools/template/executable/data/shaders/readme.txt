@@ -115,6 +115,7 @@ T     coreMax3                (in T, in T, in T)   // trinary maximum
 T     coreMed3                (in T, in T, in T)   // trinary median
 bool  coreAnyInvocation       (in bool)            // condition across group of shader invocations
 bool  coreAllInvocations      (in bool)
+T     coreLinearStep          (in T, in T, in T)   // linear interpolation between 0.0 and 1.0
 vec3  coreRgbToHsv            (in vec3)            // RGB to HSV conversion
 vec3  coreHsvToRgb            (in vec3)            // HSV to RGB conversion
 vec3  coreRgbToYiq            (in vec3)            // RGB to YIQ conversion   (BT.601, NTSC)
@@ -131,7 +132,8 @@ vec3  coreUnpackNormalSphere  (in vec2)            // vector normal unpack (with
 vec3  coreUnpackNormalMap     (in vec2)            // vector normal unpack (with z-reconstruction)
 vec3  coreUnpackNormalMapDeriv(in vec2)            // vector normal unpack (with partial-derivative)
 vec3  coreQuatApply           (in vec4, in vec3)   // quaternion transformation
-mat3  coreTranspose           (in mat3)            // matrix transpose
+mat2  coreTranspose           (in mat2)            // matrix transpose
+mat3  coreTranspose           (in mat3)
 mat4  coreTranspose           (in mat4)
 mat3  coreInvert              (in mat3)            // matrix invert
 mat4  coreInvert              (in mat4)

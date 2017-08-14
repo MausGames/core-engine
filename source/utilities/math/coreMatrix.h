@@ -107,12 +107,12 @@ public:
 
     /*! convert matrix */
     //! @{
-    constexpr     operator const coreFloat* ()const {return arr[0];}
-    CONSTEXPR     coreMatrix2 m12 ()const           {return coreMatrix2(_11, _12, _21, _22);}
-    CONSTEXPR     coreMatrix2 m13 ()const           {return coreMatrix2(_11, _13, _31, _33);}
-    CONSTEXPR     coreMatrix2 m23 ()const           {return coreMatrix2(_22, _23, _32, _33);}
-    inline        coreVector4 Quat()const;
-    static inline coreMatrix3 Quat(const coreVector4& v);
+    constexpr        operator const coreFloat* ()const {return arr[0];}
+    CONSTEXPR        coreMatrix2 m12     ()const       {return coreMatrix2(_11, _12, _21, _22);}
+    CONSTEXPR        coreMatrix2 m13     ()const       {return coreMatrix2(_11, _13, _31, _33);}
+    CONSTEXPR        coreMatrix2 m23     ()const       {return coreMatrix2(_22, _23, _32, _33);}
+    inline           coreVector4 ToQuat  ()const;
+    static constexpr coreMatrix3 FromQuat(const coreVector4& v);
     //! @}
 
     /*! transpose matrix */
@@ -347,7 +347,7 @@ constexpr coreMatrix3 coreMatrix3::operator * (const coreFloat f)const
 
 // ****************************************************************
 /* convert matrix to quaternion */
-inline coreVector4 coreMatrix3::Quat()const
+inline coreVector4 coreMatrix3::ToQuat()const
 {
     const coreFloat fTrace = _11 + _22 + _33;
 
@@ -391,7 +391,7 @@ inline coreVector4 coreMatrix3::Quat()const
 
 // ****************************************************************
 /* convert quaternion to matrix */
-inline coreMatrix3 coreMatrix3::Quat(const coreVector4& v)
+constexpr coreMatrix3 coreMatrix3::FromQuat(const coreVector4& v)
 {
     const coreFloat XX = v.x*v.x;
     const coreFloat XY = v.x*v.y;

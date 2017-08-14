@@ -20,11 +20,11 @@ coreButton::coreButton()noexcept
 {
 }
 
-coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept
+coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept
 : coreButton ()
 {
     // construct on creation
-    this->Construct(sIdle, sBusy, sFont, iHeight, iOutline, iLength);
+    this->Construct(sIdle, sBusy, sFont, iHeight, iOutline);
 }
 
 coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy)noexcept
@@ -46,11 +46,11 @@ coreButton::~coreButton()
 
 // ****************************************************************
 // construct the button
-void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline, const coreUint8 iLength)
+void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)
 {
     // create the label
     if(!m_pCaption) m_pCaption = new coreLabel();
-    m_pCaption->Construct(sFont, iHeight, iOutline, iLength);
+    m_pCaption->Construct(sFont, iHeight, iOutline);
 
     // construct remaining object
     this->Construct(sIdle, sBusy);
@@ -75,7 +75,7 @@ void coreButton::Render()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
 
     // render the 2d-object
-    if(m_apTexture[0]) coreObject2D::Render();
+    if(m_apTexture[0]) this->coreObject2D::Render();
 
     // render the label
     if(m_pCaption)
@@ -116,5 +116,5 @@ void coreButton::Move()
     }
 
     // move the 2d-object
-    coreObject2D::Move();
+    this->coreObject2D::Move();
 }

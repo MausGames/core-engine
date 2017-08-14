@@ -75,7 +75,7 @@ CoreDebug::CoreDebug()noexcept
     m_pOverall->oOutput.SetColor3(COLOR_WHITE);
 
     // create background object
-    m_Background.DefineTexture(0, "default_black.png");
+    m_Background.DefineTexture(0u, "default_black.png");
     m_Background.DefineProgram("default_2d_program");
     m_Background.SetPosition  (coreVector2( 0.0f, 0.0f));
     m_Background.SetCenter    (coreVector2(-0.5f, 0.5f));
@@ -83,7 +83,7 @@ CoreDebug::CoreDebug()noexcept
     m_Background.SetColor4    (coreVector4(0.05f,0.05f,0.05f,0.75f));
 
     // create loading indicator
-    m_Loading.Construct   ("default.ttf", 16u, 0u, 16u);
+    m_Loading.Construct   ("default.ttf", 16u, 0u);
     m_Loading.SetCenter   (coreVector2(-0.5f, 0.5f));
     m_Loading.SetAlignment(coreVector2( 1.0f,-1.0f));
     m_Loading.SetColor3   (COLOR_ORANGE);
@@ -100,7 +100,7 @@ CoreDebug::CoreDebug()noexcept
         // configure statistic output labels
         for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
         {
-            m_aStatOutput[i].Construct   ("default.ttf", 16u, 0u, 64u);
+            m_aStatOutput[i].Construct   ("default.ttf", 16u, 0u);
             m_aStatOutput[i].SetCenter   (coreVector2(-0.5f, 0.5f));
             m_aStatOutput[i].SetAlignment(coreVector2( 1.0f,-1.0f));
             m_aStatOutput[i].SetColor3   (COLOR_PURPLE);
@@ -195,7 +195,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
 
         // configure output label
         coreLabel& oOutput = pNewMeasure->oOutput;
-        oOutput.Construct   ("default.ttf", 16u, 0u, 128u);
+        oOutput.Construct   ("default.ttf", 16u, 0u);
         oOutput.SetCenter   (coreVector2(-0.5f, 0.5f));
         oOutput.SetAlignment(coreVector2( 1.0f,-1.0f));
         oOutput.SetColor3   (COLOR_BLUE);

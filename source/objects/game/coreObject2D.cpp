@@ -80,7 +80,7 @@ coreObject2D::~coreObject2D()
 coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
 {
     // copy remaining properties
-    coreObject::operator = (c);
+    this->coreObject::operator = (c);
     m_vPosition      = c.m_vPosition;
     m_vSize          = c.m_vSize;
     m_vDirection     = c.m_vDirection;
@@ -99,7 +99,7 @@ coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
 coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
 {
     // move remaining properties
-    coreObject::operator = (std::move(m));
+    this->coreObject::operator = (std::move(m));
     m_vPosition      = m.m_vPosition;
     m_vSize          = m.m_vSize;
     m_vDirection     = m.m_vDirection;
@@ -151,8 +151,8 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
 
 void coreObject2D::Render()
 {
-    // render with default shader-program
-    coreObject2D::Render(m_pProgram);
+    // render with default shader-program (no inheritance)
+    this->coreObject2D::Render(m_pProgram);
 }
 
 

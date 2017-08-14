@@ -17,6 +17,7 @@ coreTextBox::coreTextBox()noexcept
 : coreButton  ()
 , m_sText     ("")
 , m_sPrevious ("")
+, m_iLength   (0u)
 , m_cCursor   ('|')
 , m_cReplace  ('\0')
 , m_bInput    (false)
@@ -39,8 +40,11 @@ void coreTextBox::Construct(const coreHashString& sIdle, const coreHashString& s
 {
     ASSERT(iLength)
 
+    // save properties
+    m_iLength = iLength;
+
     // construct the button
-    coreButton::Construct(sIdle, sBusy, sFont, iHeight, iOutline, iLength);
+    this->coreButton::Construct(sIdle, sBusy, sFont, iHeight, iOutline);
 
     // reserve memory for text
     m_sText    .reserve(iLength);
@@ -55,7 +59,7 @@ void coreTextBox::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // move the button
-    coreButton::Move();
+    this->coreButton::Move();
 
     // check for interaction
     if(this->IsClicked()) this->SetInput(true);
@@ -126,6 +130,8 @@ void coreTextBox::SetInput(const coreBool bInput)
 // process new text-input characters
 coreBool coreTextBox::__Write()
 {
+    ASSERT(m_iLength)
+
     // get new text-input character
     const coreInputChar& iChar = Core::Input->GetKeyboardChar();
     if(iChar)
@@ -146,14 +152,14 @@ coreBool coreTextBox::__Write()
             coreChar* pcPaste = SDL_GetClipboardText();
             if(pcPaste)
             {
-                const coreUintW iLen = MIN(std::strlen(pcPaste), coreUintW(m_pCaption->GetLength() - 1u) - m_sText.length());
+                const coreUintW iLen = MIN(std::strlen(pcPaste), m_iLength - m_sText.length());
 
                 // append and clamp to remaining string space
                 m_sText.append(pcPaste, iLen);
                 SDL_free(pcPaste);
             }
         }
-        else if(m_sText.length() < coreUintW(m_pCaption->GetLength() - 1u))
+        else if(m_sText.length() < m_iLength)
         {
             // append new character
             m_sText.append(1u, coreChar(iChar));

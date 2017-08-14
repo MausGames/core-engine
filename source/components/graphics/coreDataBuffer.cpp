@@ -231,7 +231,7 @@ coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer o)noexcept
 void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType)
 {
     // create buffer storage
-    coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iStorageType);
+    this->coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iStorageType);
 
     // save properties
     m_iVertexSize = iVertexSize;
@@ -245,7 +245,7 @@ void coreVertexBuffer::Delete()
     if(!this->GetDataBuffer()) return;
 
     // delete buffer storage
-    coreDataBuffer::Delete();
+    this->coreDataBuffer::Delete();
 
     // reset properties
     m_iVertexSize = 0u;

@@ -168,13 +168,13 @@ public:
 
     /*! access specific entry */
     //! @{
-    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return coreLookupGen<coreUint32, coreHashString, T>::operator [] (sKey);}
+    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreLookupGen<coreUint32, coreHashString, T>::operator [] (sKey);}
     inline T& operator [] (const coreUintW       iIndex) {return this->m_atValueList[iIndex];}
     //! @}
 
     /*! create new entry */
     //! @{
-    template <typename... A> inline void emplace(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); coreLookupGen<coreUint32, coreHashString, T>::emplace(sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupGen<coreUint32, coreHashString, T>::emplace(sKey, std::forward<A>(vArgs)...);}
     //! @}
 
     /*! remove existing entry */
