@@ -8,8 +8,6 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-// TODO: maybe add pools for renderbuffer, framebuffer, program, shader, sync, queries
-
 
 // ****************************************************************
 /* pool definitions */
@@ -49,9 +47,9 @@
 /* pool structure */
 struct coreNamePool final
 {
-    SDL_SpinLock iLock = 0;                    //!< spinlock to allow multiple threads accessing the pool
-    coreUintW    iNext = CORE_GL_POOL_SIZE;    //!< next unused resource name in the pool
     GLuint       aiArray[CORE_GL_POOL_SIZE];   //!< actual pool holding all pre-generated resource names
+    coreUintW    iNext = CORE_GL_POOL_SIZE;    //!< next unused resource name in the pool
+    SDL_SpinLock iLock = 0;                    //!< spinlock to allow multiple threads accessing the pool
 };
 
 static coreNamePool g_PoolTextures2D;
@@ -93,6 +91,10 @@ void __coreInitOpenGL()
     const GLenum iError = glewInit();
     if(iError != GLEW_OK) Core::Log->Error("GLEW could not be initialized (GLEW: %s)", glewGetErrorString(iError));
                      else Core::Log->Info ("GLEW initialized (%s)",                    glewGetString(GLEW_VERSION));
+
+    // force enable and disable extensions
+    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS),  " ,;", [](const coreChar* pcToken) {glewEnableExtension (pcToken);});
+    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});
 
     // improve frame buffer compatibility
     if(!GLEW_ARB_framebuffer_object && GLEW_EXT_framebuffer_object)

@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
@@ -85,17 +88,8 @@ This also solves the problem of...
 ...which would cause compiles to complain that somevalue is unused if we
 disable assertions.
 */
-
-/* "while (0,0)" fools Microsoft's compiler's /W4 warning level into thinking
-    this condition isn't constant. And looks like an owl's face! */
-#ifdef _MSC_VER  /* stupid /W4 warnings. */
-#define SDL_NULL_WHILE_LOOP_CONDITION (-1 == __LINE__)
-#else
-#define SDL_NULL_WHILE_LOOP_CONDITION (0)
-#endif
-
 #define SDL_disabled_assert(condition) \
-    do { (void) sizeof ((condition)); } while (SDL_NULL_WHILE_LOOP_CONDITION)
+    do { (void) sizeof ((condition)); } while (0)
 
 typedef enum
 {
@@ -154,7 +148,7 @@ extern DECLSPEC SDL_AssertState SDLCALL SDL_ReportAssertion(SDL_AssertData *,
             } \
             break; /* not retrying. */ \
         } \
-    } while (SDL_NULL_WHILE_LOOP_CONDITION)
+    } while (0)
 
 #endif  /* enabled assertions support code */
 

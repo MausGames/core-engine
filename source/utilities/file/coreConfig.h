@@ -37,6 +37,8 @@
 #define CORE_CONFIG_GRAPHICS_DOUBLEBUFFER       "Graphics", "DoubleBuffer",       (true)
 #define CORE_CONFIG_GRAPHICS_RESOURCECONTEXT    "Graphics", "ResourceContext",    (DEFINED(_CORE_PARALLEL_))
 #define CORE_CONFIG_GRAPHICS_FALLBACKMODE       "Graphics", "FallbackMode",       (false)
+#define CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS   "Graphics", "EnableExtensions",   ("")
+#define CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS  "Graphics", "DisableExtensions",  ("")
 
 #define CORE_CONFIG_AUDIO_SOURCES               "Audio",    "Sources",            (16)
 #define CORE_CONFIG_AUDIO_GLOBALVOLUME          "Audio",    "GlobalVolume",       (1.0f)

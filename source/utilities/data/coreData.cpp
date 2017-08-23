@@ -425,21 +425,33 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
 
 // ****************************************************************
 /* create folder hierarchy */
-void coreData::CreateFolder(const std::string& sPath)
+void coreData::CreateFolder(const coreChar* pcPath)
 {
-    coreUintW iPos = 0u;
+    coreChar* pcString = coreData::__NextString();
+    coreChar* pcCursor = pcString;
 
-    // loop through path
-    while((iPos = sPath.find_first_of("/\\", iPos + 2u)) != std::string::npos)
+    // make local copy
+    std::strncpy(pcString, pcPath, CORE_DATA_STRING_LEN);
+    ASSERT(std::strlen(pcPath) < CORE_DATA_STRING_LEN)
+
+    // loop through all sub-folders
+    for(; (*pcCursor) != '\0'; ++pcCursor)
     {
-        const std::string sSubFolder = sPath.substr(0u, iPos);
+        if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
+        {
+            // build temporary path
+            const coreChar cTemp = (*pcCursor);
+            (*pcCursor) = '\0';
 
-        // create sub-folder
+            // create sub-folder
 #if defined(_CORE_WINDOWS_)
-        CreateDirectoryA(sSubFolder.c_str(), NULL);
+            CreateDirectoryA(pcString, NULL);
 #else
-        mkdir(sSubFolder.c_str(), S_IRWXU);
+            mkdir(pcString, S_IRWXU);
 #endif
+            // reset path
+            (*pcCursor) = cTemp;
+        }
     }
 }
 

@@ -78,7 +78,7 @@
     #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
     #undef  _CORE_GCC_
 #endif
-#if ((_CORE_MSVC_) < 1900) && ((_CORE_GCC_) < 40800) && ((_CORE_MINGW_) < 40800) && ((_CORE_CLANG_) < 30300)
+#if ((_CORE_MSVC_) < 1911) && ((_CORE_GCC_) < 60200) && ((_CORE_MINGW_) < 60200) && ((_CORE_CLANG_) < 40000)
     #warning "Compiler not supported!"
 #endif
 
@@ -139,53 +139,54 @@
 // ****************************************************************
 /* compiler definitions */
 #if defined(_CORE_MSVC_)
-    #define UNUSED          __pragma(warning(suppress : 4100 4101 4189))
-    #define OUTPUT          __restrict             //!< output parameter without aliasing (never)
-    #define INTERFACE       __declspec(novtable)   //!< pure interface class without direct instantiation
-    #define FORCE_INLINE    __forceinline          //!< always inline the function (when optimizations are enabled)
-    #define DONT_INLINE     __declspec(noinline)   //!< never inline the function
-    #define RETURN_RESTRICT __declspec(restrict)   //!< returned object will not be aliased with another pointer
-    #define RETURN_NONNULL                         //!< returned pointer will not be null
-    #define FUNC_PURE                              //!< function reads only parameters and non-volatile globals and returns a single value
-    #define FUNC_CONST      __declspec(noalias)    //!< function reads only parameters without indirections and returns a single value
-    #define FUNC_NOALIAS    __declspec(noalias)    //!< function does not access global state directly and may only use (read and write) first-level indirections
-    #define FUNC_NORETURN   __declspec(noreturn)   //!< function terminates (e.g. with exit(3) or abort(3))
+    #define UNUSED           [[maybe_unused]]       //!< possibly unused variable (warnings 4100, 4101, 4189)
+    #define OUTPUT           __restrict             //!< output parameter without aliasing
+    #define INTERFACE        __declspec(novtable)   //!< pure interface class without direct instantiation
+    #define FORCE_INLINE     __forceinline          //!< always inline the function (when optimizations are enabled)
+    #define DONT_INLINE      __declspec(noinline)   //!< never inline the function
+    #define RETURN_RESTRICT  __declspec(restrict)   //!< returned object will not be aliased with another pointer
+    #define RETURN_NONNULL                          //!< returned pointer will not be null
+    #define RETURN_NODISCARD [[nodiscard]]          //!< returned value should not be discarded (but can be casted to void)
+    #define FUNC_PURE                               //!< function does not modify anything (or reads volatile global state), and returns a value
+    #define FUNC_CONST       __declspec(noalias)    //!< function only reads parameters (without indirections), and returns a value
+    #define FUNC_LOCAL       __declspec(noalias)    //!< function only reads parameters, reads first-level indirections (e.g. this), and returns a value
+    #define FUNC_NOALIAS     __declspec(noalias)    //!< function only reads parameters, reads and writes first-level indirections, and may return a value
+    #define FUNC_TERMINATE   __declspec(noreturn)   //!< function does not return (e.g. by calling exit(3) or abort(3))
 #else
-    #define UNUSED          __attribute__((unused))
-    #define OUTPUT          __restrict__
+    #define UNUSED           __attribute__((unused))
+    #define OUTPUT           __restrict__
     #define INTERFACE
-    #define FORCE_INLINE    __attribute__((always_inline)) inline
-    #define DONT_INLINE     __attribute__((noinline))
-    #define RETURN_RESTRICT __attribute__((malloc))
-    #define RETURN_NONNULL  __attribute__((returns_nonnull))
-    #define FUNC_PURE       __attribute__((pure))
-    #define FUNC_CONST      __attribute__((const))
+    #define FORCE_INLINE     __attribute__((always_inline)) inline
+    #define DONT_INLINE      __attribute__((noinline))
+    #define RETURN_RESTRICT  __attribute__((malloc))
+    #define RETURN_NONNULL   __attribute__((returns_nonnull))
+    #define RETURN_NODISCARD [[nodiscard]]
+    #define FUNC_PURE        __attribute__((pure))
+    #define FUNC_CONST       __attribute__((const))
+    #define FUNC_LOCAL       __attribute__((pure))
     #define FUNC_NOALIAS
-    #define FUNC_NORETURN   __attribute__((noreturn, cold))
+    #define FUNC_TERMINATE   __attribute__((noreturn, cold))
 #endif
 
 #if defined(_CORE_MINGW_) && defined(_CORE_SSE_)
-    #define ENTRY_POINT     __attribute__((force_align_arg_pointer))   //!< realign run-time stack (to fix SSE)
+    #define ENTRY_POINT      __attribute__((force_align_arg_pointer))   //!< realign run-time stack (to fix SSE)
 #else
     #define ENTRY_POINT
 #endif
 
 #if defined(_CORE_MSVC_)
 
-    #define noexcept _NOEXCEPT
-
     // disable unwanted compiler warnings (with /Wall)
     #pragma warning(disable : 4061)   //!< enumerator not handled in switch
     #pragma warning(disable : 4100)   //!< unreferenced formal parameter
-    #pragma warning(disable : 4127)   //!< constant conditional expression
     #pragma warning(disable : 4201)   //!< nameless struct or union
     #pragma warning(disable : 4242)   //!< implicit conversion to different precision #1
     #pragma warning(disable : 4244)   //!< implicit conversion to different precision #2
     #pragma warning(disable : 4266)   //!< virtual function not overridden
     #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
     #pragma warning(disable : 4365)   //!< implicit conversion between signed and unsigned
-    #pragma warning(disable : 4548)   //!< expression before comma has no effect
     #pragma warning(disable : 4557)   //!< __assume contains effect
+    #pragma warning(disable : 4577)   //!< noexcept used without exception handling
     #pragma warning(disable : 4623)   //!< default constructor implicitly deleted
     #pragma warning(disable : 4625)   //!< copy constructor implicitly deleted
     #pragma warning(disable : 4626)   //!< copy assignment operator implicitly deleted
@@ -195,7 +196,6 @@
     #pragma warning(disable : 4711)   //!< function automatically inlined
     #pragma warning(disable : 4774)   //!< format string not a string literal
     #pragma warning(disable : 4820)   //!< padding after data member
-    #pragma warning(disable : 4987)   //!< nonstandard extension throw(...)
     #pragma warning(disable : 5026)   //!< move constructor implicitly deleted
     #pragma warning(disable : 5027)   //!< move assignment operator implicitly deleted
 
@@ -432,13 +432,6 @@ constexpr coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
 inline coreBool operator == (const coreChar*    a, const std::string& b) {return !std::strcmp(a,         b.c_str());}
 inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
-
-// override integer swap function (without temporary variable)
-#define __SWAP(t) namespace std {inline void swap(t& OUTPUT a, t& OUTPUT b)noexcept {ASSERT(&a != &b) a ^= b; b ^= a; a ^= b;}}
-    __SWAP(coreInt8)  __SWAP(coreInt16)  __SWAP(coreInt32)  __SWAP(coreInt64)
-    __SWAP(coreUint8) __SWAP(coreUint16) __SWAP(coreUint32) __SWAP(coreUint64)
-    __SWAP(coreBool)  __SWAP(coreChar)
-#undef __SWAP
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];

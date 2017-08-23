@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* Murmur2 hash function */
-constexpr FUNC_PURE FUNC_NOALIAS coreUint32 coreHashMurmur2(const coreByte* pData, coreUint32 iLength)
+constexpr FUNC_LOCAL coreUint32 coreHashMurmur2(const coreByte* pData, coreUint32 iLength)
 {
     constexpr coreUint32 s = 0xC58F1A7Bu;
     constexpr coreUint32 m = 0x5BD1E995u;

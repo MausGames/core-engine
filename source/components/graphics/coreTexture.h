@@ -151,8 +151,8 @@ public:
 
     //! process and convert image data
     //! @{
-    static void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
-    static void CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static FUNC_NOALIAS void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static              void CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
     //! @}
 
     //! get object properties

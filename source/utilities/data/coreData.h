@@ -81,7 +81,7 @@ public:
     static coreInt64   FileSize     (const coreChar* pcPath);
     static std::time_t FileWriteTime(const coreChar* pcPath);
     static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
-    static void        CreateFolder (const std::string& sPath);
+    static void        CreateFolder (const coreChar* pcPath);
     //! @}
 
     /*! retrieve date and time */
@@ -100,7 +100,8 @@ public:
 
     /*! operate with string data */
     //! @{
-    template <typename F> static const coreChar* StrProcess(const coreChar* pcInput, F&& nFunction);   //!< [](const coreChar cChar) -> coreChar
+    template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   //!< [](const coreChar  cChar)   -> coreChar
+    template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   //!< [](const coreChar* pcToken) -> void
     static constexpr    coreUintW StrLenConst (const coreChar* s)                    {return *s ? 1u + StrLenConst(s+1u) : 0u;}
     static constexpr    coreBool  StrCmpConst (const coreChar* s, const coreChar* t) {return *s ? (*s == *t) && StrCmpConst(s+1u, t+1u) : !*t;}
     static inline       coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return (*t == '*') ? StrCmpLike(s, t+1u) || (*s && StrCmpLike(s+1u, t)) : *s ? ((*t == '?') || (tolower(*s) == tolower(*t))) && StrCmpLike(s+1u, t+1u) : !*t;}
@@ -169,6 +170,26 @@ template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInp
     (*pcCursor) = '\0';
 
     return pcString;
+}
+
+
+// ****************************************************************
+/* call function for each valid string token */
+template <typename F> static void coreData::StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction)
+{
+    coreChar* pcString = coreData::__NextString();
+
+    // make local copy
+    std::strncpy(pcString, pcInput, CORE_DATA_STRING_LEN);
+    ASSERT(std::strlen(pcInput) < CORE_DATA_STRING_LEN)
+
+    // tokenize string and forward to function
+    const coreChar* pcToken = std::strtok(pcString, pcDelimiter);
+    while(pcToken != NULL)
+    {
+        nFunction(pcToken);
+        pcToken = std::strtok(NULL, pcDelimiter);
+    }
 }
 
 

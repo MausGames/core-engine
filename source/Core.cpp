@@ -177,7 +177,7 @@ coreStatus Core::Run()
     // update the window event system (main loop)
     while(Core::System->__UpdateEvents())
     {
-        // update the input button interface   
+        // update the input button interface
         Core::Input->__UpdateButtonsStart();
 
         // move and render the application

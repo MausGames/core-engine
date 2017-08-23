@@ -155,6 +155,7 @@ typedef unsigned int uintptr_t;
 #define HAVE_STDARG_H 1
 #define HAVE_STDDEF_H 1
 #endif
+#define HAVE_VSNPRINTF 1
 
 /* Enable various audio drivers */
 #define SDL_AUDIO_DRIVER_DSOUND 0

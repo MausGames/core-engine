@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* FNV-1a hash function */
-constexpr FUNC_PURE FUNC_NOALIAS coreUint32 coreHashFNV1(const coreByte* pData, coreUint32 iLength)
+constexpr FUNC_LOCAL coreUint32 coreHashFNV1(const coreByte* pData, coreUint32 iLength)
 {
     coreUint32 iHash = 2166136261u;
 
@@ -27,7 +27,7 @@ constexpr FUNC_PURE FUNC_NOALIAS coreUint32 coreHashFNV1(const coreByte* pData, 
     return iHash;
 }
 
-constexpr FUNC_PURE FUNC_NOALIAS coreUint32 coreHashFNV1(const coreChar* pcString)
+constexpr FUNC_LOCAL coreUint32 coreHashFNV1(const coreChar* pcString)
 {
     coreUint32 iHash = 2166136261u;
 

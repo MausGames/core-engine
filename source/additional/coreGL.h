@@ -10,8 +10,10 @@
 #ifndef _CORE_GL_H_
 #define	_CORE_GL_H_
 
-// TODO: functionality to ignore and force arbitrary extensions through the config file
-// TODO: check <GL 2.0 mappings and GLSL 1.0
+// TODO: check <GL 2.0 mappings and GLSL 1.0 (both on my notebook)
+// TODO: maybe add pools for renderbuffer, framebuffer, program, shader, queries
+// TODO: GL_ARB_texture_filter_anisotropic (+ES)
+// TODO: GL_KHR_parallel_shader_compile (+ES)
 
 
 // ****************************************************************

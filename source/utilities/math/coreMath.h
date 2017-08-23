@@ -34,36 +34,37 @@
 #define KM_TO_MI(x)   ((x) * 0.621371192237f)                      //!< convert kilometers to miles
 #define MI_TO_KM(x)   ((x) * 1.609344000000f)                      //!< convert miles to kilometers
 
-#define MIN   coreMath::Min
-#define MAX   coreMath::Max
-#define MED   coreMath::Med
-#define CLAMP coreMath::Clamp
-#define SIGN  coreMath::Sign
-#define ABS   coreMath::Abs
-#define POW2  coreMath::Pow2
-#define POW3  coreMath::Pow3
-#define LERP  coreMath::Lerp
-#define LERPS coreMath::LerpSmooth
-#define LERPB coreMath::LerpBreak
-#define LERPH coreMath::LerpHermit
-#define POW   coreMath::Pow
-#define FMOD  coreMath::Fmod
-#define EXP2  coreMath::Exp2
-#define TRUNC coreMath::Trunc
-#define FRACT coreMath::Fract
-#define SQRT  coreMath::Sqrt
-#define RSQRT coreMath::Rsqrt
-#define RCP   coreMath::Rcp
-#define SIN   coreMath::Sin
-#define COS   coreMath::Cos
-#define TAN   coreMath::Tan
-#define ASIN  coreMath::Asin
-#define ACOS  coreMath::Acos
-#define ATAN  coreMath::Atan
-#define COT   coreMath::Cot
-#define CEIL  coreMath::Ceil
-#define FLOOR coreMath::Floor
-#define ROUND coreMath::Round
+#define MIN    coreMath::Min
+#define MAX    coreMath::Max
+#define MED    coreMath::Med
+#define CLAMP  coreMath::Clamp
+#define SIGN   coreMath::Sign
+#define ABS    coreMath::Abs
+#define POW2   coreMath::Pow2
+#define POW3   coreMath::Pow3
+#define LERP   coreMath::Lerp
+#define LERPS  coreMath::LerpSmooth
+#define LERPB  coreMath::LerpBreak
+#define LERPH3 coreMath::LerpHermit3
+#define LERPH5 coreMath::LerpHermit5
+#define POW    coreMath::Pow
+#define FMOD   coreMath::Fmod
+#define EXP2   coreMath::Exp2
+#define TRUNC  coreMath::Trunc
+#define FRACT  coreMath::Fract
+#define SQRT   coreMath::Sqrt
+#define RSQRT  coreMath::Rsqrt
+#define RCP    coreMath::Rcp
+#define SIN    coreMath::Sin
+#define COS    coreMath::Cos
+#define TAN    coreMath::Tan
+#define ASIN   coreMath::Asin
+#define ACOS   coreMath::Acos
+#define ATAN   coreMath::Atan
+#define COT    coreMath::Cot
+#define CEIL   coreMath::Ceil
+#define FLOOR  coreMath::Floor
+#define ROUND  coreMath::Round
 
 
 // ****************************************************************
@@ -81,16 +82,17 @@ public:
     template <typename T, typename S = T>                 static constexpr T Max  (const T& x, const S& y)               {return (x > y) ? x : y;}
     template <typename T, typename S = T, typename R = T> static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
     template <typename T, typename S = T, typename R = T> static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr T        Sign      (const T& x)                                               {return (x < T(0)) ? T(-1) : T(1);}
-    template <typename T> static inline    T        Abs       (const T& x)                                               {return std::abs(x);}
-    template <typename T> static constexpr T        Pow2      (const T& x)                                               {return x * x;}
-    template <typename T> static constexpr T        Pow3      (const T& x)                                               {return x * x * x;}
-    template <typename T> static constexpr T        Lerp      (const T& x, const T& y, const coreFloat s)                {return x + (y - x) * s;}
-    template <typename T> static inline    T        LerpSmooth(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
-    template <typename T> static inline    T        LerpBreak (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, SIN(s * PI * 0.5f));}
-    template <typename T> static constexpr T        LerpHermit(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
-    template <typename T> static constexpr coreBool InRange   (const T& x, const T& c, const T& r)                       {return POW2(x - c) <= POW2(r);}
-    template <typename T> static constexpr coreBool IsPot     (const T& x)                                               {return !(x & (x - T(1)));}
+    template <typename T> static constexpr T        Sign       (const T& x)                                              {return (x < T(0)) ? T(-1) : T(1);}
+    template <typename T> static inline    T        Abs        (const T& x)                                              {return std::abs(x);}
+    template <typename T> static constexpr T        Pow2       (const T& x)                                              {return x * x;}
+    template <typename T> static constexpr T        Pow3       (const T& x)                                              {return x * x * x;}
+    template <typename T> static constexpr T        Lerp       (const T& x, const T& y, const coreFloat s)               {return x + (y - x) * s;}
+    template <typename T> static inline    T        LerpSmooth (const T& x, const T& y, const coreFloat s)               {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
+    template <typename T> static inline    T        LerpBreak  (const T& x, const T& y, const coreFloat s)               {return LERP(x, y, SIN(s * PI * 0.5f));}
+    template <typename T> static constexpr T        LerpHermit3(const T& x, const T& y, const coreFloat s)               {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
+    template <typename T> static constexpr T        LerpHermit5(const T& x, const T& y, const coreFloat s)               {return LERP(x, y, (10.0f + (-15.0f + 6.0f * s) * s) * s * s * s);}
+    template <typename T> static constexpr coreBool InRange    (const T& x, const T& c, const T& r)                      {return POW2(x - c) <= POW2(r);}
+    template <typename T> static constexpr coreBool IsPot      (const T& x)                                              {return !(x & (x - T(1)));}
     //! @}
 
     /*! elementary operations */

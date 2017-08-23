@@ -14,6 +14,7 @@
 // TODO: currently key-identifier $ may cause problems in normal text
 // TODO: reduce memory consumption with all the redundant keys in containers
 // TODO: determine number of entries and call reserve(x)
+// TODO: try to use strtok()
 
 
 // ****************************************************************

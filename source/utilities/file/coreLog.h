@@ -45,7 +45,7 @@ private:
     std::string  m_sPath;         //!< relative path of the file
     coreLogLevel m_iLevel;        //!< logging level
 
-    coreByte m_iListStatus;       //!< currently writing a list
+    coreUint8 m_iListStatus;       //!< currently writing a list
 
     coreUint32   m_iLastTime;     //!< last time-value for duration approximations
     SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
@@ -60,9 +60,9 @@ public:
 
     /*! message functions */
     //! @{
-    template <typename... A> inline        void Info   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
-    template <typename... A> inline        void Warning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> FUNC_NORETURN void Error  (const coreChar* pcText, A&&... vArgs);
+    template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
+    template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> FUNC_TERMINATE void Error  (const coreChar* pcText, A&&... vArgs);
     //! @}
 
     /*! special functions */
@@ -103,7 +103,7 @@ private:
 
 // ****************************************************************
 /* write error message and shut down the application */
-template <typename... A> FUNC_NORETURN void coreLog::Error(const coreChar* pcText, A&&... vArgs)
+template <typename... A> FUNC_TERMINATE void coreLog::Error(const coreChar* pcText, A&&... vArgs)
 {
     // write error message
     if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_ERROR)) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");

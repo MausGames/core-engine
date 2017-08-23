@@ -110,7 +110,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <MinimalRebuild>false</MinimalRebuild>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
@@ -140,7 +140,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <MinimalRebuild>false</MinimalRebuild>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
@@ -169,7 +169,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings /Gw /Qfast_transcendentals /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding /Gw /Qfast_transcendentals /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -209,7 +209,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings /Gw /Qfast_transcendentals /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding /Gw /Qfast_transcendentals /Qpar-report:1 /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>

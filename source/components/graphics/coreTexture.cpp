@@ -467,10 +467,10 @@ void coreTexture::Invalidate(const coreUint8 iLevel)
 
 // ****************************************************************
 // create next level-of-detail image
-void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
+FUNC_NOALIAS void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
 {
-    ASSERT(coreMath::IsPot(iInWidth)  && (iInWidth  >= 2u) &&
-           coreMath::IsPot(iInHeight) && (iInHeight >= 2u) &&
+    ASSERT((coreMath::IsPot(iInWidth)  && (iInWidth  >= 2u)) &&
+           (coreMath::IsPot(iInHeight) && (iInHeight >= 2u)) &&
            (iComponents <= 4u) && pInput && pOutput)
 
     // save output texture size
