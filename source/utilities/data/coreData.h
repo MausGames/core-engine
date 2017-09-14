@@ -118,6 +118,7 @@ public:
     /*! operate with containers */
     //! @{
     template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
+    template <typename T> static typename std::vector<T>::iterator SwapErase(const typename std::vector<T>::iterator& oEntry, std::vector<T>* OUTPUT patContainer);
     //! @}
 
 
@@ -175,7 +176,7 @@ template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInp
 
 // ****************************************************************
 /* call function for each valid string token */
-template <typename F> static void coreData::StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction)
+template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction)
 {
     coreChar* pcString = coreData::__NextString();
 
@@ -190,6 +191,23 @@ template <typename F> static void coreData::StrForEachToken(const coreChar* pcIn
         nFunction(pcToken);
         pcToken = std::strtok(NULL, pcDelimiter);
     }
+}
+
+
+// ****************************************************************
+/* delete vector entry without compaction */
+template <typename T> typename std::vector<T>::iterator coreData::SwapErase(const typename std::vector<T>::iterator& oEntry, std::vector<T>* OUTPUT patContainer)
+{
+    ASSERT(!patContainer->empty())
+
+    // remember current index
+    const coreUintW iIndex = oEntry - patContainer->begin();
+
+    // swap and delete target entry (but do not preserve ordering)
+    std::swap(oEntry, patContainer->end() - 1u);
+    patContainer->pop_back();
+
+    return patContainer->begin() + iIndex;
 }
 
 

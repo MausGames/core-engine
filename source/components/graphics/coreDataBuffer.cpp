@@ -55,31 +55,40 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
 
     if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STREAM))
     {
-        // always allocate normal when streaming
+        // always allocate mutable when streaming
         glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
-    }
-    else if(CORE_GL_SUPPORT(ARB_buffer_storage))
-    {
-        // set storage flags
-        GLenum iFlags = 0u;
-        switch(m_iStorageType & 0xFFu)
-        {
-        case CORE_DATABUFFER_STORAGE_PERSISTENT: ADD_FLAG(iFlags, GL_MAP_PERSISTENT_BIT)
-        case CORE_DATABUFFER_STORAGE_DYNAMIC:    ADD_FLAG(iFlags, GL_MAP_WRITE_BIT)
-        default: break;
-        }
-
-        // allocate immutable buffer memory
-        glBufferStorage(m_iTarget, m_iSize, pData, iFlags);
-
-        // map persistent mapped buffer
-        if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_PERSISTENT))
-            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, iFlags | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
     }
     else
     {
-        // allocate normal buffer memory
-        glBufferData(m_iTarget, m_iSize, pData, this->IsWritable() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+        if(CORE_GL_SUPPORT(ARB_buffer_storage))
+        {
+            if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+            {
+                // allocate static immutable buffer memory
+                glBufferStorage(m_iTarget, m_iSize, pData, 0u);
+            }
+            else
+            {
+                // allocate dynamic immutable buffer memory
+                glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
+
+                // map persistent mapped buffer
+                m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
+            }
+        }
+        else
+        {
+            if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+            {
+                // allocate static mutable buffer memory
+                glBufferData(m_iTarget, m_iSize, pData, GL_STATIC_DRAW);
+            }
+            else
+            {
+                // allocate dynamic mutable buffer memory
+                glBufferData(m_iTarget, m_iSize, pData, GL_DYNAMIC_DRAW);
+            }
+        }
     }
 
     if(CORE_GL_SUPPORT(NV_shader_buffer_load))
@@ -231,7 +240,7 @@ coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer o)noexcept
 void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType)
 {
     // create buffer storage
-    this->coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices*iVertexSize, pVertexData, iStorageType);
+    this->coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices * iVertexSize, pVertexData, iStorageType);
 
     // save properties
     m_iVertexSize = iVertexSize;

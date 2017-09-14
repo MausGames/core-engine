@@ -21,19 +21,17 @@
 // data buffer definitions
 enum coreDataBufferStorage : coreUint16
 {
-    CORE_DATABUFFER_STORAGE_STATIC     = 0x0001u,   //!< store fast static buffer (STATIC_DRAW)
-    CORE_DATABUFFER_STORAGE_DYNAMIC    = 0x0002u,   //!< store writable dynamic buffer (DYNAMIC_DRAW)
-    CORE_DATABUFFER_STORAGE_STREAM     = 0x0004u,   //!< store writable temporary buffer (STREAM_DRAW)
-    CORE_DATABUFFER_STORAGE_PERSISTENT = 0x0008u,   //!< store persistent mapped buffer when supported (fallback to dynamic)
-    CORE_DATABUFFER_STORAGE_FENCED     = 0x0100u    //!< use sync object for reliable asynchronous processing
+    CORE_DATABUFFER_STORAGE_STATIC  = 0x0001u,   //!< fast static buffer (STATIC_DRAW)
+    CORE_DATABUFFER_STORAGE_DYNAMIC = 0x0002u,   //!< writable dynamic buffer (DYNAMIC_DRAW), persistent mapped if supported
+    CORE_DATABUFFER_STORAGE_STREAM  = 0x0004u,   //!< writable temporary buffer (STREAM_DRAW)
+    CORE_DATABUFFER_STORAGE_FENCED  = 0x0100u    //!< use sync object for reliable asynchronous processing
 };
 ENABLE_BITWISE(coreDataBufferStorage)
 
 enum coreDataBufferMap : coreUint8
 {
-    CORE_DATABUFFER_MAP_INVALIDATE_ALL   = GL_MAP_INVALIDATE_BUFFER_BIT,   //!< invalidate complete buffer
-    CORE_DATABUFFER_MAP_INVALIDATE_RANGE = GL_MAP_INVALIDATE_RANGE_BIT,    //!< invalidate only required range
-    CORE_DATABUFFER_MAP_UNSYNCHRONIZED   = GL_MAP_UNSYNCHRONIZED_BIT       //!< map and unmap unsynchronized
+    CORE_DATABUFFER_MAP_INVALIDATE_ALL   = GL_MAP_INVALIDATE_BUFFER_BIT,   //!< invalidate complete buffer   (best for complete updating)
+    CORE_DATABUFFER_MAP_UNSYNCHRONIZED   = GL_MAP_UNSYNCHRONIZED_BIT       //!< map and unmap unsynchronized (best for partial updating)
 };
 
 

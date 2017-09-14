@@ -31,7 +31,7 @@
 
 #if !defined(_STDINT_H_) && (!defined(HAVE_STDINT_H) || !_HAVE_STDINT_H)
 #if defined(__GNUC__) || defined(__DMC__) || defined(__WATCOMC__)
-#define HAVE_STDINT_H   1
+#define HAVE_STDINT_H 1
 #elif defined(_MSC_VER)
 typedef signed __int8 int8_t;
 typedef unsigned __int8 uint8_t;
@@ -145,6 +145,7 @@ typedef unsigned int uintptr_t;
 #if _MSC_VER >= 1800
 #define HAVE_STRTOLL 1
 #define HAVE_VSSCANF 1
+#define HAVE_VSNPRINTF 1
 #define HAVE_COPYSIGN 1
 #define HAVE_SCALBN 1
 #endif
@@ -155,7 +156,6 @@ typedef unsigned int uintptr_t;
 #define HAVE_STDARG_H 1
 #define HAVE_STDDEF_H 1
 #endif
-#define HAVE_VSNPRINTF 1
 
 /* Enable various audio drivers */
 #define SDL_AUDIO_DRIVER_DSOUND 0

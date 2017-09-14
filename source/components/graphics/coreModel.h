@@ -18,7 +18,7 @@
 // TODO: compress texture-coords, 32bit is too much, but still need coords <0.0 >1.0 (probably to -1.0 2.0)
 // TODO: index buffer ignore as constructor parameter ? (resource manager load)
 // TODO: currently radius and range can change, but they should not... implement more strict interface
-// TODO: de-interleaved vertex data
+// TODO: de-interleaved vertex data ?
 
 
 // ****************************************************************

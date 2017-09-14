@@ -26,7 +26,7 @@
 
     </Type>
 
-    <Type Name="coreLookupStr&lt;*&gt;">
+    <Type Name="coreLookupStrFull&lt;*&gt;">
 
         <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
         <Expand>

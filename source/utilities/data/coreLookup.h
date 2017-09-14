@@ -10,8 +10,7 @@
 #ifndef _CORE_GUARD_LOOKUP_H_
 #define _CORE_GUARD_LOOKUP_H_
 
-// TODO: implement quicksort and binary search (std::lower_bound)
-// TODO: measure performance with high amount of entries (>200), but should not be as good as (unordered_)map
+// TODO: measure performance with high amount of entries (>200), both normal and bs interface
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
 // TODO: check for detection of inconsistent vector-manipulation (changing value-ordering through iterator, without changing the key-ordering)
 // TODO: TryGet function ?
@@ -58,10 +57,12 @@ public:
 
     /*! check number of existing entries */
     //! @{
-    inline coreBool  count(const I& tKey)      {return this->_check(this->_retrieve(tKey));}
-    inline coreBool  count(const I& tKey)const {return this->_check(this->_retrieve(tKey));}
-    inline coreUintW size ()const              {return m_atValueList.size ();}
-    inline coreBool  empty()const              {return m_atValueList.empty();}
+    inline coreBool  count   (const I& tKey)      {return this->_check(this->_retrieve   (tKey));}
+    inline coreBool  count   (const I& tKey)const {return this->_check(this->_retrieve   (tKey));}
+    inline coreBool  count_bs(const I& tKey)      {return this->_check(this->_retrieve_bs(tKey));}
+    inline coreBool  count_bs(const I& tKey)const {return this->_check(this->_retrieve_bs(tKey));}
+    inline coreUintW size    ()const              {return m_atValueList.size ();}
+    inline coreBool  empty   ()const              {return m_atValueList.empty();}
     //! @}
 
     /*! control memory allocation */
@@ -73,9 +74,10 @@ public:
 
     /*! manage container ordering */
     //! @{
-    inline void sort_asc () {this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
-    inline void sort_desc() {this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
-    inline void reverse  () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
+    inline void sort_asc  () {this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
+    inline void sort_desc () {this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
+    inline void reverse   () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
+    inline void prepare_bs() {this->sort_asc();}
     //! @}
 
     /*! create new entry */
@@ -85,11 +87,12 @@ public:
 
     /*! remove existing entry */
     //! @{
-    coreBool                 erase(const I& tKey);
-    inline coreValueIterator erase(const coreValueIterator& it) {this->_cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}
-    inline void              clear()                            {this->_cache_clear(); m_atValueList.clear();    m_atKeyList.clear();}
-    inline void              pop_back ()                        {this->_cache_clear(); m_atValueList.pop_back(); m_atKeyList.pop_back();}
-    inline void              pop_front()                        {this->_cache_clear(); this->erase(this->begin());}
+    coreBool                 erase    (const I& tKey);
+    coreBool                 erase_bs (const I& tKey);
+    inline coreValueIterator erase    (const coreValueIterator& it) {this->_cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}
+    inline void              clear    ()                            {this->_cache_clear(); m_atValueList.clear();    m_atKeyList.clear();}
+    inline void              pop_back ()                            {this->_cache_clear(); m_atValueList.pop_back(); m_atKeyList.pop_back();}
+    inline void              pop_front()                            {this->_cache_clear(); this->erase(this->begin());}
     //! @}
 
     /*! return first and last entry */
@@ -102,12 +105,14 @@ public:
 
     /*! return internal iterator */
     //! @{
-    inline coreValueIterator      begin()                   {return m_atValueList.begin();}
-    inline coreValueConstIterator begin()const              {return m_atValueList.begin();}
-    inline coreValueIterator      end  ()                   {return m_atValueList.end  ();}
-    inline coreValueConstIterator end  ()const              {return m_atValueList.end  ();}
-    inline coreValueIterator      find (const I& tKey)      {return this->get_value(this->_retrieve(tKey));}
-    inline coreValueConstIterator find (const I& tKey)const {return this->get_value(this->_retrieve(tKey));}
+    inline coreValueIterator      begin  ()                   {return m_atValueList.begin();}
+    inline coreValueConstIterator begin  ()const              {return m_atValueList.begin();}
+    inline coreValueIterator      end    ()                   {return m_atValueList.end  ();}
+    inline coreValueConstIterator end    ()const              {return m_atValueList.end  ();}
+    inline coreValueIterator      find   (const I& tKey)      {return this->get_value(this->_retrieve   (tKey));}
+    inline coreValueConstIterator find   (const I& tKey)const {return this->get_value(this->_retrieve   (tKey));}
+    inline coreValueIterator      find_bs(const I& tKey)      {return this->get_value(this->_retrieve_bs(tKey));}
+    inline coreValueConstIterator find_bs(const I& tKey)const {return this->get_value(this->_retrieve_bs(tKey));}
     //! @}
 
     /*! operate between values and keys */
@@ -141,30 +146,35 @@ protected:
     coreKeyConstIterator _retrieve(const I& tKey)const;
     //! @}
 
+    /*! binary lookup entry by key */
+    //! @{
+    coreKeyIterator      _retrieve_bs(const I& tKey);
+    coreKeyConstIterator _retrieve_bs(const I& tKey)const;
+    //! @}
+
     /*! sort entries with comparison function */
     //! @{
     template <typename F> void _sort(F&& nCompareFunc);   //!< [](const auto& a, const auto& b) -> coreBool
     //! @}
 };
 
-
 // ****************************************************************
-/* simplified lookup container type */
+/* simplified generic lookup container type */
 template <typename K, typename T> using coreLookup = coreLookupGen<K, K, T>;
 
 
 // ****************************************************************
-/* string lookup container class */
-template <typename T> class coreLookupStr final : public coreLookupGen<coreUint32, coreHashString, T>
+/* string lookup container class (with original strings) */
+template <typename T> class coreLookupStrFull final : public coreLookupGen<coreUint32, coreHashString, T>
 {
 private:
     coreLookup<coreUint32, std::string> m_asStringList;   //!< list with original strings
 
 
 public:
-    coreLookupStr() = default;
+    coreLookupStrFull() = default;
 
-    ENABLE_COPY(coreLookupStr)
+    ENABLE_COPY(coreLookupStrFull)
 
     /*! access specific entry */
     //! @{
@@ -180,15 +190,15 @@ public:
     /*! remove existing entry */
     //! @{
     using coreLookupGen<coreUint32, coreHashString, T>::erase;
-    inline typename coreLookupStr<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    inline typename coreLookupStrFull<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 
     /*! return original string */
     //! @{
-    inline const coreChar* get_string(const typename coreLookupStr<T>::coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStr<T>::coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStr<T>::coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStr<T>::coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
     //! @}
 
 
@@ -198,6 +208,38 @@ private:
     inline void __save_string(const coreHashString& sKey) {if(!m_asStringList.count(sKey)) m_asStringList.emplace(sKey, sKey.GetString()); else WARN_IF(sKey.GetString() != m_asStringList.at(sKey)) {}}
     //! @}
 };
+
+
+// ****************************************************************
+/* string lookup container class (without original strings) */
+template <typename T> class coreLookupStrSlim final : public coreLookupGen<coreUint32, coreHashString, T>
+{
+public:
+    coreLookupStrSlim() = default;
+
+    ENABLE_COPY(coreLookupStrSlim)
+
+    /*! access specific entry */
+    //! @{
+    using coreLookupGen<coreUint32, coreHashString, T>::operator [];
+    inline T& operator [] (const coreUintW iIndex) {return this->m_atValueList[iIndex];}
+    //! @}
+
+    /*! remove existing entry */
+    //! @{
+    using coreLookupGen<coreUint32, coreHashString, T>::erase;
+    inline typename coreLookupStrSlim<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    //! @}
+};
+
+
+// ****************************************************************
+/* simplified string lookup container type */
+#if defined(_CORE_DEBUG_)
+    template <typename T> using coreLookupStr = coreLookupStrFull<T>;
+#else
+    template <typename T> using coreLookupStr = coreLookupStrSlim<T>;
+#endif
 
 
 // ****************************************************************
@@ -325,6 +367,24 @@ template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::e
     return false;
 }
 
+template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::erase_bs(const I& tKey)
+{
+    // binary lookup entry by key
+    auto it = this->_retrieve_bs(tKey);
+    if(this->_check(it))
+    {
+        // reset cache
+        this->_cache_clear();
+
+        // remove existing entry
+        m_atValueList.erase(this->get_value(it));
+        m_atKeyList  .erase(it);
+        return true;
+    }
+
+    return false;
+}
+
 
 // ****************************************************************
 /* lookup entry by key */
@@ -354,6 +414,39 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
         if((*it) == tKey)
             return it;
     }
+
+    return m_atKeyList.end();
+}
+
+
+// ****************************************************************
+/* binary lookup entry by key */
+template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreKeyIterator coreLookupGen<K, I, T>::_retrieve_bs(const I& tKey)
+{
+    // find entry with binary search
+    ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))
+    auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
+
+    // check result
+    if((it != m_atKeyList.end()) && ((*it) == tKey))
+    {
+        // cache current entry
+        this->_cache_set(&(*this->get_value(it)), &(*it));
+        return it;
+    }
+
+    return m_atKeyList.end();
+}
+
+template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreKeyConstIterator coreLookupGen<K, I, T>::_retrieve_bs(const I& tKey)const
+{
+    // find entry with binary search
+    ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))
+    auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
+
+    // check result
+    if((it != m_atKeyList.end()) && ((*it) == tKey))
+        return it;
 
     return m_atKeyList.end();
 }

@@ -304,6 +304,9 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             // re-determine render-count (may have changed between move and render)
             m_iCurEnabled = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
 
+            // invalidate previous buffer
+            m_aInstanceBuffer.current().Invalidate();
+
             // switch to next available array and buffer
             m_aiVertexArray  .next();
             m_aInstanceBuffer.next();
@@ -553,7 +556,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
                 m_aiVertexArray.next();
 
                 // create instance data buffers
-                it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+                it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
@@ -569,7 +572,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
                     m_paCustomBuffer->next();
 
                     // also re-create and activate custom attribute buffer
-                    oBuffer.Create(m_iCurCapacity, oBuffer.GetVertexSize(), NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+                    oBuffer.Create(m_iCurCapacity, oBuffer.GetVertexSize(), NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
                     oBuffer.ActivateDivided(2u, 1u);
                 }
             }

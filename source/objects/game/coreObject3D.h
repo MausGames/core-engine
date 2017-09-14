@@ -213,7 +213,7 @@ template <typename F> void coreBatchList::CreateCustom(const coreUintW iVertexSi
         glBindVertexArray(m_aiVertexArray[i]);
 
         // create custom attribute buffers
-        oBuffer.Create(m_iCurCapacity, iVertexSize, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+        oBuffer.Create(m_iCurCapacity, iVertexSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
         nDefineBufferFunc(&oBuffer);
 
         // set vertex data
@@ -234,6 +234,9 @@ template <typename F, typename G> void coreBatchList::RenderCustom(F&& nUpdateDa
         {
             // get vertex size
             const coreUintW iVertexSize = (*m_paCustomBuffer)[0].GetVertexSize();
+
+            // invalidate previous buffer
+            m_paCustomBuffer->current().Invalidate();
 
             // switch to next available buffer
             m_paCustomBuffer->select(m_aInstanceBuffer.index());

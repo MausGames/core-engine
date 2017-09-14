@@ -82,6 +82,9 @@ void coreParticleSystem::Render()
     {
         if(m_bUpdate)
         {
+            // invalidate previous buffer
+            m_aiInstanceBuffer.current().Invalidate();
+
             // switch to next available array and buffer
             m_aiVertexArray   .next();
             m_aiInstanceBuffer.next();
@@ -300,7 +303,7 @@ void coreParticleSystem::__Reset(const coreResourceReset bInit)
             m_aiVertexArray.next();
 
             // create instance data buffers
-            it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_PERSISTENT | CORE_DATABUFFER_STORAGE_FENCED);
+            it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));

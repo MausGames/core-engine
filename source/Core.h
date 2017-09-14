@@ -430,8 +430,11 @@ constexpr coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
 
 // override string comparison operator (faster but insecure)
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
+inline coreBool operator != (const std::string& a, const coreChar*    b) {return  std::strcmp(a.c_str(), b);}
 inline coreBool operator == (const coreChar*    a, const std::string& b) {return !std::strcmp(a,         b.c_str());}
+inline coreBool operator != (const coreChar*    a, const std::string& b) {return  std::strcmp(a,         b.c_str());}
 inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
+inline coreBool operator != (const std::string& a, const std::string& b) {return  std::strcmp(a.c_str(), b.c_str());}
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];

@@ -376,14 +376,14 @@ coreStatus coreModel::Unload()
 // draw the model
 void coreModel::DrawArrays()const
 {
-    // check and draw the model
+    // draw the model (without index buffer)
     ASSERT(s_pCurrent == this || !s_pCurrent)
     glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
 }
 
 void coreModel::DrawElements()const
 {
-    // check and draw the model
+    // draw the model (with index buffer)
     ASSERT((s_pCurrent == this || !s_pCurrent) && m_IndexBuffer)
     glDrawRangeElements(m_iPrimitiveType, 0u, m_iNumVertices, m_iNumIndices, m_iIndexType, NULL);
 }
@@ -393,14 +393,14 @@ void coreModel::DrawElements()const
 // draw the model instanced
 void coreModel::DrawArraysInstanced(const coreUint32 iCount)const
 {
-    // check and draw the model instanced
+    // draw the model instanced (without index buffer)
     ASSERT((s_pCurrent == this) || !s_pCurrent)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
 void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
 {
-    // check and draw the model instanced
+    // draw the model instanced (with index buffer)
     ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer)
     glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, NULL, iCount);
 }

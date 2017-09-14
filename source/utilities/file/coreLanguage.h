@@ -71,7 +71,7 @@ private:
 class coreLanguage final
 {
 private:
-    coreLookupStr<std::string> m_asStringList;            //!< list with language-strings to specific keys
+    coreLookupStrFull<std::string> m_asStringList;        //!< list with language-strings to specific keys
 
     coreLookup<std::string*, std::string> m_apsForeign;   //!< foreign string pointers connected with keys <foreign, key>
     coreSet<coreTranslate*> m_apObject;                   //!< objects to update after modification
