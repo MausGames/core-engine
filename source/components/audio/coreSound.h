@@ -40,7 +40,7 @@ public:
 
 
 private:
-    ALuint m_iBuffer;                             //!< sound buffer identifier
+    ALuint m_iBuffer;                             //!< sound buffer object
     coreWaveFormat m_Format;                      //!< format of the sound file
 
     ALuint m_iCurSource;                          //!< active sound source

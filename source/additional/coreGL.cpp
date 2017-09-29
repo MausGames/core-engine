@@ -137,13 +137,26 @@ void __coreInitOpenGL()
         __GLEW_EXT_packed_depth_stencil    = true;
     }
 
+    // improve image unit compatibility
+    if(!GLEW_ARB_shader_image_load_store && GLEW_EXT_shader_image_load_store)
+    {
+        // remap GL_EXT_shader_image_load_store
+        glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)glBindImageTextureEXT;
+        glMemoryBarrier    = glMemoryBarrierEXT;
+    }
+    else if(GLEW_ARB_shader_image_load_store)
+    {
+        // force extension status
+        __GLEW_EXT_shader_image_load_store = true;
+    }
+
     // improve sample shading compatibility
     if(!GLEW_VERSION_4_0 && GLEW_ARB_sample_shading)
     {
         // remap GL_ARB_sample_shading
         glMinSampleShading = glMinSampleShadingARB;
     }
-    else
+    else if(GLEW_VERSION_4_0)
     {
         // force extension status
         __GLEW_ARB_sample_shading = true;

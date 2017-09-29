@@ -81,7 +81,7 @@ public:
 class coreResourceHandle final
 {
 private:
-    coreResource* m_pResource;   //!< holding resource object
+    coreResource* m_pResource;   //!< handled resource object
     coreFile* m_pFile;           //!< pointer to resource file
 
     std::string m_sName;         //!< identifier of this resource handle
@@ -102,10 +102,10 @@ public:
 
     /*! access resource object and status */
     //! @{
-    inline coreResource*   GetResource()const {return m_pResource;}
-    inline const coreBool& IsAutomatic()const {return m_bAutomatic;}
-    inline       coreBool  IsLoaded   ()const {return (m_iStatus != CORE_BUSY)           ? true : false;}
-    inline       coreBool  IsLoading  ()const {return (!this->IsLoaded() && m_iRefCount) ? true : false;}
+    inline coreResource*   GetRawResource()const {return m_pResource;}
+    inline const coreBool& IsAutomatic   ()const {return m_bAutomatic;}
+    inline       coreBool  IsLoaded      ()const {return (m_iStatus != CORE_BUSY)           ? true : false;}
+    inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount) ? true : false;}
     //! @}
 
     /*! control the reference-counter */
@@ -166,10 +166,11 @@ public:
 
     /*! access resource object and resource handle */
     //! @{
-    inline T* operator ->       ()const         {ASSERT(m_pHandle) return   s_cast<T*>(m_pHandle->GetResource());}
-    inline T& operator *        ()const         {ASSERT(m_pHandle) return *(s_cast<T*>(m_pHandle->GetResource()));}
-    inline    operator coreBool ()const         {return m_pHandle ? true : false;}
-    inline coreResourceHandle* GetHandle()const {return m_pHandle;}
+    inline T*                  GetResource()const {ASSERT(m_pHandle) return s_cast<T*>(m_pHandle->GetRawResource());}
+    inline coreResourceHandle* GetHandle  ()const {return m_pHandle;}
+    inline    operator coreBool           ()const {return m_pHandle ? true : false;}
+    inline T* operator ->                 ()const {return  this->GetResource();}
+    inline T& operator *                  ()const {return *this->GetResource();}
     //! @}
 
     /*! check for usable resource object */

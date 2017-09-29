@@ -137,9 +137,10 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     if(!pProgram->Enable())  return;
 
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, m_mTransform * Core::Graphics->GetOrtho().m124(), false);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
+    coreProgram* pLocal = pProgram.GetResource();
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, m_mTransform * Core::Graphics->GetOrtho().m124(), false);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
     coreTexture::EnableAll(m_apTexture);

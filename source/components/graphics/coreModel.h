@@ -111,14 +111,14 @@ public:
 
     //! draw the model
     //! @{
-    inline void Draw        ()const {if(m_IndexBuffer) this->DrawElements(); else this->DrawArrays();}
+    inline void Draw        ()const {if(m_IndexBuffer.IsValid()) this->DrawElements(); else this->DrawArrays();}
     void        DrawArrays  ()const;
     void        DrawElements()const;
     //! @}
 
     //! draw the model instanced
     //! @{
-    inline void DrawInstanced        (const coreUint32 iCount)const {if(m_IndexBuffer) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
+    inline void DrawInstanced        (const coreUint32 iCount)const {if(m_IndexBuffer.IsValid()) this->DrawElementsInstanced(iCount); else this->DrawArraysInstanced(iCount);}
     void        DrawArraysInstanced  (const coreUint32 iCount)const;
     void        DrawElementsInstanced(const coreUint32 iCount)const;
     //! @}

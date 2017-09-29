@@ -170,7 +170,7 @@ public:
 
     /*! check for instancing status */
     //! @{
-    inline coreBool IsInstanced()const {return (m_aInstanceBuffer[0] && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
+    inline coreBool IsInstanced()const {return (m_aInstanceBuffer[0].IsValid() && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
     //! @}
 
     /*! access 3d-object list directly */

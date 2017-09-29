@@ -384,7 +384,7 @@ void coreModel::DrawArrays()const
 void coreModel::DrawElements()const
 {
     // draw the model (with index buffer)
-    ASSERT((s_pCurrent == this || !s_pCurrent) && m_IndexBuffer)
+    ASSERT((s_pCurrent == this || !s_pCurrent) && m_IndexBuffer.IsValid())
     glDrawRangeElements(m_iPrimitiveType, 0u, m_iNumVertices, m_iNumIndices, m_iIndexType, NULL);
 }
 
@@ -401,7 +401,7 @@ void coreModel::DrawArraysInstanced(const coreUint32 iCount)const
 void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
 {
     // draw the model instanced (with index buffer)
-    ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer)
+    ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer.IsValid())
     glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, NULL, iCount);
 }
 
@@ -435,7 +435,7 @@ void coreModel::Enable()
             m_aVertexBuffer[i].Activate(i);
 
         // set index data
-        if(m_IndexBuffer) m_IndexBuffer.Bind();
+        if(m_IndexBuffer.IsValid()) m_IndexBuffer.Bind();
     }
 }
 
@@ -486,7 +486,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, c
 // create index buffer
 coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const coreUint8 iIndexSize, const void* pIndexData, const coreDataBufferStorage iStorageType)
 {
-    ASSERT(!m_iVertexArray && !m_IndexBuffer)
+    ASSERT(!m_iVertexArray && !m_IndexBuffer.IsValid())
 
     // save properties
     m_iNumIndices = iNumIndices;

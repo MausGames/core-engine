@@ -16,6 +16,7 @@
 // TODO: handle unsupported RelativeMouseMode, SDL_HINT_MOUSE_RELATIVE_MODE_WARP
 // TODO: handle joystick/gamepad remove and insert during execution (also events in CoreSystem)
 // TODO: remove the 1-frame delay when using the Set* interface from game-code
+// TODO: add SDL_JoystickGetType
 
 
 // ****************************************************************
@@ -25,7 +26,7 @@
 #define __CORE_INPUT_COUNT(x,c)     {if(x) for(coreUintW j = 0u; j < CORE_INPUT_TYPES; ++j) if(CONTAINS_BIT(x, j)) {++(c)[j]; ADD_BIT(m_iAnyButton, j)}}
 #define __CORE_INPUT_JOYSTICK(i)    (m_aJoystick[MIN(coreUintW(i), m_aJoystick.size() - 1u)])
 
-#define CORE_INPUT_BUTTONS_KEYBOARD (284u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
+#define CORE_INPUT_BUTTONS_KEYBOARD (231u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    (16u)    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK (32u)    //!< number of regarded joystick buttons
 #if defined(_CORE_MOBILE_)

@@ -82,7 +82,7 @@ public:
     FRIEND_CLASS(Core)
     DISABLE_COPY(CoreGraphics)
 
-    //! control camera and view
+    //! control camera and view frustum
     //! @{
     void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
     void SetView  (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);

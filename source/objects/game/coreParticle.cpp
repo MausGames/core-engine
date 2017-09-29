@@ -78,7 +78,7 @@ void coreParticleSystem::Render()
     // enable all active textures
     coreTexture::EnableAll(m_apTexture);
 
-    if(m_aiInstanceBuffer[0])
+    if(m_aiInstanceBuffer[0].IsValid())
     {
         if(m_bUpdate)
         {
@@ -135,6 +135,9 @@ void coreParticleSystem::Render()
     }
     else
     {
+        coreProgram* pProgram = m_pProgram.GetResource();
+        coreModel*   pModel   = Core::Manager::Object->GetLowModel().GetResource();
+
         // draw without instancing
         FOR_EACH_REV(it, m_apRenderList)
         {
@@ -144,13 +147,13 @@ void coreParticleSystem::Render()
             const coreParticle::coreState& oCurrent  = pParticle->GetCurrentState();
 
             // update all particle uniforms
-            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oCurrent.vPosition) : oCurrent.vPosition);
-            m_pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue()));
-            m_pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          oCurrent.vColor);
+            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oCurrent.vPosition) : oCurrent.vPosition);
+            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue()));
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          oCurrent.vColor);
 
             // draw the model
-            Core::Manager::Object->GetLowModel()->Enable();
-            Core::Manager::Object->GetLowModel()->DrawArrays();
+            pModel->Enable();
+            pModel->DrawArrays();
         }
     }
 }

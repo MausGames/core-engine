@@ -115,7 +115,7 @@ CoreGraphics::CoreGraphics()noexcept
         m_AmbientBuffer  .Create(GL_UNIFORM_BUFFER, coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE)   * CORE_GRAPHICS_UNIFORM_BUFFERS, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
     }
 
-    // reset camera and view
+    // reset camera and view frustum
     this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
     this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
 
@@ -190,7 +190,7 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
 
 
 // ****************************************************************
-// set view and create projection matrices
+// set view frustum and create projection matrices
 void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
 {
     coreBool bNewView = false;
@@ -258,7 +258,7 @@ void CoreGraphics::UpdateTransformation()
     if(!CONTAINS_BIT(m_iUniformUpdate, 0u)) return;
     REMOVE_BIT(m_iUniformUpdate, 0u)
 
-    if(m_TransformBuffer)
+    if(m_TransformBuffer.IsValid())
     {
         const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
@@ -268,7 +268,7 @@ void CoreGraphics::UpdateTransformation()
         const coreUint32 iOffset = m_aTransformSync.index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
 
         // bind and map required area of the UBO
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer, iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer.GetIdentifier(), iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
         coreByte* pRange = m_TransformBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
@@ -299,7 +299,7 @@ void CoreGraphics::UpdateAmbient()
     if(!CONTAINS_BIT(m_iUniformUpdate, 1u)) return;
     REMOVE_BIT(m_iUniformUpdate, 1u)
 
-    if(m_AmbientBuffer)
+    if(m_AmbientBuffer.IsValid())
     {
         // switch and check next available sync object
         m_aAmbientSync.next();
@@ -307,7 +307,7 @@ void CoreGraphics::UpdateAmbient()
         const coreUint32 iOffset = m_aAmbientSync.index() * coreMath::CeilAlign<256u>(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
 
         // bind and map required area of the UBO
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer, iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer.GetIdentifier(), iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
         coreByte* pRange = m_AmbientBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update ambient data

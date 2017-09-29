@@ -144,6 +144,7 @@ uint  corePackUnorm4x8        (in vec4)            // value pack   (4x 8bit floa
 vec4  coreUnpackUnorm4x8      (in uint)            // value unpack (1x 32bit uint -> 4x 8bit float)
 
 vec4  coreTexture2D    (in int v1Unit, in vec2 v2TexCoord)    // normal texture lookup
+vec4  coreTextureProj  (in int v1Unit, in vec4 v4ProjCoord)   // normal texture lookup (with projection)
 float coreTextureShadow(in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures
 
 half, hvec2, hvec3, hvec4     // 16-bit floating point types (32-bit, if not supported)

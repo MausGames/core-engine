@@ -31,15 +31,14 @@
     #define CORE_TEXTURE_MASK (0x000000FFu), (0x0000FF00u), (0x00FF0000u), (0xFF000000u)
 #endif
 
-#define GL_RED_R (0x1903)
-#undef  GL_RED
-#define GL_RED (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_RED_R : GL_LUMINANCE)
+#define GL_RED_LUMINANCE (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_RED : GL_LUMINANCE)
+#define GL_R8_LUMINANCE8 (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_R8  : GL_LUMINANCE8)
 
-#define CORE_TEXTURE_SPEC_R8               (coreTextureSpec(GL_R8,                GL_RED,             GL_UNSIGNED_BYTE))                  //!< ARB_texture_rg
+#define CORE_TEXTURE_SPEC_R8               (coreTextureSpec(GL_R8_LUMINANCE8,     GL_RED_LUMINANCE,   GL_UNSIGNED_BYTE))                  //!< ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RG8              (coreTextureSpec(GL_RG8,               GL_RG,              GL_UNSIGNED_BYTE))                  //!< ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RGB8             (coreTextureSpec(GL_RGB8,              GL_RGB,             GL_UNSIGNED_BYTE))                  //!< -
 #define CORE_TEXTURE_SPEC_RGBA8            (coreTextureSpec(GL_RGBA8,             GL_RGBA,            GL_UNSIGNED_BYTE))                  //!< -
-#define CORE_TEXTURE_SPEC_R16F             (coreTextureSpec(GL_R16F,              GL_RED,             GL_HALF_FLOAT))                     //!< ARB_texture_float ARB_texture_rg
+#define CORE_TEXTURE_SPEC_R16F             (coreTextureSpec(GL_R16F,              GL_RED_LUMINANCE,   GL_HALF_FLOAT))                     //!< ARB_texture_float ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RG16F            (coreTextureSpec(GL_RG16F,             GL_RG,              GL_HALF_FLOAT))                     //!< ARB_texture_float ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RGB16F           (coreTextureSpec(GL_RGB16F,            GL_RGB,             GL_HALF_FLOAT))                     //!< ARB_texture_float
 #define CORE_TEXTURE_SPEC_RGBA16F          (coreTextureSpec(GL_RGBA16F,           GL_RGBA,            GL_HALF_FLOAT))                     //!< ARB_texture_float
@@ -88,7 +87,7 @@ struct coreTextureSpec final
 class coreTexture final : public coreResource
 {
 private:
-    GLuint m_iTexture;                                   //!< texture identifier
+    GLuint m_iIdentifier;                                //!< texture identifier
 
     coreVector2 m_vResolution;                           //!< resolution of the base level
     coreUint8   m_iLevels;                               //!< number of texture levels
@@ -137,7 +136,7 @@ public:
 
     //! enable and disable the texture
     //! @{
-    inline        void Enable    (const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iTexture)}
+    inline        void Enable    (const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, this); ASSERT(m_iIdentifier)}
     static inline void Disable   (const coreUintW iUnit) {coreTexture::__BindTexture(iUnit, NULL);}
     static        void EnableAll (const coreResourcePtr<coreTexture>* ppTextureArray);
     static        void DisableAll();
@@ -157,7 +156,7 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint&          GetTexture   ()const {return m_iTexture;}
+    inline const GLuint&          GetIdentifier()const {return m_iIdentifier;}
     inline const coreVector2&     GetResolution()const {return m_vResolution;}
     inline const coreUint8&       GetLevels    ()const {return m_iLevels;}
     inline const coreTextureMode& GetMode      ()const {return m_iMode;}

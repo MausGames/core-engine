@@ -24,7 +24,7 @@ coreDataBuffer::~coreDataBuffer()
 // assignment operations
 coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer o)noexcept
 {
-    std::swap(m_iDataBuffer,       o.m_iDataBuffer);
+    std::swap(m_iIdentifier,       o.m_iIdentifier);
     std::swap(m_iStorageType,      o.m_iStorageType);
     std::swap(m_iTarget,           o.m_iTarget);
     std::swap(m_iSize,             o.m_iSize);
@@ -40,7 +40,7 @@ coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer o)noexcept
 // create buffer storage
 void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage iStorageType)
 {
-    WARN_IF(m_iDataBuffer) this->Delete();
+    WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(iSize)
 
     // save properties
@@ -49,9 +49,9 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     m_iSize        = iSize;
 
     // generate buffer
-    coreGenBuffers(1u, &m_iDataBuffer);
-    glBindBuffer(m_iTarget, m_iDataBuffer);
-    s_aiBound[m_iTarget] = m_iDataBuffer;
+    coreGenBuffers(1u, &m_iIdentifier);
+    glBindBuffer(m_iTarget, m_iIdentifier);
+    s_aiBound[m_iTarget] = m_iIdentifier;
 
     if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STREAM))
     {
@@ -104,7 +104,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
 // delete buffer storage
 void coreDataBuffer::Delete()
 {
-    if(!m_iDataBuffer) return;
+    if(!m_iIdentifier) return;
 
     // unmap persistent mapped buffer
     if(m_pPersistentBuffer)
@@ -114,13 +114,13 @@ void coreDataBuffer::Delete()
     }
 
     // delete buffer
-    glDeleteBuffers(1, &m_iDataBuffer);
+    glDeleteBuffers(1, &m_iIdentifier);
 
     // delete sync object
     m_Sync.Delete();
 
     // reset properties
-    m_iDataBuffer  = 0u;
+    m_iIdentifier  = 0u;
     m_iStorageType = CORE_DATABUFFER_STORAGE_STATIC;
     m_iTarget      = 0u;
     m_iSize        = 0u;
@@ -131,25 +131,25 @@ void coreDataBuffer::Delete()
 // copy content of the data buffer object
 void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const
 {
-    ASSERT(m_iDataBuffer && ((iReadOffset + iLength) <= m_iSize) && ((iWriteOffset + iLength) <= pDestination->GetSize()))
+    ASSERT(m_iIdentifier && ((iReadOffset + iLength) <= m_iSize) && ((iWriteOffset + iLength) <= pDestination->GetSize()))
 
     if(CORE_GL_SUPPORT(ARB_copy_buffer))
     {
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // copy content directly (new)
-            glCopyNamedBufferSubData(m_iDataBuffer, pDestination->GetDataBuffer(), iReadOffset, iWriteOffset, iLength);
+            glCopyNamedBufferSubData(m_iIdentifier, pDestination->GetIdentifier(), iReadOffset, iWriteOffset, iLength);
         }
         else if(CORE_GL_SUPPORT(EXT_direct_state_access))
         {
             // copy content directly (old)
-            glNamedCopyBufferSubDataEXT(m_iDataBuffer, pDestination->GetDataBuffer(), iReadOffset, iWriteOffset, iLength);
+            glNamedCopyBufferSubDataEXT(m_iIdentifier, pDestination->GetIdentifier(), iReadOffset, iWriteOffset, iLength);
         }
         else
         {
             // bind and copy content
-            coreDataBuffer::Bind(GL_COPY_READ_BUFFER,  m_iDataBuffer);
-            coreDataBuffer::Bind(GL_COPY_WRITE_BUFFER, pDestination->GetDataBuffer());
+            coreDataBuffer::Bind(GL_COPY_READ_BUFFER,  m_iIdentifier);
+            coreDataBuffer::Bind(GL_COPY_WRITE_BUFFER, pDestination->GetIdentifier());
             glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, iReadOffset, iWriteOffset, iLength);
         }
     }
@@ -160,19 +160,19 @@ void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteO
 // clear content of the data buffer object
 void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pData)
 {
-    ASSERT(m_iDataBuffer && this->IsWritable())
+    ASSERT(m_iIdentifier && this->IsWritable())
 
     if(CORE_GL_SUPPORT(ARB_clear_buffer_object))
     {
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // clear content directly (new)
-            glClearNamedBufferData(m_iDataBuffer, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
+            glClearNamedBufferData(m_iIdentifier, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
         }
         else if(CORE_GL_SUPPORT(EXT_direct_state_access))
         {
             // clear content directly (old)
-            glClearNamedBufferDataEXT(m_iDataBuffer, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
+            glClearNamedBufferDataEXT(m_iIdentifier, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
         }
         else
         {
@@ -188,12 +188,12 @@ void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pDat
 // invalidate content of the data buffer object
 void coreDataBuffer::Invalidate()
 {
-    ASSERT(m_iDataBuffer && this->IsWritable())
+    ASSERT(m_iIdentifier && this->IsWritable())
 
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
         // invalidate the whole buffer
-        glInvalidateBufferData(m_iDataBuffer);
+        glInvalidateBufferData(m_iIdentifier);
     }
 }
 
@@ -251,7 +251,7 @@ void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVe
 // delete buffer storage
 void coreVertexBuffer::Delete()
 {
-    if(!this->GetDataBuffer()) return;
+    if(!this->GetIdentifier()) return;
 
     // delete buffer storage
     this->coreDataBuffer::Delete();
@@ -266,7 +266,7 @@ void coreVertexBuffer::Delete()
 // define vertex attribute array
 void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreBool bInteger, const coreUint8 iOffset)
 {
-    ASSERT(this->GetDataBuffer())
+    ASSERT(this->GetIdentifier())
 
 #if defined(_CORE_DEBUG_)
 
@@ -293,12 +293,12 @@ void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint
 // activate the vertex structure
 void coreVertexBuffer::Activate(const coreUint8 iBinding)
 {
-    ASSERT(this->GetDataBuffer() && !m_aAttribute.empty())
+    ASSERT(this->GetIdentifier() && !m_aAttribute.empty())
 
     if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding))
     {
         // bind the vertex buffer
-        glBindVertexBuffer(iBinding, this->GetDataBuffer(), 0, m_iVertexSize);
+        glBindVertexBuffer(iBinding, this->GetIdentifier(), 0, m_iVertexSize);
 
         FOR_EACH(it, m_aAttribute)
         {

@@ -40,7 +40,7 @@ enum coreDataBufferMap : coreUint8
 class coreDataBuffer
 {
 private:
-    GLuint m_iDataBuffer;                          //!< data buffer identifier
+    GLuint m_iIdentifier;                          //!< data buffer identifier
     coreDataBufferStorage m_iStorageType;          //!< storage type
 
     GLenum     m_iTarget;                          //!< buffer target (e.g. GL_ARRAY_BUFFER)
@@ -73,9 +73,9 @@ public:
 
     //! bind and unbind the data buffer object
     //! @{
-    inline void Bind()const                                               {ASSERT(m_iDataBuffer) coreDataBuffer::Bind(m_iTarget, m_iDataBuffer);}
-    static inline void Bind  (const GLenum iTarget, const GLuint iBuffer) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iBuffer) return;} s_aiBound[iTarget] = iBuffer; glBindBuffer(iTarget, iBuffer);}
-    static inline void Unbind(const GLenum iTarget, const coreBool bFull) {if(bFull) coreDataBuffer::Bind(iTarget, 0u); else s_aiBound[iTarget] = 0u;}
+    inline void Bind()const                                                   {ASSERT(m_iIdentifier) coreDataBuffer::Bind(m_iTarget, m_iIdentifier);}
+    static inline void Bind  (const GLenum iTarget, const GLuint iIdentifier) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iIdentifier) return;} s_aiBound[iTarget] = iIdentifier; glBindBuffer(iTarget, iIdentifier);}
+    static inline void Unbind(const GLenum iTarget, const coreBool bFull)     {if(bFull) coreDataBuffer::Bind(iTarget, 0u); else s_aiBound[iTarget] = 0u;}
     //! @}
 
     //! modify buffer memory
@@ -96,16 +96,12 @@ public:
     inline coreBool IsWritable  ()const {return CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
     inline coreBool IsPersistent()const {return m_pPersistentBuffer                                           ?  true : false;}
     inline coreBool IsMapped    ()const {return m_iMapLength                                                  ?  true : false;}
-    //! @}
-
-    //! access buffer directly
-    //! @{
-    inline operator GLuint ()const {return m_iDataBuffer;}
+    inline coreBool IsValid     ()const {return m_iIdentifier                                                 ?  true : false;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint&                GetDataBuffer ()const {return m_iDataBuffer;}
+    inline const GLuint&                GetIdentifier ()const {return m_iIdentifier;}
     inline const coreDataBufferStorage& GetStorageType()const {return m_iStorageType;}
     inline const GLenum&                GetTarget     ()const {return m_iTarget;}
     inline const coreUint32&            GetSize       ()const {return m_iSize;}
@@ -167,7 +163,7 @@ public:
 // ****************************************************************
 // constructor
 constexpr coreDataBuffer::coreDataBuffer()noexcept
-: m_iDataBuffer       (0u)
+: m_iIdentifier       (0u)
 , m_iStorageType      (CORE_DATABUFFER_STORAGE_STATIC)
 , m_iTarget           (0u)
 , m_iSize             (0u)
@@ -179,7 +175,7 @@ constexpr coreDataBuffer::coreDataBuffer()noexcept
 }
 
 inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
-: m_iDataBuffer       (m.m_iDataBuffer)
+: m_iIdentifier       (m.m_iIdentifier)
 , m_iStorageType      (m.m_iStorageType)
 , m_iTarget           (m.m_iTarget)
 , m_iSize             (m.m_iSize)
@@ -188,7 +184,7 @@ inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 , m_iMapLength        (m.m_iMapLength)
 , m_Sync              (std::move(m.m_Sync))
 {
-    m.m_iDataBuffer = 0u;
+    m.m_iIdentifier = 0u;
 }
 
 
@@ -196,7 +192,7 @@ inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 // map buffer memory for writing operations
 template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType)
 {
-    ASSERT(m_iDataBuffer && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
+    ASSERT(m_iIdentifier && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
 
     // save mapping attributes
     m_iMapOffset = iOffset;
@@ -214,12 +210,12 @@ template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32 iO
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // map buffer memory directly (new)
-            return s_cast<T*>(glMapNamedBufferRange(m_iDataBuffer, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+            return s_cast<T*>(glMapNamedBufferRange(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
         }
         else if(CORE_GL_SUPPORT(EXT_direct_state_access))
         {
             // map buffer memory directly (old)
-            return s_cast<T*>(glMapNamedBufferRangeEXT(m_iDataBuffer, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+            return s_cast<T*>(glMapNamedBufferRangeEXT(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
         }
         else
         {
@@ -248,12 +244,12 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // flush persistent mapped buffer directly (new)
-            glFlushMappedNamedBufferRange(m_iDataBuffer, m_iMapOffset, m_iMapLength);
+            glFlushMappedNamedBufferRange(m_iIdentifier, m_iMapOffset, m_iMapLength);
         }
         else if(CORE_GL_SUPPORT(EXT_direct_state_access))
         {
             // flush persistent mapped buffer directly (old)
-            glFlushMappedNamedBufferRangeEXT(m_iDataBuffer, m_iMapOffset, m_iMapLength);
+            glFlushMappedNamedBufferRangeEXT(m_iIdentifier, m_iMapOffset, m_iMapLength);
         }
         else
         {
@@ -269,12 +265,12 @@ template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
             if(CORE_GL_SUPPORT(ARB_direct_state_access))
             {
                 // unmap buffer memory directly (new)
-                glUnmapNamedBuffer(m_iDataBuffer);
+                glUnmapNamedBuffer(m_iIdentifier);
             }
             else if(CORE_GL_SUPPORT(EXT_direct_state_access))
             {
                 // unmap buffer memory directly (old)
-                glUnmapNamedBufferEXT(m_iDataBuffer);
+                glUnmapNamedBufferEXT(m_iIdentifier);
             }
             else
             {

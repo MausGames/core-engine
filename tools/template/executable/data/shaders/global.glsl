@@ -20,8 +20,10 @@
 
 // compiler configuration
 #if defined(GL_ES)
+    #extension GL_EXT_conservative_depth       : enable
     #extension GL_EXT_shadow_samplers          : enable
 #else
+    #extension GL_AMD_conservative_depth       : enable
     #extension GL_AMD_gpu_shader_half_float    : enable
     #extension GL_AMD_shader_trinary_minmax    : enable
     #extension GL_ARB_conservative_depth       : enable
@@ -32,11 +34,8 @@
     #extension GL_ARB_shading_language_packing : enable
     #extension GL_ARB_uniform_buffer_object    : enable
     #extension GL_EXT_gpu_shader4              : enable
+    #extension GL_EXT_shader_image_load_store  : enable
     #extension GL_NV_gpu_shader5               : enable
-#endif
-#if (__VERSION__) < 130
-    #undef GL_ARB_conservative_depth
-    #undef GL_ARB_shader_image_load_store
 #endif
 #pragma optimize(on)
 #pragma debug(off)
@@ -56,11 +55,11 @@
 #endif
 
 // layout qualifiers
-#if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_)
-    #if defined(GL_ARB_conservative_depth)
+#if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_) && (__VERSION__) >= 130
+    #if defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth)
         layout(depth_unchanged) out float gl_FragDepth;
     #endif
-    #if defined(GL_ARB_shader_image_load_store) || (defined(GL_ES) && (__VERSION__) >= 310)
+    #if defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (defined(GL_ES) && (__VERSION__) >= 310)
         layout(early_fragment_tests) in;
     #endif
 #endif
@@ -140,12 +139,12 @@ struct coreLight
 #else
     #define coreMin3(a,b,c) (min(a, min(b, c)))
     #define coreMax3(a,b,c) (max(a, max(b, c)))
-    #define __CORE_MED3(t) t coreMed3(const in t a, const in t b, const in t c) {return max(min(max(a, b), c), min(a, b));}
-        __CORE_MED3(float)
-        __CORE_MED3(vec2)
-        __CORE_MED3(vec3)
-        __CORE_MED3(vec4)
-    #undef __CORE_MED3
+    #define _CORE_MED3(t) t coreMed3(const in t a, const in t b, const in t c) {return max(min(max(a, b), c), min(a, b));}
+        _CORE_MED3(float)
+        _CORE_MED3(vec2)
+        _CORE_MED3(vec3)
+        _CORE_MED3(vec4)
+    #undef _CORE_MED3
 #endif
 
 // condition across group of shader invocations
@@ -158,12 +157,12 @@ struct coreLight
 #endif
 
 // linear interpolation between 0.0 and 1.0
-#define __CORE_LINEAR_STEP(t) t coreLinearStep(const in float e0, const in float e1, const in t x) {return clamp((x - e0) / (e1 - e0), 0.0, 1.0);}
-    __CORE_LINEAR_STEP(float)
-    __CORE_LINEAR_STEP(vec2)
-    __CORE_LINEAR_STEP(vec3)
-    __CORE_LINEAR_STEP(vec4)
-#undef __CORE_LINEAR_STEP
+#define _CORE_LINEAR_STEP(t) t coreLinearStep(const in float e0, const in float e1, const in t x) {return clamp((x - e0) / (e1 - e0), 0.0, 1.0);}
+    _CORE_LINEAR_STEP(float)
+    _CORE_LINEAR_STEP(vec2)
+    _CORE_LINEAR_STEP(vec3)
+    _CORE_LINEAR_STEP(vec4)
+#undef _CORE_LINEAR_STEP
 
 // color convert
 vec3 coreRgbToHsv(const in vec3 v3Rgb)
@@ -711,11 +710,13 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 // recommended texture lookup
 #if (__VERSION__) >= 130
-    #define coreTexture2D(u,c)     (texture    (u_as2Texture2D    [u], c))
-    #define coreTextureShadow(u,c) (textureProj(u_as2TextureShadow[u], c))
+    #define coreTexture2D(u,c)     (texture      (u_as2Texture2D    [u], c))
+    #define coreTextureProj(u,c)   (textureProj  (u_as2Texture2D    [u], c))
+    #define coreTextureShadow(u,c) (textureProj  (u_as2TextureShadow[u], c))
 #else
-    #define coreTexture2D(u,c)     (texture2D   (u_as2Texture2D    [u], c))
-    #define coreTextureShadow(u,c) (shadow2DProj(u_as2TextureShadow[u], c).r)
+    #define coreTexture2D(u,c)     (texture2D    (u_as2Texture2D    [u], c))
+    #define coreTextureProj(u,c)   (texture2DProj(u_as2Texture2D    [u], c))
+    #define coreTextureShadow(u,c) (shadow2DProj (u_as2TextureShadow[u], c).r)
 #endif
 
 

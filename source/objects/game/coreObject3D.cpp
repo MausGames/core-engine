@@ -138,11 +138,12 @@ coreBool coreObject3D::Prepare(const coreProgramPtr& pProgram)
     if(!pProgram->Enable())  return false;
 
     // update all object uniforms
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_POSITION, m_vPosition);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_SIZE,     m_vSize);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_3D_ROTATION, m_vRotation);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,       m_vColor);
-    pProgram->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,    coreVector4(m_vTexSize, m_vTexOffset));
+    coreProgram* pLocal = pProgram.GetResource();
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_3D_POSITION, m_vPosition);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_3D_SIZE,     m_vSize);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_3D_ROTATION, m_vRotation);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_COLOR,       m_vColor);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,    coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
     coreTexture::EnableAll(m_apTexture);
@@ -363,7 +364,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
             pModel->GetVertexBuffer(0u)->Activate(0u);
 
             // set index data
-            if(*pModel->GetIndexBuffer())
+            if(pModel->GetIndexBuffer()->IsValid())
             {
                 coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
                 pModel->GetIndexBuffer()->Bind();
@@ -375,9 +376,17 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
     }
     else
     {
-        // draw without instancing (no inheritance)
         FOR_EACH(it, m_apObjectList)
-            (*it)->coreObject3D::Render(pProgramSingle);
+        {
+            coreObject3D* pObject = (*it);
+
+            // render only enabled objects
+            if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            {
+                // draw without instancing (no inheritance)
+                pObject->coreObject3D::Render(pProgramSingle);
+            }
+        }
     }
 }
 
@@ -543,7 +552,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
 
     if(bInit)
     {
-        if(m_aInstanceBuffer[0]) return;
+        if(m_aInstanceBuffer[0].IsValid()) return;
 
         // only allocate with enough capacity
         if(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)

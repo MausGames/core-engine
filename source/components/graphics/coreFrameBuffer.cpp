@@ -15,7 +15,7 @@ coreFloat        coreFrameBuffer::s_afViewData[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0
 // ****************************************************************
 // constructor
 coreFrameBuffer::coreFrameBuffer()noexcept
-: m_iFrameBuffer  (0u)
+: m_iIdentifier   (0u)
 , m_aColorTarget  {}
 , m_DepthTarget   ()
 , m_StencilTarget ()
@@ -43,15 +43,15 @@ coreFrameBuffer::~coreFrameBuffer()
 // create frame buffer object
 void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate bType)
 {
-    WARN_IF(m_iFrameBuffer) this->Delete();
+    WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(vResolution.x > 0.0f && vResolution.y > 0.0f)
 
     // check for OpenGL extensions
     if(!CORE_GL_SUPPORT(EXT_framebuffer_object)) return;
 
     // generate frame buffer object
-    glGenFramebuffers(1, &m_iFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+    glGenFramebuffers(1, &m_iIdentifier);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
 
     // set resolution
     const coreUint32 iWidth  = F_TO_UI(vResolution.x);
@@ -89,7 +89,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
             pTarget->pTexture->Create(iWidth, iHeight, pTarget->oSpec, CORE_TEXTURE_MODE_DEFAULT);
 
             // attach render target texture to frame buffer
-            glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetTexture(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetIdentifier(), 0);
         }
         else
         {
@@ -126,7 +126,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 
     // retrieve frame buffer status
     const GLenum iError = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
+    glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
 
     // check for errors
     if(iError != GL_FRAMEBUFFER_COMPLETE)
@@ -141,13 +141,13 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 // delete frame buffer object
 void coreFrameBuffer::Delete()
 {
-    if(!m_iFrameBuffer) return;
+    if(!m_iIdentifier) return;
 
     // end rendering to still active frame buffer
     WARN_IF(s_pCurrent == this) coreFrameBuffer::EndDraw();
 
     // delete frame buffer (with implicit render target detachment)
-    glDeleteFramebuffers(1, &m_iFrameBuffer);
+    glDeleteFramebuffers(1, &m_iIdentifier);
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
@@ -165,8 +165,8 @@ void coreFrameBuffer::Delete()
     }
 
     // reset properties
-    m_iFrameBuffer = 0u;
-    m_vResolution  = coreVector2(0.0f,0.0f);
+    m_iIdentifier = 0u;
+    m_vResolution = coreVector2(0.0f,0.0f);
 }
 
 
@@ -206,7 +206,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const cor
 // detach all render targets
 void coreFrameBuffer::DetachTargets()
 {
-    ASSERT(!m_iFrameBuffer)
+    ASSERT(!m_iIdentifier)
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
@@ -225,7 +225,7 @@ void coreFrameBuffer::DetachTargets()
 // start rendering to the frame buffer
 void coreFrameBuffer::StartDraw()
 {
-    ASSERT(m_iFrameBuffer && (s_pCurrent != this))
+    ASSERT(m_iIdentifier && (s_pCurrent != this))
 
     // save view properties of the default frame buffer
     if(!s_afViewData[0])
@@ -238,7 +238,7 @@ void coreFrameBuffer::StartDraw()
     }
 
     // set frame buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
     s_pCurrent = this;
 
     // set view frustum
@@ -266,7 +266,7 @@ void coreFrameBuffer::EndDraw()
 // copy content to another frame buffer
 void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
 {
-    ASSERT(m_iFrameBuffer)
+    ASSERT(m_iIdentifier)
     ASSERT((!pDestination || ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x) && (iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y))) &&
                              ((iSrcX + iWidth) <= F_TO_UI(m_vResolution.x)                 && (iSrcY + iHeight) <= F_TO_UI(m_vResolution.y)))
 
@@ -275,7 +275,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // copy content directly
-            glBlitNamedFramebuffer(m_iFrameBuffer, pDestination ? pDestination->GetFrameBuffer() : 0u,
+            glBlitNamedFramebuffer(m_iIdentifier, pDestination ? pDestination->GetIdentifier() : 0u,
                                    iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                                    iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
                                    iTargets, GL_NEAREST);
@@ -283,8 +283,8 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
         else
         {
             // switch to source and destination frame buffer
-            if(s_pCurrent != this)         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_iFrameBuffer);
-            if(s_pCurrent != pDestination) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pDestination ? pDestination->GetFrameBuffer() : 0u);
+            if(s_pCurrent != this)         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_iIdentifier);
+            if(s_pCurrent != pDestination) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pDestination ? pDestination->GetIdentifier() : 0u);
 
             // copy content
             glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
@@ -292,7 +292,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
                               iTargets, GL_NEAREST);
 
             // switch back to old frame buffer
-            glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
+            glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
         }
     }
     else
@@ -302,7 +302,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
         {
             // switch to source frame buffer
             const coreBool bToggle = (s_pCurrent != this);
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
 
             // handle color target blitting
             if(CONTAINS_FLAG(iTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
@@ -321,19 +321,19 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
                 if(pDestination->m_DepthTarget.pTexture)
                 {
                     // attach source depth texture as color target
-                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DepthTarget.pTexture->GetTexture(), 0u);
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DepthTarget.pTexture->GetIdentifier(), 0u);
 
                     // copy screen to destination texture
                     pDestination->m_DepthTarget.pTexture->Enable(0);
                     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iDstX, iDstY, iWidth, iHeight);
 
                     // re-attach old color target
-                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_aColorTarget[0].pTexture ? m_aColorTarget[0].pTexture->GetTexture() : 0u, 0);
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_aColorTarget[0].pTexture ? m_aColorTarget[0].pTexture->GetIdentifier() : 0u, 0);
                 }
             }
 
             // switch back to old frame buffer
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
         }
         else
         {
@@ -384,17 +384,17 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
 // clear content of the frame buffer
 void coreFrameBuffer::Clear(const coreFrameBufferTarget iTargets)
 {
-    ASSERT(m_iFrameBuffer)
+    ASSERT(m_iIdentifier)
 
     // switch to destination frame buffer
     const coreBool bToggle = (s_pCurrent != this);
-    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
 
     // clear content
     glClear(iTargets);
 
     // switch back to old frame buffer
-    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
+    if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
 }
 
 
@@ -402,7 +402,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget iTargets)
 // invalidate content of the frame buffer
 void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
 {
-    ASSERT(m_iFrameBuffer)
+    ASSERT(m_iIdentifier)
 
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
@@ -426,19 +426,19 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // invalidate content directly
-            glInvalidateNamedFramebufferData(m_iFrameBuffer, iNum, aiAttachment);
+            glInvalidateNamedFramebufferData(m_iIdentifier, iNum, aiAttachment);
         }
         else
         {
             // switch to destination frame buffer
             const coreBool bToggle = (s_pCurrent != this);
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iFrameBuffer);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
 
             // invalidate content
             glInvalidateFramebuffer(GL_FRAMEBUFFER, iNum, aiAttachment);
 
             // switch back to old frame buffer
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetFrameBuffer() : 0u);
+            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
         }
     }
 }
@@ -448,7 +448,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
 // attach default render target
 coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
-    ASSERT(!m_iFrameBuffer && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
+    ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
 #if defined(_CORE_GLES_)
 

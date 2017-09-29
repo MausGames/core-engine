@@ -31,6 +31,10 @@ CoreSystem::CoreSystem()noexcept
 {
     Core::Log->Header("System Interface");
 
+    // set SDL behavior hints
+    SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS,            "0");
+    SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "0");
+
     // get SDL version
     SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
     const SDL_version* pVersionTTF = TTF_Linked_Version();
@@ -169,7 +173,13 @@ CoreSystem::CoreSystem()noexcept
 
     // check for debug context
     if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
+    {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    }
+    else
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, 1);
+    }
 
     // configure the SDL window
     const coreInt32  iPos   = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
@@ -187,6 +197,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         16);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,      0);
 
         // create another main window object
         m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);

@@ -38,7 +38,7 @@ STRING_ARRAY(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avO
 // constructor
 coreShader::coreShader(const coreChar* pcCustomCode)noexcept
 : coreResource  ()
-, m_iShader     (0u)
+, m_iIdentifier (0u)
 , m_iType       (0u)
 , m_sCustomCode (pcCustomCode)
 {
@@ -59,9 +59,9 @@ coreStatus coreShader::Load(coreFile* pFile)
 {
     coreFileUnload oUnload(pFile);
 
-    WARN_IF(m_iShader)    return CORE_INVALID_CALL;
-    if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_ERROR_FILE;
+    WARN_IF(m_iIdentifier) return CORE_INVALID_CALL;
+    if(!pFile)             return CORE_INVALID_INPUT;
+    if(!pFile->GetData())  return CORE_ERROR_FILE;
 
     // extract file extension
     const coreChar* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
@@ -99,9 +99,9 @@ coreStatus coreShader::Load(coreFile* pFile)
     std::snprintf(pcData, iSize, "%s\n%s\n%s\n%s\n%s\n%s", s_asGlobalCode[0].c_str(), pcTypeDef, pcQualityDef, m_sCustomCode.c_str(), s_asGlobalCode[1].c_str(), sMainCode.c_str());
 
     // create and compile the shader
-    m_iShader = glCreateShader(m_iType);
-    glShaderSource (m_iShader, 1, &pcData, &iSize);
-    glCompileShader(m_iShader);
+    m_iIdentifier = glCreateShader(m_iType);
+    glShaderSource (m_iIdentifier, 1, &pcData, &iSize);
+    glCompileShader(m_iIdentifier);
 
     // free required shader memory
     SAFE_DELETE_ARRAY(pcData)
@@ -111,18 +111,18 @@ coreStatus coreShader::Load(coreFile* pFile)
 
     // check for errors
     GLint iStatus;
-    glGetShaderiv(m_iShader, GL_COMPILE_STATUS, &iStatus);
+    glGetShaderiv(m_iIdentifier, GL_COMPILE_STATUS, &iStatus);
     if(!iStatus)
     {
         // get length of info-log
         GLint iLength;
-        glGetShaderiv(m_iShader, GL_INFO_LOG_LENGTH, &iLength);
+        glGetShaderiv(m_iIdentifier, GL_INFO_LOG_LENGTH, &iLength);
 
         if(iLength)
         {
             // get info-log
             coreChar* pcLog = new coreChar[iLength];
-            glGetShaderInfoLog(m_iShader, iLength, NULL, pcLog);
+            glGetShaderInfoLog(m_iIdentifier, iLength, NULL, pcLog);
 
             // write info-log
             Core::Log->Warning("Shader (%s) could not be compiled", pFile->GetPath());
@@ -135,7 +135,7 @@ coreStatus coreShader::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Shader (%s:%u) loaded", pFile->GetPath(), m_iShader);
+    Core::Log->Info("Shader (%s:%u) loaded", pFile->GetPath(), m_iIdentifier);
     return CORE_OK;
 }
 
@@ -144,16 +144,16 @@ coreStatus coreShader::Load(coreFile* pFile)
 // unload shader resource data
 coreStatus coreShader::Unload()
 {
-    if(!m_iShader) return CORE_INVALID_CALL;
+    if(!m_iIdentifier) return CORE_INVALID_CALL;
 
     // delete shader
-    glDeleteShader(m_iShader);
+    glDeleteShader(m_iIdentifier);
     if(!m_sPath.empty()) Core::Log->Info("Shader (%s) unloaded", m_sPath.c_str());
 
     // reset properties
-    m_sPath   = "";
-    m_iShader = 0u;
-    m_iType   = 0u;
+    m_sPath       = "";
+    m_iIdentifier = 0u;
+    m_iType       = 0u;
 
     return CORE_OK;
 }
@@ -212,7 +212,7 @@ void coreShader::__ReduceCodeSize(std::string* OUTPUT psCode)
 // constructor
 coreProgram::coreProgram()noexcept
 : coreResource     ()
-, m_iProgram       (0u)
+, m_iIdentifier    (0u)
 , m_apShader       {}
 , m_apShaderHandle {}
 , m_iStatus        (CORE_PROGRAM_NEW)
@@ -250,7 +250,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     // check for shader-program status
     if(m_iStatus < CORE_PROGRAM_DEFINED) return CORE_BUSY;
     if(m_iStatus > CORE_PROGRAM_DEFINED) return CORE_INVALID_CALL;
-    WARN_IF(m_iProgram)                  return CORE_INVALID_CALL;
+    WARN_IF(m_iIdentifier)               return CORE_INVALID_CALL;
 
     // load all required shader objects
     if(m_apShader.empty())
@@ -279,61 +279,61 @@ coreStatus coreProgram::Load(coreFile* pFile)
 #endif
 
     // create shader-program
-    m_iProgram = glCreateProgram();
+    m_iIdentifier = glCreateProgram();
 
     // attach shader objects
     FOR_EACH(it, m_apShader)
     {
-        if((*it)->GetShader())
-            glAttachShader(m_iProgram, (*it)->GetShader());
+        if((*it)->GetIdentifier())
+            glAttachShader(m_iIdentifier, (*it)->GetIdentifier());
     }
 
     // bind default attribute locations
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, CORE_SHADER_ATTRIBUTE_TEXCOORD);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
-    glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
+    glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
+    glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, CORE_SHADER_ATTRIBUTE_TEXCOORD);
+    glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
+    glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
 
     // bind instancing attribute locations
     if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object))
     {
-        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_POSITION);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,      CORE_SHADER_ATTRIBUTE_DIV_SIZE);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_ROTATION);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,      CORE_SHADER_ATTRIBUTE_DIV_DATA);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,     CORE_SHADER_ATTRIBUTE_DIV_COLOR);
-        glBindAttribLocation(m_iProgram, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,  CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
+        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_POSITION);
+        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,      CORE_SHADER_ATTRIBUTE_DIV_SIZE);
+        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_ROTATION);
+        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,      CORE_SHADER_ATTRIBUTE_DIV_DATA);
+        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,     CORE_SHADER_ATTRIBUTE_DIV_COLOR);
+        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,  CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
     }
 
     // bind custom attribute locations
     FOR_EACH(it, m_aiAttribute)
     {
         if((*it) >= 0)
-            glBindAttribLocation(m_iProgram, (*it), (*m_aiAttribute.get_key(it)));
+            glBindAttribLocation(m_iIdentifier, (*it), (*m_aiAttribute.get_key(it)));
     }
 
     // bind output locations
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
-            glBindFragDataLocation(m_iProgram, i, avOutColor[i]);
+            glBindFragDataLocation(m_iIdentifier, i, avOutColor[i]);
     }
 
     // link shader-program
-    glLinkProgram(m_iProgram);
-    glUseProgram (m_iProgram);
+    glLinkProgram(m_iIdentifier);
+    glUseProgram (m_iIdentifier);
 
     // bind texture units
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTexture2D    [i]), i);
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iProgram, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTexture2D    [i]), i);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
 
     // bind uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        const GLuint iTransformBlock = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_TRANSFORM);
-        const GLuint iAmbientBlock   = glGetUniformBlockIndex(m_iProgram, CORE_SHADER_BUFFER_AMBIENT);
-        if(iTransformBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iProgram, iTransformBlock, CORE_SHADER_BUFFER_TRANSFORM_NUM);
-        if(iAmbientBlock   != GL_INVALID_INDEX) glUniformBlockBinding(m_iProgram, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
+        const GLuint iTransformBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM);
+        const GLuint iAmbientBlock   = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_AMBIENT);
+        if(iTransformBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransformBlock, CORE_SHADER_BUFFER_TRANSFORM_NUM);
+        if(iAmbientBlock   != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
     }
 
     // save properties
@@ -346,7 +346,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
 
     // check for errors
     GLint iStatus;
-    glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iStatus);
+    glGetProgramiv(m_iIdentifier, GL_LINK_STATUS, &iStatus);
     if(!iStatus)
     {
         this->__WriteLog();
@@ -357,7 +357,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     const coreBool bSync = m_Sync.Create();
     if(!bSync) m_iStatus = CORE_PROGRAM_FINISHED;
 
-    Core::Log->Info("Program (%s:%u) loaded", m_sPath.c_str(), m_iProgram);
+    Core::Log->Info("Program (%s:%u) loaded", m_sPath.c_str(), m_iIdentifier);
     this->__WriteInterface();
     return bSync ? CORE_BUSY : CORE_OK;
 }
@@ -367,7 +367,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
 // unload shader-program
 coreStatus coreProgram::Unload()
 {
-    if(!m_iProgram) return CORE_INVALID_CALL;
+    if(!m_iIdentifier) return CORE_INVALID_CALL;
 
     // disable still active shader-program
     if(s_pCurrent == this) coreProgram::Disable(true);
@@ -376,16 +376,16 @@ coreStatus coreProgram::Unload()
     m_apShader.clear();
 
     // delete shader-program (with implicit shader object detachment)
-    glDeleteProgram(m_iProgram);
+    glDeleteProgram(m_iIdentifier);
     if(!m_sPath.empty()) Core::Log->Info("Program (%s) unloaded", m_sPath.c_str());
 
     // delete sync object
     m_Sync.Delete();
 
     // reset properties
-    m_sPath    = "";
-    m_iProgram = 0u;
-    m_iStatus  = CORE_PROGRAM_DEFINED;
+    m_sPath       = "";
+    m_iIdentifier = 0u;
+    m_iStatus     = CORE_PROGRAM_DEFINED;
 
     // clear uniform locations and cache
     m_aiUniform.clear();
@@ -411,7 +411,7 @@ coreBool coreProgram::Enable()
 
     // set current shader-program
     s_pCurrent = this;
-    glUseProgram(m_iProgram);
+    glUseProgram(m_iIdentifier);
 
     // forward global uniform data without UBOs
     if(!CORE_GL_SUPPORT(ARB_uniform_buffer_object))
@@ -438,11 +438,11 @@ coreBool coreProgram::Enable()
 #if defined(_CORE_DEBUG_)   // # never in release
 
     // validate shader-program
-    glValidateProgram(m_iProgram);
+    glValidateProgram(m_iIdentifier);
 
     // check for errors
     GLint iStatus;
-    glGetProgramiv(m_iProgram, GL_VALIDATE_STATUS, &iStatus);
+    glGetProgramiv(m_iIdentifier, GL_VALIDATE_STATUS, &iStatus);
     if(!iStatus)
     {
         this->__WriteLog();
@@ -542,13 +542,13 @@ void coreProgram::__WriteLog()const
 {
     // get length of info-log
     GLint iLength;
-    glGetProgramiv(m_iProgram, GL_INFO_LOG_LENGTH, &iLength);
+    glGetProgramiv(m_iIdentifier, GL_INFO_LOG_LENGTH, &iLength);
 
     if(iLength)
     {
         // get info-log
         coreChar* pcLog = new coreChar[iLength];
-        glGetProgramInfoLog(m_iProgram, iLength, NULL, pcLog);
+        glGetProgramInfoLog(m_iIdentifier, iLength, NULL, pcLog);
 
         // write info-log
         Core::Log->Warning("Program (%s) could not be linked or validated", m_sPath.c_str());
@@ -584,15 +584,15 @@ void coreProgram::__WriteInterface()const
             constexpr GLenum aiProperty[] = {GL_LOCATION, GL_OFFSET};
 
             // get number of active shader-program resources
-            glGetProgramInterfaceiv(m_iProgram, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &iNumInput);
-            glGetProgramInterfaceiv(m_iProgram, GL_UNIFORM,       GL_ACTIVE_RESOURCES, &iNumUniform);
+            glGetProgramInterfaceiv(m_iIdentifier, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &iNumInput);
+            glGetProgramInterfaceiv(m_iIdentifier, GL_UNIFORM,       GL_ACTIVE_RESOURCES, &iNumUniform);
 
             // write active vertex attributes (name, location)
             Core::Log->ListDeeper(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
             for(coreUintW i = 0u, ie = iNumInput; i < ie; ++i)
             {
-                glGetProgramResourceName(m_iProgram, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
-                glGetProgramResourceiv  (m_iProgram, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
+                glGetProgramResourceName(m_iIdentifier, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
+                glGetProgramResourceiv  (m_iIdentifier, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
 
                 Core::Log->ListAdd("%s: %i", acName, aiValue[0]);
             }
@@ -602,8 +602,8 @@ void coreProgram::__WriteInterface()const
             Core::Log->ListDeeper(CORE_LOG_BOLD("Uniforms:") " %d", iNumUniform);
             for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
             {
-                glGetProgramResourceName(m_iProgram, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
-                glGetProgramResourceiv  (m_iProgram, GL_UNIFORM, i, 2, aiProperty, 2,   NULL, aiValue);
+                glGetProgramResourceName(m_iIdentifier, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
+                glGetProgramResourceiv  (m_iIdentifier, GL_UNIFORM, i, 2, aiProperty, 2,   NULL, aiValue);
 
                 Core::Log->ListAdd("%s: %i/%i", acName, aiValue[0], aiValue[1]);
             }
@@ -612,8 +612,8 @@ void coreProgram::__WriteInterface()const
         else
         {
             // get number of active shader-program resources
-            glGetProgramiv(m_iProgram, GL_ACTIVE_ATTRIBUTES, &iNumInput);
-            glGetProgramiv(m_iProgram, GL_ACTIVE_UNIFORMS,   &iNumUniform);
+            glGetProgramiv(m_iIdentifier, GL_ACTIVE_ATTRIBUTES, &iNumInput);
+            glGetProgramiv(m_iIdentifier, GL_ACTIVE_UNIFORMS,   &iNumUniform);
 
             // write only numbers
             Core::Log->ListAdd(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);

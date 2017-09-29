@@ -97,7 +97,7 @@ enum coreProgramStatus : coreUint8
 class coreShader final : public coreResource
 {
 private:
-    GLuint m_iShader;                       //!< shader identifier
+    GLuint m_iIdentifier;                   //!< shader identifier
     GLenum m_iType;                         //!< shader type (e.g. GL_VERTEX_SHADER)
 
     std::string m_sCustomCode;              //!< custom shader code added to the beginning of the shader
@@ -123,7 +123,7 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint&   GetShader    ()const {return m_iShader;}
+    inline const GLuint&   GetIdentifier()const {return m_iIdentifier;}
     inline const GLenum&   GetType      ()const {return m_iType;}
     inline const coreChar* GetCustomCode()const {return m_sCustomCode.c_str();}
     //! @}
@@ -152,7 +152,7 @@ using coreShaderPtr = coreResourcePtr<coreShader>;
 class coreProgram final : public coreResource
 {
 private:
-    GLuint m_iProgram;                                     //!< shader-program identifier
+    GLuint m_iIdentifier;                                  //!< shader-program identifier
 
     std::vector<coreShaderPtr>       m_apShader;           //!< attached shader objects
     std::vector<coreResourceHandle*> m_apShaderHandle;     //!< raw shader resource handles (to preserve while unloaded)
@@ -201,11 +201,11 @@ public:
 
     //! send new uniform values
     //! @{
-    inline void SendUniform(const coreChar* pcName, const coreInt32    iInt)    {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(I_TO_F(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
-    inline void SendUniform(const coreChar* pcName, const coreFloat    fFloat)  {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(fFloat,       0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
-    inline void SendUniform(const coreChar* pcName, const coreVector2& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
-    inline void SendUniform(const coreChar* pcName, const coreVector3& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, coreVector4(vVector,      0.0f)))             glUniform3fv(iLocation, 1, vVector);}
-    inline void SendUniform(const coreChar* pcName, const coreVector4& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if(this->CheckCache(iLocation, vVector))                                     glUniform4fv(iLocation, 1, vVector);}
+    inline void SendUniform(const coreChar* pcName, const coreInt32    iInt)    {const coreInt8 iLocation = this->RetrieveUniform(pcName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(I_TO_F(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
+    inline void SendUniform(const coreChar* pcName, const coreFloat    fFloat)  {const coreInt8 iLocation = this->RetrieveUniform(pcName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(fFloat,       0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
+    inline void SendUniform(const coreChar* pcName, const coreVector2& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(vVector,      0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
+    inline void SendUniform(const coreChar* pcName, const coreVector3& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(vVector,      0.0f)))             glUniform3fv(iLocation, 1, vVector);}
+    inline void SendUniform(const coreChar* pcName, const coreVector4& vVector) {const coreInt8 iLocation = this->RetrieveUniform(pcName); if((iLocation >= 0) && this->CheckCache(iLocation, vVector))                                     glUniform4fv(iLocation, 1, vVector);}
     void        SendUniform(const coreChar* pcName, const coreMatrix2& mMatrix, const coreBool bTranspose);
     void        SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool bTranspose);
     void        SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool bTranspose);
@@ -213,19 +213,19 @@ public:
 
     //! retrieve uniform and attribute locations
     //! @{
-    inline const coreInt8& RetrieveUniform  (const coreChar* pcName) {if(!m_aiUniform  .count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  .emplace(pcName, glGetUniformLocation(m_iProgram, pcName));} ASSERT(m_aiUniform  .at(pcName) >= -1) return m_aiUniform  .at(pcName);}
-    inline const coreInt8& RetrieveAttribute(const coreChar* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(pcName, glGetAttribLocation (m_iProgram, pcName));} ASSERT(m_aiAttribute.at(pcName) >= -1) return m_aiAttribute.at(pcName);}
+    inline const coreInt8& RetrieveUniform  (const coreChar* pcName) {if(!m_aiUniform  .count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  .emplace(pcName, glGetUniformLocation(m_iIdentifier, pcName));} ASSERT(m_aiUniform  .at(pcName) >= -1) return m_aiUniform  .at(pcName);}
+    inline const coreInt8& RetrieveAttribute(const coreChar* pcName) {if(!m_aiAttribute.count(pcName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(pcName, glGetAttribLocation (m_iIdentifier, pcName));} ASSERT(m_aiAttribute.at(pcName) >= -1) return m_aiAttribute.at(pcName);}
     //! @}
 
     //! check for cached uniform values
     //! @{
-    inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4& vVector) {if(iLocation < 0) return false; if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
+    inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4& vVector) {if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const GLuint& GetProgram   ()const                       {return m_iProgram;}
-    inline coreShader*   GetShader    (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return s_cast<coreShader*>(m_apShaderHandle[iIndex]->GetResource());}
+    inline const GLuint& GetIdentifier()const                       {return m_iIdentifier;}
+    inline coreShader*   GetShader    (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return s_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
     inline coreUintW     GetNumShaders()const                       {return m_apShaderHandle.size();}
     //! @}
 

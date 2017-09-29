@@ -65,7 +65,7 @@ private:
 
 
 private:
-    GLuint m_iFrameBuffer;                                        //!< frame buffer identifier
+    GLuint m_iIdentifier;                                         //!< frame buffer identifier
 
     coreRenderTarget m_aColorTarget[CORE_SHADER_OUTPUT_COLORS];   //!< attached color targets
     coreRenderTarget m_DepthTarget;                               //!< attached depth target
@@ -118,11 +118,6 @@ public:
     void Invalidate(const coreFrameBufferTarget iTargets);
     //! @}
 
-    //! access buffer directly
-    //! @{
-    inline operator GLuint ()const {return m_iFrameBuffer;}
-    //! @}
-
     //! set object properties
     //! @{
     inline void SetFOV     (const coreFloat fFOV)      {m_fFOV      = fFOV;}
@@ -132,7 +127,7 @@ public:
 
     //! get object properties
     //! @{
-    inline const GLuint&           GetFrameBuffer  ()const                            {return m_iFrameBuffer;}
+    inline const GLuint&           GetIdentifier   ()const                            {return m_iIdentifier;}
     inline const coreRenderTarget& GetColorTarget  (const coreUintW iColorIndex)const {ASSERT(iColorIndex < CORE_SHADER_OUTPUT_COLORS) return m_aColorTarget[iColorIndex];}
     inline const coreRenderTarget& GetDepthTarget  ()const                            {return m_DepthTarget;}
     inline const coreRenderTarget& GetStencilTarget()const                            {return m_StencilTarget;}

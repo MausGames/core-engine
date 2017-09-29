@@ -17,7 +17,7 @@ coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS] = {};
 // constructor
 coreTexture::coreTexture(const coreBool bLoadCompressed)noexcept
 : coreResource  ()
-, m_iTexture    (0u)
+, m_iIdentifier (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
 , m_iCompressed (bLoadCompressed ? 0 : -1)
@@ -46,9 +46,9 @@ coreStatus coreTexture::Load(coreFile* pFile)
 
     coreFileUnload oUnload(pFile);
 
-    WARN_IF(m_iTexture)   return CORE_INVALID_CALL;
-    if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_ERROR_FILE;
+    WARN_IF(m_iIdentifier) return CORE_INVALID_CALL;
+    if(!pFile)             return CORE_INVALID_INPUT;
+    if(!pFile->GetData())  return CORE_ERROR_FILE;
 
     // decompress file to plain pixel data
     SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
@@ -74,7 +74,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     // delete pixel data
     SDL_FreeSurface(pData);
 
-    Core::Log->Info("Texture (%s:%u) loaded", pFile->GetPath(), m_iTexture);
+    Core::Log->Info("Texture (%s:%u) loaded", pFile->GetPath(), m_iIdentifier);
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
 }
 
@@ -83,14 +83,14 @@ coreStatus coreTexture::Load(coreFile* pFile)
 // unload texture resource data
 coreStatus coreTexture::Unload()
 {
-    if(!m_iTexture) return CORE_INVALID_CALL;
+    if(!m_iIdentifier) return CORE_INVALID_CALL;
 
     // disable still active texture bindings
     for(coreUintW i = CORE_TEXTURE_UNITS; i--; )
         if(s_apBound[i] == this) coreTexture::Disable(i);
 
     // delete texture
-    glDeleteTextures(1, &m_iTexture);
+    glDeleteTextures(1, &m_iIdentifier);
     if(!m_sPath.empty()) Core::Log->Info("Texture (%s) unloaded", m_sPath.c_str());
 
     // delete sync object
@@ -98,7 +98,7 @@ coreStatus coreTexture::Unload()
 
     // reset properties
     m_sPath       = "";
-    m_iTexture    = 0u;
+    m_iIdentifier = 0u;
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
     m_iCompressed = MIN(m_iCompressed, 0);
@@ -113,7 +113,7 @@ coreStatus coreTexture::Unload()
 // create texture memory
 void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode iMode)
 {
-    WARN_IF(m_iTexture) this->Unload();
+    WARN_IF(m_iIdentifier) this->Unload();
 
     // check for OpenGL extensions
     const coreBool bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic)                && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_FILTER);
@@ -140,6 +140,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             switch(m_Spec.iInternal)
             {
             default: ASSERT(false)
+            case GL_LUMINANCE8:
             case GL_R8:    if(CORE_GL_SUPPORT(EXT_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_RGTC1_EXT;       break;
             case GL_RG8:   if(CORE_GL_SUPPORT(EXT_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_GREEN_RGTC2_EXT; break;
             case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;   break;
@@ -150,8 +151,8 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     }
 
     // generate texture
-    coreGenTextures2D(1u, &m_iTexture);
-    glBindTexture(GL_TEXTURE_2D, m_iTexture);
+    coreGenTextures2D(1u, &m_iIdentifier);
+    glBindTexture(GL_TEXTURE_2D, m_iIdentifier);
     s_apBound[s_iActiveUnit] = NULL;
 
     // set sampling parameters
@@ -181,7 +182,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
 // modify texture memory
 void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData)
 {
-    WARN_IF(!m_iTexture) return;
+    WARN_IF(!m_iIdentifier) return;
     ASSERT(((iOffsetX + iWidth) <= F_TO_UI(m_vResolution.x)) && ((iOffsetY + iHeight) <= F_TO_UI(m_vResolution.y)))
 
     // check for OpenGL extensions
@@ -193,7 +194,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
         ASSERT((iWidth == F_TO_UI(m_vResolution.x)) && (iHeight == F_TO_UI(m_vResolution.y)))
 
         // bind texture (simple)
-        glBindTexture(GL_TEXTURE_2D, m_iTexture);
+        glBindTexture(GL_TEXTURE_2D, m_iIdentifier);
         s_apBound[s_iActiveUnit] = NULL;
 
         // calculate components and compressed size
@@ -252,19 +253,19 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // update texture data directly (new)
-            glTextureSubImage2D(m_iTexture, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
-            if(bMipMap) glGenerateTextureMipmap(m_iTexture);
+            glTextureSubImage2D(m_iIdentifier, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
+            if(bMipMap) glGenerateTextureMipmap(m_iIdentifier);
         }
         else if(CORE_GL_SUPPORT(EXT_direct_state_access))
         {
             // update texture data directly (old)
-            glTextureSubImage2DEXT(m_iTexture, GL_TEXTURE_2D, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
-            if(bMipMap) glGenerateTextureMipmapEXT(m_iTexture, GL_TEXTURE_2D);
+            glTextureSubImage2DEXT(m_iIdentifier, GL_TEXTURE_2D, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
+            if(bMipMap) glGenerateTextureMipmapEXT(m_iIdentifier, GL_TEXTURE_2D);
         }
         else
         {
             // bind texture (simple)
-            glBindTexture(GL_TEXTURE_2D, m_iTexture);
+            glBindTexture(GL_TEXTURE_2D, m_iIdentifier);
             s_apBound[s_iActiveUnit] = NULL;
 
             // update texture data
@@ -279,19 +280,19 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
 // copy content from current read frame buffer
 void coreTexture::CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)
 {
-    ASSERT(m_iTexture)
+    ASSERT(m_iIdentifier)
     ASSERT(((iSrcX + iWidth) <= F_TO_UI(Core::Graphics->GetViewResolution().x)) && ((iSrcY + iHeight) <= F_TO_UI(Core::Graphics->GetViewResolution().y)) &&
            ((iDstX + iWidth) <= F_TO_UI(m_vResolution                      .x)) && ((iDstY + iHeight) <= F_TO_UI(m_vResolution                      .y)))
 
     if(CORE_GL_SUPPORT(ARB_direct_state_access))
     {
         // copy frame buffer directly (new)
-        glCopyTextureSubImage2D(m_iTexture, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
+        glCopyTextureSubImage2D(m_iIdentifier, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
     }
     else if(CORE_GL_SUPPORT(EXT_direct_state_access))
     {
         // copy frame buffer directly (old)
-        glCopyTextureSubImage2DEXT(m_iTexture, GL_TEXTURE_2D, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
+        glCopyTextureSubImage2DEXT(m_iIdentifier, GL_TEXTURE_2D, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
     }
     else
     {
@@ -311,12 +312,12 @@ void coreTexture::CopyFrameBuffer()
 // bind texture level to image unit
 void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess)
 {
-    ASSERT(m_iTexture && (iLevel < m_iLevels))
+    ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
     if(CORE_GL_SUPPORT(ARB_shader_image_load_store))
     {
         // bind directly without layering
-        glBindImageTexture(iUnit, m_iTexture, iLevel, false, 0, iAccess, m_Spec.iInternal);
+        glBindImageTexture(iUnit, m_iIdentifier, iLevel, false, 0, iAccess, m_Spec.iInternal);
     }
 }
 
@@ -325,7 +326,7 @@ void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const
 // copy image data to another image
 void coreTexture::CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
 {
-    ASSERT(m_iTexture)
+    ASSERT(m_iIdentifier)
     ASSERT((iSrcLevel < m_iLevels) && (iDstLevel < pDestination->GetLevels()) &&
            ((iSrcX + iWidth) <= F_TO_UI(m_vResolution                .x)) && ((iSrcY + iHeight) <= F_TO_UI(m_vResolution                .y)) &&
            ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x)) && ((iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y)))
@@ -333,8 +334,8 @@ void coreTexture::CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iS
     if(CORE_GL_SUPPORT(ARB_copy_image))
     {
         // copy directly to another texture unit
-        glCopyImageSubData(m_iTexture,                 GL_TEXTURE_2D, iSrcLevel, iSrcX, iSrcY, 0,
-                           pDestination->GetTexture(), GL_TEXTURE_2D, iDstLevel, iDstX, iDstY, 0,
+        glCopyImageSubData(m_iIdentifier,                 GL_TEXTURE_2D, iSrcLevel, iSrcX, iSrcY, 0,
+                           pDestination->GetIdentifier(), GL_TEXTURE_2D, iDstLevel, iDstX, iDstY, 0,
                            iWidth, iHeight, 0);
     }
 }
@@ -349,7 +350,7 @@ void coreTexture::CopyImage(coreTexture* OUTPUT pDestination)const
 // configure shadow sampling
 void coreTexture::ShadowSampling(const coreBool bStatus)
 {
-    ASSERT(m_iTexture && (m_Spec.iFormat == GL_DEPTH_COMPONENT || m_Spec.iFormat == GL_DEPTH_STENCIL))
+    ASSERT(m_iIdentifier && (m_Spec.iFormat == GL_DEPTH_COMPONENT || m_Spec.iFormat == GL_DEPTH_STENCIL))
 
     // bind texture
     this->Enable(0u);
@@ -378,7 +379,7 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
         {
             if(ppTextureArray[i].IsUsable())
             {
-                coreTexture* pTexture = s_cast<coreTexture*>(ppTextureArray[i].GetHandle()->GetResource());
+                coreTexture* pTexture = ppTextureArray[i].GetResource();
 
                 // check texture binding
                 if(s_apBound[i] == pTexture) continue;
@@ -401,7 +402,7 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
             // arrange texture identifiers
             for(coreUintW i = 0u; i < iCount; ++i)
             {
-                if(ppTextureArray[i].IsUsable()) aiIdentifier[i] = ppTextureArray[i]->GetTexture();
+                if(ppTextureArray[i].IsUsable()) aiIdentifier[i] = ppTextureArray[i]->GetIdentifier();
                 else s_apBound[i] = NULL;
             }
 
@@ -441,12 +442,12 @@ void coreTexture::DisableAll()
 // clear content of the texture
 void coreTexture::Clear(const coreUint8 iLevel)
 {
-    ASSERT(m_iTexture && (iLevel < m_iLevels))
+    ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
     if(CORE_GL_SUPPORT(ARB_clear_texture))
     {
         // clear the whole texture
-        glClearTexImage(m_iTexture, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
+        glClearTexImage(m_iIdentifier, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
     }
 }
 
@@ -455,12 +456,12 @@ void coreTexture::Clear(const coreUint8 iLevel)
 // invalidate content of the texture
 void coreTexture::Invalidate(const coreUint8 iLevel)
 {
-    ASSERT(m_iTexture && (iLevel < m_iLevels))
+    ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
         // invalidate the whole texture
-        glInvalidateTexImage(m_iTexture, iLevel);
+        glInvalidateTexImage(m_iIdentifier, iLevel);
     }
 }
 
@@ -560,12 +561,12 @@ void coreTexture::__BindTexture(const coreUintW iUnit, coreTexture* pTexture)
     if(CORE_GL_SUPPORT(ARB_direct_state_access))
     {
         // bind texture directly (new)
-        glBindTextureUnit(iUnit, pTexture ? pTexture->GetTexture() : 0u);
+        glBindTextureUnit(iUnit, pTexture ? pTexture->GetIdentifier() : 0u);
     }
     else if(CORE_GL_SUPPORT(EXT_direct_state_access))
     {
         // bind texture directly (old)
-        glBindMultiTextureEXT(GL_TEXTURE0 + iUnit, GL_TEXTURE_2D, pTexture ? pTexture->GetTexture() : 0u);
+        glBindMultiTextureEXT(GL_TEXTURE0 + iUnit, GL_TEXTURE_2D, pTexture ? pTexture->GetIdentifier() : 0u);
     }
     else
     {
@@ -577,6 +578,6 @@ void coreTexture::__BindTexture(const coreUintW iUnit, coreTexture* pTexture)
         }
 
         // bind texture to current unit
-        glBindTexture(GL_TEXTURE_2D, pTexture ? pTexture->GetTexture() : 0u);
+        glBindTexture(GL_TEXTURE_2D, pTexture ? pTexture->GetIdentifier() : 0u);
     }
 }
