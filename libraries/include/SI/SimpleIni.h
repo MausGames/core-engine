@@ -1195,6 +1195,19 @@ private:
         a_pData += (*a_pData == '\r' && *(a_pData+1) == '\n') ? 2 : 1;
     }
 
+    inline unsigned int HashFNV1(const SI_CHAR* pcString)
+    {
+        unsigned int iHash = 2166136261u;
+
+        while(*pcString)
+        {
+            iHash = ((*pcString) ^ iHash) * 16777619u;
+            ++pcString;
+        }
+
+        return iHash;
+    }
+
     /** Make a copy of the supplied string, replacing the original pointer */
     SI_Error CopyString(const SI_CHAR *& a_pString);
 
@@ -1247,7 +1260,7 @@ private:
         been supplied after the file load. It will be empty unless SetValue()
         has been called.
      */
-    TNamesDepend m_strings;
+    std::map<unsigned int, const SI_CHAR*> m_strings;
 
     /** Is the format of our datafile UTF-8 or MBCS? */
     bool m_bStoreIsUtf8;
@@ -1260,7 +1273,7 @@ private:
 
     /** Should spaces be written out surrounding the equals sign? */
     bool m_bSpaces;
-    
+
     /** Next order value, used to ensure sections and keys are output in the
         same order that they are loaded/added.
      */
@@ -1307,13 +1320,11 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::Reset()
     }
 
     // remove all strings
-    if (!m_strings.empty()) {
-        typename TNamesDepend::iterator i = m_strings.begin();
-        for (; i != m_strings.end(); ++i) {
-            delete[] const_cast<SI_CHAR*>(i->pItem);
-        }
-        m_strings.erase(m_strings.begin(), m_strings.end());
+    for (auto i = m_strings.begin(); i != m_strings.end(); ++i)
+    {
+        delete[] i->second;
     }
+    m_strings.clear();
 }
 
 template<class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
@@ -1845,6 +1856,13 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::CopyString(
     const SI_CHAR *& a_pString
     )
 {
+    const unsigned int iHash = HashFNV1(a_pString);
+    if (m_strings.count(iHash))
+    {
+        a_pString = m_strings.at(iHash);
+        return SI_OK;
+    }
+
     size_t uLen = 0;
     if (sizeof(SI_CHAR) == sizeof(char)) {
         uLen = strlen((const char *)a_pString);
@@ -1861,7 +1879,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::CopyString(
         return SI_NOMEM;
     }
     memcpy(pCopy, a_pString, sizeof(SI_CHAR)*uLen);
-    m_strings.push_back(pCopy);
+    m_strings[iHash] = pCopy;
     a_pString = pCopy;
     return SI_OK;
 }
@@ -2614,6 +2632,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::DeleteString(
     // strings may exist either inside the data block, or they will be
     // individually allocated and stored in m_strings. We only physically
     // delete those stored in m_strings.
+    /*
     if (a_pString < m_pData || a_pString >= m_pData + m_uDataLen) {
         typename TNamesDepend::iterator i = m_strings.begin();
         for (;i != m_strings.end(); ++i) {
@@ -2624,6 +2643,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::DeleteString(
             }
         }
     }
+    */
 }
 
 // ---------------------------------------------------------------------------
