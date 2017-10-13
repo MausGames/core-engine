@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef _CORE_CPUID_H_
-#define	_CORE_CPUID_H_
+#ifndef _CORE_GUARD_CPUID_H_
+#define _CORE_GUARD_CPUID_H_
 
 
 // ****************************************************************
@@ -119,4 +119,4 @@ public:
 };
 
 
-#endif /* _CORE_CPUID_H_ */
+#endif /* _CORE_GUARD_CPUID_H_ */

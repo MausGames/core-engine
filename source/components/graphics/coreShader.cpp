@@ -166,7 +166,7 @@ void coreShader::__LoadGlobalCode()
     if(!s_asGlobalCode[0].empty()) return;
 
     // set global shader definitions
-    s_asGlobalCode[0].assign(PRINT("#version %.0f \n", CORE_GL_SUPPORT(ARB_uniform_buffer_object) ? Core::Graphics->VersionGLSL()*100.0f : (DEFINED(_CORE_GLES_) ? 100.0f : 110.0f)));
+    s_asGlobalCode[0].assign(PRINT("#version %.0f \n", CORE_GL_SUPPORT(ARB_uniform_buffer_object) ? Core::Graphics->GetVersionGLSL()*100.0f : (DEFINED(_CORE_GLES_) ? 100.0f : 110.0f)));
     s_asGlobalCode[1].assign(PRINT("#define CORE_NUM_TEXTURES_2D     (%u) \n", CORE_TEXTURE_UNITS_2D));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_TEXTURES_SHADOW (%u) \n", CORE_TEXTURE_UNITS_SHADOW));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS          (%u) \n", CORE_GRAPHICS_LIGHTS));
@@ -569,7 +569,7 @@ void coreProgram::__WriteLog()const
 // write interface to log file
 void coreProgram::__WriteInterface()const
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
     Core::Log->ListStartInfo("Program Interface");
     {

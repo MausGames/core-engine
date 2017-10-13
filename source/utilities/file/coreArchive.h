@@ -15,6 +15,7 @@
 // TODO: check sum
 // TODO: allocate page-size aligned
 // TODO: static and dynamic archives (with fixed-size array for renaming)
+// TODO: reference-counting wrapper instead of coreFileUnload
 
 
 // ****************************************************************

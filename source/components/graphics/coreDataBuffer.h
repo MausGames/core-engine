@@ -13,6 +13,7 @@
 // TODO: enable read and copy operations (currently only static and write/dynamic)
 // TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
 // TODO: remove per-frame allocation on map/unmap-fallback
+// TODO: remove mapping templates, generates too many function copies (search for other locations as well)
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 

@@ -146,8 +146,8 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
     coreTexture::EnableAll(m_apTexture);
 
     // draw the model
-    Core::Manager::Object->GetLowModel()->Enable();
-    Core::Manager::Object->GetLowModel()->DrawArrays();
+    Core::Manager::Object->GetLowQuad()->Enable();
+    Core::Manager::Object->GetLowQuad()->DrawArrays();
 }
 
 void coreObject2D::Render()

@@ -31,11 +31,13 @@ coreObject::coreObject()noexcept
 coreObjectManager::coreObjectManager()noexcept
 : m_aapObjectList    {}
 , m_aObjectCollision {}
-, m_pLowModel        (NULL)
+, m_pLowQuad         (NULL)
+, m_pLowTriangle     (NULL)
 , m_pBlitFallback    (NULL)
 {
-    // allocate low-memory model object
-    m_pLowModel = Core::Manager::Resource->LoadNew<coreModel>();
+    // allocate low-memory models
+    m_pLowQuad     = Core::Manager::Resource->LoadNew<coreModel>();
+    m_pLowTriangle = Core::Manager::Resource->LoadNew<coreModel>();
 
     // start up the object manager
     this->__Reset(CORE_RESOURCE_RESET_INIT);
@@ -51,8 +53,9 @@ coreObjectManager::~coreObjectManager()
     // shut down the object manager
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
 
-    // free low-memory model object
-    Core::Manager::Resource->Free(&m_pLowModel);
+    // free low-memory models
+    Core::Manager::Resource->Free(&m_pLowQuad);
+    Core::Manager::Resource->Free(&m_pLowTriangle);
 
     Core::Log->Info(CORE_LOG_BOLD("Object Manager destroyed"));
 }
@@ -381,21 +384,34 @@ void coreObjectManager::__Reset(const coreResourceReset bInit)
 {
     if(bInit)
     {
-        const coreUint32 aiDataStrip[4] = {coreVector2(-0.5f, 0.5f).PackSnorm2x16(),
-                                           coreVector2(-0.5f,-0.5f).PackSnorm2x16(),
-                                           coreVector2( 0.5f, 0.5f).PackSnorm2x16(),
-                                           coreVector2( 0.5f,-0.5f).PackSnorm2x16()};
+        constexpr coreUint32 aiQuadData[] = {coreVector2(-0.5f, 0.5f).PackSnorm2x16(),
+                                             coreVector2(-0.5f,-0.5f).PackSnorm2x16(),
+                                             coreVector2( 0.5f, 0.5f).PackSnorm2x16(),
+                                             coreVector2( 0.5f,-0.5f).PackSnorm2x16()};
 
-        // create low-memory model object
-        m_pLowModel->SetBoundingRange (coreVector3(0.5f,0.5f,0.0f));
-        m_pLowModel->SetBoundingRadius(1.0f / SQRT2);
-        m_pLowModel->SetPrimitiveType (GL_TRIANGLE_STRIP);
+        constexpr coreVector2 avTriangleData[] = {coreVector2(-0.5f, 0.5f),
+                                                  coreVector2(-0.5f,-1.5f),
+                                                  coreVector2( 1.5f, 0.5f)};
+
+        // create low-memory square model
+        m_pLowQuad->SetBoundingRange (coreVector3(0.5f,0.5f,0.0f));
+        m_pLowQuad->SetBoundingRadius(1.0f / SQRT2);
+        m_pLowQuad->SetPrimitiveType (GL_TRIANGLE_STRIP);
 
         // define vertex data
-        coreVertexBuffer* pBuffer = m_pLowModel->CreateVertexBuffer(4u, sizeof(coreUint32), aiDataStrip, CORE_DATABUFFER_STORAGE_STATIC);
+        coreVertexBuffer* pBuffer = m_pLowQuad->CreateVertexBuffer(ARRAY_SIZE(aiQuadData), sizeof(coreUint32), aiQuadData, CORE_DATABUFFER_STORAGE_STATIC);
         pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_SHORT, false, 0u);
 
-        Core::Log->Info("Low-memory model object created");
+        // create low-memory triangle model
+        m_pLowTriangle->SetBoundingRange (coreVector3(1.5f,1.5f,0.0f));
+        m_pLowTriangle->SetBoundingRadius(SQRT(2.5f));
+        m_pLowTriangle->SetPrimitiveType (GL_TRIANGLES);
+
+        // define vertex data
+        pBuffer = m_pLowTriangle->CreateVertexBuffer(ARRAY_SIZE(avTriangleData), sizeof(coreVector2), avTriangleData, CORE_DATABUFFER_STORAGE_STATIC);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_FLOAT, false, 0u);
+
+        Core::Log->Info("Low-memory models created");
 
         // create frame buffer fallback
         if(!CORE_GL_SUPPORT(EXT_framebuffer_blit))
@@ -416,8 +432,9 @@ void coreObjectManager::__Reset(const coreResourceReset bInit)
     }
     else
     {
-        // unload low-memory model object
-        m_pLowModel->Unload();
+        // unload low-memory models
+        m_pLowQuad    ->Unload();
+        m_pLowTriangle->Unload();
 
         // delete frame buffer fallback
         SAFE_DELETE(m_pBlitFallback)

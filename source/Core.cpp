@@ -44,12 +44,18 @@ Core::Core()noexcept
     Manager::Memory   = new coreMemoryManager();
     Manager::Resource = new coreResourceManager();
     Manager::Object   = new coreObjectManager();
+    Log->Header("Other");
 
     // init debug component
     Debug = new CoreDebug();
 
     // load language file
-    Language = new coreLanguage(Config->GetString(CORE_CONFIG_SYSTEM_LANGUAGE));
+    Language = new coreLanguage(Config->GetString(CORE_CONFIG_BASE_LANGUAGE));
+
+    // set window title, icon and cursor
+    System->SetWindowTitle(Application->Settings.Name);
+    System->SetWindowIcon (Application->Settings.IconPath);
+    Input ->SetCursor     (Application->Settings.CursorPath);
 
     // init application
     Log->Header("Application Init");
@@ -64,7 +70,7 @@ Core::Core()noexcept
 /* destructor */
 Core::~Core()
 {
-    Core::Log->Header("Shut Down");
+    Log->Header("Shut Down");
 
     // delete application
     SAFE_DELETE(Application)
@@ -168,7 +174,7 @@ coreStatus Core::Run()
     Core Engine;
 
     // set logging level
-    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
     {
         Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR);
         Core::Log->Warning ("Logging level reduced");

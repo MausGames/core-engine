@@ -131,12 +131,12 @@ void coreParticleSystem::Render()
 
         // draw the model instanced
         glBindVertexArray(m_aiVertexArray.current());
-        Core::Manager::Object->GetLowModel()->DrawArraysInstanced(m_apRenderList.size());
+        Core::Manager::Object->GetLowQuad()->DrawArraysInstanced(m_apRenderList.size());
     }
     else
     {
         coreProgram* pProgram = m_pProgram.GetResource();
-        coreModel*   pModel   = Core::Manager::Object->GetLowModel().GetResource();
+        coreModel*   pModel   = Core::Manager::Object->GetLowQuad().GetResource();
 
         // draw without instancing
         FOR_EACH_REV(it, m_apRenderList)
@@ -312,7 +312,7 @@ void coreParticleSystem::__Reset(const coreResourceReset bInit)
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
 
             // set vertex data
-            Core::Manager::Object->GetLowModel()->GetVertexBuffer(0u)->Activate(0u);
+            Core::Manager::Object->GetLowQuad()->GetVertexBuffer(0u)->Activate(0u);
             it->ActivateDivided(1u, 1u);
         }
 

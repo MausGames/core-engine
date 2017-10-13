@@ -83,56 +83,63 @@
 #endif
 
 // operating system
+#if defined(__APPLE__)
+    #include <TargetConditionals.h>
+#endif
 #if defined(_WIN32)
     #define _CORE_WINDOWS_ (1)
 #endif
 #if defined(__linux__)
     #define _CORE_LINUX_   (1)
 #endif
-#if defined(__APPLE__)
+#if defined(__APPLE__) && TARGET_OS_MAC
     #define _CORE_OSX_     (1)
 #endif
 #if defined(__ANDROID__)
     #define _CORE_ANDROID_ (1)
     #undef  _CORE_LINUX_
 #endif
-#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) /*&& !defined(_CORE_OSX_)*/ && !defined(_CORE_ANDROID_)
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+    #define _CORE_IOS_     (1)
+    #undef  _CORE_OSX_
+#endif
+#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) /*&& !defined(_CORE_OSX_)*/ && !defined(_CORE_ANDROID_) /*&& defined(_CORE_IOS_)*/
     #warning "Operating System not supported!"
 #endif
 
-// debug mode
-#if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_MINGW_)) && !defined(__OPTIMIZE__))
-    #define _CORE_DEBUG_    (1)
-#endif
-
-// parallel mode
-#if !defined(_CORE_ANDROID_)
-    #define _CORE_PARALLEL_ (1)
-#endif
-
 // mobile mode
-#if defined(_CORE_ANDROID_)
-    #define _CORE_MOBILE_   (1)
+#if defined(_CORE_ANDROID_) || defined(_CORE_IOS_)
+    #define _CORE_MOBILE_ (1)
 #endif
 
-// Windows XP compatibility
+// debug mode
+#if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_MINGW_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
+    #define _CORE_DEBUG_  (1)
+#endif
+
+// async mode
+#if !defined(_CORE_MOBILE_)
+    #define _CORE_ASYNC_  (1)
+#endif
+
+// OpenGL ES mode
+#if defined(_CORE_MOBILE_)
+    #define _CORE_GLES_   (1)
+#endif
+
+// Windows XP mode
 #if (defined(_USING_V110_SDK71_) || defined(_CORE_MINGW_)) && defined(_CORE_WINDOWS_)
-    #define _CORE_WINXP_    (1)
+    #define _CORE_WINXP_  (1)
 #endif
 
 // x64 instruction set
 #if defined(_M_X64) || defined(__x86_64__)
-    #define _CORE_X64_      (1)
+    #define _CORE_X64_    (1)
 #endif
 
 // SSE2 instruction set
 #if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_MOBILE_) && !defined(_CORE_WINXP_)
-    #define _CORE_SSE_      (1)
-#endif
-
-// OpenGL ES
-#if defined(_CORE_MOBILE_)
-    #define _CORE_GLES_     (1)
+    #define _CORE_SSE_    (1)
 #endif
 
 
@@ -160,7 +167,7 @@
     #define DONT_INLINE      __attribute__((noinline))
     #define RETURN_RESTRICT  __attribute__((malloc))
     #define RETURN_NONNULL   __attribute__((returns_nonnull))
-    #define RETURN_NODISCARD [[nodiscard]]
+    #define RETURN_NODISCARD __attribute__((warn_unused_result))
     #define FUNC_PURE        __attribute__((pure))
     #define FUNC_CONST       __attribute__((const))
     #define FUNC_LOCAL       __attribute__((pure))
@@ -489,8 +496,8 @@ enum coreStatus : coreInt8
 
 
 // ****************************************************************
-/* multi-threading adjustments */
-#if defined(_CORE_PARALLEL_)
+/* multi-threading utilities */
+#if defined(_CORE_ASYNC_)
 
     // acquire the spinlock
     FORCE_INLINE void coreAtomicLock(SDL_SpinLock* OUTPUT piLock)
@@ -565,6 +572,27 @@ class  coreObjectManager;
 /* application framework */
 class CoreApp final
 {
+public:
+    /*! project settings */
+    struct Settings final
+    {
+        static const coreChar* const Name;         //!< project name
+        static const coreChar* const IconPath;     //!< window icon file path
+        static const coreChar* const CursorPath;   //!< mouse cursor file path
+
+        struct RenderBuffer final
+        {
+            static const coreUint8 DepthSize;      //!< depth buffer size (0, 16, 24, 32)
+            static const coreUint8 StencilSize;    //!< stencil buffer size (0, 8)
+            static const coreBool  AlphaChannel;   //!< enable alpha channel (RGBA8)
+            static const coreBool  DoubleBuffer;   //!< enable double buffering
+            static const coreBool  StereoRender;   //!< enable stereo rendering
+        }
+        RenderBuffer;
+    }
+    Settings;
+
+
 private:
     CoreApp()noexcept {this->Setup(); this->Init();}
     ~CoreApp()        {this->Exit();}

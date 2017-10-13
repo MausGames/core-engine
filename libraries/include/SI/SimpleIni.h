@@ -258,6 +258,7 @@ enum SI_Error {
     SI_OK       =  0,   //!< No error
     SI_UPDATED  =  1,   //!< An existing value was updated
     SI_INSERTED =  2,   //!< A new value was inserted
+    SI_SAME     =  3,
 
     // note: test for any error with (retval < 0)
     SI_FAIL     = -1,   //!< Generic failure
@@ -1966,6 +1967,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::AddEntry(
         iKey = keyval.insert(oEntry);
         bInserted = true;
     }
+    if (!bInserted && (iKey->second == a_pValue)) return SI_SAME;
     iKey->second = a_pValue;
     return bInserted ? SI_INSERTED : SI_UPDATED;
 }

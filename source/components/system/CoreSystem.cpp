@@ -116,7 +116,7 @@ CoreSystem::CoreSystem()noexcept
         if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
         const coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
 
-        if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
+        if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
         {
             m_vResolution.x = CLAMP(m_vResolution.x, 0.0f, oPrimary.vDesktopRes.x);
             m_vResolution.y = CLAMP(m_vResolution.y, 0.0f, oPrimary.vDesktopRes.y);
@@ -133,15 +133,16 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,         8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,          8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         Core::Config->GetBool(CORE_CONFIG_GRAPHICS_ALPHACHANNEL) ? 8 : 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         Core::Config->GetInt (CORE_CONFIG_GRAPHICS_DEPTHSIZE));
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       Core::Config->GetInt (CORE_CONFIG_GRAPHICS_STENCILSIZE));
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       Core::Config->GetBool(CORE_CONFIG_GRAPHICS_DOUBLEBUFFER) ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt (CORE_CONFIG_GRAPHICS_ANTIALIASING));
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         Core::Application->Settings.RenderBuffer.AlphaChannel   ? 8 : 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         Core::Application->Settings.RenderBuffer.DepthSize);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       Core::Application->Settings.RenderBuffer.StencilSize);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       Core::Application->Settings.RenderBuffer.DoubleBuffer   ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_STEREO,             Core::Application->Settings.RenderBuffer.StereoRender   ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
 
     // check for core profile
-    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE) && !DEFINED(_CORE_GLES_))
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE) && !DEFINED(_CORE_GLES_))
     {
         // create quick test-window and -context
         m_pWindow = SDL_CreateWindow("OpenGL Test", 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
@@ -165,14 +166,14 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // check for shared context
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) && DEFINED(_CORE_PARALLEL_))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && DEFINED(_CORE_ASYNC_))
     {
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
     }
 
     // check for debug context
-    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
     }
@@ -182,7 +183,7 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // configure the SDL window
-    const coreInt32  iPos   = (Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
+    const coreInt32  iPos   = (Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
     const coreInt32  iSizeX = F_TO_SI(m_vResolution.x);
     const coreInt32  iSizeY = F_TO_SI(m_vResolution.y);
     const coreUint32 iFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
@@ -279,6 +280,8 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
         // create icon and free the texture
         SDL_SetWindowIcon(m_pWindow, pData);
         SDL_FreeSurface(pData);
+
+        Core::Log->Info("Icon (%s) loaded", pcPath);
     }
 }
 

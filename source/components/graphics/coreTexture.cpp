@@ -118,11 +118,12 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     // check for OpenGL extensions
     const coreBool bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic)                && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_COMPRESS);
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
-    m_iLevels     = bMipMap ? F_TO_UI(coreMath::Log<2u>(m_vResolution.Max())) + 1u : 1u;
+    m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(coreMath::Log<2u>(m_vResolution.Max())) + 1u : 1u;
     m_iMode       = iMode;
     m_Spec        = oSpec;
 
@@ -156,13 +157,14 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     s_apBound[s_iActiveUnit] = NULL;
 
     // set sampling parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (bMipMap || bMipMapOld) ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  m_iLevels - 1);
-    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER)));
+    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER), 1, Core::Graphics->GetMaxAnisotropy())));
+    if(bMipMapOld)   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,            GL_TRUE);
 
     if(CORE_GL_SUPPORT(ARB_texture_storage))
     {
@@ -171,8 +173,8 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     }
     else
     {
-        // allocate normal texture memory
-        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_Spec.iFormat, m_Spec.iType, NULL);
+        // allocate mutable texture memory
+        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, (m_iCompressed > 0) ? GL_RGBA : m_Spec.iFormat, (m_iCompressed > 0) ? GL_UNSIGNED_BYTE : m_Spec.iType, NULL);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
     }
 }
@@ -361,7 +363,11 @@ void coreTexture::ShadowSampling(const coreBool bStatus)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_GEQUAL);
     }
-    else glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+    else
+    {
+        // disable depth value comparison
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+    }
 }
 
 

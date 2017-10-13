@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_THREAD_H_
 #define _CORE_GUARD_THREAD_H_
 
+// TODO: implement proper wakeup events, instead of sleepy waiting
+
 
 // ****************************************************************
 /* thread interface */

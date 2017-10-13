@@ -7,8 +7,8 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #pragma once
-#ifndef _CORE_GLES_H_
-#define	_CORE_GLES_H_
+#ifndef _CORE_GUARD_GLES_H_
+#define _CORE_GUARD_GLES_H_
 
 // TODO: __CORE_GLES_CHECK does not handle sub-strings
 // TODO: add name-pooling to OpenGL ES
@@ -19,32 +19,35 @@
 
 // ****************************************************************
 /* default extensions */
-#define CORE_GL_ARB_buffer_storage           false
-#define CORE_GL_ARB_clear_buffer_object      false
-#define CORE_GL_ARB_clear_texture            false
-#define CORE_GL_ARB_compute_shader           false
-#define CORE_GL_ARB_copy_buffer              false
-#define CORE_GL_ARB_copy_image               false
-#define CORE_GL_ARB_direct_state_access      false
-#define CORE_GL_ARB_geometry_shader4         false
-#define CORE_GL_ARB_half_float_vertex        false   // different token value in OES_vertex_half_float
-#define CORE_GL_ARB_multi_bind               false
-#define CORE_GL_ARB_parallel_shader_compile  false
-#define CORE_GL_ARB_program_interface_query  false
-#define CORE_GL_ARB_sample_shading           false
-#define CORE_GL_ARB_shader_image_load_store  false
-#define CORE_GL_ARB_sync                     false
-#define CORE_GL_ARB_tessellation_shader      false
-#define CORE_GL_ARB_texture_rg               false
-#define CORE_GL_ARB_timer_query              false
-#define CORE_GL_ARB_uniform_buffer_object    false   // controls shader-handling
-#define CORE_GL_ARB_vertex_attrib_binding    false
-#define CORE_GL_EXT_direct_state_access      false
-#define CORE_GL_EXT_framebuffer_object       true
-#define CORE_GL_EXT_gpu_shader4              false
-#define CORE_GL_EXT_texture_compression_rgtc false
-#define CORE_GL_KHR_debug                    false
-#define CORE_GL_NV_shader_buffer_load        false
+#define CORE_GL_V2_compatibility                    false
+#define CORE_GL_ARB_buffer_storage                  false
+#define CORE_GL_ARB_clear_buffer_object             false
+#define CORE_GL_ARB_clear_texture                   false
+#define CORE_GL_ARB_compute_shader                  false
+#define CORE_GL_ARB_copy_buffer                     false
+#define CORE_GL_ARB_copy_image                      false
+#define CORE_GL_ARB_direct_state_access             false
+#define CORE_GL_ARB_geometry_shader4                false
+#define CORE_GL_ARB_half_float_vertex               false   // different token value in OES_vertex_half_float
+#define CORE_GL_ARB_multi_bind                      false
+#define CORE_GL_ARB_parallel_shader_compile         false
+#define CORE_GL_ARB_program_interface_query         false
+#define CORE_GL_ARB_sample_shading                  false
+#define CORE_GL_ARB_shader_image_load_store         false
+#define CORE_GL_ARB_sync                            false
+#define CORE_GL_ARB_tessellation_shader             false
+#define CORE_GL_ARB_texture_rg                      false
+#define CORE_GL_ARB_timer_query                     false
+#define CORE_GL_ARB_uniform_buffer_object           false   // controls shader-handling
+#define CORE_GL_ARB_vertex_attrib_binding           false
+#define CORE_GL_EXT_direct_state_access             false
+#define CORE_GL_EXT_framebuffer_object              true
+#define CORE_GL_EXT_gpu_shader4                     false
+#define CORE_GL_EXT_texture_compression_rgtc        false
+#define CORE_GL_KHR_debug                           false
+#define CORE_GL_NV_framebuffer_multisample_coverage false
+#define CORE_GL_NV_multisample_filter_hint          false
+#define CORE_GL_NV_shader_buffer_load               false
 
 
 // ****************************************************************
@@ -97,10 +100,25 @@ typedef void (GL_APIENTRY *PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GLu
 
 
 // ****************************************************************
+/* GL_EXT_multisample_compatibility (mapped on GL_ARB_multisample) */
+#define CORE_GL_ARB_multisample __CORE_GLES_VAR(GL_EXT_multisample_compatibility)
+
+#define GL_MULTISAMPLE 0x809D
+
+
+// ****************************************************************
+/* GL_EXT_sRGB_write_control (mapped on GL_ARB_framebuffer_sRGB) */
+#define CORE_GL_ARB_framebuffer_sRGB __CORE_GLES_VAR(GL_EXT_sRGB_write_control)
+
+#define GL_FRAMEBUFFER_SRGB 0x8DB9
+
+
+// ****************************************************************
 /* GL_EXT_texture_filter_anisotropic */
 #define CORE_GL_EXT_texture_filter_anisotropic __CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic)
 
-#define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 
 
 // ****************************************************************
@@ -133,6 +151,8 @@ typedef void (GL_APIENTRY *PFNGLBLITFRAMEBUFFERNVPROC) (GLint srcX0, GLint srcY0
 // ****************************************************************
 /* GL_NV_framebuffer_multisample (mapped on GL_EXT_framebuffer_multisample) */
 #define CORE_GL_EXT_framebuffer_multisample __CORE_GLES_VAR(GL_NV_framebuffer_multisample)
+
+#define GL_MAX_SAMPLES 0x8D57
 
 typedef void (GL_APIENTRY *PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
 #define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisampleNV)
@@ -180,43 +200,46 @@ typedef void (GL_APIENTRY *PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint* a
 typedef int32_t* GLsync;
 typedef uint64_t GLuint64;
 
-#define GL_ACTIVE_RESOURCES               0x92F5
-#define GL_COMPARE_REF_TO_TEXTURE         0x884E
-#define GL_COMPRESSED_RED_GREEN_RGTC2_EXT 0x8DBD
-#define GL_COMPRESSED_RED_RGTC1_EXT       0x8DBB
-#define GL_COMPUTE_SHADER                 0x91B9
-#define GL_DEBUG_OUTPUT                   0x92E0
-#define GL_DEBUG_OUTPUT_SYNCHRONOUS       0x8242
-#define GL_DEPTH_STENCIL                  0x84F9
-#define GL_FRAMEBUFFER_SRGB               0x8DB9
-#define GL_GEOMETRY_SHADER                0x8DD9
-#define GL_HALF_FLOAT                     0x140B   // 0x8D61 in OES_vertex_half_float
-#define GL_INVALID_INDEX                  0xFFFFFFFF
-#define GL_LOCATION                       0x930E
-#define GL_MAP_COHERENT_BIT               0x00000080
-#define GL_MAP_FLUSH_EXPLICIT_BIT         0x0010
-#define GL_MAP_PERSISTENT_BIT             0x00000040
-#define GL_MULTISAMPLE                    0x809D
-#define GL_OFFSET                         0x92FC
-#define GL_PROGRAM_INPUT                  0x92E3
-#define GL_QUERY_RESULT                   0x8866
-#define GL_R8                             0x8229
-#define GL_RED                            0x1903
-#define GL_RG                             0x8227
-#define GL_RG8                            0x822B
-#define GL_RGB8                           0x8051
-#define GL_RGBA8                          0x8058
-#define GL_SYNC_FLUSH_COMMANDS_BIT        0x00000001
-#define GL_SYNC_GPU_COMMANDS_COMPLETE     0x9117
-#define GL_TESS_CONTROL_SHADER            0x8E88
-#define GL_TESS_EVALUATION_SHADER         0x8E87
-#define GL_TEXTURE_COMPARE_FUNC           0x884D
-#define GL_TEXTURE_COMPARE_MODE           0x884C
-#define GL_TIMEOUT_EXPIRED                0x911B
-#define GL_TIMEOUT_IGNORED                0xFFFFFFFFFFFFFFFF
-#define GL_TIMESTAMP                      0x8E28
-#define GL_UNIFORM                        0x92E1
-#define GL_UNIFORM_BUFFER                 0x8A11
+#define GL_ACTIVE_RESOURCES                0x92F5
+#define GL_COMPARE_REF_TO_TEXTURE          0x884E
+#define GL_COMPRESSED_RED_GREEN_RGTC2_EXT  0x8DBD
+#define GL_COMPRESSED_RED_RGTC1_EXT        0x8DBB
+#define GL_COMPUTE_SHADER                  0x91B9
+#define GL_DEBUG_OUTPUT                    0x92E0
+#define GL_DEBUG_OUTPUT_SYNCHRONOUS        0x8242
+#define GL_DEPTH_STENCIL                   0x84F9
+#define GL_FRAGMENT_SHADER_DERIVATIVE_HINT 0x8B8B
+#define GL_GENERATE_MIPMAP                 0x8191
+#define GL_GEOMETRY_SHADER                 0x8DD9
+#define GL_HALF_FLOAT                      0x140B   // 0x8D61 in OES_vertex_half_float
+#define GL_INVALID_INDEX                   0xFFFFFFFF
+#define GL_LOCATION                        0x930E
+#define GL_MAP_COHERENT_BIT                0x00000080
+#define GL_MAP_FLUSH_EXPLICIT_BIT          0x0010
+#define GL_MAP_PERSISTENT_BIT              0x00000040
+#define GL_MULTISAMPLE_FILTER_HINT_NV      0x8534
+#define GL_OFFSET                          0x92FC
+#define GL_PERSPECTIVE_CORRECTION_HINT     0x0C50
+#define GL_PROGRAM_INPUT                   0x92E3
+#define GL_QUERY_RESULT                    0x8866
+#define GL_R8                              0x8229
+#define GL_RED                             0x1903
+#define GL_RG                              0x8227
+#define GL_RG8                             0x822B
+#define GL_RGB8                            0x8051
+#define GL_RGBA8                           0x8058
+#define GL_SYNC_FLUSH_COMMANDS_BIT         0x00000001
+#define GL_SYNC_GPU_COMMANDS_COMPLETE      0x9117
+#define GL_TESS_CONTROL_SHADER             0x8E88
+#define GL_TESS_EVALUATION_SHADER          0x8E87
+#define GL_TEXTURE_COMPARE_FUNC            0x884D
+#define GL_TEXTURE_COMPARE_MODE            0x884C
+#define GL_TEXTURE_COMPRESSION_HINT        0x84EF
+#define GL_TIMEOUT_EXPIRED                 0x911B
+#define GL_TIMEOUT_IGNORED                 0xFFFFFFFFFFFFFFFF
+#define GL_TIMESTAMP                       0x8E28
+#define GL_UNIFORM                         0x92E1
+#define GL_UNIFORM_BUFFER                  0x8A11
 
 #define glBindBufferBase(...)
 #define glBindBufferRange(...)
@@ -256,8 +279,10 @@ typedef uint64_t GLuint64;
 #define glInvalidateNamedFramebufferData(...)
 #define glMapNamedBufferRange(...) (NULL)
 #define glMapNamedBufferRangeEXT(...) (NULL)
+#define glMaxShaderCompilerThreadsARB(...)
 #define glMinSampleShading(...)
 #define glQueryCounter(...)
+#define glRenderbufferStorageMultisampleCoverageNV(...)
 #define glTextureSubImage2D(...)
 #define glTextureSubImage2DEXT(...)
 #define glUniformBlockBinding(...)
@@ -281,6 +306,8 @@ struct coreContext final
     GLboolean __GL_EXT_texture_storage;
     GLboolean __GL_EXT_map_buffer_range;
     GLboolean __GL_EXT_instanced_arrays;
+    GLboolean __GL_EXT_multisample_compatibility;
+    GLboolean __GL_EXT_sRGB_write_control;
     GLboolean __GL_EXT_texture_filter_anisotropic;
     GLboolean __GL_EXT_texture_compression_s3tc;
     GLboolean __GL_NV_pixel_buffer_object;
@@ -310,20 +337,13 @@ struct coreContext final
 };
 
 extern std::string g_sExtensions;   //!< full extension string
-extern coreContext g_CoreContext;   //!< thread local context structure
+extern coreContext g_CoreContext;   //!< context object
 
 #define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x) != std::string::npos) || b))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
 #define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f ## a = (decltype(g_CoreContext.__ ## f ## a))eglGetProcAddress(b ? #f : #f #a);}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
 #define __CORE_GLES_VAR_SET(v,a)      {g_CoreContext.__ ## v = (a);}
-
-
-// ****************************************************************
-/* init and exit OpenGL ES */
-extern void __coreInitOpenGLES();
-#define coreInitOpenGL __coreInitOpenGLES
-#define coreExitOpenGL []{}
 
 
 // ****************************************************************
@@ -334,9 +354,16 @@ extern void __coreInitOpenGLES();
 
 
 // ****************************************************************
+/* init and exit OpenGL ES */
+extern void __coreInitOpenGLES();
+#define coreInitOpenGL __coreInitOpenGLES
+#define coreExitOpenGL []{}
+
+
+// ****************************************************************
 /* check for extensions */
 extern void coreExtensions(std::string* OUTPUT psOutput);
 #define CORE_GL_SUPPORT(e) (CORE_GL_ ## e)
 
 
-#endif /* _CORE_GLES_H_ */
+#endif /* _CORE_GUARD_GLES_H_ */

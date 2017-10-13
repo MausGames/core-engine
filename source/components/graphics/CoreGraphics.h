@@ -20,6 +20,7 @@
 // TODO: defer uniform-push to next shader-enable
 // TODO: improve screenshot with pixel-pack-buffer
 // TODO: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision, breaks depth-dependent rendering (water, shadow) in Project One
+// TODO: somehow log all available OpenGL capabilities
 
 
 // ****************************************************************
@@ -69,6 +70,8 @@ private:
     coreArray<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     //!< ambient sync objects
     coreUint8 m_iUniformUpdate;                                            //!< update status for the UBOs (dirty flag)
 
+    coreUint8 m_iMaxSamples;                                               //!< max multisample anti aliasing level
+    coreUint8 m_iMaxAnisotropy;                                            //!< max anisotropic texture filter level
     coreFloat m_fVersionOpenGL;                                            //!< available OpenGL version
     coreFloat m_fVersionGLSL;                                              //!< available GLSL version
 
@@ -124,10 +127,12 @@ public:
     inline const coreDataBuffer& GetAmbientBuffer  ()const                       {return m_AmbientBuffer;}
     //! @}
 
-    //! check OpenGL versions
+    //! check OpenGL properties
     //! @{
-    inline const coreFloat& VersionOpenGL()const {return m_fVersionOpenGL;}
-    inline const coreFloat& VersionGLSL  ()const {return m_fVersionGLSL;}
+    inline const coreUint8& GetMaxSamples   ()const {return m_iMaxSamples;}
+    inline const coreUint8& GetMaxAnisotropy()const {return m_iMaxAnisotropy;}
+    inline const coreFloat& GetVersionOpenGL()const {return m_fVersionOpenGL;}
+    inline const coreFloat& GetVersionGLSL  ()const {return m_fVersionGLSL;}
     //! @}
 
 

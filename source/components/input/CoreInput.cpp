@@ -97,7 +97,7 @@ CoreInput::~CoreInput()
 
 // ****************************************************************
 // set the cursor object
-void CoreInput::DefineCursor(const coreChar* pcPath)
+void CoreInput::SetCursor(const coreChar* pcPath)
 {
     coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
     coreFileUnload oUnload(pFile);
@@ -114,6 +114,8 @@ void CoreInput::DefineCursor(const coreChar* pcPath)
 
         // free the texture
         SDL_FreeSurface(pData);
+
+        Core::Log->Info("Cursor (%s) loaded", pcPath);
     }
 }
 

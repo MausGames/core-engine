@@ -35,8 +35,7 @@
 #define ALIGNED_NEW(t,c,a)   (r_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
 #define ALIGNED_DELETE(p)    {_aligned_free(p); (p) = NULL;}
 
-#define ZERO_NEW(t,c)        (r_cast<t*>(std::calloc((c),  sizeof(t))))
-#define STACK_NEW(t,c)       (r_cast<t*>(std::alloca((c) * sizeof(t))))
+#define ZERO_NEW(t,c)        (r_cast<t*>(std::calloc((c), sizeof(t))))
 #define RESIZE_ARRAY(a,t,c)  {(a) = r_cast<t*>(std::realloc((a), (c) * sizeof(t)));}
 
 #if !defined(_CORE_WINDOWS_)

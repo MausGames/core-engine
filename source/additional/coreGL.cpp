@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+coreBool GLEW_V2_compatibility = false;
+
 
 // ****************************************************************
 /* pool definitions */
@@ -95,6 +97,9 @@ void __coreInitOpenGL()
     // force enable and disable extensions
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS),  " ,;", [](const coreChar* pcToken) {glewEnableExtension (pcToken);});
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});
+
+    // handle support for deprecated features
+    GLEW_V2_compatibility = !GLEW_VERSION_3_1;
 
     // improve frame buffer compatibility
     if(!GLEW_ARB_framebuffer_object && GLEW_EXT_framebuffer_object)
@@ -198,9 +203,12 @@ void __coreInitOpenGL()
     }
 
     // force additional extension status
-    if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object) __GLEW_ARB_pixel_buffer_object = true;
-    if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)    __GLEW_ARB_geometry_shader4    = true;
-    if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_GRAPHICS_FALLBACKMODE))
+    if(                     GLEW_EXT_framebuffer_sRGB)           __GLEW_ARB_framebuffer_sRGB           = true;
+    if( GLEW_VERSION_1_3 || GLEW_EXT_multisample)                __GLEW_ARB_multisample                = true;
+    if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)        __GLEW_ARB_pixel_buffer_object        = true;
+    if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)           __GLEW_ARB_geometry_shader4           = true;
+    if( GLEW_VERSION_4_6 || GLEW_ARB_texture_filter_anisotropic) __GLEW_EXT_texture_filter_anisotropic = true;
+    if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
         __GLEW_ARB_uniform_buffer_object = false;
 
     // try to support old OpenGL versions

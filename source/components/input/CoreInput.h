@@ -26,7 +26,7 @@
 #define __CORE_INPUT_COUNT(x,c)     {if(x) for(coreUintW j = 0u; j < CORE_INPUT_TYPES; ++j) if(CONTAINS_BIT(x, j)) {++(c)[j]; ADD_BIT(m_iAnyButton, j)}}
 #define __CORE_INPUT_JOYSTICK(i)    (m_aJoystick[MIN(coreUintW(i), m_aJoystick.size() - 1u)])
 
-#define CORE_INPUT_BUTTONS_KEYBOARD (231u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
+#define CORE_INPUT_BUTTONS_KEYBOARD (287u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    (16u)    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK (32u)    //!< number of regarded joystick buttons
 #if defined(_CORE_MOBILE_)
@@ -133,8 +133,8 @@ public:
 
     //! control the mouse cursor
     //! @{
-    void DefineCursor(const coreChar* pcPath);
-    void ShowCursor  (const coreBool  bStatus);
+    void SetCursor (const coreChar* pcPath);
+    void ShowCursor(const coreBool  bStatus);
     inline const coreBool& IsCursorVisible()const {return m_bCursorVisible;}
     //! @}
 

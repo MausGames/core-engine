@@ -63,9 +63,10 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     if(!m_fNearClip) m_fNearClip = Core::Graphics->GetNearClip();
     if(!m_fFarClip)  m_fFarClip  = Core::Graphics->GetFarClip();
 
-    // set number of samples
-    const coreUint8 iSamples = ((bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && CORE_GL_SUPPORT(EXT_framebuffer_multisample)) ?
-                               Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) : 0u;
+    // check for multisampling
+    const coreUint8 iSamples     = CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING), 0, Core::Graphics->GetMaxSamples());
+    const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage) && (bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 4u || iSamples == 8u);
+    const coreBool  bMultisample = CORE_GL_SUPPORT(EXT_framebuffer_multisample)         && (bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 2u);
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
@@ -98,8 +99,9 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
             glBindRenderbuffer(GL_RENDERBUFFER, pTarget->iBuffer);
 
             // allocate buffer memory
-            if(iSamples) glRenderbufferStorageMultisample(GL_RENDERBUFFER, iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
-                    else glRenderbufferStorage           (GL_RENDERBUFFER,           pTarget->oSpec.iInternal, iWidth, iHeight);
+                 if(bNvCoverage)  glRenderbufferStorageMultisampleCoverageNV(GL_RENDERBUFFER, iSamples * 2u, iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
+            else if(bMultisample) glRenderbufferStorageMultisample          (GL_RENDERBUFFER,                iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
+            else                  glRenderbufferStorage                     (GL_RENDERBUFFER,                          pTarget->oSpec.iInternal, iWidth, iHeight);
 
             // attach render target buffer to frame buffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, iAttachment, GL_RENDERBUFFER, pTarget->iBuffer);

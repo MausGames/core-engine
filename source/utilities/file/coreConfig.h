@@ -13,30 +13,26 @@
 // TODO: don't set an already defined value or default value (use map ?)
 // TODO: check out templated Get and Set
 // TODO: remove simpleIni, need more specialized functionality
-// TODO: improve dirty flag: don't set if value was the same
 // TODO: don't do two lookups when getting a value
 
 
 // ****************************************************************
 /* configuration definitions */
+#define CORE_CONFIG_BASE_LANGUAGE               "Base",     "Language",           ("data/languages/english.lng")
+#define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)
+#define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (DEFINED(_CORE_ASYNC_))
+#define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)
+
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (800)
 #define CORE_CONFIG_SYSTEM_HEIGHT               "System",   "Height",             (600)
 #define CORE_CONFIG_SYSTEM_FULLSCREEN           "System",   "Fullscreen",         (0)
 #define CORE_CONFIG_SYSTEM_VSYNC                "System",   "Vsync",              (true)
-#define CORE_CONFIG_SYSTEM_LANGUAGE             "System",   "Language",           ("data/languages/english.lng")
-#define CORE_CONFIG_SYSTEM_DEBUGMODE            "System",   "DebugMode",          (false)
 
 #define CORE_CONFIG_GRAPHICS_QUALITY            "Graphics", "Quality",            (0)
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING       "Graphics", "AntiAliasing",       (2)
 #define CORE_CONFIG_GRAPHICS_TEXTUREFILTER      "Graphics", "TextureFilter",      (4)
 #define CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION "Graphics", "TextureCompression", (true)
-#define CORE_CONFIG_GRAPHICS_DEPTHSIZE          "Graphics", "DepthSize",          (24)
-#define CORE_CONFIG_GRAPHICS_STENCILSIZE        "Graphics", "StencilSize",        (8)
-#define CORE_CONFIG_GRAPHICS_ALPHACHANNEL       "Graphics", "AlphaChannel",       (true)
-#define CORE_CONFIG_GRAPHICS_DOUBLEBUFFER       "Graphics", "DoubleBuffer",       (true)
-#define CORE_CONFIG_GRAPHICS_RESOURCECONTEXT    "Graphics", "ResourceContext",    (DEFINED(_CORE_PARALLEL_))
-#define CORE_CONFIG_GRAPHICS_FALLBACKMODE       "Graphics", "FallbackMode",       (false)
 #define CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS   "Graphics", "EnableExtensions",   ("")
 #define CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS  "Graphics", "DisableExtensions",  ("")
 
@@ -77,14 +73,14 @@ public:
 
     /*! set configuration values */
     //! @{
-    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool,  const coreBool  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);  m_bDirty = true;}
-    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey,                  const coreBool  bValue)  {m_Config.SetBoolValue  (pcSection, pcKey, bValue);  m_bDirty = true;}
-    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32, const coreInt32 iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);  m_bDirty = true;}
-    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey,                  const coreInt32 iValue)  {m_Config.SetLongValue  (pcSection, pcKey, iValue);  m_bDirty = true;}
-    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat, const coreFloat fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);  m_bDirty = true;}
-    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey,                  const coreFloat fValue)  {m_Config.SetDoubleValue(pcSection, pcKey, fValue);  m_bDirty = true;}
-    inline void SetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar*, const coreChar* pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue); m_bDirty = true;}
-    inline void SetString(const coreChar* pcSection, const coreChar* pcKey,                  const coreChar* pcValue) {m_Config.SetValue      (pcSection, pcKey, pcValue); m_bDirty = true;}
+    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool,  const coreBool  bValue)  {if(m_Config.SetBoolValue  (pcSection, pcKey, bValue)  != SI_SAME) m_bDirty = true;}
+    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey,                  const coreBool  bValue)  {if(m_Config.SetBoolValue  (pcSection, pcKey, bValue)  != SI_SAME) m_bDirty = true;}
+    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32, const coreInt32 iValue)  {if(m_Config.SetLongValue  (pcSection, pcKey, iValue)  != SI_SAME) m_bDirty = true;}
+    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey,                  const coreInt32 iValue)  {if(m_Config.SetLongValue  (pcSection, pcKey, iValue)  != SI_SAME) m_bDirty = true;}
+    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat, const coreFloat fValue)  {if(m_Config.SetDoubleValue(pcSection, pcKey, fValue)  != SI_SAME) m_bDirty = true;}
+    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey,                  const coreFloat fValue)  {if(m_Config.SetDoubleValue(pcSection, pcKey, fValue)  != SI_SAME) m_bDirty = true;}
+    inline void SetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar*, const coreChar* pcValue) {if(m_Config.SetValue      (pcSection, pcKey, pcValue) != SI_SAME) m_bDirty = true;}
+    inline void SetString(const coreChar* pcSection, const coreChar* pcKey,                  const coreChar* pcValue) {if(m_Config.SetValue      (pcSection, pcKey, pcValue) != SI_SAME) m_bDirty = true;}
     //! @}
 
     /*! get configuration values */

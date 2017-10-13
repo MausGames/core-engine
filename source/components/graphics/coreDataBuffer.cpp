@@ -70,10 +70,17 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
             else
             {
                 // allocate dynamic immutable buffer memory
-                glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
+                glBufferStorage(m_iTarget, m_iSize, NULL, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
 
                 // map persistent mapped buffer
-                m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
+                m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
+
+                if(pData)
+                {
+                    // initialize buffer memory
+                    std::memcpy(m_pPersistentBuffer, pData, m_iSize);
+                    glFlushMappedBufferRange(m_iTarget, 0, m_iSize);
+                }
             }
         }
         else

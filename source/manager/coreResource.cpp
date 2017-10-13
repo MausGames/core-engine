@@ -267,10 +267,15 @@ coreStatus coreResourceManager::__InitThread()
     // enable OpenGL debug output
     Core::Log->DebugOpenGL();
 
-    // setup texturing
-    if(DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    // setup texturing and packing
+    if(CORE_GL_SUPPORT(V2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+    // disable parallel shader compilation
+    if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
+        glMaxShaderCompilerThreadsARB(0u);
 
     return CORE_OK;
 }

@@ -8,40 +8,20 @@
 
 
 // ****************************************************************
-// setup all defined resources
-static void SetupResources()
-{
-
-}
-
-
-// ****************************************************************
-// setup all defined designs
-static void SetupDesigns()
-{
-
-}
+// project settings
+const coreChar* const CoreApp::Settings::Name                       = "Core Application";
+const coreChar* const CoreApp::Settings::IconPath                   = "data/textures/game_icon.png";
+const coreChar* const CoreApp::Settings::CursorPath                 = "data/textures/default_cursor.png";
+const coreUint8       CoreApp::Settings::RenderBuffer::DepthSize    = 24u;
+const coreUint8       CoreApp::Settings::RenderBuffer::StencilSize  = 8u;
+const coreBool        CoreApp::Settings::RenderBuffer::AlphaChannel = true;
+const coreBool        CoreApp::Settings::RenderBuffer::DoubleBuffer = true;
+const coreBool        CoreApp::Settings::RenderBuffer::StereoRender = false;
 
 
 // ****************************************************************
 // setup the application
 void CoreApp::Setup()
 {
-    // set window title and icon
-    Core::System->SetWindowTitle("Core Application");
-    Core::System->SetWindowIcon("data/textures/game_icon.png");
 
-    // set view frustum
-    Core::Graphics->SetView(Core::System->GetResolution(), DEG_TO_RAD(55.0f), 1.0f, 500.0f);
-
-    // set cursor
-#if defined(_CORE_LINUX_)
-    Core::Input->DefineCursor("data/textures/default_cursor_low.png");
-#else
-    Core::Input->DefineCursor("data/textures/default_cursor.png");
-#endif
-
-    // setup resources and designs
-    SetupResources();
-    SetupDesigns();
 }

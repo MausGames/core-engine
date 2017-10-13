@@ -63,6 +63,12 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glVertexAttribDivisor,   EXT, bES3)
     }
 
+    // implement GL_EXT_multisample_compatibility
+    __CORE_GLES_CHECK(GL_EXT_multisample_compatibility, false);
+
+    // implement GL_EXT_sRGB_write_control
+    __CORE_GLES_CHECK(GL_EXT_sRGB_write_control, false);
+
     // implement GL_EXT_texture_filter_anisotropic
     __CORE_GLES_CHECK(GL_EXT_texture_filter_anisotropic, false);
 

@@ -64,7 +64,7 @@ CoreDebug::CoreDebug()noexcept
 , m_bVisible    (false)
 , m_bHolding    (false)
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_SYSTEM_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
 
     // enable the debug-monitor
     m_bEnabled = true;
@@ -106,6 +106,8 @@ CoreDebug::CoreDebug()noexcept
             m_aStatOutput[i].SetColor3   (COLOR_PURPLE);
         }
     }
+
+    Core::Log->Info(CORE_LOG_BOLD("Debug Component enabled"));
 }
 
 
@@ -113,6 +115,8 @@ CoreDebug::CoreDebug()noexcept
 /* destructor */
 CoreDebug::~CoreDebug()
 {
+    if(!m_bEnabled) return;
+
     if(CORE_GL_SUPPORT(ARB_timer_query))
     {
         // delete timer-query objects
@@ -139,6 +143,8 @@ CoreDebug::~CoreDebug()
     m_apDisplay.clear();
     m_apMeasure.clear();
     m_apInspect.clear();
+
+    Core::Log->Info(CORE_LOG_BOLD("Debug Component disabled"));
 }
 
 

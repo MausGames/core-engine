@@ -125,7 +125,8 @@ private:
     coreLookup<coreInt32, coreObjectList> m_aapObjectList;   //!< lists with pointers to registered 3d-objects <type, list>
     std::vector<coreObjectCollision> m_aObjectCollision;     //!< currently recorded collisions
 
-    coreModelPtr  m_pLowModel;                               //!< low-memory model object (4 bytes per vertex, simple square)
+    coreModelPtr  m_pLowQuad;                                //!< low-memory square model (4 bytes per vertex, 16 total)
+    coreModelPtr  m_pLowTriangle;                            //!< low-memory triangle model (8 bytes per vertex, 24 total)
     coreObject2D* m_pBlitFallback;                           //!< 2d-object used for fallback-blitting onto the default frame buffer
 
     static coreSet<coreObject2D*> s_apSpriteList;            //!< list with pointers to all existing 2d-objects
@@ -155,7 +156,8 @@ public:
     /*! get manager properties */
     //! @{
     inline const coreObjectList& GetObjectList  (const coreInt32 iType)const {return m_aapObjectList.at(iType);}
-    inline const coreModelPtr&   GetLowModel    ()const                      {return m_pLowModel;}
+    inline const coreModelPtr&   GetLowQuad     ()const                      {return m_pLowQuad;}
+    inline const coreModelPtr&   GetLowTriangle ()const                      {return m_pLowTriangle;}
     inline       coreObject2D*   GetBlitFallback()const                      {return m_pBlitFallback;}
     //! @}
 

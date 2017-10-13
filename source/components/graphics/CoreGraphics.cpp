@@ -30,6 +30,8 @@ CoreGraphics::CoreGraphics()noexcept
 , m_aTransformSync   {}
 , m_aAmbientSync     {}
 , m_iUniformUpdate   (0u)
+, m_iMaxSamples      (0u)
+, m_iMaxAnisotropy   (0u)
 , m_fVersionOpenGL   (0.0f)
 , m_fVersionGLSL     (0.0f)
 {
@@ -49,6 +51,20 @@ CoreGraphics::CoreGraphics()noexcept
     // save version numbers
     m_fVersionOpenGL = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
     m_fVersionGLSL   = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+    // get max anti aliasing level
+    if(CORE_GL_SUPPORT(EXT_framebuffer_multisample))
+    {
+        GLint iValue; glGetIntegerv(GL_MAX_SAMPLES, &iValue);
+        m_iMaxSamples = MAX(iValue, 0);
+    }
+
+    // get max texture filter level
+    if(CORE_GL_SUPPORT(EXT_texture_filter_anisotropic))
+    {
+        GLfloat fValue; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fValue);
+        m_iMaxAnisotropy = F_TO_UI(MAX(fValue, 1.0f));
+    }
 
     // log video card information
     Core::Log->ListStartInfo("Video Card Information");
@@ -72,8 +88,9 @@ CoreGraphics::CoreGraphics()noexcept
         else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
     }
 
-    // setup texturing
-    if(DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    // setup texturing and packing
+    if(CORE_GL_SUPPORT(V2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
@@ -90,13 +107,17 @@ CoreGraphics::CoreGraphics()noexcept
 
     // setup alpha blending
     glEnable(GL_BLEND);
+    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
-    // setup rasterization
-    glEnable(GL_MULTISAMPLE);
+    // setup shading and rasterization
+    if(CORE_GL_SUPPORT(V2_compatibility))           glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    if(CORE_GL_SUPPORT(NV_multisample_filter_hint)) glHint(GL_MULTISAMPLE_FILTER_HINT_NV,  GL_NICEST);
+    if(CORE_GL_SUPPORT(ARB_multisample))            glEnable(GL_MULTISAMPLE);
+    if(CORE_GL_SUPPORT(ARB_framebuffer_sRGB))       glDisable(GL_FRAMEBUFFER_SRGB);
+    glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
     glDisable(GL_DITHER);
-    glDisable(GL_FRAMEBUFFER_SRGB);
     glColorMask(true, true, true, true);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -117,9 +138,9 @@ CoreGraphics::CoreGraphics()noexcept
 
     // reset camera and view frustum
     this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
-    this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 0.1f, 1000.0f);
+    this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 1.0f, 1000.0f);
 
-    // reset ambient
+    // reset ambient light
     for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i)
         this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
 
@@ -128,7 +149,7 @@ CoreGraphics::CoreGraphics()noexcept
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_RESOURCECONTEXT) && DEFINED(_CORE_PARALLEL_))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && DEFINED(_CORE_ASYNC_))
     {
         // create resource context (after reset, because of flickering on Windows with fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
