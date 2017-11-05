@@ -309,7 +309,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     FOR_EACH(it, m_aiAttribute)
     {
         if((*it) >= 0)
-            glBindAttribLocation(m_iIdentifier, (*it), (*m_aiAttribute.get_key(it)));
+            glBindAttribLocation(m_iIdentifier, (*it), m_aiAttribute.get_string(it));
     }
 
     // bind output locations
@@ -481,10 +481,10 @@ void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iG
 
 // ****************************************************************
 // send new uniform 2x2-matrix
-void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix2& mMatrix, const coreBool bTranspose)
+void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix2& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
-    const coreInt8 iLocation = this->RetrieveUniform(pcName);
+    const coreInt8 iLocation = this->RetrieveUniform(sName);
     if(iLocation >= 0)
     {
         if(this->CheckCache(iLocation, coreVector4(mMatrix[0], mMatrix[1], mMatrix[2], mMatrix[3])))
@@ -502,10 +502,10 @@ void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix2& mMatrix
 
 // ****************************************************************
 // send new uniform 3x3-matrix
-void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix, const coreBool bTranspose)
+void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix3& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
-    const coreInt8 iLocation = this->RetrieveUniform(pcName);
+    const coreInt8 iLocation = this->RetrieveUniform(sName);
     if(iLocation >= 0)
     {
         // send new value
@@ -520,10 +520,10 @@ void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix3& mMatrix
 
 // ****************************************************************
 // send new uniform 4x4-matrix
-void coreProgram::SendUniform(const coreChar* pcName, const coreMatrix4& mMatrix, const coreBool bTranspose)
+void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
-    const coreInt8 iLocation = this->RetrieveUniform(pcName);
+    const coreInt8 iLocation = this->RetrieveUniform(sName);
     if(iLocation >= 0)
     {
         // send new value

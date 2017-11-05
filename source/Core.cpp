@@ -131,13 +131,6 @@ void Core::Reset()
     Input    = new CoreInput();
     Debug    = new CoreDebug();
 
-    // setup the application
-    Application->Setup();
-
-    // start up managers
-    Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
-    Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
-
     // load former state
     System->m_dTotalTime = dTotalTime;
     System->m_iCurFrame  = iCurFrame;
@@ -145,6 +138,13 @@ void Core::Reset()
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
     for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
     for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
+
+    // setup the application
+    Application->Setup();
+
+    // start up managers
+    Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
+    Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
 
     Log->Header("Reset finished");
 }

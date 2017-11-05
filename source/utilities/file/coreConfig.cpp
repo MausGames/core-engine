@@ -31,7 +31,7 @@ coreConfig::coreConfig(const coreChar* pcPath)noexcept
     Core::Log->ListStartInfo("Configuration Values");
     {
         // retrieve all sections
-        CSimpleIni::TNamesDepend apSection;
+        CSimpleIniA::TNamesDepend apSection;
         m_Config.GetAllSections(apSection);
 
         FOR_EACH(pSection, apSection)
@@ -39,7 +39,7 @@ coreConfig::coreConfig(const coreChar* pcPath)noexcept
             Core::Log->ListDeeper(CORE_LOG_BOLD("%s"), pSection->pItem);
             {
                 // retrieve all keys per section
-                CSimpleIni::TNamesDepend apKey;
+                CSimpleIniA::TNamesDepend apKey;
                 m_Config.GetAllKeys(pSection->pItem, apKey);
 
                 FOR_EACH(pKey, apKey)

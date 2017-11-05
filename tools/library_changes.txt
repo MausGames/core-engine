@@ -1,0 +1,125 @@
+
+Linux SDL configuration:
+  > ./configure --prefix=/home/martin/Entwicklung/Libraries --enable-x11-shared --disable-rpath --disable-video-directfb --disable-audio --enable-sdl-dlopen
+
+  > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/martin/Entwicklung/Libraries
+  > ./configure --prefix=/home/martin/Entwicklung/Libraries --enable-lbm=no --enable-pcx=no --enable-pnm=no --enable-tif=no --enable-xcf=no --enable-xpm=no --enable-xv=no --enable-webp=no --enable-png-shared=no --enable-jpg-shared=no
+  > ./configure --prefix=/home/martin/Entwicklung/Libraries
+  
+  > #define SDL_VIDEO_DRIVER_X11_XCURSOR 1
+
+SDL MAIN:
+- use sequential scan and 4kb page-size in rwops
+  > #define READAHEAD_BUFFER_SIZE   0x1000
+  > FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN
+- do not use large magnitude for leftright haptic
+  > efx->leftright.large_magnitude = 0;
+  > efx->leftright.small_magnitude = magnitude;
+- add #define HAVE_LIBC 1 in config_windows
+- add #define HAVE_VSNPRINTF 1 in config_windows
+- add additional OpenGL attributes
+  > *iAttr++ = WGL_SUPPORT_OPENGL_ARB;
+  > *iAttr++ = GL_TRUE;
+  >
+  > SDL_bool HAS_WGL_NV_multisample_coverage;
+  >
+  > /* Check for WGL_NV_multisample_coverage */
+  > if (HasExtension("WGL_NV_multisample_coverage", extensions)) {
+  >     _this->gl_data->HAS_WGL_NV_multisample_coverage = SDL_TRUE;
+  > }
+  >
+  > if ((_this->gl_data->HAS_WGL_NV_multisample_coverage) &&
+  >     (_this->gl_config.multisamplesamples == 4 ||
+  >      _this->gl_config.multisamplesamples == 8))
+  > {
+  >     #define WGL_COVERAGE_SAMPLES_NV 0x2042
+  >     #define WGL_COLOR_SAMPLES_NV    0x20B9
+  > 
+  >     *iAttr++ = WGL_COVERAGE_SAMPLES_NV;
+  >     *iAttr++ = _this->gl_config.multisamplesamples * 2;
+  >     *iAttr++ = WGL_COLOR_SAMPLES_NV;
+  >     *iAttr++ = _this->gl_config.multisamplesamples;
+  > }
+  > else
+  > {
+  >     *iAttr++ = WGL_SAMPLES_ARB;
+  >     *iAttr++ = _this->gl_config.multisamplesamples;
+  > }
+  >
+  > SDL_bool HAS_GLX_NV_multisample_coverage;
+  >
+  > /* Check for GLX_NV_multisample_coverage */
+  > if (HasExtension("GLX_NV_multisample_coverage", extensions)) {
+  >     _this->gl_data->HAS_GLX_NV_multisample_coverage = SDL_TRUE;
+  > }
+  >
+  > if ((_this->gl_data->HAS_GLX_NV_multisample_coverage) &&
+  >     (_this->gl_config.multisamplesamples == 4 ||
+  >      _this->gl_config.multisamplesamples == 8))
+  > {
+  >     #define GLX_COVERAGE_SAMPLES_NV 100001
+  >     #define GLX_COLOR_SAMPLES_NV    0x20B3
+  > 
+  >     attribs[i++] = GLX_COVERAGE_SAMPLES_NV;
+  >     attribs[i++] = _this->gl_config.multisamplesamples * 2;
+  >     attribs[i++] = GLX_COLOR_SAMPLES_NV;
+  >     attribs[i++] = _this->gl_config.multisamplesamples;
+  > }
+  > else
+  > {
+  >     attribs[i++] = GLX_SAMPLES_ARB;
+  >     attribs[i++] = _this->gl_config.multisamplesamples;
+  > }
+ 
+SDL IMG:
+- change PNG saving to only use 3 channels
+
+SDL TTF:
+- fix outline positioning bug
+  > const FT_BitmapGlyph bg = (FT_BitmapGlyph)bitmap_glyph;
+  > if(FT_IS_SCALABLE(face))
+  > {
+  >     cached->minx    = bg->left;
+  >     cached->maxx    = bg->left + FT_CEIL(metrics->width);
+  >     cached->maxy    = bg->top;
+  >     cached->miny    = cached->maxy - FT_CEIL(metrics->height);
+  >     cached->yoffset = font->ascent - cached->maxy;
+  > }
+  > else
+  > {
+  >     cached->minx    = bg->left;
+  >     cached->maxx    = bg->left + FT_CEIL(metrics->width);
+  >     cached->maxy    = bg->top;
+  >     cached->miny    = cached->maxy - FT_CEIL(face->available_sizes[font->font_size_family].height);
+  >     cached->yoffset = 0;
+  > }
+  > cached->minx    += font->outline;
+  > cached->maxx    += font->outline;
+  > cached->maxy    += font->outline;
+  > cached->miny    += font->outline;
+  > cached->yoffset += font->outline;
+
+GLEW:
+- change _glewExtensionString array-size to 1 and remove check-functions
+- add new functions
+  > GLboolean GLEWAPIENTRY glewEnableExtension(const char* name)
+  > {
+  >     GLboolean* pBool = _glewGetExtensionEnable(name);
+  >     if(pBool)
+  >     {
+  >         (*pBool) = GL_TRUE;
+  >         return GL_TRUE;
+  >     }
+  >     return GL_FALSE;
+  > }
+  > 
+  > GLboolean GLEWAPIENTRY glewDisableExtension(const char* name)
+  > {
+  >     GLboolean* pBool = _glewGetExtensionEnable(name);
+  >     if(pBool)
+  >     {
+  >         (*pBool) = GL_FALSE;
+  >         return GL_TRUE;
+  >     }
+  >     return GL_FALSE;
+  > }

@@ -183,7 +183,7 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // configure the SDL window
-    const coreInt32  iPos   = (Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? 0 : SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
+    const coreInt32  iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
     const coreInt32  iSizeX = F_TO_SI(m_vResolution.x);
     const coreInt32  iSizeY = F_TO_SI(m_vResolution.y);
     const coreUint32 iFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
@@ -255,7 +255,7 @@ void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 #if defined(_CORE_DEBUG_)
 
     // set the new title (with debug label)
-    SDL_SetWindowTitle(m_pWindow, PRINT("%s (Debug)", pcTitle));
+    SDL_SetWindowTitle(m_pWindow, PRINT("%s (Debug Build)", pcTitle));
 
 #else
 

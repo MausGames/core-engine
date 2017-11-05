@@ -1315,9 +1315,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::Reset()
     m_pData = NULL;
     m_uDataLen = 0;
     m_pFileComment = NULL;
-    if (!m_data.empty()) {
-        m_data.erase(m_data.begin(), m_data.end());
-    }
+    m_data.clear();
 
     // remove all strings
     for (auto i = m_strings.begin(); i != m_strings.end(); ++i)

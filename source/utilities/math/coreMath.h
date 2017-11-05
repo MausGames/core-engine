@@ -47,6 +47,7 @@
 #define LERPB  coreMath::LerpBreak
 #define LERPH3 coreMath::LerpHermit3
 #define LERPH5 coreMath::LerpHermit5
+#define LOG    coreMath::Log
 #define POW    coreMath::Pow
 #define FMOD   coreMath::Fmod
 #define EXP2   coreMath::Exp2

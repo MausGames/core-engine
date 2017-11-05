@@ -123,7 +123,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
-    m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(coreMath::Log<2u>(m_vResolution.Max())) + 1u : 1u;
+    m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(LOG<2u>(m_vResolution.Max())) + 1u : 1u;
     m_iMode       = iMode;
     m_Spec        = oSpec;
 
@@ -298,7 +298,7 @@ void coreTexture::CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY
     }
     else
     {
-        // bind and copy frame buffer
+        // bind texture and copy frame buffer
         this->Enable(0);
         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
     }

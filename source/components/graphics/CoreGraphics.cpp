@@ -350,14 +350,17 @@ void CoreGraphics::UpdateAmbient()
 // take screenshot
 void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 {
-    const coreUintW iWidth  = F_TO_UI(Core::System->GetResolution().x);
-    const coreUintW iHeight = F_TO_UI(Core::System->GetResolution().y);
-    const coreUintW iPitch  = iWidth  * 3u;
-    const coreUintW iSize   = iHeight * iPitch;
+    const coreUintW iWidthSrc = coreMath::CeilAlign<4u>(F_TO_UI(Core::System->GetResolution().x));
+    const coreUintW iWidthDst = F_TO_UI(Core::System->GetResolution().x);
+    const coreUintW iHeight   = F_TO_UI(Core::System->GetResolution().y);
+    const coreUintW iPitchSrc = iWidthSrc * 3u;
+    const coreUintW iPitchDst = iWidthDst * 3u;
+    const coreUintW iSize     = iHeight * iPitchSrc;
+    ASSERT(iPitchDst <= iPitchSrc)
 
     // read pixel data from the frame buffer
     coreByte* pData = new coreByte[iSize * 2u];
-    glReadPixels(0, 0, iWidth, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
+    glReadPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
 
     // copy path into another thread
     const std::string sPathCopy = pcPath;
@@ -367,10 +370,10 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
         // flip pixel data vertically
         coreByte* pConvert = pData + iSize;
         for(coreUintW i = 0u; i < iHeight; ++i)
-            std::memcpy(pConvert + (iHeight - i - 1u) * iPitch, pData + i * iPitch, iPitch);
+            std::memcpy(pConvert + (iHeight - i - 1u) * iPitchDst, pData + i * iPitchSrc, iPitchDst);
 
         // create SDL surface
-        SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidth, iHeight, 24, iPitch, CORE_TEXTURE_MASK);
+        SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidthDst, iHeight, 24, iPitchDst, CORE_TEXTURE_MASK);
         if(pSurface)
         {
             // create folder hierarchy
