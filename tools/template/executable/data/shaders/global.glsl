@@ -28,6 +28,7 @@
     #extension GL_AMD_shader_trinary_minmax    : enable
     #extension GL_ARB_conservative_depth       : enable
     #extension GL_ARB_enhanced_layouts         : enable
+    #extension GL_ARB_gpu_shader5              : enable
     #extension GL_ARB_sample_shading           : enable
     #extension GL_ARB_shader_group_vote        : enable
     #extension GL_ARB_shader_image_load_store  : enable
@@ -87,11 +88,24 @@
         #define varying in
     #endif
 #else
-    #undef  _CORE_OPTION_INSTANCING_
+    #undef _CORE_OPTION_INSTANCING_
+#endif
+#if !defined(GL_EXT_gpu_shader4)
     #define flat
     #define noperspective
     #define smooth
+    #define centroid
 #endif
+#if !defined(GL_ARB_gpu_shader5)
+    #define sample
+    #define precise
+    #define fma(a,b,c) ((a) * (b) + (c))
+#endif
+#if !defined(GL_ES) && (__VERSION__) < 120
+    #define invariant
+#endif
+
+// type definitions
 #if !defined(GL_EXT_gpu_shader4)
     #define uint  int
     #define uvec2 ivec2
@@ -387,9 +401,6 @@ mat4 coreInvert(const in mat4 m)
     #endif
     }
 
-#else
-    #define corePackUnorm4x8(x)   (x)
-    #define coreUnpackUnorm4x8(x) (x)
 #endif
 
 

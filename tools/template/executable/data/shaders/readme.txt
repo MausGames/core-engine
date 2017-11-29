@@ -3,7 +3,7 @@
 # Shader Interface #
 
 *varying* and *attribute* instead of *in* and *out* in vertex and fragment shader for max compatibility
-qualifiers *highp*, *mediump*, *lowp*, *flat*, *noperspective* and *smooth* are safe to use
+qualifiers *highp*, *mediump*, *lowp*, *flat*, *noperspective*, *smooth*, *centroid*, *sample*, *precise* and *invariant* are safe to use
 shader main functions are named *VertexMain()* and *FragmentMain()*
 
 

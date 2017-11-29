@@ -166,7 +166,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER), 1, Core::Graphics->GetMaxAnisotropy())));
     if(bMipMapOld)   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,            GL_TRUE);
 
-    if(CORE_GL_SUPPORT(ARB_texture_storage))
+    if(CORE_GL_SUPPORT(EXT_texture_storage))
     {
         // allocate immutable texture memory
         glTexStorage2D(GL_TEXTURE_2D, m_iLevels, m_Spec.iInternal, iWidth, iHeight);
@@ -316,7 +316,7 @@ void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const
 {
     ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
-    if(CORE_GL_SUPPORT(ARB_shader_image_load_store))
+    if(CORE_GL_SUPPORT(EXT_shader_image_load_store))
     {
         // bind directly without layering
         glBindImageTexture(iUnit, m_iIdentifier, iLevel, false, 0, iAccess, m_Spec.iInternal);

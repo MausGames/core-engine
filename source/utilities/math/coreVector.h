@@ -116,8 +116,8 @@ public:
     constexpr coreUintW MaxDimension()const {return (x > y) ? 0u : 1u;}
     inline    coreFloat AspectRatio ()const {return (x * RCP(y));}
     inline    coreFloat Angle       ()const {return (-std::atan2(x, y));}
-    constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
-    constexpr coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    constexpr coreBool  IsNormalized()const {return coreMath::IsNear(this->LengthSq(), 1.0f);}
+    constexpr coreBool  IsNull      ()const {return coreMath::IsNear(this->LengthSq(), 0.0f);}
     //! @}
 
     /*! static functions */
@@ -268,8 +268,8 @@ public:
     constexpr coreFloat Max         ()const {return MAX(x, y, z);}
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
-    constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
-    constexpr coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    constexpr coreBool  IsNormalized()const {return coreMath::IsNear(this->LengthSq(), 1.0f);}
+    constexpr coreBool  IsNull      ()const {return coreMath::IsNear(this->LengthSq(), 0.0f);}
     //! @}
 
     /*! static functions */
@@ -414,8 +414,8 @@ public:
     constexpr coreFloat Max         ()const {return MAX(x, y, z, w);}
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
-    constexpr coreBool  IsNormalized()const {return coreMath::InRange(this->LengthSq(), 1.0f, CORE_MATH_PRECISION);}
-    constexpr coreBool  IsNull      ()const {return coreMath::InRange(this->LengthSq(), 0.0f, CORE_MATH_PRECISION);}
+    constexpr coreBool  IsNormalized()const {return coreMath::IsNear(this->LengthSq(), 1.0f);}
+    constexpr coreBool  IsNull      ()const {return coreMath::IsNear(this->LengthSq(), 0.0f);}
     //! @}
 
     /*! static functions */

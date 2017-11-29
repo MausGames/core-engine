@@ -346,7 +346,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
                 const coreVector3 A = coreVector3::Cross(vRelRayDir, W2);
                 const coreFloat   B = coreVector3::Dot(W1, A);
 
-                if(coreMath::InRange(B, 0.0f, CORE_MATH_PRECISION))
+                if(coreMath::IsNear(B, 0.0f))
                     continue;
 
                 const coreFloat   C = RCP(B);

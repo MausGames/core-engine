@@ -15,6 +15,7 @@
 // TODO: single triangle for fullscreen processing ?
 // TODO: fix resource-manager reset, change location of global resources/objects (incl. single triangle)
 // TODO: add pre-registering interface to object manager ? accessing a non-existing list can cause issues
+// TODO: [const coreObject3D*] should be [const coreObject3D&], but pointers are swapped (for performance reasons)
 
 
 // ****************************************************************

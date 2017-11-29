@@ -33,7 +33,6 @@
 #define CORE_GL_ARB_parallel_shader_compile         false
 #define CORE_GL_ARB_program_interface_query         false
 #define CORE_GL_ARB_sample_shading                  false
-#define CORE_GL_ARB_shader_image_load_store         false
 #define CORE_GL_ARB_sync                            false
 #define CORE_GL_ARB_tessellation_shader             false
 #define CORE_GL_ARB_texture_rg                      false
@@ -43,6 +42,7 @@
 #define CORE_GL_EXT_direct_state_access             false
 #define CORE_GL_EXT_framebuffer_object              true
 #define CORE_GL_EXT_gpu_shader4                     false
+#define CORE_GL_EXT_shader_image_load_store         false
 #define CORE_GL_EXT_texture_compression_rgtc        false
 #define CORE_GL_KHR_debug                           false
 #define CORE_GL_NV_framebuffer_multisample_coverage false
@@ -65,8 +65,8 @@ typedef void (GL_APIENTRY *PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsiz
 
 
 // ****************************************************************
-/* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage) */
-#define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
+/* GL_EXT_texture_storage */
+#define CORE_GL_EXT_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
 
 typedef void (GL_APIENTRY *PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 #define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2DEXT)

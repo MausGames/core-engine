@@ -84,7 +84,7 @@ public:
 private:
     /*! calculate final position and direction */
     //! @{
-    static void __CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection);
+    static FUNC_NOALIAS void __CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection);
     //! @}
 };
 
@@ -355,7 +355,7 @@ template <typename T> coreFloat coreSpline<T>::TranslateDistance(const coreUintW
 
 // ****************************************************************
 /* calculate final position and direction */
-template <typename T> void coreSpline<T>::__CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
+template <typename T> FUNC_NOALIAS void coreSpline<T>::__CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection)
 {
     // normal calculation:
     // (*ptPosition)  = (2.0f*X3 - 3.0f*X2 + 1.0f)*tP1 - (2.0f*X3 - 3.0f*X2)*tP2 + (     X3 - 2.0f*X2 +   X1)*tT1 + (     X3 -      X2)*tT2;

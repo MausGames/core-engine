@@ -155,6 +155,20 @@ void __coreInitOpenGL()
         __GLEW_EXT_shader_image_load_store = true;
     }
 
+    // improve texture storage compatibility
+    if(!GLEW_ARB_texture_storage && GLEW_EXT_texture_storage)
+    {
+        // remap GL_EXT_texture_storage
+        glTexStorage1D = glTexStorage1DEXT;
+        glTexStorage2D = glTexStorage2DEXT;
+        glTexStorage3D = glTexStorage3DEXT;
+    }
+    else if(GLEW_ARB_texture_storage)
+    {
+        // force extension status
+        __GLEW_EXT_texture_storage = true;
+    }
+
     // improve sample shading compatibility
     if(!GLEW_VERSION_4_0 && GLEW_ARB_sample_shading)
     {
