@@ -8,19 +8,19 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreLog*             Core::Log               = NULL;
-coreConfig*          Core::Config            = NULL;
-coreLanguage*        Core::Language          = NULL;
-coreRand*            Core::Rand              = NULL;
-CoreSystem*          Core::System            = NULL;
-CoreGraphics*        Core::Graphics          = NULL;
-CoreAudio*           Core::Audio             = NULL;
-CoreInput*           Core::Input             = NULL;
-CoreDebug*           Core::Debug             = NULL;
-coreMemoryManager*   Core::Manager::Memory   = NULL;
-coreResourceManager* Core::Manager::Resource = NULL;
-coreObjectManager*   Core::Manager::Object   = NULL;
-CoreApp*             Core::Application       = NULL;
+STATIC_MEMORY(coreLog,             Core::Log)
+STATIC_MEMORY(coreConfig,          Core::Config)
+STATIC_MEMORY(coreLanguage,        Core::Language)
+STATIC_MEMORY(coreRand,            Core::Rand)
+STATIC_MEMORY(CoreSystem,          Core::System)
+STATIC_MEMORY(CoreGraphics,        Core::Graphics)
+STATIC_MEMORY(CoreAudio,           Core::Audio)
+STATIC_MEMORY(CoreInput,           Core::Input)
+STATIC_MEMORY(CoreDebug,           Core::Debug)
+STATIC_MEMORY(coreMemoryManager,   Core::Manager::Memory)
+STATIC_MEMORY(coreResourceManager, Core::Manager::Resource)
+STATIC_MEMORY(coreObjectManager,   Core::Manager::Object)
+STATIC_MEMORY(CoreApp,             Core::Application)
 
 
 // ****************************************************************
@@ -28,38 +28,38 @@ CoreApp*             Core::Application       = NULL;
 Core::Core()noexcept
 {
     // init utilities
-    Log    = new coreLog("log.html");
-    Log->Header("Utilities");
-    Config = new coreConfig("config.ini");
-    Rand   = new coreRand();
+    STATIC_NEW(Log, "log.html")
+    Log->Header("Configuration");
+    STATIC_NEW(Config, "config.ini")
+    STATIC_NEW(Language)
+    STATIC_NEW(Rand)
 
     // init main components
-    System   = new CoreSystem();
-    Graphics = new CoreGraphics();
-    Audio    = new CoreAudio();
-    Input    = new CoreInput();
+    STATIC_NEW(System)
+    STATIC_NEW(Graphics)
+    STATIC_NEW(Audio)
+    STATIC_NEW(Input)
 
     // init managers
-    Log->Header("Managers");
-    Manager::Memory   = new coreMemoryManager();
-    Manager::Resource = new coreResourceManager();
-    Manager::Object   = new coreObjectManager();
     Log->Header("Other");
+    STATIC_NEW(Manager::Memory)
+    STATIC_NEW(Manager::Resource)
+    STATIC_NEW(Manager::Object)
 
     // init debug component
-    Debug = new CoreDebug();
+    STATIC_NEW(Debug)
 
     // load language file
-    Language = new coreLanguage(Config->GetString(CORE_CONFIG_BASE_LANGUAGE));
+    Language->Load(Config->GetString(CORE_CONFIG_BASE_LANGUAGE));
 
-    // set window title, icon and cursor
+    // apply project settings
     System->SetWindowTitle(Application->Settings.Name);
     System->SetWindowIcon (Application->Settings.IconPath);
     Input ->SetCursor     (Application->Settings.CursorPath);
 
     // init application
-    Log->Header("Application Init");
-    Application = new CoreApp();
+    Log->Header("Application Setup");
+    STATIC_NEW(Application)
     Manager::Resource->UpdateResources();
     Manager::Resource->UpdateFunctions();
     Log->Header("Application Run");
@@ -72,28 +72,31 @@ Core::~Core()
 {
     Log->Header("Shut Down");
 
+    // finish all remaining OpenGL operations
+    coreSync::Finish();
+
     // delete application
-    SAFE_DELETE(Application)
+    STATIC_DELETE(Application)
 
     // delete debug component
-    SAFE_DELETE(Debug)
+    STATIC_DELETE(Debug)
 
     // delete managers
-    SAFE_DELETE(Manager::Object)
-    SAFE_DELETE(Manager::Resource)
-    SAFE_DELETE(Manager::Memory)
+    STATIC_DELETE(Manager::Object)
+    STATIC_DELETE(Manager::Resource)
+    STATIC_DELETE(Manager::Memory)
 
     // delete main components
-    SAFE_DELETE(Input)
-    SAFE_DELETE(Audio)
-    SAFE_DELETE(Graphics)
-    SAFE_DELETE(System)
+    STATIC_DELETE(Input)
+    STATIC_DELETE(Audio)
+    STATIC_DELETE(Graphics)
+    STATIC_DELETE(System)
 
     // delete utilities
-    SAFE_DELETE(Rand)
-    SAFE_DELETE(Language)
-    SAFE_DELETE(Config)
-    SAFE_DELETE(Log)
+    STATIC_DELETE(Rand)
+    STATIC_DELETE(Language)
+    STATIC_DELETE(Config)
+    STATIC_DELETE(Log)
 }
 
 
@@ -102,6 +105,9 @@ Core::~Core()
 void Core::Reset()
 {
     Log->Warning("Reset started");
+
+    // finish all remaining OpenGL operations
+    coreSync::Finish();
 
     // save current state
     const coreDouble  dTotalTime      = System  ->m_dTotalTime;
@@ -120,31 +126,33 @@ void Core::Reset()
     Manager::Object->__Reset(CORE_RESOURCE_RESET_EXIT);
 
     // shut down main components
-    SAFE_DELETE(Debug)
-    SAFE_DELETE(Input)
-    SAFE_DELETE(Graphics)
-    SAFE_DELETE(System)
+    STATIC_DELETE(Debug)
+    STATIC_DELETE(Input)
+    STATIC_DELETE(Graphics)
+    STATIC_DELETE(System)
 
     // start up main components
-    System   = new CoreSystem();
-    Graphics = new CoreGraphics();
-    Input    = new CoreInput();
-    Debug    = new CoreDebug();
+    STATIC_NEW(System);
+    STATIC_NEW(Graphics);
+    STATIC_NEW(Input);
+    STATIC_NEW(Debug);
 
     // load former state
-    System->m_dTotalTime = dTotalTime;
-    System->m_iCurFrame  = iCurFrame;
+    System  ->m_dTotalTime = dTotalTime;
+    System  ->m_iCurFrame  = iCurFrame;
     Graphics->SetView  (System->GetResolution(), fFOV, fNearClip, fFarClip);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
-    for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System->SetTimeSpeed(i, afTimeSpeed[i]);
-    for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight(i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
-
-    // setup the application
-    Application->Setup();
+    for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System  ->SetTimeSpeed(i, afTimeSpeed[i]);
+    for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight    (i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
 
     // start up managers
     Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
     Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
+
+    // apply project settings
+    System->SetWindowTitle(Application->Settings.Name);
+    System->SetWindowIcon (Application->Settings.IconPath);
+    Input ->SetCursor     (Application->Settings.CursorPath);
 
     Log->Header("Reset finished");
 }

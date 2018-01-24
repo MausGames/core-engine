@@ -93,11 +93,11 @@ coreResourceManager::~coreResourceManager()
     FOR_EACH(it, m_apProxy.get_keylist()) this->AssignProxy(*it, NULL);
 
     // delete resource handles
-    FOR_EACH(it, m_apHandle) MANAGED_DELETE(coreResourceHandle, *it)
+    FOR_EACH(it, m_apHandle) MANAGED_DELETE(*it)
 
     // delete resource files
-    FOR_EACH(it, m_apArchive)    MANAGED_DELETE(coreArchive, *it)
-    FOR_EACH(it, m_apDirectFile) MANAGED_DELETE(coreFile,    *it)
+    FOR_EACH(it, m_apArchive)    MANAGED_DELETE(*it)
+    FOR_EACH(it, m_apDirectFile) MANAGED_DELETE(*it)
 
     // clear memory
     m_apHandle    .clear();

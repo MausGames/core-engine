@@ -38,7 +38,8 @@ extern void __coreExitOpenGL();
 
 // ****************************************************************
 /* check for extensions */
-extern void coreExtensions(std::string* OUTPUT psOutput);
+extern void coreExtensions        (std::string* OUTPUT psOutput);
+extern void corePlatformExtensions(std::string* OUTPUT psOutput);
 #define CORE_GL_SUPPORT(e) ((GLEW_ ## e) ? true : false)
 
 

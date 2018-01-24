@@ -190,15 +190,15 @@ public:
     /*! remove existing entry */
     //! @{
     using coreLookupGen<coreUint32, coreHashString, T>::erase;
-    inline typename coreLookupStrFull<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    inline typename coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 
     /*! return original string */
     //! @{
-    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStrFull<T>::coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
     //! @}
 
 
@@ -228,7 +228,7 @@ public:
     /*! remove existing entry */
     //! @{
     using coreLookupGen<coreUint32, coreHashString, T>::erase;
-    inline typename coreLookupStrSlim<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    inline typename coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 };
 

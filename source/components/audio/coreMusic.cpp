@@ -358,7 +358,7 @@ coreStatus coreMusicPlayer::AddMusicFile(const coreChar* pcPath)
 
 
 // ****************************************************************
-// add music object from archive
+// add music objects from archive
 coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreChar* pcFilter)
 {
     coreBool bStatus = false;
@@ -382,7 +382,7 @@ coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreCh
 
 
 // ****************************************************************
-// add music object from folder
+// add music objects from folder
 coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreChar* pcFilter)
 {
     coreBool bStatus = false;

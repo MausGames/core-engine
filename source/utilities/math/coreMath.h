@@ -77,8 +77,8 @@ public:
 
     /*! special operations */
     //! @{
-    template <typename T, typename S, typename... A>      static constexpr T Min  (const T& x, const S& y, A&&... vArgs)  {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S, typename... A>      static constexpr T Max  (const T& x, const S& y, A&&... vArgs)  {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S = T, typename... A>  static constexpr T Min  (const T& x, const S& y, A&&... vArgs)  {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename S = T, typename... A>  static constexpr T Max  (const T& x, const S& y, A&&... vArgs)  {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
     template <typename T, typename S = T>                 static constexpr T Min  (const T& x, const S& y)                {return (x < y) ? x : y;}
     template <typename T, typename S = T>                 static constexpr T Max  (const T& x, const S& y)                {return (x > y) ? x : y;}
     template <typename T, typename S = T, typename R = T> static constexpr T Med  (const T& x, const S& y, const R& z)    {return MAX(MIN(MAX(x, y), z), MIN(x, y));}

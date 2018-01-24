@@ -117,7 +117,7 @@ void coreDataBuffer::Delete()
     if(m_pPersistentBuffer)
     {
         m_pPersistentBuffer = NULL;
-        this->Unmap(r_cast<coreByte*>(~0x00));
+        this->Unmap(r_cast<coreByte*>(-1));
     }
 
     // delete buffer

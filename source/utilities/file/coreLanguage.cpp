@@ -115,11 +115,16 @@ void coreTranslate::_UnbindString(std::string* psString)
 
 // ****************************************************************
 /* constructor */
-coreLanguage::coreLanguage(const coreChar* pcPath)noexcept
+coreLanguage::coreLanguage()noexcept
 : m_asStringList {}
 , m_apsForeign   {}
 , m_apObject     {}
 , m_sPath        ("")
+{
+}
+
+coreLanguage::coreLanguage(const coreChar* pcPath)noexcept
+: coreLanguage ()
 {
     // load language file
     this->Load(pcPath);

@@ -59,6 +59,7 @@
 // TODO: #pragma warning(default : 4242 4244 4365) // loss of precision
 // TODO: #pragma warning(default : 4820)           // byte padding
 // TODO: unify const void* and const coreByte*
+// TODO: #define FORCE_CONSTEXPR(...) [&](){constexpr auto A = __VA_ARGS__; return A;}() #define HS(...) FORCE_CONSTEXPR(coreHashString(__VA_ARGS__))
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -153,7 +154,7 @@
     #define DONT_INLINE      __declspec(noinline)   //!< never inline the function
     #define RETURN_RESTRICT  __declspec(restrict)   //!< returned object will not be aliased with another pointer
     #define RETURN_NONNULL                          //!< returned pointer will not be null
-    #define RETURN_NODISCARD [[nodiscard]]          //!< returned value should not be discarded (but can be casted to void)
+    #define RETURN_NODISCARD [[nodiscard]]          //!< returned value should not be discarded (but can be cast to void)
     #define FUNC_PURE                               //!< function does not modify anything (or reads volatile global state), and returns a value
     #define FUNC_CONST       __declspec(noalias)    //!< function only reads parameters (without indirections), and returns a value
     #define FUNC_LOCAL       __declspec(noalias)    //!< function only reads parameters, reads first-level indirections (e.g. this), and returns a value
@@ -192,7 +193,7 @@
     #pragma warning(disable : 4266)   //!< virtual function not overridden
     #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
     #pragma warning(disable : 4365)   //!< implicit conversion between signed and unsigned
-    #pragma warning(disable : 4557)   //!< __assume contains effect
+    #pragma warning(disable : 4557)   //!< __assume contains effect (# only false-positives)
     #pragma warning(disable : 4577)   //!< noexcept used without exception handling
     #pragma warning(disable : 4623)   //!< default constructor implicitly deleted
     #pragma warning(disable : 4625)   //!< copy constructor implicitly deleted
@@ -205,6 +206,7 @@
     #pragma warning(disable : 4820)   //!< padding after data member
     #pragma warning(disable : 5026)   //!< move constructor implicitly deleted
     #pragma warning(disable : 5027)   //!< move assignment operator implicitly deleted
+    #pragma warning(disable : 5039)   //!< potentially throwing function passed to extern C function
 
     // check for floating-point results stored in memory, causing performance loss
     #if defined(_CORE_X64_)
@@ -267,8 +269,9 @@
 #include <cfenv>
 #include <cmath>
 #include <ctime>
-#include <memory>
+#include <type_traits>
 #include <functional>
+#include <memory>
 #include <random>
 #include <string>
 #include <array>
@@ -304,10 +307,13 @@
 /* general definitions */
 #undef NULL
 #undef __STRING
+#undef __CONCAT
 
 #define NULL                 nullptr
 #define __STRING(a)          #a
 #define STRING(a)            __STRING(a)
+#define __CONCAT(a,b)        a ## b
+#define CONCAT(a,b)          __CONCAT(a, b)
 #define DEFINED(a)           (!coreData::StrCmpConst(STRING(a), #a))
 
 #define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
@@ -462,6 +468,10 @@ template <typename R,             typename... A> struct INTERFACE function_trait
 #define TRAIT_ARG_TYPE(f,i)  function_traits<f>::template arg_type<i>
 #define TRAIT_ARITY(f)       function_traits<f>::arity
 
+// directly call constructor and destructor on pointer
+#define CALL_CONSTRUCTOR(p,...) {using __t = std::remove_reference<decltype(*(p))>::type; new(p) __t(__VA_ARGS__);}
+#define CALL_DESTRUCTOR(p)      {using __t = std::remove_reference<decltype(*(p))>::type; (p)->~__t();}
+
 // default color values
 #define COLOR_WHITE  (coreVector3(1.000f, 1.000f, 1.000f))
 #define COLOR_YELLOW (coreVector3(1.000f, 0.824f, 0.392f))
@@ -489,9 +499,9 @@ enum coreStatus : coreInt8
     CORE_ERROR_SUPPORT = -2,    //!< requested feature is not supported on the target system
     CORE_ERROR_SYSTEM  = -3,    //!< invalid system or application behavior
 
-    CORE_INVALID_CALL  = -11,   //!< object has wrong status
+    CORE_INVALID_CALL  = -11,   //!< object has invalid status
     CORE_INVALID_INPUT = -12,   //!< function parameters are invalid
-    CORE_INVALID_DATA  = -13    //!< depending objects contain wrong data
+    CORE_INVALID_DATA  = -13    //!< depending objects contain invalid data
 };
 
 
@@ -503,7 +513,7 @@ enum coreStatus : coreInt8
     FORCE_INLINE void coreAtomicLock(SDL_SpinLock* OUTPUT piLock)
     {
     #if defined(_CORE_WINDOWS_)
-        while(InterlockedExchange((long*)piLock, 1))
+        while(InterlockedExchange(r_cast<long*>(piLock), 1))
     #else
         while(!SDL_AtomicTryLock(piLock))
     #endif
@@ -605,13 +615,13 @@ private:
     void Setup();
     //! @}
 
-    /*! undefined init and exit function */
+    /*! user-defined init and exit function */
     //! @{
     void Init();
     void Exit();
     //! @}
 
-    /*! undefined render and move function */
+    /*! user-defined render and move function */
     //! @{
     void Render();
     void Move();
@@ -624,25 +634,25 @@ private:
 class Core final
 {
 public:
-    static coreLog*      Log;        //!< log file
-    static coreConfig*   Config;     //!< configuration file
-    static coreLanguage* Language;   //!< language file
-    static coreRand*     Rand;       //!< random number generator
+    static coreLog*      const Log;        //!< log file
+    static coreConfig*   const Config;     //!< configuration file
+    static coreLanguage* const Language;   //!< language file
+    static coreRand*     const Rand;       //!< random number generator
 
-    static CoreSystem*   System;     //!< main system component
-    static CoreGraphics* Graphics;   //!< main graphics component
-    static CoreAudio*    Audio;      //!< main audio component
-    static CoreInput*    Input;      //!< main input component
-    static CoreDebug*    Debug;      //!< main debug component
+    static CoreSystem*   const System;     //!< main system component
+    static CoreGraphics* const Graphics;   //!< main graphics component
+    static CoreAudio*    const Audio;      //!< main audio component
+    static CoreInput*    const Input;      //!< main input component
+    static CoreDebug*    const Debug;      //!< main debug component
 
     struct INTERFACE Manager final
     {
-        static coreMemoryManager*   Memory;     //!< memory manager
-        static coreResourceManager* Resource;   //!< resource manager
-        static coreObjectManager*   Object;     //!< object manager
+        static coreMemoryManager*   const Memory;     //!< memory manager
+        static coreResourceManager* const Resource;   //!< resource manager
+        static coreObjectManager*   const Object;     //!< object manager
     };
 
-    static CoreApp* Application;     //!< application object
+    static CoreApp* const Application;     //!< application object
 
 
 private:

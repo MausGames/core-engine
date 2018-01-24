@@ -15,7 +15,7 @@
 // TODO: the mXXX() conversion functions create a lot of move instructions
 
 #if defined(_CORE_MSVC_)
-    #define CONSTEXPR inline
+    #define CONSTEXPR FORCE_INLINE
 #else
     #define CONSTEXPR constexpr
 #endif
@@ -700,6 +700,8 @@ inline coreMatrix4 coreMatrix4::RotationZ(const coreFloat fAngle)
 /* get rotation matrix around arbitrary axis */
 inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat fAngle, const coreVector3& vAxis)
 {
+    ASSERT(vAxis.IsNormalized())
+
     const coreFloat C = COS(fAngle);
     const coreFloat S = SIN(fAngle);
     const coreFloat I = 1.0f - C;

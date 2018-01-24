@@ -6,7 +6,7 @@
         <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
         <Expand>
 
-            <Item Name="[capacity]" ExcludeView="simple">m_atValueList._Mypair._Myval2._Myend - m_atValueList._Mypair._Myval2._Myfirst</Item>
+            <Item Name="[capacity]">m_atValueList._Mypair._Myval2._Myend - m_atValueList._Mypair._Myval2._Myfirst</Item>
             <CustomListItems MaxItemsPerView="1000">
 
                 <Variable Name="i" InitialValue="0" />
@@ -31,7 +31,7 @@
         <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
         <Expand>
 
-            <Item Name="[capacity]" ExcludeView="simple">m_atValueList._Mypair._Myval2._Myend - m_atValueList._Mypair._Myval2._Myfirst</Item>
+            <Item Name="[capacity]">m_atValueList._Mypair._Myval2._Myend - m_atValueList._Mypair._Myval2._Myfirst</Item>
             <CustomListItems MaxItemsPerView="1000">
 
                 <Variable Name="i" InitialValue="0" />
@@ -59,14 +59,32 @@
 
     <Type Name="coreVector2">
         <DisplayString>{{x={x} y={y}}}</DisplayString>
+        <Expand>
+            <Item Name="[sqlen]">x*x + y*y</Item>
+            <Item Name="x">x</Item>
+            <Item Name="y">y</Item>
+        </Expand>
     </Type>
 
     <Type Name="coreVector3">
         <DisplayString>{{x={x} y={y} z={z}}}</DisplayString>
+        <Expand>
+            <Item Name="[sqlen]">x*x + y*y + z*z</Item>
+            <Item Name="x">x</Item>
+            <Item Name="y">y</Item>
+            <Item Name="z">z</Item>
+        </Expand>
     </Type>
 
     <Type Name="coreVector4">
         <DisplayString>{{x={x} y={y} z={z} w={w}}}</DisplayString>
+        <Expand>
+            <Item Name="[sqlen]">x*x + y*y + z*z + w*w</Item>
+            <Item Name="x">x</Item>
+            <Item Name="y">y</Item>
+            <Item Name="z">z</Item>
+            <Item Name="w">w</Item>
+        </Expand>
     </Type>
 
 </AutoVisualizer>

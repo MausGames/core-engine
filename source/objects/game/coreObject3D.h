@@ -15,6 +15,7 @@
 // TODO: implement efficient batch list sort function
 // TODO: compress rotation and texture parameters (2x16 ?)
 // TODO: make coreBatchList to template class, check for every casting
+// TODO: add MoveNormal() and MoveSort() with callback
 
 
 // ****************************************************************

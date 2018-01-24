@@ -80,6 +80,7 @@ private:
 
 
 public:
+    coreLanguage()noexcept;
     explicit coreLanguage(const coreChar* pcPath)noexcept;
     ~coreLanguage();
 

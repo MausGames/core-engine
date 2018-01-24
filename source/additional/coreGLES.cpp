@@ -36,7 +36,7 @@ void __coreInitOpenGLES()
     else if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, bES3))
     {
         // override function
-        g_CoreContext.__glDiscardFramebufferEXT = (decltype(g_CoreContext.__glDiscardFramebufferEXT))eglGetProcAddress("glInvalidateFramebuffer");
+        g_CoreContext.__glDiscardFramebufferEXT = r_cast<decltype(g_CoreContext.__glDiscardFramebufferEXT)>(eglGetProcAddress("glInvalidateFramebuffer"));
     }
 
     // implement GL_EXT_texture_storage
@@ -123,4 +123,13 @@ void coreExtensions(std::string* OUTPUT psOutput)
 {
     // copy saved extension string
     (*psOutput) = g_sExtensions;
+}
+
+
+// ****************************************************************
+/* get platform-specific extension string */
+void corePlatformExtensions(std::string* OUTPUT psOutput)
+{
+    // return nothing
+    (*psOutput) = "";
 }

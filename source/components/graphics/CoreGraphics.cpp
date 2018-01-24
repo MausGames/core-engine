@@ -72,11 +72,15 @@ CoreGraphics::CoreGraphics()noexcept
         std::string sExtensions;
         coreExtensions(&sExtensions);
 
+        std::string sPlatformExtensions;
+        corePlatformExtensions(&sPlatformExtensions);
+
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
         Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
         Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Core::Log->ListAdd(sExtensions.c_str());
+        Core::Log->ListAdd(sExtensions        .c_str());
+        Core::Log->ListAdd(sPlatformExtensions.c_str());
     }
     Core::Log->ListEnd();
 

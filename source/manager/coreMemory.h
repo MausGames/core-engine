@@ -23,20 +23,24 @@
 
 // ****************************************************************
 // memory definitions
-#define CORE_MEMORY_SHARED   (STRING(__FILE__) ":" STRING(__LINE__))
-#define CORE_MEMORY_UNIQUE   (PRINT(CORE_MEMORY_SHARED ":%p", this))
+#define CORE_MEMORY_SHARED  (STRING(__FILE__) ":" STRING(__LINE__))
+#define CORE_MEMORY_UNIQUE  (PRINT(CORE_MEMORY_SHARED ":%p", this))
 
-#define MANAGED_NEW(t,...)   (new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__))
-#define MANAGED_DELETE(t,p)  {(p)->~t(); Core::Manager::Memory->Free(sizeof(t), r_cast<void**>(&(p)));}
+#define MANAGED_NEW(t,...)  (new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__))
+#define MANAGED_DELETE(p)   {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), r_cast<void**>(&(p)));}
 
-#define POOLED_NEW(m,t,...)  (new((m).Allocate()) t(__VA_ARGS__))
-#define POOLED_DELETE(m,t,p) {(p)->~t(); (m).Free(r_cast<void**>(&(p)));}
+#define POOLED_NEW(m,t,...) (new((m).Allocate()) t(__VA_ARGS__))
+#define POOLED_DELETE(m,p)  {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}
 
-#define ALIGNED_NEW(t,c,a)   (r_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
-#define ALIGNED_DELETE(p)    {_aligned_free(p); (p) = NULL;}
+#define ALIGNED_NEW(t,c,a)  (r_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
+#define ALIGNED_DELETE(p)   {_aligned_free(p); (p) = NULL;}
 
-#define ZERO_NEW(t,c)        (r_cast<t*>(std::calloc((c), sizeof(t))))
-#define RESIZE_ARRAY(a,t,c)  {(a) = r_cast<t*>(std::realloc((a), (c) * sizeof(t)));}
+#define STATIC_MEMORY(t,p)  alignas(ALIGNMENT_SSE) static coreByte CONCAT(__m, __LINE__)[sizeof(t)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));
+#define STATIC_NEW(p,...)   {CALL_CONSTRUCTOR(p, __VA_ARGS__)}
+#define STATIC_DELETE(p)    {CALL_DESTRUCTOR(p) std::memset(p, 0, sizeof(*(p)));}
+
+#define ZERO_NEW(t,c)       (r_cast<t*>(std::calloc((c), sizeof(t))))
+#define RESIZE_ARRAY(a,c)   {(a) = r_cast<decltype(a)>(std::realloc((a), (c) * sizeof(*(a))));}
 
 #if !defined(_CORE_WINDOWS_)
     #define _aligned_malloc(c,a) std::aligned_alloc(a, c)

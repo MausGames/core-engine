@@ -341,7 +341,7 @@ extern coreContext g_CoreContext;   //!< context object
 
 #define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x) != std::string::npos) || b))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
-#define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f ## a = (decltype(g_CoreContext.__ ## f ## a))eglGetProcAddress(b ? #f : #f #a);}
+#define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f ## a = r_cast<decltype(g_CoreContext.__ ## f ## a)>(eglGetProcAddress(b ? #f : #f #a));}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
 #define __CORE_GLES_VAR_SET(v,a)      {g_CoreContext.__ ## v = (a);}
 
@@ -362,7 +362,8 @@ extern void __coreInitOpenGLES();
 
 // ****************************************************************
 /* check for extensions */
-extern void coreExtensions(std::string* OUTPUT psOutput);
+extern void coreExtensions        (std::string* OUTPUT psOutput);
+extern void corePlatformExtensions(std::string* OUTPUT psOutput);
 #define CORE_GL_SUPPORT(e) (CORE_GL_ ## e)
 
 

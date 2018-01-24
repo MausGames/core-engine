@@ -26,7 +26,7 @@ coreModel::coreModel(const coreBool bCreateClusters)noexcept
 , m_iNumClusters        (0u)
 , m_vBoundingRange      (coreVector3(0.0f,0.0f,0.0f))
 , m_fBoundingRadius     (0.0f)
-, m_pvVertexPosition    (bCreateClusters ? NULL : r_cast<coreVector3*>(~0x00))
+, m_pvVertexPosition    (bCreateClusters ? NULL : r_cast<coreVector3*>(-1))
 , m_ppiClusterIndex     (NULL)
 , m_piClusterNumIndices (NULL)
 , m_pvClusterPosition   (NULL)

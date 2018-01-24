@@ -153,7 +153,7 @@ struct md5File final
         // check for correct file type
         MD5_SCAN(ppcData, "")
         MD5_SCAN(ppcData, "%15s %d", r_cast<coreChar*>(&acIdentifier), &iVersion)
-        if(std::strncmp(acIdentifier, "MD5Version", 10u) || iVersion != 10) return;
+        if(std::strncmp(acIdentifier, "MD5Version", 10u) || (iVersion != 10)) return;
 
         // read number of objects
         MD5_SCAN(ppcData, "%*s %*s")

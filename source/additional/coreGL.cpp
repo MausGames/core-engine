@@ -8,6 +8,12 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
+#if defined(_CORE_WINDOWS_)
+    #include <GL/wglew.h>
+#elif defined(_CORE_LINUX_)
+    #include <GL/glxew.h>
+#endif
+
 coreBool GLEW_V2_compatibility = false;
 
 
@@ -311,6 +317,7 @@ void coreExtensions(std::string* OUTPUT psOutput)
         glGetIntegerv(GL_NUM_EXTENSIONS, &iNumExtensions);
 
         // reserve some memory
+        psOutput->clear();
         psOutput->reserve(iNumExtensions * 32u);
 
         // concatenate all extensions to a single string
@@ -329,4 +336,41 @@ void coreExtensions(std::string* OUTPUT psOutput)
         // get full extension string
         (*psOutput) = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
     }
+}
+
+
+// ****************************************************************
+/* get platform-specific extension string */
+void corePlatformExtensions(std::string* OUTPUT psOutput)
+{
+    // clear memory
+    psOutput->clear();
+
+#if defined(_CORE_WINDOWS_)
+
+    // get device context of current screen
+    const HDC pDC = GetDC(NULL);
+    if(pDC)
+    {
+        // get full extension string
+        (*psOutput) = wglGetExtensionsStringARB(pDC);
+
+        // release device context
+        ReleaseDC(NULL, pDC);
+    }
+
+#elif defined(_CORE_LINUX_)
+
+    // open connection to default display
+    Display* pDisplay = X11_XOpenDisplay(NULL);
+    if(pDisplay)
+    {
+        // get full extension string
+        (*psOutput) = glXQueryExtensionsString(pDisplay, DefaultScreen(pDisplay));
+
+        // close connection
+        X11_XCloseDisplay(pDisplay);
+    }
+
+#endif
 }

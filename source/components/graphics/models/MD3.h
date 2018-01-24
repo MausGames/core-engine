@@ -16,7 +16,7 @@
 struct md3Header final
 {
     coreChar  acIdentity[4];     //!< magic number (IDP3)
-    coreInt32 iVersion;          //!< version number (15)
+    coreInt32 iVersion;          //!< version number (15 or 16)
 
     coreChar  acName[64];        //!< internal file name
     coreInt32 iFlags;            //!< 'dunno
@@ -109,7 +109,13 @@ struct md3Texture final
 struct md3Vertex final
 {
     coreInt16 asCoord [3];   //!< compressed vertex coordinates (1:64)
-    coreUint8 aiNormal[2];   //!< compressed normal zenith and azimuth
+    coreUint8 aiNormal[2];   //!< compressed normal zenith and azimuth (16 bit)
+};
+
+struct md3VertexV16 final
+{
+    coreInt16  asCoord [3];   //!< compressed vertex coordinates (1:256)
+    coreUint16 aiNormal[2];   //!< compressed normal zenith and azimuth (32 bit)
 };
 
 
@@ -121,7 +127,11 @@ struct md3Surface final
     md3Shader*   pShader;     //!< pointer to shader data
     md3Triangle* pTriangle;   //!< pointer to triangle data
     md3Texture*  pTexture;    //!< pointer to texture data
-    md3Vertex*   pVertex;     //!< pointer to vertex data
+    union                     //!< pointer to vertex data
+    {
+        md3Vertex*    pVertex;
+        md3VertexV16* pVertexV16;
+    };
 };
 
 
@@ -151,8 +161,11 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     std::memcpy(&oFile.oHeader, pData, sizeof(md3Header));
 
     // check for correct file type
-    if(std::strncmp(oFile.oHeader.acIdentity, "IDP3", 4u) || oFile.oHeader.iVersion != 15)
+    if(std::strncmp(oFile.oHeader.acIdentity, "IDP3", 4u) || ((oFile.oHeader.iVersion != 15) && (oFile.oHeader.iVersion != 16)))
         return CORE_INVALID_DATA;
+
+    // determine the file version
+    const coreBool bVersion16 = (oFile.oHeader.iVersion == 16);
 
     // allocate frame and surface memory
     oFile.pFrame   = new md3Frame  [oFile.oHeader.iNumFrames];
@@ -174,12 +187,14 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
         // allocate vertex memory
         oSurface.pTriangle = new md3Triangle[oMesh.iNumTriangles];
         oSurface.pTexture  = new md3Texture [oMesh.iNumVertices];
-        oSurface.pVertex   = new md3Vertex  [oMesh.iNumVertices];
+        if(bVersion16) oSurface.pVertexV16 = new md3VertexV16[oMesh.iNumVertices];
+                  else oSurface.pVertex    = new md3Vertex   [oMesh.iNumVertices];
 
         // read vertex data
         std::memcpy(oSurface.pTriangle, pCursor + oMesh.iOffsetTriangles, sizeof(md3Triangle) * oMesh.iNumTriangles);
         std::memcpy(oSurface.pTexture,  pCursor + oMesh.iOffsetTexture,   sizeof(md3Texture)  * oMesh.iNumVertices);
-        std::memcpy(oSurface.pVertex,   pCursor + oMesh.iOffsetVertices,  sizeof(md3Vertex)   * oMesh.iNumVertices);
+        if(bVersion16) std::memcpy(oSurface.pVertexV16, pCursor + oMesh.iOffsetVertices, sizeof(md3VertexV16) * oMesh.iNumVertices);
+                  else std::memcpy(oSurface.pVertex,    pCursor + oMesh.iOffsetVertices, sizeof(md3Vertex)    * oMesh.iNumVertices);
 
         pCursor += oMesh.iOffsetEnd;
     }
@@ -199,22 +214,45 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     coreVector3* pvOrtho1 = ZERO_NEW(coreVector3, iNumVertices);
     coreVector3* pvOrtho2 = ZERO_NEW(coreVector3, iNumVertices);
 
-    // loop through all vertices
-    for(coreUintW i = 0u; i < iNumVertices; ++i)
+    if(bVersion16)
     {
-        // calculate vertex position
-        pVertex[i].vPosition = coreVector3(I_TO_F(oSurface.pVertex[i].asCoord[0]),
-                                           I_TO_F(oSurface.pVertex[i].asCoord[1]),
-                                           I_TO_F(oSurface.pVertex[i].asCoord[2])) * 0.015625f;
+        // loop through all vertices (high quality)
+        for(coreUintW i = 0u; i < iNumVertices; ++i)
+        {
+            // calculate vertex position
+            pVertex[i].vPosition = coreVector3(I_TO_F(oSurface.pVertexV16[i].asCoord[0]),
+                                               I_TO_F(oSurface.pVertexV16[i].asCoord[1]),
+                                               I_TO_F(oSurface.pVertexV16[i].asCoord[2])) * (1.0f/256.0f);
 
-        // calculate vertex normal
-        const coreFloat fLat = I_TO_F(oSurface.pVertex[i].aiNormal[1]) * (PI / 128.0f);
-        const coreFloat fLng = I_TO_F(oSurface.pVertex[i].aiNormal[0]) * (PI / 128.0f);
-        const coreFloat fSin = SIN(fLng);
-        pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).Normalized();
+            // calculate vertex normal
+            const coreFloat fLat = I_TO_F(oSurface.pVertexV16[i].aiNormal[1]) * (PI / 32768.0f);
+            const coreFloat fLng = I_TO_F(oSurface.pVertexV16[i].aiNormal[0]) * (PI / 32768.0f);
+            const coreFloat fSin = SIN(fLng);
+            pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).Normalized();
 
-        // forward texture coordinate
-        pVertex[i].vTexCoord = oSurface.pTexture[i].vCoord;
+            // forward texture coordinate
+            pVertex[i].vTexCoord = oSurface.pTexture[i].vCoord;
+        }
+    }
+    else
+    {
+        // loop through all vertices (low quality)
+        for(coreUintW i = 0u; i < iNumVertices; ++i)
+        {
+            // calculate vertex position
+            pVertex[i].vPosition = coreVector3(I_TO_F(oSurface.pVertex[i].asCoord[0]),
+                                               I_TO_F(oSurface.pVertex[i].asCoord[1]),
+                                               I_TO_F(oSurface.pVertex[i].asCoord[2])) * (1.0f/64.0f);
+
+            // calculate vertex normal
+            const coreFloat fLat = I_TO_F(oSurface.pVertex[i].aiNormal[1]) * (PI / 128.0f);
+            const coreFloat fLng = I_TO_F(oSurface.pVertex[i].aiNormal[0]) * (PI / 128.0f);
+            const coreFloat fSin = SIN(fLng);
+            pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).Normalized();
+
+            // forward texture coordinate
+            pVertex[i].vTexCoord = oSurface.pTexture[i].vCoord;
+        }
     }
 
     // loop through all triangles
@@ -253,7 +291,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     {
         for(coreUintW j = 0u; j < 3u; ++j)
         {
-            pOutput->aiIndexData[i*3u+j] = coreUint16(oFile.pSurface[0].pTriangle[i].aiIndex[2u-j]);
+            pOutput->aiIndexData[i*3u+j] = coreUint16(oSurface.pTriangle[i].aiIndex[2u-j]);
         }
     }
 
@@ -266,7 +304,8 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     {
         SAFE_DELETE_ARRAY(oFile.pSurface[i].pTriangle)
         SAFE_DELETE_ARRAY(oFile.pSurface[i].pTexture)
-        SAFE_DELETE_ARRAY(oFile.pSurface[i].pVertex)
+        if(bVersion16) SAFE_DELETE_ARRAY(oFile.pSurface[i].pVertexV16)
+                  else SAFE_DELETE_ARRAY(oFile.pSurface[i].pVertex)
     }
     SAFE_DELETE_ARRAY(oFile.pFrame)
     SAFE_DELETE_ARRAY(oFile.pSurface)
