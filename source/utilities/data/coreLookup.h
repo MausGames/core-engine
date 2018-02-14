@@ -17,6 +17,11 @@
 
 
 // ****************************************************************
+/* lookup container definitions */
+#define CORE_LOOKUP_INVALID (coreUintW(-1))   //!< invalid cache index
+
+
+// ****************************************************************
 /* generic lookup container class */
 template <typename K, typename I, typename T> class coreLookupGen
 {
@@ -34,8 +39,7 @@ protected:
     coreValueList m_atValueList;   //!< list with values
     coreKeyList   m_atKeyList;     //!< list with keys
 
-    T* m_ptValueCache;             //!< last requested value
-    K* m_ptKeyCache;               //!< key to the last requested value
+    coreUintW m_iCacheIndex;       //!< index to the last requested value
 
 
 public:
@@ -67,15 +71,15 @@ public:
 
     /*! control memory allocation */
     //! @{
-    inline void      reserve(const coreUintW iReserve) {this->_cache_clear(); m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
-    inline void      shrink_to_fit()                   {this->_cache_clear(); m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
+    inline void      reserve(const coreUintW iReserve) {m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
+    inline void      shrink_to_fit()                   {m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
     inline coreUintW capacity()const                   {return m_atValueList.capacity();}
     //! @}
 
     /*! manage container ordering */
     //! @{
-    inline void sort_asc  () {this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
-    inline void sort_desc () {this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
+    inline void sort_asc  () {this->_cache_clear(); this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
+    inline void sort_desc () {this->_cache_clear(); this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
     inline void reverse   () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
     inline void prepare_bs() {this->sort_asc();}
     //! @}
@@ -92,7 +96,7 @@ public:
     inline coreValueIterator erase    (const coreValueIterator& it) {this->_cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}
     inline void              clear    ()                            {this->_cache_clear(); m_atValueList.clear();    m_atKeyList.clear();}
     inline void              pop_back ()                            {this->_cache_clear(); m_atValueList.pop_back(); m_atKeyList.pop_back();}
-    inline void              pop_front()                            {this->_cache_clear(); this->erase(this->begin());}
+    inline void              pop_front()                            {this->erase(this->begin());}
     //! @}
 
     /*! return first and last entry */
@@ -135,9 +139,9 @@ protected:
 
     /*! cache last requested entry */
     //! @{
-    inline void     _cache_set(T* ptValue, K* ptKey) {m_ptValueCache = ptValue; m_ptKeyCache =  ptKey;}
-    inline void     _cache_clear()                   {m_ptValueCache = NULL;    m_ptKeyCache =  NULL;}
-    inline coreBool _cache_try(const I& tKey)const   {return (m_ptKeyCache && (*m_ptKeyCache == tKey)) ? true : false;}
+    inline void     _cache_set(const coreUintW iIndex) {m_iCacheIndex = iIndex;}
+    inline void     _cache_clear()                     {m_iCacheIndex = CORE_LOOKUP_INVALID;}
+    inline coreBool _cache_try(const I& tKey)const     {return ((m_iCacheIndex != CORE_LOOKUP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey)) ? true : false;}
     //! @}
 
     /*! lookup entry by key */
@@ -245,26 +249,23 @@ public:
 // ****************************************************************
 /* constructor */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen()noexcept
-: m_atValueList  {}
-, m_atKeyList    {}
-, m_ptValueCache (NULL)
-, m_ptKeyCache   (NULL)
+: m_atValueList {}
+, m_atKeyList   {}
+, m_iCacheIndex (CORE_LOOKUP_INVALID)
 {
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept
-: m_atValueList  (c.m_atValueList)
-, m_atKeyList    (c.m_atKeyList)
-, m_ptValueCache (NULL)
-, m_ptKeyCache   (NULL)
+: m_atValueList (c.m_atValueList)
+, m_atKeyList   (c.m_atKeyList)
+, m_iCacheIndex (c.m_iCacheIndex)
 {
 }
 
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(coreLookupGen<K, I, T>&& m)noexcept
-: m_atValueList  (std::move(m.m_atValueList))
-, m_atKeyList    (std::move(m.m_atKeyList))
-, m_ptValueCache (NULL)
-, m_ptKeyCache   (NULL)
+: m_atValueList (std::move(m.m_atValueList))
+, m_atKeyList   (std::move(m.m_atKeyList))
+, m_iCacheIndex (m.m_iCacheIndex)
 {
 }
 
@@ -273,10 +274,9 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 /* assignment operations */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookupGen<K, I, T>::operator = (coreLookupGen<K, I, T> o)noexcept
 {
-    std::swap(m_atValueList,  o.m_atValueList);
-    std::swap(m_atKeyList,    o.m_atKeyList);
-    std::swap(m_ptValueCache, o.m_ptValueCache);
-    std::swap(m_ptKeyCache,   o.m_ptKeyCache);
+    std::swap(m_atValueList, o.m_atValueList);
+    std::swap(m_atKeyList,   o.m_atKeyList);
+    std::swap(m_iCacheIndex, o.m_iCacheIndex);
     return *this;
 }
 
@@ -286,7 +286,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookup
 template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operator [] (const I& tKey)
 {
     // check for cached entry
-    if(this->_cache_try(tKey)) return (*m_ptValueCache);
+    if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
 
     // lookup entry by key
     auto it = this->_retrieve(tKey);
@@ -297,7 +297,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
         m_atKeyList  .push_back(tKey);
 
         // cache current entry
-        this->_cache_set(&m_atValueList.back(), &m_atKeyList.back());
+        this->_cache_set(m_atValueList.size() - 1u);
         return m_atValueList.back();
     }
 
@@ -310,7 +310,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
 template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at(const I& tKey)
 {
     // check for cached entry
-    if(this->_cache_try(tKey)) return (*m_ptValueCache);
+    if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
 
     // lookup entry by key
     auto it = this->_retrieve(tKey);
@@ -322,7 +322,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at(cons
 template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& tKey)const
 {
     // check for cached entry
-    if(this->_cache_try(tKey)) return (*m_ptValueCache);
+    if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
 
     // lookup entry by key
     auto it = this->_retrieve(tKey);
@@ -343,7 +343,7 @@ template <typename K, typename I, typename T> template <typename... A> void core
     m_atKeyList  .push_back(tKey);
 
     // cache current entry
-    this->_cache_set(&m_atValueList.back(), &m_atKeyList.back());
+    this->_cache_set(m_atValueList.size() - 1u);
 }
 
 
@@ -397,7 +397,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
         if((*it) == tKey)
         {
             // cache current entry
-            this->_cache_set(&(*this->get_value(it)), &(*it));
+            this->_cache_set(it - m_atKeyList.begin());
             return it;
         }
     }
@@ -431,7 +431,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
     if((it != m_atKeyList.end()) && ((*it) == tKey))
     {
         // cache current entry
-        this->_cache_set(&(*this->get_value(it)), &(*it));
+        this->_cache_set(it - m_atKeyList.begin());
         return it;
     }
 

@@ -57,6 +57,12 @@
 
     </Type>
 
+    <Type Name="coreVariant&lt;*&gt;">
+        <DisplayString Condition="m_sTypeName._Mypair._Myval2._Mysize == 0">{{&lt;empty&gt;}}</DisplayString>
+        <DisplayString Condition="m_sTypeName._Mypair._Myval2._Myres &lt;  m_sTypeName._Mypair._Myval2._BUF_SIZE">{{{m_sTypeName._Mypair._Myval2._Bx._Buf,na}}}</DisplayString>
+        <DisplayString Condition="m_sTypeName._Mypair._Myval2._Myres &gt;= m_sTypeName._Mypair._Myval2._BUF_SIZE">{{{m_sTypeName._Mypair._Myval2._Bx._Ptr,na}}}</DisplayString>
+    </Type>
+
     <Type Name="coreVector2">
         <DisplayString>{{x={x} y={y}}}</DisplayString>
         <Expand>

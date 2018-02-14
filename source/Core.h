@@ -12,7 +12,7 @@
 //*------------------------------------------------------------------------------*//
 //| Core Engine v0.0.9a (http://www.maus-games.at)                               |//
 //*------------------------------------------------------------------------------*//
-//| Copyright (c) 2013-2017 Martin Mauersics                                     |//
+//| Copyright (c) 2013-2018 Martin Mauersics                                     |//
 //|                                                                              |//
 //| This software is provided 'as-is', without any express or implied            |//
 //| warranty. In no event will the authors be held liable for any damages        |//
@@ -59,7 +59,6 @@
 // TODO: #pragma warning(default : 4242 4244 4365) // loss of precision
 // TODO: #pragma warning(default : 4820)           // byte padding
 // TODO: unify const void* and const coreByte*
-// TODO: #define FORCE_CONSTEXPR(...) [&](){constexpr auto A = __VA_ARGS__; return A;}() #define HS(...) FORCE_CONSTEXPR(coreHashString(__VA_ARGS__))
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -314,7 +313,7 @@
 #define STRING(a)            __STRING(a)
 #define __CONCAT(a,b)        a ## b
 #define CONCAT(a,b)          __CONCAT(a, b)
-#define DEFINED(a)           (!coreData::StrCmpConst(STRING(a), #a))
+#define DEFINED(a)           (FORCE_COMPILE_TIME(!coreData::StrCmpConst(STRING(a), #a)))
 
 #define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
@@ -441,32 +440,37 @@ using coreDouble = double;
 // user-defined literals
 constexpr coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
 
-// override string comparison operator (faster but insecure)
+// override string comparison operator
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
 inline coreBool operator != (const std::string& a, const coreChar*    b) {return  std::strcmp(a.c_str(), b);}
 inline coreBool operator == (const coreChar*    a, const std::string& b) {return !std::strcmp(a,         b.c_str());}
 inline coreBool operator != (const coreChar*    a, const std::string& b) {return  std::strcmp(a,         b.c_str());}
-inline coreBool operator == (const std::string& a, const std::string& b) {return !std::strcmp(a.c_str(), b.c_str());}
-inline coreBool operator != (const std::string& a, const std::string& b) {return  std::strcmp(a.c_str(), b.c_str());}
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
 
 // retrieve compile-time function and lambda properties
-template <typename T>                            struct INTERFACE function_traits final               : public function_traits<decltype(&std::remove_reference<T>::type::operator())> {};
-template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)const> : public function_traits<R(A...)>                                               {};
-template <typename R, typename C, typename... A> struct INTERFACE function_traits<R(C::*)(A...)>      : public function_traits<R(A...)>                                               {};
-template <typename R,             typename... A> struct INTERFACE function_traits<R   (*)(A...)>      : public function_traits<R(A...)>                                               {};
-template <typename R,             typename... A> struct INTERFACE function_traits<R      (A...)>
+template <typename T>                            struct INTERFACE coreFunctionTraits final               : public coreFunctionTraits<decltype(&std::remove_reference<T>::type::operator())> {};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const> : public coreFunctionTraits<R(A...)>                                               {};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)>      : public coreFunctionTraits<R(A...)>                                               {};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)>      : public coreFunctionTraits<R(A...)>                                               {};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)>
 {
-    using return_type = R;                                                                                      //!< return type
-    template <coreUintW iIndex> using arg_type = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   //!< argument types
-    static const coreUintW arity = sizeof...(A);                                                                //!< number of arguments
+    using uReturnType = R;                                                                                      //!< return type
+    template <coreUintW iIndex> using uArgType = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   //!< argument types
+    enum : coreUintW {iArity = sizeof...(A)};                                                                   //!< number of arguments
 };
-#define TRAIT_RETURN_TYPE(f) function_traits<f>::return_type
-#define TRAIT_ARG_TYPE(f,i)  function_traits<f>::template arg_type<i>
-#define TRAIT_ARITY(f)       function_traits<f>::arity
+#define TRAIT_RETURN_TYPE(f) coreFunctionTraits<f>::uReturnType
+#define TRAIT_ARG_TYPE(f,i)  coreFunctionTraits<f>::template uArgType<i>
+#define TRAIT_ARITY(f)       coreFunctionTraits<f>::iArity
+
+// safely force compile-time evaluation (without creating symbols)
+template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
+{
+    enum : T {tResult = tExpression};
+};
+#define FORCE_COMPILE_TIME(x) (coreForceCompileTime<decltype(x), x>::tResult)
 
 // directly call constructor and destructor on pointer
 #define CALL_CONSTRUCTOR(p,...) {using __t = std::remove_reference<decltype(*(p))>::type; new(p) __t(__VA_ARGS__);}
@@ -687,12 +691,13 @@ private:
 #endif
 #include "additional/coreCPUID.h"
 #include "utilities/math/coreMath.h"
-#include "utilities/data/coreData.h"
 #include "utilities/data/hash/CRC32.h"
 #include "utilities/data/hash/FNV1.h"
 #include "utilities/data/hash/Murmur2.h"
+#include "utilities/data/coreData.h"
 #include "utilities/data/coreProtect.h"
 #include "utilities/data/coreHashString.h"
+#include "utilities/data/coreVariant.h"
 #include "utilities/data/coreArray.h"
 #include "utilities/data/coreSet.h"
 #include "utilities/data/coreLookup.h"

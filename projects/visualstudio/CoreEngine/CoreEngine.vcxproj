@@ -303,6 +303,7 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreProtect.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreSet.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreVariant.h" />
     <ClInclude Include="..\..\..\source\utilities\data\hash\CRC32.h" />
     <ClInclude Include="..\..\..\source\utilities\data\hash\FNV1.h" />
     <ClInclude Include="..\..\..\source\utilities\data\hash\Murmur2.h" />

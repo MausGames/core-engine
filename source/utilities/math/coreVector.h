@@ -137,9 +137,11 @@ public:
     constexpr        coreUint32  PackUnorm2x16  ()const;
     constexpr        coreUint32  PackSnorm2x16  ()const;
     inline           coreUint32  PackFloat2x16  ()const;
+    inline           coreUint64  PackFloat2x32  ()const;
     static constexpr coreVector2 UnpackUnorm2x16(const coreUint32 iNumber);
     static constexpr coreVector2 UnpackSnorm2x16(const coreUint32 iNumber);
     static inline    coreVector2 UnpackFloat2x16(const coreUint32 iNumber);
+    static inline    coreVector2 UnpackFloat2x32(const coreUint64 iNumber);
     //! @}
 };
 
@@ -555,6 +557,15 @@ inline coreUint32 coreVector2::PackFloat2x16()const
 
 
 // ****************************************************************
+/* safely convert vector into bit-representation */
+inline coreUint64 coreVector2::PackFloat2x32()const
+{
+    coreUint64 iOutput; std::memcpy(&iOutput, arr, sizeof(coreUint64));
+    return iOutput;
+}
+
+
+// ****************************************************************
 /* uncompress YX packed uint into 0.0 to 1.0 vector */
 constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32 iNumber)
 {
@@ -581,6 +592,15 @@ inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 {
     return coreVector2(coreMath::Float16To32( iNumber         & 0xFFFFu),
                        coreMath::Float16To32((iNumber >> 16u) & 0xFFFFu));
+}
+
+
+// ****************************************************************
+/* safely convert bit-representation into vector */
+inline coreVector2 coreVector2::UnpackFloat2x32(const coreUint64 iNumber)
+{
+    coreVector2 vOutput; std::memcpy(&vOutput, &iNumber, sizeof(coreVector2));
+    return vOutput;
 }
 
 

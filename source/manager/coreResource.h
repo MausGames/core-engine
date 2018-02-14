@@ -82,10 +82,10 @@ class coreResourceHandle final
 {
 private:
     coreResource* m_pResource;   //!< handled resource object
-    coreFile* m_pFile;           //!< pointer to resource file
+    coreFile*     m_pFile;       //!< pointer to resource file
 
     std::string m_sName;         //!< identifier of this resource handle
-    coreBool m_bAutomatic;       //!< updated automatically by the resource manager
+    coreBool    m_bAutomatic;    //!< updated automatically by the resource manager
 
     coreStatus m_iStatus;        //!< current resource status
     coreInt32  m_iRefCount;      //!< simple reference-counter
@@ -213,7 +213,7 @@ private:
     coreLookupStr<coreResourceHandle*> m_apHandle;                    //!< resource handles
 
     coreLookupStr<coreArchive*> m_apArchive;                          //!< archives with resource files
-    coreLookupStr<coreFile*> m_apDirectFile;                          //!< direct resource files
+    coreLookupStr<coreFile*>    m_apDirectFile;                       //!< direct resource files
 
     coreLookup<coreResourceHandle*, coreResourceHandle*> m_apProxy;   //!< resource proxies pointing to foreign handles <proxy, foreign>
 
@@ -221,7 +221,7 @@ private:
 
     SDL_SpinLock m_iResourceLock;                                     //!< spinlock to prevent invalid resource handle access
     SDL_SpinLock m_iFileLock;                                         //!< spinlock to prevent invalid resource file access
-    coreBool m_bActive;                                               //!< current management status
+    coreBool     m_bActive;                                           //!< current management status
 
 
 private:

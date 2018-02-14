@@ -98,6 +98,12 @@ public:
     static coreStatus DecompressDeflate(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize);
     //! @}
 
+    /*! get compile-time type information */
+    //! @{
+    template <typename T> static const     coreChar*  TypeName();
+    template <typename T> static constexpr coreUint32 TypeId();
+    //! @}
+
     /*! operate with string data */
     //! @{
     template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   //!< [](const coreChar  cChar)   -> coreChar
@@ -151,6 +157,55 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 
     ASSERT((-1 < iReturn) && (iReturn < coreInt32(CORE_DATA_STRING_LEN)))
     return pcString;
+}
+
+
+// ****************************************************************
+/* get compile-time type name (with run-time extraction) */
+template <typename T> const coreChar* coreData::TypeName()
+{
+    coreChar* pcString = coreData::__NextString();
+
+#if defined(_CORE_MSVC_)
+
+    // analyze function signature (const char* __cdecl coreData::TypeName<int>(void))
+    const        coreChar* pcBase = __FUNCSIG__;
+    static const coreChar* pcFrom = std::strchr (pcBase, '<') + 1u; if(pcFrom - 1u == NULL) return "";
+    static const coreChar* pcTo   = std::strrchr(pcFrom, '>');      if(pcTo        == NULL) return "";
+
+#elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
+
+    // analyze function signature (const char* coreData::TypeName() [with T = int])
+    const        coreChar* pcBase = __PRETTY_FUNCTION__;
+    static const coreChar* pcFrom = std::strchr (pcBase, '=') + 2u; if(pcFrom - 2u == NULL) return "";
+    static const coreChar* pcTo   = std::strrchr(pcFrom, ']');      if(pcTo        == NULL) return "";
+
+#endif
+
+    // calculate name length
+    static const coreUintW iLen = MIN(P_TO_UI(pcTo - pcFrom), CORE_DATA_STRING_LEN - 1u);
+
+    // extract name from the function signature
+    std::strncpy(pcString, pcFrom, iLen);
+    pcString[iLen] = '\0';
+
+    return pcString;
+}
+
+
+// ****************************************************************
+/* get compile-time type identifier (not determinstic) */
+template <typename T> constexpr coreUint32 coreData::TypeId()
+{
+#if defined(_CORE_MSVC_)
+
+    return FORCE_COMPILE_TIME(coreHashFNV1(__FUNCDNAME__));
+
+#elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
+
+    return FORCE_COMPILE_TIME(coreHashFNV1(__PRETTY_FUNCTION__));
+
+#endif
 }
 
 

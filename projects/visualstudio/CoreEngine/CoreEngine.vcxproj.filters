@@ -328,6 +328,9 @@
       <Filter>utilities\data\hash</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\Core.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreVariant.h">
+      <Filter>utilities\data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\natvis.natvis" />
