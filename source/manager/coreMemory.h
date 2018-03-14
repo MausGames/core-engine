@@ -35,11 +35,13 @@
 #define ALIGNED_NEW(t,c,a)  (r_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
 #define ALIGNED_DELETE(p)   {_aligned_free(p); (p) = NULL;}
 
+#define ZERO_NEW(t,c)       (r_cast<t*>(std::calloc((c), sizeof(t))))
+#define ZERO_DELETE(p)      {std::free(p); (p) = NULL;}
+
 #define STATIC_MEMORY(t,p)  alignas(ALIGNMENT_SSE) static coreByte CONCAT(__m, __LINE__)[sizeof(t)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));
 #define STATIC_NEW(p,...)   {CALL_CONSTRUCTOR(p, __VA_ARGS__)}
 #define STATIC_DELETE(p)    {CALL_DESTRUCTOR(p) std::memset(p, 0, sizeof(*(p)));}
 
-#define ZERO_NEW(t,c)       (r_cast<t*>(std::calloc((c), sizeof(t))))
 #define RESIZE_ARRAY(a,c)   {(a) = r_cast<decltype(a)>(std::realloc((a), (c) * sizeof(*(a))));}
 
 #if !defined(_CORE_WINDOWS_)

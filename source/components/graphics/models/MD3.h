@@ -161,7 +161,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     std::memcpy(&oFile.oHeader, pData, sizeof(md3Header));
 
     // check for correct file type
-    if(std::strncmp(oFile.oHeader.acIdentity, "IDP3", 4u) || ((oFile.oHeader.iVersion != 15) && (oFile.oHeader.iVersion != 16)))
+    if(std::memcmp(oFile.oHeader.acIdentity, "IDP3", 4u) || ((oFile.oHeader.iVersion != 15) && (oFile.oHeader.iVersion != 16)))
         return CORE_INVALID_DATA;
 
     // determine the file version
@@ -296,8 +296,8 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     }
 
     // free required vertex memory
-    SAFE_DELETE_ARRAY(pvOrtho1)
-    SAFE_DELETE_ARRAY(pvOrtho2)
+    ZERO_DELETE(pvOrtho1)
+    ZERO_DELETE(pvOrtho2)
 
     // free model file memory
     for(coreUintW i = 0u, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)

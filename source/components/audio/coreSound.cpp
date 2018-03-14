@@ -51,8 +51,8 @@ coreStatus coreSound::Load(coreFile* pFile)
     std::memcpy(&iSize, pData, 4u); pData += 4u;
 
     // check file format
-    if(!std::strncmp(acID, "RIFF", 4u)) {std::memcpy(acID, pData, 4u); pData += 4u;}
-    if( std::strncmp(acID, "WAVE", 4u))
+    if(!std::memcmp(acID, "RIFF", 4u)) {std::memcpy(acID, pData, 4u); pData += 4u;}
+    if( std::memcmp(acID, "WAVE", 4u))
     {
         Core::Log->Warning("Sound (%s) is not a valid WAVE-file", pFile->GetPath());
         return CORE_INVALID_DATA;
@@ -66,8 +66,8 @@ coreStatus coreSound::Load(coreFile* pFile)
         std::memcpy(acID,   pData, 4u); pData += 4u;
         std::memcpy(&iSize, pData, 4u); pData += 4u;
 
-             if(!std::strncmp(acID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format));}
-        else if(!std::strncmp(acID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize;}
+             if(!std::memcmp(acID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format));}
+        else if(!std::memcmp(acID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize;}
 
         pData += iSize;
     }

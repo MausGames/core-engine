@@ -153,7 +153,7 @@ struct md5File final
         // check for correct file type
         MD5_SCAN(ppcData, "")
         MD5_SCAN(ppcData, "%15s %d", r_cast<coreChar*>(&acIdentifier), &iVersion)
-        if(std::strncmp(acIdentifier, "MD5Version", 10u) || (iVersion != 10)) return;
+        if(std::memcmp(acIdentifier, "MD5Version", 10u) || (iVersion != 10)) return;
 
         // read number of objects
         MD5_SCAN(ppcData, "%*s %*s")
@@ -274,8 +274,8 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     std::memcpy(pOutput->aiIndexData.data(), oMesh.aTriangle.data(), sizeof(coreUint16) * iNumIndices);
 
     // free required vertex memory
-    SAFE_DELETE_ARRAY(pvOrtho1)
-    SAFE_DELETE_ARRAY(pvOrtho2)
+    ZERO_DELETE(pvOrtho1)
+    ZERO_DELETE(pvOrtho2)
 
     return CORE_OK;
 }

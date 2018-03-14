@@ -261,7 +261,7 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
         if((*pcTo) == CORE_LANGUAGE_ASSIGN[0])
         {
             // search for key
-            if(!std::strncmp(pcFrom, pcKey, iKeyLen)) bFound = true;
+            if(!std::memcmp(pcFrom, pcKey, iKeyLen)) bFound = true;
             pcFrom = pcTo + 1u;
         }
         else if((*pcTo) == CORE_LANGUAGE_KEY[0])

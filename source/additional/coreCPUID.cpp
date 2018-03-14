@@ -30,31 +30,39 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
     std::array<coreInt32, 4u> aiPage;
 
     // get highest valid function IDs
-    CORE_CPUID_EX(aiPage.data(), 0, 0)
+    CORE_CPUID_FUNC(aiPage.data(), CORE_CPUID_BASIC, 0)
     const coreUint32 iNum = aiPage[0];
-    CORE_CPUID_EX(aiPage.data(), 0x80000000, 0)
+    CORE_CPUID_FUNC(aiPage.data(), CORE_CPUID_EXTENDED, 0)
     const coreUint32 iNumEx = aiPage[0];
 
+    // reserve some memory
+    if(iNum   > CORE_CPUID_BASIC)    aaiData  .reserve(iNum   + 1u - CORE_CPUID_BASIC);
+    if(iNumEx > CORE_CPUID_EXTENDED) aaiDataEx.reserve(iNumEx + 1u - CORE_CPUID_EXTENDED);
+
     // read all available feature bits
-    for(coreUint32 i = 0u; i <= iNum; ++i)
+    for(coreUint32 i = CORE_CPUID_BASIC; i <= iNum; ++i)
     {
-        CORE_CPUID_EX(aiPage.data(), i, 0)
+        CORE_CPUID_FUNC(aiPage.data(), i, 0)
         aaiData.push_back(aiPage);
     }
-    for(coreUint32 i = 0x80000000u; i <= iNumEx; ++i)
+    for(coreUint32 i = CORE_CPUID_EXTENDED; i <= iNumEx; ++i)
     {
-        CORE_CPUID_EX(aiPage.data(), i, 0)
+        CORE_CPUID_FUNC(aiPage.data(), i, 0)
         aaiDataEx.push_back(aiPage);
     }
 
     // save processor vendor string
-    std::memcpy(acVendor,                        &aaiData[0][1], sizeof(coreInt32));
-    std::memcpy(acVendor + 1u*sizeof(coreInt32), &aaiData[0][3], sizeof(coreInt32));
-    std::memcpy(acVendor + 2u*sizeof(coreInt32), &aaiData[0][2], sizeof(coreInt32));
-    std::memset(acVendor + 3u*sizeof(coreInt32), 0, 1u);
+    if(aaiData[0][1])
+    {
+        std::memcpy(acVendor,                        &aaiData[0][1], sizeof(coreInt32));
+        std::memcpy(acVendor + 1u*sizeof(coreInt32), &aaiData[0][3], sizeof(coreInt32));
+        std::memcpy(acVendor + 2u*sizeof(coreInt32), &aaiData[0][2], sizeof(coreInt32));
+        std::memset(acVendor + 3u*sizeof(coreInt32), 0, 1u);
+    }
+    else std::strcpy(acVendor, "Unknown");
 
     // save processor brand string
-    if(iNumEx >= 0x80000004u)
+    if(iNumEx >= (CORE_CPUID_EXTENDED + 4u))
     {
         std::memcpy(acBrand,                     aaiDataEx[2].data(), sizeof(aiPage));
         std::memcpy(acBrand + 1u*sizeof(aiPage), aaiDataEx[3].data(), sizeof(aiPage));
@@ -68,17 +76,17 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
     else if(!std::strcmp(acVendor, "AuthenticAMD")) bIsAMD   = true;
 
     // save all relevant feature bits
-    if(iNum >= 1u)
+    if(iNum >= (CORE_CPUID_BASIC + 1u))
     {
         i01ECX = aaiData[1][2];
         i01EDX = aaiData[1][3];
     }
-    if(iNum >= 7u)
+    if(iNum >= (CORE_CPUID_BASIC + 7u))
     {
         i07EBX = aaiData[7][1];
         i07ECX = aaiData[7][2];
     }
-    if(iNumEx >= 0x80000001u)
+    if(iNumEx >= (CORE_CPUID_EXTENDED + 1u))
     {
         i81ECX = aaiDataEx[1][2];
         i81EDX = aaiDataEx[1][3];

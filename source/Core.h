@@ -152,7 +152,7 @@
     #define FORCE_INLINE     __forceinline          //!< always inline the function (when optimizations are enabled)
     #define DONT_INLINE      __declspec(noinline)   //!< never inline the function
     #define RETURN_RESTRICT  __declspec(restrict)   //!< returned object will not be aliased with another pointer
-    #define RETURN_NONNULL                          //!< returned pointer will not be null
+    #define RETURN_NONNULL   _Ret_notnull_          //!< returned pointer will not be null
     #define RETURN_NODISCARD [[nodiscard]]          //!< returned value should not be discarded (but can be cast to void)
     #define FUNC_PURE                               //!< function does not modify anything (or reads volatile global state), and returns a value
     #define FUNC_CONST       __declspec(noalias)    //!< function only reads parameters (without indirections), and returns a value
@@ -517,7 +517,7 @@ enum coreStatus : coreInt8
     FORCE_INLINE void coreAtomicLock(SDL_SpinLock* OUTPUT piLock)
     {
     #if defined(_CORE_WINDOWS_)
-        while(InterlockedExchange(r_cast<long*>(piLock), 1))
+        while(_InterlockedExchange(r_cast<long*>(piLock), 1))
     #else
         while(!SDL_AtomicTryLock(piLock))
     #endif

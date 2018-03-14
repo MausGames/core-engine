@@ -209,7 +209,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
         for(coreUintW i = 0u, ie = m_pComment->comments; i < ie; ++i)
         {
             // check comment and extract meta-information
-            if(!std::strncmp(pcName, m_pComment->user_comments[i], iLen))
+            if(!std::memcmp(pcName, m_pComment->user_comments[i], iLen))
                 return m_pComment->user_comments[i] + iLen + 1;
         }
     }

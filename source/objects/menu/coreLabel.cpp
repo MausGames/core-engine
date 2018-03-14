@@ -257,5 +257,5 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     // delete text surface data
     SDL_FreeSurface(pSolid);
     SDL_FreeSurface(pOutline);
-    if(pOutline) SAFE_DELETE_ARRAY(pData)
+    if(pOutline) ZERO_DELETE(pData)
 }

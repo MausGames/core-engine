@@ -130,12 +130,12 @@ const coreChar* coreData::SystemName()
     case  50u: pcSubString = "2000";  break;
 
     default:
-        pcSubString = PRINT("v%d.%d", iMajor, iMinor);
+        pcSubString = PRINT("v%u.%u", iMajor, iMinor);
         break;
     }
 
     // add service pack string when available
-    const coreChar* pcPackString = iPack ? PRINT(" (Service Pack %d)", iPack) : "";
+    const coreChar* pcPackString = iPack ? PRINT(" (Service Pack %u)", iPack) : "";
 
     // return full operating system name
     return PRINT("Windows %s%s", pcSubString, pcPackString);
@@ -431,8 +431,7 @@ void coreData::CreateFolder(const coreChar* pcPath)
     coreChar* pcCursor = pcString;
 
     // make local copy
-    std::strncpy(pcString, pcPath, CORE_DATA_STRING_LEN);
-    ASSERT(std::strlen(pcPath) < CORE_DATA_STRING_LEN)
+    coreData::StrCopy(pcPath, pcString, CORE_DATA_STRING_LEN);
 
     // loop through all sub-folders
     for(; (*pcCursor) != '\0'; ++pcCursor)
@@ -476,8 +475,10 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm*
 {
     coreChar* pcString = coreData::__NextString();
 
-    // assemble string
-    WARN_IF(!std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pTimeMap)) return pcFormat;
+    // read arguments and assemble string
+    const coreUintW iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pTimeMap);
+    WARN_IF(!iReturn) return pcFormat;
+
     return pcString;
 }
 
@@ -618,6 +619,22 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
 
     const coreChar* pcDot = std::strchr(pcInput, '.');
     return pcDot ? (I_TO_F((pcDot - 1u)[0] - '0') + 0.1f * I_TO_F((pcDot + 1u)[0] - '0')) : 0.0f;
+}
+
+
+// ****************************************************************
+/* copy string into another buffer */
+void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iSize)
+{
+    ASSERT(pcInput && pcOutput)
+
+    // calculate string length
+    const coreUintW iLen = MIN(std::strlen(pcInput), iSize - 1u);
+    WARN_IF(std::strlen(pcInput) >= iSize) {}
+
+    // copy string with guaranteed null-termination
+    std::memcpy(pcOutput, pcInput, iLen);
+    pcOutput[iLen] = '\0';
 }
 
 

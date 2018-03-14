@@ -117,6 +117,7 @@ public:
     static const coreChar*        StrFilename (const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
+    static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iSize);
     static void                   StrTrim     (std::string* OUTPUT psInput);
     static void                   StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
     //! @}
@@ -142,20 +143,10 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 {
     coreChar* pcString = coreData::__NextString();
 
-#if defined(_CORE_WINDOWS_)
-
-    // assemble string without guaranteed null-termination
-    const coreInt32 iReturn = _snprintf(pcString, CORE_DATA_STRING_LEN - 1u, pcFormat, std::forward<A>(vArgs)...);
-    pcString[CORE_DATA_STRING_LEN - 1u] = '\0';
-
-#else
-
-    // assemble string
+    // read arguments and assemble string
     const coreInt32 iReturn = std::snprintf(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
+    ASSERT((iReturn > -1) && (iReturn < coreInt32(CORE_DATA_STRING_LEN)))
 
-#endif
-
-    ASSERT((-1 < iReturn) && (iReturn < coreInt32(CORE_DATA_STRING_LEN)))
     return pcString;
 }
 
@@ -186,7 +177,7 @@ template <typename T> const coreChar* coreData::TypeName()
     static const coreUintW iLen = MIN(P_TO_UI(pcTo - pcFrom), CORE_DATA_STRING_LEN - 1u);
 
     // extract name from the function signature
-    std::strncpy(pcString, pcFrom, iLen);
+    std::memcpy(pcString, pcFrom, iLen);
     pcString[iLen] = '\0';
 
     return pcString;
@@ -194,7 +185,7 @@ template <typename T> const coreChar* coreData::TypeName()
 
 
 // ****************************************************************
-/* get compile-time type identifier (not determinstic) */
+/* get compile-time type identifier (not deterministic) */
 template <typename T> constexpr coreUint32 coreData::TypeId()
 {
 #if defined(_CORE_MSVC_)
@@ -236,8 +227,7 @@ template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, co
     coreChar* pcString = coreData::__NextString();
 
     // make local copy
-    std::strncpy(pcString, pcInput, CORE_DATA_STRING_LEN);
-    ASSERT(std::strlen(pcInput) < CORE_DATA_STRING_LEN)
+    coreData::StrCopy(pcInput, pcString, CORE_DATA_STRING_LEN);
 
     // tokenize string and forward to function
     const coreChar* pcToken = std::strtok(pcString, pcDelimiter);

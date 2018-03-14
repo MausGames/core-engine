@@ -26,6 +26,7 @@
 #define CORE_GL_ARB_compute_shader                  false
 #define CORE_GL_ARB_copy_buffer                     false
 #define CORE_GL_ARB_copy_image                      false
+#define CORE_GL_ARB_depth_buffer_float              false
 #define CORE_GL_ARB_direct_state_access             false
 #define CORE_GL_ARB_geometry_shader4                false
 #define CORE_GL_ARB_half_float_vertex               false   // different token value in OES_vertex_half_float
@@ -35,6 +36,7 @@
 #define CORE_GL_ARB_sample_shading                  false
 #define CORE_GL_ARB_sync                            false
 #define CORE_GL_ARB_tessellation_shader             false
+#define CORE_GL_ARB_texture_float                   false
 #define CORE_GL_ARB_texture_rg                      false
 #define CORE_GL_ARB_timer_query                     false
 #define CORE_GL_ARB_uniform_buffer_object           false   // controls shader-handling
@@ -42,6 +44,7 @@
 #define CORE_GL_EXT_direct_state_access             false
 #define CORE_GL_EXT_framebuffer_object              true
 #define CORE_GL_EXT_gpu_shader4                     false
+#define CORE_GL_EXT_packed_float                    false
 #define CORE_GL_EXT_shader_image_load_store         false
 #define CORE_GL_EXT_texture_compression_rgtc        false
 #define CORE_GL_KHR_debug                           false

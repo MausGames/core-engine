@@ -65,8 +65,8 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // import model file
     coreImport oImport;
-         if(!std::strncmp(pcExtension, "md5", 3u)) coreImportMD5(pFile->GetData(), &oImport);
-    else if(!std::strncmp(pcExtension, "md3", 3u)) coreImportMD3(pFile->GetData(), &oImport);
+         if(!std::memcmp(pcExtension, "md5", 3u)) coreImportMD5(pFile->GetData(), &oImport);
+    else if(!std::memcmp(pcExtension, "md3", 3u)) coreImportMD3(pFile->GetData(), &oImport);
     else
     {
         Core::Log->Warning("Model (%s) could not be identified (valid extensions: md5[mesh], md3)", pFile->GetPath());

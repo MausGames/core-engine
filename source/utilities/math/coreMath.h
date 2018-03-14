@@ -260,7 +260,7 @@ inline coreUint32 coreMath::BitScanFwd(coreUint32 iInput)
 #else
 
     // calculation with other intrinsic
-    return __builtin_ffs(iInput) - 1u;
+    return __builtin_ctz(iInput);
 
 #endif
 }

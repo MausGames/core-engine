@@ -65,7 +65,7 @@ public:
 
     //! get object properties
     //! @{
-    inline const coreChar* GetText   ()const {const coreChar* pcText = PRINT("%s", m_sText.c_str()); c_cast<coreChar*>(pcText)[m_iLength] = '\0'; return pcText;}
+    inline const coreChar* GetText   ()const {return m_sText.c_str();}
     inline const coreChar& GetCursor ()const {return m_cCursor;}
     inline const coreChar& GetReplace()const {return m_cReplace;}
     inline const coreBool& GetInput  ()const {return m_bInput;}
