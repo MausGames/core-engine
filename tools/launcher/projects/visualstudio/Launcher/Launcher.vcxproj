@@ -92,7 +92,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding /Gw %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding /Gw /GA %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MinSpace</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <IntrinsicFunctions>false</IntrinsicFunctions>

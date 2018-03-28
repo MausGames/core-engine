@@ -6,16 +6,17 @@
 //| More information available in the readme file      |//
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
-#define _WIN32_WINNT _WIN32_WINNT_WINXP
-#define  WINVER      _WIN32_WINNT_WINXP
-#define  WIN32_LEAN_AND_MEAN
+#if defined(_WIN32)
 
 #pragma warning(disable : 4100)   // unreferenced formal parameter
 #pragma warning(disable : 4127)   // constant conditional expression
 
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
+#define WINVER       _WIN32_WINNT_WINXP
+#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
 #include <shellapi.h>
-
 #include <string>
 #include <vector>
 
@@ -113,3 +114,6 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
     // start real application
     return (int)ShellExecuteW(NULL, L"open", asFile[0].c_str(), pcCmdLine, NULL, SW_SHOWNORMAL);
 }
+
+
+#endif /* _WIN32 */

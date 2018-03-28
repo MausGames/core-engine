@@ -10,8 +10,8 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <shellapi.h>
-    #include <Psapi.h>
-    #include <VersionHelpers.h>
+    #include <psapi.h>
+    #include <versionhelpers.h>
 #elif defined(_CORE_LINUX_)
     #include <dirent.h>
     #include <sys/utsname.h>
@@ -22,8 +22,8 @@
     #include <sys/system_properties.h>
 #endif
 
-thread_local coreChar  coreData::s_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN] = {{}};
-thread_local coreUintW coreData::s_iCurString                                            = 0u;
+thread_local coreData::coreTempString coreData::s_TempString = {};
+thread_local coreUintW                coreData::s_iCurString = 0u;
 
 
 // ****************************************************************
@@ -67,7 +67,7 @@ coreUint64 coreData::AppMemory()
 /* get full application path */
 const coreChar* coreData::AppPath()
 {
-    UNUSED coreChar* pcString = coreData::__NextString();
+    UNUSED coreChar* pcString = coreData::__NextTempString();
 
 #if defined(_CORE_WINDOWS_)
 
@@ -190,7 +190,7 @@ coreStatus coreData::SetCurDir(const coreChar* pcPath)
 /* get current working directory */
 const coreChar* coreData::GetCurDir()
 {
-    UNUSED coreChar* pcString = coreData::__NextString();
+    UNUSED coreChar* pcString = coreData::__NextTempString();
 
 #if defined(_CORE_WINDOWS_)
 
@@ -427,7 +427,7 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
 /* create folder hierarchy */
 void coreData::CreateFolder(const coreChar* pcPath)
 {
-    coreChar* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextTempString();
     coreChar* pcCursor = pcString;
 
     // make local copy
@@ -473,7 +473,7 @@ void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon,
 /* retrieve date and time as formatted string */
 const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap)
 {
-    coreChar* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextTempString();
 
     // read arguments and assemble string
     const coreUintW iReturn = std::strftime(pcString, CORE_DATA_STRING_LEN, pcFormat, pTimeMap);

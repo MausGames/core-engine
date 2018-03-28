@@ -7,7 +7,7 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
-#include <EGL/egl.h>
+#include <egl/egl.h>
 
 std::string g_sExtensions = "";
 coreContext g_CoreContext = {};

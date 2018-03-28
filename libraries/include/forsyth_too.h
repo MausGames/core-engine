@@ -20,8 +20,10 @@
 #ifndef __FORSYTH_TRIANGLE_REORDER__
 #define __FORSYTH_TRIANGLE_REORDER__
 
+#include <stdint.h>
 #include <assert.h>
 #include <math.h>
+#include <string.h>
 #include <vector>
 #include <limits>
 #include <algorithm>
@@ -32,10 +34,6 @@
 
 namespace Forsyth
 {
-    typedef unsigned int uint;
-    typedef unsigned short uint16;
-    typedef unsigned char byte;
-
     //-----------------------------------------------------------------------------
     //  OptimizeFaces
     //-----------------------------------------------------------------------------
@@ -52,13 +50,13 @@ namespace Forsyth
     //      lruCacheSize
     //          the size of the simulated post-transform cache (max:64)
     //-----------------------------------------------------------------------------
-    void OptimizeFaces(const uint16* indexList, uint indexCount, uint vertexCount, uint16* __restrict newIndexList, uint16 lruCacheSize);
+    void OptimizeFaces(const uint16_t* indexList, uint32_t indexCount, uint32_t vertexCount, uint16_t* __restrict newIndexList, uint16_t lruCacheSize);
 
     namespace
     {
         // code for computing vertex score was taken, as much as possible
         // directly from the original publication.
-        float ComputeVertexCacheScore(int cachePosition, int vertexCacheSize)
+        float ComputeVertexCacheScore(int32_t cachePosition, int32_t vertexCacheSize)
         {
             const float FindVertexScore_CacheDecayPower = 1.5f;
             const float FindVertexScore_LastTriScore = 0.75f;
@@ -92,7 +90,7 @@ namespace Forsyth
             return score;
         }
 
-        float ComputeVertexValenceScore(uint numActiveFaces)
+        float ComputeVertexValenceScore(uint32_t numActiveFaces)
         {
             const float FindVertexScore_ValenceBoostScale = 2.0f;
             const float FindVertexScore_ValenceBoostPower = 0.5f;
@@ -108,23 +106,22 @@ namespace Forsyth
             return score;
         }
 
-
-        const int kMaxVertexCacheSize = 64;
-        const uint kMaxPrecomputedVertexValenceScores = 64;
+        const int32_t kMaxVertexCacheSize = 64;
+        const uint32_t kMaxPrecomputedVertexValenceScores = 64;
         float s_vertexCacheScores[kMaxVertexCacheSize+1][kMaxVertexCacheSize];
         float s_vertexValenceScores[kMaxPrecomputedVertexValenceScores];
 
         bool ComputeVertexScores()
         {
-            for (int cacheSize=0; cacheSize<=kMaxVertexCacheSize; ++cacheSize)
+            for (int32_t cacheSize=0; cacheSize<=kMaxVertexCacheSize; ++cacheSize)
             {
-                for (int cachePos=0; cachePos<cacheSize; ++cachePos)
+                for (int32_t cachePos=0; cachePos<cacheSize; ++cachePos)
                 {
                     s_vertexCacheScores[cacheSize][cachePos] = ComputeVertexCacheScore(cachePos, cacheSize);
                 }
             }
 
-            for (uint valence=0; valence<kMaxPrecomputedVertexValenceScores; ++valence)
+            for (uint32_t valence=0; valence<kMaxPrecomputedVertexValenceScores; ++valence)
             {
                 s_vertexValenceScores[valence] = ComputeVertexValenceScore(valence);
             }
@@ -133,7 +130,7 @@ namespace Forsyth
         }
         bool s_vertexScoresComputed = ComputeVertexScores();
 
-        float FindVertexScore(uint numActiveFaces, uint cachePosition, uint vertexCacheSize)
+        float FindVertexScore(uint32_t numActiveFaces, uint32_t cachePosition, uint32_t vertexCacheSize)
         {
             assert(s_vertexScoresComputed);
 
@@ -163,37 +160,37 @@ namespace Forsyth
 
         struct OptimizeVertexData
         {
-            float   score;
-            uint    activeFaceListStart;
-            uint    activeFaceListSize;
-            uint16  cachePos0;
-            uint16  cachePos1;
-            OptimizeVertexData() : score(0.f), activeFaceListStart(0), activeFaceListSize(0), cachePos0(0), cachePos1(0) { }
+            float score;
+            uint32_t activeFaceListStart;
+            uint32_t activeFaceListSize;
+            uint16_t cachePos0;
+            uint16_t cachePos1;
         };
     }
 
-    void OptimizeFaces(const uint16* indexList, uint indexCount, uint vertexCount, uint16* __restrict newIndexList, uint16 lruCacheSize)
+    void OptimizeFaces(const uint16_t* indexList, uint32_t indexCount, uint32_t vertexCount, uint16_t* __restrict newIndexList, uint16_t lruCacheSize)
     {
         std::vector<OptimizeVertexData> vertexDataList;
         vertexDataList.resize(vertexCount);
+        memset(vertexDataList.data(), 0, sizeof(OptimizeVertexData) * vertexCount);
 
         // compute face count per vertex
-        for (uint i=0; i<indexCount; ++i)
+        for (uint32_t i=0; i<indexCount; ++i)
         {
-            uint16 index = indexList[i];
+            uint16_t index = indexList[i];
             assert(index < vertexCount);
             OptimizeVertexData& vertexData = vertexDataList[index];
             vertexData.activeFaceListSize++;
         }
 
-        std::vector<uint> activeFaceList;
+        std::vector<uint32_t> activeFaceList;
 
-        const uint16 kEvictedCacheIndex = std::numeric_limits<uint16>::max();
+        const uint16_t kEvictedCacheIndex = std::numeric_limits<uint16_t>::max();
 
         {
             // allocate face list per vertex
-            uint curActiveFaceListPos = 0;
-            for (uint i=0; i<vertexCount; ++i)
+            uint32_t curActiveFaceListPos = 0;
+            for (uint32_t i=0; i<vertexCount; ++i)
             {
                 OptimizeVertexData& vertexData = vertexDataList[i];
                 vertexData.cachePos0 = kEvictedCacheIndex;
@@ -203,49 +200,49 @@ namespace Forsyth
                 vertexData.score = FindVertexScore(vertexData.activeFaceListSize, vertexData.cachePos0, lruCacheSize);
                 vertexData.activeFaceListSize = 0;
             }
-            activeFaceList.resize(curActiveFaceListPos   +1u);  // # seems to overflow always for one position, only in score-calculation in the find-range though
+            activeFaceList.resize(curActiveFaceListPos);
         }
 
         // fill out face list per vertex
-        for (uint i=0; i<indexCount; i+=3)
+        for (uint32_t i=0; i<indexCount; i+=3)
         {
-            for (uint j=0; j<3; ++j)
+            for (uint32_t j=0; j<3; ++j)
             {
-                uint16 index = indexList[i+j];
+                uint16_t index = indexList[i+j];
                 OptimizeVertexData& vertexData = vertexDataList[index];
                 activeFaceList[vertexData.activeFaceListStart + vertexData.activeFaceListSize] = i;
                 vertexData.activeFaceListSize++;
             }
         }
 
-        std::vector<byte> processedFaceList;
+        std::vector<uint8_t> processedFaceList;
         processedFaceList.resize(indexCount);
 
-        uint16 vertexCacheBuffer[(kMaxVertexCacheSize+3)*2];
-        uint16* cache0 = vertexCacheBuffer;
-        uint16* cache1 = vertexCacheBuffer+(kMaxVertexCacheSize+3);
-        uint16 entriesInCache0 = 0;
+        uint16_t vertexCacheBuffer[(kMaxVertexCacheSize+3)*2];
+        uint16_t* cache0 = vertexCacheBuffer;
+        uint16_t* cache1 = vertexCacheBuffer+(kMaxVertexCacheSize+3);
+        uint16_t entriesInCache0 = 0;
 
-        uint bestFace = 0;
+        uint32_t bestFace = 0;
         float bestScore = -1.f;
 
         const float maxValenceScore = FindVertexScore(1, kEvictedCacheIndex, lruCacheSize) * 3.f;
 
-        for (uint i = 0; i < indexCount; i += 3)
+        for (uint32_t i = 0; i < indexCount; i += 3)
         {
             if (bestScore < 0.f)
             {
                 // no verts in the cache are used by any unprocessed faces so
                 // search all unprocessed faces for a new starting point
-                for (uint j = 0; j < indexCount; j += 3)
+                for (uint32_t j = 0; j < indexCount; j += 3)
                 {
                     if (processedFaceList[j] == 0)
                     {
-                        uint face = j;
+                        uint32_t face = j;
                         float faceScore = 0.f;
-                        for (uint k=0; k<3; ++k)
+                        for (uint32_t k=0; k<3; ++k)
                         {
-                            uint16 index = indexList[face+k];
+                            uint16_t index = indexList[face+k];
                             OptimizeVertexData& vertexData = vertexDataList[index];
                             assert(vertexData.activeFaceListSize > 0);
                             assert(vertexData.cachePos0 >= lruCacheSize);
@@ -269,12 +266,12 @@ namespace Forsyth
             }
 
             processedFaceList[bestFace] = 1;
-            uint16 entriesInCache1 = 0;
+            uint16_t entriesInCache1 = 0;
 
             // add bestFace to LRU cache and to newIndexList
-            for (uint v = 0; v < 3; ++v)
+            for (uint32_t v = 0; v < 3; ++v)
             {
-                uint16 index = indexList[bestFace+v];
+                uint16_t index = indexList[bestFace+v];
                 newIndexList[i+v] = index;
 
                 OptimizeVertexData& vertexData = vertexDataList[index];
@@ -292,24 +289,21 @@ namespace Forsyth
                 }
 
                 assert(vertexData.activeFaceListSize > 0);
-                uint* begin = &activeFaceList[vertexData.activeFaceListStart];
-                uint* end = &activeFaceList[vertexData.activeFaceListStart + vertexData.activeFaceListSize]; // # overflow
-                uint* it = std::find(begin, end, bestFace);
+                uint32_t* begin = &activeFaceList[vertexData.activeFaceListStart];
+                uint32_t* end = &activeFaceList[vertexData.activeFaceListStart + vertexData.activeFaceListSize - 1] + 1;
+                uint32_t* it = std::find(begin, end, bestFace);
                 assert(it != end);
 
-                uint temp = *it;
-                *it = *(end-1);
-                *(end-1) = temp;
+                std::swap(*it, *(end-1));
 
                 --vertexData.activeFaceListSize;
                 vertexData.score = FindVertexScore(vertexData.activeFaceListSize, vertexData.cachePos1, lruCacheSize);
-
             }
 
             // move the rest of the old verts in the cache down and compute their new scores
-            for (uint c0 = 0; c0 < entriesInCache0; ++c0)
+            for (uint32_t c0 = 0; c0 < entriesInCache0; ++c0)
             {
-                uint16 index = cache0[c0];
+                uint16_t index = cache0[c0];
                 OptimizeVertexData& vertexData = vertexDataList[index];
 
                 if (vertexData.cachePos1 >= entriesInCache1)
@@ -322,19 +316,19 @@ namespace Forsyth
 
             // find the best scoring triangle in the current cache (including up to 3 that were just evicted)
             bestScore = -1.f;
-            for (uint c1 = 0; c1 < entriesInCache1; ++c1)
+            for (uint32_t c1 = 0; c1 < entriesInCache1; ++c1)
             {
-                uint16 index = cache1[c1];
+                uint16_t index = cache1[c1];
                 OptimizeVertexData& vertexData = vertexDataList[index];
                 vertexData.cachePos0 = vertexData.cachePos1;
                 vertexData.cachePos1 = kEvictedCacheIndex;
-                for (uint j=0; j<vertexData.activeFaceListSize; ++j)
+                for (uint32_t j=0; j<vertexData.activeFaceListSize; ++j)
                 {
-                    uint face = activeFaceList[vertexData.activeFaceListStart+j];
+                    uint32_t face = activeFaceList[vertexData.activeFaceListStart+j];
                     float faceScore = 0.f;
-                    for (uint v=0; v<3; v++)
+                    for (uint32_t v=0; v<3; v++)
                     {
-                        uint16 faceIndex = indexList[face+v];
+                        uint16_t faceIndex = indexList[face+v];
                         OptimizeVertexData& faceVertexData = vertexDataList[faceIndex];
                         faceScore += faceVertexData.score;
                     }

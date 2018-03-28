@@ -8,9 +8,8 @@
 //////////////////////////////////////////////////////////
 #if defined(__ANDROID__)
 
-#include <SDL2/SDL_config.h>
-#include <SDL2/SDL_main.h>
 #include <jni.h>
+#include <sdl2/sdl_main.h>
 
 
 // ****************************************************************
@@ -37,8 +36,8 @@ void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* pEnv, jclass pCls, jobje
     SDL_SetMainReady();
 
     // run the application
-    char* argv[2] = {SDL_strdup("CoreApp"), NULL};
-    SDL_main(1, argv);
+    char* argv[] = {SDL_strdup("CoreApp"), NULL};
+    SDL_main(sizeof(argv) / sizeof(argv[0]) - 1, argv);
 }
 
 

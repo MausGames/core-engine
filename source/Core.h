@@ -84,7 +84,7 @@
 
 // operating system
 #if defined(__APPLE__)
-    #include <TargetConditionals.h>
+    #include <targetconditionals.h>
 #endif
 #if defined(_WIN32)
     #define _CORE_WINDOWS_ (1)
@@ -239,16 +239,16 @@
 #define _ALLOW_KEYWORD_MACROS
 #define _ALLOW_RTCc_IN_STL
 #define _CRT_SECURE_NO_WARNINGS
-#define  WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #if defined(_CORE_MINGW_)
     #undef __STRICT_ANSI__
 #endif
 #if defined(_CORE_WINXP_)
     #define _WIN32_WINNT _WIN32_WINNT_WINXP
-    #define  WINVER      _WIN32_WINNT_WINXP
+    #define WINVER       _WIN32_WINNT_WINXP
 #else
     #define _WIN32_WINNT _WIN32_WINNT_WIN7
-    #define  WINVER      _WIN32_WINNT_WIN7
+    #define WINVER       _WIN32_WINNT_WIN7
 #endif
 
 #if defined(_CORE_WINDOWS_)
@@ -286,20 +286,20 @@
 #define ZLIB_CONST
 #define ZLIB_DLL
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include <sdl2/sdl.h>
+#include <sdl2/sdl_ttf.h>
+#include <sdl2/sdl_image.h>
 #if defined(_CORE_GLES_)
-    #include <GLES2/gl2.h>
+    #include <gles2/gl2.h>
 #else
-    #include <GL/glew.h>
+    #include <gl/glew.h>
 #endif
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <al/al.h>
+#include <al/alc.h>
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <zlib/zlib.h>
-#include <SI/SimpleIni.h>
+#include <si/simpleini.h>
 
 
 // ****************************************************************

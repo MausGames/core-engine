@@ -13,8 +13,8 @@
 
 // ****************************************************************
 /* data definitions */
-#define CORE_DATA_STRING_NUM (32u)    //!< number of return-strings
-#define CORE_DATA_STRING_LEN (256u)   //!< length of each return-string
+#define CORE_DATA_STRING_NUM (32u)    //!< number of temp-strings
+#define CORE_DATA_STRING_LEN (256u)   //!< length of each temp-string
 
 #if defined(_CORE_WINDOWS_)
     #define CORE_DATA_SLASH "\\"      //!< default path-delimiter of the operating system (as string)
@@ -38,8 +38,17 @@
 class INTERFACE coreData final
 {
 private:
-    static thread_local coreChar  s_aacString[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   //!< pre-allocated return-strings
-    static thread_local coreUintW s_iCurString;                                              //!< current return-string
+    /*! temp-string structure */
+    struct coreTempString final
+    {
+        coreChar* pcPointer = coreMath::CeilAlignPtr(acData, ALIGNMENT_CACHE);             //!< manually aligned pointer (auto-aligning thread-local data is not supported by the Windows 7 PE-loader)
+        coreChar  acData[CORE_DATA_STRING_NUM * CORE_DATA_STRING_LEN + ALIGNMENT_CACHE];   //!< temp-string buffer
+    };
+
+
+private:
+    static thread_local coreTempString s_TempString;   //!< manually aligned temp-string buffer
+    static thread_local coreUintW      s_iCurString;   //!< current temp-string
 
 
 public:
@@ -130,9 +139,9 @@ public:
 
 
 private:
-    /*! access next return-string */
+    /*! access next temp-string */
     //! @{
-    static inline RETURN_RESTRICT coreChar* __NextString() {if(++s_iCurString >= CORE_DATA_STRING_NUM) s_iCurString = 0u; return s_aacString[s_iCurString];}
+    static inline RETURN_RESTRICT coreChar* __NextTempString() {if(++s_iCurString >= CORE_DATA_STRING_NUM) s_iCurString = 0u; return &s_TempString.pcPointer[s_iCurString * CORE_DATA_STRING_LEN];}
     //! @}
 };
 
@@ -141,7 +150,7 @@ private:
 /* create formatted string */
 template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const coreChar* pcFormat, A&&... vArgs)
 {
-    coreChar* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextTempString();
 
     // read arguments and assemble string
     const coreInt32 iReturn = std::snprintf(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
@@ -155,7 +164,7 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 /* get compile-time type name (with run-time extraction) */
 template <typename T> const coreChar* coreData::TypeName()
 {
-    coreChar* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextTempString();
 
 #if defined(_CORE_MSVC_)
 
@@ -204,7 +213,7 @@ template <typename T> constexpr coreUint32 coreData::TypeId()
 /* process string with custom sub-function */
 template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInput, F&& nFunction)
 {
-    coreChar* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextTempString();
     coreChar* pcCursor = pcString;
 
     // define max string position
@@ -224,7 +233,7 @@ template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInp
 /* call function for each valid string token */
 template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction)
 {
-    coreChar* pcString = coreData::__NextString();
+    coreChar* pcString = coreData::__NextTempString();
 
     // make local copy
     coreData::StrCopy(pcInput, pcString, CORE_DATA_STRING_LEN);

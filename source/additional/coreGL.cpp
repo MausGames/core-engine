@@ -9,9 +9,9 @@
 #include "Core.h"
 
 #if defined(_CORE_WINDOWS_)
-    #include <GL/wglew.h>
+    #include <gl/wglew.h>
 #elif defined(_CORE_LINUX_)
-    #include <GL/glxew.h>
+    #include <gl/glxew.h>
 #endif
 
 coreBool GLEW_V2_compatibility = false;

@@ -122,13 +122,15 @@ public:
 
     /*! rounding operations */
     //! @{
-    template <coreUintW iByte, typename T> static constexpr T CeilAlign (const T& tInput) {const T  k = tInput - T(1); return k - (k % iByte) + iByte;}
-    template <coreUintW iByte, typename T> static constexpr T FloorAlign(const T& tInput) {const T& k = tInput;        return k - (k % iByte);}
-    template                  <typename T> static constexpr T CeilPot   (const T& tInput) {T k = T(1); while(k <  tInput) k <<= T(1); return k;}
-    template                  <typename T> static constexpr T FloorPot  (const T& tInput) {T k = T(2); while(k <= tInput) k <<= T(1); return k >> T(1);}
-    static inline coreFloat Ceil (const coreFloat fInput)                                 {return std::ceil (fInput);}
-    static inline coreFloat Floor(const coreFloat fInput)                                 {return std::floor(fInput);}
-    static inline coreFloat Round(const coreFloat fInput)                                 {return std::round(fInput);}
+    template <typename T> static constexpr T* CeilAlignPtr (const T* tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return r_cast<T*>(I_TO_P((P_TO_UI(tInput) + k) & ~k));}
+    template <typename T> static constexpr T* FloorAlignPtr(const T* tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return r_cast<T*>(I_TO_P((P_TO_UI(tInput))     & ~k));}
+    template <typename T> static constexpr T  CeilAlign    (const T& tInput, const coreUintW iAlign) {const T  k = tInput - T(1); return k - (k % iAlign) + iAlign;}
+    template <typename T> static constexpr T  FloorAlign   (const T& tInput, const coreUintW iAlign) {const T& k = tInput;        return k - (k % iAlign);}
+    template <typename T> static constexpr T  CeilPot      (const T& tInput)                         {T k = T(1); while(k <  tInput) k <<= T(1); return k;}
+    template <typename T> static constexpr T  FloorPot     (const T& tInput)                         {T k = T(2); while(k <= tInput) k <<= T(1); return k >> T(1);}
+    static inline coreFloat Ceil (const coreFloat fInput)                                            {return std::ceil (fInput);}
+    static inline coreFloat Floor(const coreFloat fInput)                                            {return std::floor(fInput);}
+    static inline coreFloat Round(const coreFloat fInput)                                            {return std::round(fInput);}
     //! @}
 
     /*! bit operations */
