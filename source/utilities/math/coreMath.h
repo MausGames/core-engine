@@ -135,13 +135,13 @@ public:
 
     /*! bit operations */
     //! @{
-    static inline    coreUint32 PopCount     (coreUint32 iInput);
-    static inline    coreUint32 BitScanFwd   (coreUint32 iInput);
-    static inline    coreUint32 BitScanRev   (coreUint32 iInput);
-    static constexpr coreUint8  ReverseBits8 (coreUint8  iInput);
-    static constexpr coreUint16 ReverseBits16(coreUint16 iInput);
-    static constexpr coreUint32 ReverseBits32(coreUint32 iInput);
-    static constexpr coreUint64 ReverseBits64(coreUint64 iInput);
+    static inline coreUint32 PopCount     (coreUint32 iInput);
+    static inline coreUint32 BitScanFwd   (coreUint32 iInput);
+    static inline coreUint32 BitScanRev   (coreUint32 iInput);
+    static inline coreUint8  ReverseBits8 (coreUint8  iInput);
+    static inline coreUint16 ReverseBits16(coreUint16 iInput);
+    static inline coreUint32 ReverseBits32(coreUint32 iInput);
+    static inline coreUint64 ReverseBits64(coreUint64 iInput);
     //! @}
 
     /*! converting operations */
@@ -291,7 +291,7 @@ inline coreUint32 coreMath::BitScanRev(coreUint32 iInput)
 
 // ****************************************************************
 /* reverse bit-order of a 8-bit sequence */
-constexpr coreUint8 coreMath::ReverseBits8(coreUint8 iInput)
+inline coreUint8 coreMath::ReverseBits8(coreUint8 iInput)
 {
 #if defined(_CORE_CLANG_)
 
@@ -312,7 +312,7 @@ constexpr coreUint8 coreMath::ReverseBits8(coreUint8 iInput)
 
 // ****************************************************************
 /* reverse bit-order of a 16-bit sequence */
-constexpr coreUint16 coreMath::ReverseBits16(coreUint16 iInput)
+inline coreUint16 coreMath::ReverseBits16(coreUint16 iInput)
 {
 #if defined(_CORE_CLANG_)
 
@@ -334,7 +334,7 @@ constexpr coreUint16 coreMath::ReverseBits16(coreUint16 iInput)
 
 // ****************************************************************
 /* reverse bit-order of a 32-bit sequence */
-constexpr coreUint32 coreMath::ReverseBits32(coreUint32 iInput)
+inline coreUint32 coreMath::ReverseBits32(coreUint32 iInput)
 {
 #if defined(_CORE_CLANG_)
 
@@ -357,7 +357,7 @@ constexpr coreUint32 coreMath::ReverseBits32(coreUint32 iInput)
 
 // ****************************************************************
 /* reverse bit-order of a 64-bit sequence */
-constexpr coreUint64 coreMath::ReverseBits64(coreUint64 iInput)
+inline coreUint64 coreMath::ReverseBits64(coreUint64 iInput)
 {
 #if defined(_CORE_CLANG_)
 

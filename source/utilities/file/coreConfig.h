@@ -67,7 +67,7 @@ public:
 
     /*! load and save configuration file */
     //! @{
-    coreStatus Load();
+    coreStatus Load(const coreBool bSaveDirty);
     coreStatus Save();
     //! @}
 

@@ -140,7 +140,7 @@ public:
 
     //! use controls from other devices
     //! @{
-    void UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKey iRight, const coreInputKey iUp, const coreInputKey iDown, const coreInputKey iButton1, const coreInputKey iButton2, const coreFloat fSpeed);
+    void UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKey iRight, const coreInputKey iDown, const coreInputKey iUp, const coreInputKey iButton1, const coreInputKey iButton2, const coreFloat fSpeed);
     void UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iButton1, const coreUint8 iButton2, const coreFloat fSpeed);
     void ForwardDpadToStick  (const coreUintW iIndex);
     //! @}
@@ -217,7 +217,7 @@ public:
 
     //! get status of any available button
     //! @{
-    inline const coreBool GetAnyButton(const coreInputType iType)const {return CONTAINS_BIT(m_iAnyButton, iType);}
+    inline coreBool GetAnyButton(const coreInputType iType)const {return CONTAINS_BIT(m_iAnyButton, iType);}
     //! @}
 
     //! clear status of input buttons

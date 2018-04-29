@@ -33,7 +33,7 @@ private:
 
 
 public:
-    coreFont(const coreUint8 iHinting = TTF_HINTING_NORMAL, const coreBool bKerning = true)noexcept;
+    explicit coreFont(const coreUint8 iHinting = TTF_HINTING_NORMAL, const coreBool bKerning = true)noexcept;
     ~coreFont()final;
 
     DISABLE_COPY(coreFont)

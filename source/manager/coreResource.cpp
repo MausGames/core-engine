@@ -70,6 +70,9 @@ coreResourceManager::coreResourceManager()noexcept
 , m_iFileLock     (0)
 , m_bActive       (false)
 {
+    // configure resource thread
+    this->SetExecutions(2u);
+
     // start up the resource manager
     this->Reset(CORE_RESOURCE_RESET_INIT);
 
@@ -84,7 +87,7 @@ coreResourceManager::coreResourceManager()noexcept
 /* destructor */
 coreResourceManager::~coreResourceManager()
 {
-    ASSERT(!m_apRelation.size())
+    ASSERT(m_apRelation.empty())
 
     // shut down the resource manager
     this->Reset(CORE_RESOURCE_RESET_EXIT);
@@ -139,7 +142,7 @@ void coreResourceManager::UpdateResources()
 /* retrieve archive */
 coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 {
-    coreLockRelease oRelease(m_iFileLock);
+    coreLockRelease oRelease(&m_iFileLock);
 
     // check for existing archive
     if(m_apArchive.count(sPath)) return m_apArchive.at(sPath);
@@ -157,7 +160,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 /* retrieve resource file */
 coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 {
-    coreLockRelease oRelease(m_iFileLock);
+    coreLockRelease oRelease(&m_iFileLock);
 
     // try to open direct resource file first
     if(!coreData::FileExists(sPath.GetString()))

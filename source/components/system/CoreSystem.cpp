@@ -17,8 +17,6 @@ CoreSystem::CoreSystem()noexcept
 , m_iDisplayIndex    (Core::Config->GetInt(CORE_CONFIG_SYSTEM_DISPLAY))
 , m_vResolution      (coreVector2(I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_WIDTH)), I_TO_F(Core::Config->GetInt(CORE_CONFIG_SYSTEM_HEIGHT))))
 , m_iFullscreen      (Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN))
-, m_bMinimized       (false)
-, m_bTerminated      (false)
 , m_dTotalTime       (0.0)
 , m_dTotalTimeBefore (0.0)
 , m_fLastTime        (0.0f)
@@ -28,6 +26,10 @@ CoreSystem::CoreSystem()noexcept
 , m_iSkipFrame       (1u)
 , m_dPerfFrequency   (0.0)
 , m_iPerfTime        (0u)
+, m_bWinFocusLost    (false)
+, m_bWinPosChanged   (false)
+, m_bWinSizeChanged  (false)
+, m_bTerminated      (false)
 {
     Core::Log->Header("System Interface");
 
@@ -62,20 +64,24 @@ CoreSystem::CoreSystem()noexcept
     {
         Core::Log->ListStartInfo("Available Displays");
         {
-            // retrieve display
             for(coreUintW i = 0u; i < iNumDisplays; ++i)
             {
                 m_aDisplayData.emplace_back();
                 coreDisplay& oDisplayData = m_aDisplayData.back();
 
-                // retrieve display DDPI
-                coreFloat fDDPI;
-                SDL_GetDisplayDPI(i, &fDDPI, NULL, NULL);
-
                 // retrieve desktop resolution
-                SDL_DisplayMode oDesktop;
+                SDL_DisplayMode oDesktop = {};
                 SDL_GetDesktopDisplayMode(i, &oDesktop);
                 oDisplayData.vDesktopRes = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
+
+                // retrieve work area resolution
+                SDL_Rect oWorkArea = {};
+                SDL_GetDisplayUsableBounds(i, &oWorkArea);
+                oDisplayData.vWorkAreaRes = coreVector2(I_TO_F(oWorkArea.w), I_TO_F(oWorkArea.h));
+
+                // retrieve display DDPI
+                coreFloat fDDPI = 0.0f;
+                SDL_GetDisplayDPI(i, &fDDPI, NULL, NULL);
 
                 // load all available screen resolutions
                 const coreUintW iNumModes = SDL_GetNumDisplayModes(i);
@@ -86,24 +92,23 @@ CoreSystem::CoreSystem()noexcept
                         for(coreUintW j = 0u; j < iNumModes; ++j)
                         {
                             // retrieve resolution
-                            SDL_DisplayMode oMode;
+                            SDL_DisplayMode oMode = {};
                             SDL_GetDisplayMode(i, j, &oMode);
-                            const coreVector2 vMode = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
+                            const coreVector2 vModeRes = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
 
-                            coreUintW k = 0u, ke = oDisplayData.avAvailableRes.size();
-                            for(; k < ke; ++k)
+                            // add new resolution
+                            if(!oDisplayData.avAvailableRes.count(vModeRes))
                             {
-                                // check for already added resolutions
-                                if(oDisplayData.avAvailableRes[k] == vMode)
-                                    break;
-                            }
-                            if(k == ke)
-                            {
-                                // add new resolution
-                                oDisplayData.avAvailableRes.push_back(vMode);
-                                Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vMode == oDisplayData.vDesktopRes) ? " (Desktop)" : "");
+                                oDisplayData.avAvailableRes.push_back(vModeRes);
+                                Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vModeRes == oDisplayData.vDesktopRes) ? " (Desktop)" : "");
                             }
                         }
+
+                        // copy highest resolution
+                        oDisplayData.vMaximumRes = oDisplayData.avAvailableRes.front();
+
+                        // reduce memory consumption
+                        oDisplayData.avAvailableRes.shrink_to_fit();
                     }
                     Core::Log->ListEnd();
                 }
@@ -111,23 +116,24 @@ CoreSystem::CoreSystem()noexcept
             }
         }
         Core::Log->ListEnd();
-
-        // clamp display index and resolution
-        if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
-        const coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
-
-        if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
-        {
-            m_vResolution.x = CLAMP(m_vResolution.x, 0.0f, oPrimary.vDesktopRes.x);
-            m_vResolution.y = CLAMP(m_vResolution.y, 0.0f, oPrimary.vDesktopRes.y);
-        }
-
-        // override screen resolution
-        if(oPrimary.avAvailableRes.size() == 1u) m_vResolution = oPrimary.avAvailableRes.back();
-        if(!m_vResolution.x) m_vResolution.x = oPrimary.vDesktopRes.x;
-        if(!m_vResolution.y) m_vResolution.y = oPrimary.vDesktopRes.y;
     }
     else Core::Log->Warning("Could not get available displays (SDL: %s)", SDL_GetError());
+
+    // sanitize display data
+    if(m_aDisplayData.empty()) m_aDisplayData.emplace_back();
+    FOR_EACH(it, m_aDisplayData)
+    {
+        coreDisplay& oDisplayData = (*it);
+
+        if(oDisplayData.avAvailableRes.empty ()) oDisplayData.avAvailableRes.push_back(m_vResolution);
+        if(oDisplayData.vDesktopRes   .IsNull()) oDisplayData.vDesktopRes  = m_vResolution;
+        if(oDisplayData.vWorkAreaRes  .IsNull()) oDisplayData.vWorkAreaRes = m_vResolution;
+        if(oDisplayData.vMaximumRes   .IsNull()) oDisplayData.vMaximumRes  = m_vResolution;
+    }
+
+    // sanitize display index and screen resolution
+    if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
+    this->SetWindowResolution(m_vResolution);
 
     // configure the OpenGL context
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
@@ -182,11 +188,11 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, 1);
     }
 
-    // configure the SDL window
+    // define window properties
     const coreInt32  iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
     const coreInt32  iSizeX = F_TO_SI(m_vResolution.x);
     const coreInt32  iSizeY = F_TO_SI(m_vResolution.y);
-    const coreUint32 iFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : 0u));
+    const coreUint32 iFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : SDL_WINDOW_RESIZABLE));
 
     // create main window object
     m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
@@ -205,6 +211,9 @@ CoreSystem::CoreSystem()noexcept
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
+
+    // restrict window size
+    SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
 
     // disable screen saver
     SDL_DisableScreenSaver();
@@ -252,17 +261,8 @@ CoreSystem::~CoreSystem()
 // change the title of the window
 void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 {
-#if defined(_CORE_DEBUG_)
-
-    // set the new title (with debug label)
-    SDL_SetWindowTitle(m_pWindow, PRINT("%s (Debug Build)", pcTitle));
-
-#else
-
-    // set the new title
-    SDL_SetWindowTitle(m_pWindow, pcTitle);
-
-#endif
+    // set new title (with additional info)
+    SDL_SetWindowTitle(m_pWindow, PRINT("%s (%.0f x %.0f)", pcTitle, m_vResolution.x, m_vResolution.y));
 }
 
 
@@ -287,11 +287,46 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 
 
 // ****************************************************************
-// update the window event system
+// change the resolution of the window (safely)
+void CoreSystem::SetWindowResolution(const coreVector2& vResolution)
+{
+    const coreDisplay& oCurrent = m_aDisplayData[m_iDisplayIndex];
+
+    // save new resolution
+    m_vResolution = vResolution;
+
+    // override in specific situations
+    if(oCurrent.avAvailableRes.size() == 1u) m_vResolution = oCurrent.avAvailableRes.front();
+    if(m_vResolution.x <= 0.0f) m_vResolution.x = oCurrent.vDesktopRes.x;
+    if(m_vResolution.y <= 0.0f) m_vResolution.y = oCurrent.vDesktopRes.y;
+
+    // clamp to bounds
+    const coreVector2 vMaximum = (m_iFullscreen == 2u ? oCurrent.vMaximumRes : (m_iFullscreen == 1u ? oCurrent.vDesktopRes : (oCurrent.vWorkAreaRes - I_TO_F(CORE_SYSTEM_WINDOW_BORDER))));
+    m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
+    m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
+
+    if(m_pWindow)
+    {
+        // define window properties
+        const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
+        const coreInt32 iSizeX = F_TO_SI(m_vResolution.x);
+        const coreInt32 iSizeY = F_TO_SI(m_vResolution.y);
+
+        // set new size and position
+        SDL_SetWindowSize    (m_pWindow, iSizeX, iSizeY);
+        SDL_SetWindowPosition(m_pWindow, iPos,   iPos);
+    }
+}
+
+
+// ****************************************************************
+// update the event system
 coreBool CoreSystem::__UpdateEvents()
 {
-    // reset minimize status
-    m_bMinimized = false;
+    // reset window states
+    m_bWinFocusLost   = false;
+    m_bWinPosChanged  = false;
+    m_bWinSizeChanged = false;
 
     // process events
     SDL_Event oEvent;
@@ -299,20 +334,35 @@ coreBool CoreSystem::__UpdateEvents()
     {
         switch(oEvent.type)
         {
-        // control window
+        // process window events
         case SDL_WINDOWEVENT:
             switch(oEvent.window.event)
             {
-            // minimize window
+            // window moved
+            case SDL_WINDOWEVENT_MOVED:
+                m_bWinPosChanged = true;
+                m_iDisplayIndex  = CLAMP(SDL_GetWindowDisplayIndex(m_pWindow), 0, coreInt32(m_aDisplayData.size()) - 1);
+                Core::Config->SetInt(CORE_CONFIG_SYSTEM_DISPLAY, m_iDisplayIndex);
+                break;
+
+            // window size changed
+            case SDL_WINDOWEVENT_SIZE_CHANGED:
+                m_bWinSizeChanged = true;
+                m_vResolution     = coreVector2(I_TO_F(oEvent.window.data1), I_TO_F(oEvent.window.data2));
+                Core::Config->SetInt(CORE_CONFIG_SYSTEM_WIDTH,  F_TO_SI(m_vResolution.x));
+                Core::Config->SetInt(CORE_CONFIG_SYSTEM_HEIGHT, F_TO_SI(m_vResolution.y));
+                break;
+
+            // window focus lost
             case SDL_WINDOWEVENT_HIDDEN:
             case SDL_WINDOWEVENT_MINIMIZED:
             case SDL_WINDOWEVENT_MAXIMIZED:
             case SDL_WINDOWEVENT_RESTORED:
             case SDL_WINDOWEVENT_FOCUS_LOST:
-                m_bMinimized = true;
+                m_bWinFocusLost = true;
                 break;
 
-            // close window
+            // window closed
             case SDL_WINDOWEVENT_CLOSE:
                 if(oEvent.window.windowID == SDL_GetWindowID(m_pWindow)) this->Quit();
                 else SDL_DestroyWindow(SDL_GetWindowFromID(oEvent.window.windowID));
@@ -320,15 +370,15 @@ coreBool CoreSystem::__UpdateEvents()
             }
             break;
 
-        // minimize application
-        case SDL_APP_WILLENTERBACKGROUND:
-        case SDL_APP_DIDENTERFOREGROUND:
+        // application focus lost
         case SDL_JOYDEVICEREMOVED:
         case SDL_CONTROLLERDEVICEREMOVED:
-            m_bMinimized = true;
+        case SDL_APP_WILLENTERBACKGROUND:
+        case SDL_APP_DIDENTERFOREGROUND:
+            m_bWinFocusLost = true;
             break;
 
-        // quit application
+        // application closed
         case SDL_QUIT:
         case SDL_APP_TERMINATING:
             this->Quit();
@@ -340,6 +390,33 @@ coreBool CoreSystem::__UpdateEvents()
     }
 
     return !m_bTerminated;
+}
+
+
+// ****************************************************************
+// update the main window
+void CoreSystem::__UpdateWindow()
+{
+    // reduce overhead if window is not visible
+    if(SDL_GetWindowFlags(m_pWindow) & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))
+        SDL_Delay(100u);
+
+    // toggle between borderless and windowed mode
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(LALT),   CORE_INPUT_HOLD) &&
+       Core::Input->GetKeyboardButton(CORE_INPUT_KEY(RETURN), CORE_INPUT_PRESS))
+    {
+        // set new configuration value
+        m_iFullscreen = m_iFullscreen ? 0u : 1u;
+        Core::Config->SetInt(CORE_CONFIG_SYSTEM_FULLSCREEN, m_iFullscreen);
+
+        // set new window appearance
+        SDL_SetWindowFullscreen(m_pWindow, 0u);
+        SDL_SetWindowBordered  (m_pWindow, m_iFullscreen ? SDL_FALSE : SDL_TRUE);
+        SDL_SetWindowResizable (m_pWindow, m_iFullscreen ? SDL_FALSE : SDL_TRUE);
+
+        // change resolution to fit desktop (always)
+        this->SetWindowResolution(m_aDisplayData[m_iDisplayIndex].vDesktopRes);
+    }
 }
 
 
@@ -366,7 +443,7 @@ void CoreSystem::__UpdateTime()
         m_dTotalTimeBefore = m_dTotalTime;
 
         // smooth last frame time and increase total time
-        m_fLastTime   = 0.85f * m_fLastTime + 0.15f * fNewLastTime;
+        m_fLastTime   = LERP(m_fLastTime, fNewLastTime, 0.15f);
         m_dTotalTime += coreDouble(m_fLastTime);
     }
 

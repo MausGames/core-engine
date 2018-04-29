@@ -42,9 +42,9 @@
 #define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
 #define CORE_SHADER_UNIFORM_CAMPOSITION         "u_v3CamPosition"
 
-#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_aLight[%u].v4Position"
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_aLight[%u].v4Direction"
-#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_aLight[%u].v4Value"
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_aLight[%zu].v4Position"
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_aLight[%zu].v4Direction"
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_aLight[%zu].v4Value"
 
 #define CORE_SHADER_UNIFORM_3D_POSITION         "u_v3Position"
 #define CORE_SHADER_UNIFORM_3D_SIZE             "u_v3Size"
@@ -52,8 +52,8 @@
 #define CORE_SHADER_UNIFORM_2D_SCREENVIEW       "u_m3ScreenView"
 #define CORE_SHADER_UNIFORM_COLOR               "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXPARAM            "u_v4TexParam"
-#define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_as2Texture2D[%u]"
-#define CORE_SHADER_UNIFORM_TEXTURE_SHADOW      "u_as2TextureShadow[%u]"
+#define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_as2Texture2D[%zu]"
+#define CORE_SHADER_UNIFORM_TEXTURE_SHADOW      "u_as2TextureShadow[%zu]"
 
 #define CORE_SHADER_ATTRIBUTE_POSITION          "a_v3RawPosition"
 #define CORE_SHADER_ATTRIBUTE_TEXCOORD          "a_v2RawTexCoord"
@@ -77,7 +77,7 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7u)
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
 
-#define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%u]"
+#define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%zu]"
 #define CORE_SHADER_OUTPUT_COLORS               (2u)
 
 #define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_     (1) \n"

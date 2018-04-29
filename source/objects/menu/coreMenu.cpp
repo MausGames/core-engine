@@ -19,10 +19,10 @@ coreMenu::coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)n
 , m_iCurSurface  (iStartSurface)
 , m_iOldSurface  (iStartSurface)
 , m_Transition   (coreTimer(1.0f, 1.0f, 1u))
-, m_aapRender    {}
+, m_aapRender    {{}}
 {
     // create surfaces
-    m_papObject = new std::vector<coreObject2D*>[m_iNumSurfaces];
+    m_papObject = new coreSet<coreObject2D*>[m_iNumSurfaces];
 }
 
 
@@ -129,17 +129,9 @@ void coreMenu::BindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
     ASSERT(iSurface < m_iNumSurfaces)
 
-#if defined(_CORE_DEBUG_)
-
-    // check for duplicate menu objects
-    FOR_EACH(it, m_papObject[iSurface])
-        ASSERT((*it) != pObject)
-
-#endif
-
     // add menu object
     pObject->SetAlpha(0.0f);
-    m_papObject[iSurface].push_back(pObject);
+    m_papObject[iSurface].insert(pObject);
 }
 
 
@@ -149,16 +141,8 @@ void coreMenu::UnbindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
     ASSERT(iSurface < m_iNumSurfaces)
 
-    // loop through all menu objects
-    FOR_EACH(it, m_papObject[iSurface])
-    {
-        if((*it) == pObject)
-        {
-            // remove the requested object
-            m_papObject[iSurface].erase(it);
-            return;
-        }
-    }
+    // remove the requested object
+    m_papObject[iSurface].erase(pObject);
 }
 
 

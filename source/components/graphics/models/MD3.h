@@ -157,7 +157,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     pOutput->aiIndexData.clear();
 
     // read header data
-    md3File oFile;
+    md3File oFile = {};
     std::memcpy(&oFile.oHeader, pData, sizeof(md3Header));
 
     // check for correct file type

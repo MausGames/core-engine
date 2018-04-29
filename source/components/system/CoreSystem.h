@@ -11,13 +11,15 @@
 #define _CORE_GUARD_SYSTEM_H_
 
 // TODO: fullscreen enumeration
-// TODO: available resolutions are currently only retrieved from the first display (though some drivers may "merge" displays)
+// TODO: some drivers may "merge" displays
 // TODO: handle display hot-plugging
 
 
 // ****************************************************************
 // system definitions
-#define CORE_SYSTEM_TIMES (4u)   //!< number of dynamic frame times
+#define CORE_SYSTEM_TIMES          (4u)     //!< number of dynamic frame times
+#define CORE_SYSTEM_WINDOW_BORDER  (20u)    //!< border width used for restricting window size
+#define CORE_SYSTEM_WINDOW_MINIMUM (128u)   //!< minimum size of the main window
 
 
 // ****************************************************************
@@ -28,8 +30,10 @@ private:
     //! display structure
     struct coreDisplay final
     {
-        std::vector<coreVector2> avAvailableRes;   //!< all available screen resolutions
-        coreVector2              vDesktopRes;      //!< desktop resolution
+        coreSet<coreVector2> avAvailableRes;   //!< all available screen resolutions
+        coreVector2          vDesktopRes;      //!< desktop resolution
+        coreVector2          vWorkAreaRes;     //!< work area resolution (e.g. without task bar)
+        coreVector2          vMaximumRes;      //!< highest available resolution (primary on width)
     };
 
 
@@ -37,13 +41,10 @@ private:
     SDL_Window* m_pWindow;                         //!< SDL main window object
 
     std::vector<coreDisplay> m_aDisplayData;       //!< all available displays
+    coreUint8                m_iDisplayIndex;      //!< current display index
 
-    coreUint8   m_iDisplayIndex;                   //!< primary display index
     coreVector2 m_vResolution;                     //!< width and height of the window
     coreUint8   m_iFullscreen;                     //!< fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
-
-    coreBool m_bMinimized;                         //!< window/application was minimized
-    coreBool m_bTerminated;                        //!< application will be terminated
 
     coreDouble m_dTotalTime;                       //!< total time since start of the application
     coreDouble m_dTotalTimeBefore;                 //!< total time of the previous frame
@@ -57,6 +58,11 @@ private:
     coreDouble m_dPerfFrequency;                   //!< high-precision time coefficient
     coreUint64 m_iPerfTime;                        //!< high-precision time value
 
+    coreBool m_bWinFocusLost;                      //!< window/application lost focus
+    coreBool m_bWinPosChanged;                     //!< window position changed
+    coreBool m_bWinSizeChanged;                    //!< window size changed
+    coreBool m_bTerminated;                        //!< application will be terminated
+
 
 private:
     CoreSystem()noexcept;
@@ -69,8 +75,9 @@ public:
 
     //! control window
     //! @{
-    void SetWindowTitle(const coreChar* pcTitle);
-    void SetWindowIcon (const coreChar* pcPath);
+    void SetWindowTitle     (const coreChar*    pcTitle);
+    void SetWindowIcon      (const coreChar*    pcPath);
+    void SetWindowResolution(const coreVector2& vResolution);
     //! @}
 
     //! control time
@@ -93,7 +100,6 @@ public:
     inline const coreUint8&   GetDisplayIndex   ()const                    {return m_iDisplayIndex;}
     inline const coreVector2& GetResolution     ()const                    {return m_vResolution;}
     inline const coreUint8&   GetFullscreen     ()const                    {return m_iFullscreen;}
-    inline const coreBool&    GetMinimized      ()const                    {return m_bMinimized;}
     inline const coreDouble&  GetTotalTime      ()const                    {return m_dTotalTime;}
     inline const coreDouble&  GetTotalTimeBefore()const                    {return m_dTotalTimeBefore;}
     inline const coreFloat&   GetTime           ()const                    {return m_fLastTime;}
@@ -102,13 +108,21 @@ public:
     inline const coreUint32&  GetCurFrame       ()const                    {return m_iCurFrame;}
     inline const coreDouble&  GetPerfFrequency  ()const                    {return m_dPerfFrequency;}
     inline const coreUint64&  GetPerfTime       ()const                    {return m_iPerfTime;}
+    inline const coreBool&    GetWinFocusLost   ()const                    {return m_bWinFocusLost;}
+    inline const coreBool&    GetWinPosChanged  ()const                    {return m_bWinPosChanged;}
+    inline const coreBool&    GetWinSizeChanged ()const                    {return m_bWinSizeChanged;}
     //! @}
 
 
 private:
-    //! update the window event system
+    //! update the event system
     //! @{
     coreBool __UpdateEvents();
+    //! @}
+
+    //! update the main window
+    //! @{
+    void __UpdateWindow();
     //! @}
 
     //! update the high-precision time

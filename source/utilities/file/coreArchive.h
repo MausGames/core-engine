@@ -20,8 +20,8 @@
 
 // ****************************************************************
 // file definitions
-#define CORE_FILE_MAGIC   (coreUint32('CFA'))   //!< magic number of core-archives
-#define CORE_FILE_VERSION (0x00000001u)         //!< current file version of core-archives
+#define CORE_FILE_MAGIC   (coreUint32('CFA0'))   //!< magic number of core-archives
+#define CORE_FILE_VERSION (0x00000001u)          //!< current file version of core-archives
 
 
 // ****************************************************************
@@ -148,12 +148,12 @@ public:
 class coreLockRelease final
 {
 private:
-    SDL_SpinLock& m_iLock;   //!< associated spinlock
+    SDL_SpinLock* m_piLock;   //!< associated spinlock
 
 
 public:
-    explicit coreLockRelease(SDL_SpinLock& iLock)noexcept : m_iLock (iLock) {coreAtomicLock  (&m_iLock);}
-    ~coreLockRelease()                                                      {coreAtomicUnlock(&m_iLock);}
+    explicit coreLockRelease(SDL_SpinLock* piLock)noexcept : m_piLock (piLock) {coreAtomicLock  (m_piLock);}
+    ~coreLockRelease()                                                         {coreAtomicUnlock(m_piLock);}
 
     DISABLE_COPY(coreLockRelease)
     DISABLE_NEW

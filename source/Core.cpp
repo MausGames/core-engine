@@ -140,7 +140,7 @@ void Core::Reset()
     // load former state
     System  ->m_dTotalTime = dTotalTime;
     System  ->m_iCurFrame  = iCurFrame;
-    Graphics->SetView  (System->GetResolution(), fFOV, fNearClip, fFarClip);
+    Graphics->SetView  (System->m_vResolution, fFOV, fNearClip, fFarClip);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
     for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System  ->SetTimeSpeed(i, afTimeSpeed[i]);
     for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight    (i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
@@ -155,6 +155,26 @@ void Core::Reset()
     Input ->SetCursor     (Application->Settings.CursorPath);
 
     Log->Header("Reset finished");
+}
+
+
+// ****************************************************************
+/* reshape engine */
+void Core::Reshape()
+{
+    // shut down managers
+    Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
+    Manager::Object->__Reset(CORE_RESOURCE_RESET_EXIT);
+
+    // reset view frustum
+    Graphics->SetView(System->m_vResolution, Graphics->m_fFOV, Graphics->m_fNearClip, Graphics->m_fFarClip);
+
+    // start up managers
+    Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
+    Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
+
+    // apply project settings
+    System->SetWindowTitle(Application->Settings.Name);
 }
 
 
@@ -188,7 +208,7 @@ coreStatus Core::Run()
         Core::Log->Warning ("Logging level reduced");
     }
 
-    // update the window event system (main loop)
+    // update the event system (main loop)
     while(Core::System->__UpdateEvents())
     {
         // update the input button interface
@@ -204,6 +224,7 @@ coreStatus Core::Run()
         // update all remaining components
         Core::Debug   ->__UpdateOutput();
         Core::Graphics->__UpdateScene();   // # contains frame terminator
+        Core::System  ->__UpdateWindow();
         Core::System  ->__UpdateTime();
         Core::Input   ->__UpdateButtonsEnd();
 

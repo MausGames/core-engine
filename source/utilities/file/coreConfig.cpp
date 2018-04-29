@@ -25,7 +25,7 @@ coreConfig::coreConfig(const coreChar* pcPath)noexcept
     m_Config.SetSpaces   (true);
 
     // load configuration file
-    this->Load();
+    this->Load(false);
 
     // write all loaded configuration values to the log file
     Core::Log->ListStartInfo("Configuration Values");
@@ -66,8 +66,11 @@ coreConfig::~coreConfig()
 
 // ****************************************************************
 /* load configuration file */
-coreStatus coreConfig::Load()
+coreStatus coreConfig::Load(const coreBool bSaveDirty)
 {
+    // save pending changes
+    if(m_bDirty && bSaveDirty) this->Save();
+
     // load configuration file
     if(m_Config.LoadFile(m_sPath.c_str()) < 0)
     {

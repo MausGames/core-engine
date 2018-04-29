@@ -93,4 +93,8 @@
         </Expand>
     </Type>
 
+    <Type Name="coreFlow">
+        <DisplayString>{m_fValue}</DisplayString>
+    </Type>
+
 </AutoVisualizer>

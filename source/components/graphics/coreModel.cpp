@@ -242,11 +242,12 @@ coreStatus coreModel::Load(coreFile* pFile)
             m_pvClusterPosition[i] = (vClusterMax + vClusterMin) * 0.5f;
 
             // find maximum distance from the cluster center
+            coreFloat fClusterRadiusSq = 0.0f;
             for(coreUintW j = 0u, je = m_piClusterNumIndices[i]; j < je; ++j)
             {
-                m_pfClusterRadius[i] = MAX(m_pfClusterRadius[i], (m_pvVertexPosition[m_ppiClusterIndex[i][j]] - m_pvClusterPosition[i]).LengthSq());
+                fClusterRadiusSq = MAX(fClusterRadiusSq, (m_pvVertexPosition[m_ppiClusterIndex[i][j]] - m_pvClusterPosition[i]).LengthSq());
             }
-            m_pfClusterRadius[i] = SQRT(m_pfClusterRadius[i]);
+            m_pfClusterRadius[i] = SQRT(fClusterRadiusSq);
         }
     }
 

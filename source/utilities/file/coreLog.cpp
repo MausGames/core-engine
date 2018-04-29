@@ -40,8 +40,8 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fputs("</style>                                        \n", m_pFile);
 
         // write application data and timestamp
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s/%s (%s %s, %s 0x%08X) <br />\n", DEFINED(_CORE_X64_) ? "x64" : "x86", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", CORE_RAND_COMPILE);
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s                    <br />\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s, %s, %s) <br />\n", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", DEFINED(_CORE_X64_) ? "x64" : "x86");
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s              <br />\n", coreData::DateString(), coreData::TimeString());
 
         // flush log file
         std::fflush(m_pFile);
@@ -127,7 +127,7 @@ void coreLog::DebugOpenGL()
 /* write text to the log file */
 void coreLog::__Write(const coreBool bTimeStamp, std::string sText)
 {
-    coreLockRelease oRelease(m_iLock);
+    coreLockRelease oRelease(&m_iLock);
 
 #if defined(_CORE_DEBUG_)
 

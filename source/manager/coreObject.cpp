@@ -168,13 +168,11 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     {
         const coreVector3 vPosition1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetClusterPosition(k));
         const coreFloat   fRadius1   = pModel1->GetClusterRadius(k) * vSizeMax1;
-        const coreFloat   fRadius1Sq = POW2(fRadius1);
 
         for(coreUintW m = 0u, me = pModel2->GetNumClusters(); m < me; ++m)
         {
             const coreVector3 vPosition2 = vSize2 * pModel2->GetClusterPosition(m);
             const coreFloat   fRadius2   = pModel2->GetClusterRadius(m) * vSizeMax2;
-            const coreFloat   fRadius2Sq = POW2(fRadius2);
 
             const coreVector3 vClusterDiff   = vPosition1 - vPosition2;
             const coreFloat   fClusterRadius = fRadius1 + fRadius2;
@@ -188,11 +186,6 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                 coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i+1u]]);
                 coreVector3 A3 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i+2u]]);
 
-                if(((A1 - vPosition2).LengthSq() > fRadius2Sq) &&
-                   ((A2 - vPosition2).LengthSq() > fRadius2Sq) &&
-                   ((A3 - vPosition2).LengthSq() > fRadius2Sq))
-                    continue;
-
                 const coreVector3 vCross1 = coreVector3::Cross(A2 - A1, A3 - A1);
 
                 for(coreUintW j = 0u, je = pModel2->GetClusterNumIndices(m); j < je; j += 3u)
@@ -200,11 +193,6 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                     coreVector3 B1 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j]];
                     coreVector3 B2 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j+1u]];
                     coreVector3 B3 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j+2u]];
-
-                    if(((B1 - vPosition1).LengthSq() > fRadius1Sq) &&
-                       ((B2 - vPosition1).LengthSq() > fRadius1Sq) &&
-                       ((B3 - vPosition1).LengthSq() > fRadius1Sq))
-                        continue;
 
                     coreUint32 F1 = (coreVector3::Dot(B1 - A1, vCross1) >= 0.0f) ? 1u : 0u;
                     coreUint32 F2 = (coreVector3::Dot(B2 - A1, vCross1) >= 0.0f) ? 1u : 0u;
@@ -256,7 +244,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                     if((coreVector3::Dot(A2 - B1, coreVector3::Cross(B2 - B1, A1 - B1)) <= 0.0f) &&
                        (coreVector3::Dot(A1 - B1, coreVector3::Cross(B3 - B1, A3 - B1)) <= 0.0f))
                     {
-                        (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply((B1 + B2 + B3) * 0.333f);
+                        (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply((A1 + A2 + A3 + B1 + B2 + B3) / 6.0f);
                         return true;
                     }
                 }

@@ -27,7 +27,7 @@
 class coreMenu : public coreObject2D
 {
 private:
-    std::vector<coreObject2D*>* m_papObject;     //!< surfaces with pointers to menu objects
+    coreSet<coreObject2D*>* m_papObject;         //!< surfaces with pointers to menu objects
     coreObject2D* m_pCurObject;                  //!< current object with input focus
 
     coreUint8 m_iNumSurfaces;                    //!< number of surfaces

@@ -140,7 +140,7 @@ coreMemoryManager::~coreMemoryManager()
 // create memory-block from internal memory-pool
 RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 {
-    coreLockRelease oRelease(m_iPoolLock);
+    coreLockRelease oRelease(&m_iPoolLock);
 
     // check and create memory-pool
     if(!m_aMemoryPool.count(iSize)) m_aMemoryPool.emplace(iSize, iSize, 128u);
@@ -154,7 +154,7 @@ RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 // remove memory-block to internal memory-pool
 void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT pptPointer)
 {
-    coreLockRelease oRelease(m_iPoolLock);
+    coreLockRelease oRelease(&m_iPoolLock);
 
     // forward request to internal memory-pool
     m_aMemoryPool.at(iSize).Free(pptPointer);

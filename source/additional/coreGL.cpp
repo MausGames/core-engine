@@ -73,14 +73,14 @@ void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
     auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
 
     // generate 2D texture names
-    coreLockRelease oRelease(g_PoolTextures2D.iLock);
+    coreLockRelease oRelease(&g_PoolTextures2D.iLock);
     CORE_GL_POOL_GENERATE(g_PoolTextures2D, nCreateFunc, glGenTextures)
 }
 
 void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate data buffer names
-    coreLockRelease oRelease(g_PoolBuffers.iLock);
+    coreLockRelease oRelease(&g_PoolBuffers.iLock);
     CORE_GL_POOL_GENERATE(g_PoolBuffers, glCreateBuffers, glGenBuffers)
 }
 
@@ -152,7 +152,7 @@ void __coreInitOpenGL()
     if(!GLEW_ARB_shader_image_load_store && GLEW_EXT_shader_image_load_store)
     {
         // remap GL_EXT_shader_image_load_store
-        glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)glBindImageTextureEXT;
+        glBindImageTexture = r_cast<PFNGLBINDIMAGETEXTUREPROC>(glBindImageTextureEXT);
         glMemoryBarrier    = glMemoryBarrierEXT;
     }
     else if(GLEW_ARB_shader_image_load_store)
@@ -256,7 +256,7 @@ void __coreInitOpenGL()
         glGetProgramiv       = glGetObjectParameterivARB;
         glGetUniformLocation = glGetUniformLocationARB;
         glLinkProgram        = glLinkProgramARB;
-        glShaderSource       = (PFNGLSHADERSOURCEPROC)glShaderSourceARB;
+        glShaderSource       = r_cast<PFNGLSHADERSOURCEPROC>(glShaderSourceARB);
         glUniform1f          = glUniform1fARB;
         glUniform1i          = glUniform1iARB;
         glUniform2fv         = glUniform2fvARB;

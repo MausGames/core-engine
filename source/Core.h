@@ -258,7 +258,7 @@
     #include <unistd.h>
 #endif
 #if defined(_CORE_SSE_)
-    #include <emmintrin.h>
+    #include <immintrin.h>
 #endif
 #include <cstdlib>
 #include <cstdio>
@@ -670,6 +670,11 @@ public:
     /*! reset engine */
     //! @{
     static void Reset();
+    //! @}
+
+    /*! reshape engine */
+    //! @{
+    static void Reshape();
     //! @}
 
 

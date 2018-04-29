@@ -36,9 +36,9 @@ public:
 
     /*! access reference to current item */
     //! @{
-    inline       T&        current()      {return (*this)[m_iCurIndex];}
-    inline const T&        current()const {return (*this)[m_iCurIndex];}
-    inline const coreUintW index  ()const {return m_iCurIndex;}
+    inline       T&         current()      {return (*this)[m_iCurIndex];}
+    inline const T&         current()const {return (*this)[m_iCurIndex];}
+    inline const coreUintW& index  ()const {return m_iCurIndex;}
     //! @}
 };
 

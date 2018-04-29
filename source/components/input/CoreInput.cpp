@@ -137,9 +137,28 @@ void CoreInput::ShowCursor(const coreBool bStatus)
 
 // ****************************************************************
 // control mouse with keyboard
-void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKey iRight, const coreInputKey iUp, const coreInputKey iDown, const coreInputKey iButton1, const coreInputKey iButton2, const coreFloat fSpeed)
+void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKey iRight, const coreInputKey iDown, const coreInputKey iUp, const coreInputKey iButton1, const coreInputKey iButton2, const coreFloat fSpeed)
 {
-    // TODO: implement function
+    // get original input
+    coreVector2 vAcc = coreVector2(0.0f,0.0f);
+         if(this->GetKeyboardButton(iLeft,  CORE_INPUT_PRESS)) vAcc.x = -1.0f;
+    else if(this->GetKeyboardButton(iRight, CORE_INPUT_PRESS)) vAcc.x =  1.0f;
+         if(this->GetKeyboardButton(iDown,  CORE_INPUT_PRESS)) vAcc.y = -1.0f;
+    else if(this->GetKeyboardButton(iUp,    CORE_INPUT_PRESS)) vAcc.y =  1.0f;
+
+    // move the mouse cursor
+    if(!vAcc.IsNull())
+    {
+        const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
+        const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx() * (RCP(Core::System->GetResolution().Min()) * Core::System->GetTime() * fSpeed) + vPos) * Core::System->GetResolution();
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(vNew.x + 0.5f), F_TO_SI(-vNew.y + 0.5f));
+    }
+
+    // press mouse buttons
+    if(this->GetKeyboardButton(iButton1, CORE_INPUT_PRESS))   this->SetMouseButton(CORE_INPUT_LEFT,  true);
+    if(this->GetKeyboardButton(iButton1, CORE_INPUT_RELEASE)) this->SetMouseButton(CORE_INPUT_LEFT,  false);
+    if(this->GetKeyboardButton(iButton2, CORE_INPUT_PRESS))   this->SetMouseButton(CORE_INPUT_RIGHT, true);
+    if(this->GetKeyboardButton(iButton2, CORE_INPUT_RELEASE)) this->SetMouseButton(CORE_INPUT_RIGHT, false);
 }
 
 
@@ -147,22 +166,24 @@ void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKe
 // control mouse with joystick
 void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iButton1, const coreUint8 iButton2, const coreFloat fSpeed)
 {
-    if(iIndex >= m_aJoystick.size()) return;
+    WARN_IF(iIndex >= m_aJoystick.size()) return;
+
+    // get original input
+    const coreVector2& vAcc = m_aJoystick[iIndex].vRelative;
 
     // move the mouse cursor
-    const coreVector2& vAcc = m_aJoystick[iIndex].vRelative;
     if(!vAcc.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx() / Core::System->GetResolution().Min() * Core::System->GetTime() * fSpeed + vPos) * Core::System->GetResolution();
+        const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx() * (RCP(Core::System->GetResolution().Min()) * Core::System->GetTime() * fSpeed) + vPos) * Core::System->GetResolution();
         SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(vNew.x + 0.5f), F_TO_SI(-vNew.y + 0.5f));
     }
 
     // press mouse buttons
-    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_PRESS))   {this->SetMouseButton(1, true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
-    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_RELEASE)) {this->SetMouseButton(1, false);}
-    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_PRESS))   {this->SetMouseButton(2, true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
-    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_RELEASE)) {this->SetMouseButton(2, false);}
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_PRESS))   {this->SetMouseButton(CORE_INPUT_LEFT,  true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_RELEASE)) {this->SetMouseButton(CORE_INPUT_LEFT,  false);}
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_PRESS))   {this->SetMouseButton(CORE_INPUT_RIGHT, true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_RELEASE)) {this->SetMouseButton(CORE_INPUT_RIGHT, false);}
 }
 
 
@@ -170,6 +191,8 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
 // forward d-pad input to stick input on joystick
 void CoreInput::ForwardDpadToStick(const coreUintW iIndex)
 {
+    WARN_IF(iIndex >= m_aJoystick.size()) return;
+
     // check for d-pad buttons and invoke stick movement
          if(this->GetJoystickButton(iIndex, 11u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u,  1.0f);
     else if(this->GetJoystickButton(iIndex, 12u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u, -1.0f);

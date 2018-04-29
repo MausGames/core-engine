@@ -256,7 +256,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     if(m_apShader.empty())
     {
         FOR_EACH(it, m_apShaderHandle)
-            m_apShader.push_back(*it);
+            m_apShader.emplace_back(*it);
     }
     FOR_EACH(it, m_apShader)
     {

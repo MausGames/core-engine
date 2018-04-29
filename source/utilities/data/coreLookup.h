@@ -162,14 +162,20 @@ protected:
     //! @}
 };
 
+
 // ****************************************************************
 /* simplified generic lookup container type */
 template <typename K, typename T> using coreLookup = coreLookupGen<K, K, T>;
 
 
 // ****************************************************************
+/* base string lookup container type */
+template <typename T> using coreLookupStrBase = coreLookupGen<coreUint32, coreHashString, T>;
+
+
+// ****************************************************************
 /* string lookup container class (with original strings) */
-template <typename T> class coreLookupStrFull final : public coreLookupGen<coreUint32, coreHashString, T>
+template <typename T> class coreLookupStrFull final : public coreLookupStrBase<T>
 {
 private:
     coreLookup<coreUint32, std::string> m_asStringList;   //!< list with original strings
@@ -182,27 +188,27 @@ public:
 
     /*! access specific entry */
     //! @{
-    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreLookupGen<coreUint32, coreHashString, T>::operator [] (sKey);}
+    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreLookupStrBase<T>::operator [] (sKey);}
     inline T& operator [] (const coreUintW       iIndex) {return this->m_atValueList[iIndex];}
     //! @}
 
     /*! create new entry */
     //! @{
-    template <typename... A> inline void emplace(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupGen<coreUint32, coreHashString, T>::emplace(sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace(sKey, std::forward<A>(vArgs)...);}
     //! @}
 
     /*! remove existing entry */
     //! @{
-    using coreLookupGen<coreUint32, coreHashString, T>::erase;
-    inline typename coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    using coreLookupStrBase<T>::erase;
+    inline typename coreLookupStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 
     /*! return original string */
     //! @{
-    inline const coreChar* get_string(const typename coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
-    inline const coreChar* get_string(const typename coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
+    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
     //! @}
 
 
@@ -216,7 +222,7 @@ private:
 
 // ****************************************************************
 /* string lookup container class (without original strings) */
-template <typename T> class coreLookupStrSlim final : public coreLookupGen<coreUint32, coreHashString, T>
+template <typename T> class coreLookupStrSlim final : public coreLookupStrBase<T>
 {
 public:
     coreLookupStrSlim() = default;
@@ -225,14 +231,14 @@ public:
 
     /*! access specific entry */
     //! @{
-    using coreLookupGen<coreUint32, coreHashString, T>::operator [];
+    using coreLookupStrBase<T>::operator [];
     inline T& operator [] (const coreUintW iIndex) {return this->m_atValueList[iIndex];}
     //! @}
 
     /*! remove existing entry */
     //! @{
-    using coreLookupGen<coreUint32, coreHashString, T>::erase;
-    inline typename coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    using coreLookupStrBase<T>::erase;
+    inline typename coreLookupStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
     //! @}
 };
 
