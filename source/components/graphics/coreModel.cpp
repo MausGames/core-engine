@@ -161,10 +161,12 @@ coreStatus coreModel::Load(coreFile* pFile)
         std::vector<coreUint16> aiTempIndex[CORE_MODEL_CLUSTERS_MAX];
         for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; i += 3u)
         {
-            // calculate triangle center
-            const coreVector3 vCenterPos = (m_pvVertexPosition[piOptimizedData[i]]    +
-                                            m_pvVertexPosition[piOptimizedData[i+1u]] +
-                                            m_pvVertexPosition[piOptimizedData[i+2u]]) / 3.0f;
+            // calculate triangle (bounding) center
+            const coreVector3& vPos1      = m_pvVertexPosition[piOptimizedData[i]];
+            const coreVector3& vPos2      = m_pvVertexPosition[piOptimizedData[i+1u]];
+            const coreVector3& vPos3      = m_pvVertexPosition[piOptimizedData[i+2u]];
+            const coreVector3  vCenterPos = (coreVector3(MIN(vPos1.x, vPos2.x, vPos3.x), MIN(vPos1.y, vPos2.y, vPos3.y), MIN(vPos1.z, vPos2.z, vPos3.z)) +
+                                             coreVector3(MAX(vPos1.x, vPos2.x, vPos3.x), MAX(vPos1.y, vPos2.y, vPos3.y), MAX(vPos1.z, vPos2.z, vPos3.z))) * 0.5f;
 
             // calculate target cluster
             const coreVector3 vRangePos = ((vCenterPos - vRangeMin) * vRangeDiff).Processed(CLAMP, 0.0f, 1.0f - CORE_MATH_PRECISION) * I_TO_F(CORE_MODEL_CLUSTERS_AXIS);
@@ -183,27 +185,15 @@ coreStatus coreModel::Load(coreFile* pFile)
         }
 
         // reorder clusters to compact list
-        coreUintW iFront = 0u;
-        coreUintW iBack  = CORE_MODEL_CLUSTERS_MAX - 1u;
-        for(; iFront < iBack; ++iFront)
+        std::sort(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const std::vector<coreUint16>& a, const std::vector<coreUint16>& b)
         {
-            if(aiTempIndex[iFront].empty())
-            {
-                for(; iFront < iBack; --iBack)
-                {
-                    if(!aiTempIndex[iBack].empty())
-                    {
-                        // move occupied cluster (in back) into empty space (in front)
-                        aiTempIndex[iFront] = std::move(aiTempIndex[iBack--]);
-                        break;
-                    }
-                }
-            }
-        }
+            if(a.empty()) return false;
+            if(b.empty()) return true;
+            return (a.front() < b.front());
+        });
 
         // save number of clusters
-        m_iNumClusters = aiTempIndex[iBack].empty() ? iBack : (iBack + 1u);
-        ASSERT((m_iNumClusters == CORE_MODEL_CLUSTERS_MAX || aiTempIndex[m_iNumClusters].empty()) && !aiTempIndex[m_iNumClusters - 1u].empty())
+        m_iNumClusters = std::find_if(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const std::vector<coreUint16>& a) {return a.empty();}) - aiTempIndex;
 
         // allocate cluster memory
         coreByte* pIndexMemory = ALIGNED_NEW(coreByte,    m_iNumClusters * sizeof(coreUint16*) + m_iNumIndices * sizeof(coreUint16), ALIGNMENT_CACHE);
@@ -323,7 +313,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), piOptimizedData, CORE_DATABUFFER_STORAGE_STATIC);
     SAFE_DELETE_ARRAY(piOptimizedData)
 
-    Core::Log->Info("Model (%s) loaded", pFile->GetPath());
+    Core::Log->Info("Model (%s, %u vertices, %u indices, %u clusters, %.5f x %.5f x %.5f range, %.5f radius) loaded", pFile->GetPath(), m_iNumVertices, m_iNumIndices, m_iNumClusters, m_vBoundingRange.x, m_vBoundingRange.y, m_vBoundingRange.z, m_fBoundingRadius);
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
 }
 

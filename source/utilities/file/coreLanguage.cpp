@@ -213,7 +213,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     FOR_EACH(it, m_apsForeign) (*m_apsForeign.get_key(it))->assign(m_asStringList[it->c_str()]);
     FOR_EACH(it, m_apObject)   (*it)->__Update();
 
-    Core::Log->Info("Language (%s) loaded", pFile->GetPath());
+    Core::Log->Info("Language (%s, %u strings) loaded", pFile->GetPath(), m_asStringList.size());
     return CORE_OK;
 }
 

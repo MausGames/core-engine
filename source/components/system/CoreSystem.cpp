@@ -234,7 +234,7 @@ CoreSystem::CoreSystem()noexcept
     {
         Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                                             coreData::SystemName());
         Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %s (%s, %d Logical Cores, %d Bytes Cache Line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
-        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MiB",                                         SDL_GetSystemRAM());
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MB",                                          SDL_GetSystemRAM());
     }
     Core::Log->ListEnd();
 
@@ -431,7 +431,7 @@ void CoreSystem::__UpdateTime()
 
     if(m_iSkipFrame || (fNewLastTime >= 0.25f))
     {
-        Core::Log->Warning("Skipped Frame (%u:%f:%f)", m_iCurFrame, m_dTotalTime, fNewLastTime);
+        Core::Log->Warning("Skipped Frame (%u / %.5f / %.5f)", m_iCurFrame, m_dTotalTime, fNewLastTime);
 
         // skip frames
         m_fLastTime = 0.0f;

@@ -100,10 +100,6 @@ void __coreInitOpenGL()
     if(iError != GLEW_OK) Core::Log->Error("GLEW could not be initialized (GLEW: %s)", glewGetErrorString(iError));
                      else Core::Log->Info ("GLEW initialized (%s)",                    glewGetString(GLEW_VERSION));
 
-    // force enable and disable extensions
-    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS),  " ,;", [](const coreChar* pcToken) {glewEnableExtension (pcToken);});
-    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});
-
     // handle support for deprecated features
     GLEW_V2_compatibility = !GLEW_VERSION_3_1;
 
@@ -230,6 +226,10 @@ void __coreInitOpenGL()
     if( GLEW_VERSION_4_6 || GLEW_ARB_texture_filter_anisotropic) __GLEW_EXT_texture_filter_anisotropic = true;
     if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
         __GLEW_ARB_uniform_buffer_object = false;
+
+    // change extension status through configuration file
+    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS),  " ,;", [](const coreChar* pcToken) {glewEnableExtension (pcToken);});
+    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});
 
     // try to support old OpenGL versions
     if(!GLEW_VERSION_2_0)

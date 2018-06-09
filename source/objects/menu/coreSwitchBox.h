@@ -368,7 +368,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
 // switch to specific entry
 template <typename T> void coreSwitchBox<T>::SelectIndex(const coreUintW iIndex)
 {
-    ASSERT(iIndex < m_aEntry.size())
+    WARN_IF(iIndex >= m_aEntry.size()) return;
 
     // save new index
     if(m_iCurIndex == iIndex) return;

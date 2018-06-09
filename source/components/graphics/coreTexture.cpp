@@ -59,13 +59,14 @@ coreStatus coreTexture::Load(coreFile* pFile)
     }
 
     // calculate data size
-    const coreUint32 iDataSize = pData->w * pData->h * pData->format->BytesPerPixel;
+    const coreUint8  iComponents = pData->format->BytesPerPixel;
+    const coreUint32 iDataSize   = pData->w * pData->h * iComponents;
 
     // check for compression capability
     const coreTextureMode iCompress = (coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
 
     // create texture
-    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(pData->format->BytesPerPixel), iCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
+    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), iCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
     this->Modify(0u, 0u, pData->w, pData->h, iDataSize, s_cast<coreByte*>(pData->pixels));
 
     // save properties
@@ -74,7 +75,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     // delete pixel data
     SDL_FreeSurface(pData);
 
-    Core::Log->Info("Texture (%s:%u) loaded", pFile->GetPath(), m_iIdentifier);
+    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, iCompress ? "compressed" : "normal");
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
 }
 

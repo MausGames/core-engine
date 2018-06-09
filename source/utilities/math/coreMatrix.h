@@ -14,11 +14,7 @@
 // TODO: implement "Rotation from One Vector to Another" matrix
 // TODO: the mXXX() conversion functions create a lot of move instructions
 
-#if defined(_CORE_MSVC_)
-    #define CONSTEXPR FORCE_INLINE
-#else
-    #define CONSTEXPR constexpr
-#endif
+#define CONSTEXPR inline
 
 
 // ****************************************************************
@@ -36,8 +32,8 @@ public:
 
 public:
     coreMatrix2() = default;
-    constexpr coreMatrix2(const coreFloat f11, const coreFloat f12,
-                          const coreFloat f21, const coreFloat f22)noexcept;
+    constexpr FORCE_INLINE coreMatrix2(const coreFloat f11, const coreFloat f12,
+                                       const coreFloat f21, const coreFloat f22)noexcept;
 
     ENABLE_COPY(coreMatrix2)
 
@@ -74,10 +70,10 @@ public:
 
 public:
     coreMatrix3() = default;
-    constexpr coreMatrix3(const coreFloat f11, const coreFloat f12, const coreFloat f13,
-                          const coreFloat f21, const coreFloat f22, const coreFloat f23,
-                          const coreFloat f31, const coreFloat f32, const coreFloat f33)noexcept;
-    constexpr explicit coreMatrix3(const coreMatrix2& m)noexcept;
+    constexpr FORCE_INLINE coreMatrix3(const coreFloat f11, const coreFloat f12, const coreFloat f13,
+                                       const coreFloat f21, const coreFloat f22, const coreFloat f23,
+                                       const coreFloat f31, const coreFloat f32, const coreFloat f33)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix3(const coreMatrix2& m)noexcept;
 
     ENABLE_COPY(coreMatrix3)
 
@@ -166,12 +162,12 @@ public:
 
 public:
     coreMatrix4() = default;
-    constexpr coreMatrix4(const coreFloat f11, const coreFloat f12, const coreFloat f13, const coreFloat f14,
-                          const coreFloat f21, const coreFloat f22, const coreFloat f23, const coreFloat f24,
-                          const coreFloat f31, const coreFloat f32, const coreFloat f33, const coreFloat f34,
-                          const coreFloat f41, const coreFloat f42, const coreFloat f43, const coreFloat f44)noexcept;
-    constexpr explicit coreMatrix4(const coreMatrix3& m)noexcept;
-    constexpr explicit coreMatrix4(const coreMatrix2& m)noexcept;
+    constexpr FORCE_INLINE coreMatrix4(const coreFloat f11, const coreFloat f12, const coreFloat f13, const coreFloat f14,
+                                       const coreFloat f21, const coreFloat f22, const coreFloat f23, const coreFloat f24,
+                                       const coreFloat f31, const coreFloat f32, const coreFloat f33, const coreFloat f34,
+                                       const coreFloat f41, const coreFloat f42, const coreFloat f43, const coreFloat f44)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix3& m)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix2& m)noexcept;
 
     ENABLE_COPY(coreMatrix4)
 
@@ -260,8 +256,8 @@ CONSTEXPR coreMatrix4 operator * (const coreFloat f, const coreMatrix4& m) {retu
 
 // ****************************************************************
 /* constructor */
-constexpr coreMatrix2::coreMatrix2(const coreFloat f11, const coreFloat f12,
-                                   const coreFloat f21, const coreFloat f22)noexcept
+constexpr FORCE_INLINE coreMatrix2::coreMatrix2(const coreFloat f11, const coreFloat f12,
+                                                const coreFloat f21, const coreFloat f22)noexcept
 : _11 (f11), _12 (f12)
 , _21 (f21), _22 (f22)
 {
@@ -288,16 +284,16 @@ constexpr coreMatrix2 coreMatrix2::Identity()
 
 // ****************************************************************
 /* constructor */
-constexpr coreMatrix3::coreMatrix3(const coreFloat f11, const coreFloat f12, const coreFloat f13,
-                                   const coreFloat f21, const coreFloat f22, const coreFloat f23,
-                                   const coreFloat f31, const coreFloat f32, const coreFloat f33)noexcept
+constexpr FORCE_INLINE coreMatrix3::coreMatrix3(const coreFloat f11, const coreFloat f12, const coreFloat f13,
+                                                const coreFloat f21, const coreFloat f22, const coreFloat f23,
+                                                const coreFloat f31, const coreFloat f32, const coreFloat f33)noexcept
 : _11 (f11), _12 (f12), _13 (f13)
 , _21 (f21), _22 (f22), _23 (f23)
 , _31 (f31), _32 (f32), _33 (f33)
 {
 }
 
-constexpr coreMatrix3::coreMatrix3(const coreMatrix2& m)noexcept
+constexpr FORCE_INLINE coreMatrix3::coreMatrix3(const coreMatrix2& m)noexcept
 : _11 (m._11), _12 (m._12), _13 (0.0f)
 , _21 (m._21), _22 (m._22), _23 (0.0f)
 , _31  (0.0f), _32  (0.0f), _33 (1.0f)
@@ -490,10 +486,10 @@ inline coreMatrix3 coreMatrix3::Rotation(const coreFloat fAngle)
 
 // ****************************************************************
 /* constructor */
-constexpr coreMatrix4::coreMatrix4(const coreFloat f11, const coreFloat f12, const coreFloat f13, const coreFloat f14,
-                                   const coreFloat f21, const coreFloat f22, const coreFloat f23, const coreFloat f24,
-                                   const coreFloat f31, const coreFloat f32, const coreFloat f33, const coreFloat f34,
-                                   const coreFloat f41, const coreFloat f42, const coreFloat f43, const coreFloat f44)noexcept
+constexpr FORCE_INLINE coreMatrix4::coreMatrix4(const coreFloat f11, const coreFloat f12, const coreFloat f13, const coreFloat f14,
+                                                const coreFloat f21, const coreFloat f22, const coreFloat f23, const coreFloat f24,
+                                                const coreFloat f31, const coreFloat f32, const coreFloat f33, const coreFloat f34,
+                                                const coreFloat f41, const coreFloat f42, const coreFloat f43, const coreFloat f44)noexcept
 : _11 (f11), _12 (f12), _13 (f13), _14 (f14)
 , _21 (f21), _22 (f22), _23 (f23), _24 (f24)
 , _31 (f31), _32 (f32), _33 (f33), _34 (f34)
@@ -501,7 +497,7 @@ constexpr coreMatrix4::coreMatrix4(const coreFloat f11, const coreFloat f12, con
 {
 }
 
-constexpr coreMatrix4::coreMatrix4(const coreMatrix3& m)noexcept
+constexpr FORCE_INLINE coreMatrix4::coreMatrix4(const coreMatrix3& m)noexcept
 : _11 (m._11), _12 (m._12), _13 (m._13), _14 (0.0f)
 , _21 (m._21), _22 (m._22), _23 (m._23), _24 (0.0f)
 , _31 (m._31), _32 (m._32), _33 (m._33), _34 (0.0f)
@@ -509,7 +505,7 @@ constexpr coreMatrix4::coreMatrix4(const coreMatrix3& m)noexcept
 {
 }
 
-constexpr coreMatrix4::coreMatrix4(const coreMatrix2& m)noexcept
+constexpr FORCE_INLINE coreMatrix4::coreMatrix4(const coreMatrix2& m)noexcept
 : _11 (m._11), _12 (m._12), _13 (0.0f), _14 (0.0f)
 , _21 (m._21), _22 (m._22), _23 (0.0f), _24 (0.0f)
 , _31  (0.0f), _32  (0.0f), _33 (1.0f), _34 (0.0f)

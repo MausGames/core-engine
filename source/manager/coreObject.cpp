@@ -74,7 +74,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     const coreFloat fTotalRadius = pObject1->GetCollisionRadius() + pObject2->GetCollisionRadius();
 
     // check for sphere intersection
-    if(vDiff.LengthSq() > POW2(fTotalRadius))
+    if((vDiff.LengthSq() > POW2(fTotalRadius)) || coreMath::IsNear(fTotalRadius, 0.0f))
         return false;
 
     // get collision range and rotation
@@ -132,12 +132,12 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     const coreVector4 vRelRotation = bSwap ? Q.QuatConjugate() : Q;
 
     // get models and object sizes (precise collision detection does not use size-modifiers)
-    const coreModelPtr& pModel1   = pObject1->GetModel();
-    const coreModelPtr& pModel2   = pObject2->GetModel();
-    const coreVector3&  vSize1    = pObject1->GetSize();
-    const coreVector3&  vSize2    = pObject2->GetSize();
-    const coreFloat     vSizeMax1 = vSize1.Max();
-    const coreFloat     vSizeMax2 = vSize2.Max();
+    const coreModel*   pModel1   = pObject1->GetModel().IsUsable() ? pObject1->GetModel().GetResource() : NULL;
+    const coreModel*   pModel2   = pObject2->GetModel().GetResource();
+    const coreVector3& vSize1    = pObject1->GetSize();
+    const coreVector3& vSize2    = pObject2->GetSize();
+    const coreFloat    vSizeMax1 = vSize1.Max();
+    const coreFloat    vSizeMax2 = vSize2.Max();
 
     // calculate collision between precise and simple model
     if(!bPrecise1 || !bPrecise2)
@@ -173,6 +173,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
         {
             const coreVector3 vPosition2 = vSize2 * pModel2->GetClusterPosition(m);
             const coreFloat   fRadius2   = pModel2->GetClusterRadius(m) * vSizeMax2;
+            const coreFloat   fRadius2Sq = POW2(fRadius2);
 
             const coreVector3 vClusterDiff   = vPosition1 - vPosition2;
             const coreFloat   fClusterRadius = fRadius1 + fRadius2;
@@ -187,6 +188,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                 coreVector3 A3 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i+2u]]);
 
                 const coreVector3 vCross1 = coreVector3::Cross(A2 - A1, A3 - A1);
+
+                if(POW2(coreVector3::Dot(A1 - vPosition2, vCross1)) > fRadius2Sq * vCross1.LengthSq())
+                    continue;
 
                 for(coreUintW j = 0u, je = pModel2->GetClusterNumIndices(m); j < je; j += 3u)
                 {
@@ -296,9 +300,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
     const coreVector3 vRelRayDir   = vRevRotation.QuatApply(vRayDir);
 
     // get model and object size (precise collision detection does not use size-modifiers)
-    const coreModelPtr& pModel   = pObject->GetModel();
-    const coreVector3&  vSize    = pObject->GetSize();
-    const coreFloat     vSizeMax = vSize.Max();
+    const coreModel*   pModel   = pObject->GetModel().GetResource();
+    const coreVector3& vSize    = pObject->GetSize();
+    const coreFloat    vSizeMax = vSize.Max();
 
     // calculate collision with precise model (MoellerTrumbore97)
     if(bPrecise)
@@ -399,7 +403,7 @@ void coreObjectManager::__Reset(const coreResourceReset bInit)
         pBuffer = m_pLowTriangle->CreateVertexBuffer(ARRAY_SIZE(avTriangleData), sizeof(coreVector2), avTriangleData, CORE_DATABUFFER_STORAGE_STATIC);
         pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_FLOAT, false, 0u);
 
-        Core::Log->Info("Low-memory models created");
+        Core::Log->Info("Low-Memory models created");
 
         // create frame buffer fallback
         if(!CORE_GL_SUPPORT(EXT_framebuffer_blit))

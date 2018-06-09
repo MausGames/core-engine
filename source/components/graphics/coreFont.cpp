@@ -188,7 +188,7 @@ coreBool coreFont::__InitHeight(const coreUint8 iHeight, const coreUint8 iOutlin
     TTF_Font* pNewFont = TTF_OpenFontRW(pSource, true, iHeight);
     if(!pNewFont)
     {
-        Core::Log->Warning("Font (%s:%u:%u) could not be loaded", m_pFile->GetPath(), iHeight, iOutline);
+        Core::Log->Warning("Sub-Font (%s, %u height, %u outline) could not be loaded", m_pFile->GetPath(), iHeight, iOutline);
         return false;
     }
 
@@ -201,6 +201,8 @@ coreBool coreFont::__InitHeight(const coreUint8 iHeight, const coreUint8 iOutlin
 
     // save sub-font
     m_aapFont[iHeight].emplace(iOutline, pNewFont);
+
+    Core::Log->Info("Sub-Font (%s, %u height, %u outline) loaded", m_pFile->GetPath(), iHeight, iOutline);
     return true;
 }
 

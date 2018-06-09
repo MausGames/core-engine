@@ -26,7 +26,7 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
 
     // check for success
     if(!m_iSize) Core::Log->Warning("File (%s) could not be opened", m_sPath.c_str());
-            else Core::Log->Info   ("File (%s:%u) opened",           m_sPath.c_str(), m_iSize);
+            else Core::Log->Info   ("File (%s, %.1f KB) opened",     m_sPath.c_str(), I_TO_F(m_iSize) / 1024.0f);
 }
 
 coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)noexcept
@@ -263,7 +263,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 
     // close archive
     SDL_RWclose(pArchive);
-    Core::Log->Info("Archive (%s:%u) opened", m_sPath.c_str(), iFiles);
+    Core::Log->Info("Archive (%s, %u files) opened", m_sPath.c_str(), iFiles);
 }
 
 

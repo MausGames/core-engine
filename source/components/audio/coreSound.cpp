@@ -108,7 +108,7 @@ coreStatus coreSound::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Sound (%s:%u) loaded", pFile->GetPath(), m_iBuffer);
+    Core::Log->Info("Sound (%s, %u channels, %u bits, %u rate) loaded", pFile->GetPath(), m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
     return CORE_OK;
 }
 

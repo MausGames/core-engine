@@ -25,7 +25,7 @@ public:
 
 public:
     coreVector2() = default;
-    constexpr coreVector2(const coreFloat fx, const coreFloat fy)noexcept : x (fx), y (fy) {}
+    constexpr FORCE_INLINE coreVector2(const coreFloat fx, const coreFloat fy)noexcept : x (fx), y (fy) {}
 
     ENABLE_COPY(coreVector2)
 
@@ -158,9 +158,9 @@ public:
 
 public:
     coreVector3() = default;
-    constexpr coreVector3(const coreVector2& v, const coreFloat fz)noexcept                   : x (v.x), y (v.y), z (fz)  {}
-    constexpr coreVector3(const coreFloat fx, const coreVector2& v)noexcept                   : x (fx),  y (v.x), z (v.y) {}
-    constexpr coreVector3(const coreFloat fx, const coreFloat fy, const coreFloat fz)noexcept : x (fx),  y (fy),  z (fz)  {}
+    constexpr FORCE_INLINE coreVector3(const coreVector2& v, const coreFloat fz)noexcept                   : x (v.x), y (v.y), z (fz)  {}
+    constexpr FORCE_INLINE coreVector3(const coreFloat fx, const coreVector2& v)noexcept                   : x (fx),  y (v.x), z (v.y) {}
+    constexpr FORCE_INLINE coreVector3(const coreFloat fx, const coreFloat fy, const coreFloat fz)noexcept : x (fx),  y (fy),  z (fz)  {}
 
     ENABLE_COPY(coreVector3)
 
@@ -322,13 +322,13 @@ public:
 
 public:
     coreVector4() = default;
-    constexpr coreVector4(const coreVector3& v, const coreFloat fw)noexcept                                       : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
-    constexpr coreVector4(const coreFloat fx, const coreVector3& v)noexcept                                       : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
-    constexpr coreVector4(const coreVector2& v, const coreFloat fz, const coreFloat fw)noexcept                   : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
-    constexpr coreVector4(const coreFloat fx, const coreVector2& v, const coreFloat fw)noexcept                   : x (fx),   y (v.x),  z (v.y),  w (fw)   {}
-    constexpr coreVector4(const coreFloat fx, const coreFloat fy, const coreVector2& v)noexcept                   : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
-    constexpr coreVector4(const coreVector2& v1, const coreVector2& v2)noexcept                                   : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
-    constexpr coreVector4(const coreFloat fx, const coreFloat fy, const coreFloat fz, const coreFloat fw)noexcept : x (fx),   y (fy),   z (fz),   w (fw)   {}
+    constexpr FORCE_INLINE coreVector4(const coreVector3& v, const coreFloat fw)noexcept                                       : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
+    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreVector3& v)noexcept                                       : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
+    constexpr FORCE_INLINE coreVector4(const coreVector2& v, const coreFloat fz, const coreFloat fw)noexcept                   : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
+    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreVector2& v, const coreFloat fw)noexcept                   : x (fx),   y (v.x),  z (v.y),  w (fw)   {}
+    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreFloat fy, const coreVector2& v)noexcept                   : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
+    constexpr FORCE_INLINE coreVector4(const coreVector2& v1, const coreVector2& v2)noexcept                                   : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
+    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreFloat fy, const coreFloat fz, const coreFloat fw)noexcept : x (fx),   y (fy),   z (fz),   w (fw)   {}
 
     ENABLE_COPY(coreVector4)
 

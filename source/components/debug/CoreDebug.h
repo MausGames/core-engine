@@ -166,7 +166,7 @@ template <typename... A> void CoreDebug::InspectValue(const coreChar* pcName, co
     }
 
     // write formatted values to output label
-    m_apInspect.at(pcName)->oOutput.SetText(PRINT("%s (%s)", pcName, PRINT(pcFormat, std::forward<A>(vArgs)...)));
+    m_apInspect.at(pcName)->oOutput.SetText(PRINT("%s = %s", pcName, PRINT(pcFormat, std::forward<A>(vArgs)...)));
 }
 
 

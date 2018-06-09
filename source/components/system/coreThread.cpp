@@ -99,7 +99,7 @@ coreStatus coreThread::__Main()
     coreUint8  iCurExecution = 0u;
 
     // call init-routine
-    Core::Log->Info("Thread (%s:%04lX) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
+    Core::Log->Info("Thread (%s, %04lX) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
     coreStatus iReturn = this->__InitThread();
 
     // begin main-loop
@@ -133,7 +133,7 @@ coreStatus coreThread::__Main()
 
     // call exit-routine
     this->__ExitThread();
-    Core::Log->Info("Thread (%s:%04lX) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
+    Core::Log->Info("Thread (%s, %04lX) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
 
     m_bActive = false;
     return iReturn;

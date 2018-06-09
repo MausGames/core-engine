@@ -101,7 +101,7 @@ private:
 
 public:
     coreFlow() = default;
-    constexpr coreFlow(const coreFloat fValue)noexcept : m_fValue (fValue) {}
+    constexpr FORCE_INLINE coreFlow(const coreFloat fValue)noexcept : m_fValue (fValue) {}
 
     ENABLE_COPY(coreFlow)
 

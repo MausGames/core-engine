@@ -337,12 +337,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     }
 
     // save properties
-    FOR_EACH(it, m_apShader)
-    {
-        m_sPath += (*it).GetHandle()->GetName();
-        m_sPath += ':';
-    }
-    m_sPath.pop_back();
+    FOR_EACH(it, m_apShader) m_sPath += PRINT("%s%s:%u", m_sPath.empty() ? "" : ", ", (*it).GetHandle()->GetName(), (*it)->GetIdentifier());
 
     // check for errors
     GLint iStatus;
@@ -357,7 +352,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     const coreBool bSync = m_Sync.Create();
     if(!bSync) m_iStatus = CORE_PROGRAM_FINISHED;
 
-    Core::Log->Info("Program (%s:%u) loaded", m_sPath.c_str(), m_iIdentifier);
+    Core::Log->Info("Program (%s) loaded", m_sPath.c_str());
     this->__WriteInterface();
     return bSync ? CORE_BUSY : CORE_OK;
 }

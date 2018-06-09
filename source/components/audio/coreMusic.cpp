@@ -67,7 +67,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     m_pComment = ov_comment   (&m_Stream, -1);
     m_dMaxTime = ov_time_total(&m_Stream, -1);
 
-    Core::Log->Info("Music (%s) loaded", pFile->GetPath());
+    Core::Log->Info("Music (%s, %.1f seconds) loaded", pFile->GetPath(), m_dMaxTime);
 }
 
 

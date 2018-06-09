@@ -393,7 +393,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 void coreBatchList::Render()
 {
     // render with default shader-programs
-    if(!m_apObjectList.empty()) coreBatchList::Render(m_pProgram, m_apObjectList.front()->GetProgram());
+    if(!m_apObjectList.empty()) this->Render(m_pProgram, m_apObjectList.front()->GetProgram());
 }
 
 

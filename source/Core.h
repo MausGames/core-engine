@@ -59,6 +59,7 @@
 // TODO: #pragma warning(default : 4242 4244 4365) // loss of precision
 // TODO: #pragma warning(default : 4820)           // byte padding
 // TODO: unify const void* and const coreByte*
+// TODO: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -149,7 +150,7 @@
     #define UNUSED           [[maybe_unused]]       //!< possibly unused variable (warnings 4100, 4101, 4189)
     #define OUTPUT           __restrict             //!< output parameter without aliasing
     #define INTERFACE        __declspec(novtable)   //!< pure interface class without direct instantiation
-    #define FORCE_INLINE     __forceinline          //!< always inline the function (when optimizations are enabled)
+    #define FORCE_INLINE     __forceinline          //!< always inline the function
     #define DONT_INLINE      __declspec(noinline)   //!< never inline the function
     #define RETURN_RESTRICT  __declspec(restrict)   //!< returned object will not be aliased with another pointer
     #define RETURN_NONNULL   _Ret_notnull_          //!< returned pointer will not be null
@@ -206,6 +207,7 @@
     #pragma warning(disable : 5026)   //!< move constructor implicitly deleted
     #pragma warning(disable : 5027)   //!< move assignment operator implicitly deleted
     #pragma warning(disable : 5039)   //!< potentially throwing function passed to extern C function
+    #pragma warning(disable : 5045)   //!< possible Spectre vulnerability
 
     // check for floating-point results stored in memory, causing performance loss
     #if defined(_CORE_X64_)
