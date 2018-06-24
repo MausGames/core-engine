@@ -294,7 +294,7 @@ void CoreGraphics::UpdateTransformation()
 
         // bind and map required area of the UBO
         glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer.GetIdentifier(), iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
-        coreByte* pRange = m_TransformBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        coreByte* pRange = m_TransformBuffer.Map(iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
         std::memcpy(pRange,                                                 &mViewProj,         sizeof(coreMatrix4));
@@ -333,7 +333,7 @@ void CoreGraphics::UpdateAmbient()
 
         // bind and map required area of the UBO
         glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer.GetIdentifier(), iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
-        coreByte* pRange = m_AmbientBuffer.Map<coreByte>(iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        coreByte* pRange = m_AmbientBuffer.Map(iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update ambient data
         std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);

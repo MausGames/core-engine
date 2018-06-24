@@ -74,16 +74,16 @@ public:
 
     //! bind and unbind the data buffer object
     //! @{
-    inline void Bind()const                                                   {ASSERT(m_iIdentifier) coreDataBuffer::Bind(m_iTarget, m_iIdentifier);}
+    inline void        Bind  ()const                                          {ASSERT(m_iIdentifier) coreDataBuffer::Bind(m_iTarget, m_iIdentifier);}
     static inline void Bind  (const GLenum iTarget, const GLuint iIdentifier) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iIdentifier) return;} s_aiBound[iTarget] = iIdentifier; glBindBuffer(iTarget, iIdentifier);}
     static inline void Unbind(const GLenum iTarget, const coreBool bFull)     {if(bFull) coreDataBuffer::Bind(iTarget, 0u); else s_aiBound[iTarget] = 0u;}
     //! @}
 
     //! modify buffer memory
     //! @{
-    template <typename T> RETURN_RESTRICT T* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType);
-    template <typename T> void               Unmap(T* ptPointer);
-    void Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
+    RETURN_RESTRICT coreByte* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType);
+    void                      Unmap(const coreByte* pPointer);
+    void                      Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
     //! @}
 
     //! reset content of the data buffer object
@@ -186,118 +186,6 @@ inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 , m_Sync              (std::move(m.m_Sync))
 {
     m.m_iIdentifier = 0u;
-}
-
-
-// ****************************************************************
-// map buffer memory for writing operations
-template <typename T> RETURN_RESTRICT T* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType)
-{
-    ASSERT(m_iIdentifier && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
-
-    // save mapping attributes
-    m_iMapOffset = iOffset;
-    m_iMapLength = iLength;
-
-    // check for sync object status
-    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
-        m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
-
-    // return persistent mapped buffer
-    if(m_pPersistentBuffer) return r_cast<T*>(m_pPersistentBuffer + iOffset);
-
-    if(CORE_GL_SUPPORT(ARB_map_buffer_range))
-    {
-        if(CORE_GL_SUPPORT(ARB_direct_state_access))
-        {
-            // map buffer memory directly (new)
-            return s_cast<T*>(glMapNamedBufferRange(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
-        }
-        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
-        {
-            // map buffer memory directly (old)
-            return s_cast<T*>(glMapNamedBufferRangeEXT(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
-        }
-        else
-        {
-            // bind and map buffer memory
-            this->Bind();
-            return s_cast<T*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
-        }
-    }
-    else
-    {
-        // create temporary memory
-        T* ptPointer = new T[iLength / sizeof(T) + 1u];
-        return ptPointer;
-    }
-}
-
-
-// ****************************************************************
-// unmap buffer memory
-template <typename T> void coreDataBuffer::Unmap(T* ptPointer)
-{
-    ASSERT(ptPointer)
-
-    if(m_pPersistentBuffer)
-    {
-        if(CORE_GL_SUPPORT(ARB_direct_state_access))
-        {
-            // flush persistent mapped buffer directly (new)
-            glFlushMappedNamedBufferRange(m_iIdentifier, m_iMapOffset, m_iMapLength);
-        }
-        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
-        {
-            // flush persistent mapped buffer directly (old)
-            glFlushMappedNamedBufferRangeEXT(m_iIdentifier, m_iMapOffset, m_iMapLength);
-        }
-        else
-        {
-            // bind and flush persistent mapped buffer
-            this->Bind();
-            glFlushMappedBufferRange(m_iTarget, m_iMapOffset, m_iMapLength);
-        }
-    }
-    else
-    {
-        if(CORE_GL_SUPPORT(ARB_map_buffer_range))
-        {
-            if(CORE_GL_SUPPORT(ARB_direct_state_access))
-            {
-                // unmap buffer memory directly (new)
-                glUnmapNamedBuffer(m_iIdentifier);
-            }
-            else if(CORE_GL_SUPPORT(EXT_direct_state_access))
-            {
-                // unmap buffer memory directly (old)
-                glUnmapNamedBufferEXT(m_iIdentifier);
-            }
-            else
-            {
-                // bind and unmap buffer memory
-                this->Bind();
-                glUnmapBuffer(m_iTarget);
-            }
-        }
-        else
-        {
-            // send new data to the data buffer
-            this->Bind();
-            glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, ptPointer);
-
-            // delete temporary memory
-            SAFE_DELETE_ARRAY(ptPointer);
-        }
-    }
-
-    // create sync object
-    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
-        m_Sync.Create();
-
-    // reset mapping attributes
-    m_iMapOffset = 0u;
-    m_iMapLength = 0u;
 }
 
 

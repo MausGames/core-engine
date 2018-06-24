@@ -86,7 +86,8 @@ public:
 
     /*! create new entry */
     //! @{
-    template <typename... A> void emplace(const I& tKey, A&&... vArgs);
+    template <typename... A> void emplace   (const I& tKey, A&&... vArgs);
+    template <typename... A> void emplace_bs(const I& tKey, A&&... vArgs);
     //! @}
 
     /*! remove existing entry */
@@ -194,7 +195,8 @@ public:
 
     /*! create new entry */
     //! @{
-    template <typename... A> inline void emplace(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace(sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace   (const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace   (sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace_bs(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace_bs(sKey, std::forward<A>(vArgs)...);}
     //! @}
 
     /*! remove existing entry */
@@ -350,6 +352,21 @@ template <typename K, typename I, typename T> template <typename... A> void core
 
     // cache current entry
     this->_cache_set(m_atValueList.size() - 1u);
+}
+
+template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace_bs(const I& tKey, A&&... vArgs)
+{
+    ASSERT(!this->count_bs(tKey))
+
+    // find target location with binary search
+    auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
+
+    // create new entry
+    m_atValueList.emplace(this->get_value(it), std::forward<A>(vArgs)...);
+    it = m_atKeyList.insert(it, tKey);
+
+    // cache current entry
+    this->_cache_set(it - m_atKeyList.begin());
 }
 
 

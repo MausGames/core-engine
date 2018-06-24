@@ -238,6 +238,10 @@ coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 , m_aInstanceBuffer    {}
 , m_paCustomBuffer     (NULL)
 , m_pLastModel         (NULL)
+, m_nDefineBufferFunc  (NULL)
+, m_nUpdateDataFunc    (NULL)
+, m_nUpdateShaderFunc  (NULL)
+, m_iCustomSize        (0u)
 , m_iFilled            (0u)
 , m_iUpdate            (0u)
 {
@@ -280,120 +284,20 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 {
     if(m_apObjectList.empty()) return;
 
-    if(this->IsInstanced())
-    {
-        // get first object from list
-        const coreObject3D* pFirst = m_apObjectList.front();
-        const coreModelPtr& pModel = pFirst->GetModel();
+    // re-determine render-count (may have changed between move and render)
+    if(m_iUpdate) m_iCurEnabled = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
 
-        // check for model status
-        if(!pModel.IsUsable()) return;
-
-        // detect model changes and invoke update
-        if(m_pLastModel != pModel.GetHandle()) m_iFilled = 0u;
-        m_pLastModel = pModel.GetHandle();
-
-        // enable the shader-program
-        if(!pProgramInstanced.IsUsable()) return;
-        if(!pProgramInstanced->Enable())  return;
-
-        // enable all active textures
-        coreTexture::EnableAll(&pFirst->GetTexture(0u));
-
-        if(CONTAINS_BIT(m_iUpdate, 0u))
-        {
-            // re-determine render-count (may have changed between move and render)
-            m_iCurEnabled = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
-
-            // invalidate previous buffer
-            m_aInstanceBuffer.current().Invalidate();
-
-            // switch to next available array and buffer
-            m_aiVertexArray  .next();
-            m_aInstanceBuffer.next();
-
-            // map required area of the instance data buffer
-            coreByte* pRange  = m_aInstanceBuffer.current().Map<coreByte>(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
-            coreByte* pCursor = pRange;
-
-            FOR_EACH(it, m_apObjectList)
-            {
-                const coreObject3D* pObject = (*it);
-
-                // render only enabled objects
-                if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-                {
-                    // compress data
-                    const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f)                      .PackFloat4x16();
-                    const coreUint64 iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
-                    const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
-                    const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
-                    ASSERT((pObject->GetColor4   ().Min() >=  0.0f)  && (pObject->GetColor4   ().Max() <= 1.0f))
-                    ASSERT((pObject->GetTexOffset().Min() >= -50.0f) && (pObject->GetTexOffset().Max() <= 50.0f))
-
-                    // write data to the buffer
-                    std::memcpy(pCursor,                                                &pObject->GetPosition(), sizeof(coreVector3));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iSize,                  sizeof(coreUint64));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iRotation,              sizeof(coreUint64));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32), &iTexParams,             sizeof(coreUint64));
-                    pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
-                }
-            }
-
-            // unmap buffer
-            m_aInstanceBuffer.current().Unmap(pRange);
-
-            // reset the update status
-            REMOVE_BIT(m_iUpdate, 0u)
-        }
-
-        // disable current model object (because of direct VAO use)
-        coreModel::Disable(false);
-
-        // bind vertex array object
-        glBindVertexArray(m_aiVertexArray.current());
-
-        // activate missing geometry data
-        if(!CONTAINS_BIT(m_iFilled, m_aiVertexArray.index()))
-        {
-            ADD_BIT(m_iFilled, m_aiVertexArray.index())
-            STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_OBJECT3D_INSTANCE_BUFFERS)
-
-            // set vertex data (model only)
-            pModel->GetVertexBuffer(0u)->Activate(0u);
-
-            // set index data
-            if(pModel->GetIndexBuffer()->IsValid())
-            {
-                coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
-                pModel->GetIndexBuffer()->Bind();
-            }
-        }
-
-        // draw the model instanced
-        pModel->DrawInstanced(m_iCurEnabled);
-    }
-    else
-    {
-        FOR_EACH(it, m_apObjectList)
-        {
-            coreObject3D* pObject = (*it);
-
-            // render only enabled objects
-            if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-            {
-                // draw without instancing (no inheritance)
-                pObject->coreObject3D::Render(pProgramSingle);
-            }
-        }
-    }
+    // check for custom vertex attributes
+    if(this->IsCustom()) this->__RenderCustom (pProgramInstanced, pProgramSingle);
+                    else this->__RenderDefault(pProgramInstanced, pProgramSingle);
 }
 
 void coreBatchList::Render()
 {
+    if(m_apObjectList.empty()) return;
+
     // render with default shader-programs
-    if(!m_apObjectList.empty()) this->Render(m_pProgram, m_apObjectList.front()->GetProgram());
+    this->Render(m_pProgram, m_apObjectList.front()->GetProgram());
 }
 
 
@@ -552,7 +456,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
 
     if(bInit)
     {
-        if(m_aInstanceBuffer[0].IsValid()) return;
+        WARN_IF(m_aInstanceBuffer[0].IsValid()) return;
 
         // only allocate with enough capacity
         if(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
@@ -564,7 +468,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
                 glBindVertexArray(m_aiVertexArray.current());
                 m_aiVertexArray.next();
 
-                // create instance data buffers
+                // create instance data buffer
                 it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
@@ -575,13 +479,16 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
                 // set vertex data (instancing only)
                 it->ActivateDivided(1u, 1u);
 
-                if(m_paCustomBuffer)
+                if(this->IsCustom())
                 {
                     coreVertexBuffer& oBuffer = m_paCustomBuffer->current();
                     m_paCustomBuffer->next();
 
-                    // also re-create and activate custom attribute buffer
-                    oBuffer.Create(m_iCurCapacity, oBuffer.GetVertexSize(), NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+                    // create custom attribute buffer
+                    oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+                    m_nDefineBufferFunc(&oBuffer);
+
+                    // set vertex data (custom only)
                     oBuffer.ActivateDivided(2u, 1u);
                 }
             }
@@ -601,21 +508,195 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
-        FOR_EACH(it, m_aInstanceBuffer)
-            it->Delete();
+        FOR_EACH(it, m_aInstanceBuffer) it->Delete();
 
         // reset selected array and buffer (to synchronize)
         m_aiVertexArray  .select(0u);
         m_aInstanceBuffer.select(0u);
 
-        if(m_paCustomBuffer)
+        if(this->IsCustom())
         {
-            // delete custom attribute buffers (keep attributes and vertex size)
-            FOR_EACH(it, *m_paCustomBuffer)
-                it->coreDataBuffer::Delete();
+            // delete custom attribute buffers
+            FOR_EACH(it, *m_paCustomBuffer) it->Delete();
 
             // reset selected buffer (to synchronize)
             m_paCustomBuffer->select(0u);
+        }
+    }
+}
+
+
+// ****************************************************************
+/* render without inheritance or additional attributes */
+void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle)
+{
+    if(this->IsInstanced())
+    {
+        // get first object from list
+        const coreObject3D* pFirst = m_apObjectList.front();
+        const coreModelPtr& pModel = pFirst->GetModel();
+
+        // check for model status
+        if(!pModel.IsUsable()) return;
+
+        // detect model changes and invoke update
+        if(m_pLastModel != pModel.GetHandle()) m_iFilled = 0u;
+        m_pLastModel = pModel.GetHandle();
+
+        // enable the shader-program
+        if(!pProgramInstanced.IsUsable()) return;
+        if(!pProgramInstanced->Enable())  return;
+
+        // enable all active textures
+        coreTexture::EnableAll(&pFirst->GetTexture(0u));
+
+        if(CONTAINS_BIT(m_iUpdate, 0u))
+        {
+            // invalidate previous buffer
+            m_aInstanceBuffer.current().Invalidate();
+
+            // switch to next available array and buffer
+            m_aiVertexArray  .next();
+            m_aInstanceBuffer.next();
+
+            // map required area of the instance data buffer
+            coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pCursor = pRange;
+
+            FOR_EACH(it, m_apObjectList)
+            {
+                const coreObject3D* pObject = (*it);
+
+                // render only enabled objects
+                if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+                {
+                    // compress data
+                    const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f)                      .PackFloat4x16();
+                    const coreUint64 iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
+                    const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
+                    const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
+                    ASSERT((pObject->GetColor4   ().Min() >=  0.0f)  && (pObject->GetColor4   ().Max() <= 1.0f))
+                    ASSERT((pObject->GetTexOffset().Min() >= -50.0f) && (pObject->GetTexOffset().Max() <= 50.0f))
+
+                    // write data to the buffer
+                    std::memcpy(pCursor,                                                &pObject->GetPosition(), sizeof(coreVector3));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iSize,                  sizeof(coreUint64));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iRotation,              sizeof(coreUint64));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
+                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32), &iTexParams,             sizeof(coreUint64));
+                    pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
+                }
+            }
+
+            // unmap buffer
+            m_aInstanceBuffer.current().Unmap(pRange);
+
+            // reset the update status
+            REMOVE_BIT(m_iUpdate, 0u)
+        }
+
+        // disable current model object (because of direct VAO use)
+        coreModel::Disable(false);
+
+        // bind vertex array object
+        glBindVertexArray(m_aiVertexArray.current());
+
+        // activate missing geometry data
+        if(!CONTAINS_BIT(m_iFilled, m_aiVertexArray.index()))
+        {
+            ADD_BIT(m_iFilled, m_aiVertexArray.index())
+            STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_OBJECT3D_INSTANCE_BUFFERS)
+
+            // set vertex data (model only)
+            pModel->GetVertexBuffer(0u)->Activate(0u);
+
+            // set index data
+            if(pModel->GetIndexBuffer()->IsValid())
+            {
+                coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
+                pModel->GetIndexBuffer()->Bind();
+            }
+        }
+
+        // draw the model instanced
+        pModel->DrawInstanced(m_iCurEnabled);
+    }
+    else
+    {
+        FOR_EACH(it, m_apObjectList)
+        {
+            coreObject3D* pObject = (*it);
+
+            // render only enabled objects
+            if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            {
+                // draw without instancing (no inheritance)
+                pObject->coreObject3D::Render(pProgramSingle);
+            }
+        }
+    }
+}
+
+
+// ****************************************************************
+/* render with custom vertex attributes per active object */
+void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle)
+{
+    ASSERT(this->IsCustom())
+
+    if(this->IsInstanced())
+    {
+        if(CONTAINS_BIT(m_iUpdate, 1u))
+        {
+            // invalidate previous buffer
+            m_paCustomBuffer->current().Invalidate();
+
+            // switch to next available buffer
+            m_paCustomBuffer->select(m_aInstanceBuffer.index());
+            if(CONTAINS_BIT(m_iUpdate, 0u)) m_paCustomBuffer->next();
+
+            // map required area of the custom attribute buffer
+            coreByte* pRange  = m_paCustomBuffer->current().Map(0u, m_iCurEnabled * m_iCustomSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pCursor = pRange;
+
+            FOR_EACH(it, m_apObjectList)
+            {
+                coreObject3D* pObject = (*it);
+
+                // render only enabled objects
+                if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+                {
+                    // write data to the buffer
+                    m_nUpdateDataFunc(pCursor, pObject);
+                    pCursor += m_iCustomSize;
+                }
+            }
+
+            // unmap buffer
+            m_paCustomBuffer->current().Unmap(pRange);
+
+            // reset the update status
+            REMOVE_BIT(m_iUpdate, 1u)
+        }
+
+        // render the batch list
+        this->__RenderDefault(pProgramInstanced, pProgramSingle);
+    }
+    else
+    {
+        FOR_EACH(it, m_apObjectList)
+        {
+            coreObject3D* pObject = (*it);
+
+            // render only enabled objects
+            if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            {
+                // update shader manually
+                m_nUpdateShaderFunc(pProgramSingle, pObject);
+
+                // draw without instancing (no inheritance)
+                pObject->coreObject3D::Render(pProgramSingle);
+            }
         }
     }
 }

@@ -90,7 +90,7 @@ void coreParticleSystem::Render()
             m_aiInstanceBuffer.next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.current().Map<coreByte>(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pRange  = m_aiInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
             coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)
@@ -329,8 +329,7 @@ void coreParticleSystem::__Reset(const coreResourceReset bInit)
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
-        FOR_EACH(it, m_aiInstanceBuffer)
-            it->Delete();
+        FOR_EACH(it, m_aiInstanceBuffer) it->Delete();
 
         // reset selected array and buffer (to synchronize)
         m_aiVertexArray   .select(0u);

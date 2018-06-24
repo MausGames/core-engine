@@ -454,15 +454,19 @@ template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iS
 
 // retrieve compile-time function and lambda properties
 template <typename T>                            struct INTERFACE coreFunctionTraits final               : public coreFunctionTraits<decltype(&std::remove_reference<T>::type::operator())> {};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const> : public coreFunctionTraits<R(A...)>                                               {};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)>      : public coreFunctionTraits<R(A...)>                                               {};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const> : public coreFunctionTraits<R(A...)>                                               {using uClassType = C;};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)>      : public coreFunctionTraits<R(A...)>                                               {using uClassType = C;};
 template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)>      : public coreFunctionTraits<R(A...)>                                               {};
 template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)>
 {
+    using uFuncType   = R(*)(A...);                                                                             //!< function type (without class)
+    using uClassType  = void;                                                                                   //!< class type
     using uReturnType = R;                                                                                      //!< return type
     template <coreUintW iIndex> using uArgType = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   //!< argument types
     enum : coreUintW {iArity = sizeof...(A)};                                                                   //!< number of arguments
 };
+#define TRAIT_FUNC_TYPE(f)   coreFunctionTraits<f>::uFuncType
+#define TRAIT_CLASS_TYPE(f)  coreFunctionTraits<f>::uClassType
 #define TRAIT_RETURN_TYPE(f) coreFunctionTraits<f>::uReturnType
 #define TRAIT_ARG_TYPE(f,i)  coreFunctionTraits<f>::template uArgType<i>
 #define TRAIT_ARITY(f)       coreFunctionTraits<f>::iArity

@@ -135,6 +135,118 @@ void coreDataBuffer::Delete()
 
 
 // ****************************************************************
+// map buffer memory for writing operations
+RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType)
+{
+    ASSERT(m_iIdentifier && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
+
+    // save mapping attributes
+    m_iMapOffset = iOffset;
+    m_iMapLength = iLength;
+
+    // check for sync object status
+    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+        m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
+
+    // return persistent mapped buffer
+    if(m_pPersistentBuffer) return (m_pPersistentBuffer + iOffset);
+
+    if(CORE_GL_SUPPORT(ARB_map_buffer_range))
+    {
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // map buffer memory directly (new)
+            return s_cast<coreByte*>(glMapNamedBufferRange(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // map buffer memory directly (old)
+            return s_cast<coreByte*>(glMapNamedBufferRangeEXT(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+        }
+        else
+        {
+            // bind and map buffer memory
+            this->Bind();
+            return s_cast<coreByte*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+        }
+    }
+    else
+    {
+        // create temporary memory
+        coreByte* pPointer = new coreByte[iLength];
+        return pPointer;
+    }
+}
+
+
+// ****************************************************************
+// unmap buffer memory
+void coreDataBuffer::Unmap(const coreByte* pPointer)
+{
+    ASSERT(pPointer)
+
+    if(m_pPersistentBuffer)
+    {
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // flush persistent mapped buffer directly (new)
+            glFlushMappedNamedBufferRange(m_iIdentifier, m_iMapOffset, m_iMapLength);
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // flush persistent mapped buffer directly (old)
+            glFlushMappedNamedBufferRangeEXT(m_iIdentifier, m_iMapOffset, m_iMapLength);
+        }
+        else
+        {
+            // bind and flush persistent mapped buffer
+            this->Bind();
+            glFlushMappedBufferRange(m_iTarget, m_iMapOffset, m_iMapLength);
+        }
+    }
+    else
+    {
+        if(CORE_GL_SUPPORT(ARB_map_buffer_range))
+        {
+            if(CORE_GL_SUPPORT(ARB_direct_state_access))
+            {
+                // unmap buffer memory directly (new)
+                glUnmapNamedBuffer(m_iIdentifier);
+            }
+            else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+            {
+                // unmap buffer memory directly (old)
+                glUnmapNamedBufferEXT(m_iIdentifier);
+            }
+            else
+            {
+                // bind and unmap buffer memory
+                this->Bind();
+                glUnmapBuffer(m_iTarget);
+            }
+        }
+        else
+        {
+            // send new data to the data buffer
+            this->Bind();
+            glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, pPointer);
+
+            // delete temporary memory
+            SAFE_DELETE_ARRAY(pPointer);
+        }
+    }
+
+    // create sync object
+    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+        m_Sync.Create();
+
+    // reset mapping attributes
+    m_iMapOffset = 0u;
+    m_iMapLength = 0u;
+}
+
+
+// ****************************************************************
 // copy content of the data buffer object
 void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const
 {

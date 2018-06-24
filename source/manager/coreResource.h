@@ -366,7 +366,7 @@ template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreRe
 template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreHashString& sName, const coreResourceUpdate bUpdate, const coreHashString& sPath, A&&... vArgs)
 {
     // check for existing resource handle
-    if(m_apHandle.count(sName)) return m_apHandle.at(sName);
+    if(m_apHandle.count_bs(sName)) return m_apHandle.at(sName);
 
     // create new resource handle
     coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), bUpdate ? true : false);
@@ -374,7 +374,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     coreAtomicLock(&m_iResourceLock);
     {
         // add resource handle to manager
-        m_apHandle.emplace(sName, pNewHandle);
+        m_apHandle.emplace_bs(sName, pNewHandle);
     }
     coreAtomicUnlock(&m_iResourceLock);
 
@@ -390,7 +390,7 @@ template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreRes
 inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& sName)
 {
     // check for existing resource proxy
-    if(m_apHandle.count(sName))
+    if(m_apHandle.count_bs(sName))
     {
         ASSERT(m_apProxy.count(m_apHandle.at(sName)))
         return m_apHandle.at(sName);

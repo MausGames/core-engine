@@ -145,11 +145,11 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
     coreLockRelease oRelease(&m_iFileLock);
 
     // check for existing archive
-    if(m_apArchive.count(sPath)) return m_apArchive.at(sPath);
+    if(m_apArchive.count_bs(sPath)) return m_apArchive.at(sPath);
 
     // load new archive
     coreArchive* pNewArchive = MANAGED_NEW(coreArchive, sPath.GetString());
-    m_apArchive.emplace(sPath, pNewArchive);
+    m_apArchive.emplace_bs(sPath, pNewArchive);
 
     ASSERT(pNewArchive->GetNumFiles())
     return pNewArchive;
@@ -177,11 +177,11 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
     }
 
     // check for existing direct resource file
-    if(m_apDirectFile.count(sPath)) return m_apDirectFile.at(sPath);
+    if(m_apDirectFile.count_bs(sPath)) return m_apDirectFile.at(sPath);
 
     // load new direct resource file
     coreFile* pNewFile = MANAGED_NEW(coreFile, sPath.GetString());
-    m_apDirectFile.emplace(sPath, pNewFile);
+    m_apDirectFile.emplace_bs(sPath, pNewFile);
 
     return pNewFile;
 }

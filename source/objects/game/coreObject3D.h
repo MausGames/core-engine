@@ -10,10 +10,9 @@
 #ifndef _CORE_GUARD_OBJECT3D_H_
 #define _CORE_GUARD_OBJECT3D_H_
 
-// TODO: remove SQRT in object-line collision
 // TODO: instancing with more than one vertex array in the model ? (binding location)
 // TODO: implement efficient batch list sort function
-// TODO: compress rotation and texture parameters (2x16 ?)
+// TODO: compress rotation and texture parameters (2x16 ?), color 4b, position and size
 // TODO: make coreBatchList to template class, check for every casting
 // TODO: add MoveNormal() and MoveSort() with callback
 
@@ -112,6 +111,13 @@ public:
 class coreBatchList final : public coreResourceRelation
 {
 private:
+    /*! internal types */
+    using coreDefineBuffer = void (*) (coreVertexBuffer* OUTPUT);
+    using coreUpdateData   = void (*) (coreByte* OUTPUT, const coreObject3D*);
+    using coreUpdateShader = void (*) (const coreProgramPtr&, const coreObject3D*);
+
+
+private:
     coreSet<coreObject3D*> m_apObjectList;                                            //!< list with pointers to similar 3d-objects
     coreUint32 m_iCurCapacity;                                                        //!< current instance-capacity of all related resources
     coreUint32 m_iCurEnabled;                                                         //!< current number of render-enabled 3d-objects (render-count)
@@ -123,6 +129,11 @@ private:
     coreArray<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>* m_paCustomBuffer;    //!< optional custom attribute buffers
 
     const void* m_pLastModel;                                                         //!< pointer to last used model (to detect changes and update the vertex array)
+
+    coreDefineBuffer m_nDefineBufferFunc;                                             //!< function for defining the vertex structure of the custom attribute buffers
+    coreUpdateData   m_nUpdateDataFunc;                                               //!< function for updating custom attributes with instancing
+    coreUpdateShader m_nUpdateShaderFunc;                                             //!< function for updating custom attributes through shader uniforms
+    coreUint8        m_iCustomSize;                                                   //!< vertex size for the custom attribute buffers
 
     coreUint8 m_iFilled;                                                              //!< vertex array fill status
     coreUint8 m_iUpdate;                                                              //!< buffer update status (dirty flag)
@@ -165,13 +176,13 @@ public:
 
     /*! control custom vertex attributes */
     //! @{
-    template <typename F>             void CreateCustom(const coreUintW iVertexSize, F&& nDefineBufferFunc);   //!< [](coreVertexBuffer* OUTPUT pBuffer) -> void
-    template <typename F, typename G> void RenderCustom(F&& nUpdateDataFunc, G&& nUpdateShaderFunc);           //!< [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void, [](const coreObject3D* pObject) -> void
+    template <typename F, typename G, typename H> void CreateCustom(const coreUint8 iVertexSize, F&& nDefineBufferFunc, G&& nUpdateDataFunc, H&& nUpdateShaderFunc);   //!< [](coreVertexBuffer* OUTPUT pBuffer) -> void, [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void, [](const coreProgramPtr& pProgram, const coreObject3D* pObject) -> void
     //! @}
 
     /*! check for instancing status */
     //! @{
     inline coreBool IsInstanced()const {return (m_aInstanceBuffer[0].IsValid() && (m_iCurEnabled >= CORE_OBJECT3D_INSTANCE_THRESHOLD)) ? true : false;}
+    inline coreBool IsCustom   ()const {return (m_paCustomBuffer != NULL) ? true : false;}
     //! @}
 
     /*! access 3d-object list directly */
@@ -193,100 +204,50 @@ private:
     //! @{
     void __Reset(const coreResourceReset bInit)final;
     //! @}
+
+    /*! render the batch list */
+    //! @{
+    void __RenderDefault(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle);
+    void __RenderCustom (const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle);
+    //! @}
 };
 
 
 // ****************************************************************
 /* create buffer for custom vertex attributes */
-template <typename F> void coreBatchList::CreateCustom(const coreUintW iVertexSize, F&& nDefineBufferFunc)
+template <typename F, typename G, typename H> void coreBatchList::CreateCustom(const coreUint8 iVertexSize, F&& nDefineBufferFunc, G&& nUpdateDataFunc, H&& nUpdateShaderFunc)
 {
-    ASSERT(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
-    WARN_IF(m_paCustomBuffer) return;
+    WARN_IF(this->IsCustom()) return;
 
     // allocate custom attribute buffer memory
     m_paCustomBuffer = new coreArray<coreVertexBuffer, CORE_OBJECT3D_INSTANCE_BUFFERS>();
 
-    for(coreUintW i = 0u; i < CORE_OBJECT3D_INSTANCE_BUFFERS; ++i)
+    // save functions and vertex size
+    m_nDefineBufferFunc = nDefineBufferFunc;
+    m_nUpdateDataFunc   = r_cast<coreUpdateData>  (s_cast<TRAIT_FUNC_TYPE(G)>(nUpdateDataFunc));
+    m_nUpdateShaderFunc = r_cast<coreUpdateShader>(s_cast<TRAIT_FUNC_TYPE(H)>(nUpdateShaderFunc));
+    m_iCustomSize       = iVertexSize;
+
+    // immediately initialize if instance data buffers are already valid
+    if(m_aInstanceBuffer[0].IsValid())
     {
-        coreVertexBuffer& oBuffer = (*m_paCustomBuffer)[i];
-
-        // bind corresponding vertex array object
-        glBindVertexArray(m_aiVertexArray[i]);
-
-        // create custom attribute buffers
-        oBuffer.Create(m_iCurCapacity, iVertexSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
-        nDefineBufferFunc(&oBuffer);
-
-        // set vertex data
-        oBuffer.ActivateDivided(2u, 1u);
-    }
-}
-
-
-// ****************************************************************
-/* render with custom vertex attributes per active object */
-template <typename F, typename G> void coreBatchList::RenderCustom(F&& nUpdateDataFunc, G&& nUpdateShaderFunc)
-{
-    ASSERT(m_paCustomBuffer)
-
-    if(this->IsInstanced())
-    {
-        if(CONTAINS_BIT(m_iUpdate, 1u))
+        for(coreUintW i = 0u; i < CORE_OBJECT3D_INSTANCE_BUFFERS; ++i)
         {
-            // get vertex size
-            const coreUintW iVertexSize = (*m_paCustomBuffer)[0].GetVertexSize();
+            coreVertexBuffer& oBuffer = (*m_paCustomBuffer)[i];
 
-            // invalidate previous buffer
-            m_paCustomBuffer->current().Invalidate();
+            // bind vertex array object
+            glBindVertexArray(m_aiVertexArray[i]);
 
-            // switch to next available buffer
-            m_paCustomBuffer->select(m_aInstanceBuffer.index());
-            if(CONTAINS_BIT(m_iUpdate, 0u)) m_paCustomBuffer->next();
+            // create custom attribute buffer
+            oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+            m_nDefineBufferFunc(&oBuffer);
 
-            // map required area of the custom attribute buffer
-            coreByte* pRange  = m_paCustomBuffer->current().Map<coreByte>(0u, m_iCurEnabled * iVertexSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
-            coreByte* pCursor = pRange;
-
-            FOR_EACH(it, m_apObjectList)
-            {
-                coreObject3D* pObject = (*it);
-
-                // render only enabled objects
-                if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-                {
-                    // write data to the buffer
-                    nUpdateDataFunc(r_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCursor),
-                                    s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject));
-                    pCursor += iVertexSize;
-                }
-            }
-
-            // unmap buffer
-            m_paCustomBuffer->current().Unmap(pRange);
-
-            // reset the update status
-            REMOVE_BIT(m_iUpdate, 1u)
+            // set vertex data (custom only)
+            oBuffer.ActivateDivided(2u, 1u);
         }
 
-        // render the batch list
-        this->Render();
-    }
-    else
-    {
-        FOR_EACH(it, m_apObjectList)
-        {
-            coreObject3D* pObject = (*it);
-
-            // render only enabled objects
-            if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-            {
-                // update shader manually
-                nUpdateShaderFunc(s_cast<typename TRAIT_ARG_TYPE(G, 0u)>(pObject));
-
-                // draw without instancing (no inheritance)
-                pObject->coreObject3D::Render();
-            }
-        }
+        // disable current model object (to fully enable the next model)
+        coreModel::Disable(false);
     }
 }
 

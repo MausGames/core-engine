@@ -21,6 +21,7 @@
 // TODO: automatic resizing function (preserve old values)
 // TODO: culling (also on instancing)
 // TODO: fix invalid returned particle (e.g. wrong effect, sort) when no free particle is available
+// TODO: supporting ARB_uniform_buffer_object but not ARB_instanced_arrays, ARB_vertex_array_object and ARB_half_float_vertex breaks shaders, because of wrong shader-version
 
 
 // ****************************************************************
