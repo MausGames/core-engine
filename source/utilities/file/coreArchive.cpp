@@ -15,14 +15,14 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_pData       (NULL)
 , m_iSize       (0u)
-, m_iArchivePos (1u)
+, m_iArchivePos (UINT32_MAX)
 , m_pArchive    (NULL)
 {
     if(m_sPath.empty()) return;
 
     // retrieve and clamp file size
     const coreInt64 iFullSize = coreData::FileSize(m_sPath.c_str());
-    if((0 <= iFullSize) && (iFullSize <= 0xFFFFFFFF)) m_iSize = iFullSize;
+    if((iFullSize >= 0) && (iFullSize <= 0xFFFFFFFF)) m_iSize = iFullSize;
 
     // check for success
     if(!m_iSize) Core::Log->Warning("File (%s) could not be opened", m_sPath.c_str());
@@ -73,7 +73,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
     // close file
     SDL_RWclose(pFile);
-    if(!m_iArchivePos) m_iArchivePos = 1u;
+    if(!m_iArchivePos) m_iArchivePos = UINT32_MAX;
 
     return CORE_OK;
 }

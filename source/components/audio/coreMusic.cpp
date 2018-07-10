@@ -44,7 +44,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     if(!pFile->GetData()) return;
 
     // create virtual file as streaming source
-    m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
+    m_pFile = MANAGED_NEW(coreFile, pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
     SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
 
     // test file format and open music stream
@@ -54,7 +54,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     {
         Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: 0x%08X)", pFile->GetPath(), iError);
         ov_clear(&m_Stream);
-        SAFE_DELETE(m_pFile)
+        MANAGED_DELETE(m_pFile)
 
         return;
     }
@@ -84,7 +84,7 @@ coreMusic::~coreMusic()
     if(m_pFile) Core::Log->Info("Music (%s) unloaded", m_pFile->GetPath());
 
     // delete file object
-    SAFE_DELETE(m_pFile)
+    MANAGED_DELETE(m_pFile)
 }
 
 
@@ -308,9 +308,9 @@ coreBool coreMusicPlayer::Update()
         // repeat, switch or stop as defined
         switch(m_iRepeat)
         {
-        case CORE_MUSIC_ALL_NOREPEAT:    if((m_iCurIndex + 1u) >= m_apMusic.size()) break;
-        case CORE_MUSIC_ALL_REPEAT:      this->Next();
-        case CORE_MUSIC_SINGLE_REPEAT:   m_pCurMusic->Play();
+        case CORE_MUSIC_ALL_NOREPEAT:    if((m_iCurIndex + 1u) >= m_apMusic.size()) break; FALLTHROUGH
+        case CORE_MUSIC_ALL_REPEAT:      this->Next();                                     FALLTHROUGH
+        case CORE_MUSIC_SINGLE_REPEAT:   m_pCurMusic->Play();                              FALLTHROUGH
         case CORE_MUSIC_SINGLE_NOREPEAT: break;
         }
         return true;
@@ -328,7 +328,7 @@ void coreMusicPlayer::Order()
     m_apSequence = m_apMusic;
 
     // switch to first music object
-    this->Select(0);
+    this->Select(0u);
 }
 
 
@@ -344,7 +344,7 @@ void coreMusicPlayer::Shuffle()
     coreData::Shuffle(m_apSequence.begin(), m_apSequence.end());
 
     // switch to first music object
-    this->Select(0);
+    this->Select(0u);
 }
 
 

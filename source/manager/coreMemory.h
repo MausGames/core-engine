@@ -27,10 +27,10 @@
 #define CORE_MEMORY_UNIQUE  (PRINT(CORE_MEMORY_SHARED ":%p", this))
 
 #define MANAGED_NEW(t,...)  (new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__))
-#define MANAGED_DELETE(p)   {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), r_cast<void**>(&(p)));}
+#define MANAGED_DELETE(p)   {if(p) {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), r_cast<void**>(&(p)));}}
 
 #define POOLED_NEW(m,t,...) (new((m).Allocate()) t(__VA_ARGS__))
-#define POOLED_DELETE(m,p)  {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}
+#define POOLED_DELETE(m,p)  {if(p) {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}}
 
 #define ALIGNED_NEW(t,c,a)  (r_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
 #define ALIGNED_DELETE(p)   {_aligned_free(p); (p) = NULL;}

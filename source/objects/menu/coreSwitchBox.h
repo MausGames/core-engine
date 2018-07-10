@@ -306,7 +306,7 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, co
 {
     // create new entry
     coreEntry oNewEntry;
-    oNewEntry.psText = new std::string(pcText);
+    oNewEntry.psText = MANAGED_NEW(std::string, pcText);
     oNewEntry.tValue = tValue;
 
     // add entry to the list
@@ -333,7 +333,7 @@ template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUintW iIndex)
 
     // unbind entry
     this->_UnbindString(it->psText);
-    SAFE_DELETE(it->psText)
+    MANAGED_DELETE(it->psText)
 
     // remove entry and update index
     m_aEntry.erase(it);
@@ -352,7 +352,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
     FOR_EACH(it, m_aEntry)
     {
         this->_UnbindString(it->psText);
-        SAFE_DELETE(it->psText)
+        MANAGED_DELETE(it->psText)
     }
 
     // remove all entries and reset index

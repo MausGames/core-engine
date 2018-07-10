@@ -38,8 +38,8 @@ constexpr FUNC_LOCAL coreUint32 coreHashMurmur2(const coreByte* pData, coreUint3
 
     switch(iLength)
     {
-    case 3u: iHash ^= pData[2] << 16u;
-    case 2u: iHash ^= pData[1] << 8u;
+    case 3u: iHash ^= pData[2] << 16u; FALLTHROUGH
+    case 2u: iHash ^= pData[1] << 8u;  FALLTHROUGH
     case 1u: iHash ^= pData[0];
              iHash *= m;
     };

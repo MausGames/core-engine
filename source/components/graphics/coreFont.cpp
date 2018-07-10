@@ -38,7 +38,7 @@ coreStatus coreFont::Load(coreFile* pFile)
     if(!pFile->GetData()) return CORE_ERROR_FILE;
 
     // copy the input file for later font creations
-    m_pFile = new coreFile(pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
+    m_pFile = MANAGED_NEW(coreFile, pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
 
 #if defined(_CORE_DEBUG_)
 
@@ -66,7 +66,7 @@ coreStatus coreFont::Unload()
     m_aapFont.clear();
 
     // delete file
-    SAFE_DELETE(m_pFile)
+    MANAGED_DELETE(m_pFile)
     if(!m_sPath.empty()) Core::Log->Info("Font (%s) unloaded", m_sPath.c_str());
 
     // reset properties

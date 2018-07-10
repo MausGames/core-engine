@@ -10,8 +10,6 @@
 #ifndef _CORE_GUARD_RAND_H_
 #define _CORE_GUARD_RAND_H_
 
-// TODO: check out Xorshift (or Xorshift+) algorithm to increase period
-
 
 // ****************************************************************
 /* random number definitions */

@@ -23,55 +23,8 @@ CoreInput::CoreInput()noexcept
 {
     Core::Log->Header("Input Interface");
 
-    // check for available joystick devices
-    const coreUintW iNumJoysticks = SDL_NumJoysticks();
-    if(iNumJoysticks)
-    {
-        Core::Log->ListStartInfo("Joysticks and Gamepads found");
-        {
-            m_aJoystick.reserve(iNumJoysticks);
-            for(coreUintW i = 0u; i < iNumJoysticks; ++i)
-            {
-                coreJoystick oJoystick = {};
-
-                // open game controller and joystick device
-                oJoystick.pController = SDL_GameControllerOpen(i);
-                oJoystick.pJoystick   = oJoystick.pController ? SDL_GameControllerGetJoystick(oJoystick.pController) : SDL_JoystickOpen(i);
-
-                // try to open haptic device
-                oJoystick.pHaptic = SDL_HapticOpenFromJoystick(oJoystick.pJoystick);
-                if(oJoystick.pHaptic)
-                {
-                    // check for simple rumble playback
-                    if(SDL_HapticRumbleInit(oJoystick.pHaptic))
-                    {
-                        SDL_HapticClose(oJoystick.pHaptic);
-                        oJoystick.pHaptic = NULL;
-                    }
-                }
-
-                // get supported haptic device features
-                const coreUint32 iQuery = SDL_HapticQuery(oJoystick.pHaptic);
-
-                // save joystick object
-                m_aJoystick.push_back(oJoystick);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s / %s 0x%04X)", oJoystick.pController ? "Gamepad" : "Joystick",
-                                                                                this->GetJoystickName(i), this->GetJoystickGUID(i),
-                                                                                oJoystick.pHaptic ? "haptic" : "not haptic", iQuery);
-            }
-        }
-        Core::Log->ListEnd();
-
-        // sort correctly by joystick instance ID
-        std::sort(m_aJoystick.begin(), m_aJoystick.end(), [](const coreJoystick& a, const coreJoystick& b)
-        {
-            return (SDL_JoystickInstanceID(a.pJoystick) < SDL_JoystickInstanceID(b.pJoystick));
-        });
-    }
-    else Core::Log->Info("No Joysticks or Gamepads found");
-
-    // append empty joystick object to prevent problems
-    m_aJoystick.emplace_back();
+    // start up joystick input
+    this->__OpenJoysticks();
 }
 
 
@@ -79,14 +32,8 @@ CoreInput::CoreInput()noexcept
 // destructor
 CoreInput::~CoreInput()
 {
-    // close all joystick and haptic devices
-    FOR_EACH(it, m_aJoystick)
-    {
-             if(it->pHaptic)     SDL_HapticClose        (it->pHaptic);
-             if(it->pController) SDL_GameControllerClose(it->pController);
-        else if(it->pJoystick)   SDL_JoystickClose      (it->pJoystick);
-    }
-    m_aJoystick.clear();
+    // shut down joystick input
+    this->__CloseJoysticks();
 
     // free the hardware mouse cursor
     if(m_pCursor) SDL_FreeCursor(m_pCursor);
@@ -188,22 +135,22 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
 
 
 // ****************************************************************
-// forward d-pad input to stick input on joystick
-void CoreInput::ForwardDpadToStick(const coreUintW iIndex)
+// forward hat input to stick input on joystick
+void CoreInput::ForwardHatToStick(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_aJoystick.size()) return;
 
-    // check for d-pad buttons and invoke stick movement
-         if(this->GetJoystickButton(iIndex, 11u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u,  1.0f);
-    else if(this->GetJoystickButton(iIndex, 12u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u, -1.0f);
-         if(this->GetJoystickButton(iIndex, 13u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u, -1.0f);
-    else if(this->GetJoystickButton(iIndex, 14u, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u,  1.0f);
+    // check for hat directions and invoke stick movement
+         if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u, -1.0f);
+    else if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u,  1.0f);
+         if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u, -1.0f);
+    else if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u,  1.0f);
 
     // reset stick movement on release
-    if(this->GetJoystickButton(iIndex, 11u, CORE_INPUT_RELEASE) ||
-       this->GetJoystickButton(iIndex, 12u, CORE_INPUT_RELEASE)) this->SetJoystickRelative(iIndex, 1u, 0.0f);
-    if(this->GetJoystickButton(iIndex, 13u, CORE_INPUT_RELEASE) ||
-       this->GetJoystickButton(iIndex, 14u, CORE_INPUT_RELEASE)) this->SetJoystickRelative(iIndex, 0u, 0.0f);
+    if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  CORE_INPUT_RELEASE) ||
+       this->GetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, CORE_INPUT_RELEASE)) this->SetJoystickRelative(iIndex, 0u, 0.0f);
+    if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  CORE_INPUT_RELEASE) ||
+       this->GetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    CORE_INPUT_RELEASE)) this->SetJoystickRelative(iIndex, 1u, 0.0f);
 }
 
 
@@ -252,12 +199,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // move mouse position
     case SDL_MOUSEMOTION:
-        if((oEvent.motion.x != F_TO_SI(0.5f*Core::System->GetResolution().x)) ||
-           (oEvent.motion.y != F_TO_SI(0.5f*Core::System->GetResolution().y)))
-        {
-            this->SetMousePosition(coreVector2(I_TO_F(oEvent.motion.x),    -I_TO_F(oEvent.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
-            this->SetMouseRelative(coreVector2(I_TO_F(oEvent.motion.xrel), -I_TO_F(oEvent.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
-        }
+        this->SetMousePosition(coreVector2(I_TO_F(oEvent.motion.x),    -I_TO_F(oEvent.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
+        this->SetMouseRelative(coreVector2(I_TO_F(oEvent.motion.xrel), -I_TO_F(oEvent.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
         break;
 
     // move mouse wheel
@@ -269,28 +212,43 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // press joystick button
     case SDL_JOYBUTTONDOWN:
-        if(__CORE_INPUT_JOYSTICK(oEvent.jbutton.which).pController) break;
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController) break; FALLTHROUGH
     case SDL_CONTROLLERBUTTONDOWN:
-        this->SetJoystickButton(oEvent.jbutton.which, oEvent.jbutton.button, true);
+        this->SetJoystickButton(this->__GetJoystickIndex(oEvent.jbutton.which), oEvent.jbutton.button, true);
         break;
 
     // release joystick button
     case SDL_JOYBUTTONUP:
-        if(__CORE_INPUT_JOYSTICK(oEvent.jbutton.which).pController) break;
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController) break; FALLTHROUGH
     case SDL_CONTROLLERBUTTONUP:
-        this->SetJoystickButton(oEvent.jbutton.which, oEvent.jbutton.button, false);
+        this->SetJoystickButton(this->__GetJoystickIndex(oEvent.jbutton.which), oEvent.jbutton.button, false);
         break;
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(__CORE_INPUT_JOYSTICK(oEvent.jbutton.which).pController) break;
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jaxis.which)).pController) break; FALLTHROUGH
     case SDL_CONTROLLERAXISMOTION:
         if(oEvent.jaxis.axis < 2u)
         {
             if(ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD))
-                 this->SetJoystickRelative(oEvent.jaxis.which, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX))) * (oEvent.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
-            else this->SetJoystickRelative(oEvent.jaxis.which, oEvent.jaxis.axis, 0.0f);
+                 this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX))) * (oEvent.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
+            else this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, 0.0f);
         }
+        break;
+
+    // move joystick hat
+    case SDL_JOYHATMOTION:
+        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_LEFT,  oEvent.jhat.value & SDL_HAT_LEFT);
+        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_RIGHT, oEvent.jhat.value & SDL_HAT_RIGHT);
+        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_DOWN,  oEvent.jhat.value & SDL_HAT_DOWN);
+        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_UP,    oEvent.jhat.value & SDL_HAT_UP);
+        break;
+
+    // attach or detach joystick
+    case SDL_JOYDEVICEADDED:
+    case SDL_JOYDEVICEREMOVED:
+        this->__CloseJoysticks();
+        this->__OpenJoysticks();
         break;
 
 #if defined(_CORE_MOBILE_)
@@ -339,8 +297,8 @@ void CoreInput::__UpdateButtonsStart()
     // process keyboard inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
-        if(CONTAINS_BIT(m_Keyboard.aiButton[i], 0u)) __CORE_INPUT_PRESS  (m_Keyboard.aiButton[i])
-                                                else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[i])
+        if(CONTAINS_BIT(m_Keyboard.aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_Keyboard.aiButton[i])
+                                                             else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[i])
         __CORE_INPUT_COUNT(m_Keyboard.aiButton[i], m_Keyboard.aiCount)
     }
 
@@ -349,8 +307,8 @@ void CoreInput::__UpdateButtonsStart()
     // process mouse inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
-        if(CONTAINS_BIT(m_Mouse.aiButton[i], 0u)) __CORE_INPUT_PRESS  (m_Mouse.aiButton[i])
-                                             else __CORE_INPUT_RELEASE(m_Mouse.aiButton[i])
+        if(CONTAINS_BIT(m_Mouse.aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_Mouse.aiButton[i])
+                                                          else __CORE_INPUT_RELEASE(m_Mouse.aiButton[i])
         __CORE_INPUT_COUNT(m_Mouse.aiButton[i], m_Mouse.aiCount)
     }
 
@@ -361,9 +319,15 @@ void CoreInput::__UpdateButtonsStart()
     {
         for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
-            if(CONTAINS_BIT(it->aiButton[i], 0u)) __CORE_INPUT_PRESS  (it->aiButton[i])
-                                             else __CORE_INPUT_RELEASE(it->aiButton[i])
+            if(CONTAINS_BIT(it->aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (it->aiButton[i])
+                                                          else __CORE_INPUT_RELEASE(it->aiButton[i])
             __CORE_INPUT_COUNT(it->aiButton[i], it->aiCount)
+        }
+
+        for(coreUintW i = 0u; i < CORE_INPUT_DIRECTIONS; ++i)
+        {
+            if(CONTAINS_BIT(it->aiHat[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (it->aiHat[i])
+                                                       else __CORE_INPUT_RELEASE(it->aiHat[i])
         }
     }
 
@@ -372,20 +336,9 @@ void CoreInput::__UpdateButtonsStart()
     // process touch inputs
     for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
     {
-        if(CONTAINS_BIT(m_aTouch[i].iButton, 0u)) __CORE_INPUT_PRESS  (m_aTouch[i].iButton)
-                                             else __CORE_INPUT_RELEASE(m_aTouch[i].iButton)
+        if(CONTAINS_BIT(m_aTouch[i].iButton, CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_aTouch[i].iButton)
+                                                          else __CORE_INPUT_RELEASE(m_aTouch[i].iButton)
         __CORE_INPUT_COUNT(m_aTouch[i].iButton, m_aiTouchCount)
-    }
-
-#endif
-
-#if defined(_CORE_LINUX_)
-
-    if(!m_bCursorVisible)
-    {
-        // hold cursor in window center when not visible
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(0.5f*Core::System->GetResolution().x),
-                                                         F_TO_SI(0.5f*Core::System->GetResolution().y));
     }
 
 #endif
@@ -417,4 +370,101 @@ void CoreInput::__UpdateButtonsEnd()
 
     // clear status of any available button
     m_iAnyButton = 0u;
+}
+
+
+// ****************************************************************
+// start up joystick input
+void CoreInput::__OpenJoysticks()
+{
+    ASSERT(m_aJoystick.empty())
+
+    // check for available joystick devices
+    const coreUintW iNumJoysticks = SDL_NumJoysticks();
+    if(iNumJoysticks)
+    {
+        Core::Log->ListStartInfo("Joysticks and Gamepads found");
+        {
+            m_aJoystick.reserve(iNumJoysticks + 1u);
+            for(coreUintW i = 0u; i < iNumJoysticks; ++i)
+            {
+                coreJoystick oJoystick = {};
+
+                // open game controller and joystick device
+                oJoystick.pController = SDL_GameControllerOpen(i);
+                oJoystick.pJoystick   = oJoystick.pController ? SDL_GameControllerGetJoystick(oJoystick.pController) : SDL_JoystickOpen(i);
+
+                // try to open haptic device
+                oJoystick.pHaptic = SDL_HapticOpenFromJoystick(oJoystick.pJoystick);
+                if(oJoystick.pHaptic)
+                {
+                    // check for simple rumble playback
+                    if(SDL_HapticRumbleInit(oJoystick.pHaptic))
+                    {
+                        SDL_HapticClose(oJoystick.pHaptic);
+                        oJoystick.pHaptic = NULL;
+                    }
+                }
+
+                // get device features
+                const coreInt32  iNumButtons = SDL_JoystickNumButtons(oJoystick.pJoystick);
+                const coreInt32  iNumAxes    = SDL_JoystickNumAxes   (oJoystick.pJoystick);
+                const coreInt32  iNumHats    = SDL_JoystickNumHats   (oJoystick.pJoystick);
+                const coreInt32  iNumBalls   = SDL_JoystickNumBalls  (oJoystick.pJoystick);
+                const coreUint32 iQuery      = SDL_HapticQuery       (oJoystick.pHaptic);
+
+                // save joystick object
+                m_aJoystick.push_back(oJoystick);
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %d buttons, %d axes, %d hats, %d balls, %s 0x%04X)",
+                                   oJoystick.pController ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickGUID(i),
+                                   iNumButtons, iNumAxes, iNumHats, iNumBalls, oJoystick.pHaptic ? "haptic" : "not haptic", iQuery);
+            }
+        }
+        Core::Log->ListEnd();
+
+        // sort correctly by joystick instance ID
+        std::sort(m_aJoystick.begin(), m_aJoystick.end(), [](const coreJoystick& a, const coreJoystick& b)
+        {
+            return (SDL_JoystickInstanceID(a.pJoystick) < SDL_JoystickInstanceID(b.pJoystick));
+        });
+    }
+    else Core::Log->Info("No Joysticks or Gamepads found");
+
+    // append empty joystick object to prevent problems
+    m_aJoystick.emplace_back();
+}
+
+
+// ****************************************************************
+// shut down joystick input
+void CoreInput::__CloseJoysticks()
+{
+    // close all joystick and haptic devices
+    FOR_EACH(it, m_aJoystick)
+    {
+             if(it->pHaptic)     SDL_HapticClose        (it->pHaptic);
+             if(it->pController) SDL_GameControllerClose(it->pController);
+        else if(it->pJoystick)   SDL_JoystickClose      (it->pJoystick);
+    }
+
+    // clear memory
+    m_aJoystick.clear();
+}
+
+
+// ****************************************************************
+// convert joystick instance ID to joystick index
+coreUintW CoreInput::__GetJoystickIndex(const SDL_JoystickID iID)const
+{
+    const SDL_Joystick* pFind = SDL_JoystickFromInstanceID(iID);
+
+    // find required joystick object
+    FOR_EACH(it, m_aJoystick)
+    {
+        if(it->pJoystick == pFind)
+            return (it - m_aJoystick.begin());
+    }
+
+    // return index to empty joystick object
+    return (m_aJoystick.size() - 1u);
 }

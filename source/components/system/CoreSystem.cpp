@@ -233,7 +233,7 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->ListStartInfo("Platform Information");
     {
         Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                                             coreData::SystemName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %s (%s, %d Logical Cores, %d Bytes Cache Line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %s (%s, %d logical cores, %d bytes cache line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MB",                                          SDL_GetSystemRAM());
     }
     Core::Log->ListEnd();
@@ -371,8 +371,6 @@ coreBool CoreSystem::__UpdateEvents()
             break;
 
         // application focus lost
-        case SDL_JOYDEVICEREMOVED:
-        case SDL_CONTROLLERDEVICEREMOVED:
         case SDL_APP_WILLENTERBACKGROUND:
         case SDL_APP_DIDENTERFOREGROUND:
             m_bWinFocusLost = true;
@@ -383,6 +381,11 @@ coreBool CoreSystem::__UpdateEvents()
         case SDL_APP_TERMINATING:
             this->Quit();
             break;
+
+        // joystick detached
+        case SDL_JOYDEVICEREMOVED:
+            m_bWinFocusLost = true;
+            FALLTHROUGH
 
         // forward event to input component
         default: if(!Core::Input->ProcessEvent(oEvent)) return true;

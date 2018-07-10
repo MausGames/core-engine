@@ -60,6 +60,7 @@
 // TODO: #pragma warning(default : 4820)           // byte padding
 // TODO: unify const void* and const coreByte*
 // TODO: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
+// TODO: overflow check in I_TO_F
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 
@@ -152,6 +153,7 @@
     #define INTERFACE        __declspec(novtable)   //!< pure interface class without direct instantiation
     #define FORCE_INLINE     __forceinline          //!< always inline the function
     #define DONT_INLINE      __declspec(noinline)   //!< never inline the function
+    #define FALLTHROUGH      [[fallthrough]];       //!< intentionally fall through to the next switch-label
     #define RETURN_RESTRICT  __declspec(restrict)   //!< returned object will not be aliased with another pointer
     #define RETURN_NONNULL   _Ret_notnull_          //!< returned pointer will not be null
     #define RETURN_NODISCARD [[nodiscard]]          //!< returned value should not be discarded (but can be cast to void)
@@ -166,6 +168,7 @@
     #define INTERFACE
     #define FORCE_INLINE     __attribute__((always_inline)) inline
     #define DONT_INLINE      __attribute__((noinline))
+    #define FALLTHROUGH      __attribute__((fallthrough));
     #define RETURN_RESTRICT  __attribute__((malloc))
     #define RETURN_NONNULL   __attribute__((returns_nonnull))
     #define RETURN_NODISCARD __attribute__((warn_unused_result))
