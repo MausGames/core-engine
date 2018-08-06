@@ -13,10 +13,10 @@
 // callback functions for the music stream object
 static const ov_callbacks OV_CALLBACKS =
 {
-    [](void* pData, coreUintW iSize, coreUintW iCount, void* pFile) {return coreUintW(SDL_RWread (r_cast<SDL_RWops*>(pFile), pData, iSize, iCount));},
-    [](void* pFile, coreInt64 iOffset, coreInt32 iWhence)           {return coreInt32(SDL_RWseek (r_cast<SDL_RWops*>(pFile), iOffset, iWhence));},
-    [](void* pFile)                                                 {return coreInt32(SDL_RWclose(r_cast<SDL_RWops*>(pFile)));},
-    [](void* pFile)                                                 {return long     (SDL_RWtell (r_cast<SDL_RWops*>(pFile)));}
+    [](void* pData, coreUintW iSize, coreUintW iCount, void* pFile) {return coreUintW(SDL_RWread (s_cast<SDL_RWops*>(pFile), pData, iSize, iCount));},
+    [](void* pFile, coreInt64 iOffset, coreInt32 iWhence)           {return coreInt32(SDL_RWseek (s_cast<SDL_RWops*>(pFile), iOffset, iWhence));},
+    [](void* pFile)                                                 {return coreInt32(SDL_RWclose(s_cast<SDL_RWops*>(pFile)));},
+    [](void* pFile)                                                 {return long     (SDL_RWtell (s_cast<SDL_RWops*>(pFile)));}
 };
 
 

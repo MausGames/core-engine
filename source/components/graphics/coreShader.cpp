@@ -172,7 +172,7 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS          (%u) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS         (%u) \n", CORE_SHADER_OUTPUT_COLORS));
 
-    auto nRetrieveFunc = [](const coreChar* pcPath)
+    const auto nRetrieveFunc = [](const coreChar* pcPath)
     {
         // retrieve shader file
         coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);

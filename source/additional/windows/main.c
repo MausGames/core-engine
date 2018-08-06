@@ -14,15 +14,14 @@
 #pragma warning(disable : 4668)   // preprocessor macro not defined
 #pragma warning(disable : 4820)   // padding after data member
 
-#define _WIN32_WINNT _WIN32_WINNT_WINXP
-#define WINVER       _WIN32_WINNT_WINXP
 #define WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
 
-#include <windows.h>
-#include <dbghelp.h>
+#include <Windows.h>
+#include <DbgHelp.h>
 #include <crtdbg.h>
 #include <stdlib.h>
-#include <sdl2/sdl_main.h>
+#include <SDL2/SDL_main.h>
 
 typedef BOOL (WINAPI *uMiniDumpWriteDump) (HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION, PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
 

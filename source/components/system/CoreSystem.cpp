@@ -215,6 +215,9 @@ CoreSystem::CoreSystem()noexcept
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
 
+    // execute main-thread with higher priority
+    SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
+
     // disable screen saver
     SDL_DisableScreenSaver();
 

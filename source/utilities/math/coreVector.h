@@ -88,8 +88,8 @@ public:
 
     /*! rotate vector */
     //! @{
-    constexpr coreVector2 Rotated90 ()const {return coreVector2(  y,   -x);}
-    constexpr coreVector2 Rotated45 ()const {return coreVector2(x+y,  y-x) * (1.0f / SQRT2);}
+    constexpr coreVector2 Rotated90 ()const {return coreVector2(y,   -x);}
+    constexpr coreVector2 Rotated45 ()const {return coreVector2(y+x, -x+y) * (1.0f / SQRT2);}
     constexpr coreVector2 Rotated135()const {return coreVector2(y-x, -x-y) * (1.0f / SQRT2);}
     //! @}
 
@@ -731,9 +731,9 @@ constexpr coreVector3 coreVector3::UnpackSnorm011(const coreUint32 iNumber)
 /* convert RGB-color to HSV-color */
 inline coreVector3 coreVector3::RgbToHsv()const
 {
-    const coreFloat& R = x;
-    const coreFloat& G = y;
-    const coreFloat& B = z;
+    const coreFloat R = x;
+    const coreFloat G = y;
+    const coreFloat B = z;
 
     const coreFloat v = this->Max();
     const coreFloat d = v - this->Min();
@@ -752,9 +752,9 @@ inline coreVector3 coreVector3::RgbToHsv()const
 /* convert HSV-color to RGB-color */
 constexpr coreVector3 coreVector3::HsvToRgb()const
 {
-    const coreFloat  H = x * 6.0f;
-    const coreFloat& S = y;
-    const coreFloat& V = z;
+    const coreFloat H = x * 6.0f;
+    const coreFloat S = y;
+    const coreFloat V = z;
 
     const coreInt32 h = F_TO_SI(H);
 

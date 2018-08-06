@@ -7,7 +7,7 @@
 //*----------------------------------------------------*//
 //////////////////////////////////////////////////////////
 #include "Core.h"
-#include <egl/egl.h>
+#include <EGL/egl.h>
 
 std::string g_sExtensions = "";
 coreContext g_CoreContext = {};
@@ -26,7 +26,7 @@ void __coreInitOpenGLES()
     // get OpenGL ES version
     g_CoreContext.__fVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
     g_CoreContext.__bES3     = (g_CoreContext.__fVersion >= 3.0f);
-    const coreBool& bES3     =  g_CoreContext.__bES3;
+    const coreBool  bES3     =  g_CoreContext.__bES3;
 
     // implement GL_EXT_discard_framebuffer
     if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))

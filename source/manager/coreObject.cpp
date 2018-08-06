@@ -128,8 +128,8 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     if(bSwap) std::swap(pObject1, pObject2);
 
     // prepare relative transformation (only first object will be transformed)
-    const coreVector3 vRelPosition = bSwap ? D2                : D1;
-    const coreVector4 vRelRotation = bSwap ? Q.QuatConjugate() : Q;
+    const coreVector3& vRelPosition = bSwap ? D2                : D1;
+    const coreVector4  vRelRotation = bSwap ? Q.QuatConjugate() : Q;
 
     // get models and object sizes (precise collision detection does not use size-modifiers)
     const coreModel*   pModel1   = pObject1->GetModel().IsUsable() ? pObject1->GetModel().GetResource() : NULL;
@@ -143,7 +143,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     if(!bPrecise1 || !bPrecise2)
     {
         const coreVector3& vPosition1 = vRelPosition;
-        const coreFloat&   fRadius1   = pObject1->GetCollisionRadius();
+        const coreFloat    fRadius1   = pObject1->GetCollisionRadius();
 
         for(coreUintW m = 0u, me = pModel2->GetNumClusters(); m < me; ++m)
         {
@@ -450,7 +450,7 @@ void coreObjectManager::__UpdateObjects()
     }
 
     // loop through all collisions
-    const coreUint32& iCurFrame = Core::System->GetCurFrame();
+    const coreUint32 iCurFrame = Core::System->GetCurFrame();
     FOR_EACH_DYN(it, m_aObjectCollision)
     {
         // check for old entries and remove them

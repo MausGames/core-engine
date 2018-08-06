@@ -32,17 +32,17 @@
 #define POOLED_NEW(m,t,...) (new((m).Allocate()) t(__VA_ARGS__))
 #define POOLED_DELETE(m,p)  {if(p) {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}}
 
-#define ALIGNED_NEW(t,c,a)  (r_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
+#define ALIGNED_NEW(t,c,a)  (s_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))))
 #define ALIGNED_DELETE(p)   {_aligned_free(p); (p) = NULL;}
 
-#define ZERO_NEW(t,c)       (r_cast<t*>(std::calloc((c), sizeof(t))))
+#define ZERO_NEW(t,c)       (s_cast<t*>(std::calloc((c), sizeof(t))))
 #define ZERO_DELETE(p)      {std::free(p); (p) = NULL;}
 
 #define STATIC_MEMORY(t,p)  alignas(ALIGNMENT_SSE) static coreByte CONCAT(__m, __LINE__)[sizeof(t)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));
 #define STATIC_NEW(p,...)   {CALL_CONSTRUCTOR(p, __VA_ARGS__)}
 #define STATIC_DELETE(p)    {CALL_DESTRUCTOR(p) std::memset(p, 0, sizeof(*(p)));}
 
-#define RESIZE_ARRAY(a,c)   {(a) = r_cast<decltype(a)>(std::realloc((a), (c) * sizeof(*(a))));}
+#define RESIZE_ARRAY(a,c)   {(a) = s_cast<decltype(a)>(std::realloc((a), (c) * sizeof(*(a))));}
 
 #if !defined(_CORE_WINDOWS_)
     #define _aligned_malloc(c,a) std::aligned_alloc(a, c)
@@ -78,7 +78,12 @@ public:
     //! create and remove memory-blocks
     //! @{
     RETURN_RESTRICT void* Allocate();
-    void Free(void** OUTPUT pptPointer);
+    void Free(void** OUTPUT ppPointer);
+    //! @}
+
+    //! check if pointer belongs to the memory-pool
+    //! @{
+    bool Contains(const void* pPointer)const;
     //! @}
 
 
@@ -118,7 +123,7 @@ public:
     //! create and remove memory-blocks through internal memory-pools
     //! @{
     RETURN_RESTRICT void* Allocate(const coreUintW iSize);
-    void Free(const coreUintW iSize, void** OUTPUT pptPointer);
+    void Free(const coreUintW iSize, void** OUTPUT ppPointer);
     //! @}
 };
 

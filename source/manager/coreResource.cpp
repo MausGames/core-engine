@@ -317,17 +317,17 @@ void coreResourceManager::__LoadDefault()
     this->Load<coreShader> ("default_label_smooth.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_smooth.frag");
     this->Load<coreFont>   ("default.ttf",               CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
 
-    s_cast<coreProgram*>(this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
+    d_cast<coreProgram*>(this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
         ->AttachShader  (this->Get <coreShader> ("default_2d.vert"))
         ->AttachShader  (this->Get <coreShader> ("default_2d.frag"))
         ->Finish();
 
-    s_cast<coreProgram*>(this->Load<coreProgram>("default_label_sharp_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
+    d_cast<coreProgram*>(this->Load<coreProgram>("default_label_sharp_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
         ->AttachShader  (this->Get <coreShader> ("default_label.vert"))
         ->AttachShader  (this->Get <coreShader> ("default_label_sharp.frag"))
         ->Finish();
 
-    s_cast<coreProgram*>(this->Load<coreProgram>("default_label_smooth_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
+    d_cast<coreProgram*>(this->Load<coreProgram>("default_label_smooth_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
         ->AttachShader  (this->Get <coreShader> ("default_label.vert"))
         ->AttachShader  (this->Get <coreShader> ("default_label_smooth.frag"))
         ->Finish();

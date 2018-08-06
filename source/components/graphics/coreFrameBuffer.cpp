@@ -349,7 +349,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
                 glDisable(GL_DEPTH_TEST);
                 glDisable(GL_BLEND);
                 {
-                    const coreFloat&  fDstInvWid = Core::Graphics->GetViewResolution().w;
+                    const coreFloat   fDstInvWid = Core::Graphics->GetViewResolution().w;
                     const coreVector2 vDstInvRes = Core::Graphics->GetViewResolution().zw();
                     const coreVector2 vSrcInvRes = coreVector2(1.0f,1.0f) / m_vResolution;
 

@@ -217,8 +217,8 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
             coreVector3 vIntersection;
             if(coreObjectManager::TestCollision(pObject1, pObject2, &vIntersection))
             {
-                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
-                          s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
+                nCallback(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
+                          d_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
                           vIntersection, this->__NewCollision(pObject1, pObject2));
             }
         }
@@ -254,8 +254,8 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
             coreVector3 vIntersection;
             if(coreObjectManager::TestCollision(pObject1, pObject2, &vIntersection))
             {
-                nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
-                          s_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
+                nCallback(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pObject1),
+                          d_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject2),
                           vIntersection, this->__NewCollision(pObject1, pObject2));
             }
         }
@@ -282,7 +282,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
         coreVector3 vIntersection;
         if(coreObjectManager::TestCollision(pCurObject, pObject, &vIntersection))
         {
-            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
+            nCallback(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
                       vIntersection, this->__NewCollision(pCurObject, pObject));
         }
     }
@@ -308,7 +308,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
         coreFloat fDistance;
         if(coreObjectManager::TestCollision(pCurObject, vRayPos, vRayDir, &fDistance))
         {
-            nCallback(s_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
+            nCallback(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
                       fDistance, this->__NewCollision(pCurObject, r_cast<coreObject3D*>(&nCallback)));
         }
     }

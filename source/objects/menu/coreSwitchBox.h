@@ -329,7 +329,7 @@ template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreHashStri
 template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUintW iIndex)
 {
     ASSERT(iIndex < m_aEntry.size())
-    auto it = m_aEntry.begin() + iIndex;
+    const auto it = m_aEntry.begin() + iIndex;
 
     // unbind entry
     this->_UnbindString(it->psText);

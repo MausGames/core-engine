@@ -98,7 +98,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     coreUint16 iCurIndex = 0u;
     for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
     {
-        const coreUint16& iFirst = piOptimizedData[i];
+        const coreUint16 iFirst = piOptimizedData[i];
         ASSERT(iFirst < m_iNumVertices)
 
         // check first map entry

@@ -361,11 +361,11 @@ template <typename T> FUNC_NOALIAS void coreSpline<T>::__CalcPosDir(const coreFl
     // (*ptPosition)  = (2.0f*X3 - 3.0f*X2 + 1.0f)*tP1 - (2.0f*X3 - 3.0f*X2)*tP2 + (     X3 - 2.0f*X2 +   X1)*tT1 + (     X3 -      X2)*tT2;
     // (*ptDirection) = (6.0f*X2 - 6.0f*X1       )*tP1 - (6.0f*X2 - 6.0f*X1)*tP2 + (3.0f*X2 - 4.0f*X1 + 1.0f)*tT1 + (3.0f*X2 - 2.0f*X1)*tT2;
 
-    const coreFloat& X1 = fTime;
-    const coreFloat  X2 =   X1 *  X1;
-    const coreFloat  D  = 3.0f *  X2;
-    const coreFloat  E  =   X2 -  X1;
-    const T          PP =  tP1 - tP2;
+    const coreFloat X1 = fTime;
+    const coreFloat X2 =   X1 *  X1;
+    const coreFloat D  = 3.0f *  X2;
+    const coreFloat E  =   X2 -  X1;
+    const T         PP =  tP1 - tP2;
 
     if(ptPosition)
     {

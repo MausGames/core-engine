@@ -257,7 +257,7 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
         this->__StatEnd();
 
         // add additional performance information (frame rate and process memory)
-        const coreFloat& fTime = Core::System->GetTime();
+        const coreFloat fTime = Core::System->GetTime();
         if(fTime) pcName = PRINT("%s %.1f FPS%s %.2lf MB", pcName, RCP(fTime), SDL_GL_GetSwapInterval() ? "*" : "", coreDouble(coreData::AppMemory()) / (1024.0*1024.0));
     }
 

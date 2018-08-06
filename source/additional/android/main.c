@@ -9,7 +9,7 @@
 #if defined(__ANDROID__)
 
 #include <jni.h>
-#include <sdl2/sdl_main.h>
+#include <SDL2/SDL_main.h>
 
 
 // ****************************************************************

@@ -10,8 +10,8 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <shellapi.h>
-    #include <psapi.h>
-    #include <versionhelpers.h>
+    #include <Psapi.h>
+    #include <VersionHelpers.h>
 #elif defined(_CORE_LINUX_)
     #include <dirent.h>
     #include <sys/utsname.h>
@@ -113,9 +113,9 @@ const coreChar* coreData::SystemName()
 
     // detect actual Windows version (GetVersionEx() is deprecated)
     coreUint32 i, j, k;
-    for(i = 5u; IsWindowsVersionOrGreater(i, 0u, 0u); ++i) {} --i; const coreUint32& iMajor = i;
-    for(j = 0u; IsWindowsVersionOrGreater(i,  j, 0u); ++j) {} --j; const coreUint32& iMinor = j;
-    for(k = 0u; IsWindowsVersionOrGreater(i,  j,  k); ++k) {} --k; const coreUint32& iPack  = k;
+    for(i = 5u; IsWindowsVersionOrGreater(i, 0u, 0u); ++i) {} --i; const coreUint32 iMajor = i;
+    for(j = 0u; IsWindowsVersionOrGreater(i,  j, 0u); ++j) {} --j; const coreUint32 iMinor = j;
+    for(k = 0u; IsWindowsVersionOrGreater(i,  j,  k); ++k) {} --k; const coreUint32 iPack  = k;
 
     // map to corresponding sub-name
     const coreChar* pcSubString;

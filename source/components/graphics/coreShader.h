@@ -225,7 +225,7 @@ public:
     //! get object properties
     //! @{
     inline const GLuint& GetIdentifier()const                       {return m_iIdentifier;}
-    inline coreShader*   GetShader    (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return s_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
+    inline coreShader*   GetShader    (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return d_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
     inline coreUintW     GetNumShaders()const                       {return m_apShaderHandle.size();}
     //! @}
 

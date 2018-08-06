@@ -27,6 +27,7 @@
 
 #define PI    (3.1415926535897932384626433832795f)                 //!< Archimedes' constant
 #define EU    (2.7182818284590452353602874713527f)                 //!< Euler's number
+#define GA    (2.3999632297286533222315555066336f)                 //!< golden angle
 #define SQRT2 (1.4142135623730950488016887242097f)                 //!< principal square root of 2
 
 #define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degrees to radians
@@ -79,8 +80,8 @@ public:
     //! @{
     template <typename T, typename S = T, typename... A>  static constexpr T Min  (const T& x, const S& y, A&&... vArgs)  {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
     template <typename T, typename S = T, typename... A>  static constexpr T Max  (const T& x, const S& y, A&&... vArgs)  {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename S = T>                 static constexpr T Min  (const T& x, const S& y)                {return (x < y) ? x : y;}
-    template <typename T, typename S = T>                 static constexpr T Max  (const T& x, const S& y)                {return (x > y) ? x : y;}
+    template <typename T, typename S = T>                 static constexpr T Min  (const T& x, const S& y)                {return (x < y) ? T(x) : T(y);}
+    template <typename T, typename S = T>                 static constexpr T Max  (const T& x, const S& y)                {return (x > y) ? T(x) : T(y);}
     template <typename T, typename S = T, typename R = T> static constexpr T Med  (const T& x, const S& y, const R& z)    {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
     template <typename T, typename S = T, typename R = T> static constexpr T Clamp(const T& x, const S& a, const R& b)    {return MIN(MAX(x, a), b);}
     template <typename T> static constexpr T        Sign       (const T& x)                                               {return (x < T(0)) ? T(-1) : T(1);}
@@ -154,8 +155,9 @@ public:
 
     /*! miscellaneous functions */
     //! @{
-    static inline void DisableDenormals();
     static inline void EnableExceptions();
+    static inline void EnableRoundToNearest();
+    static inline void DisableDenormals();
     //! @}
 };
 
@@ -440,27 +442,6 @@ inline coreFloat coreMath::Float16To32(const coreUint16 iInput)
 
 
 // ****************************************************************
-/* disable denormal results and inputs (per thread) */
-inline void coreMath::DisableDenormals()
-{
-#if defined(_CORE_SSE_)
-
-    // disable in the MXCSR control register (only for SSE)
-    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);                                 // calculation results
-    if(coreCPUID::SSE3()) _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);   // instruction inputs
-
-#endif
-
-#if defined(_CORE_WINDOWS_)
-
-    // disable with Windows function (both for x87 and SSE)
-    _controlfp(_DN_FLUSH, _MCW_DN);
-
-#endif
-}
-
-
-// ****************************************************************
 /* enable relevant floating-point exceptions (per thread) */
 inline void coreMath::EnableExceptions()
 {
@@ -468,24 +449,68 @@ inline void coreMath::EnableExceptions()
 
     #if defined(_CORE_SSE_)
 
-        // enable in the MXCSR control register (only for SSE)
+        // enable in the MXCSR control register (for SSE)
         _MM_SET_EXCEPTION_MASK(~(_MM_MASK_OVERFLOW | _MM_MASK_DIV_ZERO | _MM_MASK_INVALID) & _MM_MASK_MASK);
 
     #endif
 
     #if defined(_CORE_WINDOWS_)
 
-        // enable with Windows function (both for x87 and SSE)
+        // enable with Windows function (for x87 and SSE)
         _controlfp(~(_EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID) & _MCW_EM, _MCW_EM);
 
     #endif
 
     #if defined(_CORE_GCC_)
 
-        // enable with GCC function (both for x87 and SSE)
+        // enable with GCC function (for x87 and SSE)
         feenableexcept(FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
 
     #endif
+
+#endif
+}
+
+
+// ****************************************************************
+/* enable floating-point rounding to nearest even value (per thread) */
+inline void coreMath::EnableRoundToNearest()
+{
+#if defined(_CORE_SSE_)
+
+    // enable in the MXCSR control register (for SSE)
+    _MM_SET_ROUNDING_MODE(_MM_ROUND_NEAREST);
+
+#endif
+
+#if defined(_CORE_WINDOWS_)
+
+    // enable with Windows function (for x87 and SSE)
+    _controlfp(_RC_NEAR, _MCW_RC);
+
+#endif
+
+    // enable with standard function
+    std::fesetround(FE_TONEAREST);
+}
+
+
+// ****************************************************************
+/* disable denormal results and inputs (per thread) */
+inline void coreMath::DisableDenormals()
+{
+#if defined(_CORE_SSE_)
+
+    // disable in the MXCSR control register (for SSE)
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);                                 // calculation results
+    if(coreCPUID::SSE3()) _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);   // instruction inputs
+
+#endif
+
+#if defined(_CORE_WINDOWS_)
+
+    // disable with Windows function (for x87 and SSE)
+    _controlfp(_DN_FLUSH, _MCW_DN);
 
 #endif
 }

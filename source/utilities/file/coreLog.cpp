@@ -21,7 +21,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_iLock       (0)
 {
     // open and reset log file
-    m_pFile = std::fopen(m_sPath.c_str(), "wt");
+    m_pFile = std::fopen(m_sPath.c_str(), "wb");
     if(m_pFile)
     {
         // write basic style sheet

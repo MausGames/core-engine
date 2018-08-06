@@ -153,6 +153,7 @@ half, hvec2, hvec3, hvec4     // 16-bit floating point types (32-bit, if not sup
 
 #define PI    (3.1415926535897932384626433832795)
 #define EU    (2.7182818284590452353602874713527)
+#define GA    (2.3999632297286533222315555066336)
 #define SQRT2 (1.4142135623730950488016887242097)
 
 ## In ##

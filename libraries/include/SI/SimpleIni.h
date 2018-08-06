@@ -2039,7 +2039,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::GetLongValue(
     if (!pszValue || !*pszValue) return a_nDefault;
 
     // convert to UTF-8/MBCS which for a numeric value will be the same as ASCII
-    char szValue[64] = { 0 };
+    char szValue[64] = {};
     SI_CONVERTER c(m_bStoreIsUtf8);
     if (!c.ConvertToStore(pszValue, szValue, sizeof(szValue))) {
         return a_nDefault;
@@ -2110,7 +2110,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::GetDoubleValue(
     if (!pszValue || !*pszValue) return a_nDefault;
 
     // convert to UTF-8/MBCS which for a numeric value will be the same as ASCII
-    char szValue[64] = { 0 };
+    char szValue[64] = {};
     SI_CONVERTER c(m_bStoreIsUtf8);
     if (!c.ConvertToStore(pszValue, szValue, sizeof(szValue))) {
         return a_nDefault;

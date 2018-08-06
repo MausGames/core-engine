@@ -166,7 +166,7 @@ public:
 
     /*! access resource object and resource handle */
     //! @{
-    inline T*                  GetResource()const {ASSERT(m_pHandle) return s_cast<T*>(m_pHandle->GetRawResource());}
+    inline T*                  GetResource()const {ASSERT(m_pHandle) return d_cast<T*>(m_pHandle->GetRawResource());}
     inline coreResourceHandle* GetHandle  ()const {return m_pHandle;}
     inline explicit operator coreBool     ()const {return m_pHandle ? true : false;}
     inline T*       operator ->           ()const {return  this->GetResource();}

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////
 #include "Core.h"
 
-const coreCPUID::__coreCPUID coreCPUID::s_CPUID = {};
+alignas(ALIGNMENT_CACHE) const coreCPUID::__coreCPUID coreCPUID::s_CPUID = {};
 
 
 // ****************************************************************

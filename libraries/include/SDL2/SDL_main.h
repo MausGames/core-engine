@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2017 Sam Lantinga <slouken@libsdl.org>
@@ -107,7 +110,7 @@
 /**
  *  The prototype for the application's main() function
  */
-extern C_LINKAGE DECLSPEC int SDL_main(int argc, char *argv[]);
+extern C_LINKAGE /*DECLSPEC*/ int SDL_main(int argc, char *argv[]);
 
 
 #include "begin_code.h"

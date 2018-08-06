@@ -297,7 +297,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
 
     // lookup entry by key
-    auto it = this->_retrieve(tKey);
+    const auto it = this->_retrieve(tKey);
     if(!this->_check(it))
     {
         // create new entry
@@ -321,7 +321,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at(cons
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
 
     // lookup entry by key
-    auto it = this->_retrieve(tKey);
+    const auto it = this->_retrieve(tKey);
     ASSERT(this->_check(it))
 
     return (*this->get_value(it));
@@ -333,7 +333,7 @@ template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::a
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
 
     // lookup entry by key
-    auto it = this->_retrieve(tKey);
+    const auto it = this->_retrieve(tKey);
     ASSERT(this->_check(it))
 
     return (*this->get_value(it));
@@ -375,7 +375,7 @@ template <typename K, typename I, typename T> template <typename... A> void core
 template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::erase(const I& tKey)
 {
     // lookup entry by key
-    auto it = this->_retrieve(tKey);
+    const auto it = this->_retrieve(tKey);
     if(this->_check(it))
     {
         // reset cache
@@ -393,7 +393,7 @@ template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::e
 template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::erase_bs(const I& tKey)
 {
     // binary lookup entry by key
-    auto it = this->_retrieve_bs(tKey);
+    const auto it = this->_retrieve_bs(tKey);
     if(this->_check(it))
     {
         // reset cache
@@ -448,7 +448,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
 {
     // find entry with binary search
     ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))
-    auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
+    const auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
 
     // check result
     if((it != m_atKeyList.end()) && ((*it) == tKey))
@@ -465,7 +465,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
 {
     // find entry with binary search
     ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))
-    auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
+    const auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
 
     // check result
     if((it != m_atKeyList.end()) && ((*it) == tKey))

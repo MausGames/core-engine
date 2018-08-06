@@ -65,83 +65,101 @@
 // NOTE: always compile Win32 libraries/executables for WinXP
 
 
+// ****************************************************************
+/* target configuration */
+#if defined(__APPLE__)
+    #include <TargetConditionals.h>
+#endif
+
 // compiler
 #if defined(_MSC_VER)
     #define _CORE_MSVC_  (_MSC_VER)
 #endif
 #if defined(__GNUC__)
-    #define _CORE_GCC_   (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
+    #define _CORE_GCC_   ((__GNUC__)*10000 + (__GNUC_MINOR__)*100 + (__GNUC_PATCHLEVEL__)*1)
 #endif
 #if defined(__MINGW32__)
-    #define _CORE_MINGW_ (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__*1)
+    #define _CORE_MINGW_ ((__GNUC__)*10000 + (__GNUC_MINOR__)*100 + (__GNUC_PATCHLEVEL__)*1)
     #undef  _CORE_GCC_
 #endif
 #if defined(__clang__)
-    #define _CORE_CLANG_ (__clang_major__*10000 + __clang_minor__*100 + __clang_patchlevel__*1)
+    #define _CORE_CLANG_ ((__clang_major__)*10000 + (__clang_minor__)*100 + (__clang_patchlevel__)*1)
     #undef  _CORE_GCC_
-#endif
-#if ((_CORE_MSVC_) < 1911) && ((_CORE_GCC_) < 60200) && ((_CORE_MINGW_) < 60200) && ((_CORE_CLANG_) < 40000)
-    #warning "Compiler not supported!"
 #endif
 
 // operating system
-#if defined(__APPLE__)
-    #include <targetconditionals.h>
-#endif
 #if defined(_WIN32)
-    #define _CORE_WINDOWS_ (1)
+    #define _CORE_WINDOWS_
 #endif
 #if defined(__linux__)
-    #define _CORE_LINUX_   (1)
+    #define _CORE_LINUX_
 #endif
 #if defined(__APPLE__) && TARGET_OS_MAC
-    #define _CORE_OSX_     (1)
+    #define _CORE_OSX_
 #endif
 #if defined(__ANDROID__)
-    #define _CORE_ANDROID_ (1)
+    #define _CORE_ANDROID_
     #undef  _CORE_LINUX_
 #endif
 #if defined(__APPLE__) && TARGET_OS_IPHONE
-    #define _CORE_IOS_     (1)
+    #define _CORE_IOS_
     #undef  _CORE_OSX_
 #endif
-#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) /*&& !defined(_CORE_OSX_)*/ && !defined(_CORE_ANDROID_) /*&& defined(_CORE_IOS_)*/
-    #warning "Operating System not supported!"
+
+// run-time type information
+#if defined(_CPPRTTI) || defined(__GXX_RTTI)
+    #define _CORE_RTTI_
+#endif
+
+// exception handling
+#if defined(_CPPUNWIND) || defined(__EXCEPTIONS)
+    #define _CORE_EXCEPTIONS_
 #endif
 
 // mobile mode
 #if defined(_CORE_ANDROID_) || defined(_CORE_IOS_)
-    #define _CORE_MOBILE_ (1)
+    #define _CORE_MOBILE_
 #endif
 
 // debug mode
 #if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_MINGW_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
-    #define _CORE_DEBUG_  (1)
+    #define _CORE_DEBUG_
 #endif
 
 // async mode
 #if !defined(_CORE_MOBILE_)
-    #define _CORE_ASYNC_  (1)
+    #define _CORE_ASYNC_
 #endif
 
 // OpenGL ES mode
 #if defined(_CORE_MOBILE_)
-    #define _CORE_GLES_   (1)
+    #define _CORE_GLES_
 #endif
 
 // Windows XP mode
 #if (defined(_USING_V110_SDK71_) || defined(_CORE_MINGW_)) && defined(_CORE_WINDOWS_)
-    #define _CORE_WINXP_  (1)
+    #define _CORE_WINXP_
 #endif
 
 // x64 instruction set
 #if defined(_M_X64) || defined(__x86_64__)
-    #define _CORE_X64_    (1)
+    #define _CORE_X64_
 #endif
 
 // SSE2 instruction set
 #if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_MOBILE_) && !defined(_CORE_WINXP_)
-    #define _CORE_SSE_    (1)
+    #define _CORE_SSE_
+#endif
+
+// target configuration checks
+#if ((_CORE_MSVC_) < 1911) && ((_CORE_GCC_) < 60200) && ((_CORE_MINGW_) < 60200) && ((_CORE_CLANG_) < 40000)
+    #error Compiler not supported!
+#endif
+#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_OSX_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_)
+    #error Operating System not supported!
+#endif
+#if !defined(_CORE_DEBUG_) && (defined(_CORE_RTTI_) || defined(_CORE_EXCEPTIONS_))
+    #error Run-Time Type Information or Exception Handling still enabled!
 #endif
 
 
@@ -179,8 +197,8 @@
     #define FUNC_TERMINATE   __attribute__((noreturn, cold))
 #endif
 
-#if defined(_CORE_MINGW_) && defined(_CORE_SSE_)
-    #define ENTRY_POINT      __attribute__((force_align_arg_pointer))   //!< realign run-time stack (to fix SSE)
+#if (defined(_CORE_GCC_) || defined(_CORE_MINGW_) || defined(_CORE_CLANG_)) && defined(_CORE_SSE_)
+    #define ENTRY_POINT      __attribute__((force_align_arg_pointer))   //!< realign run-time stack (to prevent SSE issues)
 #else
     #define ENTRY_POINT
 #endif
@@ -197,6 +215,7 @@
     #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
     #pragma warning(disable : 4365)   //!< implicit conversion between signed and unsigned
     #pragma warning(disable : 4557)   //!< __assume contains effect (# only false-positives)
+    #pragma warning(disable : 4571)   //!< semantic change of catch(...)
     #pragma warning(disable : 4577)   //!< noexcept used without exception handling
     #pragma warning(disable : 4623)   //!< default constructor implicitly deleted
     #pragma warning(disable : 4625)   //!< copy constructor implicitly deleted
@@ -219,7 +238,7 @@
         #pragma warning(disable : 4738)
     #endif
 
-#elif defined(_CORE_GCC_) || defined(_CORE_MINGW_)
+#else
 
     // disable unwanted compiler warnings (with -Wall)
     #pragma GCC diagnostic ignored "-Wmisleading-indentation"
@@ -228,7 +247,7 @@
 
 #if !defined(_CORE_DEBUG_)
     #if defined(_CORE_MSVC_)
-        #pragma fenv_access (off)   //!< ignore access to the floating-point environment
+        #pragma fenv_access (off)   //!< ignore access to the floating-point environment (on purpose)
         #pragma fp_contract (on)    //!< allow contracting of floating-point expressions
     #else
         #pragma STDC FENV_ACCESS OFF
@@ -239,25 +258,24 @@
 
 // ****************************************************************
 /* standard libraries */
-#define _GNU_SOURCE     (1)
-#define _HAS_EXCEPTIONS (0)
-#define _ALLOW_KEYWORD_MACROS
 #define _ALLOW_RTCc_IN_STL
 #define _CRT_SECURE_NO_WARNINGS
+#define _GNU_SOURCE
 #define WIN32_LEAN_AND_MEAN
 #if defined(_CORE_MINGW_)
     #undef __STRICT_ANSI__
 #endif
+#if !defined(_CORE_EXCEPTIONS_)
+    #define _HAS_EXCEPTIONS 0
+#endif
 #if defined(_CORE_WINXP_)
     #define _WIN32_WINNT _WIN32_WINNT_WINXP
-    #define WINVER       _WIN32_WINNT_WINXP
 #else
     #define _WIN32_WINNT _WIN32_WINNT_WIN7
-    #define WINVER       _WIN32_WINNT_WIN7
 #endif
 
 #if defined(_CORE_WINDOWS_)
-    #include <windows.h>
+    #include <Windows.h>
 #else
     #include <sys/stat.h>
     #include <unistd.h>
@@ -285,26 +303,26 @@
 
 // ****************************************************************
 /* external libraries */
-#define HAVE_LIBC (1)
+#define HAVE_LIBC
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #define ZLIB_CONST
 #define ZLIB_DLL
 
-#include <sdl2/sdl.h>
-#include <sdl2/sdl_ttf.h>
-#include <sdl2/sdl_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #if defined(_CORE_GLES_)
-    #include <gles2/gl2.h>
+    #include <GLES2/gl2.h>
 #else
-    #include <gl/glew.h>
+    #include <GL/glew.h>
 #endif
-#include <al/al.h>
-#include <al/alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <zlib/zlib.h>
-#include <si/simpleini.h>
+#include <SI/SimpleIni.h>
 
 
 // ****************************************************************
@@ -318,7 +336,8 @@
 #define STRING(a)            __STRING(a)
 #define __CONCAT(a,b)        a ## b
 #define CONCAT(a,b)          __CONCAT(a, b)
-#define DEFINED(a)           (FORCE_COMPILE_TIME(!coreData::StrCmpConst(STRING(a), #a)))
+#define __DEFINED(a,b)       FORCE_COMPILE_TIME(!coreData::StrCmpConst(#a, b))
+#define DEFINED(a)           __DEFINED(a, #a)
 
 #define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
@@ -347,7 +366,7 @@
 #define FRIEND_CLASS(c)      friend class c;
 
 #if defined(_CORE_DEBUG_)
-    #define ASSERT(c)        {SDL_assert((c));}
+    #define ASSERT(c)        {SDL_assert(c); if(false) assert(c);}
 #else
     #if defined(_CORE_MSVC_)
         #define ASSERT(c)    {__assume(!!(c));}
@@ -409,12 +428,16 @@
     inline    e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                                     \
     inline    e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
 
+// safely convert pointers and references along the inheritance hierarchy
+#if defined(_CORE_RTTI_)
+    template <typename T, typename S> inline T coreDynamicCast(S a) {T b = dynamic_cast<T>(a); ASSERT(!a || b) return b;}
+#else
+    #define coreDynamicCast static_cast
+#endif
+
 // shorter common keywords
-#define f_list forward_list
-#define u_map  unordered_map
-#define u_set  unordered_set
 #define s_cast static_cast
-#define d_cast dynamic_cast
+#define d_cast coreDynamicCast
 #define r_cast reinterpret_cast
 #define c_cast const_cast
 

@@ -87,15 +87,28 @@ RETURN_RESTRICT void* coreMemoryPool::Allocate()
 
 // ****************************************************************
 // remove memory-block
-void coreMemoryPool::Free(void** OUTPUT pptPointer)
+void coreMemoryPool::Free(void** OUTPUT ppPointer)
 {
-    ASSERT(std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(*pptPointer) - P_TO_UI(pPage)) < (m_iBlockSize * m_iPageSize);}))
+    ASSERT(this->Contains(*ppPointer))
+
+    // find target location with binary search
+    ASSERT(std::is_sorted(m_apFreeStack.begin(), m_apFreeStack.end(), std::greater()))
+    const auto it = std::lower_bound(m_apFreeStack.begin(), m_apFreeStack.end(), *ppPointer, std::greater());
 
     // return pointer to the free-stack
-    m_apFreeStack.push_back(*pptPointer);
+    m_apFreeStack.insert(it, *ppPointer);
 
     // remove reference
-    (*pptPointer) = NULL;
+    (*ppPointer) = NULL;
+}
+
+
+// ****************************************************************
+// check if pointer belongs to the memory-pool
+bool coreMemoryPool::Contains(const void* pPointer)const
+{
+    const coreUintW iTotalSize = m_iBlockSize * m_iPageSize;
+    return std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(pPointer) - P_TO_UI(pPage) < iTotalSize);});
 }
 
 
@@ -152,10 +165,10 @@ RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 
 // ****************************************************************
 // remove memory-block to internal memory-pool
-void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT pptPointer)
+void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT ppPointer)
 {
     coreLockRelease oRelease(&m_iPoolLock);
 
     // forward request to internal memory-pool
-    m_aMemoryPool.at(iSize).Free(pptPointer);
+    m_aMemoryPool.at(iSize).Free(ppPointer);
 }

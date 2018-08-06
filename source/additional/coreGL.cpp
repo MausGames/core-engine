@@ -9,9 +9,9 @@
 #include "Core.h"
 
 #if defined(_CORE_WINDOWS_)
-    #include <gl/wglew.h>
+    #include <GL/wglew.h>
 #elif defined(_CORE_LINUX_)
-    #include <gl/glxew.h>
+    #include <GL/glxew.h>
 #endif
 
 coreBool GLEW_V2_compatibility = false;
@@ -70,7 +70,7 @@ static coreNamePool g_PoolVertexArrays;
 void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // wrap function for consistent interface
-    auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
+    const auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
 
     // generate 2D texture names
     coreLockRelease oRelease(&g_PoolTextures2D.iLock);

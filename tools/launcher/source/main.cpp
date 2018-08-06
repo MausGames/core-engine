@@ -11,11 +11,10 @@
 #pragma warning(disable : 4100)   // unreferenced formal parameter
 #pragma warning(disable : 4127)   // constant conditional expression
 
-#define _WIN32_WINNT _WIN32_WINNT_WINXP
-#define WINVER       _WIN32_WINNT_WINXP
 #define WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
 
-#include <windows.h>
+#include <Windows.h>
 #include <shellapi.h>
 #include <string>
 #include <vector>
@@ -79,7 +78,7 @@ static bool IsWow64()
 
 
 // ****************************************************************
-static bool IsWindowsVistaOrHigher()
+static bool IsWindows7OrGreater()
 {
     OSVERSIONINFOW iOS = {};
     iOS.dwOSVersionInfoSize = sizeof(iOS);
@@ -88,7 +87,7 @@ static bool IsWindowsVistaOrHigher()
     GetVersionExW(&iOS);
 
     // check for Windows Vista or higher
-    return (iOS.dwMajorVersion >= 6u);
+    return (iOS.dwMajorVersion >= 7u) || ((iOS.dwMajorVersion >= 6u) && (iOS.dwMinorVersion >= 1u));
 }
 
 
@@ -96,7 +95,7 @@ static bool IsWindowsVistaOrHigher()
 extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPWSTR pcCmdLine, _In_ int iCmdShow)
 {
     // set working directory
-    const wchar_t* pcDirectory = (IsWow64() && IsWindowsVistaOrHigher()) ? L"bin\\windows\\x64\\" : L"bin\\windows\\x86\\";
+    const wchar_t* pcDirectory = (IsWow64() && IsWindows7OrGreater()) ? L"bin\\windows\\x64\\" : L"bin\\windows\\x86\\";
     if(!SetCurrentDirectoryW(pcDirectory))
     {
         MessageBoxW(NULL, L"Could not set working directory!", NULL, MB_OK | MB_ICONERROR);

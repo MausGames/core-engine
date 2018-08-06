@@ -286,6 +286,7 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
 
     // re-determine render-count (may have changed between move and render)
     if(m_iUpdate) m_iCurEnabled = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
+    if(!m_iCurEnabled) return;
 
     // check for custom vertex attributes
     if(this->IsCustom()) this->__RenderCustom (pProgramInstanced, pProgramSingle);

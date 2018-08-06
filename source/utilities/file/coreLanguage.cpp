@@ -161,7 +161,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     const coreChar* pcTo   = pcFrom;
     const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1u;
 
-    auto nAssignFunc = [&](std::string* OUTPUT pString)
+    const auto nAssignFunc = [&](std::string* OUTPUT pString)
     {
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
