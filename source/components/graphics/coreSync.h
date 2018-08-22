@@ -38,7 +38,7 @@ public:
 
     /*! assignment operations */
     //! @{
-    coreSync& operator = (coreSync o)noexcept;
+    coreSync& operator = (coreSync&& m)noexcept;
     //! @}
 
     /*! handle the sync object */

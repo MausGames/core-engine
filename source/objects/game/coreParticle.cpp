@@ -378,7 +378,7 @@ coreParticleEffect& coreParticleEffect::operator = (const coreParticleEffect& c)
     if(this->IsDynamic() && (m_pSystem != c.m_pSystem))
         m_pSystem->Unbind(this);
 
-    // copy remaining properties
+    // copy properties
     m_fCreation = c.m_fCreation;
     m_iTimeID   = c.m_iTimeID;
     m_pOrigin   = c.m_pOrigin;

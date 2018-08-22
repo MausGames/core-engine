@@ -63,7 +63,7 @@ public:
 
     //! assignment operations
     //! @{
-    coreDataBuffer& operator = (coreDataBuffer o)noexcept;
+    coreDataBuffer& operator = (coreDataBuffer&& m)noexcept;
     //! @}
 
     //! control the data buffer object
@@ -138,7 +138,7 @@ public:
 
     //! assignment operations
     //! @{
-    coreVertexBuffer& operator = (coreVertexBuffer o)noexcept;
+    coreVertexBuffer& operator = (coreVertexBuffer&& m)noexcept;
     //! @}
 
     //! control the vertex buffer object

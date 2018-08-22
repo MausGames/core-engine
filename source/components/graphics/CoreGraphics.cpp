@@ -377,7 +377,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
             std::memcpy(pConvert + (iHeight - i - 1u) * iPitchDst, pData + i * iPitchSrc, iPitchDst);
 
         // create SDL surface
-        SDL_Surface* pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidthDst, iHeight, 24, iPitchDst, CORE_TEXTURE_MASK);
+        coreSurfaceScope pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidthDst, iHeight, 24, iPitchDst, CORE_TEXTURE_MASK);
         if(pSurface)
         {
             // create folder hierarchy
@@ -386,7 +386,6 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 
             // save the surface as PNG image
             IMG_SavePNG(pSurface, pcFullPath);
-            SDL_FreeSurface(pSurface);
         }
 
         // delete pixel data

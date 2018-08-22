@@ -18,7 +18,7 @@
 #define CORE_RAND_SEED_ALWAYS (coreUint32(std::time(NULL)))                                //!< always use current time to seed the generator
 
 #define CORE_RAND_RUNTIME     (coreUint32(SDL_GetPerformanceCounter() & 0xFFFFFFFFu))
-#define CORE_RAND_COMPILE     (coreHashFNV1(__DATE__ __TIME__))
+#define CORE_RAND_COMPILE     (FORCE_COMPILE_TIME(coreHashFNV1(__DATE__ __TIME__)))
 
 
 // ****************************************************************

@@ -282,9 +282,11 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 /* assignment operations */
 template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookupGen<K, I, T>::operator = (coreLookupGen<K, I, T> o)noexcept
 {
+    // swap properties
     std::swap(m_atValueList, o.m_atValueList);
     std::swap(m_atKeyList,   o.m_atKeyList);
     std::swap(m_iCacheIndex, o.m_iCacheIndex);
+
     return *this;
 }
 

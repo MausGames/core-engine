@@ -260,7 +260,7 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 , m_iCurIndex     (0u)
 {
     // create empty music object
-    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0x00));
+    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0));
     m_pCurMusic   = m_pEmptyMusic;
 }
 
@@ -308,6 +308,7 @@ coreBool coreMusicPlayer::Update()
         // repeat, switch or stop as defined
         switch(m_iRepeat)
         {
+        default: ASSERT(false)
         case CORE_MUSIC_ALL_NOREPEAT:    if((m_iCurIndex + 1u) >= m_apMusic.size()) break; FALLTHROUGH
         case CORE_MUSIC_ALL_REPEAT:      this->Next();                                     FALLTHROUGH
         case CORE_MUSIC_SINGLE_REPEAT:   m_pCurMusic->Play();                              FALLTHROUGH

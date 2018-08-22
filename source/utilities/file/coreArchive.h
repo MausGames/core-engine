@@ -11,7 +11,7 @@
 #define _CORE_GUARD_ARCHIVE_H_
 
 // TODO: make archive a file
-// TODO: implement Unload into coreFile, so the unload is better
+// TODO: implement Unload into coreFile
 // TODO: check sum
 // TODO: allocate page-size aligned
 // TODO: static and dynamic archives (with fixed-size array for renaming)
@@ -122,42 +122,6 @@ private:
     //! @{
     void __CalculatePositions();
     //! @}
-};
-
-
-// ****************************************************************
-// file-unload helper class
-class coreFileUnload final
-{
-private:
-    coreFile* m_pFile;   //!< associated file object
-
-
-public:
-    constexpr explicit coreFileUnload(coreFile* pFile)noexcept : m_pFile (pFile) {}
-    ~coreFileUnload() {ASSERT(m_pFile) m_pFile->UnloadData();}
-
-    DISABLE_COPY(coreFileUnload)
-    DISABLE_NEW
-    DISABLE_DELETE
-};
-
-
-// ****************************************************************
-// spinlock-release helper class
-class coreLockRelease final
-{
-private:
-    SDL_SpinLock* m_piLock;   //!< associated spinlock
-
-
-public:
-    explicit coreLockRelease(SDL_SpinLock* piLock)noexcept : m_piLock (piLock) {coreAtomicLock  (m_piLock);}
-    ~coreLockRelease()                                                         {coreAtomicUnlock(m_piLock);}
-
-    DISABLE_COPY(coreLockRelease)
-    DISABLE_NEW
-    DISABLE_DELETE
 };
 
 

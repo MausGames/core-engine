@@ -77,7 +77,7 @@ coreObject3D& coreObject3D::operator = (const coreObject3D& c)noexcept
     // bind to object manager
     this->ChangeType(c.m_iType);
 
-    // copy remaining properties
+    // copy properties
     this->coreObject::operator = (c);
     m_vPosition          = c.m_vPosition;
     m_vSize              = c.m_vSize;
@@ -97,7 +97,7 @@ coreObject3D& coreObject3D::operator = (coreObject3D&& m)noexcept
     // bind to object manager
     this->ChangeType(m.m_iType);
 
-    // move remaining properties
+    // move properties
     this->coreObject::operator = (std::move(m));
     m_vPosition          = m.m_vPosition;
     m_vSize              = m.m_vSize;
@@ -243,7 +243,7 @@ coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 , m_nUpdateShaderFunc  (NULL)
 , m_iCustomSize        (0u)
 , m_iFilled            (0u)
-, m_iUpdate            (0u)
+, m_iUpdate            (CORE_BATCHLIST_UPDATE_NOTHING)
 {
     // reserve memory for objects
     m_apObjectList.reserve(iStartCapacity);
@@ -285,12 +285,12 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
     if(m_apObjectList.empty()) return;
 
     // re-determine render-count (may have changed between move and render)
-    if(m_iUpdate) m_iCurEnabled = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
-    if(!m_iCurEnabled) return;
+    const coreUint32 iRenderCount = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
+    if(!iRenderCount) return;
 
     // check for custom vertex attributes
-    if(this->IsCustom()) this->__RenderCustom (pProgramInstanced, pProgramSingle);
-                    else this->__RenderDefault(pProgramInstanced, pProgramSingle);
+    if(this->IsCustom()) this->__RenderCustom (pProgramInstanced, pProgramSingle, iRenderCount);
+                    else this->__RenderDefault(pProgramInstanced, pProgramSingle, iRenderCount);
 }
 
 void coreBatchList::Render()
@@ -322,7 +322,7 @@ void coreBatchList::MoveNormal()
     }
 
     // set the update status
-    m_iUpdate = 3u;
+    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -376,7 +376,7 @@ void coreBatchList::MoveSort()
     }
 
     // set the update status
-    m_iUpdate = 3u;
+    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -396,7 +396,7 @@ void coreBatchList::BindObject(coreObject3D* pObject)
     m_apObjectList.insert(pObject);
 
     // set the update status
-    m_iUpdate = 3u;
+    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -408,7 +408,7 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
     m_apObjectList.erase(pObject);
 
     // set the update status
-    m_iUpdate = 3u;
+    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -460,7 +460,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
         WARN_IF(m_aInstanceBuffer[0].IsValid()) return;
 
         // only allocate with enough capacity
-        if(m_iCurCapacity >= CORE_OBJECT3D_INSTANCE_THRESHOLD)
+        if(m_iCurCapacity >= CORE_BATCHLIST_INSTANCE_THRESHOLD)
         {
             FOR_EACH(it, m_aInstanceBuffer)
             {
@@ -470,7 +470,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
                 m_aiVertexArray.next();
 
                 // create instance data buffer
-                it->Create(m_iCurCapacity, CORE_OBJECT3D_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+                it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
@@ -499,13 +499,13 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
 
             // invoke vertex array and buffer update
             m_iFilled = 0u;
-            m_iUpdate = 3u;
+            m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
         }
     }
     else
     {
         // delete vertex array objects
-        if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_OBJECT3D_INSTANCE_BUFFERS, m_aiVertexArray.data());
+        if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_BATCHLIST_INSTANCE_BUFFERS, m_aiVertexArray.data());
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
@@ -529,7 +529,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
 
 // ****************************************************************
 /* render without inheritance or additional attributes */
-void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle)
+void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle, const coreUint32 iRenderCount)
 {
     if(this->IsInstanced())
     {
@@ -551,7 +551,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         // enable all active textures
         coreTexture::EnableAll(&pFirst->GetTexture(0u));
 
-        if(CONTAINS_BIT(m_iUpdate, 0u))
+        if(CONTAINS_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
         {
             // invalidate previous buffer
             m_aInstanceBuffer.current().Invalidate();
@@ -561,7 +561,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             m_aInstanceBuffer.next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_iCurEnabled * CORE_OBJECT3D_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)
@@ -585,7 +585,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                     std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iRotation,              sizeof(coreUint64));
                     std::memcpy(pCursor + 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
                     std::memcpy(pCursor + 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32), &iTexParams,             sizeof(coreUint64));
-                    pCursor += CORE_OBJECT3D_INSTANCE_SIZE;
+                    pCursor += CORE_BATCHLIST_INSTANCE_SIZE;
                 }
             }
 
@@ -593,7 +593,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             m_aInstanceBuffer.current().Unmap(pRange);
 
             // reset the update status
-            REMOVE_BIT(m_iUpdate, 0u)
+            REMOVE_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)
         }
 
         // disable current model object (because of direct VAO use)
@@ -606,7 +606,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         if(!CONTAINS_BIT(m_iFilled, m_aiVertexArray.index()))
         {
             ADD_BIT(m_iFilled, m_aiVertexArray.index())
-            STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_OBJECT3D_INSTANCE_BUFFERS)
+            STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_BATCHLIST_INSTANCE_BUFFERS)
 
             // set vertex data (model only)
             pModel->GetVertexBuffer(0u)->Activate(0u);
@@ -620,7 +620,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         }
 
         // draw the model instanced
-        pModel->DrawInstanced(m_iCurEnabled);
+        pModel->DrawInstanced(iRenderCount);
     }
     else
     {
@@ -641,23 +641,23 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
 
 // ****************************************************************
 /* render with custom vertex attributes per active object */
-void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle)
+void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle, const coreUint32 iRenderCount)
 {
     ASSERT(this->IsCustom())
 
     if(this->IsInstanced())
     {
-        if(CONTAINS_BIT(m_iUpdate, 1u))
+        if(CONTAINS_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_CUSTOM))
         {
             // invalidate previous buffer
             m_paCustomBuffer->current().Invalidate();
 
             // switch to next available buffer
             m_paCustomBuffer->select(m_aInstanceBuffer.index());
-            if(CONTAINS_BIT(m_iUpdate, 0u)) m_paCustomBuffer->next();
+            if(CONTAINS_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)) m_paCustomBuffer->next();
 
             // map required area of the custom attribute buffer
-            coreByte* pRange  = m_paCustomBuffer->current().Map(0u, m_iCurEnabled * m_iCustomSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pRange  = m_paCustomBuffer->current().Map(0u, iRenderCount * m_iCustomSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)
@@ -677,11 +677,11 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
             m_paCustomBuffer->current().Unmap(pRange);
 
             // reset the update status
-            REMOVE_BIT(m_iUpdate, 1u)
+            REMOVE_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_CUSTOM)
         }
 
         // render the batch list
-        this->__RenderDefault(pProgramInstanced, pProgramSingle);
+        this->__RenderDefault(pProgramInstanced, pProgramSingle, iRenderCount);
     }
     else
     {

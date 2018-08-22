@@ -12,7 +12,7 @@
 
 // TODO: check for inheritance of coreLabel to remove separate caption object
 // TODO: separate/remove buttons from switchbox and allow "hooks" to own coreButton/coreObject2D objects
-// TODO: coreError on entry management
+// TODO: coreStatus on entry management
 // TODO: handle rotation on move (+ all menu objects)
 
 

@@ -44,14 +44,14 @@ coreStatus coreTexture::Load(coreFile* pFile)
     const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck >= CORE_OK) return iCheck;
 
-    coreFileUnload oUnload(pFile);
+    coreFileScope oUnloader(pFile);
 
     WARN_IF(m_iIdentifier) return CORE_INVALID_CALL;
     if(!pFile)             return CORE_INVALID_INPUT;
     if(!pFile->GetData())  return CORE_ERROR_FILE;
 
     // decompress file to plain pixel data
-    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
+    coreSurfaceScope pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
         Core::Log->Warning("Texture (%s) could not be loaded (SDL: %s)", pFile->GetPath(), SDL_GetError());
@@ -71,9 +71,6 @@ coreStatus coreTexture::Load(coreFile* pFile)
 
     // save properties
     m_sPath = pFile->GetPath();
-
-    // delete pixel data
-    SDL_FreeSurface(pData);
 
     Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, iCompress ? "compressed" : "normal");
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;

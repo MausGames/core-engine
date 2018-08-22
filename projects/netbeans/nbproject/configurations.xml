@@ -110,9 +110,10 @@
           <itemPath>../../source/utilities/data/coreHashString.h</itemPath>
           <itemPath>../../source/utilities/data/coreLookup.h</itemPath>
           <itemPath>../../source/utilities/data/coreProtect.h</itemPath>
-          <itemPath>../../source/utilities/data/coreRand.cpp</itemPath>
           <itemPath>../../source/utilities/data/coreRand.h</itemPath>
+          <itemPath>../../source/utilities/data/coreScope.h</itemPath>
           <itemPath>../../source/utilities/data/coreSet.h</itemPath>
+          <itemPath>../../source/utilities/data/coreVariant.h</itemPath>
         </logicalFolder>
         <logicalFolder name="file" displayName="file" projectFiles="true">
           <itemPath>../../source/utilities/file/coreArchive.cpp</itemPath>
@@ -175,7 +176,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-std=c++14 -fno-rtti</commandLine>
+          <commandLine>-std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -517,17 +518,22 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreRand.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/data/coreRand.h"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreScope.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreVariant.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -631,7 +637,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
+          <commandLine>-std=c++14 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -973,17 +979,22 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreRand.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/data/coreRand.h"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreScope.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreVariant.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1087,7 +1098,7 @@
             <pElem>../../source</pElem>
             <pElem>../../libraries/include</pElem>
           </incDir>
-          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
+          <commandLine>-std=c++14 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -1429,17 +1440,22 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreRand.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/data/coreRand.h"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreScope.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreVariant.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1889,17 +1905,22 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreRand.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/data/coreRand.h"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreScope.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreVariant.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2349,17 +2370,22 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreRand.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/data/coreRand.h"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreScope.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreVariant.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2809,17 +2835,22 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="../../source/utilities/data/coreRand.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
       <item path="../../source/utilities/data/coreRand.h"
             ex="false"
             tool="3"
             flavor2="0">
       </item>
+      <item path="../../source/utilities/data/coreScope.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="../../source/utilities/data/coreSet.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../source/utilities/data/coreVariant.h"
             ex="false"
             tool="3"
             flavor2="0">

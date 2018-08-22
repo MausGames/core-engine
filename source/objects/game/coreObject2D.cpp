@@ -79,7 +79,7 @@ coreObject2D::~coreObject2D()
 // assignment operations
 coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
 {
-    // copy remaining properties
+    // copy properties
     this->coreObject::operator = (c);
     m_vPosition      = c.m_vPosition;
     m_vSize          = c.m_vSize;
@@ -98,7 +98,7 @@ coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
 
 coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
 {
-    // move remaining properties
+    // move properties
     this->coreObject::operator = (std::move(m));
     m_vPosition      = m.m_vPosition;
     m_vSize          = m.m_vSize;

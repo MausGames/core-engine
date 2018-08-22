@@ -150,7 +150,7 @@ coreLanguage::~coreLanguage()
 /* load language file */
 coreStatus coreLanguage::Load(const coreChar* pcPath)
 {
-    coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+    coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
     // get file data
     const coreChar* pcData = r_cast<const coreChar*>(pFile->GetData());
@@ -194,9 +194,8 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     }
     if(!sKey.empty()) nAssignFunc(&m_asStringList[sKey.c_str()]);
 
-    // save relative path and unload data
+    // save relative path
     m_sPath = pcPath;
-    pFile->UnloadData();
 
     // reduce memory consumption
     FOR_EACH(it, m_asStringList)
@@ -241,7 +240,7 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
 {
     ASSERT(psOutput)
 
-    coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+    coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
     // get file data
     const coreChar* pcData = r_cast<const coreChar*>(pFile->GetData());
@@ -280,7 +279,6 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
         coreData::StrTrim(psOutput);
     }
 
-    pFile->UnloadData();
     return bFound;
 }
 

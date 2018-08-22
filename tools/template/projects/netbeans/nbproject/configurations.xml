@@ -51,7 +51,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-std=c++14 -fno-rtti</commandLine>
+          <commandLine>-std=c++14</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -127,7 +127,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
+          <commandLine>-std=c++14 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>
@@ -199,7 +199,7 @@
             <pElem>../../../CoreEngine/libraries/include</pElem>
             <pElem>../../source</pElem>
           </incDir>
-          <commandLine>-std=c++14 -msse2 -fno-rtti</commandLine>
+          <commandLine>-std=c++14 -msse2</commandLine>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
           </preprocessorList>

@@ -19,6 +19,7 @@
 // TODO: extend OnLoad interface with new functions, call directly after load instead of threaded ?
 // TODO: resources exist only within handles, redefine all interfaces
 // TODO: investigate possible GPU memory fragmentation when streaming in and out lots of resources
+// TODO: defer resource-unload on ref-count 0 to an explicit call at the end of a frame
 
 
 // ****************************************************************
@@ -81,14 +82,15 @@ public:
 class coreResourceHandle final
 {
 private:
-    coreResource* m_pResource;   //!< handled resource object
-    coreFile*     m_pFile;       //!< pointer to resource file
+    coreResource* m_pResource;    //!< handled resource object
+    coreFile*     m_pFile;        //!< pointer to resource file
 
-    std::string m_sName;         //!< identifier of this resource handle
-    coreBool    m_bAutomatic;    //!< updated automatically by the resource manager
+    std::string m_sName;          //!< identifier of this resource handle
+    coreBool    m_bAutomatic;     //!< updated automatically by the resource manager
 
-    coreStatus m_iStatus;        //!< current resource status
-    coreInt32  m_iRefCount;      //!< simple reference-counter
+    coreStatus   m_iStatus;       //!< current resource status
+    coreUint16   m_iRefCount;     //!< simple reference-counter
+    SDL_SpinLock m_iUpdateLock;   //!< spinlock to prevent concurrent automatic resource loading
 
 
 private:
@@ -111,14 +113,14 @@ public:
     /*! control the reference-counter */
     //! @{
     inline void RefIncrease() {++m_iRefCount;}
-    inline void RefDecrease() {--m_iRefCount; ASSERT(m_iRefCount >= 0) if(!m_iRefCount) this->Nullify();}
+    inline void RefDecrease() {--m_iRefCount; ASSERT(m_iRefCount != 0xFFFFu) if(!m_iRefCount) this->Nullify();}
     //! @}
 
     /*! handle resource loading */
     //! @{
-    inline coreBool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic)       {m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline coreBool Reload () {if( this->IsLoaded() && m_iRefCount) {m_pResource->Unload(); m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline coreBool Nullify() {if( this->IsLoaded())                {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
+    inline coreBool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic) {m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
+    inline coreBool Reload () {if( this->IsLoaded())          {m_pResource->Unload(); m_iStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
+    inline coreBool Nullify() {if( this->IsLoaded())          {m_pResource->Unload(); m_iStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
     //! @}
 
     /*! attach asynchronous callbacks */
@@ -130,14 +132,15 @@ public:
     //! @{
     inline const coreChar*   GetName    ()const {return m_sName.c_str();}
     inline const coreStatus& GetStatus  ()const {return m_iStatus;}
-    inline const coreInt32&  GetRefCount()const {return m_iRefCount;}
+    inline const coreUint16& GetRefCount()const {return m_iRefCount;}
     //! @}
 
 
 private:
     /*! handle automatic resource loading */
     //! @{
-    inline coreBool __AutoUpdate() {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) {m_iStatus = m_pResource->Load(m_pFile); return true;} return false;}
+    inline coreBool __CanAutoUpdate() {if(coreAtomicTryLock(&m_iUpdateLock)) {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) return true; coreAtomicUnlock(&m_iUpdateLock);} return false;}
+    inline void     __AutoUpdate   () {m_iStatus = m_pResource->Load(m_pFile); coreAtomicUnlock(&m_iUpdateLock);}
     //! @}
 };
 
@@ -356,7 +359,9 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 /* assignment operations */
 template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
 {
+    // swap properties
     std::swap(m_pHandle, o.m_pHandle);
+
     return *this;
 }
 
@@ -433,6 +438,9 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
 
         // delete possible resource proxy
         m_apProxy.erase(pHandle);
+
+        // stop automatic resource loading
+        coreAtomicLock(&pHandle->m_iUpdateLock);
 
         // delete resource handle
         (*pptResourcePtr) = NULL;

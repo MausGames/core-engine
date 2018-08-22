@@ -545,14 +545,20 @@ enum coreStatus : coreInt8
 /* multi-threading utilities */
 #if defined(_CORE_ASYNC_)
 
+    // try to acquire the spinlock
+    FORCE_INLINE coreBool coreAtomicTryLock(SDL_SpinLock* OUTPUT piLock)
+    {
+    #if defined(_CORE_WINDOWS_)
+        return !_InterlockedExchange(r_cast<long*>(piLock), 1);
+    #else
+        return SDL_AtomicTryLock(piLock);
+    #endif
+    }
+
     // acquire the spinlock
     FORCE_INLINE void coreAtomicLock(SDL_SpinLock* OUTPUT piLock)
     {
-    #if defined(_CORE_WINDOWS_)
-        while(_InterlockedExchange(r_cast<long*>(piLock), 1))
-    #else
-        while(!SDL_AtomicTryLock(piLock))
-    #endif
+        while(!coreAtomicTryLock(piLock))
     #if defined(_CORE_SSE_)
         _mm_pause();     // processor level spinning
     #else
@@ -572,13 +578,15 @@ enum coreStatus : coreInt8
     }
 
     // prevent default spinlock functions
-    #define SDL_AtomicLock(x)   (error)
-    #define SDL_AtomicUnlock(x) (error)
+    #define SDL_AtomicTryLock(x) (error)
+    #define SDL_AtomicLock(x)    (error)
+    #define SDL_AtomicUnlock(x)  (error)
 
 #else
 
     // disable multi-threading utilities
     #define thread_local
+    #define coreAtomicTryLock(x)
     #define coreAtomicLock(x)
     #define coreAtomicUnlock(x)
 
@@ -746,6 +754,7 @@ private:
 #include "utilities/math/coreVector.h"
 #include "utilities/math/coreMatrix.h"
 #include "utilities/math/coreSpline.h"
+#include "utilities/data/coreScope.h"
 #include "components/system/CoreSystem.h"
 #include "components/system/coreTimer.h"
 #include "components/system/coreThread.h"

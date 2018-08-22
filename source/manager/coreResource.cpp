@@ -12,12 +12,13 @@
 // ****************************************************************
 /* constructor */
 coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic)noexcept
-: m_pResource  (pResource)
-, m_pFile      (pFile)
-, m_sName      (pcName)
-, m_bAutomatic (bAutomatic)
-, m_iStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
-, m_iRefCount  (0)
+: m_pResource   (pResource)
+, m_pFile       (pFile)
+, m_sName       (pcName)
+, m_bAutomatic  (bAutomatic)
+, m_iStatus     ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
+, m_iRefCount   (0u)
+, m_iUpdateLock (0)
 {
 }
 
@@ -71,7 +72,7 @@ coreResourceManager::coreResourceManager()noexcept
 , m_bActive       (false)
 {
     // configure resource thread
-    this->SetExecutions(2u);
+    this->SetFrequency(100.0f);
 
     // start up the resource manager
     this->Reset(CORE_RESOURCE_RESET_INIT);
@@ -117,19 +118,24 @@ coreResourceManager::~coreResourceManager()
 /* update the resource manager */
 void coreResourceManager::UpdateResources()
 {
-    // check for current status
     if(m_bActive)
     {
         coreAtomicLock(&m_iResourceLock);
         {
+            // loop through all resource handles
             for(coreUintW i = 0u; i < m_apHandle.size(); ++i)   // # size may change
             {
-                // update resource handle
-                if(m_apHandle[i]->__AutoUpdate())
+                coreResourceHandle* pCurHandle = m_apHandle[i];
+
+                // check for requirements
+                if(pCurHandle->__CanAutoUpdate())
                 {
-                    // allow changes during iteration
                     coreAtomicUnlock(&m_iResourceLock);
-                    coreAtomicLock  (&m_iResourceLock);
+                    {
+                        // update resource handle
+                        pCurHandle->__AutoUpdate();
+                    }
+                    coreAtomicLock(&m_iResourceLock);
                 }
             }
         }
@@ -142,7 +148,7 @@ void coreResourceManager::UpdateResources()
 /* retrieve archive */
 coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 {
-    coreLockRelease oRelease(&m_iFileLock);
+    coreSpinLocker oLocker(&m_iFileLock);
 
     // check for existing archive
     if(m_apArchive.count_bs(sPath)) return m_apArchive.at(sPath);
@@ -160,7 +166,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 /* retrieve resource file */
 coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 {
-    coreLockRelease oRelease(&m_iFileLock);
+    coreSpinLocker oLocker(&m_iFileLock);
 
     // try to open direct resource file first
     if(!coreData::FileExists(sPath.GetString()))

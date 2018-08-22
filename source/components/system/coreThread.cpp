@@ -14,12 +14,14 @@ ENTRY_POINT coreInt32 SDLCALL coreThreadMain(void* pData);
 // ****************************************************************
 /* constructor */
 coreThread::coreThread(const coreChar* pcName)noexcept
-: m_pThread     (NULL)
-, m_sName       (pcName)
-, m_iExecutions (1u)
-, m_bActive     (false)
-, m_iFuncLock   (0)
-, m_anFunction  {}
+: m_pThread      (NULL)
+, m_sName        (pcName)
+, m_fFrequency   (0.0f)
+, m_bActive      (false)
+, m_anFuncNew    {}
+, m_anFuncActive {}
+, m_iLockNew     (0)
+, m_iLockActive  (0)
 {
 }
 
@@ -32,7 +34,8 @@ coreThread::~coreThread()
     this->KillThread();
 
     // clear memory
-    m_anFunction.clear();
+    m_anFuncNew   .clear();
+    m_anFuncActive.clear();
 }
 
 
@@ -49,7 +52,7 @@ SDL_Thread* coreThread::StartThread()
         m_pThread = SDL_CreateThread(coreThreadMain, m_sName.c_str(), this);
         if(!m_pThread)
         {
-            Core::Log->Warning("Could not start thread (%s) (SDL: %s)", m_sName.c_str(), SDL_GetError());
+            Core::Log->Warning("Thread (%s) could not be started (SDL: %s)", m_sName.c_str(), SDL_GetError());
             m_bActive = false;
         }
     }
@@ -75,19 +78,26 @@ void coreThread::KillThread()
 /* call and manage custom functions */
 void coreThread::UpdateFunctions()
 {
-    if(m_anFunction.empty()) return;
+    coreSpinLocker oLocker(&m_iLockActive);
 
-    coreAtomicLock(&m_iFuncLock);
+    if(!m_anFuncNew.empty())
     {
-        // loop trough all functions
-        FOR_EACH_DYN(it, m_anFunction)
+        coreAtomicLock(&m_iLockNew);
         {
-            // call function and remove when successful
-            if((*it)()) DYN_KEEP  (it)
-                   else DYN_REMOVE(it, m_anFunction)
+            // collect new custom functions
+            FOR_EACH(it, m_anFuncNew) m_anFuncActive.push_back(std::move(*it));
+            m_anFuncNew.clear();
         }
+        coreAtomicUnlock(&m_iLockNew);
     }
-    coreAtomicUnlock(&m_iFuncLock);
+
+    // loop trough all functions
+    FOR_EACH_DYN(it, m_anFuncActive)
+    {
+        // call function and remove when successful
+        if((*it)()) DYN_KEEP  (it)
+               else DYN_REMOVE(it, m_anFuncActive)
+    }
 }
 
 
@@ -95,8 +105,9 @@ void coreThread::UpdateFunctions()
 /* execute the thread */
 coreStatus coreThread::__Main()
 {
-    coreUint32 iCurFrame     = 0u;
-    coreUint8  iCurExecution = 0u;
+    coreUint64 iBeforeTime = 0u;
+    coreUint64 iAfterTime  = 0u;
+    coreDouble dWait       = 0.0;
 
     // call init-routine
     Core::Log->Info("Thread (%s, %04lX) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
@@ -105,24 +116,28 @@ coreStatus coreThread::__Main()
     // begin main-loop
     while(iReturn == CORE_OK)
     {
-        do
+        if(m_fFrequency)
         {
-            // wait for next frame or execution
-            SDL_Delay(1u);
-        }
-        while((iCurFrame >= Core::System->GetCurFrame()) && (iCurExecution == m_iExecutions) && m_bActive);
+            // handle thread-overhead
+            iBeforeTime = SDL_GetPerformanceCounter();
+            dWait      -= coreDouble(iBeforeTime - iAfterTime) * Core::System->GetPerfFrequency();
 
-        // check for external shut down
+            // wait for next iteration
+            dWait = MAX(dWait + (1.0 / coreDouble(m_fFrequency)), 0.0);
+            SDL_Delay(F_TO_UI(dWait * 1000.0));
+
+            // handle rounding-errors
+            iAfterTime = SDL_GetPerformanceCounter();
+            dWait     -= coreDouble(iAfterTime - iBeforeTime) * Core::System->GetPerfFrequency();
+        }
+        else
+        {
+            // always yield
+            SDL_Delay(0u);
+        }
+
+        // check for shut down
         if(!m_bActive) break;
-
-        // process execution number
-        if(iCurExecution >= m_iExecutions)
-        {
-            // save latest frame number
-            iCurFrame     = Core::System->GetCurFrame();
-            iCurExecution = 0u;
-        }
-        ++iCurExecution;
 
         // call and manage custom functions
         this->UpdateFunctions();

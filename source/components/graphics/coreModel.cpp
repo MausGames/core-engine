@@ -54,7 +54,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
     if(iCheck >= CORE_OK) return iCheck;
 
-    coreFileUnload oUnload(pFile);
+    coreFileScope oUnloader(pFile);
 
     WARN_IF(!m_aVertexBuffer.empty()) return CORE_INVALID_CALL;
     if(!pFile)                        return CORE_INVALID_INPUT;

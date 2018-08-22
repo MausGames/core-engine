@@ -35,7 +35,7 @@ CoreInput::~CoreInput()
     // shut down joystick input
     this->__CloseJoysticks();
 
-    // free the hardware mouse cursor
+    // delete mouse cursor
     if(m_pCursor) SDL_FreeCursor(m_pCursor);
 
     Core::Log->Info(CORE_LOG_BOLD("Input Interface shut down"));
@@ -43,27 +43,28 @@ CoreInput::~CoreInput()
 
 
 // ****************************************************************
-// set the cursor object
+// set the mouse cursor
 void CoreInput::SetCursor(const coreChar* pcPath)
 {
-    coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
-    coreFileUnload oUnload(pFile);
+    // retrieve texture file
+    coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
-    // load texture from file
-    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
-    if(pData)
+    // decompress file to plain pixel data
+    coreSurfaceScope pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pcPath));
+    if(!pData)
     {
-        if(m_pCursor) SDL_FreeCursor(m_pCursor);
-
-        // create hardware mouse cursor
-        m_pCursor = SDL_CreateColorCursor(pData, 0, 0);
-        SDL_SetCursor(m_pCursor);
-
-        // free the texture
-        SDL_FreeSurface(pData);
-
-        Core::Log->Info("Cursor (%s) loaded", pcPath);
+        Core::Log->Warning("Cursor (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
+        return;
     }
+
+    // delete old mouse cursor
+    if(m_pCursor) SDL_FreeCursor(m_pCursor);
+
+    // create and set new mouse cursor
+    m_pCursor = SDL_CreateColorCursor(pData, 0, 0);
+    SDL_SetCursor(m_pCursor);
+
+    Core::Log->Info("Cursor (%s) loaded", pcPath);
 }
 
 

@@ -273,19 +273,21 @@ void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 // change the icon of the window
 void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 {
-    coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
-    coreFileUnload oUnload(pFile);
+    // retrieve texture file
+    coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
-    // load texture from file
-    SDL_Surface* pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
+    // decompress file to plain pixel data
+    coreSurfaceScope pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pcPath));
     if(pData)
     {
-        // create icon and free the texture
-        SDL_SetWindowIcon(m_pWindow, pData);
-        SDL_FreeSurface(pData);
-
-        Core::Log->Info("Icon (%s) loaded", pcPath);
+        Core::Log->Warning("Icon (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
+        return;
     }
+
+    // set new window icon
+    SDL_SetWindowIcon(m_pWindow, pData);
+
+    Core::Log->Info("Icon (%s) loaded", pcPath);
 }
 
 

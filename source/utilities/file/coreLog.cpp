@@ -127,7 +127,7 @@ void coreLog::DebugOpenGL()
 /* write text to the log file */
 void coreLog::__Write(const coreBool bTimeStamp, std::string sText)
 {
-    coreLockRelease oRelease(&m_iLock);
+    coreSpinLocker oLocker(&m_iLock);
 
 #if defined(_CORE_DEBUG_)
 

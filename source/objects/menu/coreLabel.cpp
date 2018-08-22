@@ -164,9 +164,9 @@ void coreLabel::__Reset(const coreResourceReset bInit)
 // generate the texture
 void coreLabel::__GenerateTexture(const coreChar* pcText)
 {
-    SDL_Surface* pSolid   = NULL;
-    SDL_Surface* pOutline = NULL;
-    coreByte*    pData    = NULL;
+    coreSurfaceScope pSolid   = NULL;
+    coreSurfaceScope pOutline = NULL;
+    coreByte*        pData    = NULL;
 
     // get relative font height
     const coreUint8 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
@@ -254,8 +254,6 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     this->SetTexSize(coreVector2(I_TO_F(iWidth) - 0.5f, I_TO_F(iHeight)) / m_vResolution);
     ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
 
-    // delete text surface data
-    SDL_FreeSurface(pSolid);
-    SDL_FreeSurface(pOutline);
+    // delete merge buffer
     if(pOutline) ZERO_DELETE(pData)
 }

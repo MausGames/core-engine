@@ -20,9 +20,14 @@ coreSync::~coreSync()
 
 // ****************************************************************
 /* assignment operations */
-coreSync& coreSync::operator = (coreSync o)noexcept
+coreSync& coreSync::operator = (coreSync&& m)noexcept
 {
-    std::swap(m_pSync, o.m_pSync);
+    // move properties
+    m_pSync = m.m_pSync;
+
+    // clear source object
+    m.m_pSync = NULL;
+
     return *this;
 }
 

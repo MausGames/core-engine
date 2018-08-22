@@ -57,7 +57,7 @@ coreShader::~coreShader()
 // load shader resource data
 coreStatus coreShader::Load(coreFile* pFile)
 {
-    coreFileUnload oUnload(pFile);
+    coreFileScope oUnloader(pFile);
 
     WARN_IF(m_iIdentifier) return CORE_INVALID_CALL;
     if(!pFile)             return CORE_INVALID_INPUT;
@@ -175,13 +175,12 @@ void coreShader::__LoadGlobalCode()
     const auto nRetrieveFunc = [](const coreChar* pcPath)
     {
         // retrieve shader file
-        coreFile* pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+        coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
         WARN_IF(!pFile->GetData()) return;
 
-        // copy and unload data
+        // copy data
         s_asGlobalCode[1].append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
         s_asGlobalCode[1].append(1u, '\n');
-        pFile->UnloadData();
     };
     nRetrieveFunc("data/shaders/global.glsl");
     nRetrieveFunc("data/shaders/custom.glsl");

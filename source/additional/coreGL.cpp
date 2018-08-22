@@ -73,14 +73,14 @@ void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
     const auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
 
     // generate 2D texture names
-    coreLockRelease oRelease(&g_PoolTextures2D.iLock);
+    coreSpinLocker oLocker(&g_PoolTextures2D.iLock);
     CORE_GL_POOL_GENERATE(g_PoolTextures2D, nCreateFunc, glGenTextures)
 }
 
 void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate data buffer names
-    coreLockRelease oRelease(&g_PoolBuffers.iLock);
+    coreSpinLocker oLocker(&g_PoolBuffers.iLock);
     CORE_GL_POOL_GENERATE(g_PoolBuffers, glCreateBuffers, glGenBuffers)
 }
 
