@@ -41,22 +41,22 @@ public:
         coreVector3 vPosition;   //!< position of the particle
         coreFloat   fScale;      //!< scale-factor of the particle
         coreFloat   fAngle;      //!< orientation-angle of the particle
-        coreVector4 vColor;      //!< RGBA color-value
+        coreUint32  iColor;      //!< packed RGBA color-value
     };
 
 
 private:
-    coreState m_CurrentState;        //!< current calculated state
-    coreState m_MoveState;           //!< difference between initial and final state
+    coreState m_BeginState;          //!< initial state
+    coreState m_EndState;            //!< final state
 
-    coreFloat m_fValue;              //!< current animation value of the particle (between 0.0f and 1.0f)
+    coreFloat m_fValue;              //!< current animation value of the particle (from 1.0f and 0.0f)
     coreFloat m_fSpeed;              //!< speed factor of the particle
 
     coreParticleEffect* m_pEffect;   //!< associated particle effect object
 
 
 private:
-    constexpr coreParticle()noexcept;
+    coreParticle() = default;
     ~coreParticle() = default;
 
 
@@ -69,44 +69,48 @@ public:
     inline coreBool IsActive()const {return (m_fValue > 0.0f) ? true : false;}
     //! @}
 
-    //! animate the particle relative
-    //! @{
-    inline void SetPositionRel(const coreVector3& vStart, const coreVector3& vMove) {m_CurrentState.vPosition = vStart; m_MoveState.vPosition = vMove;}
-    inline void SetScaleRel   (const coreFloat    fStart, const coreFloat    fMove) {m_CurrentState.fScale    = fStart; m_MoveState.fScale    = fMove;}
-    inline void SetAngleRel   (const coreFloat    fStart, const coreFloat    fMove) {m_CurrentState.fAngle    = fStart; m_MoveState.fAngle    = fMove;}
-    inline void SetColor4Rel  (const coreVector4& vStart, const coreVector4& vMove) {m_CurrentState.vColor    = vStart; m_MoveState.vColor    = vMove;}
-    //! @}
-
     //! animate the particle absolute
     //! @{
-    inline void SetPositionAbs(const coreVector3& vStart, const coreVector3& vEnd) {this->SetPositionRel(vStart, vEnd - vStart);}
-    inline void SetScaleAbs   (const coreFloat    fStart, const coreFloat    fEnd) {this->SetScaleRel   (fStart, fEnd - fStart);}
-    inline void SetAngleAbs   (const coreFloat    fStart, const coreFloat    fEnd) {this->SetAngleRel   (fStart, fEnd - fStart);}
-    inline void SetColor4Abs  (const coreVector4& vStart, const coreVector4& vEnd) {this->SetColor4Rel  (vStart, vEnd - vStart);}
+    inline void SetPositionAbs(const coreVector3& vBegin, const coreVector3& vEnd) {m_BeginState.vPosition = vBegin;                m_EndState.vPosition = vEnd;}
+    inline void SetScaleAbs   (const coreFloat    fBegin, const coreFloat    fEnd) {m_BeginState.fScale    = fBegin;                m_EndState.fScale    = fEnd;}
+    inline void SetAngleAbs   (const coreFloat    fBegin, const coreFloat    fEnd) {m_BeginState.fAngle    = fBegin;                m_EndState.fAngle    = fEnd;}
+    inline void SetColor4Abs  (const coreVector4& vBegin, const coreVector4& vEnd) {m_BeginState.iColor    = vBegin.PackUnorm4x8(); m_EndState.iColor    = vEnd.PackUnorm4x8(); ASSERT((vBegin.Min() >= 0.0f) && (vBegin.Max() <= 1.0f) && (vEnd.Min() >= 0.0f) && (vEnd.Max() <= 1.0f))}
+    //! @}
+
+    //! animate the particle relative
+    //! @{
+    inline void SetPositionRel(const coreVector3& vBegin, const coreVector3& vMove) {this->SetPositionAbs(vBegin, vBegin + vMove);}
+    inline void SetScaleRel   (const coreFloat    fBegin, const coreFloat    fMove) {this->SetScaleAbs   (fBegin, fBegin + fMove);}
+    inline void SetAngleRel   (const coreFloat    fBegin, const coreFloat    fMove) {this->SetAngleAbs   (fBegin, fBegin + fMove);}
+    inline void SetColor4Rel  (const coreVector4& vBegin, const coreVector4& vMove) {this->SetColor4Abs  (vBegin, vBegin + vMove);}
     //! @}
 
     //! animate the particle static
     //! @{
-    inline void SetPositionStc(const coreVector3& vStatic) {this->SetPositionRel(vStatic, coreVector3(0.0f,0.0f,0.0f));}
-    inline void SetScaleStc   (const coreFloat    fStatic) {this->SetScaleRel   (fStatic, 0.0f);}
-    inline void SetAngleStc   (const coreFloat    fStatic) {this->SetAngleRel   (fStatic, 0.0f);}
-    inline void SetColor4Stc  (const coreVector4& vStatic) {this->SetColor4Rel  (vStatic, coreVector4(0.0f,0.0f,0.0f,0.0f));}
+    inline void SetPositionStc(const coreVector3& vStatic) {this->SetPositionAbs(vStatic, vStatic);}
+    inline void SetScaleStc   (const coreFloat    fStatic) {this->SetScaleAbs   (fStatic, fStatic);}
+    inline void SetAngleStc   (const coreFloat    fStatic) {this->SetAngleAbs   (fStatic, fStatic);}
+    inline void SetColor4Stc  (const coreVector4& vStatic) {this->SetColor4Abs  (vStatic, vStatic);}
+    //! @}
+
+    //! retrieve interpolated values
+    //! @{
+    inline coreVector3 GetCurPosition()const {return LERP(m_EndState.vPosition,                           m_BeginState.vPosition,                           m_fValue);}
+    inline coreFloat   GetCurScale   ()const {return LERP(m_EndState.fScale,                              m_BeginState.fScale,                              m_fValue);}
+    inline coreFloat   GetCurAngle   ()const {return LERP(m_EndState.fAngle,                              m_BeginState.fAngle,                              m_fValue);}
+    inline coreVector4 GetCurColor4  ()const {return LERP(coreVector4::UnpackUnorm4x8(m_EndState.iColor), coreVector4::UnpackUnorm4x8(m_BeginState.iColor), m_fValue);}
     //! @}
 
     //! set object properties
     //! @{
-    inline void SetSpeed   (const coreFloat fSpeed)    {m_fSpeed = fSpeed;}
-    inline void SetLifetime(const coreFloat fLifetime) {m_fSpeed = RCP(fLifetime);}
+    inline void SetSpeed(const coreFloat fSpeed) {m_fSpeed = fSpeed;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const coreState&    GetCurrentState()const {return m_CurrentState;}
-    inline const coreState&    GetMoveState   ()const {return m_MoveState;}
-    inline const coreFloat&    GetValue       ()const {return m_fValue;}
-    inline const coreFloat&    GetSpeed       ()const {return m_fSpeed;}
-    inline       coreFloat     GetLifetime    ()const {return RCP(m_fSpeed);}
-    inline coreParticleEffect* GetEffect      ()const {return m_pEffect;}
+    inline const coreFloat&    GetValue ()const {return m_fValue;}
+    inline const coreFloat&    GetSpeed ()const {return m_fSpeed;}
+    inline coreParticleEffect* GetEffect()const {return m_pEffect;}
     //! @}
 
 
@@ -131,7 +135,7 @@ private:
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                   //!< multiple texture objects
     coreProgramPtr m_pProgram;                                                        //!< shader-program object
 
-    std::list<coreParticle*> m_apRenderList;                                          //!< sorted render list with active particles
+    std::deque<coreParticle*> m_apRenderList;                                         //!< sorted render list with active particles
     coreParticleEffect* m_pDefaultEffect;                                             //!< default particle effect object (dynamic, because of class order)
 
     coreArray<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;      //!< vertex array objects
@@ -254,32 +258,13 @@ public:
 
 
 // ****************************************************************
-// constructor
-constexpr coreParticle::coreParticle()noexcept
-: m_CurrentState {}
-, m_MoveState    {}
-, m_fValue       (0.0f)
-, m_fSpeed       (1.0f)
-, m_pEffect      (NULL)
-{
-}
-
-
-// ****************************************************************
 // update the particle
 inline void coreParticle::__Update()
 {
     ASSERT(m_pEffect)
 
     // update current animation value
-    const coreFloat fTime = m_fSpeed * Core::System->GetTime(m_pEffect->GetTimeID());
-    m_fValue -= fTime;
-
-    // update current state
-    m_CurrentState.vPosition += m_MoveState.vPosition * fTime;
-    m_CurrentState.fScale    += m_MoveState.fScale    * fTime;
-    m_CurrentState.fAngle    += m_MoveState.fAngle    * fTime;
-    m_CurrentState.vColor    += m_MoveState.vColor    * fTime;
+    m_fValue -= m_fSpeed * Core::System->GetTime(m_pEffect->GetTimeID());
 }
 
 
@@ -309,6 +294,11 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
     for(coreUintW i = iNum; i--; )
         nFunction(this->CreateParticle());
 }
+
+
+// ****************************************************************
+/* additional checks */
+STATIC_ASSERT(std::is_pod<coreParticle>::value == true)
 
 
 #endif // _CORE_GUARD_PARTICLE_H_

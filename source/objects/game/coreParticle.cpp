@@ -28,6 +28,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 
     // pre-allocate particles
     m_pParticle = ALIGNED_NEW(coreParticle, m_iNumParticles, ALIGNMENT_CACHE);
+    std::memset(m_pParticle, 0, sizeof(coreParticle) * m_iNumParticles);
 
     // create default particle effect object
     m_pDefaultEffect = new coreParticleEffect(this);
@@ -96,26 +97,19 @@ void coreParticleSystem::Render()
             FOR_EACH_REV(it, m_apRenderList)
             {
                 // get current particle state
-                const coreParticle*            pParticle = (*it);
-                const coreObject3D*            pOrigin   = pParticle->GetEffect()->GetOrigin();
-                const coreParticle::coreState& oCurrent  = pParticle->GetCurrentState();
+                const coreParticle* pParticle = (*it);
+                const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
-                // write position data to the buffer
-                if(pOrigin)
-                {
-                    const coreVector3 vPosition = pOrigin->GetPosition() + oCurrent.vPosition;
-                    std::memcpy(pCursor, &vPosition, sizeof(coreVector3));
-                }
-                else std::memcpy(pCursor, &oCurrent.vPosition, sizeof(coreVector3));
-
-                // compress remaining data
-                const coreUint64 iData  = coreVector4(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue(), 0.0f).PackFloat4x16();
-                const coreUint32 iColor = oCurrent.vColor.PackUnorm4x8();
-                ASSERT(oCurrent.vColor.Min() >= 0.0f && oCurrent.vColor.Max() <= 1.0f)
+                // compress data
+                const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition();
+                const coreUint64  iData     = coreVector4(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue(), 0.0f).PackFloat4x16();
+                const coreUint32  iColor    = pParticle->GetCurColor4().PackUnorm4x8();
+                ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
 
                 // write remaining data to the buffer
-                std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iData,  sizeof(coreUint64));
-                std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iColor, sizeof(coreUint32));
+                std::memcpy(pCursor,                                                &vPosition, sizeof(coreVector3));
+                std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iData,     sizeof(coreUint64));
+                std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iColor,    sizeof(coreUint32));
                 pCursor += CORE_PARTICLE_INSTANCE_SIZE;
             }
 
@@ -142,14 +136,13 @@ void coreParticleSystem::Render()
         FOR_EACH_REV(it, m_apRenderList)
         {
             // get current particle state
-            const coreParticle*            pParticle = (*it);
-            const coreObject3D*            pOrigin   = pParticle->GetEffect()->GetOrigin();
-            const coreParticle::coreState& oCurrent  = pParticle->GetCurrentState();
+            const coreParticle* pParticle = (*it);
+            const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
             // update all particle uniforms
-            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oCurrent.vPosition) : oCurrent.vPosition);
-            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(oCurrent.fScale, oCurrent.fAngle, pParticle->GetValue()));
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          oCurrent.vColor);
+            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition());
+            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue()));
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          pParticle->GetCurColor4());
 
             // draw the model
             pModel->Enable();
@@ -224,8 +217,14 @@ void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
         // check particle effect object
         if(pParticle->GetEffect() == pEffect)
         {
+            const coreObject3D* pOrigin = pEffect->GetOrigin();
+
             // check origin object and transform position
-            if(pEffect->GetOrigin()) pParticle->m_CurrentState.vPosition += pEffect->GetOrigin()->GetPosition();
+            if(pOrigin)
+            {
+                pParticle->m_BeginState.vPosition += pOrigin->GetPosition();
+                pParticle->m_EndState  .vPosition += pOrigin->GetPosition();
+            }
 
             // reset associated particle effect object
             pParticle->m_pEffect = m_pDefaultEffect;
@@ -264,11 +263,15 @@ void coreParticleSystem::UnbindAll()
 {
     FOR_EACH(it, m_apRenderList)
     {
-        coreParticle* pParticle = (*it);
-        coreParticleEffect* pEffect = pParticle->GetEffect();
+        coreParticle*       pParticle = (*it);
+        const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
         // check origin object and transform position
-        if(pEffect->GetOrigin()) pParticle->m_CurrentState.vPosition += pEffect->GetOrigin()->GetPosition();
+        if(pOrigin)
+        {
+            pParticle->m_BeginState.vPosition += pOrigin->GetPosition();
+            pParticle->m_EndState  .vPosition += pOrigin->GetPosition();
+        }
 
         // reset associated particle effect object
         pParticle->m_pEffect = m_pDefaultEffect;

@@ -278,7 +278,7 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 
     // decompress file to plain pixel data
     coreSurfaceScope pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pcPath));
-    if(pData)
+    if(!pData)
     {
         Core::Log->Warning("Icon (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
         return;

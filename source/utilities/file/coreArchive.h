@@ -11,11 +11,10 @@
 #define _CORE_GUARD_ARCHIVE_H_
 
 // TODO: make archive a file
-// TODO: implement Unload into coreFile
 // TODO: check sum
 // TODO: allocate page-size aligned
 // TODO: static and dynamic archives (with fixed-size array for renaming)
-// TODO: reference-counting wrapper instead of coreFileUnload
+// TODO: reference-counting wrapper instead of coreFileScope
 
 
 // ****************************************************************
@@ -34,7 +33,7 @@ private:
     coreByte*  m_pData;           //!< file data
     coreUint32 m_iSize;           //!< size of the file
 
-    coreUint32   m_iArchivePos;   //!< absolute data position in the associated archive (0 = file doesn't exist physically)
+    coreUint32   m_iArchivePos;   //!< absolute data position in the associated archive (0 = does not exist physically | -1 = not associated with an archive)
     coreArchive* m_pArchive;      //!< associated archive
 
 

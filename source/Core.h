@@ -298,7 +298,7 @@
 #include <string>
 #include <array>
 #include <vector>
-#include <list>
+#include <deque>
 
 
 // ****************************************************************
@@ -595,12 +595,12 @@ enum coreStatus : coreInt8
 
 // ****************************************************************
 /* forward declarations */
-union  coreVector2;
-union  coreVector3;
-union  coreVector4;
-union  coreMatrix2;
-union  coreMatrix3;
-union  coreMatrix4;
+class  coreVector2;
+class  coreVector3;
+class  coreVector4;
+class  coreMatrix2;
+class  coreMatrix3;
+class  coreMatrix4;
 class  coreFile;
 class  coreArchive;
 class  coreObject2D;

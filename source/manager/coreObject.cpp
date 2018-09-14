@@ -248,7 +248,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                     if((coreVector3::Dot(A2 - B1, coreVector3::Cross(B2 - B1, A1 - B1)) <= 0.0f) &&
                        (coreVector3::Dot(A1 - B1, coreVector3::Cross(B3 - B1, A3 - B1)) <= 0.0f))
                     {
-                        (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply((A1 + A2 + A3 + B1 + B2 + B3) / 6.0f);
+                        (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply((A1 + A2 + A3 + B1 + B2 + B3) * (1.0f/6.0f));
                         return true;
                     }
                 }
@@ -262,23 +262,25 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
 
 // ****************************************************************
 /* test collision between 3d-object and ray */
-coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vRayPos, const coreVector3& vRayDir, coreFloat* OUTPUT pfDistance)
+coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vRayPos, const coreVector3& vRayDir, coreFloat* OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount)
 {
-    ASSERT(pObject && vRayDir.IsNormalized() && pfDistance)
+    ASSERT(pObject && vRayDir.IsNormalized() && pfHitDistance && piHitCount)
+    ASSERT(((*piHitCount) >= 1u) && ((*piHitCount) <= CORE_OBJECT_RAY_HITCOUNT))
 
     // calculate difference between ray and object
     const coreVector3 vDiff = pObject->GetPosition() - vRayPos;
 
     // get closest point on ray
     const coreFloat fAdjacent = coreVector3::Dot(vDiff, vRayDir);
+    const coreFloat fDiffSq   = vDiff.LengthSq();
+    const coreFloat fRadiusSq = POW2(pObject->GetCollisionRadius());
 
     // check if ray moves away from object
-    if(fAdjacent < 0.0f)
+    if((fAdjacent < 0.0f) && (fDiffSq > fRadiusSq))
         return false;
 
-    // get ray distance and collision radius
-    const coreFloat fOppositeSq = vDiff.LengthSq() - POW2(fAdjacent);
-    const coreFloat fRadiusSq   = POW2(pObject->GetCollisionRadius());
+    // get minimum distance
+    const coreFloat fOppositeSq = fDiffSq - POW2(fAdjacent);
 
     // check for sphere intersection
     if(fOppositeSq > fRadiusSq)
@@ -290,13 +292,29 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
     // return intersection with simple model
     if(!bPrecise)
     {
-        (*pfDistance) = fAdjacent - SQRT(fRadiusSq - fOppositeSq);
+        // get half penetration length
+        const coreFloat fHalfLen = SQRT(fRadiusSq - fOppositeSq);
+
+        if(fDiffSq > fRadiusSq)
+        {
+            // ray is outside
+            if((*piHitCount) >= 1u) pfHitDistance[0] = fAdjacent - fHalfLen;
+            if((*piHitCount) >= 2u) pfHitDistance[1] = fAdjacent + fHalfLen;
+            (*piHitCount) = 2u;
+        }
+        else
+        {
+            // ray is inside
+            pfHitDistance[0] = fAdjacent + fHalfLen;
+            (*piHitCount) = 1u;
+        }
+
         return true;
     }
 
     // transform ray instead of whole object
     const coreVector4 vRevRotation = pObject->GetRotation().QuatConjugate();
-    const coreVector3 vRelRayPos   = vRevRotation.QuatApply(vRayPos - pObject->GetPosition());
+    const coreVector3 vRelRayPos   = vRevRotation.QuatApply(-vDiff);
     const coreVector3 vRelRayDir   = vRevRotation.QuatApply(vRayDir);
 
     // get model and object size (precise collision detection does not use size-modifiers)
@@ -307,8 +325,8 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
     // calculate collision with precise model (MoellerTrumbore97)
     if(bPrecise)
     {
-        coreBool  bHasHit      = false;
-        coreFloat fMinDistance = FLT_MAX;
+        coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT] = {};
+        coreUint8 iHitCount                               = 0u;
 
         for(coreUintW m = 0u, me = pModel->GetNumClusters(); m < me; ++m)
         {
@@ -316,12 +334,13 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
             const coreVector3 vClusterDiff = vClusterPos - vRelRayPos;
 
             const coreFloat fAdjacent2 = coreVector3::Dot(vClusterDiff, vRelRayDir);
+            const coreFloat fDiffSq2   = vClusterDiff.LengthSq();
+            const coreFloat fRadiusSq2 = POW2(pModel->GetClusterRadius(m) * vSizeMax);
 
-            if(fAdjacent2 < 0.0f)
+            if((fAdjacent2 < 0.0f) && (fDiffSq2 > fRadiusSq2))
                 continue;
 
-            const coreFloat fOppositeSq2 = vClusterDiff.LengthSq() - POW2(fAdjacent2);
-            const coreFloat fRadiusSq2   = POW2(pModel->GetClusterRadius(m) * vSizeMax);
+            const coreFloat fOppositeSq2 = fDiffSq2 - POW2(fAdjacent2);
 
             if(fOppositeSq2 > fRadiusSq2)
                 continue;
@@ -350,18 +369,26 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
 
                 const coreVector3 F = coreVector3::Cross(D, W1);
                 const coreFloat   G = coreVector3::Dot(vRelRayDir, F) * C;
+                const coreFloat   H = coreVector3::Dot(W2, F) * C;
 
-                if((G < 0.0f) || (G + E > 1.0f))
+                if((G < 0.0f) || (G + E > 1.0f) || (H < 0.0f))
                     continue;
 
-                bHasHit      = true;
-                fMinDistance = MIN(fMinDistance, coreVector3::Dot(W2, F) * C);
+                ASSERT(iHitCount < CORE_OBJECT_RAY_HITCOUNT)
+                afHitDistance[iHitCount++] = H;
             }
         }
 
-        if(bHasHit)
+        if(iHitCount)
         {
-            (*pfDistance) = fMinDistance;
+            // filter and sort distance values (ascending)
+            const coreUint8 iUniqueCount = std::unique(afHitDistance, afHitDistance + iHitCount, [](const coreFloat A, const coreFloat B) {return coreMath::IsNear(A, B);}) - afHitDistance;
+            std::sort(afHitDistance, afHitDistance + iUniqueCount, std::less());
+
+            // return collision data
+            std::memcpy(pfHitDistance, afHitDistance, sizeof(coreFloat) * MIN(iUniqueCount, (*piHitCount)));
+            std::memcpy(piHitCount,    &iUniqueCount, sizeof(coreUint8));
+
             return true;
         }
     }

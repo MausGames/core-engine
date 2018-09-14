@@ -73,7 +73,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
     // close file
     SDL_RWclose(pFile);
-    if(!m_iArchivePos) m_iArchivePos = UINT32_MAX;
+    if(!m_pArchive && !m_iArchivePos) m_iArchivePos = UINT32_MAX;
 
     return CORE_OK;
 }

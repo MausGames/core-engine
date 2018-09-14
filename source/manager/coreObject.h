@@ -20,6 +20,8 @@
 
 // ****************************************************************
 /* object definitions */
+#define CORE_OBJECT_RAY_HITCOUNT (16u)   //!< maximum number of hits recognized by a single ray-intersection test
+
 enum coreObjectUpdate : coreUint8
 {
     CORE_OBJECT_UPDATE_NOTHING   = 0x00u,   //!< update nothing
@@ -84,7 +86,7 @@ public:
     //! @{
     inline void SetColor4   (const coreVector4&     vColor)     {m_vColor     = vColor;}
     inline void SetColor3   (const coreVector3&     vColor)     {m_vColor.xyz(vColor);}
-    inline void SetAlpha    (const coreFloat        fAlpha)     {m_vColor.a   = fAlpha;}
+    inline void SetAlpha    (const coreFloat        fAlpha)     {m_vColor.w   = fAlpha;}
     inline void SetTexSize  (const coreVector2&     vTexSize)   {m_vTexSize   = vTexSize;}
     inline void SetTexOffset(const coreVector2&     vTexOffset) {m_vTexOffset = vTexOffset;}
     inline void SetEnabled  (const coreObjectEnable iEnabled)   {m_iEnabled   = iEnabled;}
@@ -97,7 +99,7 @@ public:
     inline const coreProgramPtr& GetProgram  ()const                      {return m_pProgram;}
     inline const coreVector4&    GetColor4   ()const                      {return m_vColor;}
     inline       coreVector3     GetColor3   ()const                      {return m_vColor.xyz();}
-    inline const coreFloat&      GetAlpha    ()const                      {return m_vColor.a;}
+    inline const coreFloat&      GetAlpha    ()const                      {return m_vColor.w;}
     inline const coreVector2&    GetTexSize  ()const                      {return m_vTexSize;}
     inline const coreVector2&    GetTexOffset()const                      {return m_vTexOffset;}
     inline const coreInt32&      GetStatus   ()const                      {return m_iStatus;}
@@ -146,12 +148,12 @@ public:
 
     /*! test collision between different structures */
     //! @{
-    template <typename F> void TestCollision(const coreInt32     iType,                                                             F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA,     coreObject3D* OUTPUT pObjectB,     const coreVector3& vIntersection, const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32     iType2,                              F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectType1, coreObject3D* OUTPUT pObjectType2, const coreVector3& vIntersection, const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType,    const coreObject3D* pObject,                             F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreVector3& vIntersection, const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3&  vRayPos, const coreVector3& vRayDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                         const coreFloat    fDistance,     const coreBool bFirstHit) -> void
-    static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2,                            coreVector3* OUTPUT pvIntersection);
-    static coreBool            TestCollision(const coreObject3D* pObject,  const coreVector3&  vRayPos, const coreVector3& vRayDir, coreFloat*   OUTPUT pfDistance);
+    template <typename F> void TestCollision(const coreInt32     iType,                                                              F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3& vIntersection,                            const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32      iType2,                              F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3& vIntersection,                            const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    coreObject3D* OUTPUT pObject,                             F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3& vIntersection,                            const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3&   vRayPos, const coreVector3& vRayDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                 const coreFloat*   pfHitDistance, const coreUint8 iHitCount, const coreBool bFirstHit) -> void
+    static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D*  pObject2,                            coreVector3* OUTPUT pvIntersection);
+    static coreBool            TestCollision(const coreObject3D* pObject,  const coreVector3&   vRayPos, const coreVector3& vRayDir, coreFloat*   OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount);
     //! @}
 
     /*! get manager properties */
@@ -265,7 +267,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
 
 // ****************************************************************
 /* test collision between list and 3d-object */
-template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, const coreObject3D* pObject, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, coreObject3D* OUTPUT pObject, F&& nCallback)
 {
     ASSERT(iType && pObject)
 
@@ -283,6 +285,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
         if(coreObjectManager::TestCollision(pCurObject, pObject, &vIntersection))
         {
             nCallback(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
+                      d_cast<typename TRAIT_ARG_TYPE(F, 1u)>(pObject),
                       vIntersection, this->__NewCollision(pCurObject, pObject));
         }
     }
@@ -305,11 +308,12 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
         if(!pCurObject) continue;
 
         // test collision and call function
-        coreFloat fDistance;
-        if(coreObjectManager::TestCollision(pCurObject, vRayPos, vRayDir, &fDistance))
+        coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT] = {};
+        coreUint8 iHitCount                               = CORE_OBJECT_RAY_HITCOUNT;
+        if(coreObjectManager::TestCollision(pCurObject, vRayPos, vRayDir, &fHitDistance, &iHitCount))
         {
             nCallback(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
-                      fDistance, this->__NewCollision(pCurObject, r_cast<coreObject3D*>(&nCallback)));
+                      fHitDistance, iHitCount, this->__NewCollision(pCurObject, r_cast<coreObject3D*>(&nCallback)));
         }
     }
 }

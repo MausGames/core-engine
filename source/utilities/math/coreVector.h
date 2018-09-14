@@ -15,12 +15,10 @@
 
 // ****************************************************************
 /* 2d-vector class */
-union coreVector2 final
+class coreVector2 final
 {
 public:
-    struct {coreFloat x, y;};
-    struct {coreFloat r, g;};
-    coreFloat arr[2];
+    coreFloat x, y;
 
 
 public:
@@ -75,8 +73,10 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr operator const coreFloat* ()const {return arr;}
-    constexpr coreVector2 yx()const             {return coreVector2(y, x);}
+    constexpr operator const coreFloat* ()const            {return (&x);}
+    inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 2u) return (&x)[i];}
+    inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 2u) return (&x)[i];}
+    constexpr coreVector2      yx ()const                  {return coreVector2(y, x);}
     //! @}
 
     /*! invert vector */
@@ -148,12 +148,10 @@ public:
 
 // ****************************************************************
 /* 3d-vector class */
-union coreVector3 final
+class coreVector3 final
 {
 public:
-    struct {coreFloat x, y, z;};
-    struct {coreFloat r, g, b;};
-    coreFloat arr[3];
+    coreFloat x, y, z;
 
 
 public:
@@ -208,24 +206,26 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr operator const coreFloat* ()const {return arr;}
-    constexpr coreVector3 xzy()const            {return coreVector3(x, z, y);}
-    constexpr coreVector3 yxz()const            {return coreVector3(y, x, z);}
-    constexpr coreVector3 yzx()const            {return coreVector3(y, z, x);}
-    constexpr coreVector3 zxy()const            {return coreVector3(z, x, y);}
-    constexpr coreVector3 zyx()const            {return coreVector3(z, y, x);}
-    constexpr coreVector2 xy ()const            {return coreVector2(x, y);}
-    constexpr coreVector2 xz ()const            {return coreVector2(x, z);}
-    constexpr coreVector2 yx ()const            {return coreVector2(y, x);}
-    constexpr coreVector2 yz ()const            {return coreVector2(y, z);}
-    constexpr coreVector2 zx ()const            {return coreVector2(z, x);}
-    constexpr coreVector2 zy ()const            {return coreVector2(z, y);}
-    inline void xy(const coreVector2& v)        {x = v.x; y = v.y;}
-    inline void xz(const coreVector2& v)        {x = v.x; z = v.y;}
-    inline void yx(const coreVector2& v)        {y = v.x; x = v.y;}
-    inline void yz(const coreVector2& v)        {y = v.x; z = v.y;}
-    inline void zx(const coreVector2& v)        {z = v.x; x = v.y;}
-    inline void zy(const coreVector2& v)        {z = v.x; y = v.y;}
+    constexpr operator const coreFloat* ()const            {return (&x);}
+    inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 3u) return (&x)[i];}
+    inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 3u) return (&x)[i];}
+    constexpr coreVector3      xzy()const                  {return coreVector3(x, z, y);}
+    constexpr coreVector3      yxz()const                  {return coreVector3(y, x, z);}
+    constexpr coreVector3      yzx()const                  {return coreVector3(y, z, x);}
+    constexpr coreVector3      zxy()const                  {return coreVector3(z, x, y);}
+    constexpr coreVector3      zyx()const                  {return coreVector3(z, y, x);}
+    constexpr coreVector2      xy ()const                  {return coreVector2(x, y);}
+    constexpr coreVector2      xz ()const                  {return coreVector2(x, z);}
+    constexpr coreVector2      yx ()const                  {return coreVector2(y, x);}
+    constexpr coreVector2      yz ()const                  {return coreVector2(y, z);}
+    constexpr coreVector2      zx ()const                  {return coreVector2(z, x);}
+    constexpr coreVector2      zy ()const                  {return coreVector2(z, y);}
+    inline    void             xy (const coreVector2& v)   {x = v.x; y = v.y;}
+    inline    void             xz (const coreVector2& v)   {x = v.x; z = v.y;}
+    inline    void             yx (const coreVector2& v)   {y = v.x; x = v.y;}
+    inline    void             yz (const coreVector2& v)   {y = v.x; z = v.y;}
+    inline    void             zx (const coreVector2& v)   {z = v.x; x = v.y;}
+    inline    void             zy (const coreVector2& v)   {z = v.x; y = v.y;}
     //! @}
 
     /*! invert vector */
@@ -312,12 +312,10 @@ public:
 
 // ****************************************************************
 /* 4d-vector and quaternion class */
-union coreVector4 final
+class coreVector4 final
 {
 public:
-    struct {coreFloat x, y, z, w;};
-    struct {coreFloat r, g, b, a;};
-    coreFloat arr[4];
+    coreFloat x, y, z, w;
 
 
 public:
@@ -374,16 +372,18 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr operator const coreFloat* ()const {return arr;}
-    constexpr coreVector3 xyzw()const           {return coreVector3(x, y, z) * w;}
-    constexpr coreVector3 xyz ()const           {return coreVector3(x, y, z);}
-    constexpr coreVector2 xy  ()const           {return coreVector2(x, y);}
-    constexpr coreVector2 yz  ()const           {return coreVector2(y, z);}
-    constexpr coreVector2 zw  ()const           {return coreVector2(z, w);}
-    inline void xyz(const coreVector3& v)       {x = v.x; y = v.y; z = v.z;}
-    inline void xy (const coreVector2& v)       {x = v.x; y = v.y;}
-    inline void yz (const coreVector2& v)       {y = v.x; z = v.y;}
-    inline void zw (const coreVector2& v)       {z = v.x; w = v.y;}
+    constexpr operator const coreFloat* ()const             {return (&x);}
+    inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 4u) return (&x)[i];}
+    inline    const coreFloat& arr (const coreUintW i)const {ASSERT(i < 4u) return (&x)[i];}
+    constexpr coreVector3      xyzw()const                  {return coreVector3(x, y, z) * w;}
+    constexpr coreVector3      xyz ()const                  {return coreVector3(x, y, z);}
+    constexpr coreVector2      xy  ()const                  {return coreVector2(x, y);}
+    constexpr coreVector2      yz  ()const                  {return coreVector2(y, z);}
+    constexpr coreVector2      zw  ()const                  {return coreVector2(z, w);}
+    inline    void             xyz (const coreVector3& v)   {x = v.x; y = v.y; z = v.z;}
+    inline    void             xy  (const coreVector2& v)   {x = v.x; y = v.y;}
+    inline    void             yz  (const coreVector2& v)   {y = v.x; z = v.y;}
+    inline    void             zw  (const coreVector2& v)   {z = v.x; w = v.y;}
     //! @}
 
     /*! invert vector */
@@ -560,7 +560,7 @@ inline coreUint32 coreVector2::PackFloat2x16()const
 /* safely convert vector into bit-representation */
 inline coreUint64 coreVector2::PackFloat2x32()const
 {
-    coreUint64 iOutput; std::memcpy(&iOutput, arr, sizeof(coreUint64));
+    coreUint64 iOutput; std::memcpy(&iOutput, &x, sizeof(coreUint64));
     return iOutput;
 }
 
@@ -599,7 +599,7 @@ inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 /* safely convert bit-representation into vector */
 inline coreVector2 coreVector2::UnpackFloat2x32(const coreUint64 iNumber)
 {
-    coreVector2 vOutput; std::memcpy(&vOutput, &iNumber, sizeof(coreVector2));
+    coreVector2 vOutput; std::memcpy(&vOutput.x, &iNumber, sizeof(coreVector2));
     return vOutput;
 }
 
@@ -892,7 +892,7 @@ inline coreUint64 coreVector4::PackFloat4x16()const
     if(coreCPUID::F16C())
     {
         // optimized calculation with F16C
-        return _mm_cvtsi128_si64(_mm_cvtps_ph(_mm_loadu_ps(arr), _MM_FROUND_CUR_DIRECTION));
+        return _mm_cvtsi128_si64(_mm_cvtps_ph(_mm_loadu_ps(&x), _MM_FROUND_CUR_DIRECTION));
     }
 
 #endif
@@ -995,7 +995,7 @@ inline coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
     if(coreCPUID::F16C())
     {
         // optimized calculation with F16C
-        coreVector4 vOutput; _mm_storeu_ps(vOutput.arr, _mm_cvtph_ps(_mm_set_epi64x(0u, iNumber)));
+        coreVector4 vOutput; _mm_storeu_ps(&vOutput.x, _mm_cvtph_ps(_mm_set_epi64x(0u, iNumber)));
         return vOutput;
     }
 

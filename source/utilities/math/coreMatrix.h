@@ -19,15 +19,11 @@
 
 // ****************************************************************
 /* 2x2-matrix class */
-union coreMatrix2 final
+class coreMatrix2 final
 {
 public:
-    struct
-    {
-        coreFloat _11, _12;
-        coreFloat _21, _22;
-    };
-    coreFloat arr[2][2];
+    coreFloat _11, _12;
+    coreFloat _21, _22;
 
 
 public:
@@ -63,7 +59,9 @@ public:
 
     /*! convert matrix */
     //! @{
-    constexpr operator const coreFloat* ()const {return arr[0];}
+    constexpr operator const coreFloat* ()const         {return (&_11);}
+    inline       coreFloat& arr(const coreUintW i)      {ASSERT(i < 4u) return (&_11)[i];}
+    inline const coreFloat& arr(const coreUintW i)const {ASSERT(i < 4u) return (&_11)[i];}
     //! @}
 
     /*! transpose matrix */
@@ -78,10 +76,10 @@ public:
 
     /*! process matrix */
     //! @{
-    template <typename F, typename... A> inline coreMatrix2 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr[0][i] = nFunction(arr[0][i], std::forward<A>(vArgs)...); return M;}
-    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr[0][i] = nFunction(arr[0][i]);                            return M;}
-    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1);                        return M;}
-    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1, f2);                    return M;}
+    template <typename F, typename... A> inline coreMatrix2 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
+    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
+    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
     //! @}
 
     /*! direct functions */
@@ -98,16 +96,12 @@ public:
 
 // ****************************************************************
 /* 3x3-matrix class */
-union coreMatrix3 final
+class coreMatrix3 final
 {
 public:
-    struct
-    {
-        coreFloat _11, _12, _13;
-        coreFloat _21, _22, _23;
-        coreFloat _31, _32, _33;
-    };
-    coreFloat arr[3][3];
+    coreFloat _11, _12, _13;
+    coreFloat _21, _22, _23;
+    coreFloat _31, _32, _33;
 
 
 public:
@@ -145,12 +139,12 @@ public:
 
     /*! convert matrix */
     //! @{
-    constexpr        operator const coreFloat* ()const {return arr[0];}
-    CONSTEXPR        coreMatrix2 m12     ()const       {return coreMatrix2(_11, _12, _21, _22);}
-    CONSTEXPR        coreMatrix2 m13     ()const       {return coreMatrix2(_11, _13, _31, _33);}
-    CONSTEXPR        coreMatrix2 m23     ()const       {return coreMatrix2(_22, _23, _32, _33);}
-    inline           coreVector4 ToQuat  ()const;
-    static constexpr coreMatrix3 FromQuat(const coreVector4& v);
+    constexpr operator const coreFloat* ()const            {return (&_11);}
+    inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
+    inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 9u) return (&_11)[i];}
+    CONSTEXPR coreMatrix2      m12()const                  {return coreMatrix2(_11, _12, _21, _22);}
+    CONSTEXPR coreMatrix2      m13()const                  {return coreMatrix2(_11, _13, _31, _33);}
+    CONSTEXPR coreMatrix2      m23()const                  {return coreMatrix2(_22, _23, _32, _33);}
     //! @}
 
     /*! transpose matrix */
@@ -165,10 +159,10 @@ public:
 
     /*! process matrix */
     //! @{
-    template <typename F, typename... A> inline coreMatrix3 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i], std::forward<A>(vArgs)...); return M;}
-    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i]);                            return M;}
-    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1);                        return M;}
-    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1, f2);                    return M;}
+    template <typename F, typename... A> inline coreMatrix3 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
     //! @}
 
     /*! direct functions */
@@ -184,22 +178,24 @@ public:
     static inline    coreMatrix3 Rotation   (const coreVector2& vDirection);
     static inline    coreMatrix3 Rotation   (const coreFloat    fAngle);
     //! @}
+
+    /*! quaternion functions */
+    //! @{
+    inline           coreVector4 ToQuat  ()const;
+    static constexpr coreMatrix3 FromQuat(const coreVector4& v);
+    //! @}
 };
 
 
 // ****************************************************************
 /* 4x4-matrix class */
-union coreMatrix4 final
+class coreMatrix4 final
 {
 public:
-    struct
-    {
-        coreFloat _11, _12, _13, _14;
-        coreFloat _21, _22, _23, _24;
-        coreFloat _31, _32, _33, _34;
-        coreFloat _41, _42, _43, _44;
-    };
-    coreFloat arr[4][4];
+    coreFloat _11, _12, _13, _14;
+    coreFloat _21, _22, _23, _24;
+    coreFloat _31, _32, _33, _34;
+    coreFloat _41, _42, _43, _44;
 
 
 public:
@@ -239,11 +235,13 @@ public:
 
     /*! convert matrix */
     //! @{
-    constexpr operator const coreFloat* ()const {return arr[0];}
-    CONSTEXPR coreMatrix3 m123()const           {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
-    CONSTEXPR coreMatrix3 m124()const           {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
-    CONSTEXPR coreMatrix3 m134()const           {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
-    CONSTEXPR coreMatrix3 m234()const           {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
+    constexpr operator const coreFloat* ()const             {return (&_11);}
+    inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 16u) return (&_11)[i];}
+    inline    const coreFloat& arr (const coreUintW i)const {ASSERT(i < 16u) return (&_11)[i];}
+    CONSTEXPR coreMatrix3      m123()const                  {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
+    CONSTEXPR coreMatrix3      m124()const                  {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
+    CONSTEXPR coreMatrix3      m134()const                  {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
+    CONSTEXPR coreMatrix3      m234()const                  {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
     //! @}
 
     /*! transpose matrix */
@@ -258,10 +256,10 @@ public:
 
     /*! process matrix */
     //! @{
-    template <typename F, typename... A> inline coreMatrix4 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i], std::forward<A>(vArgs)...); return M;}
-    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i]);                            return M;}
-    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1);                        return M;}
-    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr[0][i] = nFunction(arr[0][i], f1, f2);                    return M;}
+    template <typename F, typename... A> inline coreMatrix4 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
     //! @}
 
     /*! direct functions */
@@ -438,70 +436,6 @@ constexpr coreMatrix3 coreMatrix3::operator * (const coreFloat f)const
 
 
 // ****************************************************************
-/* convert matrix to quaternion */
-inline coreVector4 coreMatrix3::ToQuat()const
-{
-    const coreFloat fTrace = _11 + _22 + _33;
-
-    if(fTrace > 0.0f)
-    {
-        const coreFloat F = 0.5f * RSQRT(fTrace + 1.0f);
-        return coreVector4((_23 - _32) *     F,
-                           (_31 - _13) *     F,
-                           (_12 - _21) *     F,
-                                 0.25f * RCP(F));
-    }
-    else
-    {
-        if((_11 > _22) && (_11 > _33))
-        {
-            const coreFloat F = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
-            return coreVector4(      0.25f * RCP(F),
-                               (_21 + _12) *     F,
-                               (_31 + _13) *     F,
-                               (_23 - _32) *     F);
-        }
-        else if(_22 > _33)
-        {
-            const coreFloat F = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
-            return coreVector4((_21 + _12) *     F,
-                                     0.25f * RCP(F),
-                               (_32 + _23) *     F,
-                               (_31 - _13) *     F);
-        }
-        else
-        {
-            const coreFloat F = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
-            return coreVector4((_31 + _13) *     F,
-                               (_32 + _23) *     F,
-                                     0.25f * RCP(F),
-                               (_12 - _21) *     F);
-        }
-    }
-}
-
-
-// ****************************************************************
-/* convert quaternion to matrix */
-constexpr coreMatrix3 coreMatrix3::FromQuat(const coreVector4& v)
-{
-    const coreFloat XX = v.x*v.x;
-    const coreFloat XY = v.x*v.y;
-    const coreFloat XZ = v.x*v.z;
-    const coreFloat XW = v.x*v.w;
-    const coreFloat YY = v.y*v.y;
-    const coreFloat YZ = v.y*v.z;
-    const coreFloat YW = v.y*v.w;
-    const coreFloat ZZ = v.z*v.z;
-    const coreFloat ZW = v.z*v.w;
-
-    return coreMatrix3(1.0f - 2.0f * (YY + ZZ),        2.0f * (XY + ZW),        2.0f * (XZ - YW),
-                              2.0f * (XY - ZW), 1.0f - 2.0f * (XX + ZZ),        2.0f * (YZ + XW),
-                              2.0f * (XZ + YW),        2.0f * (YZ - XW), 1.0f - 2.0f * (XX + YY));
-}
-
-
-// ****************************************************************
 /* transpose matrix */
 constexpr coreMatrix3 coreMatrix3::Transposed()const
 {
@@ -576,6 +510,70 @@ inline coreMatrix3 coreMatrix3::Rotation(const coreVector2& vDirection)
 inline coreMatrix3 coreMatrix3::Rotation(const coreFloat fAngle)
 {
     return coreMatrix3::Rotation(coreVector2::Direction(fAngle));
+}
+
+
+// ****************************************************************
+/* convert matrix to quaternion */
+inline coreVector4 coreMatrix3::ToQuat()const
+{
+    const coreFloat fTrace = _11 + _22 + _33;
+
+    if(fTrace > 0.0f)
+    {
+        const coreFloat F = 0.5f * RSQRT(fTrace + 1.0f);
+        return coreVector4((_23 - _32) *     F,
+                           (_31 - _13) *     F,
+                           (_12 - _21) *     F,
+                                 0.25f * RCP(F));
+    }
+    else
+    {
+        if((_11 > _22) && (_11 > _33))
+        {
+            const coreFloat F = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
+            return coreVector4(      0.25f * RCP(F),
+                               (_21 + _12) *     F,
+                               (_31 + _13) *     F,
+                               (_23 - _32) *     F);
+        }
+        else if(_22 > _33)
+        {
+            const coreFloat F = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
+            return coreVector4((_21 + _12) *     F,
+                                     0.25f * RCP(F),
+                               (_32 + _23) *     F,
+                               (_31 - _13) *     F);
+        }
+        else
+        {
+            const coreFloat F = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
+            return coreVector4((_31 + _13) *     F,
+                               (_32 + _23) *     F,
+                                     0.25f * RCP(F),
+                               (_12 - _21) *     F);
+        }
+    }
+}
+
+
+// ****************************************************************
+/* convert quaternion to matrix */
+constexpr coreMatrix3 coreMatrix3::FromQuat(const coreVector4& v)
+{
+    const coreFloat XX = v.x*v.x;
+    const coreFloat XY = v.x*v.y;
+    const coreFloat XZ = v.x*v.z;
+    const coreFloat XW = v.x*v.w;
+    const coreFloat YY = v.y*v.y;
+    const coreFloat YZ = v.y*v.z;
+    const coreFloat YW = v.y*v.w;
+    const coreFloat ZZ = v.z*v.z;
+    const coreFloat ZW = v.z*v.w;
+
+    return coreMatrix3(1.0f - 2.0f * (YY + ZZ),        2.0f * (XY + ZW),        2.0f * (XZ - YW),
+                              2.0f * (XY - ZW), 1.0f - 2.0f * (XX + ZZ),        2.0f * (YZ + XW),
+                              2.0f * (XZ + YW),        2.0f * (YZ - XW), 1.0f - 2.0f * (XX + YY));
 }
 
 
