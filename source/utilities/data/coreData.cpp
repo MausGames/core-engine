@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////
-//*----------------------------------------------------*//
-//| Part of the Core Engine (http://www.maus-games.at) |//
-//*----------------------------------------------------*//
-//| Released under the zlib License                    |//
-//| More information available in the readme file      |//
-//*----------------------------------------------------*//
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//*-----------------------------------------------------*//
+//| Part of the Core Engine (https://www.maus-games.at) |//
+//*-----------------------------------------------------*//
+//| Released under the zlib License                     |//
+//| More information available in the readme file       |//
+//*-----------------------------------------------------*//
+///////////////////////////////////////////////////////////
 #include "Core.h"
 
 #if defined(_CORE_WINDOWS_)
@@ -624,13 +624,13 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
 
 // ****************************************************************
 /* copy string into another buffer */
-void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iSize)
+void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxSize)
 {
     ASSERT(pcInput && pcOutput)
 
     // calculate string length
-    const coreUintW iLen = MIN(std::strlen(pcInput), iSize - 1u);
-    WARN_IF(std::strlen(pcInput) >= iSize) {}
+    const coreUintW iLen = MIN(std::strlen(pcInput), iMaxSize - 1u);
+    WARN_IF(std::strlen(pcInput) >= iMaxSize) {}
 
     // copy string with guaranteed null-termination
     std::memcpy(pcOutput, pcInput, iLen);

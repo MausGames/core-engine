@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////
-//*----------------------------------------------------*//
-//| Part of the Core Engine (http://www.maus-games.at) |//
-//*----------------------------------------------------*//
-//| Released under the zlib License                    |//
-//| More information available in the readme file      |//
-//*----------------------------------------------------*//
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//*-----------------------------------------------------*//
+//| Part of the Core Engine (https://www.maus-games.at) |//
+//*-----------------------------------------------------*//
+//| Released under the zlib License                     |//
+//| More information available in the readme file       |//
+//*-----------------------------------------------------*//
+///////////////////////////////////////////////////////////
 #pragma once
 #ifndef _CORE_GUARD_SCOPE_H_
 #define _CORE_GUARD_SCOPE_H_
@@ -39,7 +39,7 @@ protected:
 
 
 public:
-    DISABLE_NEW
+    DISABLE_HEAP
 
     /*! assignment operations */
     //! @{
@@ -70,7 +70,7 @@ public:
     ~coreSpinLocker()                                                         {coreAtomicUnlock(m_piLock);}
 
     DISABLE_COPY(coreSpinLocker)
-    DISABLE_NEW
+    DISABLE_HEAP
 };
 
 

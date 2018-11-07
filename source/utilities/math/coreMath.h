@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////
-//*----------------------------------------------------*//
-//| Part of the Core Engine (http://www.maus-games.at) |//
-//*----------------------------------------------------*//
-//| Released under the zlib License                    |//
-//| More information available in the readme file      |//
-//*----------------------------------------------------*//
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//*-----------------------------------------------------*//
+//| Part of the Core Engine (https://www.maus-games.at) |//
+//*-----------------------------------------------------*//
+//| Released under the zlib License                     |//
+//| More information available in the readme file       |//
+//*-----------------------------------------------------*//
+///////////////////////////////////////////////////////////
 #pragma once
 #ifndef _CORE_GUARD_MATH_H_
 #define _CORE_GUARD_MATH_H_
@@ -90,7 +90,7 @@ public:
     template <typename T> static constexpr T        Pow3       (const T& x)                                               {return x * x * x;}
     template <typename T> static constexpr T        Lerp       (const T& x, const T& y, const coreFloat s)                {return x + (y - x) * s;}
     template <typename T> static inline    T        LerpSmooth (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
-    template <typename T> static inline    T        LerpBreak  (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, SIN(s * PI * 0.5f));}
+    template <typename T> static inline    T        LerpBreak  (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, SIN(s * (PI * 0.5f)));}
     template <typename T> static constexpr T        LerpHermit3(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
     template <typename T> static constexpr T        LerpHermit5(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, (10.0f + (-15.0f + 6.0f * s) * s) * s * s * s);}
     template <typename T> static constexpr coreBool IsNear     (const T& x, const T& c, const T& r = CORE_MATH_PRECISION) {return POW2(x - c) <= POW2(r);}

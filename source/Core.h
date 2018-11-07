@@ -10,7 +10,7 @@
 //*------------------------------------------------------------------------------*//
 ////////////////////////////////////////////////////////////////////////////////////
 //*------------------------------------------------------------------------------*//
-//| Core Engine v0.0.9a (http://www.maus-games.at)                               |//
+//| Core Engine v0.0.9a (https://www.maus-games.at)                              |//
 //*------------------------------------------------------------------------------*//
 //| Copyright (c) 2013-2018 Martin Mauersics                                     |//
 //|                                                                              |//
@@ -405,12 +405,11 @@
     c& operator = (c&&)      = delete;
 
 // disable heap-operations with the defined class
-#define DISABLE_NEW                                        \
+#define DISABLE_HEAP                                       \
     void* operator new      (std::size_t)        = delete; \
     void* operator new      (std::size_t, void*) = delete; \
     void* operator new[]    (std::size_t)        = delete; \
-    void* operator new[]    (std::size_t, void*) = delete;
-#define DISABLE_DELETE                                     \
+    void* operator new[]    (std::size_t, void*) = delete; \
     void  operator delete   (void*)              = delete; \
     void  operator delete   (void*, void*)       = delete; \
     void  operator delete   (void*, std::size_t) = delete; \
@@ -464,9 +463,6 @@ using coreBool   = bool;
 using coreChar   = char;
 using coreFloat  = float;
 using coreDouble = double;
-
-// user-defined literals
-constexpr coreUintW operator "" _zu(unsigned long long i) {return coreUintW(i);}
 
 // override string comparison operator
 inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}

@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////
-//*----------------------------------------------------*//
-//| Part of the Core Engine (http://www.maus-games.at) |//
-//*----------------------------------------------------*//
-//| Released under the zlib License                    |//
-//| More information available in the readme file      |//
-//*----------------------------------------------------*//
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//*-----------------------------------------------------*//
+//| Part of the Core Engine (https://www.maus-games.at) |//
+//*-----------------------------------------------------*//
+//| Released under the zlib License                     |//
+//| More information available in the readme file       |//
+//*-----------------------------------------------------*//
+///////////////////////////////////////////////////////////
 #include "Core.h"
 
 coreSet<coreObject2D*> coreObjectManager::s_apSpriteList = {};
@@ -305,7 +305,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
         else
         {
             // ray is inside
-            pfHitDistance[0] = fAdjacent + fHalfLen;
+            if((*piHitCount) >= 1u) pfHitDistance[0] = fAdjacent + fHalfLen;
             (*piHitCount) = 1u;
         }
 

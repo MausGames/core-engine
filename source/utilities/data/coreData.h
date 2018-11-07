@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////
-//*----------------------------------------------------*//
-//| Part of the Core Engine (http://www.maus-games.at) |//
-//*----------------------------------------------------*//
-//| Released under the zlib License                    |//
-//| More information available in the readme file      |//
-//*----------------------------------------------------*//
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//*-----------------------------------------------------*//
+//| Part of the Core Engine (https://www.maus-games.at) |//
+//*-----------------------------------------------------*//
+//| Released under the zlib License                     |//
+//| More information available in the readme file       |//
+//*-----------------------------------------------------*//
+///////////////////////////////////////////////////////////
 #pragma once
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
@@ -126,7 +126,7 @@ public:
     static const coreChar*        StrFilename (const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
-    static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iSize);
+    static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxSize);
     static void                   StrTrim     (std::string* OUTPUT psInput);
     static void                   StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
     //! @}

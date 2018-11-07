@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////
-//*----------------------------------------------------*//
-//| Part of the Core Engine (http://www.maus-games.at) |//
-//*----------------------------------------------------*//
-//| Released under the zlib License                    |//
-//| More information available in the readme file      |//
-//*----------------------------------------------------*//
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//*-----------------------------------------------------*//
+//| Part of the Core Engine (https://www.maus-games.at) |//
+//*-----------------------------------------------------*//
+//| Released under the zlib License                     |//
+//| More information available in the readme file       |//
+//*-----------------------------------------------------*//
+///////////////////////////////////////////////////////////
 #pragma once
 #ifndef _CORE_GUARD_RESOURCE_H_
 #define _CORE_GUARD_RESOURCE_H_
@@ -160,7 +160,7 @@ public:
     coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
     ~coreResourcePtr();
 
-    DISABLE_NEW
+    DISABLE_HEAP
 
     /*! assignment operations */
     //! @{

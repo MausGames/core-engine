@@ -1,11 +1,11 @@
-//////////////////////////////////////////////////////////
-//*----------------------------------------------------*//
-//| Part of the Core Engine (http://www.maus-games.at) |//
-//*----------------------------------------------------*//
-//| Released under the zlib License                    |//
-//| More information available in the readme file      |//
-//*----------------------------------------------------*//
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//*-----------------------------------------------------*//
+//| Part of the Core Engine (https://www.maus-games.at) |//
+//*-----------------------------------------------------*//
+//| Released under the zlib License                     |//
+//| More information available in the readme file       |//
+//*-----------------------------------------------------*//
+///////////////////////////////////////////////////////////
 #include "Core.h"
 
 
@@ -106,7 +106,7 @@ void coreParticleSystem::Render()
                 const coreUint32  iColor    = pParticle->GetCurColor4().PackUnorm4x8();
                 ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
 
-                // write remaining data to the buffer
+                // write data to the buffer
                 std::memcpy(pCursor,                                                &vPosition, sizeof(coreVector3));
                 std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iData,     sizeof(coreUint64));
                 std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iColor,    sizeof(coreUint32));
