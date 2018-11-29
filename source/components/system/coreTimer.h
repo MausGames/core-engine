@@ -146,7 +146,7 @@ constexpr coreTimer::coreTimer()noexcept
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_pod<coreFlow>::value == true)
+STATIC_ASSERT(std::is_trivial<coreFlow>::value == true)
 
 
 #endif /* _CORE_GUARD_TIMER_H_ */

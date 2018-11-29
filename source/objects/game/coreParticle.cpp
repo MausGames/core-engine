@@ -26,9 +26,9 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 {
     ASSERT(iNumParticles)
 
-    // pre-allocate particles
-    m_pParticle = ALIGNED_NEW(coreParticle, m_iNumParticles, ALIGNMENT_CACHE);
-    std::memset(m_pParticle, 0, sizeof(coreParticle) * m_iNumParticles);
+    // pre-allocate particles (with one additional safety particle)
+    m_pParticle = ALIGNED_NEW(coreParticle, m_iNumParticles + 1u, ALIGNMENT_CACHE);
+    std::memset(m_pParticle, 0, sizeof(coreParticle) * (m_iNumParticles + 1u));
 
     // create default particle effect object
     m_pDefaultEffect = new coreParticleEffect(this);
@@ -200,12 +200,12 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
 
     // no free particle available
     WARN_IF(true) {}
-    return &m_pParticle[m_iCurParticle];
+    return &m_pParticle[m_iNumParticles];   // # safety particle
 }
 
 
 // ****************************************************************
-// remove particle effect objects
+// unsbind particles
 void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
@@ -246,8 +246,8 @@ void coreParticleSystem::Clear(coreParticleEffect* pEffect)
         // check particle effect object
         if(pParticle->GetEffect() == pEffect)
         {
-            // reset particle animation
-            pParticle->m_fValue = 0.0f;
+            // reset particle state
+            pParticle->Disable();
 
             // remove particle
             DYN_REMOVE(it, m_apRenderList)
@@ -258,7 +258,7 @@ void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
-// remove all particle effect objects
+// unsbind all particles
 void coreParticleSystem::UnbindAll()
 {
     FOR_EACH(it, m_apRenderList)
@@ -283,9 +283,9 @@ void coreParticleSystem::UnbindAll()
 // remove all particles
 void coreParticleSystem::ClearAll()
 {
-    // reset all particle animations
+    // reset all particle states
     FOR_EACH(it, m_apRenderList)
-        (*it)->m_fValue = 0.0f;
+        (*it)->Disable();
 
     // clear memory
     m_apRenderList.clear();
@@ -369,7 +369,7 @@ coreParticleEffect::~coreParticleEffect()
 {
     // unbind all dynamic particles
     if(this->IsDynamic())
-        m_pSystem->Unbind(this);
+        this->Unbind();
 }
 
 
@@ -379,7 +379,7 @@ coreParticleEffect& coreParticleEffect::operator = (const coreParticleEffect& c)
 {
     // unbind all dynamic particles (if necessary)
     if(this->IsDynamic() && (m_pSystem != c.m_pSystem))
-        m_pSystem->Unbind(this);
+        this->Unbind();
 
     // copy properties
     m_fCreation = c.m_fCreation;
@@ -400,7 +400,7 @@ void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBoo
     if(this->IsDynamic())
     {
         // unbind old particles (not unbinding them may cause crash if not handled)
-        if(bUnbind) m_pSystem->Unbind(this);
+        if(bUnbind) this->Unbind();
     }
     else m_pThis = pSystem ? pSystem->GetDefaultEffect() : NULL;
 

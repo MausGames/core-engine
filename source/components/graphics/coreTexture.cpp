@@ -72,7 +72,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     // save properties
     m_sPath = pFile->GetPath();
 
-    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, iCompress ? "compressed" : "normal");
+    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, iCompress ? "compressed" : "standard");
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
 }
 
@@ -478,6 +478,10 @@ FUNC_NOALIAS void coreTexture::CreateNextLevel(const coreUintW iInWidth, const c
            (coreMath::IsPot(iInHeight) && (iInHeight >= 2u)) &&
            (iComponents <= 4u) && pInput && pOutput)
 
+    // assume pointer alignment
+    pInput  = ASSUME_ALIGNED(pInput,  ALIGNMENT_NEW);
+    pOutput = ASSUME_ALIGNED(pOutput, ALIGNMENT_NEW);
+
     // save output texture size
     const coreUintW iOutWidth  = iInWidth  >> 1u;
     const coreUintW iOutHeight = iInHeight >> 1u;
@@ -505,7 +509,7 @@ FUNC_NOALIAS void coreTexture::CreateNextLevel(const coreUintW iInWidth, const c
                 const coreUint16 D = pInput[iInBase + i + iInOffset3];
 
                 // calculate average output value (bilinear, rounding-error)
-                pOutput[iOutBase + i] = ((A + B + C + D) >> 2u) & 0xFFu;
+                pOutput[iOutBase + i] = ((A + B + C + D + 1u) >> 2u) & 0xFFu;
             }
         }
     }
@@ -519,6 +523,10 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
     ASSERT(coreMath::IsPot(iInWidth)  && (iInWidth  >= 4u) &&
            coreMath::IsPot(iInHeight) && (iInHeight >= 4u) &&
            (iComponents <= 4u) && pInput && pOutput)
+
+    // assume pointer alignment
+    pInput  = ASSUME_ALIGNED(pInput,  ALIGNMENT_NEW);
+    pOutput = ASSUME_ALIGNED(pOutput, ALIGNMENT_NEW);
 
     // save memory offsets and alpha status
     const coreUintW iInOffsetX = 4u * iComponents;

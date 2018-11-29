@@ -14,6 +14,8 @@
 // TODO: implement "Rotation from One Vector to Another" matrix
 // TODO: the mXXX() conversion functions create a lot of move instructions (seen before using FORCE_INLINE constructors)
 
+// NOTE: row major
+
 #define CONSTEXPR inline
 
 
@@ -177,6 +179,8 @@ public:
     static constexpr coreMatrix3 Scaling    (const coreVector2& vSize);
     static inline    coreMatrix3 Rotation   (const coreVector2& vDirection);
     static inline    coreMatrix3 Rotation   (const coreFloat    fAngle);
+    static constexpr coreMatrix3 ShearXY    (const coreFloat    fFactor);
+    static constexpr coreMatrix3 ShearYX    (const coreFloat    fFactor);
     //! @}
 
     /*! quaternion functions */
@@ -279,6 +283,12 @@ public:
     static inline    coreMatrix4 RotationZ   (const coreVector2& vDirection);
     static inline    coreMatrix4 RotationZ   (const coreFloat    fAngle);
     static inline    coreMatrix4 RotationAxis(const coreFloat    fAngle, const coreVector3& vAxis);
+    static constexpr coreMatrix4 ShearXY     (const coreFloat    fFactor);
+    static constexpr coreMatrix4 ShearXZ     (const coreFloat    fFactor);
+    static constexpr coreMatrix4 ShearYX     (const coreFloat    fFactor);
+    static constexpr coreMatrix4 ShearYZ     (const coreFloat    fFactor);
+    static constexpr coreMatrix4 ShearZX     (const coreFloat    fFactor);
+    static constexpr coreMatrix4 ShearZY     (const coreFloat    fFactor);
     static inline    coreMatrix4 Orientation (const coreVector3& vDirection, const coreVector3& vOrientation);
     static inline    coreMatrix4 Perspective (const coreVector2& vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
     static inline    coreMatrix4 Ortho       (const coreVector2& vResolution);
@@ -510,6 +520,26 @@ inline coreMatrix3 coreMatrix3::Rotation(const coreVector2& vDirection)
 inline coreMatrix3 coreMatrix3::Rotation(const coreFloat fAngle)
 {
     return coreMatrix3::Rotation(coreVector2::Direction(fAngle));
+}
+
+
+// ****************************************************************
+/* get shear matrix along X sheared by Y */
+constexpr coreMatrix3 coreMatrix3::ShearXY(const coreFloat fFactor)
+{
+    return coreMatrix3(   1.0f, 0.0f, 0.0f,
+                       fFactor, 1.0f, 0.0f,
+                          0.0f, 0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get shear matrix along Y sheared by X */
+constexpr coreMatrix3 coreMatrix3::ShearYX(const coreFloat fFactor)
+{
+    return coreMatrix3(1.0f, fFactor, 0.0f,
+                       0.0f,    1.0f, 0.0f,
+                       0.0f,    0.0f, 1.0f);
 }
 
 
@@ -814,6 +844,72 @@ inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat fAngle, const coreV
 
 
 // ****************************************************************
+/* get shear matrix along X sheared by Y */
+constexpr coreMatrix4 coreMatrix4::ShearXY(const coreFloat fFactor)
+{
+    return coreMatrix4(   1.0f, 0.0f, 0.0f, 0.0f,
+                       fFactor, 1.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 1.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get shear matrix along X sheared by Z */
+constexpr coreMatrix4 coreMatrix4::ShearXZ(const coreFloat fFactor)
+{
+    return coreMatrix4(   1.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 1.0f, 0.0f, 0.0f,
+                       fFactor, 0.0f, 1.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get shear matrix along Y sheared by X */
+constexpr coreMatrix4 coreMatrix4::ShearYX(const coreFloat fFactor)
+{
+    return coreMatrix4(1.0f, fFactor, 0.0f, 0.0f,
+                       0.0f,    1.0f, 0.0f, 0.0f,
+                       0.0f,    0.0f, 1.0f, 0.0f,
+                       0.0f,    0.0f, 0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get shear matrix along Y sheared by Z */
+constexpr coreMatrix4 coreMatrix4::ShearYZ(const coreFloat fFactor)
+{
+    return coreMatrix4(1.0f,    0.0f, 0.0f, 0.0f,
+                       0.0f,    1.0f, 0.0f, 0.0f,
+                       0.0f, fFactor, 1.0f, 0.0f,
+                       0.0f,    0.0f, 0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get shear matrix along Z sheared by X */
+constexpr coreMatrix4 coreMatrix4::ShearZX(const coreFloat fFactor)
+{
+    return coreMatrix4(1.0f, 0.0f, fFactor, 0.0f,
+                       0.0f, 1.0f,    0.0f, 0.0f,
+                       0.0f, 0.0f,    1.0f, 0.0f,
+                       0.0f, 0.0f,    0.0f, 1.0f);
+}
+
+
+// ****************************************************************
+/* get shear matrix along Z sheared by Y */
+constexpr coreMatrix4 coreMatrix4::ShearZY(const coreFloat fFactor)
+{
+    return coreMatrix4(1.0f, 0.0f,    0.0f, 0.0f,
+                       0.0f, 1.0f, fFactor, 0.0f,
+                       0.0f, 0.0f,    1.0f, 0.0f,
+                       0.0f, 0.0f,    0.0f, 1.0f);
+}
+
+
+// ****************************************************************
 /* calculate orientation matrix */
 inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)
 {
@@ -1012,9 +1108,9 @@ constexpr coreVector3 coreVector3::YcbcrToRgb()const
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_pod<coreMatrix2>::value == true)
-STATIC_ASSERT(std::is_pod<coreMatrix3>::value == true)
-STATIC_ASSERT(std::is_pod<coreMatrix4>::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix2>::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix3>::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix4>::value == true)
 
 
 #endif /* _CORE_GUARD_MATRIX_H_ */

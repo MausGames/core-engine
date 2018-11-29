@@ -220,7 +220,6 @@
     #pragma warning(disable : 4623)   //!< default constructor implicitly deleted
     #pragma warning(disable : 4625)   //!< copy constructor implicitly deleted
     #pragma warning(disable : 4626)   //!< copy assignment operator implicitly deleted
-    #pragma warning(disable : 4647)   //!< behavior change of std::is_pod
     #pragma warning(disable : 4668)   //!< preprocessor macro not defined
     #pragma warning(disable : 4710)   //!< function not inlined
     #pragma warning(disable : 4711)   //!< function automatically inlined
@@ -331,61 +330,70 @@
 #undef __STRING
 #undef __CONCAT
 
-#define NULL                 nullptr
-#define __STRING(a)          #a
-#define STRING(a)            __STRING(a)
-#define __CONCAT(a,b)        a ## b
-#define CONCAT(a,b)          __CONCAT(a, b)
-#define __DEFINED(a,b)       FORCE_COMPILE_TIME(!coreData::StrCmpConst(#a, b))
-#define DEFINED(a)           __DEFINED(a, #a)
+#define NULL                        nullptr
+#define __STRING(a)                 #a
+#define STRING(a)                   __STRING(a)
+#define __CONCAT(a,b)               a ## b
+#define CONCAT(a,b)                 __CONCAT(a, b)
+#define __DEFINED(a,b)              FORCE_COMPILE_TIME(!coreData::StrCmpConst(#a, b))
+#define DEFINED(a)                  __DEFINED(a, #a)
 
-#define SAFE_DELETE(p)       {delete   (p); (p) = NULL;}
-#define SAFE_DELETE_ARRAY(p) {delete[] (p); (p) = NULL;}
+#define SAFE_DELETE(p)              {delete   (p); (p) = NULL;}
+#define SAFE_DELETE_ARRAY(p)        {delete[] (p); (p) = NULL;}
 
-#define BIT(n)               (1ull << (n))   // starts with 0
-#define BITLINE(n)           (BIT(n) - 1ull)
-#define ADD_BIT(o,n)         { (o) |=  BIT(n);}
-#define ADD_FLAG(o,n)        { (o) |=     (n);}
-#define REMOVE_BIT(o,n)      { (o) &= ~BIT(n);}
-#define REMOVE_FLAG(o,n)     { (o) &=    ~(n);}
-#define TOGGLE_BIT(o,n)      { (o) ^=  BIT(n);}
-#define TOGGLE_FLAG(o,n)     { (o) ^=     (n);}
-#define SET_BIT(o,n,t)       { (o) ^=  BIT(n) & ((o) ^ ((t) ? ~0ull : 0ull));}
-#define SET_FLAG(o,n,t)      { (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
-#define CONTAINS_BIT(o,n)    (((o) &   BIT(n)) ? true : false)
-#define CONTAINS_FLAG(o,n)   (((o) &      (n)) == (n))
+#define BIT(n)                      (1ull << (n))   // starts with 0
+#define BITLINE(n)                  (BIT(n) - 1ull)
+#define ADD_BIT(o,n)                { (o) |=  BIT(n);}
+#define ADD_FLAG(o,n)               { (o) |=     (n);}
+#define REMOVE_BIT(o,n)             { (o) &= ~BIT(n);}
+#define REMOVE_FLAG(o,n)            { (o) &=    ~(n);}
+#define TOGGLE_BIT(o,n)             { (o) ^=  BIT(n);}
+#define TOGGLE_FLAG(o,n)            { (o) ^=     (n);}
+#define SET_BIT(o,n,t)              { (o) ^=  BIT(n) & ((o) ^ ((t) ? ~0ull : 0ull));}
+#define SET_FLAG(o,n,t)             { (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
+#define CONTAINS_BIT(o,n)           (((o) &   BIT(n)) ? true : false)
+#define CONTAINS_FLAG(o,n)          (((o) &      (n)) == (n))
 
-#define FOR_EACH(i,c)        for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
-#define FOR_EACH_REV(i,c)    for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
-#define FOR_EACH_SET(i,s,c)  for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; ++i)
-#define FOR_EACH_DYN(i,c)    for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
-#define DYN_KEEP(i)          {++i;}
-#define DYN_REMOVE(i,c)      {i = (c).erase(i); i ## __e = (c).end();}
+#define FOR_EACH(i,c)               for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH_REV(i,c)           for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
+#define FOR_EACH_SET(i,s,c)         for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH_DYN(i,c)           for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
+#define DYN_KEEP(i)                 {++i;}
+#define DYN_REMOVE(i,c)             {i = (c).erase(i); i ## __e = (c).end();}
 
-#define BIG_STATIC           static
-#define FRIEND_CLASS(c)      friend class c;
+#define BIG_STATIC                  static
+#define FRIEND_CLASS(c)             friend class c;
+#define STATIC_ASSERT(c)            static_assert(c, "Static Assert [" #c "]");
 
 #if defined(_CORE_DEBUG_)
-    #define ASSERT(c)        {SDL_assert(c); if(false) assert(c);}
+    #define ASSERT(c)               {if(false) assert(c); SDL_assert(c);}
 #else
     #if defined(_CORE_MSVC_)
-        #define ASSERT(c)    {__assume(!!(c));}
+        #define ASSERT(c)           {__assume(!!(c));}
     #else
-        #define ASSERT(c)    {if(!(c)) __builtin_unreachable();}
+        #define ASSERT(c)           {if(!(c)) __builtin_unreachable();}
     #endif
 #endif
 
 #if defined(_CORE_DEBUG_)
-    #define WARN_IF(c)       if([](const coreBool bWarnIf) {ASSERT(!bWarnIf); return bWarnIf;}(!!(c)))
+    #define WARN_IF(c)              if([](const coreBool bCondition) {ASSERT(!bCondition) return bCondition;}(!!(c)))
 #else
     #if defined(_CORE_MSVC_)
-        #define WARN_IF(c)   if(c)
+        #define WARN_IF(c)          if(c)
     #else
-        #define WARN_IF(c)   if(__builtin_expect(c, 0))
+        #define WARN_IF(c)          if(__builtin_expect(c, 0))
     #endif
 #endif
 
-#define STATIC_ASSERT(c)     static_assert(c, "Static Assertion [" #c "]");
+#if defined(_CORE_DEBUG_)
+    #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT((P_TO_UI(pPointer) % iAlign) == 0u) return pPointer;}(p, a))
+#else
+    #if defined(_CORE_MSVC_)
+        #define ASSUME_ALIGNED(p,a) (p)
+    #else
+        #define ASSUME_ALIGNED(p,a) (s_cast<decltype(p)>(__builtin_assume_aligned(p, a)))
+    #endif
+#endif
 
 // disable constructor and destructor of the defined class
 #define DISABLE_CONSTRUCTION(c) \
@@ -517,6 +525,7 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 #define COLOR_GOLD   (coreVector3(1.000f, 0.859f, 0.000f))
 
 // default alignment values
+#define ALIGNMENT_NEW   ((DEFINED(_CORE_MSVC_) && DEFINED(_CORE_X64_)) ? 16u : 8u)
 #define ALIGNMENT_SSE   (16u)
 #define ALIGNMENT_CACHE (64u)
 #define ALIGNMENT_PAGE  (4096u)
