@@ -11,7 +11,7 @@
 #define _CORE_GUARD_ARRAY_H_
 
 // TODO: create a dynamic-sized version with std::vector ? (replacement in coreParticleSystem)
-// TODO: rename functions to better and more obvious names
+// TODO: rename class and functions to better and more obvious names
 
 
 // ****************************************************************

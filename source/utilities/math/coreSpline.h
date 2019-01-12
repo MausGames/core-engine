@@ -12,6 +12,7 @@
 
 // TODO: implement insert-node function
 // TODO: multidimensional spline ((spline-)interpolation between other splines)
+// TODO: add capacity and reserve
 
 
 // ****************************************************************

@@ -97,11 +97,13 @@ enum coreProgramStatus : coreUint8
 class coreShader final : public coreResource
 {
 private:
-    GLuint m_iIdentifier;                   //!< shader identifier
-    GLenum m_iType;                         //!< shader type (e.g. GL_VERTEX_SHADER)
+    GLuint m_iIdentifier;                    //!< shader identifier
+    GLenum m_iType;                          //!< shader type (e.g. GL_VERTEX_SHADER)
 
-    std::string m_sCustomCode;              //!< custom shader code added to the beginning of the shader
-    static std::string s_asGlobalCode[2];   //!< global shader code (0 = version | 1 = global shader file)
+    std::string m_sCustomCode;               //!< custom shader code added to the beginning of the shader
+
+    static std::string  s_asGlobalCode[2];   //!< global shader code (0 = version | 1 = global shader file)
+    static SDL_SpinLock s_iGlobalLock;       //!< spinlock to prevent concurrent initialization of global shader code
 
 
 public:

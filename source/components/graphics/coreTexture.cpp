@@ -155,13 +155,13 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     s_apBound[s_iActiveUnit] = NULL;
 
     // set sampling parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (bMipMap || bMipMapOld) ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (bMipMap || bMipMapOld) ? (Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR) ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR_MIPMAP_NEAREST) : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  m_iLevels - 1);
-    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREFILTER), 1, Core::Graphics->GetMaxAnisotropy())));
+    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY), 1, Core::Graphics->GetMaxAnisotropy())));
     if(bMipMapOld)   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,            GL_TRUE);
 
     if(CORE_GL_SUPPORT(EXT_texture_storage))

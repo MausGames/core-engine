@@ -31,7 +31,8 @@
 
 #define CORE_CONFIG_GRAPHICS_QUALITY            "Graphics", "Quality",            (0)
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING       "Graphics", "AntiAliasing",       (2)
-#define CORE_CONFIG_GRAPHICS_TEXTUREFILTER      "Graphics", "TextureFilter",      (4)
+#define CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY  "Graphics", "TextureAnisotropy",  (4)
+#define CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR   "Graphics", "TextureTrilinear",   (true)
 #define CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION "Graphics", "TextureCompression", (true)
 #define CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS   "Graphics", "EnableExtensions",   ("")
 #define CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS  "Graphics", "DisableExtensions",  ("")

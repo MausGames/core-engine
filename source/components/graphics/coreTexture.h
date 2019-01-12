@@ -13,7 +13,6 @@
 // TODO: check for max available texture units (only at start?)
 // TODO: implement sampler objects
 // TODO: implement light unbind (like in model and program)
-// TODO: add option/config for trilinear filtering
 // TODO: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
 // TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
 // TODO: last few compressed mipmap levels contain only garbage

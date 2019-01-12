@@ -169,14 +169,14 @@ template <typename T> const coreChar* coreData::TypeName()
 #if defined(_CORE_MSVC_)
 
     // analyze function signature (const char* __cdecl coreData::TypeName<int>(void))
-    const        coreChar* pcBase = __FUNCSIG__;
+    static const coreChar* pcBase = __FUNCSIG__;
     static const coreChar* pcFrom = std::strchr (pcBase, '<') + 1u; if(pcFrom - 1u == NULL) return "";
     static const coreChar* pcTo   = std::strrchr(pcFrom, '>');      if(pcTo        == NULL) return "";
 
-#elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
+#elif defined(_CORE_GCC_) || defined(_CORE_MINGW_) || defined(_CORE_CLANG_)
 
     // analyze function signature (const char* coreData::TypeName() [with T = int])
-    const        coreChar* pcBase = __PRETTY_FUNCTION__;
+    static const coreChar* pcBase = __PRETTY_FUNCTION__;
     static const coreChar* pcFrom = std::strchr (pcBase, '=') + 2u; if(pcFrom - 2u == NULL) return "";
     static const coreChar* pcTo   = std::strrchr(pcFrom, ']');      if(pcTo        == NULL) return "";
 
@@ -201,7 +201,7 @@ template <typename T> constexpr coreUint32 coreData::TypeId()
 
     return FORCE_COMPILE_TIME(coreHashFNV1(__FUNCDNAME__));
 
-#elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
+#elif defined(_CORE_GCC_) || defined(_CORE_MINGW_) || defined(_CORE_CLANG_)
 
     return FORCE_COMPILE_TIME(coreHashFNV1(__PRETTY_FUNCTION__));
 

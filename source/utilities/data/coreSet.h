@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_SET_H_
 #define _CORE_GUARD_SET_H_
 
+// TODO: implement bs interface like in lookup container (count_bs, insert_bs, etc.)
+
 
 // ****************************************************************
 /* extended set class */

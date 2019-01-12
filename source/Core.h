@@ -61,6 +61,7 @@
 // TODO: unify const void* and const coreByte*
 // TODO: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
 // TODO: overflow check in I_TO_F
+// TODO: const smart-ptr and resource-ptr ?
 
 // NOTE: always compile Win32 libraries/executables for WinXP
 

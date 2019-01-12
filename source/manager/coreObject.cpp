@@ -325,8 +325,15 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
     // calculate collision with precise model (MoellerTrumbore97)
     if(bPrecise)
     {
-        coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT] = {};
-        coreUint8 iHitCount                               = 0u;
+        const auto nFilterFunc = [](coreFloat* OUTPUT pfArray, const coreUint8 iCount)
+        {
+            // sort ascending and remove duplicates
+            std::sort(pfArray, pfArray + iCount);
+            return std::unique(pfArray, pfArray + iCount, [](const coreFloat A, const coreFloat B) {return coreMath::IsNear(A, B);}) - pfArray;
+        };
+
+        coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT + 1u] = {};
+        coreUint8 iHitCount                                    = 0u;
 
         for(coreUintW m = 0u, me = pModel->GetNumClusters(); m < me; ++m)
         {
@@ -374,20 +381,24 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
                 if((G < 0.0f) || (G + E > 1.0f) || (H < 0.0f))
                     continue;
 
-                ASSERT(iHitCount < CORE_OBJECT_RAY_HITCOUNT)
                 afHitDistance[iHitCount++] = H;
+
+                if(iHitCount == CORE_OBJECT_RAY_HITCOUNT + 1u)
+                {
+                    // remove duplicates early or drop biggest distance value
+                    iHitCount = MIN(nFilterFunc(afHitDistance, CORE_OBJECT_RAY_HITCOUNT + 1u), CORE_OBJECT_RAY_HITCOUNT);
+                }
             }
         }
 
         if(iHitCount)
         {
-            // filter and sort distance values (ascending)
-            const coreUint8 iUniqueCount = std::unique(afHitDistance, afHitDistance + iHitCount, [](const coreFloat A, const coreFloat B) {return coreMath::IsNear(A, B);}) - afHitDistance;
-            std::sort(afHitDistance, afHitDistance + iUniqueCount, std::less());
+            // finalize distance values
+            const coreUint8 iFinalCount = nFilterFunc(afHitDistance, iHitCount);
 
             // return collision data
-            std::memcpy(pfHitDistance, afHitDistance, sizeof(coreFloat) * MIN(iUniqueCount, (*piHitCount)));
-            std::memcpy(piHitCount,    &iUniqueCount, sizeof(coreUint8));
+            std::memcpy(pfHitDistance, afHitDistance, sizeof(coreFloat) * MIN(iFinalCount, (*piHitCount)));
+            std::memcpy(piHitCount,    &iFinalCount,  sizeof(coreUint8));
 
             return true;
         }

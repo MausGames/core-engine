@@ -11,6 +11,10 @@
 #define _CORE_GUARD_VECTOR_H_
 
 // TODO: check out Clang ext_vector_type
+// TODO: rotation from one vector to another
+// TODO: extract axis from quaternion
+// TODO: extract angle from quaternion
+// TODO: quaternion spline, with spherically interpolation of quaternions using a smooth cubic spline
 
 
 // ****************************************************************

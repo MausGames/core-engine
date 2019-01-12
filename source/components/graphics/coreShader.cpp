@@ -9,29 +9,31 @@
 #include "Core.h"
 
 std::string  coreShader ::s_asGlobalCode[2] = {"", ""};
+SDL_SpinLock coreShader ::s_iGlobalLock     = 0;
 coreProgram* coreProgram::s_pCurrent        = NULL;
 
 
 // ****************************************************************
 // create static string lists
-template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct sStringList final
+template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct coreStringList final
 {
-    coreChar aacEntry[iNum][iLength];
+    coreChar       aacCharArray[iNum][iLength];
+    coreHashString asHashString[iNum];
 
-    sStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) std::sprintf(aacEntry[i], pcString, i);}
-    inline const coreChar* operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return aacEntry[iIndex];}
+    coreStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) {std::snprintf(aacCharArray[i], iLength, pcString, i); asHashString[i] = aacCharArray[i];}}
+    inline const coreHashString& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return asHashString[iIndex];}
 };
 
-#define STRING_ARRAY(s,n,v)               \
+#define STRING_LIST(s,n,v)                \
     extern const coreChar v ## __a[] = s; \
-    static const sStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
+    static const coreStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
 
-STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
-STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      avLightDirection)
-STRING_ARRAY(CORE_SHADER_UNIFORM_LIGHT_VALUE,     CORE_GRAPHICS_LIGHTS,      avLightValue)
-STRING_ARRAY(CORE_SHADER_UNIFORM_TEXTURE_2D,      CORE_TEXTURE_UNITS_2D,     avTexture2D)
-STRING_ARRAY(CORE_SHADER_UNIFORM_TEXTURE_SHADOW,  CORE_TEXTURE_UNITS_SHADOW, avTextureShadow)
-STRING_ARRAY(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avOutColor)
+STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
+STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      avLightDirection)
+STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_VALUE,     CORE_GRAPHICS_LIGHTS,      avLightValue)
+STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_2D,      CORE_TEXTURE_UNITS_2D,     avTexture2D)
+STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_SHADOW,  CORE_TEXTURE_UNITS_SHADOW, avTextureShadow)
+STRING_LIST(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avOutColor)
 
 
 // ****************************************************************
@@ -163,6 +165,8 @@ coreStatus coreShader::Unload()
 // load global shader code
 void coreShader::__LoadGlobalCode()
 {
+    coreSpinLocker oLocker(&s_iGlobalLock);
+
     if(!s_asGlobalCode[0].empty()) return;
 
     // set global shader definitions
@@ -294,7 +298,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
 
     // bind instancing attribute locations
-    if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object))
+    if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object) && CORE_GL_SUPPORT(ARB_half_float_vertex))
     {
         glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,  CORE_SHADER_ATTRIBUTE_DIV_POSITION);
         glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,      CORE_SHADER_ATTRIBUTE_DIV_SIZE);
@@ -315,7 +319,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
-            glBindFragDataLocation(m_iIdentifier, i, avOutColor[i]);
+            glBindFragDataLocation(m_iIdentifier, i, avOutColor[i].GetString());
     }
 
     // link shader-program
@@ -323,8 +327,8 @@ coreStatus coreProgram::Load(coreFile* pFile)
     glUseProgram (m_iIdentifier);
 
     // bind texture units
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTexture2D    [i]), i);
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTextureShadow[i]), i + CORE_TEXTURE_SHADOW);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTexture2D    [i].GetString()), i);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTextureShadow[i].GetString()), i + CORE_TEXTURE_SHADOW);
 
     // bind uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))

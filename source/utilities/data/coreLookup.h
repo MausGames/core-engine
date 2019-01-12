@@ -14,6 +14,7 @@
 // TODO: radix-tree, crit-bit-tree, splay-tree ?
 // TODO: check for detection of inconsistent vector-manipulation (changing value-ordering through iterator, without changing the key-ordering)
 // TODO: TryGet function ?
+// TODO: implement swap-erase ?
 
 
 // ****************************************************************

@@ -15,6 +15,7 @@
 // TODO: allocate page-size aligned
 // TODO: static and dynamic archives (with fixed-size array for renaming)
 // TODO: reference-counting wrapper instead of coreFileScope
+// TODO: use hash-strings, e.g. for GetFile(const coreChar* pcPath)
 
 
 // ****************************************************************
