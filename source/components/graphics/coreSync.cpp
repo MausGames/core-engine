@@ -68,12 +68,12 @@ void coreSync::Delete()
 
 // ****************************************************************
 /* check for sync object status */
-coreStatus coreSync::Check(const coreUint64 iNanoWait, const coreSyncCheck iCheck)
+coreStatus coreSync::Check(const coreUint64 iNanoWait, const coreSyncCheck eCheck)
 {
     if(!m_pSync) return CORE_INVALID_CALL;
 
     // retrieve and compare status
-    if(glClientWaitSync(m_pSync, iCheck, iNanoWait) != GL_TIMEOUT_EXPIRED)
+    if(glClientWaitSync(m_pSync, eCheck, iNanoWait) != GL_TIMEOUT_EXPIRED)
     {
         // delete sync object
         this->Delete();

@@ -67,22 +67,22 @@ public:
     //! interact with the 2d-object
     //! @{
     void Interact();
-    coreBool IsClicked(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const;
+    coreBool IsClicked(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType eType = CORE_INPUT_PRESS)const;
     inline const coreBool& IsFocused()const {return m_bFocused;}
     //! @}
 
     //! transform the whole object
     //! @{
-    inline void FitToScreen() {m_iUpdate = CORE_OBJECT_UPDATE_ALL; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = Core::System->GetResolution() / Core::System->GetResolution().Min(); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}
+    inline void FitToScreen() {m_eUpdate = CORE_OBJECT_UPDATE_ALL; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = Core::System->GetResolution() / Core::System->GetResolution().Min(); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}
     //! @}
 
     //! set object properties
     //! @{
-    inline void SetPosition     (const coreVector2& vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
-    inline void SetSize         (const coreVector2& vSize)          {if(m_vSize      != vSize)      {ADD_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
-    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
-    inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
-    inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
+    inline void SetPosition     (const coreVector2& vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
+    inline void SetSize         (const coreVector2& vSize)          {if(m_vSize      != vSize)      {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
+    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
+    inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
+    inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetFocus        (const coreBool     bFocus)         {m_bFocused       = bFocus;}
     inline void SetFocusModifier(const coreVector2& vFocusModifier) {m_vFocusModifier = vFocusModifier;}
     //! @}

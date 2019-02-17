@@ -48,7 +48,7 @@ private:
     std::string m_sText;         //!< current text
     coreFloat   m_fScale;        //!< scale factor
 
-    coreLabelUpdate m_iUpdate;   //!< update status (dirty flag)
+    coreLabelUpdate m_eUpdate;   //!< update status (dirty flag)
 
 
 public:
@@ -76,7 +76,7 @@ public:
 
     //! invoke texture generation
     //! @{
-    inline void RegenerateTexture() {ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL) m_vResolution = coreVector2(0.0f,0.0f);}
+    inline void RegenerateTexture() {ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL) m_vResolution = coreVector2(0.0f,0.0f);}
     //! @}
 
     //! set object properties
@@ -84,7 +84,7 @@ public:
     coreBool    SetText        (const coreChar*       pcText);
     coreBool    SetText        (const coreChar*       pcText, const coreUint8 iNum);
     inline void SetTextLanguage(const coreHashString& sKey)   {this->_BindString(&m_sText, sKey);}
-    inline void SetScale       (const coreFloat       fScale) {if(m_fScale != fScale) {ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
+    inline void SetScale       (const coreFloat       fScale) {if(m_fScale != fScale) {ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
     //! @}
 
     //! get object properties
@@ -101,12 +101,12 @@ public:
 private:
     //! reset with the resource manager
     //! @{
-    void __Reset(const coreResourceReset bInit)final;
+    void __Reset(const coreResourceReset eInit)final;
     //! @}
 
     //! update object after modification
     //! @{
-    inline void __Update()final {ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)}
+    inline void __Update()final {ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL)}
     //! @}
 
     //! generate the texture
@@ -120,7 +120,7 @@ private:
 /* retrieve desired size without rendering */
 template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)const
 {
-    if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
+    if(CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
     {
         // check if requested font is loaded
         m_pFont.OnUsableOnce([=]()

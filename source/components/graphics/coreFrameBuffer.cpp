@@ -41,7 +41,7 @@ coreFrameBuffer::~coreFrameBuffer()
 
 // ****************************************************************
 // create frame buffer object
-void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate bType)
+void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate eType)
 {
     WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(vResolution.x > 0.0f && vResolution.y > 0.0f)
@@ -65,8 +65,8 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 
     // check for multisampling
     const coreUint8 iSamples     = CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING), 0, Core::Graphics->GetMaxSamples());
-    const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage) && (bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 4u || iSamples == 8u);
-    const coreBool  bMultisample = CORE_GL_SUPPORT(EXT_framebuffer_multisample)         && (bType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 2u);
+    const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)  && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 8u || iSamples == 4u);
+    const coreBool  bMultisample = CORE_GL_SUPPORT(EXT_framebuffer_multisample)          && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 2u);
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
@@ -174,15 +174,15 @@ void coreFrameBuffer::Delete()
 
 // ****************************************************************
 // attach render target texture
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName)
 {
     // get requested render target structure
-    coreRenderTarget* pTarget = this->__AttachTarget(iTarget, iColorIndex, oSpec);
+    coreRenderTarget* pTarget = this->__AttachTarget(eTarget, iColorIndex, oSpec);
     if(pTarget)
     {
         // check for OpenGL extensions
-        if((!CONTAINS_FLAG(iTarget, CORE_FRAMEBUFFER_TARGET_DEPTH)   || CORE_GL_SUPPORT(ARB_depth_texture)) &&
-           (!CONTAINS_FLAG(iTarget, CORE_FRAMEBUFFER_TARGET_STENCIL) || CORE_GL_SUPPORT(ARB_texture_stencil8)))
+        if((!CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_DEPTH)   || CORE_GL_SUPPORT(ARB_depth_texture)) &&
+           (!CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_STENCIL) || CORE_GL_SUPPORT(ARB_texture_stencil8)))
         {
             // allocate render target texture
             if(pcName) pTarget->pTexture = Core::Manager::Resource->Load   <coreTexture>(pcName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
@@ -196,11 +196,11 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
 
 // ****************************************************************
 // attach render target buffer
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
     // get requested render target structure
-    if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (iTarget, iColorIndex, oSpec);
-                                         else return this->AttachTargetTexture(iTarget, iColorIndex, oSpec);
+    if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (eTarget, iColorIndex, oSpec);
+                                         else return this->AttachTargetTexture(eTarget, iColorIndex, oSpec);
 }
 
 
@@ -266,7 +266,7 @@ void coreFrameBuffer::EndDraw()
 
 // ****************************************************************
 // copy content to another frame buffer
-void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
+void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
 {
     ASSERT(m_iIdentifier)
     ASSERT((!pDestination || ((iDstX + iWidth) <= F_TO_UI(pDestination->GetResolution().x) && (iDstY + iHeight) <= F_TO_UI(pDestination->GetResolution().y))) &&
@@ -280,7 +280,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
             glBlitNamedFramebuffer(m_iIdentifier, pDestination ? pDestination->GetIdentifier() : 0u,
                                    iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                                    iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
-                                   iTargets, GL_NEAREST);
+                                   eTargets, GL_NEAREST);
         }
         else
         {
@@ -291,7 +291,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
             // copy content
             glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                               iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
-                              iTargets, GL_NEAREST);
+                              eTargets, GL_NEAREST);
 
             // switch back to old frame buffer
             glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
@@ -307,7 +307,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
             if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
 
             // handle color target blitting
-            if(CONTAINS_FLAG(iTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
+            if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
             {
                 if(pDestination->m_aColorTarget[0].pTexture)
                 {
@@ -318,7 +318,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
             }
 
             // handle depth target blitting
-            if(CONTAINS_FLAG(iTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))
+            if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))
             {
                 if(pDestination->m_DepthTarget.pTexture)
                 {
@@ -376,15 +376,15 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer
     }
 }
 
-void coreFrameBuffer::Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination)const
+void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer* OUTPUT pDestination)const
 {
-    this->Blit(iTargets, pDestination, 0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
+    this->Blit(eTargets, pDestination, 0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
 }
 
 
 // ****************************************************************
 // clear content of the frame buffer
-void coreFrameBuffer::Clear(const coreFrameBufferTarget iTargets)
+void coreFrameBuffer::Clear(const coreFrameBufferTarget eTargets)
 {
     ASSERT(m_iIdentifier)
 
@@ -393,7 +393,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget iTargets)
     if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
 
     // clear content
-    glClear(iTargets);
+    glClear(eTargets);
 
     // switch back to old frame buffer
     if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
@@ -402,7 +402,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget iTargets)
 
 // ****************************************************************
 // invalidate content of the frame buffer
-void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
+void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
 {
     ASSERT(m_iIdentifier)
 
@@ -412,7 +412,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
         coreInt32 iNum = 0;
 
         // assemble required attachments
-        if(CONTAINS_FLAG(iTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
+        if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
         {
             for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             {
@@ -421,8 +421,8 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
                     aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
             }
         }
-        if(CONTAINS_FLAG(iTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
-        if(CONTAINS_FLAG(iTargets, CORE_FRAMEBUFFER_TARGET_STENCIL)) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
+        if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
+        if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_STENCIL)) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
         WARN_IF(!iNum) return;
 
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
@@ -448,7 +448,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget iTargets)
 
 // ****************************************************************
 // attach default render target
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
     ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
@@ -461,9 +461,9 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
 
     // get requested render target structure
     coreRenderTarget* pTarget = NULL;
-         if(CONTAINS_FLAG(iTarget, CORE_FRAMEBUFFER_TARGET_COLOR))   pTarget = &m_aColorTarget[iColorIndex];
-    else if(CONTAINS_FLAG(iTarget, CORE_FRAMEBUFFER_TARGET_DEPTH))   pTarget = &m_DepthTarget;
-    else if(CONTAINS_FLAG(iTarget, CORE_FRAMEBUFFER_TARGET_STENCIL)) pTarget = &m_StencilTarget;
+         if(CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_COLOR))   pTarget = &m_aColorTarget[iColorIndex];
+    else if(CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_DEPTH))   pTarget = &m_DepthTarget;
+    else if(CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_STENCIL)) pTarget = &m_StencilTarget;
     else {WARN_IF(true) {} return NULL;}
 
     // free possible old texture

@@ -21,7 +21,7 @@ coreLabel::coreLabel()noexcept
 , m_vResolution        (coreVector2(0.0f,0.0f))
 , m_sText              ("")
 , m_fScale             (1.0f)
-, m_iUpdate            (CORE_LABEL_UPDATE_NOTHING)
+, m_eUpdate            (CORE_LABEL_UPDATE_NOTHING)
 {
 }
 
@@ -70,17 +70,17 @@ void coreLabel::Render()
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
-    if(m_iUpdate)
+    if(m_eUpdate)
     {
         // check if requested font is loaded
         if(!m_pFont.IsUsable()) return;
 
-        if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_TEXTURE))
+        if(CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_TEXTURE))
         {
             // generate the texture
             this->__GenerateTexture(m_sText.c_str());
         }
-        if(CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE))
+        if(CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
         {
             // update the object size
             this->SetSize(this->GetTexSize() * m_vResolution * (CORE_LABEL_SIZE_FACTOR * m_fScale));
@@ -88,7 +88,7 @@ void coreLabel::Render()
         }
 
         // reset the update status
-        m_iUpdate = CORE_LABEL_UPDATE_NOTHING;
+        m_eUpdate = CORE_LABEL_UPDATE_NOTHING;
     }
 
     // render the 2d-object
@@ -106,7 +106,7 @@ void coreLabel::Move()
     if(m_sText.empty()) return;
 
     // move the 2d-object
-    if(!CONTAINS_FLAG(m_iUpdate, CORE_LABEL_UPDATE_SIZE)) this->coreObject2D::Move();
+    if(!CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE)) this->coreObject2D::Move();
 }
 
 
@@ -117,7 +117,7 @@ coreBool coreLabel::SetText(const coreChar* pcText)
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
-        ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)
+        ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
         m_sText.assign(pcText);
@@ -131,7 +131,7 @@ coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
     // check for new text
     if((iNum != m_sText.length()) || std::strcmp(m_sText.c_str(), pcText))
     {
-        ADD_FLAG(m_iUpdate, CORE_LABEL_UPDATE_ALL)
+        ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL)
 
         // change the current text
         m_sText.assign(pcText, MIN(iNum, std::strlen(pcText)));
@@ -143,11 +143,11 @@ coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
 
 // ****************************************************************
 // reset with the resource manager
-void coreLabel::__Reset(const coreResourceReset bInit)
+void coreLabel::__Reset(const coreResourceReset eInit)
 {
     if(!m_pFont) return;
 
-    if(bInit)
+    if(eInit)
     {
         // invoke texture generation
         this->RegenerateTexture();

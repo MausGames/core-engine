@@ -218,7 +218,7 @@ coreProgram::coreProgram()noexcept
 , m_iIdentifier    (0u)
 , m_apShader       {}
 , m_apShaderHandle {}
-, m_iStatus        (CORE_PROGRAM_NEW)
+, m_eStatus        (CORE_PROGRAM_NEW)
 , m_aiUniform      {}
 , m_aiAttribute    {}
 , m_avCache        {}
@@ -246,13 +246,13 @@ coreProgram::~coreProgram()
 coreStatus coreProgram::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
-    if(iCheck == CORE_OK) m_iStatus = CORE_PROGRAM_FINISHED;
-    if(iCheck >= CORE_OK) return iCheck;
+    const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
+    if(eCheck == CORE_OK) m_eStatus = CORE_PROGRAM_FINISHED;
+    if(eCheck >= CORE_OK) return eCheck;
 
     // check for shader-program status
-    if(m_iStatus < CORE_PROGRAM_DEFINED) return CORE_BUSY;
-    if(m_iStatus > CORE_PROGRAM_DEFINED) return CORE_INVALID_CALL;
+    if(m_eStatus < CORE_PROGRAM_DEFINED) return CORE_BUSY;
+    if(m_eStatus > CORE_PROGRAM_DEFINED) return CORE_INVALID_CALL;
     WARN_IF(m_iIdentifier)               return CORE_INVALID_CALL;
 
     // load all required shader objects
@@ -353,7 +353,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
 
     // create sync object
     const coreBool bSync = m_Sync.Create();
-    if(!bSync) m_iStatus = CORE_PROGRAM_FINISHED;
+    if(!bSync) m_eStatus = CORE_PROGRAM_FINISHED;
 
     Core::Log->Info("Program (%s) loaded", m_sPath.c_str());
     this->__WriteInterface();
@@ -383,7 +383,7 @@ coreStatus coreProgram::Unload()
     // reset properties
     m_sPath       = "";
     m_iIdentifier = 0u;
-    m_iStatus     = CORE_PROGRAM_DEFINED;
+    m_eStatus     = CORE_PROGRAM_DEFINED;
 
     // clear uniform locations and cache
     m_aiUniform.clear();
@@ -397,7 +397,7 @@ coreStatus coreProgram::Unload()
 // enable the shader-program
 coreBool coreProgram::Enable()
 {
-    ASSERT(m_iStatus)
+    ASSERT(m_eStatus)
 
     // try to update global uniform data
     Core::Graphics->UpdateTransformation();
@@ -405,7 +405,7 @@ coreBool coreProgram::Enable()
 
     // check current shader-program
     if(s_pCurrent == this)                  return true;
-    if(m_iStatus  != CORE_PROGRAM_FINISHED) return false;
+    if(m_eStatus  != CORE_PROGRAM_FINISHED) return false;
 
     // set current shader-program
     s_pCurrent = this;
@@ -467,7 +467,7 @@ void coreProgram::Disable(const coreBool bFull)
 // execute a compute shader-program
 void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ)
 {
-    ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this)
+    ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this)
 
     if(CORE_GL_SUPPORT(ARB_compute_shader))
     {

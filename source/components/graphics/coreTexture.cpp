@@ -21,7 +21,7 @@ coreTexture::coreTexture(const coreBool bLoadCompressed)noexcept
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
 , m_iCompressed (bLoadCompressed ? 0 : -1)
-, m_iMode       (CORE_TEXTURE_MODE_DEFAULT)
+, m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
 , m_Spec        (coreTextureSpec(0u, 0u, 0u))
 , m_Sync        ()
 {
@@ -41,8 +41,8 @@ coreTexture::~coreTexture()
 coreStatus coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
-    if(iCheck >= CORE_OK) return iCheck;
+    const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
+    if(eCheck >= CORE_OK) return eCheck;
 
     coreFileScope oUnloader(pFile);
 
@@ -63,16 +63,16 @@ coreStatus coreTexture::Load(coreFile* pFile)
     const coreUint32 iDataSize   = pData->w * pData->h * iComponents;
 
     // check for compression capability
-    const coreTextureMode iCompress = (coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
+    const coreTextureMode eCompress = (coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
 
     // create texture
-    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), iCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
+    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
     this->Modify(0u, 0u, pData->w, pData->h, iDataSize, s_cast<coreByte*>(pData->pixels));
 
     // save properties
     m_sPath = pFile->GetPath();
 
-    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, iCompress ? "compressed" : "standard");
+    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, eCompress ? "compressed" : "standard");
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
 }
 
@@ -100,7 +100,7 @@ coreStatus coreTexture::Unload()
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
     m_iCompressed = MIN(m_iCompressed, 0);
-    m_iMode       = CORE_TEXTURE_MODE_DEFAULT;
+    m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
     m_Spec        = coreTextureSpec(0u, 0u, 0u);
 
     return CORE_OK;
@@ -109,24 +109,24 @@ coreStatus coreTexture::Unload()
 
 // ****************************************************************
 // create texture memory
-void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode iMode)
+void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode)
 {
     WARN_IF(m_iIdentifier) this->Unload();
 
     // check for OpenGL extensions
-    const coreBool bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic)                && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_COMPRESS);
+    const coreBool bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic)                && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
     m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(LOG<2u>(m_vResolution.Max())) + 1u : 1u;
-    m_iMode       = iMode;
+    m_eMode       = eMode;
     m_Spec        = oSpec;
 
     // set wrap mode
-    const GLenum iWrapMode = CONTAINS_FLAG(iMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+    const GLenum iWrapMode = CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
     // set compression
     if(bCompress)

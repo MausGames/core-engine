@@ -158,7 +158,7 @@ private:
 
     std::vector<coreShaderPtr>       m_apShader;         //!< attached shader objects
     std::vector<coreResourceHandle*> m_apShaderHandle;   //!< raw shader resource handles (to preserve while unloaded)
-    coreProgramStatus m_iStatus;                         //!< current status
+    coreProgramStatus m_eStatus;                         //!< current status
 
     coreLookupStr<coreInt8> m_aiUniform;                 //!< uniform locations
     coreLookupStrFull<coreInt8> m_aiAttribute;           //!< attribute locations
@@ -194,11 +194,11 @@ public:
 
     //! define shader objects and attribute locations
     //! @{
-    inline coreProgram* AttachShader (const coreShaderPtr&  pShader)                          {if(!m_iStatus)  m_apShaderHandle.push_back(pShader.GetHandle());                             return this;}
-    inline coreProgram* AttachShader (const coreHashString& sName)                            {if(!m_iStatus)  m_apShaderHandle.push_back(Core::Manager::Resource->Get<coreShader>(sName)); return this;}
-    inline coreProgram* BindAttribute(const coreHashString& sName, const coreUint8 iLocation) {if(!m_iStatus)  m_aiAttribute[sName] = iLocation;                                            return this;}
-    inline void Finish ()                                                                     {if(!m_iStatus) {m_apShader.reserve(m_apShaderHandle.size()); m_apShaderHandle.shrink_to_fit(); m_aiAttribute.shrink_to_fit(); m_iStatus = CORE_PROGRAM_DEFINED;}}
-    inline void Restart()                                                                     {this->Unload(); m_apShader.clear();                          m_apShaderHandle.clear();         m_aiAttribute.clear();         m_iStatus = CORE_PROGRAM_NEW;}
+    inline coreProgram* AttachShader (const coreShaderPtr&  pShader)                          {if(!m_eStatus)  m_apShaderHandle.push_back(pShader.GetHandle());                             return this;}
+    inline coreProgram* AttachShader (const coreHashString& sName)                            {if(!m_eStatus)  m_apShaderHandle.push_back(Core::Manager::Resource->Get<coreShader>(sName)); return this;}
+    inline coreProgram* BindAttribute(const coreHashString& sName, const coreUint8 iLocation) {if(!m_eStatus)  m_aiAttribute[sName] = iLocation;                                            return this;}
+    inline void Finish ()                                                                     {if(!m_eStatus) {m_apShader.reserve(m_apShaderHandle.size()); m_apShaderHandle.shrink_to_fit(); m_aiAttribute.shrink_to_fit(); m_eStatus = CORE_PROGRAM_DEFINED;}}
+    inline void Restart()                                                                     {this->Unload(); m_apShader.clear();                          m_apShaderHandle.clear();         m_aiAttribute.clear();         m_eStatus = CORE_PROGRAM_NEW;}
     //! @}
 
     //! send new uniform values
@@ -215,8 +215,8 @@ public:
 
     //! retrieve uniform and attribute locations
     //! @{
-    inline const coreInt8& RetrieveUniform  (const coreHashString& sName) {if(!m_aiUniform  .count(sName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  .emplace(sName, glGetUniformLocation(m_iIdentifier, sName.GetString()));} ASSERT(m_aiUniform  .at(sName) >= -1) return m_aiUniform  .at(sName);}
-    inline const coreInt8& RetrieveAttribute(const coreHashString& sName) {if(!m_aiAttribute.count(sName)) {ASSERT(m_iStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(sName, glGetAttribLocation (m_iIdentifier, sName.GetString()));} ASSERT(m_aiAttribute.at(sName) >= -1) return m_aiAttribute.at(sName);}
+    inline const coreInt8& RetrieveUniform  (const coreHashString& sName) {if(!m_aiUniform  .count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  .emplace(sName, glGetUniformLocation(m_iIdentifier, sName.GetString()));} ASSERT(m_aiUniform  .at(sName) >= -1) return m_aiUniform  .at(sName);}
+    inline const coreInt8& RetrieveAttribute(const coreHashString& sName) {if(!m_aiAttribute.count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(sName, glGetAttribLocation (m_iIdentifier, sName.GetString()));} ASSERT(m_aiAttribute.at(sName) >= -1) return m_aiAttribute.at(sName);}
     //! @}
 
     //! check for cached uniform values

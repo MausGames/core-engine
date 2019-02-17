@@ -19,8 +19,8 @@ coreObject::coreObject()noexcept
 , m_vColor     (coreVector4(1.0f,1.0f,1.0f,1.0f))
 , m_vTexSize   (coreVector2(1.0f,1.0f))
 , m_vTexOffset (coreVector2(0.0f,0.0f))
-, m_iUpdate    (CORE_OBJECT_UPDATE_ALL)
-, m_iEnabled   (CORE_OBJECT_ENABLE_ALL)
+, m_eUpdate    (CORE_OBJECT_UPDATE_ALL)
+, m_eEnabled   (CORE_OBJECT_ENABLE_ALL)
 , m_iStatus    (0)
 {
 }
@@ -410,9 +410,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
 
 // ****************************************************************
 /* reset with the resource manager */
-void coreObjectManager::__Reset(const coreResourceReset bInit)
+void coreObjectManager::__Reset(const coreResourceReset eInit)
 {
-    if(bInit)
+    if(eInit)
     {
         constexpr coreUint32 aiQuadData[] = {coreVector2(-0.5f, 0.5f).PackSnorm2x16(),
                                              coreVector2(-0.5f,-0.5f).PackSnorm2x16(),
@@ -455,9 +455,9 @@ void coreObjectManager::__Reset(const coreResourceReset bInit)
         // force update of all existing 2d-objects
         FOR_EACH(it, s_apSpriteList)
         {
-            (*it)->m_iUpdate = CORE_OBJECT_UPDATE_ALL;
+            (*it)->m_eUpdate = CORE_OBJECT_UPDATE_ALL;
             (*it)->coreObject2D::Move();
-            (*it)->m_iUpdate = CORE_OBJECT_UPDATE_ALL;
+            (*it)->m_eUpdate = CORE_OBJECT_UPDATE_ALL;
         }
     }
     else

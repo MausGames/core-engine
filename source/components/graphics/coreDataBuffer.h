@@ -42,7 +42,7 @@ class coreDataBuffer
 {
 private:
     GLuint m_iIdentifier;                          //!< data buffer identifier
-    coreDataBufferStorage m_iStorageType;          //!< storage type
+    coreDataBufferStorage m_eStorageType;          //!< storage type
 
     GLenum     m_iTarget;                          //!< buffer target (e.g. GL_ARRAY_BUFFER)
     coreUint32 m_iSize;                            //!< data size in bytes
@@ -68,7 +68,7 @@ public:
 
     //! control the data buffer object
     //! @{
-    void Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage iStorageType);
+    void Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage eStorageType);
     void Delete();
     //! @}
 
@@ -81,7 +81,7 @@ public:
 
     //! modify buffer memory
     //! @{
-    RETURN_RESTRICT coreByte* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType);
+    RETURN_RESTRICT coreByte* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType);
     void                      Unmap(const coreByte* pPointer);
     void                      Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
     //! @}
@@ -94,7 +94,7 @@ public:
 
     //! check for current buffer status
     //! @{
-    inline coreBool IsWritable  ()const {return CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
+    inline coreBool IsWritable  ()const {return CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC) ? false :  true;}
     inline coreBool IsPersistent()const {return m_pPersistentBuffer                                           ?  true : false;}
     inline coreBool IsMapped    ()const {return m_iMapLength                                                  ?  true : false;}
     inline coreBool IsValid     ()const {return m_iIdentifier                                                 ?  true : false;}
@@ -103,7 +103,7 @@ public:
     //! get object properties
     //! @{
     inline const GLuint&                GetIdentifier ()const {return m_iIdentifier;}
-    inline const coreDataBufferStorage& GetStorageType()const {return m_iStorageType;}
+    inline const coreDataBufferStorage& GetStorageType()const {return m_eStorageType;}
     inline const GLenum&                GetTarget     ()const {return m_iTarget;}
     inline const coreUint32&            GetSize       ()const {return m_iSize;}
     //! @}
@@ -143,7 +143,7 @@ public:
 
     //! control the vertex buffer object
     //! @{
-    void Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType);
+    void Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType);
     void Delete();
     //! @}
 
@@ -165,7 +165,7 @@ public:
 // constructor
 constexpr coreDataBuffer::coreDataBuffer()noexcept
 : m_iIdentifier       (0u)
-, m_iStorageType      (CORE_DATABUFFER_STORAGE_STATIC)
+, m_eStorageType      (CORE_DATABUFFER_STORAGE_STATIC)
 , m_iTarget           (0u)
 , m_iSize             (0u)
 , m_pPersistentBuffer (NULL)
@@ -177,7 +177,7 @@ constexpr coreDataBuffer::coreDataBuffer()noexcept
 
 inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 : m_iIdentifier       (m.m_iIdentifier)
-, m_iStorageType      (m.m_iStorageType)
+, m_eStorageType      (m.m_eStorageType)
 , m_iTarget           (m.m_iTarget)
 , m_iSize             (m.m_iSize)
 , m_pPersistentBuffer (m.m_pPersistentBuffer)

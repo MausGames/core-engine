@@ -106,7 +106,7 @@ void coreButton::Move()
     // update the label
     if(m_pCaption)
     {
-        if(m_iUpdate)
+        if(m_eUpdate)
         {
             m_pCaption->SetPosition (this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment());
             m_pCaption->SetDirection(this->GetDirection());

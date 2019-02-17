@@ -93,7 +93,7 @@ public:
 
     //! interact with the switch-box
     //! @{
-    inline coreBool IsClickedArrow(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType iType = CORE_INPUT_PRESS)const {return (m_aArrow[0].IsClicked(iButton, iType) || m_aArrow[1].IsClicked(iButton, iType)) ? true : false;}
+    inline coreBool IsClickedArrow(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType eType = CORE_INPUT_PRESS)const {return (m_aArrow[0].IsClicked(iButton, eType) || m_aArrow[1].IsClicked(iButton, eType)) ? true : false;}
     inline coreBool IsFocusedArrow()const                                                                                        {return (m_aArrow[0].IsFocused()               || m_aArrow[1].IsFocused())               ? true : false;}
     //! @}
 
@@ -267,7 +267,7 @@ template <typename T> void coreSwitchBox<T>::Move()
         }
     }
 
-    if(m_iUpdate)
+    if(m_eUpdate)
     {
         ASSERT(this->GetSize().x > 2.0f*this->GetSize().y)
 

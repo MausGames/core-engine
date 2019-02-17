@@ -253,7 +253,7 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 : m_apMusic       {}
 , m_pEmptyMusic   (NULL)
 , m_apSequence    {}
-, m_iRepeat       (CORE_MUSIC_ALL_REPEAT)
+, m_eRepeat       (CORE_MUSIC_ALL_REPEAT)
 , m_FadeTimer     (coreTimer(1.0f, 0.0f, 1u))
 , m_pFadePrevious (NULL)
 , m_pCurMusic     (NULL)
@@ -302,11 +302,11 @@ coreBool coreMusicPlayer::Update()
     if(m_pCurMusic->Update())
     {
         // handle unnecessary loop
-        if((m_iRepeat != CORE_MUSIC_SINGLE_REPEAT))
+        if((m_eRepeat != CORE_MUSIC_SINGLE_REPEAT))
             m_pCurMusic->Stop();
 
         // repeat, switch or stop as defined
-        switch(m_iRepeat)
+        switch(m_eRepeat)
         {
         default: ASSERT(false)
         case CORE_MUSIC_ALL_NOREPEAT:    if((m_iCurIndex + 1u) >= m_apMusic.size()) break; FALLTHROUGH

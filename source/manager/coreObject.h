@@ -53,8 +53,8 @@ protected:
     coreVector2 m_vTexSize;                           //!< size-factor of the texture
     coreVector2 m_vTexOffset;                         //!< offset of the texture
 
-    coreObjectUpdate m_iUpdate;                       //!< update status (dirty flag)
-    coreObjectEnable m_iEnabled;                      //!< enabled object routines
+    coreObjectUpdate m_eUpdate;                       //!< update status (dirty flag)
+    coreObjectEnable m_eEnabled;                      //!< enabled object routines
     coreInt32 m_iStatus;                              //!< numeric status-value for individual use
 
 
@@ -79,7 +79,7 @@ public:
 
     /*! check for enabled object routines */
     //! @{
-    inline coreBool IsEnabled(const coreObjectEnable iEnabled)const {ASSERT(iEnabled) return CONTAINS_FLAG(m_iEnabled, iEnabled) ? true : false;}
+    inline coreBool IsEnabled(const coreObjectEnable eEnabled)const {ASSERT(eEnabled) return CONTAINS_FLAG(m_eEnabled, eEnabled) ? true : false;}
     //! @}
 
     /*! set object properties */
@@ -89,7 +89,7 @@ public:
     inline void SetAlpha    (const coreFloat        fAlpha)     {m_vColor.w   = fAlpha;}
     inline void SetTexSize  (const coreVector2&     vTexSize)   {m_vTexSize   = vTexSize;}
     inline void SetTexOffset(const coreVector2&     vTexOffset) {m_vTexOffset = vTexOffset;}
-    inline void SetEnabled  (const coreObjectEnable iEnabled)   {m_iEnabled   = iEnabled;}
+    inline void SetEnabled  (const coreObjectEnable eEnabled)   {m_eEnabled   = eEnabled;}
     inline void SetStatus   (const coreInt32        iStatus)    {m_iStatus    = iStatus;}
     //! @}
 
@@ -168,7 +168,7 @@ public:
 private:
     /*! reset with the resource manager */
     //! @{
-    void __Reset(const coreResourceReset bInit);
+    void __Reset(const coreResourceReset eInit);
     //! @}
 
     /*! update all objects and collisions */

@@ -131,8 +131,8 @@ public:
 
     //! generate custom model resource data
     //! @{
-    coreVertexBuffer*        CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType);
-    coreDataBuffer*          CreateIndexBuffer (const coreUint32 iNumIndices,  const coreUint8 iIndexSize,  const void* pIndexData,  const coreDataBufferStorage iStorageType);
+    coreVertexBuffer*        CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType);
+    coreDataBuffer*          CreateIndexBuffer (const coreUint32 iNumIndices,  const coreUint8 iIndexSize,  const void* pIndexData,  const coreDataBufferStorage eStorageType);
     inline coreVertexBuffer* GetVertexBuffer   (const coreUintW iIndex) {return &m_aVertexBuffer[iIndex];}
     inline coreDataBuffer*   GetIndexBuffer    ()                       {return &m_IndexBuffer;}
     //! @}

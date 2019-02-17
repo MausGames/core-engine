@@ -111,10 +111,10 @@ coreStatus coreThread::__Main()
 
     // call init-routine
     Core::Log->Info("Thread (%s, %04lX) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
-    coreStatus iReturn = this->__InitThread();
+    coreStatus eReturn = this->__InitThread();
 
     // begin main-loop
-    while(iReturn == CORE_OK)
+    while(eReturn == CORE_OK)
     {
         if(m_fFrequency)
         {
@@ -143,7 +143,7 @@ coreStatus coreThread::__Main()
         this->UpdateFunctions();
 
         // call run-routine
-        iReturn = this->__RunThread();
+        eReturn = this->__RunThread();
     }
 
     // call exit-routine
@@ -151,7 +151,7 @@ coreStatus coreThread::__Main()
     Core::Log->Info("Thread (%s, %04lX) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
 
     m_bActive = false;
-    return iReturn;
+    return eReturn;
 }
 
 

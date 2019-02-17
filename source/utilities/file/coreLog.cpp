@@ -14,7 +14,7 @@
 coreLog::coreLog(const coreChar* pcPath)noexcept
 : m_pFile       (NULL)
 , m_sPath       (pcPath)
-, m_iLevel      (CORE_LOG_LEVEL_ALL)
+, m_eLevel      (CORE_LOG_LEVEL_ALL)
 , m_iListStatus (0u)
 , m_iLastTime   (0u)
 , m_iMainThread (0u)

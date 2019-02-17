@@ -57,7 +57,7 @@ public:
 
     /*! control the timer */
     //! @{
-    inline void Play (const coreTimerPlay bReset) {m_bStatus = true; if(bReset) this->Reset();}
+    inline void Play (const coreTimerPlay eReset) {m_bStatus = true; if(eReset) this->Reset();}
     inline void Pause()                           {m_bStatus = false;}
     inline void Reset()                           {m_fValue  = 0.0f; m_iCurLoops = 0u;}
     inline void Stop ()                           {this->Pause(); this->Reset();}
@@ -80,7 +80,7 @@ public:
 
     /*! get object properties */
     //! @{
-    inline       coreFloat   GetValue   (const coreTimerGet bReversed)const {return bReversed ? (m_fEnd - m_fValue) : m_fValue;}
+    inline       coreFloat   GetValue   (const coreTimerGet eReversed)const {return eReversed ? (m_fEnd - m_fValue) : m_fValue;}
     inline const coreFloat&  GetEnd     ()const                             {return m_fEnd;}
     inline const coreFloat&  GetSpeed   ()const                             {return m_fSpeed;}
     inline const coreUint16& GetMaxLoops()const                             {return m_iMaxLoops;}

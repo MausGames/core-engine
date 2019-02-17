@@ -51,8 +51,8 @@ coreModel::~coreModel()
 coreStatus coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreStatus iCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
-    if(iCheck >= CORE_OK) return iCheck;
+    const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
+    if(eCheck >= CORE_OK) return eCheck;
 
     coreFileScope oUnloader(pFile);
 
@@ -454,7 +454,7 @@ void coreModel::Disable(const coreBool bFull)
 
 // ****************************************************************
 // create vertex buffer
-coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType)
+coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType)
 {
     ASSERT(!m_iVertexArray)
 
@@ -464,7 +464,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, c
 
     // create vertex buffer
     m_aVertexBuffer.emplace_back();
-    m_aVertexBuffer.back().Create(iNumVertices, iVertexSize, pVertexData, iStorageType);
+    m_aVertexBuffer.back().Create(iNumVertices, iVertexSize, pVertexData, eStorageType);
 
     // disable current model object (to fully enable the next model)
     coreModel::Disable(false);
@@ -475,7 +475,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, c
 
 // ****************************************************************
 // create index buffer
-coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const coreUint8 iIndexSize, const void* pIndexData, const coreDataBufferStorage iStorageType)
+coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const coreUint8 iIndexSize, const void* pIndexData, const coreDataBufferStorage eStorageType)
 {
     ASSERT(!m_iVertexArray && !m_IndexBuffer.IsValid())
 
@@ -495,7 +495,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const
     coreModel::Disable(true);
 
     // create index buffer
-    m_IndexBuffer.Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, iStorageType);
+    m_IndexBuffer.Create(GL_ELEMENT_ARRAY_BUFFER, iNumIndices*iIndexSize, pIndexData, eStorageType);
 
     return &m_IndexBuffer;
 }

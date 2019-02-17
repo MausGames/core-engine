@@ -43,7 +43,7 @@ private:
     std::FILE* m_pFile;           //!< log file stream handle
 
     std::string  m_sPath;         //!< relative path of the file
-    coreLogLevel m_iLevel;        //!< logging level
+    coreLogLevel m_eLevel;        //!< logging level
 
     coreUint8 m_iListStatus;       //!< currently writing a list
 
@@ -60,16 +60,16 @@ public:
 
     /*! message functions */
     //! @{
-    template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
-    template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true,                              __CORE_LOG_STRING + "<br />");}
+    template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "<span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
     template <typename... A> FUNC_TERMINATE void Error  (const coreChar* pcText, A&&... vArgs);
     //! @}
 
     /*! special functions */
     //! @{
-    template <typename... A> inline void Header          (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_INFO))     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
-    template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
-    template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
+    template <typename... A> inline void Header          (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
+    template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
+    template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "<span class=\"list\">"         + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
     template <typename... A> inline void ListDeeper      (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                   {this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li><ul>");   ++m_iListStatus;}}
     template <typename... A> inline void ListAdd         (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                    this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
     inline                          void ListEnd         ()                                     {if(m_iListStatus)                                   {this->__Write(false, "</ul>"); --m_iListStatus;}}
@@ -83,13 +83,13 @@ public:
 
     /*! set object properties */
     //! @{
-    inline void SetLevel(const coreLogLevel iLevel) {m_iLevel = iLevel;}
+    inline void SetLevel(const coreLogLevel eLevel) {m_eLevel = eLevel;}
     //! @}
 
     /*! get object properties */
     //! @{
     inline const coreChar*     GetPath ()const {return m_sPath.c_str();}
-    inline const coreLogLevel& GetLevel()const {return m_iLevel;}
+    inline const coreLogLevel& GetLevel()const {return m_eLevel;}
     //! @}
 
 
@@ -106,7 +106,7 @@ private:
 template <typename... A> FUNC_TERMINATE void coreLog::Error(const coreChar* pcText, A&&... vArgs)
 {
     // write error message
-    if(CONTAINS_FLAG(m_iLevel, CORE_LOG_LEVEL_ERROR)) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
+    if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_ERROR)) this->__Write(true, "<span class=\"error\">" + __CORE_LOG_STRING + "</span><br />");
 
     // also show message box
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Critical Error", __CORE_LOG_STRING.c_str(), NULL);

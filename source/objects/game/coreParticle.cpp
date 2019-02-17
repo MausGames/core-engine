@@ -294,12 +294,12 @@ void coreParticleSystem::ClearAll()
 
 // ****************************************************************
 // reset with the resource manager
-void coreParticleSystem::__Reset(const coreResourceReset bInit)
+void coreParticleSystem::__Reset(const coreResourceReset eInit)
 {
     // check for OpenGL extensions
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;
 
-    if(bInit)
+    if(eInit)
     {
         FOR_EACH(it, m_aiInstanceBuffer)
         {

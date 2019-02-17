@@ -170,7 +170,7 @@ public:
     //! @{
     inline void                 SetKeyboardButton(const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; SET_BIT(m_Keyboard.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Keyboard.iLast = iButton;}
     inline void                 SetKeyboardChar  (const coreInputChar iChar)                                   {m_Keyboard.iChar = iChar;}
-    inline coreBool             GetKeyboardButton(const coreInputKey  iButton, const coreInputType iType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_KEYBOARD) return CONTAINS_BIT(m_Keyboard.aiButton[iButton], iType);}
+    inline coreBool             GetKeyboardButton(const coreInputKey  iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_KEYBOARD) return CONTAINS_BIT(m_Keyboard.aiButton[iButton], eType);}
     inline const coreInputChar& GetKeyboardChar  ()const                                                       {return m_Keyboard.iChar;}
     //! @}
 
@@ -180,7 +180,7 @@ public:
     inline void               SetMousePosition(const coreVector2& vPosition)                            {m_Mouse.vPosition   = vPosition;}
     inline void               SetMouseRelative(const coreVector2& vRelative)                            {m_Mouse.vRelative.x = vRelative.x; m_Mouse.vRelative.y = vRelative.y;}
     inline void               SetMouseWheel   (const coreFloat fValue)                                  {m_Mouse.vRelative.z = fValue;}
-    inline coreBool           GetMouseButton  (const coreUint8 iButton, const coreInputType iType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_MOUSE) return CONTAINS_BIT(m_Mouse.aiButton[iButton], iType);}
+    inline coreBool           GetMouseButton  (const coreUint8 iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_MOUSE) return CONTAINS_BIT(m_Mouse.aiButton[iButton], eType);}
     inline const coreVector2& GetMousePosition()const                                                   {return m_Mouse.vPosition;}
     inline const coreVector3& GetMouseRelative()const                                                   {return m_Mouse.vRelative;}
     inline const coreFloat&   GetMouseWheel   ()const                                                   {return m_Mouse.vRelative.z;}
@@ -189,10 +189,10 @@ public:
     //! access joystick input
     //! @{
     inline void               SetJoystickButton  (const coreUintW iIndex, const coreUint8 iButton, const coreBool bStatus)               {WARN_IF(iButton    >= CORE_INPUT_BUTTONS_JOYSTICK) return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) __CORE_INPUT_JOYSTICK(iIndex).iLast = iButton;}
-    inline void               SetJoystickHat     (const coreUintW iIndex, const coreInputDir iDirection, const coreBool bStatus)         {WARN_IF(iDirection >= CORE_INPUT_DIRECTIONS)       return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[iDirection], CORE_INPUT_DATA, bStatus)}
+    inline void               SetJoystickHat     (const coreUintW iIndex, const coreInputDir eDirection, const coreBool bStatus)         {WARN_IF(eDirection >= CORE_INPUT_DIRECTIONS)       return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], CORE_INPUT_DATA, bStatus)}
     inline void               SetJoystickRelative(const coreUintW iIndex, const coreUint8 iAxis, const coreFloat fValue)                 {WARN_IF(iAxis      >= 2u)                          return; __CORE_INPUT_JOYSTICK(iIndex).vRelative.arr(iAxis) = fValue;}
-    inline coreBool           GetJoystickButton  (const coreUintW iIndex, const coreUint8 iButton, const coreInputType iType)const       {ASSERT(iButton    < CORE_INPUT_BUTTONS_JOYSTICK) return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], iType);}
-    inline coreBool           GetJoystickHat     (const coreUintW iIndex, const coreInputDir iDirection, const coreInputType iType)const {ASSERT(iDirection < CORE_INPUT_DIRECTIONS)       return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[iDirection], iType);}
+    inline coreBool           GetJoystickButton  (const coreUintW iIndex, const coreUint8 iButton, const coreInputType eType)const       {ASSERT(iButton    < CORE_INPUT_BUTTONS_JOYSTICK) return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], eType);}
+    inline coreBool           GetJoystickHat     (const coreUintW iIndex, const coreInputDir eDirection, const coreInputType eType)const {ASSERT(eDirection < CORE_INPUT_DIRECTIONS)       return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], eType);}
     inline const coreVector2& GetJoystickRelative(const coreUintW iIndex)const                                                           {return __CORE_INPUT_JOYSTICK(iIndex).vRelative;}
     inline void               RumbleJoystick     (const coreUintW iIndex, const coreFloat fStrength, const coreUint32 iLength)           {if(__CORE_INPUT_JOYSTICK(iIndex).pHaptic) SDL_HapticRumblePlay(__CORE_INPUT_JOYSTICK(iIndex).pHaptic, fStrength, iLength);}
     //! @}
@@ -203,19 +203,19 @@ public:
     inline void                SetTouchPosition(const coreUintW iIndex, const coreVector2& vPosition)   {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].vPosition = vPosition;}
     inline void                SetTouchRelative(const coreUintW iIndex, const coreVector2& vRelative)   {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].vRelative = vRelative;}
     inline void                SetTouchPressure(const coreUintW iIndex, const coreFloat fPressure)      {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].fPressure = fPressure;}
-    inline coreBool            GetTouchButton  (const coreUintW iIndex, const coreInputType iType)const {ASSERT(iIndex < CORE_INPUT_FINGERS) return CONTAINS_BIT(m_aTouch[iIndex].iButton, iType);}
+    inline coreBool            GetTouchButton  (const coreUintW iIndex, const coreInputType eType)const {ASSERT(iIndex < CORE_INPUT_FINGERS) return CONTAINS_BIT(m_aTouch[iIndex].iButton, eType);}
     inline const coreVector2&  GetTouchPosition(const coreUintW iIndex)const                            {ASSERT(iIndex < CORE_INPUT_FINGERS) return m_aTouch[iIndex].vPosition;}
     inline const coreVector2&  GetTouchRelative(const coreUintW iIndex)const                            {ASSERT(iIndex < CORE_INPUT_FINGERS) return m_aTouch[iIndex].vRelative;}
     inline const coreFloat&    GetTouchPressure(const coreUintW iIndex)const                            {ASSERT(iIndex < CORE_INPUT_FINGERS) return m_aTouch[iIndex].fPressure;}
-    template <typename F> void ForEachFinger   (const coreInputType iType, F&& nFunction);   //!< [](const coreUintW iFingerIndex) -> void
+    template <typename F> void ForEachFinger   (const coreInputType eType, F&& nFunction);   //!< [](const coreUintW iFingerIndex) -> void
     //! @}
 
     //! get number of input buttons with same status
     //! @{
-    inline const coreUint16& GetCountKeyboard(const coreInputType iType)const                         {ASSERT(iType < CORE_INPUT_TYPES) return m_Keyboard.aiCount[iType];}
-    inline const coreUint8&  GetCountMouse   (const coreInputType iType)const                         {ASSERT(iType < CORE_INPUT_TYPES) return m_Mouse.aiCount[iType];}
-    inline const coreUint8&  GetCountJoystick(const coreUintW iIndex, const coreInputType iType)const {ASSERT(iType < CORE_INPUT_TYPES) return __CORE_INPUT_JOYSTICK(iIndex).aiCount[iType];}
-    inline const coreUint8&  GetCountTouch   (const coreInputType iType)const                         {ASSERT(iType < CORE_INPUT_TYPES) return m_aiTouchCount[iType];}
+    inline const coreUint16& GetCountKeyboard(const coreInputType eType)const                         {ASSERT(eType < CORE_INPUT_TYPES) return m_Keyboard.aiCount[eType];}
+    inline const coreUint8&  GetCountMouse   (const coreInputType eType)const                         {ASSERT(eType < CORE_INPUT_TYPES) return m_Mouse.aiCount[eType];}
+    inline const coreUint8&  GetCountJoystick(const coreUintW iIndex, const coreInputType eType)const {ASSERT(eType < CORE_INPUT_TYPES) return __CORE_INPUT_JOYSTICK(iIndex).aiCount[eType];}
+    inline const coreUint8&  GetCountTouch   (const coreInputType eType)const                         {ASSERT(eType < CORE_INPUT_TYPES) return m_aiTouchCount[eType];}
     //! @}
 
     //! get last pressed input button
@@ -227,7 +227,7 @@ public:
 
     //! get status of any available button
     //! @{
-    inline coreBool GetAnyButton(const coreInputType iType)const {return CONTAINS_BIT(m_iAnyButton, iType);}
+    inline coreBool GetAnyButton(const coreInputType eType)const {return CONTAINS_BIT(m_iAnyButton, eType);}
     //! @}
 
     //! clear status of input buttons
@@ -261,12 +261,12 @@ private:
 
 // ****************************************************************
 // call function for each active finger
-template <typename F> void CoreInput::ForEachFinger(const coreInputType iType, F&& nFunction)
+template <typename F> void CoreInput::ForEachFinger(const coreInputType eType, F&& nFunction)
 {
     for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
     {
         // check finger status and call function
-        if(this->GetTouchButton(i, iType))
+        if(this->GetTouchButton(i, eType))
             nFunction(i);
     }
 }

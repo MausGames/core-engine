@@ -89,14 +89,14 @@ public:
 
     //! control the frame buffer
     //! @{
-    void Create(const coreVector2& vResolution, const coreFrameBufferCreate bType);
+    void Create(const coreVector2& vResolution, const coreFrameBufferCreate eType);
     void Delete();
     //! @}
 
     //! attach render targets
     //! @{
-    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName = NULL);
-    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
+    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName = NULL);
+    coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
     void DetachTargets();
     //! @}
 
@@ -108,14 +108,14 @@ public:
 
     //! copy content to another frame buffer
     //! @{
-    void Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;
-    void Blit(const coreFrameBufferTarget iTargets, coreFrameBuffer* OUTPUT pDestination)const;
+    void Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;
+    void Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer* OUTPUT pDestination)const;
     //! @}
 
     //! reset content of the frame buffer
     //! @{
-    void Clear     (const coreFrameBufferTarget iTargets);
-    void Invalidate(const coreFrameBufferTarget iTargets);
+    void Clear     (const coreFrameBufferTarget eTargets);
+    void Invalidate(const coreFrameBufferTarget eTargets);
     //! @}
 
     //! set object properties
@@ -141,7 +141,7 @@ public:
 private:
     //! attach render targets
     //! @{
-    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget iTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
+    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
     //! @}
 };
 

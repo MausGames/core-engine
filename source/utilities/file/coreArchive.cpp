@@ -90,9 +90,9 @@ coreStatus coreFile::Compress(const coreInt8 iCompression)
     // compress data with deflate algorithm
     coreByte*  pNewData;
     coreUint32 iNewSize;
-    const coreStatus iError = coreData::CompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize, iCompression);
+    const coreStatus eError = coreData::CompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize, iCompression);
 
-    if(iError == CORE_OK)
+    if(eError == CORE_OK)
     {
         // delete old data
         SAFE_DELETE_ARRAY(m_pData)
@@ -102,7 +102,7 @@ coreStatus coreFile::Compress(const coreInt8 iCompression)
         m_iSize = iNewSize;
     }
 
-    return iError;
+    return eError;
 }
 
 
@@ -117,9 +117,9 @@ coreStatus coreFile::Decompress()
     // decompress data with deflate algorithm
     coreByte*  pNewData;
     coreUint32 iNewSize;
-    const coreStatus iError = coreData::DecompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize);
+    const coreStatus eError = coreData::DecompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize);
 
-    if(iError == CORE_OK)
+    if(eError == CORE_OK)
     {
         // delete old data
         SAFE_DELETE_ARRAY(m_pData)
@@ -129,7 +129,7 @@ coreStatus coreFile::Decompress()
         m_iSize = iNewSize;
     }
 
-    return iError;
+    return eError;
 }
 
 

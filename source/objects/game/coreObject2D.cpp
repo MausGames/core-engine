@@ -164,7 +164,7 @@ void coreObject2D::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
-    if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+    if(CONTAINS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
     {
         // calculate resolution-modified transformation parameters
         const coreVector2& vResolution     = Core::System->GetResolution();
@@ -181,7 +181,7 @@ void coreObject2D::Move()
         m_mTransform._32 += 0.5f * m_vAlignment.y * ABS(m_mTransform._12 + m_mTransform._22);
 
         // reset the update status
-        m_iUpdate = CORE_OBJECT_UPDATE_NOTHING;
+        m_eUpdate = CORE_OBJECT_UPDATE_NOTHING;
     }
 }
 
@@ -191,8 +191,9 @@ void coreObject2D::Move()
 void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
-    const coreVector2 vScreenPosition = coreVector2(    m_mTransform._31,      m_mTransform._32);
-    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11), ABS(m_mTransform._22)) * 0.5f * m_vFocusModifier;
+    const coreVector2 vScreenPosition = coreVector2(    m_mTransform._31,  m_mTransform._32);
+    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11 + m_mTransform._21),
+                                                    ABS(m_mTransform._12 + m_mTransform._22)) * (0.5f * m_vFocusModifier);
 
 #if defined(_CORE_MOBILE_)
 
@@ -229,7 +230,7 @@ void coreObject2D::Interact()
 
 // ****************************************************************
 // check for direct input
-coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType iType)const
+coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType eType)const
 {
 #if defined(_CORE_MOBILE_)
 
@@ -239,7 +240,7 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType iT
         for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
         {
             // check for every finger on the object
-            if(CONTAINS_BIT(m_iFinger, i) && Core::Input->GetTouchButton(i, iType))
+            if(CONTAINS_BIT(m_iFinger, i) && Core::Input->GetTouchButton(i, eType))
                 return true;
         }
     }
@@ -248,7 +249,7 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType iT
 #else
 
     // check for interaction status and mouse button
-    return (m_bFocused && Core::Input->GetMouseButton(iButton, iType)) ? true : false;
+    return (m_bFocused && Core::Input->GetMouseButton(iButton, eType)) ? true : false;
 
 #endif
 }

@@ -16,7 +16,7 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 , m_pFile       (pFile)
 , m_sName       (pcName)
 , m_bAutomatic  (bAutomatic)
-, m_iStatus     ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
+, m_eStatus     ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
 , m_iRefCount   (0u)
 , m_iUpdateLock (0)
 {
@@ -214,8 +214,8 @@ void coreResourceManager::AssignProxy(coreResourceHandle* OUTPUT pProxy, coreRes
         pForeign->RefIncrease();
 
         // forward status of the foreign handle
-        pProxy->m_iStatus = CORE_BUSY;
-        pForeign->OnLoadedOnce([=]() {pProxy->m_iStatus = pForeign->m_iStatus;});
+        pProxy->m_eStatus = CORE_BUSY;
+        pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus;});
     }
 
     // save new foreign handle
@@ -225,9 +225,9 @@ void coreResourceManager::AssignProxy(coreResourceHandle* OUTPUT pProxy, coreRes
 
 // ****************************************************************
 /* reset all resources and relation-objects */
-void coreResourceManager::Reset(const coreResourceReset bInit)
+void coreResourceManager::Reset(const coreResourceReset eInit)
 {
-    const coreBool bActive = bInit ? true : false;
+    const coreBool bActive = eInit ? true : false;
 
     // check and set current status
     if(m_bActive == bActive) return;

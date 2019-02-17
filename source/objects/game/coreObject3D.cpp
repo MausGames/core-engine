@@ -186,14 +186,14 @@ void coreObject3D::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
-    if(m_iUpdate)
+    if(m_eUpdate)
     {
-        if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+        if(CONTAINS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
         {
             // update rotation quaternion
             m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().ToQuat();
         }
-        if(CONTAINS_FLAG(m_iUpdate, CORE_OBJECT_UPDATE_COLLISION))
+        if(CONTAINS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {
             // cancel update without valid model
             if(!m_pModel.IsUsable() || !m_pModel->GetBoundingRadius()) return;
@@ -208,7 +208,7 @@ void coreObject3D::Move()
         }
 
         // reset the update status
-        m_iUpdate = CORE_OBJECT_UPDATE_NOTHING;
+        m_eUpdate = CORE_OBJECT_UPDATE_NOTHING;
     }
 }
 
@@ -243,7 +243,7 @@ coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 , m_nUpdateShaderFunc  (NULL)
 , m_iCustomSize        (0u)
 , m_iFilled            (0u)
-, m_iUpdate            (CORE_BATCHLIST_UPDATE_NOTHING)
+, m_eUpdate            (CORE_BATCHLIST_UPDATE_NOTHING)
 {
     // reserve memory for objects
     m_apObjectList.reserve(iStartCapacity);
@@ -322,7 +322,7 @@ void coreBatchList::MoveNormal()
     }
 
     // set the update status
-    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
+    m_eUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -376,7 +376,7 @@ void coreBatchList::MoveSort()
     }
 
     // set the update status
-    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
+    m_eUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -396,7 +396,7 @@ void coreBatchList::BindObject(coreObject3D* pObject)
     m_apObjectList.insert(pObject);
 
     // set the update status
-    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
+    m_eUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -408,7 +408,7 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
     m_apObjectList.erase(pObject);
 
     // set the update status
-    m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
+    m_eUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
 
@@ -450,12 +450,12 @@ void coreBatchList::ShrinkToFit()
 
 // ****************************************************************
 /* reset with the resource manager */
-void coreBatchList::__Reset(const coreResourceReset bInit)
+void coreBatchList::__Reset(const coreResourceReset eInit)
 {
     // check for OpenGL extensions
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;
 
-    if(bInit)
+    if(eInit)
     {
         WARN_IF(m_aInstanceBuffer[0].IsValid()) return;
 
@@ -499,7 +499,7 @@ void coreBatchList::__Reset(const coreResourceReset bInit)
 
             // invoke vertex array and buffer update
             m_iFilled = 0u;
-            m_iUpdate = CORE_BATCHLIST_UPDATE_ALL;
+            m_eUpdate = CORE_BATCHLIST_UPDATE_ALL;
         }
     }
     else
@@ -551,7 +551,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         // enable all active textures
         coreTexture::EnableAll(&pFirst->GetTexture(0u));
 
-        if(CONTAINS_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
+        if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
         {
             // invalidate previous buffer
             m_aInstanceBuffer.current().Invalidate();
@@ -593,7 +593,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             m_aInstanceBuffer.current().Unmap(pRange);
 
             // reset the update status
-            REMOVE_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)
+            REMOVE_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)
         }
 
         // disable current model object (because of direct VAO use)
@@ -647,14 +647,14 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
 
     if(this->IsInstanced())
     {
-        if(CONTAINS_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_CUSTOM))
+        if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_CUSTOM))
         {
             // invalidate previous buffer
             m_paCustomBuffer->current().Invalidate();
 
             // switch to next available buffer
             m_paCustomBuffer->select(m_aInstanceBuffer.index());
-            if(CONTAINS_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)) m_paCustomBuffer->next();
+            if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)) m_paCustomBuffer->next();
 
             // map required area of the custom attribute buffer
             coreByte* pRange  = m_paCustomBuffer->current().Map(0u, iRenderCount * m_iCustomSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
@@ -677,7 +677,7 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
             m_paCustomBuffer->current().Unmap(pRange);
 
             // reset the update status
-            REMOVE_FLAG(m_iUpdate, CORE_BATCHLIST_UPDATE_CUSTOM)
+            REMOVE_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_CUSTOM)
         }
 
         // render the batch list

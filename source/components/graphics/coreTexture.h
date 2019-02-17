@@ -99,7 +99,7 @@ private:
     coreUint8   m_iLevels;                               //!< number of texture levels
     coreInt8    m_iCompressed;                           //!< compression status
 
-    coreTextureMode m_iMode;                             //!< texture mode (sampling)
+    coreTextureMode m_eMode;                             //!< texture mode (sampling)
     coreTextureSpec m_Spec;                              //!< texture specification (format)
 
     coreSync m_Sync;                                     //!< sync object for asynchronous texture loading
@@ -122,7 +122,7 @@ public:
 
     //! handle texture memory
     //! @{
-    void Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode iMode);
+    void Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode);
     void Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData);
     void CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight);
     void CopyFrameBuffer();
@@ -165,7 +165,7 @@ public:
     inline const GLuint&          GetIdentifier()const {return m_iIdentifier;}
     inline const coreVector2&     GetResolution()const {return m_vResolution;}
     inline const coreUint8&       GetLevels    ()const {return m_iLevels;}
-    inline const coreTextureMode& GetMode      ()const {return m_iMode;}
+    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
     inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
     //! @}
 

@@ -132,7 +132,7 @@ private:
     coreMusic* m_pEmptyMusic;               //!< empty music object
 
     std::vector<coreMusic*> m_apSequence;   //!< playback sequence
-    coreMusicRepeat m_iRepeat;              //!< repeat behavior
+    coreMusicRepeat m_eRepeat;              //!< repeat behavior
 
     coreTimer  m_FadeTimer;                 //!< timer for a transition between two music objects
     coreMusic* m_pFadePrevious;             //!< previous music object during a transition
@@ -182,7 +182,7 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetRepeat(const coreMusicRepeat iRepeat) {m_iRepeat = iRepeat;}
+    inline void SetRepeat(const coreMusicRepeat eRepeat) {m_eRepeat = eRepeat;}
     inline void SetFade  (const coreFloat       fTime)   {if(fTime) m_FadeTimer.SetSpeed(RCP(fTime)); else {m_FadeTimer.SetValue(1.0f); m_FadeTimer.SetSpeed(0.0f);}}
     //! @}
 
@@ -190,7 +190,7 @@ public:
     //! @{
     inline       coreUintW        GetNumMusic()const {return m_apMusic.size();}
     inline const coreUintW&       GetCurIndex()const {return m_iCurIndex;}
-    inline const coreMusicRepeat& GetRepeat  ()const {return m_iRepeat;}
+    inline const coreMusicRepeat& GetRepeat  ()const {return m_eRepeat;}
     //! @}
 
 

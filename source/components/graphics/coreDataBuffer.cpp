@@ -26,7 +26,7 @@ coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer&& m)noexcept
 {
     // move properties
     m_iIdentifier       = m.m_iIdentifier;
-    m_iStorageType      = m.m_iStorageType;
+    m_eStorageType      = m.m_eStorageType;
     m_iTarget           = m.m_iTarget;
     m_iSize             = m.m_iSize;
     m_pPersistentBuffer = m.m_pPersistentBuffer;
@@ -43,13 +43,13 @@ coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer&& m)noexcept
 
 // ****************************************************************
 // create buffer storage
-void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage iStorageType)
+void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage eStorageType)
 {
     WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(iSize)
 
     // save properties
-    m_iStorageType = iStorageType;
+    m_eStorageType = eStorageType;
     m_iTarget      = iTarget;
     m_iSize        = iSize;
 
@@ -58,7 +58,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     glBindBuffer(m_iTarget, m_iIdentifier);
     s_aiBound[m_iTarget] = m_iIdentifier;
 
-    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STREAM))
+    if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STREAM))
     {
         // always allocate mutable when streaming
         glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
@@ -67,7 +67,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     {
         if(CORE_GL_SUPPORT(ARB_buffer_storage))
         {
-            if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+            if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
             {
                 // allocate static immutable buffer memory
                 glBufferStorage(m_iTarget, m_iSize, pData, 0u);
@@ -90,7 +90,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
         }
         else
         {
-            if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+            if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
             {
                 // allocate static mutable buffer memory
                 glBufferData(m_iTarget, m_iSize, pData, GL_STATIC_DRAW);
@@ -106,7 +106,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     if(CORE_GL_SUPPORT(NV_shader_buffer_load))
     {
         // make sure static buffers are in GPU memory
-        if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+        if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
             glMakeBufferResidentNV(m_iTarget, GL_READ_ONLY);
     }
 }
@@ -133,7 +133,7 @@ void coreDataBuffer::Delete()
 
     // reset properties
     m_iIdentifier  = 0u;
-    m_iStorageType = CORE_DATABUFFER_STORAGE_STATIC;
+    m_eStorageType = CORE_DATABUFFER_STORAGE_STATIC;
     m_iTarget      = 0u;
     m_iSize        = 0u;
 }
@@ -141,7 +141,7 @@ void coreDataBuffer::Delete()
 
 // ****************************************************************
 // map buffer memory for writing operations
-RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap iMapType)
+RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType)
 {
     ASSERT(m_iIdentifier && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
 
@@ -150,7 +150,7 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
     m_iMapLength = iLength;
 
     // check for sync object status
-    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+    if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_FENCED))
         m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
 
     // return persistent mapped buffer
@@ -161,18 +161,18 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // map buffer memory directly (new)
-            return s_cast<coreByte*>(glMapNamedBufferRange(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+            return s_cast<coreByte*>(glMapNamedBufferRange(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | eMapType));
         }
         else if(CORE_GL_SUPPORT(EXT_direct_state_access))
         {
             // map buffer memory directly (old)
-            return s_cast<coreByte*>(glMapNamedBufferRangeEXT(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+            return s_cast<coreByte*>(glMapNamedBufferRangeEXT(m_iIdentifier, iOffset, iLength, GL_MAP_WRITE_BIT | eMapType));
         }
         else
         {
             // bind and map buffer memory
             this->Bind();
-            return s_cast<coreByte*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | iMapType));
+            return s_cast<coreByte*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_WRITE_BIT | eMapType));
         }
     }
     else
@@ -242,7 +242,7 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
     }
 
     // create sync object
-    if(CONTAINS_FLAG(m_iStorageType, CORE_DATABUFFER_STORAGE_FENCED))
+    if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_FENCED))
         m_Sync.Create();
 
     // reset mapping attributes
@@ -363,10 +363,10 @@ coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer&& m)noexcept
 
 // ****************************************************************
 // create buffer storage
-void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage iStorageType)
+void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType)
 {
     // create buffer storage
-    this->coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices * iVertexSize, pVertexData, iStorageType);
+    this->coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices * iVertexSize, pVertexData, eStorageType);
 
     // save properties
     m_iVertexSize = iVertexSize;

@@ -10,6 +10,9 @@
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
 
+// TODO: constexpr strlen -> ARRAY_SIZE(x)-1
+// TODO: implement constexpr strright
+
 
 // ****************************************************************
 /* data definitions */
