@@ -48,16 +48,16 @@ private:
 
 public:
     coreSwitchBox()noexcept;
-    coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept;
-    coreSwitchBox(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept;
+    coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept;
+    coreSwitchBox(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept;
     ~coreSwitchBox()final;
 
     DISABLE_COPY(coreSwitchBox)
 
     //! construct the switch-box
     //! @{
-    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline);
-    void Construct(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline);
+    void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline);
+    void Construct(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline);
     //! @}
 
     //! render and move the switch-box
@@ -138,14 +138,14 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 {
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
     this->Construct(sIdle, sBusy, sFont, iHeight, iOutline);
 }
 
-template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept
+template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept
 : coreSwitchBox ()
 {
     // construct on creation
@@ -164,7 +164,7 @@ template <typename T> coreSwitchBox<T>::~coreSwitchBox()
 
 // ****************************************************************
 // construct the switch-box
-template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)
+template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // create selection arrows
     m_aArrow[0].Construct(sIdle, sBusy, sFont, iHeight, iOutline);
@@ -178,7 +178,7 @@ template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sId
     this->Construct(sFont, iHeight, iOutline);
 }
 
-template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)
+template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // create the label
     m_Caption.Construct(sFont, iHeight, iOutline);

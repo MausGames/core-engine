@@ -26,10 +26,10 @@
 #define CORE_MEMORY_SHARED  (STRING(__FILE__) ":" STRING(__LINE__))
 #define CORE_MEMORY_UNIQUE  (PRINT(CORE_MEMORY_SHARED ":%p", this))
 
-#define MANAGED_NEW(t,...)  (new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__))
+#define MANAGED_NEW(t,...)  (ASSUME_ALIGNED(new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__), alignof(t)))
 #define MANAGED_DELETE(p)   {if(p) {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), r_cast<void**>(&(p)));}}
 
-#define POOLED_NEW(m,t,...) (new((m).Allocate()) t(__VA_ARGS__))
+#define POOLED_NEW(m,t,...) (ASSUME_ALIGNED(new((m).Allocate()) t(__VA_ARGS__), alignof(t)))
 #define POOLED_DELETE(m,p)  {if(p) {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}}
 
 #define ALIGNED_NEW(t,c,a)  (ASSUME_ALIGNED(s_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))), a))

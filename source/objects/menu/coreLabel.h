@@ -40,7 +40,7 @@ class coreLabel final : public coreObject2D, public coreTranslate, public coreRe
 {
 private:
     coreFontPtr m_pFont;         //!< font object
-    coreUint8   m_iHeight;       //!< specific height for the font
+    coreUint16  m_iHeight;       //!< specific height for the font
     coreUint8   m_iOutline;      //!< create very sharp outlined text
 
     coreVector2 m_vResolution;   //!< resolution of the generated texture
@@ -53,14 +53,14 @@ private:
 
 public:
     coreLabel()noexcept;
-    coreLabel(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept;
+    coreLabel(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept;
     ~coreLabel()final;
 
     DISABLE_COPY(coreLabel)
 
     //! construct the label
     //! @{
-    void Construct(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline);
+    void Construct(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline);
     //! @}
 
     //! render and move the label
@@ -90,7 +90,7 @@ public:
     //! get object properties
     //! @{
     inline const coreFontPtr& GetFont      ()const {return m_pFont;}
-    inline const coreUint8&   GetHeight    ()const {return m_iHeight;}
+    inline const coreUint16&  GetHeight    ()const {return m_iHeight;}
     inline const coreUint8&   GetOutline   ()const {return m_iOutline;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreChar*    GetText      ()const {return m_sText.c_str();}
@@ -126,7 +126,7 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
         m_pFont.OnUsableOnce([=]()
         {
             // get relative font height
-            const coreUint8 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+            const coreUint16 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
 
             // return the dimensions of the current text (may differ a bit)
             const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, m_iOutline);

@@ -78,13 +78,13 @@ coreStatus coreFont::Unload()
 
 // ****************************************************************
 // create solid text with the font
-SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint8 iHeight)
+SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint16 iHeight)
 {
     // render and return the text surface
     return this->CreateTextOutline(pcText, iHeight, 0u);
 }
 
-SDL_Surface* coreFont::CreateGlyph(const coreUint16 iGlyph, const coreUint8 iHeight)
+SDL_Surface* coreFont::CreateGlyph(const coreUint16 iGlyph, const coreUint16 iHeight)
 {
     // render and return the text surface
     return this->CreateGlyphOutline(iGlyph, iHeight, 0u);
@@ -93,7 +93,7 @@ SDL_Surface* coreFont::CreateGlyph(const coreUint16 iGlyph, const coreUint8 iHei
 
 // ****************************************************************
 // create outlined text with the font
-SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint8 iHeight, const coreUint8 iOutline)
+SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     ASSERT(pcText)
 
@@ -104,7 +104,7 @@ SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint8
     return TTF_RenderUTF8_Shaded(m_aapFont.at(iHeight).at(iOutline), (pcText[0] == '\0') ? " " : pcText, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
 }
 
-SDL_Surface* coreFont::CreateGlyphOutline(const coreUint16 iGlyph, const coreUint8 iHeight, const coreUint8 iOutline)
+SDL_Surface* coreFont::CreateGlyphOutline(const coreUint16 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
@@ -116,7 +116,7 @@ SDL_Surface* coreFont::CreateGlyphOutline(const coreUint16 iGlyph, const coreUin
 
 // ****************************************************************
 // retrieve the dimensions of a rendered string of text
-coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreUint8 iHeight, const coreUint8 iOutline)
+coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     ASSERT(pcText)
 
@@ -154,7 +154,7 @@ coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
 
 // ****************************************************************
 // retrieve the dimensions of a glyph
-void coreFont::RetrieveGlyphMetrics(const coreUint16 iGlyph, const coreUint8 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
+void coreFont::RetrieveGlyphMetrics(const coreUint16 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
@@ -163,7 +163,7 @@ void coreFont::RetrieveGlyphMetrics(const coreUint16 iGlyph, const coreUint8 iHe
     TTF_GlyphMetrics(m_aapFont.at(iHeight).at(iOutline), iGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
 }
 
-coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint8 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
+coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
     // convert multibyte character to UTF-8 glyph
     coreUint16 iGlyph;
@@ -177,7 +177,7 @@ coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const core
 
 // ****************************************************************
 // init font with specific properties
-coreBool coreFont::__InitHeight(const coreUint8 iHeight, const coreUint8 iOutline)
+coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutline)
 {
     ASSERT(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
 
@@ -209,7 +209,7 @@ coreBool coreFont::__InitHeight(const coreUint8 iHeight, const coreUint8 iOutlin
 
 // ****************************************************************
 // ensure font with specific properties
-coreBool coreFont::__EnsureHeight(const coreUint8 iHeight, const coreUint8 iOutline)
+coreBool coreFont::__EnsureHeight(const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // check for requested height and outline
     if(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))

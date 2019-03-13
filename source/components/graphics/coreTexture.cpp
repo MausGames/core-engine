@@ -121,7 +121,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
-    m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(LOG<2u>(m_vResolution.Max())) + 1u : 1u;
+    m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(LOG2(m_vResolution.Max())) + 1u : 1u;
     m_eMode       = eMode;
     m_Spec        = oSpec;
 

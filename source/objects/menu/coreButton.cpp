@@ -20,7 +20,7 @@ coreButton::coreButton()noexcept
 {
 }
 
-coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept
+coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept
 : coreButton ()
 {
     // construct on creation
@@ -46,7 +46,7 @@ coreButton::~coreButton()
 
 // ****************************************************************
 // construct the button
-void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)
+void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // create the label
     if(!m_pCaption) m_pCaption = new coreLabel();

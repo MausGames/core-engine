@@ -25,7 +25,7 @@ coreLabel::coreLabel()noexcept
 {
 }
 
-coreLabel::coreLabel(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept
+coreLabel::coreLabel(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept
 : coreLabel ()
 {
     // construct on creation
@@ -44,7 +44,7 @@ coreLabel::~coreLabel()
 
 // ****************************************************************
 // construct the label
-void coreLabel::Construct(const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)
+void coreLabel::Construct(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // save properties
     m_iHeight  = iHeight;
@@ -169,7 +169,7 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     coreByte*        pData    = NULL;
 
     // get relative font height
-    const coreUint8 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+    const coreUint16 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
 
     // create solid text surface data
     pSolid = m_pFont->CreateText(pcText, iRelHeight);

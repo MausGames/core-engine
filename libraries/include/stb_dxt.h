@@ -25,7 +25,7 @@
 
 // compression mode (bitflags)
 #define STB_DXT_NORMAL    0
-#define STB_DXT_DITHER    1   // use dithering. dubious win. never use for normal maps and the like!
+//#define STB_DXT_DITHER    1   // use dithering. dubious win. never use for normal maps and the like!
 #define STB_DXT_HIGHQUAL  2   // high quality mode, does two refinement steps instead of 1. ~30-40% slower.
 
 void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char* __restrict src, int components, int mode);
@@ -471,12 +471,18 @@ static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned cha
    unsigned short max16, min16;
    unsigned char dblock[16*4],color[4*4];
 
-   dither = mode & STB_DXT_DITHER;
+   dither = 0;//mode & STB_DXT_DITHER;
    refinecount = (mode & STB_DXT_HIGHQUAL) ? 2 : 1;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+      const unsigned int testmask = 0xFFFFFF00;
+#else
+      const unsigned int testmask = 0x00FFFFFF;
+#endif
 
    // check if block is constant
    for (i=1;i<16;i++)
-      if (((unsigned int *) block)[i] != ((unsigned int *) block)[0])
+      if ((((unsigned int *) block)[i] & testmask) != (((unsigned int *) block)[0] & testmask))
          break;
 
    if(i == 16) { // constant color
