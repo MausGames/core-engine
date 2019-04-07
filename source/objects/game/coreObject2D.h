@@ -59,6 +59,8 @@ public:
 
     //! render and move the 2d-object
     //! @{
+    coreBool     Prepare(const coreProgramPtr& pProgram);
+    coreBool     Prepare();
     virtual void Render(const coreProgramPtr& pProgram);
     virtual void Render();
     virtual void Move  ();
@@ -83,7 +85,7 @@ public:
     inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
     inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
     inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
-    inline void SetFocus        (const coreBool     bFocus)         {m_bFocused       = bFocus;}
+    inline void SetFocused      (const coreBool     bFocused)       {m_bFocused       = bFocused;}
     inline void SetFocusModifier(const coreVector2& vFocusModifier) {m_vFocusModifier = vFocusModifier;}
     //! @}
 
@@ -95,6 +97,24 @@ public:
     inline const coreVector2& GetCenter   ()const {return m_vCenter;}
     inline const coreVector2& GetAlignment()const {return m_vAlignment;}
     inline const coreMatrix3& GetTransform()const {return m_mTransform;}
+    //! @}
+};
+
+
+// ****************************************************************
+// fullscreen-object class
+class coreFullscreen : public coreObject2D
+{
+public:
+    coreFullscreen() = default;
+    virtual ~coreFullscreen()override = default;
+
+    ENABLE_COPY(coreFullscreen)
+
+    //! render the fullscreen-object
+    //! @{
+    virtual void Render(const coreProgramPtr& pProgram)override;
+    virtual void Render()override;
     //! @}
 };
 

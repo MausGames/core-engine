@@ -65,9 +65,9 @@
     #endif
 #endif
 #if defined(GL_ARB_enhanced_layouts)
-    #define align(x) layout(align = x)
+    #define layoutEx(x) layout(x)
 #else
-    #define align(x)
+    #define layoutEx(x)
 #endif
 
 // compatibility adjustments
@@ -412,18 +412,18 @@ mat4 coreInvert(const in mat4 m)
     // transformation uniforms
     layout(std140) uniform b_Transform
     {
-        align(16) mat4 u_m4ViewProj;
-        align(16) mat4 u_m4Camera;
-        align(16) mat4 u_m4Perspective;
-        align(16) mat4 u_m4Ortho;
-        align(16) vec4 u_v4Resolution;
-        align(16) vec3 u_v3CamPosition;
+        layoutEx(align = 16) mat4 u_m4ViewProj;
+        layoutEx(align = 16) mat4 u_m4Camera;
+        layoutEx(align = 16) mat4 u_m4Perspective;
+        layoutEx(align = 16) mat4 u_m4Ortho;
+        layoutEx(align = 16) vec4 u_v4Resolution;
+        layoutEx(align = 16) vec3 u_v3CamPosition;
     };
 
     // ambient uniforms
     layout(std140) uniform b_Ambient
     {
-        align(16) coreLight u_aLight[CORE_NUM_LIGHTS];
+        layoutEx(align = 16) coreLight u_aLight[CORE_NUM_LIGHTS];
     };
 
 #else

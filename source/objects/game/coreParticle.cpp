@@ -73,6 +73,7 @@ void coreParticleSystem::Render()
     if(m_apRenderList.empty()) return;
 
     // enable the shader-program
+    ASSERT(m_pProgram)
     if(!m_pProgram.IsUsable()) return;
     if(!m_pProgram->Enable())  return;
 

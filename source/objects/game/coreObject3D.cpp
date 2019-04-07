@@ -131,9 +131,11 @@ coreBool coreObject3D::Prepare(const coreProgramPtr& pProgram)
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return false;
 
     // check for model status
+    ASSERT(m_pModel)
     if(!m_pModel.IsUsable()) return false;
 
     // enable the shader-program
+    ASSERT(pProgram)
     if(!pProgram.IsUsable()) return false;
     if(!pProgram->Enable())  return false;
 
@@ -538,6 +540,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         const coreModelPtr& pModel = pFirst->GetModel();
 
         // check for model status
+        ASSERT(pModel)
         if(!pModel.IsUsable()) return;
 
         // detect model changes and invoke update
@@ -545,6 +548,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         m_pLastModel = pModel.GetHandle();
 
         // enable the shader-program
+        ASSERT(pProgramInstanced)
         if(!pProgramInstanced.IsUsable()) return;
         if(!pProgramInstanced->Enable())  return;
 

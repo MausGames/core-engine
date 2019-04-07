@@ -355,6 +355,87 @@ std::time_t coreData::FileWriteTime(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* copy file from source to destination (and replace) */
+coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
+{
+#if defined(_CORE_WINDOWS_)
+
+    // copy directly (with attributes)
+    if(CopyFileA(pcFrom, pcTo, false)) return CORE_OK;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+
+    // open source file
+    std::FILE* pFileFrom = std::fopen(pcFrom, "rb");
+    if(pFileFrom)
+    {
+        // open destination file
+        std::FILE* pFileTo = std::fopen(pcTo, "wb");
+        if(pFileTo)
+        {
+            alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte aBuffer[0x4000u];
+
+            // copy all data
+            while(!std::feof(pFileFrom))
+            {
+                const coreUintW iResult = std::fread(aBuffer, 1u, ARRAY_SIZE(aBuffer), pFileFrom);
+                std::fwrite(aBuffer, 1u, iResult, pFileTo);
+            }
+
+            // close both files
+            std::fclose(pFileTo);
+            std::fclose(pFileFrom);
+
+            return CORE_OK;
+        }
+
+        // close source file
+        std::fclose(pFileFrom);
+    }
+
+#endif
+
+    return CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
+/* move file from source to destination (and replace) */
+coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
+{
+#if defined(_CORE_WINDOWS_)
+
+    if(MoveFileExA(pcFrom, pcTo, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+
+    if(!rename(pcFrom, pcTo)) return CORE_OK;
+
+#endif
+
+    return CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
+/* delete existing file */
+coreStatus coreData::FileDelete(const coreChar* pcPath)
+{
+#if defined(_CORE_WINDOWS_)
+
+    if(DeleteFileA(pcPath)) return CORE_OK;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+
+    if(!unlink(pcPath)) return CORE_OK;
+
+#endif
+
+    return CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
 /* retrieve relative paths of all files from a folder */
 coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput)
 {

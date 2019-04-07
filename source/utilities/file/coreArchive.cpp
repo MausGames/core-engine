@@ -60,8 +60,11 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     if(pcPath) m_sPath = pcPath;
     ASSERT(!m_sPath.empty())
 
+    // write to temporary file (to prevent corruption)
+    const coreChar* pcTemp = PRINT("%s.temp_%s", m_sPath.c_str(), coreData::DateTimePrint("%Y%m%d_%H%M%S"));
+
     // open file
-    SDL_RWops* pFile = SDL_RWFromFile(m_sPath.c_str(), "wb");
+    SDL_RWops* pFile = SDL_RWFromFile(pcTemp, "wb");
     if(!pFile)
     {
         Core::Log->Warning("File (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -74,6 +77,13 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     // close file
     SDL_RWclose(pFile);
     if(!m_pArchive && !m_iArchivePos) m_iArchivePos = UINT32_MAX;
+
+    // move temporary file over real file
+    if(coreData::FileMove(pcTemp, m_sPath.c_str()))
+    {
+        Core::Log->Warning("File (%s) could not be moved", m_sPath.c_str());
+        return CORE_ERROR_FILE;
+    }
 
     return CORE_OK;
 }
@@ -286,8 +296,11 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     if(pcPath) m_sPath = pcPath;
     ASSERT(!m_sPath.empty())
 
+    // write to temporary file (to prevent corruption)
+    const coreChar* pcTemp = PRINT("%s.temp_%s", m_sPath.c_str(), coreData::DateTimePrint("%Y%m%d_%H%M%S"));
+
     // open archive
-    SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "wb");
+    SDL_RWops* pArchive = SDL_RWFromFile(pcTemp, "wb");
     if(!pArchive)
     {
         Core::Log->Warning("Archive (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -329,6 +342,13 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
     // close archive
     SDL_RWclose(pArchive);
+
+    // move temporary file over real file
+    if(coreData::FileMove(pcTemp, m_sPath.c_str()))
+    {
+        Core::Log->Warning("Archive (%s) could not be moved", m_sPath.c_str());
+        return CORE_ERROR_FILE;
+    }
 
     return CORE_OK;
 }

@@ -91,7 +91,7 @@ public:
 
     //! save archive
     //! @{
-    coreStatus Save(const coreChar* pcPath);
+    coreStatus Save(const coreChar* pcPath = NULL);
     //! @}
 
     //! manage file objects

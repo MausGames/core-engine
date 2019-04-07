@@ -127,14 +127,15 @@ void coreObject2D::Undefine()
 
 
 // ****************************************************************
-// render the 2d-object
-void coreObject2D::Render(const coreProgramPtr& pProgram)
+// separately enable all resources for rendering
+coreBool coreObject2D::Prepare(const coreProgramPtr& pProgram)
 {
-    if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
+    if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return false;
 
     // enable the shader-program
-    if(!pProgram.IsUsable()) return;
-    if(!pProgram->Enable())  return;
+    ASSERT(pProgram)
+    if(!pProgram.IsUsable()) return false;
+    if(!pProgram->Enable())  return false;
 
     // update all object uniforms
     coreProgram* pLocal = pProgram.GetResource();
@@ -144,10 +145,27 @@ void coreObject2D::Render(const coreProgramPtr& pProgram)
 
     // enable all active textures
     coreTexture::EnableAll(m_apTexture);
+    return true;
+}
 
-    // draw the model
-    Core::Manager::Object->GetLowQuad()->Enable();
-    Core::Manager::Object->GetLowQuad()->DrawArrays();
+coreBool coreObject2D::Prepare()
+{
+    // enable default shader-program
+    return this->Prepare(m_pProgram);
+}
+
+
+// ****************************************************************
+// render the 2d-object
+void coreObject2D::Render(const coreProgramPtr& pProgram)
+{
+    // enable all resources
+    if(this->Prepare(pProgram))
+    {
+        // draw the model
+        Core::Manager::Object->GetLowQuad()->Enable();
+        Core::Manager::Object->GetLowQuad()->DrawArrays();
+    }
 }
 
 void coreObject2D::Render()
@@ -252,4 +270,24 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType eT
     return (m_bFocused && Core::Input->GetMouseButton(iButton, eType)) ? true : false;
 
 #endif
+}
+
+
+// ****************************************************************
+// render the fullscreen-object
+void coreFullscreen::Render(const coreProgramPtr& pProgram)
+{
+    // enable all resources
+    if(this->Prepare(pProgram))
+    {
+        // draw the model
+        Core::Manager::Object->GetLowTriangle()->Enable();
+        Core::Manager::Object->GetLowTriangle()->DrawArrays();
+    }
+}
+
+void coreFullscreen::Render()
+{
+    // render with default shader-program (no inheritance)
+    this->coreFullscreen::Render(m_pProgram);
 }

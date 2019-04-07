@@ -217,7 +217,7 @@ template <typename T> void coreSwitchBox<T>::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // override focus status
-    if(m_iOverride < 0) this->SetFocus(false);
+    if(m_iOverride < 0) this->SetFocused(false);
 
     // forward transparency
     m_aArrow[0].SetAlpha(this->GetAlpha());
@@ -235,8 +235,8 @@ template <typename T> void coreSwitchBox<T>::Move()
     }
     else
     {
-        m_aArrow[0].SetFocus(false);
-        m_aArrow[1].SetFocus(false);
+        m_aArrow[0].SetFocused(false);
+        m_aArrow[1].SetFocused(false);
     }
 
     // check for selection arrow interaction

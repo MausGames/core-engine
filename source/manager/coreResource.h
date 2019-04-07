@@ -113,7 +113,7 @@ public:
     /*! control the reference-counter */
     //! @{
     inline void RefIncrease() {++m_iRefCount;}
-    inline void RefDecrease() {--m_iRefCount; ASSERT(m_iRefCount != 0xFFFFu) if(!m_iRefCount) this->Nullify();}
+    inline void RefDecrease() {--m_iRefCount; ASSERT(m_iRefCount != 0xFFFFu) if(!m_iRefCount && !Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE)) this->Nullify();}
     //! @}
 
     /*! handle resource loading */

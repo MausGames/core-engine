@@ -92,6 +92,9 @@ public:
     static coreBool    FileExists   (const coreChar* pcPath);
     static coreInt64   FileSize     (const coreChar* pcPath);
     static std::time_t FileWriteTime(const coreChar* pcPath);
+    static coreStatus  FileCopy     (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  FileMove     (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  FileDelete   (const coreChar* pcPath);
     static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
     static void        CreateFolder (const coreChar* pcPath);
     //! @}

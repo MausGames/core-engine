@@ -87,7 +87,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     ASSERT(m_iNumVertices <= 0xFFFFu)
 
     // prepare index-map (for deferred remapping)
-    alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 aiMap[0xFFFFu];
+    alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 aiMap[0x10000u];
     for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) aiMap[i] = i & 0xFFFFu;
 
     // apply post-transform vertex cache optimization to index data

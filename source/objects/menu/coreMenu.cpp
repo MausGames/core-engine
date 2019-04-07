@@ -78,7 +78,7 @@ void coreMenu::Move()
         if(m_Transition.Update(1.0f))
         {
             // remove focus from old surface
-            FOR_EACH(it, m_aapRender[1]) (*it)->SetFocus(false);
+            FOR_EACH(it, m_aapRender[1]) (*it)->SetFocused(false);
         }
 
         // set alpha value for each render-list
@@ -113,7 +113,7 @@ void coreMenu::Move()
                 pObject->Interact();
                 if(pObject->IsFocused()) m_pCurObject = pObject;
             }
-            else pObject->SetFocus(false);
+            else pObject->SetFocused(false);
 
             // update object
             pObject->SetAlpha(this->GetAlpha());
