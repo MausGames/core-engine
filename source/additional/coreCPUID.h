@@ -35,16 +35,17 @@ private:
     /*! CPUID data structure */
     struct __coreCPUID final
     {
-        coreChar  acVendor[13];
-        coreChar  acBrand [49];
-        coreBool  bIsIntel;
-        coreBool  bIsAMD;
-        coreInt32 i01ECX;
-        coreInt32 i01EDX;
-        coreInt32 i07EBX;
-        coreInt32 i07ECX;
-        coreInt32 i81ECX;
-        coreInt32 i81EDX;
+        coreChar   acVendor[13];
+        coreChar   acBrand [49];
+        coreBool   bIsIntel;
+        coreBool   bIsAMD;
+        coreInt32  i01ECX;
+        coreInt32  i01EDX;
+        coreInt32  i07EBX;
+        coreInt32  i07ECX;
+        coreInt32  i81ECX;
+        coreInt32  i81EDX;
+        coreUint64 iXCR;
 
         __coreCPUID()noexcept;
     };
@@ -75,7 +76,7 @@ public:
     static coreBool AES         () {return CONTAINS_BIT(s_CPUID.i01ECX, 25);}
     static coreBool XSAVE       () {return CONTAINS_BIT(s_CPUID.i01ECX, 26);}
     static coreBool OSXSAVE     () {return CONTAINS_BIT(s_CPUID.i01ECX, 27);}
-    static coreBool AVX         () {return CONTAINS_BIT(s_CPUID.i01ECX, 28);}
+    static coreBool AVX         () {return CONTAINS_BIT(s_CPUID.i01ECX, 28) && CONTAINS_FLAG(s_CPUID.iXCR, 0x06u);}
     static coreBool F16C        () {return CONTAINS_BIT(s_CPUID.i01ECX, 29);}
     static coreBool RDRAND      () {return CONTAINS_BIT(s_CPUID.i01ECX, 30);}
 

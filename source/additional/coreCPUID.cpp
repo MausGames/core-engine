@@ -24,6 +24,7 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
 , i07ECX   (0)
 , i81ECX   (0)
 , i81EDX   (0)
+, iXCR     (0u)
 {
     std::vector<std::array<coreInt32, 4u>> aaiData;
     std::vector<std::array<coreInt32, 4u>> aaiDataEx;
@@ -91,4 +92,7 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
         i81ECX = aaiDataEx[1][2];
         i81EDX = aaiDataEx[1][3];
     }
+
+    // save extended control register
+    if(coreCPUID::OSXSAVE()) iXCR = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
 }

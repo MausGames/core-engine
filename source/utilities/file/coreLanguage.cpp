@@ -87,6 +87,7 @@ void coreTranslate::_BindString(std::string* psString, const coreHashString& sKe
     {
         // associate object with default language
         this->ChangeLanguage(Core::Language);
+        ASSERT(m_pLanguage)
     }
 
     // bind string to language and save it internally
@@ -209,7 +210,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     m_asStringList.shrink_to_fit();
 
     // update all foreign strings and objects
-    FOR_EACH(it, m_apsForeign) (*m_apsForeign.get_key(it))->assign(m_asStringList[it->c_str()]);
+    FOR_EACH(it, m_apsForeign) (*m_apsForeign.get_key(it))->assign(m_asStringList.at(it->c_str()));
     FOR_EACH(it, m_apObject)   (*it)->__Update();
 
     Core::Log->Info("Language (%s, %u strings) loaded", pFile->GetPath(), m_asStringList.size());
@@ -230,7 +231,7 @@ void coreLanguage::BindForeign(std::string* psForeign, const coreHashString& sKe
     m_apsForeign[psForeign].assign(sKey.GetString());
 
     // initially update the foreign string
-    psForeign->assign(m_asStringList[sKey]);
+    psForeign->assign(m_asStringList.at(sKey));
 }
 
 

@@ -122,6 +122,14 @@ public:
     inline void UpdateMod(const coreFloat fSpeed, const coreFloat fMod)                         {m_fValue = FMOD(m_fValue + fSpeed * Core::System->GetTime(),        fMod);}
     inline void UpdateMod(const coreFloat fSpeed, const coreFloat fMod, const coreInt8 iTimeID) {m_fValue = FMOD(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMod);}
     //! @}
+
+    /*! update the flowing value with min and max operation */
+    //! @{
+    inline void UpdateMin(const coreFloat fSpeed, const coreFloat fMin)                         {m_fValue = MIN(m_fValue + fSpeed * Core::System->GetTime(),        fMin);}
+    inline void UpdateMin(const coreFloat fSpeed, const coreFloat fMin, const coreInt8 iTimeID) {m_fValue = MIN(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMin);}
+    inline void UpdateMax(const coreFloat fSpeed, const coreFloat fMax)                         {m_fValue = MAX(m_fValue + fSpeed * Core::System->GetTime(),        fMax);}
+    inline void UpdateMax(const coreFloat fSpeed, const coreFloat fMax, const coreInt8 iTimeID) {m_fValue = MAX(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMax);}
+    //! @}
 };
 
 

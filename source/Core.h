@@ -12,7 +12,7 @@
 //*------------------------------------------------------------------------------*//
 //| Core Engine v0.0.9a (https://www.maus-games.at)                              |//
 //*------------------------------------------------------------------------------*//
-//| Copyright (c) 2013-2018 Martin Mauersics                                     |//
+//| Copyright (c) 2013-2019 Martin Mauersics                                     |//
 //|                                                                              |//
 //| This software is provided 'as-is', without any express or implied            |//
 //| warranty. In no event will the authors be held liable for any damages        |//
@@ -296,6 +296,7 @@
 #include <ctime>
 #include <type_traits>
 #include <functional>
+#include <algorithm>
 #include <memory>
 #include <random>
 #include <string>
@@ -477,10 +478,10 @@ using coreFloat  = float;
 using coreDouble = double;
 
 // override string comparison operator
-inline coreBool operator == (const std::string& a, const coreChar*    b) {return !std::strcmp(a.c_str(), b);}
-inline coreBool operator != (const std::string& a, const coreChar*    b) {return  std::strcmp(a.c_str(), b);}
-inline coreBool operator == (const coreChar*    a, const std::string& b) {return !std::strcmp(a,         b.c_str());}
-inline coreBool operator != (const coreChar*    a, const std::string& b) {return  std::strcmp(a,         b.c_str());}
+inline coreBool operator == (const std::string& a, const coreChar*    b) {ASSERT(b) return !std::strcmp(a.c_str(), b);}
+inline coreBool operator != (const std::string& a, const coreChar*    b) {ASSERT(b) return  std::strcmp(a.c_str(), b);}
+inline coreBool operator == (const coreChar*    a, const std::string& b) {ASSERT(a) return !std::strcmp(a,         b.c_str());}
+inline coreBool operator != (const coreChar*    a, const std::string& b) {ASSERT(a) return  std::strcmp(a,         b.c_str());}
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];

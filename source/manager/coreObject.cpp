@@ -506,10 +506,10 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32 iTyp
 
 #if defined(_CORE_DEBUG_)
 
-        // check for duplicate objects
-        FOR_EACH(it, m_aapObjectList)
-            FOR_EACH(et, *it)
-                ASSERT(*et != pObject)
+    // check for duplicate objects
+    FOR_EACH(it, m_aapObjectList)
+        FOR_EACH(et, *it)
+            ASSERT(*et != pObject)
 
 #endif
 
@@ -530,10 +530,10 @@ void coreObjectManager::__UnbindObject(coreObject3D* pObject, const coreInt32 iT
     // loop through all objects
     FOR_EACH(it, oList)
     {
-        if(*it == pObject)
+        if((*it) == pObject)
         {
             // invalidate pointer and delete later
-            *it = NULL;
+            (*it) = NULL;
             return;
         }
     }

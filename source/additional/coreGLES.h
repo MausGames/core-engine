@@ -360,7 +360,7 @@ extern coreContext g_CoreContext;   //!< context object
 /* init and exit OpenGL ES */
 extern void __coreInitOpenGLES();
 #define coreInitOpenGL __coreInitOpenGLES
-#define coreExitOpenGL []{}
+#define coreExitOpenGL [](){}
 
 
 // ****************************************************************

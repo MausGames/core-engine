@@ -38,9 +38,10 @@
 #define ZERO_NEW(t,c)       (ASSUME_ALIGNED(s_cast<t*>(std::calloc((c), sizeof(t))), ALIGNMENT_NEW))
 #define ZERO_DELETE(p)      {std::free(p); (p) = NULL;}
 
-#define STATIC_MEMORY(t,p)  alignas(alignof(t)) static coreByte CONCAT(__m, __LINE__)[sizeof(t)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));
-#define STATIC_NEW(p,...)   {CALL_CONSTRUCTOR(p, __VA_ARGS__)}
-#define STATIC_DELETE(p)    {CALL_DESTRUCTOR(p) std::memset(p, 0, sizeof(*(p)));}
+#define STATIC_MEMORY(t,p)  alignas(alignof(t)) static coreByte CONCAT(__m, __LINE__)[sizeof(t) + sizeof(coreBool)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));
+#define STATIC_ISVALID(p)   (*(r_cast<coreBool*>((p) + 1u)))
+#define STATIC_NEW(p,...)   {ASSERT(!STATIC_ISVALID(p)) CALL_CONSTRUCTOR(p, __VA_ARGS__) STATIC_ISVALID(p) = true;}
+#define STATIC_DELETE(p)    {if(STATIC_ISVALID(p))      CALL_DESTRUCTOR (p)              STATIC_ISVALID(p) = false;}
 
 #define RESIZE_ARRAY(a,c)   {(a) = s_cast<decltype(a)>(std::realloc((a), (c) * sizeof(*(a))));}
 

@@ -71,8 +71,8 @@ class coreResourceDummy final : public coreResource
 public:
     /*! load and unload resource data (without any effect) */
     //! @{
-    coreStatus Load(coreFile* pFile)final {ASSERT(false) return CORE_OK;}
-    coreStatus Unload()final              {ASSERT(false) return CORE_OK;}
+    coreStatus Load(coreFile* pFile)final {return CORE_OK;}
+    coreStatus Unload()final              {return CORE_OK;}
     //! @}
 };
 

@@ -114,6 +114,8 @@ void coreLabel::Move()
 // change the current text
 coreBool coreLabel::SetText(const coreChar* pcText)
 {
+    ASSERT(pcText)
+
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
@@ -128,6 +130,8 @@ coreBool coreLabel::SetText(const coreChar* pcText)
 
 coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
 {
+    ASSERT(pcText)
+
     // check for new text
     if((iNum != m_sText.length()) || std::strcmp(m_sText.c_str(), pcText))
     {
