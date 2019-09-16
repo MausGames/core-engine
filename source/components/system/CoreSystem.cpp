@@ -241,8 +241,8 @@ CoreSystem::CoreSystem()noexcept
     }
     Core::Log->ListEnd();
 
-    // log zlib library version
-    Core::Log->Info("zlib initialized (%s 0x%08X)", zlibVersion(), zlibCompileFlags());
+    // log Zstandard library versions
+    Core::Log->Info("Zstandard initialized (%s)", ZSTD_versionString());
 }
 
 

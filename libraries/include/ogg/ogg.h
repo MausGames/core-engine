@@ -1,5 +1,6 @@
 // Modified version for Core Engine
 // Please use the original library from https://xiph.org/
+
 /********************************************************************
  *                                                                  *
  * THIS FILE IS PART OF THE OggVorbis SOFTWARE CODEC SOURCE CODE.   *
@@ -23,6 +24,13 @@
 extern "C" {
 #endif
 
+#if !defined(OGGAPI)
+    #if defined(_WIN32)
+        #define OGGAPI __declspec(dllimport)
+    #else
+        #define OGGAPI
+    #endif
+#endif
 #if !defined(OGGCALL)
     #if defined(_WIN32)
         #define OGGCALL __cdecl
@@ -125,92 +133,92 @@ typedef struct {
 
 /* Ogg BITSTREAM PRIMITIVES: bitstream ************************/
 
-extern void OGGCALL oggpack_writeinit(oggpack_buffer *b);
-extern int OGGCALL  oggpack_writecheck(oggpack_buffer *b);
-extern void OGGCALL oggpack_writetrunc(oggpack_buffer *b,long bits);
-extern void OGGCALL oggpack_writealign(oggpack_buffer *b);
-extern void OGGCALL oggpack_writecopy(oggpack_buffer *b,void *source,long bits);
-extern void OGGCALL oggpack_reset(oggpack_buffer *b);
-extern void OGGCALL oggpack_writeclear(oggpack_buffer *b);
-extern void OGGCALL oggpack_readinit(oggpack_buffer *b,unsigned char *buf,int bytes);
-extern void OGGCALL oggpack_write(oggpack_buffer *b,unsigned long value,int bits);
-extern long OGGCALL oggpack_look(oggpack_buffer *b,int bits);
-extern long OGGCALL oggpack_look1(oggpack_buffer *b);
-extern void OGGCALL oggpack_adv(oggpack_buffer *b,int bits);
-extern void OGGCALL oggpack_adv1(oggpack_buffer *b);
-extern long OGGCALL oggpack_read(oggpack_buffer *b,int bits);
-extern long OGGCALL oggpack_read1(oggpack_buffer *b);
-extern long OGGCALL oggpack_bytes(oggpack_buffer *b);
-extern long OGGCALL oggpack_bits(oggpack_buffer *b);
-extern unsigned char* OGGCALL oggpack_get_buffer(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpack_writeinit(oggpack_buffer *b);
+extern OGGAPI int OGGCALL  oggpack_writecheck(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpack_writetrunc(oggpack_buffer *b,long bits);
+extern OGGAPI void OGGCALL oggpack_writealign(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpack_writecopy(oggpack_buffer *b,void *source,long bits);
+extern OGGAPI void OGGCALL oggpack_reset(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpack_writeclear(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpack_readinit(oggpack_buffer *b,unsigned char *buf,int bytes);
+extern OGGAPI void OGGCALL oggpack_write(oggpack_buffer *b,unsigned long value,int bits);
+extern OGGAPI long OGGCALL oggpack_look(oggpack_buffer *b,int bits);
+extern OGGAPI long OGGCALL oggpack_look1(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpack_adv(oggpack_buffer *b,int bits);
+extern OGGAPI void OGGCALL oggpack_adv1(oggpack_buffer *b);
+extern OGGAPI long OGGCALL oggpack_read(oggpack_buffer *b,int bits);
+extern OGGAPI long OGGCALL oggpack_read1(oggpack_buffer *b);
+extern OGGAPI long OGGCALL oggpack_bytes(oggpack_buffer *b);
+extern OGGAPI long OGGCALL oggpack_bits(oggpack_buffer *b);
+extern OGGAPI unsigned char* OGGCALL oggpack_get_buffer(oggpack_buffer *b);
 
-extern void OGGCALL oggpackB_writeinit(oggpack_buffer *b);
-extern int OGGCALL  oggpackB_writecheck(oggpack_buffer *b);
-extern void OGGCALL oggpackB_writetrunc(oggpack_buffer *b,long bits);
-extern void OGGCALL oggpackB_writealign(oggpack_buffer *b);
-extern void OGGCALL oggpackB_writecopy(oggpack_buffer *b,void *source,long bits);
-extern void OGGCALL oggpackB_reset(oggpack_buffer *b);
-extern void OGGCALL oggpackB_writeclear(oggpack_buffer *b);
-extern void OGGCALL oggpackB_readinit(oggpack_buffer *b,unsigned char *buf,int bytes);
-extern void OGGCALL oggpackB_write(oggpack_buffer *b,unsigned long value,int bits);
-extern long OGGCALL oggpackB_look(oggpack_buffer *b,int bits);
-extern long OGGCALL oggpackB_look1(oggpack_buffer *b);
-extern void OGGCALL oggpackB_adv(oggpack_buffer *b,int bits);
-extern void OGGCALL oggpackB_adv1(oggpack_buffer *b);
-extern long OGGCALL oggpackB_read(oggpack_buffer *b,int bits);
-extern long OGGCALL oggpackB_read1(oggpack_buffer *b);
-extern long OGGCALL oggpackB_bytes(oggpack_buffer *b);
-extern long OGGCALL oggpackB_bits(oggpack_buffer *b);
-extern unsigned char* OGGCALL oggpackB_get_buffer(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpackB_writeinit(oggpack_buffer *b);
+extern OGGAPI int OGGCALL  oggpackB_writecheck(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpackB_writetrunc(oggpack_buffer *b,long bits);
+extern OGGAPI void OGGCALL oggpackB_writealign(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpackB_writecopy(oggpack_buffer *b,void *source,long bits);
+extern OGGAPI void OGGCALL oggpackB_reset(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpackB_writeclear(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpackB_readinit(oggpack_buffer *b,unsigned char *buf,int bytes);
+extern OGGAPI void OGGCALL oggpackB_write(oggpack_buffer *b,unsigned long value,int bits);
+extern OGGAPI long OGGCALL oggpackB_look(oggpack_buffer *b,int bits);
+extern OGGAPI long OGGCALL oggpackB_look1(oggpack_buffer *b);
+extern OGGAPI void OGGCALL oggpackB_adv(oggpack_buffer *b,int bits);
+extern OGGAPI void OGGCALL oggpackB_adv1(oggpack_buffer *b);
+extern OGGAPI long OGGCALL oggpackB_read(oggpack_buffer *b,int bits);
+extern OGGAPI long OGGCALL oggpackB_read1(oggpack_buffer *b);
+extern OGGAPI long OGGCALL oggpackB_bytes(oggpack_buffer *b);
+extern OGGAPI long OGGCALL oggpackB_bits(oggpack_buffer *b);
+extern OGGAPI unsigned char* OGGCALL oggpackB_get_buffer(oggpack_buffer *b);
 
 /* Ogg BITSTREAM PRIMITIVES: encoding **************************/
 
-extern int OGGCALL     ogg_stream_packetin(ogg_stream_state *os, ogg_packet *op);
-extern int OGGCALL     ogg_stream_iovecin(ogg_stream_state *os, ogg_iovec_t *iov,
+extern OGGAPI int OGGCALL     ogg_stream_packetin(ogg_stream_state *os, ogg_packet *op);
+extern OGGAPI int OGGCALL     ogg_stream_iovecin(ogg_stream_state *os, ogg_iovec_t *iov,
                                    int count, long e_o_s, ogg_int64_t granulepos);
-extern int OGGCALL     ogg_stream_pageout(ogg_stream_state *os, ogg_page *og);
-extern int OGGCALL     ogg_stream_pageout_fill(ogg_stream_state *os, ogg_page *og, int nfill);
-extern int OGGCALL     ogg_stream_flush(ogg_stream_state *os, ogg_page *og);
-extern int OGGCALL     ogg_stream_flush_fill(ogg_stream_state *os, ogg_page *og, int nfill);
+extern OGGAPI int OGGCALL     ogg_stream_pageout(ogg_stream_state *os, ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_stream_pageout_fill(ogg_stream_state *os, ogg_page *og, int nfill);
+extern OGGAPI int OGGCALL     ogg_stream_flush(ogg_stream_state *os, ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_stream_flush_fill(ogg_stream_state *os, ogg_page *og, int nfill);
 
 /* Ogg BITSTREAM PRIMITIVES: decoding **************************/
 
-extern int OGGCALL     ogg_sync_init(ogg_sync_state *oy);
-extern int OGGCALL     ogg_sync_clear(ogg_sync_state *oy);
-extern int OGGCALL     ogg_sync_reset(ogg_sync_state *oy);
-extern int OGGCALL     ogg_sync_destroy(ogg_sync_state *oy);
-extern int OGGCALL     ogg_sync_check(ogg_sync_state *oy);
+extern OGGAPI int OGGCALL     ogg_sync_init(ogg_sync_state *oy);
+extern OGGAPI int OGGCALL     ogg_sync_clear(ogg_sync_state *oy);
+extern OGGAPI int OGGCALL     ogg_sync_reset(ogg_sync_state *oy);
+extern OGGAPI int OGGCALL     ogg_sync_destroy(ogg_sync_state *oy);
+extern OGGAPI int OGGCALL     ogg_sync_check(ogg_sync_state *oy);
 
-extern char* OGGCALL   ogg_sync_buffer(ogg_sync_state *oy, long size);
-extern int OGGCALL     ogg_sync_wrote(ogg_sync_state *oy, long bytes);
-extern long OGGCALL    ogg_sync_pageseek(ogg_sync_state *oy,ogg_page *og);
-extern int OGGCALL     ogg_sync_pageout(ogg_sync_state *oy, ogg_page *og);
-extern int OGGCALL     ogg_stream_pagein(ogg_stream_state *os, ogg_page *og);
-extern int OGGCALL     ogg_stream_packetout(ogg_stream_state *os,ogg_packet *op);
-extern int OGGCALL     ogg_stream_packetpeek(ogg_stream_state *os,ogg_packet *op);
+extern OGGAPI char* OGGCALL   ogg_sync_buffer(ogg_sync_state *oy, long size);
+extern OGGAPI int OGGCALL     ogg_sync_wrote(ogg_sync_state *oy, long bytes);
+extern OGGAPI long OGGCALL    ogg_sync_pageseek(ogg_sync_state *oy,ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_sync_pageout(ogg_sync_state *oy, ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_stream_pagein(ogg_stream_state *os, ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_stream_packetout(ogg_stream_state *os,ogg_packet *op);
+extern OGGAPI int OGGCALL     ogg_stream_packetpeek(ogg_stream_state *os,ogg_packet *op);
 
 /* Ogg BITSTREAM PRIMITIVES: general ***************************/
 
-extern int OGGCALL     ogg_stream_init(ogg_stream_state *os,int serialno);
-extern int OGGCALL     ogg_stream_clear(ogg_stream_state *os);
-extern int OGGCALL     ogg_stream_reset(ogg_stream_state *os);
-extern int OGGCALL     ogg_stream_reset_serialno(ogg_stream_state *os,int serialno);
-extern int OGGCALL     ogg_stream_destroy(ogg_stream_state *os);
-extern int OGGCALL     ogg_stream_check(ogg_stream_state *os);
-extern int OGGCALL     ogg_stream_eos(ogg_stream_state *os);
+extern OGGAPI int OGGCALL     ogg_stream_init(ogg_stream_state *os,int serialno);
+extern OGGAPI int OGGCALL     ogg_stream_clear(ogg_stream_state *os);
+extern OGGAPI int OGGCALL     ogg_stream_reset(ogg_stream_state *os);
+extern OGGAPI int OGGCALL     ogg_stream_reset_serialno(ogg_stream_state *os,int serialno);
+extern OGGAPI int OGGCALL     ogg_stream_destroy(ogg_stream_state *os);
+extern OGGAPI int OGGCALL     ogg_stream_check(ogg_stream_state *os);
+extern OGGAPI int OGGCALL     ogg_stream_eos(ogg_stream_state *os);
 
-extern void OGGCALL    ogg_page_checksum_set(ogg_page *og);
+extern OGGAPI void OGGCALL    ogg_page_checksum_set(ogg_page *og);
 
-extern int OGGCALL     ogg_page_version(const ogg_page *og);
-extern int OGGCALL     ogg_page_continued(const ogg_page *og);
-extern int OGGCALL     ogg_page_bos(const ogg_page *og);
-extern int OGGCALL     ogg_page_eos(const ogg_page *og);
-extern ogg_int64_t OGGCALL ogg_page_granulepos(const ogg_page *og);
-extern int OGGCALL     ogg_page_serialno(const ogg_page *og);
-extern long OGGCALL    ogg_page_pageno(const ogg_page *og);
-extern int OGGCALL     ogg_page_packets(const ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_page_version(const ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_page_continued(const ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_page_bos(const ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_page_eos(const ogg_page *og);
+extern OGGAPI ogg_int64_t OGGCALL ogg_page_granulepos(const ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_page_serialno(const ogg_page *og);
+extern OGGAPI long OGGCALL    ogg_page_pageno(const ogg_page *og);
+extern OGGAPI int OGGCALL     ogg_page_packets(const ogg_page *og);
 
-extern void OGGCALL    ogg_packet_clear(ogg_packet *op);
+extern OGGAPI void OGGCALL    ogg_packet_clear(ogg_packet *op);
 
 
 #ifdef __cplusplus

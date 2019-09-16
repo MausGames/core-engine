@@ -150,8 +150,7 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
     m_iMapLength = iLength;
 
     // check for sync object status
-    if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_FENCED))
-        m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
+    m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
 
     // return persistent mapped buffer
     if(m_pPersistentBuffer) return (m_pPersistentBuffer + iOffset);
@@ -240,10 +239,6 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
             SAFE_DELETE_ARRAY(pPointer);
         }
     }
-
-    // create sync object
-    if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_FENCED))
-        m_Sync.Create();
 
     // reset mapping attributes
     m_iMapOffset = 0u;

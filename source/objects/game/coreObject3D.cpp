@@ -472,7 +472,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                 m_aiVertexArray.next();
 
                 // create instance data buffer
-                it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+                it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
                 it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
@@ -488,7 +488,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                     m_paCustomBuffer->next();
 
                     // create custom attribute buffer
-                    oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+                    oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
                     m_nDefineBufferFunc(&oBuffer);
 
                     // set vertex data (custom only)
@@ -557,8 +557,9 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
 
         if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
         {
-            // invalidate previous buffer
+            // invalidate and synchronize previous buffer
             m_aInstanceBuffer.current().Invalidate();
+            m_aInstanceBuffer.current().Synchronize();
 
             // switch to next available array and buffer
             m_aiVertexArray  .next();
@@ -653,8 +654,9 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
     {
         if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_CUSTOM))
         {
-            // invalidate previous buffer
+            // invalidate and synchronize previous buffer
             m_paCustomBuffer->current().Invalidate();
+            m_paCustomBuffer->current().Synchronize();
 
             // switch to next available buffer
             m_paCustomBuffer->select(m_aInstanceBuffer.index());

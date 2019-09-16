@@ -1,5 +1,6 @@
 // Modified version for Core Engine
 // Please use the original library from https://github.com/nigels-com/glew
+
 /*
 ** The OpenGL Extension Wrangler Library
 ** Copyright (C) 2008-2017, Nigel Stewart <nigels[]users sourceforge net>

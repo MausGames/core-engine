@@ -287,14 +287,24 @@ void CoreGraphics::UpdateTransformation()
     {
         const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
-        // switch and check next available sync object
+        // invalidate previous buffer range
+        if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
+        {
+            const coreUint32 iOldOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
+            glInvalidateBufferSubData(m_TransformBuffer.GetIdentifier(), iOldOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
+        }
+
+        // synchronize and switch to next sync object
+        m_aTransformSync.current().Create();
         m_aTransformSync.next();
         m_aTransformSync.current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
-        const coreUint32 iOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
 
-        // bind and map required area of the UBO
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer.GetIdentifier(), iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
-        coreByte* pRange = m_TransformBuffer.Map(iOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        // bind next buffer range
+        const coreUint32 iNewOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer.GetIdentifier(), iNewOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
+
+        // map required area of the UBO
+        coreByte* pRange = m_TransformBuffer.Map(iNewOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
         std::memcpy(pRange,                                                 &mViewProj,         sizeof(coreMatrix4));
@@ -304,9 +314,6 @@ void CoreGraphics::UpdateTransformation()
         std::memcpy(pRange + 4u*sizeof(coreMatrix4),                        &m_vViewResolution, sizeof(coreVector4));
         std::memcpy(pRange + 4u*sizeof(coreMatrix4) + 4u*sizeof(coreFloat), &m_vCamPosition,    sizeof(coreVector3));
         m_TransformBuffer.Unmap(pRange);
-
-        // create sync object
-        m_aTransformSync.current().Create();
     }
     else
     {
@@ -326,21 +333,28 @@ void CoreGraphics::UpdateAmbient()
 
     if(m_AmbientBuffer.IsValid())
     {
-        // switch and check next available sync object
+        // invalidate previous buffer range
+        if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
+        {
+            const coreUint32 iOldOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
+            glInvalidateBufferSubData(m_AmbientBuffer.GetIdentifier(), iOldOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+        }
+
+        // synchronize and switch to next sync object
+        m_aAmbientSync.current().Create();
         m_aAmbientSync.next();
         m_aAmbientSync.current().Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
-        const coreUint32 iOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
 
-        // bind and map required area of the UBO
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer.GetIdentifier(), iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
-        coreByte* pRange = m_AmbientBuffer.Map(iOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        // bind next buffer range
+        const coreUint32 iNewOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer.GetIdentifier(), iNewOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+
+        // map required area of the UBO
+        coreByte* pRange = m_AmbientBuffer.Map(iNewOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update ambient data
         std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
         m_AmbientBuffer.Unmap(pRange);
-
-        // create sync object
-        m_aAmbientSync.current().Create();
     }
     else
     {

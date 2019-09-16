@@ -1,5 +1,6 @@
 // Modified version for Core Engine
 // Please use the original library from https://xiph.org/
+
 /********************************************************************
  *                                                                  *
  * THIS FILE IS PART OF THE OggVorbis SOFTWARE CODEC SOURCE CODE.   *
@@ -25,6 +26,13 @@ extern "C"
 {
 #endif /* __cplusplus */
 
+#if !defined(OVAPI)
+    #if defined(_WIN32)
+        #define OVAPI __declspec(dllimport)
+    #else
+        #define OVAPI
+    #endif
+#endif
 #if !defined(OVCALL)
     #if defined(_WIN32)
         #define OVCALL __cdecl
@@ -156,57 +164,57 @@ typedef struct OggVorbis_File {
 } OggVorbis_File;
 
 
-extern int OVCALL ov_clear(OggVorbis_File *vf);
-extern int OVCALL ov_fopen(const char *path,OggVorbis_File *vf);
-extern int OVCALL ov_open(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes);
-extern int OVCALL ov_open_callbacks(void *datasource, OggVorbis_File *vf,
+extern OVAPI int OVCALL ov_clear(OggVorbis_File *vf);
+extern OVAPI int OVCALL ov_fopen(const char *path,OggVorbis_File *vf);
+extern OVAPI int OVCALL ov_open(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes);
+extern OVAPI int OVCALL ov_open_callbacks(void *datasource, OggVorbis_File *vf,
                        const char *initial, long ibytes, ov_callbacks callbacks);
 
-extern int OVCALL ov_test(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes);
-extern int OVCALL ov_test_callbacks(void *datasource, OggVorbis_File *vf,
+extern OVAPI int OVCALL ov_test(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes);
+extern OVAPI int OVCALL ov_test_callbacks(void *datasource, OggVorbis_File *vf,
                        const char *initial, long ibytes, ov_callbacks callbacks);
-extern int OVCALL ov_test_open(OggVorbis_File *vf);
+extern OVAPI int OVCALL ov_test_open(OggVorbis_File *vf);
 
-extern long OVCALL ov_bitrate(OggVorbis_File *vf,int i);
-extern long OVCALL ov_bitrate_instant(OggVorbis_File *vf);
-extern long OVCALL ov_streams(OggVorbis_File *vf);
-extern long OVCALL ov_seekable(OggVorbis_File *vf);
-extern long OVCALL ov_serialnumber(OggVorbis_File *vf,int i);
+extern OVAPI long OVCALL ov_bitrate(OggVorbis_File *vf,int i);
+extern OVAPI long OVCALL ov_bitrate_instant(OggVorbis_File *vf);
+extern OVAPI long OVCALL ov_streams(OggVorbis_File *vf);
+extern OVAPI long OVCALL ov_seekable(OggVorbis_File *vf);
+extern OVAPI long OVCALL ov_serialnumber(OggVorbis_File *vf,int i);
 
-extern ogg_int64_t OVCALL ov_raw_total(OggVorbis_File *vf,int i);
-extern ogg_int64_t OVCALL ov_pcm_total(OggVorbis_File *vf,int i);
-extern double OVCALL ov_time_total(OggVorbis_File *vf,int i);
+extern OVAPI ogg_int64_t OVCALL ov_raw_total(OggVorbis_File *vf,int i);
+extern OVAPI ogg_int64_t OVCALL ov_pcm_total(OggVorbis_File *vf,int i);
+extern OVAPI double OVCALL ov_time_total(OggVorbis_File *vf,int i);
 
-extern int OVCALL ov_raw_seek(OggVorbis_File *vf,ogg_int64_t pos);
-extern int OVCALL ov_pcm_seek(OggVorbis_File *vf,ogg_int64_t pos);
-extern int OVCALL ov_pcm_seek_page(OggVorbis_File *vf,ogg_int64_t pos);
-extern int OVCALL ov_time_seek(OggVorbis_File *vf,double pos);
-extern int OVCALL ov_time_seek_page(OggVorbis_File *vf,double pos);
+extern OVAPI int OVCALL ov_raw_seek(OggVorbis_File *vf,ogg_int64_t pos);
+extern OVAPI int OVCALL ov_pcm_seek(OggVorbis_File *vf,ogg_int64_t pos);
+extern OVAPI int OVCALL ov_pcm_seek_page(OggVorbis_File *vf,ogg_int64_t pos);
+extern OVAPI int OVCALL ov_time_seek(OggVorbis_File *vf,double pos);
+extern OVAPI int OVCALL ov_time_seek_page(OggVorbis_File *vf,double pos);
 
-extern int OVCALL ov_raw_seek_lap(OggVorbis_File *vf,ogg_int64_t pos);
-extern int OVCALL ov_pcm_seek_lap(OggVorbis_File *vf,ogg_int64_t pos);
-extern int OVCALL ov_pcm_seek_page_lap(OggVorbis_File *vf,ogg_int64_t pos);
-extern int OVCALL ov_time_seek_lap(OggVorbis_File *vf,double pos);
-extern int OVCALL ov_time_seek_page_lap(OggVorbis_File *vf,double pos);
+extern OVAPI int OVCALL ov_raw_seek_lap(OggVorbis_File *vf,ogg_int64_t pos);
+extern OVAPI int OVCALL ov_pcm_seek_lap(OggVorbis_File *vf,ogg_int64_t pos);
+extern OVAPI int OVCALL ov_pcm_seek_page_lap(OggVorbis_File *vf,ogg_int64_t pos);
+extern OVAPI int OVCALL ov_time_seek_lap(OggVorbis_File *vf,double pos);
+extern OVAPI int OVCALL ov_time_seek_page_lap(OggVorbis_File *vf,double pos);
 
-extern ogg_int64_t OVCALL ov_raw_tell(OggVorbis_File *vf);
-extern ogg_int64_t OVCALL ov_pcm_tell(OggVorbis_File *vf);
-extern double OVCALL ov_time_tell(OggVorbis_File *vf);
+extern OVAPI ogg_int64_t OVCALL ov_raw_tell(OggVorbis_File *vf);
+extern OVAPI ogg_int64_t OVCALL ov_pcm_tell(OggVorbis_File *vf);
+extern OVAPI double OVCALL ov_time_tell(OggVorbis_File *vf);
 
-extern vorbis_info* OVCALL ov_info(OggVorbis_File *vf,int link);
-extern vorbis_comment* OVCALL ov_comment(OggVorbis_File *vf,int link);
+extern OVAPI vorbis_info* OVCALL ov_info(OggVorbis_File *vf,int link);
+extern OVAPI vorbis_comment* OVCALL ov_comment(OggVorbis_File *vf,int link);
 
-extern long OVCALL ov_read_float(OggVorbis_File *vf,float ***pcm_channels,int samples,
+extern OVAPI long OVCALL ov_read_float(OggVorbis_File *vf,float ***pcm_channels,int samples,
                                  int *bitstream);
-extern long OVCALL ov_read_filter(OggVorbis_File *vf,char *buffer,int length,
+extern OVAPI long OVCALL ov_read_filter(OggVorbis_File *vf,char *buffer,int length,
                                  int bigendianp,int word,int sgned,int *bitstream,
                                  void (*filter)(float **pcm,long channels,long samples,void *filter_param),void *filter_param);
-extern long OVCALL ov_read(OggVorbis_File *vf,char *buffer,int length,
+extern OVAPI long OVCALL ov_read(OggVorbis_File *vf,char *buffer,int length,
                            int bigendianp,int word,int sgned,int *bitstream);
-extern int OVCALL ov_crosslap(OggVorbis_File *vf1,OggVorbis_File *vf2);
+extern OVAPI int OVCALL ov_crosslap(OggVorbis_File *vf1,OggVorbis_File *vf2);
 
-extern int OVCALL ov_halfrate(OggVorbis_File *vf,int flag);
-extern int OVCALL ov_halfrate_p(OggVorbis_File *vf);
+extern OVAPI int OVCALL ov_halfrate(OggVorbis_File *vf,int flag);
+extern OVAPI int OVCALL ov_halfrate_p(OggVorbis_File *vf);
 
 #ifdef __cplusplus
 }

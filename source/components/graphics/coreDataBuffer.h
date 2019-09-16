@@ -14,25 +14,25 @@
 // TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
 // TODO: remove per-frame allocation on map/unmap-fallback
 // TODO: remove mapping templates, generates too many function copies (search for other locations as well)
+// TODO: CORE_DATABUFFER_MAP_UNSYNCHRONIZED to CORE_DATABUFFER_MAP_INVALIDATE_RANGE ?
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 
 
 // ****************************************************************
 // data buffer definitions
-enum coreDataBufferStorage : coreUint16
+enum coreDataBufferStorage : coreUint8
 {
-    CORE_DATABUFFER_STORAGE_STATIC  = 0x0001u,   //!< fast static buffer (STATIC_DRAW)
-    CORE_DATABUFFER_STORAGE_DYNAMIC = 0x0002u,   //!< writable dynamic buffer (DYNAMIC_DRAW), persistent mapped if supported
-    CORE_DATABUFFER_STORAGE_STREAM  = 0x0004u,   //!< writable temporary buffer (STREAM_DRAW)
-    CORE_DATABUFFER_STORAGE_FENCED  = 0x0100u    //!< use sync object for reliable asynchronous processing
+    CORE_DATABUFFER_STORAGE_STATIC  = 0x01u,   //!< fast static buffer (STATIC_DRAW)
+    CORE_DATABUFFER_STORAGE_DYNAMIC = 0x02u,   //!< writable dynamic buffer (DYNAMIC_DRAW), persistent mapped if supported
+    CORE_DATABUFFER_STORAGE_STREAM  = 0x04u    //!< writable temporary buffer (STREAM_DRAW)
 };
 ENABLE_BITWISE(coreDataBufferStorage)
 
 enum coreDataBufferMap : coreUint8
 {
-    CORE_DATABUFFER_MAP_INVALIDATE_ALL   = GL_MAP_INVALIDATE_BUFFER_BIT,   //!< invalidate complete buffer   (best for complete updating)
-    CORE_DATABUFFER_MAP_UNSYNCHRONIZED   = GL_MAP_UNSYNCHRONIZED_BIT       //!< map and unmap unsynchronized (best for partial updating)
+    CORE_DATABUFFER_MAP_INVALIDATE_ALL = GL_MAP_INVALIDATE_BUFFER_BIT,                             //!< invalidate complete buffer   (best for complete updating)
+    CORE_DATABUFFER_MAP_UNSYNCHRONIZED = GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT   //!< map and unmap unsynchronized (best for partial updating)
 };
 
 
@@ -51,7 +51,7 @@ private:
     coreUint32 m_iMapOffset;                       //!< current mapping offset
     coreUint32 m_iMapLength;                       //!< current mapping length
 
-    coreSync m_Sync;                               //!< sync object for reliable asynchronous processing
+    coreSync m_Sync;                               //!< sync object for reliable access (unsynchronized, persistent mapped)
 
     static coreLookup<GLenum, GLuint> s_aiBound;   //!< data buffer objects currently associated with buffer targets <target, identifier>
 
@@ -84,6 +84,11 @@ public:
     RETURN_RESTRICT coreByte* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType);
     void                      Unmap(const coreByte* pPointer);
     void                      Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
+    //! @}
+
+    //! protect buffer memory up to now
+    //! @{
+    inline void Synchronize() {m_Sync.Create();}
     //! @}
 
     //! reset content of the data buffer object

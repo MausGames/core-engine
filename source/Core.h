@@ -310,8 +310,7 @@
 #define HAVE_LIBC
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
-#define ZLIB_CONST
-#define ZLIB_DLL
+#define ZSTD_DLL_IMPORT 1
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -325,7 +324,7 @@
 #include <AL/alc.h>
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
-#include <zlib/zlib.h>
+#include <zstd/zstd.h>
 #include <SI/SimpleIni.h>
 
 
@@ -366,7 +365,7 @@
 #define DYN_KEEP(i)                 {++i;}
 #define DYN_REMOVE(i,c)             {i = (c).erase(i); i ## __e = (c).end();}
 
-#define BIG_STATIC                  static
+#define BIG_STATIC                  static thread_local
 #define FRIEND_CLASS(c)             friend class c;
 #define STATIC_ASSERT(c)            static_assert(c, "Static Assert [" #c "]");
 
@@ -477,12 +476,6 @@ using coreChar   = char;
 using coreFloat  = float;
 using coreDouble = double;
 
-// override string comparison operator
-inline coreBool operator == (const std::string& a, const coreChar*    b) {ASSERT(b) return !std::strcmp(a.c_str(), b);}
-inline coreBool operator != (const std::string& a, const coreChar*    b) {ASSERT(b) return  std::strcmp(a.c_str(), b);}
-inline coreBool operator == (const coreChar*    a, const std::string& b) {ASSERT(a) return !std::strcmp(a,         b.c_str());}
-inline coreBool operator != (const coreChar*    a, const std::string& b) {ASSERT(a) return  std::strcmp(a,         b.c_str());}
-
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
@@ -530,7 +523,7 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 #define COLOR_GOLD   (coreVector3(1.000f, 0.859f, 0.000f))
 
 // default alignment values
-#define ALIGNMENT_NEW   ((DEFINED(_CORE_MSVC_) && DEFINED(_CORE_X64_)) ? 16u : 8u)
+#define ALIGNMENT_NEW   (__STDCPP_DEFAULT_NEW_ALIGNMENT__)
 #define ALIGNMENT_SSE   (16u)
 #define ALIGNMENT_CACHE (64u)
 #define ALIGNMENT_PAGE  (4096u)

@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2017 Sam Lantinga <slouken@libsdl.org>
@@ -42,7 +45,7 @@
 #endif
 
 #ifndef SDL_UNUSED
-#  ifdef __GNUC__
+#  if defined(__GNUC__)
 #    define SDL_UNUSED __attribute__((unused))
 #  else
 #    define SDL_UNUSED
@@ -52,23 +55,13 @@
 /* Some compilers use a special export keyword */
 #ifndef DECLSPEC
 # if defined(__WIN32__) || defined(__WINRT__)
-#  ifdef __BORLANDC__
-#   ifdef BUILD_SDL
-#    define DECLSPEC
-#   else
-#    define DECLSPEC    __declspec(dllimport)
-#   endif
-#  else
+#  if defined(BUILD_SDL)
 #   define DECLSPEC __declspec(dllexport)
+#  else
+#   define DECLSPEC __declspec(dllimport)
 #  endif
-# elif defined(__OS2__)
-#   ifdef BUILD_SDL
-#    define DECLSPEC    __declspec(dllexport)
-#   else
-#    define DECLSPEC
-#   endif
 # else
-#  if defined(__GNUC__) && __GNUC__ >= 4
+#  if defined(__GNUC__) && (__GNUC__ >= 4)
 #   define DECLSPEC __attribute__ ((visibility("default")))
 #  else
 #   define DECLSPEC

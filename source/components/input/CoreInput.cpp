@@ -117,7 +117,7 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
     WARN_IF(iIndex >= m_aJoystick.size()) return;
 
     // get original input
-    const coreVector2& vAcc = m_aJoystick[iIndex].vRelative;
+    const coreVector2& vAcc = this->GetJoystickRelativeL(iIndex);
 
     // move the mouse cursor
     if(!vAcc.IsNull())
@@ -229,10 +229,10 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     case SDL_JOYAXISMOTION:
         if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jaxis.which)).pController) break; FALLTHROUGH
     case SDL_CONTROLLERAXISMOTION:
-        if(oEvent.jaxis.axis < 2u)
+        if(oEvent.jaxis.axis < CORE_INPUT_AXIS)
         {
             if(ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD))
-                 this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX))) * (oEvent.jaxis.axis ? -1.0f : 1.0f), -1.0f, 1.0f));
+                 this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX))) * (((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)) ? -1.0f : 1.0f), -1.0f, 1.0f));
             else this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, 0.0f);
         }
         break;

@@ -4,7 +4,7 @@
 
 *varying* and *attribute* instead of *in* and *out* in vertex and fragment shader for max compatibility
 qualifiers *highp*, *mediump*, *lowp*, *flat*, *noperspective*, *smooth*, *centroid*, *sample*, *precise* and *invariant* are safe to use
-shader main functions are named *VertexMain()* and *FragmentMain()*
+shader main functions are named *VertexMain()*, *GeometryMain()*, *FragmentMain()*
 
 
 // ****************************************************************
@@ -46,7 +46,7 @@ void coreLightingTransform(in vec3 v3Position)
 // object3D attributes
 vec3 a_v3RawPosition     // raw vertex position
 vec2 a_v2RawTexCoord     // raw texture coordinate
-vec3 a_v3RawNormal       // normal vector 
+vec3 a_v3RawNormal       // normal vector
 vec4 a_v4RawTangent      // tangent vector (xyz = tangent, w = binormal sign)
 vec3 u_v3Position        // position offset
 vec3 u_v3Size            // non-uniform size factor
@@ -83,6 +83,12 @@ vec3 v_v3TangentCam                        // tangent-space camera position forw
 
 // ****************************************************************
 # Fragment Shader #
+
+
+## Functions ##
+
+// GGX specular function
+float coreGGX(in float v1Dot, in float v1Rough)
 
 
 ## In ##
@@ -147,15 +153,6 @@ vec4  coreTexture2D    (in int v1Unit, in vec2 v2TexCoord)    // normal texture 
 vec4  coreTextureProj  (in int v1Unit, in vec4 v4ProjCoord)   // normal texture lookup (with projection)
 float coreTextureShadow(in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures
 
-half, hvec2, hvec3, hvec4     // 16-bit floating point types (32-bit, if not supported)
-
-#define CORE_SAMPLE_SHADING   // evaluate shader per sample (just place it somewhere in FragmentMain)
-
-#define PI    (3.1415926535897932384626433832795)
-#define EU    (2.7182818284590452353602874713527)
-#define GR    (1.6180339887498948482045868343656)
-#define GA    (2.3999632297286533222315555066336)
-#define SQRT2 (1.4142135623730950488016887242097)
 
 ## In ##
 
@@ -174,3 +171,16 @@ struct
     vec4 v4Direction
     vec4 v4Value
 } u_aLight[CORE_NUM_LIGHTS]   // light data directly from the application
+
+
+## Definitions ##
+
+half, hvec2, hvec3, hvec4     // 16-bit floating point types (32-bit, if not supported)
+
+#define CORE_SAMPLE_SHADING   // evaluate shader per sample (just place it somewhere in FragmentMain)
+
+#define PI    (3.1415926535897932384626433832795)
+#define EU    (2.7182818284590452353602874713527)
+#define GR    (1.6180339887498948482045868343656)
+#define GA    (2.3999632297286533222315555066336)
+#define SQRT2 (1.4142135623730950488016887242097)

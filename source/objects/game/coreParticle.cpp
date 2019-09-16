@@ -21,7 +21,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 , m_apRenderList       {}
 , m_pDefaultEffect     (NULL)
 , m_aiVertexArray      {}
-, m_aiInstanceBuffer   {}
+, m_aInstanceBuffer    {}
 , m_bUpdate            (false)
 {
     ASSERT(iNumParticles)
@@ -80,19 +80,20 @@ void coreParticleSystem::Render()
     // enable all active textures
     coreTexture::EnableAll(m_apTexture);
 
-    if(m_aiInstanceBuffer[0].IsValid())
+    if(m_aInstanceBuffer[0].IsValid())
     {
         if(m_bUpdate)
         {
-            // invalidate previous buffer
-            m_aiInstanceBuffer.current().Invalidate();
+            // invalidate and synchronize previous buffer
+            m_aInstanceBuffer.current().Invalidate();
+            m_aInstanceBuffer.current().Synchronize();
 
             // switch to next available array and buffer
-            m_aiVertexArray   .next();
-            m_aiInstanceBuffer.next();
+            m_aiVertexArray  .next();
+            m_aInstanceBuffer.next();
 
             // map required area of the instance data buffer
-            coreByte* pRange  = m_aiInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
             coreByte* pCursor = pRange;
 
             FOR_EACH_REV(it, m_apRenderList)
@@ -115,7 +116,7 @@ void coreParticleSystem::Render()
             }
 
             // unmap buffer
-            m_aiInstanceBuffer.current().Unmap(pRange);
+            m_aInstanceBuffer.current().Unmap(pRange);
 
             // reset the update status
             m_bUpdate = false;
@@ -302,7 +303,7 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
 
     if(eInit)
     {
-        FOR_EACH(it, m_aiInstanceBuffer)
+        FOR_EACH(it, m_aInstanceBuffer)
         {
             // create vertex array objects
             coreGenVertexArrays(1u, &m_aiVertexArray.current());
@@ -310,7 +311,7 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
             m_aiVertexArray.next();
 
             // create instance data buffers
-            it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+            it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
             it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
@@ -333,11 +334,11 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
-        FOR_EACH(it, m_aiInstanceBuffer) it->Delete();
+        FOR_EACH(it, m_aInstanceBuffer) it->Delete();
 
         // reset selected array and buffer (to synchronize)
-        m_aiVertexArray   .select(0u);
-        m_aiInstanceBuffer.select(0u);
+        m_aiVertexArray  .select(0u);
+        m_aInstanceBuffer.select(0u);
     }
 }
 

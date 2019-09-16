@@ -31,8 +31,8 @@ CoreAudio::CoreAudio()noexcept
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
-        Core::Log->Warning("OpenAL context could not be created (ALC Error Code: 0x%08X)", alcGetError(m_pDevice));
-    else Core::Log->Info("OpenAL context created");
+         Core::Log->Warning("OpenAL context could not be created (ALC Error Code: 0x%08X)", alcGetError(m_pDevice));
+    else Core::Log->Info   ("OpenAL context created");
 
     // generate sound sources
     m_pSource = ALIGNED_NEW(ALuint, m_iNumSources, ALIGNMENT_CACHE);

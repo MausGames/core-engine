@@ -91,16 +91,16 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
 // ****************************************************************
 // compress file data
-coreStatus coreFile::Compress(const coreInt8 iCompression)
+coreStatus coreFile::Compress(const coreInt32 iLevel)
 {
     // check file data
     this->LoadData();
     if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
 
-    // compress data with deflate algorithm
+    // compress data
     coreByte*  pNewData;
     coreUint32 iNewSize;
-    const coreStatus eError = coreData::CompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize, iCompression);
+    const coreStatus eError = coreData::Compress(m_pData, m_iSize, &pNewData, &iNewSize, iLevel);
 
     if(eError == CORE_OK)
     {
@@ -124,10 +124,10 @@ coreStatus coreFile::Decompress()
     this->LoadData();
     if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
 
-    // decompress data with deflate algorithm
+    // decompress data
     coreByte*  pNewData;
     coreUint32 iNewSize;
-    const coreStatus eError = coreData::DecompressDeflate(m_pData, m_iSize, &pNewData, &iNewSize);
+    const coreStatus eError = coreData::Decompress(m_pData, m_iSize, &pNewData, &iNewSize);
 
     if(eError == CORE_OK)
     {
@@ -140,6 +140,31 @@ coreStatus coreFile::Decompress()
     }
 
     return eError;
+}
+
+
+// ****************************************************************
+// scramble file data
+coreStatus coreFile::Scramble(const coreUint32 iKey)
+{
+    // check file data
+    this->LoadData();
+    if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
+
+    // scramble data
+    coreData::Scramble(m_pData, m_iSize, iKey);
+    return CORE_OK;
+}
+
+coreStatus coreFile::Unscramble(const coreUint32 iKey)
+{
+    // check file data
+    this->LoadData();
+    if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
+
+    // scramble data
+    coreData::Unscramble(m_pData, m_iSize, iKey);
+    return CORE_OK;
 }
 
 

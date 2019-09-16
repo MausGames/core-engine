@@ -111,34 +111,55 @@ const coreChar* coreData::SystemName()
 {
 #if defined(_CORE_WINDOWS_)
 
-    // detect actual Windows version (GetVersionEx() is deprecated)
-    coreUint32 i, j, k;
-    for(i = 5u; IsWindowsVersionOrGreater(i, 0u, 0u); ++i) {} --i; const coreUint32 iMajor = i;
-    for(j = 0u; IsWindowsVersionOrGreater(i,  j, 0u); ++j) {} --j; const coreUint32 iMinor = j;
-    for(k = 0u; IsWindowsVersionOrGreater(i,  j,  k); ++k) {} --k; const coreUint32 iPack  = k;
+    coreUint16 iMajor    = 0u;
+    coreUint16 iMinor    = 0u;
+    coreUint16 iBuild    = 0u;
+    coreUint16 iRevision = 0u;
 
-    // map to corresponding sub-name
-    const coreChar* pcSubString;
-    switch(iMajor*10u + iMinor)
+    // fetch version from system library
+    coreChar acPath[MAX_PATH];
+    if(GetModuleFileNameA(GetModuleHandleA("kernel32.dll"), acPath, MAX_PATH))
     {
-    case 100u: pcSubString = "10";    break;
-    case  63u: pcSubString = "8.1";   break;
-    case  62u: pcSubString = "8";     break;
-    case  61u: pcSubString = "7";     break;
-    case  60u: pcSubString = "Vista"; break;
-    case  51u: pcSubString = "XP";    break;
-    case  50u: pcSubString = "2000";  break;
-
-    default:
-        pcSubString = PRINT("v%u.%u", iMajor, iMinor);
-        break;
+        // get file version info size
+        const coreUint32 iDataSize = GetFileVersionInfoSizeA(acPath, NULL);
+        if(iDataSize)
+        {
+            // get file version info
+            coreByte* pData = new coreByte[iDataSize];
+            if(GetFileVersionInfoA(acPath, 0u, iDataSize, pData))
+            {
+                // access root block
+                VS_FIXEDFILEINFO* pInfo;
+                coreUint32        iInfoSize;
+                if(VerQueryValueA(pData, "\\", r_cast<void**>(&pInfo), &iInfoSize) && (pInfo->dwSignature == 0xFEEF04BDu))
+                {
+                    // extract version numbers
+                    iMajor    = HIWORD(pInfo->dwProductVersionMS);
+                    iMinor    = LOWORD(pInfo->dwProductVersionMS);
+                    iBuild    = HIWORD(pInfo->dwProductVersionLS);
+                    iRevision = LOWORD(pInfo->dwProductVersionLS);
+                }
+            }
+            SAFE_DELETE_ARRAY(pData)
+        }
     }
 
-    // add service pack string when available
-    const coreChar* pcPackString = iPack ? PRINT(" (Service Pack %u)", iPack) : "";
+    // map to corresponding sub-name
+    const coreChar* pcSubName;
+    switch(iMajor*10u + iMinor)
+    {
+    case 100u: pcSubName = "10";    break;
+    case  63u: pcSubName = "8.1";   break;
+    case  62u: pcSubName = "8";     break;
+    case  61u: pcSubName = "7";     break;
+    case  60u: pcSubName = "Vista"; break;
+    case  51u: pcSubName = "XP";    break;
+    case  50u: pcSubName = "2000";  break;
+    default:   pcSubName = "-";     break;
+    }
 
     // return full operating system name
-    return PRINT("Windows %s%s", pcSubString, pcPackString);
+    return PRINT("Windows %s (%u.%u.%u.%u)", pcSubName, iMajor, iMinor, iBuild, iRevision);
 
 #elif defined(_CORE_LINUX_)
 
@@ -158,7 +179,7 @@ const coreChar* coreData::SystemName()
     __system_property_get("ro.build.version.sdk",     acSDK);
 
     // return full operating system name
-    return PRINT("Android %s (API level %s)", acOS, acSDK);
+    return PRINT("Android %s (API Level %s)", acOS, acSDK);
 
 #elif defined(_CORE_OSX_)
     return "OSX";
@@ -565,56 +586,36 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm*
 
 
 // ****************************************************************
-/* compress data with deflate algorithm */
-coreStatus coreData::CompressDeflate(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt8 iCompression)
+/* compress data with Zstandard library */
+coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel)
 {
-    ASSERT(pInput && iInputSize && ppOutput && piOutputSize)
-
-    // set input parameters
-    z_stream oStream = {};
-    oStream.next_in  = pInput;
-    oStream.avail_in = iInputSize;
-
-    // initialize compression
-    coreInt32 iError = deflateInit(&oStream, iCompression);
-    if(iError != Z_OK)
-    {
-        Core::Log->Warning("Error initializing compression with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
-        return CORE_INVALID_DATA;
-    }
+    ASSERT(pInput && iInputSize && ppOutput && piOutputSize && (iLevel >= ZSTD_minCLevel()) && (iLevel <= ZSTD_maxCLevel()))
 
     // retrieve required output size
-    const coreUint32 iBound  = deflateBound(&oStream, iInputSize);
-    coreByte*        pBuffer = new coreByte[iBound + sizeof(coreUint32)];
-
-    // set output parameters
-    oStream.next_out  = pBuffer + sizeof(coreUint32);
-    oStream.avail_out = iBound;
+    const coreUintW iBound  = ZSTD_compressBound(iInputSize);
+    coreByte*       pBuffer = new coreByte[iBound + sizeof(coreUint32)];
 
     // compress data
-    iError = deflate(&oStream, Z_FINISH);
-    if(iError != Z_STREAM_END)
+    const coreUintW iWritten = ZSTD_compress(pBuffer + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
+    if(ZSTD_isError(iWritten))
     {
-        Core::Log->Warning("Error compressing data with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
+        Core::Log->Warning("Error compressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
         SAFE_DELETE_ARRAY(pBuffer)
-        deflateEnd(&oStream);
         return CORE_INVALID_INPUT;
     }
 
     // store original size and return compressed data
-    (*r_cast<coreUint32*>(pBuffer)) = oStream.total_in;
+    (*r_cast<coreUint32*>(pBuffer)) = iInputSize;
     (*ppOutput)     = pBuffer;
-    (*piOutputSize) = oStream.total_out + sizeof(coreUint32);
+    (*piOutputSize) = iWritten + sizeof(coreUint32);
 
-    // compression finished
-    deflateEnd(&oStream);
     return CORE_OK;
 }
 
 
 // ****************************************************************
-/* decompress data with deflate algorithm */
-coreStatus coreData::DecompressDeflate(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
+/* decompress data with Zstandard library */
+coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
 {
     ASSERT(pInput && iInputSize && ppOutput && piOutputSize)
 
@@ -622,29 +623,12 @@ coreStatus coreData::DecompressDeflate(const coreByte* pInput, const coreUint32 
     const coreUint32 iBound  = (*r_cast<const coreUint32*>(pInput));
     coreByte*        pBuffer = new coreByte[iBound];
 
-    // set input and output parameters
-    z_stream oStream  = {};
-    oStream.next_in   = pInput     + sizeof(coreUint32);
-    oStream.avail_in  = iInputSize - sizeof(coreUint32);
-    oStream.next_out  = pBuffer;
-    oStream.avail_out = iBound;
-
-    // initialize decompression
-    coreInt32 iError = inflateInit(&oStream);
-    if(iError != Z_OK)
-    {
-        Core::Log->Warning("Error initializing decompression with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
-        SAFE_DELETE_ARRAY(pBuffer)
-        return CORE_INVALID_DATA;
-    }
-
     // decompress data
-    iError = inflate(&oStream, Z_FINISH);
-    if(iError != Z_STREAM_END)
+    const coreUintW iWritten = ZSTD_decompress(pBuffer, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
+    if(ZSTD_isError(iWritten))
     {
-        Core::Log->Warning("Error decompressing data with deflate (ZLIB: %s (0x%08X))", oStream.msg ? oStream.msg : "-", iError);
+        Core::Log->Warning("Error decompressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
         SAFE_DELETE_ARRAY(pBuffer)
-        inflateEnd(&oStream);
         return CORE_INVALID_INPUT;
     }
 
@@ -652,9 +636,26 @@ coreStatus coreData::DecompressDeflate(const coreByte* pInput, const coreUint32 
     (*ppOutput)     = pBuffer;
     (*piOutputSize) = iBound;
 
-    // decompression finished
-    inflateEnd(&oStream);
     return CORE_OK;
+}
+
+
+// ****************************************************************
+/* scramble data with 32-bit key */
+void coreData::Scramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey)
+{
+    // create sequence
+    coreRand oRand(iKey);
+
+    // combine sequence with original data
+    for(coreUintW i = 0u; i < iSize; ++i)
+        pData[i] = (oRand.Raw() & 0xFFu) - pData[i];
+}
+
+void coreData::Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey)
+{
+    // scramble again (operation is involutory)
+    coreData::Scramble(pData, iSize, iKey);
 }
 
 

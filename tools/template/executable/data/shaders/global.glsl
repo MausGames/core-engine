@@ -721,6 +721,19 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 #endif // _CORE_VERTEX_SHADER_
 
+#if defined(_CORE_FRAGMENT_SHADER_)
+
+    // GGX specular function
+    float coreGGX(const in float v1Dot, const in float v1Rough)
+    {
+        float v1DotSq   = v1Dot   * v1Dot;
+        float v1RoughSq = v1Rough * v1Rough;
+        float v1Value   = 1.0 + v1DotSq * (v1RoughSq - 1.0);
+        return v1RoughSq / (PI * v1Value * v1Value);
+    }
+
+#endif // _CORE_FRAGMENT_SHADER_
+
 // recommended texture lookup
 #if (__VERSION__) >= 130
     #define coreTexture2D(u,c)     (texture      (u_as2Texture2D    [u], c))

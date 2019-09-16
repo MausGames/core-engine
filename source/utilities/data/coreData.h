@@ -12,6 +12,7 @@
 
 // TODO: constexpr strlen -> ARRAY_SIZE(x)-1
 // TODO: implement constexpr strright
+// TODO: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
 
 
 // ****************************************************************
@@ -109,8 +110,10 @@ public:
 
     /*! compress and decompress data */
     //! @{
-    static coreStatus CompressDeflate  (const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt8 iCompression = Z_DEFAULT_COMPRESSION);
-    static coreStatus DecompressDeflate(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize);
+    static coreStatus Compress  (const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel = ZSTD_CLEVEL_DEFAULT);
+    static coreStatus Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize);
+    static void       Scramble  (coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey = 0u);
+    static void       Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey = 0u);
     //! @}
 
     /*! get compile-time type information */

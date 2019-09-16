@@ -62,9 +62,12 @@
 #define GL_STENCIL 0x1802
 
 typedef void (GL_APIENTRY *PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
-#define glInvalidateBufferData(x)
+#define glInvalidateBufferData(...)
+#define glInvalidateBufferSubData(...)
 #define glInvalidateFramebuffer __CORE_GLES_FUNC(glDiscardFramebufferEXT)
-#define glInvalidateTexImage(x,y)
+#define glInvalidateSubFramebuffer(...)
+#define glInvalidateTexImage(...)
+#define glInvalidateTexSubImage(...)
 
 
 // ****************************************************************

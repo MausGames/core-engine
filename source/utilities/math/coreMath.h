@@ -17,6 +17,7 @@
 // TODO: use std::common_type for return values
 // TODO: CeilPot and FloorPot with BitScan
 // TODO: BSWAP, __builtin_bswap16, __builtin_bswap32, __builtin_bswap64
+// TODO: LerpSmooth and LerpBreak, faster when checking for s == 0.0f and s == 1.0f, and using input directly ? (worst case may get higher)
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 
@@ -117,7 +118,7 @@ public:
     /*! exponential operations */
     //! @{
     static inline coreFloat Pow  (const coreFloat fBase, const coreFloat fExp)  {return std::pow  (fBase, fExp);}
-    static inline coreFloat Log  (const coreFloat fVal,  const coreFloat fBase) {return LOG(fVal) / LOG(fBase);}
+    static inline coreFloat LogB (const coreFloat fVal,  const coreFloat fBase) {return LOG(fVal) * RCP(LOG(fBase));}
     static inline coreFloat Log  (const coreFloat fInput)                       {return std::log  (fInput);}
     static inline coreFloat Log2 (const coreFloat fInput)                       {return std::log2 (fInput);}
     static inline coreFloat Log10(const coreFloat fInput)                       {return std::log10(fInput);}

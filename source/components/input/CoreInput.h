@@ -26,6 +26,7 @@
 #define CORE_INPUT_BUTTONS_KEYBOARD (287u)   //!< number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
 #define CORE_INPUT_BUTTONS_MOUSE    (16u)    //!< number of regarded mouse buttons
 #define CORE_INPUT_BUTTONS_JOYSTICK (32u)    //!< number of regarded joystick buttons
+#define CORE_INPUT_AXIS             (6u)     //!< number of regarded joystick axis
 #if defined(_CORE_MOBILE_)
     #define CORE_INPUT_FINGERS      (5u)     //!< maximum number of simultaneous fingers
 #else
@@ -99,11 +100,11 @@ private:
         SDL_Joystick*       pJoystick;                       //!< joystick device handle
         SDL_Haptic*         pHaptic;                         //!< haptic device handle
 
-        coreUint8   aiButton[CORE_INPUT_BUTTONS_JOYSTICK];   //!< status of the joystick buttons
-        coreUint8   aiCount [CORE_INPUT_TYPES];              //!< number of joystick buttons with same status
-        coreUint8   iLast;                                   //!< last pressed joystick button
-        coreUint8   aiHat[CORE_INPUT_DIRECTIONS];            //!< status of the joystick hat
-        coreVector2 vRelative;                               //!< relative movement of the control axis
+        coreUint8 aiButton[CORE_INPUT_BUTTONS_JOYSTICK];   //!< status of the joystick buttons
+        coreUint8 aiCount [CORE_INPUT_TYPES];              //!< number of joystick buttons with same status
+        coreUint8 iLast;                                   //!< last pressed joystick button
+        coreUint8 aiHat[CORE_INPUT_DIRECTIONS];            //!< status of the joystick hat
+        coreFloat afRelative[CORE_INPUT_AXIS];             //!< relative movement of the joystick axis (0|1 = left stick, 2|3 = right stick, 4 = left shoulder, 5 = right shoulder)
     };
 
     //! touch structure
@@ -188,13 +189,15 @@ public:
 
     //! access joystick input
     //! @{
-    inline void               SetJoystickButton  (const coreUintW iIndex, const coreUint8 iButton, const coreBool bStatus)               {WARN_IF(iButton    >= CORE_INPUT_BUTTONS_JOYSTICK) return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) __CORE_INPUT_JOYSTICK(iIndex).iLast = iButton;}
-    inline void               SetJoystickHat     (const coreUintW iIndex, const coreInputDir eDirection, const coreBool bStatus)         {WARN_IF(eDirection >= CORE_INPUT_DIRECTIONS)       return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], CORE_INPUT_DATA, bStatus)}
-    inline void               SetJoystickRelative(const coreUintW iIndex, const coreUint8 iAxis, const coreFloat fValue)                 {WARN_IF(iAxis      >= 2u)                          return; __CORE_INPUT_JOYSTICK(iIndex).vRelative.arr(iAxis) = fValue;}
-    inline coreBool           GetJoystickButton  (const coreUintW iIndex, const coreUint8 iButton, const coreInputType eType)const       {ASSERT(iButton    < CORE_INPUT_BUTTONS_JOYSTICK) return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], eType);}
-    inline coreBool           GetJoystickHat     (const coreUintW iIndex, const coreInputDir eDirection, const coreInputType eType)const {ASSERT(eDirection < CORE_INPUT_DIRECTIONS)       return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], eType);}
-    inline const coreVector2& GetJoystickRelative(const coreUintW iIndex)const                                                           {return __CORE_INPUT_JOYSTICK(iIndex).vRelative;}
-    inline void               RumbleJoystick     (const coreUintW iIndex, const coreFloat fStrength, const coreUint32 iLength)           {if(__CORE_INPUT_JOYSTICK(iIndex).pHaptic) SDL_HapticRumblePlay(__CORE_INPUT_JOYSTICK(iIndex).pHaptic, fStrength, iLength);}
+    inline void               SetJoystickButton   (const coreUintW iIndex, const coreUint8 iButton, const coreBool bStatus)               {WARN_IF(iButton    >= CORE_INPUT_BUTTONS_JOYSTICK) return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) __CORE_INPUT_JOYSTICK(iIndex).iLast = iButton;}
+    inline void               SetJoystickHat      (const coreUintW iIndex, const coreInputDir eDirection, const coreBool bStatus)         {WARN_IF(eDirection >= CORE_INPUT_DIRECTIONS)       return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], CORE_INPUT_DATA, bStatus)}
+    inline void               SetJoystickRelative (const coreUintW iIndex, const coreUint8 iAxis, const coreFloat fValue)                 {WARN_IF(iAxis      >= CORE_INPUT_AXIS)             return; __CORE_INPUT_JOYSTICK(iIndex).afRelative[iAxis] = fValue;}
+    inline coreBool           GetJoystickButton   (const coreUintW iIndex, const coreUint8 iButton, const coreInputType eType)const       {ASSERT(iButton    < CORE_INPUT_BUTTONS_JOYSTICK) return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], eType);}
+    inline coreBool           GetJoystickHat      (const coreUintW iIndex, const coreInputDir eDirection, const coreInputType eType)const {ASSERT(eDirection < CORE_INPUT_DIRECTIONS)       return CONTAINS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], eType);}
+    inline const coreFloat&   GetJoystickRelative (const coreUintW iIndex, const coreUint8 iAxis)const                                    {ASSERT(iAxis      < CORE_INPUT_AXIS)             return __CORE_INPUT_JOYSTICK(iIndex).afRelative[iAxis];}
+    inline const coreVector2& GetJoystickRelativeL(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[0]);}
+    inline const coreVector2& GetJoystickRelativeR(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[2]);}
+    inline void               RumbleJoystick      (const coreUintW iIndex, const coreFloat fStrength, const coreUint32 iLength)           {if(__CORE_INPUT_JOYSTICK(iIndex).pHaptic) SDL_HapticRumblePlay(__CORE_INPUT_JOYSTICK(iIndex).pHaptic, fStrength, iLength);}
     //! @}
 
     //! access touch input

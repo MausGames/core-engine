@@ -20,7 +20,7 @@
 // ****************************************************************
 /* 3d-object definitions */
 #define CORE_BATCHLIST_INSTANCE_SIZE      (3u*sizeof(coreFloat) + 7u*sizeof(coreUint32))   //!< instancing per-object size (position, size, rotation, color, texture-parameters)
-#define CORE_BATCHLIST_INSTANCE_BUFFERS   (3u)                                             //!< number of concurrent instance data buffer
+#define CORE_BATCHLIST_INSTANCE_BUFFERS   (4u)                                             //!< number of concurrent instance data buffer
 #define CORE_BATCHLIST_INSTANCE_THRESHOLD (4u)                                             //!< minimum number of objects to draw instanced
 
 enum coreBatchListUpdate : coreUint8
@@ -248,7 +248,7 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
             glBindVertexArray(m_aiVertexArray[i]);
 
             // create custom attribute buffer
-            oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC | CORE_DATABUFFER_STORAGE_FENCED);
+            oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
             m_nDefineBufferFunc(&oBuffer);
 
             // set vertex data (custom only)
