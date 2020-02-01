@@ -1,13 +1,17 @@
-
+-------------------------------------------------------------------
 Linux SDL configuration:
-  > ./configure --prefix=/home/martin/Entwicklung/Libraries --enable-x11-shared --disable-rpath --disable-video-directfb --disable-audio --enable-sdl-dlopen
+- install X11 libraries: xcursor xdbe xinerama xrandr xscrnsaver xshape xvidmode
+- SDL MAIN:
+  > ./configure --prefix=/media/data/Entwicklung/libraries/temp --enable-x11-shared --disable-audio --disable-render --disable-video-opengles --disable-video-vulkan --disable-rpath
+- SDL IMG:
+  > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/data/Entwicklung/libraries/temp
+  > ./configure --prefix=/media/data/Entwicklung/libraries/temp --enable-lbm=no --enable-pcx=no --enable-pnm=no --enable-tif=no --enable-xcf=no --enable-xpm=no --enable-xv=no --enable-webp=no --enable-png-shared=no --enable-jpg-shared=no
+- SDL TTF:
+  > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/data/Entwicklung/libraries/temp
+  > ./configure --prefix=/media/data/Entwicklung/libraries/temp
 
-  > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/martin/Entwicklung/Libraries
-  > ./configure --prefix=/home/martin/Entwicklung/Libraries --enable-lbm=no --enable-pcx=no --enable-pnm=no --enable-tif=no --enable-xcf=no --enable-xpm=no --enable-xv=no --enable-webp=no --enable-png-shared=no --enable-jpg-shared=no
-  > ./configure --prefix=/home/martin/Entwicklung/Libraries
   
-  > #define SDL_VIDEO_DRIVER_X11_XCURSOR 1
-
+-------------------------------------------------------------------
 SDL MAIN:
 - use sequential scan and 4kb page-size in rwops
   > #define READAHEAD_BUFFER_SIZE   0x1000
@@ -84,34 +88,19 @@ SDL MAIN:
   > if((window->w < window->min_w) || (window->h < window->min_h))   // SDL_SetWindowMinimumSize
   > if((window->w > window->max_w) || (window->h > window->max_h))   // SDL_SetWindowMaximumSize
  
+ 
+-------------------------------------------------------------------
 SDL IMG:
 - change PNG saving to only use 3 channels
 
-SDL TTF:
-- fix outline positioning bug
-  > const FT_BitmapGlyph bg = (FT_BitmapGlyph)bitmap_glyph;
-  > if(FT_IS_SCALABLE(face))
-  > {
-  >     cached->minx    = bg->left;
-  >     cached->maxx    = bg->left + FT_CEIL(metrics->width);
-  >     cached->maxy    = bg->top;
-  >     cached->miny    = cached->maxy - FT_CEIL(metrics->height);
-  >     cached->yoffset = font->ascent - cached->maxy;
-  > }
-  > else
-  > {
-  >     cached->minx    = bg->left;
-  >     cached->maxx    = bg->left + FT_CEIL(metrics->width);
-  >     cached->maxy    = bg->top;
-  >     cached->miny    = cached->maxy - FT_CEIL(face->available_sizes[font->font_size_family].height);
-  >     cached->yoffset = 0;
-  > }
-  > cached->minx    += font->outline;
-  > cached->maxx    += font->outline;
-  > cached->maxy    += font->outline;
-  > cached->miny    += font->outline;
-  > cached->yoffset += font->outline;
 
+-------------------------------------------------------------------
+SDL TTF:
+- fix implementation-defined division on negative values
+  > (delta.x / 64)   // instead of (delta.x >> 6)
+
+  
+-------------------------------------------------------------------
 GLEW:
 - change _glewExtensionString array-size to 1 and remove check-functions
 - add new functions
