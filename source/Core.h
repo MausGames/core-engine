@@ -12,7 +12,7 @@
 //*------------------------------------------------------------------------------*//
 //| Core Engine v0.0.9a (https://www.maus-games.at)                              |//
 //*------------------------------------------------------------------------------*//
-//| Copyright (c) 2013-2019 Martin Mauersics                                     |//
+//| Copyright (c) 2013-2020 Martin Mauersics                                     |//
 //|                                                                              |//
 //| This software is provided 'as-is', without any express or implied            |//
 //| warranty. In no event will the authors be held liable for any damages        |//
