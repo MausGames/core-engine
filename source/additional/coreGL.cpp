@@ -362,14 +362,14 @@ void corePlatformExtensions(std::string* OUTPUT psOutput)
 #elif defined(_CORE_LINUX_)
 
     // open connection to default display
-    Display* pDisplay = X11_XOpenDisplay(NULL);
+    Display* pDisplay = XOpenDisplay(NULL);
     if(pDisplay)
     {
         // get full extension string
         (*psOutput) = glXQueryExtensionsString(pDisplay, DefaultScreen(pDisplay));
 
         // close connection
-        X11_XCloseDisplay(pDisplay);
+        XCloseDisplay(pDisplay);
     }
 
 #endif

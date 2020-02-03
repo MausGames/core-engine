@@ -109,6 +109,7 @@ public:
     //! @{
     inline    operator       coreFloat& ()      {return m_fValue;}
     constexpr operator const coreFloat& ()const {return m_fValue;}
+    constexpr const coreFloat& ToFloat  ()const {return m_fValue;}
     //! @}
 
     /*! update the flowing value */

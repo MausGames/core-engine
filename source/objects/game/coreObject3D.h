@@ -233,8 +233,8 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
 
     // save functions and vertex size
     m_nDefineBufferFunc = nDefineBufferFunc;
-    m_nUpdateDataFunc   = r_cast<coreUpdateData>  (s_cast<TRAIT_FUNC_TYPE(G)>(nUpdateDataFunc));
-    m_nUpdateShaderFunc = r_cast<coreUpdateShader>(s_cast<TRAIT_FUNC_TYPE(H)>(nUpdateShaderFunc));
+    m_nUpdateDataFunc   = r_cast<coreUpdateData>  (s_cast<typename TRAIT_FUNC_TYPE(G)>(nUpdateDataFunc));
+    m_nUpdateShaderFunc = r_cast<coreUpdateShader>(s_cast<typename TRAIT_FUNC_TYPE(H)>(nUpdateShaderFunc));
     m_iCustomSize       = iVertexSize;
 
     // immediately initialize if instance data buffers are already valid

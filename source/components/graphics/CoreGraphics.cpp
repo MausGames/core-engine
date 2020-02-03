@@ -381,7 +381,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
     glReadPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
 
     // copy path into another thread
-    const std::string sPathCopy = pcPath;
+    std::string sPathCopy = pcPath;
 
     Core::Manager::Resource->AttachFunction([=, sPathCopy = std::move(sPathCopy)]()
     {

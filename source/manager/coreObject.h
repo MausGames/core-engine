@@ -310,10 +310,10 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
         // test collision and call function
         coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT] = {};
         coreUint8 iHitCount                               = CORE_OBJECT_RAY_HITCOUNT;
-        if(coreObjectManager::TestCollision(pCurObject, vRayPos, vRayDir, &fHitDistance, &iHitCount))
+        if(coreObjectManager::TestCollision(pCurObject, vRayPos, vRayDir, afHitDistance, &iHitCount))
         {
             nCallback(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(pCurObject),
-                      fHitDistance, iHitCount, this->__NewCollision(pCurObject, r_cast<coreObject3D*>(&nCallback)));
+                      afHitDistance, iHitCount, this->__NewCollision(pCurObject, r_cast<coreObject3D*>(&nCallback)));
         }
     }
 }

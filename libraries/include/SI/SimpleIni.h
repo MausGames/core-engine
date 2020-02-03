@@ -3425,6 +3425,8 @@ typedef CSimpleIniTempl<wchar_t,
 # pragma warning (pop)
 #endif
 
+#define CSimpleIniA CSimpleIniTempl<char, SI_NoCase<char>,SI_ConvertA<char> >
+
 
 // ****************************************************************
 // use SDL to support Android and iOS

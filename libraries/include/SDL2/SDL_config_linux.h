@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /* include/SDL_config.h.  Generated from SDL_config.h.in by configure.  */
 /*
   Simple DirectMedia Layer
@@ -20,7 +23,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef SDL_config_h_
+#ifndef SDL_config_linux_h_
+#define SDL_config_linux_h_
 #define SDL_config_h_
 
 /**
@@ -390,4 +394,4 @@
 /* Enable dynamic libsamplerate support */
 /* #undef SDL_LIBSAMPLERATE_DYNAMIC */
 
-#endif /* SDL_config_h_ */
+#endif /* SDL_config_linux_h_ */

@@ -236,7 +236,7 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
             glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, pPointer);
 
             // delete temporary memory
-            SAFE_DELETE_ARRAY(pPointer);
+            SAFE_DELETE_ARRAY(pPointer)
         }
     }
 

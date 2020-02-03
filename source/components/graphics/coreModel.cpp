@@ -176,7 +176,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
             // reserve memory only for occupied clusters
             ASSERT(iIndex < CORE_MODEL_CLUSTERS_MAX)
-            aiTempIndex[iIndex].reserve(m_iNumIndices >> 4);
+            aiTempIndex[iIndex].reserve(m_iNumIndices >> 4u);
 
             // assign triangle indices to target cluster
             aiTempIndex[iIndex].push_back(piOptimizedData[i]);

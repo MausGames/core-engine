@@ -50,7 +50,7 @@ coreUint64 coreData::AppMemory()
         coreUint64 iPages;
 
         // read resident set size (in pages)
-        std::fscanf(pFile, "%*s %llu", &iPages);
+        std::fscanf(pFile, "%*s %lu", &iPages);
         std::fclose(pFile);
 
         // multiply with page-size and return
@@ -253,7 +253,7 @@ coreStatus coreData::OpenURL(const coreChar* pcURL)
     // delegate request to the Linux command processor (/bin/sh)
     if(std::system(NULL) && !std::system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
 
-#else defined(_CORE_OSX_)
+#elif defined(_CORE_OSX_)
 
     // delegate request to the OSX command processor
     if(std::system(NULL) && !std::system(PRINT("open %s", pcURL))) return CORE_OK;
@@ -278,7 +278,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
     struct stat oBuffer;
 
     // quick POSIX check
-    if(!stat(pcPath, &oBuffer) return true;
+    if(!stat(pcPath, &oBuffer)) return true;
 
 #else
 

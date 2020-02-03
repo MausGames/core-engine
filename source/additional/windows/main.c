@@ -21,9 +21,10 @@
 #include <DbgHelp.h>
 #include <crtdbg.h>
 #include <stdlib.h>
-#include <SDL2/SDL_main.h>
 
 typedef BOOL (WINAPI *uMiniDumpWriteDump) (HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION, PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
+
+extern int coreMain(int argc, char** argv);
 
 
 // ****************************************************************
@@ -190,12 +191,9 @@ extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInst
     // improve hardware utilization on NUMA systems
     ImproveNuma();
 
-    // initialize the SDL library
-    SDL_SetMainReady();
-
     // run the application
     char* argv[] = {"CoreApp", NULL};
-    return SDL_main(sizeof(argv) / sizeof(argv[0]) - 1, argv);
+    return coreMain(sizeof(argv) / sizeof(argv[0]) - 1, argv);
 }
 
 

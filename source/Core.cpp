@@ -132,10 +132,10 @@ void Core::Reset()
     STATIC_DELETE(System)
 
     // start up main components
-    STATIC_NEW(System);
-    STATIC_NEW(Graphics);
-    STATIC_NEW(Input);
-    STATIC_NEW(Debug);
+    STATIC_NEW(System)
+    STATIC_NEW(Graphics)
+    STATIC_NEW(Input)
+    STATIC_NEW(Debug)
 
     // load former state
     System  ->m_dTotalTime = dTotalTime;
@@ -180,7 +180,7 @@ void Core::Reshape()
 
 // ****************************************************************
 /* main function */
-ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar** argv)
+coreInt32 coreMain(coreInt32 argc, coreChar** argv)
 {
     // set new working directory (bin/<OS>/<ARCH>)
     coreData::SetCurDir("../../..");

@@ -79,10 +79,6 @@
 #if defined(__GNUC__)
     #define _CORE_GCC_   ((__GNUC__)*10000 + (__GNUC_MINOR__)*100 + (__GNUC_PATCHLEVEL__)*1)
 #endif
-#if defined(__MINGW32__)
-    #define _CORE_MINGW_ ((__GNUC__)*10000 + (__GNUC_MINOR__)*100 + (__GNUC_PATCHLEVEL__)*1)
-    #undef  _CORE_GCC_
-#endif
 #if defined(__clang__)
     #define _CORE_CLANG_ ((__clang_major__)*10000 + (__clang_minor__)*100 + (__clang_patchlevel__)*1)
     #undef  _CORE_GCC_
@@ -123,7 +119,7 @@
 #endif
 
 // debug mode
-#if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_MINGW_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
+#if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_
 #endif
 
@@ -138,7 +134,7 @@
 #endif
 
 // Windows XP mode
-#if (defined(_USING_V110_SDK71_) || defined(_CORE_MINGW_)) && defined(_CORE_WINDOWS_)
+#if defined(_USING_V110_SDK71_) && defined(_CORE_WINDOWS_)
     #define _CORE_WINXP_
 #endif
 
@@ -153,7 +149,7 @@
 #endif
 
 // target configuration checks
-#if ((_CORE_MSVC_) < 1911) && ((_CORE_GCC_) < 60200) && ((_CORE_MINGW_) < 60200) && ((_CORE_CLANG_) < 40000)
+#if ((_CORE_MSVC_) < 1916) && ((_CORE_GCC_) < 90201) && ((_CORE_CLANG_) < 90000)
     #error Compiler not supported!
 #endif
 #if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_OSX_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_)
@@ -240,8 +236,11 @@
 
 #else
 
-    // disable unwanted compiler warnings (with -Wall)
-    #pragma GCC diagnostic ignored "-Wmisleading-indentation"
+    // disable unwanted compiler warnings (with -Wall -Wextra)
+    #pragma GCC diagnostic ignored "-Wdefaulted-function-deleted"
+    #pragma GCC diagnostic ignored "-Wformat-security"
+    #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+    #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #endif
 
@@ -249,7 +248,7 @@
     #if defined(_CORE_MSVC_)
         #pragma fenv_access (off)   //!< ignore access to the floating-point environment (on purpose)
         #pragma fp_contract (on)    //!< allow contracting of floating-point expressions
-    #else
+    #elif defined(_CORE_CLANG_)
         #pragma STDC FENV_ACCESS OFF
         #pragma STDC FP_CONTRACT ON
     #endif
@@ -260,16 +259,12 @@
 /* standard libraries */
 #define _ALLOW_RTCc_IN_STL
 #define _CRT_SECURE_NO_WARNINGS
-#define _GNU_SOURCE
 #define WIN32_LEAN_AND_MEAN
-#if defined(_CORE_MINGW_)
-    #undef __STRICT_ANSI__
-#endif
 #if !defined(_CORE_EXCEPTIONS_)
     #define _HAS_EXCEPTIONS 0
 #endif
 #if defined(_CORE_DEBUG_)
-    #define _GLIBCXX_DEBUG
+    #define _CRTDBG_MAP_ALLOC
 #endif
 #if defined(_CORE_WINXP_)
     #define _WIN32_WINNT _WIN32_WINNT_WINXP
@@ -294,6 +289,7 @@
 #include <cfenv>
 #include <cmath>
 #include <ctime>
+#include <cassert>
 #include <type_traits>
 #include <functional>
 #include <algorithm>
@@ -307,10 +303,11 @@
 
 // ****************************************************************
 /* external libraries */
-#define HAVE_LIBC
 #define GLEW_NO_GLU
 #define OV_EXCLUDE_STATIC_CALLBACKS
-#define ZSTD_DLL_IMPORT 1
+#if defined(_CORE_MSVC_)
+    #define ZSTD_DLL_IMPORT 1
+#endif
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -385,7 +382,7 @@
     #if defined(_CORE_MSVC_)
         #define WARN_IF(c)          if(c)
     #else
-        #define WARN_IF(c)          if(__builtin_expect(c, 0))
+        #define WARN_IF(c)          if(__builtin_expect(!!(c), 0))
     #endif
 #endif
 
@@ -507,8 +504,8 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 #define FORCE_COMPILE_TIME(x) (coreForceCompileTime<decltype(x), x>::tResult)
 
 // directly call constructor and destructor on pointer
-#define CALL_CONSTRUCTOR(p,...) {using __t = std::remove_reference<decltype(*(p))>::type; new(p) __t(__VA_ARGS__);}
-#define CALL_DESTRUCTOR(p)      {using __t = std::remove_reference<decltype(*(p))>::type; (p)->~__t();}
+#define CALL_CONSTRUCTOR(p,...) {using __t = typename std::remove_reference<decltype(*(p))>::type; new(p) __t(__VA_ARGS__);}
+#define CALL_DESTRUCTOR(p)      {using __t = typename std::remove_reference<decltype(*(p))>::type; (p)->~__t();}
 
 // default color values
 #define COLOR_WHITE  (coreVector3(1.000f, 1.000f, 1.000f))
@@ -551,8 +548,10 @@ enum coreStatus : coreInt8
     // try to acquire the spinlock
     FORCE_INLINE coreBool coreAtomicTryLock(SDL_SpinLock* OUTPUT piLock)
     {
-    #if defined(_CORE_WINDOWS_)
+    #if defined(_CORE_MSVC_)
         return !_InterlockedExchange(r_cast<long*>(piLock), 1);
+    #elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
+        return !__sync_lock_test_and_set(piLock, 1);
     #else
         return SDL_AtomicTryLock(piLock);
     #endif
@@ -572,9 +571,11 @@ enum coreStatus : coreInt8
     // release the spinlock
     FORCE_INLINE void coreAtomicUnlock(SDL_SpinLock* OUTPUT piLock)
     {
-    #if defined(_CORE_WINDOWS_)
+    #if defined(_CORE_MSVC_)
         _ReadWriteBarrier();
         (*piLock) = 0;
+    #elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
+        __sync_lock_release(piLock);
     #else
         SDL_AtomicUnlock(piLock);
     #endif
@@ -623,6 +624,9 @@ class  CoreDebug;
 class  coreMemoryManager;
 class  coreResourceManager;
 class  coreObjectManager;
+
+extern "C" coreInt32 coreMain(coreInt32 argc, coreChar** argv);
+extern "C" coreInt32 coreThreadMain(void* pData);
 
 
 // ****************************************************************
@@ -724,7 +728,7 @@ public:
 private:
     /*! run engine */
     //! @{
-    friend ENTRY_POINT coreInt32 main(coreInt32 argc, coreChar** argv);
+    friend coreInt32 coreMain(coreInt32 argc, coreChar** argv);
     static coreStatus Run();
     //! @}
 };

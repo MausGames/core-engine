@@ -250,7 +250,7 @@ inline coreUint32 coreMath::PopCount(coreUint32 iInput)
     if(coreCPUID::POPCNT())
     {
         // optimized calculation with POPCNT
-        return __popcnt(iInput);
+        return _mm_popcnt_u32(iInput);
     }
 
 #endif
@@ -430,7 +430,7 @@ inline coreUint16 coreMath::Float32To16(const coreFloat fInput)
     const coreUint32 A = coreMath::FloatToBits(fInput);
     return ((A & 0x7FFFFFFFu) > 0x38000000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x0001C000u) |
                                                  ((A & 0x80000000u) >> 16u)) & 0xFFFFu : 0u;
-};
+}
 
 
 // ****************************************************************
@@ -451,7 +451,7 @@ inline coreFloat coreMath::Float16To32(const coreUint16 iInput)
     const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
                                                 (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
     return coreMath::BitsToFloat(A);
-};
+}
 
 
 // ****************************************************************

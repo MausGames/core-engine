@@ -94,5 +94,5 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
     }
 
     // save extended control register
-    if(coreCPUID::OSXSAVE()) iXCR = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
+    if(coreCPUID::OSXSAVE()) iXCR = _xgetbv(0);
 }

@@ -70,7 +70,7 @@ private:
 
     /*! entry-point function */
     //! @{
-    friend ENTRY_POINT coreInt32 SDLCALL coreThreadMain(void* pData);
+    friend coreInt32 coreThreadMain(void* pData);
     //! @}
 };
 

@@ -11,6 +11,8 @@
 #include <jni.h>
 #include <SDL2/SDL_main.h>
 
+extern int coreMain(int argc, char** argv);
+
 
 // ****************************************************************
 /* JNI access objects */
@@ -37,7 +39,7 @@ void Java_org_libsdl_app_SDLActivity_nativeInit(JNIEnv* pEnv, jclass pCls, jobje
 
     // run the application
     char* argv[] = {SDL_strdup("CoreApp"), NULL};
-    SDL_main(sizeof(argv) / sizeof(argv[0]) - 1, argv);
+    coreMain(sizeof(argv) / sizeof(argv[0]) - 1, argv);
 }
 
 
