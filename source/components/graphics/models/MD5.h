@@ -262,10 +262,10 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
         // normalize the normal vector
-        pVertex[i].vNormal = pVertex[i].vNormal.Normalized();
+        pVertex[i].vNormal = pVertex[i].vNormal.NormalizedUnsafe();
 
         // finish the Gram-Schmidt process to calculate the tangent vector and bitangent sign (w)
-        pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalized(),
+        pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).NormalizedUnsafe(),
                                           SIGN(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 

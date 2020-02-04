@@ -16,6 +16,8 @@
 // TODO: extract angle from quaternion
 // TODO: quaternion spline, with spherically interpolation of quaternions using a smooth cubic spline
 
+// NOTE: normalization needs to be safe by default, because an accidental null-normalization is hard to predict or detect in gameplay-code and can be fatal
+
 
 // ****************************************************************
 /* 2d-vector class */
@@ -77,7 +79,8 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr operator const coreFloat* ()const            {return (&x);}
+    constexpr explicit operator coreBool         ()const   {return ((x != 0.0f) || (y != 0.0f));}
+    constexpr          operator const coreFloat* ()const   {return (&x);}
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 2u) return (&x)[i];}
     inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 2u) return (&x)[i];}
     constexpr coreVector2      yx ()const                  {return coreVector2(y, x);}
@@ -99,7 +102,8 @@ public:
 
     /*! normalize vector */
     //! @{
-    inline coreVector2 Normalized()const {return coreVector2(x, y) * RSQRT(this->LengthSq());}
+    inline coreVector2 Normalized      (const coreVector2& vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    inline coreVector2 NormalizedUnsafe()const                                                      {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
     //! @}
 
     /*! process vector */
@@ -120,8 +124,8 @@ public:
     constexpr coreUintW MaxDimension()const {return (x > y) ? 0u : 1u;}
     inline    coreFloat AspectRatio ()const {return (x * RCP(y));}
     inline    coreFloat Angle       ()const {return (-std::atan2(x, y));}
-    constexpr coreBool  IsNormalized()const {return coreMath::IsNear(this->LengthSq(), 1.0f);}
-    constexpr coreBool  IsNull      ()const {return coreMath::IsNear(this->LengthSq(), 0.0f);}
+    constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
     //! @}
 
     /*! static functions */
@@ -210,7 +214,8 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr operator const coreFloat* ()const            {return (&x);}
+    constexpr explicit operator coreBool         ()const   {return ((x != 0.0f) || (y != 0.0f) || (z != 0.0f));}
+    constexpr          operator const coreFloat* ()const   {return (&x);}
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 3u) return (&x)[i];}
     inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 3u) return (&x)[i];}
     constexpr coreVector3      xzy()const                  {return coreVector3(x, z, y);}
@@ -255,7 +260,8 @@ public:
 
     /*! normalize vector */
     //! @{
-    inline coreVector3 Normalized()const {return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
+    inline coreVector3 Normalized      (const coreVector3& vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    inline coreVector3 NormalizedUnsafe()const                                                           {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
     //! @}
 
     /*! process vector */
@@ -274,8 +280,8 @@ public:
     constexpr coreFloat Max         ()const {return MAX(x, y, z);}
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
-    constexpr coreBool  IsNormalized()const {return coreMath::IsNear(this->LengthSq(), 1.0f);}
-    constexpr coreBool  IsNull      ()const {return coreMath::IsNear(this->LengthSq(), 0.0f);}
+    constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
     //! @}
 
     /*! static functions */
@@ -376,7 +382,8 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr operator const coreFloat* ()const             {return (&x);}
+    constexpr explicit operator coreBool         ()const    {return ((x != 0.0f) || (y != 0.0f) || (z != 0.0f) || (w != 0.0f));}
+    constexpr          operator const coreFloat* ()const    {return (&x);}
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 4u) return (&x)[i];}
     inline    const coreFloat& arr (const coreUintW i)const {ASSERT(i < 4u) return (&x)[i];}
     constexpr coreVector3      xyzw()const                  {return coreVector3(x, y, z) * w;}
@@ -401,7 +408,8 @@ public:
 
     /*! normalize vector */
     //! @{
-    inline coreVector4 Normalized()const {return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
+    inline coreVector4 Normalized      (const coreVector4& vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    inline coreVector4 NormalizedUnsafe()const                                                                {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
     //! @}
 
     /*! process vector */
@@ -420,8 +428,8 @@ public:
     constexpr coreFloat Max         ()const {return MAX(x, y, z, w);}
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
-    constexpr coreBool  IsNormalized()const {return coreMath::IsNear(this->LengthSq(), 1.0f);}
-    constexpr coreBool  IsNull      ()const {return coreMath::IsNear(this->LengthSq(), 0.0f);}
+    constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
     //! @}
 
     /*! static functions */
@@ -529,7 +537,7 @@ inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMax
 constexpr coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
 {
     const coreFloat fDot = coreVector2::Dot(vVelocity, vNormal);
-    return (fDot > 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
+    return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
 }
 
 
@@ -670,7 +678,7 @@ inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMax
 constexpr coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
 {
     const coreFloat fDot = coreVector3::Dot(vVelocity, vNormal);
-    return (fDot > 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
+    return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
 }
 
 
@@ -683,6 +691,7 @@ inline coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFlo
     const coreFloat   fDot      = coreVector3::Dot(vRelative, vViewDirection);
 
     // check result
+    ASSERT(fFOV <= 0.5f*PI)
     return (fDot < 0.0f) ? false : (fDot > COS(fFOV));
 }
 

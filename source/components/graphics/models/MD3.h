@@ -228,7 +228,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
             const coreFloat fLat = I_TO_F(oSurface.pVertexV16[i].aiNormal[1]) * (PI / 32768.0f);
             const coreFloat fLng = I_TO_F(oSurface.pVertexV16[i].aiNormal[0]) * (PI / 32768.0f);
             const coreFloat fSin = SIN(fLng);
-            pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).Normalized();
+            pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).NormalizedUnsafe();
 
             // forward texture coordinate
             pVertex[i].vTexCoord = oSurface.pTexture[i].vCoord;
@@ -248,7 +248,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
             const coreFloat fLat = I_TO_F(oSurface.pVertex[i].aiNormal[1]) * (PI / 128.0f);
             const coreFloat fLng = I_TO_F(oSurface.pVertex[i].aiNormal[0]) * (PI / 128.0f);
             const coreFloat fSin = SIN(fLng);
-            pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).Normalized();
+            pVertex[i].vNormal = coreVector3(COS(fLat) * fSin, SIN(fLat) * fSin, COS(fLng)).NormalizedUnsafe();
 
             // forward texture coordinate
             pVertex[i].vTexCoord = oSurface.pTexture[i].vCoord;
@@ -281,7 +281,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
         // finish the Gram-Schmidt process to calculate the tangent vector and bitangent sign (w)
-        pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).Normalized(),
+        pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).NormalizedUnsafe(),
                                           SIGN(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
     }
 
