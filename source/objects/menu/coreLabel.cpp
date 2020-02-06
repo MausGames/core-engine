@@ -38,7 +38,7 @@ coreLabel::coreLabel(const coreHashString& sFont, const coreUint16 iHeight, cons
 coreLabel::~coreLabel()
 {
     // free own texture
-    Core::Manager::Resource->Free(&m_apTexture[1]);
+    Core::Manager::Resource->Free(&m_apTexture[CORE_LABEL_TEXTURE]);
 }
 
 
@@ -54,7 +54,7 @@ void coreLabel::Construct(const coreHashString& sFont, const coreUint16 iHeight,
     m_pFont = Core::Manager::Resource->Get<coreFont>(sFont);
 
     // allocate own texture to display text
-    if(!m_apTexture[1]) m_apTexture[1] = Core::Manager::Resource->LoadNew<coreTexture>();
+    if(!m_apTexture[CORE_LABEL_TEXTURE]) m_apTexture[CORE_LABEL_TEXTURE] = Core::Manager::Resource->LoadNew<coreTexture>();
 
     // load shader-program
     this->DefineProgram(iOutline ? "default_label_sharp_program" : "default_label_smooth_program");
@@ -116,6 +116,9 @@ coreBool coreLabel::SetText(const coreChar* pcText)
 {
     ASSERT(pcText)
 
+    // unbind from language
+    this->_UnbindString(&m_sText);
+
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
@@ -131,6 +134,9 @@ coreBool coreLabel::SetText(const coreChar* pcText)
 coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
 {
     ASSERT(pcText)
+
+    // unbind from language
+    this->_UnbindString(&m_sText);
 
     // check for new text
     if((iNum != m_sText.length()) || std::strcmp(m_sText.c_str(), pcText))
@@ -159,7 +165,7 @@ void coreLabel::__Reset(const coreResourceReset eInit)
     else
     {
         // unload texture resource data
-        m_apTexture[1]->Unload();
+        m_apTexture[CORE_LABEL_TEXTURE]->Unload();
     }
 }
 
@@ -243,16 +249,16 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
         const coreUint32 iNewHeight = MAX(iHeight, F_TO_UI(m_vResolution.y));
 
         // create new texture
-        m_apTexture[1]->Unload();
-        m_apTexture[1]->Create(iNewPitch, iNewHeight, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), CORE_TEXTURE_MODE_DEFAULT);
+        m_apTexture[CORE_LABEL_TEXTURE]->Unload();
+        m_apTexture[CORE_LABEL_TEXTURE]->Create(iNewPitch, iNewHeight, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), CORE_TEXTURE_MODE_DEFAULT);
 
         // save new texture resolution
         m_vResolution = coreVector2(I_TO_F(iNewPitch), I_TO_F(iNewHeight));
     }
 
     // update only required texture area
-    m_apTexture[1]->Invalidate(0u);
-    m_apTexture[1]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
+    m_apTexture[CORE_LABEL_TEXTURE]->Invalidate(0u);
+    m_apTexture[CORE_LABEL_TEXTURE]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
 
     // display only visible texture area
     this->SetTexSize(coreVector2(I_TO_F(iWidth) - 0.5f, I_TO_F(iHeight)) / m_vResolution);

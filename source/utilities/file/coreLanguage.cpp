@@ -106,10 +106,10 @@ void coreTranslate::_UnbindString(std::string* psString)
     ASSERT(psString)
 
     // remove string internally
-    if(m_apsPointer.erase(psString))
+    if(m_pLanguage && m_apsPointer.erase(psString))
     {
         // unbind from language
-        if(m_pLanguage) m_pLanguage->UnbindForeign(psString);
+        m_pLanguage->UnbindForeign(psString);
     }
 }
 
