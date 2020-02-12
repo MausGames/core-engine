@@ -20,6 +20,70 @@
 
 
 // ****************************************************************
+/* 3x2-matrix class (storage only) */
+class coreMatrix3x2 final
+{
+public:
+    coreFloat _11, _12;
+    coreFloat _21, _22;
+    coreFloat _31, _32;
+
+
+public:
+    coreMatrix3x2() = default;
+    constexpr FORCE_INLINE coreMatrix3x2(const coreFloat f11, const coreFloat f12,
+                                         const coreFloat f21, const coreFloat f22,
+                                         const coreFloat f31, const coreFloat f32)noexcept;
+
+    ENABLE_COPY(coreMatrix3x2)
+
+    /*! compare operations */
+    //! @{
+    inline coreBool operator == (const coreMatrix3x2& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3x2)) ? false : true;}
+    inline coreBool operator != (const coreMatrix3x2& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3x2)) ? true : false;}
+    //! @}
+
+    /*! static functions */
+    //! @{
+    static constexpr coreMatrix3x2 Identity();
+    //! @}
+};
+
+
+// ****************************************************************
+/* 4x3-matrix class (storage only) */
+class coreMatrix4x3 final
+{
+public:
+    coreFloat _11, _12, _13;
+    coreFloat _21, _22, _23;
+    coreFloat _31, _32, _33;
+    coreFloat _41, _42, _43;
+
+
+public:
+    coreMatrix4x3() = default;
+    constexpr FORCE_INLINE coreMatrix4x3(const coreFloat f11, const coreFloat f12, const coreFloat f13,
+                                         const coreFloat f21, const coreFloat f22, const coreFloat f23,
+                                         const coreFloat f31, const coreFloat f32, const coreFloat f33,
+                                         const coreFloat f41, const coreFloat f42, const coreFloat f43)noexcept;
+
+    ENABLE_COPY(coreMatrix4x3)
+
+    /*! compare operations */
+    //! @{
+    inline coreBool operator == (const coreMatrix4x3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4x3)) ? false : true;}
+    inline coreBool operator != (const coreMatrix4x3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4x3)) ? true : false;}
+    //! @}
+
+    /*! static functions */
+    //! @{
+    static constexpr coreMatrix4x3 Identity();
+    //! @}
+};
+
+
+// ****************************************************************
 /* 2x2-matrix class */
 class coreMatrix2 final
 {
@@ -111,7 +175,8 @@ public:
     constexpr FORCE_INLINE coreMatrix3(const coreFloat f11, const coreFloat f12, const coreFloat f13,
                                        const coreFloat f21, const coreFloat f22, const coreFloat f23,
                                        const coreFloat f31, const coreFloat f32, const coreFloat f33)noexcept;
-    constexpr FORCE_INLINE explicit coreMatrix3(const coreMatrix2& m)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix3(const coreMatrix3x2& m)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix3(const coreMatrix2&   m)noexcept;
 
     ENABLE_COPY(coreMatrix3)
 
@@ -144,9 +209,10 @@ public:
     constexpr operator const coreFloat* ()const            {return (&_11);}
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
     inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 9u) return (&_11)[i];}
-    CONSTEXPR coreMatrix2      m12()const                  {return coreMatrix2(_11, _12, _21, _22);}
-    CONSTEXPR coreMatrix2      m13()const                  {return coreMatrix2(_11, _13, _31, _33);}
-    CONSTEXPR coreMatrix2      m23()const                  {return coreMatrix2(_22, _23, _32, _33);}
+    CONSTEXPR coreMatrix3x2    m3x2()const                 {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
+    CONSTEXPR coreMatrix2      m12()const                  {return coreMatrix2  (_11, _12, _21, _22);}
+    CONSTEXPR coreMatrix2      m13()const                  {return coreMatrix2  (_11, _13, _31, _33);}
+    CONSTEXPR coreMatrix2      m23()const                  {return coreMatrix2  (_22, _23, _32, _33);}
     //! @}
 
     /*! transpose matrix */
@@ -208,8 +274,10 @@ public:
                                        const coreFloat f21, const coreFloat f22, const coreFloat f23, const coreFloat f24,
                                        const coreFloat f31, const coreFloat f32, const coreFloat f33, const coreFloat f34,
                                        const coreFloat f41, const coreFloat f42, const coreFloat f43, const coreFloat f44)noexcept;
-    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix3& m)noexcept;
-    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix2& m)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix4x3& m)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix3x2& m)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix3&   m)noexcept;
+    constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix2&   m)noexcept;
 
     ENABLE_COPY(coreMatrix4)
 
@@ -242,10 +310,12 @@ public:
     constexpr operator const coreFloat* ()const             {return (&_11);}
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 16u) return (&_11)[i];}
     inline    const coreFloat& arr (const coreUintW i)const {ASSERT(i < 16u) return (&_11)[i];}
-    CONSTEXPR coreMatrix3      m123()const                  {return coreMatrix3(_11, _12, _13, _21, _22, _23, _31, _32, _33);}
-    CONSTEXPR coreMatrix3      m124()const                  {return coreMatrix3(_11, _12, _14, _21, _22, _24, _41, _42, _44);}
-    CONSTEXPR coreMatrix3      m134()const                  {return coreMatrix3(_11, _13, _14, _31, _33, _34, _41, _43, _44);}
-    CONSTEXPR coreMatrix3      m234()const                  {return coreMatrix3(_22, _23, _24, _32, _33, _34, _42, _43, _44);}
+    CONSTEXPR coreMatrix4x3    m4x3()const                  {return coreMatrix4x3(_11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43);}
+    CONSTEXPR coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
+    CONSTEXPR coreMatrix3      m123()const                  {return coreMatrix3  (_11, _12, _13, _21, _22, _23, _31, _32, _33);}
+    CONSTEXPR coreMatrix3      m124()const                  {return coreMatrix3  (_11, _12, _14, _21, _22, _24, _41, _42, _44);}
+    CONSTEXPR coreMatrix3      m134()const                  {return coreMatrix3  (_11, _13, _14, _31, _33, _34, _41, _43, _44);}
+    CONSTEXPR coreMatrix3      m234()const                  {return coreMatrix3  (_22, _23, _24, _32, _33, _34, _42, _43, _44);}
     //! @}
 
     /*! transpose matrix */
@@ -303,6 +373,53 @@ public:
 CONSTEXPR coreMatrix2 operator * (const coreFloat f, const coreMatrix2& m) {return m * f;}
 CONSTEXPR coreMatrix3 operator * (const coreFloat f, const coreMatrix3& m) {return m * f;}
 CONSTEXPR coreMatrix4 operator * (const coreFloat f, const coreMatrix4& m) {return m * f;}
+
+
+// ****************************************************************
+/* constructor */
+constexpr FORCE_INLINE coreMatrix3x2::coreMatrix3x2(const coreFloat f11, const coreFloat f12,
+                                                    const coreFloat f21, const coreFloat f22,
+                                                    const coreFloat f31, const coreFloat f32)noexcept
+: _11 (f11), _12 (f12)
+, _21 (f21), _22 (f22)
+, _31 (f31), _32 (f32)
+{
+}
+
+
+// ****************************************************************
+/* get identity matrix */
+constexpr coreMatrix3x2 coreMatrix3x2::Identity()
+{
+    return coreMatrix3x2(1.0f, 0.0f,
+                         0.0f, 1.0f,
+                         0.0f, 0.0f);
+}
+
+
+// ****************************************************************
+/* constructor */
+constexpr FORCE_INLINE coreMatrix4x3::coreMatrix4x3(const coreFloat f11, const coreFloat f12, const coreFloat f13,
+                                                    const coreFloat f21, const coreFloat f22, const coreFloat f23,
+                                                    const coreFloat f31, const coreFloat f32, const coreFloat f33,
+                                                    const coreFloat f41, const coreFloat f42, const coreFloat f43)noexcept
+: _11 (f11), _12 (f12), _13 (f13)
+, _21 (f21), _22 (f22), _23 (f23)
+, _31 (f31), _32 (f32), _33 (f33)
+, _41 (f41), _42 (f42), _43 (f43)
+{
+}
+
+
+// ****************************************************************
+/* get identity matrix */
+constexpr coreMatrix4x3 coreMatrix4x3::Identity()
+{
+    return coreMatrix4x3(1.0f, 0.0f, 0.0f,
+                         0.0f, 1.0f, 0.0f,
+                         0.0f, 0.0f, 1.0f,
+                         0.0f, 0.0f, 0.0f);
+}
 
 
 // ****************************************************************
@@ -394,6 +511,13 @@ constexpr FORCE_INLINE coreMatrix3::coreMatrix3(const coreFloat f11, const coreF
 : _11 (f11), _12 (f12), _13 (f13)
 , _21 (f21), _22 (f22), _23 (f23)
 , _31 (f31), _32 (f32), _33 (f33)
+{
+}
+
+constexpr FORCE_INLINE coreMatrix3::coreMatrix3(const coreMatrix3x2& m)noexcept
+: _11 (m._11), _12 (m._12), _13 (0.0f)
+, _21 (m._21), _22 (m._22), _23 (0.0f)
+, _31 (m._31), _32 (m._32), _33 (1.0f)
 {
 }
 
@@ -617,6 +741,22 @@ constexpr FORCE_INLINE coreMatrix4::coreMatrix4(const coreFloat f11, const coreF
 , _21 (f21), _22 (f22), _23 (f23), _24 (f24)
 , _31 (f31), _32 (f32), _33 (f33), _34 (f34)
 , _41 (f41), _42 (f42), _43 (f43), _44 (f44)
+{
+}
+
+constexpr FORCE_INLINE coreMatrix4::coreMatrix4(const coreMatrix4x3& m)noexcept
+: _11 (m._11), _12 (m._12), _13 (m._13), _14 (0.0f)
+, _21 (m._21), _22 (m._22), _23 (m._23), _24 (0.0f)
+, _31 (m._31), _32 (m._32), _33 (m._33), _34 (0.0f)
+, _41 (m._41), _42 (m._42), _43 (m._43), _44 (1.0f)
+{
+}
+
+constexpr FORCE_INLINE coreMatrix4::coreMatrix4(const coreMatrix3x2& m)noexcept
+: _11 (m._11), _12 (m._12), _13 (0.0f), _14 (0.0f)
+, _21 (m._21), _22 (m._22), _23 (0.0f), _24 (0.0f)
+, _31 (m._31), _32 (m._32), _33 (1.0f), _34 (0.0f)
+, _41  (0.0f), _42  (0.0f), _43 (0.0f), _44 (1.0f)
 {
 }
 
