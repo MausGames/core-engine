@@ -1,14 +1,31 @@
 #!/usr/bin/python
-
 import lldb
 
-#def Test(value, internal_dict):
-#    x = value.GetChildMemberWithName("x").GetValue()
-#    y = value.GetChildMemberWithName("y").GetValue()
-#    return "(x = {0}, y = {1})".format(x, y)
+
+def coreResourcePtrVisualizer(value, internal_dict):
+
+    pCursor  = value.GetChildMemberWithName("m_pHandle")
+    iPointer = pCursor.GetValueAsUnsigned(0)
+
+    if iPointer == 0:
+        return "(null)"
+
+    pCursor  = pCursor.GetValueForExpressionPath(".m_sName._M_dataplus._M_p")
+    sSummary = pCursor.GetSummary()
+
+    if sSummary == "\"\"":
+        return "(custom)"
+
+    return F"({sSummary})"
+
 
 def __lldb_init_module(debugger, internal_dict):
-    #debugger.HandleCommand("type summary add -F " + __name__ + ".Test coreVector2")
-    debugger.HandleCommand("type summary add --summary-string \"(${var.x}, ${var.y})\"                     coreVector2")
-    debugger.HandleCommand("type summary add --summary-string \"(${var.x}, ${var.y}, ${var.z})\"           coreVector3")
-    debugger.HandleCommand("type summary add --summary-string \"(${var.x}, ${var.y}, ${var.z}, ${var.w})\" coreVector4")
+
+    debugger.HandleCommand("type summary add --python-function " + __name__ + ".coreResourcePtrVisualizer -x \"coreResourcePtr<\\w+>\"")
+    debugger.HandleCommand("type summary add --inline-children --omit-names coreVector2")
+    debugger.HandleCommand("type summary add --inline-children --omit-names coreVector3")
+    debugger.HandleCommand("type summary add --inline-children --omit-names coreVector4")
+    debugger.HandleCommand("type summary add --inline-children --omit-names coreFlow")
+
+
+# command script import <path>/CoreEngine/projects/cmake/visualizer.py
