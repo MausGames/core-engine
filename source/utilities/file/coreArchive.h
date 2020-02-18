@@ -20,8 +20,8 @@
 
 // ****************************************************************
 // file definitions
-#define CORE_FILE_MAGIC   (coreUint32('CFA0'))   //!< magic number of core-archives
-#define CORE_FILE_VERSION (0x00000001u)          //!< current file version of core-archives
+#define CORE_FILE_MAGIC   (UINT_LITERAL("CFA0"))   //!< magic number of core-archives
+#define CORE_FILE_VERSION (0x00000001u)            //!< current file version of core-archives
 
 
 // ****************************************************************
