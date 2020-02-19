@@ -11,6 +11,7 @@ set_target_properties(
     CoreApp PROPERTIES
     CXX_STANDARD 17
     DEBUG_POSTFIX _debug
+    SUFFIX .elf
     RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/linux/x64/
 )
 

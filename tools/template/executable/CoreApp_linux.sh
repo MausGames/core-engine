@@ -5,4 +5,4 @@ cd bin/linux/x64
 export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
 
 # start game
-./CoreApp
+./CoreApp.elf

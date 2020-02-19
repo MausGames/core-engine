@@ -72,9 +72,8 @@ target_include_directories(
 target_compile_options(
     CoreEngine PUBLIC
     -mf16c -mxsave -Wall -Wextra -pedantic
-    $<IF:$<CONFIG:Debug>, -O0 -g, -O3 -flto -fno-rtti -fno-exceptions -Werror>
+    $<IF:$<CONFIG:Debug>, -O0 -g, -O3 -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
 )
-#-rdynamic
 
 
 target_link_directories(
@@ -92,5 +91,5 @@ target_link_libraries(
 
 target_link_options(
     CoreEngine INTERFACE
-    $<IF:$<CONFIG:Debug>, , -flto>
+    $<IF:$<CONFIG:Debug>, , -rdynamic>
 )
