@@ -75,6 +75,7 @@ public:
     /* get operating system properties */
     //! @{
     static const coreChar* SystemName();
+    static const coreChar* SystemUserName();
     //! @}
 
     /*! control current working directory */

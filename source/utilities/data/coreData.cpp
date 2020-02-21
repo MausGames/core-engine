@@ -15,8 +15,10 @@
 #elif defined(_CORE_LINUX_)
     #include <dirent.h>
     #include <sys/utsname.h>
+    #include <pwd.h>
 #elif defined(_CORE_OSX_)
     #include <mach-o/dyld.h>
+    #include <pwd.h>
 #elif defined(_CORE_ANDROID_)
     #include <dirent.h>
     #include <sys/system_properties.h>
@@ -170,6 +172,10 @@ const coreChar* coreData::SystemName()
     // return full operating system name
     return PRINT("%s %s (%s)", oInfo.sysname, oInfo.release, oInfo.version);
 
+#elif defined(_CORE_OSX_)
+
+    return "OSX";
+
 #elif defined(_CORE_ANDROID_)
 
     coreChar acOS[PROP_VALUE_MAX], acSDK[PROP_VALUE_MAX];
@@ -181,11 +187,35 @@ const coreChar* coreData::SystemName()
     // return full operating system name
     return PRINT("Android %s (API Level %s)", acOS, acSDK);
 
-#elif defined(_CORE_OSX_)
-    return "OSX";
-#else
-    return "Unknown";
 #endif
+}
+
+
+// ****************************************************************
+/* get user name */
+const coreChar* coreData::SystemUserName()
+{
+    UNUSED coreChar* pcString = coreData::__NextTempString();
+
+#if defined(_CORE_WINDOWS_)
+
+    // get user name associated with current thread
+    DWORD nSize = CORE_DATA_STRING_LEN;
+    if(GetUserNameA(pcString, &nSize)) return pcString;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+
+    // get user name from password database
+    const passwd* pRecord = getpwuid(geteuid());
+    if(pRecord && pRecord->pw_name) return pRecord->pw_name;
+
+    // get user name from controlling terminal
+    const coreChar* pcLogin = getlogin();
+    if(pcLogin) return pcLogin;
+
+#endif
+
+    return "";
 }
 
 
@@ -689,7 +719,7 @@ const coreChar* coreData::StrExtension(const coreChar* pcInput)
     WARN_IF(!pcInput) return "";
 
     const coreChar* pcDot = std::strrchr(pcInput, '.');
-    return pcDot ? (pcDot + 1u) : pcInput;
+    return pcDot ? (pcDot + 1u) : "";
 }
 
 
