@@ -176,28 +176,22 @@
     #define FUNC_CONST       __declspec(noalias)    //!< function only reads parameters (without indirections), and returns a value
     #define FUNC_LOCAL       __declspec(noalias)    //!< function only reads parameters, reads first-level indirections (e.g. this), and returns a value
     #define FUNC_NOALIAS     __declspec(noalias)    //!< function only reads parameters, reads and writes first-level indirections, and may return a value
-    #define FUNC_TERMINATE   __declspec(noreturn)   //!< function does not return (e.g. by calling exit(3) or abort(3))
+    #define FUNC_TERMINATE   [[noreturn]]           //!< function does not return (e.g. by calling exit(3) or abort(3))
 #else
-    #define UNUSED           __attribute__((unused))
+    #define UNUSED           [[maybe_unused]]
     #define OUTPUT           __restrict__
     #define INTERFACE
     #define FORCE_INLINE     __attribute__((always_inline)) inline
     #define DONT_INLINE      __attribute__((noinline))
-    #define FALLTHROUGH      __attribute__((fallthrough));
-    #define RETURN_RESTRICT  __attribute__((malloc))
+    #define FALLTHROUGH      [[fallthrough]];
+    #define RETURN_RESTRICT  __attribute__((returns_nonnull, malloc))
     #define RETURN_NONNULL   __attribute__((returns_nonnull))
-    #define RETURN_NODISCARD __attribute__((warn_unused_result))
+    #define RETURN_NODISCARD [[nodiscard]]
     #define FUNC_PURE        __attribute__((pure))
     #define FUNC_CONST       __attribute__((const))
     #define FUNC_LOCAL       __attribute__((pure))
     #define FUNC_NOALIAS
-    #define FUNC_TERMINATE   __attribute__((noreturn, cold))
-#endif
-
-#if (defined(_CORE_GCC_) || defined(_CORE_MINGW_) || defined(_CORE_CLANG_)) && defined(_CORE_SSE_)
-    #define ENTRY_POINT      __attribute__((force_align_arg_pointer))   //!< realign run-time stack (to prevent SSE issues)
-#else
-    #define ENTRY_POINT
+    #define FUNC_TERMINATE   [[noreturn]]
 #endif
 
 #if defined(_CORE_MSVC_)
