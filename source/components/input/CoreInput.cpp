@@ -117,7 +117,7 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
     WARN_IF(iIndex >= m_aJoystick.size()) return;
 
     // get original input
-    const coreVector2& vAcc = this->GetJoystickRelativeL(iIndex);
+    const coreVector2 vAcc = this->GetJoystickRelativeL(iIndex);
 
     // move the mouse cursor
     if(!vAcc.IsNull())
@@ -288,6 +288,9 @@ void CoreInput::ClearButtonAll()
     this->ClearMouseButtonAll();
     for(coreUintW i = 0u, ie = this->GetJoystickNum(); i < ie; ++i) this->ClearJoystickButtonAll(i);
     this->ClearTouchButtonAll();
+
+    // clear status of any available button
+    this->ClearAnyButton();
 }
 
 
@@ -370,7 +373,7 @@ void CoreInput::__UpdateButtonsEnd()
     m_Keyboard.iChar = CORE_INPUT_CHAR(UNKNOWN);
 
     // clear status of any available button
-    m_iAnyButton = 0u;
+    this->ClearAnyButton();
 }
 
 

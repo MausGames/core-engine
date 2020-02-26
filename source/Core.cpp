@@ -232,8 +232,8 @@ coreStatus Core::Run()
         // update the resource manager with only one context
         if(!Core::Graphics->GetResourceContext())
         {
-            Core::Manager::Resource->UpdateFunctions();
             Core::Manager::Resource->UpdateResources();
+            Core::Manager::Resource->UpdateFunctions();
         }
     }
 

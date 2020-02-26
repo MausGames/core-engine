@@ -197,7 +197,7 @@ public:
     inline const coreFloat&   GetJoystickRelative (const coreUintW iIndex, const coreUint8 iAxis)const                                    {ASSERT(iAxis      < CORE_INPUT_AXIS)             return __CORE_INPUT_JOYSTICK(iIndex).afRelative[iAxis];}
     inline const coreVector2& GetJoystickRelativeL(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[0]);}
     inline const coreVector2& GetJoystickRelativeR(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[2]);}
-    inline void               RumbleJoystick      (const coreUintW iIndex, const coreFloat fStrength, const coreUint32 iLength)           {if(__CORE_INPUT_JOYSTICK(iIndex).pHaptic) SDL_HapticRumblePlay(__CORE_INPUT_JOYSTICK(iIndex).pHaptic, fStrength, iLength);}
+    inline void               RumbleJoystick      (const coreUintW iIndex, const coreFloat fStrength, const coreUint32 iLengthMs)         {ASSERT((fStrength > 0.0f) && (fStrength <= 1.0f) && (iLengthMs > 0u)) if(__CORE_INPUT_JOYSTICK(iIndex).pHaptic) SDL_HapticRumblePlay(__CORE_INPUT_JOYSTICK(iIndex).pHaptic, fStrength, iLengthMs);}
     //! @}
 
     //! access touch input
@@ -242,6 +242,7 @@ public:
     inline void ClearMouseButtonAll   ()                                                {std::memset(m_Mouse   .aiButton,                    0, sizeof(m_Mouse   .aiButton));}
     inline void ClearJoystickButtonAll(const coreUintW iIndex)                          {std::memset(__CORE_INPUT_JOYSTICK(iIndex).aiButton, 0, sizeof(__CORE_INPUT_JOYSTICK(iIndex).aiButton));}
     inline void ClearTouchButtonAll   ()                                                {for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i) m_aTouch[i].iButton = 0u;}
+    inline void ClearAnyButton        ()                                                {m_iAnyButton = 0u;}
     void        ClearButtonAll        ();
     //! @}
 

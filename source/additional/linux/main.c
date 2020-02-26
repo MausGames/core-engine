@@ -55,6 +55,7 @@ static void InstallSignalHandler(void)
 
     // set signal action
     sigaction(SIGILL,  &oAction, NULL);
+    sigaction(SIGABRT, &oAction, NULL);
     sigaction(SIGFPE,  &oAction, NULL);
     sigaction(SIGBUS,  &oAction, NULL);
     sigaction(SIGSEGV, &oAction, NULL);

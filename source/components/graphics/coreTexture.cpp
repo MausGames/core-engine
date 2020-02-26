@@ -544,7 +544,7 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
             for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i)       * 4u, pInput + (i)               * iComponents, 4u);
             for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i +  4u) * 4u, pInput + (i + 1u*iInWidth) * iComponents, 4u);
             for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i +  8u) * 4u, pInput + (i + 2u*iInWidth) * iComponents, 4u);
-            for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i + 12u) * 4u, pInput + (i + 3u*iInWidth) * iComponents, 4u);
+            for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i + 12u) * 4u, pInput + (i + 3u*iInWidth) * iComponents, 4u);   // out-of-bounds read, on purpose
 
             // compress block (R -> RGTC1/BC4, RG -> RGTC2/BC5, RGB -> DXT1/BC1, RGBA -> DXT5/BC3)
             stb_compress_dxt_block(pOutput, aBlock, iComponents, STB_DXT_HIGHQUAL);

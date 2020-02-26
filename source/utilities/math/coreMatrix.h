@@ -1055,10 +1055,10 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 {
     ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
 
-    const coreVector3& D = vDirection;
-    const coreVector3& O = vOrientation;
-    const coreVector3  S = coreVector3::Cross(D, O).Normalized();
-    const coreVector3  U = coreVector3::Cross(S, D);
+    const coreVector3 D = vDirection;
+    const coreVector3 O = vOrientation;
+    const coreVector3 S = coreVector3::Cross(D, O).Normalized();
+    const coreVector3 U = coreVector3::Cross(S, D);
 
     return coreMatrix4( S.x,  S.y,  S.z, 0.0f,
                         D.x,  D.y,  D.z, 0.0f,

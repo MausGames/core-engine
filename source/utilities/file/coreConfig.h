@@ -14,6 +14,7 @@
 // TODO: check out templated Get and Set
 // TODO: remove simpleIni, need more specialized functionality
 // TODO: don't do two lookups when getting a value
+// TODO: use temp-save, like for coreFile
 
 
 // ****************************************************************

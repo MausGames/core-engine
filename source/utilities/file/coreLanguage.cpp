@@ -164,6 +164,8 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
 
     const auto nAssignFunc = [&](std::string* OUTPUT pString)
     {
+        ASSERT(pString->empty())
+
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
         coreData::StrTrim(pString);

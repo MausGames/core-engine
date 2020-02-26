@@ -136,6 +136,7 @@ CoreSystem::CoreSystem()noexcept
     this->SetWindowResolution(m_vResolution);
 
     // configure the OpenGL context
+    SDL_GL_ResetAttributes();
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,         8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,          8);

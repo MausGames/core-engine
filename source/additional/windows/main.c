@@ -169,7 +169,7 @@ static void ImproveNuma(void)
 
 // ****************************************************************
 /* start up the application */
-extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPSTR pcCmdLine, _In_ int iCmdShow)
+extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPWSTR pcCmdLine, _In_ int iCmdShow)
 {
 #if defined(_DEBUG)
 

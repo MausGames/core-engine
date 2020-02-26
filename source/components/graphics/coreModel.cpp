@@ -162,11 +162,11 @@ coreStatus coreModel::Load(coreFile* pFile)
         for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; i += 3u)
         {
             // calculate triangle (bounding) center
-            const coreVector3& vPos1      = m_pvVertexPosition[piOptimizedData[i]];
-            const coreVector3& vPos2      = m_pvVertexPosition[piOptimizedData[i+1u]];
-            const coreVector3& vPos3      = m_pvVertexPosition[piOptimizedData[i+2u]];
-            const coreVector3  vCenterPos = (coreVector3(MIN(vPos1.x, vPos2.x, vPos3.x), MIN(vPos1.y, vPos2.y, vPos3.y), MIN(vPos1.z, vPos2.z, vPos3.z)) +
-                                             coreVector3(MAX(vPos1.x, vPos2.x, vPos3.x), MAX(vPos1.y, vPos2.y, vPos3.y), MAX(vPos1.z, vPos2.z, vPos3.z))) * 0.5f;
+            const coreVector3 vPos1      = m_pvVertexPosition[piOptimizedData[i]];
+            const coreVector3 vPos2      = m_pvVertexPosition[piOptimizedData[i+1u]];
+            const coreVector3 vPos3      = m_pvVertexPosition[piOptimizedData[i+2u]];
+            const coreVector3 vCenterPos = (coreVector3(MIN(vPos1.x, vPos2.x, vPos3.x), MIN(vPos1.y, vPos2.y, vPos3.y), MIN(vPos1.z, vPos2.z, vPos3.z)) +
+                                            coreVector3(MAX(vPos1.x, vPos2.x, vPos3.x), MAX(vPos1.y, vPos2.y, vPos3.y), MAX(vPos1.z, vPos2.z, vPos3.z))) * 0.5f;
 
             // calculate target cluster
             const coreVector3 vRangePos = ((vCenterPos - vRangeMin) * vRangeDiff).Processed(CLAMP, 0.0f, 1.0f - CORE_MATH_PRECISION) * I_TO_F(CORE_MODEL_CLUSTERS_AXIS);
@@ -220,7 +220,7 @@ coreStatus coreModel::Load(coreFile* pFile)
             coreVector3 vClusterMax = coreVector3(-FLT_MAX,-FLT_MAX,-FLT_MAX);
             for(coreUintW j = 0u, je = m_piClusterNumIndices[i]; j < je; ++j)
             {
-                const coreVector3& vPosition = m_pvVertexPosition[m_ppiClusterIndex[i][j]];
+                const coreVector3 vPosition = m_pvVertexPosition[m_ppiClusterIndex[i][j]];
 
                 vClusterMin.x = MIN(vClusterMin.x, vPosition.x);
                 vClusterMin.y = MIN(vClusterMin.y, vPosition.y);
@@ -368,14 +368,14 @@ coreStatus coreModel::Unload()
 void coreModel::DrawArrays()const
 {
     // draw the model (without index buffer)
-    ASSERT(s_pCurrent == this || !s_pCurrent)
+    ASSERT((s_pCurrent == this) || !s_pCurrent)
     glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
 }
 
 void coreModel::DrawElements()const
 {
     // draw the model (with index buffer)
-    ASSERT((s_pCurrent == this || !s_pCurrent) && m_IndexBuffer.IsValid())
+    ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer.IsValid())
     glDrawRangeElements(m_iPrimitiveType, 0u, m_iNumVertices, m_iNumIndices, m_iIndexType, NULL);
 }
 

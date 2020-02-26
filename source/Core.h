@@ -259,6 +259,7 @@
 #endif
 #if defined(_CORE_DEBUG_)
     #define _CRTDBG_MAP_ALLOC
+    #define _GLIBCXX_ASSERTIONS
 #endif
 #if defined(_CORE_WINXP_)
     #define _WIN32_WINNT _WIN32_WINNT_WINXP

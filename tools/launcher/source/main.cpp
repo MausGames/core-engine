@@ -86,7 +86,7 @@ static bool IsWindows7OrGreater()
     // get operating system version
     GetVersionExW(&iOS);
 
-    // check for Windows Vista or higher
+    // check for Windows 7 or higher
     return (iOS.dwMajorVersion >= 7u) || ((iOS.dwMajorVersion >= 6u) && (iOS.dwMinorVersion >= 1u));
 }
 
