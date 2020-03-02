@@ -39,8 +39,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline coreBool operator == (const coreMatrix3x2& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3x2)) ? false : true;}
-    inline coreBool operator != (const coreMatrix3x2& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3x2)) ? true : false;}
+    inline coreBool operator == (const coreMatrix3x2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3x2)) == 0);}
+    inline coreBool operator != (const coreMatrix3x2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3x2)) != 0);}
     //! @}
 
     /*! static functions */
@@ -72,8 +72,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline coreBool operator == (const coreMatrix4x3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4x3)) ? false : true;}
-    inline coreBool operator != (const coreMatrix4x3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4x3)) ? true : false;}
+    inline coreBool operator == (const coreMatrix4x3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4x3)) == 0);}
+    inline coreBool operator != (const coreMatrix4x3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4x3)) != 0);}
     //! @}
 
     /*! static functions */
@@ -101,8 +101,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline coreBool operator == (const coreMatrix2& m)const {return std::memcmp(this, &m, sizeof(coreMatrix2)) ? false :  true;}
-    inline coreBool operator != (const coreMatrix2& m)const {return std::memcmp(this, &m, sizeof(coreMatrix2)) ?  true : false;}
+    inline coreBool operator == (const coreMatrix2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix2)) == 0);}
+    inline coreBool operator != (const coreMatrix2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix2)) != 0);}
     //! @}
 
     /*! matrix operations */
@@ -182,8 +182,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline coreBool operator == (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ? false :  true;}
-    inline coreBool operator != (const coreMatrix3& m)const {return std::memcmp(this, &m, sizeof(coreMatrix3)) ?  true : false;}
+    inline coreBool operator == (const coreMatrix3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3)) == 0);}
+    inline coreBool operator != (const coreMatrix3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3)) != 0);}
     //! @}
 
     /*! matrix operations */
@@ -283,8 +283,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline coreBool operator == (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ? false :  true;}
-    inline coreBool operator != (const coreMatrix4& m)const {return std::memcmp(this, &m, sizeof(coreMatrix4)) ?  true : false;}
+    inline coreBool operator == (const coreMatrix4& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4)) == 0);}
+    inline coreBool operator != (const coreMatrix4& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4)) != 0);}
     //! @}
 
     /*! matrix operations */

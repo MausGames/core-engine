@@ -118,21 +118,23 @@ private:
     /*! object collision structure */
     struct coreObjectCollision final
     {
-        const coreObject3D* pObject1;     //!< first 3d-object
-        const coreObject3D* pObject2;     //!< second 3d-object
-        coreUint32          iLastFrame;   //!< frame number of their last collision
+        const coreObject3D* pObject1;   //!< first 3d-object
+        const coreObject3D* pObject2;   //!< second 3d-object
+
+        inline coreBool operator == (const coreObjectCollision& o)const {return (std::memcmp(this, &o, sizeof(coreObjectCollision)) == 0);}
+        inline coreBool operator <  (const coreObjectCollision& o)const {return (std::memcmp(this, &o, sizeof(coreObjectCollision)) <  0);}
     };
 
 
 private:
-    coreLookup<coreInt32, coreObjectList> m_aapObjectList;   //!< lists with pointers to registered 3d-objects <type, list>
-    std::vector<coreObjectCollision> m_aObjectCollision;     //!< currently recorded collisions
+    coreLookup<coreInt32, coreObjectList>       m_aapObjectList;       //!< lists with pointers to registered 3d-objects <type, list>
+    coreLookup<coreObjectCollision, coreUint32> m_aiObjectCollision;   //!< currently recorded collisions
 
-    coreModelPtr  m_pLowQuad;                                //!< low-memory square model (4 bytes per vertex, 16 total)
-    coreModelPtr  m_pLowTriangle;                            //!< low-memory triangle model (8 bytes per vertex, 24 total)
-    coreObject2D* m_pBlitFallback;                           //!< 2d-object used for fallback-blitting onto the default frame buffer
+    coreModelPtr  m_pLowQuad;                                          //!< low-memory square model (4 bytes per vertex, 16 total)
+    coreModelPtr  m_pLowTriangle;                                      //!< low-memory triangle model (8 bytes per vertex, 24 total)
+    coreObject2D* m_pBlitFallback;                                     //!< 2d-object used for fallback-blitting onto the default frame buffer
 
-    static coreSet<coreObject2D*> s_apSpriteList;            //!< list with pointers to all existing 2d-objects
+    static coreSet<coreObject2D*> m_apSpriteList;                      //!< list with pointers to all existing 2d-objects
 
 
 private:

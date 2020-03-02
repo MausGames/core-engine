@@ -29,11 +29,11 @@ coreObject::coreObject()noexcept
 // ****************************************************************
 /* constructor */
 coreObjectManager::coreObjectManager()noexcept
-: m_aapObjectList    {}
-, m_aObjectCollision {}
-, m_pLowQuad         (NULL)
-, m_pLowTriangle     (NULL)
-, m_pBlitFallback    (NULL)
+: m_aapObjectList     {}
+, m_aiObjectCollision {}
+, m_pLowQuad          (NULL)
+, m_pLowTriangle      (NULL)
+, m_pBlitFallback     (NULL)
 {
     // allocate low-memory models
     m_pLowQuad     = Core::Manager::Resource->LoadNew<coreModel>();
@@ -78,10 +78,10 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
         return false;
 
     // get collision range and rotation
-    const coreVector3& vRange1    = pObject1->GetCollisionRange();
-    const coreVector3& vRange2    = pObject2->GetCollisionRange();
-    const coreVector4& vRotation1 = pObject1->GetRotation();
-    const coreVector4& vRotation2 = pObject2->GetRotation();
+    const coreVector3 vRange1    = pObject1->GetCollisionRange();
+    const coreVector3 vRange2    = pObject2->GetCollisionRange();
+    const coreVector4 vRotation1 = pObject1->GetRotation();
+    const coreVector4 vRotation2 = pObject2->GetRotation();
 
     // revert second rotation
     const coreVector4 vRevRotation2 = vRotation2.QuatConjugate();
@@ -128,22 +128,22 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     if(bSwap) std::swap(pObject1, pObject2);
 
     // prepare relative transformation (only first object will be transformed)
-    const coreVector3& vRelPosition = bSwap ? D2                : D1;
-    const coreVector4  vRelRotation = bSwap ? Q.QuatConjugate() : Q;
+    const coreVector3 vRelPosition = bSwap ? D2                : D1;
+    const coreVector4 vRelRotation = bSwap ? Q.QuatConjugate() : Q;
 
     // get models and object sizes (precise collision detection does not use size-modifiers)
-    const coreModel*   pModel1   = pObject1->GetModel().IsUsable() ? pObject1->GetModel().GetResource() : NULL;
-    const coreModel*   pModel2   = pObject2->GetModel().GetResource();
-    const coreVector3& vSize1    = pObject1->GetSize();
-    const coreVector3& vSize2    = pObject2->GetSize();
-    const coreFloat    vSizeMax1 = vSize1.Max();
-    const coreFloat    vSizeMax2 = vSize2.Max();
+    const coreModel*  pModel1   = pObject1->GetModel().IsUsable() ? pObject1->GetModel().GetResource() : NULL;
+    const coreModel*  pModel2   = pObject2->GetModel().GetResource();
+    const coreVector3 vSize1    = pObject1->GetSize();
+    const coreVector3 vSize2    = pObject2->GetSize();
+    const coreFloat   vSizeMax1 = vSize1.Max();
+    const coreFloat   vSizeMax2 = vSize2.Max();
 
     // calculate collision between precise and simple model
     if(!bPrecise1 || !bPrecise2)
     {
-        const coreVector3& vPosition1 = vRelPosition;
-        const coreFloat    fRadius1   = pObject1->GetCollisionRadius();
+        const coreVector3 vPosition1 = vRelPosition;
+        const coreFloat   fRadius1   = pObject1->GetCollisionRadius();
 
         for(coreUintW m = 0u, me = pModel2->GetNumClusters(); m < me; ++m)
         {
@@ -181,11 +181,16 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
             if(vClusterDiff.LengthSq() > POW2(fClusterRadius))
                 continue;
 
+            const coreVector3* pvVertexPosition1 = pModel1->GetVertexPosition();
+            const coreVector3* pvVertexPosition2 = pModel2->GetVertexPosition();
+            const coreUint16*  piClusterIndex1   = pModel1->GetClusterIndex(k);
+            const coreUint16*  piClusterIndex2   = pModel2->GetClusterIndex(m);
+
             for(coreUintW i = 0u, ie = pModel1->GetClusterNumIndices(k); i < ie; i += 3u)
             {
-                coreVector3 A1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i]]);
-                coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i+1u]]);
-                coreVector3 A3 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetVertexPosition()[pModel1->GetClusterIndex(k)[i+2u]]);
+                coreVector3 A1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i]]);
+                coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+1u]]);
+                coreVector3 A3 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+2u]]);
 
                 const coreVector3 vCross1 = coreVector3::Cross(A2 - A1, A3 - A1);
 
@@ -194,9 +199,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
 
                 for(coreUintW j = 0u, je = pModel2->GetClusterNumIndices(m); j < je; j += 3u)
                 {
-                    coreVector3 B1 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j]];
-                    coreVector3 B2 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j+1u]];
-                    coreVector3 B3 = vSize2 * pModel2->GetVertexPosition()[pModel2->GetClusterIndex(m)[j+2u]];
+                    coreVector3 B1 = vSize2 * pvVertexPosition2[piClusterIndex2[j]];
+                    coreVector3 B2 = vSize2 * pvVertexPosition2[piClusterIndex2[j+1u]];
+                    coreVector3 B3 = vSize2 * pvVertexPosition2[piClusterIndex2[j+2u]];
 
                     coreUint32 F1 = (coreVector3::Dot(B1 - A1, vCross1) >= 0.0f) ? 1u : 0u;
                     coreUint32 F2 = (coreVector3::Dot(B2 - A1, vCross1) >= 0.0f) ? 1u : 0u;
@@ -318,9 +323,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
     const coreVector3 vRelRayDir   = vRevRotation.QuatApply(vRayDir);
 
     // get model and object size (precise collision detection does not use size-modifiers)
-    const coreModel*   pModel   = pObject->GetModel().GetResource();
-    const coreVector3& vSize    = pObject->GetSize();
-    const coreFloat    vSizeMax = vSize.Max();
+    const coreModel*  pModel   = pObject->GetModel().GetResource();
+    const coreVector3 vSize    = pObject->GetSize();
+    const coreFloat   vSizeMax = vSize.Max();
 
     // calculate collision with precise model (MoellerTrumbore97)
     if(bPrecise)
@@ -352,11 +357,14 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
             if(fOppositeSq2 > fRadiusSq2)
                 continue;
 
+            const coreVector3* pvVertexPosition = pModel->GetVertexPosition();
+            const coreUint16*  piClusterIndex   = pModel->GetClusterIndex(m);
+
             for(coreUintW j = 0u, je = pModel->GetClusterNumIndices(m); j < je; j += 3u)
             {
-                const coreVector3 V1 = vSize * pModel->GetVertexPosition()[pModel->GetClusterIndex(m)[j]];
-                const coreVector3 V2 = vSize * pModel->GetVertexPosition()[pModel->GetClusterIndex(m)[j+1u]];
-                const coreVector3 V3 = vSize * pModel->GetVertexPosition()[pModel->GetClusterIndex(m)[j+2u]];
+                const coreVector3 V1 = vSize * pvVertexPosition[piClusterIndex[j]];
+                const coreVector3 V2 = vSize * pvVertexPosition[piClusterIndex[j+1u]];
+                const coreVector3 V3 = vSize * pvVertexPosition[piClusterIndex[j+2u]];
 
                 const coreVector3 W1 = V2 - V1;
                 const coreVector3 W2 = V3 - V1;
@@ -489,11 +497,11 @@ void coreObjectManager::__UpdateObjects()
 
     // loop through all collisions
     const coreUint32 iCurFrame = Core::System->GetCurFrame();
-    FOR_EACH_DYN(it, m_aObjectCollision)
+    FOR_EACH_DYN(it, m_aiObjectCollision)
     {
         // check for old entries and remove them
-        if(it->iLastFrame == iCurFrame) DYN_KEEP  (it)
-                                   else DYN_REMOVE(it, m_aObjectCollision)
+        if((*it) == iCurFrame) DYN_KEEP  (it)
+                          else DYN_REMOVE(it, m_aiObjectCollision)
     }
 }
 
@@ -544,24 +552,20 @@ void coreObjectManager::__UnbindObject(coreObject3D* pObject, const coreInt32 iT
 /* handle and track new collisions */
 coreBool coreObjectManager::__NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2)
 {
-    // loop through all collisions
-    FOR_EACH(it, m_aObjectCollision)
+    // create lookup key
+    coreObjectCollision oCollision;
+    oCollision.pObject1 = pObject1;
+    oCollision.pObject2 = pObject2;
+
+    // find existing collision
+    if(m_aiObjectCollision.count_bs(oCollision))
     {
-        if((it->pObject1 == pObject1) && (it->pObject2 == pObject2))
-        {
-            // update frame number
-            it->iLastFrame = Core::System->GetCurFrame();
-            return false;
-        }
+        // update frame number
+        m_aiObjectCollision.at(oCollision) = Core::System->GetCurFrame();
+        return false;
     }
 
-    // create new collision
-    coreObjectCollision oNewCollision;
-    oNewCollision.pObject1   = pObject1;
-    oNewCollision.pObject2   = pObject2;
-    oNewCollision.iLastFrame = Core::System->GetCurFrame();
-
     // add collision to list
-    m_aObjectCollision.push_back(oNewCollision);
+    m_aiObjectCollision.emplace_bs(oCollision, Core::System->GetCurFrame());
     return true;
 }

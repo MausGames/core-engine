@@ -35,8 +35,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline    coreBool operator == (const coreVector2& v)const {return std::memcmp(this, &v, sizeof(coreVector2)) ? false :  true;}
-    inline    coreBool operator != (const coreVector2& v)const {return std::memcmp(this, &v, sizeof(coreVector2)) ?  true : false;}
+    inline    coreBool operator == (const coreVector2& v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) == 0);}
+    inline    coreBool operator != (const coreVector2& v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) != 0);}
     constexpr coreBool operator <  (const coreVector2& v)const {return (x <  v.x) && (y <  v.y);}
     constexpr coreBool operator <= (const coreVector2& v)const {return (x <= v.x) && (y <= v.y);}
     constexpr coreBool operator >  (const coreVector2& v)const {return (x >  v.x) && (y >  v.y);}
@@ -172,8 +172,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline    coreBool operator == (const coreVector3& v)const {return std::memcmp(this, &v, sizeof(coreVector3)) ? false :  true;}
-    inline    coreBool operator != (const coreVector3& v)const {return std::memcmp(this, &v, sizeof(coreVector3)) ?  true : false;}
+    inline    coreBool operator == (const coreVector3& v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) == 0);}
+    inline    coreBool operator != (const coreVector3& v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) != 0);}
     constexpr coreBool operator <  (const coreVector3& v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z);}
     constexpr coreBool operator <= (const coreVector3& v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z);}
     constexpr coreBool operator >  (const coreVector3& v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z);}
@@ -342,8 +342,8 @@ public:
 
     /*! compare operations */
     //! @{
-    inline    coreBool operator == (const coreVector4& v)const {return std::memcmp(this, &v, sizeof(coreVector4)) ? false :  true;}
-    inline    coreBool operator != (const coreVector4& v)const {return std::memcmp(this, &v, sizeof(coreVector4)) ?  true : false;}
+    inline    coreBool operator == (const coreVector4& v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) == 0);}
+    inline    coreBool operator != (const coreVector4& v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) != 0);}
     constexpr coreBool operator <  (const coreVector4& v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z) && (w <  v.w);}
     constexpr coreBool operator <= (const coreVector4& v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z) && (w <= v.w);}
     constexpr coreBool operator >  (const coreVector4& v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z) && (w >  v.w);}
