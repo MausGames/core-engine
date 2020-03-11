@@ -40,6 +40,7 @@ private:
 
     std::vector<coreEntry> m_aEntry;   //!< list with entries and associated values
     coreUintW m_iCurIndex;             //!< index of the current entry
+    coreInt8  m_iUserSwitch;           //!< current entry changed by interaction (0 = unchanged | -1 = left | 1 = right)
 
     coreBool  m_bEndless;              //!< endless repeat behavior
     coreInt8  m_iOverride;             //!< override for selection arrows (0 = normal | 1 = always busy | -1 = always idle)
@@ -81,20 +82,14 @@ public:
     coreBool    SelectValue(const T&        tValue);
     inline void SelectFirst() {if(!m_aEntry.empty()) this->SelectIndex(0u);}
     inline void SelectLast () {if(!m_aEntry.empty()) this->SelectIndex(m_aEntry.size() - 1u);}
-    void Next    ();
-    void Previous();
+    void        Next       ();
+    void        Previous   ();
     //! @}
 
     //! access entries
     //! @{
     inline const coreEntry& GetEntry   (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex];}
     inline const coreEntry& GetCurEntry()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex];}
-    //! @}
-
-    //! interact with the switch-box
-    //! @{
-    inline coreBool IsClickedArrow(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType eType = CORE_INPUT_PRESS)const {return (m_aArrow[0].IsClicked(iButton, eType) || m_aArrow[1].IsClicked(iButton, eType)) ? true : false;}
-    inline coreBool IsFocusedArrow()const                                                                                        {return (m_aArrow[0].IsFocused()               || m_aArrow[1].IsFocused())               ? true : false;}
     //! @}
 
     //! set object properties
@@ -110,6 +105,7 @@ public:
     inline       coreLabel*  GetCaption   ()                       {return &m_Caption;}
     inline       coreUintW   GetNumEntries()const                  {return m_aEntry.size();}
     inline const coreUintW&  GetCurIndex  ()const                  {return m_iCurIndex;}
+    inline const coreInt8&   GetUserSwitch()const                  {return m_iUserSwitch;}
     inline const coreBool&   GetEndless   ()const                  {return m_bEndless;}
     inline const coreInt8&   GetOverride  ()const                  {return m_iOverride;}
     //! @}
@@ -132,6 +128,7 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 , m_Caption     ()
 , m_aEntry      {}
 , m_iCurIndex   (0u)
+, m_iUserSwitch (0)
 , m_bEndless    (false)
 , m_iOverride   (0)
 , m_Automatic   (coreTimer(1.0f, 10.0f, 1u))
@@ -239,19 +236,28 @@ template <typename T> void coreSwitchBox<T>::Move()
         m_aArrow[1].SetFocused(false);
     }
 
-    // check for selection arrow interaction
-    const coreBool abStatus[2] = {m_aArrow[0].IsClicked(CORE_INPUT_LEFT, CORE_INPUT_HOLD),
-                                  m_aArrow[1].IsClicked(CORE_INPUT_LEFT, CORE_INPUT_HOLD)};
+    // reset switch status
+    m_iUserSwitch = 0;
 
-    if(abStatus[0] || abStatus[1])
+    // check for selection arrow interaction
+    const coreInputType eType  = m_Automatic.GetStatus() ? CORE_INPUT_HOLD : CORE_INPUT_PRESS;
+    const coreBool      bLeft  = m_aArrow[0].IsClicked(CORE_INPUT_LEFT, eType);
+    const coreBool      bRight = m_aArrow[1].IsClicked(CORE_INPUT_LEFT, eType);
+
+    if(bLeft || bRight)
     {
         // update the automatic timer
         m_Automatic.Update(1.0f);
         if(!m_Automatic.GetStatus())
         {
+            const coreUintW iOldIndex = m_iCurIndex;
+
             // change current entry
-            if(abStatus[0]) this->Previous();
-                       else this->Next();
+            if(bLeft) this->Previous();
+                 else this->Next();
+
+            // set switch status
+            if(m_iCurIndex != iOldIndex) m_iUserSwitch = bLeft ? -1 : 1;
 
             // manually loop the automatic timer
             m_Automatic.Play((m_Automatic.GetValue(CORE_TIMER_GET_NORMAL) > 0.0f) ? CORE_TIMER_PLAY_RESET : CORE_TIMER_PLAY_CURRENT);
