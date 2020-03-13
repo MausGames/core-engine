@@ -221,6 +221,7 @@ void __coreInitOpenGL()
     // force additional extension status
     if(                     GLEW_EXT_framebuffer_sRGB)           __GLEW_ARB_framebuffer_sRGB           = true;
     if( GLEW_VERSION_1_3 || GLEW_EXT_multisample)                __GLEW_ARB_multisample                = true;
+    if( GLEW_VERSION_1_4)                                        __GLEW_ARB_depth_texture              = true;
     if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)        __GLEW_ARB_pixel_buffer_object        = true;
     if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)           __GLEW_ARB_geometry_shader4           = true;
     if( GLEW_VERSION_4_6 || GLEW_ARB_texture_filter_anisotropic) __GLEW_EXT_texture_filter_anisotropic = true;
@@ -279,14 +280,14 @@ void __coreInitOpenGL()
     }
 
     // check for basic OpenGL support
-    if(!GLEW_ARB_vertex_program           ||
-       !GLEW_ARB_vertex_shader            ||
-       !GLEW_ARB_fragment_shader          ||
-       !GLEW_ARB_shader_objects           ||
-       !GLEW_ARB_shading_language_100     ||
-       !GLEW_ARB_vertex_buffer_object     ||
-       !GLEW_ARB_texture_non_power_of_two ||
-       !GLEW_EXT_draw_range_elements)
+    if((!GLEW_ARB_vertex_program           ||
+        !GLEW_ARB_vertex_shader            ||
+        !GLEW_ARB_fragment_shader          ||
+        !GLEW_ARB_shader_objects           ||
+        !GLEW_ARB_shading_language_100     ||
+        !GLEW_ARB_vertex_buffer_object     ||
+        !GLEW_ARB_texture_non_power_of_two ||
+        !GLEW_EXT_draw_range_elements) && GLEW_V2_compatibility)
         Core::Log->Warning("Minimum OpenGL requirements not met, application may not work properly");
 
     // check for frame buffer object support
