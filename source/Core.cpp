@@ -185,6 +185,9 @@ coreInt32 coreMain(coreInt32 argc, coreChar** argv)
     // set new working directory (bin/<OS>/<ARCH>)
     coreData::SetCurDir("../../..");
 
+    // set command line arguments
+    coreData::SetCommandLine(argc, argv);
+
     // set floating-point behavior
     coreMath::EnableExceptions();
     coreMath::EnableRoundToNearest();

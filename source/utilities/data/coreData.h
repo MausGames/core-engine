@@ -51,8 +51,10 @@ private:
 
 
 private:
-    static thread_local coreTempString s_TempString;   //!< manually aligned temp-string buffer
-    static thread_local coreUintW      s_iCurString;   //!< current temp-string
+    static thread_local coreTempString s_TempString;          //!< manually aligned temp-string buffer
+    static thread_local coreUintW      s_iCurString;          //!< current temp-string
+
+    static coreLookupStr<const coreChar*> s_apcCommandLine;   //!< parsed command line arguments
 
 
 public:
@@ -82,6 +84,12 @@ public:
     //! @{
     static       coreStatus SetCurDir(const coreChar* pcPath);
     static const coreChar*  GetCurDir();
+    //! @}
+
+    /*! control command line arguments */
+    //! @{
+    static        void            SetCommandLine(const coreInt32 iArgc, coreChar** ppcArgv);
+    static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
     //! @}
 
     /*! open URL with default web-browser */

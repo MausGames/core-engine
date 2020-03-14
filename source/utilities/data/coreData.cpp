@@ -24,8 +24,9 @@
     #include <sys/system_properties.h>
 #endif
 
-thread_local coreData::coreTempString coreData::s_TempString = {};
-thread_local coreUintW                coreData::s_iCurString = 0u;
+thread_local coreData::coreTempString coreData::s_TempString     = {};
+thread_local coreUintW                coreData::s_iCurString     = 0u;
+coreLookupStr<const coreChar*>        coreData::s_apcCommandLine = {};
 
 
 // ****************************************************************
@@ -266,6 +267,28 @@ const coreChar* coreData::GetCurDir()
 #endif
 
     return "";
+}
+
+
+// ****************************************************************
+/* set command line arguments */
+void coreData::SetCommandLine(const coreInt32 iArgc, coreChar** ppcArgv)
+{
+    ASSERT(ppcArgv)
+
+    // loop through all arguments
+    for(coreUintW i = 1u, ie = iArgc; i < ie; ++i)
+    {
+        const coreChar* pcCurrent = ppcArgv[i];
+        ASSERT(pcCurrent)
+
+        // insert valid entries
+        if((*pcCurrent) == '-')
+        {
+            while((*(++pcCurrent)) == '-') {}
+            s_apcCommandLine[coreData::StrLower(pcCurrent)] = ((i+1u < ie) && ((*ppcArgv[i+1u]) != '-')) ? ppcArgv[i+1u] : "";
+        }
+    }
 }
 
 
