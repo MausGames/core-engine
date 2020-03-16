@@ -90,7 +90,7 @@ private:
 
     coreStatus   m_eStatus;       //!< current resource status
     coreUint16   m_iRefCount;     //!< simple reference-counter
-    SDL_SpinLock m_iUpdateLock;   //!< spinlock to prevent concurrent automatic resource loading
+    SDL_SpinLock m_iUpdateLock;   //!< spinlock to prevent concurrent resource loading
 
 
 private:
@@ -106,8 +106,8 @@ public:
     //! @{
     inline coreResource*   GetRawResource()const {return m_pResource;}
     inline const coreBool& IsAutomatic   ()const {return m_bAutomatic;}
-    inline       coreBool  IsLoaded      ()const {return (m_eStatus != CORE_BUSY)           ? true : false;}
-    inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount) ? true : false;}
+    inline       coreBool  IsLoaded      ()const {return (m_eStatus != CORE_BUSY);}
+    inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
     //! @}
 
     /*! control the reference-counter */
@@ -118,9 +118,9 @@ public:
 
     /*! handle resource loading */
     //! @{
-    inline coreBool Update () {if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic) {m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline coreBool Reload () {if( this->IsLoaded())          {m_pResource->Unload(); m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline coreBool Nullify() {if( this->IsLoaded())          {m_pResource->Unload(); m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
+    inline coreBool Update () {coreSpinLocker oLocker(&m_iUpdateLock); if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic) {m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
+    inline coreBool Reload () {coreSpinLocker oLocker(&m_iUpdateLock); if( this->IsLoaded())          {m_pResource->Unload(); m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
+    inline coreBool Nullify() {coreSpinLocker oLocker(&m_iUpdateLock); if( this->IsLoaded())          {m_pResource->Unload(); m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
     //! @}
 
     /*! attach asynchronous callbacks */
@@ -178,7 +178,7 @@ public:
 
     /*! check for usable resource object */
     //! @{
-    inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded()) ? true : false;}
+    inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded());}
     //! @}
 
     /*! attach asynchronous callbacks */
@@ -439,8 +439,9 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
         // delete possible resource proxy
         m_apProxy.erase(pHandle);
 
-        // stop automatic resource loading
-        coreAtomicLock(&pHandle->m_iUpdateLock);
+        // wait on possible resource loading
+        coreAtomicLock  (&pHandle->m_iUpdateLock);
+        coreAtomicUnlock(&pHandle->m_iUpdateLock);   // # locked again in destructor
 
         // delete resource handle
         (*pptResourcePtr) = NULL;
