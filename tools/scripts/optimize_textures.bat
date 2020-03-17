@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET _EXECUTABLE_="%~dp0optipng.exe"
+SET _EXECUTABLE_="%~dp0base\optipng.exe"
 SET _PARAMETERS_=-strip all -nx -o7
 
 IF EXIST "%~1\" (

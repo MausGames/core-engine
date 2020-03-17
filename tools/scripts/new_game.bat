@@ -21,7 +21,7 @@ xcopy "%PRJ_CUR%" "%PRJ_TARGET%" /E /Q
 ECHO Renaming...
 
 
-SET TOOL_REPLACE="%PRJ_CUR%\..\scripts\replace_text.bat"
+SET TOOL_REPLACE="%PRJ_CUR%\..\scripts\base\replace_text.bat"
 SET TOOL_NAME=CoreApp
 
 SET PATH_NETBEANS=%PRJ_TARGET%\projects\netbeans\nbproject

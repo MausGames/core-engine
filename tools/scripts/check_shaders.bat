@@ -1,6 +1,6 @@
 @ECHO OFF
 
-SET _EXECUTABLE_="%~dp0glslang.exe"
+SET _EXECUTABLE_="%~dp0base\glslang.exe"
 SET _PARAMETERS_=-t -w
 
 SET _GLOBAL_="%~1\global.glsl"
@@ -18,7 +18,7 @@ FOR %%V IN %_A_VERSION% DO (
     FOR /R "%~1\" %%G IN (*.vert) DO (
 
         (@ECHO [%%G]) >> %_LOG_%
-    
+
         (@ECHO #version                       %%V) >  temp
         (@ECHO #define _CORE_VERTEX_SHADER_     1) >> temp
         (@ECHO #define _CORE_QUALITY_           2) >> temp
@@ -31,11 +31,11 @@ FOR %%V IN %_A_VERSION% DO (
         CALL %_EXECUTABLE_% %_PARAMETERS_% temp.vert >> %_LOG_%
 
     )
-    
+
     FOR /R "%~1\" %%G IN (*.frag) DO (
 
         (@ECHO [%%G]) >> %_LOG_%
-    
+
         (@ECHO #version                       %%V) >  temp
         (@ECHO #define _CORE_FRAGMENT_SHADER_   1) >> temp
         (@ECHO #define _CORE_QUALITY_           2) >> temp
