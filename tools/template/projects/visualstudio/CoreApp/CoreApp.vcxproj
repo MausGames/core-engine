@@ -40,27 +40,27 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseDebugLibraries>true</UseDebugLibraries>
     <UseNativeEnvironment>true</UseNativeEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <UseNativeEnvironment>true</UseNativeEnvironment>
@@ -85,25 +85,25 @@
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86\msvc;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x86;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows\x86\</OutDir>
-    <TargetName>$(ProjectName)_msvc_debug</TargetName>
+    <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>$(ProjectName)_msvc_debug</TargetName>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x64;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x64;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows\x64\</OutDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86\msvc;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x86;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows\x86\</OutDir>
-    <TargetName>$(ProjectName)_msvc</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>$(ProjectName)_msvc</TargetName>
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x64;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x64;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows\x64\</OutDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -115,7 +115,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <MinimalRebuild>false</MinimalRebuild>
+      <SupportJustMyCode>false</SupportJustMyCode>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
@@ -126,7 +126,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
@@ -146,7 +146,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:strictStrings /Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <MinimalRebuild>false</MinimalRebuild>
+      <SupportJustMyCode>false</SupportJustMyCode>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -156,7 +156,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>CoreEngine_msvc_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib notelemetry.obj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_debug.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib notelemetry.obj %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
@@ -193,7 +193,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalOptions>CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -234,7 +234,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
-      <AdditionalOptions>CoreEngine_msvc.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib notelemetry.obj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib notelemetry.obj %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

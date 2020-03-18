@@ -58,6 +58,9 @@
     <Filter Include="utilities\file">
       <UniqueIdentifier>{56849995-541c-4251-ae5c-287c45a3eb01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="additional\linux">
+      <UniqueIdentifier>{0b560ded-0906-4ce4-8a1a-46863ea114da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -172,6 +175,9 @@
       <Filter>additional\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\Core.cpp" />
+    <ClCompile Include="..\..\..\source\additional\linux\main.c">
+      <Filter>additional\linux</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">

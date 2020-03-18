@@ -63,7 +63,7 @@
 // TODO: overflow check in I_TO_F
 // TODO: const smart-ptr and resource-ptr ?
 
-// NOTE: always compile Win32 libraries/executables for WinXP
+// NOTE: always compile x86 libraries/executables without SSE support
 
 
 // ****************************************************************
@@ -133,23 +133,18 @@
     #define _CORE_GLES_
 #endif
 
-// Windows XP mode
-#if defined(_USING_V110_SDK71_) && defined(_CORE_WINDOWS_)
-    #define _CORE_WINXP_
-#endif
-
 // x64 instruction set
 #if defined(_M_X64) || defined(__x86_64__)
     #define _CORE_X64_
 #endif
 
 // SSE2 instruction set
-#if (defined(_M_IX86) || defined(__i386__) || defined(_CORE_X64_)) && !defined(_CORE_MOBILE_) && !defined(_CORE_WINXP_)
+#if defined(_CORE_X64_) && !defined(_CORE_MOBILE_)
     #define _CORE_SSE_
 #endif
 
 // target configuration checks
-#if ((_CORE_MSVC_) < 1916) && ((_CORE_GCC_) < 90201) && ((_CORE_CLANG_) < 90000)
+#if ((_CORE_MSVC_) < 1920) && ((_CORE_GCC_) < 90201) && ((_CORE_CLANG_) < 90000)
     #error Compiler not supported!
 #endif
 #if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_OSX_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_)
@@ -261,8 +256,8 @@
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
 #endif
-#if defined(_CORE_WINXP_)
-    #define _WIN32_WINNT _WIN32_WINNT_WINXP
+#if defined(_CORE_X64_)
+    #define _WIN32_WINNT _WIN32_WINNT_WIN10
 #else
     #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #endif
@@ -377,7 +372,7 @@
     #define WARN_IF(c)              if([](const coreBool bCondition) {ASSERT(!bCondition) return bCondition;}(!!(c)))
 #else
     #if defined(_CORE_MSVC_)
-        #define WARN_IF(c)          if(c)
+        #define WARN_IF(c)          if(c) [[unlikely]]
     #else
         #define WARN_IF(c)          if(__builtin_expect(!!(c), 0))
     #endif

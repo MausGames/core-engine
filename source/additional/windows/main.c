@@ -15,7 +15,7 @@
 #pragma warning(disable : 4820)   // padding after data member
 
 #define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT _WIN32_WINNT_WINXP
+#define _WIN32_WINNT _WIN32_WINNT_WIN7
 
 #include <Windows.h>
 #include <DbgHelp.h>

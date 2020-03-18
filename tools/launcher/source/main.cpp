@@ -12,7 +12,7 @@
 #pragma warning(disable : 4127)   // constant conditional expression
 
 #define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT _WIN32_WINNT_WINXP
+#define _WIN32_WINNT _WIN32_WINNT_WIN7
 
 #include <Windows.h>
 #include <shellapi.h>
@@ -78,16 +78,14 @@ static bool IsWow64()
 
 
 // ****************************************************************
-static bool IsWindows7OrGreater()
+static bool IsWindows10OrGreater()
 {
-    OSVERSIONINFOW iOS = {};
-    iOS.dwOSVersionInfoSize = sizeof(iOS);
+    // use only major version
+    OSVERSIONINFOEXW oVersionInfo = {sizeof(oVersionInfo)};
+    oVersionInfo.dwMajorVersion   = 10;
 
-    // get operating system version
-    GetVersionExW(&iOS);
-
-    // check for Windows 7 or higher
-    return (iOS.dwMajorVersion >= 7u) || ((iOS.dwMajorVersion >= 6u) && (iOS.dwMinorVersion >= 1u));
+    // check for Windows 10 or greater
+    return (VerifyVersionInfoW(&oVersionInfo, VER_MAJORVERSION, VerSetConditionMask(0u, VER_MAJORVERSION, VER_GREATER_EQUAL)) != FALSE);
 }
 
 
@@ -95,7 +93,7 @@ static bool IsWindows7OrGreater()
 extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPWSTR pcCmdLine, _In_ int iCmdShow)
 {
     // set working directory
-    const wchar_t* pcDirectory = (IsWow64() && IsWindows7OrGreater()) ? L"bin\\windows\\x64\\" : L"bin\\windows\\x86\\";
+    const wchar_t* pcDirectory = (IsWow64() && IsWindows10OrGreater()) ? L"bin\\windows\\x64\\" : L"bin\\windows\\x86\\";
     if(!SetCurrentDirectoryW(pcDirectory))
     {
         MessageBoxW(NULL, L"Could not set working directory!", NULL, MB_OK | MB_ICONERROR);
@@ -104,7 +102,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
 
     // find executable name
     std::vector<std::wstring> asFile;
-    if(!ScanFolder(L"*_msvc.exe", &asFile) || asFile.empty())
+    if(!ScanFolder(L"*.exe", &asFile) || asFile.empty())
     {
         MessageBoxW(NULL, L"Could not find executable!", NULL, MB_OK | MB_ICONERROR);
         return -1;
