@@ -95,7 +95,7 @@ public:
     template <typename T> static inline    T        Abs         (const T& x)                                               {return std::abs(x);}
     template <typename T> static constexpr T        Pow2        (const T& x)                                               {return x * x;}
     template <typename T> static constexpr T        Pow3        (const T& x)                                               {return x * x * x;}
-    template <typename T> static constexpr T        Lerp        (const T& x, const T& y, const coreFloat s)                {return x + (y - x) * s;}
+    template <typename T> static constexpr T        Lerp        (const T& x, const T& y, const coreFloat s)                {return x * (1.0f - s) + y * s;}   // better precision than (x + (y - x) * s)
     template <typename T> static inline    T        LerpSmooth  (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
     template <typename T> static inline    T        LerpBreak   (const T& x, const T& y, const coreFloat s)                {return LERP(x, y, SIN(s * (PI * 0.5f)));}
     template <typename T> static constexpr T        LerpHermite3(const T& x, const T& y, const coreFloat s)                {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
@@ -474,9 +474,9 @@ inline void coreMath::EnableExceptions()
 
     #endif
 
-    #if defined(_CORE_GCC_)
+    #if defined(_CORE_GCC_) || defined(_CORE_CLANG_)
 
-        // enable with GCC function (for x87 and SSE)
+        // enable with GCC/Clang function (for x87 and SSE)
         feenableexcept(FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
 
     #endif

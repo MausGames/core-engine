@@ -225,8 +225,8 @@ void coreObject2D::Interact()
         const coreVector2 vInput = Core::Input->GetTouchPosition(i) * Core::System->GetResolution() - vScreenPosition;
 
         // test for intersection
-        if(ABS(vInput.x) < vScreenSize.x &&
-           ABS(vInput.y) < vScreenSize.y)
+        if((ABS(vInput.x) < vScreenSize.x) &&
+           (ABS(vInput.y) < vScreenSize.y))
         {
             m_bFocused = true;
             ADD_BIT(m_iFinger, i)
@@ -239,8 +239,8 @@ void coreObject2D::Interact()
     const coreVector2 vInput = Core::Input->GetMousePosition() * Core::System->GetResolution() - vScreenPosition;
 
     // test for intersection
-    m_bFocused = (ABS(vInput.x) < vScreenSize.x &&
-                  ABS(vInput.y) < vScreenSize.y);
+    m_bFocused = (ABS(vInput.x) < vScreenSize.x) &&
+                 (ABS(vInput.y) < vScreenSize.y);
 
 #endif
 }

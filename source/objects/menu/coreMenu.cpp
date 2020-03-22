@@ -153,7 +153,7 @@ coreBool coreMenu::ChangeSurface(const coreUint8 iNewSurface, const coreFloat fS
          if(iNewSurface == m_iCurSurface)  return false;
     WARN_IF(iNewSurface >= m_iNumSurfaces) return false;
 
-    if(!fSpeed)
+    if(fSpeed <= 0.0f)
     {
         // change surface without transition
         FOR_EACH(it, m_papObject[m_iCurSurface]) {(*it)->SetAlpha(0.0f); (*it)->SetFocused(false); (*it)->Move();}

@@ -31,7 +31,7 @@ private:
     //! display structure
     struct coreDisplay final
     {
-        coreSet<coreVector2> avAvailableRes;   //!< all available screen resolutions
+        coreSet<coreVector2> avAvailableRes;   //!< all available screen resolutions (highest to lowest, primary on width)
         coreVector2          vDesktopRes;      //!< desktop resolution
         coreVector2          vWorkAreaRes;     //!< work area resolution (e.g. without task bar)
         coreVector2          vMaximumRes;      //!< highest available resolution (primary on width)

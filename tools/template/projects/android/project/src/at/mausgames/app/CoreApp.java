@@ -16,7 +16,7 @@ public class CoreApp extends SDLActivity
     public void onDestroy()
     {
         super.onDestroy();
-        
+
         // fully kill application to force library reloading
         System.runFinalizersOnExit(true);
         System.exit(0);

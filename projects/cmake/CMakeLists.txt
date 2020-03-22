@@ -71,7 +71,7 @@ target_include_directories(
 
 target_compile_options(
     CoreEngine PUBLIC
-    -mf16c -mxsave -Wall -Wextra -pedantic
+    -msse3 -mf16c -mxsave -Wall -Wextra -pedantic
     $<IF:$<CONFIG:Debug>, -O0 -glldb, -O3 -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
 )
 

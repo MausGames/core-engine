@@ -19,6 +19,7 @@
 // TODO: add interface for reusing big memory-blocks (free when?)
 // TODO: __declspec(allocator)
 // TODO: consider allocation granularity 64kb
+// TODO: pointer to next free block inside unused block (linked list) instead of free-stack (consider sorting)
 
 
 // ****************************************************************
