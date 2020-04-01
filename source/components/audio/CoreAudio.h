@@ -12,24 +12,43 @@
 
 
 // ****************************************************************
+// audio definitions
+#define CORE_AUDIO_SOURCES_MUSIC (4u)                                                    //!< number of audio sources for music
+#define CORE_AUDIO_SOURCES_SOUND (16u)                                                   //!< number of audio sources for sound
+#define CORE_AUDIO_SOURCES       (CORE_AUDIO_SOURCES_MUSIC + CORE_AUDIO_SOURCES_SOUND)   //!< total number of audio sources
+#define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    //!< sound buffer identifier for music
+
+
+// ****************************************************************
 // main audio component
 class CoreAudio final
 {
 private:
-    ALCdevice*  m_pDevice;                   //!< audio device
-    ALCcontext* m_pContext;                  //!< OpenAL context
+    //! audio source data structure
+    struct coreSourceData
+    {
+        ALuint    iBuffer;   //!< current sound buffer (for identification)
+        coreFloat fVolume;   //!< current volume
+    };
 
-    coreVector3 m_vPosition;                 //!< position of the listener
-    coreVector3 m_vVelocity;                 //!< velocity of the listener
-    coreVector3 m_avDirection[2];            //!< direction and orientation of the listener
 
-    ALuint*   m_pSource;                     //!< sound sources
-    coreUint8 m_iNumSources;                 //!< number of sound sources
-    coreUint8 m_iCurSource;                  //!< current sound source
+private:
+    ALCdevice*  m_pDevice;                              //!< audio device
+    ALCcontext* m_pContext;                             //!< primary OpenAL context (for all threads)
 
-    coreFloat m_fVolume;                     //!< global volume
+    coreVector3 m_vPosition;                            //!< position of the listener
+    coreVector3 m_vVelocity;                            //!< velocity of the listener
+    coreVector3 m_avDirection[2];                       //!< direction and orientation of the listener
 
-    coreLookup<ALuint, ALuint> m_aiBuffer;   //!< sound buffers currently bound to sound sources <source, buffer>
+    coreFloat m_afGlobalVolume[3];                      //!< global volume (0 = current | 1 = target | 2 = config reference)
+    coreFloat m_afMusicVolume [3];                      //!< music volume
+    coreFloat m_afSoundVolume [3];                      //!< sound volume
+
+    ALuint         m_aiSource   [CORE_AUDIO_SOURCES];   //!< audio sources
+    coreSourceData m_aSourceData[CORE_AUDIO_SOURCES];   //!< data associated with audio sources
+
+    LPALDEFERUPDATESSOFT   m_nDeferUpdates;             //!< suspend immediate playback state changes
+    LPALPROCESSUPDATESSOFT m_nProcessUpdates;           //!< catch-up and resume playback state changes
 
 
 private:
@@ -47,16 +66,39 @@ public:
     void SetListener(const coreFloat fSpeed, const coreInt8 iTimeID = -1);
     //! @}
 
-    //! distribute sound sources
+    //! override current volume
     //! @{
-    inline coreBool CheckSource (const ALuint iBuffer, const ALuint iSource)const {if(!m_aiBuffer.count(iSource)) return false; return (m_aiBuffer.at(iSource) == iBuffer) ? true : false;}
-    ALuint          NextSource  (const ALuint iBuffer);
-    void            ClearSources(const ALuint iBuffer);
+    inline void SetGlobalVolume(const coreFloat fVolume) {m_afGlobalVolume[1] = fVolume;}
+    inline void SetMusicVolume (const coreFloat fVolume) {m_afMusicVolume [1] = fVolume;}
+    inline void SetSoundVolume (const coreFloat fVolume) {m_afSoundVolume [1] = fVolume;}
     //! @}
 
-    //! set global volume
+    //! control sound playback
     //! @{
-    inline void SetVolume(const coreFloat fVolume) {if(m_fVolume != fVolume) {m_fVolume = fVolume; alListenerf(AL_GAIN, m_fVolume);}}
+    void PauseSound ();
+    void ResumeSound();
+    void CancelSound();
+    //! @}
+
+    //! handle audio sources
+    //! @{
+    ALuint   NextSource  (const ALuint iBuffer, const coreFloat fVolume);
+    void     FreeSources (const ALuint iBuffer);
+    void     UpdateSource(const ALuint iSource, const coreFloat fVolume);
+    coreBool CheckSource (const ALuint iBuffer, const ALuint iSource)const;
+    //! @}
+
+    //! combine playback state changes
+    //! @{
+    inline void DeferUpdates  ()const {m_nDeferUpdates  ();}
+    inline void ProcessUpdates()const {m_nProcessUpdates();}
+    //! @}
+
+
+private:
+    //! update all audio sources
+    //! @{
+    void __UpdateSources();
     //! @}
 };
 

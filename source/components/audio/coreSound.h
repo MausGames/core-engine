@@ -12,8 +12,7 @@
 
 // TODO: improve 3D sound integration and control
 // TODO: implement sound pause
-// TODO: implement global sound volume change
-// TODO: cache and check sound source properties
+// TODO: cache and check audio source properties
 // TODO: problem with loop on unloaded sound
 
 
@@ -43,10 +42,10 @@ private:
     ALuint m_iBuffer;                             //!< sound buffer object
     coreWaveFormat m_Format;                      //!< format of the sound file
 
-    ALuint m_iCurSource;                          //!< active sound source
-    coreLookup<const void*, ALuint> m_aiSource;   //!< currently used sound sources
+    ALuint m_iCurSource;                          //!< active audio source
+    coreLookup<const void*, ALuint> m_aiSource;   //!< currently used audio sources
 
-    const void* m_pCurRef;                        //!< reference pointer to active sound source
+    const void* m_pCurRef;                        //!< reference pointer to active audio source
 
 
 public:
@@ -63,21 +62,21 @@ public:
 
     //! control playback
     //! @{
-    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop, const coreVector3& vPosition);
-    void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop);
+    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreVector3& vPosition);
+    void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop);
     void Stop();
     coreBool IsPlaying()const;
     //! @}
 
-    //! set various sound source properties
+    //! set various audio source properties
     //! @{
     void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
-    inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_GAIN,    fVolume); ASSERT(fVolume >= 0.0f)}
-    inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);  ASSERT(fPitch  >= 0.0f)}
+    inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); ASSERT(fVolume >= 0.0f)}
+    inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      ASSERT(fPitch  >= 0.0f)}
     inline void SetLoop  (const coreBool  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
     //! @}
 
-    //! enable active sound source with reference pointer
+    //! enable active audio source with reference pointer
     //! @{
     inline coreBool EnableRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
     ALuint          CheckRef (const void* pRef);

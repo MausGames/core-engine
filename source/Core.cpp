@@ -226,6 +226,7 @@ coreStatus Core::Run()
         Core::Manager::Object->__UpdateObjects();
 
         // update all remaining components
+        Core::Audio   ->__UpdateSources();
         Core::Debug   ->__UpdateOutput();
         Core::Graphics->__UpdateScene();   // # contains frame terminator
         Core::System  ->__UpdateWindow();

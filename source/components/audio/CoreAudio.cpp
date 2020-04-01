@@ -12,31 +12,65 @@
 // ****************************************************************
 // constructor
 CoreAudio::CoreAudio()noexcept
-: m_pDevice     (NULL)
-, m_pContext    (NULL)
-, m_vPosition   (coreVector3(0.0f,0.0f,0.0f))
-, m_vVelocity   (coreVector3(0.0f,0.0f,0.0f))
-, m_avDirection {coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,0.0f)}
-, m_pSource     (NULL)
-, m_iNumSources (Core::Config->GetInt(CORE_CONFIG_AUDIO_SOURCES))
-, m_iCurSource  (0u)
-, m_fVolume     (-1.0f)
-, m_aiBuffer    {}
+: m_pDevice         (NULL)
+, m_pContext        (NULL)
+, m_vPosition       (coreVector3(0.0f,0.0f,0.0f))
+, m_vVelocity       (coreVector3(0.0f,0.0f,0.0f))
+, m_avDirection     {coreVector3(0.0f,1.0f,0.0f), coreVector3(0.0f,0.0f,1.0f)}
+, m_afGlobalVolume  {-1.0f, -1.0f, -1.0f}
+, m_afMusicVolume   {-1.0f, -1.0f, -1.0f}
+, m_afSoundVolume   {-1.0f, -1.0f, -1.0f}
+, m_aiSource        {}
+, m_aSourceData     {}
+, m_nDeferUpdates   (NULL)
+, m_nProcessUpdates (NULL)
 {
     Core::Log->Header("Audio Interface");
 
+    // set OpenAL context attributes
+    constexpr ALCint aiAttributes[] =
+    {
+        ALC_FREQUENCY,      48000,
+        ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES,
+        ALC_STEREO_SOURCES, 0, 0
+    };
+
     // open audio device and create OpenAL context
     m_pDevice  = alcOpenDevice(NULL);
-    m_pContext = alcCreateContext(m_pDevice, NULL);
+    m_pContext = alcCreateContext(m_pDevice, aiAttributes);
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
          Core::Log->Warning("OpenAL context could not be created (ALC Error Code: 0x%08X)", alcGetError(m_pDevice));
     else Core::Log->Info   ("OpenAL context created");
 
-    // generate sound sources
-    m_pSource = ALIGNED_NEW(ALuint, m_iNumSources, ALIGNMENT_CACHE);
-    alGenSources(m_iNumSources, m_pSource);
+    // generate audio sources
+    alGenSources(CORE_AUDIO_SOURCES, m_aiSource);
+
+    // init defer extension
+    if(alIsExtensionPresent("AL_SOFT_deferred_updates"))
+    {
+        m_nDeferUpdates   = r_cast<LPALDEFERUPDATESSOFT>  (alGetProcAddress("alDeferUpdatesSOFT"));
+        m_nProcessUpdates = r_cast<LPALPROCESSUPDATESSOFT>(alGetProcAddress("alProcessUpdatesSOFT"));
+    }
+    if(!m_nDeferUpdates || !m_nProcessUpdates)
+    {
+        m_nDeferUpdates   = []() {alcSuspendContext(alcGetCurrentContext());};
+        m_nProcessUpdates = []() {alcProcessContext(alcGetCurrentContext());};
+    }
+
+    // reset listener
+    this->DeferUpdates();
+    {
+        alListenerfv(AL_POSITION,    m_vPosition);
+        alListenerfv(AL_VELOCITY,    m_vVelocity);
+        alListenerfv(AL_ORIENTATION, m_avDirection[0]);
+        alListenerf (AL_GAIN,        0.0f);
+    }
+    this->ProcessUpdates();
+
+    // reset audio sources
+    this->__UpdateSources();
 
     // log audio device information
     Core::Log->ListStartInfo("Audio Device Information");
@@ -52,14 +86,6 @@ CoreAudio::CoreAudio()noexcept
     // log Ogg Vorbis library version
     Core::Log->Info("Ogg Vorbis initialized (%s)", vorbis_version_string());
 
-    // reset listener
-    constexpr coreVector3 vInit = coreVector3(1.0f,0.0f,0.0f);
-    this->SetListener(vInit, vInit, vInit, vInit);
-    this->SetListener(0.0f);
-
-    // reset volume
-    this->SetVolume(Core::Config->GetFloat(CORE_CONFIG_AUDIO_GLOBALVOLUME));
-
     // check for errors
     const ALenum iError = alGetError();
     if(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: 0x%08X)", iError);
@@ -70,12 +96,8 @@ CoreAudio::CoreAudio()noexcept
 // destructor
 CoreAudio::~CoreAudio()
 {
-    // clear memory
-    m_aiBuffer.clear();
-
-    // delete sound sources
-    alDeleteSources(m_iNumSources, m_pSource);
-    ALIGNED_DELETE(m_pSource)
+    // delete audio sources
+    alDeleteSources(CORE_AUDIO_SOURCES, m_aiSource);
 
     // delete OpenAL context and close audio device
     alcMakeContextCurrent(NULL);
@@ -90,17 +112,21 @@ CoreAudio::~CoreAudio()
 // control the listener
 void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
-    coreBool bNewOrientation = false;
+    this->DeferUpdates();
+    {
+        coreBool bNewOrientation = false;
 
-    // set and update properties of the listener
-    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
-    if(m_vPosition      != vPosition)    {m_vPosition      = vPosition;    alListenerfv(AL_POSITION, m_vPosition);}
-    if(m_vVelocity      != vVelocity)    {m_vVelocity      = vVelocity;    alListenerfv(AL_VELOCITY, m_vVelocity);}
-    if(m_avDirection[0] != vDirection)   {m_avDirection[0] = vDirection;   bNewOrientation = true;}
-    if(m_avDirection[1] != vOrientation) {m_avDirection[1] = vOrientation; bNewOrientation = true;}
+        // set and update properties of the listener
+        ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
+        if(m_vPosition      != vPosition)    {m_vPosition      = vPosition;    alListenerfv(AL_POSITION, m_vPosition);}
+        if(m_vVelocity      != vVelocity)    {m_vVelocity      = vVelocity;    alListenerfv(AL_VELOCITY, m_vVelocity);}
+        if(m_avDirection[0] != vDirection)   {m_avDirection[0] = vDirection;   bNewOrientation = true;}
+        if(m_avDirection[1] != vOrientation) {m_avDirection[1] = vOrientation; bNewOrientation = true;}
 
-    // update direction and orientation
-    if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
+        // update direction and orientation
+        if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
+    }
+    this->ProcessUpdates();
 }
 
 void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
@@ -118,41 +144,51 @@ void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
 
 
 // ****************************************************************
-// retrieve next free sound source
-ALuint CoreAudio::NextSource(const ALuint iBuffer)
+// retrieve next free audio source
+ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume)
 {
-    // search for next free sound source
-    for(coreUintW i = m_iNumSources; i--; )
+    // define search range
+    const coreUintW iFrom = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? 0u                       : CORE_AUDIO_SOURCES_MUSIC;
+    const coreUintW iTo   = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? CORE_AUDIO_SOURCES_MUSIC : CORE_AUDIO_SOURCES;
+
+    // search for next free audio source
+    for(coreUintW i = iFrom, ie = iTo; i < ie; ++i)
     {
-        if(++m_iCurSource >= m_iNumSources) m_iCurSource = 0u;
+        const ALuint iSource = m_aiSource[i];
 
         // check status
         ALint iStatus;
-        alGetSourcei(m_pSource[m_iCurSource], AL_SOURCE_STATE, &iStatus);
-        if(iStatus != AL_PLAYING)
+        alGetSourcei(iSource, AL_SOURCE_STATE, &iStatus);
+        if((iStatus != AL_PLAYING) && (iStatus != AL_PAUSED))
         {
-            const ALuint& pSource = m_pSource[m_iCurSource];
+            // set current volume
+            const coreFloat fBase = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[0] : m_afSoundVolume[0];
+            alSourcef(iSource, AL_GAIN, fBase * fVolume);
 
-            // return sound source
-            m_aiBuffer[pSource] = iBuffer;
-            return pSource;
+            // save audio source data
+            m_aSourceData[i].iBuffer = iBuffer;
+            m_aSourceData[i].fVolume = fVolume;
+
+            // return audio source
+            return iSource;
         }
     }
 
-    // no free sound source available
+    // no free audio source available
+    WARN_IF(true) {}
     return 0u;
 }
 
 
 // ****************************************************************
-// unbind sound buffer from all sound sources
-void CoreAudio::ClearSources(const ALuint iBuffer)
+// unbind sound buffer from all audio sources
+void CoreAudio::FreeSources(const ALuint iBuffer)
 {
-    FOR_EACH(it, m_aiBuffer)
+    for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
     {
-        if((*it) == iBuffer)
+        if(m_aSourceData[i].iBuffer == iBuffer)
         {
-            const GLenum iSource = (*m_aiBuffer.get_key(it));
+            const ALuint iSource = m_aiSource[i];
 
 #if defined(_CORE_DEBUG_)
 
@@ -162,12 +198,128 @@ void CoreAudio::ClearSources(const ALuint iBuffer)
             ASSERT((iPlaying != AL_PLAYING) || !iLooping)
 
 #endif
-            // stop sound source
+            // stop audio source
             alSourceStop(iSource);
             alSourcei(iSource, AL_BUFFER, 0);
 
             // reset sound buffer
-            (*it) = 0u;
+            m_aSourceData[i].iBuffer = 0u;
         }
+    }
+}
+
+
+// ****************************************************************
+// update audio source data
+void CoreAudio::UpdateSource(const ALuint iSource, const coreFloat fVolume)
+{
+    for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
+    {
+        if(m_aiSource[i] == iSource)
+        {
+            // update current volume
+            const coreFloat fBase = ((m_aSourceData[i].iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[0] : m_afSoundVolume[0]);
+            alSourcef(iSource, AL_GAIN, fBase * fVolume);
+
+            // save new audio source data
+            m_aSourceData[i].fVolume = fVolume;
+            break;
+        }
+    }
+}
+
+
+// ****************************************************************
+// check if audio source is still valid
+coreBool CoreAudio::CheckSource(const ALuint iBuffer, const ALuint iSource)const
+{
+    for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
+    {
+        if(m_aiSource[i] == iSource)
+        {
+            // test with sound buffer
+            return (m_aSourceData[i].iBuffer == iBuffer);
+        }
+    }
+    return false;
+}
+
+
+// ****************************************************************
+// control sound playback
+void CoreAudio::PauseSound()
+{
+    // pause all audio sources
+    alSourcePausev(CORE_AUDIO_SOURCES_SOUND, m_aiSource + CORE_AUDIO_SOURCES_MUSIC);
+}
+
+void CoreAudio::ResumeSound()
+{
+    ALuint    aiPaused[CORE_AUDIO_SOURCES_SOUND];
+    coreUintW iNum = 0u;
+
+    for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
+    {
+        // check status
+        ALint iStatus;
+        alGetSourcei(m_aiSource[i], AL_SOURCE_STATE, &iStatus);
+
+        // collect paused audio sources
+        if(iStatus == AL_PAUSED) aiPaused[iNum++] = m_aiSource[i];
+    }
+
+    // resume paused audio sources
+    if(iNum) alSourcePlayv(iNum, aiPaused);
+}
+
+void CoreAudio::CancelSound()
+{
+    // stop all audio sources
+    alSourceStopv(CORE_AUDIO_SOURCES_SOUND, m_aiSource + CORE_AUDIO_SOURCES_MUSIC);
+}
+
+
+// ****************************************************************
+// update all audio sources
+void CoreAudio::__UpdateSources()
+{
+    const auto nUpdateVolumeFunc = [](coreFloat* OUTPUT pfVolume, const coreChar* pcSection, const coreChar* pcKey, const coreFloat fDefault)
+    {
+        // read current config value
+        const coreFloat fNewVolume = Core::Config->GetFloat(pcSection, pcKey, fDefault);
+
+        // compare and forward
+        if(pfVolume[2] != fNewVolume)  {pfVolume[1] = pfVolume[2] = fNewVolume;}   // forward config
+        if(pfVolume[0] != pfVolume[1]) {pfVolume[0] = pfVolume[1]; return true;}   // forward target
+
+        return false;
+    };
+
+    // update listener volume
+    if(nUpdateVolumeFunc(m_afGlobalVolume, CORE_CONFIG_AUDIO_GLOBALVOLUME))
+    {
+        alListenerf(AL_GAIN, m_afGlobalVolume[0]);
+    }
+
+    // update music volume
+    if(nUpdateVolumeFunc(m_afMusicVolume, CORE_CONFIG_AUDIO_MUSICVOLUME))
+    {
+        this->DeferUpdates();
+        {
+            for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES_MUSIC; ++i)
+                alSourcef(m_aiSource[i], AL_GAIN, m_afMusicVolume[0] * m_aSourceData[i].fVolume);
+        }
+        this->ProcessUpdates();
+    }
+
+    // update sound volume
+    if(nUpdateVolumeFunc(m_afSoundVolume, CORE_CONFIG_AUDIO_SOUNDVOLUME))
+    {
+        this->DeferUpdates();
+        {
+            for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
+                alSourcef(m_aiSource[i], AL_GAIN, m_afSoundVolume[0] * m_aSourceData[i].fVolume);
+        }
+        this->ProcessUpdates();
     }
 }

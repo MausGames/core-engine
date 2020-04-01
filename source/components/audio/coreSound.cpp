@@ -119,8 +119,8 @@ coreStatus coreSound::Unload()
 {
     if(!m_iBuffer) return CORE_INVALID_CALL;
 
-    // unbind sound buffer from all sound sources
-    Core::Audio->ClearSources(m_iBuffer);
+    // unbind sound buffer from all audio sources
+    Core::Audio->FreeSources(m_iBuffer);
     m_aiSource.clear();
 
     // delete sound buffer
@@ -140,25 +140,26 @@ coreStatus coreSound::Unload()
 
 // ****************************************************************
 // play the sound with positional behavior
-void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop, const coreVector3& vPosition)
+void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreVector3& vPosition)
 {
+    ASSERT(m_iBuffer)
+
     // set active reference pointer
     m_pCurRef = pRef;
     ASSERT(m_pCurRef || !bLoop)
 
-    // retrieve next free sound source
-    m_iCurSource = Core::Audio->NextSource(m_iBuffer);
+    // retrieve next free audio source
+    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume);
     if(m_iCurSource)
     {
-        // save sound source
+        // save audio source
         if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
 
-        // set initial sound source properties
+        // set initial audio source properties
         alSourcei (m_iCurSource, AL_BUFFER,             m_iBuffer);
         alSourcei (m_iCurSource, AL_SOURCE_RELATIVE,    false);
 
-        alSourcef (m_iCurSource, AL_GAIN,               fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_SOUNDVOLUME));
-        alSourcef (m_iCurSource, AL_PITCH,              fPitch  * (fPitchRnd ? 1.0f + Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
+        alSourcef (m_iCurSource, AL_PITCH,              fPitch);
         alSourcei (m_iCurSource, AL_LOOPING,            bLoop);
 
         alSourcefv(m_iCurSource, AL_POSITION,           vPosition);
@@ -175,28 +176,30 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
 
 // ****************************************************************
 // play the sound with relative behavior
-void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreFloat fPitchRnd, const coreBool bLoop)
+void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop)
 {
+    ASSERT(m_iBuffer)
+
     // set active reference pointer
     m_pCurRef = pRef;
     ASSERT(m_pCurRef || !bLoop)
 
-    // retrieve next free sound source
-    m_iCurSource = Core::Audio->NextSource(m_iBuffer);
+    // retrieve next free audio source
+    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume);
     if(m_iCurSource)
     {
-        // save sound source
+        // save audio source
         if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
 
-        // set initial sound source properties
+        // set initial audio source properties
         alSourcei (m_iCurSource, AL_BUFFER,          m_iBuffer);
         alSourcei (m_iCurSource, AL_SOURCE_RELATIVE, true);
 
-        alSourcef (m_iCurSource, AL_GAIN,            fVolume * Core::Config->GetFloat(CORE_CONFIG_AUDIO_SOUNDVOLUME));
-        alSourcef (m_iCurSource, AL_PITCH,           fPitch  * (fPitchRnd ? 1.0f + Core::Rand->Float(-fPitchRnd, fPitchRnd) : 1.0f));
+        alSourcef (m_iCurSource, AL_PITCH,           fPitch);
         alSourcei (m_iCurSource, AL_LOOPING,         bLoop);
 
         alSourcefv(m_iCurSource, AL_POSITION,        coreVector3(0.0f,0.0f,0.0f));
+        alSourcefv(m_iCurSource, AL_VELOCITY,        coreVector3(0.0f,0.0f,0.0f));
 
         // start playback
         alSourcePlay(m_iCurSource);
@@ -211,11 +214,11 @@ void coreSound::Stop()
     __CORE_SOUND_ASSERT
     if(m_iCurSource)
     {
-        // stop sound source
+        // stop audio source
         alSourceStop(m_iCurSource);
         alSourcei(m_iCurSource, AL_BUFFER, 0);
 
-        // remove invalid sound source
+        // remove invalid audio source
         m_aiSource.erase(m_pCurRef);
         m_iCurSource = 0u;
     }
@@ -233,12 +236,12 @@ coreBool coreSound::IsPlaying()const
     alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iStatus);
 
     // check for playback
-    return (iStatus == AL_PLAYING) ? true : false;
+    return (iStatus == AL_PLAYING);
 }
 
 
 // ****************************************************************
-// change the sound source position and velocity
+// change the audio source position and velocity
 void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelocity)
 {
     __CORE_SOUND_ASSERT
@@ -260,18 +263,18 @@ void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelo
 
 
 // ****************************************************************
-// check reference pointer for valid sound source
+// check reference pointer for valid audio source
 ALuint coreSound::CheckRef(const void* pRef)
 {
-    // check if sound source is available
+    // check if audio source is available
     if(!pRef) return 0u;
     if(!m_aiSource.count(pRef)) return 0u;
 
-    // check if sound source is still valid
-    const ALuint& iSource = m_aiSource.at(pRef);
+    // check if audio source is still valid
+    const ALuint iSource = m_aiSource.at(pRef);
     if(Core::Audio->CheckSource(m_iBuffer, iSource)) return iSource;
 
-    // remove invalid sound source
+    // remove invalid audio source
     m_aiSource.erase(pRef);
     return 0u;
 }

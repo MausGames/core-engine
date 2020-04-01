@@ -10,12 +10,11 @@
 #ifndef _CORE_GUARD_MUSIC_H_
 #define _CORE_GUARD_MUSIC_H_
 
-// TODO: consider threaded music update (->coreMusicPlayer)
-// TODO: implement global music volume change (music-player changes volume already)
 // TODO: music which is inactive should not be in memory (maybe MusicPlayer?), too heavy with many files
 // TODO: player: improve the representation of the current track while shuffled
 // TODO: player: callback when music track changes (or return true is enough probably)
 // TODO: player: own thread
+// TODO: consider threaded music update (->coreMusicPlayer)
 // TODO: player: own (cached) parameters like volume, pitch - forwarded to music files
 // TODO: player: reorder properties, SwitchBox is similar
 // TODO: coreMusicFile.cpp, coreMusicPlayer.cpp
@@ -41,7 +40,7 @@ class coreMusic final
 {
 private:
     ALuint m_aiBuffer[2];         //!< sound buffers for streaming
-    ALuint m_iSource;             //!< currently used sound source
+    ALuint m_iSource;             //!< currently used audio source
 
     coreFloat m_fVolume;          //!< current volume
     coreFloat m_fPitch;           //!< current playback speed
@@ -76,10 +75,10 @@ public:
     inline const coreBool& IsPlaying()const {return m_bStatus;}
     //! @}
 
-    //! set various sound source properties
+    //! set various audio source properties
     //! @{
-    inline void SetVolume(const coreFloat fVolume) {if(m_iSource && (m_fVolume != fVolume)) {m_fVolume = fVolume; alSourcef(m_iSource, AL_GAIN,  fVolume);} ASSERT(fVolume >= 0.0f)}
-    inline void SetPitch (const coreFloat fPitch)  {if(m_iSource && (m_fPitch  != fPitch))  {m_fPitch  = fPitch;  alSourcef(m_iSource, AL_PITCH, fPitch);}  ASSERT(fPitch  >= 0.0f)}
+    inline void SetVolume(const coreFloat fVolume) {if(m_iSource && (m_fVolume != fVolume)) Core::Audio->UpdateSource(m_iSource, fVolume); m_fVolume = fVolume; ASSERT(fVolume >= 0.0f)}
+    inline void SetPitch (const coreFloat fPitch)  {if(m_iSource && (m_fPitch  != fPitch))  alSourcef(m_iSource, AL_PITCH, fPitch);        m_fPitch  = fPitch;  ASSERT(fPitch  >= 0.0f)}
     inline void SetLoop  (const coreBool  bLoop)   {m_bLoop = bLoop;}
     //! @}
 
@@ -88,7 +87,7 @@ public:
     inline void SeekRaw   (const coreInt64  iBytes)   {ov_raw_seek_lap (&m_Stream, iBytes);}
     inline void SeekPcm   (const coreInt64  iSamples) {ov_pcm_seek_lap (&m_Stream, iSamples);}
     inline void SeekTime  (const coreDouble dSeconds) {ov_time_seek_lap(&m_Stream, dSeconds);}
-    inline void SeekFactor(const coreDouble dFactor)  {ov_time_seek_lap(&m_Stream, dFactor * m_dMaxTime);}
+    inline void SeekFactor(const coreDouble dFactor)  {ov_time_seek_lap(&m_Stream, dFactor * m_dMaxTime); ASSERT((dFactor >= 0.0) && (dFactor <= 1.0))}
     inline coreInt64  TellRaw   ()                    {return ov_raw_tell (&m_Stream);}
     inline coreInt64  TellPcm   ()                    {return ov_pcm_tell (&m_Stream);}
     inline coreDouble TellTime  ()                    {return ov_time_tell(&m_Stream);}
@@ -111,7 +110,7 @@ public:
 
     //! lap streams between two different music objects
     //! @{
-    static coreBool CrossLap(coreMusic* pFirst, coreMusic* pSecond) {ASSERT(pFirst != pSecond) return ov_crosslap(&pFirst->m_Stream, &pSecond->m_Stream) ? false : true;}
+    static coreBool CrossLap(coreMusic* pFirst, coreMusic* pSecond) {ASSERT(pFirst != pSecond) return !ov_crosslap(&pFirst->m_Stream, &pSecond->m_Stream);}
     //! @}
 
 

@@ -307,8 +307,7 @@
 #else
     #include <GL/glew.h>
 #endif
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <AL/alext.h>
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <zstd/zstd.h>

@@ -75,7 +75,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 // destructor
 coreMusic::~coreMusic()
 {
-    // clear sound source and sound buffers
+    // clear audio source and sound buffers
     this->Pause();
     alDeleteBuffers(2, m_aiBuffer);
 
@@ -94,7 +94,7 @@ coreBool coreMusic::Update()
 {
     if(!m_bStatus) return false;
 
-    // check for valid sound source
+    // check for valid audio source
     if(!m_iSource)
     {
         if(this->Play() != CORE_OK)
@@ -138,8 +138,8 @@ coreStatus coreMusic::Play()
     if(m_iSource) return CORE_INVALID_CALL;
     if(!m_pFile)  return CORE_INVALID_DATA;
 
-    // retrieve next free sound source
-    m_iSource = Core::Audio->NextSource(0u);
+    // retrieve next free audio source
+    m_iSource = Core::Audio->NextSource(CORE_AUDIO_MUSIC_BUFFER, m_fVolume);
     if(m_iSource)
     {
         // prepare sound buffers
@@ -150,9 +150,8 @@ coreStatus coreMusic::Play()
         alSourcei(m_iSource, AL_BUFFER, 0);
         alSourceQueueBuffers(m_iSource, 2, m_aiBuffer);
 
-        // set initial sound source properties
+        // set initial audio source properties
         alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
-        alSourcef(m_iSource, AL_GAIN,            Core::Config->GetFloat(CORE_CONFIG_AUDIO_MUSICVOLUME));
         alSourcef(m_iSource, AL_PITCH,           m_fPitch);
         alSourcei(m_iSource, AL_LOOPING,         false);
 
@@ -185,7 +184,7 @@ void coreMusic::Pause()
     {
         ALuint iBuffer;
 
-        // stop and clear sound source
+        // stop and clear audio source
         alSourceStop(m_iSource);
         alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
         alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
@@ -474,7 +473,7 @@ void coreMusicPlayer::Select(const coreUintW iIndex)
     m_pCurMusic = m_apSequence[iIndex];
 
     // adjust volume and status
-    m_pCurMusic->SetVolume(1.0f);
+    m_pCurMusic->SetVolume(m_FadeTimer.GetStatus() ? 0.0f : 1.0f);
     if(bStatus) m_pCurMusic->Play();
 }
 
