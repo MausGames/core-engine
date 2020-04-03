@@ -18,7 +18,7 @@ coreObject2D::coreObject2D()noexcept
 , m_vDirection     (coreVector2(0.0f,1.0f))
 , m_vCenter        (coreVector2(0.0f,0.0f))
 , m_vAlignment     (coreVector2(0.0f,0.0f))
-, m_mTransform     (coreMatrix3::Identity())
+, m_mTransform     (coreMatrix3x2::Identity())
 , m_bFocused       (false)
 , m_vFocusModifier (coreVector2(1.0f,1.0f))
 #if defined(_CORE_MOBILE_)
@@ -139,7 +139,7 @@ coreBool coreObject2D::Prepare(const coreProgramPtr& pProgram)
 
     // update all object uniforms
     coreProgram* pLocal = pProgram.GetResource();
-    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, m_mTransform * Core::Graphics->GetOrtho().m124(), false);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, coreMatrix3(m_mTransform) * Core::Graphics->GetOrtho().m124(), false);
     pLocal->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
     pLocal->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
 

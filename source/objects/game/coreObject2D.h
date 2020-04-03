@@ -14,7 +14,6 @@
 // TODO: Interact depends on Move, and Move of some menu objects depend on Interact
 // TODO: on IsClicked: make right mouse button on Android a longer push ?
 // TODO: on IsClicked: consider finger number
-// TODO: use only 3x2 matrix to store transformation
 
 
 // ****************************************************************
@@ -30,7 +29,7 @@ private:
 
 
 protected:
-    coreMatrix3 m_mTransform;       //!< transformation matrix
+    coreMatrix3x2 m_mTransform;     //!< transformation matrix
 
     coreBool    m_bFocused;         //!< interaction status
     coreVector2 m_vFocusModifier;   //!< size-modifier for interaction handling
@@ -91,12 +90,12 @@ public:
 
     //! get object properties
     //! @{
-    inline const coreVector2& GetPosition ()const {return m_vPosition;}
-    inline const coreVector2& GetSize     ()const {return m_vSize;}
-    inline const coreVector2& GetDirection()const {return m_vDirection;}
-    inline const coreVector2& GetCenter   ()const {return m_vCenter;}
-    inline const coreVector2& GetAlignment()const {return m_vAlignment;}
-    inline const coreMatrix3& GetTransform()const {return m_mTransform;}
+    inline const coreVector2&   GetPosition ()const {return m_vPosition;}
+    inline const coreVector2&   GetSize     ()const {return m_vSize;}
+    inline const coreVector2&   GetDirection()const {return m_vDirection;}
+    inline const coreVector2&   GetCenter   ()const {return m_vCenter;}
+    inline const coreVector2&   GetAlignment()const {return m_vAlignment;}
+    inline const coreMatrix3x2& GetTransform()const {return m_mTransform;}
     //! @}
 };
 
