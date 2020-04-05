@@ -2,15 +2,18 @@
 Linux SDL configuration:
 - install X11 libraries: xcursor xdbe xinerama xrandr xscrnsaver xshape xvidmode
 - SDL MAIN:
+  > export CFLAGS=-O3
   > ./configure --prefix=/media/data/Entwicklung/libraries/temp --enable-x11-shared --disable-audio --disable-render --disable-video-opengles --disable-video-vulkan --disable-rpath
 - SDL IMG:
+  > export CFLAGS=-O3
   > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/data/Entwicklung/libraries/temp
-  > ./configure --prefix=/media/data/Entwicklung/libraries/temp --enable-lbm=no --enable-pcx=no --enable-pnm=no --enable-tif=no --enable-xcf=no --enable-xpm=no --enable-xv=no --enable-webp=no --enable-png-shared=no --enable-jpg-shared=no
+  > ./configure --prefix=/media/data/Entwicklung/libraries/temp --enable-lbm=no --enable-pcx=no --enable-pnm=no --enable-svg=no --enable-tif=no --enable-xcf=no --enable-xpm=no --enable-xv=no --enable-webp=no --enable-png-shared=no --enable-jpg-shared=no
 - SDL TTF:
+  > export CFLAGS=-O3
   > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/data/Entwicklung/libraries/temp
   > ./configure --prefix=/media/data/Entwicklung/libraries/temp
 
-  
+
 -------------------------------------------------------------------
 SDL MAIN:
 - use sequential scan and 4kb page-size in rwops
@@ -38,7 +41,7 @@ SDL MAIN:
   > {
   >     #define WGL_COVERAGE_SAMPLES_NV 0x2042
   >     #define WGL_COLOR_SAMPLES_NV    0x20B9
-  > 
+  >
   >     *iAttr++ = WGL_COVERAGE_SAMPLES_NV;
   >     *iAttr++ = _this->gl_config.multisamplesamples * 2;
   >     *iAttr++ = WGL_COLOR_SAMPLES_NV;
@@ -63,7 +66,7 @@ SDL MAIN:
   > {
   >     #define GLX_COVERAGE_SAMPLES_NV 100001
   >     #define GLX_COLOR_SAMPLES_NV    0x20B3
-  > 
+  >
   >     attribs[i++] = GLX_COVERAGE_SAMPLES_NV;
   >     attribs[i++] = _this->gl_config.multisamplesamples * 2;
   >     attribs[i++] = GLX_COLOR_SAMPLES_NV;
@@ -87,11 +90,18 @@ SDL MAIN:
 - do not resize window when setting minimum and maximum size, if window size is already within bounds
   > if((window->w < window->min_w) || (window->h < window->min_h))   // SDL_SetWindowMinimumSize
   > if((window->w > window->max_w) || (window->h > window->max_h))   // SDL_SetWindowMaximumSize
- 
- 
+
+
 -------------------------------------------------------------------
 SDL IMG:
 - change PNG saving to only use 3 channels
+  > #if SDL_BYTEORDER == SDL_LIL_ENDIAN
+  > static const Uint32 png_format = SDL_PIXELFORMAT_RGB24;
+  > #else
+  > static const Uint32 png_format = SDL_PIXELFORMAT_BGR24;
+  > #endif
+  >
+  > int png_color_type = PNG_COLOR_TYPE_RGB;
 
 
 -------------------------------------------------------------------
@@ -99,7 +109,7 @@ SDL TTF:
 - fix implementation-defined division on negative values
   > (delta.x / 64)   // instead of (delta.x >> 6)
 
-  
+
 -------------------------------------------------------------------
 GLEW:
 - change _glewExtensionString array-size to 1 and remove check-functions
