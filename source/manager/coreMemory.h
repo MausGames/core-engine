@@ -49,7 +49,7 @@
 #define STATIC_DELETE(p)    {if(STATIC_ISVALID(p))      CALL_DESTRUCTOR (p)              STATIC_ISVALID(p) = false;}
 
 #if !defined(_CORE_WINDOWS_)
-    #define _aligned_malloc(c,a) std::aligned_alloc(a, c)
+    #define _aligned_malloc(c,a) std::aligned_alloc(a, coreMath::CeilAlign(c, a))
     #define _aligned_free(p)     std::free(p)
 #endif
 
