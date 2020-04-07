@@ -410,6 +410,10 @@ void CoreInput::__OpenJoysticks()
                     }
                 }
 
+                // get device type
+                const SDL_GameControllerType eControllerType = SDL_GameControllerGetType(oJoystick.pController);
+                const SDL_JoystickType       eJoystickType   = SDL_JoystickGetType      (oJoystick.pJoystick);
+
                 // get device features
                 const coreInt32  iNumButtons = SDL_JoystickNumButtons(oJoystick.pJoystick);
                 const coreInt32  iNumAxes    = SDL_JoystickNumAxes   (oJoystick.pJoystick);
@@ -419,9 +423,9 @@ void CoreInput::__OpenJoysticks()
 
                 // save joystick object
                 m_aJoystick.push_back(oJoystick);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %d buttons, %d axes, %d hats, %d balls, %s 0x%04X)",
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %d/%d, %d buttons, %d axes, %d hats, %d balls, %s 0x%04X)",
                                    oJoystick.pController ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickGUID(i),
-                                   iNumButtons, iNumAxes, iNumHats, iNumBalls, oJoystick.pHaptic ? "haptic" : "not haptic", iQuery);
+                                   eControllerType, eJoystickType, iNumButtons, iNumAxes, iNumHats, iNumBalls, oJoystick.pHaptic ? "haptic" : "not haptic", iQuery);
             }
         }
         Core::Log->ListEnd();

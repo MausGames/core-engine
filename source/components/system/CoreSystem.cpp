@@ -35,7 +35,9 @@ CoreSystem::CoreSystem()noexcept
 
     // set SDL behavior hints
     SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS,            "0");
+    SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS,            "0");
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "0");
+    SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,           "1");
 
     // get SDL version
     SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
@@ -221,6 +223,9 @@ CoreSystem::CoreSystem()noexcept
 
     // disable screen saver
     SDL_DisableScreenSaver();
+
+    // ignore all events created during initialization
+    SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 
     // init high-precision time
     m_dPerfFrequency = 1.0 / coreDouble(SDL_GetPerformanceFrequency());
