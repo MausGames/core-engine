@@ -62,6 +62,7 @@
 // TODO: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
 // TODO: overflow check in I_TO_F
 // TODO: const smart-ptr and resource-ptr ?
+// TODO: rename ASSERT to ASSUME ?, as it's the actual way this macro is used (while WARN_IF is a handled assert)
 
 // NOTE: always compile x86 libraries/executables without SSE support
 
@@ -333,7 +334,7 @@
 
 #define UINT_LITERAL(x)             ((coreUint32(x[0]) << 24u) | (coreUint32(x[1]) << 16u) | (coreUint32(x[2]) << 8u) | (coreUint32(x[3])))
 
-#define BIT(n)                      (1ull << (n))   // starts with 0
+#define BIT(n)                      (1ull << (n))
 #define BITLINE(n)                  (BIT(n) - 1ull)
 #define ADD_BIT(o,n)                { (o) |=  BIT(n);}
 #define ADD_FLAG(o,n)               { (o) |=     (n);}
@@ -358,7 +359,7 @@
 #define STATIC_ASSERT(c)            static_assert(c, "Static Assert [" #c "]");
 
 #if defined(_CORE_DEBUG_)
-    #define ASSERT(c)               {if(false) assert(c); SDL_assert(c);}
+    #define ASSERT(c)               {if(false) assert(c); SDL_assert(c);}   // strong
 #else
     #if defined(_CORE_MSVC_)
         #define ASSERT(c)           {__assume(!!(c));}
@@ -368,7 +369,7 @@
 #endif
 
 #if defined(_CORE_DEBUG_)
-    #define WARN_IF(c)              if([](const coreBool bCondition) {ASSERT(!bCondition) return bCondition;}(!!(c)))
+    #define WARN_IF(c)              if([](const coreBool bCondition) {ASSERT(!bCondition) return bCondition;}(!!(c)))   // weak
 #else
     #if defined(_CORE_MSVC_)
         #define WARN_IF(c)          if(c) [[unlikely]]
@@ -381,7 +382,7 @@
     #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT((P_TO_UI(pPointer) % iAlign) == 0u) return pPointer;}(p, a))
 #else
     #if defined(_CORE_MSVC_)
-        #define ASSUME_ALIGNED(p,a) (p)
+        #define ASSUME_ALIGNED(p,a) (std::assume_aligned<a>(p))
     #else
         #define ASSUME_ALIGNED(p,a) (s_cast<decltype(p)>(__builtin_assume_aligned(p, a)))
     #endif

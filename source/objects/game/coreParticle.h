@@ -65,7 +65,7 @@ public:
 
     //! check current status
     //! @{
-    inline coreBool IsActive()const {return (m_fValue > 0.0f) ? true : false;}
+    inline coreBool IsActive()const {return (m_fValue > 0.0f);}
     inline void     Disable ()      {m_fValue = 0.0f;}
     //! @}
 
@@ -256,7 +256,7 @@ public:
 
     //! check for dynamic behavior
     //! @{
-    inline coreBool IsDynamic()const {return (m_pThis == this) ? true : false;}
+    inline coreBool IsDynamic()const {return (m_pThis == this);}
     //! @}
 
     //! set object properties
@@ -346,11 +346,6 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
     for(coreUintW i = iNum; i--; )
         nInitFunc(this->CreateParticle());
 }
-
-
-// ****************************************************************
-/* additional checks */
-STATIC_ASSERT(std::is_trivial<coreParticle>::value == true)
 
 
 #endif // _CORE_GUARD_PARTICLE_H_

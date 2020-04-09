@@ -217,12 +217,15 @@ void CoreAudio::UpdateSource(const ALuint iSource, const coreFloat fVolume)
     {
         if(m_aiSource[i] == iSource)
         {
-            // update current volume
-            const coreFloat fBase = ((m_aSourceData[i].iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[0] : m_afSoundVolume[0]);
-            alSourcef(iSource, AL_GAIN, fBase * fVolume);
+            if(m_aSourceData[i].fVolume != fVolume)
+            {
+                // update current volume
+                const coreFloat fBase = ((m_aSourceData[i].iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[0] : m_afSoundVolume[0]);
+                alSourcef(iSource, AL_GAIN, fBase * fVolume);
 
-            // save new audio source data
-            m_aSourceData[i].fVolume = fVolume;
+                // save new audio source data
+                m_aSourceData[i].fVolume = fVolume;
+            }
             break;
         }
     }

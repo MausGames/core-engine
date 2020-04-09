@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_HASHSTRING_H_
 #define _CORE_GUARD_HASHSTRING_H_
 
+// TODO: add debug-logging to catch global hash-collisions (currently only in lookup-container)
+
 
 // ****************************************************************
 /* hash-string wrapper class */

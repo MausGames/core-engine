@@ -213,7 +213,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
-    Core::Log->Info("Main window created (%.0f x %.0f / %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
+    Core::Log->Info("Main window created (%.0f x %.0f, %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
@@ -270,8 +270,16 @@ CoreSystem::~CoreSystem()
 // change the title of the window
 void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 {
-    // set new title (with additional info)
-    SDL_SetWindowTitle(m_pWindow, PRINT("%s (%.0f x %.0f)", pcTitle, m_vResolution.x, m_vResolution.y));
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
+    {
+        // set new title (with additional info)
+        SDL_SetWindowTitle(m_pWindow, PRINT("%s (%.0f x %.0f)", pcTitle, m_vResolution.x, m_vResolution.y));
+    }
+    else
+    {
+        // set new title
+        SDL_SetWindowTitle(m_pWindow, pcTitle);
+    }
 }
 
 
