@@ -9,6 +9,7 @@ add_library(CoreEngine STATIC)
 set_target_properties(
     CoreEngine PROPERTIES
     CXX_STANDARD 17
+    UNITY_BUILD ON
     DEBUG_POSTFIX _debug
     ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux/x64/
 )
