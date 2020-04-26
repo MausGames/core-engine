@@ -139,7 +139,7 @@ coreStatus coreMusic::Play()
     if(!m_pFile)  return CORE_INVALID_DATA;
 
     // retrieve next free audio source
-    m_iSource = Core::Audio->NextSource(CORE_AUDIO_MUSIC_BUFFER, m_fVolume);
+    m_iSource = Core::Audio->NextSource(CORE_AUDIO_MUSIC_BUFFER, m_fVolume, 0u);
     if(m_iSource)
     {
         // prepare sound buffers

@@ -29,6 +29,7 @@ private:
     {
         ALuint    iBuffer;   //!< current sound buffer (for identification)
         coreFloat fVolume;   //!< current volume
+        coreUint8 iType;     //!< sound type (0 = none)
     };
 
 
@@ -43,6 +44,8 @@ private:
     coreFloat m_afGlobalVolume[3];                      //!< global volume (0 = current | 1 = target | 2 = config reference)
     coreFloat m_afMusicVolume [3];                      //!< music volume
     coreFloat m_afSoundVolume [3];                      //!< sound volume
+
+    coreLookup<coreUint8, coreFloat> m_afTypeVolume;    //!< volume for each custom sound type (e.g. effect, ambient, voice)
 
     ALuint         m_aiSource   [CORE_AUDIO_SOURCES];   //!< audio sources
     coreSourceData m_aSourceData[CORE_AUDIO_SOURCES];   //!< data associated with audio sources
@@ -68,9 +71,10 @@ public:
 
     //! override current volume
     //! @{
-    inline void SetGlobalVolume(const coreFloat fVolume) {m_afGlobalVolume[1] = fVolume;}
-    inline void SetMusicVolume (const coreFloat fVolume) {m_afMusicVolume [1] = fVolume;}
-    inline void SetSoundVolume (const coreFloat fVolume) {m_afSoundVolume [1] = fVolume;}
+    inline void SetGlobalVolume(const coreFloat fVolume)                        {ASSERT(fVolume >= 0.0f) m_afGlobalVolume[1] = fVolume;}
+    inline void SetMusicVolume (const coreFloat fVolume)                        {ASSERT(fVolume >= 0.0f) m_afMusicVolume [1] = fVolume;}
+    inline void SetSoundVolume (const coreFloat fVolume)                        {ASSERT(fVolume >= 0.0f) m_afSoundVolume [1] = fVolume;}
+    inline void SetTypeVolume  (const coreFloat fVolume, const coreUint8 iType) {ASSERT(fVolume >= 0.0f && iType) if(m_afTypeVolume[iType] != fVolume) {m_afTypeVolume.at(iType) = fVolume; m_afSoundVolume[0] = -1.0f;}}
     //! @}
 
     //! control sound playback
@@ -82,7 +86,7 @@ public:
 
     //! handle audio sources
     //! @{
-    ALuint   NextSource  (const ALuint iBuffer, const coreFloat fVolume);
+    ALuint   NextSource  (const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType);
     void     FreeSources (const ALuint iBuffer);
     void     UpdateSource(const ALuint iSource, const coreFloat fVolume);
     coreBool CheckSource (const ALuint iBuffer, const ALuint iSource)const;

@@ -140,7 +140,7 @@ coreStatus coreSound::Unload()
 
 // ****************************************************************
 // play the sound with positional behavior
-void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreVector3& vPosition)
+void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3& vPosition)
 {
     ASSERT(m_iBuffer)
 
@@ -149,7 +149,7 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
     ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free audio source
-    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume);
+    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume, iType);
     if(m_iCurSource)
     {
         // save audio source
@@ -176,7 +176,7 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
 
 // ****************************************************************
 // play the sound with relative behavior
-void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop)
+void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType)
 {
     ASSERT(m_iBuffer)
 
@@ -185,7 +185,7 @@ void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const co
     ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free audio source
-    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume);
+    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume, iType);
     if(m_iCurSource)
     {
         // save audio source

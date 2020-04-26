@@ -20,6 +20,7 @@ CoreAudio::CoreAudio()noexcept
 , m_afGlobalVolume  {-1.0f, -1.0f, -1.0f}
 , m_afMusicVolume   {-1.0f, -1.0f, -1.0f}
 , m_afSoundVolume   {-1.0f, -1.0f, -1.0f}
+, m_afTypeVolume    {}
 , m_aiSource        {}
 , m_aSourceData     {}
 , m_nDeferUpdates   (NULL)
@@ -70,6 +71,7 @@ CoreAudio::CoreAudio()noexcept
     this->ProcessUpdates();
 
     // reset audio sources
+    m_afTypeVolume.emplace(0u, 1.0f);
     this->__UpdateSources();
 
     // log audio device information
@@ -88,7 +90,7 @@ CoreAudio::CoreAudio()noexcept
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: 0x%08X)", iError);
+    WARN_IF(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: 0x%08X)", iError);
 }
 
 
@@ -145,7 +147,7 @@ void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
 
 // ****************************************************************
 // retrieve next free audio source
-ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume)
+ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType)
 {
     // define search range
     const coreUintW iFrom = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? 0u                       : CORE_AUDIO_SOURCES_MUSIC;
@@ -161,13 +163,17 @@ ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume)
         alGetSourcei(iSource, AL_SOURCE_STATE, &iStatus);
         if((iStatus != AL_PLAYING) && (iStatus != AL_PAUSED))
         {
+            // init sound type volume
+            if(!m_afTypeVolume.count(iType)) m_afTypeVolume.emplace(iType, 1.0f);
+
             // set current volume
-            const coreFloat fBase = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[0] : m_afSoundVolume[0];
-            alSourcef(iSource, AL_GAIN, fBase * fVolume);
+            const coreFloat fBase = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[1] : (m_afSoundVolume[1] * m_afTypeVolume.at(iType));
+            alSourcef(iSource, AL_GAIN, fVolume * fBase);
 
             // save audio source data
             m_aSourceData[i].iBuffer = iBuffer;
             m_aSourceData[i].fVolume = fVolume;
+            m_aSourceData[i].iType   = iType;
 
             // return audio source
             return iSource;
@@ -220,8 +226,8 @@ void CoreAudio::UpdateSource(const ALuint iSource, const coreFloat fVolume)
             if(m_aSourceData[i].fVolume != fVolume)
             {
                 // update current volume
-                const coreFloat fBase = ((m_aSourceData[i].iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[0] : m_afSoundVolume[0]);
-                alSourcef(iSource, AL_GAIN, fBase * fVolume);
+                const coreFloat fBase = (m_aSourceData[i].iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[1] : (m_afSoundVolume[1] * m_afTypeVolume.at(m_aSourceData[i].iType));
+                alSourcef(iSource, AL_GAIN, fVolume * fBase);
 
                 // save new audio source data
                 m_aSourceData[i].fVolume = fVolume;
@@ -289,7 +295,7 @@ void CoreAudio::__UpdateSources()
     const auto nUpdateVolumeFunc = [](coreFloat* OUTPUT pfVolume, const coreChar* pcSection, const coreChar* pcKey, const coreFloat fDefault)
     {
         // read current config value
-        const coreFloat fNewVolume = Core::Config->GetFloat(pcSection, pcKey, fDefault);
+        const coreFloat fNewVolume = MAX(Core::Config->GetFloat(pcSection, pcKey, fDefault), 0.0f);
 
         // compare and forward
         if(pfVolume[2] != fNewVolume)  {pfVolume[1] = pfVolume[2] = fNewVolume;}   // forward config
@@ -310,7 +316,7 @@ void CoreAudio::__UpdateSources()
         this->DeferUpdates();
         {
             for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES_MUSIC; ++i)
-                alSourcef(m_aiSource[i], AL_GAIN, m_afMusicVolume[0] * m_aSourceData[i].fVolume);
+                alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afMusicVolume[0]);
         }
         this->ProcessUpdates();
     }
@@ -321,7 +327,7 @@ void CoreAudio::__UpdateSources()
         this->DeferUpdates();
         {
             for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
-                alSourcef(m_aiSource[i], AL_GAIN, m_afSoundVolume[0] * m_aSourceData[i].fVolume);
+                alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afSoundVolume[0] * m_afTypeVolume.at(m_aSourceData[i].iType));
         }
         this->ProcessUpdates();
     }
