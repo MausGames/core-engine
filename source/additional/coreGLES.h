@@ -19,38 +19,39 @@
 
 // ****************************************************************
 /* default extensions */
-#define CORE_GL_V2_compatibility                    false
-#define CORE_GL_ARB_buffer_storage                  false
-#define CORE_GL_ARB_clear_buffer_object             false
-#define CORE_GL_ARB_clear_texture                   false
-#define CORE_GL_ARB_compute_shader                  false
-#define CORE_GL_ARB_copy_buffer                     false
-#define CORE_GL_ARB_copy_image                      false
-#define CORE_GL_ARB_depth_buffer_float              false
-#define CORE_GL_ARB_direct_state_access             false
-#define CORE_GL_ARB_geometry_shader4                false
-#define CORE_GL_ARB_half_float_vertex               false   // different token value in OES_vertex_half_float
-#define CORE_GL_ARB_multi_bind                      false
-#define CORE_GL_ARB_parallel_shader_compile         false
-#define CORE_GL_ARB_program_interface_query         false
-#define CORE_GL_ARB_sample_shading                  false
-#define CORE_GL_ARB_sync                            false
-#define CORE_GL_ARB_tessellation_shader             false
-#define CORE_GL_ARB_texture_float                   false
-#define CORE_GL_ARB_texture_rg                      false
-#define CORE_GL_ARB_timer_query                     false
-#define CORE_GL_ARB_uniform_buffer_object           false   // controls shader-handling
-#define CORE_GL_ARB_vertex_attrib_binding           false
-#define CORE_GL_EXT_direct_state_access             false
-#define CORE_GL_EXT_framebuffer_object              true
-#define CORE_GL_EXT_gpu_shader4                     false
-#define CORE_GL_EXT_packed_float                    false
-#define CORE_GL_EXT_shader_image_load_store         false
-#define CORE_GL_EXT_texture_compression_rgtc        false
-#define CORE_GL_KHR_debug                           false
-#define CORE_GL_NV_framebuffer_multisample_coverage false
-#define CORE_GL_NV_multisample_filter_hint          false
-#define CORE_GL_NV_shader_buffer_load               false
+#define CORE_GL_V2_compatibility                     false
+#define CORE_GL_AMD_framebuffer_multisample_advanced false
+#define CORE_GL_ARB_buffer_storage                   false
+#define CORE_GL_ARB_clear_buffer_object              false
+#define CORE_GL_ARB_clear_texture                    false
+#define CORE_GL_ARB_compute_shader                   false
+#define CORE_GL_ARB_copy_buffer                      false
+#define CORE_GL_ARB_copy_image                       false
+#define CORE_GL_ARB_depth_buffer_float               false
+#define CORE_GL_ARB_direct_state_access              false
+#define CORE_GL_ARB_geometry_shader4                 false
+#define CORE_GL_ARB_half_float_vertex                false   // different token value in OES_vertex_half_float
+#define CORE_GL_ARB_multi_bind                       false
+#define CORE_GL_ARB_parallel_shader_compile          false
+#define CORE_GL_ARB_program_interface_query          false
+#define CORE_GL_ARB_sample_shading                   false
+#define CORE_GL_ARB_sync                             false
+#define CORE_GL_ARB_tessellation_shader              false
+#define CORE_GL_ARB_texture_float                    false
+#define CORE_GL_ARB_texture_rg                       false
+#define CORE_GL_ARB_timer_query                      false
+#define CORE_GL_ARB_uniform_buffer_object            false   // controls shader-handling
+#define CORE_GL_ARB_vertex_attrib_binding            false
+#define CORE_GL_EXT_direct_state_access              false
+#define CORE_GL_EXT_framebuffer_object               true
+#define CORE_GL_EXT_gpu_shader4                      false
+#define CORE_GL_EXT_packed_float                     false
+#define CORE_GL_EXT_shader_image_load_store          false
+#define CORE_GL_EXT_texture_compression_rgtc         false
+#define CORE_GL_KHR_debug                            false
+#define CORE_GL_NV_framebuffer_multisample_coverage  false
+#define CORE_GL_NV_multisample_filter_hint           false
+#define CORE_GL_NV_shader_buffer_load                false
 
 
 // ****************************************************************
@@ -288,6 +289,7 @@ typedef uint64_t GLuint64;
 #define glMaxShaderCompilerThreadsARB(...)
 #define glMinSampleShading(...)
 #define glQueryCounter(...)
+#define glRenderbufferStorageMultisampleAdvancedAMD(...)
 #define glRenderbufferStorageMultisampleCoverageNV(...)
 #define glTextureSubImage2D(...)
 #define glTextureSubImage2DEXT(...)
