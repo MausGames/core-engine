@@ -16,6 +16,7 @@
 #define CORE_AUDIO_SOURCES_MUSIC (4u)                                                    //!< number of audio sources for music
 #define CORE_AUDIO_SOURCES_SOUND (16u)                                                   //!< number of audio sources for sound
 #define CORE_AUDIO_SOURCES       (CORE_AUDIO_SOURCES_MUSIC + CORE_AUDIO_SOURCES_SOUND)   //!< total number of audio sources
+#define CORE_AUDIO_TYPES         (8u)                                                    //!< number of sound types
 #define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    //!< sound buffer identifier for music
 
 
@@ -29,7 +30,7 @@ private:
     {
         ALuint    iBuffer;   //!< current sound buffer (for identification)
         coreFloat fVolume;   //!< current volume
-        coreUint8 iType;     //!< sound type (0 = none)
+        coreUint8 iType;     //!< sound type (e.g. effect, ambient, voice)
     };
 
 
@@ -45,7 +46,7 @@ private:
     coreFloat m_afMusicVolume [3];                      //!< music volume
     coreFloat m_afSoundVolume [3];                      //!< sound volume
 
-    coreLookup<coreUint8, coreFloat> m_afTypeVolume;    //!< volume for each custom sound type (e.g. effect, ambient, voice)
+    coreFloat m_afTypeVolume[CORE_AUDIO_TYPES];         //!< volume for each sound type
 
     ALuint         m_aiSource   [CORE_AUDIO_SOURCES];   //!< audio sources
     coreSourceData m_aSourceData[CORE_AUDIO_SOURCES];   //!< data associated with audio sources
@@ -74,7 +75,7 @@ public:
     inline void SetGlobalVolume(const coreFloat fVolume)                        {ASSERT(fVolume >= 0.0f) m_afGlobalVolume[1] = fVolume;}
     inline void SetMusicVolume (const coreFloat fVolume)                        {ASSERT(fVolume >= 0.0f) m_afMusicVolume [1] = fVolume;}
     inline void SetSoundVolume (const coreFloat fVolume)                        {ASSERT(fVolume >= 0.0f) m_afSoundVolume [1] = fVolume;}
-    inline void SetTypeVolume  (const coreFloat fVolume, const coreUint8 iType) {ASSERT(fVolume >= 0.0f && iType) if(m_afTypeVolume[iType] != fVolume) {m_afTypeVolume.at(iType) = fVolume; m_afSoundVolume[0] = -1.0f;}}
+    inline void SetTypeVolume  (const coreFloat fVolume, const coreUint8 iType) {ASSERT(fVolume >= 0.0f && iType < CORE_AUDIO_TYPES) if(m_afTypeVolume[iType] != fVolume) {m_afTypeVolume[iType] = fVolume; m_afSoundVolume[0] = -1.0f;}}
     //! @}
 
     //! control sound playback
