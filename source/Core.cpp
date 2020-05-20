@@ -233,8 +233,8 @@ coreStatus Core::Run()
         Core::System  ->__UpdateTime();
         Core::Input   ->__UpdateButtonsEnd();
 
-        // update the resource manager with only one context
-        if(!Core::Graphics->GetResourceContext())
+        // update the resource manager without resource thread
+        if(!Core::Manager::Resource->GetActive())
         {
             Core::Manager::Resource->UpdateResources();
             Core::Manager::Resource->UpdateFunctions();

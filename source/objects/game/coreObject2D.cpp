@@ -267,7 +267,7 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType eT
 #else
 
     // check for interaction status and mouse button
-    return (m_bFocused && Core::Input->GetMouseButton(iButton, eType)) ? true : false;
+    return (m_bFocused && Core::Input->GetMouseButton(iButton, eType));
 
 #endif
 }

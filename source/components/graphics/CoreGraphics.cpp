@@ -146,7 +146,9 @@ CoreGraphics::CoreGraphics()noexcept
 
     // reset ambient light
     for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i)
+    {
         this->SetLight(i, coreVector4(0.0f,0.0f,0.0f,0.0f), coreVector4(0.0f,0.0f,-1.0f,1.0f), coreVector4(1.0f,1.0f,1.0f,1.0f));
+    }
 
     // reset scene
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -388,14 +390,17 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
         // flip pixel data vertically
         coreByte* pConvert = pData + iSize;
         for(coreUintW i = 0u; i < iHeight; ++i)
+        {
             std::memcpy(pConvert + (iHeight - i - 1u) * iPitchDst, pData + i * iPitchSrc, iPitchDst);
+        }
 
         // create SDL surface
         coreSurfaceScope pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidthDst, iHeight, 24, iPitchDst, CORE_TEXTURE_MASK);
         if(pSurface)
         {
-            // create folder hierarchy
             const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? PRINT("%s.png", sPathCopy.c_str()) : sPathCopy.c_str();
+
+            // create folder hierarchy
             coreData::CreateFolder(pcFullPath);
 
             // save the surface as PNG image

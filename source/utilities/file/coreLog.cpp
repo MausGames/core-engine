@@ -110,17 +110,17 @@ void coreLog::DebugOpenGL()
         glDebugMessageCallback(&WriteOpenGL, this);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
 
-        // disable certain shader compiler messages
-        constexpr GLuint aiID1[] = {1u, 2u};
-        glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, ARRAY_SIZE(aiID1), aiID1, false);
+        // disable all shader compiler messages
+        glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, false);
 
         // 1: Shader Stats (SGPRs, VGPRs, Code Size, LDS, Scratch, Max Waves, Spilled SGPRs, Spilled VGPRs, PrivMem VGPRs)
         // 2: LLVM Diagnostics (# instructions in function)
+        // #: extension # unsupported in # shader
 
         // disable certain API messages
-        constexpr GLuint aiID2[] = {131169u, 131185u, 131204u, 131222u};
-        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID2), aiID2, false);
-        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, GL_DONT_CARE, ARRAY_SIZE(aiID2), aiID2, false);
+        constexpr GLuint aiID[] = {131169u, 131185u, 131204u, 131222u};
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
 
         // 131169: Framebuffer detailed info: The driver allocated multisample storage for renderbuffer #.
         // 131185: Buffer detailed info: Buffer object # (bound to #, usage hint is #) will use # memory as the source for buffer object operations.

@@ -114,7 +114,7 @@ coreStatus coreShader::Load(coreFile* pFile)
     // check for errors
     GLint iStatus;
     glGetShaderiv(m_iIdentifier, GL_COMPILE_STATUS, &iStatus);
-    if(!iStatus)
+    WARN_IF(!iStatus)
     {
         // get length of info-log
         GLint iLength;
@@ -345,7 +345,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     // check for errors
     GLint iStatus;
     glGetProgramiv(m_iIdentifier, GL_LINK_STATUS, &iStatus);
-    if(!iStatus)
+    WARN_IF(!iStatus)
     {
         this->__WriteLog();
         return CORE_INVALID_DATA;
@@ -441,7 +441,7 @@ coreBool coreProgram::Enable()
     // check for errors
     GLint iStatus;
     glGetProgramiv(m_iIdentifier, GL_VALIDATE_STATUS, &iStatus);
-    if(!iStatus)
+    WARN_IF(!iStatus)
     {
         this->__WriteLog();
         return false;

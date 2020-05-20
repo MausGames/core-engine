@@ -230,6 +230,7 @@
     #pragma GCC diagnostic ignored "-Wdefaulted-function-deleted"
     #pragma GCC diagnostic ignored "-Wformat-security"
     #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+    #pragma GCC diagnostic ignored "-Wmisleading-indentation"
     #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #endif

@@ -47,8 +47,8 @@ SDL_Thread* coreThread::StartThread()
         m_bActive = true;
 
         // create thread object
-        m_pThread = SDL_CreateThreadWithStackSize(coreThreadMain, m_sName.c_str(), 1024u * 1024u, this);
-        if(!m_pThread)
+        m_pThread = SDL_CreateThreadWithStackSize(coreThreadMain, m_sName.c_str(), 2u * 1024u * 1024u, this);
+        WARN_IF(!m_pThread)
         {
             Core::Log->Warning("Thread (%s) could not be started (SDL: %s)", m_sName.c_str(), SDL_GetError());
             m_bActive = false;

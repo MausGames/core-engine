@@ -135,15 +135,15 @@ public:
 protected:
     /*! check for successful entry lookup */
     //! @{
-    inline coreBool _check(const coreKeyIterator&      it)      {return (it != m_atKeyList.end()) ? true : false;}
-    inline coreBool _check(const coreKeyConstIterator& it)const {return (it != m_atKeyList.end()) ? true : false;}
+    inline coreBool _check(const coreKeyIterator&      it)      {return (it != m_atKeyList.end());}
+    inline coreBool _check(const coreKeyConstIterator& it)const {return (it != m_atKeyList.end());}
     //! @}
 
     /*! cache last requested entry */
     //! @{
     inline void     _cache_set(const coreUintW iIndex) {m_iCacheIndex = iIndex;}
     inline void     _cache_clear()                     {m_iCacheIndex = CORE_LOOKUP_INVALID;}
-    inline coreBool _cache_try(const I& tKey)const     {return ((m_iCacheIndex != CORE_LOOKUP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey)) ? true : false;}
+    inline coreBool _cache_try(const I& tKey)const     {return ((m_iCacheIndex != CORE_LOOKUP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey));}
     //! @}
 
     /*! lookup entry by key */

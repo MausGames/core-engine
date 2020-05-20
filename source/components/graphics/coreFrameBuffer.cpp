@@ -133,7 +133,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
     glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
 
     // check for errors
-    if(iError != GL_FRAMEBUFFER_COMPLETE)
+    WARN_IF(iError != GL_FRAMEBUFFER_COMPLETE)
     {
         Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: 0x%08X)", iError);
         this->Delete();

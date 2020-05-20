@@ -13,7 +13,6 @@
 // TODO: touch-related functions empty on non-mobile
 // TODO: save GUID ?, format Name and GUID get functions
 // TODO: remove the 1-frame delay when using the Set* interface from game-code
-// TODO: add SDL_JoystickGetType
 
 
 // ****************************************************************
