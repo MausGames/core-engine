@@ -580,7 +580,7 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
 
 // ****************************************************************
 /* create folder hierarchy */
-void coreData::CreateFolder(const coreChar* pcPath)
+coreStatus coreData::CreateFolder(const coreChar* pcPath)
 {
     coreChar* pcString = coreData::__NextTempString();
     coreChar* pcCursor = pcString;
@@ -599,14 +599,16 @@ void coreData::CreateFolder(const coreChar* pcPath)
 
             // create sub-folder
 #if defined(_CORE_WINDOWS_)
-            CreateDirectoryA(pcString, NULL);
+            if(!CreateDirectoryA(pcString, NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
 #else
-            mkdir(pcString, S_IRWXU);
+            if(mkdir(pcString, S_IRWXU) && (errno != EEXIST)) return CORE_ERROR_FILE;
 #endif
             // reset path
             (*pcCursor) = cTemp;
         }
     }
+
+    return CORE_OK;
 }
 
 

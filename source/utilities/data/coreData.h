@@ -106,7 +106,7 @@ public:
     static coreStatus  FileMove     (const coreChar* pcFrom, const coreChar* pcTo);
     static coreStatus  FileDelete   (const coreChar* pcPath);
     static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
-    static void        CreateFolder (const coreChar* pcPath);
+    static coreStatus  CreateFolder (const coreChar* pcPath);
     //! @}
 
     /*! retrieve date and time */

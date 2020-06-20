@@ -60,6 +60,9 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     if(pcPath) m_sPath = pcPath;
     ASSERT(!m_sPath.empty())
 
+    // create folder hierarchy
+    coreData::CreateFolder(m_sPath.c_str());
+
     // write to temporary file (to prevent corruption)
     const coreChar* pcTemp = PRINT("%s.temp_%s", m_sPath.c_str(), coreData::DateTimePrint("%Y%m%d_%H%M%S"));
 
@@ -320,6 +323,9 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     // save path
     if(pcPath) m_sPath = pcPath;
     ASSERT(!m_sPath.empty())
+
+    // create folder hierarchy
+    coreData::CreateFolder(m_sPath.c_str());
 
     // write to temporary file (to prevent corruption)
     const coreChar* pcTemp = PRINT("%s.temp_%s", m_sPath.c_str(), coreData::DateTimePrint("%Y%m%d_%H%M%S"));
