@@ -78,6 +78,8 @@ public:
     //! @{
     static const coreChar* SystemName();
     static const coreChar* SystemUserName();
+    static const coreChar* SystemDirAppData();
+    static const coreChar* SystemDirTemp();
     //! @}
 
     /*! control current working directory */
@@ -160,6 +162,11 @@ private:
     /*! access next temp-string */
     //! @{
     static inline RETURN_RESTRICT coreChar* __NextTempString() {if(++s_iCurString >= CORE_DATA_STRING_NUM) s_iCurString = 0u; return &s_TempString.pcPointer[s_iCurString * CORE_DATA_STRING_LEN];}
+    //! @}
+
+    /*! prepare path for system directory */
+    //! @{
+    static const coreChar* __PrepareSystemDir(const coreChar* pcPath);
     //! @}
 };
 

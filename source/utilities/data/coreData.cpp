@@ -11,6 +11,7 @@
 #if defined(_CORE_WINDOWS_)
     #include <shellapi.h>
     #include <Psapi.h>
+    #include <Shlobj.h>
     #include <VersionHelpers.h>
 #elif defined(_CORE_LINUX_)
     #include <dirent.h>
@@ -213,6 +214,91 @@ const coreChar* coreData::SystemUserName()
     // get user name from controlling terminal
     const coreChar* pcLogin = getlogin();
     if(pcLogin) return pcLogin;
+
+#endif
+
+    return "";
+}
+
+
+// ****************************************************************
+/* get path to store application data */
+const coreChar* coreData::SystemDirAppData()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // get default roaming directory
+    wchar_t* pcRoamingPath;
+    if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &pcRoamingPath)))
+    {
+        coreChar* pcString = coreData::__NextTempString();
+
+        // convert characters
+        const coreInt32 iLen = WideCharToMultiByte(CP_UTF8, 0u, pcRoamingPath, -1, pcString, CORE_DATA_STRING_LEN - 1, NULL, NULL);
+        CoTaskMemFree(pcRoamingPath);
+
+        if(iLen)
+        {
+            // prepare path and return
+            const coreChar* pcPath = coreData::__PrepareSystemDir(pcString);
+            if(pcPath) return pcPath;
+        }
+    }
+
+#elif defined(_CORE_LINUX_)
+
+    const coreChar* pcPath;
+
+    // get directory from XDG variable
+    if((pcPath = std::getenv("XDG_DATA_HOME")) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
+        return pcPath;
+
+    // get directory from home variable
+    if((pcPath = std::getenv("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.local/share", pcPath))))
+        return pcPath;
+
+    // get directory from password database
+    const passwd* pRecord = getpwuid(geteuid());
+    if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.local/share", pRecord->pw_dir))))
+        return pcPath;
+
+#endif
+
+    return "";
+}
+
+
+// ****************************************************************
+/* get path to store temporary data */
+const coreChar* coreData::SystemDirTemp()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // get default temporary directory
+    coreChar acTempPath[MAX_PATH];
+    if(GetTempPathA(MAX_PATH, acTempPath))
+    {
+        // prepare path and return
+        const coreChar* pcPath = coreData::__PrepareSystemDir(acTempPath);
+        if(pcPath) return pcPath;
+    }
+
+#elif defined(_CORE_LINUX_)
+
+    const coreChar* pcPath;
+
+    // get directory from XDG variable
+    if((pcPath = std::getenv("XDG_CACHE_HOME")) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
+        return pcPath;
+
+    // get directory from home variable
+    if((pcPath = std::getenv("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.cache", pcPath))))
+        return pcPath;
+
+    // get directory from password database
+    const passwd* pRecord = getpwuid(geteuid());
+    if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.cache", pRecord->pw_dir))))
+        return pcPath;
 
 #endif
 
@@ -805,4 +891,26 @@ void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, co
         psInput->replace(iPos, iOldLen, pcNew);
         iPos += iNewLen;
     }
+}
+
+
+// ****************************************************************
+/* prepare path for system directory */
+const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
+{
+    // get folder name from application name
+    static std::string sIdentifier;
+    if(sIdentifier.empty())
+    {
+        sIdentifier = Core::Application->Settings.Name;
+        coreData::StrReplace(&sIdentifier, " ", "");
+    }
+
+    // create full path
+    const coreChar* pcFullPath = PRINT("%s" CORE_DATA_SLASH "%s" CORE_DATA_SLASH, pcPath, sIdentifier.c_str());
+
+    // create folder hierarchy (and check if path is valid)
+    if(coreData::CreateFolder(pcFullPath) != CORE_OK) return NULL;
+
+    return pcFullPath;
 }
