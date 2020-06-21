@@ -10,18 +10,23 @@
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+#include <unistd.h>
 #include <signal.h>
 #include <execinfo.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 extern int coreMain(int argc, char** argv);
+extern const char* g_pcUserFolder;
 
 
 // ****************************************************************
 /* execute custom signal handler */
 static void SignalHandler(int iSignal, siginfo_t* pInfo, void* pContext)
 {
+    // switch to user folder
+    chdir(g_pcUserFolder);
+
     // create custom crash dump
     FILE* pFile = fopen("crash.dmp", "wb");
     if(pFile)

@@ -28,6 +28,9 @@
 thread_local coreData::coreTempString coreData::s_TempString     = {};
 thread_local coreUintW                coreData::s_iCurString     = 0u;
 coreLookupStr<const coreChar*>        coreData::s_apcCommandLine = {};
+std::string                           coreData::s_sUserFolder    = "";
+
+const coreChar* g_pcUserFolder = "";   //!< to allow access from C files
 
 
 // ****************************************************************
@@ -375,6 +378,39 @@ void coreData::SetCommandLine(const coreInt32 iArgc, coreChar** ppcArgv)
             s_apcCommandLine[coreData::StrLower(pcCurrent)] = ((i+1u < ie) && ((*ppcArgv[i+1u]) != '-')) ? ppcArgv[i+1u] : "";
         }
     }
+}
+
+
+// ****************************************************************
+/* initialize user folder */
+void coreData::InitUserFolder()
+{
+    // get command line argument
+    const coreChar* pcPath = coreData::GetCommandLine("user-folder-path");
+
+    // use specific user folder
+    if(pcPath && pcPath[0])
+    {
+             if(!std::strcmp(pcPath, "!appdata")) pcPath = coreData::SystemDirAppData();
+        else if(!std::strcmp(pcPath, "!temp"))    pcPath = coreData::SystemDirTemp();
+        else                                      pcPath = PRINT("%s" CORE_DATA_SLASH, pcPath);
+    }
+
+    // use default user folder (and create folder hierarchy)
+    if(!pcPath || !pcPath[0] || (coreData::CreateFolder(pcPath) != CORE_OK))
+    {
+        pcPath = "user/";
+        coreData::CreateFolder(pcPath);
+    }
+
+    // save selected user folder
+    s_sUserFolder  = pcPath;
+    g_pcUserFolder = s_sUserFolder.c_str();
+
+    // copy configuration file
+    const coreChar* pcSource = "user/config.ini";
+    const coreChar* pcTarget = coreData::UserFolder("config.ini");
+    if(!coreData::FileExists(pcTarget)) coreData::FileCopy(pcSource, pcTarget);
 }
 
 

@@ -13,6 +13,7 @@
 // TODO: constexpr strlen -> ARRAY_SIZE(x)-1
 // TODO: implement constexpr strright
 // TODO: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
+// TODO: --help, --force-x86, --force-x64 (windows, launcher?)
 
 
 // ****************************************************************
@@ -55,6 +56,7 @@ private:
     static thread_local coreUintW      s_iCurString;          //!< current temp-string
 
     static coreLookupStr<const coreChar*> s_apcCommandLine;   //!< parsed command line arguments
+    static std::string                    s_sUserFolder;      //!< selected user folder
 
 
 public:
@@ -92,6 +94,12 @@ public:
     //! @{
     static        void            SetCommandLine(const coreInt32 iArgc, coreChar** ppcArgv);
     static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
+    //! @}
+
+    /*! control user folder */
+    //! @{
+    static        void            InitUserFolder();
+    static inline const coreChar* UserFolder(const coreChar* pcPath) {ASSERT(pcPath) return PRINT("%s%s", s_sUserFolder.c_str(), pcPath);}
     //! @}
 
     /*! open URL with default web-browser */

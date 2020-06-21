@@ -28,9 +28,9 @@ STATIC_MEMORY(CoreApp,             Core::Application)
 Core::Core()noexcept
 {
     // init utilities
-    STATIC_NEW(Log, "log.html")
+    STATIC_NEW(Log, coreData::UserFolder("log.html"))
     Log->Header("Configuration");
-    STATIC_NEW(Config, "config.ini")
+    STATIC_NEW(Config, coreData::UserFolder("config.ini"))
     STATIC_NEW(Language)
     STATIC_NEW(Rand)
 
@@ -187,6 +187,7 @@ coreInt32 coreMain(coreInt32 argc, coreChar** argv)
 
     // set command line arguments
     coreData::SetCommandLine(argc, argv);
+    coreData::InitUserFolder();
 
     // set floating-point behavior
     coreMath::EnableExceptions();

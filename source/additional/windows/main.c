@@ -25,6 +25,7 @@
 typedef BOOL (WINAPI *uMiniDumpWriteDump) (HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION, PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
 
 extern int coreMain(int argc, char** argv);
+extern const char* g_pcUserFolder;
 
 
 // ****************************************************************
@@ -53,6 +54,9 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
     // try to recover several times
     static int s_iRecover = 10;
     if(s_iRecover--) return EXCEPTION_CONTINUE_EXECUTION;
+
+    // switch to user folder
+    SetCurrentDirectoryA(g_pcUserFolder);
 
     // load debug library
     const HMODULE pLibrary = LoadLibraryA("dbghelp.dll");
