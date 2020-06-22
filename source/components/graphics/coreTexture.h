@@ -131,6 +131,7 @@ public:
     //! handle texture levels and images
     //! @{
     void BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess);
+    void ReadImage(const coreUint8 iLevel, const coreUint32 iDataSize, coreByte* OUTPUT pData);
     void CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;
     void CopyImage(coreTexture* OUTPUT pDestination)const;
     //! @}

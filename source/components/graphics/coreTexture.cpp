@@ -297,7 +297,7 @@ void coreTexture::CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY
     else
     {
         // bind texture and copy frame buffer
-        this->Enable(0);
+        this->Enable(0u);
         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, iDstX, iDstY, iSrcX, iSrcY, iWidth, iHeight);
     }
 }
@@ -318,6 +318,31 @@ void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const
     {
         // bind directly without layering
         glBindImageTexture(iUnit, m_iIdentifier, iLevel, false, 0, iAccess, m_Spec.iInternal);
+    }
+}
+
+
+// ****************************************************************
+// read image data into buffer
+void coreTexture::ReadImage(const coreUint8 iLevel, const coreUint32 iDataSize, coreByte* OUTPUT pData)
+{
+    ASSERT(m_iIdentifier && (iLevel < m_iLevels) && iDataSize && pData)
+
+    if(CORE_GL_SUPPORT(ARB_direct_state_access))
+    {
+        // read image data directly (new)
+        glGetTextureImage(m_iIdentifier, iLevel, m_Spec.iFormat, m_Spec.iType, iDataSize, pData);
+    }
+    else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+    {
+        // read image data directly (old)
+        glGetTextureImageEXT(m_iIdentifier, GL_TEXTURE_2D, iLevel, m_Spec.iFormat, m_Spec.iType, pData);
+    }
+    else
+    {
+        // bind texture and read image data
+        this->Enable(0u);
+        glGetTexImage(GL_TEXTURE_2D, iLevel, m_Spec.iFormat, m_Spec.iType, pData);
     }
 }
 
