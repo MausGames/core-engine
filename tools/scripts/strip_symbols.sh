@@ -1,11 +1,11 @@
 #!/bin/bash
 
-_EXECUTABLE_="./base/optipng.elf"
-_PARAMETERS_="-strip all -nx -o7"
+_EXECUTABLE_="strip"
+_PARAMETERS_="--strip-unneeded"
 
 if [ -d "$1" ]; then
 
-    for file in "$1"/*.png; do
+    for file in "$1"/*; do
 
         $_EXECUTABLE_ $_PARAMETERS_ "$file"
 
