@@ -134,7 +134,7 @@ private:
     coreModelPtr  m_pLowTriangle;                                      //!< low-memory triangle model (8 bytes per vertex, 24 total)
     coreObject2D* m_pBlitFallback;                                     //!< 2d-object used for fallback-blitting onto the default frame buffer
 
-    static coreSet<coreObject2D*> m_apSpriteList;                      //!< list with pointers to all existing 2d-objects
+    coreSet<coreObject2D*> m_apSpriteList;                             //!< list with pointers to all existing 2d-objects
 
 
 private:
@@ -186,8 +186,8 @@ private:
 
     /*! bind and unbind 2d-objects */
     //! @{
-    inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!s_apSpriteList.count(pSprite)) s_apSpriteList.insert(pSprite);}
-    inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( s_apSpriteList.count(pSprite)) s_apSpriteList.erase (pSprite);}
+    inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!m_apSpriteList.count(pSprite)) m_apSpriteList.insert(pSprite);}
+    inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( m_apSpriteList.count(pSprite)) m_apSpriteList.erase (pSprite);}
     //! @}
 
     /*! handle and track new collisions */

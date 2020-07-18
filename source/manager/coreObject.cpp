@@ -8,8 +8,6 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreSet<coreObject2D*> coreObjectManager::s_apSpriteList = {};
-
 
 // ****************************************************************
 /* constructor */
@@ -34,6 +32,7 @@ coreObjectManager::coreObjectManager()noexcept
 , m_pLowQuad          (NULL)
 , m_pLowTriangle      (NULL)
 , m_pBlitFallback     (NULL)
+, m_apSpriteList      {}
 {
     // allocate low-memory models
     m_pLowQuad     = Core::Manager::Resource->LoadNew<coreModel>();
@@ -461,7 +460,7 @@ void coreObjectManager::__Reset(const coreResourceReset eInit)
         }
 
         // force update of all existing 2d-objects
-        FOR_EACH(it, s_apSpriteList)
+        FOR_EACH(it, m_apSpriteList)
         {
             (*it)->m_eUpdate = CORE_OBJECT_UPDATE_ALL;
             (*it)->coreObject2D::Move();
