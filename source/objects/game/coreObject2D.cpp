@@ -209,9 +209,9 @@ void coreObject2D::Move()
 void coreObject2D::Interact()
 {
     // get resolution-modified transformation parameters
-    const coreVector2 vScreenPosition = coreVector2(    m_mTransform._31,  m_mTransform._32);
-    const coreVector2 vScreenSize     = coreVector2(ABS(m_mTransform._11 + m_mTransform._21),
-                                                    ABS(m_mTransform._12 + m_mTransform._22)) * (0.5f * m_vFocusModifier);
+    const coreVector2 vResolution     = Core::System->GetResolution();
+    const coreVector2 vScreenPosition = coreVector2(m_mTransform._31, m_mTransform._32);
+    const coreVector2 vScreenSize     = m_vSize * m_vFocusModifier * (0.5f * vResolution.Min());
 
 #if defined(_CORE_MOBILE_)
 
@@ -222,11 +222,13 @@ void coreObject2D::Interact()
     Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUintW i)
     {
         // get relative finger position
-        const coreVector2 vInput = Core::Input->GetTouchPosition(i) * Core::System->GetResolution() - vScreenPosition;
+        const coreVector2 vInput   = Core::Input->GetTouchPosition(i) * vResolution - vScreenPosition;
+        const coreVector2 vRotated = (vInput.x * m_vDirection.Rotated90()) +
+                                     (vInput.y * m_vDirection);
 
         // test for intersection
-        if((ABS(vInput.x) < vScreenSize.x) &&
-           (ABS(vInput.y) < vScreenSize.y))
+        if((ABS(vRotated.x) < vScreenSize.x) &&
+           (ABS(vRotated.y) < vScreenSize.y))
         {
             m_bFocused = true;
             ADD_BIT(m_iFinger, i)
@@ -236,11 +238,13 @@ void coreObject2D::Interact()
 #else
 
     // get relative mouse cursor position
-    const coreVector2 vInput = Core::Input->GetMousePosition() * Core::System->GetResolution() - vScreenPosition;
+    const coreVector2 vInput   = Core::Input->GetMousePosition() * vResolution - vScreenPosition;
+    const coreVector2 vRotated = (vInput.x * m_vDirection.Rotated90()) +
+                                 (vInput.y * m_vDirection);
 
     // test for intersection
-    m_bFocused = (ABS(vInput.x) < vScreenSize.x) &&
-                 (ABS(vInput.y) < vScreenSize.y);
+    m_bFocused = (ABS(vRotated.x) < vScreenSize.x) &&
+                 (ABS(vRotated.y) < vScreenSize.y);
 
 #endif
 }
