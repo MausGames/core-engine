@@ -30,7 +30,7 @@ thread_local coreUintW                coreData::s_iCurString     = 0u;
 coreLookupStr<const coreChar*>        coreData::s_apcCommandLine = {};
 std::string                           coreData::s_sUserFolder    = "";
 
-const coreChar* g_pcUserFolder = "";   //!< to allow access from C files
+extern "C" const coreChar* g_pcUserFolder = "";   //!< to allow access from C files
 
 
 // ****************************************************************
@@ -200,9 +200,9 @@ const coreChar* coreData::SystemName()
 /* get user name */
 const coreChar* coreData::SystemUserName()
 {
-    UNUSED coreChar* pcString = coreData::__NextTempString();
-
 #if defined(_CORE_WINDOWS_)
+
+    coreChar* pcString = coreData::__NextTempString();
 
     // get user name associated with current thread
     DWORD nSize = CORE_DATA_STRING_LEN;
@@ -853,8 +853,8 @@ const coreChar* coreData::StrFilename(const coreChar* pcInput)
 {
     WARN_IF(!pcInput) return "";
 
-    const coreChar* pcSlash = std::strrchr(pcInput, '\\');
-    if(!pcSlash)    pcSlash = std::strrchr(pcInput, '/');
+    const coreChar* pcSlash = std::strrchr(pcInput, '/');
+    if(!pcSlash)    pcSlash = std::strrchr(pcInput, '\\');
     return pcSlash ? (pcSlash + 1u) : pcInput;
 }
 

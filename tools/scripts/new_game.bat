@@ -53,10 +53,6 @@ CALL RENAME .gitignore .gitignore_temp
 CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% .gitignore_temp > .gitignore
 CALL DEL .gitignore_temp
 
-CALL RENAME .hgignore .hgignore_temp
-CALL %TOOL_REPLACE% %TOOL_NAME% %PRJ_NAME% .hgignore_temp > .hgignore
-CALL DEL .hgignore_temp
-
 CD "executable"
 CALL RENAME %TOOL_NAME%_linux.sh %PRJ_NAME%_linux.sh
 CALL RENAME %TOOL_NAME%_windows.exe %PRJ_NAME%_windows.exe

@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 //*-----------------------------------------------------*//
 //| Part of the Core Engine (https://www.maus-games.at) |//
 //*-----------------------------------------------------*//
@@ -582,7 +582,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                     const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
                     const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
                     ASSERT((pObject->GetColor4   ().Min() >=  0.0f)  && (pObject->GetColor4   ().Max() <= 1.0f))
-                    ASSERT((pObject->GetTexOffset().Min() >= -50.0f) && (pObject->GetTexOffset().Max() <= 50.0f))
+                    ASSERT((pObject->GetTexOffset().Min() >= -15.0f) && (pObject->GetTexOffset().Max() <= 15.0f))
 
                     // write data to the buffer
                     std::memcpy(pCursor,                                                &pObject->GetPosition(), sizeof(coreVector3));

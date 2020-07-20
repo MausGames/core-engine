@@ -230,7 +230,7 @@ coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OU
     {
         // count number of bytes
         const coreUint8 iBytes = 2u + CONTAINS_FLAG((*pcMultiByte), 0xE0u) + CONTAINS_FLAG((*pcMultiByte), 0xF0u);
-        ASSERT(iBytes < 4u)
+        ASSERT(iBytes <= 4u)
 
         // convert characters (with foreign library)
         SI_ConvertW<coreUint16> oConvert(true);

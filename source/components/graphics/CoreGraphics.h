@@ -21,6 +21,7 @@
 // TODO: improve screenshot with pixel-pack-buffer
 // TODO: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision, breaks depth-dependent rendering (water, shadow) in Project One
 // TODO: somehow log all available OpenGL capabilities
+// TODO: async glReadPixels
 
 
 // ****************************************************************

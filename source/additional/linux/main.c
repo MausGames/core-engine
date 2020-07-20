@@ -43,9 +43,6 @@ static void SignalHandler(int iSignal, siginfo_t* pInfo, void* pContext)
         // close file
         fclose(pFile);
     }
-
-    // try to create regular crash dump
-    abort();
 }
 
 

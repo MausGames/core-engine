@@ -383,7 +383,7 @@
     #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT((P_TO_UI(pPointer) % iAlign) == 0u) return pPointer;}(p, a))
 #else
     #if defined(_CORE_MSVC_)
-        #define ASSUME_ALIGNED(p,a) (std::assume_aligned<a>(p))
+        #define ASSUME_ALIGNED(p,a) (p)
     #else
         #define ASSUME_ALIGNED(p,a) (s_cast<decltype(p)>(__builtin_assume_aligned(p, a)))
     #endif
@@ -740,7 +740,7 @@ private:
 #include "utilities/data/hash/FNV1.h"
 #include "utilities/data/hash/Murmur2.h"
 #include "utilities/data/coreHashString.h"
-#include "utilities/data/coreArray.h"
+#include "utilities/data/coreRing.h"
 #include "utilities/data/coreSet.h"
 #include "utilities/data/coreLookup.h"
 #include "utilities/data/coreData.h"

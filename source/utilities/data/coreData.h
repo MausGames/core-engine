@@ -161,7 +161,7 @@ public:
 
     /*! operate with containers */
     //! @{
-    template <typename T> static inline void Shuffle (const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
+    template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
     template <typename T> static typename std::vector<T>::iterator SwapErase(const typename std::vector<T>::iterator& oEntry, std::vector<T>* OUTPUT patContainer);
     //! @}
 
