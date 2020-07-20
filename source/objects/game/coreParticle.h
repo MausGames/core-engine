@@ -128,20 +128,20 @@ private:
 class coreParticleSystem final : public coreResourceRelation
 {
 private:
-    coreParticle* m_pParticle;                                                       //!< pre-allocated particles
-    coreUint32    m_iNumParticles;                                                   //!< number of particles
-    coreUint32    m_iCurParticle;                                                    //!< current particle
+    coreParticle* m_pParticle;                                                      //!< pre-allocated particles
+    coreUint32    m_iNumParticles;                                                  //!< number of particles
+    coreUint32    m_iCurParticle;                                                   //!< current particle
 
-    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                  //!< multiple texture objects
-    coreProgramPtr m_pProgram;                                                       //!< shader-program object
+    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                 //!< multiple texture objects
+    coreProgramPtr m_pProgram;                                                      //!< shader-program object
 
-    std::deque<coreParticle*> m_apRenderList;                                        //!< sorted render list with active particles
-    coreParticleEffect*       m_pDefaultEffect;                                      //!< default particle effect object (dynamic, because of class order)
+    std::deque<coreParticle*> m_apRenderList;                                       //!< sorted render list with active particles
+    coreParticleEffect*       m_pDefaultEffect;                                     //!< default particle effect object (dynamic, because of class order)
 
-    coreArray<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;     //!< vertex array objects
-    coreArray<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aInstanceBuffer;   //!< instance data buffers
+    coreRing<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;     //!< vertex array objects
+    coreRing<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aInstanceBuffer;   //!< instance data buffers
 
-    coreBool m_bUpdate;                                                              //!< buffer update status (dirty flag)
+    coreBool m_bUpdate;                                                             //!< buffer update status (dirty flag)
 
 
 public:

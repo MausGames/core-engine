@@ -315,7 +315,7 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreSet.h">
       <Filter>utilities\data</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\utilities\data\coreArray.h">
+    <ClInclude Include="..\..\..\source\utilities\data\coreRing.h">
       <Filter>utilities\data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\data\hash\CRC32.h">

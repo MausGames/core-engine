@@ -127,25 +127,25 @@ private:
 
 
 private:
-    coreSet<coreObject3D*> m_apObjectList;                                             //!< list with pointers to similar 3d-objects
-    coreUint32 m_iCurCapacity;                                                         //!< current instance-capacity of all related resources
-    coreUint32 m_iCurEnabled;                                                          //!< current number of render-enabled 3d-objects (render-count)
+    coreSet<coreObject3D*> m_apObjectList;                                            //!< list with pointers to similar 3d-objects
+    coreUint32 m_iCurCapacity;                                                        //!< current instance-capacity of all related resources
+    coreUint32 m_iCurEnabled;                                                         //!< current number of render-enabled 3d-objects (render-count)
 
-    coreProgramPtr m_pProgram;                                                         //!< shader-program object
+    coreProgramPtr m_pProgram;                                                        //!< shader-program object
 
-    coreArray<GLuint,           CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aiVertexArray;     //!< vertex array objects
-    coreArray<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aInstanceBuffer;   //!< instance data buffers
-    coreArray<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>* m_paCustomBuffer;    //!< optional custom attribute buffers
+    coreRing<GLuint,           CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aiVertexArray;     //!< vertex array objects
+    coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aInstanceBuffer;   //!< instance data buffers
+    coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>* m_paCustomBuffer;    //!< optional custom attribute buffers
 
-    const void* m_pLastModel;                                                          //!< pointer to last used model (to detect changes and update the vertex array)
+    const void* m_pLastModel;                                                         //!< pointer to last used model (to detect changes and update the vertex array)
 
-    coreDefineBuffer m_nDefineBufferFunc;                                              //!< function for defining the vertex structure of the custom attribute buffers
-    coreUpdateData   m_nUpdateDataFunc;                                                //!< function for updating custom attributes with instancing
-    coreUpdateShader m_nUpdateShaderFunc;                                              //!< function for updating custom attributes through shader uniforms
-    coreUint8        m_iCustomSize;                                                    //!< vertex size for the custom attribute buffers
+    coreDefineBuffer m_nDefineBufferFunc;                                             //!< function for defining the vertex structure of the custom attribute buffers
+    coreUpdateData   m_nUpdateDataFunc;                                               //!< function for updating custom attributes with instancing
+    coreUpdateShader m_nUpdateShaderFunc;                                             //!< function for updating custom attributes through shader uniforms
+    coreUint8        m_iCustomSize;                                                   //!< vertex size for the custom attribute buffers
 
-    coreUint8           m_iFilled;                                                     //!< vertex array fill status
-    coreBatchListUpdate m_eUpdate;                                                     //!< buffer update status (dirty flag)
+    coreUint8           m_iFilled;                                                    //!< vertex array fill status
+    coreBatchListUpdate m_eUpdate;                                                    //!< buffer update status (dirty flag)
 
 
 public:
@@ -229,7 +229,7 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
     WARN_IF(this->IsCustom()) return;
 
     // allocate custom attribute buffer memory
-    m_paCustomBuffer = new coreArray<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>();
+    m_paCustomBuffer = new coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>();
 
     // save functions and vertex size
     m_nDefineBufferFunc = nDefineBufferFunc;

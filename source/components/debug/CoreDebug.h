@@ -46,11 +46,11 @@ private:
     /*! measure structure */
     struct coreMeasure final
     {
-        coreUint64 iPerfTime;                                //!< high-precision CPU time value at start
-        coreArray<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
-        coreFloat fCurrentCPU;                               //!< current CPU performance value
-        coreFloat fCurrentGPU;                               //!< current GPU performance value
-        coreLabel oOutput;                                   //!< label for displaying output
+        coreUint64 iPerfTime;                               //!< high-precision CPU time value at start
+        coreRing<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   //!< asynchronous GPU timer-query objects
+        coreFloat fCurrentCPU;                              //!< current CPU performance value
+        coreFloat fCurrentGPU;                              //!< current GPU performance value
+        coreLabel oOutput;                                  //!< label for displaying output
 
         coreMeasure()noexcept;
     };
@@ -84,7 +84,7 @@ private:
     coreObject2D m_Background;                            //!< background object to increase output readability
     coreLabel    m_Loading;                               //!< resource manager loading indicator
 
-    coreArray<coreStat, CORE_DEBUG_STATS> m_aStat;        //!< statistic objects to retrieve various pipeline statistics
+    coreRing<coreStat, CORE_DEBUG_STATS> m_aStat;         //!< statistic objects to retrieve various pipeline statistics
     coreLabel m_aStatOutput[3];                           //!< labels for displaying statistic output
 
     coreBool m_bEnabled;                                  //!< debug-monitor is enabled (debug-build or debug-context)

@@ -7,25 +7,25 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #pragma once
-#ifndef _CORE_GUARD_ARRAY_H_
-#define _CORE_GUARD_ARRAY_H_
+#ifndef _CORE_GUARD_RING_H_
+#define _CORE_GUARD_RING_H_
 
 // TODO: create a dynamic-sized version with std::vector ? (replacement in coreParticleSystem)
-// TODO: rename class and functions to better and more obvious names
+// TODO: rename functions to better and more obvious names
 
 
 // ****************************************************************
-/* extended array class */
-template <typename T, coreUintW iSize> class coreArray final : public std::array<T, iSize>
+/* ring array class */
+template <typename T, coreUintW iSize> class coreRing final : public std::array<T, iSize>
 {
 private:
     coreUintW m_iCurIndex;   //!< index of the current item
 
 
 public:
-    constexpr coreArray()noexcept;
+    constexpr coreRing()noexcept;
 
-    ENABLE_COPY(coreArray)
+    ENABLE_COPY(coreRing)
 
     /*! switch current item */
     //! @{
@@ -45,11 +45,11 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T, coreUintW iSize> constexpr coreArray<T, iSize>::coreArray()noexcept
+template <typename T, coreUintW iSize> constexpr coreRing<T, iSize>::coreRing()noexcept
 : std::array<T, iSize> ()
 , m_iCurIndex          (0u)
 {
 }
 
 
-#endif /* _CORE_GUARD_ARRAY_H_ */
+#endif /* _CORE_GUARD_RING_H_ */
