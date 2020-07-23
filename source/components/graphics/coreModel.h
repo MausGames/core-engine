@@ -82,6 +82,10 @@ private:
     coreVector3 m_vBoundingRange;                    //!< maximum per-axis distance from the model center
     coreFloat   m_fBoundingRadius;                   //!< maximum direct distance from the model center
 
+    coreVector3 m_vNaturalCenter;                    //!< position of the smallest axis-aligned bounding-box
+    coreVector3 m_vNaturalRange;                     //!< size of the smallest axis-aligned bounding-box
+    coreVector3 m_vWeightedCenter;                   //!< offset to the average vertex position (for certain effects)
+
     coreVector3* m_pvVertexPosition;                 //!< vertex positions for clusters and precise collision detection
 
     coreUint16** m_ppiClusterIndex;                  //!< pointer to indices per cluster (single allocation)
@@ -152,6 +156,9 @@ public:
     inline const coreUint8&   GetNumClusters      ()const                       {return m_iNumClusters;}
     inline const coreVector3& GetBoundingRange    ()const                       {return m_vBoundingRange;}
     inline const coreFloat&   GetBoundingRadius   ()const                       {return m_fBoundingRadius;}
+    inline const coreVector3& GetNaturalCenter    ()const                       {return m_vNaturalCenter;}
+    inline const coreVector3& GetNaturalRange     ()const                       {return m_vNaturalRange;}
+    inline const coreVector3& GetWeightedCenter   ()const                       {return m_vWeightedCenter;}
     inline const coreVector3* GetVertexPosition   ()const                       {return m_pvVertexPosition;}
     inline const coreUint16*  GetClusterIndex     (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_ppiClusterIndex    [iIndex];}
     inline const coreUint16&  GetClusterNumIndices(const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_piClusterNumIndices[iIndex];}

@@ -26,8 +26,11 @@ coreModel::coreModel(const coreBool bCreateClusters)noexcept
 , m_iNumClusters        (0u)
 , m_vBoundingRange      (coreVector3(0.0f,0.0f,0.0f))
 , m_fBoundingRadius     (0.0f)
-, m_pvVertexPosition    (bCreateClusters ? NULL : r_cast<coreVector3*>(-1))
-, m_ppiClusterIndex     (NULL)
+, m_vNaturalCenter      (coreVector3(0.0f,0.0f,0.0f))
+, m_vNaturalRange       (coreVector3(0.0f,0.0f,0.0f))
+, m_vWeightedCenter     (coreVector3(0.0f,0.0f,0.0f))
+, m_pvVertexPosition    (NULL)
+, m_ppiClusterIndex     (bCreateClusters ? NULL : r_cast<coreUint16**>(-1))
 , m_piClusterNumIndices (NULL)
 , m_pvClusterPosition   (NULL)
 , m_pfClusterRadius     (NULL)
@@ -127,6 +130,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     // analyze all vertices
     coreVector3 vRangeMin = coreVector3( FLT_MAX, FLT_MAX, FLT_MAX);
     coreVector3 vRangeMax = coreVector3(-FLT_MAX,-FLT_MAX,-FLT_MAX);
+    coreDouble  adSum[3]  = {};
     FOR_EACH(it, oImport.aVertexData)
     {
         // check for valid vertex attributes
@@ -142,13 +146,21 @@ coreStatus coreModel::Load(coreFile* pFile)
         vRangeMax.y       = MAX(vRangeMax.y,       it->vPosition.y);
         vRangeMax.z       = MAX(vRangeMax.z,       it->vPosition.z);
         m_fBoundingRadius = MAX(m_fBoundingRadius, it->vPosition.LengthSq());
+        adSum[0]         += coreDouble(it->vPosition.x);
+        adSum[1]         += coreDouble(it->vPosition.y);
+        adSum[2]         += coreDouble(it->vPosition.z);
     }
     m_vBoundingRange.x = MAX(ABS(vRangeMin.x), ABS(vRangeMax.x));
     m_vBoundingRange.y = MAX(ABS(vRangeMin.y), ABS(vRangeMax.y));
     m_vBoundingRange.z = MAX(ABS(vRangeMin.z), ABS(vRangeMax.z));
     m_fBoundingRadius  = SQRT(m_fBoundingRadius);
+    m_vNaturalCenter   = (vRangeMax + vRangeMin) * 0.5f;
+    m_vNaturalRange    = (vRangeMax - vRangeMin) * 0.5f;
+    m_vWeightedCenter  = coreVector3(coreFloat(adSum[0] / coreDouble(m_iNumVertices)),
+                                     coreFloat(adSum[1] / coreDouble(m_iNumVertices)),
+                                     coreFloat(adSum[2] / coreDouble(m_iNumVertices)));
 
-    if(!m_pvVertexPosition)
+    if(!m_ppiClusterIndex)
     {
         // store vertex positions
         m_pvVertexPosition = ALIGNED_NEW(coreVector3, m_iNumVertices, ALIGNMENT_CACHE);
@@ -356,6 +368,9 @@ coreStatus coreModel::Unload()
     m_iNumClusters    = 0u;
     m_vBoundingRange  = coreVector3(0.0f,0.0f,0.0f);
     m_fBoundingRadius = 0.0f;
+    m_vNaturalCenter  = coreVector3(0.0f,0.0f,0.0f);
+    m_vNaturalRange   = coreVector3(0.0f,0.0f,0.0f);
+    m_vWeightedCenter = coreVector3(0.0f,0.0f,0.0f);
     m_iPrimitiveType  = GL_TRIANGLES;
     m_iIndexType      = 0u;
 
