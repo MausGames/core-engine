@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
-    
+
     <assemblyIdentity name="Core App" version="1.0.0.0" type="win32" />
     <description>Maus Games (www.maus-games.at)</description>
-    
+
     <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
         <security>
             <requestedPrivileges>
@@ -11,7 +11,7 @@
             </requestedPrivileges>
         </security>
     </trustInfo>
-    
+
     <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1"> 
         <application> 
             <!-- Windows 10 --> 
@@ -26,7 +26,7 @@
             <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/> 
         </application> 
     </compatibility>
-    
+
     <dependency>
         <dependentAssembly>
             <assemblyIdentity
@@ -39,11 +39,11 @@
             />
         </dependentAssembly>
     </dependency>
-    
+
     <asmv3:application>
         <asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
             <dpiAware>true</dpiAware>
         </asmv3:windowsSettings>
     </asmv3:application>
-    
+
 </assembly>

@@ -47,7 +47,7 @@ struct md5Joint final
                  &vOrientation.x, &vOrientation.y, &vOrientation.z)
 
         // calculate w-component of the normalized quaternion
-        const coreVector4 V = vOrientation * vOrientation;
+        const coreVector3 V = vOrientation.xyz() * vOrientation.xyz();
         const coreFloat   T = 1.0f - V.x - V.y - V.z;
         vOrientation.w = (T < 0.0f) ? 0.0f : -SQRT(T);
     }

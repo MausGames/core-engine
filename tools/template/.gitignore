@@ -1,5 +1,4 @@
 backup/
-executable/bin/**/CoreApp*
 executable/user/screenshots/
 executable/user/log.html
 projects/android/project/assets/

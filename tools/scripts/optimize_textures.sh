@@ -1,7 +1,7 @@
 #!/bin/bash
 
 _EXECUTABLE_="./base/optipng.elf"
-_PARAMETERS_="-strip all -nx -o7"
+_PARAMETERS_="-strip all -nx -o5"
 
 if [ -d "$1" ]; then
 

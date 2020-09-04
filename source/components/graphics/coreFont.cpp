@@ -138,7 +138,7 @@ coreBool coreFont::IsGlyphProvided(const coreUint16 iGlyph)
     ASSERT(!m_aapFont.empty())
 
     // check for the glyph with first available sub-font
-    return TTF_GlyphIsProvided(m_aapFont.front().front(), iGlyph) ? true : false;
+    return (TTF_GlyphIsProvided(m_aapFont.front().front(), iGlyph) != 0);
 }
 
 coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)

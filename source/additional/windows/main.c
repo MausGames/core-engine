@@ -129,7 +129,7 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
 
     const char* const pcMessageSuccess =
         "I'm really sorry, but the game just crashed. :(\n\n"
-        "Fortunately a crash-dump was created in the game-folder, containing non-personal information like:\n"
+        "Fortunately a crash-dump was created in the user-folder, containing non-personal information like:\n"
         "- the current process-state\n"
         "- the exact location of the crash\n"
         "- the log-file with your hardware-configuration\n\n"

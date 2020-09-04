@@ -320,11 +320,11 @@ static void stb__OptimizeColorsBlock(unsigned char* __restrict block, unsigned s
 
   // convert covariance matrix to float, find principal axis via power iter
   for(i=0;i<6;i++)
-    covf[i] = cov[i] / 255.0f;
+    covf[i] = (float)cov[i] / 255.0f;
 
-  vfr = (float) (max[0] - min[0]);
-  vfg = (float) (max[1] - min[1]);
-  vfb = (float) (max[2] - min[2]);
+  vfr = (float)(max[0] - min[0]);
+  vfg = (float)(max[1] - min[1]);
+  vfb = (float)(max[2] - min[2]);
 
   for(iter=0;iter<nIterPower;iter++)
   {
@@ -460,15 +460,15 @@ static int stb__RefineBlock(unsigned char* __restrict block, unsigned short* __r
       yy = (akku >> 8) & 0xff;
       xy = (akku >> 0) & 0xff;
 
-      f = 3.0f / 255.0f / (xx*yy - xy*xy);
+      f = 3.0f / 255.0f / (float)(xx*yy - xy*xy);
 
-      max16 =  stb__Quantize5((At1_r*yy - At2_r * xy) * f) << 11;
-      max16 |= stb__Quantize6((At1_g*yy - At2_g * xy) * f) << 5;
-      max16 |= stb__Quantize5((At1_b*yy - At2_b * xy) * f) << 0;
+      max16 =  stb__Quantize5((float)(At1_r * yy - At2_r * xy) * f) << 11;
+      max16 |= stb__Quantize6((float)(At1_g * yy - At2_g * xy) * f) << 5;
+      max16 |= stb__Quantize5((float)(At1_b * yy - At2_b * xy) * f) << 0;
 
-      min16 =  stb__Quantize5((At2_r*xx - At1_r * xy) * f) << 11;
-      min16 |= stb__Quantize6((At2_g*xx - At1_g * xy) * f) << 5;
-      min16 |= stb__Quantize5((At2_b*xx - At1_b * xy) * f) << 0;
+      min16 =  stb__Quantize5((float)(At2_r * xx - At1_r * xy) * f) << 11;
+      min16 |= stb__Quantize6((float)(At2_g * xx - At1_g * xy) * f) << 5;
+      min16 |= stb__Quantize5((float)(At2_b * xx - At1_b * xy) * f) << 0;
    }
 
    *pmin16 = min16;
