@@ -38,6 +38,15 @@
     #extension GL_EXT_shader_image_load_store  : enable
     #extension GL_NV_gpu_shader5               : enable
 #endif
+#if defined(GL_EXT_gpu_shader4) || (__VERSION__) >= 130
+    #define CORE_GL_gpu_shader4
+#endif
+#if defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth) || (__VERSION__) >= 420
+    #define CORE_GL_conservative_depth
+#endif
+#if defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (__VERSION__) >= 420 || (defined(GL_ES) && (__VERSION__) >= 310)
+    #define CORE_GL_shader_image_load_store
+#endif
 #pragma optimize(on)
 #pragma debug(off)
 
@@ -57,10 +66,10 @@
 
 // layout qualifiers
 #if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_) && (__VERSION__) >= 130
-    #if defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth)
+    #if defined(CORE_GL_conservative_depth)
         layout(depth_unchanged) out float gl_FragDepth;
     #endif
-    #if defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (defined(GL_ES) && (__VERSION__) >= 310)
+    #if defined(CORE_GL_shader_image_load_store)
         layout(early_fragment_tests) in;
     #endif
 #endif
@@ -90,7 +99,7 @@
 #else
     #undef _CORE_OPTION_INSTANCING_
 #endif
-#if !defined(GL_EXT_gpu_shader4)
+#if !defined(CORE_GL_gpu_shader4)
     #define flat
     #define noperspective
     #define smooth
@@ -106,7 +115,7 @@
 #endif
 
 // type definitions
-#if !defined(GL_EXT_gpu_shader4)
+#if !defined(CORE_GL_gpu_shader4)
     #define uint  int
     #define uvec2 ivec2
     #define uvec3 ivec3
@@ -167,6 +176,9 @@ struct coreLight
 #if defined(GL_ARB_shader_group_vote)
     #define coreAnyInvocation(x)  (anyInvocationARB (x))
     #define coreAllInvocations(x) (allInvocationsARB(x))
+#elif defined(GL_NV_gpu_shader5)
+    #define coreAnyInvocation(x)  (anyThreadNV (x))
+    #define coreAllInvocations(x) (allThreadsNV(x))
 #else
     #define coreAnyInvocation(x)  (x)
     #define coreAllInvocations(x) (x)
@@ -377,7 +389,7 @@ mat4 coreInvert(const in mat4 m)
 #define coreMat4to2(m) coreMat3to2(m)
 
 // value pack and unpack
-#if defined(GL_EXT_gpu_shader4)
+#if defined(CORE_GL_gpu_shader4)
 
     uint corePackUnorm4x8(const in vec4 x)
     {
