@@ -92,11 +92,8 @@ template <typename T> coreScope<T>::coreScope(coreScope<T>&& m)noexcept
 /* assignment operations */
 template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope<T>&& m)noexcept
 {
-    // move properties
-    m_ptObject = m.m_ptObject;
-
-    // clear source object
-    m.m_ptObject = NULL;
+    // swap properties
+    std::swap(m_ptObject, m.m_ptObject);
 
     return *this;
 }

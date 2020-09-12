@@ -24,18 +24,15 @@ coreDataBuffer::~coreDataBuffer()
 // assignment operations
 coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer&& m)noexcept
 {
-    // move properties
-    m_iIdentifier       = m.m_iIdentifier;
-    m_eStorageType      = m.m_eStorageType;
-    m_iTarget           = m.m_iTarget;
-    m_iSize             = m.m_iSize;
-    m_pPersistentBuffer = m.m_pPersistentBuffer;
-    m_iMapOffset        = m.m_iMapOffset;
-    m_iMapLength        = m.m_iMapLength;
-    m_Sync              = std::move(m.m_Sync);
-
-    // clear source object
-    m.m_iIdentifier = 0u;
+    // swap properties
+    std::swap(m_iIdentifier,       m.m_iIdentifier);
+    std::swap(m_eStorageType,      m.m_eStorageType);
+    std::swap(m_iTarget,           m.m_iTarget);
+    std::swap(m_iSize,             m.m_iSize);
+    std::swap(m_pPersistentBuffer, m.m_pPersistentBuffer);
+    std::swap(m_iMapOffset,        m.m_iMapOffset);
+    std::swap(m_iMapLength,        m.m_iMapLength);
+    std::swap(m_Sync,              m.m_Sync);
 
     return *this;
 }
@@ -347,10 +344,10 @@ coreVertexBuffer::~coreVertexBuffer()
 // assignment operations
 coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer&& m)noexcept
 {
-    // move properties
+    // swap properties
     this->coreDataBuffer::operator = (std::move(m));
-    m_iVertexSize = m.m_iVertexSize;
-    m_aAttribute  = std::move(m.m_aAttribute);
+    std::swap(m_iVertexSize, m.m_iVertexSize);
+    std::swap(m_aAttribute,  m.m_aAttribute);
 
     return *this;
 }

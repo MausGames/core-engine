@@ -22,11 +22,8 @@ coreSync::~coreSync()
 /* assignment operations */
 coreSync& coreSync::operator = (coreSync&& m)noexcept
 {
-    // move properties
-    m_pSync = m.m_pSync;
-
-    // clear source object
-    m.m_pSync = NULL;
+    // swap properties
+    std::swap(m_pSync, m.m_pSync);
 
     return *this;
 }
