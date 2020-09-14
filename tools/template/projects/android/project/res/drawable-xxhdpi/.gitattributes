@@ -1,1 +1,0 @@
-*.{gif,ico,jpg,png,svg,xcf,mp3,ogg,wav,mkv,mp4,webm,eot,otf,ttf,woff,woff2,blend,md3,docx,odp,ods,odt,pdf,pptx,xlsx,7z,gz,jar,zip,a,dll,elf,exe,lib,so,so.*} filter=lfs diff=lfs merge=lfs -text
