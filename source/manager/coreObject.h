@@ -160,10 +160,10 @@ public:
 
     /*! get manager properties */
     //! @{
-    inline const coreObjectList& GetObjectList  (const coreInt32 iType)const {return m_aapObjectList.at(iType);}
-    inline const coreModelPtr&   GetLowQuad     ()const                      {return m_pLowQuad;}
-    inline const coreModelPtr&   GetLowTriangle ()const                      {return m_pLowTriangle;}
-    inline       coreObject2D*   GetBlitFallback()const                      {return m_pBlitFallback;}
+    inline const coreObjectList& GetObjectList  (const coreInt32 iType) {return m_aapObjectList[iType];}
+    inline const coreModelPtr&   GetLowQuad     ()const                 {return m_pLowQuad;}
+    inline const coreModelPtr&   GetLowTriangle ()const                 {return m_pLowTriangle;}
+    inline       coreObject2D*   GetBlitFallback()const                 {return m_pBlitFallback;}
     //! @}
 
 
@@ -209,11 +209,11 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     // loop through all objects
     for(coreUintW i = 0u, ie = oList.size(); i < ie; ++i)
     {
-        coreObject3D* pObject1 = oList[i];
-        if(!pObject1) continue;
-
         for(coreUintW j = i + 1u; j < ie; ++j)
         {
+            coreObject3D* pObject1 = oList[i];   // # may change
+            if(!pObject1) continue;
+
             coreObject3D* pObject2 = oList[j];
             if(!pObject2) continue;
 
@@ -244,13 +244,13 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     const coreObjectList& oList2 = m_aapObjectList.at(iType2);
 
     // loop through all objects
-    for(coreUintW i = 0u, ie = oList1.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = oList1.size(), je = oList2.size(); i < ie; ++i)
     {
-        coreObject3D* pObject1 = oList1[i];
-        if(!pObject1) continue;
-
-        for(coreUintW j = 0u, je = oList2.size(); j < je; ++j)
+        for(coreUintW j = 0u; j < je; ++j)
         {
+            coreObject3D* pObject1 = oList1[i];   // # may change
+            if(!pObject1) continue;
+
             coreObject3D* pObject2 = oList2[j];
             if(!pObject2) continue;
 
@@ -281,6 +281,9 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     {
         coreObject3D* pCurObject = oList[i];
         if(!pCurObject) continue;
+
+        // never compare with itself
+        if(pCurObject == pObject) continue;
 
         // test collision and call function
         coreVector3 vIntersection;
