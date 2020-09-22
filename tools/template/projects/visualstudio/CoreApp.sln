@@ -3,12 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreApp", "CoreApp\CoreApp.vcxproj", "{323E13E4-2099-4F61-B4D4-BC1612D1B6B0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreApp", "configuration\project.vcxproj", "{323E13E4-2099-4F61-B4D4-BC1612D1B6B0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CDB760EE-1F23-4423-A0EF-03B7CB95AA24} = {CDB760EE-1F23-4423-A0EF-03B7CB95AA24}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreEngine", "..\..\..\CoreEngine\projects\visualstudio\CoreEngine\CoreEngine.vcxproj", "{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreEngine", "..\..\..\CoreEngine\projects\visualstudio\configuration\project.vcxproj", "{CDB760EE-1F23-4423-A0EF-03B7CB95AA24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

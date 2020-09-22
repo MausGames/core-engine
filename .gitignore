@@ -3,6 +3,6 @@ docs/index.html
 docs/html/
 output/
 projects/cmake/**/
+projects/visualstudio/.tmp/
 projects/visualstudio/.vs/
-projects/visualstudio/CoreEngine/**/
 tools/editor/

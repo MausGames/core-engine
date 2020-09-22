@@ -1,12 +1,6 @@
 backup/
 executable/user/screenshots/
 executable/user/log.html
-projects/android/project/assets/
-projects/android/project/bin/
-projects/android/project/gen/
-projects/android/project/libs/
-projects/android/project/obj/
-projects/android/project/local.properties
 projects/cmake/**/
+projects/visualstudio/.tmp/
 projects/visualstudio/.vs/
-projects/visualstudio/CoreApp/**/
