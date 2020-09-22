@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 
-project(CoreEngine VERSION 0.0.9)
+project(CoreEngine VERSION 0.1.0)
 add_library(CoreEngine STATIC)
 
 
