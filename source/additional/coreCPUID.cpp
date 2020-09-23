@@ -94,5 +94,5 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
     }
 
     // save extended control register
-    if(coreCPUID::OSXSAVE()) iXCR = _xgetbv(0);
+    if(coreCPUID::OSXSAVE()) CORE_XGETBV_FUNC(&iXCR)
 }

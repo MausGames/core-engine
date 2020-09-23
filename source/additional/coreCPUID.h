@@ -16,11 +16,14 @@
 #if defined(_CORE_SSE_)
     #if defined(_CORE_MSVC_)
         #define CORE_CPUID_FUNC(x,a,c) {__cpuidex(x, a, c);}
+        #define CORE_XGETBV_FUNC(x)    {(*(x)) = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);}
     #else
         #define CORE_CPUID_FUNC(x,a,c) {asm volatile("cpuid" : "=a" (x[0]), "=b" (x[1]), "=c" (x[2]), "=d" (x[3]) : "a" (a), "c" (c));}
+        #define CORE_XGETBV_FUNC(x)    {coreInt32 v[2]; asm volatile("xgetbv" : "=a" (v[0]), "=d" (v[1]) : "c" (0)); std::memcpy(x, v, sizeof(coreUint64));}
     #endif
 #else
-    #define CORE_CPUID_FUNC(x,a,c) {std::memset(x, 0, 4u*sizeof(coreInt32));}
+    #define CORE_CPUID_FUNC(x,a,c) {std::memset(x, 0, sizeof(coreInt32) * 4u);}
+    #define CORE_XGETBV_FUNC(x)    {std::memset(x, 0, sizeof(coreUint64));}
 #endif
 
 #define CORE_CPUID_BASIC    (0x00000000u)
