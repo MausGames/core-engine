@@ -80,7 +80,7 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr explicit operator coreBool         ()const   {return ((x != 0.0f) || (y != 0.0f));}
+    constexpr explicit operator coreBool         ()const   {return (x != 0.0f) || (y != 0.0f);}
     constexpr          operator const coreFloat* ()const   {return (&x);}
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 2u) return (&x)[i];}
     inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 2u) return (&x)[i];}
@@ -126,6 +126,7 @@ public:
     inline    coreFloat AspectRatio ()const {return (x * RCP(y));}
     inline    coreFloat Angle       ()const {return (-std::atan2(x, y));}
     constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f);}
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
     //! @}
 
@@ -215,7 +216,7 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr explicit operator coreBool         ()const   {return ((x != 0.0f) || (y != 0.0f) || (z != 0.0f));}
+    constexpr explicit operator coreBool         ()const   {return (x != 0.0f) || (y != 0.0f) || (z != 0.0f);}
     constexpr          operator const coreFloat* ()const   {return (&x);}
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 3u) return (&x)[i];}
     inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 3u) return (&x)[i];}
@@ -282,6 +283,7 @@ public:
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
     constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (y*z == 0.0f);}
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
     //! @}
 
@@ -383,7 +385,7 @@ public:
 
     /*! convert vector */
     //! @{
-    constexpr explicit operator coreBool         ()const    {return ((x != 0.0f) || (y != 0.0f) || (z != 0.0f) || (w != 0.0f));}
+    constexpr explicit operator coreBool         ()const    {return (x != 0.0f) || (y != 0.0f) || (z != 0.0f) || (w != 0.0f);}
     constexpr          operator const coreFloat* ()const    {return (&x);}
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 4u) return (&x)[i];}
     inline    const coreFloat& arr (const coreUintW i)const {ASSERT(i < 4u) return (&x)[i];}
@@ -430,6 +432,7 @@ public:
     constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
     constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
     constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (x*w == 0.0f) && (y*z == 0.0f) && (y*w == 0.0f) && (z*w == 0.0f);}
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
     //! @}
 
