@@ -285,15 +285,18 @@ template <typename T> void coreSwitchBox<T>::Move()
         m_aArrow[0].SetPosition(vPosition - vOffset);
         m_aArrow[0].SetSize    (vSize);
         m_aArrow[0].SetCenter  (this->GetCenter());
+        m_aArrow[0].SetStyle   (this->GetStyle());
 
         // update right selection arrow
         m_aArrow[1].SetPosition(vPosition + vOffset);
         m_aArrow[1].SetSize    (vSize);
         m_aArrow[1].SetCenter  (this->GetCenter());
+        m_aArrow[1].SetStyle   (this->GetStyle());
 
         // update the label
         m_Caption.SetPosition(vPosition);
         m_Caption.SetCenter  (this->GetCenter());
+        m_Caption.SetStyle   (this->GetStyle());
         m_Caption.Move();
     }
 

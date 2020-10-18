@@ -33,6 +33,8 @@ coreObjectManager::coreObjectManager()noexcept
 , m_pLowTriangle      (NULL)
 , m_pBlitFallback     (NULL)
 , m_apSpriteList      {}
+, m_vSpriteViewDir    (coreVector2(0.0f,1.0f))
+, m_vSpriteAltCenter  (coreVector2(0.0f,0.0f))
 {
     // allocate low-memory models
     m_pLowQuad     = Core::Manager::Resource->LoadNew<coreModel>();
@@ -416,6 +418,14 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
 
 
 // ****************************************************************
+/* refresh all existing 2d-objects */
+void coreObjectManager::RefreshSprites()
+{
+    FOR_EACH(it, m_apSpriteList) (*it)->m_eUpdate = CORE_OBJECT_UPDATE_ALL;
+}
+
+
+// ****************************************************************
 /* reset with the resource manager */
 void coreObjectManager::__Reset(const coreResourceReset eInit)
 {
@@ -459,13 +469,8 @@ void coreObjectManager::__Reset(const coreResourceReset eInit)
             Core::Log->Warning("Frame buffer fallback created");
         }
 
-        // force update of all existing 2d-objects
-        FOR_EACH(it, m_apSpriteList)
-        {
-            (*it)->m_eUpdate = CORE_OBJECT_UPDATE_ALL;
-            (*it)->coreObject2D::Move();
-            (*it)->m_eUpdate = CORE_OBJECT_UPDATE_ALL;
-        }
+        // refresh all existing 2d-objects
+        this->RefreshSprites();
     }
     else
     {

@@ -135,6 +135,8 @@ private:
     coreObject2D* m_pBlitFallback;                                     //!< 2d-object used for fallback-blitting onto the default frame buffer
 
     coreSet<coreObject2D*> m_apSpriteList;                             //!< list with pointers to all existing 2d-objects
+    coreVector2            m_vSpriteViewDir;                           //!< global 2d-object rotation (override)
+    coreVector2            m_vSpriteAltCenter;                         //!< global 2d-object screen space resolution (override)
 
 
 private:
@@ -158,12 +160,25 @@ public:
     static coreBool            TestCollision(const coreObject3D* pObject,  const coreVector3&   vRayPos, const coreVector3& vRayDir, coreFloat*   OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount);
     //! @}
 
+    /*! refresh all existing 2d-objects */
+    //! @{
+    void RefreshSprites();
+    //! @}
+
+    /*! set manager properties */
+    //! @{
+    inline void SetSpriteViewDir  (const coreVector2& vViewDir)   {m_vSpriteViewDir   = vViewDir; ASSERT(vViewDir.IsNormalized() && vViewDir.IsAligned())}
+    inline void SetSpriteAltCenter(const coreVector2& vAltCenter) {m_vSpriteAltCenter = vAltCenter;}
+    //! @}
+
     /*! get manager properties */
     //! @{
-    inline const coreObjectList& GetObjectList  (const coreInt32 iType) {return m_aapObjectList[iType];}
-    inline const coreModelPtr&   GetLowQuad     ()const                 {return m_pLowQuad;}
-    inline const coreModelPtr&   GetLowTriangle ()const                 {return m_pLowTriangle;}
-    inline       coreObject2D*   GetBlitFallback()const                 {return m_pBlitFallback;}
+    inline const coreObjectList& GetObjectList     (const coreInt32 iType) {return m_aapObjectList[iType];}   // # create if not available
+    inline const coreModelPtr&   GetLowQuad        ()const                 {return m_pLowQuad;}
+    inline const coreModelPtr&   GetLowTriangle    ()const                 {return m_pLowTriangle;}
+    inline       coreObject2D*   GetBlitFallback   ()const                 {return m_pBlitFallback;}
+    inline const coreVector2&    GetSpriteViewDir  ()const                 {return m_vSpriteViewDir;}
+    inline const coreVector2&    GetSpriteAltCenter()const                 {return m_vSpriteAltCenter;}
     //! @}
 
 

@@ -10,10 +10,20 @@
 #ifndef _CORE_GUARD_OBJECT2D_H_
 #define _CORE_GUARD_OBJECT2D_H_
 
-// TODO: add interaction for rotated objects (ABS is for 180 degrees)
 // TODO: Interact depends on Move, and Move of some menu objects depend on Interact
-// TODO: on IsClicked: make right mouse button on Android a longer push ?
+// TODO: on IsClicked: make right mouse button on mobile a longer push or multiple fingers ?
 // TODO: on IsClicked: consider finger number
+
+
+// ****************************************************************
+/* 2d-object definitions */
+enum coreObject2DStyle : coreUint8
+{
+    CORE_OBJECT2D_STYLE_NOTHING   = 0x00u,   //!< override nothing
+    CORE_OBJECT2D_STYLE_VIEWDIR   = 0x01u,   //!< react to global 2d-object rotation
+    CORE_OBJECT2D_STYLE_ALTCENTER = 0x02u    //!< react to global 2d-object screen space resolution
+};
+ENABLE_BITWISE(coreObject2DStyle)
 
 
 // ****************************************************************
@@ -30,6 +40,8 @@ private:
 
 protected:
     coreMatrix3x2 m_mTransform;     //!< transformation matrix
+
+    coreObject2DStyle m_eStyle;     //!< style overrides
 
     coreBool    m_bFocused;         //!< interaction status
     coreVector2 m_vFocusModifier;   //!< size-modifier for interaction handling
@@ -79,23 +91,25 @@ public:
 
     //! set object properties
     //! @{
-    inline void SetPosition     (const coreVector2& vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
-    inline void SetSize         (const coreVector2& vSize)          {if(m_vSize      != vSize)      {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
-    inline void SetDirection    (const coreVector2& vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
-    inline void SetCenter       (const coreVector2& vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
-    inline void SetAlignment    (const coreVector2& vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
-    inline void SetFocused      (const coreBool     bFocused)       {m_bFocused       = bFocused;}
-    inline void SetFocusModifier(const coreVector2& vFocusModifier) {m_vFocusModifier = vFocusModifier;}
+    inline void SetPosition     (const coreVector2&      vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
+    inline void SetSize         (const coreVector2&      vSize)          {if(m_vSize      != vSize)      {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
+    inline void SetDirection    (const coreVector2&      vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
+    inline void SetCenter       (const coreVector2&      vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
+    inline void SetAlignment    (const coreVector2&      vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
+    inline void SetStyle        (const coreObject2DStyle eStyle)         {if(m_eStyle     != eStyle)     {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_eStyle     = eStyle;}}
+    inline void SetFocused      (const coreBool          bFocused)       {m_bFocused       = bFocused;}
+    inline void SetFocusModifier(const coreVector2&      vFocusModifier) {m_vFocusModifier = vFocusModifier;}
     //! @}
 
     //! get object properties
     //! @{
-    inline const coreVector2&   GetPosition ()const {return m_vPosition;}
-    inline const coreVector2&   GetSize     ()const {return m_vSize;}
-    inline const coreVector2&   GetDirection()const {return m_vDirection;}
-    inline const coreVector2&   GetCenter   ()const {return m_vCenter;}
-    inline const coreVector2&   GetAlignment()const {return m_vAlignment;}
-    inline const coreMatrix3x2& GetTransform()const {return m_mTransform;}
+    inline const coreVector2&       GetPosition ()const {return m_vPosition;}
+    inline const coreVector2&       GetSize     ()const {return m_vSize;}
+    inline const coreVector2&       GetDirection()const {return m_vDirection;}
+    inline const coreVector2&       GetCenter   ()const {return m_vCenter;}
+    inline const coreVector2&       GetAlignment()const {return m_vAlignment;}
+    inline const coreMatrix3x2&     GetTransform()const {return m_mTransform;}
+    inline const coreObject2DStyle& GetStyle    ()const {return m_eStyle;}
     //! @}
 };
 
