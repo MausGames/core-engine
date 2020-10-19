@@ -8,6 +8,7 @@ add_library(CoreEngine STATIC)
 
 set_target_properties(
     CoreEngine PROPERTIES
+    C_STANDARD 11
     CXX_STANDARD 17
     UNITY_BUILD ON
     DEBUG_POSTFIX _debug
@@ -72,8 +73,8 @@ target_precompile_headers(
 
 target_compile_options(
     CoreEngine PUBLIC
-    -msse3 -mf16c -mxsave -Wall -Wextra -pedantic
-    $<IF:$<CONFIG:Debug>, -O0 -glldb, -O3 -flto=thin -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
+    -msse3 -mf16c -mxsave -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
+    $<IF:$<CONFIG:Debug>, -O0 -glldb, -O3 -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
 )
 
 
@@ -92,6 +93,6 @@ target_link_libraries(
 
 target_link_options(
     CoreEngine INTERFACE
-    -rdynamic -fuse-ld=lld
+    -rdynamic -fuse-ld=lld ${SANITIZER_OPTIONS}
     $<IF:$<CONFIG:Debug>, , >
 )

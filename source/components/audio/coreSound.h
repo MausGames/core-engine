@@ -65,7 +65,7 @@ public:
     void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3& vPosition);
     void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType);
     void Stop();
-    coreBool IsPlaying()const;
+    coreBool IsPlaying();
     //! @}
 
     //! set various audio source properties

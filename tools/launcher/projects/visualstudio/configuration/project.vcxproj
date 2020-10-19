@@ -81,7 +81,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
-      <AdditionalManifestFiles>$(SolutionDir)manifest.xml</AdditionalManifestFiles>
+      <AdditionalManifestFiles>manifest.xml</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -117,7 +117,7 @@
       <Command>..\..\..\..\..\tools\scripts\sign_application.bat $(OutDir)$(TargetFileName)</Command>
     </PostBuildEvent>
     <Manifest>
-      <AdditionalManifestFiles>$(SolutionDir)manifest.xml</AdditionalManifestFiles>
+      <AdditionalManifestFiles>manifest.xml</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

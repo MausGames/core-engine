@@ -227,16 +227,19 @@ void coreSound::Stop()
 
 // ****************************************************************
 // get playback status
-coreBool coreSound::IsPlaying()const
+coreBool coreSound::IsPlaying()
 {
-    if(!m_iCurSource) return false;
+    __CORE_SOUND_ASSERT
+    if(m_iCurSource)
+    {
+        // retrieve current status
+        ALint iStatus;
+        alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iStatus);
 
-    // retrieve current status
-    ALint iStatus;
-    alGetSourcei(m_iCurSource, AL_SOURCE_STATE, &iStatus);
-
-    // check for playback
-    return (iStatus == AL_PLAYING);
+        // check for playback
+        return (iStatus == AL_PLAYING);
+    }
+    return false;
 }
 
 

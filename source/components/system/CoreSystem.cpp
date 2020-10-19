@@ -247,7 +247,7 @@ CoreSystem::CoreSystem()noexcept
     }
     Core::Log->ListEnd();
 
-    // log Zstandard library versions
+    // log Zstandard library version
     Core::Log->Info("Zstandard initialized (%s)", ZSTD_versionString());
 }
 

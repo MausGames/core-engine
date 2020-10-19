@@ -9,6 +9,7 @@ add_executable(CoreApp)
 
 set_target_properties(
     CoreApp PROPERTIES
+    C_STANDARD 11
     CXX_STANDARD 17
     DEBUG_POSTFIX _debug
     SUFFIX .elf

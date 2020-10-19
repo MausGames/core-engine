@@ -22,6 +22,8 @@
 #define CORE_SYSTEM_WINDOW_BORDER  (20u)    //!< border width used for restricting window size
 #define CORE_SYSTEM_WINDOW_MINIMUM (128u)   //!< minimum size of the main window
 
+#define TIME (Core::System->GetTime())
+
 
 // ****************************************************************
 // main system component

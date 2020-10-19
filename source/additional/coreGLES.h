@@ -12,7 +12,7 @@
 
 // TODO: __CORE_GLES_CHECK does not handle sub-strings
 // TODO: add name-pooling to OpenGL ES
-// TODO: GL_EXT_buffer_storage, GL_EXT_clear_texture, GL_EXT_copy_image, GL_EXT_draw_buffers, GL_EXT_geometry_shader, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_shadow_smaplers, GL_EXT_texture_rg, GL_EXT_Texture_Type_2_10_10_10_REV, GL_NV_texture_compression_s3tc
+// TODO: GL_EXT_buffer_storage, GL_EXT_clear_texture, GL_EXT_copy_image, GL_EXT_draw_buffers, GL_EXT_geometry_shader, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_shadow_samplers, GL_EXT_texture_rg, GL_EXT_texture_type_2_10_10_10_rev, GL_NV_texture_compression_s3tc
 // TODO: ANDROID_extension_pack_es31a, ES 3.X
 // TODO: check more extensions to improve performance (if necessary after recent port)
 
