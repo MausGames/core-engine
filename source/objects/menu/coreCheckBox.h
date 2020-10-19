@@ -13,7 +13,7 @@
 
 // ****************************************************************
 // menu check-box class
-class coreCheckBox final : public coreButton
+class coreCheckBox : public coreButton
 {
 private:
     coreTexturePtr m_apUnchecked[2];   //!< unchecked background textures (0 = idle | 1 = busy)
@@ -26,6 +26,7 @@ public:
     coreCheckBox()noexcept;
     coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)noexcept;
     coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline)noexcept;
+    virtual ~coreCheckBox()override = default;
 
     DISABLE_COPY(coreCheckBox)
 
@@ -37,7 +38,7 @@ public:
 
     //! move the check-box
     //! @{
-    void Move()final;
+    virtual void Move()override;
     //! @}
 
     //! set object properties

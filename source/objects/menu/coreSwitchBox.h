@@ -23,7 +23,7 @@
 
 // ****************************************************************
 // menu switch-box class
-template <typename T> class coreSwitchBox final : public coreObject2D, public coreTranslate
+template <typename T> class coreSwitchBox : public coreObject2D, public coreTranslate
 {
 public:
     //! entry structure
@@ -51,7 +51,7 @@ public:
     coreSwitchBox()noexcept;
     coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept;
     coreSwitchBox(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept;
-    ~coreSwitchBox()final;
+    virtual ~coreSwitchBox()override;
 
     DISABLE_COPY(coreSwitchBox)
 
@@ -63,8 +63,8 @@ public:
 
     //! render and move the switch-box
     //! @{
-    void Render()final;
-    void Move  ()final;
+    virtual void Render()override;
+    virtual void Move  ()override;
     //! @}
 
     //! manage entries

@@ -37,7 +37,7 @@ ENABLE_BITWISE(coreLabelUpdate)
 
 // ****************************************************************
 // menu label class
-class coreLabel final : public coreObject2D, public coreTranslate, public coreResourceRelation
+class coreLabel : public coreObject2D, public coreTranslate, public coreResourceRelation
 {
 private:
     coreFontPtr m_pFont;         //!< font object
@@ -55,7 +55,7 @@ private:
 public:
     coreLabel()noexcept;
     coreLabel(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept;
-    ~coreLabel()final;
+    virtual ~coreLabel()override;
 
     DISABLE_COPY(coreLabel)
 
@@ -66,8 +66,8 @@ public:
 
     //! render and move the label
     //! @{
-    void Render()final;
-    void Move  ()final;
+    virtual void Render()override;
+    virtual void Move  ()override;
     //! @}
 
     //! retrieve desired size without rendering

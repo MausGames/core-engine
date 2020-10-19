@@ -16,7 +16,7 @@
 
 // ****************************************************************
 // menu text-box class
-class coreTextBox final : public coreButton
+class coreTextBox : public coreButton
 {
 private:
     std::string m_sText;                //!< current text
@@ -37,6 +37,7 @@ private:
 public:
     coreTextBox()noexcept;
     coreTextBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline, const coreUint8 iLength)noexcept;
+    virtual ~coreTextBox()override = default;
 
     DISABLE_COPY(coreTextBox)
 
@@ -47,7 +48,7 @@ public:
 
     //! move the text-box
     //! @{
-    void Move()final;
+    virtual void Move()override;
     //! @}
 
     //! check for finished text-input
