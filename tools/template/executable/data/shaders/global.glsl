@@ -561,11 +561,25 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 // ****************************************************************
 #if defined(_CORE_TESS_CONTROL_SHADER_)
 
+    // main function
+    void TessControlMain();
+    void main()
+    {
+        TessControlMain();
+    }
+
 #endif // _CORE_TESS_CONTROL_SHADER_
 
 
 // ****************************************************************
 #if defined(_CORE_TESS_EVALUATION_SHADER_)
+
+    // main function
+    void TessEvaluationMain();
+    void main()
+    {
+        TessEvaluationMain();
+    }
 
 #endif // _CORE_TESS_EVALUATION_SHADER_
 
@@ -660,6 +674,13 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 // ****************************************************************
 #if defined(_CORE_COMPUTE_SHADER_)
+
+    // main function
+    void ComputeMain();
+    void main()
+    {
+        ComputeMain();
+    }
 
 #endif // _CORE_COMPUTE_SHADER_
 
