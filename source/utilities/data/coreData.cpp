@@ -12,7 +12,6 @@
     #include <shellapi.h>
     #include <Psapi.h>
     #include <Shlobj.h>
-    #include <VersionHelpers.h>
 #elif defined(_CORE_LINUX_)
     #include <dirent.h>
     #include <sys/utsname.h>
@@ -642,11 +641,8 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     HANDLE pFolder;
     WIN32_FIND_DATAA oFile;
 
-    // improve performance if possible
-    static const FINDEX_INFO_LEVELS s_iInfoLevel = IsWindowsVersionOrGreater(6u, 1u, 0u) ? FindExInfoBasic : FindExInfoStandard;
-
     // open folder
-    pFolder = FindFirstFileExA(PRINT("%s/%s", pcPath, pcFilter), s_iInfoLevel, &oFile, FindExSearchNameMatch, NULL, 0u);
+    pFolder = FindFirstFileExA(PRINT("%s/%s", pcPath, pcFilter), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
