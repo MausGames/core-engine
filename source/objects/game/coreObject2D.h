@@ -44,6 +44,7 @@ protected:
     coreObject2DStyle m_eStyle;     //!< style overrides
 
     coreBool    m_bFocused;         //!< interaction status
+    coreBool    m_bFocusable;       //!< enabled interaction handling
     coreVector2 m_vFocusModifier;   //!< size-modifier for interaction handling
 
 #if defined(_CORE_MOBILE_)
@@ -98,6 +99,7 @@ public:
     inline void SetAlignment    (const coreVector2&      vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetStyle        (const coreObject2DStyle eStyle)         {if(m_eStyle     != eStyle)     {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_eStyle     = eStyle;}}
     inline void SetFocused      (const coreBool          bFocused)       {m_bFocused       = bFocused;}
+    inline void SetFocusable    (const coreBool          bFocusable)     {m_bFocusable     = bFocusable;}
     inline void SetFocusModifier(const coreVector2&      vFocusModifier) {m_vFocusModifier = vFocusModifier;}
     //! @}
 

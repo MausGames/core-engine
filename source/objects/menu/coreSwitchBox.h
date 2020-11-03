@@ -182,6 +182,9 @@ template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sFo
 
     // init automatic forward behavior
     m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
+
+    // enable interaction handling
+    m_bFocusable = true;
 }
 
 

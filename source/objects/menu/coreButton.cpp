@@ -65,6 +65,9 @@ void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sB
 
     // load shader-program
     this->DefineProgram("default_2d_program");
+
+    // enable interaction handling
+    m_bFocusable = true;
 }
 
 

@@ -21,6 +21,7 @@ coreObject2D::coreObject2D()noexcept
 , m_mTransform     (coreMatrix3x2::Identity())
 , m_eStyle         (CORE_OBJECT2D_STYLE_NOTHING)
 , m_bFocused       (false)
+, m_bFocusable     (false)
 , m_vFocusModifier (coreVector2(1.0f,1.0f))
 #if defined(_CORE_MOBILE_)
 , m_iFinger        (0u)
@@ -40,6 +41,7 @@ coreObject2D::coreObject2D(const coreObject2D& c)noexcept
 , m_mTransform     (c.m_mTransform)
 , m_eStyle         (c.m_eStyle)
 , m_bFocused       (c.m_bFocused)
+, m_bFocusable     (c.m_bFocusable)
 , m_vFocusModifier (c.m_vFocusModifier)
 #if defined(_CORE_MOBILE_)
 , m_iFinger        (c.m_iFinger)
@@ -59,6 +61,7 @@ coreObject2D::coreObject2D(coreObject2D&& m)noexcept
 , m_mTransform     (m.m_mTransform)
 , m_eStyle         (m.m_eStyle)
 , m_bFocused       (m.m_bFocused)
+, m_bFocusable     (m.m_bFocusable)
 , m_vFocusModifier (m.m_vFocusModifier)
 #if defined(_CORE_MOBILE_)
 , m_iFinger        (m.m_iFinger)
@@ -92,6 +95,7 @@ coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
     m_mTransform     = c.m_mTransform;
     m_eStyle         = c.m_eStyle;
     m_bFocused       = c.m_bFocused;
+    m_bFocusable     = c.m_bFocusable;
     m_vFocusModifier = c.m_vFocusModifier;
 #if defined(_CORE_MOBILE_)
     m_iFinger        = c.m_iFinger;
@@ -112,6 +116,7 @@ coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
     m_mTransform     = m.m_mTransform;
     m_eStyle         = m.m_eStyle;
     m_bFocused       = m.m_bFocused;
+    m_bFocusable     = m.m_bFocusable;
     m_vFocusModifier = m.m_vFocusModifier;
 #if defined(_CORE_MOBILE_)
     m_iFinger        = m.m_iFinger;
@@ -218,11 +223,18 @@ void coreObject2D::Move()
 // interact with the 2d-object
 void coreObject2D::Interact()
 {
+    // skip interaction handling
+    if(!m_bFocusable)
+    {
+        m_bFocused = false;
+        return;
+    }
+
     // get resolution-modified transformation parameters
     const coreVector2 vResolution      = Core::System->GetResolution();
+    const coreVector2 vScreenDirection = coreVector2(m_mTransform._12, m_mTransform._11).Normalized();
     const coreVector2 vScreenPosition  = coreVector2(m_mTransform._31, m_mTransform._32);
     const coreVector2 vScreenSize      = m_vSize * m_vFocusModifier * (0.5f * vResolution.Min());
-    const coreVector2 vScreenDirection = coreVector2(m_mTransform._12, m_mTransform._11).NormalizedUnsafe();
 
 #if defined(_CORE_MOBILE_)
 
