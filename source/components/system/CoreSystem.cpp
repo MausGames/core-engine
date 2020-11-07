@@ -448,16 +448,14 @@ void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
     const coreUint64 iNewPerfTime = SDL_GetPerformanceCounter();
-    const coreFloat  fNewLastTime = coreFloat(coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
+    const coreFloat  fNewLastTime = MIN(coreFloat(coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency), 0.1f);
     m_iPerfTime                   = iNewPerfTime;
 
-    if(m_iSkipFrame || (fNewLastTime >= 0.25f))
+    if(m_iSkipFrame)
     {
-        Core::Log->Warning("Skipped Frame (%u / %.5f / %.5f)", m_iCurFrame, m_dTotalTime, fNewLastTime);
-
-        // skip frames
-        m_fLastTime = 0.0f;
-        if(m_iSkipFrame) --m_iSkipFrame;
+        // skip frame
+        m_fLastTime   = 0.0f;
+        m_iSkipFrame -= 1u;
     }
     else
     {
