@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 CoreInput::CoreInput()noexcept
 : m_Keyboard       {}
 , m_Mouse          {}
@@ -29,7 +29,7 @@ CoreInput::CoreInput()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 CoreInput::~CoreInput()
 {
     // shut down joystick input
@@ -43,7 +43,7 @@ CoreInput::~CoreInput()
 
 
 // ****************************************************************
-// set the mouse cursor
+/* set the mouse cursor */
 void CoreInput::SetCursor(const coreChar* pcPath)
 {
     // retrieve texture file
@@ -69,7 +69,7 @@ void CoreInput::SetCursor(const coreChar* pcPath)
 
 
 // ****************************************************************
-// show or hide the mouse cursor
+/* show or hide the mouse cursor */
 void CoreInput::ShowCursor(const coreBool bStatus)
 {
     if(m_bCursorVisible == bStatus) return;
@@ -84,7 +84,7 @@ void CoreInput::ShowCursor(const coreBool bStatus)
 
 
 // ****************************************************************
-// control mouse with keyboard
+/* control mouse with keyboard */
 void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKey iRight, const coreInputKey iDown, const coreInputKey iUp, const coreInputKey iButton1, const coreInputKey iButton2, const coreFloat fSpeed)
 {
     // get original input
@@ -111,7 +111,7 @@ void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKe
 
 
 // ****************************************************************
-// control mouse with joystick
+/* control mouse with joystick */
 void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iButton1, const coreUint8 iButton2, const coreFloat fSpeed)
 {
     WARN_IF(iIndex >= m_aJoystick.size()) return;
@@ -136,7 +136,7 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
 
 
 // ****************************************************************
-// forward hat input to stick input on joystick
+/* forward hat input to stick input on joystick */
 void CoreInput::ForwardHatToStick(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_aJoystick.size()) return;
@@ -156,7 +156,7 @@ void CoreInput::ForwardHatToStick(const coreUintW iIndex)
 
 
 // ****************************************************************
-// process input events
+/* process input events */
 coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 {
     switch(oEvent.type)
@@ -280,7 +280,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
 
 // ****************************************************************
-// clear status of all input buttons
+/* clear status of all input buttons */
 void CoreInput::ClearButtonAll()
 {
     // clear each available device
@@ -295,7 +295,7 @@ void CoreInput::ClearButtonAll()
 
 
 // ****************************************************************
-// update the input button interface (start)
+/* update the input button interface (start) */
 void CoreInput::__UpdateButtonsStart()
 {
     // process keyboard inputs
@@ -350,7 +350,7 @@ void CoreInput::__UpdateButtonsStart()
 
 
 // ****************************************************************
-// update the input button interface (end)
+/* update the input button interface (end) */
 void CoreInput::__UpdateButtonsEnd()
 {
     // clear all numbers of input buttons with same status
@@ -378,7 +378,7 @@ void CoreInput::__UpdateButtonsEnd()
 
 
 // ****************************************************************
-// start up joystick input
+/* start up joystick input */
 void CoreInput::__OpenJoysticks()
 {
     ASSERT(m_aJoystick.empty())
@@ -444,7 +444,7 @@ void CoreInput::__OpenJoysticks()
 
 
 // ****************************************************************
-// shut down joystick input
+/* shut down joystick input */
 void CoreInput::__CloseJoysticks()
 {
     // close all joystick and haptic devices
@@ -461,7 +461,7 @@ void CoreInput::__CloseJoysticks()
 
 
 // ****************************************************************
-// convert joystick instance ID to joystick index
+/* convert joystick instance ID to joystick index */
 coreUintW CoreInput::__GetJoystickIndex(const SDL_JoystickID iID)const
 {
     const SDL_Joystick* pFind = SDL_JoystickFromInstanceID(iID);

@@ -13,42 +13,43 @@
 // TODO: Interact depends on Move, and Move of some menu objects depend on Interact
 // TODO: on IsClicked: make right mouse button on mobile a longer push or multiple fingers ?
 // TODO: on IsClicked: consider finger number
+// TODO: <old comment style>
 
 
 // ****************************************************************
 /* 2d-object definitions */
 enum coreObject2DStyle : coreUint8
 {
-    CORE_OBJECT2D_STYLE_NOTHING   = 0x00u,   //!< override nothing
-    CORE_OBJECT2D_STYLE_VIEWDIR   = 0x01u,   //!< react to global 2d-object rotation
-    CORE_OBJECT2D_STYLE_ALTCENTER = 0x02u    //!< react to global 2d-object screen space resolution
+    CORE_OBJECT2D_STYLE_NOTHING   = 0x00u,   // override nothing
+    CORE_OBJECT2D_STYLE_VIEWDIR   = 0x01u,   // react to global 2d-object rotation
+    CORE_OBJECT2D_STYLE_ALTCENTER = 0x02u    // react to global 2d-object screen space resolution
 };
 ENABLE_BITWISE(coreObject2DStyle)
 
 
 // ****************************************************************
-// 2d-object class
+/* 2d-object class */
 class coreObject2D : public coreObject
 {
 private:
-    coreVector2 m_vPosition;    //!< position of the 2d-object (aspect ratio independent)
-    coreVector2 m_vSize;        //!< size-factor of the 2d-object (independent)
-    coreVector2 m_vDirection;   //!< direction for the rotation matrix (independent)
-    coreVector2 m_vCenter;      //!< screen space origin (depending)
-    coreVector2 m_vAlignment;   //!< offset factor (independent)
+    coreVector2 m_vPosition;    // position of the 2d-object (aspect ratio independent)
+    coreVector2 m_vSize;        // size-factor of the 2d-object (independent)
+    coreVector2 m_vDirection;   // direction for the rotation matrix (independent)
+    coreVector2 m_vCenter;      // screen space origin (depending)
+    coreVector2 m_vAlignment;   // offset factor (independent)
 
 
 protected:
-    coreMatrix3x2 m_mTransform;     //!< transformation matrix
+    coreMatrix3x2 m_mTransform;     // transformation matrix
 
-    coreObject2DStyle m_eStyle;     //!< style overrides
+    coreObject2DStyle m_eStyle;     // style overrides
 
-    coreBool    m_bFocused;         //!< interaction status
-    coreBool    m_bFocusable;       //!< enabled interaction handling
-    coreVector2 m_vFocusModifier;   //!< size-modifier for interaction handling
+    coreBool    m_bFocused;         // interaction status
+    coreBool    m_bFocusable;       // enabled interaction handling
+    coreVector2 m_vFocusModifier;   // size-modifier for interaction handling
 
 #if defined(_CORE_MOBILE_)
-    coreUint32 m_iFinger;           //!< separate finger interaction status (bitwise)
+    coreUint32 m_iFinger;           // separate finger interaction status (bitwise)
 #endif
 
 
@@ -58,40 +59,29 @@ public:
     coreObject2D(coreObject2D&&      m)noexcept;
     virtual ~coreObject2D();
 
-    //! assignment operations
-    //! @{
+    /* assignment operations */
     coreObject2D& operator = (const coreObject2D& c)noexcept;
     coreObject2D& operator = (coreObject2D&&      m)noexcept;
-    //! @}
 
-    //! define the visual appearance
-    //! @{
+    /* define the visual appearance */
     void Undefine();
-    //! @}
 
-    //! render and move the 2d-object
-    //! @{
+    /* render and move the 2d-object */
     coreBool     Prepare(const coreProgramPtr& pProgram);
     coreBool     Prepare();
     virtual void Render(const coreProgramPtr& pProgram);
     virtual void Render();
     virtual void Move  ();
-    //! @}
 
-    //! interact with the 2d-object
-    //! @{
+    /* interact with the 2d-object */
     void Interact();
     coreBool IsClicked(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType eType = CORE_INPUT_PRESS)const;
     inline const coreBool& IsFocused()const {return m_bFocused;}
-    //! @}
 
-    //! transform the whole object
-    //! @{
+    /* transform the whole object */
     inline void FitToScreen() {m_eUpdate = CORE_OBJECT_UPDATE_ALL; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = Core::System->GetResolution() / Core::System->GetResolution().Min(); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}
-    //! @}
 
-    //! set object properties
-    //! @{
+    /* set object properties */
     inline void SetPosition     (const coreVector2&      vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
     inline void SetSize         (const coreVector2&      vSize)          {if(m_vSize      != vSize)      {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
     inline void SetDirection    (const coreVector2&      vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
@@ -101,10 +91,8 @@ public:
     inline void SetFocused      (const coreBool          bFocused)       {m_bFocused       = bFocused;}
     inline void SetFocusable    (const coreBool          bFocusable)     {m_bFocusable     = bFocusable;}
     inline void SetFocusModifier(const coreVector2&      vFocusModifier) {m_vFocusModifier = vFocusModifier;}
-    //! @}
 
-    //! get object properties
-    //! @{
+    /* get object properties */
     inline const coreVector2&       GetPosition ()const {return m_vPosition;}
     inline const coreVector2&       GetSize     ()const {return m_vSize;}
     inline const coreVector2&       GetDirection()const {return m_vDirection;}
@@ -112,12 +100,11 @@ public:
     inline const coreVector2&       GetAlignment()const {return m_vAlignment;}
     inline const coreMatrix3x2&     GetTransform()const {return m_mTransform;}
     inline const coreObject2DStyle& GetStyle    ()const {return m_eStyle;}
-    //! @}
 };
 
 
 // ****************************************************************
-// fullscreen-object class
+/* fullscreen-object class */
 class coreFullscreen : public coreObject2D
 {
 public:
@@ -126,12 +113,10 @@ public:
 
     ENABLE_COPY(coreFullscreen)
 
-    //! render the fullscreen-object
-    //! @{
+    /* render the fullscreen-object */
     virtual void Render(const coreProgramPtr& pProgram)override;
     virtual void Render()override;
-    //! @}
 };
 
 
-#endif // _CORE_GUARD_OBJECT2D_H_
+#endif /* _CORE_GUARD_OBJECT2D_H_ */

@@ -148,20 +148,20 @@
 // ****************************************************************
 /* compiler definitions */
 #if defined(_CORE_MSVC_)
-    #define UNUSED           [[maybe_unused]]       //!< possibly unused variable (warnings 4100, 4101, 4189)
-    #define OUTPUT           __restrict             //!< output parameter without aliasing
-    #define INTERFACE        __declspec(novtable)   //!< pure interface class without direct instantiation
-    #define FORCE_INLINE     __forceinline          //!< always inline the function
-    #define DONT_INLINE      __declspec(noinline)   //!< never inline the function
-    #define FALLTHROUGH      [[fallthrough]];       //!< intentionally fall through to the next switch-label
-    #define RETURN_RESTRICT  __declspec(restrict)   //!< returned object will not be aliased with another pointer
-    #define RETURN_NONNULL   _Ret_notnull_          //!< returned pointer will not be null
-    #define RETURN_NODISCARD [[nodiscard]]          //!< returned value should not be discarded (but can be cast to void)
-    #define FUNC_PURE                               //!< function does not modify anything (or reads volatile global state), and returns a value
-    #define FUNC_CONST       __declspec(noalias)    //!< function only reads parameters (without indirections), and returns a value
-    #define FUNC_LOCAL       __declspec(noalias)    //!< function only reads parameters, reads first-level indirections (e.g. this), and returns a value
-    #define FUNC_NOALIAS     __declspec(noalias)    //!< function only reads parameters, reads and writes first-level indirections, and may return a value
-    #define FUNC_TERMINATE   [[noreturn]]           //!< function does not return (e.g. by calling exit(3) or abort(3))
+    #define UNUSED           [[maybe_unused]]       // possibly unused variable (warnings 4100, 4101, 4189)
+    #define OUTPUT           __restrict             // output parameter without aliasing
+    #define INTERFACE        __declspec(novtable)   // pure interface class without direct instantiation
+    #define FORCE_INLINE     __forceinline          // always inline the function
+    #define DONT_INLINE      __declspec(noinline)   // never inline the function
+    #define FALLTHROUGH      [[fallthrough]];       // intentionally fall through to the next switch-label
+    #define RETURN_RESTRICT  __declspec(restrict)   // returned object will not be aliased with another pointer
+    #define RETURN_NONNULL   _Ret_notnull_          // returned pointer will not be null
+    #define RETURN_NODISCARD [[nodiscard]]          // returned value should not be discarded (but can be cast to void)
+    #define FUNC_PURE                               // function does not modify anything (or reads volatile global state), and returns a value
+    #define FUNC_CONST       __declspec(noalias)    // function only reads parameters (without indirections), and returns a value
+    #define FUNC_LOCAL       __declspec(noalias)    // function only reads parameters, reads first-level indirections (e.g. this), and returns a value
+    #define FUNC_NOALIAS     __declspec(noalias)    // function only reads parameters, reads and writes first-level indirections, and may return a value
+    #define FUNC_TERMINATE   [[noreturn]]           // function does not return (e.g. by calling exit(3) or abort(3))
 #else
     #define UNUSED           [[maybe_unused]]
     #define OUTPUT           __restrict__
@@ -182,29 +182,29 @@
 #if defined(_CORE_MSVC_)
 
     // disable unwanted compiler warnings (with /Wall)
-    #pragma warning(disable : 4061)   //!< enumerator not handled in switch
-    #pragma warning(disable : 4100)   //!< unreferenced formal parameter
-    #pragma warning(disable : 4201)   //!< nameless struct or union
-    #pragma warning(disable : 4242)   //!< implicit conversion to different precision #1
-    #pragma warning(disable : 4244)   //!< implicit conversion to different precision #2
-    #pragma warning(disable : 4266)   //!< virtual function not overridden
-    #pragma warning(disable : 4267)   //!< implicit conversion of std::size_t
-    #pragma warning(disable : 4365)   //!< implicit conversion between signed and unsigned
-    #pragma warning(disable : 4557)   //!< __assume contains effect (# only false-positives)
-    #pragma warning(disable : 4571)   //!< semantic change of catch(...)
-    #pragma warning(disable : 4577)   //!< noexcept used without exception handling
-    #pragma warning(disable : 4623)   //!< default constructor implicitly deleted
-    #pragma warning(disable : 4625)   //!< copy constructor implicitly deleted
-    #pragma warning(disable : 4626)   //!< copy assignment operator implicitly deleted
-    #pragma warning(disable : 4668)   //!< preprocessor macro not defined
-    #pragma warning(disable : 4710)   //!< function not inlined
-    #pragma warning(disable : 4711)   //!< function automatically inlined
-    #pragma warning(disable : 4774)   //!< format string not a string literal
-    #pragma warning(disable : 4820)   //!< padding after data member
-    #pragma warning(disable : 5026)   //!< move constructor implicitly deleted
-    #pragma warning(disable : 5027)   //!< move assignment operator implicitly deleted
-    #pragma warning(disable : 5039)   //!< potentially throwing function passed to extern C function
-    #pragma warning(disable : 5045)   //!< possible Spectre vulnerability
+    #pragma warning(disable : 4061)   // enumerator not handled in switch
+    #pragma warning(disable : 4100)   // unreferenced formal parameter
+    #pragma warning(disable : 4201)   // nameless struct or union
+    #pragma warning(disable : 4242)   // implicit conversion to different precision #1
+    #pragma warning(disable : 4244)   // implicit conversion to different precision #2
+    #pragma warning(disable : 4266)   // virtual function not overridden
+    #pragma warning(disable : 4267)   // implicit conversion of std::size_t
+    #pragma warning(disable : 4365)   // implicit conversion between signed and unsigned
+    #pragma warning(disable : 4557)   // __assume contains effect (# only false-positives)
+    #pragma warning(disable : 4571)   // semantic change of catch(...)
+    #pragma warning(disable : 4577)   // noexcept used without exception handling
+    #pragma warning(disable : 4623)   // default constructor implicitly deleted
+    #pragma warning(disable : 4625)   // copy constructor implicitly deleted
+    #pragma warning(disable : 4626)   // copy assignment operator implicitly deleted
+    #pragma warning(disable : 4668)   // preprocessor macro not defined
+    #pragma warning(disable : 4710)   // function not inlined
+    #pragma warning(disable : 4711)   // function automatically inlined
+    #pragma warning(disable : 4774)   // format string not a string literal
+    #pragma warning(disable : 4820)   // padding after data member
+    #pragma warning(disable : 5026)   // move constructor implicitly deleted
+    #pragma warning(disable : 5027)   // move assignment operator implicitly deleted
+    #pragma warning(disable : 5039)   // potentially throwing function passed to extern C function
+    #pragma warning(disable : 5045)   // possible Spectre vulnerability
 
     // check for floating-point results stored in memory, causing performance loss
     #if defined(_CORE_X64_)
@@ -226,8 +226,8 @@
 
 #if !defined(_CORE_DEBUG_)
     #if defined(_CORE_MSVC_)
-        #pragma fenv_access (off)   //!< ignore access to the floating-point environment (on purpose)
-        #pragma fp_contract (on)    //!< allow contracting of floating-point expressions
+        #pragma fenv_access (off)   // ignore access to the floating-point environment (on purpose)
+        #pragma fp_contract (on)    // allow contracting of floating-point expressions
     #elif defined(_CORE_CLANG_)
         #pragma STDC FENV_ACCESS OFF
         #pragma STDC FP_CONTRACT ON
@@ -432,12 +432,12 @@
 #define c_cast const_cast
 
 // type conversion macros
-#define F_TO_SI(x) ((coreInt32)            (x))   //!< float to signed int
-#define F_TO_UI(x) ((coreUint32)(coreInt32)(x))   //!< float to unsigned int (force [_mm_cvtt_ss2si])
-#define I_TO_F(x)  ((coreFloat)(coreInt32) (x))   //!< int to float          (force [_mm_cvtepi32_ps])
-#define P_TO_SI(x) ((std::intptr_t)(void*) (x))   //!< pointer to signed int
-#define P_TO_UI(x) ((std::uintptr_t)(void*)(x))   //!< pointer to unsigned int
-#define I_TO_P(x)  ((void*)(std::intptr_t) (x))   //!< int to pointer
+#define F_TO_SI(x) ((coreInt32)            (x))   // float to signed int
+#define F_TO_UI(x) ((coreUint32)(coreInt32)(x))   // float to unsigned int (force [_mm_cvtt_ss2si])
+#define I_TO_F(x)  ((coreFloat)(coreInt32) (x))   // int to float          (force [_mm_cvtepi32_ps])
+#define P_TO_SI(x) ((std::intptr_t)(void*) (x))   // pointer to signed int
+#define P_TO_UI(x) ((std::uintptr_t)(void*)(x))   // pointer to unsigned int
+#define I_TO_P(x)  ((void*)(std::intptr_t) (x))   // int to pointer
 
 // type definitions
 using coreInt8   = std::int8_t;
@@ -466,11 +466,11 @@ template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTr
 template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)>      : public coreFunctionTraits<R(A...)>                                               {};
 template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)>
 {
-    using coreFuncType   = R(*)(A...);                                                                             //!< function type (without class)
-    using coreClassType  = void;                                                                                   //!< class type
-    using coreReturnType = R;                                                                                      //!< return type
-    template <coreUintW iIndex> using coreArgType = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   //!< argument types
-    enum : coreUintW {iArity = sizeof...(A)};                                                                      //!< number of arguments
+    using coreFuncType   = R(*)(A...);                                                                             // function type (without class)
+    using coreClassType  = void;                                                                                   // class type
+    using coreReturnType = R;                                                                                      // return type
+    template <coreUintW iIndex> using coreArgType = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   // argument types
+    enum : coreUintW {iArity = sizeof...(A)};                                                                      // number of arguments
 };
 #define TRAIT_FUNC_TYPE(f)   coreFunctionTraits<f>::coreFuncType
 #define TRAIT_CLASS_TYPE(f)  coreFunctionTraits<f>::coreClassType
@@ -510,16 +510,16 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 
 enum coreStatus : coreInt8
 {
-    CORE_OK            =  0,    //!< everything is fine
-    CORE_BUSY          =  1,    //!< currently waiting for an event
+    CORE_OK            =  0,    // everything is fine
+    CORE_BUSY          =  1,    // currently waiting for an event
 
-    CORE_ERROR_FILE    = -1,    //!< error on reading, writing or finding a file or folder
-    CORE_ERROR_SUPPORT = -2,    //!< requested feature is not supported on the target system
-    CORE_ERROR_SYSTEM  = -3,    //!< invalid system or application behavior
+    CORE_ERROR_FILE    = -1,    // error on reading, writing or finding a file or folder
+    CORE_ERROR_SUPPORT = -2,    // requested feature is not supported on the target system
+    CORE_ERROR_SYSTEM  = -3,    // invalid system or application behavior
 
-    CORE_INVALID_CALL  = -11,   //!< object has invalid status
-    CORE_INVALID_INPUT = -12,   //!< function parameters are invalid
-    CORE_INVALID_DATA  = -13    //!< depending objects contain invalid data
+    CORE_INVALID_CALL  = -11,   // object has invalid status
+    CORE_INVALID_INPUT = -12,   // function parameters are invalid
+    CORE_INVALID_DATA  = -13    // depending objects contain invalid data
 };
 
 
@@ -616,20 +616,20 @@ extern "C" coreInt32 coreThreadMain(void* pData);
 class CoreApp final
 {
 public:
-    /*! project settings */
+    /* project settings */
     struct Settings final
     {
-        static const coreChar* const Name;         //!< project name
-        static const coreChar* const IconPath;     //!< window icon file path
-        static const coreChar* const CursorPath;   //!< mouse cursor file path
+        static const coreChar* const Name;         // project name
+        static const coreChar* const IconPath;     // window icon file path
+        static const coreChar* const CursorPath;   // mouse cursor file path
 
         struct RenderBuffer final
         {
-            static const coreUint8 DepthSize;      //!< depth buffer size (0, 16, 24, 32)
-            static const coreUint8 StencilSize;    //!< stencil buffer size (0, 8)
-            static const coreBool  AlphaChannel;   //!< enable alpha channel (RGBA8)
-            static const coreBool  DoubleBuffer;   //!< enable double buffering
-            static const coreBool  StereoRender;   //!< enable stereo rendering
+            static const coreUint8 DepthSize;      // depth buffer size (0, 16, 24, 32)
+            static const coreUint8 StencilSize;    // stencil buffer size (0, 8)
+            static const coreBool  AlphaChannel;   // enable alpha channel (RGBA8)
+            static const coreBool  DoubleBuffer;   // enable double buffering
+            static const coreBool  StereoRender;   // enable stereo rendering
         }
         RenderBuffer;
     }
@@ -643,22 +643,16 @@ private:
     FRIEND_CLASS(Core)
     DISABLE_COPY(CoreApp)
 
-    /*! auto-generated setup function */
-    //! @{
+    /* auto-generated setup function */
     void Setup();
-    //! @}
 
-    /*! user-defined init and exit function */
-    //! @{
+    /* user-defined init and exit function */
     void Init();
     void Exit();
-    //! @}
 
-    /*! user-defined render and move function */
-    //! @{
+    /* user-defined render and move function */
     void Render();
     void Move();
-    //! @}
 };
 
 
@@ -667,25 +661,25 @@ private:
 class Core final
 {
 public:
-    static coreLog*      const Log;        //!< log file
-    static coreConfig*   const Config;     //!< configuration file
-    static coreLanguage* const Language;   //!< language file
-    static coreRand*     const Rand;       //!< random number generator
+    static coreLog*      const Log;        // log file
+    static coreConfig*   const Config;     // configuration file
+    static coreLanguage* const Language;   // language file
+    static coreRand*     const Rand;       // random number generator
 
-    static CoreSystem*   const System;     //!< main system component
-    static CoreGraphics* const Graphics;   //!< main graphics component
-    static CoreAudio*    const Audio;      //!< main audio component
-    static CoreInput*    const Input;      //!< main input component
-    static CoreDebug*    const Debug;      //!< main debug component
+    static CoreSystem*   const System;     // main system component
+    static CoreGraphics* const Graphics;   // main graphics component
+    static CoreAudio*    const Audio;      // main audio component
+    static CoreInput*    const Input;      // main input component
+    static CoreDebug*    const Debug;      // main debug component
 
     struct INTERFACE Manager final
     {
-        static coreMemoryManager*   const Memory;     //!< memory manager
-        static coreResourceManager* const Resource;   //!< resource manager
-        static coreObjectManager*   const Object;     //!< object manager
+        static coreMemoryManager*   const Memory;     // memory manager
+        static coreResourceManager* const Resource;   // resource manager
+        static coreObjectManager*   const Object;     // object manager
     };
 
-    static CoreApp* const Application;     //!< application object
+    static CoreApp* const Application;     // application object
 
 
 private:
@@ -696,23 +690,17 @@ private:
 public:
     DISABLE_COPY(Core)
 
-    /*! reset engine */
-    //! @{
+    /* reset engine */
     static void Reset();
-    //! @}
 
-    /*! reshape engine */
-    //! @{
+    /* reshape engine */
     static void Reshape();
-    //! @}
 
 
 private:
-    /*! run engine */
-    //! @{
+    /* run engine */
     friend coreInt32 coreMain(coreInt32 argc, coreChar** argv);
     static coreStatus Run();
-    //! @}
 };
 
 

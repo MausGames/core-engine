@@ -20,10 +20,11 @@
 // TODO: __declspec(allocator)
 // TODO: consider allocation granularity 64kb
 // TODO: pointer to next free block inside unused block (linked list) instead of free-stack (consider sorting)
+// TODO: <old comment style>
 
 
 // ****************************************************************
-// memory definitions
+/* memory definitions */
 #define CORE_MEMORY_SHARED  (STRING(__FILE__) ":" STRING(__LINE__))
 #define CORE_MEMORY_UNIQUE  (PRINT(CORE_MEMORY_SHARED ":%p", this))
 
@@ -55,15 +56,15 @@
 
 
 // ****************************************************************
-// memory-pool class
+/* memory-pool class */
 class coreMemoryPool final
 {
 private:
-    std::vector<coreByte*> m_apPageList;    //!< list with memory-pages containing many memory-blocks
-    std::vector<void*>     m_apFreeStack;   //!< stack with pointers to free memory-blocks
+    std::vector<coreByte*> m_apPageList;    // list with memory-pages containing many memory-blocks
+    std::vector<void*>     m_apFreeStack;   // stack with pointers to free memory-blocks
 
-    coreUintW m_iBlockSize;                 //!< memory-block size (in bytes)
-    coreUintW m_iPageSize;                  //!< memory-page size (in number of containing memory-blocks)
+    coreUintW m_iBlockSize;                 // memory-block size (in bytes)
+    coreUintW m_iPageSize;                  // memory-page size (in number of containing memory-blocks)
 
 
 public:
@@ -73,41 +74,33 @@ public:
 
     ENABLE_COPY(coreMemoryPool)
 
-    //! control state of the memory-pool
-    //! @{
+    /* control state of the memory-pool */
     void Configure(const coreUintW iBlockSize, const coreUintW iPageSize);
     void Reset();
-    //! @}
 
-    //! create and remove memory-blocks
-    //! @{
+    /* create and remove memory-blocks */
     RETURN_RESTRICT void* Allocate();
     void Free(void** OUTPUT ppPointer);
-    //! @}
 
-    //! check if pointer belongs to the memory-pool
-    //! @{
+    /* check if pointer belongs to the memory-pool */
     bool Contains(const void* pPointer)const;
-    //! @}
 
 
 private:
-    //! add new memory-page to memory-pool
-    //! @{
+    /* add new memory-page to memory-pool */
     void __AddPage();
-    //! @}
 };
 
 
 // ****************************************************************
-// memory manager
+/* memory manager */
 class coreMemoryManager final
 {
 private:
-    coreLookupStr<std::weak_ptr<void>>     m_apPointer;     //!< list with weak shared memory pointer
-    coreLookup<coreUint16, coreMemoryPool> m_aMemoryPool;   //!< internal memory-pools (each for a different block-size)
+    coreLookupStr<std::weak_ptr<void>>     m_apPointer;     // list with weak shared memory pointer
+    coreLookup<coreUint16, coreMemoryPool> m_aMemoryPool;   // internal memory-pools (each for a different block-size)
 
-    SDL_SpinLock m_iPoolLock;                               //!< spinlock to prevent invalid memory-pool access
+    SDL_SpinLock m_iPoolLock;                               // spinlock to prevent invalid memory-pool access
 
 
 private:
@@ -119,21 +112,17 @@ public:
     FRIEND_CLASS(Core)
     DISABLE_COPY(coreMemoryManager)
 
-    //! share memory pointer through specific identifier
-    //! @{
+    /* share memory pointer through specific identifier */
     template <typename T, typename... A> std::shared_ptr<T> Share(const coreHashString& sName, A&&... vArgs);
-    //! @}
 
-    //! create and remove memory-blocks through internal memory-pools
-    //! @{
+    /* create and remove memory-blocks through internal memory-pools */
     RETURN_RESTRICT void* Allocate(const coreUintW iSize);
     void Free(const coreUintW iSize, void** OUTPUT ppPointer);
-    //! @}
 };
 
 
 // ****************************************************************
-// share memory pointer through specific identifier
+/* share memory pointer through specific identifier */
 template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share(const coreHashString& sName, A&&... vArgs)
 {
     // check for existing pointer
@@ -154,4 +143,4 @@ template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share
 }
 
 
-#endif // _CORE_GUARD_MEMORY_H_
+#endif /* _CORE_GUARD_MEMORY_H_ */

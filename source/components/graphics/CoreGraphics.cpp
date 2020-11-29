@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 CoreGraphics::CoreGraphics()noexcept
 : m_pRenderContext   (NULL)
 , m_pResourceContext (NULL)
@@ -169,7 +169,7 @@ CoreGraphics::CoreGraphics()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 CoreGraphics::~CoreGraphics()
 {
     // delete uniform buffer objects
@@ -194,7 +194,7 @@ CoreGraphics::~CoreGraphics()
 
 
 // ****************************************************************
-// set camera and create camera matrix
+/* set camera and create camera matrix */
 void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
     coreBool bNewCamera = false;
@@ -217,7 +217,7 @@ void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vD
 
 
 // ****************************************************************
-// set view frustum and create projection matrices
+/* set view frustum and create projection matrices */
 void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
 {
     coreBool bNewView = false;
@@ -254,7 +254,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
 
 
 // ****************************************************************
-// set and update ambient light
+/* set and update ambient light */
 void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
 {
     coreBool bNewLight = false;
@@ -278,7 +278,7 @@ void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4& vPosition
 
 
 // ****************************************************************
-// update transformation data for the uniform buffer objects
+/* update transformation data for the uniform buffer objects */
 void CoreGraphics::UpdateTransformation()
 {
     // check update status
@@ -326,7 +326,7 @@ void CoreGraphics::UpdateTransformation()
 
 
 // ****************************************************************
-// update ambient data for the uniform buffer objects
+/* update ambient data for the uniform buffer objects */
 void CoreGraphics::UpdateAmbient()
 {
     // check update status
@@ -367,7 +367,7 @@ void CoreGraphics::UpdateAmbient()
 
 
 // ****************************************************************
-// take screenshot
+/* take screenshot */
 void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 {
     const coreUintW iWidthSrc = coreMath::CeilAlign(F_TO_UI(Core::System->GetResolution().x), 4u);
@@ -415,7 +415,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 
 
 // ****************************************************************
-// update the graphics scene
+/* update the graphics scene */
 void CoreGraphics::__UpdateScene()
 {
     // take screenshot

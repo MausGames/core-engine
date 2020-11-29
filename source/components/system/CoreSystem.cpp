@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 CoreSystem::CoreSystem()noexcept
 : m_pWindow          (NULL)
 , m_aDisplayData     {}
@@ -253,7 +253,7 @@ CoreSystem::CoreSystem()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 CoreSystem::~CoreSystem()
 {
     // clear memory
@@ -267,7 +267,7 @@ CoreSystem::~CoreSystem()
 
 
 // ****************************************************************
-// change the title of the window
+/* change the title of the window */
 void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 {
     if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
@@ -284,7 +284,7 @@ void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 
 
 // ****************************************************************
-// change the icon of the window
+/* change the icon of the window */
 void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 {
     // retrieve texture file
@@ -306,7 +306,7 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 
 
 // ****************************************************************
-// change the resolution of the window (safely)
+/* change the resolution of the window (safely) */
 void CoreSystem::SetWindowResolution(const coreVector2& vResolution)
 {
     const coreDisplay& oCurrent = m_aDisplayData[m_iDisplayIndex];
@@ -339,7 +339,7 @@ void CoreSystem::SetWindowResolution(const coreVector2& vResolution)
 
 
 // ****************************************************************
-// update the event system
+/* update the event system */
 coreBool CoreSystem::__UpdateEvents()
 {
     // reset window states
@@ -416,7 +416,7 @@ coreBool CoreSystem::__UpdateEvents()
 
 
 // ****************************************************************
-// update the main window
+/* update the main window */
 void CoreSystem::__UpdateWindow()
 {
     // reduce overhead if window is not visible
@@ -443,7 +443,7 @@ void CoreSystem::__UpdateWindow()
 
 
 // ****************************************************************
-// update the high-precision time
+/* update the high-precision time */
 void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time

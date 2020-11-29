@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreMemoryPool::coreMemoryPool()noexcept
 : m_apPageList  {}
 , m_apFreeStack {}
@@ -31,7 +31,7 @@ coreMemoryPool::coreMemoryPool(const coreUintW iBlockSize, const coreUintW iPage
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreMemoryPool::~coreMemoryPool()
 {
     this->Reset();
@@ -39,7 +39,7 @@ coreMemoryPool::~coreMemoryPool()
 
 
 // ****************************************************************
-// set required memory-pool properties
+/* set required memory-pool properties */
 void coreMemoryPool::Configure(const coreUintW iBlockSize, const coreUintW iPageSize)
 {
     ASSERT(m_apPageList.empty())
@@ -54,7 +54,7 @@ void coreMemoryPool::Configure(const coreUintW iBlockSize, const coreUintW iPage
 
 
 // ****************************************************************
-// reset memory-pool to its initial state
+/* reset memory-pool to its initial state */
 void coreMemoryPool::Reset()
 {
     ASSERT(m_apFreeStack.size() == (m_apPageList.size() * m_iPageSize))
@@ -70,7 +70,7 @@ void coreMemoryPool::Reset()
 
 
 // ****************************************************************
-// create memory-block
+/* create memory-block */
 RETURN_RESTRICT void* coreMemoryPool::Allocate()
 {
     // check for free memory-block
@@ -86,7 +86,7 @@ RETURN_RESTRICT void* coreMemoryPool::Allocate()
 
 
 // ****************************************************************
-// remove memory-block
+/* remove memory-block */
 void coreMemoryPool::Free(void** OUTPUT ppPointer)
 {
     ASSERT(this->Contains(*ppPointer))
@@ -104,7 +104,7 @@ void coreMemoryPool::Free(void** OUTPUT ppPointer)
 
 
 // ****************************************************************
-// check if pointer belongs to the memory-pool
+/* check if pointer belongs to the memory-pool */
 bool coreMemoryPool::Contains(const void* pPointer)const
 {
     const coreUintW iTotalSize = m_iBlockSize * m_iPageSize;
@@ -113,7 +113,7 @@ bool coreMemoryPool::Contains(const void* pPointer)const
 
 
 // ****************************************************************
-// add new memory-page to memory-pool
+/* add new memory-page to memory-pool */
 void coreMemoryPool::__AddPage()
 {
     // create new memory-page
@@ -127,7 +127,7 @@ void coreMemoryPool::__AddPage()
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreMemoryManager::coreMemoryManager()noexcept
 : m_apPointer   {}
 , m_aMemoryPool {}
@@ -138,7 +138,7 @@ coreMemoryManager::coreMemoryManager()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreMemoryManager::~coreMemoryManager()
 {
     // clear memory
@@ -150,7 +150,7 @@ coreMemoryManager::~coreMemoryManager()
 
 
 // ****************************************************************
-// create memory-block from internal memory-pool
+/* create memory-block from internal memory-pool */
 RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 {
     coreSpinLocker oLocker(&m_iPoolLock);
@@ -164,7 +164,7 @@ RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 
 
 // ****************************************************************
-// remove memory-block to internal memory-pool
+/* remove memory-block to internal memory-pool */
 void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT ppPointer)
 {
     coreSpinLocker oLocker(&m_iPoolLock);

@@ -20,10 +20,10 @@
 // ****************************************************************
 /* configuration definitions */
 #define CORE_CONFIG_BASE_LANGUAGE               "Base",     "Language",           ("data/languages/english.lng")
-#define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)                    //!< enable debug capabilities and extended logging
-#define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (DEFINED(_CORE_ASYNC_))    //!< enable asynchronous processing and resource loading
-#define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)                    //!< disable all possible hardware features
-#define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (DEFINED(_CORE_MOBILE_))   //!< keep resources in memory
+#define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)                    // enable debug capabilities and extended logging
+#define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (DEFINED(_CORE_ASYNC_))    // enable asynchronous processing and resource loading
+#define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)                    // disable all possible hardware features
+#define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (DEFINED(_CORE_MOBILE_))   // keep resources in memory
 
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (800)
@@ -47,7 +47,7 @@
 #define CORE_CONFIG_INPUT_JOYSTICKDEAD          "Input",    "JoystickDead",       (0x2000)
 #define CORE_CONFIG_INPUT_JOYSTICKMAX           "Input",    "JoystickMax",        (0x7000)
 
-extern template class CSimpleIniA;   //!< do not create template in every compilation unit
+extern template class CSimpleIniA;   // do not create template in every compilation unit
 
 
 // ****************************************************************
@@ -55,10 +55,10 @@ extern template class CSimpleIniA;   //!< do not create template in every compil
 class coreConfig final
 {
 private:
-    std::string m_sPath;    //!< relative path of the file
-    CSimpleIniA m_Config;   //!< configuration file interface
+    std::string m_sPath;    // relative path of the file
+    CSimpleIniA m_Config;   // configuration file interface
 
-    coreBool m_bDirty;      //!< status flag for pending changes
+    coreBool m_bDirty;      // status flag for pending changes
 
 
 public:
@@ -67,14 +67,11 @@ public:
 
     DISABLE_COPY(coreConfig)
 
-    /*! load and save configuration file */
-    //! @{
+    /* load and save configuration file */
     coreStatus Load(const coreBool bSaveDirty);
     coreStatus Save();
-    //! @}
 
-    /*! set configuration values */
-    //! @{
+    /* set configuration values */
     inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool,  const coreBool  bValue)  {if(m_Config.SetBoolValue  (pcSection, pcKey, bValue)  != SI_SAME) m_bDirty = true;}
     inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey,                  const coreBool  bValue)  {if(m_Config.SetBoolValue  (pcSection, pcKey, bValue)  != SI_SAME) m_bDirty = true;}
     inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32, const coreInt32 iValue)  {if(m_Config.SetLongValue  (pcSection, pcKey, iValue)  != SI_SAME) m_bDirty = true;}
@@ -83,20 +80,15 @@ public:
     inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey,                  const coreFloat fValue)  {if(m_Config.SetDoubleValue(pcSection, pcKey, fValue)  != SI_SAME) m_bDirty = true;}
     inline void SetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar*, const coreChar* pcValue) {if(m_Config.SetValue      (pcSection, pcKey, pcValue) != SI_SAME) m_bDirty = true;}
     inline void SetString(const coreChar* pcSection, const coreChar* pcKey,                  const coreChar* pcValue) {if(m_Config.SetValue      (pcSection, pcKey, pcValue) != SI_SAME) m_bDirty = true;}
-    //! @}
 
-    /*! get configuration values */
-    //! @{
+    /* get configuration values */
     inline coreBool        GetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool  bDefault)  {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetBool  (pcSection, pcKey, bDefault);  return m_Config.GetBoolValue  (pcSection, pcKey, bDefault); }
     inline coreInt32       GetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32 iDefault)  {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetInt   (pcSection, pcKey, iDefault);  return m_Config.GetLongValue  (pcSection, pcKey, iDefault); }
     inline coreFloat       GetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat fDefault)  {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetFloat (pcSection, pcKey, fDefault);  return m_Config.GetDoubleValue(pcSection, pcKey, fDefault); }
     inline const coreChar* GetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar* pcDefault) {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetString(pcSection, pcKey, pcDefault); return m_Config.GetValue      (pcSection, pcKey, pcDefault);}
-    //! @}
 
-    /*! get object properties */
-    //! @{
+    /* get object properties */
     inline const coreChar* GetPath()const {return m_sPath.c_str();}
-    //! @}
 };
 
 

@@ -12,7 +12,7 @@ coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound = {};
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreDataBuffer::~coreDataBuffer()
 {
     // delete buffer storage
@@ -21,7 +21,7 @@ coreDataBuffer::~coreDataBuffer()
 
 
 // ****************************************************************
-// assignment operations
+/* assignment operations */
 coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer&& m)noexcept
 {
     // swap properties
@@ -39,7 +39,7 @@ coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer&& m)noexcept
 
 
 // ****************************************************************
-// create buffer storage
+/* create buffer storage */
 void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage eStorageType)
 {
     WARN_IF(m_iIdentifier) this->Delete();
@@ -110,7 +110,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
 
 
 // ****************************************************************
-// delete buffer storage
+/* delete buffer storage */
 void coreDataBuffer::Delete()
 {
     if(!m_iIdentifier) return;
@@ -137,7 +137,7 @@ void coreDataBuffer::Delete()
 
 
 // ****************************************************************
-// map buffer memory for writing operations
+/* map buffer memory for writing operations */
 RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType)
 {
     ASSERT(m_iIdentifier && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
@@ -181,7 +181,7 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
 
 
 // ****************************************************************
-// unmap buffer memory
+/* unmap buffer memory */
 void coreDataBuffer::Unmap(const coreByte* pPointer)
 {
     ASSERT(pPointer)
@@ -244,7 +244,7 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
 
 
 // ****************************************************************
-// copy content of the data buffer object
+/* copy content of the data buffer object */
 void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const
 {
     ASSERT(m_iIdentifier && ((iReadOffset + iLength) <= m_iSize) && ((iWriteOffset + iLength) <= pDestination->GetSize()))
@@ -273,7 +273,7 @@ void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteO
 
 
 // ****************************************************************
-// clear content of the data buffer object
+/* clear content of the data buffer object */
 void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pData)
 {
     ASSERT(m_iIdentifier && this->IsWritable())
@@ -301,7 +301,7 @@ void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pDat
 
 
 // ****************************************************************
-// invalidate content of the data buffer object
+/* invalidate content of the data buffer object */
 void coreDataBuffer::Invalidate()
 {
     ASSERT(m_iIdentifier && this->IsWritable())
@@ -315,7 +315,7 @@ void coreDataBuffer::Invalidate()
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreVertexBuffer::coreVertexBuffer()noexcept
 : coreDataBuffer ()
 , m_iVertexSize  (0u)
@@ -332,7 +332,7 @@ coreVertexBuffer::coreVertexBuffer(coreVertexBuffer&& m)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreVertexBuffer::~coreVertexBuffer()
 {
     // delete buffer storage
@@ -341,7 +341,7 @@ coreVertexBuffer::~coreVertexBuffer()
 
 
 // ****************************************************************
-// assignment operations
+/* assignment operations */
 coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer&& m)noexcept
 {
     // swap properties
@@ -354,7 +354,7 @@ coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer&& m)noexcept
 
 
 // ****************************************************************
-// create buffer storage
+/* create buffer storage */
 void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType)
 {
     // create buffer storage
@@ -366,7 +366,7 @@ void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVe
 
 
 // ****************************************************************
-// delete buffer storage
+/* delete buffer storage */
 void coreVertexBuffer::Delete()
 {
     if(!this->GetIdentifier()) return;
@@ -381,7 +381,7 @@ void coreVertexBuffer::Delete()
 
 
 // ****************************************************************
-// define vertex attribute array
+/* define vertex attribute array */
 void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreBool bInteger, const coreUint8 iOffset)
 {
     ASSERT(this->GetIdentifier())
@@ -408,7 +408,7 @@ void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint
 
 
 // ****************************************************************
-// activate the vertex structure
+/* activate the vertex structure */
 void coreVertexBuffer::Activate(const coreUint8 iBinding)
 {
     ASSERT(this->GetIdentifier() && !m_aAttribute.empty())

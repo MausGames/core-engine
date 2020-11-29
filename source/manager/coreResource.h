@@ -26,14 +26,14 @@
 /* resource definitions */
 enum coreResourceUpdate : coreBool
 {
-    CORE_RESOURCE_UPDATE_MANUAL = false,   //!< updated and managed by the developer
-    CORE_RESOURCE_UPDATE_AUTO   = true     //!< updated automatically by the resource manager
+    CORE_RESOURCE_UPDATE_MANUAL = false,   // updated and managed by the developer
+    CORE_RESOURCE_UPDATE_AUTO   = true     // updated automatically by the resource manager
 };
 
 enum coreResourceReset : coreBool
 {
-    CORE_RESOURCE_RESET_EXIT = false,   //!< invoke shut down routine
-    CORE_RESOURCE_RESET_INIT = true     //!< invoke start up routine
+    CORE_RESOURCE_RESET_EXIT = false,   // invoke shut down routine
+    CORE_RESOURCE_RESET_INIT = true     // invoke start up routine
 };
 
 
@@ -42,7 +42,7 @@ enum coreResourceReset : coreBool
 class INTERFACE coreResource
 {
 protected:
-    std::string m_sPath;   //!< relative path of the resource file
+    std::string m_sPath;   // relative path of the resource file
 
 
 public:
@@ -51,16 +51,12 @@ public:
 
     ENABLE_COPY(coreResource)
 
-    /*! load and unload resource data */
-    //! @{
+    /* load and unload resource data */
     virtual coreStatus Load(coreFile* pFile) = 0;
     virtual coreStatus Unload()              = 0;
-    //! @}
 
-    /*! get object properties */
-    //! @{
+    /* get object properties */
     inline const coreChar* GetPath()const {return m_sPath.c_str();}
-    //! @}
 };
 
 
@@ -69,11 +65,9 @@ public:
 class coreResourceDummy final : public coreResource
 {
 public:
-    /*! load and unload resource data (without any effect) */
-    //! @{
+    /* load and unload resource data (without any effect) */
     coreStatus Load(coreFile* pFile)final {return CORE_OK;}
     coreStatus Unload()final              {return CORE_OK;}
-    //! @}
 };
 
 
@@ -82,15 +76,15 @@ public:
 class coreResourceHandle final
 {
 private:
-    coreResource* m_pResource;    //!< handled resource object
-    coreFile*     m_pFile;        //!< pointer to resource file
+    coreResource* m_pResource;    // handled resource object
+    coreFile*     m_pFile;        // pointer to resource file
 
-    std::string m_sName;          //!< identifier of this resource handle
-    coreBool    m_bAutomatic;     //!< updated automatically by the resource manager
+    std::string m_sName;          // identifier of this resource handle
+    coreBool    m_bAutomatic;     // updated automatically by the resource manager
 
-    coreStatus   m_eStatus;       //!< current resource status
-    coreUint16   m_iRefCount;     //!< simple reference-counter
-    SDL_SpinLock m_iUpdateLock;   //!< spinlock to prevent concurrent resource loading
+    coreStatus   m_eStatus;       // current resource status
+    coreUint16   m_iRefCount;     // simple reference-counter
+    SDL_SpinLock m_iUpdateLock;   // spinlock to prevent concurrent resource loading
 
 
 private:
@@ -102,46 +96,34 @@ public:
     FRIEND_CLASS(coreResourceManager)
     DISABLE_COPY(coreResourceHandle)
 
-    /*! access resource object and status */
-    //! @{
+    /* access resource object and status */
     inline coreResource*   GetRawResource()const {return m_pResource;}
     inline const coreBool& IsAutomatic   ()const {return m_bAutomatic;}
     inline       coreBool  IsLoaded      ()const {return (m_eStatus != CORE_BUSY);}
     inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
-    //! @}
 
-    /*! control the reference-counter */
-    //! @{
+    /* control the reference-counter */
     inline void RefIncrease() {++m_iRefCount;}
     inline void RefDecrease() {--m_iRefCount; ASSERT(m_iRefCount != 0xFFFFu) if(!m_iRefCount && !Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE)) this->Nullify();}
-    //! @}
 
-    /*! handle resource loading */
-    //! @{
+    /* handle resource loading */
     inline coreBool Update () {coreSpinLocker oLocker(&m_iUpdateLock); if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic) {m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
     inline coreBool Reload () {coreSpinLocker oLocker(&m_iUpdateLock); if( this->IsLoaded())          {m_pResource->Unload(); m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
     inline coreBool Nullify() {coreSpinLocker oLocker(&m_iUpdateLock); if( this->IsLoaded())          {m_pResource->Unload(); m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
-    //! @}
 
-    /*! attach asynchronous callbacks */
-    //! @{
-    template <typename F> void OnLoadedOnce(F&& nFunction)const;   //!< [](void) -> void
-    //! @}
+    /* attach asynchronous callbacks */
+    template <typename F> void OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
 
-    /*! get object properties */
-    //! @{
+    /* get object properties */
     inline const coreChar*   GetName    ()const {return m_sName.c_str();}
     inline const coreStatus& GetStatus  ()const {return m_eStatus;}
     inline const coreUint16& GetRefCount()const {return m_iRefCount;}
-    //! @}
 
 
 private:
-    /*! handle automatic resource loading */
-    //! @{
+    /* handle automatic resource loading */
     inline coreBool __CanAutoUpdate() {if(coreAtomicTryLock(&m_iUpdateLock)) {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) return true; coreAtomicUnlock(&m_iUpdateLock);} return false;}
     inline void     __AutoUpdate   () {m_eStatus = m_pResource->Load(m_pFile); coreAtomicUnlock(&m_iUpdateLock);}
-    //! @}
 };
 
 
@@ -150,7 +132,7 @@ private:
 template <typename T> class coreResourcePtr final
 {
 private:
-    coreResourceHandle* m_pHandle;   //!< resource handle
+    coreResourceHandle* m_pHandle;   // resource handle
 
 
 public:
@@ -162,29 +144,21 @@ public:
 
     DISABLE_HEAP
 
-    /*! assignment operations */
-    //! @{
+    /* assignment operations */
     coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
-    //! @}
 
-    /*! access resource object and resource handle */
-    //! @{
+    /* access resource object and resource handle */
     inline T*                  GetResource()const {ASSERT(m_pHandle) return d_cast<T*>(m_pHandle->GetRawResource());}
     inline coreResourceHandle* GetHandle  ()const {return m_pHandle;}
     inline explicit operator coreBool     ()const {return m_pHandle ? true : false;}
     inline T*       operator ->           ()const {return  this->GetResource();}
     inline T&       operator *            ()const {return *this->GetResource();}
-    //! @}
 
-    /*! check for usable resource object */
-    //! @{
+    /* check for usable resource object */
     inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded());}
-    //! @}
 
-    /*! attach asynchronous callbacks */
-    //! @{
-    template <typename F> void OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) m_pHandle->OnLoadedOnce(std::move(nFunction));}   //!< [](void) -> void
-    //! @}
+    /* attach asynchronous callbacks */
+    template <typename F> void OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) m_pHandle->OnLoadedOnce(std::move(nFunction));}   // [](void) -> void
 };
 
 
@@ -201,10 +175,8 @@ public:
 
 
 private:
-    /*! reset with the resource manager */
-    //! @{
+    /* reset with the resource manager */
     virtual void __Reset(const coreResourceReset eInit) = 0;
-    //! @}
 };
 
 
@@ -213,18 +185,18 @@ private:
 class coreResourceManager final : public coreThread
 {
 private:
-    coreLookupStr<coreResourceHandle*> m_apHandle;                    //!< resource handles
+    coreLookupStr<coreResourceHandle*> m_apHandle;                    // resource handles
 
-    coreLookupStr<coreArchive*> m_apArchive;                          //!< archives with resource files
-    coreLookupStr<coreFile*>    m_apDirectFile;                       //!< direct resource files
+    coreLookupStr<coreArchive*> m_apArchive;                          // archives with resource files
+    coreLookupStr<coreFile*>    m_apDirectFile;                       // direct resource files
 
-    coreLookup<coreResourceHandle*, coreResourceHandle*> m_apProxy;   //!< resource proxies pointing to foreign handles <proxy, foreign>
+    coreLookup<coreResourceHandle*, coreResourceHandle*> m_apProxy;   // resource proxies pointing to foreign handles <proxy, foreign>
 
-    coreSet<coreResourceRelation*> m_apRelation;                      //!< objects to reset with the resource manager
+    coreSet<coreResourceRelation*> m_apRelation;                      // objects to reset with the resource manager
 
-    SDL_SpinLock m_iResourceLock;                                     //!< spinlock to prevent invalid resource handle access
-    SDL_SpinLock m_iFileLock;                                         //!< spinlock to prevent invalid resource file access
-    coreBool     m_bActive;                                           //!< current management status
+    SDL_SpinLock m_iResourceLock;                                     // spinlock to prevent invalid resource handle access
+    SDL_SpinLock m_iFileLock;                                         // spinlock to prevent invalid resource file access
+    coreBool     m_bActive;                                           // current management status
 
 
 private:
@@ -237,64 +209,46 @@ public:
     FRIEND_CLASS(coreResourceRelation)
     DISABLE_COPY(coreResourceManager)
 
-    /*! update the resource manager */
-    //! @{
+    /* update the resource manager */
     void UpdateResources();
     inline coreBool  IsLoading   ()const {return std::any_of  (m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
     inline coreUintW IsLoadingNum()const {return std::count_if(m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
-    //! @}
 
-    /*! create and delete resource and resource handle */
-    //! @{
+    /* create and delete resource and resource handle */
     template <typename T, typename... A>                 coreResourceHandle* Load     (const coreHashString& sName, const coreResourceUpdate eUpdate, const coreHashString& sPath, A&&... vArgs);
     template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew  (A&&... vArgs)const;
     inline                                               coreResourceHandle* LoadProxy(const coreHashString& sName);
     template <typename T> void Free(coreResourcePtr<T>* OUTPUT pptResourcePtr);
-    //! @}
 
-    /*! get existing resource handle */
-    //! @{
+    /* get existing resource handle */
     template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
-    //! @}
 
-    /*! retrieve archives and resource files */
-    //! @{
+    /* retrieve archives and resource files */
     coreArchive* RetrieveArchive(const coreHashString& sPath);
     coreFile*    RetrieveFile   (const coreHashString& sPath);
-    //! @}
 
-    /*! point resource proxy to foreign handle */
-    //! @{
+    /* point resource proxy to foreign handle */
     void        AssignProxy(coreResourceHandle* OUTPUT pProxy, coreResourceHandle* OUTPUT pForeign);
     inline void AssignProxy(coreResourceHandle* OUTPUT pProxy, const coreHashString&      sForeign) {this->AssignProxy(pProxy,                               this->Get<coreResourceDummy>(sForeign));}
     inline void AssignProxy(const coreHashString&      sProxy, coreResourceHandle* OUTPUT pForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), pForeign);}
     inline void AssignProxy(const coreHashString&      sProxy, const coreHashString&      sForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), this->Get<coreResourceDummy>(sForeign));}
-    //! @}
 
-    /*! reset all resources and relation-objects */
-    //! @{
+    /* reset all resources and relation-objects */
     void Reset(const coreResourceReset eInit);
-    //! @}
 
 
 private:
-    /*! resource thread implementations */
-    //! @{
+    /* resource thread implementations */
     coreStatus __InitThread()final;
     coreStatus __RunThread ()final;
     void       __ExitThread()final;
-    //! @}
 
-    /*! load all relevant default resource */
-    //! @{
+    /* load all relevant default resource */
     void __LoadDefault();
-    //! @}
 
-    /*! bind and unbind relation-objects */
-    //! @{
+    /* bind and unbind relation-objects */
     inline void __BindRelation  (coreResourceRelation* pRelation) {ASSERT(!m_apRelation.count(pRelation)) m_apRelation.insert(pRelation);}
     inline void __UnbindRelation(coreResourceRelation* pRelation) {ASSERT( m_apRelation.count(pRelation)) m_apRelation.erase (pRelation);}
-    //! @}
 };
 
 

@@ -20,23 +20,23 @@
 
 // ****************************************************************
 /* object definitions */
-#define CORE_OBJECT_RAY_HITCOUNT (16u)   //!< maximum number of hits recognized by a single ray-intersection test
+#define CORE_OBJECT_RAY_HITCOUNT (16u)   // maximum number of hits recognized by a single ray-intersection test
 
 enum coreObjectUpdate : coreUint8
 {
-    CORE_OBJECT_UPDATE_NOTHING   = 0x00u,   //!< update nothing
-    CORE_OBJECT_UPDATE_TRANSFORM = 0x01u,   //!< update transformation values
-    CORE_OBJECT_UPDATE_COLLISION = 0x02u,   //!< update collision-relevant values
-    CORE_OBJECT_UPDATE_ALL       = 0x03u    //!< update everything
+    CORE_OBJECT_UPDATE_NOTHING   = 0x00u,   // update nothing
+    CORE_OBJECT_UPDATE_TRANSFORM = 0x01u,   // update transformation values
+    CORE_OBJECT_UPDATE_COLLISION = 0x02u,   // update collision-relevant values
+    CORE_OBJECT_UPDATE_ALL       = 0x03u    // update everything
 };
 ENABLE_BITWISE(coreObjectUpdate)
 
 enum coreObjectEnable : coreUint8
 {
-    CORE_OBJECT_ENABLE_NOTHING = 0x00u,   //!< do nothing
-    CORE_OBJECT_ENABLE_RENDER  = 0x01u,   //!< enable render routine
-    CORE_OBJECT_ENABLE_MOVE    = 0x02u,   //!< enable move routine
-    CORE_OBJECT_ENABLE_ALL     = 0x03u    //!< enable all routines
+    CORE_OBJECT_ENABLE_NOTHING = 0x00u,   // do nothing
+    CORE_OBJECT_ENABLE_RENDER  = 0x01u,   // enable render routine
+    CORE_OBJECT_ENABLE_MOVE    = 0x02u,   // enable move routine
+    CORE_OBJECT_ENABLE_ALL     = 0x03u    // enable all routines
 };
 ENABLE_BITWISE(coreObjectEnable)
 
@@ -46,16 +46,16 @@ ENABLE_BITWISE(coreObjectEnable)
 class INTERFACE coreObject
 {
 protected:
-    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   //!< multiple texture objects
-    coreProgramPtr m_pProgram;                        //!< shader-program object
+    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];   // multiple texture objects
+    coreProgramPtr m_pProgram;                        // shader-program object
 
-    coreVector4 m_vColor;                             //!< RGBA color-value
-    coreVector2 m_vTexSize;                           //!< size-factor of the texture
-    coreVector2 m_vTexOffset;                         //!< offset of the texture
+    coreVector4 m_vColor;                             // RGBA color-value
+    coreVector2 m_vTexSize;                           // size-factor of the texture
+    coreVector2 m_vTexOffset;                         // offset of the texture
 
-    coreObjectUpdate m_eUpdate;                       //!< update status (dirty flag)
-    coreObjectEnable m_eEnabled;                      //!< enabled object routines
-    coreInt32 m_iStatus;                              //!< numeric status-value for individual use
+    coreObjectUpdate m_eUpdate;                       // update status (dirty flag)
+    coreObjectEnable m_eEnabled;                      // enabled object routines
+    coreInt32 m_iStatus;                              // numeric status-value for individual use
 
 
 protected:
@@ -67,23 +67,18 @@ public:
     FRIEND_CLASS(coreObjectManager)
     ENABLE_COPY (coreObject)
 
-    /*! define the visual appearance */
-    //! @{
+    /* define the visual appearance */
     inline void DefineTexture(const coreUintW iUnit, std::nullptr_t)                 {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = NULL;}
     inline void DefineTexture(const coreUintW iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
     inline void DefineTexture(const coreUintW iUnit, const coreHashString& sName)    {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(sName);}
     inline void DefineProgram(std::nullptr_t)                                        {m_pProgram = NULL;}
     inline void DefineProgram(const coreProgramPtr& pProgram)                        {m_pProgram = pProgram;}
     inline void DefineProgram(const coreHashString& sName)                           {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
-    //! @}
 
-    /*! check for enabled object routines */
-    //! @{
+    /* check for enabled object routines */
     inline coreBool IsEnabled(const coreObjectEnable eEnabled)const {ASSERT(eEnabled) return CONTAINS_FLAG(m_eEnabled, eEnabled) ? true : false;}
-    //! @}
 
-    /*! set object properties */
-    //! @{
+    /* set object properties */
     inline void SetColor4   (const coreVector4&     vColor)     {m_vColor     = vColor;}
     inline void SetColor3   (const coreVector3&     vColor)     {m_vColor.xyz(vColor);}
     inline void SetAlpha    (const coreFloat        fAlpha)     {m_vColor.w   = fAlpha;}
@@ -91,10 +86,8 @@ public:
     inline void SetTexOffset(const coreVector2&     vTexOffset) {m_vTexOffset = vTexOffset;}
     inline void SetEnabled  (const coreObjectEnable eEnabled)   {m_eEnabled   = eEnabled;}
     inline void SetStatus   (const coreInt32        iStatus)    {m_iStatus    = iStatus;}
-    //! @}
 
-    /*! get object properties */
-    //! @{
+    /* get object properties */
     inline const coreTexturePtr& GetTexture  (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
     inline const coreProgramPtr& GetProgram  ()const                      {return m_pProgram;}
     inline const coreVector4&    GetColor4   ()const                      {return m_vColor;}
@@ -103,7 +96,6 @@ public:
     inline const coreVector2&    GetTexSize  ()const                      {return m_vTexSize;}
     inline const coreVector2&    GetTexOffset()const                      {return m_vTexOffset;}
     inline const coreInt32&      GetStatus   ()const                      {return m_iStatus;}
-    //! @}
 };
 
 
@@ -112,14 +104,14 @@ public:
 class coreObjectManager final
 {
 private:
-    /*! internal types */
+    /* internal types */
     using coreObjectList = std::vector<coreObject3D*>;
 
-    /*! object collision structure */
+    /* object collision structure */
     struct coreObjectCollision final
     {
-        const coreObject3D* pObject1;   //!< first 3d-object
-        const coreObject3D* pObject2;   //!< second 3d-object
+        const coreObject3D* pObject1;   // first 3d-object
+        const coreObject3D* pObject2;   // second 3d-object
 
         inline coreBool operator == (const coreObjectCollision& o)const {return (std::memcmp(this, &o, sizeof(coreObjectCollision)) == 0);}
         inline coreBool operator <  (const coreObjectCollision& o)const {return (std::memcmp(this, &o, sizeof(coreObjectCollision)) <  0);}
@@ -127,16 +119,16 @@ private:
 
 
 private:
-    coreLookup<coreInt32, coreObjectList>       m_aapObjectList;       //!< lists with pointers to registered 3d-objects <type, list>
-    coreLookup<coreObjectCollision, coreUint32> m_aiObjectCollision;   //!< currently recorded collisions
+    coreLookup<coreInt32, coreObjectList>       m_aapObjectList;       // lists with pointers to registered 3d-objects <type, list>
+    coreLookup<coreObjectCollision, coreUint32> m_aiObjectCollision;   // currently recorded collisions
 
-    coreModelPtr  m_pLowQuad;                                          //!< low-memory square model (4 bytes per vertex, 16 total)
-    coreModelPtr  m_pLowTriangle;                                      //!< low-memory triangle model (8 bytes per vertex, 24 total)
-    coreObject2D* m_pBlitFallback;                                     //!< 2d-object used for fallback-blitting onto the default frame buffer
+    coreModelPtr  m_pLowQuad;                                          // low-memory square model (4 bytes per vertex, 16 total)
+    coreModelPtr  m_pLowTriangle;                                      // low-memory triangle model (8 bytes per vertex, 24 total)
+    coreObject2D* m_pBlitFallback;                                     // 2d-object used for fallback-blitting onto the default frame buffer
 
-    coreSet<coreObject2D*> m_apSpriteList;                             //!< list with pointers to all existing 2d-objects
-    coreVector2            m_vSpriteViewDir;                           //!< global 2d-object rotation (override)
-    coreVector2            m_vSpriteAltCenter;                         //!< global 2d-object screen space resolution (override)
+    coreSet<coreObject2D*> m_apSpriteList;                             // list with pointers to all existing 2d-objects
+    coreVector2            m_vSpriteViewDir;                           // global 2d-object rotation (override)
+    coreVector2            m_vSpriteAltCenter;                         // global 2d-object screen space resolution (override)
 
 
 private:
@@ -150,65 +142,47 @@ public:
     FRIEND_CLASS(coreObject3D)
     DISABLE_COPY(coreObjectManager)
 
-    /*! test collision between different structures */
-    //! @{
+    /* test collision between different structures */
     template <typename F> void TestCollision(const coreInt32     iType,                                                              F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3& vIntersection,                            const coreBool bFirstHit) -> void
     template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32      iType2,                              F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3& vIntersection,                            const coreBool bFirstHit) -> void
     template <typename F> void TestCollision(const coreInt32     iType,    coreObject3D* OUTPUT pObject,                             F&& nCallback);   //!< [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3& vIntersection,                            const coreBool bFirstHit) -> void
     template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3&   vRayPos, const coreVector3& vRayDir, F&& nCallback);   //!< [](coreObject3D* OUTPUT pObject,                                 const coreFloat*   pfHitDistance, const coreUint8 iHitCount, const coreBool bFirstHit) -> void
     static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D*  pObject2,                            coreVector3* OUTPUT pvIntersection);
     static coreBool            TestCollision(const coreObject3D* pObject,  const coreVector3&   vRayPos, const coreVector3& vRayDir, coreFloat*   OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount);
-    //! @}
 
-    /*! refresh all existing 2d-objects */
-    //! @{
+    /* refresh all existing 2d-objects */
     void RefreshSprites();
-    //! @}
 
-    /*! set manager properties */
-    //! @{
+    /* set manager properties */
     inline void SetSpriteViewDir  (const coreVector2& vViewDir)   {m_vSpriteViewDir   = vViewDir; ASSERT(vViewDir.IsNormalized() && vViewDir.IsAligned())}
     inline void SetSpriteAltCenter(const coreVector2& vAltCenter) {m_vSpriteAltCenter = vAltCenter;}
-    //! @}
 
-    /*! get manager properties */
-    //! @{
+    /* get manager properties */
     inline const coreObjectList& GetObjectList     (const coreInt32 iType) {return m_aapObjectList[iType];}   // # create if not available
     inline const coreModelPtr&   GetLowQuad        ()const                 {return m_pLowQuad;}
     inline const coreModelPtr&   GetLowTriangle    ()const                 {return m_pLowTriangle;}
     inline       coreObject2D*   GetBlitFallback   ()const                 {return m_pBlitFallback;}
     inline const coreVector2&    GetSpriteViewDir  ()const                 {return m_vSpriteViewDir;}
     inline const coreVector2&    GetSpriteAltCenter()const                 {return m_vSpriteAltCenter;}
-    //! @}
 
 
 private:
-    /*! reset with the resource manager */
-    //! @{
+    /* reset with the resource manager */
     void __Reset(const coreResourceReset eInit);
-    //! @}
 
-    /*! update all objects and collisions */
-    //! @{
+    /* update all objects and collisions */
     void __UpdateObjects();
-    //! @}
 
-    /*! bind and unbind 3d-objects to types */
-    //! @{
+    /* bind and unbind 3d-objects to types */
     void __BindObject  (coreObject3D* pObject, const coreInt32 iType);
     void __UnbindObject(coreObject3D* pObject, const coreInt32 iType);
-    //! @}
 
-    /*! bind and unbind 2d-objects */
-    //! @{
+    /* bind and unbind 2d-objects */
     inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!m_apSpriteList.count(pSprite)) m_apSpriteList.insert(pSprite);}
     inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( m_apSpriteList.count(pSprite)) m_apSpriteList.erase (pSprite);}
-    //! @}
 
-    /*! handle and track new collisions */
-    //! @{
+    /* handle and track new collisions */
     coreBool __NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);
-    //! @}
 };
 
 

@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreMenu::coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)noexcept
 : coreObject2D   ()
 , m_papObject    (NULL)
@@ -27,7 +27,7 @@ coreMenu::coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)n
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreMenu::~coreMenu()
 {
     // remove all menu objects
@@ -40,7 +40,7 @@ coreMenu::~coreMenu()
 
 
 // ****************************************************************
-// render the menu
+/* render the menu */
 void coreMenu::Render()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
@@ -64,7 +64,7 @@ void coreMenu::Render()
 
 
 // ****************************************************************
-// move the menu
+/* move the menu */
 void coreMenu::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
@@ -124,7 +124,7 @@ void coreMenu::Move()
 
 
 // ****************************************************************
-// bind menu object
+/* bind menu object */
 void coreMenu::BindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
     ASSERT(iSurface < m_iNumSurfaces)
@@ -136,7 +136,7 @@ void coreMenu::BindObject(const coreUintW iSurface, coreObject2D* pObject)
 
 
 // ****************************************************************
-// unbind menu object
+/* unbind menu object */
 void coreMenu::UnbindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
     ASSERT(iSurface < m_iNumSurfaces)
@@ -147,7 +147,7 @@ void coreMenu::UnbindObject(const coreUintW iSurface, coreObject2D* pObject)
 
 
 // ****************************************************************
-// change current surface
+/* change current surface */
 coreBool coreMenu::ChangeSurface(const coreUint8 iNewSurface, const coreFloat fSpeed)
 {
          if(iNewSurface == m_iCurSurface)  return false;

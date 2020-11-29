@@ -12,7 +12,7 @@ coreInt8 coreTextBox::s_iActiveCounter = 0;
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreTextBox::coreTextBox()noexcept
 : coreButton  ()
 , m_sText     ("")
@@ -35,7 +35,7 @@ coreTextBox::coreTextBox(const coreHashString& sIdle, const coreHashString& sBus
 
 
 // ****************************************************************
-// construct the text-box
+/* construct the text-box */
 void coreTextBox::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline, const coreUint8 iLength)
 {
     ASSERT(iLength)
@@ -53,7 +53,7 @@ void coreTextBox::Construct(const coreHashString& sIdle, const coreHashString& s
 
 
 // ****************************************************************
-// move the text-box
+/* move the text-box */
 void coreTextBox::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
@@ -102,7 +102,7 @@ void coreTextBox::Move()
 
 
 // ****************************************************************
-// set text-input status
+/* set text-input status */
 void coreTextBox::SetInput(const coreBool bInput)
 {
     if(m_bInput == bInput) return;
@@ -127,7 +127,7 @@ void coreTextBox::SetInput(const coreBool bInput)
 
 
 // ****************************************************************
-// process new text-input characters
+/* process new text-input characters */
 coreBool coreTextBox::__Write()
 {
     ASSERT(m_iLength)

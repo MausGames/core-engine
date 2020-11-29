@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreObject2D::coreObject2D()noexcept
 : coreObject       ()
 , m_vPosition      (coreVector2(0.0f,0.0f))
@@ -73,7 +73,7 @@ coreObject2D::coreObject2D(coreObject2D&& m)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreObject2D::~coreObject2D()
 {
     // unbind from object manager
@@ -82,7 +82,7 @@ coreObject2D::~coreObject2D()
 
 
 // ****************************************************************
-// assignment operations
+/* assignment operations */
 coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
 {
     // copy properties
@@ -127,7 +127,7 @@ coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
 
 
 // ****************************************************************
-// undefine the visual appearance
+/* undefine the visual appearance */
 void coreObject2D::Undefine()
 {
     // reset all resource and memory pointers
@@ -137,7 +137,7 @@ void coreObject2D::Undefine()
 
 
 // ****************************************************************
-// separately enable all resources for rendering
+/* separately enable all resources for rendering */
 coreBool coreObject2D::Prepare(const coreProgramPtr& pProgram)
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return false;
@@ -166,7 +166,7 @@ coreBool coreObject2D::Prepare()
 
 
 // ****************************************************************
-// render the 2d-object
+/* render the 2d-object */
 void coreObject2D::Render(const coreProgramPtr& pProgram)
 {
     // enable all resources
@@ -186,7 +186,7 @@ void coreObject2D::Render()
 
 
 // ****************************************************************
-// move the 2d-object
+/* move the 2d-object */
 void coreObject2D::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
@@ -220,7 +220,7 @@ void coreObject2D::Move()
 
 
 // ****************************************************************
-// interact with the 2d-object
+/* interact with the 2d-object */
 void coreObject2D::Interact()
 {
     // skip interaction handling
@@ -274,7 +274,7 @@ void coreObject2D::Interact()
 
 
 // ****************************************************************
-// check for direct input
+/* check for direct input */
 coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType eType)const
 {
 #if defined(_CORE_MOBILE_)
@@ -301,7 +301,7 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType eT
 
 
 // ****************************************************************
-// render the fullscreen-object
+/* render the fullscreen-object */
 void coreFullscreen::Render(const coreProgramPtr& pProgram)
 {
     // enable all resources

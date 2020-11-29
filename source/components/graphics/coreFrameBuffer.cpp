@@ -13,7 +13,7 @@ coreFloat        coreFrameBuffer::s_afViewData[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreFrameBuffer::coreFrameBuffer()noexcept
 : m_iIdentifier   (0u)
 , m_aColorTarget  {}
@@ -28,7 +28,7 @@ coreFrameBuffer::coreFrameBuffer()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreFrameBuffer::~coreFrameBuffer()
 {
     // delete frame buffer object
@@ -40,7 +40,7 @@ coreFrameBuffer::~coreFrameBuffer()
 
 
 // ****************************************************************
-// create frame buffer object
+/* create frame buffer object */
 void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate eType)
 {
     WARN_IF(m_iIdentifier) this->Delete();
@@ -142,7 +142,7 @@ void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBuff
 
 
 // ****************************************************************
-// delete frame buffer object
+/* delete frame buffer object */
 void coreFrameBuffer::Delete()
 {
     if(!m_iIdentifier) return;
@@ -175,7 +175,7 @@ void coreFrameBuffer::Delete()
 
 
 // ****************************************************************
-// attach render target texture
+/* attach render target texture */
 coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName)
 {
     // get requested render target structure
@@ -197,7 +197,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
 
 
 // ****************************************************************
-// attach render target buffer
+/* attach render target buffer */
 coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
     // get requested render target structure
@@ -207,7 +207,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const cor
 
 
 // ****************************************************************
-// detach all render targets
+/* detach all render targets */
 void coreFrameBuffer::DetachTargets()
 {
     ASSERT(!m_iIdentifier)
@@ -226,7 +226,7 @@ void coreFrameBuffer::DetachTargets()
 
 
 // ****************************************************************
-// start rendering to the frame buffer
+/* start rendering to the frame buffer */
 void coreFrameBuffer::StartDraw()
 {
     ASSERT(m_iIdentifier && (s_pCurrent != this))
@@ -251,7 +251,7 @@ void coreFrameBuffer::StartDraw()
 
 
 // ****************************************************************
-// end rendering to the frame buffer
+/* end rendering to the frame buffer */
 void coreFrameBuffer::EndDraw()
 {
     if(!s_pCurrent) return;
@@ -267,7 +267,7 @@ void coreFrameBuffer::EndDraw()
 
 
 // ****************************************************************
-// copy content to another frame buffer
+/* copy content to another frame buffer */
 void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
 {
     ASSERT(m_iIdentifier)
@@ -385,7 +385,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer
 
 
 // ****************************************************************
-// clear content of the frame buffer
+/* clear content of the frame buffer */
 void coreFrameBuffer::Clear(const coreFrameBufferTarget eTargets)
 {
     ASSERT(m_iIdentifier)
@@ -403,7 +403,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget eTargets)
 
 
 // ****************************************************************
-// invalidate content of the frame buffer
+/* invalidate content of the frame buffer */
 void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
 {
     ASSERT(m_iIdentifier)
@@ -449,7 +449,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
 
 
 // ****************************************************************
-// attach default render target
+/* attach default render target */
 coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
     ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))

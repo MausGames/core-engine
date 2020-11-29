@@ -15,7 +15,7 @@ coreModel* coreModel::s_pCurrent = NULL;
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreModel::coreModel(const coreBool bCreateClusters)noexcept
 : coreResource          ()
 , m_iVertexArray        (0u)
@@ -42,7 +42,7 @@ coreModel::coreModel(const coreBool bCreateClusters)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreModel::~coreModel()
 {
     this->Unload();
@@ -50,7 +50,7 @@ coreModel::~coreModel()
 
 
 // ****************************************************************
-// load model resource data
+/* load model resource data */
 coreStatus coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
@@ -331,7 +331,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
 
 // ****************************************************************
-// unload model resource data
+/* unload model resource data */
 coreStatus coreModel::Unload()
 {
     if(m_aVertexBuffer.empty()) return CORE_INVALID_CALL;
@@ -379,7 +379,7 @@ coreStatus coreModel::Unload()
 
 
 // ****************************************************************
-// draw the model
+/* draw the model */
 void coreModel::DrawArrays()const
 {
     // draw the model (without index buffer)
@@ -396,7 +396,7 @@ void coreModel::DrawElements()const
 
 
 // ****************************************************************
-// draw the model instanced
+/* draw the model instanced */
 void coreModel::DrawArraysInstanced(const coreUint32 iCount)const
 {
     // draw the model instanced (without index buffer)
@@ -413,7 +413,7 @@ void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
 
 
 // ****************************************************************
-// enable the model
+/* enable the model */
 void coreModel::Enable()
 {
     ASSERT(!m_aVertexBuffer.empty())
@@ -447,7 +447,7 @@ void coreModel::Enable()
 
 
 // ****************************************************************
-// disable the model
+/* disable the model */
 void coreModel::Disable(const coreBool bFull)
 {
     // reset current model object
@@ -468,7 +468,7 @@ void coreModel::Disable(const coreBool bFull)
 
 
 // ****************************************************************
-// create vertex buffer
+/* create vertex buffer */
 coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType)
 {
     ASSERT(!m_iVertexArray)
@@ -489,7 +489,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, c
 
 
 // ****************************************************************
-// create index buffer
+/* create index buffer */
 coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const coreUint8 iIndexSize, const void* pIndexData, const coreDataBufferStorage eStorageType)
 {
     ASSERT(!m_iVertexArray && !m_IndexBuffer.IsValid())

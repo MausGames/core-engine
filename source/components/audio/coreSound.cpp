@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreSound::coreSound()noexcept
 : coreResource ()
 , m_iBuffer    (0u)
@@ -23,7 +23,7 @@ coreSound::coreSound()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreSound::~coreSound()
 {
     this->Unload();
@@ -31,7 +31,7 @@ coreSound::~coreSound()
 
 
 // ****************************************************************
-// load sound resource data
+/* load sound resource data */
 coreStatus coreSound::Load(coreFile* pFile)
 {
     coreFileScope oUnloader(pFile);
@@ -114,7 +114,7 @@ coreStatus coreSound::Load(coreFile* pFile)
 
 
 // ****************************************************************
-// unload sound resource data
+/* unload sound resource data */
 coreStatus coreSound::Unload()
 {
     if(!m_iBuffer) return CORE_INVALID_CALL;
@@ -139,7 +139,7 @@ coreStatus coreSound::Unload()
 
 
 // ****************************************************************
-// play the sound with positional behavior
+/* play the sound with positional behavior */
 void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3& vPosition)
 {
     ASSERT(m_iBuffer)
@@ -175,7 +175,7 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
 
 
 // ****************************************************************
-// play the sound with relative behavior
+/* play the sound with relative behavior */
 void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType)
 {
     ASSERT(m_iBuffer)
@@ -208,7 +208,7 @@ void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const co
 
 
 // ****************************************************************
-// stop the sound
+/* stop the sound */
 void coreSound::Stop()
 {
     __CORE_SOUND_ASSERT
@@ -226,7 +226,7 @@ void coreSound::Stop()
 
 
 // ****************************************************************
-// get playback status
+/* get playback status */
 coreBool coreSound::IsPlaying()
 {
     __CORE_SOUND_ASSERT
@@ -244,7 +244,7 @@ coreBool coreSound::IsPlaying()
 
 
 // ****************************************************************
-// change the audio source position and velocity
+/* change the audio source position and velocity */
 void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelocity)
 {
     __CORE_SOUND_ASSERT
@@ -266,7 +266,7 @@ void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelo
 
 
 // ****************************************************************
-// check reference pointer for valid audio source
+/* check reference pointer for valid audio source */
 ALuint coreSound::CheckRef(const void* pRef)
 {
     // check if audio source is available

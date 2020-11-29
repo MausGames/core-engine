@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreLabel::coreLabel()noexcept
 : coreObject2D         ()
 , coreTranslate        ()
@@ -34,7 +34,7 @@ coreLabel::coreLabel(const coreHashString& sFont, const coreUint16 iHeight, cons
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreLabel::~coreLabel()
 {
     // free own texture
@@ -43,7 +43,7 @@ coreLabel::~coreLabel()
 
 
 // ****************************************************************
-// construct the label
+/* construct the label */
 void coreLabel::Construct(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // save properties
@@ -62,7 +62,7 @@ void coreLabel::Construct(const coreHashString& sFont, const coreUint16 iHeight,
 
 
 // ****************************************************************
-// render the label
+/* render the label */
 void coreLabel::Render()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
@@ -97,7 +97,7 @@ void coreLabel::Render()
 
 
 // ****************************************************************
-// move the label
+/* move the label */
 void coreLabel::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
@@ -111,7 +111,7 @@ void coreLabel::Move()
 
 
 // ****************************************************************
-// change the current text
+/* change the current text */
 coreBool coreLabel::SetText(const coreChar* pcText)
 {
     ASSERT(pcText)
@@ -152,7 +152,7 @@ coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
 
 
 // ****************************************************************
-// reset with the resource manager
+/* reset with the resource manager */
 void coreLabel::__Reset(const coreResourceReset eInit)
 {
     if(!m_pFont) return;
@@ -171,7 +171,7 @@ void coreLabel::__Reset(const coreResourceReset eInit)
 
 
 // ****************************************************************
-// generate the texture
+/* generate the texture */
 void coreLabel::__GenerateTexture(const coreChar* pcText)
 {
     coreSurfaceScope pSolid   = NULL;

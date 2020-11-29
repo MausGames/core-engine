@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 : coreResourceRelation ()
 , m_pParticle          (NULL)
@@ -41,7 +41,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreParticleSystem::~coreParticleSystem()
 {
     // delete particles
@@ -57,7 +57,7 @@ coreParticleSystem::~coreParticleSystem()
 
 
 // ****************************************************************
-// undefine the visual appearance
+/* undefine the visual appearance */
 void coreParticleSystem::Undefine()
 {
     // reset all resource and memory pointers
@@ -67,7 +67,7 @@ void coreParticleSystem::Undefine()
 
 
 // ****************************************************************
-// render the particle system
+/* render the particle system */
 void coreParticleSystem::Render()
 {
     if(m_apRenderList.empty()) return;
@@ -155,7 +155,7 @@ void coreParticleSystem::Render()
 
 
 // ****************************************************************
-// move the particle system
+/* move the particle system */
 void coreParticleSystem::Move()
 {
     FOR_EACH_DYN(it, m_apRenderList)
@@ -178,7 +178,7 @@ void coreParticleSystem::Move()
 
 
 // ****************************************************************
-// create new particle
+/* create new particle */
 coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
@@ -207,7 +207,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
-// unsbind particles
+/* unsbind particles */
 void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
@@ -236,7 +236,7 @@ void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
-// remove particles
+/* remove particles */
 void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
@@ -260,7 +260,7 @@ void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
-// unsbind all particles
+/* unsbind all particles */
 void coreParticleSystem::UnbindAll()
 {
     FOR_EACH(it, m_apRenderList)
@@ -282,7 +282,7 @@ void coreParticleSystem::UnbindAll()
 
 
 // ****************************************************************
-// remove all particles
+/* remove all particles */
 void coreParticleSystem::ClearAll()
 {
     // reset all particle states
@@ -295,7 +295,7 @@ void coreParticleSystem::ClearAll()
 
 
 // ****************************************************************
-// reset with the resource manager
+/* reset with the resource manager */
 void coreParticleSystem::__Reset(const coreResourceReset eInit)
 {
     // check for OpenGL extensions
@@ -344,7 +344,7 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 : m_fCreation (0.0f)
 , m_iTimeID   (-1)
@@ -366,7 +366,7 @@ coreParticleEffect::coreParticleEffect(const coreParticleEffect& c)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreParticleEffect::~coreParticleEffect()
 {
     // unbind all dynamic particles
@@ -376,7 +376,7 @@ coreParticleEffect::~coreParticleEffect()
 
 
 // ****************************************************************
-// assignment operations
+/* assignment operations */
 coreParticleEffect& coreParticleEffect::operator = (const coreParticleEffect& c)noexcept
 {
     // unbind all dynamic particles (if necessary)
@@ -395,7 +395,7 @@ coreParticleEffect& coreParticleEffect::operator = (const coreParticleEffect& c)
 
 
 // ****************************************************************
-// change associated particle system object
+/* change associated particle system object */
 void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBool bUnbind)
 {
     // check for dynamic behavior

@@ -22,59 +22,60 @@
 // TODO: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision, breaks depth-dependent rendering (water, shadow) in Project One
 // TODO: somehow log all available OpenGL capabilities
 // TODO: async glReadPixels
+// TODO: <old comment style>
 
 
 // ****************************************************************
-// graphics definitions
-#define CORE_GRAPHICS_LIGHTS                 (2u)                                              //!< number of ambient lights
-#define CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE (4u*sizeof(coreMatrix4) + 7u*sizeof(coreFloat))   //!< transformation uniform data size (view-projection, camera matrix, perspective, ortho, resolution, camera position)
-#define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE   (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))        //!< ambient uniform data size (light-positions, light-directions, light-values)
-#define CORE_GRAPHICS_UNIFORM_BUFFERS        (32u)                                             //!< number of concurrent uniform buffer objects
+/* graphics definitions */
+#define CORE_GRAPHICS_LIGHTS                 (2u)                                              // number of ambient lights
+#define CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE (4u*sizeof(coreMatrix4) + 7u*sizeof(coreFloat))   // transformation uniform data size (view-projection, camera matrix, perspective, ortho, resolution, camera position)
+#define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE   (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))        // ambient uniform data size (light-positions, light-directions, light-values)
+#define CORE_GRAPHICS_UNIFORM_BUFFERS        (32u)                                             // number of concurrent uniform buffer objects
 
 
 // ****************************************************************
-// main graphics component
+/* main graphics component */
 class CoreGraphics final
 {
 private:
-    //! light structure
+    /* light structure */
     struct coreLight final
     {
-        coreVector4 vPosition;    //!< position of the light
-        coreVector4 vDirection;   //!< direction and range of the light
-        coreVector4 vValue;       //!< color and strength value
+        coreVector4 vPosition;    // position of the light
+        coreVector4 vDirection;   // direction and range of the light
+        coreVector4 vValue;       // color and strength value
     };
 
 
 private:
-    SDL_GLContext m_pRenderContext;                                       //!< primary OpenGL context for render operations
-    SDL_GLContext m_pResourceContext;                                     //!< secondary OpenGL context for resource loading
+    SDL_GLContext m_pRenderContext;                                       // primary OpenGL context for render operations
+    SDL_GLContext m_pResourceContext;                                     // secondary OpenGL context for resource loading
 
-    coreFloat m_fFOV;                                                     //!< field-of-view
-    coreFloat m_fNearClip;                                                //!< near clipping plane
-    coreFloat m_fFarClip;                                                 //!< far clipping plane
+    coreFloat m_fFOV;                                                     // field-of-view
+    coreFloat m_fNearClip;                                                // near clipping plane
+    coreFloat m_fFarClip;                                                 // far clipping plane
 
-    coreVector3 m_vCamPosition;                                           //!< position of the camera
-    coreVector3 m_vCamDirection;                                          //!< direction of the camera
-    coreVector3 m_vCamOrientation;                                        //!< orientation of the camera
-    coreMatrix4 m_mCamera;                                                //!< camera matrix
+    coreVector3 m_vCamPosition;                                           // position of the camera
+    coreVector3 m_vCamDirection;                                          // direction of the camera
+    coreVector3 m_vCamOrientation;                                        // orientation of the camera
+    coreMatrix4 m_mCamera;                                                // camera matrix
 
-    coreMatrix4 m_mPerspective;                                           //!< perspective projection matrix
-    coreMatrix4 m_mOrtho;                                                 //!< orthographic projection matrix
-    coreVector4 m_vViewResolution;                                        //!< current viewport resolution (xy = normal, zw = reciprocal)
+    coreMatrix4 m_mPerspective;                                           // perspective projection matrix
+    coreMatrix4 m_mOrtho;                                                 // orthographic projection matrix
+    coreVector4 m_vViewResolution;                                        // current viewport resolution (xy = normal, zw = reciprocal)
 
-    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                             //!< global ambient lights
+    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                             // global ambient lights
 
-    coreDataBuffer m_TransformBuffer;                                     //!< uniform buffer objects for transformation data
-    coreDataBuffer m_AmbientBuffer;                                       //!< uniform buffer objects for ambient data
-    coreRing<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aTransformSync;   //!< transformation sync objects (for each sub-range)
-    coreRing<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     //!< ambient sync objects
-    coreUint8 m_iUniformUpdate;                                           //!< update status for the UBOs (dirty flag)
+    coreDataBuffer m_TransformBuffer;                                     // uniform buffer objects for transformation data
+    coreDataBuffer m_AmbientBuffer;                                       // uniform buffer objects for ambient data
+    coreRing<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aTransformSync;   // transformation sync objects (for each sub-range)
+    coreRing<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     // ambient sync objects
+    coreUint8 m_iUniformUpdate;                                           // update status for the UBOs (dirty flag)
 
-    coreUint8 m_iMaxSamples;                                              //!< max multisample anti aliasing level
-    coreUint8 m_iMaxAnisotropy;                                           //!< max anisotropic texture filter level
-    coreFloat m_fVersionOpenGL;                                           //!< available OpenGL version
-    coreFloat m_fVersionGLSL;                                             //!< available GLSL version
+    coreUint8 m_iMaxSamples;                                              // max multisample anti aliasing level
+    coreUint8 m_iMaxAnisotropy;                                           // max anisotropic texture filter level
+    coreFloat m_fVersionOpenGL;                                           // available OpenGL version
+    coreFloat m_fVersionGLSL;                                             // available GLSL version
 
 
 private:
@@ -86,31 +87,22 @@ public:
     FRIEND_CLASS(Core)
     DISABLE_COPY(CoreGraphics)
 
-    //! control camera and view frustum
-    //! @{
+    /* control camera and view frustum */
     void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
     void SetView  (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
-    //! @}
 
-    //! control ambient
-    //! @{
+    /* control ambient */
     void SetLight(const coreUintW iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
-    //! @}
 
-    //! update data for the uniform buffer objects
-    //! @{
+    /* update data for the uniform buffer objects */
     void UpdateTransformation();
     void UpdateAmbient();
-    //! @}
 
-    //! take screenshot
-    //! @{
+    /* take screenshot */
     void        TakeScreenshot(const coreChar* pcPath)const;
     inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolder(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
-    //! @}
 
-    //! get component properties
-    //! @{
+    /* get component properties */
     inline const SDL_GLContext&  GetRenderContext  ()const                       {return m_pRenderContext;}
     inline const SDL_GLContext&  GetResourceContext()const                       {return m_pResourceContext;}
     inline const coreFloat&      GetFOV            ()const                       {return m_fFOV;}
@@ -126,23 +118,18 @@ public:
     inline const coreLight&      GetLight          (const coreUintW iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
     inline const coreDataBuffer& GetTransformBuffer()const                       {return m_TransformBuffer;}
     inline const coreDataBuffer& GetAmbientBuffer  ()const                       {return m_AmbientBuffer;}
-    //! @}
 
-    //! check OpenGL properties
-    //! @{
+    /* check OpenGL properties */
     inline const coreUint8& GetMaxSamples   ()const {return m_iMaxSamples;}
     inline const coreUint8& GetMaxAnisotropy()const {return m_iMaxAnisotropy;}
     inline const coreFloat& GetVersionOpenGL()const {return m_fVersionOpenGL;}
     inline const coreFloat& GetVersionGLSL  ()const {return m_fVersionGLSL;}
-    //! @}
 
 
 private:
-    //! update the graphics scene
-    //! @{
+    /* update the graphics scene */
     void __UpdateScene();
-    //! @}
 };
 
 
-#endif // _CORE_GUARD_GRAPHICS_H_
+#endif /* _CORE_GUARD_GRAPHICS_H_ */

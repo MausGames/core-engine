@@ -14,7 +14,7 @@ coreProgram* coreProgram::s_pCurrent        = NULL;
 
 
 // ****************************************************************
-// create static string lists
+/* create static string lists */
 template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct coreStringList final
 {
     coreChar       aacCharArray[iNum][iLength];
@@ -37,7 +37,7 @@ STRING_LIST(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avOu
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreShader::coreShader(const coreChar* pcCustomCode)noexcept
 : coreResource  ()
 , m_iIdentifier (0u)
@@ -48,7 +48,7 @@ coreShader::coreShader(const coreChar* pcCustomCode)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreShader::~coreShader()
 {
     this->Unload();
@@ -56,7 +56,7 @@ coreShader::~coreShader()
 
 
 // ****************************************************************
-// load shader resource data
+/* load shader resource data */
 coreStatus coreShader::Load(coreFile* pFile)
 {
     coreFileScope oUnloader(pFile);
@@ -143,7 +143,7 @@ coreStatus coreShader::Load(coreFile* pFile)
 
 
 // ****************************************************************
-// unload shader resource data
+/* unload shader resource data */
 coreStatus coreShader::Unload()
 {
     if(!m_iIdentifier) return CORE_INVALID_CALL;
@@ -162,7 +162,7 @@ coreStatus coreShader::Unload()
 
 
 // ****************************************************************
-// load global shader code
+/* load global shader code */
 void coreShader::__LoadGlobalCode()
 {
     coreSpinLocker oLocker(&s_iGlobalLock);
@@ -199,7 +199,7 @@ void coreShader::__LoadGlobalCode()
 
 
 // ****************************************************************
-// reduce shader code size
+/* reduce shader code size */
 void coreShader::__ReduceCodeSize(std::string* OUTPUT psCode)
 {
     // remove code comments
@@ -212,7 +212,7 @@ void coreShader::__ReduceCodeSize(std::string* OUTPUT psCode)
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreProgram::coreProgram()noexcept
 : coreResource     ()
 , m_iIdentifier    (0u)
@@ -228,7 +228,7 @@ coreProgram::coreProgram()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreProgram::~coreProgram()
 {
     // unload shader-program
@@ -242,7 +242,7 @@ coreProgram::~coreProgram()
 
 
 // ****************************************************************
-// load shader-program
+/* load shader-program */
 coreStatus coreProgram::Load(coreFile* pFile)
 {
     // check for sync object status
@@ -362,7 +362,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
 
 
 // ****************************************************************
-// unload shader-program
+/* unload shader-program */
 coreStatus coreProgram::Unload()
 {
     if(!m_iIdentifier) return CORE_INVALID_CALL;
@@ -394,7 +394,7 @@ coreStatus coreProgram::Unload()
 
 
 // ****************************************************************
-// enable the shader-program
+/* enable the shader-program */
 coreBool coreProgram::Enable()
 {
     ASSERT(m_eStatus)
@@ -454,7 +454,7 @@ coreBool coreProgram::Enable()
 
 
 // ****************************************************************
-// disable the shader-program
+/* disable the shader-program */
 void coreProgram::Disable(const coreBool bFull)
 {
     // reset current shader-program
@@ -464,7 +464,7 @@ void coreProgram::Disable(const coreBool bFull)
 
 
 // ****************************************************************
-// execute a compute shader-program
+/* execute a compute shader-program */
 void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ)
 {
     ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this)
@@ -478,7 +478,7 @@ void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iG
 
 
 // ****************************************************************
-// send new uniform 2x2-matrix
+/* send new uniform 2x2-matrix */
 void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix2& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
@@ -499,7 +499,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix2& mM
 
 
 // ****************************************************************
-// send new uniform 3x3-matrix
+/* send new uniform 3x3-matrix */
 void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix3& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
@@ -517,7 +517,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix3& mM
 
 
 // ****************************************************************
-// send new uniform 4x4-matrix
+/* send new uniform 4x4-matrix */
 void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mMatrix, const coreBool bTranspose)
 {
     // retrieve uniform location
@@ -535,7 +535,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mM
 
 
 // ****************************************************************
-// write info-log to log file
+/* write info-log to log file */
 void coreProgram::__WriteLog()const
 {
     // get length of info-log
@@ -564,7 +564,7 @@ void coreProgram::__WriteLog()const
 
 
 // ****************************************************************
-// write interface to log file
+/* write interface to log file */
 void coreProgram::__WriteInterface()const
 {
     if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;

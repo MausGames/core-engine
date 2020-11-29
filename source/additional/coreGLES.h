@@ -344,8 +344,8 @@ struct coreContext final
     PFNGLGENVERTEXARRAYSOESPROC               __glGenVertexArraysOES;
 };
 
-extern std::string g_sExtensions;   //!< full extension string
-extern coreContext g_CoreContext;   //!< context object
+extern std::string g_sExtensions;   // full extension string
+extern coreContext g_CoreContext;   // context object
 
 #define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x) != std::string::npos) || b))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)

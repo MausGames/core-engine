@@ -18,8 +18,8 @@
 /* sync definitions */
 enum coreSyncCheck : coreUint8
 {
-    CORE_SYNC_CHECK_NORMAL  = 0u,                           //!< check only for current status
-    CORE_SYNC_CHECK_FLUSHED = GL_SYNC_FLUSH_COMMANDS_BIT    //!< check and flush the command buffer
+    CORE_SYNC_CHECK_NORMAL  = 0u,                           // check only for current status
+    CORE_SYNC_CHECK_FLUSHED = GL_SYNC_FLUSH_COMMANDS_BIT    // check and flush the command buffer
 };
 
 
@@ -28,7 +28,7 @@ enum coreSyncCheck : coreUint8
 class coreSync final
 {
 private:
-    GLsync m_pSync;   //!< sync object for asynchronous OpenGL operations
+    GLsync m_pSync;   // sync object for asynchronous OpenGL operations
 
 
 public:
@@ -36,27 +36,19 @@ public:
     inline coreSync(coreSync&& m)noexcept;
     ~coreSync();
 
-    /*! assignment operations */
-    //! @{
+    /* assignment operations */
     coreSync& operator = (coreSync&& m)noexcept;
-    //! @}
 
-    /*! handle the sync object */
-    //! @{
+    /* handle the sync object */
     coreBool Create();
     void     Delete();
-    //! @}
 
-    /*! check for sync object status */
-    //! @{
+    /* check for sync object status */
     coreStatus Check(const coreUint64 iNanoWait, const coreSyncCheck eCheck);
-    //! @}
 
-    /*! invoke explicit synchronization */
-    //! @{
+    /* invoke explicit synchronization */
     static inline void Flush () {glFlush ();}
     static inline void Finish() {glFinish();}
-    //! @}
 };
 
 

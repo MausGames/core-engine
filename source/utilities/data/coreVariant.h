@@ -16,11 +16,11 @@
 template <coreUintW iSize> class coreVariant final
 {
 private:
-    coreByte m_aData[iSize];   //!< buffer containing the stored object
+    coreByte m_aData[iSize];   // buffer containing the stored object
 
 #if defined(_CORE_DEBUG_)
-    std::string m_sTypeName;   //!< current type name (for debug inspection)
-    coreUint32  m_iTypeId;     //!< current type identifier (for run-time checks)
+    std::string m_sTypeName;   // current type name (for debug inspection)
+    coreUint32  m_iTypeId;     // current type identifier (for run-time checks)
 #endif
 
 
@@ -30,10 +30,8 @@ public:
 
     ENABLE_COPY(coreVariant)
 
-    /*! access stored object */
-    //! @{
+    /* access stored object */
     template <typename T> const T& Get()const;
-    //! @}
 };
 
 
@@ -71,4 +69,4 @@ using coreVariant16 = coreVariant<16>;
 using coreVariantW  = coreVariant<sizeof(coreUintW)>;
 
 
-#endif // _CORE_GUARD_VARIANT_H_
+#endif /* _CORE_GUARD_VARIANT_H_ */

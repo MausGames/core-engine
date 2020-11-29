@@ -19,7 +19,7 @@
 
 // ****************************************************************
 /* lookup container definitions */
-#define CORE_LOOKUP_INVALID (coreUintW(-1))   //!< invalid cache index
+#define CORE_LOOKUP_INVALID (coreUintW(-1))   // invalid cache index
 
 
 // ****************************************************************
@@ -27,7 +27,7 @@
 template <typename K, typename I, typename T> class coreLookupGen
 {
 protected:
-    /*! internal types */
+    /* internal types */
     using coreValueList          = std::vector<T>;
     using coreKeyList            = std::vector<K>;
     using coreValueIterator      = typename coreValueList::iterator;
@@ -37,10 +37,10 @@ protected:
 
 
 protected:
-    coreValueList m_atValueList;   //!< list with values
-    coreKeyList   m_atKeyList;     //!< list with keys
+    coreValueList m_atValueList;   // list with values
+    coreKeyList   m_atKeyList;     // list with keys
 
-    coreUintW m_iCacheIndex;       //!< index to the last requested value
+    coreUintW m_iCacheIndex;       // index to the last requested value
 
 
 public:
@@ -48,69 +48,52 @@ public:
     coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept;
     coreLookupGen(coreLookupGen<K, I, T>&&      m)noexcept;
 
-    /*! assignment operations */
-    //! @{
+    /* assignment operations */
     coreLookupGen<K, I, T>& operator = (coreLookupGen<K, I, T> o)noexcept;
-    //! @}
 
-    /*! access specific entry */
-    //! @{
+    /* access specific entry */
     T& operator [] (const I& tKey);
     T&          at (const I& tKey);
     const T&    at (const I& tKey)const;
-    //! @}
 
-    /*! check number of existing entries */
-    //! @{
+    /* check number of existing entries */
     inline coreBool  count   (const I& tKey)      {return this->_check(this->_retrieve   (tKey));}
     inline coreBool  count   (const I& tKey)const {return this->_check(this->_retrieve   (tKey));}
     inline coreBool  count_bs(const I& tKey)      {return this->_check(this->_retrieve_bs(tKey));}
     inline coreBool  count_bs(const I& tKey)const {return this->_check(this->_retrieve_bs(tKey));}
     inline coreUintW size    ()const              {return m_atValueList.size ();}
     inline coreBool  empty   ()const              {return m_atValueList.empty();}
-    //! @}
 
-    /*! control memory allocation */
-    //! @{
+    /* control memory allocation */
     inline void      reserve(const coreUintW iReserve) {m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
     inline void      shrink_to_fit()                   {m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
     inline coreUintW capacity()const                   {return m_atValueList.capacity();}
-    //! @}
 
-    /*! manage container ordering */
-    //! @{
+    /* manage container ordering */
     inline void sort_asc  () {this->_cache_clear(); this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
     inline void sort_desc () {this->_cache_clear(); this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
     inline void reverse   () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
     inline void prepare_bs() {this->sort_asc();}
-    //! @}
 
-    /*! create new entry */
-    //! @{
+    /* create new entry */
     template <typename... A> void emplace   (const I& tKey, A&&... vArgs);
     template <typename... A> void emplace_bs(const I& tKey, A&&... vArgs);
-    //! @}
 
-    /*! remove existing entry */
-    //! @{
+    /* remove existing entry */
     coreBool                 erase    (const I& tKey);
     coreBool                 erase_bs (const I& tKey);
     inline coreValueIterator erase    (const coreValueIterator& it) {this->_cache_clear(); m_atKeyList.erase(this->get_key(it)); return m_atValueList.erase(it);}
     inline void              clear    ()                            {this->_cache_clear(); m_atValueList.clear();    m_atKeyList.clear();}
     inline void              pop_back ()                            {this->_cache_clear(); m_atValueList.pop_back(); m_atKeyList.pop_back();}
     inline void              pop_front()                            {this->erase(this->begin());}
-    //! @}
 
-    /*! return first and last entry */
-    //! @{
+    /* return first and last entry */
     inline T&       front()      {return m_atValueList.front();}
     inline const T& front()const {return m_atValueList.front();}
     inline T&       back ()      {return m_atValueList.back ();}
     inline const T& back ()const {return m_atValueList.back ();}
-    //! @}
 
-    /*! return internal iterator */
-    //! @{
+    /* return internal iterator */
     inline coreValueIterator      begin  ()                   {return m_atValueList.begin();}
     inline coreValueConstIterator begin  ()const              {return m_atValueList.begin();}
     inline coreValueIterator      end    ()                   {return m_atValueList.end  ();}
@@ -119,49 +102,36 @@ public:
     inline coreValueConstIterator find   (const I& tKey)const {return this->get_value(this->_retrieve   (tKey));}
     inline coreValueIterator      find_bs(const I& tKey)      {return this->get_value(this->_retrieve_bs(tKey));}
     inline coreValueConstIterator find_bs(const I& tKey)const {return this->get_value(this->_retrieve_bs(tKey));}
-    //! @}
 
-    /*! operate between values and keys */
-    //! @{
+    /* operate between values and keys */
     inline coreValueIterator      get_value    (const coreKeyIterator&        it)      {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
     inline coreValueConstIterator get_value    (const coreKeyConstIterator&   it)const {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
     inline coreKeyIterator        get_key      (const coreValueIterator&      it)      {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
     inline coreKeyConstIterator   get_key      (const coreValueConstIterator& it)const {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
     inline const coreValueList&   get_valuelist()const                                 {return m_atValueList;}
     inline const coreKeyList&     get_keylist  ()const                                 {return m_atKeyList;}
-    //! @}
 
 
 protected:
-    /*! check for successful entry lookup */
-    //! @{
+    /* check for successful entry lookup */
     inline coreBool _check(const coreKeyIterator&      it)      {return (it != m_atKeyList.end());}
     inline coreBool _check(const coreKeyConstIterator& it)const {return (it != m_atKeyList.end());}
-    //! @}
 
-    /*! cache last requested entry */
-    //! @{
+    /* cache last requested entry */
     inline void     _cache_set(const coreUintW iIndex) {m_iCacheIndex = iIndex;}
     inline void     _cache_clear()                     {m_iCacheIndex = CORE_LOOKUP_INVALID;}
     inline coreBool _cache_try(const I& tKey)const     {return ((m_iCacheIndex != CORE_LOOKUP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey));}
-    //! @}
 
-    /*! lookup entry by key */
-    //! @{
+    /* lookup entry by key */
     coreKeyIterator      _retrieve(const I& tKey);
     coreKeyConstIterator _retrieve(const I& tKey)const;
-    //! @}
 
-    /*! binary lookup entry by key */
-    //! @{
+    /* binary lookup entry by key */
     coreKeyIterator      _retrieve_bs(const I& tKey);
     coreKeyConstIterator _retrieve_bs(const I& tKey)const;
-    //! @}
 
-    /*! sort entries with comparison function */
-    //! @{
-    template <typename F> void _sort(F&& nCompareFunc);   //!< [](const auto& a, const auto& b) -> coreBool
-    //! @}
+    /* sort entries with comparison function */
+    template <typename F> void _sort(F&& nCompareFunc);   // [](const auto& a, const auto& b) -> coreBool
 };
 
 
@@ -180,7 +150,7 @@ template <typename T> using coreLookupStrBase = coreLookupGen<coreUint32, coreHa
 template <typename T> class coreLookupStrFull final : public coreLookupStrBase<T>
 {
 private:
-    coreLookup<coreUint32, std::string> m_asStringList;   //!< list with original strings
+    coreLookup<coreUint32, std::string> m_asStringList;   // list with original strings
 
 
 public:
@@ -188,38 +158,28 @@ public:
 
     ENABLE_COPY(coreLookupStrFull)
 
-    /*! access specific entry */
-    //! @{
+    /* access specific entry */
     inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreLookupStrBase<T>::operator [] (sKey);}
     inline T& operator [] (const coreUintW       iIndex) {return this->m_atValueList[iIndex];}
-    //! @}
 
-    /*! create new entry */
-    //! @{
+    /* create new entry */
     template <typename... A> inline void emplace   (const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace   (sKey, std::forward<A>(vArgs)...);}
     template <typename... A> inline void emplace_bs(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace_bs(sKey, std::forward<A>(vArgs)...);}
-    //! @}
 
-    /*! remove existing entry */
-    //! @{
+    /* remove existing entry */
     using coreLookupStrBase<T>::erase;
     inline typename coreLookupStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
-    //! @}
 
-    /*! return original string */
-    //! @{
+    /* return original string */
     inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at(*this->get_key(it)).c_str();}
     inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreValueConstIterator& it)const {return m_asStringList.at(*this->get_key(it)).c_str();}
     inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreKeyIterator&        it)      {return m_asStringList.at(*it).c_str();}
     inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreKeyConstIterator&   it)const {return m_asStringList.at(*it).c_str();}
-    //! @}
 
 
 private:
-    /*! save original string */
-    //! @{
+    /* save original string */
     inline void __save_string(const coreHashString& sKey) {if(!m_asStringList.count(sKey)) m_asStringList.emplace(sKey, sKey.GetString()); else WARN_IF(sKey.GetString() != m_asStringList.at(sKey)) {}}
-    //! @}
 };
 
 
@@ -232,17 +192,13 @@ public:
 
     ENABLE_COPY(coreLookupStrSlim)
 
-    /*! access specific entry */
-    //! @{
+    /* access specific entry */
     using coreLookupStrBase<T>::operator [];
     inline T& operator [] (const coreUintW iIndex) {return this->m_atValueList[iIndex];}
-    //! @}
 
-    /*! remove existing entry */
-    //! @{
+    /* remove existing entry */
     using coreLookupStrBase<T>::erase;
     inline typename coreLookupStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
-    //! @}
 };
 
 

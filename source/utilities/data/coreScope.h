@@ -29,7 +29,7 @@
 template <typename T> class INTERFACE coreScope
 {
 protected:
-    T* m_ptObject;   //!< associated object
+    T* m_ptObject;   // associated object
 
 
 protected:
@@ -41,19 +41,15 @@ protected:
 public:
     DISABLE_HEAP
 
-    /*! assignment operations */
-    //! @{
+    /* assignment operations */
     coreScope<T>& operator = (coreScope<T>&& m)noexcept;
-    //! @}
 
-    /*! access associated object */
-    //! @{
+    /* access associated object */
     inline          operator       T* ()      {return m_ptObject;}
     constexpr       operator const T* ()const {return m_ptObject;}
     inline explicit operator coreBool ()const {return m_ptObject ? true : false;}
     inline T*       operator ->       ()const {ASSERT(m_ptObject) return  m_ptObject;}
     inline T&       operator *        ()const {ASSERT(m_ptObject) return *m_ptObject;}
-    //! @}
 };
 
 
@@ -62,7 +58,7 @@ public:
 class coreSpinLocker final
 {
 private:
-    SDL_SpinLock* m_piLock;   //!< associated spinlock
+    SDL_SpinLock* m_piLock;   // associated spinlock
 
 
 public:

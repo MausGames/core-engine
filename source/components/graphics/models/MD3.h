@@ -15,21 +15,21 @@
 /* MD3-header structure */
 struct md3Header final
 {
-    coreChar  acIdentity[4];     //!< magic number (IDP3)
-    coreInt32 iVersion;          //!< version number (15 or 16)
+    coreChar  acIdentity[4];     // magic number (IDP3)
+    coreInt32 iVersion;          // version number (15 or 16)
 
-    coreChar  acName[64];        //!< internal file name
-    coreInt32 iFlags;            //!< 'dunno
+    coreChar  acName[64];        // internal file name
+    coreInt32 iFlags;            // 'dunno
 
-    coreInt32 iNumFrames;        //!< number of frames
-    coreInt32 iNumTags;          //!< number of tags
-    coreInt32 iNumSurfaces;      //!< number of surfaces
-    coreInt32 iNumSkins;         //!< number of skins (unused)
+    coreInt32 iNumFrames;        // number of frames
+    coreInt32 iNumTags;          // number of tags
+    coreInt32 iNumSurfaces;      // number of surfaces
+    coreInt32 iNumSkins;         // number of skins (unused)
 
-    coreInt32 iOffsetFrames;     //!< byte offset to frame data
-    coreInt32 iOffsetTags;       //!< byte offset to tag data
-    coreInt32 iOffsetSurfaces;   //!< byte offset to surface data
-    coreInt32 iOffsetEOF;        //!< end of file (file size)
+    coreInt32 iOffsetFrames;     // byte offset to frame data
+    coreInt32 iOffsetTags;       // byte offset to tag data
+    coreInt32 iOffsetSurfaces;   // byte offset to surface data
+    coreInt32 iOffsetEOF;        // end of file (file size)
 };
 
 
@@ -37,12 +37,12 @@ struct md3Header final
 /* MD3-frame structure */
 struct md3Frame final
 {
-    coreVector3 vMinBounds;   //!< first corner of the bounding box
-    coreVector3 vMaxBounds;   //!< second corner of the bounding box
-    coreVector3 vOrigin;      //!< local origin (0.0f, 0.0f, 0.0f)
-    coreFloat   fRadius;      //!< bounding sphere radius
+    coreVector3 vMinBounds;   // first corner of the bounding box
+    coreVector3 vMaxBounds;   // second corner of the bounding box
+    coreVector3 vOrigin;      // local origin (0.0f, 0.0f, 0.0f)
+    coreFloat   fRadius;      // bounding sphere radius
 
-    coreChar acName[16];      //!< frame name
+    coreChar acName[16];      // frame name
 };
 
 
@@ -50,10 +50,10 @@ struct md3Frame final
 /* MD3-tag structure */
 struct md3Tag final
 {
-    coreChar acName[64];   //!< tag name
+    coreChar acName[64];   // tag name
 
-    coreVector3 vOrigin;   //!< origin coordinates
-    coreMatrix3 mAxis;     //!< associated rotation matrix
+    coreVector3 vOrigin;   // origin coordinates
+    coreMatrix3 mAxis;     // associated rotation matrix
 };
 
 
@@ -61,21 +61,21 @@ struct md3Tag final
 /* MD3-mesh structure */
 struct md3Mesh final
 {
-    coreChar acIdentity[4];        //!< magic number (IDP3)
+    coreChar acIdentity[4];        // magic number (IDP3)
 
-    coreChar  acName[64];         //!< surface name
-    coreInt32 iFlags;             //!< 'dunno again
+    coreChar  acName[64];         // surface name
+    coreInt32 iFlags;             // 'dunno again
 
-    coreInt32 iNumFrames;         //!< number of frames
-    coreInt32 iNumShaders;        //!< number of shaders
-    coreInt32 iNumVertices;       //!< number of vertices
-    coreInt32 iNumTriangles;      //!< number of triangles
+    coreInt32 iNumFrames;         // number of frames
+    coreInt32 iNumShaders;        // number of shaders
+    coreInt32 iNumVertices;       // number of vertices
+    coreInt32 iNumTriangles;      // number of triangles
 
-    coreInt32 iOffsetTriangles;   //!< byte offset to triangle data
-    coreInt32 iOffsetShaders;     //!< byte offset to shader data
-    coreInt32 iOffsetTexture;     //!< byte offset to texture data
-    coreInt32 iOffsetVertices;    //!< byte offset to vertex data
-    coreInt32 iOffsetEnd;         //!< surface end (next surface)
+    coreInt32 iOffsetTriangles;   // byte offset to triangle data
+    coreInt32 iOffsetShaders;     // byte offset to shader data
+    coreInt32 iOffsetTexture;     // byte offset to texture data
+    coreInt32 iOffsetVertices;    // byte offset to vertex data
+    coreInt32 iOffsetEnd;         // surface end (next surface)
 };
 
 
@@ -83,8 +83,8 @@ struct md3Mesh final
 /* MD3-shader structure */
 struct md3Shader final
 {
-    coreChar  acName[64];     //!< shader name
-    coreInt32 iShaderIndex;   //!< shader index number
+    coreChar  acName[64];     // shader name
+    coreInt32 iShaderIndex;   // shader index number
 };
 
 
@@ -92,7 +92,7 @@ struct md3Shader final
 /* MD3-triangle structure */
 struct md3Triangle final
 {
-    coreUint32 aiIndex[3];   //!< triangle indices
+    coreUint32 aiIndex[3];   // triangle indices
 };
 
 
@@ -100,7 +100,7 @@ struct md3Triangle final
 /* MD3-texture structure */
 struct md3Texture final
 {
-    coreVector2 vCoord;   //!< texture coordinates
+    coreVector2 vCoord;   // texture coordinates
 };
 
 
@@ -108,14 +108,14 @@ struct md3Texture final
 /* MD3-vertex structure */
 struct md3Vertex final
 {
-    coreInt16 asCoord [3];   //!< compressed vertex coordinates (1:64)
-    coreUint8 aiNormal[2];   //!< compressed normal zenith and azimuth (16 bit)
+    coreInt16 asCoord [3];   // compressed vertex coordinates (1:64)
+    coreUint8 aiNormal[2];   // compressed normal zenith and azimuth (16 bit)
 };
 
 struct md3VertexV16 final
 {
-    coreInt16  asCoord [3];   //!< compressed vertex coordinates (1:256)
-    coreUint16 aiNormal[2];   //!< compressed normal zenith and azimuth (32 bit)
+    coreInt16  asCoord [3];   // compressed vertex coordinates (1:256)
+    coreUint16 aiNormal[2];   // compressed normal zenith and azimuth (32 bit)
 };
 
 
@@ -123,11 +123,11 @@ struct md3VertexV16 final
 /* MD3-surface structure */
 struct md3Surface final
 {
-    md3Mesh      oMesh;       //!< mesh object (surface description)
-    md3Shader*   pShader;     //!< pointer to shader data
-    md3Triangle* pTriangle;   //!< pointer to triangle data
-    md3Texture*  pTexture;    //!< pointer to texture data
-    union                     //!< pointer to vertex data
+    md3Mesh      oMesh;       // mesh object (surface description)
+    md3Shader*   pShader;     // pointer to shader data
+    md3Triangle* pTriangle;   // pointer to triangle data
+    md3Texture*  pTexture;    // pointer to texture data
+    union                     // pointer to vertex data
     {
         md3Vertex*    pVertex;
         md3VertexV16* pVertexV16;
@@ -139,10 +139,10 @@ struct md3Surface final
 /* MD3-file structure */
 struct md3File final
 {
-    md3Header   oHeader;    //!< header object (file description)
-    md3Frame*   pFrame;     //!< pointer to frame data
-    md3Tag*     pTag;       //!< pointer to tag data
-    md3Surface* pSurface;   //!< pointer to surface data
+    md3Header   oHeader;    // header object (file description)
+    md3Frame*   pFrame;     // pointer to frame data
+    md3Tag*     pTag;       // pointer to tag data
+    md3Surface* pSurface;   // pointer to surface data
 };
 
 

@@ -18,8 +18,8 @@
 class coreHashString final
 {
 private:
-    coreUint32      m_iHash;      //!< calculated FNV-1a hash-value
-    const coreChar* m_pcString;   //!< original string
+    coreUint32      m_iHash;      // calculated FNV-1a hash-value
+    const coreChar* m_pcString;   // original string
 
 
 public:
@@ -28,16 +28,12 @@ public:
 
     ENABLE_COPY(coreHashString)
 
-    /*! access hash-value directly */
-    //! @{
+    /* access hash-value directly */
     constexpr operator coreUint32 ()const {return m_iHash;}
-    //! @}
 
-    /*! get object properties */
-    //! @{
+    /* get object properties */
     constexpr const coreUint32& GetHash  ()const {return m_iHash;}
     constexpr const coreChar*   GetString()const {return m_pcString;}
-    //! @}
 };
 
 

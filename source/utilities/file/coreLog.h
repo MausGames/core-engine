@@ -21,17 +21,17 @@
 /* log definitions */
 #define __CORE_LOG_STRING (std::string(PRINT(pcText, std::forward<A>(vArgs)...)))
 
-#define CORE_LOG_BOLD(s)       "<b>" s "</b>"   //!< display text bold
-#define CORE_LOG_ITALIC(s)     "<i>" s "</i>"   //!< display text italic
-#define CORE_LOG_UNDERLINED(s) "<u>" s "</u>"   //!< display text underlined
+#define CORE_LOG_BOLD(s)       "<b>" s "</b>"   // display text bold
+#define CORE_LOG_ITALIC(s)     "<i>" s "</i>"   // display text italic
+#define CORE_LOG_UNDERLINED(s) "<u>" s "</u>"   // display text underlined
 
 enum coreLogLevel : coreUint8
 {
-    CORE_LOG_LEVEL_NOTHING = 0x00u,   //!< log nothing
-    CORE_LOG_LEVEL_INFO    = 0x01u,   //!< log info messages and headers
-    CORE_LOG_LEVEL_WARNING = 0x02u,   //!< log warning messages
-    CORE_LOG_LEVEL_ERROR   = 0x04u,   //!< log error messages
-    CORE_LOG_LEVEL_ALL     = 0x07u    //!< log everything
+    CORE_LOG_LEVEL_NOTHING = 0x00u,   // log nothing
+    CORE_LOG_LEVEL_INFO    = 0x01u,   // log info messages and headers
+    CORE_LOG_LEVEL_WARNING = 0x02u,   // log warning messages
+    CORE_LOG_LEVEL_ERROR   = 0x04u,   // log error messages
+    CORE_LOG_LEVEL_ALL     = 0x07u    // log everything
 };
 ENABLE_BITWISE(coreLogLevel)
 
@@ -41,16 +41,16 @@ ENABLE_BITWISE(coreLogLevel)
 class coreLog final
 {
 private:
-    std::FILE* m_pFile;           //!< log file stream handle
+    std::FILE* m_pFile;           // log file stream handle
 
-    std::string  m_sPath;         //!< relative path of the file
-    coreLogLevel m_eLevel;        //!< logging level
+    std::string  m_sPath;         // relative path of the file
+    coreLogLevel m_eLevel;        // logging level
 
-    coreUint8 m_iListStatus;       //!< currently writing a list
+    coreUint8 m_iListStatus;       // currently writing a list
 
-    coreUint32   m_iLastTime;     //!< last time-value for duration approximations
-    SDL_threadID m_iMainThread;   //!< thread-ID from the creator of this log
-    SDL_SpinLock m_iLock;         //!< spinlock to prevent concurrent log access
+    coreUint32   m_iLastTime;     // last time-value for duration approximations
+    SDL_threadID m_iMainThread;   // thread-ID from the creator of this log
+    SDL_SpinLock m_iLock;         // spinlock to prevent concurrent log access
 
 
 public:
@@ -59,46 +59,34 @@ public:
 
     DISABLE_COPY(coreLog)
 
-    /*! message functions */
-    //! @{
+    /* message functions */
     template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    this->__Write(true, "[I] "                         + __CORE_LOG_STRING + "<br />");}
     template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) this->__Write(true, "[W] <span class=\"warning\">" + __CORE_LOG_STRING + "</span><br />");}
     template <typename... A> FUNC_TERMINATE void Error  (const coreChar* pcText, A&&... vArgs);
-    //! @}
 
-    /*! special functions */
-    //! @{
+    /* special functions */
     template <typename... A> inline void Header          (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))     this->__Write(false, "<hr /><span class=\"header\">" + __CORE_LOG_STRING + "</span><br />");}
     template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {this->__Write(true,  "[I] <span class=\"list\">"     + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
     template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(CONTAINS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {this->__Write(true,  "[W] <span class=\"list\">"     + __CORE_LOG_STRING + "</span><ul>"); ++m_iListStatus;}}
     template <typename... A> inline void ListDeeper      (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                   {this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li><ul>");   ++m_iListStatus;}}
     template <typename... A> inline void ListAdd         (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                    this->__Write(false, "<li>"                          + __CORE_LOG_STRING + "</li>");}
     inline                          void ListEnd         ()                                     {if(m_iListStatus)                                   {this->__Write(false, "</ul>"); --m_iListStatus;}}
-    //! @}
 
-    /*! handle OpenGL debug output */
-    //! @{
+    /* handle OpenGL debug output */
     friend void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
     void DebugOpenGL();
-    //! @}
 
-    /*! set object properties */
-    //! @{
+    /* set object properties */
     inline void SetLevel(const coreLogLevel eLevel) {m_eLevel = eLevel;}
-    //! @}
 
-    /*! get object properties */
-    //! @{
+    /* get object properties */
     inline const coreChar*     GetPath ()const {return m_sPath.c_str();}
     inline const coreLogLevel& GetLevel()const {return m_eLevel;}
-    //! @}
 
 
 private:
-    /*! write text to the log file */
-    //! @{
+    /* write text to the log file */
     void __Write(const coreBool bTimeStamp, std::string sText);
-    //! @}
 };
 
 

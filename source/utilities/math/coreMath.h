@@ -23,20 +23,20 @@
 
 // ****************************************************************
 /* math definitions */
-#define CORE_MATH_PRECISION (0.0005f)                              //!< default floating-point precision
+#define CORE_MATH_PRECISION (0.0005f)                              // default floating-point precision
 
-#define PI    (3.1415926535897932384626433832795f)                 //!< Archimedes' constant
-#define EU    (2.7182818284590452353602874713527f)                 //!< Euler's number
-#define GR    (1.6180339887498948482045868343656f)                 //!< golden ratio ((a+b)/a = a/b)
-#define GA    (2.3999632297286533222315555066336f)                 //!< golden angle (radians)
-#define SQRT2 (1.4142135623730950488016887242097f)                 //!< principal square root of 2
+#define PI    (3.1415926535897932384626433832795f)                 // Archimedes' constant
+#define EU    (2.7182818284590452353602874713527f)                 // Euler's number
+#define GR    (1.6180339887498948482045868343656f)                 // golden ratio ((a+b)/a = a/b)
+#define GA    (2.3999632297286533222315555066336f)                 // golden angle (radians)
+#define SQRT2 (1.4142135623730950488016887242097f)                 // principal square root of 2
 
-#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   //!< convert degrees to radians
-#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   //!< convert radians to degrees
-#define KM_TO_MI(x)   ((x) * 0.621371192237f)                      //!< convert kilometers to miles
-#define MI_TO_KM(x)   ((x) * 1.609344000000f)                      //!< convert miles to kilometers
+#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   // convert degrees to radians
+#define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   // convert radians to degrees
+#define KM_TO_MI(x)   ((x) * 0.621371192237f)                      // convert kilometers to miles
+#define MI_TO_KM(x)   ((x) * 1.609344000000f)                      // convert miles to kilometers
 
-#define MIN    coreMath::Min                                       //!< for easier distinction in formulas
+#define MIN    coreMath::Min                                       // for easier distinction in formulas
 #define MAX    coreMath::Max
 #define MED    coreMath::Med
 #define CLAMP  coreMath::Clamp
@@ -86,8 +86,7 @@ class INTERFACE coreMath final
 public:
     DISABLE_CONSTRUCTION(coreMath)
 
-    /*! special operations */
-    //! @{
+    /* special operations */
     template <typename T, typename S = T, typename... A>  static constexpr T Min  (const T& x, const S& y, A&&... vArgs) {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
     template <typename T, typename S = T, typename... A>  static constexpr T Max  (const T& x, const S& y, A&&... vArgs) {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
     template <typename T, typename S = T>                 static constexpr T Min  (const T& x, const S& y)               {return (x < y) ? T(x) : T(y);}
@@ -106,10 +105,8 @@ public:
     static constexpr coreFloat               Step        (const coreFloat a, const coreFloat b, const coreFloat x)       {return CLAMP((x - a) / (b - a), 0.0f, 1.0f);}   // linearstep
     static constexpr coreFloat               StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH3(0.0f, 1.0f, STEP(a, b, x));}      // smoothstep
     static constexpr coreFloat               StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH5(0.0f, 1.0f, STEP(a, b, x));}      // smootherstep
-    //! @}
 
-    /*! base operations */
-    //! @{
+    /* base operations */
     static inline coreFloat Fmod (const coreFloat fNum, const coreFloat fDenom) {return std::fmod (fNum, fDenom);}
     static inline coreFloat Trunc(const coreFloat fInput)                       {return std::trunc(fInput);}
     static inline coreFloat Fract(const coreFloat fInput)                       {return fInput - TRUNC(fInput);}   // FMOD(x, 1.0f)
@@ -117,10 +114,8 @@ public:
     static inline coreFloat Sqrt (const coreFloat fInput);
     static inline coreFloat Rsqrt(const coreFloat fInput);
     static inline coreFloat Rcp  (const coreFloat fInput);
-    //! @}
 
-    /*! exponential operations */
-    //! @{
+    /* exponential operations */
     static inline coreFloat Pow  (const coreFloat fBase, const coreFloat fExp)  {return std::pow  (fBase, fExp);}
     static inline coreFloat LogB (const coreFloat fVal,  const coreFloat fBase) {return LOG(fVal) * RCP(LOG(fBase));}
     static inline coreFloat Log  (const coreFloat fInput)                       {return std::log  (fInput);}
@@ -129,10 +124,8 @@ public:
     static inline coreFloat Exp  (const coreFloat fInput)                       {return std::exp  (fInput);}
     static inline coreFloat Exp2 (const coreFloat fInput)                       {return std::exp2 (fInput);}
     static inline coreFloat Exp10(const coreFloat fInput)                       {return POW(10.0f, fInput);}
-    //! @}
 
-    /*! trigonometric operations */
-    //! @{
+    /* trigonometric operations */
     static inline coreFloat Sin (const coreFloat fInput) {return std::sin (fInput);}
     static inline coreFloat Cos (const coreFloat fInput) {return std::cos (fInput);}
     static inline coreFloat Tan (const coreFloat fInput) {return std::tan (fInput);}
@@ -140,10 +133,8 @@ public:
     static inline coreFloat Acos(const coreFloat fInput) {return std::acos(fInput);}
     static inline coreFloat Atan(const coreFloat fInput) {return std::atan(fInput);}
     static inline coreFloat Cot (const coreFloat fInput) {return TAN(PI*0.5f - fInput);}
-    //! @}
 
-    /*! rounding operations */
-    //! @{
+    /* rounding operations */
     static inline coreFloat Ceil (const coreFloat fInput)                                            {return std::ceil (fInput);}
     static inline coreFloat Floor(const coreFloat fInput)                                            {return std::floor(fInput);}
     static inline coreFloat Round(const coreFloat fInput)                                            {return std::round(fInput);}
@@ -153,16 +144,12 @@ public:
     template <typename T> static constexpr T  FloorAlign   (const T& tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return (tInput)     & ~k;}
     template <typename T> static constexpr T* CeilAlignPtr (const T* tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(tInput) + k) & ~k));}
     template <typename T> static constexpr T* FloorAlignPtr(const T* tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(tInput))     & ~k));}
-    //! @}
 
-    /*! analyzing operations */
-    //! @{
+    /* analyzing operations */
     template <typename T> static constexpr coreBool IsPot (const T& x)                                               {return x && !(x & (x - T(1)));}
     template <typename T> static constexpr coreBool IsNear(const T& x, const T& c, const T& r = CORE_MATH_PRECISION) {return POW2(x - c) <= POW2(r);}
-    //! @}
 
-    /*! bit operations */
-    //! @{
+    /* bit operations */
     static inline coreUint32 PopCount     (coreUint32 iInput);
     static inline coreUint32 BitScanFwd   (coreUint32 iInput);
     static inline coreUint32 BitScanRev   (coreUint32 iInput);
@@ -170,22 +157,17 @@ public:
     static inline coreUint16 ReverseBits16(coreUint16 iInput);
     static inline coreUint32 ReverseBits32(coreUint32 iInput);
     static inline coreUint64 ReverseBits64(coreUint64 iInput);
-    //! @}
 
-    /*! converting operations */
-    //! @{
+    /* converting operations */
     static inline coreUint32 FloatToBits(const coreFloat  fInput);
     static inline coreFloat  BitsToFloat(const coreUint32 iInput);
     static inline coreUint16 Float32To16(const coreFloat  fInput);
     static inline coreFloat  Float16To32(const coreUint16 iInput);
-    //! @}
 
-    /*! miscellaneous functions */
-    //! @{
+    /* miscellaneous functions */
     static inline void EnableExceptions();
     static inline void EnableRoundToNearest();
     static inline void DisableDenormals();
-    //! @}
 };
 
 

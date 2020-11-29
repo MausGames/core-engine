@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 CoreAudio::CoreAudio()noexcept
 : m_pDevice         (NULL)
 , m_pContext        (NULL)
@@ -98,7 +98,7 @@ CoreAudio::CoreAudio()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 CoreAudio::~CoreAudio()
 {
     // delete audio sources
@@ -114,7 +114,7 @@ CoreAudio::~CoreAudio()
 
 
 // ****************************************************************
-// control the listener
+/* control the listener */
 void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation)
 {
     this->DeferUpdates();
@@ -149,7 +149,7 @@ void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
 
 
 // ****************************************************************
-// retrieve next free audio source
+/* retrieve next free audio source */
 ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType)
 {
     ASSERT(iType < CORE_AUDIO_TYPES)
@@ -189,7 +189,7 @@ ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume, cons
 
 
 // ****************************************************************
-// unbind sound buffer from all audio sources
+/* unbind sound buffer from all audio sources */
 void CoreAudio::FreeSources(const ALuint iBuffer)
 {
     for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
@@ -218,7 +218,7 @@ void CoreAudio::FreeSources(const ALuint iBuffer)
 
 
 // ****************************************************************
-// update audio source data
+/* update audio source data */
 void CoreAudio::UpdateSource(const ALuint iSource, const coreFloat fVolume)
 {
     for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
@@ -241,7 +241,7 @@ void CoreAudio::UpdateSource(const ALuint iSource, const coreFloat fVolume)
 
 
 // ****************************************************************
-// check if audio source is still valid
+/* check if audio source is still valid */
 coreBool CoreAudio::CheckSource(const ALuint iBuffer, const ALuint iSource)const
 {
     for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
@@ -257,7 +257,7 @@ coreBool CoreAudio::CheckSource(const ALuint iBuffer, const ALuint iSource)const
 
 
 // ****************************************************************
-// control sound playback
+/* control sound playback */
 void CoreAudio::PauseSound()
 {
     // pause all audio sources
@@ -291,7 +291,7 @@ void CoreAudio::CancelSound()
 
 
 // ****************************************************************
-// update all audio sources
+/* update all audio sources */
 void CoreAudio::__UpdateSources()
 {
     const auto nUpdateVolumeFunc = [](coreFloat* OUTPUT pfVolume, const coreChar* pcSection, const coreChar* pcKey, const coreFloat fDefault)

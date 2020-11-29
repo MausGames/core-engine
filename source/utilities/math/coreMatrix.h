@@ -37,16 +37,12 @@ public:
 
     ENABLE_COPY(coreMatrix3x2)
 
-    /*! compare operations */
-    //! @{
+    /* compare operations */
     inline coreBool operator == (const coreMatrix3x2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3x2)) == 0);}
     inline coreBool operator != (const coreMatrix3x2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3x2)) != 0);}
-    //! @}
 
-    /*! static functions */
-    //! @{
+    /* static functions */
     static constexpr coreMatrix3x2 Identity();
-    //! @}
 };
 
 
@@ -70,16 +66,12 @@ public:
 
     ENABLE_COPY(coreMatrix4x3)
 
-    /*! compare operations */
-    //! @{
+    /* compare operations */
     inline coreBool operator == (const coreMatrix4x3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4x3)) == 0);}
     inline coreBool operator != (const coreMatrix4x3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4x3)) != 0);}
-    //! @}
 
-    /*! static functions */
-    //! @{
+    /* static functions */
     static constexpr coreMatrix4x3 Identity();
-    //! @}
 };
 
 
@@ -99,64 +91,46 @@ public:
 
     ENABLE_COPY(coreMatrix2)
 
-    /*! compare operations */
-    //! @{
+    /* compare operations */
     inline coreBool operator == (const coreMatrix2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix2)) == 0);}
     inline coreBool operator != (const coreMatrix2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix2)) != 0);}
-    //! @}
 
-    /*! matrix operations */
-    //! @{
+    /* matrix operations */
     constexpr coreMatrix2 operator +  (const coreMatrix2& m)const;
     constexpr coreMatrix2 operator -  (const coreMatrix2& m)const;
     constexpr coreMatrix2 operator *  (const coreMatrix2& m)const;
     inline    void        operator += (const coreMatrix2& m) {*this = *this + m;}
     inline    void        operator -= (const coreMatrix2& m) {*this = *this - m;}
     inline    void        operator *= (const coreMatrix2& m) {*this = *this * m;}
-    //! @}
 
-    /*! scalar operations */
-    //! @{
+    /* scalar operations */
     constexpr coreMatrix2 operator *  (const coreFloat f)const;
     inline    coreMatrix2 operator /  (const coreFloat f)const {return  *this * RCP(f);}
     inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
     inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
-    //! @}
 
-    /*! convert matrix */
-    //! @{
+    /* convert matrix */
     constexpr operator const coreFloat* ()const         {return (&_11);}
     inline       coreFloat& arr(const coreUintW i)      {ASSERT(i < 4u) return (&_11)[i];}
     inline const coreFloat& arr(const coreUintW i)const {ASSERT(i < 4u) return (&_11)[i];}
-    //! @}
 
-    /*! transpose matrix */
-    //! @{
+    /* transpose matrix */
     constexpr coreMatrix2 Transposed()const;
-    //! @}
 
-    /*! invert matrix */
-    //! @{
+    /* invert matrix */
     inline coreMatrix2 Inverted()const;
-    //! @}
 
-    /*! process matrix */
-    //! @{
+    /* process matrix */
     template <typename F, typename... A> inline coreMatrix2 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
     inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
     inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
     inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
-    //! @}
 
-    /*! direct functions */
-    //! @{
+    /* direct functions */
     constexpr coreFloat Determinant()const;
-    //! @}
 
-    /*! static functions */
-    //! @{
+    /* static functions */
     static constexpr coreMatrix2 Identity();
-    //! @}
 };
 
 
@@ -180,32 +154,25 @@ public:
 
     ENABLE_COPY(coreMatrix3)
 
-    /*! compare operations */
-    //! @{
+    /* compare operations */
     inline coreBool operator == (const coreMatrix3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3)) == 0);}
     inline coreBool operator != (const coreMatrix3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3)) != 0);}
-    //! @}
 
-    /*! matrix operations */
-    //! @{
+    /* matrix operations */
     constexpr coreMatrix3 operator +  (const coreMatrix3& m)const;
     constexpr coreMatrix3 operator -  (const coreMatrix3& m)const;
     constexpr coreMatrix3 operator *  (const coreMatrix3& m)const;
     inline    void        operator += (const coreMatrix3& m) {*this = *this + m;}
     inline    void        operator -= (const coreMatrix3& m) {*this = *this - m;}
     inline    void        operator *= (const coreMatrix3& m) {*this = *this * m;}
-    //! @}
 
-    /*! scalar operations */
-    //! @{
+    /* scalar operations */
     constexpr coreMatrix3 operator *  (const coreFloat f)const;
     inline    coreMatrix3 operator /  (const coreFloat f)const {return  *this * RCP(f);}
     inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
     inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
-    //! @}
 
-    /*! convert matrix */
-    //! @{
+    /* convert matrix */
     constexpr operator const coreFloat* ()const            {return (&_11);}
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
     inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 9u) return (&_11)[i];}
@@ -213,33 +180,23 @@ public:
     CONSTEXPR coreMatrix2      m12()const                  {return coreMatrix2  (_11, _12, _21, _22);}
     CONSTEXPR coreMatrix2      m13()const                  {return coreMatrix2  (_11, _13, _31, _33);}
     CONSTEXPR coreMatrix2      m23()const                  {return coreMatrix2  (_22, _23, _32, _33);}
-    //! @}
 
-    /*! transpose matrix */
-    //! @{
+    /* transpose matrix */
     constexpr coreMatrix3 Transposed()const;
-    //! @}
 
-    /*! invert matrix */
-    //! @{
+    /* invert matrix */
     inline coreMatrix3 Inverted()const;
-    //! @}
 
-    /*! process matrix */
-    //! @{
+    /* process matrix */
     template <typename F, typename... A> inline coreMatrix3 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
     inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
     inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
     inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
-    //! @}
 
-    /*! direct functions */
-    //! @{
+    /* direct functions */
     constexpr coreFloat Determinant()const;
-    //! @}
 
-    /*! static functions */
-    //! @{
+    /* static functions */
     static constexpr coreMatrix3 Identity   ();
     static constexpr coreMatrix3 Translation(const coreVector2& vPosition);
     static constexpr coreMatrix3 Scaling    (const coreVector2& vSize);
@@ -247,13 +204,10 @@ public:
     static inline    coreMatrix3 Rotation   (const coreFloat    fAngle);
     static constexpr coreMatrix3 ShearXY    (const coreFloat    fFactor);
     static constexpr coreMatrix3 ShearYX    (const coreFloat    fFactor);
-    //! @}
 
-    /*! quaternion functions */
-    //! @{
+    /* quaternion functions */
     inline           coreVector4 ToQuat  ()const;
     static constexpr coreMatrix3 FromQuat(const coreVector4& v);
-    //! @}
 };
 
 
@@ -281,32 +235,25 @@ public:
 
     ENABLE_COPY(coreMatrix4)
 
-    /*! compare operations */
-    //! @{
+    /* compare operations */
     inline coreBool operator == (const coreMatrix4& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4)) == 0);}
     inline coreBool operator != (const coreMatrix4& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4)) != 0);}
-    //! @}
 
-    /*! matrix operations */
-    //! @{
+    /* matrix operations */
     constexpr coreMatrix4 operator +  (const coreMatrix4& m)const;
     constexpr coreMatrix4 operator -  (const coreMatrix4& m)const;
     constexpr coreMatrix4 operator *  (const coreMatrix4& m)const;
     inline    void        operator += (const coreMatrix4& m) {*this = *this + m;}
     inline    void        operator -= (const coreMatrix4& m) {*this = *this - m;}
     inline    void        operator *= (const coreMatrix4& m) {*this = *this * m;}
-    //! @}
 
-    /*! scalar operations */
-    //! @{
+    /* scalar operations */
     constexpr coreMatrix4 operator *  (const coreFloat f)const;
     inline    coreMatrix4 operator /  (const coreFloat f)const {return  *this * RCP(f);}
     inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
     inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
-    //! @}
 
-    /*! convert matrix */
-    //! @{
+    /* convert matrix */
     constexpr operator const coreFloat* ()const             {return (&_11);}
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 16u) return (&_11)[i];}
     inline    const coreFloat& arr (const coreUintW i)const {ASSERT(i < 16u) return (&_11)[i];}
@@ -316,33 +263,23 @@ public:
     CONSTEXPR coreMatrix3      m124()const                  {return coreMatrix3  (_11, _12, _14, _21, _22, _24, _41, _42, _44);}
     CONSTEXPR coreMatrix3      m134()const                  {return coreMatrix3  (_11, _13, _14, _31, _33, _34, _41, _43, _44);}
     CONSTEXPR coreMatrix3      m234()const                  {return coreMatrix3  (_22, _23, _24, _32, _33, _34, _42, _43, _44);}
-    //! @}
 
-    /*! transpose matrix */
-    //! @{
+    /* transpose matrix */
     constexpr coreMatrix4 Transposed()const;
-    //! @}
 
-    /*! invert matrix */
-    //! @{
+    /* invert matrix */
     inline coreMatrix4 Inverted()const;
-    //! @}
 
-    /*! process matrix */
-    //! @{
+    /* process matrix */
     template <typename F, typename... A> inline coreMatrix4 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
     inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
     inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
     inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
-    //! @}
 
-    /*! direct functions */
-    //! @{
+    /* direct functions */
     constexpr coreFloat Determinant()const;
-    //! @}
 
-    /*! static functions */
-    //! @{
+    /* static functions */
     static constexpr coreMatrix4 Identity    ();
     static constexpr coreMatrix4 Translation (const coreVector3& vPosition);
     static constexpr coreMatrix4 Scaling     (const coreVector3& vSize);
@@ -364,7 +301,6 @@ public:
     static inline    coreMatrix4 Ortho       (const coreVector2& vResolution);
     static inline    coreMatrix4 Ortho       (const coreFloat    fLeft, const coreFloat fRight, const coreFloat fBottom, const coreFloat fTop, const coreFloat fNearClip, const coreFloat fFarClip);
     static inline    coreMatrix4 Camera      (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
-    //! @}
 };
 
 

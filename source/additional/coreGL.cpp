@@ -19,7 +19,7 @@ coreBool GLEW_V2_compatibility = false;
 
 // ****************************************************************
 /* pool definitions */
-#define CORE_GL_POOL_SIZE (512u)   //!< number of resource names generated and pooled at the same time
+#define CORE_GL_POOL_SIZE (512u)   // number of resource names generated and pooled at the same time
 
 #define CORE_GL_POOL_GENERATE(n,c,g)                                               \
 {                                                                                  \
@@ -55,9 +55,9 @@ coreBool GLEW_V2_compatibility = false;
 /* pool structure */
 struct coreNamePool final
 {
-    GLuint       aiArray[CORE_GL_POOL_SIZE];   //!< actual pool holding all pre-generated resource names
-    coreUintW    iNext = CORE_GL_POOL_SIZE;    //!< next unused resource name in the pool
-    SDL_SpinLock iLock = 0;                    //!< spinlock to allow multiple threads accessing the pool
+    GLuint       aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
+    coreUintW    iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
+    SDL_SpinLock iLock = 0;                    // spinlock to allow multiple threads accessing the pool
 };
 
 static coreNamePool g_PoolTextures2D;

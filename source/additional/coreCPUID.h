@@ -35,7 +35,7 @@
 class INTERFACE coreCPUID final
 {
 private:
-    /*! CPUID data structure */
+    /* CPUID data structure */
     struct __coreCPUID final
     {
         coreChar   acVendor[13];
@@ -55,17 +55,17 @@ private:
 
 
 private:
-    alignas(ALIGNMENT_CACHE) static const __coreCPUID s_CPUID;   //!< singleton object with pre-loaded processor information
+    alignas(ALIGNMENT_CACHE) static const __coreCPUID s_CPUID;   // singleton object with pre-loaded processor information
 
 
 public:
     DISABLE_CONSTRUCTION(coreCPUID)
 
-    /*! get processor strings */
+    /* get processor strings */
     static const coreChar* Vendor() {return s_CPUID.acVendor;}
     static const coreChar* Brand () {return s_CPUID.acBrand;}
 
-    /*! get processor feature bits */
+    /* get processor feature bits */
     static coreBool SSE3        () {return CONTAINS_BIT(s_CPUID.i01ECX,  0);}
     static coreBool PCLMULQDQ   () {return CONTAINS_BIT(s_CPUID.i01ECX,  1);}
     static coreBool MONITOR     () {return CONTAINS_BIT(s_CPUID.i01ECX,  3);}

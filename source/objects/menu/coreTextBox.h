@@ -12,26 +12,27 @@
 
 // TODO: enable text selection and clipboard copy/cut
 // TODO: enable text-cursor positioning (mouse + arrow keys)
+// TODO: <old comment style>
 
 
 // ****************************************************************
-// menu text-box class
+/* menu text-box class */
 class coreTextBox : public coreButton
 {
 private:
-    std::string m_sText;                //!< current text
-    std::string m_sPrevious;            //!< previous text
+    std::string m_sText;                // current text
+    std::string m_sPrevious;            // previous text
 
-    coreUint8 m_iLength;                //!< max number of characters
-    coreChar  m_cCursor;                //!< cursor character
-    coreChar  m_cReplace;               //!< replacement character for hidden text
+    coreUint8 m_iLength;                // max number of characters
+    coreChar  m_cCursor;                // cursor character
+    coreChar  m_cReplace;               // replacement character for hidden text
 
-    coreBool m_bInput;                  //!< text-input status
-    coreBool m_bDisplay;                //!< caption update status (dirty flag)
+    coreBool m_bInput;                  // text-input status
+    coreBool m_bDisplay;                // caption update status (dirty flag)
 
-    coreBool m_bReturned;               //!< text-input finished with return key
+    coreBool m_bReturned;               // text-input finished with return key
 
-    static coreInt8 s_iActiveCounter;   //!< number of currently active text-boxes
+    static coreInt8 s_iActiveCounter;   // number of currently active text-boxes
 
 
 public:
@@ -41,44 +42,32 @@ public:
 
     DISABLE_COPY(coreTextBox)
 
-    //! construct the text-box
-    //! @{
+    /* construct the text-box */
     void Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline, const coreUint8 iLength);
-    //! @}
 
-    //! move the text-box
-    //! @{
+    /* move the text-box */
     virtual void Move()override;
-    //! @}
 
-    //! check for finished text-input
-    //! @{
+    /* check for finished text-input */
     inline const coreBool& IsReturned()const {return m_bReturned;}
-    //! @}
 
-    //! set object properties
-    //! @{
+    /* set object properties */
     inline void SetText   (const coreChar* pcText)   {if(m_sText    != pcText)   {m_sText    = pcText;   m_bDisplay = true; ASSERT(m_sText.length() <= m_iLength)}}
     inline void SetCursor (const coreChar  cCursor)  {if(m_cCursor  != cCursor)  {m_cCursor  = cCursor;  m_bDisplay = true;}}
     inline void SetReplace(const coreChar  cReplace) {if(m_cReplace != cReplace) {m_cReplace = cReplace; m_bDisplay = true;}}
     void SetInput(const coreBool bInput);
-    //! @}
 
-    //! get object properties
-    //! @{
+    /* get object properties */
     inline const coreChar* GetText   ()const {return m_sText.c_str();}
     inline const coreChar& GetCursor ()const {return m_cCursor;}
     inline const coreChar& GetReplace()const {return m_cReplace;}
     inline const coreBool& GetInput  ()const {return m_bInput;}
-    //! @}
 
 
 private:
-    //! process new text-input characters
-    //! @{
+    /* process new text-input characters */
     coreBool __Write();
-    //! @}
 };
 
 
-#endif // _CORE_GUARD_TEXTBOX_H_
+#endif /* _CORE_GUARD_TEXTBOX_H_ */

@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreCheckBox::coreCheckBox()noexcept
 : coreButton    ()
 , m_apUnchecked {NULL, NULL}
@@ -35,7 +35,7 @@ coreCheckBox::coreCheckBox(const coreHashString& sIdleUnchecked, const coreHashS
 
 
 // ****************************************************************
-// construct the check-box
+/* construct the check-box */
 void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)
 {
     // construct the button
@@ -58,7 +58,7 @@ void coreCheckBox::Construct(const coreHashString& sIdleUnchecked, const coreHas
 
 
 // ****************************************************************
-// move the check-box
+/* move the check-box */
 void coreCheckBox::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
@@ -72,7 +72,7 @@ void coreCheckBox::Move()
 
 
 // ****************************************************************
-// set check status
+/* set check status */
 void coreCheckBox::SetCheck(const coreBool bCheck)
 {
     if(m_bCheck == bCheck) return;
@@ -97,7 +97,7 @@ void coreCheckBox::SetCheck(const coreBool bCheck)
 
 
 // ****************************************************************
-// construct the check-box
+/* construct the check-box */
 void coreCheckBox::__Construct(const coreHashString& sIdleChecked, const coreHashString& sBusyChecked)
 {
     // load background textures

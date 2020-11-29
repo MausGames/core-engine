@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreButton::coreButton()noexcept
 : coreObject2D   ()
 , m_apBackground {NULL, NULL}
@@ -36,7 +36,7 @@ coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy)
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreButton::~coreButton()
 {
     // delete the label
@@ -45,7 +45,7 @@ coreButton::~coreButton()
 
 
 // ****************************************************************
-// construct the button
+/* construct the button */
 void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // create the label
@@ -72,7 +72,7 @@ void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sB
 
 
 // ****************************************************************
-// render the button
+/* render the button */
 void coreButton::Render()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
@@ -90,7 +90,7 @@ void coreButton::Render()
 
 
 // ****************************************************************
-// move the button
+/* move the button */
 void coreButton::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;

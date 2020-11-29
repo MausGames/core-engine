@@ -29,7 +29,7 @@ thread_local coreUintW                coreData::s_iCurString     = 0u;
 coreLookupStr<const coreChar*>        coreData::s_apcCommandLine = {};
 std::string                           coreData::s_sUserFolder    = "";
 
-extern "C" const coreChar* g_pcUserFolder = "";   //!< to allow access from C files
+extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
 
 
 // ****************************************************************

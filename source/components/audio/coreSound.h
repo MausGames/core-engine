@@ -14,38 +14,39 @@
 // TODO: implement sound pause
 // TODO: cache and check audio source properties
 // TODO: problem with loop on unloaded sound
+// TODO: <old comment style>
 
 
 // ****************************************************************
-// sound definitions
-#define __CORE_SOUND_ASSERT {ASSERT(this->CheckRef(m_pCurRef) == m_iCurSource)}   //!< may check for missing reference pointer update
+/* sound definitions */
+#define __CORE_SOUND_ASSERT {ASSERT(this->CheckRef(m_pCurRef) == m_iCurSource)}   // may check for missing reference pointer update
 
 
 // ****************************************************************
-// sound class
+/* sound class */
 class coreSound final : public coreResource
 {
 public:
-    //! WAVE-format structure
+    /* WAVE-format structure */
     struct coreWaveFormat final
     {
-        coreUint16 iAudioFormat;     //!< internal audio format (1 = PCM)
-        coreUint16 iNumChannels;     //!< number of sound channels (1 = mono | 2 = stereo)
-        coreUint32 iSampleRate;      //!< playback frequency (e.g. 44100 Hz)
-        coreUint32 iByteRate;        //!< required data transfer rate (iSampleRate * iBlockAlign)
-        coreUint16 iBlockAlign;      //!< size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))
-        coreUint16 iBitsPerSample;   //!< sample resolution
+        coreUint16 iAudioFormat;     // internal audio format (1 = PCM)
+        coreUint16 iNumChannels;     // number of sound channels (1 = mono | 2 = stereo)
+        coreUint32 iSampleRate;      // playback frequency (e.g. 44100 Hz)
+        coreUint32 iByteRate;        // required data transfer rate (iSampleRate * iBlockAlign)
+        coreUint16 iBlockAlign;      // size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))
+        coreUint16 iBitsPerSample;   // sample resolution
     };
 
 
 private:
-    ALuint m_iBuffer;                             //!< sound buffer object
-    coreWaveFormat m_Format;                      //!< format of the sound file
+    ALuint m_iBuffer;                             // sound buffer object
+    coreWaveFormat m_Format;                      // format of the sound file
 
-    ALuint m_iCurSource;                          //!< active audio source
-    coreLookup<const void*, ALuint> m_aiSource;   //!< currently used audio sources
+    ALuint m_iCurSource;                          // active audio source
+    coreLookup<const void*, ALuint> m_aiSource;   // currently used audio sources
 
-    const void* m_pCurRef;                        //!< reference pointer to active audio source
+    const void* m_pCurRef;                        // reference pointer to active audio source
 
 
 public:
@@ -54,45 +55,35 @@ public:
 
     DISABLE_COPY(coreSound)
 
-    //! load and unload sound resource data
-    //! @{
+    /* load and unload sound resource data */
     coreStatus Load(coreFile* pFile)final;
     coreStatus Unload()final;
-    //! @}
 
-    //! control playback
-    //! @{
+    /* control playback */
     void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3& vPosition);
     void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType);
     void Stop();
     coreBool IsPlaying();
-    //! @}
 
-    //! set various audio source properties
-    //! @{
+    /* set various audio source properties */
     void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
     inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); ASSERT(fVolume >= 0.0f)}
     inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      ASSERT(fPitch  >= 0.0f)}
     inline void SetLoop  (const coreBool  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
-    //! @}
 
-    //! enable active audio source with reference pointer
-    //! @{
+    /* enable active audio source with reference pointer */
     inline coreBool EnableRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
     ALuint          CheckRef (const void* pRef);
-    //! @}
 
-    //! get object properties
-    //! @{
+    /* get object properties */
     inline const ALuint&         GetBuffer()const {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
-    //! @}
 };
 
 
 // ****************************************************************
-// sound resource access type
+/* sound resource access type */
 using coreSoundPtr = coreResourcePtr<coreSound>;
 
 
-#endif // _CORE_GUARD_SOUND_H_
+#endif /* _CORE_GUARD_SOUND_H_ */

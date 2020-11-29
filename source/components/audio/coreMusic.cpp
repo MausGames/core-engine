@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// callback functions for the music stream object
+/* callback functions for the music stream object */
 static const ov_callbacks OV_CALLBACKS =
 {
     [](void* pData, coreUintW iSize, coreUintW iCount, void* pFile) {return coreUintW(SDL_RWread (s_cast<SDL_RWops*>(pFile), pData, iSize, iCount));},
@@ -21,7 +21,7 @@ static const ov_callbacks OV_CALLBACKS =
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreMusic::coreMusic(const coreChar* pcPath)noexcept
 : coreMusic (Core::Manager::Resource->RetrieveFile(pcPath))
 {
@@ -72,7 +72,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreMusic::~coreMusic()
 {
     // clear audio source and sound buffers
@@ -89,7 +89,7 @@ coreMusic::~coreMusic()
 
 
 // ****************************************************************
-// update the music object
+/* update the music object */
 coreBool coreMusic::Update()
 {
     if(!m_bStatus) return false;
@@ -132,7 +132,7 @@ coreBool coreMusic::Update()
 
 
 // ****************************************************************
-// play the music
+/* play the music */
 coreStatus coreMusic::Play()
 {
     if(m_iSource) return CORE_INVALID_CALL;
@@ -167,7 +167,7 @@ coreStatus coreMusic::Play()
 
 
 // ****************************************************************
-// stop the music
+/* stop the music */
 void coreMusic::Stop()
 {
     // pause and rewind the music stream
@@ -177,7 +177,7 @@ void coreMusic::Stop()
 
 
 // ****************************************************************
-// pause the music
+/* pause the music */
 void coreMusic::Pause()
 {
     if(m_iSource)
@@ -197,7 +197,7 @@ void coreMusic::Pause()
 
 
 // ****************************************************************
-// get specific meta-information
+/* get specific meta-information */
 const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 {
     if(m_pComment)
@@ -219,7 +219,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 
 
 // ****************************************************************
-// read from music stream and update sound buffer
+/* read from music stream and update sound buffer */
 coreBool coreMusic::__Stream(const ALuint iBuffer)
 {
     alignas(ALIGNMENT_PAGE) BIG_STATIC coreChar acData[4u * CORE_MUSIC_CHUNK];
@@ -247,7 +247,7 @@ coreBool coreMusic::__Stream(const ALuint iBuffer)
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreMusicPlayer::coreMusicPlayer()noexcept
 : m_apMusic       {}
 , m_pEmptyMusic   (NULL)
@@ -265,7 +265,7 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreMusicPlayer::~coreMusicPlayer()
 {
     // remove all music objects
@@ -277,7 +277,7 @@ coreMusicPlayer::~coreMusicPlayer()
 
 
 // ****************************************************************
-// update the music-player
+/* update the music-player */
 coreBool coreMusicPlayer::Update()
 {
     if(m_apMusic.empty()) return false;
@@ -320,7 +320,7 @@ coreBool coreMusicPlayer::Update()
 
 
 // ****************************************************************
-// order the playback sequence
+/* order the playback sequence */
 void coreMusicPlayer::Order()
 {
     // reset playback sequence
@@ -333,7 +333,7 @@ void coreMusicPlayer::Order()
 
 
 // ****************************************************************
-// shuffle the playback sequence
+/* shuffle the playback sequence */
 void coreMusicPlayer::Shuffle()
 {
     // reset playback sequence
@@ -349,7 +349,7 @@ void coreMusicPlayer::Shuffle()
 
 
 // ****************************************************************
-// add music object from file
+/* add music object from file */
 coreStatus coreMusicPlayer::AddMusicFile(const coreChar* pcPath)
 {
     // load from path
@@ -358,7 +358,7 @@ coreStatus coreMusicPlayer::AddMusicFile(const coreChar* pcPath)
 
 
 // ****************************************************************
-// add music objects from archive
+/* add music objects from archive */
 coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreChar* pcFilter)
 {
     coreBool bStatus = false;
@@ -382,7 +382,7 @@ coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreCh
 
 
 // ****************************************************************
-// add music objects from folder
+/* add music objects from folder */
 coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreChar* pcFilter)
 {
     coreBool bStatus = false;
@@ -403,7 +403,7 @@ coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreCha
 
 
 // ****************************************************************
-// remove music object
+/* remove music object */
 coreStatus coreMusicPlayer::DeleteMusic(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
@@ -426,7 +426,7 @@ coreStatus coreMusicPlayer::DeleteMusic(const coreUintW iIndex)
 
 
 // ****************************************************************
-// remove all music objects
+/* remove all music objects */
 void coreMusicPlayer::ClearMusic()
 {
     // delete music objects
@@ -443,7 +443,7 @@ void coreMusicPlayer::ClearMusic()
 
 
 // ****************************************************************
-// switch to specific music object
+/* switch to specific music object */
 void coreMusicPlayer::Select(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_apMusic.size())     return;
@@ -479,7 +479,7 @@ void coreMusicPlayer::Select(const coreUintW iIndex)
 
 
 // ****************************************************************
-// switch to next music object
+/* switch to next music object */
 coreBool coreMusicPlayer::Next()
 {
     if((m_iCurIndex + 1u) >= m_apMusic.size())
@@ -496,7 +496,7 @@ coreBool coreMusicPlayer::Next()
 
 
 // ****************************************************************
-// switch to previous music object
+/* switch to previous music object */
 coreBool coreMusicPlayer::Previous()
 {
     if(m_iCurIndex == 0u)
@@ -513,7 +513,7 @@ coreBool coreMusicPlayer::Previous()
 
 
 // ****************************************************************
-// add music object
+/* add music object */
 coreStatus coreMusicPlayer::__AddMusic(coreFile* pFile)
 {
     // create new music object

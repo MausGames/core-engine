@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreFile::coreFile(const coreChar* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_pData       (NULL)
@@ -40,7 +40,7 @@ coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSi
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreFile::~coreFile()
 {
     // delete file data
@@ -49,7 +49,7 @@ coreFile::~coreFile()
 
 
 // ****************************************************************
-// save file
+/* save file */
 coreStatus coreFile::Save(const coreChar* pcPath)
 {
     // check file data
@@ -93,7 +93,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
 
 // ****************************************************************
-// compress file data
+/* compress file data */
 coreStatus coreFile::Compress(const coreInt32 iLevel)
 {
     // check file data
@@ -120,7 +120,7 @@ coreStatus coreFile::Compress(const coreInt32 iLevel)
 
 
 // ****************************************************************
-// decompress file data
+/* decompress file data */
 coreStatus coreFile::Decompress()
 {
     // check file data
@@ -147,7 +147,7 @@ coreStatus coreFile::Decompress()
 
 
 // ****************************************************************
-// scramble file data
+/* scramble file data */
 coreStatus coreFile::Scramble(const coreUint32 iKey)
 {
     // check file data
@@ -172,7 +172,7 @@ coreStatus coreFile::Unscramble(const coreUint32 iKey)
 
 
 // ****************************************************************
-// load file data
+/* load file data */
 coreStatus coreFile::LoadData()
 {
     // check file data
@@ -215,7 +215,7 @@ coreStatus coreFile::LoadData()
 
 
 // ****************************************************************
-// return allocated file data copy
+/* return allocated file data copy */
 coreByte* coreFile::MoveData()
 {
     coreByte* pOutput;
@@ -242,7 +242,7 @@ coreByte* coreFile::MoveData()
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreArchive::coreArchive()noexcept
 : m_sPath  ("")
 , m_apFile {}
@@ -306,7 +306,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreArchive::~coreArchive()
 {
     // remove all file objects
@@ -315,7 +315,7 @@ coreArchive::~coreArchive()
 
 
 // ****************************************************************
-// save archive
+/* save archive */
 coreStatus coreArchive::Save(const coreChar* pcPath)
 {
     if(m_apFile.empty()) return CORE_INVALID_CALL;
@@ -386,7 +386,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
 
 // ****************************************************************
-// add file object
+/* add file object */
 coreStatus coreArchive::AddFile(const coreChar* pcPath)
 {
     // check already existing file
@@ -426,7 +426,7 @@ coreStatus coreArchive::AddFile(coreFile* pFile)
 
 
 // ****************************************************************
-// remove file object
+/* remove file object */
 coreStatus coreArchive::DeleteFile(const coreUintW iIndex)
 {
     if(iIndex >= m_apFile.size()) return CORE_INVALID_INPUT;
@@ -457,7 +457,7 @@ coreStatus coreArchive::DeleteFile(coreFile* pFile)
 
 
 // ****************************************************************
-// remove all file objects
+/* remove all file objects */
 void coreArchive::ClearFiles()
 {
     // delete file objects
@@ -470,7 +470,7 @@ void coreArchive::ClearFiles()
 
 
 // ****************************************************************
-// calculate the data positions of all files
+/* calculate the data positions of all files */
 void coreArchive::__CalculatePositions()
 {
     // calculate data start position

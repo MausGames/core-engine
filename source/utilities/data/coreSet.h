@@ -22,22 +22,16 @@ public:
 
     ENABLE_COPY(coreSet)
 
-    /*! insert new unique item */
-    //! @{
+    /* insert new unique item */
     using std::vector<T>::insert;
     inline void insert(const T& tItem) {ASSERT(!this->count(tItem)) this->push_back(tItem);}
-    //! @}
 
-    /*! remove existing item */
-    //! @{
+    /* remove existing item */
     using std::vector<T>::erase;
     inline typename std::vector<T>::iterator erase(const T& tItem) {FOR_EACH(it, *this) if((*it) == tItem) return this->erase(it); return this->end();}
-    //! @}
 
-    /*! check for existing item */
-    //! @{
+    /* check for existing item */
     inline coreBool count(const T& tItem)const {FOR_EACH(it, *this) if((*it) == tItem) return true; return false;}
-    //! @}
 };
 
 

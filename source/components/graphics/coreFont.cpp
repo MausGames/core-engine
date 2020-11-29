@@ -10,7 +10,7 @@
 
 
 // ****************************************************************
-// constructor
+/* constructor */
 coreFont::coreFont(const coreUint8 iHinting, const coreBool bKerning)noexcept
 : coreResource ()
 , m_aapFont    {}
@@ -22,7 +22,7 @@ coreFont::coreFont(const coreUint8 iHinting, const coreBool bKerning)noexcept
 
 
 // ****************************************************************
-// destructor
+/* destructor */
 coreFont::~coreFont()
 {
     this->Unload();
@@ -30,7 +30,7 @@ coreFont::~coreFont()
 
 
 // ****************************************************************
-// load font resource data
+/* load font resource data */
 coreStatus coreFont::Load(coreFile* pFile)
 {
     WARN_IF(m_pFile)      return CORE_INVALID_CALL;
@@ -56,7 +56,7 @@ coreStatus coreFont::Load(coreFile* pFile)
 
 
 // ****************************************************************
-// unload font resource data
+/* unload font resource data */
 coreStatus coreFont::Unload()
 {
     if(!m_pFile) return CORE_INVALID_CALL;
@@ -77,7 +77,7 @@ coreStatus coreFont::Unload()
 
 
 // ****************************************************************
-// create solid text with the font
+/* create solid text with the font */
 SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint16 iHeight)
 {
     // render and return the text surface
@@ -92,7 +92,7 @@ SDL_Surface* coreFont::CreateGlyph(const coreUint16 iGlyph, const coreUint16 iHe
 
 
 // ****************************************************************
-// create outlined text with the font
+/* create outlined text with the font */
 SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     ASSERT(pcText)
@@ -115,7 +115,7 @@ SDL_Surface* coreFont::CreateGlyphOutline(const coreUint16 iGlyph, const coreUin
 
 
 // ****************************************************************
-// retrieve the dimensions of a rendered string of text
+/* retrieve the dimensions of a rendered string of text */
 coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     ASSERT(pcText)
@@ -132,7 +132,7 @@ coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreU
 
 
 // ****************************************************************
-// check if a glyph if provided by the font
+/* check if a glyph if provided by the font */
 coreBool coreFont::IsGlyphProvided(const coreUint16 iGlyph)
 {
     ASSERT(!m_aapFont.empty())
@@ -153,7 +153,7 @@ coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
 
 
 // ****************************************************************
-// retrieve the dimensions of a glyph
+/* retrieve the dimensions of a glyph */
 void coreFont::RetrieveGlyphMetrics(const coreUint16 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
     // check for requested height and outline
@@ -176,7 +176,7 @@ coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const core
 
 
 // ****************************************************************
-// init font with specific properties
+/* init font with specific properties */
 coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutline)
 {
     ASSERT(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
@@ -208,7 +208,7 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
 
 
 // ****************************************************************
-// ensure font with specific properties
+/* ensure font with specific properties */
 coreBool coreFont::__EnsureHeight(const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // check for requested height and outline
@@ -220,7 +220,7 @@ coreBool coreFont::__EnsureHeight(const coreUint16 iHeight, const coreUint8 iOut
 
 
 // ****************************************************************
-// convert multibyte character to UTF-8 glyph
+/* convert multibyte character to UTF-8 glyph */
 coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OUTPUT piGlyph)
 {
     ASSERT(pcMultiByte && piGlyph)

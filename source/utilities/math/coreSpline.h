@@ -19,19 +19,19 @@
 template <typename T> class coreSpline final
 {
 private:
-    /*! node structure */
+    /* node structure */
     struct coreNode final
     {
-        T         tPosition;   //!< position of the node
-        T         tTangent;    //!< tangent of the node (may not be normalized)
-        coreFloat fSpeed;      //!< speed of the node (affects previous, next, and total distance)
-        coreFloat fDistance;   //!< distance from this node to the next (0.0f = last or spiky node)
+        T         tPosition;   // position of the node
+        T         tTangent;    // tangent of the node (may not be normalized)
+        coreFloat fSpeed;      // speed of the node (affects previous, next, and total distance)
+        coreFloat fDistance;   // distance from this node to the next (0.0f = last or spiky node)
     };
 
 
 private:
-    std::vector<coreNode> m_apNode;   //!< nodes of the spline
-    coreFloat m_fTotalDistance;       //!< approximated total distance
+    std::vector<coreNode> m_apNode;   // nodes of the spline
+    coreFloat m_fTotalDistance;       // approximated total distance
 
 
 public:
@@ -40,69 +40,51 @@ public:
 
     ENABLE_COPY(coreSpline)
 
-    /*! manage nodes */
-    //! @{
+    /* manage nodes */
     void AddNode   (const T& tPosition, const T& tTangent, const coreFloat fSpeed = 1.0f);
     void AddNodes  (const T& tPosition, const T& tTangentIn, const T& tTangentOut, const coreFloat fSpeedIn = 1.0f, const coreFloat fSpeedOut = 1.0f);
     void AddStop   (const T& tPosition, const T& tTangent);
     void AddLoop   ();
     void DeleteNode(const coreUintW iIndex);
     void ClearNodes();
-    //! @}
 
-    /*! edit node properties */
-    //! @{
+    /* edit node properties */
     void EditNodePosition(const coreUintW iIndex, const T&        tNewPosition);
     void EditNodeTangent (const coreUintW iIndex, const T&        tNewTangent);
     void EditNodeSpeed   (const coreUintW iIndex, const coreFloat fNewSpeed);
-    //! @}
 
-    /*! refine existing nodes for improved interpolation */
-    //! @{
+    /* refine existing nodes for improved interpolation */
     void Refine();
-    //! @}
 
-    /*! control memory allocation */
-    //! @{
+    /* control memory allocation */
     inline void Reserve    (const coreUintW iCapacity) {m_apNode.reserve(iCapacity);}
     inline void ShrinkToFit()                          {m_apNode.shrink_to_fit();}
-    //! @}
 
-    /*! calculate position and direction */
-    //! @{
+    /* calculate position and direction */
     void        CalcPosDir       (const coreFloat fDistance, T* OUTPUT ptPosition, T* OUTPUT ptDirection)const;
     inline T    CalcPosition     (const coreFloat fDistance)const                                              {T tPos; this->CalcPosDir(fDistance, &tPos, NULL); return tPos;}
     inline T    CalcDirection    (const coreFloat fDistance)const                                              {T tDir; this->CalcPosDir(fDistance, NULL, &tDir); return tDir;}
     inline void CalcPosDirLerp   (const coreFloat fLerp,     T* OUTPUT ptPosition, T* OUTPUT ptDirection)const {this->CalcPosDir(fLerp * m_fTotalDistance, ptPosition, ptDirection);}
     inline T    CalcPositionLerp (const coreFloat fLerp)const                                                  {return this->CalcPosition (fLerp * m_fTotalDistance);}
     inline T    CalcDirectionLerp(const coreFloat fLerp)const                                                  {return this->CalcDirection(fLerp * m_fTotalDistance);}
-    //! @}
 
-    /*! translate between distance and relative node index and time */
-    //! @{
+    /* translate between distance and relative node index and time */
     void      TranslateRelative(const coreFloat fDistance, coreUintW* OUTPUT piRelIndex, coreFloat* OUTPUT pfRelTime)const;
     coreFloat TranslateDistance(const coreUintW iRelIndex, const coreFloat fRelTime)const;
-    //! @}
 
-    /*! get object properties */
-    //! @{
+    /* get object properties */
     inline const coreNode&  GetNode         (const coreUintW iIndex)const {ASSERT(iIndex < m_apNode.size()) return m_apNode[iIndex];}
     inline       coreUintW  GetNumNodes     ()const                       {return m_apNode.size();}
     inline const coreFloat& GetTotalDistance()const                       {return m_fTotalDistance;}
-    //! @}
 
 
 private:
-    /*! handle distances between nodes */
-    //! @{
+    /* handle distances between nodes */
     void __RefreshDistances(const coreUintW iIndex);
     static FUNC_LOCAL coreFloat __GetDistance(const coreNode& oFrom, const coreNode& oTo);
-    //! @}
 
-    /*! calculate final position and direction */
-    //! @{
+    /* calculate final position and direction */
     static FUNC_NOALIAS void __CalcPosDir(const coreFloat fTime, const T& tP1, const T& tP2, const T& tT1, const T& tT2, T* OUTPUT ptPosition, T* OUTPUT ptDirection);
-    //! @}
 };
 
 

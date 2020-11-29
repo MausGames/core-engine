@@ -35,9 +35,9 @@ template <coreChar cDelimiter> static void SkipComments(const coreChar** ppcInpu
 /* MD5-joint structure */
 struct md5Joint final
 {
-    coreInt32   iParent;        //!< index of the parent joint (-1 = root joint)
-    coreVector3 vPosition;      //!< position of the joint
-    coreVector4 vOrientation;   //!< orientation of the joint
+    coreInt32   iParent;        // index of the parent joint (-1 = root joint)
+    coreVector3 vPosition;      // position of the joint
+    coreVector4 vOrientation;   // orientation of the joint
 
     explicit md5Joint(const coreChar** ppcData)noexcept
     {
@@ -58,9 +58,9 @@ struct md5Joint final
 /* MD5-vertex structure */
 struct md5Vertex final
 {
-    coreVector2 vTexture;       //!< texture coordinates
-    coreUint16  iWeightStart;   //!< index of the first associated weight
-    coreUint16  iWeightCount;   //!< number of associated weights
+    coreVector2 vTexture;       // texture coordinates
+    coreUint16  iWeightStart;   // index of the first associated weight
+    coreUint16  iWeightCount;   // number of associated weights
 
     explicit md5Vertex(const coreChar** ppcData)noexcept
     {
@@ -75,7 +75,7 @@ struct md5Vertex final
 /* MD5-triangle structure */
 struct md5Triangle final
 {
-    coreUint16 aiVertex[3];   //!< indexes of the defining vertices
+    coreUint16 aiVertex[3];   // indexes of the defining vertices
 
     explicit md5Triangle(const coreChar** ppcData)noexcept
     {
@@ -89,9 +89,9 @@ struct md5Triangle final
 /* MD5-weight structure */
 struct md5Weight final
 {
-    coreInt32   iJoint;      //!< index of the associated joint
-    coreFloat   fBias;       //!< contribution factor
-    coreVector3 vPosition;   //!< position of the weight
+    coreInt32   iJoint;      // index of the associated joint
+    coreFloat   fBias;       // contribution factor
+    coreVector3 vPosition;   // position of the weight
 
     explicit md5Weight(const coreChar** ppcData)noexcept
     {
@@ -106,9 +106,9 @@ struct md5Weight final
 /* MD5-mesh structure */
 struct md5Mesh final
 {
-    std::vector<md5Vertex>   aVertex;     //!< vertex list
-    std::vector<md5Triangle> aTriangle;   //!< triangle list
-    std::vector<md5Weight>   aWeight;     //!< weight list
+    std::vector<md5Vertex>   aVertex;     // vertex list
+    std::vector<md5Triangle> aTriangle;   // triangle list
+    std::vector<md5Weight>   aWeight;     // weight list
 
     explicit md5Mesh(const coreChar** ppcData)noexcept
     {
@@ -140,8 +140,8 @@ struct md5Mesh final
 /* MD5-file structure */
 struct md5File final
 {
-    std::vector<md5Joint> aJoint;   //!< joint list
-    std::vector<md5Mesh>  aMesh;    //!< mesh list
+    std::vector<md5Joint> aJoint;   // joint list
+    std::vector<md5Mesh>  aMesh;    // mesh list
 
     explicit md5File(const coreChar** ppcData)noexcept
     {

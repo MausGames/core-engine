@@ -18,17 +18,17 @@
 
 // ****************************************************************
 /* data definitions */
-#define CORE_DATA_STRING_NUM (32u)    //!< number of temp-strings
-#define CORE_DATA_STRING_LEN (256u)   //!< length of each temp-string
+#define CORE_DATA_STRING_NUM (32u)    // number of temp-strings
+#define CORE_DATA_STRING_LEN (256u)   // length of each temp-string
 
 #if defined(_CORE_WINDOWS_)
-    #define CORE_DATA_SLASH "\\"      //!< default path-delimiter of the operating system (as string)
+    #define CORE_DATA_SLASH "\\"      // default path-delimiter of the operating system (as string)
 #else
     #define CORE_DATA_SLASH "/"
 #endif
 
 #if defined(_CORE_DEBUG_)
-    #define PRINT(...)   ([&]() {if(false) std::printf(__VA_ARGS__); return coreData::Print(__VA_ARGS__);}())   //!< enable format-specifier checking
+    #define PRINT(...)   ([&]() {if(false) std::printf(__VA_ARGS__); return coreData::Print(__VA_ARGS__);}())   // enable format-specifier checking
 #else
     #define PRINT(...)   (coreData::Print(__VA_ARGS__))
 #endif
@@ -43,72 +43,57 @@
 class INTERFACE coreData final
 {
 private:
-    /*! temp-string structure */
+    /* temp-string structure */
     struct coreTempString final
     {
-        coreChar* pcPointer = coreMath::CeilAlignPtr(acData, ALIGNMENT_CACHE);             //!< manually aligned pointer (auto-aligning thread-local data is not supported by the Windows 7 PE-loader)
-        coreChar  acData[CORE_DATA_STRING_NUM * CORE_DATA_STRING_LEN + ALIGNMENT_CACHE];   //!< temp-string buffer
+        coreChar* pcPointer = coreMath::CeilAlignPtr(acData, ALIGNMENT_CACHE);             // manually aligned pointer (auto-aligning thread-local data is not supported by the Windows 7 PE-loader)
+        coreChar  acData[CORE_DATA_STRING_NUM * CORE_DATA_STRING_LEN + ALIGNMENT_CACHE];   // temp-string buffer
     };
 
 
 private:
-    static thread_local coreTempString s_TempString;          //!< manually aligned temp-string buffer
-    static thread_local coreUintW      s_iCurString;          //!< current temp-string
+    static thread_local coreTempString s_TempString;          // manually aligned temp-string buffer
+    static thread_local coreUintW      s_iCurString;          // current temp-string
 
-    static coreLookupStr<const coreChar*> s_apcCommandLine;   //!< parsed command line arguments
-    static std::string                    s_sUserFolder;      //!< selected user folder
+    static coreLookupStr<const coreChar*> s_apcCommandLine;   // parsed command line arguments
+    static std::string                    s_sUserFolder;      // selected user folder
 
 
 public:
     DISABLE_CONSTRUCTION(coreData)
 
-    /*! create formatted string */
-    //! @{
+    /* create formatted string */
     template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
     static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
-    //! @}
 
-    /*! get application properties */
-    //! @{
+    /* get application properties */
     static              coreUint64 AppMemory();
     static        const coreChar*  AppPath  ();
     static inline const coreChar*  AppName  () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? (pcSlash + 1u) : pcString;}
     static inline const coreChar*  AppDir   () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<coreChar*>(pcSlash + 1u)) = '\0'; return pcString;}
-    //! @}
 
     /* get operating system properties */
-    //! @{
     static const coreChar* SystemName();
     static const coreChar* SystemUserName();
     static const coreChar* SystemDirAppData();
     static const coreChar* SystemDirTemp();
-    //! @}
 
-    /*! control current working directory */
-    //! @{
+    /* control current working directory */
     static       coreStatus SetCurDir(const coreChar* pcPath);
     static const coreChar*  GetCurDir();
-    //! @}
 
-    /*! control command line arguments */
-    //! @{
+    /* control command line arguments */
     static        void            SetCommandLine(const coreInt32 iArgc, coreChar** ppcArgv);
     static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
-    //! @}
 
-    /*! control user folder */
-    //! @{
+    /* control user folder */
     static        void            InitUserFolder();
     static inline const coreChar* UserFolder(const coreChar* pcPath) {ASSERT(pcPath) return PRINT("%s%s", s_sUserFolder.c_str(), pcPath);}
-    //! @}
 
-    /*! open URL with default web-browser */
-    //! @{
+    /* open URL with default web-browser */
     static coreStatus OpenURL(const coreChar* pcURL);
-    //! @}
 
-    /*! handle physical files and folders */
-    //! @{
+    /* handle physical files and folders */
     static coreBool    FileExists   (const coreChar* pcPath);
     static coreInt64   FileSize     (const coreChar* pcPath);
     static std::time_t FileWriteTime(const coreChar* pcPath);
@@ -117,34 +102,26 @@ public:
     static coreStatus  FileDelete   (const coreChar* pcPath);
     static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
     static coreStatus  CreateFolder (const coreChar* pcPath);
-    //! @}
 
-    /*! retrieve date and time */
-    //! @{
+    /* retrieve date and time */
     static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = TIMEMAP_CURRENT);
     static const coreChar* DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap = TIMEMAP_CURRENT);
     static inline const coreChar* DateString(const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%Y-%m-%d", pTimeMap);}
     static inline const coreChar* TimeString(const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%H:%M:%S", pTimeMap);}
-    //! @}
 
-    /*! compress and decompress data */
-    //! @{
+    /* compress and decompress data */
     static coreStatus Compress  (const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel = ZSTD_CLEVEL_DEFAULT);
     static coreStatus Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize);
     static void       Scramble  (coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey = 0u);
     static void       Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey = 0u);
-    //! @}
 
-    /*! get compile-time type information */
-    //! @{
+    /* get compile-time type information */
     template <typename T> static const     coreChar*  TypeName();
     template <typename T> static constexpr coreUint32 TypeId();
-    //! @}
 
-    /*! operate with string data */
-    //! @{
-    template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   //!< [](const coreChar  cChar)   -> coreChar
-    template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   //!< [](const coreChar* pcToken) -> void
+    /* operate with string data */
+    template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   // [](const coreChar  cChar)   -> coreChar
+    template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   // [](const coreChar* pcToken) -> void
     static constexpr    coreUintW StrLenConst (const coreChar* s)                    {return *s ? 1u + StrLenConst(s+1u) : 0u;}
     static constexpr    coreBool  StrCmpConst (const coreChar* s, const coreChar* t) {return *s ? (*s == *t) && StrCmpConst(s+1u, t+1u) : !*t;}
     static inline       coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return (*t == '*') ? StrCmpLike(s, t+1u) || (*s && StrCmpLike(s+1u, t)) : *s ? ((*t == '?') || (tolower(*s) == tolower(*t))) && StrCmpLike(s+1u, t+1u) : !*t;}
@@ -157,25 +134,18 @@ public:
     static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxSize);
     static void                   StrTrim     (std::string* OUTPUT psInput);
     static void                   StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
-    //! @}
 
-    /*! operate with containers */
-    //! @{
+    /* operate with containers */
     template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
     template <typename T> static typename std::vector<T>::iterator SwapErase(const typename std::vector<T>::iterator& oEntry, std::vector<T>* OUTPUT patContainer);
-    //! @}
 
 
 private:
-    /*! access next temp-string */
-    //! @{
+    /* access next temp-string */
     static inline RETURN_RESTRICT coreChar* __NextTempString() {if(++s_iCurString >= CORE_DATA_STRING_NUM) s_iCurString = 0u; return &s_TempString.pcPointer[s_iCurString * CORE_DATA_STRING_LEN];}
-    //! @}
 
-    /*! prepare path for system directory */
-    //! @{
+    /* prepare path for system directory */
     static const coreChar* __PrepareSystemDir(const coreChar* pcPath);
-    //! @}
 };
 
 

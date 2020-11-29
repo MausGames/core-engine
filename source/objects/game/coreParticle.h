@@ -21,37 +21,38 @@
 // TODO: automatic resizing function (preserve old values)
 // TODO: culling (also on instancing)
 // TODO: supporting ARB_uniform_buffer_object but not ARB_instanced_arrays, ARB_vertex_array_object and ARB_half_float_vertex breaks shaders, because of wrong shader-version
+// TODO: <old comment style>
 
 
 // ****************************************************************
-// particle definitions
-#define CORE_PARTICLE_INSTANCE_SIZE    (3u*sizeof(coreFloat) + 3u*sizeof(coreUint32))   //!< instancing per-particle size (position, data, color)
-#define CORE_PARTICLE_INSTANCE_BUFFERS (4u)                                             //!< number of concurrent instance data buffer
+/* particle definitions */
+#define CORE_PARTICLE_INSTANCE_SIZE    (3u*sizeof(coreFloat) + 3u*sizeof(coreUint32))   // instancing per-particle size (position, data, color)
+#define CORE_PARTICLE_INSTANCE_BUFFERS (4u)                                             // number of concurrent instance data buffer
 
 
 // ****************************************************************
-// particle class
+/* particle class */
 class coreParticle final
 {
 public:
-    //! state structure
+    /* state structure */
     struct coreState final
     {
-        coreVector3 vPosition;   //!< position of the particle
-        coreFloat   fScale;      //!< scale-factor of the particle
-        coreFloat   fAngle;      //!< orientation-angle of the particle
-        coreUint32  iColor;      //!< packed RGBA color-value
+        coreVector3 vPosition;   // position of the particle
+        coreFloat   fScale;      // scale-factor of the particle
+        coreFloat   fAngle;      // orientation-angle of the particle
+        coreUint32  iColor;      // packed RGBA color-value
     };
 
 
 private:
-    coreState m_BeginState;          //!< initial state
-    coreState m_EndState;            //!< final state
+    coreState m_BeginState;          // initial state
+    coreState m_EndState;            // final state
 
-    coreFloat m_fValue;              //!< current simulation value of the particle (from 1.0f and 0.0f)
-    coreFloat m_fSpeed;              //!< speed factor of the particle
+    coreFloat m_fValue;              // current simulation value of the particle (from 1.0f and 0.0f)
+    coreFloat m_fSpeed;              // speed factor of the particle
 
-    coreParticleEffect* m_pEffect;   //!< associated particle effect object
+    coreParticleEffect* m_pEffect;   // associated particle effect object
 
 
 private:
@@ -63,85 +64,69 @@ public:
     FRIEND_CLASS(coreParticleSystem)
     ENABLE_COPY (coreParticle)
 
-    //! check current status
-    //! @{
+    /* check current status */
     inline coreBool IsActive()const {return (m_fValue > 0.0f);}
     inline void     Disable ()      {m_fValue = 0.0f;}
-    //! @}
 
-    //! animate the particle absolute
-    //! @{
+    /* animate the particle absolute */
     inline void SetPositionAbs(const coreVector3& vBegin, const coreVector3& vEnd) {m_BeginState.vPosition = vBegin;                m_EndState.vPosition = vEnd;}
     inline void SetScaleAbs   (const coreFloat    fBegin, const coreFloat    fEnd) {m_BeginState.fScale    = fBegin;                m_EndState.fScale    = fEnd;}
     inline void SetAngleAbs   (const coreFloat    fBegin, const coreFloat    fEnd) {m_BeginState.fAngle    = fBegin;                m_EndState.fAngle    = fEnd;}
     inline void SetColor4Abs  (const coreVector4& vBegin, const coreVector4& vEnd) {m_BeginState.iColor    = vBegin.PackUnorm4x8(); m_EndState.iColor    = vEnd.PackUnorm4x8(); ASSERT((vBegin.Min() >= 0.0f) && (vBegin.Max() <= 1.0f) && (vEnd.Min() >= 0.0f) && (vEnd.Max() <= 1.0f))}
-    //! @}
 
-    //! animate the particle relative
-    //! @{
+    /* animate the particle relative */
     inline void SetPositionRel(const coreVector3& vBegin, const coreVector3& vMove) {this->SetPositionAbs(vBegin, vBegin + vMove);}
     inline void SetScaleRel   (const coreFloat    fBegin, const coreFloat    fMove) {this->SetScaleAbs   (fBegin, fBegin + fMove);}
     inline void SetAngleRel   (const coreFloat    fBegin, const coreFloat    fMove) {this->SetAngleAbs   (fBegin, fBegin + fMove);}
     inline void SetColor4Rel  (const coreVector4& vBegin, const coreVector4& vMove) {this->SetColor4Abs  (vBegin, vBegin + vMove);}
-    //! @}
 
-    //! animate the particle static
-    //! @{
+    /* animate the particle static */
     inline void SetPositionStc(const coreVector3& vStatic) {this->SetPositionAbs(vStatic, vStatic);}
     inline void SetScaleStc   (const coreFloat    fStatic) {this->SetScaleAbs   (fStatic, fStatic);}
     inline void SetAngleStc   (const coreFloat    fStatic) {this->SetAngleAbs   (fStatic, fStatic);}
     inline void SetColor4Stc  (const coreVector4& vStatic) {const coreUint32 iPack = vStatic.PackUnorm4x8(); m_BeginState.iColor = iPack; m_EndState.iColor = iPack; ASSERT((vStatic.Min() >= 0.0f) && (vStatic.Max() <= 1.0f))}
-    //! @}
 
-    //! retrieve interpolated values
-    //! @{
+    /* retrieve interpolated values */
     inline coreVector3 GetCurPosition()const {return LERP(m_EndState.vPosition,                           m_BeginState.vPosition,                           m_fValue);}
     inline coreFloat   GetCurScale   ()const {return LERP(m_EndState.fScale,                              m_BeginState.fScale,                              m_fValue);}
     inline coreFloat   GetCurAngle   ()const {return LERP(m_EndState.fAngle,                              m_BeginState.fAngle,                              m_fValue);}
     inline coreVector4 GetCurColor4  ()const {return LERP(coreVector4::UnpackUnorm4x8(m_EndState.iColor), coreVector4::UnpackUnorm4x8(m_BeginState.iColor), m_fValue);}
-    //! @}
 
-    //! set object properties
-    //! @{
+    /* set object properties */
     inline void SetSpeed(const coreFloat fSpeed) {m_fSpeed = fSpeed;}
-    //! @}
 
-    //! get object properties
-    //! @{
+    /* get object properties */
     inline const coreFloat&    GetValue ()const {return m_fValue;}
     inline const coreFloat&    GetSpeed ()const {return m_fSpeed;}
     inline coreParticleEffect* GetEffect()const {return m_pEffect;}
-    //! @}
 
 
 private:
-    //! control the particle
-    //! @{
+    /* control the particle */
     inline void __Prepare(coreParticleEffect* pEffect) {m_pEffect = pEffect; m_fValue = 1.0f;}
     inline void __Update();
-    //! @}
 };
 
 
 // ****************************************************************
-// particle system class
+/* particle system class */
 class coreParticleSystem final : public coreResourceRelation
 {
 private:
-    coreParticle* m_pParticle;                                                      //!< pre-allocated particles
-    coreUint32    m_iNumParticles;                                                  //!< number of particles
-    coreUint32    m_iCurParticle;                                                   //!< current particle
+    coreParticle* m_pParticle;                                                      // pre-allocated particles
+    coreUint32    m_iNumParticles;                                                  // number of particles
+    coreUint32    m_iCurParticle;                                                   // current particle
 
-    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                 //!< multiple texture objects
-    coreProgramPtr m_pProgram;                                                      //!< shader-program object
+    coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                 // multiple texture objects
+    coreProgramPtr m_pProgram;                                                      // shader-program object
 
-    std::deque<coreParticle*> m_apRenderList;                                       //!< sorted render list with active particles
-    coreParticleEffect*       m_pDefaultEffect;                                     //!< default particle effect object (dynamic, because of class order)
+    std::deque<coreParticle*> m_apRenderList;                                       // sorted render list with active particles
+    coreParticleEffect*       m_pDefaultEffect;                                     // default particle effect object (dynamic, because of class order)
 
-    coreRing<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;     //!< vertex array objects
-    coreRing<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aInstanceBuffer;   //!< instance data buffers
+    coreRing<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;     // vertex array objects
+    coreRing<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aInstanceBuffer;   // instance data buffers
 
-    coreBool m_bUpdate;                                                             //!< buffer update status (dirty flag)
+    coreBool m_bUpdate;                                                             // buffer update status (dirty flag)
 
 
 public:
@@ -150,8 +135,7 @@ public:
 
     DISABLE_COPY(coreParticleSystem)
 
-    //! define the visual appearance
-    //! @{
+    /* define the visual appearance */
     inline void DefineTexture(const coreUintW iUnit, std::nullptr_t)                 {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = NULL;}
     inline void DefineTexture(const coreUintW iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
     inline void DefineTexture(const coreUintW iUnit, const coreHashString& sName)    {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(sName);}
@@ -159,64 +143,51 @@ public:
     inline void DefineProgram(const coreProgramPtr& pProgram)                        {m_pProgram = pProgram;}
     inline void DefineProgram(const coreHashString& sName)                           {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
     void Undefine();
-    //! @}
 
-    //! render and move the particle system
-    //! @{
+    /* render and move the particle system */
     void Render();
     void Move  ();
-    //! @}
 
-    //! create new particles
-    //! @{
+    /* create new particles */
     coreParticle*        CreateParticle(coreParticleEffect* pEffect);
     inline coreParticle* CreateParticle() {return this->CreateParticle(m_pDefaultEffect);}
-    //! @}
 
-    //! unbind and remove particles
-    //! @{
+    /* unbind and remove particles */
     void Unbind(coreParticleEffect* pEffect);
     void Clear (coreParticleEffect* pEffect);
     void UnbindAll();
     void ClearAll ();
-    //! @}
 
-    //! update particles with custom simulation
-    //! @{
-    template <typename F> void ForEachParticle   (coreParticleEffect* pEffect, F&& nUpdateFunc);   //!< [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
-    template <typename F> void ForEachParticleAll(F&& nUpdateFunc);                                //!< [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
-    //! @}
+    /* update particles with custom simulation */
+    template <typename F> void ForEachParticle   (coreParticleEffect* pEffect, F&& nUpdateFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
+    template <typename F> void ForEachParticleAll(F&& nUpdateFunc);                                // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
-    //! get object properties
-    //! @{
+    /* get object properties */
     inline const coreTexturePtr& GetTexture           (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
     inline const coreProgramPtr& GetProgram           ()const                      {return m_pProgram;}
     inline const coreUint32&     GetNumParticles      ()const                      {return m_iNumParticles;}
     inline       coreUintW       GetNumActiveParticles()const                      {return m_apRenderList.size();}
     inline coreParticleEffect*   GetDefaultEffect     ()const                      {return m_pDefaultEffect;}
-    //! @}
 
 
 private:
-    //! reset with the resource manager
-    //! @{
+    /* reset with the resource manager */
     void __Reset(const coreResourceReset eInit)final;
-    //! @}
 };
 
 
 // ****************************************************************
-// particle effect class
+/* particle effect class */
 class coreParticleEffect final
 {
 private:
-    coreFlow m_fCreation;            //!< status value for particle creation
+    coreFlow m_fCreation;            // status value for particle creation
 
-    coreInt8      m_iTimeID;         //!< ID of the used frame time
-    coreObject3D* m_pOrigin;         //!< origin object for relative movement
+    coreInt8      m_iTimeID;         // ID of the used frame time
+    coreObject3D* m_pOrigin;         // origin object for relative movement
 
-    coreParticleSystem* m_pSystem;   //!< associated particle system object
-    coreParticleEffect* m_pThis;     //!< pointer to foreign default object or to itself (to improve destructor performance)
+    coreParticleSystem* m_pSystem;   // associated particle system object
+    coreParticleEffect* m_pThis;     // pointer to foreign default object or to itself (to improve destructor performance)
 
 
 public:
@@ -226,56 +197,40 @@ public:
 
     FRIEND_CLASS(coreParticleSystem)
 
-    //! assignment operations
-    //! @{
+    /* assignment operations */
     coreParticleEffect& operator = (const coreParticleEffect& c)noexcept;
-    //! @}
 
-    //! create new particles
-    //! @{
-    template <typename F> void CreateParticle(const coreUintW iNum, const coreFloat fFrequency, F&& nInitFunc);   //!< [](coreParticle* OUTPUT pParticle) -> void
-    template <typename F> void CreateParticle(const coreUintW iNum,                             F&& nInitFunc);   //!< [](coreParticle* OUTPUT pParticle) -> void
+    /* create new particles */
+    template <typename F> void CreateParticle(const coreUintW iNum, const coreFloat fFrequency, F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle) -> void
+    template <typename F> void CreateParticle(const coreUintW iNum,                             F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle) -> void
     inline coreParticle* CreateParticle() {ASSERT(m_pSystem) return m_pSystem->CreateParticle(m_pThis);}
-    //! @}
 
-    //! unbind and remove particles
-    //! @{
+    /* unbind and remove particles */
     inline void Unbind() {if(m_pSystem) m_pSystem->Unbind(m_pThis);}
     inline void Clear () {if(m_pSystem) m_pSystem->Clear (m_pThis);}
-    //! @}
 
-    //! update particles with custom simulation
-    //! @{
-    template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(m_pThis, nUpdateFunc);}   //!< [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
-    //! @}
+    /* update particles with custom simulation */
+    template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(m_pThis, nUpdateFunc);}   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
-    //! change associated particle system object
-    //! @{
+    /* change associated particle system object */
     void ChangeSystem(coreParticleSystem* pSystem, const coreBool bUnbind);
-    //! @}
 
-    //! check for dynamic behavior
-    //! @{
+    /* check for dynamic behavior */
     inline coreBool IsDynamic()const {return (m_pThis == this);}
-    //! @}
 
-    //! set object properties
-    //! @{
+    /* set object properties */
     inline void SetTimeID(const coreInt8 iTimeID) {m_pThis = this; m_iTimeID = iTimeID;}
     inline void SetOrigin(coreObject3D*  pOrigin) {m_pThis = this; m_pOrigin = pOrigin;}
-    //! @}
 
-    //! get object properties
-    //! @{
+    /* get object properties */
     inline const coreInt8&     GetTimeID()const {return m_iTimeID;}
     inline coreObject3D*       GetOrigin()const {return m_pOrigin;}
     inline coreParticleSystem* GetSystem()const {return m_pSystem;}
-    //! @}
 };
 
 
 // ****************************************************************
-// update the particle
+/* update the particle */
 inline void coreParticle::__Update()
 {
     ASSERT(m_pEffect)
@@ -286,7 +241,7 @@ inline void coreParticle::__Update()
 
 
 // ****************************************************************
-// update particles with custom simulation
+/* update particles with custom simulation */
 template <typename F> void coreParticleSystem::ForEachParticle(coreParticleEffect* pEffect, F&& nUpdateFunc)
 {
     ASSERT(pEffect)
@@ -321,7 +276,7 @@ template <typename F> void coreParticleSystem::ForEachParticleAll(F&& nUpdateFun
 
 
 // ****************************************************************
-// create new particles
+/* create new particles */
 template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iNum, const coreFloat fFrequency, F&& nInitFunc)
 {
     ASSERT(fFrequency <= 60.0f)
@@ -348,4 +303,4 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
 }
 
 
-#endif // _CORE_GUARD_PARTICLE_H_
+#endif /* _CORE_GUARD_PARTICLE_H_ */

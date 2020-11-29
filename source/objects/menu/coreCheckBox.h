@@ -10,16 +10,18 @@
 #ifndef _CORE_GUARD_CHECKBOX_H_
 #define _CORE_GUARD_CHECKBOX_H_
 
+// TODO: <old comment style>
+
 
 // ****************************************************************
-// menu check-box class
+/* menu check-box class */
 class coreCheckBox : public coreButton
 {
 private:
-    coreTexturePtr m_apUnchecked[2];   //!< unchecked background textures (0 = idle | 1 = busy)
-    coreTexturePtr m_apChecked  [2];   //!< checked background textures   (0 = idle | 1 = busy)
+    coreTexturePtr m_apUnchecked[2];   // unchecked background textures (0 = idle | 1 = busy)
+    coreTexturePtr m_apChecked  [2];   // checked background textures   (0 = idle | 1 = busy)
 
-    coreBool m_bCheck;                 //!< check status
+    coreBool m_bCheck;                 // check status
 
 
 public:
@@ -30,34 +32,24 @@ public:
 
     DISABLE_COPY(coreCheckBox)
 
-    //! construct the check-box
-    //! @{
+    /* construct the check-box */
     void Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked);
     void Construct(const coreHashString& sIdleUnchecked, const coreHashString& sBusyUnchecked, const coreHashString& sIdleChecked, const coreHashString& sBusyChecked, const coreHashString& sFont, const coreUint8 iHeight, const coreUint8 iOutline);
-    //! @}
 
-    //! move the check-box
-    //! @{
+    /* move the check-box */
     virtual void Move()override;
-    //! @}
 
-    //! set object properties
-    //! @{
+    /* set object properties */
     void SetCheck(const coreBool bCheck);
-    //! @}
 
-    //! get object properties
-    //! @{
+    /* get object properties */
     inline const coreBool& GetCheck()const {return m_bCheck;}
-    //! @}
 
 
 private:
-    //! construct the check-box
-    //! @{
+    /* construct the check-box */
     void __Construct(const coreHashString& sIdleChecked, const coreHashString& sBusyChecked);
-    //! @}
 };
 
 
-#endif // _CORE_GUARD_CHECKBOX_H_
+#endif /* _CORE_GUARD_CHECKBOX_H_ */
