@@ -178,8 +178,8 @@ private:
     void __UnbindObject(coreObject3D* pObject, const coreInt32 iType);
 
     /* bind and unbind 2d-objects */
-    inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!m_apSpriteList.count(pSprite)) m_apSpriteList.insert(pSprite);}
-    inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( m_apSpriteList.count(pSprite)) m_apSpriteList.erase (pSprite);}
+    inline void __BindSprite  (coreObject2D* pSprite) {ASSERT(!m_apSpriteList.count_bs(pSprite)) m_apSpriteList.insert_bs(pSprite);}
+    inline void __UnbindSprite(coreObject2D* pSprite) {ASSERT( m_apSpriteList.count_bs(pSprite)) m_apSpriteList.erase_bs (pSprite);}
 
     /* handle and track new collisions */
     coreBool __NewCollision(const coreObject3D* pObject1, const coreObject3D* pObject2);

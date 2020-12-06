@@ -247,8 +247,8 @@ private:
     void __LoadDefault();
 
     /* bind and unbind relation-objects */
-    inline void __BindRelation  (coreResourceRelation* pRelation) {ASSERT(!m_apRelation.count(pRelation)) m_apRelation.insert(pRelation);}
-    inline void __UnbindRelation(coreResourceRelation* pRelation) {ASSERT( m_apRelation.count(pRelation)) m_apRelation.erase (pRelation);}
+    inline void __BindRelation  (coreResourceRelation* pRelation) {ASSERT(!m_apRelation.count_bs(pRelation)) m_apRelation.insert_bs(pRelation);}
+    inline void __UnbindRelation(coreResourceRelation* pRelation) {ASSERT( m_apRelation.count_bs(pRelation)) m_apRelation.erase_bs (pRelation);}
 };
 
 

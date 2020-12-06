@@ -101,8 +101,8 @@ public:
 
 private:
     /* bind and unbind translation objects */
-    inline void __BindObject  (coreTranslate* pObject) {ASSERT(!m_apObject.count(pObject)) m_apObject.insert(pObject);}
-    inline void __UnbindObject(coreTranslate* pObject) {ASSERT( m_apObject.count(pObject)) m_apObject.erase (pObject);}
+    inline void __BindObject  (coreTranslate* pObject) {ASSERT(!m_apObject.count_bs(pObject)) m_apObject.insert_bs(pObject);}
+    inline void __UnbindObject(coreTranslate* pObject) {ASSERT( m_apObject.count_bs(pObject)) m_apObject.erase_bs (pObject);}
 };
 
 

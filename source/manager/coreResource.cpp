@@ -240,7 +240,7 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
             this->AssignProxy((*m_apProxy.get_key(it)), (*it));
 
         // start up relation-objects
-        for(coreUintW i = 0u; i < m_apRelation.size(); ++i)
+        for(coreUintW i = 0u, ie = m_apRelation.size(); i < ie; ++i)
             m_apRelation[i]->__Reset(CORE_RESOURCE_RESET_INIT);
 
         // start resource thread
@@ -254,7 +254,7 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
             this->KillThread();
 
         // shut down relation-objects
-        for(coreUintW i = 0u; i < m_apRelation.size(); ++i)
+        for(coreUintW i = 0u, ie = m_apRelation.size(); i < ie; ++i)
             m_apRelation[i]->__Reset(CORE_RESOURCE_RESET_EXIT);
 
         // unload all resources
