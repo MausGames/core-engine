@@ -15,7 +15,7 @@
 // TODO: reduce memory consumption with all the redundant keys in containers
 // TODO: determine number of entries and call reserve(x)
 // TODO: try to use strtok()
-// TODO: use bs lookup interface (.at has no bs, adding entries also needs bs)
+// TODO: use bs lookup interface for m_asStringList and m_apsForeign (.at has no bs, adding entries also needs bs)
 
 
 // ****************************************************************

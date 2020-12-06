@@ -19,6 +19,7 @@
 // TODO: extend OnLoad interface with new functions, call directly after load instead of threaded ?
 // TODO: resources exist only within handles, redefine all interfaces
 // TODO: investigate possible GPU memory fragmentation when streaming in and out lots of resources
+// TODO: reducing ref-count to 0 while resource-manager is waiting on (GL)sync-object may keep the resource half loaded (including shaders active within program), no issue as resource is recoverable, but it is not intended
 // TODO: defer resource-unload on ref-count 0 to an explicit call at the end of a frame
 
 

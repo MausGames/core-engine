@@ -153,6 +153,7 @@
     #define INTERFACE        __declspec(novtable)   // pure interface class without direct instantiation
     #define FORCE_INLINE     __forceinline          // always inline the function
     #define DONT_INLINE      __declspec(noinline)   // never inline the function
+    #define WITHIN_INLINE                           // inline everything within the function
     #define FALLTHROUGH      [[fallthrough]];       // intentionally fall through to the next switch-label
     #define RETURN_RESTRICT  __declspec(restrict)   // returned object will not be aliased with another pointer
     #define RETURN_NONNULL   _Ret_notnull_          // returned pointer will not be null
@@ -168,6 +169,7 @@
     #define INTERFACE
     #define FORCE_INLINE     __attribute__((always_inline)) inline
     #define DONT_INLINE      __attribute__((noinline))
+    #define WITHIN_INLINE    __attribute__((flatten))
     #define FALLTHROUGH      [[fallthrough]];
     #define RETURN_RESTRICT  __attribute__((returns_nonnull, malloc))
     #define RETURN_NONNULL   __attribute__((returns_nonnull))
@@ -444,6 +446,7 @@ using coreInt8   = std::int8_t;
 using coreInt16  = std::int16_t;
 using coreInt32  = std::int32_t;
 using coreInt64  = std::int64_t;
+using coreIntW   = std::make_signed<std::size_t>::type;
 using coreUint8  = std::uint8_t;
 using coreUint16 = std::uint16_t;
 using coreUint32 = std::uint32_t;
