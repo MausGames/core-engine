@@ -105,19 +105,19 @@ public:
     void DisplayTexture(const coreTexturePtr& pTexture, const coreVector2& vSize = coreVector2(0.2f,0.2f));
 
     /* measure performance between specific points */
-    void MeasureStart(const coreChar* pcName);
-    void MeasureEnd  (const coreChar* pcName);
+    void MeasureStart(const coreHashString& sName);
+    void MeasureEnd  (const coreHashString& sName);
 
     /* inspect and display values during run-time */
-    template <typename... A> void InspectValue(const coreChar* pcName, const coreChar* pcFormat, A&&... vArgs);
-    inline void InspectValue(const coreChar* pcName, const coreBool     bValue) {this->InspectValue(pcName, bValue ? "true" : "false");}
-    inline void InspectValue(const coreChar* pcName, const coreInt32    iValue) {this->InspectValue(pcName, "%d",                     iValue);}
-    inline void InspectValue(const coreChar* pcName, const coreUint32   iValue) {this->InspectValue(pcName, "%u",                     iValue);}
-    inline void InspectValue(const coreChar* pcName, const coreFloat    fValue) {this->InspectValue(pcName, "%.5f",                   fValue);}
-    inline void InspectValue(const coreChar* pcName, const coreVector2& vValue) {this->InspectValue(pcName, "%.5f, %.5f",             vValue.x, vValue.y);}
-    inline void InspectValue(const coreChar* pcName, const coreVector3& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
-    inline void InspectValue(const coreChar* pcName, const coreVector4& vValue) {this->InspectValue(pcName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
-    inline void InspectValue(const coreChar* pcName, const void*        pValue) {this->InspectValue(pcName, "0x%08X",                 P_TO_UI(pValue));}
+    template <typename... A> void InspectValue(const coreHashString& sName, const coreChar* pcFormat, A&&... vArgs);
+    inline void InspectValue(const coreHashString& sName, const coreBool     bValue) {this->InspectValue(sName, bValue ? "true" : "false");}
+    inline void InspectValue(const coreHashString& sName, const coreInt32    iValue) {this->InspectValue(sName, "%d",                     iValue);}
+    inline void InspectValue(const coreHashString& sName, const coreUint32   iValue) {this->InspectValue(sName, "%u",                     iValue);}
+    inline void InspectValue(const coreHashString& sName, const coreFloat    fValue) {this->InspectValue(sName, "%.5f",                   fValue);}
+    inline void InspectValue(const coreHashString& sName, const coreVector2& vValue) {this->InspectValue(sName, "%.5f, %.5f",             vValue.x, vValue.y);}
+    inline void InspectValue(const coreHashString& sName, const coreVector3& vValue) {this->InspectValue(sName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
+    inline void InspectValue(const coreHashString& sName, const coreVector4& vValue) {this->InspectValue(sName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
+    inline void InspectValue(const coreHashString& sName, const void*        pValue) {this->InspectValue(sName, "0x%08X",                 P_TO_UI(pValue));}
 
     /* check for debug-monitor status */
     inline const coreBool& IsEnabled()const {return m_bEnabled;}
@@ -135,15 +135,15 @@ private:
 
 // ****************************************************************
 /* inspect and display values during run-time */
-template <typename... A> void CoreDebug::InspectValue(const coreChar* pcName, const coreChar* pcFormat, A&&... vArgs)
+template <typename... A> void CoreDebug::InspectValue(const coreHashString& sName, const coreChar* pcFormat, A&&... vArgs)
 {
     if(!m_bEnabled) return;
 
-    if(!m_apInspect.count(pcName))
+    if(!m_apInspect.count(sName))
     {
         // create new inspect object
         coreInspect* pNewInspect = new coreInspect();
-        m_apInspect.emplace(pcName, pNewInspect);
+        m_apInspect.emplace(sName, pNewInspect);
 
         // configure output label
         coreLabel& oOutput = pNewInspect->oOutput;
@@ -154,7 +154,7 @@ template <typename... A> void CoreDebug::InspectValue(const coreChar* pcName, co
     }
 
     // write formatted values to output label
-    m_apInspect.at(pcName)->oOutput.SetText(PRINT("%s = %s", pcName, PRINT(pcFormat, std::forward<A>(vArgs)...)));
+    m_apInspect.at(sName)->oOutput.SetText(PRINT("%s = %s", sName.GetString(), PRINT(pcFormat, std::forward<A>(vArgs)...)));
 }
 
 

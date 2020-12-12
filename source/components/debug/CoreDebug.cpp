@@ -175,15 +175,15 @@ void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreVector2
 
 // ****************************************************************
 /* start measuring performance */
-void CoreDebug::MeasureStart(const coreChar* pcName)
+void CoreDebug::MeasureStart(const coreHashString& sName)
 {
     if(!m_bEnabled) return;
 
-    if(!m_apMeasure.count(pcName))
+    if(!m_apMeasure.count(sName))
     {
         // create new measure object
         coreMeasure* pNewMeasure = new coreMeasure();
-        m_apMeasure.emplace(pcName, pNewMeasure);
+        m_apMeasure.emplace(sName, pNewMeasure);
 
         if(CORE_GL_SUPPORT(ARB_timer_query))
         {
@@ -207,7 +207,7 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
         oOutput.SetColor3   (COLOR_BLUE);
     }
 
-    coreMeasure* pMeasure = m_apMeasure.at(pcName);
+    coreMeasure* pMeasure = m_apMeasure.at(sName);
 
     // start pipeline statistics
     if(pMeasure == m_pOverall) this->__StatStart();
@@ -220,13 +220,13 @@ void CoreDebug::MeasureStart(const coreChar* pcName)
 
 // ****************************************************************
 /* end measuring performance */
-void CoreDebug::MeasureEnd(const coreChar* pcName)
+void CoreDebug::MeasureEnd(const coreHashString& sName)
 {
     if(!m_bEnabled) return;
 
     // get requested measure object
-    WARN_IF(!m_apMeasure.count(pcName)) return;
-    coreMeasure* pMeasure = m_apMeasure.at(pcName);
+    WARN_IF(!m_apMeasure.count(sName)) return;
+    coreMeasure* pMeasure = m_apMeasure.at(sName);
 
     // fetch second CPU time value and update CPU performance value
     const coreFloat fDifferenceCPU = coreFloat(coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
@@ -251,6 +251,7 @@ void CoreDebug::MeasureEnd(const coreChar* pcName)
         pMeasure->fCurrentGPU = pMeasure->fCurrentGPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceGPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
     }
 
+    const coreChar* pcName = sName.GetString();
     if(pMeasure == m_pOverall)
     {
         // end pipeline statistics
