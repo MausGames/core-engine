@@ -77,7 +77,9 @@ public:
 
     /* create new entry */
     template <typename... A> void emplace   (const I& tKey, A&&... vArgs);
+    template <typename... A> void emplace   (I&&      tKey, A&&... vArgs);
     template <typename... A> void emplace_bs(const I& tKey, A&&... vArgs);
+    template <typename... A> void emplace_bs(I&&      tKey, A&&... vArgs);
 
     /* remove existing entry */
     coreBool                 erase    (const I& tKey);
@@ -303,17 +305,29 @@ template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::a
 /* create new entry */
 template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace(const I& tKey, A&&... vArgs)
 {
+    // copy and move key
+    this->emplace(std::move(I(tKey)), std::forward<A>(vArgs)...);
+}
+
+template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace(I&& tKey, A&&... vArgs)
+{
     ASSERT(!this->count(tKey))
 
     // create new entry
     m_atValueList.emplace_back(std::forward<A>(vArgs)...);
-    m_atKeyList  .push_back(tKey);
+    m_atKeyList  .push_back(std::move(tKey));
 
     // cache current entry
     this->_cache_set(m_atValueList.size() - 1u);
 }
 
 template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace_bs(const I& tKey, A&&... vArgs)
+{
+    // copy and move key
+    this->emplace_bs(std::move(I(tKey)), std::forward<A>(vArgs)...);
+}
+
+template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace_bs(I&& tKey, A&&... vArgs)
 {
     ASSERT(!this->count_bs(tKey))
 
@@ -322,7 +336,7 @@ template <typename K, typename I, typename T> template <typename... A> void core
 
     // create new entry
     m_atValueList.emplace(this->get_value(it), std::forward<A>(vArgs)...);
-    it = m_atKeyList.insert(it, tKey);
+    it = m_atKeyList.insert(it, std::move(tKey));
 
     // cache current entry
     this->_cache_set(it - m_atKeyList.begin());
