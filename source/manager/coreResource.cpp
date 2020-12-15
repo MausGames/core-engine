@@ -233,6 +233,9 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
     if(m_bActive == bActive) return;
     m_bActive = bActive;
 
+    // copy list with relation-objects (container may change)
+    const coreSet<coreResourceRelation*> apRelationCopy = m_apRelation;
+
     if(m_bActive)
     {
         // reload resource proxies
@@ -240,8 +243,8 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
             this->AssignProxy((*m_apProxy.get_key(it)), (*it));
 
         // start up relation-objects
-        for(coreUintW i = 0u, ie = m_apRelation.size(); i < ie; ++i)
-            m_apRelation[i]->__Reset(CORE_RESOURCE_RESET_INIT);
+        FOR_EACH(it, apRelationCopy)
+            (*it)->__Reset(CORE_RESOURCE_RESET_INIT);
 
         // start resource thread
         if(Core::Graphics->GetResourceContext())
@@ -254,8 +257,8 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
             this->KillThread();
 
         // shut down relation-objects
-        for(coreUintW i = 0u, ie = m_apRelation.size(); i < ie; ++i)
-            m_apRelation[i]->__Reset(CORE_RESOURCE_RESET_EXIT);
+        FOR_EACH(it, apRelationCopy)
+            if(m_apRelation.count_bs(*it)) (*it)->__Reset(CORE_RESOURCE_RESET_EXIT);
 
         // unload all resources
         FOR_EACH(it, m_apHandle)
