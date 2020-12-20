@@ -16,7 +16,7 @@
     #include <dirent.h>
     #include <sys/utsname.h>
     #include <pwd.h>
-#elif defined(_CORE_OSX_)
+#elif defined(_CORE_MACOS_)
     #include <mach-o/dyld.h>
     #include <pwd.h>
 #elif defined(_CORE_ANDROID_)
@@ -95,7 +95,7 @@ const coreChar* coreData::AppPath()
         return pcString;
     }
 
-#elif defined(_CORE_OSX_)
+#elif defined(_CORE_MACOS_)
 
     // get path of the current executable
     coreUint32 iLen = CORE_DATA_STRING_LEN;
@@ -176,9 +176,9 @@ const coreChar* coreData::SystemName()
     // return full operating system name
     return PRINT("%s %s (%s)", oInfo.sysname, oInfo.release, oInfo.version);
 
-#elif defined(_CORE_OSX_)
+#elif defined(_CORE_MACOS_)
 
-    return "OSX";
+    return "macOS";
 
 #elif defined(_CORE_ANDROID_)
 
@@ -207,7 +207,7 @@ const coreChar* coreData::SystemUserName()
     DWORD nSize = CORE_DATA_STRING_LEN;
     if(GetUserNameA(pcString, &nSize)) return pcString;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     // get user name from password database
     const passwd* pRecord = getpwuid(geteuid());
@@ -316,7 +316,7 @@ coreStatus coreData::SetCurDir(const coreChar* pcPath)
 
     if(SetCurrentDirectoryA(pcPath)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     if(!chdir(pcPath)) return CORE_OK;
 
@@ -343,7 +343,7 @@ const coreChar* coreData::GetCurDir()
         return pcString;
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     // get raw working directory
     if(getcwd(pcString, CORE_DATA_STRING_LEN - 1u))
@@ -427,7 +427,7 @@ coreStatus coreData::OpenURL(const coreChar* pcURL)
     // delegate request to the Linux command processor (/bin/sh)
     if(std::system(NULL) && !std::system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
 
-#elif defined(_CORE_OSX_)
+#elif defined(_CORE_MACOS_)
 
     // delegate request to the OSX command processor
     if(std::system(NULL) && !std::system(PRINT("open %s", pcURL))) return CORE_OK;
@@ -447,7 +447,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
     // quick Windows check
     if(GetFileAttributesA(pcPath) != INVALID_FILE_ATTRIBUTES) return true;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     struct stat oBuffer;
 
@@ -487,7 +487,7 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
                (coreInt64(oAttributes.nFileSizeLow));
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     struct stat oBuffer;
 
@@ -532,7 +532,7 @@ std::time_t coreData::FileWriteTime(const coreChar* pcPath)
         return r_cast<coreUint64&>(oAttributes.ftLastWriteTime) / 10000000ull - 11644473600ull;
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     struct stat oBuffer;
 
@@ -558,7 +558,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
     // copy directly (with attributes)
     if(CopyFileA(pcFrom, pcTo, false)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     // open source file
     std::FILE* pFileFrom = std::fopen(pcFrom, "rb");
@@ -602,7 +602,7 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 
     if(MoveFileExA(pcFrom, pcTo, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     if(!rename(pcFrom, pcTo)) return CORE_OK;
 
@@ -620,7 +620,7 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
     if(DeleteFileA(pcPath)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_OSX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     if(!unlink(pcPath)) return CORE_OK;
 

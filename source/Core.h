@@ -74,6 +74,14 @@
     #undef  _CORE_GCC_
 #endif
 
+// architecture
+#if defined(_M_IX86) || defined(__i386__) || defined(_M_X64) || defined(__x86_64__)
+    #define _CORE_X86_
+#endif
+#if defined(_M_ARM) || defined(__arm__) || defined(_M_ARM64) || defined(__aarch64__)
+    #define _CORE_ARM_
+#endif
+
 // operating system
 #if defined(_WIN32)
     #define _CORE_WINDOWS_
@@ -82,7 +90,7 @@
     #define _CORE_LINUX_
 #endif
 #if defined(__APPLE__) && TARGET_OS_MAC
-    #define _CORE_OSX_
+    #define _CORE_MACOS_
 #endif
 #if defined(__ANDROID__)
     #define _CORE_ANDROID_
@@ -90,7 +98,7 @@
 #endif
 #if defined(__APPLE__) && TARGET_OS_IPHONE
     #define _CORE_IOS_
-    #undef  _CORE_OSX_
+    #undef  _CORE_MACOS_
 #endif
 
 // run-time type information
@@ -123,21 +131,29 @@
     #define _CORE_GLES_
 #endif
 
-// x64 instruction set
-#if defined(_M_X64) || defined(__x86_64__)
-    #define _CORE_X64_
+// 64-bit instruction set
+#if defined(_M_X64) || defined(__x86_64__) || defined(_M_ARM64) || defined(__aarch64__)
+    #define _CORE_64BIT_
 #endif
 
-// SSE2 instruction set
-#if defined(_CORE_X64_) && !defined(_CORE_MOBILE_)
+// SSE instruction set
+#if defined(_CORE_X86_) && defined(_CORE_64BIT_)
     #define _CORE_SSE_
+#endif
+
+// NEON instruction set
+#if defined(_CORE_ARM_) && defined(_CORE_64BIT_)
+    #define _CORE_NEON_
 #endif
 
 // target configuration checks
 #if ((_CORE_MSVC_) < 1920) && ((_CORE_GCC_) < 90201) && ((_CORE_CLANG_) < 90000)
     #error Compiler not supported!
 #endif
-#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_OSX_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_)
+#if !defined(_CORE_X86_) && !defined(_CORE_ARM_)
+    #error Architecture not supported!
+#endif
+#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_MACOS_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_)
     #error Operating System not supported!
 #endif
 #if !defined(_CORE_DEBUG_) && (defined(_CORE_RTTI_) || defined(_CORE_EXCEPTIONS_))
@@ -209,7 +225,7 @@
     #pragma warning(disable : 5045)   // possible Spectre vulnerability
 
     // check for floating-point results stored in memory, causing performance loss
-    #if defined(_CORE_X64_)
+    #if defined(_CORE_64BIT_)
         #pragma warning(error : 4738)
     #else
         #pragma warning(disable : 4738)
@@ -249,7 +265,7 @@
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
 #endif
-#if defined(_CORE_X64_)
+#if defined(_CORE_64BIT_)
     #define _WIN32_WINNT _WIN32_WINNT_WIN10
 #else
     #define _WIN32_WINNT _WIN32_WINNT_WIN7
@@ -263,6 +279,8 @@
 #endif
 #if defined(_CORE_SSE_)
     #include <immintrin.h>
+#elif defined(_CORE_NEON_)
+    #include <arm_neon.h>
 #endif
 #include <cstdlib>
 #include <cstdio>

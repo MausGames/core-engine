@@ -40,7 +40,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fputs("</style>                                        \n", m_pFile);
 
         // write application data and timestamp
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s, %s, %s) <br />\n", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", DEFINED(_CORE_X64_) ? "x64" : "x86");
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s, %s, %s) <br />\n", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", DEFINED(_CORE_64BIT_) ? "64" : "32");
         std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s              <br />\n", coreData::DateString(), coreData::TimeString());
 
         // flush log file
