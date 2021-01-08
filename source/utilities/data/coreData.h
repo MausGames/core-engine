@@ -14,6 +14,7 @@
 // TODO: implement constexpr strright
 // TODO: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
 // TODO: --help, --force-x86, --force-x64 (windows, launcher?)
+// TODO: remove ToChars and FromChars float overloads if all std-libs support it, also add precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 
 
 // ****************************************************************
@@ -65,6 +66,10 @@ public:
     /* create formatted string */
     template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
     static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
+
+    /* convert between trivial value and string */
+    template <typename T> static const coreChar* ToChars  (const T& tValue);
+    template <typename T> static T               FromChars(const coreChar* pcString, const coreUintW iLen);
 
     /* get application properties */
     static              coreUint64 AppMemory();
@@ -161,6 +166,41 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 
     return pcString;
 }
+
+
+// ****************************************************************
+/* convert trivial value to string */
+template <typename T> const coreChar* coreData::ToChars(const T& tValue)
+{
+    coreChar* pcString = coreData::__NextTempString();
+
+    // use high-performance conversion
+    const std::to_chars_result oResult = std::to_chars(pcString, pcString + CORE_DATA_STRING_LEN - 1u, tValue);
+    WARN_IF(oResult.ec != std::errc()) return "";
+
+    // always null-terminate
+    (*oResult.ptr) = '\0';
+
+    return pcString;
+}
+
+template <> inline const coreChar* coreData::ToChars(const coreFloat& tValue) {return PRINT("%f", tValue);}
+
+
+// ****************************************************************
+/* convert string to trivial value */
+template <typename T> T coreData::FromChars(const coreChar* pcString, const coreUintW iLen)
+{
+    T tValue;
+
+    // use high-performance conversion
+    const std::from_chars_result oResult = std::from_chars(pcString, pcString + iLen, tValue);
+    WARN_IF(oResult.ec != std::errc()) return T(0);
+
+    return tValue;
+}
+
+template <> inline coreFloat coreData::FromChars(const coreChar* pcString, const coreUintW iLen) {return coreFloat(std::atof(pcString));}
 
 
 // ****************************************************************
