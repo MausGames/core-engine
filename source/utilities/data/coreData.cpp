@@ -604,7 +604,7 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
-    if(!rename(pcFrom, pcTo)) return CORE_OK;
+    if(!std::rename(pcFrom, pcTo)) return CORE_OK;
 
 #endif
 
@@ -879,13 +879,13 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
 
 // ****************************************************************
 /* copy string into another buffer */
-void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxSize)
+void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxLen)
 {
     ASSERT(pcInput && pcOutput)
 
     // calculate string length
-    const coreUintW iLen = MIN(std::strlen(pcInput), iMaxSize - 1u);
-    WARN_IF(std::strlen(pcInput) >= iMaxSize) {}
+    const coreUintW iLen = MIN(std::strlen(pcInput), iMaxLen - 1u);
+    WARN_IF(std::strlen(pcInput) >= iMaxLen) {}
 
     // copy string with guaranteed null-termination
     std::memcpy(pcOutput, pcInput, iLen);

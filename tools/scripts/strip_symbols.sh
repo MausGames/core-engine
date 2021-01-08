@@ -5,7 +5,7 @@ _PARAMETERS_="--strip-unneeded"
 
 if [ -d "$1" ]; then
 
-    for file in $(find "$1" \( -name "*" \) -print0 | xargs -0); do
+    find "$1" -iname "*.*" | while read file; do
 
         $_EXECUTABLE_ $_PARAMETERS_ "$file"
 

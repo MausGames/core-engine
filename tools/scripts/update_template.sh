@@ -3,7 +3,7 @@
 _PATH_="$(dirname $(realpath $0))"
 
 _EXECUTABLE_="rsync"
-_PARAMETERS_="--recursive --update --mkpath --xattrs"
+_PARAMETERS_="--recursive --update --mkpath --xattrs --times"
 
 if [ "$2" == "defaults" ]; then
     : # not yet implemented

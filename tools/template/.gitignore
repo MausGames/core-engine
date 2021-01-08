@@ -1,5 +1,5 @@
 backup/
-# executable/bin/**/
+# executable/bin/
 executable/user/screenshots/
 executable/user/log.html
 projects/cmake/**/

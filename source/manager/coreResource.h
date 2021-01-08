@@ -11,7 +11,6 @@
 #define _CORE_GUARD_RESOURCE_H_
 
 // TODO: ATI_meminfo and NVX_gpu_memory_info to check for memory usage ? (old, not widely supported)
-// TODO: variable templates for handle-list!
 // TODO: replace reference-counter with atomic variable ?
 // TODO: when and how to load default archive(s) ?
 // TODO: assert for path and update-type in load-function

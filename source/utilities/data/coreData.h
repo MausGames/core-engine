@@ -131,7 +131,7 @@ public:
     static const coreChar*        StrFilename (const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
-    static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxSize);
+    static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxLen);
     static void                   StrTrim     (std::string* OUTPUT psInput);
     static void                   StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
 

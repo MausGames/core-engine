@@ -5,7 +5,7 @@ _PARAMETERS_="-strip all -nx -o5"
 
 if [ -d "$1" ]; then
 
-    for file in $(find "$1" \( -name "*.png" \) -print0 | xargs -0); do
+    find "$1" -iname "*.png" | while read file; do
 
         $_EXECUTABLE_ $_PARAMETERS_ "$file"
 

@@ -1,6 +1,4 @@
 backup/
-docs/index.html
-docs/html/
 output/
 projects/cmake/**/
 projects/visualstudio/.tmp/

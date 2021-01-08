@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_MD3_H_
 #define _CORE_GUARD_MD3_H_
 
+// TODO: add vertex position factor as new header parameter
+
 
 // ****************************************************************
 /* MD3-header structure */
@@ -61,7 +63,7 @@ struct md3Tag final
 /* MD3-mesh structure */
 struct md3Mesh final
 {
-    coreChar acIdentity[4];        // magic number (IDP3)
+    coreChar acIdentity[4];       // magic number (IDP3)
 
     coreChar  acName[64];         // surface name
     coreInt32 iFlags;             // 'dunno again
