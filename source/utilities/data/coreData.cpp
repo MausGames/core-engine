@@ -897,9 +897,11 @@ void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const
 /* trim a standard string on both sides */
 void coreData::StrTrim(std::string* OUTPUT psInput)
 {
+    STATIC_ASSERT(std::string::npos == -1)
+
     // trim right
     const coreUintW iLast = psInput->find_last_not_of(" \n\r\t");
-    if(iLast != std::string::npos) psInput->erase(iLast + 1u);
+    psInput->erase(iLast + 1u);
 
     // trim left
     const coreUintW iFirst = psInput->find_first_not_of(" \n\r\t");
