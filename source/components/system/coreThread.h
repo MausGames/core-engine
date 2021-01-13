@@ -24,8 +24,8 @@ private:
 
     std::vector<std::function<coreStatus()>> m_anFuncNew;      // new custom functions (separate, to allow attaching and executing at the same time)
     std::vector<std::function<coreStatus()>> m_anFuncActive;   // active custom functions
-    SDL_SpinLock m_iLockNew;                                   // spinlock for collecting new functions
-    SDL_SpinLock m_iLockActive;                                // spinlock for executing active functions
+    coreSpinLock m_LockNew;                                    // spinlock for collecting new functions
+    coreSpinLock m_LockActive;                                 // spinlock for executing active functions
 
 
 public:
@@ -40,7 +40,7 @@ public:
 
     /* run custom functions within the thread */
     void UpdateFunctions();
-    template <typename F> inline void AttachFunction(F&& nFunction) {coreAtomicLock(&m_iLockNew); m_anFuncNew.push_back(nFunction); coreAtomicUnlock(&m_iLockNew);}   // [](void) -> coreStatus (CORE_OK, CORE_BUSY)
+    template <typename F> inline void AttachFunction(F&& nFunction) {m_LockNew.Lock(); m_anFuncNew.push_back(nFunction); m_LockNew.Unlock();}   // [](void) -> coreStatus (CORE_OK, CORE_BUSY)
 
     /* set object properties */
     inline void SetFrequency(const coreFloat fFrequency) {m_fFrequency = fFrequency;}

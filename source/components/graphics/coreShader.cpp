@@ -9,7 +9,7 @@
 #include "Core.h"
 
 std::string  coreShader ::s_asGlobalCode[2] = {"", ""};
-SDL_SpinLock coreShader ::s_iGlobalLock     = 0;
+coreSpinLock coreShader ::s_GlobalLock      = coreSpinLock();
 coreProgram* coreProgram::s_pCurrent        = NULL;
 
 
@@ -165,7 +165,7 @@ coreStatus coreShader::Unload()
 /* load global shader code */
 void coreShader::__LoadGlobalCode()
 {
-    coreSpinLocker oLocker(&s_iGlobalLock);
+    coreSpinLocker oLocker(&s_GlobalLock);
 
     if(!s_asGlobalCode[0].empty()) return;
 

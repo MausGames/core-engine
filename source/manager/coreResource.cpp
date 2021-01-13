@@ -12,13 +12,13 @@
 // ****************************************************************
 /* constructor */
 coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic)noexcept
-: m_pResource   (pResource)
-, m_pFile       (pFile)
-, m_sName       (pcName)
-, m_bAutomatic  (bAutomatic)
-, m_eStatus     ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
-, m_iRefCount   (0u)
-, m_iUpdateLock (0)
+: m_pResource  (pResource)
+, m_pFile      (pFile)
+, m_sName      (pcName)
+, m_bAutomatic (bAutomatic)
+, m_eStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
+, m_iRefCount  (0u)
+, m_UpdateLock ()
 {
 }
 
@@ -61,15 +61,15 @@ coreResourceRelation::~coreResourceRelation()
 // ****************************************************************
 /* constructor */
 coreResourceManager::coreResourceManager()noexcept
-: coreThread      ("resource_thread")
-, m_apHandle      {}
-, m_apArchive     {}
-, m_apDirectFile  {}
-, m_apProxy       {}
-, m_apRelation    {}
-, m_iResourceLock (0)
-, m_iFileLock     (0)
-, m_bActive       (false)
+: coreThread     ("resource_thread")
+, m_apHandle     {}
+, m_apArchive    {}
+, m_apDirectFile {}
+, m_apProxy      {}
+, m_apRelation   {}
+, m_ResourceLock ()
+, m_FileLock     ()
+, m_bActive      (false)
 {
     // configure resource thread
     this->SetFrequency(100.0f);
@@ -120,7 +120,7 @@ void coreResourceManager::UpdateResources()
 {
     if(m_bActive)
     {
-        coreAtomicLock(&m_iResourceLock);
+        m_ResourceLock.Lock();
         {
             // loop through all resource handles
             for(coreUintW i = 0u; i < m_apHandle.size(); ++i)   // # size may change
@@ -130,16 +130,16 @@ void coreResourceManager::UpdateResources()
                 // check for requirements
                 if(pCurHandle->__CanAutoUpdate())
                 {
-                    coreAtomicUnlock(&m_iResourceLock);
+                    m_ResourceLock.Unlock();
                     {
                         // update resource handle
                         pCurHandle->__AutoUpdate();
                     }
-                    coreAtomicLock(&m_iResourceLock);
+                    m_ResourceLock.Lock();
                 }
             }
         }
-        coreAtomicUnlock(&m_iResourceLock);
+        m_ResourceLock.Unlock();
     }
 }
 
@@ -148,7 +148,7 @@ void coreResourceManager::UpdateResources()
 /* retrieve archive */
 coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 {
-    coreSpinLocker oLocker(&m_iFileLock);
+    coreSpinLocker oLocker(&m_FileLock);
 
     // check for existing archive
     if(m_apArchive.count_bs(sPath)) return m_apArchive.at(sPath);
@@ -166,7 +166,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 /* retrieve resource file */
 coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 {
-    coreSpinLocker oLocker(&m_iFileLock);
+    coreSpinLocker oLocker(&m_FileLock);
 
     // try to open direct resource file first
     if(!coreData::FileExists(sPath.GetString()))

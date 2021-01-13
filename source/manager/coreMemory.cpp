@@ -131,7 +131,7 @@ void coreMemoryPool::__AddPage()
 coreMemoryManager::coreMemoryManager()noexcept
 : m_apPointer   {}
 , m_aMemoryPool {}
-, m_iPoolLock   (0)
+, m_PoolLock    ()
 {
     Core::Log->Info(CORE_LOG_BOLD("Memory Manager created"));
 }
@@ -153,7 +153,7 @@ coreMemoryManager::~coreMemoryManager()
 /* create memory-block from internal memory-pool */
 RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 {
-    coreSpinLocker oLocker(&m_iPoolLock);
+    coreSpinLocker oLocker(&m_PoolLock);
 
     // check and create memory-pool
     if(!m_aMemoryPool.count(iSize)) m_aMemoryPool.emplace(iSize, iSize, 128u);
@@ -167,7 +167,7 @@ RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 /* remove memory-block to internal memory-pool */
 void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT ppPointer)
 {
-    coreSpinLocker oLocker(&m_iPoolLock);
+    coreSpinLocker oLocker(&m_PoolLock);
 
     // forward request to internal memory-pool
     m_aMemoryPool.at(iSize).Free(ppPointer);

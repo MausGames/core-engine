@@ -297,6 +297,7 @@
 #include <algorithm>
 #include <memory>
 #include <random>
+#include <atomic>
 #include <string>
 #include <array>
 #include <vector>
@@ -546,62 +547,6 @@ enum coreStatus : coreInt8
 
 
 // ****************************************************************
-/* multi-threading utilities */
-#if defined(_CORE_ASYNC_)
-
-    // try to acquire the spinlock
-    FORCE_INLINE coreBool coreAtomicTryLock(SDL_SpinLock* OUTPUT piLock)
-    {
-    #if defined(_CORE_MSVC_)
-        return !_InterlockedExchange(r_cast<long*>(piLock), 1);
-    #elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
-        return !__sync_lock_test_and_set(piLock, 1);
-    #else
-        return SDL_AtomicTryLock(piLock);
-    #endif
-    }
-
-    // acquire the spinlock
-    FORCE_INLINE void coreAtomicLock(SDL_SpinLock* OUTPUT piLock)
-    {
-        while(!coreAtomicTryLock(piLock))
-    #if defined(_CORE_SSE_)
-        _mm_pause();     // processor level spinning
-    #else
-        SDL_Delay(0u);   // OS level spinning
-    #endif
-    }
-
-    // release the spinlock
-    FORCE_INLINE void coreAtomicUnlock(SDL_SpinLock* OUTPUT piLock)
-    {
-    #if defined(_CORE_MSVC_)
-        _ReadWriteBarrier();
-        (*piLock) = 0;
-    #elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
-        __sync_lock_release(piLock);
-    #else
-        SDL_AtomicUnlock(piLock);
-    #endif
-    }
-
-    // prevent default spinlock functions
-    #define SDL_AtomicTryLock(x) (error)
-    #define SDL_AtomicLock(x)    (error)
-    #define SDL_AtomicUnlock(x)  (error)
-
-#else
-
-    // disable multi-threading utilities
-    #define thread_local
-    #define coreAtomicTryLock(x)
-    #define coreAtomicLock(x)
-    #define coreAtomicUnlock(x)
-
-#endif
-
-
-// ****************************************************************
 /* forward declarations */
 class  coreVector2;
 class  coreVector3;
@@ -739,6 +684,7 @@ private:
 #include "utilities/data/hash/FNV1.h"
 #include "utilities/data/hash/Murmur2.h"
 #include "utilities/data/coreHashString.h"
+#include "utilities/data/coreSpinLock.h"
 #include "utilities/data/coreRing.h"
 #include "utilities/data/coreSet.h"
 #include "utilities/data/coreLookup.h"

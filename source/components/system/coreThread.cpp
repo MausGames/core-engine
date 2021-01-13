@@ -18,8 +18,8 @@ coreThread::coreThread(const coreChar* pcName)noexcept
 , m_bActive      (false)
 , m_anFuncNew    {}
 , m_anFuncActive {}
-, m_iLockNew     (0)
-, m_iLockActive  (0)
+, m_LockNew      ()
+, m_LockActive   ()
 {
 }
 
@@ -76,17 +76,17 @@ void coreThread::KillThread()
 /* call and manage custom functions */
 void coreThread::UpdateFunctions()
 {
-    coreSpinLocker oLocker(&m_iLockActive);
+    coreSpinLocker oLocker(&m_LockActive);
 
     if(!m_anFuncNew.empty())
     {
-        coreAtomicLock(&m_iLockNew);
+        m_LockNew.Lock();
         {
             // collect new custom functions
             FOR_EACH(it, m_anFuncNew) m_anFuncActive.push_back(std::move(*it));
             m_anFuncNew.clear();
         }
-        coreAtomicUnlock(&m_iLockNew);
+        m_LockNew.Unlock();
     }
 
     // loop trough all functions

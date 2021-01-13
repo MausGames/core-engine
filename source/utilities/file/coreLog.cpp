@@ -18,7 +18,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_iListStatus (0u)
 , m_iLastTime   (0u)
 , m_iMainThread (0u)
-, m_iLock       (0)
+, m_Lock        ()
 {
     // open and reset log file
     m_pFile = std::fopen(m_sPath.c_str(), "wb");
@@ -134,7 +134,7 @@ void coreLog::DebugOpenGL()
 /* write text to the log file */
 void coreLog::__Write(const coreBool bTimeStamp, std::string sText)
 {
-    coreSpinLocker oLocker(&m_iLock);
+    coreSpinLocker oLocker(&m_Lock);
 
 #if defined(_CORE_DEBUG_)
 

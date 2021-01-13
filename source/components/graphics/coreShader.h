@@ -104,7 +104,7 @@ private:
     std::string m_sCustomCode;               // custom shader code added to the beginning of the shader
 
     static std::string  s_asGlobalCode[2];   // global shader code (0 = version | 1 = global shader file)
-    static SDL_SpinLock s_iGlobalLock;       // spinlock to prevent concurrent initialization of global shader code
+    static coreSpinLock s_GlobalLock;        // spinlock to prevent concurrent initialization of global shader code
 
 
 public:

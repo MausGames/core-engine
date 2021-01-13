@@ -58,12 +58,12 @@ public:
 class coreSpinLocker final
 {
 private:
-    SDL_SpinLock* m_piLock;   // associated spinlock
+    coreSpinLock* m_pLock;   // associated spinlock
 
 
 public:
-    explicit coreSpinLocker(SDL_SpinLock* piLock)noexcept : m_piLock (piLock) {coreAtomicLock  (m_piLock);}
-    ~coreSpinLocker()                                                         {coreAtomicUnlock(m_piLock);}
+    explicit coreSpinLocker(coreSpinLock* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
+    ~coreSpinLocker()                                                      {m_pLock->Unlock();}
 
     DISABLE_COPY(coreSpinLocker)
     DISABLE_HEAP

@@ -100,7 +100,7 @@ private:
     coreLookupStr<std::weak_ptr<void>>     m_apPointer;     // list with weak shared memory pointer
     coreLookup<coreUint16, coreMemoryPool> m_aMemoryPool;   // internal memory-pools (each for a different block-size)
 
-    SDL_SpinLock m_iPoolLock;                               // spinlock to prevent invalid memory-pool access
+    coreSpinLock m_PoolLock;                                // spinlock to prevent invalid memory-pool access
 
 
 private:

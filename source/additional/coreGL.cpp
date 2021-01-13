@@ -57,7 +57,7 @@ struct coreNamePool final
 {
     GLuint       aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
     coreUintW    iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
-    SDL_SpinLock iLock = 0;                    // spinlock to allow multiple threads accessing the pool
+    coreSpinLock oLock = coreSpinLock();       // spinlock to allow multiple threads accessing the pool
 };
 
 static coreNamePool g_PoolTextures2D;
@@ -73,14 +73,14 @@ void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
     const auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
 
     // generate 2D texture names
-    coreSpinLocker oLocker(&g_PoolTextures2D.iLock);
+    coreSpinLocker oLocker(&g_PoolTextures2D.oLock);
     CORE_GL_POOL_GENERATE(g_PoolTextures2D, nCreateFunc, glGenTextures)
 }
 
 void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate data buffer names
-    coreSpinLocker oLocker(&g_PoolBuffers.iLock);
+    coreSpinLocker oLocker(&g_PoolBuffers.oLock);
     CORE_GL_POOL_GENERATE(g_PoolBuffers, glCreateBuffers, glGenBuffers)
 }
 
