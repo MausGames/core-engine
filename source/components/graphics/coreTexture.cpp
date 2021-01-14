@@ -131,7 +131,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     // set compression
     if(bCompress)
     {
-        WARN_IF(!coreMath::IsPot(iWidth) || !coreMath::IsPot(iHeight)) {}
+        WARN_IF(!coreMath::IsPot(iWidth) || !coreMath::IsPot(iHeight) || (iWidth < 4u) || (iHeight < 4u)) {}
         else
         {
             // overwrite with appropriate compressed texture format (RGTC or S3TC)
@@ -145,7 +145,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;   break;
             case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;  break;
             }
-            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_iCompressed = 1;}
+            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_iCompressed = 1; if(bMipMap || bMipMapOld) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
     }
 
