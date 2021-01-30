@@ -48,7 +48,7 @@ CoreAudio::CoreAudio()noexcept
     // generate audio sources
     alGenSources(CORE_AUDIO_SOURCES, m_aiSource);
 
-    // init defer extension
+    // init deferred-updates extension
     if(alIsExtensionPresent("AL_SOFT_deferred_updates"))
     {
         m_nDeferUpdates   = r_cast<LPALDEFERUPDATESSOFT>  (alGetProcAddress("alDeferUpdatesSOFT"));
@@ -58,6 +58,13 @@ CoreAudio::CoreAudio()noexcept
     {
         m_nDeferUpdates   = []() {alcSuspendContext(alcGetCurrentContext());};
         m_nProcessUpdates = []() {alcProcessContext(alcGetCurrentContext());};
+    }
+
+    // init direct-channels extension
+    if(alIsExtensionPresent("AL_SOFT_direct_channels"))
+    {
+        for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
+            alSourcei(m_aiSource[i], AL_DIRECT_CHANNELS_SOFT, true);
     }
 
     // reset listener
