@@ -91,7 +91,7 @@ public:
     inline const coreChar* GetTitle ()const {return this->GetComment("TITLE");}
 
     /* get object properties */
-    inline const coreChar*    GetPath   ()const {return m_pFile->GetPath();}
+    inline const coreChar*    GetPath   ()const {return m_pFile ? m_pFile->GetPath() : "";}
     inline const vorbis_info* GetInfo   ()const {return m_pInfo;}
     inline const coreDouble&  GetMaxTime()const {return m_dMaxTime;}
 

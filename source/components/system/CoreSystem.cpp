@@ -421,7 +421,7 @@ void CoreSystem::__UpdateWindow()
 {
     // reduce overhead if window is not visible
     if(SDL_GetWindowFlags(m_pWindow) & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))
-        SDL_Delay(100u);
+        SDL_Delay(10u);
 
     // toggle between borderless and windowed mode
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(LALT),   CORE_INPUT_HOLD) &&
@@ -448,7 +448,7 @@ void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
     const coreUint64 iNewPerfTime = SDL_GetPerformanceCounter();
-    const coreFloat  fNewLastTime = MIN(coreFloat(coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency), 0.1f);
+    const coreFloat  fNewLastTime = coreFloat(coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
     m_iPerfTime                   = iNewPerfTime;
 
     if(m_iSkipFrame)
@@ -463,7 +463,7 @@ void CoreSystem::__UpdateTime()
         m_dTotalTimeBefore = m_dTotalTime;
 
         // smooth last frame time and increase total time
-        m_fLastTime   = LERP(m_fLastTime, fNewLastTime, 0.15f);
+        m_fLastTime   = (fNewLastTime > 0.1f) ? 0.0f : LERP(m_fLastTime, fNewLastTime, 0.15f);
         m_dTotalTime += coreDouble(m_fLastTime);
     }
 

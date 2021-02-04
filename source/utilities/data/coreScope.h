@@ -54,23 +54,6 @@ public:
 
 
 // ****************************************************************
-/* spinlock helper class */
-class coreSpinLocker final
-{
-private:
-    coreSpinLock* m_pLock;   // associated spinlock
-
-
-public:
-    explicit coreSpinLocker(coreSpinLock* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
-    ~coreSpinLocker()                                                      {m_pLock->Unlock();}
-
-    DISABLE_COPY(coreSpinLocker)
-    DISABLE_HEAP
-};
-
-
-// ****************************************************************
 /* constructor */
 template <typename T> constexpr coreScope<T>::coreScope(T* ptObject)noexcept
 : m_ptObject (ptObject)

@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_SPINLOCK_H_
 #define _CORE_GUARD_SPINLOCK_H_
 
-// TODO: use atomic_flag with C++20 ?
+// TODO: use std::atomic_flag with C++20 ?
 
 
 // ****************************************************************
@@ -30,6 +30,26 @@ public:
     FORCE_INLINE void     Lock();
     FORCE_INLINE void     Unlock();
     FORCE_INLINE coreBool TryLock();
+
+    /* check for current lock state */
+    FORCE_INLINE coreBool IsLocked()const;
+};
+
+
+// ****************************************************************
+/* spinlock helper class */
+class coreSpinLocker final
+{
+private:
+    coreSpinLock* m_pLock;   // associated spinlock
+
+
+public:
+    explicit coreSpinLocker(coreSpinLock* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
+    ~coreSpinLocker()                                                      {m_pLock->Unlock();}
+
+    DISABLE_COPY(coreSpinLocker)
+    DISABLE_HEAP
 };
 
 
@@ -61,6 +81,14 @@ FORCE_INLINE void coreSpinLock::Unlock()
 FORCE_INLINE coreBool coreSpinLock::TryLock()
 {
     return !m_bState.load(std::memory_order_relaxed) && !m_bState.exchange(true, std::memory_order_acquire);
+}
+
+
+// ****************************************************************
+/* check for current lock state */
+FORCE_INLINE coreBool coreSpinLock::IsLocked()const
+{
+    return m_bState.load(std::memory_order_relaxed);
 }
 
 

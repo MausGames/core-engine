@@ -1,7 +1,6 @@
 // Modified version for Core Engine
 // Please use the original library from https://www.libsdl.org/
 
-/* include/SDL_config.h.  Generated from SDL_config.h.in by configure.  */
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>

@@ -93,7 +93,7 @@ public:
     template <typename T, typename S = T>                 static constexpr T Max  (const T& x, const S& y)               {return (x > y) ? T(x) : T(y);}
     template <typename T, typename S = T, typename R = T> static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
     template <typename T, typename S = T, typename R = T> static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
-    template <typename T> static constexpr T Sign        (const T& x)                                                    {return (x < T(0)) ? T(-1) : T(1);}
+    template <typename T> static constexpr T Sign        (const T& x)                                                    {return (x < T(0)) ? T(-1) : T(1);}   // never return 0
     template <typename T> static inline    T Abs         (const T& x)                                                    {return std::abs(x);}
     template <typename T> static constexpr T Pow2        (const T& x)                                                    {return x * x;}
     template <typename T> static constexpr T Pow3        (const T& x)                                                    {return x * x * x;}

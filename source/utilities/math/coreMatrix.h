@@ -173,13 +173,13 @@ public:
     inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
 
     /* convert matrix */
-    constexpr operator const coreFloat* ()const            {return (&_11);}
-    inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
-    inline    const coreFloat& arr(const coreUintW i)const {ASSERT(i < 9u) return (&_11)[i];}
-    CONSTEXPR coreMatrix3x2    m3x2()const                 {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
-    CONSTEXPR coreMatrix2      m12()const                  {return coreMatrix2  (_11, _12, _21, _22);}
-    CONSTEXPR coreMatrix2      m13()const                  {return coreMatrix2  (_11, _13, _31, _33);}
-    CONSTEXPR coreMatrix2      m23()const                  {return coreMatrix2  (_22, _23, _32, _33);}
+    constexpr operator const coreFloat* ()const             {return (&_11);}
+    inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
+    inline    const coreFloat& arr (const coreUintW i)const {ASSERT(i < 9u) return (&_11)[i];}
+    CONSTEXPR coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
+    CONSTEXPR coreMatrix2      m12 ()const                  {return coreMatrix2  (_11, _12, _21, _22);}
+    CONSTEXPR coreMatrix2      m13 ()const                  {return coreMatrix2  (_11, _13, _31, _33);}
+    CONSTEXPR coreMatrix2      m23 ()const                  {return coreMatrix2  (_22, _23, _32, _33);}
 
     /* transpose matrix */
     constexpr coreMatrix3 Transposed()const;
@@ -1184,9 +1184,11 @@ constexpr coreVector3 coreVector3::YcbcrToRgb()const
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_trivial<coreMatrix2>::value == true)
-STATIC_ASSERT(std::is_trivial<coreMatrix3>::value == true)
-STATIC_ASSERT(std::is_trivial<coreMatrix4>::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix3x2>::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix4x3>::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix2>  ::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix3>  ::value == true)
+STATIC_ASSERT(std::is_trivial<coreMatrix4>  ::value == true)
 
 
 #endif /* _CORE_GUARD_MATRIX_H_ */

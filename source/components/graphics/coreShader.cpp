@@ -245,6 +245,8 @@ coreProgram::~coreProgram()
 /* load shader-program */
 coreStatus coreProgram::Load(coreFile* pFile)
 {
+    ASSERT(!pFile)
+
     // check for sync object status
     const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
     if(eCheck == CORE_OK) m_eStatus = CORE_PROGRAM_FINISHED;

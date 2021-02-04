@@ -15,7 +15,6 @@
 // TODO: allocate page-size aligned
 // TODO: static and dynamic archives (with fixed-size array for renaming)
 // TODO: reference-counting wrapper instead of coreFileScope
-// TODO: use hash-strings, e.g. for GetFile(const coreChar* pcPath)
 // TODO: <old comment style>
 // TODO: "0 = does not exist physically" should be moved into own bool and -1 should become 0 ? (could simplify if-else, seeking)
 // TODO: allow referencing allocation instead of owning
@@ -105,12 +104,12 @@ public:
     void ClearFiles();
 
     /* access file objects */
-    inline coreFile* GetFile(const coreUintW iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex]    : NULL;}
-    inline coreFile* GetFile(const coreChar* pcPath) {return (m_apFile.count(pcPath))   ? m_apFile.at(pcPath) : NULL;}
+    inline coreFile* GetFile(const coreUintW       iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex]   : NULL;}
+    inline coreFile* GetFile(const coreHashString& sPath)  {return (m_apFile.count(sPath))    ? m_apFile.at(sPath) : NULL;}
 
     /* get object properties */
     inline const coreChar* GetPath    ()const {return m_sPath.c_str();}
-    inline       coreUintW GetNumFiles()const {return m_apFile.size();}
+    inline coreUintW       GetNumFiles()const {return m_apFile.size();}
 
 
 private:

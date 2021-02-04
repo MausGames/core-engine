@@ -137,7 +137,7 @@ public:
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
     static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxLen);
-    static void                   StrTrim     (std::string* OUTPUT psInput);
+    static void                   StrTrim     (std::string* OUTPUT psInput, const coreChar* pcRemove = " \n\r\t");
     static void                   StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
 
     /* operate with containers */
