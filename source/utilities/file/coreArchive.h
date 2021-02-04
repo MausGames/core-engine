@@ -17,6 +17,9 @@
 // TODO: reference-counting wrapper instead of coreFileScope
 // TODO: use hash-strings, e.g. for GetFile(const coreChar* pcPath)
 // TODO: <old comment style>
+// TODO: "0 = does not exist physically" should be moved into own bool and -1 should become 0 ? (could simplify if-else, seeking)
+// TODO: allow referencing allocation instead of owning
+// TODO: get rid of Internal* functions ? but files should not be copied (normally)
 
 
 // ****************************************************************
@@ -56,15 +59,21 @@ public:
     coreStatus Scramble  (const coreUint32 iKey = 0u);
     coreStatus Unscramble(const coreUint32 iKey = 0u);
 
+    /* create stream for reading file data */
+    SDL_RWops* CreateReadStream()const;
+
     /* load and unload file data */
     coreStatus LoadData();
-    coreByte*  MoveData();
     inline coreStatus UnloadData() {if(!m_iArchivePos) return CORE_INVALID_CALL; SAFE_DELETE_ARRAY(m_pData) return CORE_OK;}
 
     /* get object properties */
     inline const coreChar*   GetPath()const {return m_sPath.c_str();}
     inline const coreByte*   GetData()      {this->LoadData(); return m_pData;}
     inline const coreUint32& GetSize()const {return m_iSize;}
+
+    /* handle explicit copy (for internal use) */
+    static void InternalNew   (coreFile** OUTPUT ppTarget, const coreFile* pSource);
+    static void InternalDelete(coreFile** OUTPUT ppTarget);
 };
 
 

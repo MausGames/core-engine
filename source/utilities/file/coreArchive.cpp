@@ -79,7 +79,6 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
     // close file
     SDL_RWclose(pFile);
-    if(!m_pArchive && !m_iArchivePos) m_iArchivePos = UINT32_MAX;
 
     // move temporary file over real file
     if(coreData::FileMove(pcTemp, m_sPath.c_str()))
@@ -87,6 +86,9 @@ coreStatus coreFile::Save(const coreChar* pcPath)
         Core::Log->Warning("File (%s) could not be moved", m_sPath.c_str());
         return CORE_ERROR_FILE;
     }
+
+    // mark file as existing
+    if(!m_pArchive && !m_iArchivePos) m_iArchivePos = UINT32_MAX;
 
     return CORE_OK;
 }
@@ -172,6 +174,37 @@ coreStatus coreFile::Unscramble(const coreUint32 iKey)
 
 
 // ****************************************************************
+/* create stream for reading file data */
+SDL_RWops* coreFile::CreateReadStream()const
+{
+    SDL_RWops* pFile;
+    if(!m_iArchivePos)
+    {
+        // create memory stream
+        if(!m_pData || !m_iSize) return NULL;
+        pFile = SDL_RWFromConstMem(m_pData, m_iSize);
+    }
+    else if(m_pArchive)
+    {
+        // open archive
+        pFile = SDL_RWFromFile(m_pArchive->GetPath(), "rb");
+        if(!pFile) return NULL;
+
+        // seek file data position
+        SDL_RWseek(pFile, m_iArchivePos, RW_SEEK_SET);
+    }
+    else
+    {
+        // open direct file
+        pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
+        if(!pFile) return NULL;
+    }
+
+    return pFile;
+}
+
+
+// ****************************************************************
 /* load file data */
 coreStatus coreFile::LoadData()
 {
@@ -180,7 +213,7 @@ coreStatus coreFile::LoadData()
 
 #if defined(_CORE_DEBUG_)
 
-    // for correct hot-reloading (not in release, not in archive)
+    // for correct hot-reloading (not in release, not for archives)
     if(!m_sPath.empty() && !m_pArchive) m_iSize = coreData::FileSize(m_sPath.c_str());
 
 #endif
@@ -215,29 +248,31 @@ coreStatus coreFile::LoadData()
 
 
 // ****************************************************************
-/* return allocated file data copy */
-coreByte* coreFile::MoveData()
+/* handle explicit copy (for internal use) */
+void coreFile::InternalNew(coreFile** OUTPUT ppTarget, const coreFile* pSource)
 {
-    coreByte* pOutput;
-    if(m_iArchivePos)
-    {
-        // load file data
-        this->LoadData();
+    ASSERT(ppTarget && pSource)
 
-        // move pointer with file data
-        pOutput = m_pData;
-        m_pData = NULL;
-    }
-    else
+    coreByte* pData = NULL;
+    if(!pSource->m_iArchivePos && pSource->m_pData && pSource->m_iSize)
     {
-        if(!m_pData || !m_iSize) return NULL;
-
-        // create copy of file data
-        pOutput = new coreByte[m_iSize];
-        std::memcpy(pOutput, m_pData, m_iSize);
+        // copy file data
+        pData = new coreByte[pSource->m_iSize];
+        std::memcpy(pData, pSource->m_pData, pSource->m_iSize);
     }
 
-    return pOutput;
+    // create copy
+    (*ppTarget) = MANAGED_NEW(coreFile, pSource->m_sPath.c_str(), pData, pSource->m_iSize);
+
+    // forward archive attributes
+    (*ppTarget)->m_pArchive    = pSource->m_pArchive;
+    (*ppTarget)->m_iArchivePos = pSource->m_iArchivePos;
+}
+
+void coreFile::InternalDelete(coreFile** OUTPUT ppTarget)
+{
+    // delete copy
+    MANAGED_DELETE(*ppTarget)
 }
 
 

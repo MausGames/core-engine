@@ -35,17 +35,13 @@ coreStatus coreFont::Load(coreFile* pFile)
 {
     WARN_IF(m_pFile)      return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetData()) return CORE_ERROR_FILE;
+    if(!pFile->GetSize()) return CORE_ERROR_FILE;   // do not load file data
 
-    // copy the input file for later font creations
-    m_pFile = MANAGED_NEW(coreFile, pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
+    // copy file object for later sub-font creation
+    coreFile::InternalNew(&m_pFile, pFile);
 
-#if defined(_CORE_DEBUG_)
-
-    // create test font
-    WARN_IF(!this->__InitHeight(1u, 0u)) return CORE_INVALID_DATA;
-
-#endif
+    // create test sub-font
+    WARN_IF(DEFINED(_CORE_DEBUG_) && !this->__InitHeight(1u, 0u)) {}
 
     // save properties
     m_sPath = pFile->GetPath();
@@ -65,8 +61,8 @@ coreStatus coreFont::Unload()
     FOR_EACH(it, m_aapFont) FOR_EACH(et, *it) TTF_CloseFont(*et);
     m_aapFont.clear();
 
-    // delete file
-    MANAGED_DELETE(m_pFile)
+    // delete file object
+    coreFile::InternalDelete(&m_pFile);
     if(!m_sPath.empty()) Core::Log->Info("Font (%s) unloaded", m_sPath.c_str());
 
     // reset properties
@@ -181,11 +177,8 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
 {
     ASSERT(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
 
-    // create virtual file as rendering source
-    SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
-
     // create new sub-font
-    TTF_Font* pNewFont = TTF_OpenFontRW(pSource, true, iHeight);
+    TTF_Font* pNewFont = TTF_OpenFontRW(m_pFile->CreateReadStream(), true, iHeight);
     if(!pNewFont)
     {
         Core::Log->Warning("Sub-Font (%s, %u height, %u outline) could not be loaded", m_pFile->GetPath(), iHeight, iOutline);

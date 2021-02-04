@@ -44,14 +44,12 @@ coreStatus coreTexture::Load(coreFile* pFile)
     const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
     if(eCheck >= CORE_OK) return eCheck;
 
-    coreFileScope oUnloader(pFile);
-
     WARN_IF(m_iIdentifier) return CORE_INVALID_CALL;
     if(!pFile)             return CORE_INVALID_INPUT;
-    if(!pFile->GetData())  return CORE_ERROR_FILE;
+    if(!pFile->GetSize())  return CORE_ERROR_FILE;   // do not load file data
 
     // decompress file to plain pixel data
-    coreSurfaceScope pData = IMG_LoadTyped_RW(SDL_RWFromConstMem(pFile->GetData(), pFile->GetSize()), true, coreData::StrExtension(pFile->GetPath()));
+    coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
         Core::Log->Warning("Texture (%s) could not be loaded (SDL: %s)", pFile->GetPath(), SDL_GetError());

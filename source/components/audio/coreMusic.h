@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_MUSIC_H_
 #define _CORE_GUARD_MUSIC_H_
 
-// TODO: music which is inactive should not be in memory (maybe MusicPlayer?), too heavy with many files
 // TODO: player: improve the representation of the current track while shuffled
 // TODO: player: callback when music track changes (or return true is enough probably)
 // TODO: player: own thread
@@ -18,7 +17,6 @@
 // TODO: player: own (cached) parameters like volume, pitch - forwarded to music files
 // TODO: player: reorder properties, SwitchBox is similar
 // TODO: coreMusicFile.cpp, coreMusicPlayer.cpp
-// TODO: memory mapping
 // TODO: <old comment style>
 
 

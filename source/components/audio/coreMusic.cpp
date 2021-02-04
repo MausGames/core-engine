@@ -41,20 +41,19 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 , m_dMaxTime (0.0)
 {
     if(!pFile)            return;
-    if(!pFile->GetData()) return;
+    if(!pFile->GetSize()) return;   // do not load file data
 
-    // create virtual file as streaming source
-    m_pFile = MANAGED_NEW(coreFile, pFile->GetPath(), pFile->MoveData(), pFile->GetSize());
-    SDL_RWops* pSource = SDL_RWFromConstMem(m_pFile->GetData(), m_pFile->GetSize());
+    // copy file object as streaming source
+    coreFile::InternalNew(&m_pFile, pFile);
 
     // test file format and open music stream
-    coreInt32   iError = ov_test_callbacks(pSource, &m_Stream, NULL, 0, OV_CALLBACKS);
+    coreInt32   iError = ov_test_callbacks(m_pFile->CreateReadStream(), &m_Stream, NULL, 0, OV_CALLBACKS);
     if(!iError) iError = ov_test_open(&m_Stream);
     if( iError)
     {
         Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: 0x%08X)", pFile->GetPath(), iError);
         ov_clear(&m_Stream);
-        MANAGED_DELETE(m_pFile)
+        coreFile::InternalDelete(&m_pFile);
 
         return;
     }
@@ -84,7 +83,7 @@ coreMusic::~coreMusic()
     if(m_pFile) Core::Log->Info("Music (%s) unloaded", m_pFile->GetPath());
 
     // delete file object
-    MANAGED_DELETE(m_pFile)
+    coreFile::InternalDelete(&m_pFile);
 }
 
 
