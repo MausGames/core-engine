@@ -10,12 +10,6 @@
 #ifndef _CORE_GUARD_CONFIG_H_
 #define _CORE_GUARD_CONFIG_H_
 
-// TODO: don't set an already defined value or default value (use map ?)
-// TODO: check out templated Get and Set
-// TODO: remove simpleIni, need more specialized functionality
-// TODO: don't do two lookups when getting a value
-// TODO: use temp-save, like for coreFile
-
 
 // ****************************************************************
 /* configuration definitions */
@@ -47,18 +41,22 @@
 #define CORE_CONFIG_INPUT_JOYSTICKDEAD          "Input",    "JoystickDead",       (0x2000)
 #define CORE_CONFIG_INPUT_JOYSTICKMAX           "Input",    "JoystickMax",        (0x7000)
 
-extern template class CSimpleIniA;   // do not create template in every compilation unit
-
 
 // ****************************************************************
 /* configuration file class */
 class coreConfig final
 {
 private:
-    std::string m_sPath;    // relative path of the file
-    CSimpleIniA m_Config;   // configuration file interface
+    /* internal types */
+    using coreSection = coreLookupStrFull<std::string>;
 
-    coreBool m_bDirty;      // status flag for pending changes
+
+private:
+    coreLookupStrFull<coreSection> m_aasSection;   // configuration sections with configuration entries
+
+    std::string  m_sPath;                          // relative path of the file
+    coreBool     m_bDirty;                         // status flag for pending changes
+    coreSpinLock m_Lock;                           // spinlock to prevent concurrent configuration access
 
 
 public:
@@ -68,27 +66,42 @@ public:
     DISABLE_COPY(coreConfig)
 
     /* load and save configuration file */
-    coreStatus Load(const coreBool bSaveDirty);
+    coreStatus Load();
     coreStatus Save();
 
     /* set configuration values */
-    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool,  const coreBool  bValue)  {if(m_Config.SetBoolValue  (pcSection, pcKey, bValue)  != SI_SAME) m_bDirty = true;}
-    inline void SetBool  (const coreChar* pcSection, const coreChar* pcKey,                  const coreBool  bValue)  {if(m_Config.SetBoolValue  (pcSection, pcKey, bValue)  != SI_SAME) m_bDirty = true;}
-    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32, const coreInt32 iValue)  {if(m_Config.SetLongValue  (pcSection, pcKey, iValue)  != SI_SAME) m_bDirty = true;}
-    inline void SetInt   (const coreChar* pcSection, const coreChar* pcKey,                  const coreInt32 iValue)  {if(m_Config.SetLongValue  (pcSection, pcKey, iValue)  != SI_SAME) m_bDirty = true;}
-    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat, const coreFloat fValue)  {if(m_Config.SetDoubleValue(pcSection, pcKey, fValue)  != SI_SAME) m_bDirty = true;}
-    inline void SetFloat (const coreChar* pcSection, const coreChar* pcKey,                  const coreFloat fValue)  {if(m_Config.SetDoubleValue(pcSection, pcKey, fValue)  != SI_SAME) m_bDirty = true;}
-    inline void SetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar*, const coreChar* pcValue) {if(m_Config.SetValue      (pcSection, pcKey, pcValue) != SI_SAME) m_bDirty = true;}
-    inline void SetString(const coreChar* pcSection, const coreChar* pcKey,                  const coreChar* pcValue) {if(m_Config.SetValue      (pcSection, pcKey, pcValue) != SI_SAME) m_bDirty = true;}
+    inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool,  const coreBool  bValue)  {this->SetBool  (sSection, sKey, bValue);}
+    inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32, const coreInt32 iValue)  {this->SetInt   (sSection, sKey, iValue);}
+    inline void SetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat, const coreFloat fValue)  {this->SetFloat (sSection, sKey, fValue);}
+    inline void SetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar*, const coreChar* pcValue) {this->SetString(sSection, sKey, pcValue);}
+    inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey,                  const coreBool  bValue)  {this->SetString(sSection, sKey, coreConfig::__FromBool (bValue));}
+    inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey,                  const coreInt32 iValue)  {this->SetString(sSection, sKey, coreConfig::__FromInt  (iValue));}
+    inline void SetFloat (const coreHashString& sSection, const coreHashString& sKey,                  const coreFloat fValue)  {this->SetString(sSection, sKey, coreConfig::__FromFloat(fValue));}
+    inline void SetString(const coreHashString& sSection, const coreHashString& sKey,                  const coreChar* pcValue) {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry) || std::strcmp(psEntry->c_str(), pcValue)) {m_bDirty = true; (*psEntry) = pcValue;}}
 
     /* get configuration values */
-    inline coreBool        GetBool  (const coreChar* pcSection, const coreChar* pcKey, const coreBool  bDefault)  {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetBool  (pcSection, pcKey, bDefault);  return m_Config.GetBoolValue  (pcSection, pcKey, bDefault); }
-    inline coreInt32       GetInt   (const coreChar* pcSection, const coreChar* pcKey, const coreInt32 iDefault)  {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetInt   (pcSection, pcKey, iDefault);  return m_Config.GetLongValue  (pcSection, pcKey, iDefault); }
-    inline coreFloat       GetFloat (const coreChar* pcSection, const coreChar* pcKey, const coreFloat fDefault)  {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetFloat (pcSection, pcKey, fDefault);  return m_Config.GetDoubleValue(pcSection, pcKey, fDefault); }
-    inline const coreChar* GetString(const coreChar* pcSection, const coreChar* pcKey, const coreChar* pcDefault) {if(!m_Config.GetValue(pcSection, pcKey, NULL)) this->SetString(pcSection, pcKey, pcDefault); return m_Config.GetValue      (pcSection, pcKey, pcDefault);}
+    inline coreBool        GetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool  bDefault)  {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromBool (bDefault);} return coreConfig::__ToBool (*psEntry);}
+    inline coreInt32       GetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32 iDefault)  {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromInt  (iDefault);} return coreConfig::__ToInt  (*psEntry);}
+    inline coreFloat       GetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat fDefault)  {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromFloat(fDefault);} return coreConfig::__ToFloat(*psEntry);}
+    inline const coreChar* GetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcDefault) {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = pcDefault;}                         return psEntry->c_str();}
 
     /* get object properties */
     inline const coreChar* GetPath()const {return m_sPath.c_str();}
+
+
+private:
+    /* retrieve configuration entry */
+    coreBool __RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, std::string** OUTPUT ppsEntry);
+
+    /* convert to type */
+    static inline coreBool  __ToBool (const std::string& sString) {return (sString[0] == 't') || (sString[0] == 'T') || (sString[0] == '1');}
+    static inline coreInt32 __ToInt  (const std::string& sString) {return coreData::FromChars<coreInt32>(sString.c_str(), sString.length());}
+    static inline coreFloat __ToFloat(const std::string& sString) {return coreData::FromChars<coreFloat>(sString.c_str(), sString.length());}
+
+    /* convert to string */
+    static inline const coreChar* __FromBool (const coreBool  bValue) {return (bValue ? "true" : "false");}
+    static inline const coreChar* __FromInt  (const coreInt32 iValue) {return coreData::ToChars(iValue);}
+    static inline const coreChar* __FromFloat(const coreFloat fValue) {return coreData::ToChars(fValue);}
 };
 
 

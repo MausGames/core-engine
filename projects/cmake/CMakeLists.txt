@@ -18,7 +18,6 @@ set_target_properties(
 
 target_sources(
     CoreEngine PRIVATE
-    ${BASE_DIRECTORY}/libraries/include/SI/ConvertUTF.c
     ${BASE_DIRECTORY}/source/additional/linux/main.c
     ${BASE_DIRECTORY}/source/additional/coreCPUID.cpp
     ${BASE_DIRECTORY}/source/additional/coreGL.cpp

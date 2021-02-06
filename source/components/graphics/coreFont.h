@@ -13,6 +13,7 @@
 // TODO: distance fields for sharper text
 // TODO: 4-byte UTF-8 is beyond U+10000 and therefore bigger than uint16
 // TODO: <old comment style>
+// TODO: replace old unmaintained unicode converter (e.g. with ICU ?)
 
 
 // ****************************************************************

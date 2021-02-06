@@ -7,6 +7,7 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #include "Core.h"
+#include <convert_utf.h>
 
 
 // ****************************************************************
@@ -225,13 +226,15 @@ coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OU
         const coreUint8 iBytes = 2u + CONTAINS_FLAG((*pcMultiByte), 0xE0u) + CONTAINS_FLAG((*pcMultiByte), 0xF0u);
         ASSERT(iBytes <= 4u)
 
-        // convert characters (with foreign library)
-        SI_ConvertW<coreUint16> oConvert(true);
-        oConvert.ConvertFromStore(pcMultiByte, iBytes, piGlyph, 1u);
+        // convert character
+        const ConversionResult eResult = ConvertUTF8toUTF16(r_cast<const coreUint8**>(&pcMultiByte), r_cast<const coreUint8*>(pcMultiByte) + iBytes, &piGlyph, piGlyph + 1u, lenientConversion);
+        ASSERT(eResult == conversionOK)
+
         return iBytes;
     }
 
     // just forward the character
     (*piGlyph) = (*pcMultiByte);
+
     return 1u;
 }
