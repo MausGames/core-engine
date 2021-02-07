@@ -161,6 +161,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     const coreChar* pcFrom = pcData + 1u;
     const coreChar* pcTo   = pcFrom;
     const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1u;
+    ASSERT(pFile->GetSize())
 
     const auto nAssignFunc = [&](std::string* OUTPUT pString)
     {
@@ -189,30 +190,26 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
         else if((*pcTo) == CORE_LANGUAGE_KEY[0] && !sKey.empty())
         {
             // extract language-string
-            nAssignFunc(&m_asStringList[sKey.c_str()]);
+            nAssignFunc(&m_asStringList.bs(sKey.c_str()));
             sKey.clear();
         }
 
         ++pcTo;
     }
-    if(!sKey.empty()) nAssignFunc(&m_asStringList[sKey.c_str()]);
+    if(!sKey.empty()) nAssignFunc(&m_asStringList.bs(sKey.c_str()));
 
     // save relative path
     m_sPath = pcPath;
 
-    // reduce memory consumption
-    FOR_EACH(it, m_asStringList)
-    {
-        std::string& sString = (*it);
+    // assign key as value to possible empty language-string
+    FOR_EACH(it, m_asStringList) if(it->empty()) it->assign(PRINT(CORE_LANGUAGE_KEY "%s", m_asStringList.get_string(it)));
 
-        // assign key as value to possible empty language-string
-        if(sString.empty()) sString.assign(PRINT(CORE_LANGUAGE_KEY "%s", m_asStringList.get_string(it)));
-        sString.shrink_to_fit();
-    }
+    // reduce memory consumption
+    FOR_EACH(it, m_asStringList) it->shrink_to_fit();
     m_asStringList.shrink_to_fit();
 
     // update all foreign strings and objects
-    FOR_EACH(it, m_apsForeign) (*m_apsForeign.get_key(it))->assign(m_asStringList.at(it->c_str()));
+    FOR_EACH(it, m_apsForeign) (*m_apsForeign.get_key(it))->assign(m_asStringList.at_bs(it->c_str()));
     FOR_EACH(it, m_apObject)   (*it)->__Update();
 
     Core::Log->Info("Language (%s, %u strings) loaded", pFile->GetPath(), m_asStringList.size());
@@ -227,13 +224,13 @@ void coreLanguage::BindForeign(std::string* psForeign, const coreHashString& sKe
     ASSERT(psForeign && sKey)
 
     // assign key as value to possible new language-string
-    if(!m_asStringList.count(sKey)) m_asStringList.emplace(sKey, PRINT(CORE_LANGUAGE_KEY "%s", sKey.GetString()));
+    if(!m_asStringList.count_bs(sKey)) m_asStringList.emplace_bs(sKey, PRINT(CORE_LANGUAGE_KEY "%s", sKey.GetString()));
 
     // save foreign string pointer and key
-    m_apsForeign[psForeign].assign(sKey.GetString());
+    m_apsForeign.bs(psForeign).assign(sKey.GetString());
 
     // initially update the foreign string
-    psForeign->assign(m_asStringList.at(sKey));
+    psForeign->assign(m_asStringList.at_bs(sKey));
 }
 
 
@@ -256,6 +253,7 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
     const coreChar* pcFrom = pcData + 1u;
     const coreChar* pcTo   = pcFrom;
     const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1u;
+    ASSERT(pFile->GetSize())
 
     coreBool bFound = false;
     while(pcTo != pcEnd)

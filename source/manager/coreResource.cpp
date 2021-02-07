@@ -151,7 +151,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
     coreSpinLocker oLocker(&m_FileLock);
 
     // check for existing archive
-    if(m_apArchive.count_bs(sPath)) return m_apArchive.at(sPath);
+    if(m_apArchive.count_bs(sPath)) return m_apArchive.at_bs(sPath);
 
     // load new archive
     coreArchive* pNewArchive = MANAGED_NEW(coreArchive, sPath.GetString());
@@ -183,7 +183,7 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
     }
 
     // check for existing direct resource file
-    if(m_apDirectFile.count_bs(sPath)) return m_apDirectFile.at(sPath);
+    if(m_apDirectFile.count_bs(sPath)) return m_apDirectFile.at_bs(sPath);
 
     // load new direct resource file
     coreFile* pNewFile = MANAGED_NEW(coreFile, sPath.GetString());

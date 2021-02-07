@@ -221,7 +221,7 @@ public:
     template <typename T> void Free(coreResourcePtr<T>* OUTPUT pptResourcePtr);
 
     /* get existing resource handle */
-    template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
+    template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count_bs(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
 
     /* retrieve archives and resource files */
     coreArchive* RetrieveArchive(const coreHashString& sPath);
@@ -325,7 +325,7 @@ template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreRe
 template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreHashString& sName, const coreResourceUpdate eUpdate, const coreHashString& sPath, A&&... vArgs)
 {
     // check for existing resource handle
-    if(m_apHandle.count_bs(sName)) return m_apHandle.at(sName);
+    if(m_apHandle.count_bs(sName)) return m_apHandle.at_bs(sName);
 
     // create new resource handle
     coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), eUpdate ? true : false);
@@ -351,8 +351,8 @@ inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& 
     // check for existing resource proxy
     if(m_apHandle.count_bs(sName))
     {
-        ASSERT(m_apProxy.count(m_apHandle.at(sName)))
-        return m_apHandle.at(sName);
+        ASSERT(m_apProxy.count(m_apHandle.at_bs(sName)))
+        return m_apHandle.at_bs(sName);
     }
 
     // create new resource proxy without own resource

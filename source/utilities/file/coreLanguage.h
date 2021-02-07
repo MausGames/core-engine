@@ -15,7 +15,6 @@
 // TODO: reduce memory consumption with all the redundant keys in containers
 // TODO: determine number of entries and call reserve(x)
 // TODO: try to use strtok()
-// TODO: use bs lookup interface for m_asStringList and m_apsForeign (.at has no bs, adding entries also needs bs)
 
 
 // ****************************************************************
@@ -82,12 +81,12 @@ public:
 
     /* load and access the language file */
     coreStatus Load(const coreChar* pcPath);
-    inline const coreChar* GetString(const coreHashString& sKey)const {return m_asStringList.count(sKey) ? m_asStringList.at(sKey).c_str() : sKey.GetString();}
-    inline coreBool        HasString(const coreHashString& sKey)const {return m_asStringList.count(sKey);}
+    inline const coreChar* GetString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey) ? m_asStringList.at_bs(sKey).c_str() : sKey.GetString();}
+    inline coreBool        HasString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey);}
 
     /* bind and unbind foreign string pointers */
     void        BindForeign  (std::string* psForeign, const coreHashString& sKey);
-    inline void UnbindForeign(std::string* psForeign) {ASSERT(m_apsForeign.count(psForeign)) m_apsForeign.erase(psForeign);}
+    inline void UnbindForeign(std::string* psForeign) {ASSERT(m_apsForeign.count_bs(psForeign)) m_apsForeign.erase_bs(psForeign);}
 
     /* get object properties */
     inline const coreChar* GetPath      ()const {return m_sPath.c_str();}

@@ -565,7 +565,7 @@ coreBool coreObjectManager::__NewCollision(const coreObject3D* pObject1, const c
     if(m_aiObjectCollision.count_bs(oCollision))
     {
         // update frame number
-        m_aiObjectCollision.at(oCollision) = Core::System->GetCurFrame();
+        m_aiObjectCollision.at_bs(oCollision) = Core::System->GetCurFrame();
         return false;
     }
 
