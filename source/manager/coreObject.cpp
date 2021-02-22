@@ -29,6 +29,8 @@ coreObject::coreObject()noexcept
 coreObjectManager::coreObjectManager()noexcept
 : m_aapObjectList     {}
 , m_aiObjectCollision {}
+, m_aiIndex           {}
+, m_bIndexDirty       (false)
 , m_pLowQuad          (NULL)
 , m_pLowTriangle      (NULL)
 , m_pBlitFallback     (NULL)
@@ -488,14 +490,26 @@ void coreObjectManager::__Reset(const coreResourceReset eInit)
 /* update all objects and collisions */
 void coreObjectManager::__UpdateObjects()
 {
-    // loop through all objects
-    FOR_EACH(it, m_aapObjectList)
+    if(m_bIndexDirty)
     {
-        FOR_EACH_DYN(et, *it)
+        m_bIndexDirty = false;
+
+        // clear index
+        m_aiIndex.clear();
+
+        // loop through all objects
+        FOR_EACH(it, m_aapObjectList)
         {
-            // check for invalid pointers and remove them
-            if(*et) DYN_KEEP  (et)
-               else DYN_REMOVE(et, *it)
+            FOR_EACH_DYN(et, *it)
+            {
+                // check for invalid pointers and remove them
+                if(*et) DYN_KEEP  (et)
+                   else DYN_REMOVE(et, *it)
+            }
+
+            // reconstruct index
+            for(coreUintW i = 0u, ie = it->size(); i < ie; ++i)
+                m_aiIndex.emplace_bs((*it)[i], i);
         }
     }
 
@@ -514,7 +528,7 @@ void coreObjectManager::__UpdateObjects()
 /* bind 3d-object to type */
 void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32 iType)
 {
-    ASSERT(pObject && iType)
+    ASSERT(pObject && iType && !m_aiIndex.count_bs(pObject))
 
 #if defined(_CORE_DEBUG_)
 
@@ -525,8 +539,12 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32 iTyp
 
 #endif
 
-    // add object to requested list
-    m_aapObjectList[iType].push_back(pObject);
+    // get requested list
+    coreObjectList& oList = m_aapObjectList[iType];
+
+    // add object and index
+    m_aiIndex.emplace_bs(pObject, oList.size());
+    oList.push_back(pObject);
 }
 
 
@@ -534,21 +552,16 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32 iTyp
 /* unbind 3d-object from type */
 void coreObjectManager::__UnbindObject(coreObject3D* pObject, const coreInt32 iType)
 {
-    ASSERT(pObject && iType)
+    ASSERT(pObject && iType && m_aiIndex.count_bs(pObject))
 
-    // get requested list
-    coreObjectList& oList = m_aapObjectList[iType];
+    const auto it = m_aiIndex.find_bs(pObject);
 
-    // loop through all objects
-    FOR_EACH(it, oList)
-    {
-        if((*it) == pObject)
-        {
-            // invalidate pointer and delete later
-            (*it) = NULL;
-            return;
-        }
-    }
+    // remove object and index
+    m_aapObjectList.at(iType)[*it] = NULL;
+    m_aiIndex.erase(it);
+
+    // request index reconstruction
+    m_bIndexDirty = true;
 }
 
 

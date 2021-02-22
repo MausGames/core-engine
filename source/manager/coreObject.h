@@ -122,6 +122,9 @@ private:
     coreLookup<coreInt32, coreObjectList>       m_aapObjectList;       // lists with pointers to registered 3d-objects <type, list>
     coreLookup<coreObjectCollision, coreUint32> m_aiObjectCollision;   // currently recorded collisions
 
+    coreLookup<coreObject3D*, coreUint16> m_aiIndex;                   // index for fast 3d-object lookup
+    coreBool                              m_bIndexDirty;               // index needs full reconstruction
+
     coreModelPtr  m_pLowQuad;                                          // low-memory square model (4 bytes per vertex, 16 total)
     coreModelPtr  m_pLowTriangle;                                      // low-memory triangle model (8 bytes per vertex, 24 total)
     coreObject2D* m_pBlitFallback;                                     // 2d-object used for fallback-blitting onto the default frame buffer
