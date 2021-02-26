@@ -46,6 +46,7 @@ Libraries
 - SDL2_image (zlib)
 - SDL2_ttf (zlib)
 - stb_dxt (public domain)
+- stb_sprintf (public domain)
 - vorbis (BSD)
 - zstd (BSD)
 

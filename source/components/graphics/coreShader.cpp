@@ -20,7 +20,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct co
     coreChar       aacCharArray[iNum][iLength];
     coreHashString asHashString[iNum];
 
-    coreStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) {std::snprintf(aacCharArray[i], iLength, pcString, i); asHashString[i] = aacCharArray[i];}}
+    coreStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) {coreData::PrintBase(aacCharArray[i], iLength, pcString, i); asHashString[i] = aacCharArray[i];}}
     inline const coreHashString& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return asHashString[iIndex];}
 };
 
@@ -98,7 +98,7 @@ coreStatus coreShader::Load(coreFile* pFile)
     // assemble the shader
     const coreInt32 iSize  = 6 + s_asGlobalCode[0].length() + std::strlen(pcTypeDef) + std::strlen(pcQualityDef) + m_sCustomCode.length() + s_asGlobalCode[1].length() + sMainCode.length();
     coreChar*       pcData = new coreChar[iSize];
-    std::snprintf(pcData, iSize, "%s\n%s\n%s\n%s\n%s\n%s", s_asGlobalCode[0].c_str(), pcTypeDef, pcQualityDef, m_sCustomCode.c_str(), s_asGlobalCode[1].c_str(), sMainCode.c_str());
+    coreData::PrintBase(pcData, iSize, "%s\n%s\n%s\n%s\n%s\n%s", s_asGlobalCode[0].c_str(), pcTypeDef, pcQualityDef, m_sCustomCode.c_str(), s_asGlobalCode[1].c_str(), sMainCode.c_str());
 
     // create and compile the shader
     m_iIdentifier = glCreateShader(m_iType);

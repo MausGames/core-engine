@@ -64,6 +64,7 @@ public:
     DISABLE_CONSTRUCTION(coreData)
 
     /* create formatted string */
+    static coreInt32 PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, ...);
     template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
     static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
 
@@ -160,8 +161,8 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 {
     coreChar* pcString = coreData::__NextTempString();
 
-    // read arguments and assemble string
-    const coreInt32 iReturn = std::snprintf(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
+    // forward arguments and assemble string
+    const coreInt32 iReturn = coreData::PrintBase(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
     ASSERT((iReturn > -1) && (iReturn < coreInt32(CORE_DATA_STRING_LEN)))
 
     return pcString;

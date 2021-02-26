@@ -7,6 +7,7 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #include "Core.h"
+#include <stb_sprintf.h>
 
 #if defined(_CORE_WINDOWS_)
     #include <shellapi.h>
@@ -30,6 +31,24 @@ coreLookupStr<const coreChar*>        coreData::s_apcCommandLine = {};
 std::string                           coreData::s_sUserFolder    = "";
 
 extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
+
+
+// ****************************************************************
+/* create formatted string */
+coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, ...)
+{
+    ASSERT(pcOutput && iMaxLen && pcFormat)
+
+    // prepare variable arguments
+    va_list oArgs;
+    va_start(oArgs, pcFormat);
+
+    // assemble string
+    const coreInt32 iReturn = stbsp_vsnprintf(pcOutput, iMaxLen, pcFormat, oArgs);
+    va_end(oArgs);
+
+    return iReturn;
+}
 
 
 // ****************************************************************
