@@ -10,7 +10,7 @@ add_executable(CoreApp)
 set_target_properties(
     CoreApp PROPERTIES
     C_STANDARD 11
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     DEBUG_POSTFIX _debug
     SUFFIX .elf
     RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/linux/x64/

@@ -393,7 +393,7 @@
     #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT((P_TO_UI(pPointer) % iAlign) == 0u) return pPointer;}(p, a))
 #else
     #if defined(_CORE_MSVC_)
-        #define ASSUME_ALIGNED(p,a) (p)
+        #define ASSUME_ALIGNED(p,a) (std::assume_aligned<a>(p))
     #else
         #define ASSUME_ALIGNED(p,a) (s_cast<decltype(p)>(__builtin_assume_aligned(p, a)))
     #endif
