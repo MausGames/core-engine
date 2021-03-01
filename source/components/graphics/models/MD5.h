@@ -15,12 +15,12 @@
 
 // ****************************************************************
 /* move string pointer and skip comments */
-template <coreChar cDelimiter> static void SkipComments(const coreChar** ppcInput)
+static void coreSkipComments(const coreChar** ppcInput)
 {
     ASSERT(*ppcInput)
 
     // check for line-comments
-    while((**ppcInput) == cDelimiter)
+    while((**ppcInput) == '/')
     {
         // skip them
         coreInt32 n = 0;
@@ -28,7 +28,7 @@ template <coreChar cDelimiter> static void SkipComments(const coreChar** ppcInpu
         (*ppcInput) += n;
     }
 }
-#define MD5_SCAN(s,f,...) {coreInt32 __n = 0; std::sscanf((*s), f " %n", ##__VA_ARGS__, &__n); (*s) += __n; SkipComments<'/'>(s);}
+#define MD5_SCAN(s,f,...) {coreInt32 __n = 0; std::sscanf((*s), f " %n", ##__VA_ARGS__, &__n); (*s) += __n; coreSkipComments(s);}
 
 
 // ****************************************************************

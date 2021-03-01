@@ -423,7 +423,7 @@ void CoreInput::__OpenJoysticks()
 
                 // save joystick object
                 m_aJoystick.push_back(oJoystick);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %d/%d, %d buttons, %d axes, %d hats, %d balls, %s 0x%04X)",
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, type %d/%d, %d buttons, %d axes, %d hats, %d balls, %s 0x%04X)",
                                    oJoystick.pController ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickGUID(i),
                                    eControllerType, eJoystickType, iNumButtons, iNumAxes, iNumHats, iNumBalls, oJoystick.pHaptic ? "haptic" : "not haptic", iQuery);
             }

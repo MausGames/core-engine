@@ -199,7 +199,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalOptions>CoreEngine.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>
@@ -240,7 +240,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalOptions>CoreEngine.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib OpenGL32.lib GLew32.lib OpenAL32.lib LibOGG.lib LibVorbis.lib LibVorbisFile.lib LibZstd.lib version.lib notelemetry.obj %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>

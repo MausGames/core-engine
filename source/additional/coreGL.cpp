@@ -19,7 +19,7 @@ coreBool GLEW_V2_compatibility = false;
 
 // ****************************************************************
 /* pool definitions */
-#define CORE_GL_POOL_SIZE (512u)   // number of resource names generated and pooled at the same time
+#define CORE_GL_POOL_SIZE (256u)   // number of resource names generated and pooled at the same time
 
 #define CORE_GL_POOL_GENERATE(n,c,g)                                               \
 {                                                                                  \

@@ -511,13 +511,16 @@ void coreArchive::__CalculatePositions()
     // calculate data start position
     coreUint32 iCurPosition = 2u*sizeof(coreUint32) + sizeof(coreUint16);
     FOR_EACH(it, m_apFile)
+    {
         iCurPosition += sizeof(coreUint8) + std::strlen((*it)->GetPath()) + 2u*sizeof(coreUint32);
+    }
 
+    // set absolute data position
     FOR_EACH(it, m_apFile)
     {
-        // set absolute data position
         (*it)->m_pArchive    = this;
         (*it)->m_iArchivePos = iCurPosition;
+
         iCurPosition += (*it)->GetSize();
     }
 }

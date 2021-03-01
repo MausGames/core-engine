@@ -111,19 +111,14 @@
     #define _CORE_EXCEPTIONS_
 #endif
 
-// mobile mode
-#if defined(_CORE_ANDROID_) || defined(_CORE_IOS_)
-    #define _CORE_MOBILE_
-#endif
-
 // debug mode
 #if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_
 #endif
 
-// async mode
-#if !defined(_CORE_MOBILE_)
-    #define _CORE_ASYNC_
+// mobile mode
+#if defined(_CORE_ANDROID_) || defined(_CORE_IOS_)
+    #define _CORE_MOBILE_
 #endif
 
 // OpenGL ES mode
@@ -147,7 +142,7 @@
 #endif
 
 // target configuration checks
-#if ((_CORE_MSVC_) < 1920) && ((_CORE_GCC_) < 90201) && ((_CORE_CLANG_) < 90000)
+#if ((_CORE_MSVC_) < 1920) && ((_CORE_GCC_) < 100200) && ((_CORE_CLANG_) < 110000)
     #error Compiler not supported!
 #endif
 #if !defined(_CORE_X86_) && !defined(_CORE_ARM_)

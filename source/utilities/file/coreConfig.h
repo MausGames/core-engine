@@ -14,10 +14,10 @@
 // ****************************************************************
 /* configuration definitions */
 #define CORE_CONFIG_BASE_LANGUAGE               "Base",     "Language",           ("data/languages/english.lng")
-#define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)                    // enable debug capabilities and extended logging
-#define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (DEFINED(_CORE_ASYNC_))    // enable asynchronous processing and resource loading
-#define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)                    // disable all possible hardware features
-#define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (DEFINED(_CORE_MOBILE_))   // keep resources in memory
+#define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)   // enable debug features and extended logging
+#define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (true)    // enable asynchronous processing and resource loading
+#define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)   // disable all possible hardware features
+#define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (false)   // keep resources in memory
 
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (800)

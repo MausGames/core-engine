@@ -41,6 +41,7 @@
 #define MED    coreMath::Med
 #define CLAMP  coreMath::Clamp
 #define SIGN   coreMath::Sign
+#define SIGNUM coreMath::Signum
 #define ABS    coreMath::Abs
 #define POW2   coreMath::Pow2
 #define POW3   coreMath::Pow3
@@ -94,6 +95,7 @@ public:
     template <typename T, typename S = T, typename R = T> static constexpr T Med  (const T& x, const S& y, const R& z)   {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
     template <typename T, typename S = T, typename R = T> static constexpr T Clamp(const T& x, const S& a, const R& b)   {return MIN(MAX(x, a), b);}
     template <typename T> static constexpr T Sign        (const T& x)                                                    {return (x < T(0)) ? T(-1) : T(1);}   // never return 0
+    template <typename T> static constexpr T Signum      (const T& x)                                                    {return (x) ? SIGN(x) : T(0);}
     template <typename T> static inline    T Abs         (const T& x)                                                    {return std::abs(x);}
     template <typename T> static constexpr T Pow2        (const T& x)                                                    {return x * x;}
     template <typename T> static constexpr T Pow3        (const T& x)                                                    {return x * x * x;}

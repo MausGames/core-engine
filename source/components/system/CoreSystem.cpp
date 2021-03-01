@@ -37,7 +37,6 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS,            "0");
     SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS,            "0");
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "0");
-    SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,           "1");
 
     // get SDL version
     SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
@@ -175,7 +174,7 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // check for shared context
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && DEFINED(_CORE_ASYNC_))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE))
     {
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
@@ -213,7 +212,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
-    Core::Log->Info("Main window created (%.0f x %.0f, %d)", m_vResolution.x, m_vResolution.y, m_iFullscreen);
+    Core::Log->Info("Main window created (%s, %.0f x %.0f, %d)", SDL_GetCurrentVideoDriver(), m_vResolution.x, m_vResolution.y, m_iFullscreen);
 
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
