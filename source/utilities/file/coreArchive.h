@@ -96,6 +96,7 @@ public:
     coreStatus Save(const coreChar* pcPath = NULL);
 
     /* manage file objects */
+    coreFile*  CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize);
     coreStatus AddFile   (const coreChar* pcPath);
     coreStatus AddFile   (coreFile*       pFile);
     coreStatus DeleteFile(const coreUintW iIndex);

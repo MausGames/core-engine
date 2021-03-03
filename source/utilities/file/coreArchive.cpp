@@ -421,6 +421,25 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* create file object */
+coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)
+{
+    // check already existing file
+    if(m_apFile.count(pcPath))
+    {
+        Core::Log->Warning("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str());
+        return NULL;
+    }
+
+    // create and add new file object
+    coreFile* pFile = new coreFile(pcPath, pData, iSize);
+    this->AddFile(pFile);
+
+    return pFile;
+}
+
+
+// ****************************************************************
 /* add file object */
 coreStatus coreArchive::AddFile(const coreChar* pcPath)
 {
