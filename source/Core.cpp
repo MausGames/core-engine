@@ -183,6 +183,7 @@ void Core::Reshape()
 coreInt32 coreMain(coreInt32 argc, coreChar** argv)
 {
     // set new working directory (bin/<OS>/<ARCH>)
+    coreData::SetCurDir(coreData::AppDir());
     coreData::SetCurDir("../../..");
 
     // set command line arguments
