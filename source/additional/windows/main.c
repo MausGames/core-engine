@@ -124,25 +124,16 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
     }
 
     // define user-friendly error messages
-    #define CRASH_NAME  "<name>"
-    #define CRASH_EMAIL "<email>"
-
     const char* const pcMessageSuccess =
-        "I'm really sorry, but the game just crashed. :(\n\n"
-        "Fortunately a crash-dump was created in the user-folder, containing non-personal information like:\n"
+        "I'm really sorry, but the game just crashed. :(\n"
+        "A crash-dump was created in the user-folder, containing:\n"
         "- the current process-state\n"
         "- the exact location of the crash\n"
-        "- the log-file with your hardware-configuration\n\n"
-        "If you think this crash is annoying and want it to be fixed, please send the crash-dump to " CRASH_EMAIL ", and I will try to find a solution.\n\n"
-        "Thank you,\n"
-        CRASH_NAME;
+        "- the log-file with your hardware-configuration";
 
     const char* const pcMessageFail =
-        "I'm really sorry, but the game just crashed. :(\n\n"
-        "Unfortunately it was not possible to create a crash-dump.\n\n"
-        "If you still think this crash is annoying and want it to be fixed, please send a description of the crash and your log-file (if available) to " CRASH_EMAIL ", and I will try to find a solution.\n\n"
-        "Thank you,\n"
-        CRASH_NAME;
+        "I'm really sorry, but the game just crashed. :(\n"
+        "Unfortunately it was not possible to create a crash-dump.";
 
     // show message box and exit application
     const BOOL bDumpExists = (GetFileAttributesA("crash.dmp") != INVALID_FILE_ATTRIBUTES);
