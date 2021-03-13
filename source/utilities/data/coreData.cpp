@@ -134,6 +134,48 @@ const coreChar* coreData::AppPath()
 
 
 // ****************************************************************
+/* get currently used physical system memory */
+coreUint64 coreData::SystemMemoryUsed()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // retrieve global memory status
+    MEMORYSTATUSEX oMemory = {sizeof(oMemory)};
+    if(GlobalMemoryStatusEx(&oMemory)) return oMemory.ullTotalPhys - oMemory.ullAvailPhys;
+
+#elif defined(_CORE_LINUX_)
+
+    // retrieve runtime system parameters
+    return coreUint64(sysconf(_SC_PHYS_PAGES) - sysconf(_SC_AVPHYS_PAGES)) * coreUint64(sysconf(_SC_PAGESIZE));
+
+#endif
+
+    return 0u;
+}
+
+
+// ****************************************************************
+/* get total physical system memory */
+coreUint64 coreData::SystemMemoryTotal()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // retrieve global memory status
+    MEMORYSTATUSEX oMemory = {sizeof(oMemory)};
+    if(GlobalMemoryStatusEx(&oMemory) && oMemory.ullTotalPhys) return oMemory.ullTotalPhys;
+
+#elif defined(_CORE_LINUX_)
+
+    // retrieve runtime system parameters
+    return coreUint64(sysconf(_SC_PHYS_PAGES)) * coreUint64(sysconf(_SC_PAGESIZE));
+
+#endif
+
+    return 1u;
+}
+
+
+// ****************************************************************
 /* get operating system name */
 const coreChar* coreData::SystemName()
 {

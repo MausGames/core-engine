@@ -79,10 +79,12 @@ public:
     static inline const coreChar*  AppDir   () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<coreChar*>(pcSlash + 1u)) = '\0'; return pcString;}
 
     /* get operating system properties */
-    static const coreChar* SystemName();
-    static const coreChar* SystemUserName();
-    static const coreChar* SystemDirAppData();
-    static const coreChar* SystemDirTemp();
+    static       coreUint64 SystemMemoryUsed ();
+    static       coreUint64 SystemMemoryTotal();
+    static const coreChar*  SystemName       ();
+    static const coreChar*  SystemUserName   ();
+    static const coreChar*  SystemDirAppData ();
+    static const coreChar*  SystemDirTemp    ();
 
     /* control current working directory */
     static       coreStatus SetCurDir(const coreChar* pcPath);

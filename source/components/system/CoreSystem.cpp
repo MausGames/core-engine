@@ -240,9 +240,13 @@ CoreSystem::CoreSystem()noexcept
     // log processor information
     Core::Log->ListStartInfo("Platform Information");
     {
+        const coreUint64 iMemoryUsed  = coreData::SystemMemoryUsed();   // after window and context creation
+        const coreUint64 iMemoryTotal = coreData::SystemMemoryTotal();
+        const coreDouble dMemoryPct   = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(iMemoryTotal));
+
         Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                                             coreData::SystemName());
         Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %s (%s, %d logical cores, %d bytes cache line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
-        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %d MB",                                          SDL_GetSystemRAM());
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
     }
     Core::Log->ListEnd();
 
