@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <execinfo.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include <stdio.h>
 
 extern int coreMain(int argc, char** argv);
@@ -36,6 +36,9 @@ static void SignalHandler(int iSignal, siginfo_t* pInfo, void* pContext)
         // write backtrace
         const int iNum = backtrace(apAddress, sizeof(apAddress) / sizeof(apAddress[0]));
         if(iNum) backtrace_symbols_fd(apAddress, iNum, fileno(pFile));
+
+        // write allocator stats
+        malloc_info(0, pFile);
 
         // write signal information
         fwrite(pInfo, sizeof(siginfo_t), 1u, pFile);
@@ -70,6 +73,14 @@ static void InstallSignalHandler(void)
 /* start up the application */
 int main(int argc, char** argv)
 {
+#if !defined(__OPTIMIZE__)
+
+    // improve memory debugging with glibc
+    mallopt(M_CHECK_ACTION, 3);
+    mallopt(M_PERTURB,      1);
+
+#endif
+
     // install custom signal handler
     InstallSignalHandler();
 
