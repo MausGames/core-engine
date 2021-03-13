@@ -261,7 +261,7 @@ template <typename F> void coreResourceHandle::OnLoadedOnce(F&& nFunction)const
     else
     {
         // attach wrapper to the resource thread
-        Core::Manager::Resource->AttachFunction([=]()
+        Core::Manager::Resource->AttachFunction([=, this]()
         {
             if(this->IsLoaded())
             {

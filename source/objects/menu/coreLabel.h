@@ -107,7 +107,7 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
     if(CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
     {
         // check if requested font is loaded
-        m_pFont.OnUsableOnce([=]()
+        m_pFont.OnUsableOnce([=, this]()
         {
             // get relative font height
             const coreUint16 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);

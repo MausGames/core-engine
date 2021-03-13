@@ -13,14 +13,14 @@
 // TODO: constexpr strlen -> ARRAY_SIZE(x)-1
 // TODO: implement constexpr strright
 // TODO: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
-// TODO: --help, --force-x86, --force-x64 (windows, launcher?)
+// TODO: --help, --version, --force-x86, --force-x64 (windows, launcher?)
 // TODO: remove ToChars and FromChars float overloads if all std-libs support it, also add precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 
 
 // ****************************************************************
 /* data definitions */
 #define CORE_DATA_STRING_NUM (32u)    // number of temp-strings
-#define CORE_DATA_STRING_LEN (256u)   // length of each temp-string
+#define CORE_DATA_STRING_LEN (512u)   // length of each temp-string
 
 #if defined(_CORE_WINDOWS_)
     #define CORE_DATA_SLASH "\\"      // default path-delimiter of the operating system (as string)
