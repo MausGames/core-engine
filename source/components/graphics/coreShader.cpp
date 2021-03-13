@@ -96,17 +96,14 @@ coreStatus coreShader::Load(coreFile* pFile)
     coreShader::__ReduceCodeSize(&sMainCode);
 
     // assemble the shader
-    const coreInt32 iSize  = 6 + s_asGlobalCode[0].length() + std::strlen(pcTypeDef) + std::strlen(pcQualityDef) + m_sCustomCode.length() + s_asGlobalCode[1].length() + sMainCode.length();
-    coreChar*       pcData = new coreChar[iSize];
-    coreData::PrintBase(pcData, iSize, "%s\n%s\n%s\n%s\n%s\n%s", s_asGlobalCode[0].c_str(), pcTypeDef, pcQualityDef, m_sCustomCode.c_str(), s_asGlobalCode[1].c_str(), sMainCode.c_str());
+    const coreChar* apcData[] = {s_asGlobalCode[0].c_str(),             pcTypeDef,                         pcQualityDef,                         m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),             sMainCode.c_str()};
+    const coreInt32 aiSize [] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()), coreInt32(sMainCode.length())};
+    STATIC_ASSERT(ARRAY_SIZE(apcData) == ARRAY_SIZE(aiSize))
 
     // create and compile the shader
     m_iIdentifier = glCreateShader(m_iType);
-    glShaderSource (m_iIdentifier, 1, &pcData, &iSize);
+    glShaderSource (m_iIdentifier, ARRAY_SIZE(apcData), apcData, aiSize);
     glCompileShader(m_iIdentifier);
-
-    // free required shader memory
-    SAFE_DELETE_ARRAY(pcData)
 
     // save properties
     m_sPath = pFile->GetPath();
