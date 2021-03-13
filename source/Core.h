@@ -268,9 +268,6 @@
 
 #if defined(_CORE_WINDOWS_)
     #include <Windows.h>
-#else
-    #include <sys/stat.h>
-    #include <unistd.h>
 #endif
 #if defined(_CORE_SSE_)
     #include <immintrin.h>

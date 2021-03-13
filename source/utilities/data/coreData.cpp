@@ -14,15 +14,18 @@
     #include <Psapi.h>
     #include <Shlobj.h>
 #elif defined(_CORE_LINUX_)
-    #include <dirent.h>
     #include <sys/utsname.h>
-    #include <pwd.h>
+    #include <gnu/libc-version.h>
 #elif defined(_CORE_MACOS_)
     #include <mach-o/dyld.h>
-    #include <pwd.h>
 #elif defined(_CORE_ANDROID_)
-    #include <dirent.h>
     #include <sys/system_properties.h>
+#endif
+#if !defined(_CORE_WINDOWS_)
+    #include <unistd.h>
+    #include <dirent.h>
+    #include <pwd.h>
+    #include <sys/stat.h>
 #endif
 
 thread_local coreData::coreTempString coreData::s_TempString     = {};
