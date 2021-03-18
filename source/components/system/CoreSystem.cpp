@@ -34,9 +34,10 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->Header("System Interface");
 
     // set SDL behavior hints
-    SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS,            "0");
-    SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS,            "0");
-    SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "0");
+    SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS,                 "0");
+    SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS,                 "0");
+    SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING,      "0");
+    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, (m_iFullscreen == 2u) ? "1" : "0");
 
     // get SDL version
     SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
@@ -436,6 +437,7 @@ void CoreSystem::__UpdateWindow()
 
         // set new window appearance
         SDL_SetWindowFullscreen(m_pWindow, 0u);
+        SDL_SetWindowGrab      (m_pWindow, SDL_FALSE);
         SDL_SetWindowBordered  (m_pWindow, m_iFullscreen ? SDL_FALSE : SDL_TRUE);
         SDL_SetWindowResizable (m_pWindow, m_iFullscreen ? SDL_FALSE : SDL_TRUE);
 

@@ -14,6 +14,7 @@
 // TODO: some drivers may "merge" displays
 // TODO: handle display hot-plugging
 // TODO: improve delta-time precision, double, similar to coreThread
+// TODO: toggling out of m_iFullscreen == 2u might cause issues with some options (e.g. disabled composition)
 // TODO: <old comment style>
 
 
