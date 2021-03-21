@@ -100,131 +100,139 @@ void __coreInitOpenGL()
     if(iError != GLEW_OK) Core::Log->Error("GLEW could not be initialized (GLEW: %s)", glewGetErrorString(iError));
                      else Core::Log->Info ("GLEW initialized (%s)",                    glewGetString(GLEW_VERSION));
 
+    // improve extension support
+    #define __IMPROVE(x,y) {std::string* T = &A; if(!(x)) {(__ ## x) = (y); T = (y) ? &C : &B;} T->append(" GL").append(&(#x[4]));}
+    {
+        std::string A, B, C;
+
+        __IMPROVE(GLEW_AMD_conservative_depth,               false)                                                  // shader extension
+        __IMPROVE(GLEW_AMD_framebuffer_multisample_advanced, false)
+        __IMPROVE(GLEW_AMD_gpu_shader_half_float,            false)                                                  // shader extension
+        __IMPROVE(GLEW_AMD_shader_trinary_minmax,            false)                                                  // shader extension
+        __IMPROVE(GLEW_ARB_buffer_storage,                   GLEW_VERSION_4_4)
+        __IMPROVE(GLEW_ARB_clear_buffer_object,              GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_clear_texture,                    GLEW_VERSION_4_4)
+        __IMPROVE(GLEW_ARB_compute_shader,                   GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_conservative_depth,               GLEW_VERSION_4_2)                                       // shader extension
+        __IMPROVE(GLEW_ARB_copy_buffer,                      GLEW_VERSION_3_1)
+        __IMPROVE(GLEW_ARB_copy_image,                       GLEW_VERSION_4_3 || GLEW_NV_copy_image)
+        __IMPROVE(GLEW_ARB_depth_buffer_float,               GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_depth_texture,                    GLEW_VERSION_1_4)                                       // below minimum
+        __IMPROVE(GLEW_ARB_direct_state_access,              GLEW_VERSION_4_5)
+        __IMPROVE(GLEW_ARB_enhanced_layouts,                 GLEW_VERSION_4_4)                                       // shader extension
+        __IMPROVE(GLEW_ARB_framebuffer_sRGB,                 GLEW_VERSION_3_0 || GLEW_EXT_framebuffer_sRGB)
+        __IMPROVE(GLEW_ARB_geometry_shader4,                 GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)
+        __IMPROVE(GLEW_ARB_gpu_shader5,                      GLEW_VERSION_4_0)                                       // shader extension
+        __IMPROVE(GLEW_ARB_half_float_vertex,                GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_instanced_arrays,                 GLEW_VERSION_3_3)
+        __IMPROVE(GLEW_ARB_invalidate_subdata,               GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_map_buffer_range,                 GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_multi_bind,                       GLEW_VERSION_4_4)
+        __IMPROVE(GLEW_ARB_multisample,                      GLEW_VERSION_1_3)                                       // below minimum
+        __IMPROVE(GLEW_ARB_parallel_shader_compile,          false            || GLEW_KHR_parallel_shader_compile)
+        __IMPROVE(GLEW_ARB_pipeline_statistics_query,        GLEW_VERSION_4_6)
+        __IMPROVE(GLEW_ARB_pixel_buffer_object,              GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)
+        __IMPROVE(GLEW_ARB_program_interface_query,          GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_sample_shading,                   GLEW_VERSION_4_0)                                       // shader extension (also)
+        __IMPROVE(GLEW_ARB_shader_group_vote,                GLEW_VERSION_4_6)                                       // shader extension
+        __IMPROVE(GLEW_ARB_shader_image_load_store,          GLEW_VERSION_4_2 || GLEW_EXT_shader_image_load_store)   // shader extension (also)
+        __IMPROVE(GLEW_ARB_shading_language_packing,         GLEW_VERSION_4_2)                                       // shader extension
+        __IMPROVE(GLEW_ARB_sync,                             GLEW_VERSION_3_2)
+        __IMPROVE(GLEW_ARB_tessellation_shader,              GLEW_VERSION_4_0)
+        __IMPROVE(GLEW_ARB_texture_compression_rgtc,         GLEW_VERSION_3_0 || GLEW_EXT_texture_compression_rgtc)
+        __IMPROVE(GLEW_ARB_texture_filter_anisotropic,       GLEW_VERSION_4_6 || GLEW_EXT_texture_filter_anisotropic)
+        __IMPROVE(GLEW_ARB_texture_float,                    GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_texture_rg,                       GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_texture_stencil8,                 GLEW_VERSION_4_4)
+        __IMPROVE(GLEW_ARB_texture_storage,                  GLEW_VERSION_4_2)
+        __IMPROVE(GLEW_ARB_timer_query,                      GLEW_VERSION_3_2)
+        __IMPROVE(GLEW_ARB_uniform_buffer_object,            GLEW_VERSION_3_1)                                       // shader extension (also)
+        __IMPROVE(GLEW_ARB_vertex_array_object,              GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_vertex_attrib_binding,            GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_vertex_type_2_10_10_10_rev,       GLEW_VERSION_3_3)
+        __IMPROVE(GLEW_EXT_direct_state_access,              false)
+        __IMPROVE(GLEW_EXT_framebuffer_blit,                 GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
+        __IMPROVE(GLEW_EXT_framebuffer_multisample,          GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
+        __IMPROVE(GLEW_EXT_framebuffer_object,               GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
+        __IMPROVE(GLEW_EXT_gpu_shader4,                      GLEW_VERSION_3_0)                                       // shader extension (also)
+        __IMPROVE(GLEW_EXT_packed_depth_stencil,             GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
+        __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
+        __IMPROVE(GLEW_KHR_debug,                            GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_NV_framebuffer_multisample_coverage,  false)
+        __IMPROVE(GLEW_NV_gpu_shader5,                       false)                                                  // shader extension
+        __IMPROVE(GLEW_NV_multisample_filter_hint,           false)
+        __IMPROVE(GLEW_NV_shader_buffer_load,                false)
+
+        Core::Log->ListStartInfo("Extensions loaded");
+        {
+            Core::Log->ListAdd((CORE_LOG_BOLD("Detected:")     + A).c_str());   // avoid print-limit
+            Core::Log->ListAdd((CORE_LOG_BOLD("Not detected:") + B).c_str());
+            Core::Log->ListAdd((CORE_LOG_BOLD("Overridden:")   + C).c_str());
+        }
+        Core::Log->ListEnd();
+    }
+    #undef __IMPROVE
+
+    // remap GL_ARB_instanced_arrays to OpenGL 3.1 and 3.3
+    if(!glDrawArraysInstanced)   glDrawArraysInstanced   = glDrawArraysInstancedARB;
+    if(!glDrawElementsInstanced) glDrawElementsInstanced = glDrawElementsInstancedARB;
+    if(!glVertexAttribDivisor)   glVertexAttribDivisor   = glVertexAttribDivisorARB;
+
+    // remap GL_ARB_sample_shading to OpenGL 4.0
+    if(!glMinSampleShading) glMinSampleShading = glMinSampleShadingARB;
+
+    // remap GL_EXT_framebuffer_blit to GL_ARB_framebuffer_object
+    if(!glBlitFramebuffer) glBlitFramebuffer = glBlitFramebufferEXT;
+
+    // remap GL_EXT_framebuffer_multisample to GL_ARB_framebuffer_object
+    if(!glRenderbufferStorageMultisample) glRenderbufferStorageMultisample = glRenderbufferStorageMultisampleEXT;
+
+    // remap GL_EXT_framebuffer_object to GL_ARB_framebuffer_object
+    if(!glBindFramebuffer)                     glBindFramebuffer                     = glBindFramebufferEXT;
+    if(!glBindRenderbuffer)                    glBindRenderbuffer                    = glBindRenderbufferEXT;
+    if(!glCheckFramebufferStatus)              glCheckFramebufferStatus              = glCheckFramebufferStatusEXT;
+    if(!glDeleteFramebuffers)                  glDeleteFramebuffers                  = glDeleteFramebuffersEXT;
+    if(!glDeleteRenderbuffers)                 glDeleteRenderbuffers                 = glDeleteRenderbuffersEXT;
+    if(!glFramebufferRenderbuffer)             glFramebufferRenderbuffer             = glFramebufferRenderbufferEXT;
+    if(!glFramebufferTexture1D)                glFramebufferTexture1D                = glFramebufferTexture1DEXT;
+    if(!glFramebufferTexture2D)                glFramebufferTexture2D                = glFramebufferTexture2DEXT;
+    if(!glFramebufferTexture3D)                glFramebufferTexture3D                = glFramebufferTexture3DEXT;
+    if(!glGenFramebuffers)                     glGenFramebuffers                     = glGenFramebuffersEXT;
+    if(!glGenRenderbuffers)                    glGenRenderbuffers                    = glGenRenderbuffersEXT;
+    if(!glGenerateMipmap)                      glGenerateMipmap                      = glGenerateMipmapEXT;
+    if(!glGetFramebufferAttachmentParameteriv) glGetFramebufferAttachmentParameteriv = glGetFramebufferAttachmentParameterivEXT;
+    if(!glGetRenderbufferParameteriv)          glGetRenderbufferParameteriv          = glGetRenderbufferParameterivEXT;
+    if(!glIsFramebuffer)                       glIsFramebuffer                       = glIsFramebufferEXT;
+    if(!glIsRenderbuffer)                      glIsRenderbuffer                      = glIsRenderbufferEXT;
+    if(!glRenderbufferStorage)                 glRenderbufferStorage                 = glRenderbufferStorageEXT;
+
+    // remap GL_EXT_gpu_shader4 to OpenGL 3.0
+    if(!glBindFragDataLocation) glBindFragDataLocation = glBindFragDataLocationEXT;
+    if(!glUniform1ui)           glUniform1ui           = glUniform1uiEXT;
+    if(!glUniform1uiv)          glUniform1uiv          = glUniform1uivEXT;
+    if(!glUniform2ui)           glUniform2ui           = glUniform2uiEXT;
+    if(!glUniform2uiv)          glUniform2uiv          = glUniform2uivEXT;
+    if(!glUniform3ui)           glUniform3ui           = glUniform3uiEXT;
+    if(!glUniform3uiv)          glUniform3uiv          = glUniform3uivEXT;
+    if(!glUniform4ui)           glUniform4ui           = glUniform4uiEXT;
+    if(!glUniform4uiv)          glUniform4uiv          = glUniform4uivEXT;
+    if(!glVertexAttribIPointer) glVertexAttribIPointer = glVertexAttribIPointerEXT;
+
+    // remap GL_EXT_shader_image_load_store to GL_ARB_shader_image_load_store
+    if(!glBindImageTexture) glBindImageTexture = r_cast<PFNGLBINDIMAGETEXTUREPROC>(glBindImageTextureEXT);
+    if(!glMemoryBarrier)    glMemoryBarrier    = glMemoryBarrierEXT;
+
+    // remap GL_KHR_parallel_shader_compile to GL_ARB_parallel_shader_compile
+    if(!glMaxShaderCompilerThreadsARB) glMaxShaderCompilerThreadsARB = glMaxShaderCompilerThreadsKHR;
+
+    // remap GL_NV_copy_image to GL_ARB_copy_image
+    if(!glCopyImageSubData) glCopyImageSubData = glCopyImageSubDataNV;
+
     // handle support for deprecated features
     GLEW_V2_compatibility = !GLEW_VERSION_3_1;
 
-    // improve frame buffer compatibility
-    if(!GLEW_ARB_framebuffer_object && GLEW_EXT_framebuffer_object)
-    {
-        // remap GL_EXT_framebuffer_object
-        glBindFramebuffer                     = glBindFramebufferEXT;
-        glBindRenderbuffer                    = glBindRenderbufferEXT;
-        glCheckFramebufferStatus              = glCheckFramebufferStatusEXT;
-        glDeleteFramebuffers                  = glDeleteFramebuffersEXT;
-        glDeleteRenderbuffers                 = glDeleteRenderbuffersEXT;
-        glFramebufferRenderbuffer             = glFramebufferRenderbufferEXT;
-        glFramebufferTexture1D                = glFramebufferTexture1DEXT;
-        glFramebufferTexture2D                = glFramebufferTexture2DEXT;
-        glFramebufferTexture3D                = glFramebufferTexture3DEXT;
-        glGenFramebuffers                     = glGenFramebuffersEXT;
-        glGenRenderbuffers                    = glGenRenderbuffersEXT;
-        glGenerateMipmap                      = glGenerateMipmapEXT;
-        glGetFramebufferAttachmentParameteriv = glGetFramebufferAttachmentParameterivEXT;
-        glGetRenderbufferParameteriv          = glGetRenderbufferParameterivEXT;
-        glIsFramebuffer                       = glIsFramebufferEXT;
-        glIsRenderbuffer                      = glIsRenderbufferEXT;
-        glRenderbufferStorage                 = glRenderbufferStorageEXT;
-
-        // remap GL_EXT_framebuffer_blit
-        glBlitFramebuffer = glBlitFramebufferEXT;
-
-        // remap GL_EXT_framebuffer_multisample
-        glRenderbufferStorageMultisample = glRenderbufferStorageMultisampleEXT;
-
-        // remap GL_EXT_texture_array
-        glFramebufferTextureLayer = glFramebufferTextureLayerEXT;
-    }
-    else if(GLEW_ARB_framebuffer_object)
-    {
-        // force extension status
-        __GLEW_EXT_framebuffer_object      = true;
-        __GLEW_EXT_framebuffer_blit        = true;
-        __GLEW_EXT_framebuffer_multisample = true;
-        __GLEW_EXT_texture_array           = true;
-        __GLEW_EXT_packed_depth_stencil    = true;
-    }
-
-    // improve image unit compatibility
-    if(!GLEW_ARB_shader_image_load_store && GLEW_EXT_shader_image_load_store)
-    {
-        // remap GL_EXT_shader_image_load_store
-        glBindImageTexture = r_cast<PFNGLBINDIMAGETEXTUREPROC>(glBindImageTextureEXT);
-        glMemoryBarrier    = glMemoryBarrierEXT;
-    }
-    else if(GLEW_ARB_shader_image_load_store)
-    {
-        // force extension status
-        __GLEW_EXT_shader_image_load_store = true;
-    }
-
-    // improve texture storage compatibility
-    if(!GLEW_ARB_texture_storage && GLEW_EXT_texture_storage)
-    {
-        // remap GL_EXT_texture_storage
-        glTexStorage1D = glTexStorage1DEXT;
-        glTexStorage2D = glTexStorage2DEXT;
-        glTexStorage3D = glTexStorage3DEXT;
-    }
-    else if(GLEW_ARB_texture_storage)
-    {
-        // force extension status
-        __GLEW_EXT_texture_storage = true;
-    }
-
-    // improve sample shading compatibility
-    if(!GLEW_VERSION_4_0 && GLEW_ARB_sample_shading)
-    {
-        // remap GL_ARB_sample_shading
-        glMinSampleShading = glMinSampleShadingARB;
-    }
-    else if(GLEW_VERSION_4_0)
-    {
-        // force extension status
-        __GLEW_ARB_sample_shading = true;
-    }
-
-    // improve instancing compatibility
-    if(!GLEW_VERSION_3_3 && GLEW_ARB_instanced_arrays)
-    {
-        // remap GL_ARB_instanced_arrays
-        glDrawArraysInstanced   = glDrawArraysInstancedARB;
-        glDrawElementsInstanced = glDrawElementsInstancedARB;
-        glVertexAttribDivisor   = glVertexAttribDivisorARB;
-    }
-    else if(GLEW_VERSION_3_3)
-    {
-        // force extension status
-        __GLEW_ARB_instanced_arrays = true;
-    }
-
-    // improve shader integer compatibility
-    if(!GLEW_VERSION_3_0 && GL_EXT_gpu_shader4)
-    {
-        // remap GL_EXT_gpu_shader4
-        glBindFragDataLocation = glBindFragDataLocationEXT;
-        glUniform1ui           = glUniform1uiEXT;
-        glUniform1uiv          = glUniform1uivEXT;
-        glUniform2ui           = glUniform2uiEXT;
-        glUniform2uiv          = glUniform2uivEXT;
-        glUniform3ui           = glUniform3uiEXT;
-        glUniform3uiv          = glUniform3uivEXT;
-        glUniform4ui           = glUniform4uiEXT;
-        glUniform4uiv          = glUniform4uivEXT;
-        glVertexAttribIPointer = glVertexAttribIPointerEXT;
-    }
-    else if(GLEW_VERSION_3_0)
-    {
-        // force extension status
-        __GLEW_EXT_gpu_shader4 = true;
-    }
-
-    // force additional extension status
-    if(                     GLEW_EXT_framebuffer_sRGB)           __GLEW_ARB_framebuffer_sRGB           = true;
-    if( GLEW_VERSION_1_3 || GLEW_EXT_multisample)                __GLEW_ARB_multisample                = true;
-    if( GLEW_VERSION_1_4)                                        __GLEW_ARB_depth_texture              = true;
-    if( GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)        __GLEW_ARB_pixel_buffer_object        = true;
-    if( GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)           __GLEW_ARB_geometry_shader4           = true;
-    if( GLEW_VERSION_4_6 || GLEW_ARB_texture_filter_anisotropic) __GLEW_EXT_texture_filter_anisotropic = true;
+    // disable all features related to uniform buffer objects
     if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
         __GLEW_ARB_uniform_buffer_object = false;
 
@@ -232,67 +240,9 @@ void __coreInitOpenGL()
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS),  " ,;", [](const coreChar* pcToken) {glewEnableExtension (pcToken);});
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});
 
-    // try to support old OpenGL versions
-    if(!GLEW_VERSION_2_0)
-    {
-        // remap GL_ARB_vertex_program
-        glDisableVertexAttribArray = glDisableVertexAttribArrayARB;
-        glEnableVertexAttribArray  = glEnableVertexAttribArrayARB;
-        glVertexAttribPointer      = glVertexAttribPointerARB;
-
-        // remap GL_ARB_vertex_shader
-        glBindAttribLocation = glBindAttribLocationARB;
-
-        // remap GL_ARB_shader_objects
-        glAttachShader       = glAttachObjectARB;
-        glCompileShader      = glCompileShaderARB;
-        glCreateProgram      = glCreateProgramObjectARB;
-        glCreateShader       = glCreateShaderObjectARB;
-        glDeleteShader       = glDeleteObjectARB;
-        glDeleteProgram      = glDeleteObjectARB;
-        glDetachShader       = glDetachObjectARB;
-        glGetShaderInfoLog   = glGetInfoLogARB;
-        glGetProgramInfoLog  = glGetInfoLogARB;
-        glGetShaderiv        = glGetObjectParameterivARB;
-        glGetProgramiv       = glGetObjectParameterivARB;
-        glGetUniformLocation = glGetUniformLocationARB;
-        glLinkProgram        = glLinkProgramARB;
-        glShaderSource       = r_cast<PFNGLSHADERSOURCEPROC>(glShaderSourceARB);
-        glUniform1f          = glUniform1fARB;
-        glUniform1i          = glUniform1iARB;
-        glUniform2fv         = glUniform2fvARB;
-        glUniform3fv         = glUniform3fvARB;
-        glUniform4fv         = glUniform4fvARB;
-        glUniformMatrix3fv   = glUniformMatrix3fvARB;
-        glUniformMatrix4fv   = glUniformMatrix4fvARB,
-        glUseProgram         = glUseProgramObjectARB;
-        glValidateProgram    = glValidateProgramARB;
-
-        // remap GL_ARB_vertex_buffer_object
-        glBindBuffer    = glBindBufferARB;
-        glBufferData    = glBufferDataARB;
-        glBufferSubData = glBufferSubDataARB;
-        glDeleteBuffers = glDeleteBuffersARB;
-        glGenBuffers    = glGenBuffersARB;
-
-        // remap GL_EXT_draw_range_elements
-        glDrawRangeElements = glDrawRangeElementsEXT;
-    }
-
-    // check for basic OpenGL support
-    if((!GLEW_ARB_vertex_program           ||
-        !GLEW_ARB_vertex_shader            ||
-        !GLEW_ARB_fragment_shader          ||
-        !GLEW_ARB_shader_objects           ||
-        !GLEW_ARB_shading_language_100     ||
-        !GLEW_ARB_vertex_buffer_object     ||
-        !GLEW_ARB_texture_non_power_of_two ||
-        !GLEW_EXT_draw_range_elements) && GLEW_V2_compatibility)
-        Core::Log->Warning("Minimum OpenGL requirements not met, application may not work properly");
-
-    // check for frame buffer object support
-    if(!GLEW_EXT_framebuffer_object)
-        Core::Log->Warning("Frame Buffer Objects not supported, application may not work properly");
+    // check for minimum OpenGL support
+    if(!GLEW_VERSION_2_0)            Core::Log->Warning("OpenGL 2.0 or higher not detected, application may not work properly");
+    if(!GLEW_EXT_framebuffer_object) Core::Log->Warning("Frame Buffer Object support not detected, application may not work properly");
 }
 
 

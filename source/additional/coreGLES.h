@@ -13,6 +13,8 @@
 // TODO: __CORE_GLES_CHECK does not handle sub-strings
 // TODO: add name-pooling to OpenGL ES
 // TODO: GL_EXT_buffer_storage, GL_EXT_clear_texture, GL_EXT_copy_image, GL_EXT_draw_buffers, GL_EXT_geometry_shader, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_shadow_samplers, GL_EXT_texture_rg, GL_EXT_texture_type_2_10_10_10_rev, GL_NV_texture_compression_s3tc
+// TODO: GL_OES_copy_image GL_EXT_tessellation_shader GL_OES_tessellation_shader GL_OES_framebuffer_object GL_NV_packed_float GL_EXT_map_buffer_range GL_EXT_sRGB_write_control GL_NV_pixel_buffer_object GL_KHR_parallel_shader_compile
+// TODO: GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_OES_vertex_array_object GL_OES_texture_stencil8 GL_NV_copy_buffer GL_OES_sample_shading GL_OES_packed_depth_stencil GL_EXT_instanced_arrays GL_NV_instanced_arrays
 // TODO: ANDROID_extension_pack_es31a, ES 3.X
 // TODO: check more extensions to improve performance (if necessary after recent port)
 
@@ -33,10 +35,13 @@
 #define CORE_GL_ARB_half_float_vertex                false   // different token value in OES_vertex_half_float
 #define CORE_GL_ARB_multi_bind                       false
 #define CORE_GL_ARB_parallel_shader_compile          false
+#define CORE_GL_ARB_pipeline_statistics_query        false
 #define CORE_GL_ARB_program_interface_query          false
 #define CORE_GL_ARB_sample_shading                   false
+#define CORE_GL_ARB_shader_image_load_store          false
 #define CORE_GL_ARB_sync                             false
 #define CORE_GL_ARB_tessellation_shader              false
+#define CORE_GL_ARB_texture_compression_rgtc         false
 #define CORE_GL_ARB_texture_float                    false
 #define CORE_GL_ARB_texture_rg                       false
 #define CORE_GL_ARB_timer_query                      false
@@ -45,9 +50,8 @@
 #define CORE_GL_EXT_direct_state_access              false
 #define CORE_GL_EXT_framebuffer_object               true
 #define CORE_GL_EXT_gpu_shader4                      false
+#define CORE_GL_EXT_packed_depth_stencil             false
 #define CORE_GL_EXT_packed_float                     false
-#define CORE_GL_EXT_shader_image_load_store          false
-#define CORE_GL_EXT_texture_compression_rgtc         false
 #define CORE_GL_KHR_debug                            false
 #define CORE_GL_NV_framebuffer_multisample_coverage  false
 #define CORE_GL_NV_multisample_filter_hint           false
@@ -72,8 +76,8 @@ typedef void (GL_APIENTRY *PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsiz
 
 
 // ****************************************************************
-/* GL_EXT_texture_storage */
-#define CORE_GL_EXT_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
+/* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage)  */
+#define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
 
 typedef void (GL_APIENTRY *PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 #define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2DEXT)
@@ -121,11 +125,11 @@ typedef void (GL_APIENTRY *PFNGLVERTEXATTRIBDIVISOREXTPROC)   (GLuint index, GLu
 
 
 // ****************************************************************
-/* GL_EXT_texture_filter_anisotropic */
-#define CORE_GL_EXT_texture_filter_anisotropic __CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic)
+/* GL_EXT_texture_filter_anisotropic (mapped on GL_ARB_texture_filter_anisotropic) */
+#define CORE_GL_ARB_texture_filter_anisotropic __CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic)
 
-#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+#define GL_TEXTURE_MAX_ANISOTROPY     0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY 0x84FF
 
 
 // ****************************************************************
@@ -208,14 +212,16 @@ typedef int32_t* GLsync;
 typedef uint64_t GLuint64;
 
 #define GL_ACTIVE_RESOURCES                0x92F5
+#define GL_CLIPPING_OUTPUT_PRIMITIVES      0x82F7
 #define GL_COMPARE_REF_TO_TEXTURE          0x884E
-#define GL_COMPRESSED_RED_GREEN_RGTC2_EXT  0x8DBD
-#define GL_COMPRESSED_RED_RGTC1_EXT        0x8DBB
+#define GL_COMPRESSED_RED_RGTC1            0x8DBB
+#define GL_COMPRESSED_RG_RGTC2             0x8DBD
 #define GL_COMPUTE_SHADER                  0x91B9
 #define GL_DEBUG_OUTPUT                    0x92E0
 #define GL_DEBUG_OUTPUT_SYNCHRONOUS        0x8242
 #define GL_DEPTH_STENCIL                   0x84F9
 #define GL_FRAGMENT_SHADER_DERIVATIVE_HINT 0x8B8B
+#define GL_FRAGMENT_SHADER_INVOCATIONS     0x82F4
 #define GL_GENERATE_MIPMAP                 0x8191
 #define GL_GEOMETRY_SHADER                 0x8DD9
 #define GL_HALF_FLOAT                      0x140B   // 0x8D61 in OES_vertex_half_float
@@ -227,6 +233,7 @@ typedef uint64_t GLuint64;
 #define GL_MULTISAMPLE_FILTER_HINT_NV      0x8534
 #define GL_OFFSET                          0x92FC
 #define GL_PERSPECTIVE_CORRECTION_HINT     0x0C50
+#define GL_PRIMITIVES_SUBMITTED            0x82EF
 #define GL_PROGRAM_INPUT                   0x92E3
 #define GL_QUERY_RESULT                    0x8866
 #define GL_R8                              0x8229
@@ -247,6 +254,7 @@ typedef uint64_t GLuint64;
 #define GL_TIMESTAMP                       0x8E28
 #define GL_UNIFORM                         0x92E1
 #define GL_UNIFORM_BUFFER                  0x8A11
+#define GL_VERTEX_SHADER_INVOCATIONS       0x82F0
 
 #define glBindBufferBase(...)
 #define glBindBufferRange(...)

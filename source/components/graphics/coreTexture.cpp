@@ -112,7 +112,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     WARN_IF(m_iIdentifier) this->Unload();
 
     // check for OpenGL extensions
-    const coreBool bAnisotropic = CORE_GL_SUPPORT(EXT_texture_filter_anisotropic)                && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bAnisotropic = CORE_GL_SUPPORT(ARB_texture_filter_anisotropic)                && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
@@ -138,10 +138,10 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             {
             default: ASSERT(false)
             case GL_LUMINANCE8:
-            case GL_R8:    if(CORE_GL_SUPPORT(EXT_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_RGTC1_EXT;       break;
-            case GL_RG8:   if(CORE_GL_SUPPORT(EXT_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_GREEN_RGTC2_EXT; break;
-            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;   break;
-            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;  break;
+            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_RGTC1;          break;
+            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RG_RGTC2;           break;
+            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;  break;
+            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
             }
             if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_iCompressed = 1; if(bMipMap || bMipMapOld) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
@@ -159,10 +159,10 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  m_iLevels - 1);
-    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY), 1, Core::Graphics->GetMaxAnisotropy())));
-    if(bMipMapOld)   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,            GL_TRUE);
+    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY), 1, Core::Graphics->GetMaxAnisotropy())));
+    if(bMipMapOld)   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,        GL_TRUE);
 
-    if(CORE_GL_SUPPORT(EXT_texture_storage))
+    if(CORE_GL_SUPPORT(ARB_texture_storage))
     {
         // allocate immutable texture memory
         glTexStorage2D(GL_TEXTURE_2D, m_iLevels, m_Spec.iInternal, iWidth, iHeight);
@@ -312,7 +312,7 @@ void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const
 {
     ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
-    if(CORE_GL_SUPPORT(EXT_shader_image_load_store))
+    if(CORE_GL_SUPPORT(ARB_shader_image_load_store))
     {
         // bind directly without layering
         glBindImageTexture(iUnit, m_iIdentifier, iLevel, false, 0, iAccess, m_Spec.iInternal);

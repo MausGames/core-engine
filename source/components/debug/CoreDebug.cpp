@@ -92,10 +92,10 @@ CoreDebug::CoreDebug()noexcept
     {
         // create pipeline-query objects
         FOR_EACH(it, m_aStat) glGenQueries(1u, &it->iQuery);
-        m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iTarget = GL_PRIMITIVES_SUBMITTED_ARB;
-        m_aStat[CORE_DEBUG_STAT_CLIPPING]  .iTarget = GL_CLIPPING_OUTPUT_PRIMITIVES_ARB;
-        m_aStat[CORE_DEBUG_STAT_VERTEX]    .iTarget = GL_VERTEX_SHADER_INVOCATIONS_ARB;
-        m_aStat[CORE_DEBUG_STAT_FRAGMENT]  .iTarget = GL_FRAGMENT_SHADER_INVOCATIONS_ARB;
+        m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iTarget = GL_PRIMITIVES_SUBMITTED;
+        m_aStat[CORE_DEBUG_STAT_CLIPPING]  .iTarget = GL_CLIPPING_OUTPUT_PRIMITIVES;
+        m_aStat[CORE_DEBUG_STAT_VERTEX]    .iTarget = GL_VERTEX_SHADER_INVOCATIONS;
+        m_aStat[CORE_DEBUG_STAT_FRAGMENT]  .iTarget = GL_FRAGMENT_SHADER_INVOCATIONS;
 
         // configure statistic output labels
         for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)

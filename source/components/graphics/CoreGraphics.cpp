@@ -60,14 +60,14 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // get max texture filter level
-    if(CORE_GL_SUPPORT(EXT_texture_filter_anisotropic))
+    if(CORE_GL_SUPPORT(ARB_texture_filter_anisotropic))
     {
-        GLfloat fValue; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fValue);
+        GLfloat fValue; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &fValue);
         m_iMaxAnisotropy = F_TO_UI(MAX(fValue, 1.0f));
     }
 
-    // log video card information
-    Core::Log->ListStartInfo("Video Card Information");
+    // log video device information
+    Core::Log->ListStartInfo("Video Device Information");
     {
         std::string sExtensions;
         coreExtensions(&sExtensions);
@@ -81,6 +81,7 @@ CoreGraphics::CoreGraphics()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
         Core::Log->ListAdd(sExtensions        .c_str());
         Core::Log->ListAdd(sPlatformExtensions.c_str());
+        Core::Log->ListAdd("GL_MAX_SAMPLES (%u) GL_MAX_TEXTURE_MAX_ANISOTROPY (%u)", m_iMaxSamples, m_iMaxAnisotropy);
     }
     Core::Log->ListEnd();
 

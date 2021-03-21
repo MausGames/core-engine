@@ -10,10 +10,7 @@
 #ifndef _CORE_GUARD_GL_H_
 #define _CORE_GUARD_GL_H_
 
-// TODO: check <GL 2.0 mappings and GLSL 1.0 (both on my notebook)
-// TODO: maybe add pools for renderbuffer, framebuffer, program, shader, queries
-// TODO: GL_ARB_texture_filter_anisotropic (+ES)
-// TODO: GL_KHR_parallel_shader_compile (+ES)
+// TODO: also log function remapping (similar to extension override) (4. line in load-message)
 
 
 // ****************************************************************

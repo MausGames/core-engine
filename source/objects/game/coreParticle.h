@@ -20,7 +20,6 @@
 // TODO: try same sort-algorithm proposed for instance list, no time-sort, but position-sort
 // TODO: automatic resizing function (preserve old values)
 // TODO: culling (also on instancing)
-// TODO: supporting ARB_uniform_buffer_object but not ARB_instanced_arrays, ARB_vertex_array_object and ARB_half_float_vertex breaks shaders, because of wrong shader-version
 // TODO: <old comment style>
 
 
