@@ -72,8 +72,8 @@ target_precompile_headers(
 
 target_compile_options(
     CoreEngine PUBLIC
-    -msse3 -mf16c -mxsave -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
-    $<IF:$<CONFIG:Debug>, -O0 -glldb, -O3 -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
+    -msse3 -mf16c -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
+    $<IF:$<CONFIG:Debug>, -O0 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
 )
 
 
@@ -92,6 +92,6 @@ target_link_libraries(
 
 target_link_options(
     CoreEngine INTERFACE
-    -rdynamic -fuse-ld=lld ${SANITIZER_OPTIONS}
-    $<IF:$<CONFIG:Debug>, , >
+    -fuse-ld=lld ${SANITIZER_OPTIONS}
+    $<IF:$<CONFIG:Debug>, , -rdynamic -s>
 )

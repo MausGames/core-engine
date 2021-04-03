@@ -185,8 +185,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalOptions>/Gw /GA /Qfast_transcendentals /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>MaxSpeed</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <Optimization>MinSpace</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -228,8 +227,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalOptions>/Gw /GA /Qfast_transcendentals /Qvec-report:1 %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>MaxSpeed</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <Optimization>MinSpace</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FunctionLevelLinking>true</FunctionLevelLinking>

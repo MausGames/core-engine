@@ -64,9 +64,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <SupportJustMyCode>false</SupportJustMyCode>
@@ -97,10 +95,6 @@
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalOptions>/Gw /GA %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MinSpace</Optimization>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
-      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <OmitFramePointers>true</OmitFramePointers>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <ControlFlowGuard>Guard</ControlFlowGuard>
       <SDLCheck>true</SDLCheck>
