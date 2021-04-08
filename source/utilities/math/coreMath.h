@@ -11,12 +11,9 @@
 #define _CORE_GUARD_MATH_H_
 
 // TODO: SIN and COS with MacLaurin or Taylor series (no lookup-table, because memory access may be equally slow)
-// TODO: check out _mm_ceil_ss and _mm_floor_ss (SSE4) ?
 // TODO: FUNC_CONST and FORCEINLINE on every function in this class (beware of errno changes, maybe not const) ?
 // TODO: add integer-log (macro)
 // TODO: use std::common_type for return values
-// TODO: CeilPot and FloorPot with BitScan
-// TODO: BSWAP, __builtin_bswap16, __builtin_bswap32, __builtin_bswap64
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 
@@ -137,11 +134,11 @@ public:
     static inline coreFloat Cot (const coreFloat fInput) {return TAN(PI*0.5f - fInput);}
 
     /* rounding operations */
-    static inline coreFloat Ceil (const coreFloat fInput)                                            {return std::ceil (fInput);}
-    static inline coreFloat Floor(const coreFloat fInput)                                            {return std::floor(fInput);}
-    static inline coreFloat Round(const coreFloat fInput)                                            {return std::round(fInput);}
-    template <typename T> static constexpr T  CeilPot      (const T& tInput)                         {T k = T(1); while(k <  tInput) k <<= T(1); return k;}
-    template <typename T> static constexpr T  FloorPot     (const T& tInput)                         {T k = T(2); while(k <= tInput) k <<= T(1); return k >> T(1);}
+    static inline coreFloat Ceil (const coreFloat fInput)                                            {return std::ceil     (fInput);}
+    static inline coreFloat Floor(const coreFloat fInput)                                            {return std::floor    (fInput);}
+    static inline coreFloat Round(const coreFloat fInput)                                            {return std::round    (fInput);}
+    template <typename T> static constexpr T  CeilPot      (const T& tInput)                         {return std::bit_ceil (tInput);}
+    template <typename T> static constexpr T  FloorPot     (const T& tInput)                         {return std::bit_floor(tInput);}
     template <typename T> static constexpr T  CeilAlign    (const T& tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return (tInput + k) & ~k;}
     template <typename T> static constexpr T  FloorAlign   (const T& tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return (tInput)     & ~k;}
     template <typename T> static constexpr T* CeilAlignPtr (const T* tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(tInput) + k) & ~k));}
@@ -152,13 +149,16 @@ public:
     template <typename T> static constexpr coreBool IsNear(const T& x, const T& c, const T& r = CORE_MATH_PRECISION) {return POW2(x - c) <= POW2(r);}
 
     /* bit operations */
-    static inline coreUint32 PopCount     (coreUint32 iInput);
-    static inline coreUint32 BitScanFwd   (coreUint32 iInput);
-    static inline coreUint32 BitScanRev   (coreUint32 iInput);
-    static inline coreUint8  ReverseBits8 (coreUint8  iInput);
-    static inline coreUint16 ReverseBits16(coreUint16 iInput);
-    static inline coreUint32 ReverseBits32(coreUint32 iInput);
-    static inline coreUint64 ReverseBits64(coreUint64 iInput);
+    static inline coreUint32 PopCount      (coreUint32 iInput);
+    static inline coreUint32 BitScanFwd    (coreUint32 iInput);
+    static inline coreUint32 BitScanRev    (coreUint32 iInput);
+    static inline coreUint8  ReverseBits8  (coreUint8  iInput);
+    static inline coreUint16 ReverseBits16 (coreUint16 iInput);
+    static inline coreUint32 ReverseBits32 (coreUint32 iInput);
+    static inline coreUint64 ReverseBits64 (coreUint64 iInput);
+    static inline coreUint16 ReverseBytes16(coreUint16 iInput);
+    static inline coreUint32 ReverseBytes32(coreUint32 iInput);
+    static inline coreUint64 ReverseBytes64(coreUint64 iInput);
 
     /* converting operations */
     static inline coreUint32 FloatToBits(const coreFloat  fInput);
@@ -395,6 +395,60 @@ inline coreUint64 coreMath::ReverseBits64(coreUint64 iInput)
     iInput = ((iInput >>  2u) & 0x3333333333333333u) | ((iInput <<  2u) & 0xCCCCCCCCCCCCCCCCu);
     iInput = ((iInput >>  1u) & 0x5555555555555555u) | ((iInput <<  1u) & 0xAAAAAAAAAAAAAAAAu);
     return iInput;
+
+#endif
+}
+
+
+// ****************************************************************
+/* reverse byte-order of a 2-byte sequence */
+inline coreUint16 coreMath::ReverseBytes16(coreUint16 iInput)
+{
+#if defined(_CORE_MSVC_)
+
+    // calculation with MSVC intrinsic
+    return _byteswap_ushort(iInput);
+
+#else
+
+    // calculation with other intrinsic
+    return __builtin_bswap16(iInput);
+
+#endif
+}
+
+
+// ****************************************************************
+/* reverse byte-order of a 4-byte sequence */
+inline coreUint32 coreMath::ReverseBytes32(coreUint32 iInput)
+{
+#if defined(_CORE_MSVC_)
+
+    // calculation with MSVC intrinsic
+    return _byteswap_ulong(iInput);
+
+#else
+
+    // calculation with other intrinsic
+    return __builtin_bswap32(iInput);
+
+#endif
+}
+
+
+// ****************************************************************
+/* reverse byte-order of a 8-byte sequence */
+inline coreUint64 coreMath::ReverseBytes64(coreUint64 iInput)
+{
+#if defined(_CORE_MSVC_)
+
+    // calculation with MSVC intrinsic
+    return _byteswap_uint64(iInput);
+
+#else
+
+    // calculation with other intrinsic
+    return __builtin_bswap64(iInput);
 
 #endif
 }

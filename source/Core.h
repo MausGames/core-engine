@@ -275,26 +275,27 @@
 #elif defined(_CORE_NEON_)
     #include <arm_neon.h>
 #endif
-#include <cstdlib>
-#include <cstdio>
-#include <cstdint>
-#include <cstring>
-#include <cfloat>
-#include <cfenv>
-#include <cmath>
-#include <ctime>
 #include <cassert>
-#include <type_traits>
-#include <charconv>
-#include <functional>
+#include <cfenv>
+#include <cfloat>
+#include <cmath>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
 #include <algorithm>
+#include <array>
+#include <atomic>
+#include <bit>
+#include <charconv>
+#include <deque>
+#include <functional>
 #include <memory>
 #include <random>
-#include <atomic>
 #include <string>
-#include <array>
+#include <type_traits>
 #include <vector>
-#include <deque>
 
 
 // ****************************************************************
