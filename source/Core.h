@@ -101,6 +101,11 @@
     #undef  _CORE_MACOS_
 #endif
 
+// IDE code parsing
+#if defined(__INTELLISENSE__) || defined(__JETBRAINS_IDE__)
+    #define _CORE_IDE_
+#endif
+
 // run-time type information
 #if defined(_CPPRTTI) || defined(__GXX_RTTI)
     #define _CORE_RTTI_
@@ -363,7 +368,7 @@
 #define FRIEND_CLASS(c)             friend class c;
 #define STATIC_ASSERT(c)            static_assert(c, "Static Assert [" #c "]");
 
-#if defined(_CORE_DEBUG_)
+#if defined(_CORE_DEBUG_) && !defined(_CORE_IDE_)
     #define ASSERT(c)               {if(false) assert(c); SDL_assert(c);}   // strong
 #else
     #if defined(_CORE_MSVC_)
