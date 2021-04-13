@@ -89,10 +89,10 @@ void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKe
 {
     // get original input
     coreVector2 vAcc = coreVector2(0.0f,0.0f);
-         if(this->GetKeyboardButton(iLeft,  CORE_INPUT_PRESS)) vAcc.x = -1.0f;
-    else if(this->GetKeyboardButton(iRight, CORE_INPUT_PRESS)) vAcc.x =  1.0f;
-         if(this->GetKeyboardButton(iDown,  CORE_INPUT_PRESS)) vAcc.y = -1.0f;
-    else if(this->GetKeyboardButton(iUp,    CORE_INPUT_PRESS)) vAcc.y =  1.0f;
+         if(this->GetKeyboardButton(iLeft,  CORE_INPUT_HOLD)) vAcc.x = -1.0f;
+    else if(this->GetKeyboardButton(iRight, CORE_INPUT_HOLD)) vAcc.x =  1.0f;
+         if(this->GetKeyboardButton(iDown,  CORE_INPUT_HOLD)) vAcc.y = -1.0f;
+    else if(this->GetKeyboardButton(iUp,    CORE_INPUT_HOLD)) vAcc.y =  1.0f;
 
     // move the mouse cursor
     if(!vAcc.IsNull())
@@ -123,15 +123,15 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
     if(!vAcc.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx() * (RCP(Core::System->GetResolution().Min()) * Core::System->GetTime() * fSpeed) + vPos) * Core::System->GetResolution();
+        const coreVector2 vNew = (vAcc * Core::System->GetResolution().yx() * (RCP(Core::System->GetResolution().Min()) * Core::System->GetTime() * fSpeed) + vPos) * Core::System->GetResolution();
         SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(vNew.x + 0.5f), F_TO_SI(-vNew.y + 0.5f));
     }
 
     // press mouse buttons
-    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_PRESS))   {this->SetMouseButton(CORE_INPUT_LEFT,  true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
-    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_RELEASE)) {this->SetMouseButton(CORE_INPUT_LEFT,  false);}
-    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_PRESS))   {this->SetMouseButton(CORE_INPUT_RIGHT, true); this->RumbleJoystick(iIndex, 0.2f, 200u);}
-    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_RELEASE)) {this->SetMouseButton(CORE_INPUT_RIGHT, false);}
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_PRESS))   this->SetMouseButton(CORE_INPUT_LEFT,  true);
+    if(this->GetJoystickButton(iIndex, iButton1, CORE_INPUT_RELEASE)) this->SetMouseButton(CORE_INPUT_LEFT,  false);
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_PRESS))   this->SetMouseButton(CORE_INPUT_RIGHT, true);
+    if(this->GetJoystickButton(iIndex, iButton2, CORE_INPUT_RELEASE)) this->SetMouseButton(CORE_INPUT_RIGHT, false);
 }
 
 
@@ -141,11 +141,20 @@ void CoreInput::ForwardHatToStick(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_aJoystick.size()) return;
 
-    // check for hat directions and invoke stick movement
-         if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u, -1.0f);
-    else if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 0u,  1.0f);
-         if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u, -1.0f);
-    else if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    CORE_INPUT_HOLD)) this->SetJoystickRelative(iIndex, 1u,  1.0f);
+    // check for hat directions
+    coreVector2 vAcc = coreVector2(0.0f,0.0f);
+         if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  CORE_INPUT_HOLD)) vAcc.x = -1.0f;
+    else if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, CORE_INPUT_HOLD)) vAcc.x =  1.0f;
+         if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  CORE_INPUT_HOLD)) vAcc.y = -1.0f;
+    else if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    CORE_INPUT_HOLD)) vAcc.y =  1.0f;
+
+    // invoke stick movement
+    if(!vAcc.IsNull())
+    {
+        vAcc = vAcc.Normalized();
+        this->SetJoystickRelative(iIndex, 0u, vAcc.x);
+        this->SetJoystickRelative(iIndex, 1u, vAcc.y);
+    }
 
     // reset stick movement on release
     if(this->GetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  CORE_INPUT_RELEASE) ||
