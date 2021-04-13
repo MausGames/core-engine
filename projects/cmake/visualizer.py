@@ -21,7 +21,7 @@ def coreResourcePtrVisualizer(value, internal_dict):
 
 def __lldb_init_module(debugger, internal_dict):
 
-    debugger.HandleCommand("type summary add --python-function " + __name__ + ".coreResourcePtrVisualizer -x \"coreResourcePtr<\\w+>\"")
+    debugger.HandleCommand("type summary add --python-function " + __name__ + ".coreResourcePtrVisualizer -x \"coreResourcePtr<.+>\"")
     debugger.HandleCommand("type summary add --inline-children --omit-names coreVector2")
     debugger.HandleCommand("type summary add --inline-children --omit-names coreVector3")
     debugger.HandleCommand("type summary add --inline-children --omit-names coreVector4")

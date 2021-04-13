@@ -117,7 +117,7 @@
 #endif
 
 // debug mode
-#if defined(_DEBUG) || defined(DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
+#if defined(_DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_
 #endif
 
@@ -378,7 +378,7 @@
     #endif
 #endif
 
-#if defined(_CORE_DEBUG_)
+#if defined(_CORE_DEBUG_) && !defined(_CORE_IDE_)
     #define WARN_IF(c)              if([](const coreBool bCondition) {ASSERT(!bCondition) return bCondition;}(!!(c)))   // weak
 #else
     #if defined(_CORE_MSVC_)

@@ -27,6 +27,7 @@
 #define GR    (1.6180339887498948482045868343656f)                 // golden ratio ((a+b)/a = a/b)
 #define GA    (2.3999632297286533222315555066336f)                 // golden angle (radians)
 #define SQRT2 (1.4142135623730950488016887242097f)                 // principal square root of 2
+#define SQRT3 (1.7320508075688772935274463415059f)                 // principal square root of 3
 
 #define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   // convert degrees to radians
 #define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   // convert radians to degrees

@@ -89,7 +89,7 @@ CoreSystem::CoreSystem()noexcept
                 const coreUintW iNumModes = SDL_GetNumDisplayModes(i);
                 if(iNumModes)
                 {
-                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d Hz, %.1f DDPI)", i+1u, SDL_GetDisplayName(i), oDesktop.refresh_rate, fDDPI);
+                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d Hz, %.1f DDPI, %d)", i+1u, SDL_GetDisplayName(i), oDesktop.refresh_rate, fDDPI, SDL_GetDisplayOrientation(i));
                     {
                         for(coreUintW j = 0u; j < iNumModes; ++j)
                         {
