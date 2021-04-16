@@ -369,7 +369,7 @@
 #define STATIC_ASSERT(c)            static_assert(c, "Static Assert [" #c "]");
 
 #if defined(_CORE_DEBUG_) && !defined(_CORE_IDE_)
-    #define ASSERT(c)               {if(false) assert(c); SDL_assert(c);}   // strong
+    #define ASSERT(c)               {if(false) assert(c); SDL_assert_core(c);}   // strong
 #else
     #if defined(_CORE_MSVC_)
         #define ASSERT(c)           {__assume(!!(c));}

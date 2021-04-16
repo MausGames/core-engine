@@ -200,7 +200,7 @@ public:
     static constexpr coreMatrix3 Identity   ();
     static constexpr coreMatrix3 Translation(const coreVector2& vPosition);
     static constexpr coreMatrix3 Scaling    (const coreVector2& vSize);
-    static inline    coreMatrix3 Rotation   (const coreVector2& vDirection);
+    static constexpr coreMatrix3 Rotation   (const coreVector2& vDirection);
     static inline    coreMatrix3 Rotation   (const coreFloat    fAngle);
     static constexpr coreMatrix3 ShearXY    (const coreFloat    fFactor);
     static constexpr coreMatrix3 ShearYX    (const coreFloat    fFactor);
@@ -283,11 +283,11 @@ public:
     static constexpr coreMatrix4 Identity    ();
     static constexpr coreMatrix4 Translation (const coreVector3& vPosition);
     static constexpr coreMatrix4 Scaling     (const coreVector3& vSize);
-    static inline    coreMatrix4 RotationX   (const coreVector2& vDirection);
+    static constexpr coreMatrix4 RotationX   (const coreVector2& vDirection);
     static inline    coreMatrix4 RotationX   (const coreFloat    fAngle);
-    static inline    coreMatrix4 RotationY   (const coreVector2& vDirection);
+    static constexpr coreMatrix4 RotationY   (const coreVector2& vDirection);
     static inline    coreMatrix4 RotationY   (const coreFloat    fAngle);
-    static inline    coreMatrix4 RotationZ   (const coreVector2& vDirection);
+    static constexpr coreMatrix4 RotationZ   (const coreVector2& vDirection);
     static inline    coreMatrix4 RotationZ   (const coreFloat    fAngle);
     static inline    coreMatrix4 RotationAxis(const coreFloat    fAngle, const coreVector3& vAxis);
     static constexpr coreMatrix4 ShearXY     (const coreFloat    fFactor);
@@ -569,7 +569,7 @@ constexpr coreMatrix3 coreMatrix3::Scaling(const coreVector2& vSize)
 
 // ****************************************************************
 /* get rotation matrix */
-inline coreMatrix3 coreMatrix3::Rotation(const coreVector2& vDirection)
+constexpr coreMatrix3 coreMatrix3::Rotation(const coreVector2& vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix3( vDirection.y, vDirection.x, 0.0f,
@@ -841,7 +841,7 @@ constexpr coreMatrix4 coreMatrix4::Scaling(const coreVector3& vSize)
 
 // ****************************************************************
 /* get rotation matrix around X */
-inline coreMatrix4 coreMatrix4::RotationX(const coreVector2& vDirection)
+constexpr coreMatrix4 coreMatrix4::RotationX(const coreVector2& vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix4(1.0f,          0.0f,          0.0f, 0.0f,
@@ -858,7 +858,7 @@ inline coreMatrix4 coreMatrix4::RotationX(const coreFloat fAngle)
 
 // ****************************************************************
 /* get rotation matrix around Y */
-inline coreMatrix4 coreMatrix4::RotationY(const coreVector2& vDirection)
+constexpr coreMatrix4 coreMatrix4::RotationY(const coreVector2& vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix4(vDirection.y, 0.0f, -vDirection.x, 0.0f,
@@ -875,7 +875,7 @@ inline coreMatrix4 coreMatrix4::RotationY(const coreFloat fAngle)
 
 // ****************************************************************
 /* get rotation matrix around Z */
-inline coreMatrix4 coreMatrix4::RotationZ(const coreVector2& vDirection)
+constexpr coreMatrix4 coreMatrix4::RotationZ(const coreVector2& vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix4( vDirection.y, vDirection.x, 0.0f, 0.0f,
