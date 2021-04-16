@@ -354,8 +354,11 @@
 #define TOGGLE_FLAG(o,n)            { (o) ^=     (n);}
 #define SET_BIT(o,n,t)              { (o) ^=  BIT(n) & ((o) ^ ((t) ? ~0ull : 0ull));}
 #define SET_FLAG(o,n,t)             { (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
-#define CONTAINS_BIT(o,n)           (((o) &   BIT(n)) ? true : false)
-#define CONTAINS_FLAG(o,n)          (((o) &      (n)) == (n))
+#define HAS_BIT(o,n)                (((o) &   BIT(n)) != 0ull)
+#define HAS_FLAG(o,n)               (((o) &      (n)) == (n))
+
+#define CONTAINS_BIT(o,n)           (HAS_BIT (o, n))   // DEPRECATED
+#define CONTAINS_FLAG(o,n)          (HAS_FLAG(o, n))   // DEPRECATED
 
 #define FOR_EACH(i,c)               for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
 #define FOR_EACH_REV(i,c)           for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)

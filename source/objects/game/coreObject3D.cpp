@@ -190,12 +190,12 @@ void coreObject3D::Move()
     // check current update status
     if(m_eUpdate)
     {
-        if(CONTAINS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+        if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
         {
             // update rotation quaternion
             m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().ToQuat();
         }
-        if(CONTAINS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION))
+        if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {
             // cancel update without valid model
             if(!m_pModel.IsUsable() || !m_pModel->GetBoundingRadius()) return;
@@ -555,7 +555,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         // enable all active textures
         coreTexture::EnableAll(&pFirst->GetTexture(0u));
 
-        if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
+        if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
         {
             // invalidate and synchronize previous buffer
             m_aInstanceBuffer.current().Invalidate();
@@ -608,7 +608,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         glBindVertexArray(m_aiVertexArray.current());
 
         // activate missing geometry data
-        if(!CONTAINS_BIT(m_iFilled, m_aiVertexArray.index()))
+        if(!HAS_BIT(m_iFilled, m_aiVertexArray.index()))
         {
             ADD_BIT(m_iFilled, m_aiVertexArray.index())
             STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_BATCHLIST_INSTANCE_BUFFERS)
@@ -652,7 +652,7 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
 
     if(this->IsInstanced())
     {
-        if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_CUSTOM))
+        if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_CUSTOM))
         {
             // invalidate and synchronize previous buffer
             m_paCustomBuffer->current().Invalidate();
@@ -660,7 +660,7 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
 
             // switch to next available buffer
             m_paCustomBuffer->select(m_aInstanceBuffer.index());
-            if(CONTAINS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)) m_paCustomBuffer->next();
+            if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)) m_paCustomBuffer->next();
 
             // map required area of the custom attribute buffer
             coreByte* pRange  = m_paCustomBuffer->current().Map(0u, iRenderCount * m_iCustomSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);

@@ -55,7 +55,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     glBindBuffer(m_iTarget, m_iIdentifier);
     s_aiBound[m_iTarget] = m_iIdentifier;
 
-    if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STREAM))
+    if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STREAM))
     {
         // always allocate mutable when streaming
         glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
@@ -64,7 +64,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     {
         if(CORE_GL_SUPPORT(ARB_buffer_storage))
         {
-            if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+            if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
             {
                 // allocate static immutable buffer memory
                 glBufferStorage(m_iTarget, m_iSize, pData, 0u);
@@ -87,7 +87,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
         }
         else
         {
-            if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+            if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
             {
                 // allocate static mutable buffer memory
                 glBufferData(m_iTarget, m_iSize, pData, GL_STATIC_DRAW);
@@ -103,7 +103,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     if(CORE_GL_SUPPORT(NV_shader_buffer_load))
     {
         // make sure static buffers are in GPU memory
-        if(CONTAINS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+        if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
             glMakeBufferResidentNV(m_iTarget, GL_READ_ONLY);
     }
 }

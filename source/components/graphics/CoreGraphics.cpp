@@ -283,7 +283,7 @@ void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4& vPosition
 void CoreGraphics::UpdateTransformation()
 {
     // check update status
-    if(!CONTAINS_BIT(m_iUniformUpdate, 0u)) return;
+    if(!HAS_BIT(m_iUniformUpdate, 0u)) return;
     REMOVE_BIT(m_iUniformUpdate, 0u)
 
     if(m_TransformBuffer.IsValid())
@@ -331,7 +331,7 @@ void CoreGraphics::UpdateTransformation()
 void CoreGraphics::UpdateAmbient()
 {
     // check update status
-    if(!CONTAINS_BIT(m_iUniformUpdate, 1u)) return;
+    if(!HAS_BIT(m_iUniformUpdate, 1u)) return;
     REMOVE_BIT(m_iUniformUpdate, 1u)
 
     if(m_AmbientBuffer.IsValid())

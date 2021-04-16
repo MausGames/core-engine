@@ -75,12 +75,12 @@ void coreLabel::Render()
         // check if requested font is loaded
         if(!m_pFont.IsUsable()) return;
 
-        if(CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_TEXTURE))
+        if(HAS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_TEXTURE))
         {
             // generate the texture
             this->__GenerateTexture(m_sText.c_str());
         }
-        if(CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
+        if(HAS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
         {
             // update the object size
             this->SetSize(this->GetTexSize() * m_vResolution * (CORE_LABEL_SIZE_FACTOR * m_fScale));

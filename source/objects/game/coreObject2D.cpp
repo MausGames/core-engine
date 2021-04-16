@@ -192,12 +192,12 @@ void coreObject2D::Move()
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
     // check current update status
-    if(CONTAINS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+    if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
     {
         // calculate resolution-modified transformation parameters
         const coreVector2 vResolution     = Core::System->GetResolution();
-        const coreVector2 vViewDir        = CONTAINS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR)   ? Core::Manager::Object->GetSpriteViewDir  () : coreVector2(0.0f,1.0f);
-        const coreVector2 vAltCenter      = CONTAINS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_ALTCENTER) ? Core::Manager::Object->GetSpriteAltCenter() : vResolution;
+        const coreVector2 vViewDir        = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR)   ? Core::Manager::Object->GetSpriteViewDir  () : coreVector2(0.0f,1.0f);
+        const coreVector2 vAltCenter      = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_ALTCENTER) ? Core::Manager::Object->GetSpriteAltCenter() : vResolution;
         const coreVector2 vScreenPosition = m_vPosition * vResolution.Min() + m_vCenter * ((vViewDir.y != 0.0f) ? vAltCenter : vAltCenter.yx());
         const coreVector2 vScreenSize     = m_vSize     * vResolution.Min();
 
@@ -285,7 +285,7 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType eT
         for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
         {
             // check for every finger on the object
-            if(CONTAINS_BIT(m_iFinger, i) && Core::Input->GetTouchButton(i, eType))
+            if(HAS_BIT(m_iFinger, i) && Core::Input->GetTouchButton(i, eType))
                 return true;
         }
     }

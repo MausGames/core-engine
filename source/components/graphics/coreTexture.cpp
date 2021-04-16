@@ -112,10 +112,10 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     WARN_IF(m_iIdentifier) this->Unload();
 
     // check for OpenGL extensions
-    const coreBool bAnisotropic = CORE_GL_SUPPORT(ARB_texture_filter_anisotropic)                && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
+    const coreBool bAnisotropic = CORE_GL_SUPPORT(ARB_texture_filter_anisotropic)                && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
@@ -124,7 +124,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     m_Spec        = oSpec;
 
     // set wrap mode
-    const GLenum iWrapMode = CONTAINS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+    const GLenum iWrapMode = HAS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
     // set compression
     if(bCompress)

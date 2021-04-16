@@ -310,8 +310,8 @@ void CoreInput::__UpdateButtonsStart()
     // process keyboard inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_KEYBOARD; ++i)
     {
-        if(CONTAINS_BIT(m_Keyboard.aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_Keyboard.aiButton[i])
-                                                             else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[i])
+        if(HAS_BIT(m_Keyboard.aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_Keyboard.aiButton[i])
+                                                        else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[i])
         __CORE_INPUT_COUNT(m_Keyboard.aiButton[i], m_Keyboard.aiCount)
     }
 
@@ -320,8 +320,8 @@ void CoreInput::__UpdateButtonsStart()
     // process mouse inputs
     for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_MOUSE; ++i)
     {
-        if(CONTAINS_BIT(m_Mouse.aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_Mouse.aiButton[i])
-                                                          else __CORE_INPUT_RELEASE(m_Mouse.aiButton[i])
+        if(HAS_BIT(m_Mouse.aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_Mouse.aiButton[i])
+                                                     else __CORE_INPUT_RELEASE(m_Mouse.aiButton[i])
         __CORE_INPUT_COUNT(m_Mouse.aiButton[i], m_Mouse.aiCount)
     }
 
@@ -332,15 +332,15 @@ void CoreInput::__UpdateButtonsStart()
     {
         for(coreUintW i = 0u; i < CORE_INPUT_BUTTONS_JOYSTICK; ++i)
         {
-            if(CONTAINS_BIT(it->aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (it->aiButton[i])
-                                                          else __CORE_INPUT_RELEASE(it->aiButton[i])
+            if(HAS_BIT(it->aiButton[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (it->aiButton[i])
+                                                     else __CORE_INPUT_RELEASE(it->aiButton[i])
             __CORE_INPUT_COUNT(it->aiButton[i], it->aiCount)
         }
 
         for(coreUintW i = 0u; i < CORE_INPUT_DIRECTIONS; ++i)
         {
-            if(CONTAINS_BIT(it->aiHat[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (it->aiHat[i])
-                                                       else __CORE_INPUT_RELEASE(it->aiHat[i])
+            if(HAS_BIT(it->aiHat[i], CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (it->aiHat[i])
+                                                  else __CORE_INPUT_RELEASE(it->aiHat[i])
         }
     }
 
@@ -349,8 +349,8 @@ void CoreInput::__UpdateButtonsStart()
     // process touch inputs
     for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i)
     {
-        if(CONTAINS_BIT(m_aTouch[i].iButton, CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_aTouch[i].iButton)
-                                                          else __CORE_INPUT_RELEASE(m_aTouch[i].iButton)
+        if(HAS_BIT(m_aTouch[i].iButton, CORE_INPUT_DATA)) __CORE_INPUT_PRESS  (m_aTouch[i].iButton)
+                                                     else __CORE_INPUT_RELEASE(m_aTouch[i].iButton)
         __CORE_INPUT_COUNT(m_aTouch[i].iButton, m_aiTouchCount)
     }
 

@@ -76,7 +76,7 @@ public:
     inline void DefineProgram(const coreHashString& sName)                           {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
 
     /* check for enabled object routines */
-    inline coreBool IsEnabled(const coreObjectEnable eEnabled)const {ASSERT(eEnabled) return CONTAINS_FLAG(m_eEnabled, eEnabled) ? true : false;}
+    inline coreBool IsEnabled(const coreObjectEnable eEnabled)const {ASSERT(eEnabled) return HAS_FLAG(m_eEnabled, eEnabled) ? true : false;}
 
     /* set object properties */
     inline void SetColor4   (const coreVector4&     vColor)     {m_vColor     = vColor;}

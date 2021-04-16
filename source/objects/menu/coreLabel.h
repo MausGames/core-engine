@@ -104,7 +104,7 @@ private:
 /* retrieve desired size without rendering */
 template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)const
 {
-    if(CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
+    if(HAS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
     {
         // check if requested font is loaded
         m_pFont.OnUsableOnce([=, this]()

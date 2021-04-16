@@ -183,8 +183,8 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
     if(pTarget)
     {
         // check for OpenGL extensions
-        if((!CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_DEPTH)   || CORE_GL_SUPPORT(ARB_depth_texture)) &&
-           (!CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_STENCIL) || CORE_GL_SUPPORT(ARB_texture_stencil8)))
+        if((!HAS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_DEPTH)   || CORE_GL_SUPPORT(ARB_depth_texture)) &&
+           (!HAS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_STENCIL) || CORE_GL_SUPPORT(ARB_texture_stencil8)))
         {
             // allocate render target texture
             if(pcName) pTarget->pTexture = Core::Manager::Resource->Load   <coreTexture>(pcName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
@@ -309,7 +309,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer
             if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
 
             // handle color target blitting
-            if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
+            if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
             {
                 if(pDestination->m_aColorTarget[0].pTexture)
                 {
@@ -320,7 +320,7 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer
             }
 
             // handle depth target blitting
-            if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))
+            if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))
             {
                 if(pDestination->m_DepthTarget.pTexture)
                 {
@@ -414,7 +414,7 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
         coreInt32 iNum = 0;
 
         // assemble required attachments
-        if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
+        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
         {
             for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             {
@@ -423,8 +423,8 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
                     aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
             }
         }
-        if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
-        if(CONTAINS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_STENCIL)) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
+        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
+        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_STENCIL)) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
         WARN_IF(!iNum) return;
 
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
@@ -463,9 +463,9 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
 
     // get requested render target structure
     coreRenderTarget* pTarget = NULL;
-         if(CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_COLOR))   pTarget = &m_aColorTarget[iColorIndex];
-    else if(CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_DEPTH))   pTarget = &m_DepthTarget;
-    else if(CONTAINS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_STENCIL)) pTarget = &m_StencilTarget;
+         if(HAS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_COLOR))   pTarget = &m_aColorTarget[iColorIndex];
+    else if(HAS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_DEPTH))   pTarget = &m_DepthTarget;
+    else if(HAS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_STENCIL)) pTarget = &m_StencilTarget;
     else {WARN_IF(true) {} return NULL;}
 
     // free possible old texture

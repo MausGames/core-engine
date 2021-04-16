@@ -223,7 +223,7 @@ coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OU
     if((*pcMultiByte) < 0)
     {
         // count number of bytes
-        const coreUint8 iBytes = 2u + CONTAINS_FLAG((*pcMultiByte), 0xE0u) + CONTAINS_FLAG((*pcMultiByte), 0xF0u);
+        const coreUint8 iBytes = 2u + HAS_FLAG((*pcMultiByte), 0xE0u) + HAS_FLAG((*pcMultiByte), 0xF0u);
         ASSERT(iBytes <= 4u)
 
         // convert character
