@@ -107,13 +107,13 @@ public:
     static constexpr coreFloat               StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH5(0.0f, 1.0f, STEP(a, b, x));}      // smootherstep
 
     /* base operations */
-    static inline coreFloat Fmod (const coreFloat fNum, const coreFloat fDenom) {return std::fmod (fNum, fDenom);}
-    static inline coreFloat Trunc(const coreFloat fInput)                       {return std::trunc(fInput);}
-    static inline coreFloat Fract(const coreFloat fInput)                       {return fInput - TRUNC(fInput);}   // FMOD(x, 1.0f)
-    static inline coreFloat Cbrt (const coreFloat fInput)                       {return std::cbrt (fInput);}
-    static inline coreFloat Sqrt (const coreFloat fInput);
-    static inline coreFloat Rsqrt(const coreFloat fInput);
-    static inline coreFloat Rcp  (const coreFloat fInput);
+    static inline    coreFloat Fmod (const coreFloat fNum, const coreFloat fDenom) {return std::fmod (fNum, fDenom);}
+    static inline    coreFloat Trunc(const coreFloat fInput)                       {return std::trunc(fInput);}
+    static inline    coreFloat Fract(const coreFloat fInput)                       {return fInput - TRUNC(fInput);}   // FMOD(x, 1.0f)
+    static inline    coreFloat Cbrt (const coreFloat fInput)                       {return std::cbrt (fInput);}
+    static inline    coreFloat Sqrt (const coreFloat fInput);
+    static inline    coreFloat Rsqrt(const coreFloat fInput);
+    static constexpr coreFloat Rcp  (const coreFloat fInput);
 
     /* exponential operations */
     static inline coreFloat Pow  (const coreFloat fBase, const coreFloat fExp)  {return std::pow  (fBase, fExp);}
@@ -150,16 +150,16 @@ public:
     template <typename T> static constexpr coreBool IsNear(const T& x, const T& c, const T& r = CORE_MATH_PRECISION) {return POW2(x - c) <= POW2(r);}
 
     /* bit operations */
-    static inline coreUint32 PopCount      (coreUint32 iInput);
-    static inline coreUint32 BitScanFwd    (coreUint32 iInput);
-    static inline coreUint32 BitScanRev    (coreUint32 iInput);
-    static inline coreUint8  ReverseBits8  (coreUint8  iInput);
-    static inline coreUint16 ReverseBits16 (coreUint16 iInput);
-    static inline coreUint32 ReverseBits32 (coreUint32 iInput);
-    static inline coreUint64 ReverseBits64 (coreUint64 iInput);
-    static inline coreUint16 ReverseBytes16(coreUint16 iInput);
-    static inline coreUint32 ReverseBytes32(coreUint32 iInput);
-    static inline coreUint64 ReverseBytes64(coreUint64 iInput);
+    static constexpr coreUint32 PopCount      (const coreUint32 iInput);
+    static inline    coreUint32 BitScanFwd    (const coreUint32 iInput);
+    static inline    coreUint32 BitScanRev    (const coreUint32 iInput);
+    static constexpr coreUint8  ReverseBits8  (const coreUint8  iInput);
+    static constexpr coreUint16 ReverseBits16 (const coreUint16 iInput);
+    static constexpr coreUint32 ReverseBits32 (const coreUint32 iInput);
+    static constexpr coreUint64 ReverseBits64 (const coreUint64 iInput);
+    static inline    coreUint16 ReverseBytes16(const coreUint16 iInput);
+    static inline    coreUint32 ReverseBytes32(const coreUint32 iInput);
+    static inline    coreUint64 ReverseBytes64(const coreUint64 iInput);
 
     /* converting operations */
     static inline coreUint32 FloatToBits(const coreFloat  fInput);
@@ -223,38 +223,42 @@ inline coreFloat coreMath::Rsqrt(const coreFloat fInput)
 
 // ****************************************************************
 /* calculate approximate reciprocal */
-inline coreFloat coreMath::Rcp(const coreFloat fInput)
+constexpr coreFloat coreMath::Rcp(const coreFloat fInput)
 {
     ASSERT(fInput)
 
 #if defined(_CORE_SSE_)
 
-    // optimized calculation with SSE
-    const coreFloat A = _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(fInput)));
-    return A * (2.0f - fInput * A);
+    if(!std::is_constant_evaluated())
+    {
+        // optimized calculation with SSE
+        const coreFloat A = _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(fInput)));
+        return A * (2.0f - fInput * A);
+    }
 
 #elif defined(_CORE_NEON_)
 
-    // optimized calculation with NEON
-    const coreFloat A = vrecpes_f32(fInput);
-    return A * (2.0f - fInput * A);
+    if(!std::is_constant_evaluated())
+    {
+        // optimized calculation with NEON
+        const coreFloat A = vrecpes_f32(fInput);
+        return A * (2.0f - fInput * A);
+    }
 
-#else
+#endif
 
     // normal calculation
     return 1.0f / fInput;
-
-#endif
 }
 
 
 // ****************************************************************
 /* count the number of one-bits (population count) */
-inline coreUint32 coreMath::PopCount(coreUint32 iInput)
+constexpr coreUint32 coreMath::PopCount(coreUint32 iInput)
 {
 #if defined(_CORE_SSE_)
 
-    if(coreCPUID::POPCNT())
+    if(!std::is_constant_evaluated() && coreCPUID::POPCNT())
     {
         // optimized calculation with POPCNT
         return _mm_popcnt_u32(iInput);
@@ -271,7 +275,7 @@ inline coreUint32 coreMath::PopCount(coreUint32 iInput)
 
 // ****************************************************************
 /* get index of the least significant one-bit */
-inline coreUint32 coreMath::BitScanFwd(coreUint32 iInput)
+inline coreUint32 coreMath::BitScanFwd(const coreUint32 iInput)
 {
     if(!iInput) return 32u;
 
@@ -292,7 +296,7 @@ inline coreUint32 coreMath::BitScanFwd(coreUint32 iInput)
 
 // ****************************************************************
 /* get index of the most significant one-bit */
-inline coreUint32 coreMath::BitScanRev(coreUint32 iInput)
+inline coreUint32 coreMath::BitScanRev(const coreUint32 iInput)
 {
     if(!iInput) return 32u;
 
@@ -313,97 +317,105 @@ inline coreUint32 coreMath::BitScanRev(coreUint32 iInput)
 
 // ****************************************************************
 /* reverse bit-order of a 8-bit sequence */
-inline coreUint8 coreMath::ReverseBits8(coreUint8 iInput)
+constexpr coreUint8 coreMath::ReverseBits8(const coreUint8 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    // calculation with Clang intrinsic
-    return __builtin_bitreverse8(iInput);
-
-#else
-
-    // normal calculation
-    iInput = ((iInput >> 4u) & 0x0Fu) | ((iInput << 4u) & 0xF0u);
-    iInput = ((iInput >> 2u) & 0x33u) | ((iInput << 2u) & 0xCCu);
-    iInput = ((iInput >> 1u) & 0x55u) | ((iInput << 1u) & 0xAAu);
-    return iInput;
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with Clang intrinsic
+        return __builtin_bitreverse8(iInput);
+    }
 
 #endif
+
+    // normal calculation
+    coreUint16 iOutput = iInput;
+    iOutput = ((iOutput >> 4u) & 0x0Fu) | ((iOutput << 4u) & 0xF0u);
+    iOutput = ((iOutput >> 2u) & 0x33u) | ((iOutput << 2u) & 0xCCu);
+    iOutput = ((iOutput >> 1u) & 0x55u) | ((iOutput << 1u) & 0xAAu);
+    return iOutput;
 }
 
 
 // ****************************************************************
 /* reverse bit-order of a 16-bit sequence */
-inline coreUint16 coreMath::ReverseBits16(coreUint16 iInput)
+constexpr coreUint16 coreMath::ReverseBits16(const coreUint16 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    // calculation with Clang intrinsic
-    return __builtin_bitreverse16(iInput);
-
-#else
-
-    // normal calculation
-    iInput = ((iInput >> 8u) & 0x00FFu) | ((iInput << 8u) & 0xFF00u);
-    iInput = ((iInput >> 4u) & 0x0F0Fu) | ((iInput << 4u) & 0xF0F0u);
-    iInput = ((iInput >> 2u) & 0x3333u) | ((iInput << 2u) & 0xCCCCu);
-    iInput = ((iInput >> 1u) & 0x5555u) | ((iInput << 1u) & 0xAAAAu);
-    return iInput;
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with Clang intrinsic
+        return __builtin_bitreverse16(iInput);
+    }
 
 #endif
+
+    // normal calculation
+    coreUint16 iOutput = iInput;
+    iOutput = ((iOutput >> 8u) & 0x00FFu) | ((iOutput << 8u) & 0xFF00u);
+    iOutput = ((iOutput >> 4u) & 0x0F0Fu) | ((iOutput << 4u) & 0xF0F0u);
+    iOutput = ((iOutput >> 2u) & 0x3333u) | ((iOutput << 2u) & 0xCCCCu);
+    iOutput = ((iOutput >> 1u) & 0x5555u) | ((iOutput << 1u) & 0xAAAAu);
+    return iOutput;
 }
 
 
 // ****************************************************************
 /* reverse bit-order of a 32-bit sequence */
-inline coreUint32 coreMath::ReverseBits32(coreUint32 iInput)
+constexpr coreUint32 coreMath::ReverseBits32(const coreUint32 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    // calculation with Clang intrinsic
-    return __builtin_bitreverse32(iInput);
-
-#else
-
-    // normal calculation
-    iInput = ((iInput >> 16u) & 0x0000FFFFu) | ((iInput << 16u) & 0xFFFF0000u);
-    iInput = ((iInput >>  8u) & 0x00FF00FFu) | ((iInput <<  8u) & 0xFF00FF00u);
-    iInput = ((iInput >>  4u) & 0x0F0F0F0Fu) | ((iInput <<  4u) & 0xF0F0F0F0u);
-    iInput = ((iInput >>  2u) & 0x33333333u) | ((iInput <<  2u) & 0xCCCCCCCCu);
-    iInput = ((iInput >>  1u) & 0x55555555u) | ((iInput <<  1u) & 0xAAAAAAAAu);
-    return iInput;
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with Clang intrinsic
+        return __builtin_bitreverse32(iInput);
+    }
 
 #endif
+
+    // normal calculation
+    coreUint32 iOutput = iInput;
+    iOutput = ((iOutput >> 16u) & 0x0000FFFFu) | ((iOutput << 16u) & 0xFFFF0000u);
+    iOutput = ((iOutput >>  8u) & 0x00FF00FFu) | ((iOutput <<  8u) & 0xFF00FF00u);
+    iOutput = ((iOutput >>  4u) & 0x0F0F0F0Fu) | ((iOutput <<  4u) & 0xF0F0F0F0u);
+    iOutput = ((iOutput >>  2u) & 0x33333333u) | ((iOutput <<  2u) & 0xCCCCCCCCu);
+    iOutput = ((iOutput >>  1u) & 0x55555555u) | ((iOutput <<  1u) & 0xAAAAAAAAu);
+    return iOutput;
 }
 
 
 // ****************************************************************
 /* reverse bit-order of a 64-bit sequence */
-inline coreUint64 coreMath::ReverseBits64(coreUint64 iInput)
+constexpr coreUint64 coreMath::ReverseBits64(const coreUint64 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    // calculation with Clang intrinsic
-    return __builtin_bitreverse64(iInput);
-
-#else
-
-    // normal calculation
-    iInput = ((iInput >> 32u) & 0x00000000FFFFFFFFu) | ((iInput << 32u) & 0xFFFFFFFF00000000u);
-    iInput = ((iInput >> 16u) & 0x0000FFFF0000FFFFu) | ((iInput << 16u) & 0xFFFF0000FFFF0000u);
-    iInput = ((iInput >>  8u) & 0x00FF00FF00FF00FFu) | ((iInput <<  8u) & 0xFF00FF00FF00FF00u);
-    iInput = ((iInput >>  4u) & 0x0F0F0F0F0F0F0F0Fu) | ((iInput <<  4u) & 0xF0F0F0F0F0F0F0F0u);
-    iInput = ((iInput >>  2u) & 0x3333333333333333u) | ((iInput <<  2u) & 0xCCCCCCCCCCCCCCCCu);
-    iInput = ((iInput >>  1u) & 0x5555555555555555u) | ((iInput <<  1u) & 0xAAAAAAAAAAAAAAAAu);
-    return iInput;
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with Clang intrinsic
+        return __builtin_bitreverse64(iInput);
+    }
 
 #endif
+
+    // normal calculation
+    coreUint64 iOutput = iInput;
+    iOutput = ((iOutput >> 32u) & 0x00000000FFFFFFFFu) | ((iOutput << 32u) & 0xFFFFFFFF00000000u);
+    iOutput = ((iOutput >> 16u) & 0x0000FFFF0000FFFFu) | ((iOutput << 16u) & 0xFFFF0000FFFF0000u);
+    iOutput = ((iOutput >>  8u) & 0x00FF00FF00FF00FFu) | ((iOutput <<  8u) & 0xFF00FF00FF00FF00u);
+    iOutput = ((iOutput >>  4u) & 0x0F0F0F0F0F0F0F0Fu) | ((iOutput <<  4u) & 0xF0F0F0F0F0F0F0F0u);
+    iOutput = ((iOutput >>  2u) & 0x3333333333333333u) | ((iOutput <<  2u) & 0xCCCCCCCCCCCCCCCCu);
+    iOutput = ((iOutput >>  1u) & 0x5555555555555555u) | ((iOutput <<  1u) & 0xAAAAAAAAAAAAAAAAu);
+    return iOutput;
 }
 
 
 // ****************************************************************
 /* reverse byte-order of a 2-byte sequence */
-inline coreUint16 coreMath::ReverseBytes16(coreUint16 iInput)
+inline coreUint16 coreMath::ReverseBytes16(const coreUint16 iInput)
 {
 #if defined(_CORE_MSVC_)
 
@@ -421,7 +433,7 @@ inline coreUint16 coreMath::ReverseBytes16(coreUint16 iInput)
 
 // ****************************************************************
 /* reverse byte-order of a 4-byte sequence */
-inline coreUint32 coreMath::ReverseBytes32(coreUint32 iInput)
+inline coreUint32 coreMath::ReverseBytes32(const coreUint32 iInput)
 {
 #if defined(_CORE_MSVC_)
 
@@ -439,7 +451,7 @@ inline coreUint32 coreMath::ReverseBytes32(coreUint32 iInput)
 
 // ****************************************************************
 /* reverse byte-order of a 8-byte sequence */
-inline coreUint64 coreMath::ReverseBytes64(coreUint64 iInput)
+inline coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
 {
 #if defined(_CORE_MSVC_)
 
