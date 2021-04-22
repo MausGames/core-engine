@@ -19,21 +19,21 @@
 
 // ****************************************************************
 /* menu label definitions */
-#define CORE_LABEL_DETAIL        (Core::System->GetResolution().y * 1.1f)
+#define CORE_LABEL_DETAIL        (Core::System->GetResolution().y * 1.0f)
 #define CORE_LABEL_SIZE_FACTOR   (RCP(CORE_LABEL_DETAIL))       // map texture resolution on current window resolution
 #define CORE_LABEL_HEIGHT_FACTOR (CORE_LABEL_DETAIL / 800.0f)   // set real font height relative to current window resolution
 #define CORE_LABEL_TEXTURE       (1u)                           // default texture unit (other than 0, to reduce texture switches)
 
 #define CORE_LABEL_HEIGHT_RELATIVE(x) (F_TO_UI(I_TO_F(x) * CORE_LABEL_HEIGHT_FACTOR))
 
-enum coreLabelUpdate : coreUint8
+enum coreLabelRefresh : coreUint8
 {
-    CORE_LABEL_UPDATE_NOTHING = 0x00u,   // update nothing
-    CORE_LABEL_UPDATE_SIZE    = 0x01u,   // update object size
-    CORE_LABEL_UPDATE_TEXTURE = 0x02u,   // update and generate texture
-    CORE_LABEL_UPDATE_ALL     = 0x03u    // update everything
+    CORE_LABEL_REFRESH_NOTHING = 0x00u,   // refresh nothing
+    CORE_LABEL_REFRESH_SIZE    = 0x01u,   // refresh object size
+    CORE_LABEL_REFRESH_TEXTURE = 0x02u,   // refresh and generate texture
+    CORE_LABEL_REFRESH_ALL     = 0x03u    // refresh everything
 };
-ENABLE_BITWISE(coreLabelUpdate)
+ENABLE_BITWISE(coreLabelRefresh)
 
 
 // ****************************************************************
@@ -41,16 +41,17 @@ ENABLE_BITWISE(coreLabelUpdate)
 class coreLabel : public coreObject2D, public coreTranslate, public coreResourceRelation
 {
 private:
-    coreFontPtr m_pFont;         // font object
-    coreUint16  m_iHeight;       // specific height for the font
-    coreUint8   m_iOutline;      // create very sharp outlined text
+    coreFontPtr m_pFont;           // font object
+    coreUint16  m_iHeight;         // specific height for the font
+    coreUint8   m_iOutline;        // create very sharp outlined text
 
-    coreVector2 m_vResolution;   // resolution of the generated texture
+    coreVector2 m_vResolution;     // resolution of the generated texture
 
-    std::string m_sText;         // current text
-    coreFloat   m_fScale;        // scale factor
+    std::string m_sText;           // current text
+    coreFloat   m_fScale;          // scale factor
+    coreBool    m_bRectify;        // align texture with screen pixels
 
-    coreLabelUpdate m_eUpdate;   // update status (dirty flag)
+    coreLabelRefresh m_eRefresh;   // refresh status (dirty flag)
 
 
 public:
@@ -71,13 +72,14 @@ public:
     template <typename F> void RetrieveDesiredSize(F&& nRetrieveFunc)const;   // [](const coreVector2& vSize) -> void
 
     /* invoke texture generation */
-    inline void RegenerateTexture() {ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL) m_vResolution = coreVector2(0.0f,0.0f);}
+    inline void RegenerateTexture() {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL) m_vResolution = coreVector2(0.0f,0.0f);}
 
     /* set object properties */
     coreBool    SetText        (const coreChar*       pcText);
     coreBool    SetText        (const coreChar*       pcText, const coreUint8 iNum);
-    inline void SetTextLanguage(const coreHashString& sKey)   {this->_BindString(&m_sText, sKey);}
-    inline void SetScale       (const coreFloat       fScale) {if(m_fScale != fScale) {ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE) m_fScale = fScale;}}
+    inline void SetTextLanguage(const coreHashString& sKey)     {this->_BindString(&m_sText, sKey);}
+    inline void SetScale       (const coreFloat       fScale)   {if(m_fScale   != fScale)   {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)      m_fScale   = fScale;}}
+    inline void SetRectify     (const coreBool        bRectify) {if(m_bRectify != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) m_bRectify = bRectify;}}
 
     /* get object properties */
     inline const coreFontPtr& GetFont      ()const {return m_pFont;}
@@ -86,6 +88,7 @@ public:
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreChar*    GetText      ()const {return m_sText.c_str();}
     inline const coreFloat&   GetScale     ()const {return m_fScale;}
+    inline const coreBool&    GetRectify   ()const {return m_bRectify;}
 
 
 private:
@@ -93,10 +96,13 @@ private:
     void __Reset(const coreResourceReset eInit)final;
 
     /* update object after modification */
-    inline void __Update()final {ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL)}
+    inline void __Update()final {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)}
 
     /* generate the texture */
     void __GenerateTexture(const coreChar* pcText);
+
+    /* move and adjust the label */
+    void __MoveRectified();
 };
 
 
@@ -104,7 +110,7 @@ private:
 /* retrieve desired size without rendering */
 template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)const
 {
-    if(HAS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
+    if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
     {
         // check if requested font is loaded
         m_pFont.OnUsableOnce([=, this]()
@@ -114,7 +120,7 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
 
             // return the dimensions of the current text (may differ a bit)
             const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, m_iOutline);
-            nRetrieveFunc(coreVector2(vDimensions.x - 0.5f, vDimensions.y) * (CORE_LABEL_SIZE_FACTOR * m_fScale));
+            nRetrieveFunc(vDimensions * (CORE_LABEL_SIZE_FACTOR * m_fScale));
         });
     }
     else

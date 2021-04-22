@@ -21,7 +21,8 @@ coreLabel::coreLabel()noexcept
 , m_vResolution        (coreVector2(0.0f,0.0f))
 , m_sText              ("")
 , m_fScale             (1.0f)
-, m_eUpdate            (CORE_LABEL_UPDATE_NOTHING)
+, m_bRectify           (true)
+, m_eRefresh           (CORE_LABEL_REFRESH_NOTHING)
 {
 }
 
@@ -70,25 +71,25 @@ void coreLabel::Render()
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
-    if(m_eUpdate)
+    if(m_eRefresh)
     {
         // check if requested font is loaded
         if(!m_pFont.IsUsable()) return;
 
-        if(HAS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_TEXTURE))
+        if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE))
         {
             // generate the texture
             this->__GenerateTexture(m_sText.c_str());
         }
-        if(HAS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE))
+        if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
         {
-            // update the object size
+            // refresh the object size
             this->SetSize(this->GetTexSize() * m_vResolution * (CORE_LABEL_SIZE_FACTOR * m_fScale));
-            this->coreObject2D::Move();
+            this->__MoveRectified();
         }
 
-        // reset the update status
-        m_eUpdate = CORE_LABEL_UPDATE_NOTHING;
+        // reset the refresh status
+        m_eRefresh = CORE_LABEL_REFRESH_NOTHING;
     }
 
     // render the 2d-object
@@ -105,8 +106,8 @@ void coreLabel::Move()
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
-    // move the 2d-object
-    if(!CONTAINS_FLAG(m_eUpdate, CORE_LABEL_UPDATE_SIZE)) this->coreObject2D::Move();
+    // move and adjust the label
+    if(!HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)) this->__MoveRectified();
 }
 
 
@@ -122,7 +123,7 @@ coreBool coreLabel::SetText(const coreChar* pcText)
     // check for new text
     if(std::strcmp(m_sText.c_str(), pcText))
     {
-        ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL)
+        ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)
 
         // change the current text
         m_sText.assign(pcText);
@@ -141,7 +142,7 @@ coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
     // check for new text
     if((iNum != m_sText.length()) || std::strcmp(m_sText.c_str(), pcText))
     {
-        ADD_FLAG(m_eUpdate, CORE_LABEL_UPDATE_ALL)
+        ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)
 
         // change the current text
         m_sText.assign(pcText, MIN(iNum, std::strlen(pcText)));
@@ -261,9 +262,32 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     m_apTexture[CORE_LABEL_TEXTURE]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
 
     // display only visible texture area
-    this->SetTexSize(coreVector2(I_TO_F(iWidth) - 0.5f, I_TO_F(iHeight)) / m_vResolution);
+    this->SetTexSize(coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) / m_vResolution);
     ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
 
     // delete merge buffer
     if(pOutline) ZERO_DELETE(pData)
+}
+
+
+// ****************************************************************
+/* move and adjust the label */
+void coreLabel::__MoveRectified()
+{
+    if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+    {
+        // move the 2d-object
+        this->coreObject2D::Move();
+
+        // align texture with screen pixels
+        if(m_bRectify)
+        {
+            m_mTransform._11 = ROUND(m_mTransform._11);
+            m_mTransform._12 = ROUND(m_mTransform._12);
+            m_mTransform._21 = ROUND(m_mTransform._21);
+            m_mTransform._22 = ROUND(m_mTransform._22);
+            m_mTransform._31 = FLOOR(m_mTransform._31) + FRACT(0.5f * ABS(m_mTransform._11 + m_mTransform._21));
+            m_mTransform._32 = CEIL (m_mTransform._32) - FRACT(0.5f * ABS(m_mTransform._12 + m_mTransform._22));
+        }
+    }
 }
