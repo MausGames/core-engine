@@ -47,7 +47,7 @@ public:
     /* access associated object */
     inline          operator       T* ()      {return m_ptObject;}
     constexpr       operator const T* ()const {return m_ptObject;}
-    inline explicit operator coreBool ()const {return m_ptObject ? true : false;}
+    inline explicit operator coreBool ()const {return m_ptObject != NULL;}
     inline T*       operator ->       ()const {ASSERT(m_ptObject) return  m_ptObject;}
     inline T&       operator *        ()const {ASSERT(m_ptObject) return *m_ptObject;}
 };

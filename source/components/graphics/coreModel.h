@@ -146,11 +146,11 @@ public:
     inline const coreVector3& GetNaturalCenter    ()const                       {return m_vNaturalCenter;}
     inline const coreVector3& GetNaturalRange     ()const                       {return m_vNaturalRange;}
     inline const coreVector3& GetWeightedCenter   ()const                       {return m_vWeightedCenter;}
-    inline const coreVector3* GetVertexPosition   ()const                       {return m_pvVertexPosition;}
-    inline const coreUint16*  GetClusterIndex     (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_ppiClusterIndex    [iIndex];}
-    inline const coreUint16&  GetClusterNumIndices(const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_piClusterNumIndices[iIndex];}
-    inline const coreVector3& GetClusterPosition  (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_pvClusterPosition  [iIndex];}
-    inline const coreFloat&   GetClusterRadius    (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return m_pfClusterRadius    [iIndex];}
+    inline const coreVector3* GetVertexPosition   ()const                       {return ASSUME_ALIGNED(m_pvVertexPosition, ALIGNMENT_CACHE);}
+    inline const coreUint16*  GetClusterIndex     (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return ASSUME_ALIGNED(m_ppiClusterIndex,     ALIGNMENT_CACHE)[iIndex];}
+    inline const coreUint16&  GetClusterNumIndices(const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return ASSUME_ALIGNED(m_piClusterNumIndices, ALIGNMENT_CACHE)[iIndex];}
+    inline const coreVector3& GetClusterPosition  (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return ASSUME_ALIGNED(m_pvClusterPosition,   ALIGNMENT_CACHE)[iIndex];}
+    inline const coreFloat&   GetClusterRadius    (const coreUintW iIndex)const {ASSERT(iIndex < m_iNumClusters) return ASSUME_ALIGNED(m_pfClusterRadius,     ALIGNMENT_CACHE)[iIndex];}
     inline const GLenum&      GetPrimitiveType    ()const                       {return m_iPrimitiveType;}
     inline const GLenum&      GetIndexType        ()const                       {return m_iIndexType;}
 

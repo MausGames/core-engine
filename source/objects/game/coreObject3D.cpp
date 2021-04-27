@@ -357,7 +357,7 @@ void coreBatchList::MoveSort()
 
             // calculate properties of current object
             const coreFloat fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
-            const coreBool  bCurTransparent = (pObject->GetAlpha() < 1.0f) ? true : false;
+            const coreBool  bCurTransparent = (pObject->GetAlpha() < 1.0f);
 
             // sort objects (opaque first and from front to back, transparent later and from back to front)
             if(( bCurTransparent && (bOldTransparent && (fCurDistance > fOldDistance))) ||

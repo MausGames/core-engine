@@ -256,13 +256,13 @@
 
 // ****************************************************************
 /* standard libraries */
-#define _ALLOW_RTCc_IN_STL
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
 #if !defined(_CORE_EXCEPTIONS_)
     #define _HAS_EXCEPTIONS 0
 #endif
 #if defined(_CORE_DEBUG_)
+    #define _ALLOW_RTCc_IN_STL
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
 #endif

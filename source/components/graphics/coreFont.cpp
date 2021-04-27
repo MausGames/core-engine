@@ -41,8 +41,12 @@ coreStatus coreFont::Load(coreFile* pFile)
     // copy file object for later sub-font creation
     coreFile::InternalNew(&m_pFile, pFile);
 
+#if defined(_CORE_DEBUG_)
+
     // create test sub-font
-    WARN_IF(DEFINED(_CORE_DEBUG_) && !this->__InitHeight(1u, 0u)) {}
+    WARN_IF(!this->__InitHeight(1u, 0u)) {}
+
+#endif
 
     // save properties
     m_sPath = pFile->GetPath();

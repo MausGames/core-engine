@@ -34,7 +34,7 @@
 #define POOLED_NEW(m,t,...) (ASSUME_ALIGNED(new((m).Allocate()) t(__VA_ARGS__), alignof(t)))
 #define POOLED_DELETE(m,p)  {if(p) {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}}
 
-#define ALIGNED_NEW(t,c,a)  (ASSUME_ALIGNED(s_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))), a))
+#define ALIGNED_NEW(t,c,a)  (ASSUME_ALIGNED(s_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))), (a)))
 #define ALIGNED_DELETE(p)   {_aligned_free(p); (p) = NULL;}
 
 #define ZERO_NEW(t,c)       (ASSUME_ALIGNED(s_cast<t*>(std::calloc((c), sizeof(t))), ALIGNMENT_NEW))

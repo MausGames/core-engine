@@ -159,6 +159,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
         __IMPROVE(GLEW_KHR_debug,                            GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_KHR_no_error,                         false)                                                  // indirectly used
         __IMPROVE(GLEW_NV_framebuffer_multisample_coverage,  false)
         __IMPROVE(GLEW_NV_gpu_shader5,                       false)                                                  // shader extension
         __IMPROVE(GLEW_NV_multisample_filter_hint,           false)
