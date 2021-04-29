@@ -147,7 +147,7 @@
 #endif
 
 // target configuration checks
-#if ((_CORE_MSVC_) < 1920) && ((_CORE_GCC_) < 100200) && ((_CORE_CLANG_) < 110000)
+#if ((_CORE_MSVC_) < 1920) && ((_CORE_GCC_) < 100200) && ((_CORE_CLANG_) < 120000)
     #error Compiler not supported!
 #endif
 #if !defined(_CORE_X86_) && !defined(_CORE_ARM_)

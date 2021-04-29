@@ -123,12 +123,12 @@ public:
     /* packing functions */
     constexpr        coreUint32  PackUnorm2x16  ()const;
     constexpr        coreUint32  PackSnorm2x16  ()const;
-    inline           coreUint32  PackFloat2x16  ()const;
-    inline           coreUint64  PackFloat2x32  ()const;
+    constexpr        coreUint32  PackFloat2x16  ()const;
+    constexpr        coreUint64  PackFloat2x32  ()const;
     static constexpr coreVector2 UnpackUnorm2x16(const coreUint32 iNumber);
     static constexpr coreVector2 UnpackSnorm2x16(const coreUint32 iNumber);
-    static inline    coreVector2 UnpackFloat2x16(const coreUint32 iNumber);
-    static inline    coreVector2 UnpackFloat2x32(const coreUint64 iNumber);
+    static constexpr coreVector2 UnpackFloat2x16(const coreUint32 iNumber);
+    static constexpr coreVector2 UnpackFloat2x32(const coreUint64 iNumber);
 };
 
 
@@ -382,14 +382,14 @@ public:
     constexpr        coreUint32  PackSnorm4x8   ()const;
     constexpr        coreUint64  PackUnorm4x16  ()const;
     constexpr        coreUint64  PackSnorm4x16  ()const;
-    inline           coreUint64  PackFloat4x16  ()const;
+    constexpr        coreUint64  PackFloat4x16  ()const;
     static constexpr coreVector4 UnpackUnorm210 (const coreUint32 iNumber);
     static constexpr coreVector4 UnpackSnorm210 (const coreUint32 iNumber);
     static constexpr coreVector4 UnpackUnorm4x8 (const coreUint32 iNumber);
     static constexpr coreVector4 UnpackSnorm4x8 (const coreUint32 iNumber);
     static constexpr coreVector4 UnpackUnorm4x16(const coreUint64 iNumber);
     static constexpr coreVector4 UnpackSnorm4x16(const coreUint64 iNumber);
-    static inline    coreVector4 UnpackFloat4x16(const coreUint64 iNumber);
+    static constexpr coreVector4 UnpackFloat4x16(const coreUint64 iNumber);
 
     /* quaternion functions */
     static constexpr coreVector4 QuatMultiply (const coreVector4& v1, const coreVector4& v2);
@@ -491,7 +491,7 @@ constexpr coreUint32 coreVector2::PackSnorm2x16()const
 
 // ****************************************************************
 /* compress arbitrary vector into YX packed uint */
-inline coreUint32 coreVector2::PackFloat2x16()const
+constexpr coreUint32 coreVector2::PackFloat2x16()const
 {
     return (coreUint32(coreMath::Float32To16(y)) << 16u) |
            (coreUint32(coreMath::Float32To16(x)));
@@ -500,10 +500,9 @@ inline coreUint32 coreVector2::PackFloat2x16()const
 
 // ****************************************************************
 /* safely convert vector into bit-representation */
-inline coreUint64 coreVector2::PackFloat2x32()const
+constexpr coreUint64 coreVector2::PackFloat2x32()const
 {
-    coreUint64 iOutput; std::memcpy(&iOutput, &x, sizeof(coreUint64));
-    return iOutput;
+    return std::bit_cast<coreUint64>(*this);
 }
 
 
@@ -530,7 +529,7 @@ constexpr coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32 iNumber)
 
 // ****************************************************************
 /* uncompress YX packed uint into arbitrary vector */
-inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
+constexpr coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 {
     return coreVector2(coreMath::Float16To32( iNumber         & 0xFFFFu),
                        coreMath::Float16To32((iNumber >> 16u) & 0xFFFFu));
@@ -539,10 +538,9 @@ inline coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 
 // ****************************************************************
 /* safely convert bit-representation into vector */
-inline coreVector2 coreVector2::UnpackFloat2x32(const coreUint64 iNumber)
+constexpr coreVector2 coreVector2::UnpackFloat2x32(const coreUint64 iNumber)
 {
-    coreVector2 vOutput; std::memcpy(&vOutput.x, &iNumber, sizeof(coreVector2));
-    return vOutput;
+    return std::bit_cast<coreVector2>(iNumber);
 }
 
 
@@ -828,11 +826,11 @@ constexpr coreUint64 coreVector4::PackSnorm4x16()const
 
 // ****************************************************************
 /* compress arbitrary vector into WZYX packed uint64 */
-inline coreUint64 coreVector4::PackFloat4x16()const
+constexpr coreUint64 coreVector4::PackFloat4x16()const
 {
 #if defined(_CORE_SSE_)
 
-    if(coreCPUID::F16C())
+    if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {
         // optimized calculation with F16C
         return _mm_cvtsi128_si64(_mm_cvtps_ph(_mm_loadu_ps(&x), _MM_FROUND_CUR_DIRECTION));
@@ -931,11 +929,11 @@ constexpr coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64 iNumber)
 
 // ****************************************************************
 /* uncompress WZYX packed uint64 into arbitrary vector */
-inline coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
+constexpr coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
 {
 #if defined(_CORE_SSE_)
 
-    if(coreCPUID::F16C())
+    if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {
         // optimized calculation with F16C
         coreVector4 vOutput; _mm_storeu_ps(&vOutput.x, _mm_cvtph_ps(_mm_set_epi64x(0u, iNumber)));

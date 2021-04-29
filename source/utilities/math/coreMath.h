@@ -162,10 +162,10 @@ public:
     static inline    coreUint64 ReverseBytes64(const coreUint64 iInput);
 
     /* converting operations */
-    static inline coreUint32 FloatToBits(const coreFloat  fInput);
-    static inline coreFloat  BitsToFloat(const coreUint32 iInput);
-    static inline coreUint16 Float32To16(const coreFloat  fInput);
-    static inline coreFloat  Float16To32(const coreUint16 iInput);
+    static constexpr coreUint32 FloatToBits(const coreFloat  fInput);
+    static constexpr coreFloat  BitsToFloat(const coreUint32 iInput);
+    static constexpr coreUint16 Float32To16(const coreFloat  fInput);
+    static constexpr coreFloat  Float16To32(const coreUint16 iInput);
 
     /* miscellaneous functions */
     static inline void EnableExceptions();
@@ -321,13 +321,10 @@ constexpr coreUint8 coreMath::ReverseBits8(const coreUint8 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    if(!std::is_constant_evaluated())
-    {
-        // calculation with Clang intrinsic
-        return __builtin_bitreverse8(iInput);
-    }
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse8(iInput);
 
-#endif
+#else
 
     // normal calculation
     coreUint16 iOutput = iInput;
@@ -335,6 +332,8 @@ constexpr coreUint8 coreMath::ReverseBits8(const coreUint8 iInput)
     iOutput = ((iOutput >> 2u) & 0x33u) | ((iOutput << 2u) & 0xCCu);
     iOutput = ((iOutput >> 1u) & 0x55u) | ((iOutput << 1u) & 0xAAu);
     return iOutput;
+
+#endif
 }
 
 
@@ -344,13 +343,10 @@ constexpr coreUint16 coreMath::ReverseBits16(const coreUint16 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    if(!std::is_constant_evaluated())
-    {
-        // calculation with Clang intrinsic
-        return __builtin_bitreverse16(iInput);
-    }
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse16(iInput);
 
-#endif
+#else
 
     // normal calculation
     coreUint16 iOutput = iInput;
@@ -359,6 +355,8 @@ constexpr coreUint16 coreMath::ReverseBits16(const coreUint16 iInput)
     iOutput = ((iOutput >> 2u) & 0x3333u) | ((iOutput << 2u) & 0xCCCCu);
     iOutput = ((iOutput >> 1u) & 0x5555u) | ((iOutput << 1u) & 0xAAAAu);
     return iOutput;
+
+#endif
 }
 
 
@@ -368,13 +366,10 @@ constexpr coreUint32 coreMath::ReverseBits32(const coreUint32 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    if(!std::is_constant_evaluated())
-    {
-        // calculation with Clang intrinsic
-        return __builtin_bitreverse32(iInput);
-    }
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse32(iInput);
 
-#endif
+#else
 
     // normal calculation
     coreUint32 iOutput = iInput;
@@ -384,6 +379,8 @@ constexpr coreUint32 coreMath::ReverseBits32(const coreUint32 iInput)
     iOutput = ((iOutput >>  2u) & 0x33333333u) | ((iOutput <<  2u) & 0xCCCCCCCCu);
     iOutput = ((iOutput >>  1u) & 0x55555555u) | ((iOutput <<  1u) & 0xAAAAAAAAu);
     return iOutput;
+
+#endif
 }
 
 
@@ -393,13 +390,10 @@ constexpr coreUint64 coreMath::ReverseBits64(const coreUint64 iInput)
 {
 #if defined(_CORE_CLANG_)
 
-    if(!std::is_constant_evaluated())
-    {
-        // calculation with Clang intrinsic
-        return __builtin_bitreverse64(iInput);
-    }
+    // calculation with Clang intrinsic
+    return __builtin_bitreverse64(iInput);
 
-#endif
+#else
 
     // normal calculation
     coreUint64 iOutput = iInput;
@@ -410,6 +404,8 @@ constexpr coreUint64 coreMath::ReverseBits64(const coreUint64 iInput)
     iOutput = ((iOutput >>  2u) & 0x3333333333333333u) | ((iOutput <<  2u) & 0xCCCCCCCCCCCCCCCCu);
     iOutput = ((iOutput >>  1u) & 0x5555555555555555u) | ((iOutput <<  1u) & 0xAAAAAAAAAAAAAAAAu);
     return iOutput;
+
+#endif
 }
 
 
@@ -469,29 +465,27 @@ inline coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
 
 // ****************************************************************
 /* safely convert float into bit-representation */
-inline coreUint32 coreMath::FloatToBits(const coreFloat fInput)
+constexpr coreUint32 coreMath::FloatToBits(const coreFloat fInput)
 {
-    coreUint32 iOutput; std::memcpy(&iOutput, &fInput, sizeof(coreUint32));
-    return iOutput;
+    return std::bit_cast<coreUint32>(fInput);
 }
 
 
 // ****************************************************************
 /* safely convert bit-representation into float */
-inline coreFloat coreMath::BitsToFloat(const coreUint32 iInput)
+constexpr coreFloat coreMath::BitsToFloat(const coreUint32 iInput)
 {
-    coreFloat fOutput; std::memcpy(&fOutput, &iInput, sizeof(coreFloat));
-    return fOutput;
+    return std::bit_cast<coreFloat>(iInput);
 }
 
 
 // ****************************************************************
 /* convert single-precision float into half-precision */
-inline coreUint16 coreMath::Float32To16(const coreFloat fInput)
+constexpr coreUint16 coreMath::Float32To16(const coreFloat fInput)
 {
 #if defined(_CORE_SSE_)
 
-    if(coreCPUID::F16C())
+    if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {
         // optimized calculation with F16C
         return _mm_cvtsi128_si32(_mm_cvtps_ph(_mm_set_ss(fInput), _MM_FROUND_CUR_DIRECTION));
@@ -508,11 +502,11 @@ inline coreUint16 coreMath::Float32To16(const coreFloat fInput)
 
 // ****************************************************************
 /* convert half-precision float into single-precision */
-inline coreFloat coreMath::Float16To32(const coreUint16 iInput)
+constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 {
 #if defined(_CORE_SSE_)
 
-    if(coreCPUID::F16C())
+    if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {
         // optimized calculation with F16C
         return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(iInput)));
