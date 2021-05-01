@@ -10,19 +10,17 @@
 #ifndef _CORE_GUARD_SPINLOCK_H_
 #define _CORE_GUARD_SPINLOCK_H_
 
-// TODO: use std::atomic_flag with C++20 ?
-
 
 // ****************************************************************
 /* spinlock class */
 class coreSpinLock final
 {
 private:
-    std::atomic<coreBool> m_bState;   // atomic lock state
+    std::atomic_flag m_bState;   // atomic lock state
 
 
 public:
-    constexpr coreSpinLock()noexcept : m_bState (false) {}
+    constexpr coreSpinLock()noexcept : m_bState () {}
 
     DISABLE_COPY(coreSpinLock)
 
@@ -72,7 +70,7 @@ FORCE_INLINE void coreSpinLock::Lock()
 /* release the spinlock */
 FORCE_INLINE void coreSpinLock::Unlock()
 {
-    m_bState.store(false, std::memory_order_release);
+    m_bState.clear(std::memory_order_release);
 }
 
 
@@ -80,7 +78,7 @@ FORCE_INLINE void coreSpinLock::Unlock()
 /* try to acquire the spinlock */
 FORCE_INLINE coreBool coreSpinLock::TryLock()
 {
-    return !m_bState.load(std::memory_order_relaxed) && !m_bState.exchange(true, std::memory_order_acquire);
+    return !m_bState.test(std::memory_order_relaxed) && !m_bState.test_and_set(std::memory_order_acquire);
 }
 
 
@@ -88,7 +86,7 @@ FORCE_INLINE coreBool coreSpinLock::TryLock()
 /* check for current lock state */
 FORCE_INLINE coreBool coreSpinLock::IsLocked()const
 {
-    return m_bState.load(std::memory_order_relaxed);
+    return m_bState.test(std::memory_order_relaxed);
 }
 
 
