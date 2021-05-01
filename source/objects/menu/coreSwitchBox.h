@@ -30,22 +30,22 @@ public:
     /* entry structure */
     struct coreEntry final
     {
-        std::string* psText;   // visible text
-        T            tValue;   // associated value
+        coreString* psText;   // visible text
+        T           tValue;   // associated value
     };
 
 
 private:
-    coreButton m_aArrow[2];            // selection arrows (0 = left | 1 = right)
-    coreLabel  m_Caption;              // label displaying the current entry
+    coreButton m_aArrow[2];         // selection arrows (0 = left | 1 = right)
+    coreLabel  m_Caption;           // label displaying the current entry
 
-    std::vector<coreEntry> m_aEntry;   // list with entries and associated values
-    coreUintW m_iCurIndex;             // index of the current entry
-    coreInt8  m_iUserSwitch;           // current entry changed by interaction (0 = unchanged | -1 = left | 1 = right)
+    coreList<coreEntry> m_aEntry;   // list with entries and associated values
+    coreUintW m_iCurIndex;          // index of the current entry
+    coreInt8  m_iUserSwitch;        // current entry changed by interaction (0 = unchanged | -1 = left | 1 = right)
 
-    coreBool  m_bEndless;              // endless repeat behavior
-    coreInt8  m_iOverride;             // override for selection arrows (0 = normal | 1 = always busy | -1 = always idle)
-    coreTimer m_Automatic;             // automatic forward behavior
+    coreBool  m_bEndless;           // endless repeat behavior
+    coreInt8  m_iOverride;          // override for selection arrows (0 = normal | 1 = always busy | -1 = always idle)
+    coreTimer m_Automatic;          // automatic forward behavior
 
 
 public:
@@ -303,7 +303,7 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, co
 {
     // create new entry
     coreEntry oNewEntry;
-    oNewEntry.psText = MANAGED_NEW(std::string, pcText);
+    oNewEntry.psText = MANAGED_NEW(coreString, pcText);
     oNewEntry.tValue = tValue;
 
     // add entry to the list
@@ -443,7 +443,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
 // ****************************************************************
 /* default switch-box types */
 using coreSwitchBoxU8  = coreSwitchBox<coreUint8>;
-using coreSwitchBoxStr = coreSwitchBox<std::string>;
+using coreSwitchBoxStr = coreSwitchBox<coreString>;
 
 
 #endif /* _CORE_GUARD_SWITCHBOX_H_ */

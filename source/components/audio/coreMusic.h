@@ -110,17 +110,17 @@ private:
 class coreMusicPlayer final
 {
 private:
-    std::vector<coreMusic*> m_apMusic;      // music objects
-    coreMusic* m_pEmptyMusic;               // empty music object
+    coreList<coreMusic*> m_apMusic;      // music objects
+    coreMusic* m_pEmptyMusic;            // empty music object
 
-    std::vector<coreMusic*> m_apSequence;   // playback sequence
-    coreMusicRepeat m_eRepeat;              // repeat behavior
+    coreList<coreMusic*> m_apSequence;   // playback sequence
+    coreMusicRepeat m_eRepeat;           // repeat behavior
 
-    coreTimer  m_FadeTimer;                 // timer for a transition between two music objects
-    coreMusic* m_pFadePrevious;             // previous music object during a transition
+    coreTimer  m_FadeTimer;              // timer for a transition between two music objects
+    coreMusic* m_pFadePrevious;          // previous music object during a transition
 
-    coreMusic* m_pCurMusic;                 // current music object
-    coreUintW  m_iCurIndex;                 // sequence-index of the current music object
+    coreMusic* m_pCurMusic;              // current music object
+    coreUintW  m_iCurIndex;              // sequence-index of the current music object
 
 
 public:

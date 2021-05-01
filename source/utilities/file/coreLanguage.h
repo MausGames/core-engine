@@ -28,8 +28,8 @@
 class INTERFACE coreTranslate
 {
 private:
-    coreLanguage* m_pLanguage;                            // associated language file
-    coreLookup<std::string*, std::string> m_apsPointer;   // own string pointers connected with keys <own, key>
+    coreLanguage* m_pLanguage;                       // associated language file
+    coreMap<coreString*, coreString> m_apsPointer;   // own string pointers connected with keys <own, key>
 
 
 public:
@@ -48,8 +48,8 @@ public:
 
 protected:
     /* bind and unbind own string pointers */
-    void _BindString  (std::string* psString, const coreHashString& sKey);
-    void _UnbindString(std::string* psString);
+    void _BindString  (coreString* psString, const coreHashString& sKey);
+    void _UnbindString(coreString* psString);
 
 
 private:
@@ -63,12 +63,12 @@ private:
 class coreLanguage final
 {
 private:
-    coreLookupStrFull<std::string> m_asStringList;        // list with language-strings to specific keys
+    coreMapStrFull<coreString> m_asStringList;       // list with language-strings to specific keys
 
-    coreLookup<std::string*, std::string> m_apsForeign;   // foreign string pointers connected with keys <foreign, key>
-    coreSet<coreTranslate*> m_apObject;                   // objects to update after modification
+    coreMap<coreString*, coreString> m_apsForeign;   // foreign string pointers connected with keys <foreign, key>
+    coreSet<coreTranslate*> m_apObject;              // objects to update after modification
 
-    std::string m_sPath;                                  // relative path of the file
+    coreString m_sPath;                              // relative path of the file
 
 
 public:
@@ -85,17 +85,17 @@ public:
     inline coreBool        HasString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey);}
 
     /* bind and unbind foreign string pointers */
-    void        BindForeign  (std::string* psForeign, const coreHashString& sKey);
-    inline void UnbindForeign(std::string* psForeign) {ASSERT(m_apsForeign.count_bs(psForeign)) m_apsForeign.erase_bs(psForeign);}
+    void        BindForeign  (coreString* psForeign, const coreHashString& sKey);
+    inline void UnbindForeign(coreString* psForeign) {ASSERT(m_apsForeign.count_bs(psForeign)) m_apsForeign.erase_bs(psForeign);}
 
     /* get object properties */
     inline const coreChar* GetPath      ()const {return m_sPath.c_str();}
     inline       coreUintW GetNumStrings()const {return m_asStringList.size();}
 
     /* access language files directly */
-    static coreBool FindString(const coreChar* pcPath, const coreChar* pcKey, std::string* OUTPUT psOutput);
-    static void GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreLookup<std::string, std::string>* OUTPUT pasOutput);
-    static void GetAvailableLanguages(coreLookup<std::string, std::string>* OUTPUT pasOutput);
+    static coreBool FindString(const coreChar* pcPath, const coreChar* pcKey, coreString* OUTPUT psOutput);
+    static void GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreMap<coreString, coreString>* OUTPUT pasOutput);
+    static void GetAvailableLanguages(coreMap<coreString, coreString>* OUTPUT pasOutput);
 
 
 private:

@@ -387,7 +387,7 @@ coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreCha
     coreBool bStatus = false;
 
     // get specific files from the folder
-    std::vector<std::string> asFolder;
+    coreList<coreString> asFolder;
     coreData::ScanFolder(pcPath, pcFilter, &asFolder);
 
     // try to add all files to the music-player

@@ -258,7 +258,10 @@
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h">
       <Filter>objects\game</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\utilities\data\coreLookup.h">
+    <ClInclude Include="..\..\..\source\utilities\data\coreMap.h">
+      <Filter>utilities\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreList.h">
       <Filter>utilities\data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h">

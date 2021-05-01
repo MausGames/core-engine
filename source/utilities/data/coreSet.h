@@ -13,12 +13,12 @@
 
 // ****************************************************************
 /* set container class */
-template <typename T> class coreSet final : public std::vector<T>
+template <typename T> class coreSet final : public coreList<T>
 {
 private:
     /* internal types */
-    using coreIterator      = typename std::vector<T>::iterator;
-    using coreConstIterator = typename std::vector<T>::const_iterator;
+    using coreIterator      = typename coreList<T>::iterator;
+    using coreConstIterator = typename coreList<T>::const_iterator;
 
 
 public:
@@ -27,12 +27,12 @@ public:
     ENABLE_COPY(coreSet)
 
     /* insert new unique item */
-    using std::vector<T>::insert;
+    using coreList<T>::insert;
     inline void insert   (const T& tItem) {ASSERT(!this->count   (tItem)) this->push_back(tItem);}
     inline void insert_bs(const T& tItem) {ASSERT(!this->count_bs(tItem)) this->insert(this->__retrieve_bs(tItem), tItem);}
 
     /* remove existing item */
-    using std::vector<T>::erase;
+    using coreList<T>::erase;
     inline coreIterator erase   (const T& tItem) {const auto it = this->__retrieve   (tItem); if(this->__check   (it))        return this->erase(it); return this->end();}
     inline coreIterator erase_bs(const T& tItem) {const auto it = this->__retrieve_bs(tItem); if(this->__check_bs(it, tItem)) return this->erase(it); return this->end();}
 

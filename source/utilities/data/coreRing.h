@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_RING_H_
 #define _CORE_GUARD_RING_H_
 
-// TODO: create a dynamic-sized version with std::vector ? (replacement in coreParticleSystem)
+// TODO: create a dynamic-sized version with coreList ? (replacement in coreParticleSystem)
 // TODO: rename functions to better and more obvious names
 
 

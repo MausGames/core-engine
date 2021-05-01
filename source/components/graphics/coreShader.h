@@ -101,9 +101,9 @@ private:
     GLuint m_iIdentifier;                    // shader identifier
     GLenum m_iType;                          // shader type (e.g. GL_VERTEX_SHADER)
 
-    std::string m_sCustomCode;               // custom shader code added to the beginning of the shader
+    coreString m_sCustomCode;                // custom shader code added to the beginning of the shader
 
-    static std::string  s_asGlobalCode[2];   // global shader code (0 = version | 1 = global shader file)
+    static coreString   s_asGlobalCode[2];   // global shader code (0 = version | 1 = global shader file)
     static coreSpinLock s_GlobalLock;        // spinlock to prevent concurrent initialization of global shader code
 
 
@@ -131,7 +131,7 @@ private:
     static void __LoadGlobalCode();
 
     /* reduce shader code size */
-    static void __ReduceCodeSize(std::string* OUTPUT psCode);
+    static void __ReduceCodeSize(coreString* OUTPUT psCode);
 };
 
 
@@ -145,19 +145,19 @@ using coreShaderPtr = coreResourcePtr<coreShader>;
 class coreProgram final : public coreResource
 {
 private:
-    GLuint m_iIdentifier;                                // shader-program identifier
+    GLuint m_iIdentifier;                             // shader-program identifier
 
-    std::vector<coreShaderPtr>       m_apShader;         // attached shader objects
-    std::vector<coreResourceHandle*> m_apShaderHandle;   // raw shader resource handles (to preserve while unloaded)
-    coreProgramStatus m_eStatus;                         // current status
+    coreList<coreShaderPtr>       m_apShader;         // attached shader objects
+    coreList<coreResourceHandle*> m_apShaderHandle;   // raw shader resource handles (to preserve while unloaded)
+    coreProgramStatus m_eStatus;                      // current status
 
-    coreLookupStr<coreInt8> m_aiUniform;                 // uniform locations
-    coreLookupStrFull<coreInt8> m_aiAttribute;           // attribute locations
-    coreLookup<coreInt8, coreVector4> m_avCache;         // cached uniform values
+    coreMapStr<coreInt8> m_aiUniform;                 // uniform locations
+    coreMapStrFull<coreInt8> m_aiAttribute;           // attribute locations
+    coreMap<coreInt8, coreVector4> m_avCache;         // cached uniform values
 
-    coreSync m_Sync;                                     // sync object for asynchronous shader-program loading
+    coreSync m_Sync;                                  // sync object for asynchronous shader-program loading
 
-    static coreProgram* s_pCurrent;                      // currently active shader-program
+    static coreProgram* s_pCurrent;                   // currently active shader-program
 
 
 public:

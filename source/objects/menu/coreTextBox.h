@@ -20,8 +20,8 @@
 class coreTextBox : public coreButton
 {
 private:
-    std::string m_sText;                // current text
-    std::string m_sPrevious;            // previous text
+    coreString m_sText;                 // current text
+    coreString m_sPrevious;             // previous text
 
     coreUint8 m_iLength;                // max number of characters
     coreChar  m_cCursor;                // cursor character

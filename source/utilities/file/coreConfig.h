@@ -48,15 +48,15 @@ class coreConfig final
 {
 private:
     /* internal types */
-    using coreSection = coreLookupStrFull<std::string>;
+    using coreSection = coreMapStrFull<coreString>;
 
 
 private:
-    coreLookupStrFull<coreSection> m_aasSection;   // configuration sections with configuration entries
+    coreMapStrFull<coreSection> m_aasSection;   // configuration sections with configuration entries
 
-    std::string  m_sPath;                          // relative path of the file
-    coreBool     m_bDirty;                         // status flag for pending changes
-    coreSpinLock m_Lock;                           // spinlock to prevent concurrent configuration access
+    coreString   m_sPath;                       // relative path of the file
+    coreBool     m_bDirty;                      // status flag for pending changes
+    coreSpinLock m_Lock;                        // spinlock to prevent concurrent configuration access
 
 
 public:
@@ -77,13 +77,13 @@ public:
     inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey,                  const coreBool  bValue)  {this->SetString(sSection, sKey, coreConfig::__FromBool (bValue));}
     inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey,                  const coreInt32 iValue)  {this->SetString(sSection, sKey, coreConfig::__FromInt  (iValue));}
     inline void SetFloat (const coreHashString& sSection, const coreHashString& sKey,                  const coreFloat fValue)  {this->SetString(sSection, sKey, coreConfig::__FromFloat(fValue));}
-    inline void SetString(const coreHashString& sSection, const coreHashString& sKey,                  const coreChar* pcValue) {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry) || std::strcmp(psEntry->c_str(), pcValue)) {m_bDirty = true; (*psEntry) = pcValue;}}
+    inline void SetString(const coreHashString& sSection, const coreHashString& sKey,                  const coreChar* pcValue) {coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry) || std::strcmp(psEntry->c_str(), pcValue)) {m_bDirty = true; (*psEntry) = pcValue;}}
 
     /* get configuration values */
-    inline coreBool        GetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool  bDefault)  {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromBool (bDefault);} return coreConfig::__ToBool (*psEntry);}
-    inline coreInt32       GetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32 iDefault)  {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromInt  (iDefault);} return coreConfig::__ToInt  (*psEntry);}
-    inline coreFloat       GetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat fDefault)  {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromFloat(fDefault);} return coreConfig::__ToFloat(*psEntry);}
-    inline const coreChar* GetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcDefault) {coreSpinLocker oLocker(&m_Lock); std::string* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = pcDefault;}                         return psEntry->c_str();}
+    inline coreBool        GetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool  bDefault)  {coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromBool (bDefault);} return coreConfig::__ToBool (*psEntry);}
+    inline coreInt32       GetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32 iDefault)  {coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromInt  (iDefault);} return coreConfig::__ToInt  (*psEntry);}
+    inline coreFloat       GetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat fDefault)  {coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromFloat(fDefault);} return coreConfig::__ToFloat(*psEntry);}
+    inline const coreChar* GetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcDefault) {coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = pcDefault;}                         return psEntry->c_str();}
 
     /* get object properties */
     inline const coreChar* GetPath()const {return m_sPath.c_str();}
@@ -91,12 +91,12 @@ public:
 
 private:
     /* retrieve configuration entry */
-    coreBool __RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, std::string** OUTPUT ppsEntry);
+    coreBool __RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, coreString** OUTPUT ppsEntry);
 
     /* convert to type */
-    static inline coreBool  __ToBool (const std::string& sString) {return (sString[0] == 't') || (sString[0] == 'T') || (sString[0] == '1');}
-    static inline coreInt32 __ToInt  (const std::string& sString) {return coreData::FromChars<coreInt32>(sString.c_str(), sString.length());}
-    static inline coreFloat __ToFloat(const std::string& sString) {return coreData::FromChars<coreFloat>(sString.c_str(), sString.length());}
+    static inline coreBool  __ToBool (const coreString& sString) {return (sString[0] == 't') || (sString[0] == 'T') || (sString[0] == '1');}
+    static inline coreInt32 __ToInt  (const coreString& sString) {return coreData::FromChars<coreInt32>(sString.c_str(), sString.length());}
+    static inline coreFloat __ToFloat(const coreString& sString) {return coreData::FromChars<coreFloat>(sString.c_str(), sString.length());}
 
     /* convert to string */
     static inline const coreChar* __FromBool (const coreBool  bValue) {return (bValue ? "true" : "false");}

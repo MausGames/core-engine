@@ -19,7 +19,7 @@
 
 // ****************************************************************
 /* log definitions */
-#define __CORE_LOG_STRING (std::string(PRINT(pcText, std::forward<A>(vArgs)...)))
+#define __CORE_LOG_STRING (coreString(PRINT(pcText, std::forward<A>(vArgs)...)))
 
 #define CORE_LOG_BOLD(s)       "<b>" s "</b>"   // display text bold
 #define CORE_LOG_ITALIC(s)     "<i>" s "</i>"   // display text italic
@@ -43,7 +43,7 @@ class coreLog final
 private:
     std::FILE* m_pFile;           // log file stream handle
 
-    std::string  m_sPath;         // relative path of the file
+    coreString   m_sPath;         // relative path of the file
     coreLogLevel m_eLevel;        // logging level
 
     coreUint8 m_iListStatus;       // currently writing a list
@@ -86,7 +86,7 @@ public:
 
 private:
     /* write text to the log file */
-    void __Write(const coreBool bTimeStamp, std::string sText);
+    void __Write(const coreBool bTimeStamp, coreString sText);
 };
 
 

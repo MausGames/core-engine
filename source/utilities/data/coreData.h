@@ -53,11 +53,11 @@ private:
 
 
 private:
-    static thread_local coreTempString s_TempString;          // manually aligned temp-string buffer
-    static thread_local coreUintW      s_iCurString;          // current temp-string
+    static thread_local coreTempString s_TempString;       // manually aligned temp-string buffer
+    static thread_local coreUintW      s_iCurString;       // current temp-string
 
-    static coreLookupStr<const coreChar*> s_apcCommandLine;   // parsed command line arguments
-    static std::string                    s_sUserFolder;      // selected user folder
+    static coreMapStr<const coreChar*> s_apcCommandLine;   // parsed command line arguments
+    static coreString                  s_sUserFolder;      // selected user folder
 
 
 public:
@@ -108,7 +108,7 @@ public:
     static coreStatus  FileCopy     (const coreChar* pcFrom, const coreChar* pcTo);
     static coreStatus  FileMove     (const coreChar* pcFrom, const coreChar* pcTo);
     static coreStatus  FileDelete   (const coreChar* pcPath);
-    static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput);
+    static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
     static coreStatus  CreateFolder (const coreChar* pcPath);
 
     /* retrieve date and time */
@@ -140,12 +140,11 @@ public:
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
     static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxLen);
-    static void                   StrTrim     (std::string* OUTPUT psInput, const coreChar* pcRemove = " \n\r\t");
-    static void                   StrReplace  (std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
+    static void                   StrTrim     (coreString* OUTPUT psInput, const coreChar* pcRemove = " \n\r\t");
+    static void                   StrReplace  (coreString* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
 
     /* operate with containers */
     template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
-    template <typename T> static typename std::vector<T>::iterator SwapErase(const typename std::vector<T>::iterator& oEntry, std::vector<T>* OUTPUT patContainer);
 
 
 private:
@@ -291,23 +290,6 @@ template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, co
         nFunction(pcToken);
         pcToken = std::strtok(NULL, pcDelimiter);
     }
-}
-
-
-// ****************************************************************
-/* delete vector entry without compaction */
-template <typename T> typename std::vector<T>::iterator coreData::SwapErase(const typename std::vector<T>::iterator& oEntry, std::vector<T>* OUTPUT patContainer)
-{
-    ASSERT(!patContainer->empty())
-
-    // remember current index
-    const coreUintW iIndex = oEntry - patContainer->begin();
-
-    // swap and delete target entry (but do not preserve ordering)
-    std::swap(oEntry, patContainer->end() - 1u);
-    patContainer->pop_back();
-
-    return patContainer->begin() + iIndex;
 }
 
 

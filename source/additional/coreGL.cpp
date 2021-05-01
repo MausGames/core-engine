@@ -101,9 +101,9 @@ void __coreInitOpenGL()
                      else Core::Log->Info ("GLEW initialized (%s)",                    glewGetString(GLEW_VERSION));
 
     // improve extension support
-    #define __IMPROVE(x,y) {std::string* T = &A; if(!(x)) {(__ ## x) = (y); T = (y) ? &C : &B;} T->append(" GL").append(&(#x[4]));}
+    #define __IMPROVE(x,y) {coreString* T = &A; if(!(x)) {(__ ## x) = (y); T = (y) ? &C : &B;} T->append(" GL").append(&(#x[4]));}
     {
-        std::string A, B, C;
+        coreString A, B, C;
 
         __IMPROVE(GLEW_AMD_conservative_depth,               false)                                                  // shader extension
         __IMPROVE(GLEW_AMD_framebuffer_multisample_advanced, false)
@@ -260,7 +260,7 @@ void __coreExitOpenGL()
 
 // ****************************************************************
 /* get extension string */
-void coreExtensions(std::string* OUTPUT psOutput)
+void coreExtensions(coreString* OUTPUT psOutput)
 {
     if(GLEW_VERSION_3_0)
     {
@@ -293,7 +293,7 @@ void coreExtensions(std::string* OUTPUT psOutput)
 
 // ****************************************************************
 /* get platform-specific extension string */
-void corePlatformExtensions(std::string* OUTPUT psOutput)
+void corePlatformExtensions(coreString* OUTPUT psOutput)
 {
     // clear memory
     psOutput->clear();

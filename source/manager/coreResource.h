@@ -42,7 +42,7 @@ enum coreResourceReset : coreBool
 class INTERFACE coreResource
 {
 protected:
-    std::string m_sPath;   // relative path of the resource file
+    coreString m_sPath;   // relative path of the resource file
 
 
 public:
@@ -79,8 +79,8 @@ private:
     coreResource* m_pResource;   // handled resource object
     coreFile*     m_pFile;       // pointer to resource file
 
-    std::string m_sName;         // identifier of this resource handle
-    coreBool    m_bAutomatic;    // updated automatically by the resource manager
+    coreString m_sName;          // identifier of this resource handle
+    coreBool   m_bAutomatic;     // updated automatically by the resource manager
 
     coreStatus   m_eStatus;      // current resource status
     coreUint16   m_iRefCount;    // simple reference-counter
@@ -185,18 +185,18 @@ private:
 class coreResourceManager final : public coreThread
 {
 private:
-    coreLookupStr<coreResourceHandle*> m_apHandle;                    // resource handles
+    coreMapStr<coreResourceHandle*> m_apHandle;                    // resource handles
 
-    coreLookupStr<coreArchive*> m_apArchive;                          // archives with resource files
-    coreLookupStr<coreFile*>    m_apDirectFile;                       // direct resource files
+    coreMapStr<coreArchive*> m_apArchive;                          // archives with resource files
+    coreMapStr<coreFile*>    m_apDirectFile;                       // direct resource files
 
-    coreLookup<coreResourceHandle*, coreResourceHandle*> m_apProxy;   // resource proxies pointing to foreign handles <proxy, foreign>
+    coreMap<coreResourceHandle*, coreResourceHandle*> m_apProxy;   // resource proxies pointing to foreign handles <proxy, foreign>
 
-    coreSet<coreResourceRelation*> m_apRelation;                      // objects to reset with the resource manager
+    coreSet<coreResourceRelation*> m_apRelation;                   // objects to reset with the resource manager
 
-    coreSpinLock m_ResourceLock;                                      // spinlock to prevent invalid resource handle access
-    coreSpinLock m_FileLock;                                          // spinlock to prevent invalid resource file access
-    coreBool     m_bActive;                                           // current management status
+    coreSpinLock m_ResourceLock;                                   // spinlock to prevent invalid resource handle access
+    coreSpinLock m_FileLock;                                       // spinlock to prevent invalid resource file access
+    coreBool     m_bActive;                                        // current management status
 
 
 private:

@@ -106,9 +106,9 @@ struct md5Weight final
 /* MD5-mesh structure */
 struct md5Mesh final
 {
-    std::vector<md5Vertex>   aVertex;     // vertex list
-    std::vector<md5Triangle> aTriangle;   // triangle list
-    std::vector<md5Weight>   aWeight;     // weight list
+    coreList<md5Vertex>   aVertex;     // vertex list
+    coreList<md5Triangle> aTriangle;   // triangle list
+    coreList<md5Weight>   aWeight;     // weight list
 
     explicit md5Mesh(const coreChar** ppcData)noexcept
     {
@@ -140,8 +140,8 @@ struct md5Mesh final
 /* MD5-file structure */
 struct md5File final
 {
-    std::vector<md5Joint> aJoint;   // joint list
-    std::vector<md5Mesh>  aMesh;    // mesh list
+    coreList<md5Joint> aJoint;   // joint list
+    coreList<md5Mesh>  aMesh;    // mesh list
 
     explicit md5File(const coreChar** ppcData)noexcept
     {

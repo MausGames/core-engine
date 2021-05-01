@@ -16,16 +16,16 @@
 class INTERFACE coreThread
 {
 private:
-    SDL_Thread* m_pThread;                                     // pointer to thread structure
-    std::string m_sName;                                       // name of the thread
+    SDL_Thread* m_pThread;                                  // pointer to thread structure
+    coreString  m_sName;                                    // name of the thread
 
-    coreFloat m_fFrequency;                                    // average number of iterations per second (0.0f = ignore)
-    coreBool  m_bActive;                                       // currently active and not forced to shut down
+    coreFloat m_fFrequency;                                 // average number of iterations per second (0.0f = ignore)
+    coreBool  m_bActive;                                    // currently active and not forced to shut down
 
-    std::vector<std::function<coreStatus()>> m_anFuncNew;      // new custom functions (separate, to allow attaching and executing at the same time)
-    std::vector<std::function<coreStatus()>> m_anFuncActive;   // active custom functions
-    coreSpinLock m_LockNew;                                    // spinlock for collecting new functions
-    coreSpinLock m_LockActive;                                 // spinlock for executing active functions
+    coreList<std::function<coreStatus()>> m_anFuncNew;      // new custom functions (separate, to allow attaching and executing at the same time)
+    coreList<std::function<coreStatus()>> m_anFuncActive;   // active custom functions
+    coreSpinLock m_LockNew;                                 // spinlock for collecting new functions
+    coreSpinLock m_LockActive;                              // spinlock for executing active functions
 
 
 public:

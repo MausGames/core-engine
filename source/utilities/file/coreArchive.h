@@ -32,7 +32,7 @@
 class coreFile final
 {
 private:
-    std::string m_sPath;          // relative path of the file
+    coreString m_sPath;           // relative path of the file
 
     coreByte*  m_pData;           // file data
     coreUint32 m_iSize;           // size of the file
@@ -81,8 +81,8 @@ public:
 class coreArchive final
 {
 private:
-    std::string m_sPath;                 // relative path of the archive
-    coreLookupStr<coreFile*> m_apFile;   // file objects
+    coreString m_sPath;               // relative path of the archive
+    coreMapStr<coreFile*> m_apFile;   // file objects
 
 
 public:

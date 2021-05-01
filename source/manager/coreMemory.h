@@ -13,7 +13,7 @@
 // TODO: check if Share return is optimized
 // TODO: asynchronous memory defragmentation
 // TODO: memory-pool: main-page + smaller extension-pages
-// TODO: memory-pool: usable with std::vector & co
+// TODO: memory-pool: usable with coreList & co
 // TODO: memory-pool: support polymorphism
 // TODO: memory-pool: 1 block for multiple objects
 // TODO: add interface for reusing big memory-blocks (free when?)
@@ -60,11 +60,11 @@
 class coreMemoryPool final
 {
 private:
-    std::vector<coreByte*> m_apPageList;    // list with memory-pages containing many memory-blocks
-    std::vector<void*>     m_apFreeStack;   // stack with pointers to free memory-blocks
+    coreList<coreByte*> m_apPageList;    // list with memory-pages containing many memory-blocks
+    coreList<void*>     m_apFreeStack;   // stack with pointers to free memory-blocks
 
-    coreUintW m_iBlockSize;                 // memory-block size (in bytes)
-    coreUintW m_iPageSize;                  // memory-page size (in number of containing memory-blocks)
+    coreUintW m_iBlockSize;              // memory-block size (in bytes)
+    coreUintW m_iPageSize;               // memory-page size (in number of containing memory-blocks)
 
 
 public:
@@ -97,10 +97,10 @@ private:
 class coreMemoryManager final
 {
 private:
-    coreLookupStr<std::weak_ptr<void>>     m_apPointer;     // list with weak shared memory pointer
-    coreLookup<coreUint16, coreMemoryPool> m_aMemoryPool;   // internal memory-pools (each for a different block-size)
+    coreMapStr<std::weak_ptr<void>>     m_apPointer;     // list with weak shared memory pointer
+    coreMap<coreUint16, coreMemoryPool> m_aMemoryPool;   // internal memory-pools (each for a different block-size)
 
-    coreSpinLock m_PoolLock;                                // spinlock to prevent invalid memory-pool access
+    coreSpinLock m_PoolLock;                             // spinlock to prevent invalid memory-pool access
 
 
 private:

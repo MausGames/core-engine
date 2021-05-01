@@ -79,7 +79,7 @@ void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
 
 // ****************************************************************
 /* bind own string pointer */
-void coreTranslate::_BindString(std::string* psString, const coreHashString& sKey)
+void coreTranslate::_BindString(coreString* psString, const coreHashString& sKey)
 {
     ASSERT(psString && sKey)
 
@@ -101,7 +101,7 @@ void coreTranslate::_BindString(std::string* psString, const coreHashString& sKe
 
 // ****************************************************************
 /* unbind own string pointer */
-void coreTranslate::_UnbindString(std::string* psString)
+void coreTranslate::_UnbindString(coreString* psString)
 {
     ASSERT(psString)
 
@@ -163,7 +163,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     const coreChar* pcEnd  = pcFrom + pFile->GetSize() - 1u;
     ASSERT(pFile->GetSize())
 
-    const auto nAssignFunc = [&](std::string* OUTPUT pString)
+    const auto nAssignFunc = [&](coreString* OUTPUT pString)
     {
         ASSERT(pString->empty())
 
@@ -178,7 +178,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     // clear all existing language-strings
     FOR_EACH(it, m_asStringList) it->clear();
 
-    std::string sKey = "";
+    coreString sKey = "";
     while(pcTo != pcEnd)
     {
         if((*pcTo) == CORE_LANGUAGE_ASSIGN[0] && sKey.empty())
@@ -219,7 +219,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
 
 // ****************************************************************
 /* bind foreign string pointer */
-void coreLanguage::BindForeign(std::string* psForeign, const coreHashString& sKey)
+void coreLanguage::BindForeign(coreString* psForeign, const coreHashString& sKey)
 {
     ASSERT(psForeign && sKey)
 
@@ -236,7 +236,7 @@ void coreLanguage::BindForeign(std::string* psForeign, const coreHashString& sKe
 
 // ****************************************************************
 /* find and read string from language file directly */
-coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey, std::string* OUTPUT psOutput)
+coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey, coreString* OUTPUT psOutput)
 {
     ASSERT(psOutput)
 
@@ -286,12 +286,12 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
 
 // ****************************************************************
 /* get list with all available languages <name, path> */
-void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreLookup<std::string, std::string>* OUTPUT pasOutput)
+void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreMap<coreString, coreString>* OUTPUT pasOutput)
 {
     ASSERT(pasOutput)
 
     // retrieve files from the folder
-    std::vector<std::string> asFile;
+    coreList<coreString> asFile;
     coreData::ScanFolder(pcPath, pcFilter, &asFile);
 
     // reserve some memory
@@ -300,7 +300,7 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
     FOR_EACH(it, asFile)
     {
         // find and read language-name
-        std::string sName;
+        coreString sName;
         if(!coreLanguage::FindString(it->c_str(), "LANGUAGE", &sName))
         {
             Core::Log->Warning("Language (%s) does not contain a valid LANGUAGE key", it->c_str());
@@ -312,7 +312,7 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
     }
 }
 
-void coreLanguage::GetAvailableLanguages(coreLookup<std::string, std::string>* OUTPUT pasOutput)
+void coreLanguage::GetAvailableLanguages(coreMap<coreString, coreString>* OUTPUT pasOutput)
 {
     // get list with all available languages from the default location
     coreLanguage::GetAvailableLanguages("data/languages", "*.lng", pasOutput);

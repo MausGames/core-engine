@@ -45,8 +45,8 @@ private:
 private:
     SDL_Window* m_pWindow;                         // SDL main window object
 
-    std::vector<coreDisplay> m_aDisplayData;       // all available displays
-    coreUint8                m_iDisplayIndex;      // current display index
+    coreList<coreDisplay> m_aDisplayData;          // all available displays
+    coreUint8             m_iDisplayIndex;         // current display index
 
     coreVector2 m_vResolution;                     // width and height of the window
     coreUint8   m_iFullscreen;                     // fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)

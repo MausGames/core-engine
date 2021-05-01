@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
-    <Type Name="coreLookupGen&lt;*,*,*&gt;">
+    <Type Name="coreMapGen&lt;*,*,*&gt;">
 
         <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
         <Expand>
@@ -26,7 +26,7 @@
 
     </Type>
 
-    <Type Name="coreLookupStrFull&lt;*&gt;">
+    <Type Name="coreMapStrFull&lt;*&gt;">
 
         <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
         <Expand>

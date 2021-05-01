@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreLookup<GLenum, GLuint> coreDataBuffer::s_aiBound = {};
+coreMap<GLenum, GLuint> coreDataBuffer::s_aiBound = {};
 
 
 // ****************************************************************

@@ -132,7 +132,7 @@ void coreLog::DebugOpenGL()
 
 // ****************************************************************
 /* write text to the log file */
-void coreLog::__Write(const coreBool bTimeStamp, std::string sText)
+void coreLog::__Write(const coreBool bTimeStamp, coreString sText)
 {
     coreSpinLocker oLocker(&m_Lock);
 

@@ -19,8 +19,8 @@ private:
     coreByte m_aData[iSize];   // buffer containing the stored object
 
 #if defined(_CORE_DEBUG_)
-    std::string m_sTypeName;   // current type name (for debug inspection)
-    coreUint32  m_iTypeId;     // current type identifier (for run-time checks)
+    coreString m_sTypeName;    // current type name (for debug inspection)
+    coreUint32 m_iTypeId;      // current type identifier (for run-time checks)
 #endif
 
 

@@ -105,7 +105,7 @@ class coreObjectManager final
 {
 private:
     /* internal types */
-    using coreObjectList = std::vector<coreObject3D*>;
+    using coreObjectList = coreList<coreObject3D*>;
 
     /* object collision structure */
     struct coreObjectCollision final
@@ -119,19 +119,19 @@ private:
 
 
 private:
-    coreLookup<coreInt32, coreObjectList>       m_aapObjectList;       // lists with pointers to registered 3d-objects <type, list>
-    coreLookup<coreObjectCollision, coreUint32> m_aiObjectCollision;   // currently recorded collisions
+    coreMap<coreInt32, coreObjectList>       m_aapObjectList;       // lists with pointers to registered 3d-objects <type, list>
+    coreMap<coreObjectCollision, coreUint32> m_aiObjectCollision;   // currently recorded collisions
 
-    coreLookup<coreObject3D*, coreUint16> m_aiIndex;                   // index for fast 3d-object lookup
-    coreBool                              m_bIndexDirty;               // index needs full reconstruction
+    coreMap<coreObject3D*, coreUint16> m_aiIndex;                   // index for fast 3d-object lookup
+    coreBool                           m_bIndexDirty;               // index needs full reconstruction
 
-    coreModelPtr  m_pLowQuad;                                          // low-memory square model (4 bytes per vertex, 16 total)
-    coreModelPtr  m_pLowTriangle;                                      // low-memory triangle model (8 bytes per vertex, 24 total)
-    coreObject2D* m_pBlitFallback;                                     // 2d-object used for fallback-blitting onto the default frame buffer
+    coreModelPtr  m_pLowQuad;                                       // low-memory square model (4 bytes per vertex, 16 total)
+    coreModelPtr  m_pLowTriangle;                                   // low-memory triangle model (8 bytes per vertex, 24 total)
+    coreObject2D* m_pBlitFallback;                                  // 2d-object used for fallback-blitting onto the default frame buffer
 
-    coreSet<coreObject2D*> m_apSpriteList;                             // list with pointers to all existing 2d-objects
-    coreVector2            m_vSpriteViewDir;                           // global 2d-object rotation (override)
-    coreVector2            m_vSpriteAltCenter;                         // global 2d-object screen space resolution (override)
+    coreSet<coreObject2D*> m_apSpriteList;                          // list with pointers to all existing 2d-objects
+    coreVector2            m_vSpriteViewDir;                        // global 2d-object rotation (override)
+    coreVector2            m_vSpriteAltCenter;                      // global 2d-object screen space resolution (override)
 
 
 private:

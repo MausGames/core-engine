@@ -170,7 +170,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         const coreVector3 vRangeDiff = coreVector3(1.0f,1.0f,1.0f) / (vRangeMax - vRangeMin);
 
         // assign triangles to different clusters based on their vertex positions (uniform grid)
-        std::vector<coreUint16> aiTempIndex[CORE_MODEL_CLUSTERS_MAX];
+        coreList<coreUint16> aiTempIndex[CORE_MODEL_CLUSTERS_MAX];
         for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; i += 3u)
         {
             // calculate triangle (bounding) center
@@ -197,7 +197,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         }
 
         // reorder clusters to compact list
-        std::sort(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const std::vector<coreUint16>& a, const std::vector<coreUint16>& b)
+        std::sort(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& a, const coreList<coreUint16>& b)
         {
             if(a.empty()) return false;
             if(b.empty()) return true;
@@ -205,7 +205,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         });
 
         // save number of clusters
-        m_iNumClusters = std::find_if(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const std::vector<coreUint16>& a) {return a.empty();}) - aiTempIndex;
+        m_iNumClusters = std::find_if(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& a) {return a.empty();}) - aiTempIndex;
 
         // allocate cluster memory
         coreByte* pIndexMemory = ALIGNED_NEW(coreByte,    m_iNumClusters * sizeof(coreUint16*) + m_iNumIndices * sizeof(coreUint16), ALIGNMENT_CACHE);

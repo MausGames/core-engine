@@ -352,10 +352,10 @@ struct coreContext final
     PFNGLGENVERTEXARRAYSOESPROC               __glGenVertexArraysOES;
 };
 
-extern std::string g_sExtensions;   // full extension string
+extern coreString  g_sExtensions;   // full extension string
 extern coreContext g_CoreContext;   // context object
 
-#define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x) != std::string::npos) || b))
+#define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x) != coreString::npos) || b))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
 #define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f ## a = r_cast<decltype(g_CoreContext.__ ## f ## a)>(eglGetProcAddress(b ? #f : #f #a));}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
@@ -378,8 +378,8 @@ extern void __coreInitOpenGLES();
 
 // ****************************************************************
 /* check for extensions */
-extern void coreExtensions        (std::string* OUTPUT psOutput);
-extern void corePlatformExtensions(std::string* OUTPUT psOutput);
+extern void coreExtensions        (coreString* OUTPUT psOutput);
+extern void corePlatformExtensions(coreString* OUTPUT psOutput);
 #define CORE_GL_SUPPORT(e) (CORE_GL_ ## e)
 
 

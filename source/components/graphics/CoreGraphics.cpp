@@ -69,10 +69,10 @@ CoreGraphics::CoreGraphics()noexcept
     // log video device information
     Core::Log->ListStartInfo("Video Device Information");
     {
-        std::string sExtensions;
+        coreString sExtensions;
         coreExtensions(&sExtensions);
 
-        std::string sPlatformExtensions;
+        coreString sPlatformExtensions;
         corePlatformExtensions(&sPlatformExtensions);
 
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
@@ -384,7 +384,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
     glReadPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
 
     // copy path into another thread
-    std::string sPathCopy = pcPath;
+    coreString sPathCopy = pcPath;
 
     Core::Manager::Resource->AttachFunction([=, sPathCopy = std::move(sPathCopy)]()
     {

@@ -40,13 +40,13 @@ public:
 
 
 private:
-    ALuint m_iBuffer;                             // sound buffer object
-    coreWaveFormat m_Format;                      // format of the sound file
+    ALuint m_iBuffer;                          // sound buffer object
+    coreWaveFormat m_Format;                   // format of the sound file
 
-    ALuint m_iCurSource;                          // active audio source
-    coreLookup<const void*, ALuint> m_aiSource;   // currently used audio sources
+    ALuint m_iCurSource;                       // active audio source
+    coreMap<const void*, ALuint> m_aiSource;   // currently used audio sources
 
-    const void* m_pCurRef;                        // reference pointer to active audio source
+    const void* m_pCurRef;                     // reference pointer to active audio source
 
 
 public:

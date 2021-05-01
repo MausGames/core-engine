@@ -473,11 +473,12 @@ using coreUint16 = std::uint16_t;
 using coreUint32 = std::uint32_t;
 using coreUint64 = std::uint64_t;
 using coreUintW  = std::size_t;
-using coreByte   = std::uint8_t;
 using coreBool   = bool;
 using coreChar   = char;
 using coreFloat  = float;
 using coreDouble = double;
+using coreByte   = std::uint8_t;
+using coreString = std::string;
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
@@ -686,9 +687,10 @@ private:
 #include "utilities/data/hash/Murmur2.h"
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreSpinLock.h"
-#include "utilities/data/coreRing.h"
+#include "utilities/data/coreList.h"
 #include "utilities/data/coreSet.h"
-#include "utilities/data/coreLookup.h"
+#include "utilities/data/coreMap.h"
+#include "utilities/data/coreRing.h"
 #include "utilities/data/coreData.h"
 #include "utilities/data/coreProtect.h"
 #include "utilities/data/coreVariant.h"

@@ -30,8 +30,8 @@ private:
 
 
 private:
-    std::vector<coreNode> m_apNode;   // nodes of the spline
-    coreFloat m_fTotalDistance;       // approximated total distance
+    coreList<coreNode> m_apNode;   // nodes of the spline
+    coreFloat m_fTotalDistance;    // approximated total distance
 
 
 public:

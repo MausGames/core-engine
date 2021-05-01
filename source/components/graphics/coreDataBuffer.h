@@ -42,19 +42,19 @@ enum coreDataBufferMap : coreUint8
 class coreDataBuffer
 {
 private:
-    GLuint m_iIdentifier;                          // data buffer identifier
-    coreDataBufferStorage m_eStorageType;          // storage type
+    GLuint m_iIdentifier;                       // data buffer identifier
+    coreDataBufferStorage m_eStorageType;       // storage type
 
-    GLenum     m_iTarget;                          // buffer target (e.g. GL_ARRAY_BUFFER)
-    coreUint32 m_iSize;                            // data size in bytes
+    GLenum     m_iTarget;                       // buffer target (e.g. GL_ARRAY_BUFFER)
+    coreUint32 m_iSize;                         // data size in bytes
 
-    coreByte*  m_pPersistentBuffer;                // pointer to persistent mapped buffer
-    coreUint32 m_iMapOffset;                       // current mapping offset
-    coreUint32 m_iMapLength;                       // current mapping length
+    coreByte*  m_pPersistentBuffer;             // pointer to persistent mapped buffer
+    coreUint32 m_iMapOffset;                    // current mapping offset
+    coreUint32 m_iMapLength;                    // current mapping length
 
-    coreSync m_Sync;                               // sync object for reliable access (unsynchronized, persistent mapped)
+    coreSync m_Sync;                            // sync object for reliable access (unsynchronized, persistent mapped)
 
-    static coreLookup<GLenum, GLuint> s_aiBound;   // data buffer objects currently associated with buffer targets <target, identifier>
+    static coreMap<GLenum, GLuint> s_aiBound;   // data buffer objects currently associated with buffer targets <target, identifier>
 
 
 public:
@@ -117,8 +117,8 @@ private:
 
 
 private:
-    coreUint8 m_iVertexSize;                   // size of each vertex in bytes
-    std::vector<coreAttribute> m_aAttribute;   // defined vertex attribute arrays
+    coreUint8 m_iVertexSize;                // size of each vertex in bytes
+    coreList<coreAttribute> m_aAttribute;   // defined vertex attribute arrays
 
 
 public:

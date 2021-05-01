@@ -72,7 +72,7 @@ coreStatus coreConfig::Load()
     const coreChar* pcTo   = pcData;
     const coreChar* pcEnd  = pcData + oFile.GetSize();
 
-    const auto nAssignFunc = [&](std::string* OUTPUT pString)
+    const auto nAssignFunc = [&](coreString* OUTPUT pString)
     {
         ASSERT(pString->empty())
 
@@ -87,8 +87,8 @@ coreStatus coreConfig::Load()
     // clear all existing configuration sections
     m_aasSection.clear();
 
-    std::string sSection = "";
-    std::string sKey     = "";
+    coreString sSection = "";
+    coreString sKey     = "";
     while(pcTo != pcEnd)
     {
         if((*pcTo) == '[' || (*pcTo) == ']')
@@ -147,7 +147,7 @@ coreStatus coreConfig::Save()
     coreSpinLocker oLocker(&m_Lock);
 
     // prepare target buffer
-    std::string sBuffer;
+    coreString sBuffer;
     sBuffer.reserve(0x1000u);
 
     FOR_EACH(it, m_aasSection)
@@ -182,7 +182,7 @@ coreStatus coreConfig::Save()
 
 // ****************************************************************
 /* retrieve configuration entry */
-coreBool coreConfig::__RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, std::string** OUTPUT ppsEntry)
+coreBool coreConfig::__RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, coreString** OUTPUT ppsEntry)
 {
     // check for existence
     const coreBool bExists = (m_aasSection.count(sSection) && m_aasSection.at(sSection).count(sKey));

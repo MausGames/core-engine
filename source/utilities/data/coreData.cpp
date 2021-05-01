@@ -30,8 +30,8 @@
 
 thread_local coreData::coreTempString coreData::s_TempString     = {};
 thread_local coreUintW                coreData::s_iCurString     = 0u;
-coreLookupStr<const coreChar*>        coreData::s_apcCommandLine = {};
-std::string                           coreData::s_sUserFolder    = "";
+coreMapStr<const coreChar*>           coreData::s_apcCommandLine = {};
+coreString                            coreData::s_sUserFolder    = "";
 
 extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
 
@@ -696,7 +696,7 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
 // ****************************************************************
 /* retrieve relative paths of all files from a folder */
-coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter, std::vector<std::string>* OUTPUT pasOutput)
+coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
 {
     WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
@@ -959,9 +959,9 @@ void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const
 
 // ****************************************************************
 /* trim a standard string on both sides */
-void coreData::StrTrim(std::string* OUTPUT psInput, const coreChar* pcRemove)
+void coreData::StrTrim(coreString* OUTPUT psInput, const coreChar* pcRemove)
 {
-    STATIC_ASSERT(std::string::npos == -1)
+    STATIC_ASSERT(coreString::npos == -1)
 
     // trim right
     const coreUintW iLast = psInput->find_last_not_of(pcRemove);
@@ -969,13 +969,13 @@ void coreData::StrTrim(std::string* OUTPUT psInput, const coreChar* pcRemove)
 
     // trim left
     const coreUintW iFirst = psInput->find_first_not_of(pcRemove);
-    if(iFirst != std::string::npos) psInput->erase(0u, iFirst);
+    if(iFirst != coreString::npos) psInput->erase(0u, iFirst);
 }
 
 
 // ****************************************************************
 /* replace all occurrences of a sub-string with another one */
-void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew)
+void coreData::StrReplace(coreString* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew)
 {
     coreUintW iPos = 0u;
 
@@ -984,7 +984,7 @@ void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, co
     const coreUintW iNewLen = std::strlen(pcNew);
 
     // loop only once and replace all findings
-    while((iPos = psInput->find(pcOld, iPos, iOldLen)) != std::string::npos)
+    while((iPos = psInput->find(pcOld, iPos, iOldLen)) != coreString::npos)
     {
         psInput->replace(iPos, iOldLen, pcNew);
         iPos += iNewLen;
@@ -997,7 +997,7 @@ void coreData::StrReplace(std::string* OUTPUT psInput, const coreChar* pcOld, co
 const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
 {
     // get folder name from application name
-    static std::string sIdentifier;
+    static coreString sIdentifier;
     if(sIdentifier.empty())
     {
         sIdentifier = Core::Application->Settings.Name;

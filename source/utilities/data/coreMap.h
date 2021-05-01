@@ -7,28 +7,28 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #pragma once
-#ifndef _CORE_GUARD_LOOKUP_H_
-#define _CORE_GUARD_LOOKUP_H_
+#ifndef _CORE_GUARD_MAP_H_
+#define _CORE_GUARD_MAP_H_
 
-// TODO: check for detection of inconsistent vector-manipulation (changing value-ordering through iterator, without changing the key-ordering)
+// TODO: check for detection of inconsistent list-manipulation (changing value-ordering through iterator, without changing the key-ordering)
 // TODO: TryGet function ?
 // TODO: implement swap-erase ?
-// TODO: erase and clear strings in coreLookupStrFull ?
+// TODO: erase and clear strings in coreMapStrFull ?
 
 
 // ****************************************************************
-/* lookup container definitions */
-#define CORE_LOOKUP_INVALID (coreUintW(-1))   // invalid cache index
+/* map container definitions */
+#define CORE_MAP_INVALID (coreUintW(-1))   // invalid cache index
 
 
 // ****************************************************************
-/* generic lookup container class */
-template <typename K, typename I, typename T> class coreLookupGen
+/* generic map container class */
+template <typename K, typename I, typename T> class coreMapGen
 {
 protected:
     /* internal types */
-    using coreValueList          = std::vector<T>;
-    using coreKeyList            = std::vector<K>;
+    using coreValueList          = coreList<T>;
+    using coreKeyList            = coreList<K>;
     using coreValueIterator      = typename coreValueList::iterator;
     using coreValueConstIterator = typename coreValueList::const_iterator;
     using coreKeyIterator        = typename coreKeyList  ::iterator;
@@ -43,12 +43,12 @@ protected:
 
 
 public:
-    coreLookupGen()noexcept;
-    coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept;
-    coreLookupGen(coreLookupGen<K, I, T>&&      m)noexcept;
+    coreMapGen()noexcept;
+    coreMapGen(const coreMapGen<K, I, T>& c)noexcept;
+    coreMapGen(coreMapGen<K, I, T>&&      m)noexcept;
 
     /* assignment operations */
-    coreLookupGen<K, I, T>& operator = (coreLookupGen<K, I, T> o)noexcept;
+    coreMapGen<K, I, T>& operator = (coreMapGen<K, I, T> o)noexcept;
 
     /* access specific entry */
     T& operator []    (const I& tKey);
@@ -123,8 +123,8 @@ protected:
 
     /* cache last requested entry */
     inline void     _cache_set(const coreUintW iIndex) {m_iCacheIndex = iIndex;}
-    inline void     _cache_clear()                     {m_iCacheIndex = CORE_LOOKUP_INVALID;}
-    inline coreBool _cache_try(const I& tKey)const     {return ((m_iCacheIndex != CORE_LOOKUP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey));}
+    inline void     _cache_clear()                     {m_iCacheIndex = CORE_MAP_INVALID;}
+    inline coreBool _cache_try(const I& tKey)const     {return ((m_iCacheIndex != CORE_MAP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey));}
 
     /* lookup entry by key */
     coreKeyIterator      _retrieve(const I& tKey);
@@ -140,46 +140,46 @@ protected:
 
 
 // ****************************************************************
-/* simplified generic lookup container type */
-template <typename K, typename T> using coreLookup = coreLookupGen<K, K, T>;
+/* simplified generic map container type */
+template <typename K, typename T> using coreMap = coreMapGen<K, K, T>;
 
 
 // ****************************************************************
-/* base string lookup container type */
-template <typename T> using coreLookupStrBase = coreLookupGen<coreUint32, coreHashString, T>;
+/* base string map container type */
+template <typename T> using coreMapStrBase = coreMapGen<coreUint32, coreHashString, T>;
 
 
 // ****************************************************************
-/* string lookup container class (with original strings) */
-template <typename T> class coreLookupStrFull final : public coreLookupStrBase<T>
+/* string map container class (with original strings) */
+template <typename T> class coreMapStrFull final : public coreMapStrBase<T>
 {
 private:
-    coreLookup<coreUint32, std::string> m_asStringList;   // list with original strings
+    coreMap<coreUint32, coreString> m_asStringList;   // list with original strings
 
 
 public:
-    coreLookupStrFull() = default;
+    coreMapStrFull() = default;
 
-    ENABLE_COPY(coreLookupStrFull)
+    ENABLE_COPY(coreMapStrFull)
 
     /* access specific entry */
     inline T& operator [] (const coreUintW       iIndex) {return this->m_atValueList[iIndex];}
-    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreLookupStrBase<T>::operator [] (sKey);}
-    inline T&          bs (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreLookupStrBase<T>::         bs (sKey);}
+    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreMapStrBase<T>::operator [] (sKey);}
+    inline T&          bs (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreMapStrBase<T>::         bs (sKey);}
 
     /* create new entry */
-    template <typename... A> inline void emplace   (const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace   (sKey, std::forward<A>(vArgs)...);}
-    template <typename... A> inline void emplace_bs(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreLookupStrBase<T>::emplace_bs(sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace   (const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace_bs(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace_bs(sKey, std::forward<A>(vArgs)...);}
 
     /* remove existing entry */
-    using coreLookupStrBase<T>::erase;
-    inline typename coreLookupStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    using coreMapStrBase<T>::erase;
+    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
 
     /* return original string */
-    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreValueConstIterator& it)const {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreKeyIterator&        it)      {return m_asStringList.at_bs(*it).c_str();}
-    inline const coreChar* get_string(const typename coreLookupStrBase<T>::coreKeyConstIterator&   it)const {return m_asStringList.at_bs(*it).c_str();}
+    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueConstIterator& it)const {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreKeyIterator&        it)      {return m_asStringList.at_bs(*it).c_str();}
+    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreKeyConstIterator&   it)const {return m_asStringList.at_bs(*it).c_str();}
 
 
 private:
@@ -189,50 +189,50 @@ private:
 
 
 // ****************************************************************
-/* string lookup container class (without original strings) */
-template <typename T> class coreLookupStrSlim final : public coreLookupStrBase<T>
+/* string map container class (without original strings) */
+template <typename T> class coreMapStrSlim final : public coreMapStrBase<T>
 {
 public:
-    coreLookupStrSlim() = default;
+    coreMapStrSlim() = default;
 
-    ENABLE_COPY(coreLookupStrSlim)
+    ENABLE_COPY(coreMapStrSlim)
 
     /* access specific entry */
-    using coreLookupStrBase<T>::operator [];
+    using coreMapStrBase<T>::operator [];
     inline T& operator [] (const coreUintW iIndex) {return this->m_atValueList[iIndex];}
 
     /* remove existing entry */
-    using coreLookupStrBase<T>::erase;
-    inline typename coreLookupStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    using coreMapStrBase<T>::erase;
+    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
 };
 
 
 // ****************************************************************
-/* simplified string lookup container type */
+/* simplified string map container type */
 #if defined(_CORE_DEBUG_)
-    template <typename T> using coreLookupStr = coreLookupStrFull<T>;
+    template <typename T> using coreMapStr = coreMapStrFull<T>;
 #else
-    template <typename T> using coreLookupStr = coreLookupStrSlim<T>;
+    template <typename T> using coreMapStr = coreMapStrSlim<T>;
 #endif
 
 
 // ****************************************************************
 /* constructor */
-template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen()noexcept
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen()noexcept
 : m_atValueList {}
 , m_atKeyList   {}
-, m_iCacheIndex (CORE_LOOKUP_INVALID)
+, m_iCacheIndex (CORE_MAP_INVALID)
 {
 }
 
-template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(const coreLookupGen<K, I, T>& c)noexcept
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(const coreMapGen<K, I, T>& c)noexcept
 : m_atValueList (c.m_atValueList)
 , m_atKeyList   (c.m_atKeyList)
 , m_iCacheIndex (c.m_iCacheIndex)
 {
 }
 
-template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookupGen(coreLookupGen<K, I, T>&& m)noexcept
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(coreMapGen<K, I, T>&& m)noexcept
 : m_atValueList (std::move(m.m_atValueList))
 , m_atKeyList   (std::move(m.m_atKeyList))
 , m_iCacheIndex (m.m_iCacheIndex)
@@ -242,7 +242,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>::coreLookup
 
 // ****************************************************************
 /* assignment operations */
-template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookupGen<K, I, T>::operator = (coreLookupGen<K, I, T> o)noexcept
+template <typename K, typename I, typename T> coreMapGen<K, I, T>& coreMapGen<K, I, T>::operator = (coreMapGen<K, I, T> o)noexcept
 {
     // swap properties
     std::swap(m_atValueList, o.m_atValueList);
@@ -255,7 +255,7 @@ template <typename K, typename I, typename T> coreLookupGen<K, I, T>& coreLookup
 
 // ****************************************************************
 /* access specific entry and create it if necessary */
-template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operator [] (const I& tKey)
+template <typename K, typename I, typename T> T& coreMapGen<K, I, T>::operator [] (const I& tKey)
 {
     // check for cached entry
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
@@ -272,7 +272,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::operato
     return (*this->get_value(it));
 }
 
-template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::bs(const I& tKey)
+template <typename K, typename I, typename T> T& coreMapGen<K, I, T>::bs(const I& tKey)
 {
     // check for cached entry
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
@@ -292,7 +292,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::bs(cons
 
 // ****************************************************************
 /* access specific entry */
-template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at(const I& tKey)
+template <typename K, typename I, typename T> T& coreMapGen<K, I, T>::at(const I& tKey)
 {
     // check for cached entry
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
@@ -304,7 +304,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at(cons
     return (*this->get_value(it));
 }
 
-template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at(const I& tKey)const
+template <typename K, typename I, typename T> const T& coreMapGen<K, I, T>::at(const I& tKey)const
 {
     // check for cached entry
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
@@ -316,7 +316,7 @@ template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::a
     return (*this->get_value(it));
 }
 
-template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at_bs(const I& tKey)
+template <typename K, typename I, typename T> T& coreMapGen<K, I, T>::at_bs(const I& tKey)
 {
     // check for cached entry
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
@@ -328,7 +328,7 @@ template <typename K, typename I, typename T> T& coreLookupGen<K, I, T>::at_bs(c
     return (*this->get_value(it));
 }
 
-template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::at_bs(const I& tKey)const
+template <typename K, typename I, typename T> const T& coreMapGen<K, I, T>::at_bs(const I& tKey)const
 {
     // check for cached entry
     if(this->_cache_try(tKey)) return m_atValueList[m_iCacheIndex];
@@ -343,13 +343,13 @@ template <typename K, typename I, typename T> const T& coreLookupGen<K, I, T>::a
 
 // ****************************************************************
 /* create new entry */
-template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace(const I& tKey, A&&... vArgs)
+template <typename K, typename I, typename T> template <typename... A> void coreMapGen<K, I, T>::emplace(const I& tKey, A&&... vArgs)
 {
     // copy and move key
     this->emplace(std::move(I(tKey)), std::forward<A>(vArgs)...);
 }
 
-template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace(I&& tKey, A&&... vArgs)
+template <typename K, typename I, typename T> template <typename... A> void coreMapGen<K, I, T>::emplace(I&& tKey, A&&... vArgs)
 {
     ASSERT(!this->count(tKey))
 
@@ -361,13 +361,13 @@ template <typename K, typename I, typename T> template <typename... A> void core
     this->_cache_set(m_atValueList.size() - 1u);
 }
 
-template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace_bs(const I& tKey, A&&... vArgs)
+template <typename K, typename I, typename T> template <typename... A> void coreMapGen<K, I, T>::emplace_bs(const I& tKey, A&&... vArgs)
 {
     // copy and move key
     this->emplace_bs(std::move(I(tKey)), std::forward<A>(vArgs)...);
 }
 
-template <typename K, typename I, typename T> template <typename... A> void coreLookupGen<K, I, T>::emplace_bs(I&& tKey, A&&... vArgs)
+template <typename K, typename I, typename T> template <typename... A> void coreMapGen<K, I, T>::emplace_bs(I&& tKey, A&&... vArgs)
 {
     ASSERT(!this->count_bs(tKey))
 
@@ -385,7 +385,7 @@ template <typename K, typename I, typename T> template <typename... A> void core
 
 // ****************************************************************
 /* remove existing entry */
-template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::erase(const I& tKey)
+template <typename K, typename I, typename T> coreBool coreMapGen<K, I, T>::erase(const I& tKey)
 {
     // lookup entry by key
     const auto it = this->_retrieve(tKey);
@@ -403,7 +403,7 @@ template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::e
     return false;
 }
 
-template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::erase_bs(const I& tKey)
+template <typename K, typename I, typename T> coreBool coreMapGen<K, I, T>::erase_bs(const I& tKey)
 {
     // binary lookup entry by key
     const auto it = this->_retrieve_bs(tKey);
@@ -424,7 +424,7 @@ template <typename K, typename I, typename T> coreBool coreLookupGen<K, I, T>::e
 
 // ****************************************************************
 /* lookup entry by key */
-template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreKeyIterator coreLookupGen<K, I, T>::_retrieve(const I& tKey)
+template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)
 {
     // loop through all entries
     FOR_EACH(it, m_atKeyList)
@@ -441,7 +441,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
     return m_atKeyList.end();
 }
 
-template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreKeyConstIterator coreLookupGen<K, I, T>::_retrieve(const I& tKey)const
+template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyConstIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)const
 {
     // loop through all entries
     FOR_EACH(it, m_atKeyList)
@@ -457,7 +457,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
 
 // ****************************************************************
 /* binary lookup entry by key */
-template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreKeyIterator coreLookupGen<K, I, T>::_retrieve_bs(const I& tKey)
+template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyIterator coreMapGen<K, I, T>::_retrieve_bs(const I& tKey)
 {
     // find entry with binary search
     ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))
@@ -474,7 +474,7 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
     return m_atKeyList.end();
 }
 
-template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::coreKeyConstIterator coreLookupGen<K, I, T>::_retrieve_bs(const I& tKey)const
+template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyConstIterator coreMapGen<K, I, T>::_retrieve_bs(const I& tKey)const
 {
     // find entry with binary search
     ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))
@@ -490,9 +490,9 @@ template <typename K, typename I, typename T> typename coreLookupGen<K, I, T>::c
 
 // ****************************************************************
 /* sort entries with comparison function */
-template <typename K, typename I, typename T> template <typename F> void coreLookupGen<K, I, T>::_sort(F&& nCompareFunc)
+template <typename K, typename I, typename T> template <typename F> void coreMapGen<K, I, T>::_sort(F&& nCompareFunc)
 {
-    std::vector<std::pair<K, T>> aPairList;
+    coreList<std::pair<K, T>> aPairList;
 
     // merge values and keys into single container
     aPairList.reserve(m_atKeyList.size());
@@ -511,7 +511,39 @@ template <typename K, typename I, typename T> template <typename F> void coreLoo
         m_atKeyList  .push_back(std::move(it->first));
         m_atValueList.push_back(std::move(it->second));
     }
+
+    /*
+    const auto nDoubleQuickSortFunc = [](auto* m, auto* n, const coreUintW a, const coreUintW e)
+    {
+        coreUintW x = a;
+        coreUintW y = e;
+        const K varPivot = m[(a + e) / 2];
+        
+        while(x <= y)
+        {
+            while(m[x] < varPivot)
+                x = x + 1;
+            
+            while(m[y] > varPivot)
+                y = y - 1;
+            
+            if(x <= y)
+            {
+                std::swap(m[x], m[y]);
+                std::swap(n[x], n[y]);
+                x = x + 1;
+                y = y - 1;
+            }
+             
+        }
+        
+        if(a < y) nDoubleQuickSortFunc(m, n, a, y)
+        if(x < e) nDoubleQuickSortFunc(m, n, x, e)
+    };
+
+    nDoubleQuickSortFunc(&m_atKeyList, &m_atValueList, 0u, m_atKeyList.size() - 1u);
+     */
 }
 
 
-#endif /* _CORE_GUARD_LOOKUP_H_ */
+#endif /* _CORE_GUARD_MAP_H_ */

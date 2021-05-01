@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
-std::string  coreShader ::s_asGlobalCode[2] = {"", ""};
+coreString   coreShader ::s_asGlobalCode[2] = {"", ""};
 coreSpinLock coreShader ::s_GlobalLock      = coreSpinLock();
 coreProgram* coreProgram::s_pCurrent        = NULL;
 
@@ -92,7 +92,7 @@ coreStatus coreShader::Load(coreFile* pFile)
     coreShader::__LoadGlobalCode();
 
     // reduce shader code size
-    std::string sMainCode(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
+    coreString sMainCode(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
     coreShader::__ReduceCodeSize(&sMainCode);
 
     // assemble the shader
@@ -197,10 +197,10 @@ void coreShader::__LoadGlobalCode()
 
 // ****************************************************************
 /* reduce shader code size */
-void coreShader::__ReduceCodeSize(std::string* OUTPUT psCode)
+void coreShader::__ReduceCodeSize(coreString* OUTPUT psCode)
 {
     // remove code comments
-    for(coreUintW i = 0u; (i = psCode->find("//", i)) != std::string::npos; )
+    for(coreUintW i = 0u; (i = psCode->find("//", i)) != coreString::npos; )
         psCode->erase(i, psCode->find_first_of('\n', i) - i);
 
     // remove redundant whitespaces

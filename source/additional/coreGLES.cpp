@@ -9,7 +9,7 @@
 #include "Core.h"
 #include <EGL/egl.h>
 
-std::string g_sExtensions = "";
+coreString  g_sExtensions = "";
 coreContext g_CoreContext = {};
 
 
@@ -119,7 +119,7 @@ void __coreInitOpenGLES()
 
 // ****************************************************************
 /* get extension string */
-void coreExtensions(std::string* OUTPUT psOutput)
+void coreExtensions(coreString* OUTPUT psOutput)
 {
     // copy saved extension string
     (*psOutput) = g_sExtensions;
@@ -128,7 +128,7 @@ void coreExtensions(std::string* OUTPUT psOutput)
 
 // ****************************************************************
 /* get platform-specific extension string */
-void corePlatformExtensions(std::string* OUTPUT psOutput)
+void corePlatformExtensions(coreString* OUTPUT psOutput)
 {
     // return nothing
     (*psOutput) = "";

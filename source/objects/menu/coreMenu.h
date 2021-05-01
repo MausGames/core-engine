@@ -26,15 +26,15 @@
 class coreMenu : public coreObject2D
 {
 private:
-    coreSet<coreObject2D*>* m_papObject;         // surfaces with pointers to menu objects
-    coreObject2D* m_pCurObject;                  // current object with input focus
+    coreSet<coreObject2D*>* m_papObject;      // surfaces with pointers to menu objects
+    coreObject2D* m_pCurObject;               // current object with input focus
 
-    coreUint8 m_iNumSurfaces;                    // number of surfaces
-    coreUint8 m_iCurSurface;                     // current surface
-    coreUint8 m_iOldSurface;                     // previous surface
+    coreUint8 m_iNumSurfaces;                 // number of surfaces
+    coreUint8 m_iCurSurface;                  // current surface
+    coreUint8 m_iOldSurface;                  // previous surface
 
-    coreTimer m_Transition;                      // timer for a transition between two surfaces
-    std::vector<coreObject2D*> m_aapRender[3];   // render-lists during a transition (0 = both | 1 = old surface | 2 = new surface)
+    coreTimer m_Transition;                   // timer for a transition between two surfaces
+    coreList<coreObject2D*> m_aapRender[3];   // render-lists during a transition (0 = both | 1 = old surface | 2 = new surface)
 
 
 public:

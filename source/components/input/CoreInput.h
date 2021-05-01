@@ -118,9 +118,9 @@ private:
 
 
 private:
-    coreKeyboard              m_Keyboard;           // main keyboard object
-    coreMouse                 m_Mouse;              // main mouse object
-    std::vector<coreJoystick> m_aJoystick;          // list with joystick objects
+    coreKeyboard           m_Keyboard;              // main keyboard object
+    coreMouse              m_Mouse;                 // main mouse object
+    coreList<coreJoystick> m_aJoystick;             // list with joystick objects
 
     coreTouch m_aTouch      [CORE_INPUT_FINGERS];   // array with touch objects
     coreUint8 m_aiTouchCount[CORE_INPUT_TYPES];     // number of fingers with the same status

@@ -64,41 +64,41 @@ public:
     /* import structure */
     struct coreImport final
     {
-        std::vector<coreVertex> aVertexData;   // raw vertex data
-        std::vector<coreUint16> aiIndexData;   // raw index data
+        coreList<coreVertex> aVertexData;   // raw vertex data
+        coreList<coreUint16> aiIndexData;   // raw index data
     };
 
 
 private:
-    GLuint m_iVertexArray;                           // vertex array object
+    GLuint m_iVertexArray;                        // vertex array object
 
-    std::vector<coreVertexBuffer> m_aVertexBuffer;   // vertex buffers
-    coreDataBuffer                m_IndexBuffer;     // index buffer
+    coreList<coreVertexBuffer> m_aVertexBuffer;   // vertex buffers
+    coreDataBuffer             m_IndexBuffer;     // index buffer
 
-    coreUint32 m_iNumVertices;                       // number of vertices
-    coreUint32 m_iNumIndices;                        // number of indices
-    coreUint8  m_iNumClusters;                       // number of clusters
+    coreUint32 m_iNumVertices;                    // number of vertices
+    coreUint32 m_iNumIndices;                     // number of indices
+    coreUint8  m_iNumClusters;                    // number of clusters
 
-    coreVector3 m_vBoundingRange;                    // maximum per-axis distance from the model center
-    coreFloat   m_fBoundingRadius;                   // maximum direct distance from the model center
+    coreVector3 m_vBoundingRange;                 // maximum per-axis distance from the model center
+    coreFloat   m_fBoundingRadius;                // maximum direct distance from the model center
 
-    coreVector3 m_vNaturalCenter;                    // position of the smallest axis-aligned bounding-box
-    coreVector3 m_vNaturalRange;                     // size of the smallest axis-aligned bounding-box
-    coreVector3 m_vWeightedCenter;                   // offset to the average vertex position (for certain effects)
+    coreVector3 m_vNaturalCenter;                 // position of the smallest axis-aligned bounding-box
+    coreVector3 m_vNaturalRange;                  // size of the smallest axis-aligned bounding-box
+    coreVector3 m_vWeightedCenter;                // offset to the average vertex position (for certain effects)
 
-    coreVector3* m_pvVertexPosition;                 // vertex positions for clusters and precise collision detection
+    coreVector3* m_pvVertexPosition;              // vertex positions for clusters and precise collision detection
 
-    coreUint16** m_ppiClusterIndex;                  // pointer to indices per cluster (single allocation)
-    coreUint16*  m_piClusterNumIndices;              // number of indices per cluster
-    coreVector3* m_pvClusterPosition;                // relative cluster center
-    coreFloat*   m_pfClusterRadius;                  // maximum direct distance from the cluster center
+    coreUint16** m_ppiClusterIndex;               // pointer to indices per cluster (single allocation)
+    coreUint16*  m_piClusterNumIndices;           // number of indices per cluster
+    coreVector3* m_pvClusterPosition;             // relative cluster center
+    coreFloat*   m_pfClusterRadius;               // maximum direct distance from the cluster center
 
-    GLenum m_iPrimitiveType;                         // primitive type for draw calls (e.g. GL_TRIANGLES)
-    GLenum m_iIndexType;                             // index type for draw calls (e.g. GL_UNSIGNED_SHORT)
+    GLenum m_iPrimitiveType;                      // primitive type for draw calls (e.g. GL_TRIANGLES)
+    GLenum m_iIndexType;                          // index type for draw calls (e.g. GL_UNSIGNED_SHORT)
 
-    coreSync m_Sync;                                 // sync object for asynchronous model loading
+    coreSync m_Sync;                              // sync object for asynchronous model loading
 
-    static coreModel* s_pCurrent;                    // currently active model object
+    static coreModel* s_pCurrent;                 // currently active model object
 
 
 public:

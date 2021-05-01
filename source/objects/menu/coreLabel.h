@@ -47,9 +47,9 @@ private:
 
     coreVector2 m_vResolution;     // resolution of the generated texture
 
-    std::string m_sText;           // current text
-    coreFloat   m_fScale;          // scale factor
-    coreBool    m_bRectify;        // align texture with screen pixels
+    coreString m_sText;            // current text
+    coreFloat  m_fScale;           // scale factor
+    coreBool   m_bRectify;         // align texture with screen pixels
 
     coreLabelRefresh m_eRefresh;   // refresh status (dirty flag)
 
