@@ -15,6 +15,7 @@
     #include <Shlobj.h>
 #elif defined(_CORE_LINUX_)
     #include <sys/utsname.h>
+    #include <sys/statvfs.h>
     #include <gnu/libc-version.h>
 #elif defined(_CORE_MACOS_)
     #include <mach-o/dyld.h>
@@ -134,44 +135,79 @@ const coreChar* coreData::AppPath()
 
 
 // ****************************************************************
-/* get currently used physical system memory */
-coreUint64 coreData::SystemMemoryUsed()
+/* get physical system memory */
+coreBool coreData::SystemMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)
 {
 #if defined(_CORE_WINDOWS_)
 
-    // retrieve global memory status
     MEMORYSTATUSEX oMemory = {sizeof(oMemory)};
-    if(GlobalMemoryStatusEx(&oMemory)) return oMemory.ullTotalPhys - oMemory.ullAvailPhys;
+
+    // retrieve global memory status
+    if(GlobalMemoryStatusEx(&oMemory))
+    {
+        if(piAvailable) (*piAvailable) = oMemory.ullAvailPhys;
+        if(piTotal)     (*piTotal)     = oMemory.ullTotalPhys;
+        return true;
+    }
 
 #elif defined(_CORE_LINUX_)
 
     // retrieve runtime system parameters
-    return coreUint64(sysconf(_SC_PHYS_PAGES) - sysconf(_SC_AVPHYS_PAGES)) * coreUint64(sysconf(_SC_PAGESIZE));
+    const coreInt64 iPageSize  = sysconf(_SC_PAGESIZE);
+    const coreInt64 iAvailable = sysconf(_SC_AVPHYS_PAGES);
+    const coreInt64 ITotal     = sysconf(_SC_PHYS_PAGES);
+
+    // only allow positive values (-1 on error)
+    if((iPageSize > 0) && (iAvailable > 0) && (ITotal > 0))
+    {
+        if(piAvailable) (*piAvailable) = iPageSize * iAvailable;
+        if(piTotal)     (*piTotal)     = iPageSize * ITotal;
+        return true;
+    }
 
 #endif
 
-    return 0u;
+    // could not get physical system memory
+    if(piAvailable) (*piAvailable) = 0u;
+    if(piTotal)     (*piTotal)     = 1u;
+    return false;
 }
 
 
 // ****************************************************************
-/* get total physical system memory */
-coreUint64 coreData::SystemMemoryTotal()
+/* get disk space (for the user folder) */
+coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)
 {
 #if defined(_CORE_WINDOWS_)
 
-    // retrieve global memory status
-    MEMORYSTATUSEX oMemory = {sizeof(oMemory)};
-    if(GlobalMemoryStatusEx(&oMemory) && oMemory.ullTotalPhys) return oMemory.ullTotalPhys;
+    ULARGE_INTEGER iAvailable, iTotal;
+
+    // retrieve disk volume information
+    if(GetDiskFreeSpaceExA(s_sUserFolder.c_str(), &iAvailable, &iTotal, NULL))
+    {
+        if(piAvailable) (*piAvailable) = iAvailable.QuadPart;
+        if(piTotal)     (*piTotal)     = iTotal    .QuadPart;
+        return true;
+    }
 
 #elif defined(_CORE_LINUX_)
 
-    // retrieve runtime system parameters
-    return coreUint64(sysconf(_SC_PHYS_PAGES)) * coreUint64(sysconf(_SC_PAGESIZE));
+    struct statvfs oBuffer;
+
+    // retrieve filesystem statistics
+    if(!statvfs(s_sUserFolder.c_str(), &oBuffer))
+    {
+        if(piAvailable) (*piAvailable) = oBuffer.f_bsize * oBuffer.f_bavail;
+        if(piTotal)     (*piTotal)     = oBuffer.f_bsize * oBuffer.f_blocks;
+        return true;
+    }
 
 #endif
 
-    return 1u;
+    // could not get disk space
+    if(piAvailable) (*piAvailable) = 0u;
+    if(piTotal)     (*piTotal)     = 1u;
+    return false;
 }
 
 

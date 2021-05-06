@@ -238,16 +238,20 @@ CoreSystem::CoreSystem()noexcept
         m_afTimeSpeed[i] = 1.0f;
     }
 
-    // log processor information
+    // log platform information
     Core::Log->ListStartInfo("Platform Information");
     {
-        const coreUint64 iMemoryUsed  = coreData::SystemMemoryUsed();   // after window and context creation
-        const coreUint64 iMemoryTotal = coreData::SystemMemoryTotal();
-        const coreDouble dMemoryPct   = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(iMemoryTotal));
+        coreUint64 iMemoryAvailable, iMemoryTotal, iSpaceAvailable;
+        coreData::SystemMemory(&iMemoryAvailable, &iMemoryTotal);   // after window and context creation
+        coreData::SystemSpace (&iSpaceAvailable,  NULL);
+
+        const coreUint64 iMemoryUsed = iMemoryTotal - iMemoryAvailable;
+        const coreDouble dMemoryPct  = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(iMemoryTotal));
 
         Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                                             coreData::SystemName());
         Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %s (%s, %d logical cores, %d bytes cache line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")       " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
     }
     Core::Log->ListEnd();
 
