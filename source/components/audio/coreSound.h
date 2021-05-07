@@ -19,6 +19,10 @@
 
 // ****************************************************************
 /* sound definitions */
+#define CORE_SOUND_FORMAT_PCM   (0x0001u)   // linear pulse-code modulation
+#define CORE_SOUND_FORMAT_ALAW  (0x0006u)   // logarithmic A-law compression (better proportional distortions for small signals)
+#define CORE_SOUND_FORMAT_MULAW (0x0007u)   // logarithmic MU-law compression (slightly larger dynamic range)
+
 #define __CORE_SOUND_ASSERT {ASSERT(this->CheckRef(m_pCurRef) == m_iCurSource)}   // may check for missing reference pointer update
 
 
@@ -30,7 +34,7 @@ public:
     /* WAVE-format structure */
     struct coreWaveFormat final
     {
-        coreUint16 iAudioFormat;     // internal audio format (1 = PCM)
+        coreUint16 iAudioFormat;     // internal audio format (1 = PCM | 6 = ALAW | 7 = MULAW)
         coreUint16 iNumChannels;     // number of sound channels (1 = mono | 2 = stereo)
         coreUint32 iSampleRate;      // playback frequency (e.g. 44100 Hz)
         coreUint32 iByteRate;        // required data transfer rate (iSampleRate * iBlockAlign)
@@ -72,7 +76,7 @@ public:
     inline void SetLoop  (const coreBool  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
 
     /* enable active audio source with reference pointer */
-    inline coreBool EnableRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return m_iCurSource ? true : false;}
+    inline coreBool EnableRef(const void* pRef) {m_pCurRef = pRef; m_iCurSource = this->CheckRef(m_pCurRef); return (m_iCurSource != 0u);}
     ALuint          CheckRef (const void* pRef);
 
     /* get object properties */

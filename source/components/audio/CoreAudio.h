@@ -56,6 +56,9 @@ private:
     LPALDEFERUPDATESSOFT   m_nDeferUpdates;             // suspend immediate playback state changes
     LPALPROCESSUPDATESSOFT m_nProcessUpdates;           // catch-up and resume playback state changes
 
+    coreBool m_bSupportALAW;                            // support for A-law compression
+    coreBool m_bSupportMULAW;                           // support for MU-law compression
+
 
 private:
     CoreAudio()noexcept;
@@ -90,6 +93,10 @@ public:
     /* combine playback state changes */
     inline void DeferUpdates  ()const {m_nDeferUpdates  ();}
     inline void ProcessUpdates()const {m_nProcessUpdates();}
+
+    /* check OpenAL properties */
+    inline const coreBool& GetSupportALAW ()const {return m_bSupportALAW;}
+    inline const coreBool& GetSupportMULAW()const {return m_bSupportMULAW;}
 
 
 private:

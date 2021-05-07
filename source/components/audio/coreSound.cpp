@@ -7,6 +7,8 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #include "Core.h"
+#include "codecs/ALAW.h"
+#include "codecs/MULAW.h"
 
 
 // ****************************************************************
@@ -41,30 +43,24 @@ coreStatus coreSound::Load(coreFile* pFile)
 
     // get file data
     const coreByte* pData = pFile->GetData();
+    const coreByte* pEnd  = pData + pFile->GetSize();
     if(!pData) return CORE_ERROR_FILE;
 
-    coreChar   acID[4];
-    coreUint32 iSize;
-
-    // read header
-    std::memcpy(acID,   pData, 4u); pData += 4u;
-    std::memcpy(&iSize, pData, 4u); pData += 4u;
-
-    // check file format
-    if(!std::memcmp(acID, "RIFF", 4u)) {std::memcpy(acID, pData, 4u); pData += 4u;}
-    if( std::memcmp(acID, "WAVE", 4u))
+    // check file header
+    if(std::memcmp(pData, "RIFF", 4u) || std::memcmp(pData + 8u, "WAVE", 4u))
     {
         Core::Log->Warning("Sound (%s) is not a valid WAVE-file", pFile->GetPath());
         return CORE_INVALID_DATA;
     }
+    pData += 12u;
 
     // read sub-chunks
     const coreByte* pSoundData = NULL;
     coreUint32      iSoundSize = 0u;
-    while(coreUint32(pData - pFile->GetData()) < pFile->GetSize())
+    while(pData < pEnd)
     {
-        std::memcpy(acID,   pData, 4u); pData += 4u;
-        std::memcpy(&iSize, pData, 4u); pData += 4u;
+        coreChar   acID[4]; std::memcpy(acID,   pData, 4u); pData += 4u;
+        coreUint32 iSize;   std::memcpy(&iSize, pData, 4u); pData += 4u;
 
              if(!std::memcmp(acID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format));}
         else if(!std::memcmp(acID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize;}
@@ -72,10 +68,13 @@ coreStatus coreSound::Load(coreFile* pFile)
         pData += iSize;
     }
 
-    // check for compression
-    if(m_Format.iAudioFormat != 1u)
+    // handle compression
+    coreByte* pRawData = NULL;
+         if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_ALAW)  {if(!Core::Audio->GetSupportALAW ()) {coreDecodeALAW (pSoundData, iSoundSize, &pRawData, &iSoundSize); pSoundData = pRawData;}}
+    else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_MULAW) {if(!Core::Audio->GetSupportMULAW()) {coreDecodeMULAW(pSoundData, iSoundSize, &pRawData, &iSoundSize); pSoundData = pRawData;}}
+    else if(m_Format.iAudioFormat != CORE_SOUND_FORMAT_PCM)
     {
-        Core::Log->Warning("Sound (%s) is not PCM encoded, compression is not supported", pFile->GetPath());
+        Core::Log->Warning("Sound (%s) has unsupported audio format %u (valid formats: PCM 1, ALAW 6, MULAW 7)", pFile->GetPath(), m_Format.iAudioFormat);
         return CORE_INVALID_DATA;
     }
 
@@ -83,19 +82,26 @@ coreStatus coreSound::Load(coreFile* pFile)
     ALenum iSoundFormat = 0;
     if(m_Format.iNumChannels == 1u)
     {
-             if(m_Format.iBitsPerSample ==  8u) iSoundFormat = AL_FORMAT_MONO8;
-        else if(m_Format.iBitsPerSample == 16u) iSoundFormat = AL_FORMAT_MONO16;
+             if(pRawData)                                           iSoundFormat = AL_FORMAT_MONO16;
+        else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_ALAW)  iSoundFormat = AL_FORMAT_MONO_ALAW_EXT;
+        else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_MULAW) iSoundFormat = AL_FORMAT_MONO_MULAW_EXT;
+        else if(m_Format.iBitsPerSample ==  8u)                     iSoundFormat = AL_FORMAT_MONO8;
+        else if(m_Format.iBitsPerSample == 16u)                     iSoundFormat = AL_FORMAT_MONO16;
     }
     else if(m_Format.iNumChannels == 2u)
     {
-             if(m_Format.iBitsPerSample ==  8u) iSoundFormat = AL_FORMAT_STEREO8;
-        else if(m_Format.iBitsPerSample == 16u) iSoundFormat = AL_FORMAT_STEREO16;
+             if(pRawData)                                           iSoundFormat = AL_FORMAT_STEREO16;
+        else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_ALAW)  iSoundFormat = AL_FORMAT_STEREO_ALAW_EXT;
+        else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_MULAW) iSoundFormat = AL_FORMAT_STEREO_MULAW_EXT;
+        else if(m_Format.iBitsPerSample ==  8u)                     iSoundFormat = AL_FORMAT_STEREO8;
+        else if(m_Format.iBitsPerSample == 16u)                     iSoundFormat = AL_FORMAT_STEREO16;
     }
     ASSERT(iSoundFormat)
 
     // create sound buffer
     alGenBuffers(1, &m_iBuffer);
     alBufferData(m_iBuffer, iSoundFormat, pSoundData, iSoundSize, m_Format.iSampleRate);
+    if(pRawData) SAFE_DELETE_ARRAY(pRawData)
 
     // save properties
     m_sPath = pFile->GetPath();
@@ -108,7 +114,7 @@ coreStatus coreSound::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Sound (%s, %u channels, %u bits, %u rate) loaded", pFile->GetPath(), m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
+    Core::Log->Info("Sound (%s, format %u, %u channels, %u bits, %u rate) loaded", pFile->GetPath(), m_Format.iAudioFormat, m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
     return CORE_OK;
 }
 

@@ -25,6 +25,8 @@ CoreAudio::CoreAudio()noexcept
 , m_aSourceData     {}
 , m_nDeferUpdates   (NULL)
 , m_nProcessUpdates (NULL)
+, m_bSupportALAW    (false)
+, m_bSupportMULAW   (false)
 {
     Core::Log->Header("Audio Interface");
 
@@ -66,6 +68,10 @@ CoreAudio::CoreAudio()noexcept
         for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
             alSourcei(m_aiSource[i], AL_DIRECT_CHANNELS_SOFT, true);
     }
+
+    // init format extensions
+    if(alIsExtensionPresent("AL_EXT_ALAW"))  m_bSupportALAW  = true;
+    if(alIsExtensionPresent("AL_EXT_MULAW")) m_bSupportMULAW = true;
 
     // reset listener
     this->DeferUpdates();
