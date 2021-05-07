@@ -61,6 +61,9 @@
     <Filter Include="additional\linux">
       <UniqueIdentifier>{0b560ded-0906-4ce4-8a1a-46863ea114da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="components\audio\codecs">
+      <UniqueIdentifier>{465a3bc7-db3e-4f4b-814f-0d87676e3b37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -342,6 +345,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\data\coreScope.h">
       <Filter>utilities\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\audio\codecs\ALAW.h">
+      <Filter>components\audio\codecs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\audio\codecs\MULAW.h">
+      <Filter>components\audio\codecs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

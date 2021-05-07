@@ -129,7 +129,7 @@ public:
 
     DISABLE_COPY(coreMusicPlayer)
 
-    //* update the music-player */
+    /* update the music-player */
     coreBool Update();
 
     /* control playback behavior */

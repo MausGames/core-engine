@@ -46,6 +46,7 @@
 #define LERP   coreMath::Lerp
 #define LERPS  coreMath::LerpSmooth
 #define LERPB  coreMath::LerpBreak
+#define LERPBR coreMath::LerpBreakRev
 #define LERPH3 coreMath::LerpHermite3
 #define LERPH5 coreMath::LerpHermite5
 #define STEP   coreMath::Step
@@ -100,6 +101,7 @@ public:
     template <typename T> static constexpr T Lerp        (const T& x, const T& y, const coreFloat s)                     {return x * (1.0f - s) + y * s;}   // better precision than (x + (y - x) * s)
     template <typename T> static inline    T LerpSmooth  (const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
     template <typename T> static inline    T LerpBreak   (const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, SIN(s * (PI * 0.5f)));}
+    template <typename T> static inline    T LerpBreakRev(const T& x, const T& y, const coreFloat s)                     {return LERP(y, x, COS(s * (PI * 0.5f)));}
     template <typename T> static constexpr T LerpHermite3(const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
     template <typename T> static constexpr T LerpHermite5(const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, (10.0f + (-15.0f + 6.0f * s) * s) * s * s * s);}
     static constexpr coreFloat               Step        (const coreFloat a, const coreFloat b, const coreFloat x)       {return CLAMP((x - a) / (b - a), 0.0f, 1.0f);}   // linearstep

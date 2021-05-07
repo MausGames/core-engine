@@ -115,7 +115,7 @@ private:
     /* update the event system */
     coreBool __UpdateEvents();
 
-    //* update the main window */
+    /* update the main window */
     void __UpdateWindow();
 
     /* update the high-precision time */

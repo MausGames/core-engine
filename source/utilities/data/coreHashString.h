@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_HASHSTRING_H_
 #define _CORE_GUARD_HASHSTRING_H_
 
-// TODO: add debug-logging to catch global hash-collisions (currently only in lookup-container)
+// TODO: add debug-logging to catch global hash-collisions (currently only in map-container)
 
 
 // ****************************************************************
@@ -23,8 +23,7 @@ private:
 
 
 public:
-    constexpr coreHashString(std::nullptr_t  p = NULL)noexcept;
-    constexpr coreHashString(const coreChar* pcString)noexcept;
+    constexpr coreHashString(const coreChar* pcString = NULL)noexcept;
 
     ENABLE_COPY(coreHashString)
 
@@ -39,12 +38,6 @@ public:
 
 // ****************************************************************
 /* constructor */
-constexpr coreHashString::coreHashString(std::nullptr_t)noexcept
-: m_iHash    (0u)
-, m_pcString (NULL)
-{
-}
-
 constexpr coreHashString::coreHashString(const coreChar* pcString)noexcept
 : m_iHash    (pcString ? coreHashFNV1(pcString) : 0u)
 , m_pcString (pcString)
