@@ -101,6 +101,11 @@ public:
     /* open URL with default web-browser */
     static coreStatus OpenURL(const coreChar* pcURL);
 
+    /* handle dynamic libraries */
+    static void*      OpenLibrary (const coreChar* pcName);
+    static void*      GetAddress  (void* pLibrary, const coreChar* pcName);
+    static coreStatus CloseLibrary(void* pLibrary);
+
     /* handle physical files and folders */
     static coreBool    FileExists   (const coreChar* pcPath);
     static coreInt64   FileSize     (const coreChar* pcPath);

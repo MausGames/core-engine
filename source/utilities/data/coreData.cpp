@@ -17,6 +17,7 @@
     #include <sys/utsname.h>
     #include <sys/statvfs.h>
     #include <gnu/libc-version.h>
+    #include <dlfcn.h>
 #elif defined(_CORE_MACOS_)
     #include <mach-o/dyld.h>
 #elif defined(_CORE_ANDROID_)
@@ -531,6 +532,68 @@ coreStatus coreData::OpenURL(const coreChar* pcURL)
 
     // delegate request to the OSX command processor
     if(std::system(NULL) && !std::system(PRINT("open %s", pcURL))) return CORE_OK;
+
+#endif
+
+    return CORE_ERROR_SYSTEM;
+}
+
+
+// ****************************************************************
+/* open dynamic library */
+void* coreData::OpenLibrary(const coreChar* pcName)
+{
+#if defined(_CORE_WINDOWS_)
+
+    return LoadLibraryA(pcName);
+
+#elif defined(_CORE_LINUX_)
+
+    return dlopen(pcName, RTLD_LAZY | RTLD_LOCAL);
+
+#else
+
+    return NULL;
+
+#endif
+}
+
+
+// ****************************************************************
+/* find symbol in dynamic library */
+void* coreData::GetAddress(void* pLibrary, const coreChar* pcName)
+{
+    ASSERT(pLibrary)
+
+#if defined(_CORE_WINDOWS_)
+
+    return GetProcAddress(s_cast<HMODULE>(pLibrary), pcName);
+
+#elif defined(_CORE_LINUX_)
+
+    return dlsym(pLibrary, pcName);
+
+#else
+
+    return NULL;
+
+#endif
+}
+
+
+// ****************************************************************
+/* close dynamic library */
+coreStatus coreData::CloseLibrary(void* pLibrary)
+{
+    ASSERT(pLibrary)
+
+#if defined(_CORE_WINDOWS_)
+
+    if(FreeLibrary(s_cast<HMODULE>(pLibrary))) return CORE_OK;
+
+#elif defined(_CORE_LINUX_)
+
+    if(!dlclose(pLibrary)) return CORE_OK;
 
 #endif
 
