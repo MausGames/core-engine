@@ -155,6 +155,10 @@ public:
     static constexpr coreUint32 PopCount      (const coreUint32 iInput);
     static inline    coreUint32 BitScanFwd    (const coreUint32 iInput);
     static inline    coreUint32 BitScanRev    (const coreUint32 iInput);
+    static constexpr coreUint32 RotateLeft32  (const coreUint32 iInput, const coreUint8 iShift);
+    static constexpr coreUint64 RotateLeft64  (const coreUint64 iInput, const coreUint8 iShift);
+    static constexpr coreUint32 RotateRight32 (const coreUint32 iInput, const coreUint8 iShift);
+    static constexpr coreUint64 RotateRight64 (const coreUint64 iInput, const coreUint8 iShift);
     static constexpr coreUint8  ReverseBits8  (const coreUint8  iInput);
     static constexpr coreUint16 ReverseBits16 (const coreUint16 iInput);
     static constexpr coreUint32 ReverseBits32 (const coreUint32 iInput);
@@ -314,6 +318,110 @@ inline coreUint32 coreMath::BitScanRev(const coreUint32 iInput)
     return 31u - __builtin_clz(iInput);
 
 #endif
+}
+
+
+// ****************************************************************
+/* rotate bits to the left in a 32-bit sequence */
+constexpr coreUint32 coreMath::RotateLeft32(const coreUint32 iInput, const coreUint8 iShift)
+{
+    ASSERT(iShift <= 32u)
+
+#if defined(_CORE_MSVC_)
+
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        return _rotl(iInput, iShift);
+    }
+
+#elif defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_rotateleft32(iInput, iShift);
+
+#endif
+
+    // normal calculation
+    return (iInput << iShift) | (iInput >> (32u - iShift));
+}
+
+
+// ****************************************************************
+/* rotate bits to the left in a 64-bit sequence */
+constexpr coreUint64 coreMath::RotateLeft64(const coreUint64 iInput, const coreUint8 iShift)
+{
+    ASSERT(iShift <= 64u)
+
+#if defined(_CORE_MSVC_)
+
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        return _rotl64(iInput, iShift);
+    }
+
+#elif defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_rotateleft64(iInput, iShift);
+
+#endif
+
+    // normal calculation
+    return (iInput << iShift) | (iInput >> (64u - iShift));
+}
+
+
+// ****************************************************************
+/* rotate bits to the right in a 32-bit sequence */
+constexpr coreUint32 coreMath::RotateRight32(const coreUint32 iInput, const coreUint8 iShift)
+{
+    ASSERT(iShift <= 32u)
+
+#if defined(_CORE_MSVC_)
+
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        return _rotr(iInput, iShift);
+    }
+
+#elif defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_rotateright32(iInput, iShift);
+
+#endif
+
+    // normal calculation
+    return (iInput >> iShift) | (iInput << (32u - iShift));
+}
+
+
+// ****************************************************************
+/* rotate bits to the right in a 64-bit sequence */
+constexpr coreUint64 coreMath::RotateRight64(const coreUint64 iInput, const coreUint8 iShift)
+{
+    ASSERT(iShift <= 64u)
+
+#if defined(_CORE_MSVC_)
+
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        return _rotr64(iInput, iShift);
+    }
+
+#elif defined(_CORE_CLANG_)
+
+    // calculation with Clang intrinsic
+    return __builtin_rotateright64(iInput, iShift);
+
+#endif
+
+    // normal calculation
+    return (iInput >> iShift) | (iInput << (64u - iShift));
 }
 
 
