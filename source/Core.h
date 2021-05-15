@@ -678,7 +678,7 @@ private:
 #include "utilities/math/coreMath.h"
 #include "utilities/data/hash/CRC32.h"
 #include "utilities/data/hash/FNV1.h"
-#include "utilities/data/hash/Murmur2.h"
+#include "utilities/data/hash/Murmur.h"
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreSpinLock.h"
 #include "utilities/data/coreList.h"
