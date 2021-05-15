@@ -352,6 +352,9 @@
     <ClInclude Include="..\..\..\source\components\audio\codecs\MULAW.h">
       <Filter>components\audio\codecs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\windows\header.h">
+      <Filter>additional\windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\natvis.natvis" />

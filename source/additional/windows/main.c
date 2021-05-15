@@ -14,10 +14,7 @@
 #pragma warning(disable : 4668)   // preprocessor macro not defined
 #pragma warning(disable : 4820)   // padding after data member
 
-#define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT _WIN32_WINNT_WIN7
-
-#include <Windows.h>
+#include "additional/windows/header.h"
 #include <DbgHelp.h>
 #include <crtdbg.h>
 #include <stdlib.h>

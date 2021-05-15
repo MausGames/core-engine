@@ -11,10 +11,7 @@
 #pragma warning(disable : 4100)   // unreferenced formal parameter
 #pragma warning(disable : 4127)   // constant conditional expression
 
-#define WIN32_LEAN_AND_MEAN
-#define _WIN32_WINNT _WIN32_WINNT_WIN7
-
-#include <Windows.h>
+#include "additional/windows/header.h"
 #include <shellapi.h>
 #include <string>
 #include <vector>
@@ -29,7 +26,7 @@ static bool ScanFolder(const wchar_t* pcPath, std::vector<std::wstring>* __restr
     WIN32_FIND_DATAW oFile;
 
     // open folder
-    pFolder = FindFirstFileW(pcPath, &oFile);
+    pFolder = FindFirstFileExW(pcPath, FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         return false;
@@ -82,7 +79,7 @@ static bool IsWindows10OrGreater()
 {
     // use only major version
     OSVERSIONINFOEXW oVersionInfo = {sizeof(oVersionInfo)};
-    oVersionInfo.dwMajorVersion   = 10;
+    oVersionInfo.dwMajorVersion   = 10u;
 
     // check for Windows 10 or greater
     return (VerifyVersionInfoW(&oVersionInfo, VER_MAJORVERSION, VerSetConditionMask(0u, VER_MAJORVERSION, VER_GREATER_EQUAL)) != FALSE);
@@ -109,7 +106,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
     }
 
     // start real application
-    return (int)ShellExecuteW(NULL, L"open", asFile[0].c_str(), pcCmdLine, NULL, SW_SHOWNORMAL);
+    return int(ShellExecuteW(NULL, L"open", asFile[0].c_str(), pcCmdLine, NULL, SW_SHOWNORMAL));
 }
 
 

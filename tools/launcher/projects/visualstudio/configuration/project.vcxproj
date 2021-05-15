@@ -47,13 +47,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\..\source;$(IncludePath)</IncludePath>
     <OutDir>..\..\..\executable\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\..\source;$(IncludePath)</IncludePath>
     <OutDir>..\..\..\executable\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>

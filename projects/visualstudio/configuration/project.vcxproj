@@ -274,6 +274,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreGL.h" />
+    <ClInclude Include="..\..\..\source\additional\windows\header.h" />
     <ClInclude Include="..\..\..\source\components\audio\codecs\ALAW.h" />
     <ClInclude Include="..\..\..\source\components\audio\codecs\MULAW.h" />
     <ClInclude Include="..\..\..\source\components\audio\CoreAudio.h" />
