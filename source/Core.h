@@ -136,7 +136,7 @@
     #define _CORE_64BIT_
 #endif
 
-// SSE instruction set
+// SSE3 instruction set
 #if defined(_CORE_X86_) && defined(_CORE_64BIT_)
     #define _CORE_SSE_
 #endif

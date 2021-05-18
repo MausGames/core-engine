@@ -14,7 +14,8 @@
 // TODO: implement constexpr strright
 // TODO: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
 // TODO: --help, --version, --force-x86, --force-x64 (windows, launcher?)
-// TODO: remove ToChars and FromChars float overloads if all std-libs support it, also add precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
+// TODO: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
+// TODO: make !temp and !appdata replace instead
 
 
 // ****************************************************************
@@ -79,8 +80,8 @@ public:
     static inline const coreChar*  AppDir   () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<coreChar*>(pcSlash + 1u)) = '\0'; return pcString;}
 
     /* get operating system properties */
-    static coreBool         SystemMemory     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static coreBool         SystemSpace      (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static       coreBool   SystemMemory     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static       coreBool   SystemSpace      (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
     static const coreChar*  SystemName       ();
     static const coreChar*  SystemUserName   ();
     static const coreChar*  SystemDirAppData ();
@@ -191,8 +192,6 @@ template <typename T> const coreChar* coreData::ToChars(const T& tValue)
     return pcString;
 }
 
-template <> inline const coreChar* coreData::ToChars(const coreFloat& tValue) {return PRINT("%f", tValue);}
-
 
 // ****************************************************************
 /* convert string to trivial value */
@@ -206,8 +205,6 @@ template <typename T> T coreData::FromChars(const coreChar* pcString, const core
 
     return tValue;
 }
-
-template <> inline coreFloat coreData::FromChars(const coreChar* pcString, const coreUintW iLen) {return coreFloat(std::atof(pcString));}
 
 
 // ****************************************************************

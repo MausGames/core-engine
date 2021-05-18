@@ -104,9 +104,9 @@ public:
     template <typename T> static inline    T LerpBreakRev(const T& x, const T& y, const coreFloat s)                     {return LERP(y, x, COS(s * (PI * 0.5f)));}
     template <typename T> static constexpr T LerpHermite3(const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
     template <typename T> static constexpr T LerpHermite5(const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, (10.0f + (-15.0f + 6.0f * s) * s) * s * s * s);}
-    static constexpr coreFloat               Step        (const coreFloat a, const coreFloat b, const coreFloat x)       {return CLAMP((x - a) / (b - a), 0.0f, 1.0f);}   // linearstep
-    static constexpr coreFloat               StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH3(0.0f, 1.0f, STEP(a, b, x));}      // smoothstep
-    static constexpr coreFloat               StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH5(0.0f, 1.0f, STEP(a, b, x));}      // smootherstep
+    static constexpr coreFloat               Step        (const coreFloat a, const coreFloat b, const coreFloat x)       {return CLAMP((x - a) * RCP(b - a), 0.0f, 1.0f);}   // linearstep
+    static constexpr coreFloat               StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH3(0.0f, 1.0f, STEP(a, b, x));}         // smoothstep
+    static constexpr coreFloat               StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH5(0.0f, 1.0f, STEP(a, b, x));}         // smootherstep
 
     /* base operations */
     static inline    coreFloat Fmod (const coreFloat fNum, const coreFloat fDenom) {return std::fmod (fNum, fDenom);}
@@ -692,8 +692,8 @@ inline void coreMath::DisableDenormals()
 #if defined(_CORE_SSE_)
 
     // disable in the MXCSR control register (for SSE)
-    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);                                 // calculation results
-    if(coreCPUID::SSE3()) _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);   // instruction inputs
+    _MM_SET_FLUSH_ZERO_MODE    (_MM_FLUSH_ZERO_ON);       // calculation results
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);   // instruction inputs
 
 #endif
 

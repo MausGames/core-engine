@@ -530,7 +530,7 @@ coreStatus coreData::OpenURL(const coreChar* pcURL)
 
 #elif defined(_CORE_MACOS_)
 
-    // delegate request to the OSX command processor
+    // delegate request to the MacOS command processor
     if(std::system(NULL) && !std::system(PRINT("open %s", pcURL))) return CORE_OK;
 
 #endif

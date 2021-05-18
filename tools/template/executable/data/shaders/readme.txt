@@ -135,6 +135,7 @@ Definitions
     #define GR                    // golden ratio ((a+b)/a = a/b)
     #define GA                    // golden angle (radians)
     #define SQRT2                 // principal square root of 2
+    #define SQRT3                 // principal square root of 3
 
     // extension wrappers
     #define CORE_GL_gpu_shader4

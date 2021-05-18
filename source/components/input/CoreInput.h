@@ -47,9 +47,9 @@ using coreInputChar = SDL_Keycode;
 
 enum coreInputButton : coreUint8
 {
-    CORE_INPUT_LEFT   = 1u,
-    CORE_INPUT_MIDDLE = 2u,
-    CORE_INPUT_RIGHT  = 3u
+    CORE_INPUT_LEFT   = SDL_BUTTON_LEFT,
+    CORE_INPUT_MIDDLE = SDL_BUTTON_MIDDLE,
+    CORE_INPUT_RIGHT  = SDL_BUTTON_RIGHT
 };
 
 enum coreInputDir : coreUint8
