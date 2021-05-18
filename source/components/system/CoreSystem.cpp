@@ -224,7 +224,12 @@ CoreSystem::CoreSystem()noexcept
     // disable screen saver
     SDL_DisableScreenSaver();
 
-    // ignore all events created during initialization
+    // disable unwanted events
+    constexpr coreUint32 aiDisable[] = {SDL_DROPFILE, SDL_DROPTEXT, SDL_DROPBEGIN, SDL_DROPCOMPLETE};
+    for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_EventState(aiDisable[i], SDL_DISABLE);
+
+    // remove all events created during initialization
+    SDL_PumpEvents();
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 
     // init high-precision time
