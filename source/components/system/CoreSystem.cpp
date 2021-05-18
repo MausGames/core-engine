@@ -403,6 +403,7 @@ coreBool CoreSystem::__UpdateEvents()
             break;
 
         // application focus lost
+        case SDL_JOYDEVICEREMOVED:
         case SDL_APP_WILLENTERBACKGROUND:
         case SDL_APP_DIDENTERFOREGROUND:
             m_bWinFocusLost = true;
@@ -413,15 +414,10 @@ coreBool CoreSystem::__UpdateEvents()
         case SDL_APP_TERMINATING:
             this->Quit();
             break;
-
-        // joystick detached
-        case SDL_JOYDEVICEREMOVED:
-            m_bWinFocusLost = true;
-            FALLTHROUGH
+        }
 
         // forward event to input component
-        default: if(!Core::Input->ProcessEvent(oEvent)) return true;
-        }
+        if(!Core::Input->ProcessEvent(oEvent)) return true;
     }
 
     return !m_bTerminated;

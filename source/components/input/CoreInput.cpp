@@ -75,7 +75,6 @@ void CoreInput::ShowCursor(const coreBool bStatus)
     if(m_bCursorVisible == bStatus) return;
 
     // toggle cursor visibility
-    SDL_ShowCursor(bStatus ? 1 : 0);
     SDL_SetRelativeMouseMode(bStatus ? SDL_FALSE : SDL_TRUE);
 
     // save visibility status
@@ -170,6 +169,22 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 {
     switch(oEvent.type)
     {
+    // process window events
+    case SDL_WINDOWEVENT:
+        switch(oEvent.window.event)
+        {
+        // window focus gained
+        case SDL_WINDOWEVENT_FOCUS_GAINED:
+            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_FALSE);
+            break;
+
+        // window focus lost
+        case SDL_WINDOWEVENT_FOCUS_LOST:
+            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_TRUE);
+            break;
+        }
+        break;
+
     // set text-input character
     case SDL_TEXTINPUT:
         this->SetKeyboardChar(oEvent.text.text[0]);
