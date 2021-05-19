@@ -351,8 +351,9 @@
 #define HAS_BIT(o,n)                (((o) &   BIT(n)) != 0ull)
 #define HAS_FLAG(o,n)               (((o) &      (n)) == (n))
 
-#define CONTAINS_BIT(o,n)           (HAS_BIT (o, n))   // DEPRECATED
-#define CONTAINS_FLAG(o,n)          (HAS_FLAG(o, n))   // DEPRECATED
+#define BITVALUE(n,s,v)             (((v) & BITLINE(n)) << (s))
+#define SET_BITVALUE(o,n,s,v)       { (o) = BITVALUE(n, s, v) | ((o) & ~(BITLINE(n) << (s)));}
+#define GET_BITVALUE(o,n,s)         (((o) >> (s)) & BITLINE(n))
 
 #define FOR_EACH(i,c)               for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
 #define FOR_EACH_REV(i,c)           for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
