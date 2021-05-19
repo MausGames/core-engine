@@ -188,7 +188,7 @@ inline coreFloat coreMath::Sqrt(const coreFloat fInput)
 
 #if defined(_CORE_SSE_) || defined(_CORE_NEON_)
 
-    // optimized calculation with SSE
+    // optimized calculation with SSE/NEON
     return fInput ? (fInput * RSQRT(fInput)) : 0.0f;
 
 #else
@@ -601,6 +601,11 @@ constexpr coreUint16 coreMath::Float32To16(const coreFloat fInput)
         return _mm_cvtsi128_si32(_mm_cvtps_ph(_mm_set_ss(fInput), _MM_FROUND_CUR_DIRECTION));
     }
 
+#elif defined(_CORE_NEON_)
+
+    // optimized calculation with NEON
+    return std::bit_cast<coreUint16>(__fp16(fInput));
+
 #endif
 
     // normal calculation
@@ -621,6 +626,11 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
         // optimized calculation with F16C
         return _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128(iInput)));
     }
+
+#elif defined(_CORE_NEON_)
+
+    // optimized calculation with NEON
+    return coreFloat(std::bit_cast<__fp16>(fInput));
 
 #endif
 
