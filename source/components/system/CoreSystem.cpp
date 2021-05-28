@@ -193,10 +193,11 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // define window properties
-    const coreInt32  iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
-    const coreInt32  iSizeX = F_TO_SI(m_vResolution.x);
-    const coreInt32  iSizeY = F_TO_SI(m_vResolution.y);
-    const coreUint32 iFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? SDL_WINDOW_BORDERLESS : SDL_WINDOW_RESIZABLE));
+    const coreBool   bDesktop = (m_vResolution == m_aDisplayData[m_iDisplayIndex].vDesktopRes);
+    const coreInt32  iPos     = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
+    const coreInt32  iSizeX   = F_TO_SI(m_vResolution.x);
+    const coreInt32  iSizeY   = F_TO_SI(m_vResolution.y);
+    const coreUint32 iFlags   = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? (bDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_BORDERLESS) : SDL_WINDOW_RESIZABLE));
 
     // create main window object
     m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
@@ -442,10 +443,10 @@ void CoreSystem::__UpdateWindow()
         Core::Config->SetInt(CORE_CONFIG_SYSTEM_FULLSCREEN, m_iFullscreen);
 
         // set new window appearance
-        SDL_SetWindowFullscreen(m_pWindow, 0u);
-        SDL_SetWindowGrab      (m_pWindow, SDL_FALSE);
+        SDL_SetWindowFullscreen(m_pWindow, m_iFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0u);
         SDL_SetWindowBordered  (m_pWindow, m_iFullscreen ? SDL_FALSE : SDL_TRUE);
         SDL_SetWindowResizable (m_pWindow, m_iFullscreen ? SDL_FALSE : SDL_TRUE);
+        SDL_SetWindowGrab      (m_pWindow, SDL_FALSE);
 
         // change resolution to fit desktop (always)
         this->SetWindowResolution(m_aDisplayData[m_iDisplayIndex].vDesktopRes);
