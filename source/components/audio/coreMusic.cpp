@@ -28,7 +28,7 @@ coreMusic::coreMusic(const coreChar* pcPath)noexcept
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
-: m_aiBuffer {0u, 0u}
+: m_aiBuffer {}
 , m_iSource  (0u)
 , m_fVolume  (1.0f)
 , m_fPitch   (1.0f)

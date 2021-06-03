@@ -9,7 +9,7 @@
 #include "Core.h"
 
 coreFrameBuffer* coreFrameBuffer::s_pCurrent      = NULL;
-coreFloat        coreFrameBuffer::s_afViewData[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+coreFloat        coreFrameBuffer::s_afViewData[5] = {};
 
 
 // ****************************************************************

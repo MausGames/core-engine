@@ -15,7 +15,7 @@ CoreInput::CoreInput()noexcept
 : m_Keyboard       {}
 , m_Mouse          {}
 , m_aJoystick      {}
-, m_aTouch         {{}}
+, m_aTouch         {}
 , m_aiTouchCount   {}
 , m_pCursor        (NULL)
 , m_bCursorVisible (true)

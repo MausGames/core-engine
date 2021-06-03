@@ -154,7 +154,7 @@ public:
     inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded());}
 
     /* attach asynchronous callbacks */
-    template <typename F> void OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) m_pHandle->OnLoadedOnce(std::move(nFunction));}   // [](void) -> void
+    template <typename F> void OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) m_pHandle->OnLoadedOnce(std::forward<F>(nFunction));}   // [](void) -> void
 };
 
 

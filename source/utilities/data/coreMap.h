@@ -511,38 +511,6 @@ template <typename K, typename I, typename T> template <typename F> void coreMap
         m_atKeyList  .push_back(std::move(it->first));
         m_atValueList.push_back(std::move(it->second));
     }
-
-    /*
-    const auto nDoubleQuickSortFunc = [](auto* m, auto* n, const coreUintW a, const coreUintW e)
-    {
-        coreUintW x = a;
-        coreUintW y = e;
-        const K varPivot = m[(a + e) / 2];
-        
-        while(x <= y)
-        {
-            while(m[x] < varPivot)
-                x = x + 1;
-            
-            while(m[y] > varPivot)
-                y = y - 1;
-            
-            if(x <= y)
-            {
-                std::swap(m[x], m[y]);
-                std::swap(n[x], n[y]);
-                x = x + 1;
-                y = y - 1;
-            }
-             
-        }
-        
-        if(a < y) nDoubleQuickSortFunc(m, n, a, y)
-        if(x < e) nDoubleQuickSortFunc(m, n, x, e)
-    };
-
-    nDoubleQuickSortFunc(&m_atKeyList, &m_atValueList, 0u, m_atKeyList.size() - 1u);
-     */
 }
 
 

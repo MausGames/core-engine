@@ -24,7 +24,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_mPerspective     (coreMatrix4::Identity())
 , m_mOrtho           (coreMatrix4::Identity())
 , m_vViewResolution  (coreVector4(0.0f,0.0f,0.0f,0.0f))
-, m_aLight           {{}}
+, m_aLight           {}
 , m_TransformBuffer  ()
 , m_AmbientBuffer    ()
 , m_aTransformSync   {}
