@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_MD3_H_
 #define _CORE_GUARD_MD3_H_
 
-// TODO: add vertex position factor as new header parameter
+// TODO 3: add vertex position factor as new header parameter
 
 
 // ****************************************************************

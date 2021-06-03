@@ -10,17 +10,17 @@
 #ifndef _CORE_GUARD_PARTICLE_H_
 #define _CORE_GUARD_PARTICLE_H_
 
-// TODO: what about texture size and offset ? (make different base particles ? generic, performance, more coffee, solve in shader!)
-// TODO: what about velocity
-// TODO: texture arrays and texture index parameter to allow different objects to be rendered
-// TODO: SSBO[index] really faster than a divisor ? check also for their use instead of VAO in general
-// TODO: discard every X particle (create min 1) on lower systems ?
-// TODO: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
-// TODO: low systems: merge geometry to reduce draw calls
-// TODO: try same sort-algorithm proposed for instance list, no time-sort, but position-sort
-// TODO: automatic resizing function (preserve old values)
-// TODO: culling (also on instancing)
-// TODO: <old comment style>
+// TODO 3: make different base particles ? generic
+// TODO 5: what about texture size and offset
+// TODO 5: what about velocity
+// TODO 5: what about texture index parameter to allow different objects to be rendered
+// TODO 5: SSBO[index] really faster than a divisor ? check also for their use instead of VAO in general
+// TODO 5: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
+// TODO 5: low systems: merge geometry to reduce draw calls
+// TODO 3: sorting based on position
+// TODO 3: automatic list resizing (preserve old values)
+// TODO 3: culling (also on instancing)
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

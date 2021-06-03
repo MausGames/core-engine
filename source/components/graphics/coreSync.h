@@ -10,8 +10,8 @@
 #ifndef _CORE_GUARD_SYNC_H_
 #define _CORE_GUARD_SYNC_H_
 
-// TODO: implement CheckAsync which uses the function-attachment interface (which thread?)
-// TODO: wrap GL_TIMEOUT_IGNORED
+// TODO 3: implement CheckAsync which uses the function-attachment interface (which thread?)
+// TODO 4: wrap GL_TIMEOUT_IGNORED
 
 
 // ****************************************************************

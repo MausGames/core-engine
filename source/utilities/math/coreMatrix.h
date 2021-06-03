@@ -10,9 +10,9 @@
 #ifndef _CORE_GUARD_MATRIX_H_
 #define _CORE_GUARD_MATRIX_H_
 
-// TODO: do not multiply always full matrices, implement "modifying" functions
-// TODO: implement "Rotation from One Vector to Another" matrix
-// TODO: the mXXX() conversion functions create a lot of move instructions (seen before using FORCE_INLINE constructors)
+// TODO 5: do not multiply always full matrices, implement "modifying" functions
+// TODO 3: implement "Rotation from One Vector to Another" matrix (what about orientation ?)
+// TODO 3: the mXXX() conversion functions create a lot of move instructions (seen before using FORCE_INLINE constructors)
 
 // NOTE: row major
 

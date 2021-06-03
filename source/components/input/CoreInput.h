@@ -10,10 +10,10 @@
 #ifndef _CORE_GUARD_INPUT_H_
 #define _CORE_GUARD_INPUT_H_
 
-// TODO: touch-related functions empty on non-mobile
-// TODO: save GUID ?, format Name and GUID get functions
-// TODO: remove the 1-frame delay when using the Set* interface from game-code
-// TODO: <old comment style>
+// TODO 5: touch-related functions empty on non-mobile
+// TODO 3: remove the 1-frame delay when using the Set* interface from game-code
+// TODO 3: pseudo-joystick should accumulate all input from other devices
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

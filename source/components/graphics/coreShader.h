@@ -10,21 +10,11 @@
 #ifndef _CORE_GUARD_SHADER_H_
 #define _CORE_GUARD_SHADER_H_
 
-// TODO: document shader-name definitions
-// TODO: increase number-performance with constexpr-array int-to-char or char+# (everywhere)
-// TODO: CORE_SHADER_STATUS_* enum
-// TODO: #include interface
-// TODO: split shaders/progams more into Object3D, Object2D and Particle
-// TODO: harder integration of instancing
-// TODO: (material data in UBO)
-// TODO: try to use variable template with uniform cache (C++14)
-// TODO: assert-check for new shaders while already finished
-// TODO: allow additional shaders and attributes in-between
-// TODO: glGetProgramInterface, GetProgramResource[Name/Index] to analyze programs ?
-// TODO: check for low-precision sends (colors as byte-array (normalized to 1.0f) instead of float-vector)
-// TODO: uber-shaders
-// TODO: GLES 3.0 uses "300 es", also version >= 140 is wrong for GLES 3.0
-// TODO: <old comment style>
+// TODO 3: #include interface
+// TODO 3: better integration of instancing (allow instanced and non-instaced shaders to exist in the same program object (on demand, or per registry-attribute))
+// TODO 5: check for compressed uniform sends (e.g. colors as byte-array instead of float-vector)
+// TODO 3: support GLES shader versions other than 100 (GLES 3.0 uses "300 es", also version >= 140 is wrong for GLES 3.0)
+// TODO 5: <old comment style>
 
 // NOTE: GL below 3.0/130 or without UBO support has always GLSL version 110, GLES is currently always version 100
 

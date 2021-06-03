@@ -10,17 +10,15 @@
 #ifndef _CORE_GUARD_TEXTURE_H_
 #define _CORE_GUARD_TEXTURE_H_
 
-// TODO: check for max available texture units (only at start?)
-// TODO: implement sampler objects
-// TODO: implement light unbind (like in model and program)
-// TODO: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
-// TODO: load, check performance of 24bit formats, mind texture alignment of 4 (also for frame buffers and labels)
-// TODO: last few compressed mipmap levels contain only garbage
-// TODO: replace box filter in mipmap generation with better filter (e.g. gaussian, lanczos), check for border (repeat or clamp depending on sampling), consider overflow
-// TODO: specialized mipmap generation for normal maps
-// TODO: use DXT5 for normal maps (g and a channel (max precision) for x and y -> reconstruct z in shader)
-// TODO: check out AMD compress library, when other formats are required (e.g. for Android)
-// TODO: <old comment style>
+// TODO 5: check for max available texture units (only at start?)
+// TODO 3: implement sampler objects
+// TODO 3: implement light unbind (like in model and program)
+// TODO 3: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
+// TODO 3: improve mipmap filtering quality (replace box filter with better filter (e.g. gaussian, lanczos), check for border (repeat or clamp depending on sampling), consider overflow)
+// TODO 3: implement specialized mipmap generation for normal maps
+// TODO 3: implement normal map compression (e.g. use DXT5 for normal maps (g and a channel (max precision) for x and y -> reconstruct z in shader))
+// TODO 5: check out AMD compress library, when other formats are required (e.g. for Android)
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

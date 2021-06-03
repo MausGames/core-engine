@@ -10,18 +10,17 @@
 #ifndef _CORE_GUARD_FRAMEBUFFER_H_
 #define _CORE_GUARD_FRAMEBUFFER_H_
 
-// TODO: mipmapping ? (explicit function, how to reserve levels ? -> new create-enum-value, don't forget to move nearest-filter)
-// TODO: check for multiple viewports and uber-shaders
-// TODO: a frame buffer with a STENCIL_INDEX8 stencil attachment and a DEPTH_COMPONENT24 depth attachment may be treated as unsupported (FRAMEBUFFER_UNSUPPORTED)
-// TODO: fully implement multiple color attachment handling (esp. in blit, clear, invalidate)
-// TODO: handle multiple color attachments for ES2 with extension and ES3 in general
-// TODO: handle depth-blitting to default frame buffer without blit-function (impossible without over-engineering?)
-// TODO: save states and reset on fallback blitting
-// TODO: check if rendering quad is faster than blitting (only on default frame buffer? what about depth-stencil? still needs blit for MSAA)
-// TODO: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)
-// TODO: change R and RG targets to RGB when not supported ?
-// TODO: INTEL_framebuffer_CMAA
-// TODO: <old comment style>
+// TODO 3: mipmapping ? (explicit function, how to reserve levels ? -> new create-enum-value, don't forget to move nearest-filter)
+// TODO 5: check for multipl-viewport-rendering
+// TODO 2: certain formats, format-combinations, as texture or rendertarget or with multisampling, may not be supported (GL_FRAMEBUFFER_UNSUPPORTED), implement transparent fallback
+// TODO 3: fully implement multiple color attachment handling (esp. in blit, clear, invalidate)
+// TODO 3: handle multiple color attachments for ES2 (with extension) and ES3 (in general)
+// TODO 3: handle depth/stencil-blitting to default frame buffer on fallback-blitting
+// TODO 3: save and restore OpenGL states (GL_DEPTH_TEST/GL_BLEND) on fallback-blitting
+// TODO 3: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)
+// TODO 3: change R and RG targets to RGB if not supported ? also change some other targets if not supported
+// TODO 5: INTEL_framebuffer_CMAA, post-processing AA on non-multisampled framebuffers
+// TODO 5: <old comment style>
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 

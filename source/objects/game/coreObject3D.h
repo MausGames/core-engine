@@ -10,11 +10,9 @@
 #ifndef _CORE_GUARD_OBJECT3D_H_
 #define _CORE_GUARD_OBJECT3D_H_
 
-// TODO: instancing with more than one vertex array in the model ? (binding location)
-// TODO: implement efficient batch list sort function
-// TODO: compress rotation and texture parameters (2x16 ?), color 4b, position and size
-// TODO: make coreBatchList to template class, check for every casting
-// TODO: add MoveNormal() and MoveSort() with callback
+// TODO 5: instancing with more than one vertex array in the model ? (binding location)
+// TODO 5: compress rotation and texture parameters (2x16 ?), color 4b, position and size
+// TODO 3: add MoveNormal() and MoveSort() (with callback)
 
 
 // ****************************************************************

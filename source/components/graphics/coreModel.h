@@ -10,15 +10,12 @@
 #ifndef _CORE_GUARD_MODEL_H_
 #define _CORE_GUARD_MODEL_H_
 
-// TODO: support more than one mesh per file
-// TODO: add animation
-// TODO: enable shared vertex buffers mixed with unique
-// TODO: check out (Multi)Draw(Array|Elements)Indirect
-// TODO: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
-// TODO: index buffer ignore as constructor parameter ? (resource manager load)
-// TODO: currently radius and range can change, but they should not... implement more strict interface
-// TODO: de-interleaved vertex data ?
-// TODO: <old comment style>
+// TODO 3: support more than one mesh per file (into same buffer, with specific accessors)
+// TODO 3: add animation support
+// TODO 5: check out (Multi)Draw(Array|Elements)Indirect
+// TODO 4: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
+// TODO 3: de-interleaved vertex data
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

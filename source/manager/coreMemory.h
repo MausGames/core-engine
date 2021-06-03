@@ -10,17 +10,14 @@
 #ifndef _CORE_GUARD_MEMORY_H_
 #define _CORE_GUARD_MEMORY_H_
 
-// TODO: check if Share return is optimized
-// TODO: asynchronous memory defragmentation
-// TODO: memory-pool: main-page + smaller extension-pages
-// TODO: memory-pool: usable with coreList & co
-// TODO: memory-pool: support polymorphism
-// TODO: memory-pool: 1 block for multiple objects
-// TODO: add interface for reusing big memory-blocks (free when?)
-// TODO: __declspec(allocator)
-// TODO: consider allocation granularity 64kb
-// TODO: pointer to next free block inside unused block (linked list) instead of free-stack (consider sorting)
-// TODO: <old comment style>
+// TODO 5: memory-pool: main-page + smaller extension-pages
+// TODO 5: memory-pool: usable with coreList & co
+// TODO 5: memory-pool: support polymorphism
+// TODO 5: memory-pool: 1 block for multiple objects
+// TODO 5: add interface for reusing big memory-blocks (free when?)
+// TODO 5: __declspec(allocator)
+// TODO 3: pointer to next free block inside unused block (linked list) instead of free-stack (consider sorting)
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

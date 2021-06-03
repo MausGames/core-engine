@@ -27,31 +27,22 @@
 #ifndef _CORE_GUARD_H_
 #define _CORE_GUARD_H_
 
-// TODO: improve sort and structure under all class access modifiers
-// TODO: check for template parameters <42>
-// TODO: put everything in a namespace ? split up coreData and coreMath
-// TODO: remove this whole static pointer stuff, namespace for main-classes together with math and data ?
-// TODO: define standard-path (data/) were everything is loaded from
-// TODO: implement GL_KHR_robustness (performance penalties ?)
-// TODO: check for performance penalties and alternatives for thread_local
-// TODO: extend assertion-macro and add message to all assertions (warn_if ?)
-// TODO: reduce core-prefix ? (e.g. cr)
-// TODO: unique pointers and move semantics for functions taking ownership of a pointer
-// TODO: video class, string class, path/url class, pool+stack-allocator
-// TODO: fix constexpr msvc bug (not compiler-setting?) (constexpr-results not saved after compilation, functions often re-evaluated at run-time)
-// TODO: disallow two instances of the same application (also in launcher)
-// TODO: #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-// TODO: check out NVAPI and ADL/AGS
-// TODO: cast unused returns to (void)?
-// TODO: remove SSE from 32-bit binaries ? (compatibility binaries) _USING_V110_SDK71_
-// TODO: enable MSVC warnings 4244, 4267 again
-// TODO: #pragma warning(default : 4242 4244 4365) // loss of precision
-// TODO: #pragma warning(default : 4820)           // byte padding
-// TODO: unify const void* and const coreByte*
-// TODO: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
-// TODO: overflow check in I_TO_F
-// TODO: const smart-ptr and resource-ptr ?
-// TODO: rename ASSERT to ASSUME ?, as it's the actual way this macro is used (while WARN_IF is a handled assert)
+// TODO 3: define standard-path (data/) were everything is loaded from
+// TODO 3: implement GL_KHR_robustness (performance penalties ? Win+Ctrl+Shift+B to reset driver)
+// TODO 3: check for performance penalties and alternatives for thread_local
+// TODO 3: unique pointers and move semantics for functions taking ownership of a pointer
+// TODO 3: video class
+// TODO 3: string class
+// TODO 5: path/url class
+// TODO 5: stack-allocator
+// TODO 3: fix constexpr msvc bug (or confirm already fixed) (constexpr-results are not saved after compilation, functions often re-evaluated at run-time)
+// TODO 3: disallow two instances (or create yes/no message box) of the same application
+// TODO 3: improve MSVC debug allocator usage, #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+// TODO 5: check out NVAPI and ADL/AGS
+// TODO 4: handle implicit conversions, (enable MSVC warnings 4242, 4244, 4267 4365 again)
+// TODO 4: unify/clarify const void* and const coreByte*
+// TODO 4: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
+// TODO 3: overflow check in I_TO_F
 
 // NOTE: always compile x86 libraries/executables without SSE support
 

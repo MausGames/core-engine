@@ -10,9 +10,9 @@
 #ifndef _CORE_GUARD_TEXTBOX_H_
 #define _CORE_GUARD_TEXTBOX_H_
 
-// TODO: enable text selection and clipboard copy/cut
-// TODO: enable text-cursor positioning (mouse + arrow keys)
-// TODO: <old comment style>
+// TODO 3: enable text selection and clipboard copy/cut
+// TODO 3: enable text-cursor positioning (mouse + arrow keys)
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

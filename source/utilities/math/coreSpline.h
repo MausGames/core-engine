@@ -10,8 +10,7 @@
 #ifndef _CORE_GUARD_SPLINE_H_
 #define _CORE_GUARD_SPLINE_H_
 
-// TODO: implement insert-node function
-// TODO: multidimensional spline ((spline-)interpolation between other splines)
+// TODO 3: implement insert-node function
 
 
 // ****************************************************************

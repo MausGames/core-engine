@@ -10,12 +10,10 @@
 #ifndef _CORE_GUARD_DATABUFFER_H_
 #define _CORE_GUARD_DATABUFFER_H_
 
-// TODO: enable read and copy operations (currently only static and write/dynamic)
-// TODO: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
-// TODO: remove per-frame allocation on map/unmap-fallback
-// TODO: remove mapping templates, generates too many function copies (search for other locations as well)
-// TODO: CORE_DATABUFFER_MAP_UNSYNCHRONIZED to CORE_DATABUFFER_MAP_INVALIDATE_RANGE ?
-// TODO: <old comment style>
+// TODO 3: implement read and copy operations (currently only static and write/dynamic)
+// TODO 3: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
+// TODO 3: remove per-frame allocation on map/unmap-fallback
+// TODO 5: <old comment style>
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 

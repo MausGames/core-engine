@@ -10,11 +10,10 @@
 #ifndef _CORE_GUARD_LABEL_H_
 #define _CORE_GUARD_LABEL_H_
 
-// TODO: 3d text with link or own class ?
-// TODO: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
-// TODO: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
-// TODO: change text-generation to per-glyph interface or gather all text into big textures -> enable instancing
-// TODO: <old comment style>
+// TODO 3: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
+// TODO 2: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
+// TODO 3: change text-generation to per-glyph interface or gather all text into big textures -> enable instancing
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

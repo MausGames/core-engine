@@ -10,14 +10,12 @@
 #ifndef _CORE_GUARD_MUSIC_H_
 #define _CORE_GUARD_MUSIC_H_
 
-// TODO: player: improve the representation of the current track while shuffled
-// TODO: player: callback when music track changes (or return true is enough probably)
-// TODO: player: own thread
-// TODO: consider threaded music update (->coreMusicPlayer)
-// TODO: player: own (cached) parameters like volume, pitch - forwarded to music files
-// TODO: player: reorder properties, SwitchBox is similar
-// TODO: coreMusicFile.cpp, coreMusicPlayer.cpp
-// TODO: <old comment style>
+// TODO 3: player: callback when music track changes (or return true is enough probably)
+// TODO 5: player: own (cached) parameters like volume, pitch - forwarded to music files
+// TODO 4: player: reorder properties, SwitchBox is similar
+// TODO 3: threaded music update (->coreMusicPlayer)
+// TODO 4: split up: coreMusicFile.cpp, coreMusicPlayer.cpp
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

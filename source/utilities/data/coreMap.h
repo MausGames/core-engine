@@ -10,10 +10,10 @@
 #ifndef _CORE_GUARD_MAP_H_
 #define _CORE_GUARD_MAP_H_
 
-// TODO: check for detection of inconsistent list-manipulation (changing value-ordering through iterator, without changing the key-ordering)
-// TODO: TryGet function ?
-// TODO: implement swap-erase ?
-// TODO: erase and clear strings in coreMapStrFull ?
+// TODO 3: check for detection of inconsistent list-manipulation (changing value-ordering through iterator, without changing the key-ordering)
+// TODO 5: TryGet function ?
+// TODO 3: implement swap-erase ?
+// TODO 3: erase and clear strings in coreMapStrFull ?
 
 
 // ****************************************************************

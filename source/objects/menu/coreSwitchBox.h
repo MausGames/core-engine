@@ -10,11 +10,11 @@
 #ifndef _CORE_GUARD_SWITCHBOX_H_
 #define _CORE_GUARD_SWITCHBOX_H_
 
-// TODO: check for inheritance of coreLabel to remove separate caption object
-// TODO: separate/remove buttons from switchbox and allow "hooks" to own coreButton/coreObject2D objects
-// TODO: coreStatus on entry management
-// TODO: handle rotation on move (+ all menu objects)
-// TODO: <old comment style>
+// TODO 4: check for inheritance of coreLabel to remove separate caption object (coreObject2D properties are duplicated)
+// TODO 3: separate/remove buttons from switchbox and allow "hooks" to own coreButton/coreObject2D objects
+// TODO 4: coreStatus on entry management
+// TODO 3: handle object-rotation on Move() (+ all menu objects)
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

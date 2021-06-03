@@ -10,12 +10,12 @@
 #ifndef _CORE_GUARD_SYSTEM_H_
 #define _CORE_GUARD_SYSTEM_H_
 
-// TODO: fullscreen enumeration
-// TODO: some drivers may "merge" displays
-// TODO: handle display hot-plugging
-// TODO: improve delta-time precision, double, similar to coreThread
-// TODO: toggling out of m_iFullscreen == 2u might cause issues with some options (e.g. disabled composition)
-// TODO: <old comment style>
+// TODO 4: fullscreen enumeration
+// TODO 3: some drivers may "merge" displays
+// TODO 5: handle display hot-plugging
+// TODO 3: improve delta-time precision, double, similar to coreThread
+// TODO 3: toggling out of m_iFullscreen == 2u might cause issues with some options (e.g. disabled composition)
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

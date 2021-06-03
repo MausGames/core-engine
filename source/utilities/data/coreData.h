@@ -10,12 +10,12 @@
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
 
-// TODO: constexpr strlen -> ARRAY_SIZE(x)-1
-// TODO: implement constexpr strright
-// TODO: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
-// TODO: --help, --version, --force-x86, --force-x64 (windows, launcher?)
-// TODO: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
-// TODO: make !temp and !appdata replace instead
+// TODO 3: constexpr strlen (should work without knowing the length ([N], ARRAY_SIZE(x)-1))
+// TODO 3: implement constexpr strright
+// TODO 3: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
+// TODO 3: --help, --version, --force-x86, --force-x64 (windows, launcher?)
+// TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
+// TODO 3: make !temp and !appdata replace instead
 
 
 // ****************************************************************

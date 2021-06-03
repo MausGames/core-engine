@@ -10,10 +10,9 @@
 #ifndef _CORE_GUARD_DEBUG_H_
 #define _CORE_GUARD_DEBUG_H_
 
-// TODO: ingame editor, edit position, size and rotation (with axis-control like Blender), edit colors and time-speed!
-// TODO: display direction, orientation and bounding box+radius on objects
-// TODO: edit-mode with object selection, 3d and 2d
-// TODO: check out AMD GPU PerfAPI
+// TODO 3: ingame editor, with object selection, 3d and 2d, edit position, size and rotation (with axis-control like Blender), edit colors and time-speed
+// TODO 3: display direction, orientation and bounding box+radius on objects
+// TODO 5: check out AMD GPU PerfAPI
 
 
 // ****************************************************************

@@ -10,15 +10,15 @@
 #ifndef _CORE_GUARD_MENU_H_
 #define _CORE_GUARD_MENU_H_
 
-// TODO: allow custom animations
-// TODO: remove wrong order while animating (double-objects)
-// TODO: implement general relative behavior, submenu, hierarchy (menu/2d objects)
-// TODO: optimize rendering with a frame buffer ?
-// TODO: implement tab-switching and keyboard/gamepad control
-// TODO: handle individual transparency better
-// TODO: depth-pass
-// TODO: surface-vector-vector instead of static size ?
-// TODO: <old comment style>
+// TODO 3: allow custom animations
+// TODO 2: remove wrong order while animating (double-objects)
+// TODO 3: implement general relative behavior, submenu, hierarchy (menu/2d objects)
+// TODO 5: optimize rendering with a frame buffer ?
+// TODO 5: implement tab-switching and keyboard/gamepad control
+// TODO 2: handle individual transparency better
+// TODO 5: depth-pass
+// TODO 5: surface-vector-vector instead of static size ?
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

@@ -10,8 +10,6 @@
 #ifndef _CORE_GUARD_TIMER_H_
 #define _CORE_GUARD_TIMER_H_
 
-// TODO: implement flow-interface to reduce clamped to zero
-
 
 // ****************************************************************
 /* timer definitions */

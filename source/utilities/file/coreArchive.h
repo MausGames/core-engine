@@ -10,15 +10,13 @@
 #ifndef _CORE_GUARD_ARCHIVE_H_
 #define _CORE_GUARD_ARCHIVE_H_
 
-// TODO: make archive a file
-// TODO: check sum
-// TODO: allocate page-size aligned
-// TODO: static and dynamic archives (with fixed-size array for renaming)
-// TODO: reference-counting wrapper instead of coreFileScope
-// TODO: <old comment style>
-// TODO: "0 = does not exist physically" should be moved into own bool and -1 should become 0 ? (could simplify if-else, seeking)
-// TODO: allow referencing allocation instead of owning
-// TODO: get rid of Internal* functions ? but files should not be copied (normally)
+// TODO 4: make archive a file
+// TODO 3: archive check sum
+// TODO 2: reference-counting wrapper instead of coreFileScope
+// TODO 5: <old comment style>
+// TODO 4: "0 = does not exist physically" should be moved into own bool and -1 should become 0 ? (could simplify if-else, seeking)
+// TODO 3: allow referencing allocation instead of owning
+// TODO 4: get rid of Internal* functions ? but files should not be copied (normally)
 
 
 // ****************************************************************

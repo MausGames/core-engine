@@ -10,11 +10,11 @@
 #ifndef _CORE_GUARD_LANGUAGE_H_
 #define _CORE_GUARD_LANGUAGE_H_
 
-// TODO: save current main language file to config
-// TODO: currently key-identifier $ may cause problems in normal text
-// TODO: reduce memory consumption with all the redundant keys in containers
-// TODO: determine number of entries and call reserve(x)
-// TODO: try to use strtok()
+// TODO 3: save current main language file to config
+// TODO 2: currently key-identifier $ may cause problems in normal text, maybe use $$
+// TODO 3: reduce memory consumption with all the redundant keys in containers
+// TODO 3: determine number of entries and call reserve(x)
+// TODO 5: try to use strtok()
 
 
 // ****************************************************************

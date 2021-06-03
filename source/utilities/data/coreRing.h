@@ -10,8 +10,8 @@
 #ifndef _CORE_GUARD_RING_H_
 #define _CORE_GUARD_RING_H_
 
-// TODO: create a dynamic-sized version with coreList ? (replacement in coreParticleSystem)
-// TODO: rename functions to better and more obvious names
+// TODO 3: create a dynamic-sized version with coreList ? (replacement in coreParticleSystem)
+// TODO 4: rename functions to better and more obvious names
 
 
 // ****************************************************************

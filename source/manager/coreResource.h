@@ -10,16 +10,12 @@
 #ifndef _CORE_GUARD_RESOURCE_H_
 #define _CORE_GUARD_RESOURCE_H_
 
-// TODO: ATI_meminfo and NVX_gpu_memory_info to check for memory usage ? (old, not widely supported)
-// TODO: replace reference-counter with atomic variable ?
-// TODO: when and how to load default archive(s) ?
-// TODO: assert for path and update-type in load-function
-// TODO: check for resource context, with OGL spec 5.1.3: [gets not deleted when] the object is bound to a context bind point in any context
-// TODO: extend OnLoad interface with new functions, call directly after load instead of threaded ?
-// TODO: resources exist only within handles, redefine all interfaces
-// TODO: investigate possible GPU memory fragmentation when streaming in and out lots of resources
-// TODO: reducing ref-count to 0 while resource-manager is waiting on (GL)sync-object may keep the resource half loaded (including shaders active within program), no issue as resource is recoverable, but it is not intended
-// TODO: defer resource-unload on ref-count 0 to an explicit call at the end of a frame
+// TODO 3: replace reference-counter with atomic variable ?
+// TODO 3: call OnLoad directly after load instead with delayed function callback ?
+// TODO 4: resources exist only within handles, redefine all interfaces
+// TODO 5: investigate possible GPU memory fragmentation when streaming in and out lots of resources
+// TODO 2: reducing ref-count to 0 while resource-manager is waiting on (GL)sync-object may keep the resource half loaded (including shaders active within program), no issue as resource is recoverable, but it is not intended
+// TODO 3: defer resource-unload on ref-count 0 to an explicit call at the end of a frame
 
 
 // ****************************************************************

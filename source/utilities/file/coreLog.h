@@ -10,11 +10,10 @@
 #ifndef _CORE_GUARD_LOG_H_
 #define _CORE_GUARD_LOG_H_
 
-// TODO: define more log capturing spots, not only resource-loading/unloading and (few) errors
-// TODO: implement stack trace (tested on MSVC, works only with available debug symbols, and not with incremental linking or fast-linking)
-// TODO: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts, bacon
-// TODO: better specify, should it be possible to create many log files ? what about OpenGL debugging, console output and file header then ?
-// TODO: improve list-logging for multiple threads, currently on startup with dual-thread loading both threads interfere each other
+// TODO 4: define more log capturing spots, not only resource-loading/unloading and (few) errors
+// TODO 5: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts
+// TODO 2: should it be possible to create many log files ? what about OpenGL debugging, console output and file header then ?
+// TODO 2: improve list-logging for multiple threads, currently on startup with dual-thread loading both threads interfere each other
 
 
 // ****************************************************************

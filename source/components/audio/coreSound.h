@@ -10,11 +10,9 @@
 #ifndef _CORE_GUARD_SOUND_H_
 #define _CORE_GUARD_SOUND_H_
 
-// TODO: improve 3D sound integration and control
-// TODO: implement sound pause
-// TODO: cache and check audio source properties
-// TODO: problem with loop on unloaded sound
-// TODO: <old comment style>
+// TODO 3: implement sound pause
+// TODO 3: cache and check audio source properties (reduce OpenAL function calls)
+// TODO 5: <old comment style>
 
 
 // ****************************************************************

@@ -10,12 +10,11 @@
 #ifndef _CORE_GUARD_VECTOR_H_
 #define _CORE_GUARD_VECTOR_H_
 
-// TODO: check out Clang ext_vector_type
-// TODO: rotation from one vector to another
-// TODO: extract axis from quaternion
-// TODO: extract angle from quaternion
-// TODO: quaternion spline, with spherically interpolation of quaternions using a smooth cubic spline
-// TODO: fix flipped rotation in 2d-space
+// TODO 3: rotation from one vector to another
+// TODO 3: extract axis from quaternion
+// TODO 3: extract angle from quaternion
+// TODO 5: quaternion spline, with spherically interpolation of quaternions using a smooth cubic spline
+// TODO 2: fix flipped rotation in 2d-space
 
 // NOTE: normalization needs to be safe by default, because an accidental null-normalization is hard to predict or detect in gameplay-code and can be fatal
 

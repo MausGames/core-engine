@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_BUTTON_H_
 #define _CORE_GUARD_BUTTON_H_
 
-// TODO: <old comment style>
+// TODO 5: <old comment style>
 
 
 // ****************************************************************
