@@ -1,5 +1,8 @@
 # Core Engine
 
+[![software license: zlib](material/readme/badge_license_software.svg)](LICENSE.txt)
+[![content license: CC BY](material/readme/badge_license_content.svg)](https://creativecommons.org/licenses/by/4.0/)
+
 The Core Engine is an extensive C++ framework based on the SDL library, currently for **Windows and Linux games** and compatible with **OpenGL (ES) 2.x, 3.x and 4.x capable hardware**.
 
 It is **designed to be supportive, versatile and powerful**, and to dynamically use efficient fallback methods where specific system features are not available.
@@ -15,3 +18,21 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 > - Vectors (2d, 3d, 4d/Quaternions), Matrices (2x2, 3x3, 4x4, other), Splines
 > - Game Objects (2d, 3d), Particle System, Batching, Precise Collision Detection
 > - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes)
+
+#
+
+| Name | Description | Links |
+| - | - | - |
+| Eigengrau | Colorful shoot'em up with diverse and non-repetitive gameplay | [GitHub](https://github.com/MausGames/project-one), [GitLab](https://gitlab.com/MausGames/project-one) |
+| Disco Rock | Very simple endless-runner inspired by the 70s disco era | [GitHub](https://github.com/MausGames/disco-rock), [GitLab](https://gitlab.com/MausGames/disco-rock) |
+| Flip It | Competitive territory game made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/flip-it), [GitLab](https://gitlab.com/MausGames/flip-it) |
+| Party Raider | Multiplayer platform shooter made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/party-raider), [GitLab](https://gitlab.com/MausGames/party-raider) |
+| Endless Journey | Spiritual mountain climber made on [Mi'pu'mi][1] day | n/a |
+
+#
+
+[![screenshot](material/screenshots/p1_screen_001t.jpg)](material/screenshots/p1_screen_001.jpg?raw=true)
+[![screenshot](material/screenshots/dr_screen_new_006t.jpg)](material/screenshots/dr_screen_new_006.jpg?raw=true)
+[![screenshot](material/screenshots/fli_screen_003t.jpg)](material/screenshots/fli_screen_003.jpg?raw=true)
+
+[1]: https://mipumi.com
