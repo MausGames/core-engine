@@ -76,8 +76,8 @@ public:
     /* get application properties */
     static              coreUint64 AppMemory();
     static        const coreChar*  AppPath  ();
-    static inline const coreChar*  AppName  () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); return pcSlash ? (pcSlash + 1u) : pcString;}
-    static inline const coreChar*  AppDir   () {const coreChar* pcString = coreData::AppPath(); const coreChar* pcSlash = std::strrchr(pcString, CORE_DATA_SLASH[0]); if(pcSlash) (*c_cast<coreChar*>(pcSlash + 1u)) = '\0'; return pcString;}
+    static inline const coreChar*  AppName  () {return coreData::StrFilename (coreData::AppPath());}
+    static inline const coreChar*  AppDir   () {return coreData::StrDirectory(coreData::AppPath());}
 
     /* get operating system properties */
     static       coreBool   SystemMemory     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
@@ -143,6 +143,7 @@ public:
     static inline const coreChar* StrLower    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, tolower);}
     static const coreChar*        StrRight    (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrFilename (const coreChar* pcInput);
+    static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
     static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxLen);

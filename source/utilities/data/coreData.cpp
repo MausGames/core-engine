@@ -1020,9 +1020,34 @@ const coreChar* coreData::StrFilename(const coreChar* pcInput)
 {
     WARN_IF(!pcInput) return "";
 
-    const coreChar* pcSlash = std::strrchr(pcInput, '/');
-    if(!pcSlash)    pcSlash = std::strrchr(pcInput, '\\');
-    return pcSlash ? (pcSlash + 1u) : pcInput;
+    // return after last path-delimiter
+    for(const coreChar* pcCursor = pcInput + std::strlen(pcInput) - 1u; pcCursor >= pcInput; --pcCursor)
+    {
+        if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
+            return pcCursor + 1u;
+    }
+
+    return pcInput;
+}
+
+
+// ****************************************************************
+/* safely get directory from path */
+const coreChar* coreData::StrDirectory(const coreChar* pcInput)
+{
+    WARN_IF(!pcInput) return "";
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // identify file name
+    const coreChar* pcName = coreData::StrFilename(pcInput);
+    const coreUintW iLen   = MIN(pcName - pcInput, CORE_DATA_STRING_LEN - 1u);
+
+    // copy remaining path
+    std::memcpy(pcString, pcInput, iLen);
+    pcString[iLen] = '\0';
+
+    return pcString;
 }
 
 
