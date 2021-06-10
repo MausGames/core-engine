@@ -549,7 +549,15 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 
 #elif defined(_CORE_LINUX_)
 
-    return dlopen(pcName, RTLD_LAZY | RTLD_LOCAL);
+    // get absolute path near application
+    const coreChar* pcLocal = PRINT("%s/%s", coreData::AppDir(), pcName);
+
+    // try to open dynamic library
+    void* pLibrary = NULL;
+    if(!pLibrary) pLibrary = dlopen(pcLocal, RTLD_LAZY);   // independent of current working directory
+    if(!pLibrary) pLibrary = dlopen(pcName,  RTLD_LAZY);
+
+    return pLibrary;
 
 #else
 
