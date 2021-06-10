@@ -875,7 +875,7 @@ coreStatus coreData::CreateFolder(const coreChar* pcPath)
     coreChar* pcCursor = pcString;
 
     // make local copy
-    coreData::StrCopy(pcPath, pcString, CORE_DATA_STRING_LEN);
+    coreData::StrCopy(pcString, CORE_DATA_STRING_LEN, pcPath);
 
     // loop through all sub-folders
     for(; (*pcCursor) != '\0'; ++pcCursor)
@@ -1075,7 +1075,7 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
 
 // ****************************************************************
 /* copy string into another buffer */
-void coreData::StrCopy(const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxLen)
+void coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput)
 {
     ASSERT(pcInput && pcOutput)
 

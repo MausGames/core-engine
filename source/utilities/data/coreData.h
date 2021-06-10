@@ -146,9 +146,9 @@ public:
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
-    static void                   StrCopy     (const coreChar* pcInput, coreChar* OUTPUT pcOutput, const coreUintW iMaxLen);
-    static void                   StrTrim     (coreString* OUTPUT psInput, const coreChar* pcRemove = " \n\r\t");
-    static void                   StrReplace  (coreString* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew);
+    static void                   StrCopy     (coreChar*   OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput);
+    static void                   StrTrim     (coreString* OUTPUT psInput,  const coreChar* pcRemove = " \n\r\t");
+    static void                   StrReplace  (coreString* OUTPUT psInput,  const coreChar* pcOld, const coreChar* pcNew);
 
     /* operate with containers */
     template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
@@ -284,7 +284,7 @@ template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, co
     coreChar* pcString = coreData::__NextTempString();
 
     // make local copy
-    coreData::StrCopy(pcInput, pcString, CORE_DATA_STRING_LEN);
+    coreData::StrCopy(pcString, CORE_DATA_STRING_LEN, pcInput);
 
     // tokenize string and forward to function
     const coreChar* pcToken = std::strtok(pcString, pcDelimiter);
