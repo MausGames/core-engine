@@ -252,7 +252,6 @@
     #define _HAS_EXCEPTIONS 0
 #endif
 #if defined(_CORE_DEBUG_)
-    #define _ALLOW_RTCc_IN_STL
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
 #endif
