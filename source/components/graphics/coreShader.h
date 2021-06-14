@@ -15,6 +15,7 @@
 // TODO 5: check for compressed uniform sends (e.g. colors as byte-array instead of float-vector)
 // TODO 3: support GLES shader versions other than 100 (GLES 3.0 uses "300 es", also version >= 140 is wrong for GLES 3.0)
 // TODO 5: <old comment style>
+// TODO 2: coreLightingTransform is super-confusing to use
 
 // NOTE: GL below 3.0/130 or without UBO support has always GLSL version 110, GLES is currently always version 100
 

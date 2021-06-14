@@ -314,7 +314,7 @@ void coreResourceManager::__ExitThread()
 
 
 // ****************************************************************
-/* load all relevant default resource */
+/* load all relevant default resources */
 void coreResourceManager::__LoadDefault()
 {
     this->Load<coreTexture>("default_black.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.png");

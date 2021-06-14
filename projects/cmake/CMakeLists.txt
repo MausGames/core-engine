@@ -85,7 +85,7 @@ target_link_directories(
 
 target_link_libraries(
     CoreEngine INTERFACE
-    -ldl -lX11 -lGL
+    -ldl -lpthread -lX11 -lGL
     -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libGLEW.so.2 -l:libopenal.so.1 -l:libogg.so.0 -l:libvorbis.so.0 -l:libvorbisfile.so.3 -l:libzstd.so.1
 )
 

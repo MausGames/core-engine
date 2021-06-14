@@ -239,7 +239,7 @@ private:
     coreStatus __RunThread ()final;
     void       __ExitThread()final;
 
-    /* load all relevant default resource */
+    /* load all relevant default resources */
     void __LoadDefault();
 
     /* bind and unbind relation-objects */

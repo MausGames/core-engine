@@ -24,16 +24,16 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct co
     inline const coreHashString& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return asHashString[iIndex];}
 };
 
-#define STRING_LIST(s,n,v)                \
+#define __STRING_LIST(s,n,v)              \
     extern const coreChar v ## __a[] = s; \
     static const coreStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
 
-STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
-STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      avLightDirection)
-STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_VALUE,     CORE_GRAPHICS_LIGHTS,      avLightValue)
-STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_2D,      CORE_TEXTURE_UNITS_2D,     avTexture2D)
-STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_SHADOW,  CORE_TEXTURE_UNITS_SHADOW, avTextureShadow)
-STRING_LIST(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avOutColor)
+__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
+__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      avLightDirection)
+__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_VALUE,     CORE_GRAPHICS_LIGHTS,      avLightValue)
+__STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_2D,      CORE_TEXTURE_UNITS_2D,     avTexture2D)
+__STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_SHADOW,  CORE_TEXTURE_UNITS_SHADOW, avTextureShadow)
+__STRING_LIST(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avOutColor)
 
 
 // ****************************************************************

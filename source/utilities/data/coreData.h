@@ -231,7 +231,7 @@ template <typename T> const coreChar* coreData::TypeName()
 #endif
 
     // calculate name length
-    static const coreUintW iLen = MIN(P_TO_UI(pcTo - pcFrom), CORE_DATA_STRING_LEN - 1u);
+    static const coreUintW iLen = MIN(pcTo - pcFrom, CORE_DATA_STRING_LEN - 1u);
 
     // extract name from the function signature
     std::memcpy(pcString, pcFrom, iLen);

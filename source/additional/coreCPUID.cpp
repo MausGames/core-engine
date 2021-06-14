@@ -60,7 +60,7 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
         std::memcpy(acVendor + 2u*sizeof(coreInt32), &aaiData[0][2], sizeof(coreInt32));
         std::memset(acVendor + 3u*sizeof(coreInt32), 0, 1u);
     }
-    else std::strcpy(acVendor, "Unknown");
+    else coreData::StrCopy(acVendor, ARRAY_SIZE(acVendor), "Unknown");
 
     // save processor brand string
     if(iNumEx >= (CORE_CPUID_EXTENDED + 4u))
@@ -70,7 +70,7 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
         std::memcpy(acBrand + 2u*sizeof(aiPage), aaiDataEx[4].data(), sizeof(aiPage));
         std::memset(acBrand + 3u*sizeof(aiPage), 0, 1u);
     }
-    else std::strcpy(acBrand, "Unknown");
+    else coreData::StrCopy(acBrand, ARRAY_SIZE(acBrand), "Unknown");
 
     // check for specific vendors
          if(!std::strcmp(acVendor, "GenuineIntel")) bIsIntel = true;

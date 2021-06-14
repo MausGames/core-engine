@@ -439,7 +439,7 @@ const coreChar* coreData::GetCurDir()
     const coreUint32 iLen = GetCurrentDirectoryA(CORE_DATA_STRING_LEN - 1u, pcString);
     if(iLen)
     {
-        // add path delimiter and return (with known length)
+        // add path-delimiter and return (with known length)
         std::memcpy(pcString + iLen, CORE_DATA_SLASH, ARRAY_SIZE(CORE_DATA_SLASH));
         return pcString;
     }
@@ -449,7 +449,7 @@ const coreChar* coreData::GetCurDir()
     // get raw working directory
     if(getcwd(pcString, CORE_DATA_STRING_LEN - 1u))
     {
-        // add path delimiter and return
+        // add path-delimiter and return
         return std::strcat(pcString, CORE_DATA_SLASH);
     }
 
