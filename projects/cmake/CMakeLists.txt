@@ -21,6 +21,7 @@ target_sources(
     ${BASE_DIRECTORY}/source/additional/linux/main.c
     ${BASE_DIRECTORY}/source/additional/coreCPUID.cpp
     ${BASE_DIRECTORY}/source/additional/coreGL.cpp
+    ${BASE_DIRECTORY}/source/additional/coreGLEW.c
     ${BASE_DIRECTORY}/source/components/audio/CoreAudio.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreMusic.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreSound.cpp
@@ -86,7 +87,7 @@ target_link_directories(
 target_link_libraries(
     CoreEngine INTERFACE
     -ldl -lpthread -lX11 -lGL
-    -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libGLEW.so.2 -l:libopenal.so.1 -l:libogg.so.0 -l:libvorbis.so.0 -l:libvorbisfile.so.3 -l:libzstd.so.1
+    -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libopenal.so.1 -l:libogg.so.0 -l:libvorbis.so.0 -l:libvorbisfile.so.3 -l:libzstd.so.1
 )
 
 

@@ -181,6 +181,9 @@
     <ClCompile Include="..\..\..\source\additional\linux\main.c">
       <Filter>additional\linux</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreGLEW.c">
+      <Filter>additional</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">

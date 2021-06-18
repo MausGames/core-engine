@@ -290,6 +290,7 @@
 // ****************************************************************
 /* external libraries */
 #define GLEW_NO_GLU
+#define GLEW_STATIC
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #if defined(_CORE_MSVC_)
     #define ZSTD_DLL_IMPORT 1
