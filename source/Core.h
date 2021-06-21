@@ -44,8 +44,6 @@
 // TODO 4: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
 // TODO 3: overflow check in I_TO_F
 
-// NOTE: always compile x86 libraries/executables without SSE support
-
 
 // ****************************************************************
 /* target configuration */
@@ -128,7 +126,7 @@
 #endif
 
 // SSE3 instruction set
-#if defined(_CORE_X86_) && defined(_CORE_64BIT_)
+#if defined(_CORE_X86_)
     #define _CORE_SSE_
 #endif
 
