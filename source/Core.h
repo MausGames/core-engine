@@ -560,8 +560,8 @@ class  coreMemoryManager;
 class  coreResourceManager;
 class  coreObjectManager;
 
-extern "C" coreInt32 coreMain(coreInt32 argc, coreChar** argv);
-extern "C" coreInt32 coreThreadMain(void* pData);
+extern "C" coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv);
+extern "C" coreInt32 SDLCALL coreThreadMain(void* pData);
 
 
 // ****************************************************************
@@ -652,7 +652,7 @@ public:
 
 private:
     /* run engine */
-    friend coreInt32 coreMain(coreInt32 argc, coreChar** argv);
+    friend coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv);
     static coreStatus Run();
 };
 

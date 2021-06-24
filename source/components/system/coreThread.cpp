@@ -155,7 +155,7 @@ coreStatus coreThread::__Main()
 
 // ****************************************************************
 /* entry-point function */
-coreInt32 coreThreadMain(void* pData)
+coreInt32 SDLCALL coreThreadMain(void* pData)
 {
     // retrieve thread object
     coreThread* pThread = s_cast<coreThread*>(pData);

@@ -59,7 +59,7 @@ private:
     virtual void       __ExitThread() = 0;
 
     /* entry-point function */
-    friend coreInt32 coreThreadMain(void* pData);
+    friend coreInt32 SDLCALL coreThreadMain(void* pData);
 };
 
 

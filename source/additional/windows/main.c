@@ -21,7 +21,7 @@
 
 typedef BOOL (WINAPI *uMiniDumpWriteDump) (HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION, PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
 
-extern int coreMain(int argc, char** argv);
+extern int __cdecl coreMain(int argc, char** argv);
 extern const char* g_pcUserFolder;
 
 
@@ -33,12 +33,12 @@ __declspec(dllexport) DWORD NvOptimusEnablement                  = 0x00000001u;
 
 // ****************************************************************
 /* handle pure virtual function calls and invalid arguments */
-static void HandlePurecall(void)
+static void __cdecl HandlePurecall(void)
 {
     DebugBreak();
 }
 
-static void HandleInvalidParameter(const wchar_t* pcExpression, const wchar_t* pcFunction, const wchar_t* pcFile, const unsigned int iLine, const uintptr_t iReserved)
+static void __cdecl HandleInvalidParameter(const wchar_t* pcExpression, const wchar_t* pcFunction, const wchar_t* pcFile, const unsigned int iLine, const uintptr_t iReserved)
 {
     DebugBreak();
 }

@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://github.com/facebook/zstd
+
 /*
  * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
  * All rights reserved.
@@ -27,11 +30,14 @@ extern "C" {
 #  endif
 #endif
 #if defined(ZSTD_DLL_EXPORT) && (ZSTD_DLL_EXPORT==1)
-#  define ZSTDLIB_API __declspec(dllexport) ZSTDLIB_VISIBILITY
+#  define ZSTDLIB_API  __declspec(dllexport) ZSTDLIB_VISIBILITY
+#  define ZSTDLIB_CALL __cdecl
 #elif defined(ZSTD_DLL_IMPORT) && (ZSTD_DLL_IMPORT==1)
-#  define ZSTDLIB_API __declspec(dllimport) ZSTDLIB_VISIBILITY /* It isn't required but allows to generate better code, saving a function pointer load from the IAT and an indirect jump.*/
+#  define ZSTDLIB_API  __declspec(dllimport) ZSTDLIB_VISIBILITY /* It isn't required but allows to generate better code, saving a function pointer load from the IAT and an indirect jump.*/
+#  define ZSTDLIB_CALL __cdecl
 #else
-#  define ZSTDLIB_API ZSTDLIB_VISIBILITY
+#  define ZSTDLIB_API  ZSTDLIB_VISIBILITY
+#  define ZSTDLIB_CALL
 #endif
 
 
@@ -74,13 +80,13 @@ extern "C" {
 #define ZSTD_VERSION_RELEASE  3
 
 #define ZSTD_VERSION_NUMBER  (ZSTD_VERSION_MAJOR *100*100 + ZSTD_VERSION_MINOR *100 + ZSTD_VERSION_RELEASE)
-ZSTDLIB_API unsigned ZSTD_versionNumber(void);   /**< to check runtime library version */
+ZSTDLIB_API unsigned ZSTDLIB_CALL ZSTD_versionNumber(void);   /**< to check runtime library version */
 
 #define ZSTD_LIB_VERSION ZSTD_VERSION_MAJOR.ZSTD_VERSION_MINOR.ZSTD_VERSION_RELEASE
 #define ZSTD_QUOTE(str) #str
 #define ZSTD_EXPAND_AND_QUOTE(str) ZSTD_QUOTE(str)
 #define ZSTD_VERSION_STRING ZSTD_EXPAND_AND_QUOTE(ZSTD_LIB_VERSION)
-ZSTDLIB_API const char* ZSTD_versionString(void);   /* requires v1.3.0+ */
+ZSTDLIB_API const char* ZSTDLIB_CALL ZSTD_versionString(void);   /* requires v1.3.0+ */
 
 /* *************************************
  *  Default constant
@@ -112,9 +118,9 @@ ZSTDLIB_API const char* ZSTD_versionString(void);   /* requires v1.3.0+ */
  *  Hint : compression runs faster if `dstCapacity` >=  `ZSTD_compressBound(srcSize)`.
  *  @return : compressed size written into `dst` (<= `dstCapacity),
  *            or an error code if it fails (which can be tested using ZSTD_isError()). */
-ZSTDLIB_API size_t ZSTD_compress( void* dst, size_t dstCapacity,
-                            const void* src, size_t srcSize,
-                                  int compressionLevel);
+ZSTDLIB_API size_t ZSTDLIB_CALL ZSTD_compress( void* dst, size_t dstCapacity,
+                                         const void* src, size_t srcSize,
+                                               int compressionLevel);
 
 /*! ZSTD_decompress() :
  *  `compressedSize` : must be the _exact_ size of some number of compressed and/or skippable frames.
@@ -122,8 +128,8 @@ ZSTDLIB_API size_t ZSTD_compress( void* dst, size_t dstCapacity,
  *  If user cannot imply a maximum upper bound, it's better to use streaming mode to decompress data.
  *  @return : the number of bytes decompressed into `dst` (<= `dstCapacity`),
  *            or an errorCode if it fails (which can be tested using ZSTD_isError()). */
-ZSTDLIB_API size_t ZSTD_decompress( void* dst, size_t dstCapacity,
-                              const void* src, size_t compressedSize);
+ZSTDLIB_API size_t ZSTDLIB_CALL ZSTD_decompress( void* dst, size_t dstCapacity,
+                                           const void* src, size_t compressedSize);
 
 /*! ZSTD_getFrameContentSize() : requires v1.3.0+
  *  `src` should point to the start of a ZSTD encoded frame.
@@ -171,11 +177,11 @@ ZSTDLIB_API size_t ZSTD_findFrameCompressedSize(const void* src, size_t srcSize)
 
 /*======  Helper functions  ======*/
 #define ZSTD_COMPRESSBOUND(srcSize)   ((srcSize) + ((srcSize)>>8) + (((srcSize) < (128<<10)) ? (((128<<10) - (srcSize)) >> 11) /* margin, from 64 to 0 */ : 0))  /* this formula ensures that bound(A) + bound(B) <= bound(A+B) as long as A and B >= 128 KB */
-ZSTDLIB_API size_t      ZSTD_compressBound(size_t srcSize); /*!< maximum compressed size in worst case single-pass scenario */
-ZSTDLIB_API unsigned    ZSTD_isError(size_t code);          /*!< tells if a `size_t` function result is an error code */
-ZSTDLIB_API const char* ZSTD_getErrorName(size_t code);     /*!< provides readable string from an error code */
-ZSTDLIB_API int         ZSTD_minCLevel(void);               /*!< minimum negative compression level allowed */
-ZSTDLIB_API int         ZSTD_maxCLevel(void);               /*!< maximum compression level available */
+ZSTDLIB_API size_t      ZSTDLIB_CALL ZSTD_compressBound(size_t srcSize); /*!< maximum compressed size in worst case single-pass scenario */
+ZSTDLIB_API unsigned    ZSTDLIB_CALL ZSTD_isError(size_t code);          /*!< tells if a `size_t` function result is an error code */
+ZSTDLIB_API const char* ZSTDLIB_CALL ZSTD_getErrorName(size_t code);     /*!< provides readable string from an error code */
+ZSTDLIB_API int         ZSTDLIB_CALL ZSTD_minCLevel(void);               /*!< minimum negative compression level allowed */
+ZSTDLIB_API int         ZSTDLIB_CALL ZSTD_maxCLevel(void);               /*!< maximum compression level available */
 
 
 /***************************************

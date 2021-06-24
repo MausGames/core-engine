@@ -180,7 +180,7 @@ void Core::Reshape()
 
 // ****************************************************************
 /* main function */
-coreInt32 coreMain(coreInt32 argc, coreChar** argv)
+coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
 {
     // set new working directory (bin/<OS>/<ARCH>)
     coreData::SetCurDir(coreData::AppDir());

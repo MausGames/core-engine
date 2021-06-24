@@ -54,10 +54,10 @@ extern "C"
  * unseekable
  */
 typedef struct {
-  size_t (*read_func)  (void *ptr, size_t size, size_t nmemb, void *datasource);
-  int    (*seek_func)  (void *datasource, ogg_int64_t offset, int whence);
-  int    (*close_func) (void *datasource);
-  long   (*tell_func)  (void *datasource);
+  size_t (OVCALL *read_func)  (void *ptr, size_t size, size_t nmemb, void *datasource);
+  int    (OVCALL *seek_func)  (void *datasource, ogg_int64_t offset, int whence);
+  int    (OVCALL *close_func) (void *datasource);
+  long   (OVCALL *tell_func)  (void *datasource);
 } ov_callbacks;
 
 #ifndef OV_EXCLUDE_STATIC_CALLBACKS

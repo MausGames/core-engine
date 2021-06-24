@@ -115,6 +115,7 @@
       <SupportJustMyCode>false</SupportJustMyCode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
+      <CallingConvention>VectorCall</CallingConvention>
     </ClCompile>
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
@@ -134,6 +135,7 @@
       <SupportJustMyCode>false</SupportJustMyCode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
+      <CallingConvention>VectorCall</CallingConvention>
     </ClCompile>
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
@@ -160,6 +162,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
+      <CallingConvention>VectorCall</CallingConvention>
     </ClCompile>
     <PreBuildEvent>
       <Command>del $(IntDir)coreLog.obj</Command>
@@ -189,6 +192,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
+      <CallingConvention>VectorCall</CallingConvention>
     </ClCompile>
     <PreBuildEvent>
       <Command>del $(IntDir)coreLog.obj</Command>
