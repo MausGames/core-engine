@@ -62,8 +62,8 @@ coreStatus coreSound::Load(coreFile* pFile)
         coreChar   acID[4]; std::memcpy(acID,   pData, 4u); pData += 4u;
         coreUint32 iSize;   std::memcpy(&iSize, pData, 4u); pData += 4u;
 
-             if(!std::memcmp(acID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format));}
-        else if(!std::memcmp(acID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize;}
+             if(!std::memcmp(acID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format)); ASSERT(iSize >= sizeof(m_Format))}
+        else if(!std::memcmp(acID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize; iSize = coreMath::CeilAlign(iSize, 2u);}
 
         pData += iSize;
     }
