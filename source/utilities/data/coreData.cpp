@@ -1041,7 +1041,7 @@ const coreChar* coreData::StrDirectory(const coreChar* pcInput)
 
     // identify file name
     const coreChar* pcName = coreData::StrFilename(pcInput);
-    const coreUintW iLen   = MIN(pcName - pcInput, CORE_DATA_STRING_LEN - 1u);
+    const coreUintW iLen   = MIN(coreUintW(pcName - pcInput), CORE_DATA_STRING_LEN - 1u);
 
     // copy remaining path
     std::memcpy(pcString, pcInput, iLen);

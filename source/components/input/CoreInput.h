@@ -13,6 +13,7 @@
 // TODO 5: touch-related functions empty on non-mobile
 // TODO 3: remove the 1-frame delay when using the Set* interface from game-code
 // TODO 3: pseudo-joystick should accumulate all input from other devices
+// TODO 3: press and release within the same frame gets ignored, but it is assumed that both cannot happen in the same loop
 // TODO 5: <old comment style>
 
 

@@ -33,6 +33,8 @@
 #define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   // convert radians to degrees
 #define KM_TO_MI(x)   ((x) * 0.621371192237f)                      // convert kilometers to miles
 #define MI_TO_KM(x)   ((x) * 1.609344000000f)                      // convert miles to kilometers
+#define M_TO_FT(x)    ((x) * 0.304800000f)                         // convert meters to feet
+#define FT_TO_M(x)    ((x) * 3.280839895f)                         // convert feet to meters
 
 #define MIN    coreMath::Min                                       // for easier distinction in formulas
 #define MAX    coreMath::Max

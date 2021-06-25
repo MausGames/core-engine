@@ -14,7 +14,7 @@
 
 
 // ****************************************************************
-/* hash-string wrapper class */
+/* hash-string class */
 class coreHashString final
 {
 private:

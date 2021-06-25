@@ -132,7 +132,7 @@ coreBool coreLabel::SetText(const coreChar* pcText)
     return false;
 }
 
-coreBool coreLabel::SetText(const coreChar* pcText, const coreUint8 iNum)
+coreBool coreLabel::SetText(const coreChar* pcText, const coreUint16 iNum)
 {
     ASSERT(pcText)
 

@@ -512,7 +512,7 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 
 // default alignment values
 #define ALIGNMENT_NEW   (__STDCPP_DEFAULT_NEW_ALIGNMENT__)
-#define ALIGNMENT_SSE   (16u)
+#define ALIGNMENT_SIMD  (16u)
 #define ALIGNMENT_CACHE (64u)
 #define ALIGNMENT_PAGE  (4096u)
 #define ALIGNMENT_ALLOC (65536u)

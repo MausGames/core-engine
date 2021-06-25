@@ -75,7 +75,7 @@ public:
 
     /* set object properties */
     coreBool    SetText        (const coreChar*       pcText);
-    coreBool    SetText        (const coreChar*       pcText, const coreUint8 iNum);
+    coreBool    SetText        (const coreChar*       pcText, const coreUint16 iNum);
     inline void SetTextLanguage(const coreHashString& sKey)     {this->_BindString(&m_sText, sKey);}
     inline void SetScale       (const coreFloat       fScale)   {if(m_fScale   != fScale)   {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)      m_fScale   = fScale;}}
     inline void SetRectify     (const coreBool        bRectify) {if(m_bRectify != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) m_bRectify = bRectify;}}
