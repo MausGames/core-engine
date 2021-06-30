@@ -251,6 +251,7 @@
     <ClCompile Include="..\..\..\source\components\graphics\coreSync.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreTexture.cpp" />
     <ClCompile Include="..\..\..\source\components\input\CoreInput.cpp" />
+    <ClCompile Include="..\..\..\source\components\platform\CorePlatform.cpp" />
     <ClCompile Include="..\..\..\source\components\system\CoreSystem.cpp" />
     <ClCompile Include="..\..\..\source\components\system\coreThread.cpp" />
     <ClCompile Include="..\..\..\source\components\system\coreTimer.cpp" />
@@ -304,6 +305,9 @@
     <ClInclude Include="..\..\..\source\components\graphics\models\MD3.h" />
     <ClInclude Include="..\..\..\source\components\graphics\models\MD5.h" />
     <ClInclude Include="..\..\..\source\components\input\CoreInput.h" />
+    <ClInclude Include="..\..\..\source\components\platform\backend\steam.h" />
+    <ClInclude Include="..\..\..\source\components\platform\backend\windows.h" />
+    <ClInclude Include="..\..\..\source\components\platform\CorePlatform.h" />
     <ClInclude Include="..\..\..\source\components\system\CoreSystem.h" />
     <ClInclude Include="..\..\..\source\components\system\coreThread.h" />
     <ClInclude Include="..\..\..\source\components\system\coreTimer.h" />

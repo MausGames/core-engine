@@ -406,6 +406,7 @@ coreBool CoreSystem::__UpdateEvents()
 
         // application focus lost
         case SDL_JOYDEVICEREMOVED:
+        case SDL_USEREVENT:
         case SDL_APP_WILLENTERBACKGROUND:
         case SDL_APP_DIDENTERFOREGROUND:
             m_bWinFocusLost = true;

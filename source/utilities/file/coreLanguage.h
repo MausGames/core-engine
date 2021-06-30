@@ -22,6 +22,20 @@
 #define CORE_LANGUAGE_KEY    "$"   // prefix used to identify keys in the language file
 #define CORE_LANGUAGE_ASSIGN "="   // delimiter used to separate keys and their assigned strings
 
+#define CORE_LANGUAGE_BRAZILIAN  "brazilian"
+#define CORE_LANGUAGE_ENGLISH    "english"
+#define CORE_LANGUAGE_FRENCH     "french"
+#define CORE_LANGUAGE_GERMAN     "german"
+#define CORE_LANGUAGE_ITALIAN    "italian"
+#define CORE_LANGUAGE_JAPANESE   "japanese"
+#define CORE_LANGUAGE_KOREAN     "korean"
+#define CORE_LANGUAGE_POLISH     "polish"
+#define CORE_LANGUAGE_PORTUGUESE "portuguese"
+#define CORE_LANGUAGE_RUSSIAN    "russian"
+#define CORE_LANGUAGE_SCHINESE   "schinese"
+#define CORE_LANGUAGE_SPANISH    "spanish"
+#define CORE_LANGUAGE_TCHINESE   "tchinese"
+
 
 // ****************************************************************
 /* translation interface */

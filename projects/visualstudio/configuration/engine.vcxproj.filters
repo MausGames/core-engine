@@ -64,6 +64,12 @@
     <Filter Include="components\audio\codecs">
       <UniqueIdentifier>{465a3bc7-db3e-4f4b-814f-0d87676e3b37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="components\platform">
+      <UniqueIdentifier>{5e6d2542-54b1-4368-a29b-24b8bd4abd4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="components\platform\backend">
+      <UniqueIdentifier>{88eee9a1-4c96-479b-99d1-f4f4239064c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -178,6 +184,9 @@
       <Filter>additional\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\Core.cpp" />
+    <ClCompile Include="..\..\..\source\components\platform\CorePlatform.cpp">
+      <Filter>components\platform</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\additional\linux\main.c">
       <Filter>additional\linux</Filter>
     </ClCompile>
@@ -357,6 +366,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\windows\header.h">
       <Filter>additional\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\platform\CorePlatform.h">
+      <Filter>components\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\platform\backend\steam.h">
+      <Filter>components\platform\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\platform\backend\windows.h">
+      <Filter>components\platform\backend</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

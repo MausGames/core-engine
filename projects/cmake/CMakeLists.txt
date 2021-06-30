@@ -35,6 +35,7 @@ target_sources(
     ${BASE_DIRECTORY}/source/components/graphics/coreSync.cpp
     ${BASE_DIRECTORY}/source/components/graphics/coreTexture.cpp
     ${BASE_DIRECTORY}/source/components/input/CoreInput.cpp
+    ${BASE_DIRECTORY}/source/components/platform/CorePlatform.cpp
     ${BASE_DIRECTORY}/source/components/system/CoreSystem.cpp
     ${BASE_DIRECTORY}/source/components/system/coreThread.cpp
     ${BASE_DIRECTORY}/source/components/system/coreTimer.cpp

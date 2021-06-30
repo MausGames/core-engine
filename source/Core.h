@@ -555,6 +555,7 @@ class  CoreSystem;
 class  CoreGraphics;
 class  CoreAudio;
 class  CoreInput;
+class  CorePlatform;
 class  CoreDebug;
 class  coreMemoryManager;
 class  coreResourceManager;
@@ -585,6 +586,12 @@ public:
             static const coreBool  StereoRender;   // enable stereo rendering
         }
         RenderBuffer;
+
+        struct Platform final
+        {
+            static const coreUint32 SteamAppID;
+        }
+        Platform;
     }
     Settings;
 
@@ -623,6 +630,7 @@ public:
     static CoreGraphics* const Graphics;   // main graphics component
     static CoreAudio*    const Audio;      // main audio component
     static CoreInput*    const Input;      // main input component
+    static CorePlatform* const Platform;   // main platform component
     static CoreDebug*    const Debug;      // main debug component
 
     struct INTERFACE Manager final
@@ -714,6 +722,7 @@ private:
 #include "objects/menu/coreTextBox.h"
 #include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreMenu.h"
+#include "components/platform/CorePlatform.h"
 #include "components/debug/CoreDebug.h"
 
 

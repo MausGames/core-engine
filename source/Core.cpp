@@ -16,6 +16,7 @@ STATIC_MEMORY(CoreSystem,          Core::System)
 STATIC_MEMORY(CoreGraphics,        Core::Graphics)
 STATIC_MEMORY(CoreAudio,           Core::Audio)
 STATIC_MEMORY(CoreInput,           Core::Input)
+STATIC_MEMORY(CorePlatform,        Core::Platform)
 STATIC_MEMORY(CoreDebug,           Core::Debug)
 STATIC_MEMORY(coreMemoryManager,   Core::Manager::Memory)
 STATIC_MEMORY(coreResourceManager, Core::Manager::Resource)
@@ -33,6 +34,9 @@ Core::Core()noexcept
     STATIC_NEW(Config, coreData::UserFolder("config.ini"))
     STATIC_NEW(Language)
     STATIC_NEW(Rand)
+
+    // init platform component
+    STATIC_NEW(Platform)
 
     // init main components
     STATIC_NEW(System)
@@ -91,6 +95,9 @@ Core::~Core()
     STATIC_DELETE(Audio)
     STATIC_DELETE(Graphics)
     STATIC_DELETE(System)
+
+    // delete platform component
+    STATIC_DELETE(Platform)
 
     // delete utilities
     STATIC_DELETE(Rand)
@@ -229,6 +236,7 @@ coreStatus Core::Run()
 
         // update all remaining components
         Core::Audio   ->__UpdateSources();
+        Core::Platform->__UpdateBackend();
         Core::Debug   ->__UpdateOutput();
         Core::Graphics->__UpdateScene();   // # contains frame terminator
         Core::System  ->__UpdateWindow();
