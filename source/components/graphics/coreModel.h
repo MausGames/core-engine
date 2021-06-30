@@ -129,9 +129,9 @@ public:
     inline coreDataBuffer*   GetIndexBuffer    ()                       {return &m_IndexBuffer;}
 
     /* set object properties */
-    inline void SetBoundingRange (const coreVector3& vBoundingRange)  {ASSERT( m_vBoundingRange.IsNull()) m_vBoundingRange  = vBoundingRange;}
-    inline void SetBoundingRadius(const coreFloat    fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
-    inline void SetPrimitiveType (const GLenum       iPrimitiveType)  {m_iPrimitiveType = iPrimitiveType;}
+    inline void SetBoundingRange (const coreVector3 vBoundingRange)  {ASSERT( m_vBoundingRange.IsNull()) m_vBoundingRange  = vBoundingRange;}
+    inline void SetBoundingRadius(const coreFloat   fBoundingRadius) {ASSERT(!m_fBoundingRadius)         m_fBoundingRadius = fBoundingRadius;}
+    inline void SetPrimitiveType (const GLenum      iPrimitiveType)  {m_iPrimitiveType = iPrimitiveType;}
 
     /* get object properties */
     inline const GLuint&      GetVertexArray      ()const                       {return m_iVertexArray;}

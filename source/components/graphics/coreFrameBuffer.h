@@ -88,7 +88,7 @@ public:
     DISABLE_COPY(coreFrameBuffer)
 
     /* control the frame buffer */
-    void Create(const coreVector2& vResolution, const coreFrameBufferCreate eType);
+    void Create(const coreVector2 vResolution, const coreFrameBufferCreate eType);
     void Delete();
 
     /* attach render targets */

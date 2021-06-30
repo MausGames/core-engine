@@ -322,7 +322,7 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 
 // ****************************************************************
 /* change the resolution of the window (safely) */
-void CoreSystem::SetWindowResolution(const coreVector2& vResolution)
+void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
 {
     const coreDisplay& oCurrent = m_aDisplayData[m_iDisplayIndex];
 

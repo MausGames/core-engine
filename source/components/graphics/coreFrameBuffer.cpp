@@ -41,7 +41,7 @@ coreFrameBuffer::~coreFrameBuffer()
 
 // ****************************************************************
 /* create frame buffer object */
-void coreFrameBuffer::Create(const coreVector2& vResolution, const coreFrameBufferCreate eType)
+void coreFrameBuffer::Create(const coreVector2 vResolution, const coreFrameBufferCreate eType)
 {
     WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(vResolution.x > 0.0f && vResolution.y > 0.0f)

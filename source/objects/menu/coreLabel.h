@@ -68,7 +68,7 @@ public:
     virtual void Move  ()override;
 
     /* retrieve desired size without rendering */
-    template <typename F> void RetrieveDesiredSize(F&& nRetrieveFunc)const;   // [](const coreVector2& vSize) -> void
+    template <typename F> void RetrieveDesiredSize(F&& nRetrieveFunc)const;   // [](const coreVector2 vSize) -> void
 
     /* invoke texture generation */
     inline void RegenerateTexture() {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL) m_vResolution = coreVector2(0.0f,0.0f);}

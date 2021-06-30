@@ -79,9 +79,9 @@ public:
     DISABLE_COPY(CoreSystem)
 
     /* control window */
-    void SetWindowTitle     (const coreChar*    pcTitle);
-    void SetWindowIcon      (const coreChar*    pcPath);
-    void SetWindowResolution(const coreVector2& vResolution);
+    void SetWindowTitle     (const coreChar*   pcTitle);
+    void SetWindowIcon      (const coreChar*   pcPath);
+    void SetWindowResolution(const coreVector2 vResolution);
 
     /* control time */
     inline void SetTimeSpeed(const coreUintW iID, const coreFloat fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}

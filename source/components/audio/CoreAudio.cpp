@@ -129,7 +129,7 @@ CoreAudio::~CoreAudio()
 
 // ****************************************************************
 /* control the listener */
-void CoreAudio::SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation)
+void CoreAudio::SetListener(const coreVector3 vPosition, const coreVector3 vVelocity, const coreVector3 vDirection, const coreVector3 vOrientation)
 {
     this->DeferUpdates();
     {

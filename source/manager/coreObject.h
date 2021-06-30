@@ -78,11 +78,11 @@ public:
     inline coreBool IsEnabled(const coreObjectEnable eEnabled)const {ASSERT(eEnabled) return HAS_FLAG(m_eEnabled, eEnabled);}
 
     /* set object properties */
-    inline void SetColor4   (const coreVector4&     vColor)     {m_vColor     = vColor;}
-    inline void SetColor3   (const coreVector3&     vColor)     {m_vColor.xyz(vColor);}
+    inline void SetColor4   (const coreVector4      vColor)     {m_vColor     = vColor;}
+    inline void SetColor3   (const coreVector3      vColor)     {m_vColor.xyz(vColor);}
     inline void SetAlpha    (const coreFloat        fAlpha)     {m_vColor.w   = fAlpha;}
-    inline void SetTexSize  (const coreVector2&     vTexSize)   {m_vTexSize   = vTexSize;}
-    inline void SetTexOffset(const coreVector2&     vTexOffset) {m_vTexOffset = vTexOffset;}
+    inline void SetTexSize  (const coreVector2      vTexSize)   {m_vTexSize   = vTexSize;}
+    inline void SetTexOffset(const coreVector2      vTexOffset) {m_vTexOffset = vTexOffset;}
     inline void SetEnabled  (const coreObjectEnable eEnabled)   {m_eEnabled   = eEnabled;}
     inline void SetStatus   (const coreInt32        iStatus)    {m_iStatus    = iStatus;}
 
@@ -156,8 +156,8 @@ public:
     void RefreshSprites();
 
     /* set manager properties */
-    inline void SetSpriteViewDir  (const coreVector2& vViewDir)   {m_vSpriteViewDir   = vViewDir; ASSERT(vViewDir.IsNormalized() && vViewDir.IsAligned())}
-    inline void SetSpriteAltCenter(const coreVector2& vAltCenter) {m_vSpriteAltCenter = vAltCenter;}
+    inline void SetSpriteViewDir  (const coreVector2 vViewDir)   {m_vSpriteViewDir   = vViewDir; ASSERT(vViewDir.IsNormalized() && vViewDir.IsAligned())}
+    inline void SetSpriteAltCenter(const coreVector2 vAltCenter) {m_vSpriteAltCenter = vAltCenter;}
 
     /* get manager properties */
     inline const coreObjectList& GetObjectList     (const coreInt32 iType) {return m_aapObjectList[iType];}   // # create if not available

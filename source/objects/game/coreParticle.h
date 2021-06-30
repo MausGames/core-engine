@@ -68,22 +68,22 @@ public:
     inline void     Disable ()      {m_fValue = 0.0f;}
 
     /* animate the particle absolute */
-    inline void SetPositionAbs(const coreVector3& vBegin, const coreVector3& vEnd) {m_BeginState.vPosition = vBegin;                m_EndState.vPosition = vEnd;}
-    inline void SetScaleAbs   (const coreFloat    fBegin, const coreFloat    fEnd) {m_BeginState.fScale    = fBegin;                m_EndState.fScale    = fEnd;}
-    inline void SetAngleAbs   (const coreFloat    fBegin, const coreFloat    fEnd) {m_BeginState.fAngle    = fBegin;                m_EndState.fAngle    = fEnd;}
-    inline void SetColor4Abs  (const coreVector4& vBegin, const coreVector4& vEnd) {m_BeginState.iColor    = vBegin.PackUnorm4x8(); m_EndState.iColor    = vEnd.PackUnorm4x8(); ASSERT((vBegin.Min() >= 0.0f) && (vBegin.Max() <= 1.0f) && (vEnd.Min() >= 0.0f) && (vEnd.Max() <= 1.0f))}
+    inline void SetPositionAbs(const coreVector3 vBegin, const coreVector3 vEnd) {m_BeginState.vPosition = vBegin;                m_EndState.vPosition = vEnd;}
+    inline void SetScaleAbs   (const coreFloat   fBegin, const coreFloat   fEnd) {m_BeginState.fScale    = fBegin;                m_EndState.fScale    = fEnd;}
+    inline void SetAngleAbs   (const coreFloat   fBegin, const coreFloat   fEnd) {m_BeginState.fAngle    = fBegin;                m_EndState.fAngle    = fEnd;}
+    inline void SetColor4Abs  (const coreVector4 vBegin, const coreVector4 vEnd) {m_BeginState.iColor    = vBegin.PackUnorm4x8(); m_EndState.iColor    = vEnd.PackUnorm4x8(); ASSERT((vBegin.Min() >= 0.0f) && (vBegin.Max() <= 1.0f) && (vEnd.Min() >= 0.0f) && (vEnd.Max() <= 1.0f))}
 
     /* animate the particle relative */
-    inline void SetPositionRel(const coreVector3& vBegin, const coreVector3& vMove) {this->SetPositionAbs(vBegin, vBegin + vMove);}
-    inline void SetScaleRel   (const coreFloat    fBegin, const coreFloat    fMove) {this->SetScaleAbs   (fBegin, fBegin + fMove);}
-    inline void SetAngleRel   (const coreFloat    fBegin, const coreFloat    fMove) {this->SetAngleAbs   (fBegin, fBegin + fMove);}
-    inline void SetColor4Rel  (const coreVector4& vBegin, const coreVector4& vMove) {this->SetColor4Abs  (vBegin, vBegin + vMove);}
+    inline void SetPositionRel(const coreVector3 vBegin, const coreVector3 vMove) {this->SetPositionAbs(vBegin, vBegin + vMove);}
+    inline void SetScaleRel   (const coreFloat   fBegin, const coreFloat   fMove) {this->SetScaleAbs   (fBegin, fBegin + fMove);}
+    inline void SetAngleRel   (const coreFloat   fBegin, const coreFloat   fMove) {this->SetAngleAbs   (fBegin, fBegin + fMove);}
+    inline void SetColor4Rel  (const coreVector4 vBegin, const coreVector4 vMove) {this->SetColor4Abs  (vBegin, vBegin + vMove);}
 
     /* animate the particle static */
-    inline void SetPositionStc(const coreVector3& vStatic) {this->SetPositionAbs(vStatic, vStatic);}
-    inline void SetScaleStc   (const coreFloat    fStatic) {this->SetScaleAbs   (fStatic, fStatic);}
-    inline void SetAngleStc   (const coreFloat    fStatic) {this->SetAngleAbs   (fStatic, fStatic);}
-    inline void SetColor4Stc  (const coreVector4& vStatic) {const coreUint32 iPack = vStatic.PackUnorm4x8(); m_BeginState.iColor = iPack; m_EndState.iColor = iPack; ASSERT((vStatic.Min() >= 0.0f) && (vStatic.Max() <= 1.0f))}
+    inline void SetPositionStc(const coreVector3 vStatic) {this->SetPositionAbs(vStatic, vStatic);}
+    inline void SetScaleStc   (const coreFloat   fStatic) {this->SetScaleAbs   (fStatic, fStatic);}
+    inline void SetAngleStc   (const coreFloat   fStatic) {this->SetAngleAbs   (fStatic, fStatic);}
+    inline void SetColor4Stc  (const coreVector4 vStatic) {const coreUint32 iPack = vStatic.PackUnorm4x8(); m_BeginState.iColor = iPack; m_EndState.iColor = iPack; ASSERT((vStatic.Min() >= 0.0f) && (vStatic.Max() <= 1.0f))}
 
     /* retrieve interpolated values */
     inline coreVector3 GetCurPosition()const {return LERP(m_EndState.vPosition,                           m_BeginState.vPosition,                           m_fValue);}

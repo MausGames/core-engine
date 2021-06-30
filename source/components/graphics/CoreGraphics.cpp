@@ -196,7 +196,7 @@ CoreGraphics::~CoreGraphics()
 
 // ****************************************************************
 /* set camera and create camera matrix */
-void CoreGraphics::SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
+void CoreGraphics::SetCamera(const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation)
 {
     coreBool bNewCamera = false;
 
@@ -256,7 +256,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
 
 // ****************************************************************
 /* set and update ambient light */
-void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue)
+void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4 vPosition, const coreVector4 vDirection, const coreVector4 vValue)
 {
     coreBool bNewLight = false;
 

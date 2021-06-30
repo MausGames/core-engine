@@ -150,7 +150,7 @@ CoreDebug::~CoreDebug()
 
 // ****************************************************************
 /* render texture directly on screen */
-void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreVector2& vSize)
+void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreVector2 vSize)
 {
     if(!m_bEnabled) return;
 

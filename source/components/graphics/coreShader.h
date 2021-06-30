@@ -178,9 +178,9 @@ public:
     /* send new uniform values */
     inline void SendUniform(const coreHashString& sName, const coreInt32    iInt)    {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(I_TO_F(iInt), 0.0f, 0.0f, 0.0f))) glUniform1i (iLocation,    iInt);}
     inline void SendUniform(const coreHashString& sName, const coreFloat    fFloat)  {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(fFloat,       0.0f, 0.0f, 0.0f))) glUniform1f (iLocation,    fFloat);}
-    inline void SendUniform(const coreHashString& sName, const coreVector2& vVector) {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(vVector,      0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
-    inline void SendUniform(const coreHashString& sName, const coreVector3& vVector) {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(vVector,      0.0f)))             glUniform3fv(iLocation, 1, vVector);}
-    inline void SendUniform(const coreHashString& sName, const coreVector4& vVector) {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, vVector))                                     glUniform4fv(iLocation, 1, vVector);}
+    inline void SendUniform(const coreHashString& sName, const coreVector2  vVector) {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(vVector,      0.0f, 0.0f)))       glUniform2fv(iLocation, 1, vVector);}
+    inline void SendUniform(const coreHashString& sName, const coreVector3  vVector) {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, coreVector4(vVector,      0.0f)))             glUniform3fv(iLocation, 1, vVector);}
+    inline void SendUniform(const coreHashString& sName, const coreVector4  vVector) {const coreInt8 iLocation = this->RetrieveUniform(sName); if((iLocation >= 0) && this->CheckCache(iLocation, vVector))                                     glUniform4fv(iLocation, 1, vVector);}
     void        SendUniform(const coreHashString& sName, const coreMatrix2& mMatrix, const coreBool bTranspose);
     void        SendUniform(const coreHashString& sName, const coreMatrix3& mMatrix, const coreBool bTranspose);
     void        SendUniform(const coreHashString& sName, const coreMatrix4& mMatrix, const coreBool bTranspose);
@@ -190,7 +190,7 @@ public:
     inline const coreInt8& RetrieveAttribute(const coreHashString& sName) {if(!m_aiAttribute.count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(sName, glGetAttribLocation (m_iIdentifier, sName.GetString()));} ASSERT(m_aiAttribute.at(sName) >= -1) return m_aiAttribute.at(sName);}
 
     /* check for cached uniform values */
-    inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4& vVector) {if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
+    inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4 vVector) {if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
 
     /* get object properties */
     inline const GLuint& GetIdentifier()const                       {return m_iIdentifier;}

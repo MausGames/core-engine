@@ -198,16 +198,16 @@ public:
 
     /* static functions */
     static constexpr coreMatrix3 Identity   ();
-    static constexpr coreMatrix3 Translation(const coreVector2& vPosition);
-    static constexpr coreMatrix3 Scaling    (const coreVector2& vSize);
-    static constexpr coreMatrix3 Rotation   (const coreVector2& vDirection);
-    static inline    coreMatrix3 Rotation   (const coreFloat    fAngle);
-    static constexpr coreMatrix3 ShearXY    (const coreFloat    fFactor);
-    static constexpr coreMatrix3 ShearYX    (const coreFloat    fFactor);
+    static constexpr coreMatrix3 Translation(const coreVector2 vPosition);
+    static constexpr coreMatrix3 Scaling    (const coreVector2 vSize);
+    static constexpr coreMatrix3 Rotation   (const coreVector2 vDirection);
+    static inline    coreMatrix3 Rotation   (const coreFloat   fAngle);
+    static constexpr coreMatrix3 ShearXY    (const coreFloat   fFactor);
+    static constexpr coreMatrix3 ShearYX    (const coreFloat   fFactor);
 
     /* quaternion functions */
     inline           coreVector4 ToQuat  ()const;
-    static constexpr coreMatrix3 FromQuat(const coreVector4& v);
+    static constexpr coreMatrix3 FromQuat(const coreVector4 v);
 };
 
 
@@ -281,26 +281,26 @@ public:
 
     /* static functions */
     static constexpr coreMatrix4 Identity    ();
-    static constexpr coreMatrix4 Translation (const coreVector3& vPosition);
-    static constexpr coreMatrix4 Scaling     (const coreVector3& vSize);
-    static constexpr coreMatrix4 RotationX   (const coreVector2& vDirection);
-    static inline    coreMatrix4 RotationX   (const coreFloat    fAngle);
-    static constexpr coreMatrix4 RotationY   (const coreVector2& vDirection);
-    static inline    coreMatrix4 RotationY   (const coreFloat    fAngle);
-    static constexpr coreMatrix4 RotationZ   (const coreVector2& vDirection);
-    static inline    coreMatrix4 RotationZ   (const coreFloat    fAngle);
-    static inline    coreMatrix4 RotationAxis(const coreFloat    fAngle, const coreVector3& vAxis);
-    static constexpr coreMatrix4 ShearXY     (const coreFloat    fFactor);
-    static constexpr coreMatrix4 ShearXZ     (const coreFloat    fFactor);
-    static constexpr coreMatrix4 ShearYX     (const coreFloat    fFactor);
-    static constexpr coreMatrix4 ShearYZ     (const coreFloat    fFactor);
-    static constexpr coreMatrix4 ShearZX     (const coreFloat    fFactor);
-    static constexpr coreMatrix4 ShearZY     (const coreFloat    fFactor);
-    static inline    coreMatrix4 Orientation (const coreVector3& vDirection, const coreVector3& vOrientation);
-    static inline    coreMatrix4 Perspective (const coreVector2& vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
-    static constexpr coreMatrix4 Ortho       (const coreVector2& vResolution);
-    static constexpr coreMatrix4 Ortho       (const coreFloat    fLeft, const coreFloat fRight, const coreFloat fBottom, const coreFloat fTop, const coreFloat fNearClip, const coreFloat fFarClip);
-    static inline    coreMatrix4 Camera      (const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
+    static constexpr coreMatrix4 Translation (const coreVector3 vPosition);
+    static constexpr coreMatrix4 Scaling     (const coreVector3 vSize);
+    static constexpr coreMatrix4 RotationX   (const coreVector2 vDirection);
+    static inline    coreMatrix4 RotationX   (const coreFloat   fAngle);
+    static constexpr coreMatrix4 RotationY   (const coreVector2 vDirection);
+    static inline    coreMatrix4 RotationY   (const coreFloat   fAngle);
+    static constexpr coreMatrix4 RotationZ   (const coreVector2 vDirection);
+    static inline    coreMatrix4 RotationZ   (const coreFloat   fAngle);
+    static inline    coreMatrix4 RotationAxis(const coreFloat   fAngle, const coreVector3 vAxis);
+    static constexpr coreMatrix4 ShearXY     (const coreFloat   fFactor);
+    static constexpr coreMatrix4 ShearXZ     (const coreFloat   fFactor);
+    static constexpr coreMatrix4 ShearYX     (const coreFloat   fFactor);
+    static constexpr coreMatrix4 ShearYZ     (const coreFloat   fFactor);
+    static constexpr coreMatrix4 ShearZX     (const coreFloat   fFactor);
+    static constexpr coreMatrix4 ShearZY     (const coreFloat   fFactor);
+    static inline    coreMatrix4 Orientation (const coreVector3 vDirection, const coreVector3 vOrientation);
+    static inline    coreMatrix4 Perspective (const coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
+    static constexpr coreMatrix4 Ortho       (const coreVector2 vResolution);
+    static constexpr coreMatrix4 Ortho       (const coreFloat   fLeft, const coreFloat fRight, const coreFloat fBottom, const coreFloat fTop, const coreFloat fNearClip, const coreFloat fFarClip);
+    static inline    coreMatrix4 Camera      (const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation);
 };
 
 
@@ -549,7 +549,7 @@ constexpr coreMatrix3 coreMatrix3::Identity()
 
 // ****************************************************************
 /* get translation matrix */
-constexpr coreMatrix3 coreMatrix3::Translation(const coreVector2& vPosition)
+constexpr coreMatrix3 coreMatrix3::Translation(const coreVector2 vPosition)
 {
     return coreMatrix3(       1.0f,        0.0f, 0.0f,
                               0.0f,        1.0f, 0.0f,
@@ -559,7 +559,7 @@ constexpr coreMatrix3 coreMatrix3::Translation(const coreVector2& vPosition)
 
 // ****************************************************************
 /* get scale matrix */
-constexpr coreMatrix3 coreMatrix3::Scaling(const coreVector2& vSize)
+constexpr coreMatrix3 coreMatrix3::Scaling(const coreVector2 vSize)
 {
     return coreMatrix3(vSize.x,    0.0f, 0.0f,
                           0.0f, vSize.y, 0.0f,
@@ -569,7 +569,7 @@ constexpr coreMatrix3 coreMatrix3::Scaling(const coreVector2& vSize)
 
 // ****************************************************************
 /* get rotation matrix */
-constexpr coreMatrix3 coreMatrix3::Rotation(const coreVector2& vDirection)
+constexpr coreMatrix3 coreMatrix3::Rotation(const coreVector2 vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix3( vDirection.y, vDirection.x, 0.0f,
@@ -649,7 +649,7 @@ inline coreVector4 coreMatrix3::ToQuat()const
 
 // ****************************************************************
 /* convert quaternion to matrix */
-constexpr coreMatrix3 coreMatrix3::FromQuat(const coreVector4& v)
+constexpr coreMatrix3 coreMatrix3::FromQuat(const coreVector4 v)
 {
     const coreFloat XX = v.x*v.x;
     const coreFloat XY = v.x*v.y;
@@ -819,7 +819,7 @@ constexpr coreMatrix4 coreMatrix4::Identity()
 
 // ****************************************************************
 /* get translation matrix */
-constexpr coreMatrix4 coreMatrix4::Translation(const coreVector3& vPosition)
+constexpr coreMatrix4 coreMatrix4::Translation(const coreVector3 vPosition)
 {
     return coreMatrix4(       1.0f,        0.0f,        0.0f, 0.0f,
                               0.0f,        1.0f,        0.0f, 0.0f,
@@ -830,7 +830,7 @@ constexpr coreMatrix4 coreMatrix4::Translation(const coreVector3& vPosition)
 
 // ****************************************************************
 /* get scale matrix */
-constexpr coreMatrix4 coreMatrix4::Scaling(const coreVector3& vSize)
+constexpr coreMatrix4 coreMatrix4::Scaling(const coreVector3 vSize)
 {
     return coreMatrix4(vSize.x,    0.0f,    0.0f, 0.0f,
                           0.0f, vSize.y,    0.0f, 0.0f,
@@ -841,7 +841,7 @@ constexpr coreMatrix4 coreMatrix4::Scaling(const coreVector3& vSize)
 
 // ****************************************************************
 /* get rotation matrix around X */
-constexpr coreMatrix4 coreMatrix4::RotationX(const coreVector2& vDirection)
+constexpr coreMatrix4 coreMatrix4::RotationX(const coreVector2 vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix4(1.0f,          0.0f,          0.0f, 0.0f,
@@ -858,7 +858,7 @@ inline coreMatrix4 coreMatrix4::RotationX(const coreFloat fAngle)
 
 // ****************************************************************
 /* get rotation matrix around Y */
-constexpr coreMatrix4 coreMatrix4::RotationY(const coreVector2& vDirection)
+constexpr coreMatrix4 coreMatrix4::RotationY(const coreVector2 vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix4(vDirection.y, 0.0f, -vDirection.x, 0.0f,
@@ -875,7 +875,7 @@ inline coreMatrix4 coreMatrix4::RotationY(const coreFloat fAngle)
 
 // ****************************************************************
 /* get rotation matrix around Z */
-constexpr coreMatrix4 coreMatrix4::RotationZ(const coreVector2& vDirection)
+constexpr coreMatrix4 coreMatrix4::RotationZ(const coreVector2 vDirection)
 {
     ASSERT(vDirection.IsNormalized())
     return coreMatrix4( vDirection.y, vDirection.x, 0.0f, 0.0f,
@@ -892,7 +892,7 @@ inline coreMatrix4 coreMatrix4::RotationZ(const coreFloat fAngle)
 
 // ****************************************************************
 /* get rotation matrix around arbitrary axis */
-inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat fAngle, const coreVector3& vAxis)
+inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat fAngle, const coreVector3 vAxis)
 {
     ASSERT(vAxis.IsNormalized())
 
@@ -987,7 +987,7 @@ constexpr coreMatrix4 coreMatrix4::ShearZY(const coreFloat fFactor)
 
 // ****************************************************************
 /* calculate orientation matrix */
-inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const coreVector3& vOrientation)
+inline coreMatrix4 coreMatrix4::Orientation(const coreVector3 vDirection, const coreVector3 vOrientation)
 {
     ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
 
@@ -1005,7 +1005,7 @@ inline coreMatrix4 coreMatrix4::Orientation(const coreVector3& vDirection, const
 
 // ****************************************************************
 /* calculate perspective projection matrix */
-inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
+inline coreMatrix4 coreMatrix4::Perspective(const coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
 {
     const coreFloat Y = COT(fFOV * 0.5f);
     const coreFloat X = Y * vResolution.yx().AspectRatio();
@@ -1023,7 +1023,7 @@ inline coreMatrix4 coreMatrix4::Perspective(const coreVector2& vResolution, cons
 
 // ****************************************************************
 /* calculate orthographic projection matrix */
-constexpr coreMatrix4 coreMatrix4::Ortho(const coreVector2& vResolution)
+constexpr coreMatrix4 coreMatrix4::Ortho(const coreVector2 vResolution)
 {
     const coreFloat X = 2.0f * RCP(vResolution.x);
     const coreFloat Y = 2.0f * RCP(vResolution.y);
@@ -1053,7 +1053,7 @@ constexpr coreMatrix4 coreMatrix4::Ortho(const coreFloat fLeft, const coreFloat 
 
 // ****************************************************************
 /* calculate camera matrix */
-inline coreMatrix4 coreMatrix4::Camera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation)
+inline coreMatrix4 coreMatrix4::Camera(const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation)
 {
     coreFloat fTemp;
 

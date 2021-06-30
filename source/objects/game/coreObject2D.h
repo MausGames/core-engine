@@ -82,15 +82,15 @@ public:
     inline void FitToScreen() {m_eUpdate = CORE_OBJECT_UPDATE_ALL; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = Core::System->GetResolution() / Core::System->GetResolution().Min(); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}
 
     /* set object properties */
-    inline void SetPosition     (const coreVector2&      vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
-    inline void SetSize         (const coreVector2&      vSize)          {if(m_vSize      != vSize)      {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
-    inline void SetDirection    (const coreVector2&      vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
-    inline void SetCenter       (const coreVector2&      vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
-    inline void SetAlignment    (const coreVector2&      vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
+    inline void SetPosition     (const coreVector2       vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
+    inline void SetSize         (const coreVector2       vSize)          {if(m_vSize      != vSize)      {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vSize      = vSize;}}
+    inline void SetDirection    (const coreVector2       vDirection)     {if(m_vDirection != vDirection) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection = vDirection;} ASSERT(vDirection.IsNormalized())}
+    inline void SetCenter       (const coreVector2       vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
+    inline void SetAlignment    (const coreVector2       vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetStyle        (const coreObject2DStyle eStyle)         {if(m_eStyle     != eStyle)     {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_eStyle     = eStyle;}}
     inline void SetFocused      (const coreBool          bFocused)       {m_bFocused       = bFocused;}
     inline void SetFocusable    (const coreBool          bFocusable)     {m_bFocusable     = bFocusable;}
-    inline void SetFocusModifier(const coreVector2&      vFocusModifier) {m_vFocusModifier = vFocusModifier;}
+    inline void SetFocusModifier(const coreVector2       vFocusModifier) {m_vFocusModifier = vFocusModifier;}
 
     /* get object properties */
     inline const coreVector2&       GetPosition ()const {return m_vPosition;}

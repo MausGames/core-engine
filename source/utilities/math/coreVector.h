@@ -34,22 +34,22 @@ public:
     ENABLE_COPY(coreVector2)
 
     /* compare operations */
-    inline    coreBool operator == (const coreVector2& v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) == 0);}
-    inline    coreBool operator != (const coreVector2& v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) != 0);}
-    constexpr coreBool operator <  (const coreVector2& v)const {return (x <  v.x) && (y <  v.y);}
-    constexpr coreBool operator <= (const coreVector2& v)const {return (x <= v.x) && (y <= v.y);}
-    constexpr coreBool operator >  (const coreVector2& v)const {return (x >  v.x) && (y >  v.y);}
-    constexpr coreBool operator >= (const coreVector2& v)const {return (x >= v.x) && (y >= v.y);}
+    inline    coreBool operator == (const coreVector2 v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) == 0);}
+    inline    coreBool operator != (const coreVector2 v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) != 0);}
+    constexpr coreBool operator <  (const coreVector2 v)const {return (x <  v.x) && (y <  v.y);}
+    constexpr coreBool operator <= (const coreVector2 v)const {return (x <= v.x) && (y <= v.y);}
+    constexpr coreBool operator >  (const coreVector2 v)const {return (x >  v.x) && (y >  v.y);}
+    constexpr coreBool operator >= (const coreVector2 v)const {return (x >= v.x) && (y >= v.y);}
 
     /* vector operations */
-    constexpr coreVector2 operator +  (const coreVector2& v)const {return coreVector2(x+v.x, y+v.y);}
-    constexpr coreVector2 operator -  (const coreVector2& v)const {return coreVector2(x-v.x, y-v.y);}
-    constexpr coreVector2 operator *  (const coreVector2& v)const {return coreVector2(x*v.x, y*v.y);}
-    constexpr coreVector2 operator /  (const coreVector2& v)const {return coreVector2(x*RCP(v.x), y*RCP(v.y));}
-    inline    void        operator += (const coreVector2& v)      {*this = *this + v;}
-    inline    void        operator -= (const coreVector2& v)      {*this = *this - v;}
-    inline    void        operator *= (const coreVector2& v)      {*this = *this * v;}
-    inline    void        operator /= (const coreVector2& v)      {*this = *this / v;}
+    constexpr coreVector2 operator +  (const coreVector2 v)const {return coreVector2(x+v.x, y+v.y);}
+    constexpr coreVector2 operator -  (const coreVector2 v)const {return coreVector2(x-v.x, y-v.y);}
+    constexpr coreVector2 operator *  (const coreVector2 v)const {return coreVector2(x*v.x, y*v.y);}
+    constexpr coreVector2 operator /  (const coreVector2 v)const {return coreVector2(x*RCP(v.x), y*RCP(v.y));}
+    inline    void        operator += (const coreVector2 v)      {*this = *this + v;}
+    inline    void        operator -= (const coreVector2 v)      {*this = *this - v;}
+    inline    void        operator *= (const coreVector2 v)      {*this = *this * v;}
+    inline    void        operator /= (const coreVector2 v)      {*this = *this / v;}
 
     /* scalar operations */
     constexpr coreVector2 operator +  (const coreFloat f)const {return coreVector2(x+f, y+f);}
@@ -87,8 +87,8 @@ public:
     constexpr coreVector2 Rotated135()const {return coreVector2(y-x, -x-y) * (1.0f / SQRT2);}
 
     /* normalize vector */
-    inline coreVector2 Normalized      (const coreVector2& vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    inline coreVector2 NormalizedUnsafe()const                                                      {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
+    inline coreVector2 Normalized      (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    inline coreVector2 NormalizedUnsafe()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
@@ -110,14 +110,14 @@ public:
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
 
     /* static functions */
-    static constexpr coreFloat   Dot      (const coreVector2& v1, const coreVector2& v2);
-    static inline    coreFloat   Angle    (const coreVector2& v1, const coreVector2& v2);
+    static constexpr coreFloat   Dot      (const coreVector2 v1, const coreVector2 v2);
+    static inline    coreFloat   Angle    (const coreVector2 v1, const coreVector2 v2);
     static inline    coreVector2 Direction(const coreFloat fAngle);
     static inline    coreVector2 Rand     ();
     static inline    coreVector2 Rand     (const coreFloat fMax);
     static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax);
     static inline    coreVector2 Rand     (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY);
-    static constexpr coreVector2 Reflect  (const coreVector2& vVelocity, const coreVector2& vNormal);
+    static constexpr coreVector2 Reflect  (const coreVector2 vVelocity, const coreVector2 vNormal);
 
     /* packing functions */
     constexpr        coreUint32  PackUnorm2x16  ()const;
@@ -141,29 +141,29 @@ public:
 
 public:
     coreVector3() = default;
-    constexpr FORCE_INLINE coreVector3(const coreVector2& v, const coreFloat fz)noexcept                   : x (v.x), y (v.y), z (fz)  {}
-    constexpr FORCE_INLINE coreVector3(const coreFloat fx, const coreVector2& v)noexcept                   : x (fx),  y (v.x), z (v.y) {}
+    constexpr FORCE_INLINE coreVector3(const coreVector2 v, const coreFloat fz)noexcept                    : x (v.x), y (v.y), z (fz)  {}
+    constexpr FORCE_INLINE coreVector3(const coreFloat fx, const coreVector2 v)noexcept                    : x (fx),  y (v.x), z (v.y) {}
     constexpr FORCE_INLINE coreVector3(const coreFloat fx, const coreFloat fy, const coreFloat fz)noexcept : x (fx),  y (fy),  z (fz)  {}
 
     ENABLE_COPY(coreVector3)
 
     /* compare operations */
-    inline    coreBool operator == (const coreVector3& v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) == 0);}
-    inline    coreBool operator != (const coreVector3& v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) != 0);}
-    constexpr coreBool operator <  (const coreVector3& v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z);}
-    constexpr coreBool operator <= (const coreVector3& v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z);}
-    constexpr coreBool operator >  (const coreVector3& v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z);}
-    constexpr coreBool operator >= (const coreVector3& v)const {return (x >= v.x) && (y >= v.y) && (z >= v.z);}
+    inline    coreBool operator == (const coreVector3 v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) == 0);}
+    inline    coreBool operator != (const coreVector3 v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) != 0);}
+    constexpr coreBool operator <  (const coreVector3 v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z);}
+    constexpr coreBool operator <= (const coreVector3 v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z);}
+    constexpr coreBool operator >  (const coreVector3 v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z);}
+    constexpr coreBool operator >= (const coreVector3 v)const {return (x >= v.x) && (y >= v.y) && (z >= v.z);}
 
     /* vector operations */
-    constexpr coreVector3 operator +  (const coreVector3& v)const {return coreVector3(x+v.x, y+v.y, z+v.z);}
-    constexpr coreVector3 operator -  (const coreVector3& v)const {return coreVector3(x-v.x, y-v.y, z-v.z);}
-    constexpr coreVector3 operator *  (const coreVector3& v)const {return coreVector3(x*v.x, y*v.y, z*v.z);}
-    constexpr coreVector3 operator /  (const coreVector3& v)const {return coreVector3(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z));}
-    inline    void        operator += (const coreVector3& v)      {*this = *this + v;}
-    inline    void        operator -= (const coreVector3& v)      {*this = *this - v;}
-    inline    void        operator *= (const coreVector3& v)      {*this = *this * v;}
-    inline    void        operator /= (const coreVector3& v)      {*this = *this / v;}
+    constexpr coreVector3 operator +  (const coreVector3 v)const {return coreVector3(x+v.x, y+v.y, z+v.z);}
+    constexpr coreVector3 operator -  (const coreVector3 v)const {return coreVector3(x-v.x, y-v.y, z-v.z);}
+    constexpr coreVector3 operator *  (const coreVector3 v)const {return coreVector3(x*v.x, y*v.y, z*v.z);}
+    constexpr coreVector3 operator /  (const coreVector3 v)const {return coreVector3(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z));}
+    inline    void        operator += (const coreVector3 v)      {*this = *this + v;}
+    inline    void        operator -= (const coreVector3 v)      {*this = *this - v;}
+    inline    void        operator *= (const coreVector3 v)      {*this = *this * v;}
+    inline    void        operator /= (const coreVector3 v)      {*this = *this / v;}
 
     /* scalar operations */
     constexpr coreVector3 operator +  (const coreFloat f)const {return coreVector3(x+f, y+f, z+f);}
@@ -197,12 +197,12 @@ public:
     constexpr coreVector2      yz ()const                  {return coreVector2(y, z);}
     constexpr coreVector2      zx ()const                  {return coreVector2(z, x);}
     constexpr coreVector2      zy ()const                  {return coreVector2(z, y);}
-    inline    void             xy (const coreVector2& v)   {x = v.x; y = v.y;}
-    inline    void             xz (const coreVector2& v)   {x = v.x; z = v.y;}
-    inline    void             yx (const coreVector2& v)   {y = v.x; x = v.y;}
-    inline    void             yz (const coreVector2& v)   {y = v.x; z = v.y;}
-    inline    void             zx (const coreVector2& v)   {z = v.x; x = v.y;}
-    inline    void             zy (const coreVector2& v)   {z = v.x; y = v.y;}
+    inline    void             xy (const coreVector2 v)    {x = v.x; y = v.y;}
+    inline    void             xz (const coreVector2 v)    {x = v.x; z = v.y;}
+    inline    void             yx (const coreVector2 v)    {y = v.x; x = v.y;}
+    inline    void             yz (const coreVector2 v)    {y = v.x; z = v.y;}
+    inline    void             zx (const coreVector2 v)    {z = v.x; x = v.y;}
+    inline    void             zy (const coreVector2 v)    {z = v.x; y = v.y;}
 
     /* invert vector */
     constexpr coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
@@ -222,8 +222,8 @@ public:
     constexpr coreVector3 RotatedZ135()const {return coreVector3(this->xy().Rotated135(), z);}
 
     /* normalize vector */
-    inline coreVector3 Normalized      (const coreVector3& vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    inline coreVector3 NormalizedUnsafe()const                                                           {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
+    inline coreVector3 Normalized      (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    inline coreVector3 NormalizedUnsafe()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
@@ -243,15 +243,15 @@ public:
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
 
     /* static functions */
-    static constexpr coreFloat   Dot    (const coreVector3& v1, const coreVector3& v2);
-    static constexpr coreVector3 Cross  (const coreVector3& v1, const coreVector3& v2);
-    static inline    coreFloat   Angle  (const coreVector3& v1, const coreVector3& v2);
+    static constexpr coreFloat   Dot    (const coreVector3 v1, const coreVector3 v2);
+    static constexpr coreVector3 Cross  (const coreVector3 v1, const coreVector3 v2);
+    static inline    coreFloat   Angle  (const coreVector3 v1, const coreVector3 v2);
     static inline    coreVector3 Rand   ();
     static inline    coreVector3 Rand   (const coreFloat fMax);
     static inline    coreVector3 Rand   (const coreFloat fMin,  const coreFloat fMax);
     static inline    coreVector3 Rand   (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ);
-    static constexpr coreVector3 Reflect(const coreVector3& vVelocity, const coreVector3& vNormal);
-    static inline    coreBool    Visible(const coreVector3& vPosition, const coreFloat fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection);
+    static constexpr coreVector3 Reflect(const coreVector3 vVelocity, const coreVector3 vNormal);
+    static inline    coreBool    Visible(const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
 
     /* packing functions */
     constexpr        coreUint32  PackUnorm011  ()const;
@@ -282,33 +282,33 @@ public:
 
 public:
     coreVector4() = default;
-    constexpr FORCE_INLINE coreVector4(const coreVector3& v, const coreFloat fw)noexcept                                       : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
-    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreVector3& v)noexcept                                       : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
-    constexpr FORCE_INLINE coreVector4(const coreVector2& v, const coreFloat fz, const coreFloat fw)noexcept                   : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
-    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreVector2& v, const coreFloat fw)noexcept                   : x (fx),   y (v.x),  z (v.y),  w (fw)   {}
-    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreFloat fy, const coreVector2& v)noexcept                   : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
-    constexpr FORCE_INLINE coreVector4(const coreVector2& v1, const coreVector2& v2)noexcept                                   : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
+    constexpr FORCE_INLINE coreVector4(const coreVector3 v, const coreFloat fw)noexcept                                        : x (v.x),  y (v.y),  z (v.z),  w (fw)   {}
+    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreVector3 v)noexcept                                        : x (fx),   y (v.x),  z (v.y),  w (v.z)  {}
+    constexpr FORCE_INLINE coreVector4(const coreVector2 v, const coreFloat fz, const coreFloat fw)noexcept                    : x (v.x),  y (v.y),  z (fz),   w (fw)   {}
+    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreVector2 v, const coreFloat fw)noexcept                    : x (fx),   y (v.x),  z (v.y),  w (fw)   {}
+    constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreFloat fy, const coreVector2 v)noexcept                    : x (fx),   y (fy),   z (v.x),  w (v.y)  {}
+    constexpr FORCE_INLINE coreVector4(const coreVector2 v1, const coreVector2 v2)noexcept                                     : x (v1.x), y (v1.y), z (v2.x), w (v2.y) {}
     constexpr FORCE_INLINE coreVector4(const coreFloat fx, const coreFloat fy, const coreFloat fz, const coreFloat fw)noexcept : x (fx),   y (fy),   z (fz),   w (fw)   {}
 
     ENABLE_COPY(coreVector4)
 
     /* compare operations */
-    inline    coreBool operator == (const coreVector4& v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) == 0);}
-    inline    coreBool operator != (const coreVector4& v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) != 0);}
-    constexpr coreBool operator <  (const coreVector4& v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z) && (w <  v.w);}
-    constexpr coreBool operator <= (const coreVector4& v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z) && (w <= v.w);}
-    constexpr coreBool operator >  (const coreVector4& v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z) && (w >  v.w);}
-    constexpr coreBool operator >= (const coreVector4& v)const {return (x >= v.x) && (y >= v.y) && (z >= v.z) && (w >= v.w);}
+    inline    coreBool operator == (const coreVector4 v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) == 0);}
+    inline    coreBool operator != (const coreVector4 v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) != 0);}
+    constexpr coreBool operator <  (const coreVector4 v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z) && (w <  v.w);}
+    constexpr coreBool operator <= (const coreVector4 v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z) && (w <= v.w);}
+    constexpr coreBool operator >  (const coreVector4 v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z) && (w >  v.w);}
+    constexpr coreBool operator >= (const coreVector4 v)const {return (x >= v.x) && (y >= v.y) && (z >= v.z) && (w >= v.w);}
 
     /* vector operations */
-    constexpr coreVector4 operator +  (const coreVector4& v)const {return coreVector4(x+v.x, y+v.y, z+v.z, w+v.w);}
-    constexpr coreVector4 operator -  (const coreVector4& v)const {return coreVector4(x-v.x, y-v.y, z-v.z, w-v.w);}
-    constexpr coreVector4 operator *  (const coreVector4& v)const {return coreVector4(x*v.x, y*v.y, z*v.z, w*v.w);}
-    constexpr coreVector4 operator /  (const coreVector4& v)const {return coreVector4(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z), w*RCP(v.w));}
-    inline    void        operator += (const coreVector4& v)      {*this = *this + v;}
-    inline    void        operator -= (const coreVector4& v)      {*this = *this - v;}
-    inline    void        operator *= (const coreVector4& v)      {*this = *this * v;}
-    inline    void        operator /= (const coreVector4& v)      {*this = *this / v;}
+    constexpr coreVector4 operator +  (const coreVector4 v)const {return coreVector4(x+v.x, y+v.y, z+v.z, w+v.w);}
+    constexpr coreVector4 operator -  (const coreVector4 v)const {return coreVector4(x-v.x, y-v.y, z-v.z, w-v.w);}
+    constexpr coreVector4 operator *  (const coreVector4 v)const {return coreVector4(x*v.x, y*v.y, z*v.z, w*v.w);}
+    constexpr coreVector4 operator /  (const coreVector4 v)const {return coreVector4(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z), w*RCP(v.w));}
+    inline    void        operator += (const coreVector4 v)      {*this = *this + v;}
+    inline    void        operator -= (const coreVector4 v)      {*this = *this - v;}
+    inline    void        operator *= (const coreVector4 v)      {*this = *this * v;}
+    inline    void        operator /= (const coreVector4 v)      {*this = *this / v;}
 
     /* scalar operations */
     constexpr coreVector4 operator +  (const coreFloat f)const {return coreVector4(x+f, y+f, z+f, w+f);}
@@ -334,10 +334,10 @@ public:
     constexpr coreVector2      xy  ()const                  {return coreVector2(x, y);}
     constexpr coreVector2      yz  ()const                  {return coreVector2(y, z);}
     constexpr coreVector2      zw  ()const                  {return coreVector2(z, w);}
-    inline    void             xyz (const coreVector3& v)   {x = v.x; y = v.y; z = v.z;}
-    inline    void             xy  (const coreVector2& v)   {x = v.x; y = v.y;}
-    inline    void             yz  (const coreVector2& v)   {y = v.x; z = v.y;}
-    inline    void             zw  (const coreVector2& v)   {z = v.x; w = v.y;}
+    inline    void             xyz (const coreVector3 v)    {x = v.x; y = v.y; z = v.z;}
+    inline    void             xy  (const coreVector2 v)    {x = v.x; y = v.y;}
+    inline    void             yz  (const coreVector2 v)    {y = v.x; z = v.y;}
+    inline    void             zw  (const coreVector2 v)    {z = v.x; w = v.y;}
 
     /* invert vector */
     constexpr coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
@@ -347,8 +347,8 @@ public:
     constexpr coreVector4 InvertedW  ()const {return coreVector4( x,  y,  z, -w);}
 
     /* normalize vector */
-    inline coreVector4 Normalized      (const coreVector4& vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    inline coreVector4 NormalizedUnsafe()const                                                                {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
+    inline coreVector4 Normalized      (const coreVector4 vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    inline coreVector4 NormalizedUnsafe()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector4 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
@@ -368,7 +368,7 @@ public:
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
 
     /* static functions */
-    static constexpr coreFloat   Dot (const coreVector4& v1, const coreVector4& v2);
+    static constexpr coreFloat   Dot (const coreVector4 v1, const coreVector4 v2);
     static inline    coreVector4 Rand();
     static inline    coreVector4 Rand(const coreFloat fMax);
     static inline    coreVector4 Rand(const coreFloat fMin,  const coreFloat fMax);
@@ -391,28 +391,28 @@ public:
     static constexpr coreVector4 UnpackFloat4x16(const coreUint64 iNumber);
 
     /* quaternion functions */
-    static constexpr coreVector4 QuatMultiply (const coreVector4& v1, const coreVector4& v2);
-    static inline    coreVector4 QuatSlerp    (const coreVector4& v1, const coreVector4& v2, const coreFloat t);
+    static constexpr coreVector4 QuatMultiply (const coreVector4 v1, const coreVector4 v2);
+    static inline    coreVector4 QuatSlerp    (const coreVector4 v1, const coreVector4 v2, const coreFloat t);
     static constexpr coreVector4 QuatIdentity ()      {return coreVector4(0.0f,0.0f,0.0f,1.0f);}
     constexpr        coreVector4 QuatConjugate()const {return coreVector4(-x, -y, -z, w);}
     constexpr        coreVector4 QuatInvert   ()const {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
-    constexpr        coreVector3 QuatApply    (const coreVector3& v)const;
+    constexpr        coreVector3 QuatApply    (const coreVector3 v)const;
 };
 
 
 // ****************************************************************
 /* global scalar operations */
-constexpr coreVector2 operator + (const coreFloat f, const coreVector2& v) {return v + f;}
-constexpr coreVector2 operator * (const coreFloat f, const coreVector2& v) {return v * f;}
-constexpr coreVector3 operator + (const coreFloat f, const coreVector3& v) {return v + f;}
-constexpr coreVector3 operator * (const coreFloat f, const coreVector3& v) {return v * f;}
-constexpr coreVector4 operator + (const coreFloat f, const coreVector4& v) {return v + f;}
-constexpr coreVector4 operator * (const coreFloat f, const coreVector4& v) {return v * f;}
+constexpr coreVector2 operator + (const coreFloat f, const coreVector2 v) {return v + f;}
+constexpr coreVector2 operator * (const coreFloat f, const coreVector2 v) {return v * f;}
+constexpr coreVector3 operator + (const coreFloat f, const coreVector3 v) {return v + f;}
+constexpr coreVector3 operator * (const coreFloat f, const coreVector3 v) {return v * f;}
+constexpr coreVector4 operator + (const coreFloat f, const coreVector4 v) {return v + f;}
+constexpr coreVector4 operator * (const coreFloat f, const coreVector4 v) {return v * f;}
 
 
 // ****************************************************************
 /* calculate dot product */
-constexpr coreFloat coreVector2::Dot(const coreVector2& v1, const coreVector2& v2)
+constexpr coreFloat coreVector2::Dot(const coreVector2 v1, const coreVector2 v2)
 {
     return (v1.x*v2.x + v1.y*v2.y);
 }
@@ -420,7 +420,7 @@ constexpr coreFloat coreVector2::Dot(const coreVector2& v1, const coreVector2& v
 
 // ****************************************************************
 /* calculate angle between two vectors */
-inline coreFloat coreVector2::Angle(const coreVector2& v1, const coreVector2& v2)
+inline coreFloat coreVector2::Angle(const coreVector2 v1, const coreVector2 v2)
 {
     return ACOS(coreVector2::Dot(v1, v2));
 }
@@ -463,7 +463,7 @@ inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMax
 
 // ****************************************************************
 /* calculate reflected vector */
-constexpr coreVector2 coreVector2::Reflect(const coreVector2& vVelocity, const coreVector2& vNormal)
+constexpr coreVector2 coreVector2::Reflect(const coreVector2 vVelocity, const coreVector2 vNormal)
 {
     const coreFloat fDot = coreVector2::Dot(vVelocity, vNormal);
     return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
@@ -545,7 +545,7 @@ constexpr coreVector2 coreVector2::UnpackFloat2x32(const coreUint64 iNumber)
 
 // ****************************************************************
 /* calculate dot product */
-constexpr coreFloat coreVector3::Dot(const coreVector3& v1, const coreVector3& v2)
+constexpr coreFloat coreVector3::Dot(const coreVector3 v1, const coreVector3 v2)
 {
     return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
 }
@@ -553,7 +553,7 @@ constexpr coreFloat coreVector3::Dot(const coreVector3& v1, const coreVector3& v
 
 // ****************************************************************
 /* calculate cross product */
-constexpr coreVector3 coreVector3::Cross(const coreVector3& v1, const coreVector3& v2)
+constexpr coreVector3 coreVector3::Cross(const coreVector3 v1, const coreVector3 v2)
 {
     return coreVector3(v1.y*v2.z - v1.z*v2.y,
                        v1.z*v2.x - v1.x*v2.z,
@@ -563,7 +563,7 @@ constexpr coreVector3 coreVector3::Cross(const coreVector3& v1, const coreVector
 
 // ****************************************************************
 /* calculate angle between two vectors */
-inline coreFloat coreVector3::Angle(const coreVector3& v1, const coreVector3& v2)
+inline coreFloat coreVector3::Angle(const coreVector3 v1, const coreVector3 v2)
 {
     return ACOS(coreVector3::Dot(v1, v2));
 }
@@ -602,7 +602,7 @@ inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMax
 
 // ****************************************************************
 /* calculate reflected vector */
-constexpr coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const coreVector3& vNormal)
+constexpr coreVector3 coreVector3::Reflect(const coreVector3 vVelocity, const coreVector3 vNormal)
 {
     const coreFloat fDot = coreVector3::Dot(vVelocity, vNormal);
     return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
@@ -611,7 +611,7 @@ constexpr coreVector3 coreVector3::Reflect(const coreVector3& vVelocity, const c
 
 // ****************************************************************
 /* check if inside field-of-view */
-inline coreBool coreVector3::Visible(const coreVector3& vPosition, const coreFloat fFOV, const coreVector3& vViewPosition, const coreVector3& vViewDirection)
+inline coreBool coreVector3::Visible(const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection)
 {
     // calculate relative position and angle
     const coreVector3 vRelative = (vPosition - vViewPosition).Normalized();
@@ -716,7 +716,7 @@ constexpr coreVector3 coreVector3::HsvToRgb()const
 
 // ****************************************************************
 /* calculate dot product */
-constexpr coreFloat coreVector4::Dot(const coreVector4& v1, const coreVector4& v2)
+constexpr coreFloat coreVector4::Dot(const coreVector4 v1, const coreVector4 v2)
 {
     return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z + v1.w*v2.w);
 }
@@ -951,7 +951,7 @@ constexpr coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
 
 // ****************************************************************
 /* multiplicate two quaternions (Grassman product) */
-constexpr coreVector4 coreVector4::QuatMultiply(const coreVector4& v1, const coreVector4& v2)
+constexpr coreVector4 coreVector4::QuatMultiply(const coreVector4 v1, const coreVector4 v2)
 {
     return coreVector4(v1.x*v2.w + v1.w*v2.x + v1.y*v2.z - v1.z*v2.y,
                        v1.y*v2.w + v1.w*v2.y + v1.z*v2.x - v1.x*v2.z,
@@ -962,7 +962,7 @@ constexpr coreVector4 coreVector4::QuatMultiply(const coreVector4& v1, const cor
 
 // ****************************************************************
 /* spherical linear interpolate between two quaternions */
-inline coreVector4 coreVector4::QuatSlerp(const coreVector4& v1, const coreVector4& v2, const coreFloat t)
+inline coreVector4 coreVector4::QuatSlerp(const coreVector4 v1, const coreVector4 v2, const coreFloat t)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
 
@@ -976,7 +976,7 @@ inline coreVector4 coreVector4::QuatSlerp(const coreVector4& v1, const coreVecto
 
 // ****************************************************************
 /* apply quaternion-transformation to vector */
-constexpr coreVector3 coreVector4::QuatApply(const coreVector3& v)const
+constexpr coreVector3 coreVector4::QuatApply(const coreVector3 v)const
 {
     return v + 2.0f * coreVector3::Cross(this->xyz(), coreVector3::Cross(this->xyz(), v) + w * v);
 }

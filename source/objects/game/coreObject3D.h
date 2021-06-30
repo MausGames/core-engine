@@ -81,11 +81,11 @@ public:
     void ChangeType(const coreInt32 iType);
 
     /* set object properties */
-    inline void SetPosition         (const coreVector3& vPosition)          {m_vPosition = vPosition;}
-    inline void SetSize             (const coreVector3& vSize)              {if(m_vSize              != vSize)              {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vSize              = vSize;}}
-    inline void SetDirection        (const coreVector3& vDirection)         {if(m_vDirection         != vDirection)         {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection         = vDirection;}   ASSERT(vDirection  .IsNormalized())}
-    inline void SetOrientation      (const coreVector3& vOrientation)       {if(m_vOrientation       != vOrientation)       {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vOrientation       = vOrientation;} ASSERT(vOrientation.IsNormalized())}
-    inline void SetCollisionModifier(const coreVector3& vCollisionModifier) {if(m_vCollisionModifier != vCollisionModifier) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vCollisionModifier = vCollisionModifier;}}
+    inline void SetPosition         (const coreVector3 vPosition)          {m_vPosition = vPosition;}
+    inline void SetSize             (const coreVector3 vSize)              {if(m_vSize              != vSize)              {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vSize              = vSize;}}
+    inline void SetDirection        (const coreVector3 vDirection)         {if(m_vDirection         != vDirection)         {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection         = vDirection;}   ASSERT(vDirection  .IsNormalized())}
+    inline void SetOrientation      (const coreVector3 vOrientation)       {if(m_vOrientation       != vOrientation)       {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vOrientation       = vOrientation;} ASSERT(vOrientation.IsNormalized())}
+    inline void SetCollisionModifier(const coreVector3 vCollisionModifier) {if(m_vCollisionModifier != vCollisionModifier) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vCollisionModifier = vCollisionModifier;}}
 
     /* get object properties */
     inline const coreModelPtr& GetModel            ()const {return m_pModel;}

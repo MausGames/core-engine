@@ -146,7 +146,7 @@ coreStatus coreSound::Unload()
 
 // ****************************************************************
 /* play the sound with positional behavior */
-void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3& vPosition)
+void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition)
 {
     ASSERT(m_iBuffer)
 
@@ -251,7 +251,7 @@ coreBool coreSound::IsPlaying()
 
 // ****************************************************************
 /* change the audio source position and velocity */
-void coreSound::SetSource(const coreVector3& vPosition, const coreVector3& vVelocity)
+void coreSound::SetSource(const coreVector3 vPosition, const coreVector3 vVelocity)
 {
     __CORE_SOUND_ASSERT
     if(m_iCurSource)

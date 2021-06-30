@@ -70,7 +70,7 @@ public:
     DISABLE_COPY(CoreAudio)
 
     /* control the listener */
-    void SetListener(const coreVector3& vPosition, const coreVector3& vVelocity, const coreVector3& vDirection, const coreVector3& vOrientation);
+    void SetListener(const coreVector3 vPosition, const coreVector3 vVelocity, const coreVector3 vDirection, const coreVector3 vOrientation);
     void SetListener(const coreFloat fSpeed, const coreInt8 iTimeID = -1);
 
     /* override current volume */

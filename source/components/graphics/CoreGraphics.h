@@ -81,11 +81,11 @@ public:
     DISABLE_COPY(CoreGraphics)
 
     /* control camera and view frustum */
-    void SetCamera(const coreVector3& vPosition, const coreVector3& vDirection, const coreVector3& vOrientation);
+    void SetCamera(const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation);
     void SetView  (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
 
     /* control ambient */
-    void SetLight(const coreUintW iIndex, const coreVector4& vPosition, const coreVector4& vDirection, const coreVector4& vValue);
+    void SetLight(const coreUintW iIndex, const coreVector4 vPosition, const coreVector4 vDirection, const coreVector4 vValue);
 
     /* update data for the uniform buffer objects */
     void UpdateTransformation();

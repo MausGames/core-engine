@@ -62,13 +62,13 @@ public:
     coreStatus Unload()final;
 
     /* control playback */
-    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3& vPosition);
+    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition);
     void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType);
     void Stop();
     coreBool IsPlaying();
 
     /* set various audio source properties */
-    void SetSource(const coreVector3& vPosition, const coreVector3& vVelocity);
+    void SetSource(const coreVector3 vPosition, const coreVector3 vVelocity);
     inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); ASSERT(fVolume >= 0.0f)}
     inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      ASSERT(fPitch  >= 0.0f)}
     inline void SetLoop  (const coreBool  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}

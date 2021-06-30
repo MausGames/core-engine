@@ -168,8 +168,8 @@ public:
 
     /* access mouse input */
     inline void               SetMouseButton  (const coreUint8 iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE) return; SET_BIT(m_Mouse.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Mouse.iLast = iButton;}
-    inline void               SetMousePosition(const coreVector2& vPosition)                            {m_Mouse.vPosition   = vPosition;}
-    inline void               SetMouseRelative(const coreVector2& vRelative)                            {m_Mouse.vRelative.x = vRelative.x; m_Mouse.vRelative.y = vRelative.y;}
+    inline void               SetMousePosition(const coreVector2 vPosition)                             {m_Mouse.vPosition   = vPosition;}
+    inline void               SetMouseRelative(const coreVector2 vRelative)                             {m_Mouse.vRelative.x = vRelative.x; m_Mouse.vRelative.y = vRelative.y;}
     inline void               SetMouseWheel   (const coreFloat fValue)                                  {m_Mouse.vRelative.z = fValue;}
     inline coreBool           GetMouseButton  (const coreUint8 iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_MOUSE) return HAS_BIT(m_Mouse.aiButton[iButton], eType);}
     inline const coreVector2& GetMousePosition()const                                                   {return m_Mouse.vPosition;}
@@ -189,8 +189,8 @@ public:
 
     /* access touch input */
     inline void                SetTouchButton  (const coreUintW iIndex, const coreBool bStatus)         {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; SET_BIT(m_aTouch[iIndex].iButton, CORE_INPUT_DATA, bStatus)}
-    inline void                SetTouchPosition(const coreUintW iIndex, const coreVector2& vPosition)   {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].vPosition = vPosition;}
-    inline void                SetTouchRelative(const coreUintW iIndex, const coreVector2& vRelative)   {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].vRelative = vRelative;}
+    inline void                SetTouchPosition(const coreUintW iIndex, const coreVector2 vPosition)    {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].vPosition = vPosition;}
+    inline void                SetTouchRelative(const coreUintW iIndex, const coreVector2 vRelative)    {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].vRelative = vRelative;}
     inline void                SetTouchPressure(const coreUintW iIndex, const coreFloat fPressure)      {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; m_aTouch[iIndex].fPressure = fPressure;}
     inline coreBool            GetTouchButton  (const coreUintW iIndex, const coreInputType eType)const {ASSERT(iIndex < CORE_INPUT_FINGERS) return HAS_BIT(m_aTouch[iIndex].iButton, eType);}
     inline const coreVector2&  GetTouchPosition(const coreUintW iIndex)const                            {ASSERT(iIndex < CORE_INPUT_FINGERS) return m_aTouch[iIndex].vPosition;}
