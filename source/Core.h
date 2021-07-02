@@ -462,7 +462,6 @@ using coreChar   = char;
 using coreFloat  = float;
 using coreDouble = double;
 using coreByte   = std::uint8_t;
-using coreString = std::string;
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
@@ -540,6 +539,7 @@ class  coreVector4;
 class  coreMatrix2;
 class  coreMatrix3;
 class  coreMatrix4;
+class  coreString;
 class  coreFile;
 class  coreArchive;
 class  coreObject2D;
@@ -677,6 +677,7 @@ private:
 #include "utilities/data/hash/CRC32.h"
 #include "utilities/data/hash/FNV1.h"
 #include "utilities/data/hash/Murmur.h"
+#include "utilities/data/coreString.h"
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreSpinLock.h"
 #include "utilities/data/coreList.h"

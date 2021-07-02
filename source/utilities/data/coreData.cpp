@@ -1090,41 +1090,6 @@ void coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const
 
 
 // ****************************************************************
-/* trim a standard string on both sides */
-void coreData::StrTrim(coreString* OUTPUT psInput, const coreChar* pcRemove)
-{
-    STATIC_ASSERT(coreString::npos == -1)
-
-    // trim right
-    const coreUintW iLast = psInput->find_last_not_of(pcRemove);
-    psInput->erase(iLast + 1u);
-
-    // trim left
-    const coreUintW iFirst = psInput->find_first_not_of(pcRemove);
-    if(iFirst != coreString::npos) psInput->erase(0u, iFirst);
-}
-
-
-// ****************************************************************
-/* replace all occurrences of a sub-string with another one */
-void coreData::StrReplace(coreString* OUTPUT psInput, const coreChar* pcOld, const coreChar* pcNew)
-{
-    coreUintW iPos = 0u;
-
-    // save length of both sub-strings
-    const coreUintW iOldLen = std::strlen(pcOld);
-    const coreUintW iNewLen = std::strlen(pcNew);
-
-    // loop only once and replace all findings
-    while((iPos = psInput->find(pcOld, iPos, iOldLen)) != coreString::npos)
-    {
-        psInput->replace(iPos, iOldLen, pcNew);
-        iPos += iNewLen;
-    }
-}
-
-
-// ****************************************************************
 /* prepare path for system directory */
 const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
 {
@@ -1133,7 +1098,7 @@ const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
     if(sIdentifier.empty())
     {
         sIdentifier = Core::Application->Settings.Name;
-        coreData::StrReplace(&sIdentifier, " ", "");
+        sIdentifier.replace(" ", "");
     }
 
     // create full path

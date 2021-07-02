@@ -169,7 +169,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
 
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
-        coreData::StrTrim(pString);
+        pString->trim();
 
         // begin next string
         pcFrom = pcTo + 1u;
@@ -277,7 +277,7 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
     {
         // extract language-string
         psOutput->assign(pcFrom, pcTo - pcFrom);
-        coreData::StrTrim(psOutput);
+        psOutput->trim();
     }
 
     return bFound;

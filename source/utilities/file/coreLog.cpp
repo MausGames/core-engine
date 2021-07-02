@@ -147,9 +147,9 @@ void coreLog::__Write(const coreBool bTimeStamp, coreString sText)
     if(m_pFile)
     {
         // convert new lines and color brackets
-        coreData::StrReplace(&sText, "\n", "<br />");
-        coreData::StrReplace(&sText, "(",  "<span class=\"data\">(");
-        coreData::StrReplace(&sText, ")",  ")</span>");
+        sText.replace("\n", "<br />");
+        sText.replace("(",  "<span class=\"data\">(");
+        sText.replace(")",  ")</span>");
 
         if(bTimeStamp)
         {

@@ -204,7 +204,7 @@ void coreShader::__ReduceCodeSize(coreString* OUTPUT psCode)
         psCode->erase(i, psCode->find_first_of('\n', i) - i);
 
     // remove redundant whitespaces
-    coreData::StrReplace(psCode, "    ", " ");
+    psCode->replace("    ", " ");
 }
 
 

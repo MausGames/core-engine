@@ -78,7 +78,7 @@ coreStatus coreConfig::Load()
 
         // assign string currently in range
         pString->assign(pcFrom, pcTo - pcFrom);
-        coreData::StrTrim(pString);
+        pString->trim();
 
         // begin next string
         pcFrom = pcTo + 1u;
