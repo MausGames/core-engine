@@ -72,8 +72,8 @@ public:
     inline coreUintW capacity()const                   {return m_atValueList.capacity();}
 
     /* manage container ordering */
-    inline void sort_asc  () {this->_cache_clear(); this->_sort([](const auto& a, const auto& b) {return (a.first < b.first);});}
-    inline void sort_desc () {this->_cache_clear(); this->_sort([](const auto& a, const auto& b) {return (a.first > b.first);});}
+    inline void sort_asc  () {this->_cache_clear(); this->_sort([](const K& a, const K& b) {return (a < b);});}
+    inline void sort_desc () {this->_cache_clear(); this->_sort([](const K& a, const K& b) {return (a > b);});}
     inline void reverse   () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
     inline void prepare_bs() {this->sort_asc();}
 
@@ -135,7 +135,8 @@ protected:
     coreKeyConstIterator _retrieve_bs(const I& tKey)const;
 
     /* sort entries with comparison function */
-    template <typename F> void _sort(F&& nCompareFunc);   // [](const auto& a, const auto& b) -> coreBool
+    template <typename F> void _sort(F&& nCompareFunc);   // [](const K& a, const K& b) -> coreBool
+    template <typename F> void _sort(F&& nCompareFunc, const coreUintW a, const coreUintW b);
 };
 
 
@@ -492,24 +493,41 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
 /* sort entries with comparison function */
 template <typename K, typename I, typename T> template <typename F> void coreMapGen<K, I, T>::_sort(F&& nCompareFunc)
 {
-    coreList<std::pair<K, T>> aPairList;
+    this->_sort(nCompareFunc, 0u, m_atKeyList.size() - 1u);
+}
 
-    // merge values and keys into single container
-    aPairList.reserve(m_atKeyList.size());
-    FOR_EACH(it, m_atKeyList)
+template <typename K, typename I, typename T> template <typename F> void coreMapGen<K, I, T>::_sort(F&& nCompareFunc, const coreUintW a, const coreUintW b)
+{
+    // perform quicksort with Hoare partition scheme
+    if(a < b)
     {
-        aPairList.emplace_back(std::move(*it), std::move(*this->get_value(it)));
-    }
+        const K tPivot = m_atKeyList[(a + b) / 2u];
 
-    // sort the container
-    std::sort(aPairList.begin(), aPairList.end(), nCompareFunc);
+        coreUintW i = a - 1u;
+        coreUintW j = b + 1u;
 
-    // move entries back into separate lists
-    this->clear();
-    FOR_EACH(it, aPairList)
-    {
-        m_atKeyList  .push_back(std::move(it->first));
-        m_atValueList.push_back(std::move(it->second));
+        while(true)
+        {
+            do
+            {
+                i += 1u;
+            }
+            while(nCompareFunc(m_atKeyList[i], tPivot));
+
+            do
+            {
+                j -= 1u;
+            }
+            while(nCompareFunc(tPivot, m_atKeyList[j]));
+
+            if(i >= j) break;
+
+            std::swap(m_atValueList[i], m_atValueList[j]);
+            std::swap(m_atKeyList  [i], m_atKeyList  [j]);
+        }
+
+        this->_sort(nCompareFunc, a,      j);
+        this->_sort(nCompareFunc, j + 1u, b);
     }
 }
 
