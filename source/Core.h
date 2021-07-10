@@ -325,7 +325,7 @@
 #define SAFE_DELETE(p)              {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p)        {delete[] (p); (p) = NULL;}
 
-#define UINT_LITERAL(x)             ((coreUint32(x[0]) << 24u) | (coreUint32(x[1]) << 16u) | (coreUint32(x[2]) << 8u) | (coreUint32(x[3])))
+#define UINT_LITERAL(x)             ((coreUint32(x[3]) << 24u) | (coreUint32(x[2]) << 16u) | (coreUint32(x[1]) << 8u) | (coreUint32(x[0])))
 
 #define BIT(n)                      (1ull << (n))
 #define BITLINE(n)                  (BIT(n) - 1ull)
