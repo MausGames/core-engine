@@ -20,7 +20,11 @@
 // ****************************************************************
 /* Steam definitions */
 #if defined(_CORE_WINDOWS_)
-    #define STEAM_LIBRARY_NAME "steam_api.dll"
+    #if deinfed(_CORE_64BIT_)
+        #define STEAM_LIBRARY_NAME "steam_api64.dll"
+    #else
+        #define STEAM_LIBRARY_NAME "steam_api.dll"
+    #endif
 #elif defined(_CORE_LINUX_)
     #define STEAM_LIBRARY_NAME "libsteam_api.so"
 #endif

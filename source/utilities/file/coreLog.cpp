@@ -68,7 +68,7 @@ coreLog::~coreLog()
 
 
 // ****************************************************************
-/* write an OpenGL debug message */
+/* write OpenGL debug message */
 void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iSeverity, GLsizei iLength, const GLchar* pcMessage, const void* pUserParam)
 {
     coreLog* pLog = s_cast<coreLog*>(c_cast<void*>(pUserParam));

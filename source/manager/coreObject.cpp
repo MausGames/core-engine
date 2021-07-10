@@ -270,7 +270,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
 
 // ****************************************************************
 /* test collision between 3d-object and ray */
-coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3& vRayPos, const coreVector3& vRayDir, coreFloat* OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount)
+coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const coreVector3 vRayPos, const coreVector3 vRayDir, coreFloat* OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount)
 {
     ASSERT(pObject && vRayDir.IsNormalized() && pfHitDistance && piHitCount)
     ASSERT(((*piHitCount) >= 1u) && ((*piHitCount) <= CORE_OBJECT_RAY_HITCOUNT))

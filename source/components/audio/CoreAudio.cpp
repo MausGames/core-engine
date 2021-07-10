@@ -97,8 +97,8 @@ CoreAudio::CoreAudio()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
         Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
-        if(m_pContext) Core::Log->ListAdd(alcGetString(m_pDevice, ALC_EXTENSIONS));
-        if(m_pContext) Core::Log->ListAdd(alGetString(AL_EXTENSIONS));
+        Core::Log->ListAdd(alcGetString(m_pDevice, ALC_EXTENSIONS));
+        Core::Log->ListAdd(alGetString(AL_EXTENSIONS));
     }
     Core::Log->ListEnd();
 

@@ -111,7 +111,7 @@ const coreChar* coreData::AppPath()
 #elif defined(_CORE_LINUX_)
 
     // get content of the symbolic link
-    const coreInt32 iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1u);
+    const coreIntW iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1u);
     if(iLen >= 0)
     {
         // add missing null-terminator and return
