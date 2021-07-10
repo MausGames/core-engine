@@ -577,7 +577,7 @@ public:
         static const coreChar* const IconPath;     // window icon file path
         static const coreChar* const CursorPath;   // mouse cursor file path
 
-        struct RenderBuffer final
+        struct Graphics final
         {
             static const coreUint8 DepthSize;      // depth buffer size (0, 16, 24, 32)
             static const coreUint8 StencilSize;    // stencil buffer size (0, 8)
@@ -585,7 +585,7 @@ public:
             static const coreBool  DoubleBuffer;   // enable double buffering
             static const coreBool  StereoRender;   // enable stereo rendering
         }
-        RenderBuffer;
+        Graphics;
 
         struct Platform final
         {

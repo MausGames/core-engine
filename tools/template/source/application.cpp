@@ -9,15 +9,15 @@
 
 // ****************************************************************
 // project settings
-const coreChar* const CoreApp::Settings::Name                       = "Core Application";
-const coreChar* const CoreApp::Settings::IconPath                   = "data/textures/game_icon.png";
-const coreChar* const CoreApp::Settings::CursorPath                 = "data/textures/default_cursor.png";
-const coreUint8       CoreApp::Settings::RenderBuffer::DepthSize    = 24u;
-const coreUint8       CoreApp::Settings::RenderBuffer::StencilSize  = 8u;
-const coreBool        CoreApp::Settings::RenderBuffer::AlphaChannel = true;
-const coreBool        CoreApp::Settings::RenderBuffer::DoubleBuffer = true;
-const coreBool        CoreApp::Settings::RenderBuffer::StereoRender = false;
-const coreUint32      CoreApp::Settings::Platform::SteamAppID       = 0u;
+const coreChar* const CoreApp::Settings::Name                   = "Core Application";
+const coreChar* const CoreApp::Settings::IconPath               = "data/textures/game_icon.png";
+const coreChar* const CoreApp::Settings::CursorPath             = "data/textures/default_cursor.png";
+const coreUint8       CoreApp::Settings::Graphics::DepthSize    = 24u;
+const coreUint8       CoreApp::Settings::Graphics::StencilSize  = 8u;
+const coreBool        CoreApp::Settings::Graphics::AlphaChannel = true;
+const coreBool        CoreApp::Settings::Graphics::DoubleBuffer = true;
+const coreBool        CoreApp::Settings::Graphics::StereoRender = false;
+const coreUint32      CoreApp::Settings::Platform::SteamAppID   = 0u;
 
 
 // ****************************************************************

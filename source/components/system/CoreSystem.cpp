@@ -143,11 +143,11 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,         8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,          8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         Core::Application->Settings.RenderBuffer.AlphaChannel   ? 8 : 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         Core::Application->Settings.RenderBuffer.DepthSize);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       Core::Application->Settings.RenderBuffer.StencilSize);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       Core::Application->Settings.RenderBuffer.DoubleBuffer   ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_STEREO,             Core::Application->Settings.RenderBuffer.StereoRender   ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         Core::Application->Settings.Graphics.AlphaChannel       ? 8 : 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         Core::Application->Settings.Graphics.DepthSize);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       Core::Application->Settings.Graphics.StencilSize);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       Core::Application->Settings.Graphics.DoubleBuffer       ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_STEREO,             Core::Application->Settings.Graphics.StereoRender       ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
 
