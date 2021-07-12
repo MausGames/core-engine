@@ -1,7 +1,7 @@
 // Modified version for Core Engine
 // Please use the original library from https://github.com/nothings/stb
 
-// stb_dxt.h - v1.10 - DXT1/DXT5 compressor - public domain
+// stb_dxt.h - v1.12 - DXT1/DXT5 compressor - public domain
 // original by fabian "ryg" giesen - ported to C by stb
 // use '#define STB_DXT_IMPLEMENTATION' before including to create the implementation
 //
@@ -13,6 +13,8 @@
 //     You can turn on dithering and "high quality" using mode.
 //
 // version history:
+//   v1.12  - (ryg) fix bug in single-color table generator
+//   v1.11  - (ryg) avoid racy global init, better single-color tables, remove dither
 //   v1.10  - (i.c) various small quality improvements
 //   v1.09  - (stb) update documentation re: surprising alpha channel requirement
 //   v1.08  - (stb) fix bug in dxt-with-alpha block
@@ -32,6 +34,7 @@
 //   Kevin Schmidt (#defines for "freestanding" compilation)
 //   github:ppiastucki (BC4 support)
 //   Ignacio Castano - improve DXT endpoint quantization
+//   Alan Hickman - static table initialization
 //
 // LICENSE
 //
@@ -42,7 +45,7 @@
 
 // compression mode (bitflags)
 #define STB_DXT_NORMAL    0
-#define STB_DXT_DITHER    1   // use dithering. dubious win. never use for normal maps and the like!
+#define STB_DXT_DITHER    1   // use dithering. was always dubious, now deprecated. does nothing!
 #define STB_DXT_HIGHQUAL  2   // high quality mode, does two refinement steps instead of 1. ~30-40% slower.
 
 void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char* __restrict src, int components, int mode);
@@ -68,14 +71,75 @@ void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char*
 
 #include <stdlib.h>
 #include <math.h>
-#include <string.h> // memset
 
-static unsigned char stb__Expand5[32];
-static unsigned char stb__Expand6[64];
-static unsigned char stb__OMatch5[256][2];
-static unsigned char stb__OMatch6[256][2];
-static unsigned char stb__QuantRBTab[256+16];
-static unsigned char stb__QuantGTab[256+16];
+static const unsigned char stb__OMatch5[256][2] = {
+   {  0,  0 }, {  0,  0 }, {  0,  1 }, {  0,  1 }, {  1,  0 }, {  1,  0 }, {  1,  0 }, {  1,  1 },
+   {  1,  1 }, {  1,  1 }, {  1,  2 }, {  0,  4 }, {  2,  1 }, {  2,  1 }, {  2,  1 }, {  2,  2 },
+   {  2,  2 }, {  2,  2 }, {  2,  3 }, {  1,  5 }, {  3,  2 }, {  3,  2 }, {  4,  0 }, {  3,  3 },
+   {  3,  3 }, {  3,  3 }, {  3,  4 }, {  3,  4 }, {  3,  4 }, {  3,  5 }, {  4,  3 }, {  4,  3 },
+   {  5,  2 }, {  4,  4 }, {  4,  4 }, {  4,  5 }, {  4,  5 }, {  5,  4 }, {  5,  4 }, {  5,  4 },
+   {  6,  3 }, {  5,  5 }, {  5,  5 }, {  5,  6 }, {  4,  8 }, {  6,  5 }, {  6,  5 }, {  6,  5 },
+   {  6,  6 }, {  6,  6 }, {  6,  6 }, {  6,  7 }, {  5,  9 }, {  7,  6 }, {  7,  6 }, {  8,  4 },
+   {  7,  7 }, {  7,  7 }, {  7,  7 }, {  7,  8 }, {  7,  8 }, {  7,  8 }, {  7,  9 }, {  8,  7 },
+   {  8,  7 }, {  9,  6 }, {  8,  8 }, {  8,  8 }, {  8,  9 }, {  8,  9 }, {  9,  8 }, {  9,  8 },
+   {  9,  8 }, { 10,  7 }, {  9,  9 }, {  9,  9 }, {  9, 10 }, {  8, 12 }, { 10,  9 }, { 10,  9 },
+   { 10,  9 }, { 10, 10 }, { 10, 10 }, { 10, 10 }, { 10, 11 }, {  9, 13 }, { 11, 10 }, { 11, 10 },
+   { 12,  8 }, { 11, 11 }, { 11, 11 }, { 11, 11 }, { 11, 12 }, { 11, 12 }, { 11, 12 }, { 11, 13 },
+   { 12, 11 }, { 12, 11 }, { 13, 10 }, { 12, 12 }, { 12, 12 }, { 12, 13 }, { 12, 13 }, { 13, 12 },
+   { 13, 12 }, { 13, 12 }, { 14, 11 }, { 13, 13 }, { 13, 13 }, { 13, 14 }, { 12, 16 }, { 14, 13 },
+   { 14, 13 }, { 14, 13 }, { 14, 14 }, { 14, 14 }, { 14, 14 }, { 14, 15 }, { 13, 17 }, { 15, 14 },
+   { 15, 14 }, { 16, 12 }, { 15, 15 }, { 15, 15 }, { 15, 15 }, { 15, 16 }, { 15, 16 }, { 15, 16 },
+   { 15, 17 }, { 16, 15 }, { 16, 15 }, { 17, 14 }, { 16, 16 }, { 16, 16 }, { 16, 17 }, { 16, 17 },
+   { 17, 16 }, { 17, 16 }, { 17, 16 }, { 18, 15 }, { 17, 17 }, { 17, 17 }, { 17, 18 }, { 16, 20 },
+   { 18, 17 }, { 18, 17 }, { 18, 17 }, { 18, 18 }, { 18, 18 }, { 18, 18 }, { 18, 19 }, { 17, 21 },
+   { 19, 18 }, { 19, 18 }, { 20, 16 }, { 19, 19 }, { 19, 19 }, { 19, 19 }, { 19, 20 }, { 19, 20 },
+   { 19, 20 }, { 19, 21 }, { 20, 19 }, { 20, 19 }, { 21, 18 }, { 20, 20 }, { 20, 20 }, { 20, 21 },
+   { 20, 21 }, { 21, 20 }, { 21, 20 }, { 21, 20 }, { 22, 19 }, { 21, 21 }, { 21, 21 }, { 21, 22 },
+   { 20, 24 }, { 22, 21 }, { 22, 21 }, { 22, 21 }, { 22, 22 }, { 22, 22 }, { 22, 22 }, { 22, 23 },
+   { 21, 25 }, { 23, 22 }, { 23, 22 }, { 24, 20 }, { 23, 23 }, { 23, 23 }, { 23, 23 }, { 23, 24 },
+   { 23, 24 }, { 23, 24 }, { 23, 25 }, { 24, 23 }, { 24, 23 }, { 25, 22 }, { 24, 24 }, { 24, 24 },
+   { 24, 25 }, { 24, 25 }, { 25, 24 }, { 25, 24 }, { 25, 24 }, { 26, 23 }, { 25, 25 }, { 25, 25 },
+   { 25, 26 }, { 24, 28 }, { 26, 25 }, { 26, 25 }, { 26, 25 }, { 26, 26 }, { 26, 26 }, { 26, 26 },
+   { 26, 27 }, { 25, 29 }, { 27, 26 }, { 27, 26 }, { 28, 24 }, { 27, 27 }, { 27, 27 }, { 27, 27 },
+   { 27, 28 }, { 27, 28 }, { 27, 28 }, { 27, 29 }, { 28, 27 }, { 28, 27 }, { 29, 26 }, { 28, 28 },
+   { 28, 28 }, { 28, 29 }, { 28, 29 }, { 29, 28 }, { 29, 28 }, { 29, 28 }, { 30, 27 }, { 29, 29 },
+   { 29, 29 }, { 29, 30 }, { 29, 30 }, { 30, 29 }, { 30, 29 }, { 30, 29 }, { 30, 30 }, { 30, 30 },
+   { 30, 30 }, { 30, 31 }, { 30, 31 }, { 31, 30 }, { 31, 30 }, { 31, 30 }, { 31, 31 }, { 31, 31 },
+};
+static const unsigned char stb__OMatch6[256][2] = {
+   {  0,  0 }, {  0,  1 }, {  1,  0 }, {  1,  1 }, {  1,  1 }, {  1,  2 }, {  2,  1 }, {  2,  2 },
+   {  2,  2 }, {  2,  3 }, {  3,  2 }, {  3,  3 }, {  3,  3 }, {  3,  4 }, {  4,  3 }, {  4,  4 },
+   {  4,  4 }, {  4,  5 }, {  5,  4 }, {  5,  5 }, {  5,  5 }, {  5,  6 }, {  6,  5 }, {  6,  6 },
+   {  6,  6 }, {  6,  7 }, {  7,  6 }, {  7,  7 }, {  7,  7 }, {  7,  8 }, {  8,  7 }, {  8,  8 },
+   {  8,  8 }, {  8,  9 }, {  9,  8 }, {  9,  9 }, {  9,  9 }, {  9, 10 }, { 10,  9 }, { 10, 10 },
+   { 10, 10 }, { 10, 11 }, { 11, 10 }, {  8, 16 }, { 11, 11 }, { 11, 12 }, { 12, 11 }, {  9, 17 },
+   { 12, 12 }, { 12, 13 }, { 13, 12 }, { 11, 16 }, { 13, 13 }, { 13, 14 }, { 14, 13 }, { 12, 17 },
+   { 14, 14 }, { 14, 15 }, { 15, 14 }, { 14, 16 }, { 15, 15 }, { 15, 16 }, { 16, 14 }, { 16, 15 },
+   { 17, 14 }, { 16, 16 }, { 16, 17 }, { 17, 16 }, { 18, 15 }, { 17, 17 }, { 17, 18 }, { 18, 17 },
+   { 20, 14 }, { 18, 18 }, { 18, 19 }, { 19, 18 }, { 21, 15 }, { 19, 19 }, { 19, 20 }, { 20, 19 },
+   { 20, 20 }, { 20, 20 }, { 20, 21 }, { 21, 20 }, { 21, 21 }, { 21, 21 }, { 21, 22 }, { 22, 21 },
+   { 22, 22 }, { 22, 22 }, { 22, 23 }, { 23, 22 }, { 23, 23 }, { 23, 23 }, { 23, 24 }, { 24, 23 },
+   { 24, 24 }, { 24, 24 }, { 24, 25 }, { 25, 24 }, { 25, 25 }, { 25, 25 }, { 25, 26 }, { 26, 25 },
+   { 26, 26 }, { 26, 26 }, { 26, 27 }, { 27, 26 }, { 24, 32 }, { 27, 27 }, { 27, 28 }, { 28, 27 },
+   { 25, 33 }, { 28, 28 }, { 28, 29 }, { 29, 28 }, { 27, 32 }, { 29, 29 }, { 29, 30 }, { 30, 29 },
+   { 28, 33 }, { 30, 30 }, { 30, 31 }, { 31, 30 }, { 30, 32 }, { 31, 31 }, { 31, 32 }, { 32, 30 },
+   { 32, 31 }, { 33, 30 }, { 32, 32 }, { 32, 33 }, { 33, 32 }, { 34, 31 }, { 33, 33 }, { 33, 34 },
+   { 34, 33 }, { 36, 30 }, { 34, 34 }, { 34, 35 }, { 35, 34 }, { 37, 31 }, { 35, 35 }, { 35, 36 },
+   { 36, 35 }, { 36, 36 }, { 36, 36 }, { 36, 37 }, { 37, 36 }, { 37, 37 }, { 37, 37 }, { 37, 38 },
+   { 38, 37 }, { 38, 38 }, { 38, 38 }, { 38, 39 }, { 39, 38 }, { 39, 39 }, { 39, 39 }, { 39, 40 },
+   { 40, 39 }, { 40, 40 }, { 40, 40 }, { 40, 41 }, { 41, 40 }, { 41, 41 }, { 41, 41 }, { 41, 42 },
+   { 42, 41 }, { 42, 42 }, { 42, 42 }, { 42, 43 }, { 43, 42 }, { 40, 48 }, { 43, 43 }, { 43, 44 },
+   { 44, 43 }, { 41, 49 }, { 44, 44 }, { 44, 45 }, { 45, 44 }, { 43, 48 }, { 45, 45 }, { 45, 46 },
+   { 46, 45 }, { 44, 49 }, { 46, 46 }, { 46, 47 }, { 47, 46 }, { 46, 48 }, { 47, 47 }, { 47, 48 },
+   { 48, 46 }, { 48, 47 }, { 49, 46 }, { 48, 48 }, { 48, 49 }, { 49, 48 }, { 50, 47 }, { 49, 49 },
+   { 49, 50 }, { 50, 49 }, { 52, 46 }, { 50, 50 }, { 50, 51 }, { 51, 50 }, { 53, 47 }, { 51, 51 },
+   { 51, 52 }, { 52, 51 }, { 52, 52 }, { 52, 52 }, { 52, 53 }, { 53, 52 }, { 53, 53 }, { 53, 53 },
+   { 53, 54 }, { 54, 53 }, { 54, 54 }, { 54, 54 }, { 54, 55 }, { 55, 54 }, { 55, 55 }, { 55, 55 },
+   { 55, 56 }, { 56, 55 }, { 56, 56 }, { 56, 56 }, { 56, 57 }, { 57, 56 }, { 57, 57 }, { 57, 57 },
+   { 57, 58 }, { 58, 57 }, { 58, 58 }, { 58, 58 }, { 58, 59 }, { 59, 58 }, { 59, 59 }, { 59, 59 },
+   { 59, 60 }, { 60, 59 }, { 60, 60 }, { 60, 60 }, { 60, 61 }, { 61, 60 }, { 61, 61 }, { 61, 61 },
+   { 61, 62 }, { 62, 61 }, { 62, 62 }, { 62, 62 }, { 62, 63 }, { 63, 62 }, { 63, 63 }, { 63, 63 },
+};
 
 static int stb__Mul8Bit(int a, int b)
 {
@@ -89,9 +153,10 @@ static void stb__From16Bit(unsigned char* __restrict out, unsigned short v)
    int gv = (v & 0x07e0) >>  5;
    int bv = (v & 0x001f) >>  0;
 
-   out[0] = stb__Expand5[rv];
-   out[1] = stb__Expand6[gv];
-   out[2] = stb__Expand5[bv];
+   // expand to 8 bits via bit replication
+   out[0] = (rv * 33) >> 2;
+   out[1] = (gv * 65) >> 4;
+   out[2] = (bv * 33) >> 2;
    out[3] = 0;
 }
 
@@ -123,35 +188,6 @@ static void stb__Lerp13RGB(unsigned char* __restrict out, unsigned char* __restr
 
 /****************************************************************************/
 
-// compute table to reproduce constant colors as accurately as possible
-static void stb__PrepareOptTable(unsigned char* __restrict Table, const unsigned char* __restrict expand, int size)
-{
-   int i,mn,mx;
-   for (i=0;i<256;i++) {
-      int bestErr = 256;
-      for (mn=0;mn<size;mn++) {
-         for (mx=0;mx<size;mx++) {
-            int mine = expand[mn];
-            int maxe = expand[mx];
-            int err = abs(stb__Lerp13(maxe, mine) - i);
-
-            // DX10 spec says that interpolation must be within 3% of "correct" result,
-            // add this as error term. (normally we'd expect a random distribution of
-            // +-1.5% error, but nowhere in the spec does it say that the error has to be
-            // unbiased - better safe than sorry).
-            err += abs(maxe - mine) * 3 / 100;
-
-            if(err < bestErr)
-            {
-               Table[i*2+0] = (unsigned char)mx;
-               Table[i*2+1] = (unsigned char)mn;
-               bestErr = err;
-            }
-         }
-      }
-   }
-}
-
 static void stb__EvalColors(unsigned char* __restrict color, unsigned short c0, unsigned short c1)
 {
    stb__From16Bit(color+ 0, c0);
@@ -160,36 +196,8 @@ static void stb__EvalColors(unsigned char* __restrict color, unsigned short c0, 
    stb__Lerp13RGB(color+12, color+4, color+0);
 }
 
-// Block dithering function. Simply dithers a block to 565 RGB.
-// (Floyd-Steinberg)
-static void stb__DitherBlock(unsigned char* __restrict dest, unsigned char* __restrict block)
-{
-  int err[8],*ep1 = err,*ep2 = err+4, *et;
-  int ch,y;
-
-  // process channels separately
-  for (ch=0; ch<3; ++ch) {
-      unsigned char *bp = block+ch, *dp = dest+ch;
-      unsigned char *quant = (ch == 1) ? stb__QuantGTab+8 : stb__QuantRBTab+8;
-      memset(err, 0, sizeof(err));
-      for(y=0; y<4; ++y) {
-         dp[ 0] = quant[bp[ 0] + ((3*ep2[1] + 5*ep2[0]) >> 4)];
-         ep1[0] = bp[ 0] - dp[ 0];
-         dp[ 4] = quant[bp[ 4] + ((7*ep1[0] + 3*ep2[2] + 5*ep2[1] + ep2[0]) >> 4)];
-         ep1[1] = bp[ 4] - dp[ 4];
-         dp[ 8] = quant[bp[ 8] + ((7*ep1[1] + 3*ep2[3] + 5*ep2[2] + ep2[1]) >> 4)];
-         ep1[2] = bp[ 8] - dp[ 8];
-         dp[12] = quant[bp[12] + ((7*ep1[2] + 5*ep2[3] + ep2[2]) >> 4)];
-         ep1[3] = bp[12] - dp[12];
-         bp += 16;
-         dp += 16;
-         et = ep1, ep1 = ep2, ep2 = et; // swap
-      }
-   }
-}
-
 // The color matching function
-static unsigned int stb__MatchColorsBlock(unsigned char* __restrict block, unsigned char* __restrict color, int dither)
+static unsigned int stb__MatchColorsBlock(unsigned char* __restrict block, unsigned char* __restrict color)
 {
    unsigned int mask = 0;
    int dirr = color[0*4+0] - color[1*4+0];
@@ -218,68 +226,14 @@ static unsigned int stb__MatchColorsBlock(unsigned char* __restrict block, unsig
    halfPoint = (stops[3] + stops[2]);
    c3Point   = (stops[2] + stops[0]);
 
-   if(!dither) {
-      // the version without dithering is straightforward
-      for (i=15;i>=0;i--) {
-         int dot = dots[i]*2;
-         mask <<= 2;
+   for (i=15;i>=0;i--) {
+      int dot = dots[i]*2;
+      mask <<= 2;
 
-         if(dot < halfPoint)
-           mask |= (dot < c0Point) ? 1 : 3;
-         else
-           mask |= (dot < c3Point) ? 2 : 0;
-      }
-  } else {
-      // with floyd-steinberg dithering
-      int err[8],*ep1 = err,*ep2 = err+4;
-      int *dp = dots, y;
-
-      c0Point   <<= 3;
-      halfPoint <<= 3;
-      c3Point   <<= 3;
-      for(i=0;i<8;i++)
-         err[i] = 0;
-
-      for(y=0;y<4;y++)
-      {
-         int dot,lmask,step;
-
-         dot = (dp[0] << 4) + (3*ep2[1] + 5*ep2[0]);
-         if(dot < halfPoint)
-           step = (dot < c0Point) ? 1 : 3;
-         else
-           step = (dot < c3Point) ? 2 : 0;
-         ep1[0] = dp[0] - stops[step];
-         lmask = step;
-
-         dot = (dp[1] << 4) + (7*ep1[0] + 3*ep2[2] + 5*ep2[1] + ep2[0]);
-         if(dot < halfPoint)
-           step = (dot < c0Point) ? 1 : 3;
-         else
-           step = (dot < c3Point) ? 2 : 0;
-         ep1[1] = dp[1] - stops[step];
-         lmask |= step<<2;
-
-         dot = (dp[2] << 4) + (7*ep1[1] + 3*ep2[3] + 5*ep2[2] + ep2[1]);
-         if(dot < halfPoint)
-           step = (dot < c0Point) ? 1 : 3;
-         else
-           step = (dot < c3Point) ? 2 : 0;
-         ep1[2] = dp[2] - stops[step];
-         lmask |= step<<4;
-
-         dot = (dp[3] << 4) + (7*ep1[2] + 5*ep2[3] + ep2[2]);
-         if(dot < halfPoint)
-           step = (dot < c0Point) ? 1 : 3;
-         else
-           step = (dot < c3Point) ? 2 : 0;
-         ep1[3] = dp[3] - stops[step];
-         lmask |= step<<6;
-
-         dp += 4;
-         mask |= lmask << (y*8);
-         { int *et = ep1; ep1 = ep2; ep2 = et; } // swap
-      }
+      if(dot < halfPoint)
+         mask |= (dot < c0Point) ? 1 : 3;
+      else
+         mask |= (dot < c3Point) ? 2 : 0;
    }
 
    return mask;
@@ -288,7 +242,7 @@ static unsigned int stb__MatchColorsBlock(unsigned char* __restrict block, unsig
 // The color optimization function. (Clever code, part 1)
 static void stb__OptimizeColorsBlock(unsigned char* __restrict block, unsigned short* __restrict pmax16, unsigned short* __restrict pmin16)
 {
-  int mind = 0x7fffffff,maxd = -0x7fffffff;
+  int mind,maxd;
   unsigned char *minp = NULL, *maxp = NULL;
   double magn;
   int v_r,v_g,v_b;
@@ -370,8 +324,10 @@ static void stb__OptimizeColorsBlock(unsigned char* __restrict block, unsigned s
       v_b = (int)(vfb * magn);
    }
 
+   minp = maxp = block;
+   mind = maxd = block[0]*v_r + block[1]*v_g + block[2]*v_b;
    // Pick colors at extreme points
-   for(i=0;i<16;i++)
+   for(i=1;i<16;i++)
    {
       int dot = block[i*4+0]*v_r + block[i*4+1]*v_g + block[i*4+2]*v_b;
 
@@ -390,12 +346,12 @@ static void stb__OptimizeColorsBlock(unsigned char* __restrict block, unsigned s
    *pmin16 = stb__As16Bit(minp[0],minp[1],minp[2]);
 }
 
-static const float midpoints5[32] = {
+static const float stb__midpoints5[32] = {
    0.015686f, 0.047059f, 0.078431f, 0.111765f, 0.145098f, 0.176471f, 0.207843f, 0.241176f, 0.274510f, 0.305882f, 0.337255f, 0.370588f, 0.403922f, 0.435294f, 0.466667f, 0.5f,
    0.533333f, 0.564706f, 0.596078f, 0.629412f, 0.662745f, 0.694118f, 0.725490f, 0.758824f, 0.792157f, 0.823529f, 0.854902f, 0.888235f, 0.921569f, 0.952941f, 0.984314f, 1.0f
 };
 
-static const float midpoints6[64] = {
+static const float stb__midpoints6[64] = {
    0.007843f, 0.023529f, 0.039216f, 0.054902f, 0.070588f, 0.086275f, 0.101961f, 0.117647f, 0.133333f, 0.149020f, 0.164706f, 0.180392f, 0.196078f, 0.211765f, 0.227451f, 0.245098f,
    0.262745f, 0.278431f, 0.294118f, 0.309804f, 0.325490f, 0.341176f, 0.356863f, 0.372549f, 0.388235f, 0.403922f, 0.419608f, 0.435294f, 0.450980f, 0.466667f, 0.482353f, 0.500000f,
    0.517647f, 0.533333f, 0.549020f, 0.564706f, 0.580392f, 0.596078f, 0.611765f, 0.627451f, 0.643137f, 0.658824f, 0.674510f, 0.690196f, 0.705882f, 0.721569f, 0.737255f, 0.754902f,
@@ -407,7 +363,7 @@ static unsigned short stb__Quantize5(float x)
    unsigned short q;
    x = x < 0 ? 0 : x > 1 ? 1 : x;  // saturate
    q = (unsigned short)(x * 31);
-   q += (x > midpoints5[q]);
+   q += (x > stb__midpoints5[q]);
    return q;
 }
 
@@ -416,7 +372,7 @@ static unsigned short stb__Quantize6(float x)
    unsigned short q;
    x = x < 0 ? 0 : x > 1 ? 1 : x;  // saturate
    q = (unsigned short)(x * 63);
-   q += (x > midpoints6[q]);
+   q += (x > stb__midpoints6[q]);
    return q;
 }
 
@@ -504,12 +460,10 @@ static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned cha
 {
    unsigned int mask;
    int i;
-   int dither;
    int refinecount;
    unsigned short max16, min16;
-   unsigned char dblock[16*4],color[4*4];
+   unsigned char color[4*4];
 
-   dither = 0;//mode & STB_DXT_DITHER;
    refinecount = (mode & STB_DXT_HIGHQUAL) ? 2 : 1;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -529,15 +483,11 @@ static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned cha
       max16 = (stb__OMatch5[r][0]<<11) | (stb__OMatch6[g][0]<<5) | stb__OMatch5[b][0];
       min16 = (stb__OMatch5[r][1]<<11) | (stb__OMatch6[g][1]<<5) | stb__OMatch5[b][1];
    } else {
-      // first step: compute dithered version for PCA if desired
-      if(dither)
-         stb__DitherBlock(dblock,block);
-
-      // second step: pca+map along principal axis
-      stb__OptimizeColorsBlock(dither ? dblock : block,&max16,&min16);
+      // first step: PCA+map along principal axis
+      stb__OptimizeColorsBlock(block,&max16,&min16);
       if (max16 != min16) {
          stb__EvalColors(color,max16,min16);
-         mask = stb__MatchColorsBlock(block,color,dither);
+         mask = stb__MatchColorsBlock(block,color);
       } else
          mask = 0;
 
@@ -545,10 +495,10 @@ static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned cha
       for (i=0;i<refinecount;i++) {
          unsigned int lastmask = mask;
 
-         if (stb__RefineBlock(dither ? dblock : block,&max16,&min16,mask)) {
+         if (stb__RefineBlock(block,&max16,&min16,mask)) {
             if (max16 != min16) {
                stb__EvalColors(color,max16,min16);
-               mask = stb__MatchColorsBlock(block,color,dither);
+               mask = stb__MatchColorsBlock(block,color);
             } else {
                mask = 0;
                break;
@@ -631,30 +581,6 @@ static void stb__CompressAlphaBlock(unsigned char* __restrict dest, unsigned cha
       }
    }
 }
-
-static int stb__InitDXT()
-{
-   int i;
-   for(i=0;i<32;i++)
-      stb__Expand5[i] = (unsigned char)((i<<3)|(i>>2));
-
-   for(i=0;i<64;i++)
-      stb__Expand6[i] = (unsigned char)((i<<2)|(i>>4));
-
-   for(i=0;i<256+16;i++)
-   {
-      int v = i-8 < 0 ? 0 : i-8 > 255 ? 255 : i-8;
-      stb__QuantRBTab[i] = stb__Expand5[stb__Mul8Bit(v,31)];
-      stb__QuantGTab[i] = stb__Expand6[stb__Mul8Bit(v,63)];
-   }
-
-   stb__PrepareOptTable(&stb__OMatch5[0][0],stb__Expand5,32);
-   stb__PrepareOptTable(&stb__OMatch6[0][0],stb__Expand6,64);
-
-   return 1;
-}
-
-static const int init = stb__InitDXT();
 
 inline void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char* __restrict src, int components, int mode)
 {
