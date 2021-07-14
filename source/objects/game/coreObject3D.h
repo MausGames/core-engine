@@ -44,12 +44,13 @@ private:
 
 protected:
     coreModelPtr m_pModel;              // model object
+    coreModelPtr m_pVolume;             // bounding volume object
 
     coreVector4 m_vRotation;            // separate rotation quaternion
 
     coreVector3 m_vCollisionModifier;   // size-modifier for collision detection
-    coreVector3 m_vCollisionRange;      // total collision range (model range * size * modifier)
-    coreFloat   m_fCollisionRadius;     // total collision radius (model radius * maximum size * maximum modifier)
+    coreVector3 m_vCollisionRange;      // total collision range (volume range * size * modifier)
+    coreFloat   m_fCollisionRadius;     // total collision radius (volume radius * maximum size * maximum modifier)
 
     coreInt32 m_iType;                  // object type identifier (!0 = currently registered in the object manager)
 
@@ -65,9 +66,12 @@ public:
     coreObject3D& operator = (coreObject3D&&      m)noexcept;
 
     /* define the visual appearance */
-    inline void DefineModel(std::nullptr_t)               {m_pModel = NULL;                                           ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
-    inline void DefineModel(const coreModelPtr&   pModel) {m_pModel = pModel;                                         ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
-    inline void DefineModel(const coreHashString& sName)  {m_pModel = Core::Manager::Resource->Get<coreModel>(sName); ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineModel (std::nullptr_t)                {m_pModel  = NULL;                                           ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineModel (const coreModelPtr&   pModel)  {m_pModel  = pModel;                                         ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineModel (const coreHashString& sName)   {m_pModel  = Core::Manager::Resource->Get<coreModel>(sName); ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineVolume(std::nullptr_t)                {m_pVolume = NULL;                                           ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineVolume(const coreModelPtr&   pVolume) {m_pVolume = pVolume;                                        ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineVolume(const coreHashString& sName)   {m_pVolume = Core::Manager::Resource->Get<coreModel>(sName); ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
     void Undefine();
 
     /* render and move the 3d-object */
@@ -89,6 +93,7 @@ public:
 
     /* get object properties */
     inline const coreModelPtr& GetModel            ()const {return m_pModel;}
+    inline const coreModelPtr& GetVolume           ()const {return m_pVolume ? m_pVolume : m_pModel;}
     inline const coreVector3&  GetPosition         ()const {return m_vPosition;}
     inline const coreVector3&  GetSize             ()const {return m_vSize;}
     inline const coreVector3&  GetDirection        ()const {return m_vDirection;}

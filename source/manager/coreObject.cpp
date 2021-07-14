@@ -116,42 +116,42 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     if(ABS(D2.z) > (vRange1.z + R2.z)) return false;
 
     // check if clusters are available for precise collision detection
-    const coreBool bPrecise1 = pObject1->GetModel().IsUsable() && pObject1->GetModel()->GetNumClusters();
-    const coreBool bPrecise2 = pObject2->GetModel().IsUsable() && pObject2->GetModel()->GetNumClusters();
+    const coreBool bPrecise1 = pObject1->GetVolume().IsUsable() && pObject1->GetVolume()->GetNumClusters();
+    const coreBool bPrecise2 = pObject2->GetVolume().IsUsable() && pObject2->GetVolume()->GetNumClusters();
 
-    // return intersection between two simple models
+    // return intersection between two simple volumes
     if(!bPrecise1 && !bPrecise2)
     {
         (*pvIntersection) = pObject2->GetPosition() + vDiff * (pObject2->GetCollisionRadius() * RCP(fTotalRadius));
         return true;
     }
 
-    // move less complex object to the first position (to improve re-use of transformed data when iterating through clusters of both models)
-    const coreBool bSwap = (!bPrecise2 || (bPrecise1 && pObject1->GetModel()->GetNumIndices() > pObject2->GetModel()->GetNumIndices()));
+    // move less complex object to the first position (to improve re-use of transformed data when iterating through clusters of both volumes)
+    const coreBool bSwap = (!bPrecise2 || (bPrecise1 && pObject1->GetVolume()->GetNumIndices() > pObject2->GetVolume()->GetNumIndices()));
     if(bSwap) std::swap(pObject1, pObject2);
 
     // prepare relative transformation (only first object will be transformed)
     const coreVector3 vRelPosition = bSwap ? D2                : D1;
     const coreVector4 vRelRotation = bSwap ? Q.QuatConjugate() : Q;
 
-    // get models and object sizes (precise collision detection does not use size-modifiers)
-    const coreModel*  pModel1   = pObject1->GetModel().IsUsable() ? pObject1->GetModel().GetResource() : NULL;
-    const coreModel*  pModel2   = pObject2->GetModel().GetResource();
+    // get volumes and object sizes (precise collision detection does not use size-modifiers)
+    const coreModel*  pVolume1  = pObject1->GetVolume().IsUsable() ? pObject1->GetVolume().GetResource() : NULL;
+    const coreModel*  pVolume2  = pObject2->GetVolume().GetResource();
     const coreVector3 vSize1    = pObject1->GetSize();
     const coreVector3 vSize2    = pObject2->GetSize();
     const coreFloat   vSizeMax1 = vSize1.Max();
     const coreFloat   vSizeMax2 = vSize2.Max();
 
-    // calculate collision between precise and simple model
+    // calculate collision between precise and simple volume
     if(!bPrecise1 || !bPrecise2)
     {
         const coreVector3 vPosition1 = vRelPosition;
         const coreFloat   fRadius1   = pObject1->GetCollisionRadius();
 
-        for(coreUintW m = 0u, me = pModel2->GetNumClusters(); m < me; ++m)
+        for(coreUintW m = 0u, me = pVolume2->GetNumClusters(); m < me; ++m)
         {
-            const coreVector3 vPosition2 = vSize2 * pModel2->GetClusterPosition(m);
-            const coreFloat   fRadius2   = pModel2->GetClusterRadius(m) * vSizeMax2;
+            const coreVector3 vPosition2 = vSize2 * pVolume2->GetClusterPosition(m);
+            const coreFloat   fRadius2   = pVolume2->GetClusterRadius(m) * vSizeMax2;
 
             const coreVector3 vClusterDiff   = vPosition1 - vPosition2;
             const coreFloat   fClusterRadius = fRadius1 + fRadius2;
@@ -166,16 +166,16 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
         return false;
     }
 
-    // calculate collision between two precise models (Moeller97b)
-    for(coreUintW k = 0u, ke = pModel1->GetNumClusters(); k < ke; ++k)
+    // calculate collision between two precise volumes (Moeller97b)
+    for(coreUintW k = 0u, ke = pVolume1->GetNumClusters(); k < ke; ++k)
     {
-        const coreVector3 vPosition1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pModel1->GetClusterPosition(k));
-        const coreFloat   fRadius1   = pModel1->GetClusterRadius(k) * vSizeMax1;
+        const coreVector3 vPosition1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pVolume1->GetClusterPosition(k));
+        const coreFloat   fRadius1   = pVolume1->GetClusterRadius(k) * vSizeMax1;
 
-        for(coreUintW m = 0u, me = pModel2->GetNumClusters(); m < me; ++m)
+        for(coreUintW m = 0u, me = pVolume2->GetNumClusters(); m < me; ++m)
         {
-            const coreVector3 vPosition2 = vSize2 * pModel2->GetClusterPosition(m);
-            const coreFloat   fRadius2   = pModel2->GetClusterRadius(m) * vSizeMax2;
+            const coreVector3 vPosition2 = vSize2 * pVolume2->GetClusterPosition(m);
+            const coreFloat   fRadius2   = pVolume2->GetClusterRadius(m) * vSizeMax2;
             const coreFloat   fRadius2Sq = POW2(fRadius2);
 
             const coreVector3 vClusterDiff   = vPosition1 - vPosition2;
@@ -184,12 +184,12 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
             if(vClusterDiff.LengthSq() > POW2(fClusterRadius))
                 continue;
 
-            const coreVector3* pvVertexPosition1 = pModel1->GetVertexPosition();
-            const coreVector3* pvVertexPosition2 = pModel2->GetVertexPosition();
-            const coreUint16*  piClusterIndex1   = pModel1->GetClusterIndex(k);
-            const coreUint16*  piClusterIndex2   = pModel2->GetClusterIndex(m);
+            const coreVector3* pvVertexPosition1 = pVolume1->GetVertexPosition();
+            const coreVector3* pvVertexPosition2 = pVolume2->GetVertexPosition();
+            const coreUint16*  piClusterIndex1   = pVolume1->GetClusterIndex(k);
+            const coreUint16*  piClusterIndex2   = pVolume2->GetClusterIndex(m);
 
-            for(coreUintW i = 0u, ie = pModel1->GetClusterNumIndices(k); i < ie; i += 3u)
+            for(coreUintW i = 0u, ie = pVolume1->GetClusterNumIndices(k); i < ie; i += 3u)
             {
                 coreVector3 A1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i]]);
                 coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+1u]]);
@@ -200,7 +200,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                 if(POW2(coreVector3::Dot(A1 - vPosition2, vCross1)) > fRadius2Sq * vCross1.LengthSq())
                     continue;
 
-                for(coreUintW j = 0u, je = pModel2->GetClusterNumIndices(m); j < je; j += 3u)
+                for(coreUintW j = 0u, je = pVolume2->GetClusterNumIndices(m); j < je; j += 3u)
                 {
                     coreVector3 B1 = vSize2 * pvVertexPosition2[piClusterIndex2[j]];
                     coreVector3 B2 = vSize2 * pvVertexPosition2[piClusterIndex2[j+1u]];
@@ -295,9 +295,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
         return false;
 
     // check if clusters are available for precise collision detection
-    const coreBool bPrecise = pObject->GetModel().IsUsable() && pObject->GetModel()->GetNumClusters();
+    const coreBool bPrecise = pObject->GetVolume().IsUsable() && pObject->GetVolume()->GetNumClusters();
 
-    // return intersection with simple model
+    // return intersection with simple volume
     if(!bPrecise)
     {
         // get half penetration length
@@ -325,12 +325,12 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
     const coreVector3 vRelRayPos   = vRevRotation.QuatApply(-vDiff);
     const coreVector3 vRelRayDir   = vRevRotation.QuatApply(vRayDir);
 
-    // get model and object size (precise collision detection does not use size-modifiers)
-    const coreModel*  pModel   = pObject->GetModel().GetResource();
+    // get volume and object size (precise collision detection does not use size-modifiers)
+    const coreModel*  pVolume  = pObject->GetVolume().GetResource();
     const coreVector3 vSize    = pObject->GetSize();
     const coreFloat   vSizeMax = vSize.Max();
 
-    // calculate collision with precise model (MoellerTrumbore97)
+    // calculate collision with precise volume (MoellerTrumbore97)
     if(bPrecise)
     {
         const auto nFilterFunc = [](coreFloat* OUTPUT pfArray, const coreUint8 iCount)
@@ -343,14 +343,14 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
         coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT + 1u] = {};
         coreUint8 iHitCount                                    = 0u;
 
-        for(coreUintW m = 0u, me = pModel->GetNumClusters(); m < me; ++m)
+        for(coreUintW m = 0u, me = pVolume->GetNumClusters(); m < me; ++m)
         {
-            const coreVector3 vClusterPos  = vSize * pModel->GetClusterPosition(m);
+            const coreVector3 vClusterPos  = vSize * pVolume->GetClusterPosition(m);
             const coreVector3 vClusterDiff = vClusterPos - vRelRayPos;
 
             const coreFloat fAdjacent2 = coreVector3::Dot(vClusterDiff, vRelRayDir);
             const coreFloat fDiffSq2   = vClusterDiff.LengthSq();
-            const coreFloat fRadiusSq2 = POW2(pModel->GetClusterRadius(m) * vSizeMax);
+            const coreFloat fRadiusSq2 = POW2(pVolume->GetClusterRadius(m) * vSizeMax);
 
             if((fAdjacent2 < 0.0f) && (fDiffSq2 > fRadiusSq2))
                 continue;
@@ -360,10 +360,10 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
             if(fOppositeSq2 > fRadiusSq2)
                 continue;
 
-            const coreVector3* pvVertexPosition = pModel->GetVertexPosition();
-            const coreUint16*  piClusterIndex   = pModel->GetClusterIndex(m);
+            const coreVector3* pvVertexPosition = pVolume->GetVertexPosition();
+            const coreUint16*  piClusterIndex   = pVolume->GetClusterIndex(m);
 
-            for(coreUintW j = 0u, je = pModel->GetClusterNumIndices(m); j < je; j += 3u)
+            for(coreUintW j = 0u, je = pVolume->GetClusterNumIndices(m); j < je; j += 3u)
             {
                 const coreVector3 V1 = vSize * pvVertexPosition[piClusterIndex[j]];
                 const coreVector3 V2 = vSize * pvVertexPosition[piClusterIndex[j+1u]];

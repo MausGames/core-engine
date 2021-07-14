@@ -18,6 +18,7 @@ coreObject3D::coreObject3D()noexcept
 , m_vDirection         (coreVector3(0.0f,1.0f,0.0f))
 , m_vOrientation       (coreVector3(0.0f,0.0f,1.0f))
 , m_pModel             (NULL)
+, m_pVolume            (NULL)
 , m_vRotation          (coreVector4::QuatIdentity())
 , m_vCollisionModifier (coreVector3(1.0f,1.0f,1.0f))
 , m_vCollisionRange    (coreVector3(0.0f,0.0f,0.0f))
@@ -33,6 +34,7 @@ coreObject3D::coreObject3D(const coreObject3D& c)noexcept
 , m_vDirection         (c.m_vDirection)
 , m_vOrientation       (c.m_vOrientation)
 , m_pModel             (c.m_pModel)
+, m_pVolume            (c.m_pVolume)
 , m_vRotation          (c.m_vRotation)
 , m_vCollisionModifier (c.m_vCollisionModifier)
 , m_vCollisionRange    (c.m_vCollisionRange)
@@ -50,6 +52,7 @@ coreObject3D::coreObject3D(coreObject3D&& m)noexcept
 , m_vDirection         (m.m_vDirection)
 , m_vOrientation       (m.m_vOrientation)
 , m_pModel             (std::move(m.m_pModel))
+, m_pVolume            (std::move(m.m_pVolume))
 , m_vRotation          (m.m_vRotation)
 , m_vCollisionModifier (m.m_vCollisionModifier)
 , m_vCollisionRange    (m.m_vCollisionRange)
@@ -84,6 +87,7 @@ coreObject3D& coreObject3D::operator = (const coreObject3D& c)noexcept
     m_vDirection         = c.m_vDirection;
     m_vOrientation       = c.m_vOrientation;
     m_pModel             = c.m_pModel;
+    m_pVolume            = c.m_pVolume;
     m_vRotation          = c.m_vRotation;
     m_vCollisionModifier = c.m_vCollisionModifier;
     m_vCollisionRange    = c.m_vCollisionRange;
@@ -104,6 +108,7 @@ coreObject3D& coreObject3D::operator = (coreObject3D&& m)noexcept
     m_vDirection         = m.m_vDirection;
     m_vOrientation       = m.m_vOrientation;
     m_pModel             = std::move(m.m_pModel);
+    m_pVolume            = std::move(m.m_pVolume);
     m_vRotation          = m.m_vRotation;
     m_vCollisionModifier = m.m_vCollisionModifier;
     m_vCollisionRange    = m.m_vCollisionRange;
@@ -121,6 +126,7 @@ void coreObject3D::Undefine()
     for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i) m_apTexture[i] = NULL;
     m_pProgram = NULL;
     m_pModel   = NULL;
+    m_pVolume  = NULL;
 }
 
 
@@ -197,16 +203,17 @@ void coreObject3D::Move()
         }
         if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {
-            // cancel update without valid model
-            if(!m_pModel.IsUsable() || !m_pModel->GetBoundingRadius()) return;
+            // cancel update without valid volume
+            const coreModelPtr& pVolume = m_pVolume ? m_pVolume : m_pModel;
+            if(!pVolume.IsUsable() || !pVolume->GetBoundingRadius()) return;
 
             // calculate extend and correction (resizing short range-axis should have low effect on radius)
             const coreVector3 vExtend     = m_vSize * m_vCollisionModifier;
-            const coreVector3 vCorrection = m_pModel->GetBoundingRange() * RCP(m_pModel->GetBoundingRadius());
+            const coreVector3 vCorrection = pVolume->GetBoundingRange() * RCP(pVolume->GetBoundingRadius());
 
             // update collision range and radius
-            m_vCollisionRange  = m_pModel->GetBoundingRange () * (vExtend);
-            m_fCollisionRadius = m_pModel->GetBoundingRadius() * (vExtend * (vCorrection * RCP(vCorrection.Max()))).Max();
+            m_vCollisionRange  = pVolume->GetBoundingRange () * (vExtend);
+            m_fCollisionRadius = pVolume->GetBoundingRadius() * (vExtend * (vCorrection * RCP(vCorrection.Max()))).Max();
         }
 
         // reset the update status
