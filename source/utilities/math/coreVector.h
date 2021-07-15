@@ -85,6 +85,10 @@ public:
     constexpr coreVector2 Rotated90 ()const {return coreVector2(y,   -x);}
     constexpr coreVector2 Rotated45 ()const {return coreVector2(y+x, -x+y) * (1.0f / SQRT2);}
     constexpr coreVector2 Rotated135()const {return coreVector2(y-x, -x-y) * (1.0f / SQRT2);}
+    constexpr coreVector2 Rotated30 ()const {return coreVector2( y, -x) * 0.5f + coreVector2( x,  y) * 0.8660254037844386467637231707529f;}
+    constexpr coreVector2 Rotated60 ()const {return coreVector2( x,  y) * 0.5f + coreVector2( y, -x) * 0.8660254037844386467637231707529f;}
+    constexpr coreVector2 Rotated120()const {return coreVector2(-x, -y) * 0.5f + coreVector2( y, -x) * 0.8660254037844386467637231707529f;}
+    constexpr coreVector2 Rotated150()const {return coreVector2( y, -x) * 0.5f + coreVector2(-x, -y) * 0.8660254037844386467637231707529f;}
 
     /* normalize vector */
     inline coreVector2 Normalized      (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
