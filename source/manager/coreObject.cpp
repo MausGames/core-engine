@@ -191,9 +191,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
 
             for(coreUintW i = 0u, ie = pVolume1->GetClusterNumIndices(k); i < ie; i += 3u)
             {
-                coreVector3 A1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i]]);
-                coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+1u]]);
-                coreVector3 A3 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+2u]]);
+                const coreVector3 A1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i]]);
+                const coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+1u]]);
+                const coreVector3 A3 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+2u]]);
 
                 const coreVector3 vCross1 = coreVector3::Cross(A2 - A1, A3 - A1);
 
@@ -222,6 +222,10 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                     if((G1 == G2) && (G1 == G3))
                         continue;
 
+                    coreVector3 C1 = A1;
+                    coreVector3 C2 = A2;
+                    coreVector3 C3 = A3;
+
                     if(F2 != F3)
                     {
                         if(F1 != F2)
@@ -240,23 +244,23 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                     {
                         if(G1 != G2)
                         {
-                            std::swap(A1, A2);
+                            std::swap(C1, C2);
                             std::swap(G1, G2);
                         }
                         else if(G1 != G3)
                         {
-                            std::swap(A1, A3);
+                            std::swap(C1, C3);
                             std::swap(G1, G3);
                         }
                     }
 
-                    if(F1 > 0u) std::swap(A2, A3);
+                    if(F1 > 0u) std::swap(C2, C3);
                     if(G1 > 0u) std::swap(B2, B3);
 
-                    if((coreVector3::Dot(A2 - B1, coreVector3::Cross(B2 - B1, A1 - B1)) <= 0.0f) &&
-                       (coreVector3::Dot(A1 - B1, coreVector3::Cross(B3 - B1, A3 - B1)) <= 0.0f))
+                    if((coreVector3::Dot(C2 - B1, coreVector3::Cross(B2 - B1, C1 - B1)) <= 0.0f) &&
+                       (coreVector3::Dot(C1 - B1, coreVector3::Cross(B3 - B1, C3 - B1)) <= 0.0f))
                     {
-                        (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply((A1 + A2 + A3 + B1 + B2 + B3) * (1.0f/6.0f));
+                        (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply((C1 + C2 + C3 + B1 + B2 + B3) * (1.0f/6.0f));
                         return true;
                     }
                 }
