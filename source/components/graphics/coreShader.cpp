@@ -484,13 +484,13 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix2& mM
     const coreInt8 iLocation = this->RetrieveUniform(sName);
     if(iLocation >= 0)
     {
-        if(this->CheckCache(iLocation, coreVector4(mMatrix[0], mMatrix[1], mMatrix[2], mMatrix[3])))
+        if(this->CheckCache(iLocation, coreVector4(mMatrix.arr(0u), mMatrix.arr(1u), mMatrix.arr(2u), mMatrix.arr(3u))))
         {
             // send new value
 #if defined(_CORE_GLES_)
             glUniformMatrix2fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
 #else
-            glUniformMatrix2fv(iLocation, 1, bTranspose, mMatrix);
+            glUniformMatrix2fv(iLocation, 1, bTranspose, mMatrix.ptr());
 #endif
         }
     }
@@ -509,7 +509,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix3& mM
 #if defined(_CORE_GLES_)
         glUniformMatrix3fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
 #else
-        glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix);
+        glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix.ptr());
 #endif
     }
 }
@@ -527,7 +527,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mM
 #if defined(_CORE_GLES_)
         glUniformMatrix4fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
 #else
-        glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix);
+        glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix.ptr());
 #endif
     }
 }

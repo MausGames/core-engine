@@ -76,9 +76,9 @@ CoreAudio::CoreAudio()noexcept
     // reset listener
     this->DeferUpdates();
     {
-        alListenerfv(AL_POSITION,    m_vPosition);
-        alListenerfv(AL_VELOCITY,    m_vVelocity);
-        alListenerfv(AL_ORIENTATION, m_avDirection[0]);
+        alListenerfv(AL_POSITION,    m_vPosition.ptr());
+        alListenerfv(AL_VELOCITY,    m_vVelocity.ptr());
+        alListenerfv(AL_ORIENTATION, m_avDirection[0].ptr());
         alListenerf (AL_GAIN,        0.0f);
     }
     this->ProcessUpdates();
@@ -137,13 +137,13 @@ void CoreAudio::SetListener(const coreVector3 vPosition, const coreVector3 vVelo
 
         // set and update properties of the listener
         ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
-        if(m_vPosition      != vPosition)    {m_vPosition      = vPosition;    alListenerfv(AL_POSITION, m_vPosition);}
-        if(m_vVelocity      != vVelocity)    {m_vVelocity      = vVelocity;    alListenerfv(AL_VELOCITY, m_vVelocity);}
+        if(m_vPosition      != vPosition)    {m_vPosition      = vPosition;    alListenerfv(AL_POSITION, m_vPosition.ptr());}
+        if(m_vVelocity      != vVelocity)    {m_vVelocity      = vVelocity;    alListenerfv(AL_VELOCITY, m_vVelocity.ptr());}
         if(m_avDirection[0] != vDirection)   {m_avDirection[0] = vDirection;   bNewOrientation = true;}
         if(m_avDirection[1] != vOrientation) {m_avDirection[1] = vOrientation; bNewOrientation = true;}
 
         // update direction and orientation
-        if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0]);
+        if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0].ptr());
     }
     this->ProcessUpdates();
 }

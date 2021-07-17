@@ -168,8 +168,8 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
         alSourcef (m_iCurSource, AL_PITCH,              fPitch);
         alSourcei (m_iCurSource, AL_LOOPING,            bLoop);
 
-        alSourcefv(m_iCurSource, AL_POSITION,           vPosition);
-        alSourcefv(m_iCurSource, AL_VELOCITY,           coreVector3(0.0f,0.0f,0.0f));
+        alSourcefv(m_iCurSource, AL_POSITION,           vPosition.ptr());
+        alSourcefv(m_iCurSource, AL_VELOCITY,           coreVector3(0.0f,0.0f,0.0f).ptr());
         alSourcef (m_iCurSource, AL_REFERENCE_DISTANCE, 1.0f);
         alSourcef (m_iCurSource, AL_MAX_DISTANCE,       5.0f);
         alSourcef (m_iCurSource, AL_ROLLOFF_FACTOR,     1.0f);
@@ -204,8 +204,8 @@ void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const co
         alSourcef (m_iCurSource, AL_PITCH,           fPitch);
         alSourcei (m_iCurSource, AL_LOOPING,         bLoop);
 
-        alSourcefv(m_iCurSource, AL_POSITION,        coreVector3(0.0f,0.0f,0.0f));
-        alSourcefv(m_iCurSource, AL_VELOCITY,        coreVector3(0.0f,0.0f,0.0f));
+        alSourcefv(m_iCurSource, AL_POSITION,        coreVector3(0.0f,0.0f,0.0f).ptr());
+        alSourcefv(m_iCurSource, AL_VELOCITY,        coreVector3(0.0f,0.0f,0.0f).ptr());
 
         // start playback
         alSourcePlay(m_iCurSource);
@@ -265,8 +265,8 @@ void coreSound::SetSource(const coreVector3 vPosition, const coreVector3 vVeloci
 
 #endif
         // set position and velocity
-        alSourcefv(m_iCurSource, AL_POSITION, vPosition);
-        alSourcefv(m_iCurSource, AL_VELOCITY, vVelocity);
+        alSourcefv(m_iCurSource, AL_POSITION, vPosition.ptr());
+        alSourcefv(m_iCurSource, AL_VELOCITY, vVelocity.ptr());
     }
 }
 

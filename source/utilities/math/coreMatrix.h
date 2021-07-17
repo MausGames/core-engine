@@ -110,9 +110,9 @@ public:
     inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
 
     /* convert matrix */
-    constexpr operator const coreFloat* ()const            {return (&_11);}
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 4u) return (&_11)[i];}
     constexpr const coreFloat& arr(const coreUintW i)const {ASSERT(i < 4u) return (&_11)[i];}
+    constexpr const coreFloat* ptr()const                  {return (&_11);}
 
     /* transpose matrix */
     constexpr coreMatrix2 Transposed()const;
@@ -173,9 +173,9 @@ public:
     inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
 
     /* convert matrix */
-    constexpr operator const coreFloat* ()const             {return (&_11);}
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
     constexpr const coreFloat& arr (const coreUintW i)const {ASSERT(i < 9u) return (&_11)[i];}
+    constexpr const coreFloat* ptr ()const                  {return (&_11);}
     CONSTEXPR coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
     CONSTEXPR coreMatrix2      m12 ()const                  {return coreMatrix2  (_11, _12, _21, _22);}
     CONSTEXPR coreMatrix2      m13 ()const                  {return coreMatrix2  (_11, _13, _31, _33);}
@@ -254,9 +254,9 @@ public:
     inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
 
     /* convert matrix */
-    constexpr operator const coreFloat* ()const             {return (&_11);}
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 16u) return (&_11)[i];}
     constexpr const coreFloat& arr (const coreUintW i)const {ASSERT(i < 16u) return (&_11)[i];}
+    constexpr const coreFloat* ptr ()const                  {return (&_11);}
     CONSTEXPR coreMatrix4x3    m4x3()const                  {return coreMatrix4x3(_11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43);}
     CONSTEXPR coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
     CONSTEXPR coreMatrix3      m123()const                  {return coreMatrix3  (_11, _12, _13, _21, _22, _23, _31, _32, _33);}
