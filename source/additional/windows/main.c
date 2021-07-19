@@ -146,14 +146,14 @@ static void ImproveNuma(void)
 {
     // get highest NUMA node number
     ULONG iNumaNode;
-    if(GetNumaHighestNodeNumber(&iNumaNode))
+    if(GetNumaHighestNodeNumber(&iNumaNode) && iNumaNode)
     {
         // get all processors of the NUMA node
         ULONGLONG iProcessMask;
-        if(GetNumaNodeProcessorMask((UCHAR)iNumaNode, &iProcessMask))
+        if(GetNumaNodeProcessorMask((UCHAR)iNumaNode, &iProcessMask) && iProcessMask)
         {
             // change processor affinity mask
-            if(iProcessMask) SetProcessAffinityMask(GetCurrentProcess(), (DWORD_PTR)iProcessMask);
+            SetProcessAffinityMask(GetCurrentProcess(), (DWORD_PTR)iProcessMask);
         }
     }
 }

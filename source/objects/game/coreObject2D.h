@@ -13,6 +13,7 @@
 // TODO 2: Interact depends on Move, and Move of some menu objects depend on Interact
 // TODO 3: on IsClicked: make right mouse button on mobile a longer push or multiple fingers ?
 // TODO 3: on IsClicked: consider finger number
+// TODO 4: move transform*ortho matrix multiplication from render to move, though raw transform is needed for interaction
 // TODO 5: <old comment style>
 
 

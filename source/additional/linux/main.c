@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////
 #if defined(__linux__)
 
+#pragma GCC diagnostic ignored "-Wunused-function"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #include <unistd.h>
@@ -73,16 +74,18 @@ static void InstallSignalHandler(void)
 /* start up the application */
 int main(int argc, char** argv)
 {
-#if !defined(__OPTIMIZE__)
+#if defined(__OPTIMIZE__)
+
+    // install custom signal handler
+    InstallSignalHandler();
+
+#else
 
     // improve memory debugging with glibc
     mallopt(M_CHECK_ACTION, 3);
     mallopt(M_PERTURB,      1);
 
 #endif
-
-    // install custom signal handler
-    InstallSignalHandler();
 
     // run the application
     return coreMain(argc, argv);

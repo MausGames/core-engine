@@ -31,7 +31,7 @@
 
 // ****************************************************************
 /* particle class */
-class coreParticle final
+class alignas(ALIGNMENT_CACHE) coreParticle final
 {
 public:
     /* state structure */

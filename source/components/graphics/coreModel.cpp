@@ -87,7 +87,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     m_iNumVertices = oImport.aVertexData.size();
     m_iNumIndices  = oImport.aiIndexData.size();
     m_sPath        = pFile->GetPath();
-    ASSERT(m_iNumVertices <= 0xFFFFu)
+    ASSERT((m_iNumVertices > 0u) && (m_iNumVertices <= 0xFFFFu))
 
     // prepare index-map (for deferred remapping)
     alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 aiMap[0x10000u];
@@ -167,7 +167,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) m_pvVertexPosition[i] = oImport.aVertexData[i].vPosition;
 
         // get range factor for target cluster calculations
-        const coreVector3 vRangeDiff = coreVector3(1.0f,1.0f,1.0f) / (vRangeMax - vRangeMin);
+        const coreVector3 vRangeDiff = coreVector3(1.0f,1.0f,1.0f) / (vRangeMax - vRangeMin).Processed(MAX, CORE_MATH_PRECISION);
 
         // assign triangles to different clusters based on their vertex positions (uniform grid)
         coreList<coreUint16> aiTempIndex[CORE_MODEL_CLUSTERS_MAX];
@@ -391,7 +391,7 @@ void coreModel::DrawElements()const
 {
     // draw the model (with index buffer)
     ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer.IsValid())
-    glDrawRangeElements(m_iPrimitiveType, 0u, m_iNumVertices, m_iNumIndices, m_iIndexType, NULL);
+    glDrawRangeElements(m_iPrimitiveType, 0u, m_iNumVertices - 1u, m_iNumIndices, m_iIndexType, NULL);
 }
 
 
@@ -475,7 +475,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, c
 
     // save properties
     if(m_aVertexBuffer.empty()) m_iNumVertices = iNumVertices;
-    ASSERT(m_iNumVertices == iNumVertices)
+    ASSERT(m_iNumVertices && (m_iNumVertices == iNumVertices))
 
     // create vertex buffer
     m_aVertexBuffer.emplace_back();
@@ -496,6 +496,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const
 
     // save properties
     m_iNumIndices = iNumIndices;
+    ASSERT(m_iNumIndices)
 
     // detect index type
     switch(iIndexSize)
