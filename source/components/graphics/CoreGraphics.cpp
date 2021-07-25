@@ -152,9 +152,9 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // reset scene
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     SDL_GL_SwapWindow(Core::System->GetWindow());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE))
     {
@@ -428,10 +428,10 @@ void CoreGraphics::__UpdateScene()
     coreTexture::DisableAll();
     coreProgram::Disable(true);
 
-    // explicitly invalidate depth buffer
+    // explicitly invalidate depth and stencil buffer
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
-        constexpr GLenum aiAttachment[] = {GL_DEPTH};
+        constexpr GLenum aiAttachment[] = {GL_DEPTH, GL_STENCIL};
         glInvalidateFramebuffer(GL_FRAMEBUFFER, ARRAY_SIZE(aiAttachment), aiAttachment);
     }
 
@@ -440,10 +440,6 @@ void CoreGraphics::__UpdateScene()
     SDL_GL_SwapWindow(Core::System->GetWindow());
     Core::Debug->MeasureStart(CORE_DEBUG_OVERALL_NAME);
 
-    // clear color and depth buffer
-#if defined(_CORE_DEBUG_) || defined(_CORE_GLES_)
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#else
-    glClear(GL_DEPTH_BUFFER_BIT);
-#endif
+    // clear color, depth and stencil buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
