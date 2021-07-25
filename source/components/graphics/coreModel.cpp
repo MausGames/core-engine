@@ -90,8 +90,8 @@ coreStatus coreModel::Load(coreFile* pFile)
     ASSERT((m_iNumVertices > 0u) && (m_iNumVertices <= 0xFFFFu))
 
     // prepare index-map (for deferred remapping)
-    alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 aiMap[0x10000u];
-    for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) aiMap[i] = i & 0xFFFFu;
+    alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 s_aiMap[0x10000u];
+    for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) s_aiMap[i] = i & 0xFFFFu;
 
     // apply post-transform vertex cache optimization to index data
     coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
@@ -105,18 +105,18 @@ coreStatus coreModel::Load(coreFile* pFile)
         ASSERT(iFirst < m_iNumVertices)
 
         // check first map entry
-        if(aiMap[iFirst] >= iCurIndex)
+        if(s_aiMap[iFirst] >= iCurIndex)
         {
             const coreUint16 iNew = iCurIndex++;
-            const coreUint16 iOld = aiMap[iFirst];
+            const coreUint16 iOld = s_aiMap[iFirst];
 
             // find second map entry
             coreUint16 iSecond = iNew;
-            while(aiMap[iSecond] != iNew) iSecond = aiMap[iSecond];
+            while(s_aiMap[iSecond] != iNew) iSecond = s_aiMap[iSecond];
 
             // swap indices (in map)
-            aiMap[iFirst]  = iNew;
-            aiMap[iSecond] = iOld;
+            s_aiMap[iFirst]  = iNew;
+            s_aiMap[iSecond] = iOld;
 
             // swap vertices
             std::swap(oImport.aVertexData[iNew], oImport.aVertexData[iOld]);
@@ -125,7 +125,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // remap all indices
     for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
-        piOptimizedData[i] = aiMap[piOptimizedData[i]];
+        piOptimizedData[i] = s_aiMap[piOptimizedData[i]];
 
     // analyze all vertices
     coreVector3 vRangeMin = coreVector3( FLT_MAX, FLT_MAX, FLT_MAX);

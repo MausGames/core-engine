@@ -20,7 +20,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct co
     coreChar       aacCharArray[iNum][iLength];
     coreHashString asHashString[iNum];
 
-    coreStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) {coreData::PrintBase(aacCharArray[i], iLength, pcString, i); asHashString[i] = aacCharArray[i];}}
+    coreStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) {WARN_IF(coreUintW(coreData::PrintBase(aacCharArray[i], iLength, pcString, i)) >= iLength) {} asHashString[i] = aacCharArray[i];}}
     inline const coreHashString& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return asHashString[iIndex];}
 };
 
@@ -28,12 +28,12 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct co
     extern const coreChar v ## __a[] = s; \
     static const coreStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
 
-__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      avLightPosition)
-__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      avLightDirection)
-__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_VALUE,     CORE_GRAPHICS_LIGHTS,      avLightValue)
-__STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_2D,      CORE_TEXTURE_UNITS_2D,     avTexture2D)
-__STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_SHADOW,  CORE_TEXTURE_UNITS_SHADOW, avTextureShadow)
-__STRING_LIST(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, avOutColor)
+__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      s_asLightPosition)
+__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_DIRECTION, CORE_GRAPHICS_LIGHTS,      s_asLightDirection)
+__STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_VALUE,     CORE_GRAPHICS_LIGHTS,      s_asLightValue)
+__STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_2D,      CORE_TEXTURE_UNITS_2D,     s_asTexture2D)
+__STRING_LIST(CORE_SHADER_UNIFORM_TEXTURE_SHADOW,  CORE_TEXTURE_UNITS_SHADOW, s_asTextureShadow)
+__STRING_LIST(CORE_SHADER_OUTPUT_COLOR,            CORE_SHADER_OUTPUT_COLORS, s_asOutColor)
 
 
 // ****************************************************************
@@ -318,7 +318,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
-            glBindFragDataLocation(m_iIdentifier, i, avOutColor[i].GetString());
+            glBindFragDataLocation(m_iIdentifier, i, s_asOutColor[i].GetString());
     }
 
     // link shader-program
@@ -326,8 +326,8 @@ coreStatus coreProgram::Load(coreFile* pFile)
     glUseProgram (m_iIdentifier);
 
     // bind texture units
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTexture2D    [i].GetString()), i);
-    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, avTextureShadow[i].GetString()), i + CORE_TEXTURE_SHADOW);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, s_asTexture2D    [i].GetString()), i);
+    for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, s_asTextureShadow[i].GetString()), i + CORE_TEXTURE_SHADOW);
 
     // bind uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
@@ -426,9 +426,9 @@ coreBool coreProgram::Enable()
         // forward ambient data
         for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i)
         {
-            this->SendUniform(avLightPosition [i], Core::Graphics->GetLight(i).vPosition);
-            this->SendUniform(avLightDirection[i], Core::Graphics->GetLight(i).vDirection);
-            this->SendUniform(avLightValue    [i], Core::Graphics->GetLight(i).vValue);
+            this->SendUniform(s_asLightPosition [i], Core::Graphics->GetLight(i).vPosition);
+            this->SendUniform(s_asLightDirection[i], Core::Graphics->GetLight(i).vDirection);
+            this->SendUniform(s_asLightValue    [i], Core::Graphics->GetLight(i).vValue);
         }
     }
 

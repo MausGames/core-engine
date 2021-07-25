@@ -60,9 +60,9 @@ struct coreNamePool final
     coreSpinLock oLock = coreSpinLock();       // spinlock to allow multiple threads accessing the pool
 };
 
-static coreNamePool g_PoolTextures2D;
-static coreNamePool g_PoolBuffers;
-static coreNamePool g_PoolVertexArrays;
+static coreNamePool s_PoolTextures2D;
+static coreNamePool s_PoolBuffers;
+static coreNamePool s_PoolVertexArrays;
 
 
 // ****************************************************************
@@ -73,21 +73,21 @@ void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
     const auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
 
     // generate 2D texture names
-    coreSpinLocker oLocker(&g_PoolTextures2D.oLock);
-    CORE_GL_POOL_GENERATE(g_PoolTextures2D, nCreateFunc, glGenTextures)
+    coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
+    CORE_GL_POOL_GENERATE(s_PoolTextures2D, nCreateFunc, glGenTextures)
 }
 
 void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate data buffer names
-    coreSpinLocker oLocker(&g_PoolBuffers.oLock);
-    CORE_GL_POOL_GENERATE(g_PoolBuffers, glCreateBuffers, glGenBuffers)
+    coreSpinLocker oLocker(&s_PoolBuffers.oLock);
+    CORE_GL_POOL_GENERATE(s_PoolBuffers, glCreateBuffers, glGenBuffers)
 }
 
 void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate vertex array names (without lock, because only executed on main-thread)
-    CORE_GL_POOL_GENERATE(g_PoolVertexArrays, glCreateVertexArrays, glGenVertexArrays)
+    CORE_GL_POOL_GENERATE(s_PoolVertexArrays, glCreateVertexArrays, glGenVertexArrays)
 }
 
 
@@ -252,9 +252,9 @@ void __coreInitOpenGL()
 void __coreExitOpenGL()
 {
     // delete remaining resource names from the pools
-    CORE_GL_POOL_RESET(g_PoolTextures2D,   glDeleteTextures)
-    CORE_GL_POOL_RESET(g_PoolBuffers,      glDeleteBuffers)
-    CORE_GL_POOL_RESET(g_PoolVertexArrays, glDeleteTextures)
+    CORE_GL_POOL_RESET(s_PoolTextures2D,   glDeleteTextures)
+    CORE_GL_POOL_RESET(s_PoolBuffers,      glDeleteBuffers)
+    CORE_GL_POOL_RESET(s_PoolVertexArrays, glDeleteTextures)
 }
 
 

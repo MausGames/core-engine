@@ -215,25 +215,25 @@ template <typename T> const coreChar* coreData::TypeName()
 #if defined(_CORE_MSVC_)
 
     // analyze function signature (const char* __cdecl coreData::TypeName<int>(void))
-    static const coreChar* pcBase = __FUNCSIG__;
-    static const coreChar* pcFrom = std::strchr (pcBase, '<') + 1u; if(pcFrom - 1u == NULL) return "";
-    static const coreChar* pcTo   = std::strrchr(pcFrom, '>');      if(pcTo        == NULL) return "";
+    static const coreChar* s_pcBase = __FUNCSIG__;
+    static const coreChar* s_pcFrom = std::strchr (s_pcBase, '<') + 1u; if(s_pcFrom - 1u == NULL) return "";
+    static const coreChar* s_pcTo   = std::strrchr(s_pcFrom, '>');      if(s_pcTo        == NULL) return "";
 
 #elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
 
     // analyze function signature (const char* coreData::TypeName() [with T = int])
-    static const coreChar* pcBase = __PRETTY_FUNCTION__;
-    static const coreChar* pcFrom = std::strchr (pcBase, '=') + 2u; if(pcFrom - 2u == NULL) return "";
-    static const coreChar* pcTo   = std::strrchr(pcFrom, ']');      if(pcTo        == NULL) return "";
+    static const coreChar* s_pcBase = __PRETTY_FUNCTION__;
+    static const coreChar* s_pcFrom = std::strchr (s_pcBase, '=') + 2u; if(s_pcFrom - 2u == NULL) return "";
+    static const coreChar* s_pcTo   = std::strrchr(s_pcFrom, ']');      if(s_pcTo        == NULL) return "";
 
 #endif
 
     // calculate name length
-    static const coreUintW iLen = MIN(coreUintW(pcTo - pcFrom), CORE_DATA_STRING_LEN - 1u);
+    static const coreUintW s_iLen = MIN(coreUintW(s_pcTo - s_pcFrom), CORE_DATA_STRING_LEN - 1u);
 
     // extract name from the function signature
-    std::memcpy(pcString, pcFrom, iLen);
-    pcString[iLen] = '\0';
+    std::memcpy(pcString, s_pcFrom, s_iLen);
+    pcString[s_iLen] = '\0';
 
     return pcString;
 }

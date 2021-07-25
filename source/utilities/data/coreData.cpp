@@ -739,13 +739,13 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
         std::FILE* pFileTo = std::fopen(pcTo, "wb");
         if(pFileTo)
         {
-            alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte aBuffer[0x4000u];
+            alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aBuffer[0x4000u];
 
             // copy all data
             while(!std::feof(pFileFrom))
             {
-                const coreUintW iResult = std::fread(aBuffer, 1u, ARRAY_SIZE(aBuffer), pFileFrom);
-                std::fwrite(aBuffer, 1u, iResult, pFileTo);
+                const coreUintW iResult = std::fread(s_aBuffer, 1u, ARRAY_SIZE(s_aBuffer), pFileFrom);
+                std::fwrite(s_aBuffer, 1u, iResult, pFileTo);
             }
 
             // close both files
@@ -1094,15 +1094,15 @@ void coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const
 const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
 {
     // get folder name from application name
-    static coreString sIdentifier;
-    if(sIdentifier.empty())
+    static coreString s_sIdentifier;
+    if(s_sIdentifier.empty())
     {
-        sIdentifier = Core::Application->Settings.Name;
-        sIdentifier.replace(" ", "");
+        s_sIdentifier = Core::Application->Settings.Name;
+        s_sIdentifier.replace(" ", "");
     }
 
     // create full path
-    const coreChar* pcFullPath = PRINT("%s" CORE_DATA_SLASH "%s" CORE_DATA_SLASH, pcPath, sIdentifier.c_str());
+    const coreChar* pcFullPath = PRINT("%s" CORE_DATA_SLASH "%s" CORE_DATA_SLASH, pcPath, s_sIdentifier.c_str());
 
     // create folder hierarchy (and check if path is valid)
     if(coreData::CreateFolder(pcFullPath) != CORE_OK) return NULL;

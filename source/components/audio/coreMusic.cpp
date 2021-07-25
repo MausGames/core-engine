@@ -221,7 +221,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 /* read from music stream and update sound buffer */
 coreBool coreMusic::__Stream(const ALuint iBuffer)
 {
-    alignas(ALIGNMENT_PAGE) BIG_STATIC coreChar acData[4u * CORE_MUSIC_CHUNK];
+    alignas(ALIGNMENT_PAGE) BIG_STATIC coreChar s_acData[4u * CORE_MUSIC_CHUNK];
 
     const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4u * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;
@@ -230,7 +230,7 @@ coreBool coreMusic::__Stream(const ALuint iBuffer)
     while(iReadSize < iChunkSize)
     {
         // read and decode data from the music track
-        const coreInt32 iResult = ov_read(&m_Stream, acData + iReadSize, iChunkSize - iReadSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
+        const coreInt32 iResult = ov_read(&m_Stream, s_acData + iReadSize, iChunkSize - iReadSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
 
         if(iResult > 0) iReadSize += iResult;
         else break;
@@ -240,7 +240,7 @@ coreBool coreMusic::__Stream(const ALuint iBuffer)
     if(iReadSize == 0) return false;
 
     // write decoded data to sound buffer
-    alBufferData(iBuffer, (m_pInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, acData, iReadSize, m_pInfo->rate);
+    alBufferData(iBuffer, (m_pInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, s_acData, iReadSize, m_pInfo->rate);
     return true;
 }
 
