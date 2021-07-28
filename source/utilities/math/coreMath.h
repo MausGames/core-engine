@@ -115,8 +115,8 @@ public:
     static inline    coreFloat Trunc(const coreFloat fInput)                       {return std::trunc(fInput);}
     static inline    coreFloat Fract(const coreFloat fInput)                       {return fInput - TRUNC(fInput);}   // FMOD(x, 1.0f)
     static inline    coreFloat Cbrt (const coreFloat fInput)                       {return std::cbrt (fInput);}
-    static inline    coreFloat Sqrt (const coreFloat fInput);
-    static inline    coreFloat Rsqrt(const coreFloat fInput);
+    static constexpr coreFloat Sqrt (const coreFloat fInput);
+    static constexpr coreFloat Rsqrt(const coreFloat fInput);
     static constexpr coreFloat Rcp  (const coreFloat fInput);
 
     /* exponential operations */
@@ -184,48 +184,62 @@ public:
 
 // ****************************************************************
 /* calculate square root */
-inline coreFloat coreMath::Sqrt(const coreFloat fInput)
+constexpr coreFloat coreMath::Sqrt(const coreFloat fInput)
 {
     ASSERT(fInput >= 0.0f)
 
+    if(!std::is_constant_evaluated())
+    {
 #if defined(_CORE_SSE_) || defined(_CORE_NEON_)
 
-    // optimized calculation with SSE/NEON
-    return fInput ? (fInput * RSQRT(fInput)) : 0.0f;
+        // optimized calculation with SSE/NEON
+        return fInput ? (fInput * RSQRT(fInput)) : 0.0f;
 
 #else
 
-    // normal calculation
-    return std::sqrt(fInput);
+        // normal calculation
+        return std::sqrt(fInput);
 
 #endif
+    }
+
+    // compile-time calculation
+    coreFloat fPrev   = 0.0f;
+    coreFloat fOutput = fInput;
+    while(fPrev != fOutput)
+    {
+        fPrev   = fOutput;
+        fOutput = 0.5f * (fOutput + fInput / fOutput);
+    }
+    return fOutput;
 }
 
 
 // ****************************************************************
 /* calculate approximate inverse square root */
-inline coreFloat coreMath::Rsqrt(const coreFloat fInput)
+constexpr coreFloat coreMath::Rsqrt(const coreFloat fInput)
 {
     ASSERT(fInput > 0.0f)
 
+    if(!std::is_constant_evaluated())
+    {
 #if defined(_CORE_SSE_)
 
-    // optimized calculation with SSE
-    const coreFloat A = _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(fInput)));
-    return 0.5f * A * (3.0f - (fInput * A) * A);
+        // optimized calculation with SSE
+        const coreFloat A = _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(fInput)));
+        return 0.5f * A * (3.0f - (fInput * A) * A);
 
 #elif defined(_CORE_NEON_)
 
-    // optimized calculation with NEON
-    const coreFloat A = vrsqrtes_f32(fInput);
-    return 0.5f * A * (3.0f - (fInput * A) * A);
-
-#else
-
-    // normal calculation
-    return 1.0f / std::sqrt(fInput);
+        // optimized calculation with NEON
+        const coreFloat A = vrsqrtes_f32(fInput);
+        return 0.5f * A * (3.0f - (fInput * A) * A);
 
 #endif
+    }
+
+    // normal calculation
+    return 1.0f / SQRT(fInput);
 }
 
 
@@ -235,25 +249,22 @@ constexpr coreFloat coreMath::Rcp(const coreFloat fInput)
 {
     ASSERT(fInput)
 
-#if defined(_CORE_SSE_)
-
     if(!std::is_constant_evaluated())
     {
+#if defined(_CORE_SSE_)
+
         // optimized calculation with SSE
         const coreFloat A = _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(fInput)));
         return A * (2.0f - fInput * A);
-    }
 
 #elif defined(_CORE_NEON_)
 
-    if(!std::is_constant_evaluated())
-    {
         // optimized calculation with NEON
         const coreFloat A = vrecpes_f32(fInput);
         return A * (2.0f - fInput * A);
-    }
 
 #endif
+    }
 
     // normal calculation
     return 1.0f / fInput;

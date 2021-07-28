@@ -91,8 +91,8 @@ public:
     constexpr coreVector2 Rotated150()const {return coreVector2( y, -x) * 0.5f + coreVector2(-x, -y) * 0.8660254037844386467637231707529f;}
 
     /* normalize vector */
-    inline coreVector2 Normalized      (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    inline coreVector2 NormalizedUnsafe()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
+    constexpr coreVector2 Normalized      (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    constexpr coreVector2 NormalizedUnsafe()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
@@ -101,7 +101,7 @@ public:
     inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector2(nFunction(x, f1, f2),                    nFunction(y, f1, f2));}
 
     /* direct functions */
-    inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat Length      ()const {return SQRT(this->LengthSq());}
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y);}
     constexpr coreFloat Min         ()const {return MIN(x, y);}
     constexpr coreFloat Max         ()const {return MAX(x, y);}
@@ -226,8 +226,8 @@ public:
     constexpr coreVector3 RotatedZ135()const {return coreVector3(this->xy().Rotated135(), z);}
 
     /* normalize vector */
-    inline coreVector3 Normalized      (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    inline coreVector3 NormalizedUnsafe()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
+    constexpr coreVector3 Normalized      (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    constexpr coreVector3 NormalizedUnsafe()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
@@ -236,7 +236,7 @@ public:
     inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector3(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2));}
 
     /* direct functions */
-    inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat Length      ()const {return SQRT(this->LengthSq());}
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z);}
     constexpr coreFloat Min         ()const {return MIN(x, y, z);}
     constexpr coreFloat Max         ()const {return MAX(x, y, z);}
@@ -351,8 +351,8 @@ public:
     constexpr coreVector4 InvertedW  ()const {return coreVector4( x,  y,  z, -w);}
 
     /* normalize vector */
-    inline coreVector4 Normalized      (const coreVector4 vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    inline coreVector4 NormalizedUnsafe()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
+    constexpr coreVector4 Normalized      (const coreVector4 vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    constexpr coreVector4 NormalizedUnsafe()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector4 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
@@ -361,7 +361,7 @@ public:
     inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector4(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2),                    nFunction(w, f1, f2));}
 
     /* direct functions */
-    inline    coreFloat Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat Length      ()const {return SQRT(this->LengthSq());}
     constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z + w*w);}
     constexpr coreFloat Min         ()const {return MIN(x, y, z, w);}
     constexpr coreFloat Max         ()const {return MAX(x, y, z, w);}
