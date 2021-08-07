@@ -191,6 +191,10 @@ template <typename T> const coreChar* coreData::ToChars(const T& tValue)
     return pcString;
 }
 
+#if defined(_CORE_LIBCPP_)
+    template <> inline const coreChar* coreData::ToChars(const coreFloat& tValue) {return PRINT("%f", tValue);}
+#endif
+
 
 // ****************************************************************
 /* convert string to trivial value */
@@ -204,6 +208,10 @@ template <typename T> T coreData::FromChars(const coreChar* pcString, const core
 
     return tValue;
 }
+
+#if defined(_CORE_LIBCPP_)
+    template <> inline coreFloat coreData::FromChars(const coreChar* pcString, const coreUintW iLen) {return coreFloat(std::atof(pcString));}
+#endif
 
 
 // ****************************************************************

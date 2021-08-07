@@ -53,14 +53,25 @@
 
 // compiler
 #if defined(_MSC_VER)
-    #define _CORE_MSVC_  (_MSC_VER)
+    #define _CORE_MSVC_
 #endif
 #if defined(__GNUC__)
-    #define _CORE_GCC_   ((__GNUC__)*10000 + (__GNUC_MINOR__)*100 + (__GNUC_PATCHLEVEL__)*1)
+    #define _CORE_GCC_
 #endif
 #if defined(__clang__)
-    #define _CORE_CLANG_ ((__clang_major__)*10000 + (__clang_minor__)*100 + (__clang_patchlevel__)*1)
+    #define _CORE_CLANG_
     #undef  _CORE_GCC_
+#endif
+
+// standard library
+#if defined(_CPPLIB_VER) || __has_include(<yvals_core.h>)
+    #define _CORE_STL_
+#endif
+#if defined(__GLIBCXX__) || __has_include(<bits/c++config.h>)
+    #define _CORE_GLIBCXX_
+#endif
+#if defined(_LIBCPP_VERSION) || __has_include(<__config>)
+    #define _CORE_LIBCPP_
 #endif
 
 // architecture
@@ -136,8 +147,11 @@
 #endif
 
 // target configuration checks
-#if ((_CORE_MSVC_) < 1920) && ((_CORE_GCC_) < 100200) && ((_CORE_CLANG_) < 120000)
+#if !defined(_CORE_MSVC_) && !defined(_CORE_GCC_) && !defined(_CORE_CLANG_)
     #error Compiler not supported!
+#endif
+#if !defined(_CORE_STL_) && !defined(_CORE_GLIBCXX_) && !defined(_CORE_LIBCPP_)
+    #error Standard Library not supported!
 #endif
 #if !defined(_CORE_X86_) && !defined(_CORE_ARM_)
     #error Architecture not supported!
@@ -252,6 +266,7 @@
 #if defined(_CORE_DEBUG_)
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
+    #define _LIBCPP_DEBUG 0
 #endif
 
 #if defined(_CORE_WINDOWS_)

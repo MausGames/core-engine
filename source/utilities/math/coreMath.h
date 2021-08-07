@@ -590,7 +590,17 @@ inline coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
 /* safely convert float into bit-representation */
 constexpr coreUint32 coreMath::FloatToBits(const coreFloat fInput)
 {
+#if defined(_CORE_LIBCPP_)
+
+    // conversion without library support
+    return __builtin_bit_cast(coreUint32, fInput);
+
+#else
+
+    // conversion with standard function
     return std::bit_cast<coreUint32>(fInput);
+
+#endif
 }
 
 
@@ -598,7 +608,17 @@ constexpr coreUint32 coreMath::FloatToBits(const coreFloat fInput)
 /* safely convert bit-representation into float */
 constexpr coreFloat coreMath::BitsToFloat(const coreUint32 iInput)
 {
+#if defined(_CORE_LIBCPP_)
+
+    // conversion without library support
+    return __builtin_bit_cast(coreFloat, iInput);
+
+#else
+
+    // conversion with standard function
     return std::bit_cast<coreFloat>(iInput);
+
+#endif
 }
 
 
