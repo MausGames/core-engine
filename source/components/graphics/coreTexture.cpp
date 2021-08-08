@@ -116,12 +116,18 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
+    const coreBool bTrilinear   = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR);
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
     m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(LOG2(m_vResolution.Max())) + 1u : 1u;
     m_eMode       = eMode;
     m_Spec        = oSpec;
+
+    // set filter mode
+    const GLenum iMagFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
+    const GLenum iMinFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? ((bMipMap || bMipMapOld) ? (bTrilinear ? GL_NEAREST_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST) : GL_NEAREST) :
+                                                                           ((bMipMap || bMipMapOld) ? (bTrilinear ? GL_LINEAR_MIPMAP_LINEAR  : GL_LINEAR_MIPMAP_NEAREST)  : GL_LINEAR);
 
     // set wrap mode
     const GLenum iWrapMode = HAS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
@@ -153,8 +159,8 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     s_apBound[s_iActiveUnit] = NULL;
 
     // set sampling parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (bMipMap || bMipMapOld) ? (Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR) ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR_MIPMAP_NEAREST) : GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, iMagFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, iMinFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
