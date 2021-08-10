@@ -341,7 +341,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
         {
             // sort ascending and remove duplicates
             std::sort(pfArray, pfArray + iCount);
-            return std::unique(pfArray, pfArray + iCount, [](const coreFloat A, const coreFloat B) {return coreMath::IsNear(A, B);}) - pfArray;
+            return coreUint8(std::unique(pfArray, pfArray + iCount, [](const coreFloat A, const coreFloat B) {return coreMath::IsNear(A, B);}) - pfArray);
         };
 
         coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT + 1u] = {};

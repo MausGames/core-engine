@@ -525,7 +525,7 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 #define COLOR_GOLD   (coreVector3(1.000f, 0.859f, 0.000f))
 
 // default alignment values
-#define ALIGNMENT_NEW   (__STDCPP_DEFAULT_NEW_ALIGNMENT__)
+#define ALIGNMENT_NEW   (alignof(std::max_align_t))
 #define ALIGNMENT_SIMD  (16u)
 #define ALIGNMENT_CACHE (64u)
 #define ALIGNMENT_PAGE  (4096u)

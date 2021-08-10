@@ -265,7 +265,7 @@ void coreExtensions(coreString* OUTPUT psOutput)
     if(GLEW_VERSION_3_0)
     {
         // get number of available extensions
-        GLint iNumExtensions;
+        GLint iNumExtensions = 0;
         glGetIntegerv(GL_NUM_EXTENSIONS, &iNumExtensions);
 
         // reserve some memory

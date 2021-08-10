@@ -80,19 +80,19 @@ public:
     static inline const coreChar*  AppDir   () {return coreData::StrDirectory(coreData::AppPath());}
 
     /* get operating system properties */
-    static       coreBool   SystemMemory     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static       coreBool   SystemSpace      (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static const coreChar*  SystemName       ();
-    static const coreChar*  SystemUserName   ();
-    static const coreChar*  SystemDirAppData ();
-    static const coreChar*  SystemDirTemp    ();
+    static       coreBool  SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static       coreBool  SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static const coreChar* SystemName      ();
+    static const coreChar* SystemUserName  ();
+    static const coreChar* SystemDirAppData();
+    static const coreChar* SystemDirTemp   ();
 
     /* control current working directory */
     static       coreStatus SetCurDir(const coreChar* pcPath);
     static const coreChar*  GetCurDir();
 
     /* control command line arguments */
-    static        void            SetCommandLine(const coreInt32 iArgc, coreChar** ppcArgv);
+    static        void            SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv);
     static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
 
     /* control user folder */

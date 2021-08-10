@@ -461,7 +461,7 @@ const coreChar* coreData::GetCurDir()
 
 // ****************************************************************
 /* set command line arguments */
-void coreData::SetCommandLine(const coreInt32 iArgc, coreChar** ppcArgv)
+void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv)
 {
     ASSERT(ppcArgv)
 

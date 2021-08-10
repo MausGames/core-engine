@@ -55,14 +55,14 @@ CoreGraphics::CoreGraphics()noexcept
     // get max anti aliasing level
     if(CORE_GL_SUPPORT(EXT_framebuffer_multisample))
     {
-        GLint iValue; glGetIntegerv(GL_MAX_SAMPLES, &iValue);
+        GLint iValue = 0; glGetIntegerv(GL_MAX_SAMPLES, &iValue);
         m_iMaxSamples = MAX(iValue, 0);
     }
 
     // get max texture filter level
     if(CORE_GL_SUPPORT(ARB_texture_filter_anisotropic))
     {
-        GLfloat fValue; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &fValue);
+        GLfloat fValue = 0.0f; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &fValue);
         m_iMaxAnisotropy = F_TO_UI(MAX(fValue, 1.0f));
     }
 

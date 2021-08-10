@@ -488,7 +488,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix2& mM
         {
             // send new value
 #if defined(_CORE_GLES_)
-            glUniformMatrix2fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
+            glUniformMatrix2fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
 #else
             glUniformMatrix2fv(iLocation, 1, bTranspose, mMatrix.ptr());
 #endif
@@ -507,7 +507,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix3& mM
     {
         // send new value
 #if defined(_CORE_GLES_)
-        glUniformMatrix3fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
+        glUniformMatrix3fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
 #else
         glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix.ptr());
 #endif
@@ -525,7 +525,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mM
     {
         // send new value
 #if defined(_CORE_GLES_)
-        glUniformMatrix4fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed() : mMatrix);
+        glUniformMatrix4fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
 #else
         glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix.ptr());
 #endif

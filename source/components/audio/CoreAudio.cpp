@@ -93,10 +93,10 @@ CoreAudio::CoreAudio()noexcept
     // log audio device information
     Core::Log->ListStartInfo("Audio Device Information");
     {
-        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s", alGetString(AL_VENDOR));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s", alGetString(AL_RENDERER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s", alGetString(AL_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s)", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",      alGetString(AL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",      alGetString(AL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",      alGetString(AL_VERSION));
         Core::Log->ListAdd(alcGetString(m_pDevice, ALC_EXTENSIONS));
         Core::Log->ListAdd(alGetString(AL_EXTENSIONS));
     }
