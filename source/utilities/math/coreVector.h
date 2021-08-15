@@ -117,10 +117,10 @@ public:
     static constexpr coreFloat   Dot      (const coreVector2 v1, const coreVector2 v2);
     static inline    coreFloat   Angle    (const coreVector2 v1, const coreVector2 v2);
     static inline    coreVector2 Direction(const coreFloat fAngle);
-    static inline    coreVector2 Rand     ();
-    static inline    coreVector2 Rand     (const coreFloat fMax);
-    static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax);
-    static inline    coreVector2 Rand     (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY);
+    static inline    coreVector2 Rand     (coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 Rand     (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 Rand     (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector2 Reflect  (const coreVector2 vVelocity, const coreVector2 vNormal);
 
     /* packing functions */
@@ -250,10 +250,10 @@ public:
     static constexpr coreFloat   Dot    (const coreVector3 v1, const coreVector3 v2);
     static constexpr coreVector3 Cross  (const coreVector3 v1, const coreVector3 v2);
     static inline    coreFloat   Angle  (const coreVector3 v1, const coreVector3 v2);
-    static inline    coreVector3 Rand   ();
-    static inline    coreVector3 Rand   (const coreFloat fMax);
-    static inline    coreVector3 Rand   (const coreFloat fMin,  const coreFloat fMax);
-    static inline    coreVector3 Rand   (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ);
+    static inline    coreVector3 Rand   (coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector3 Rand   (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector3 Rand   (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector3 Rand   (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector3 Reflect(const coreVector3 vVelocity, const coreVector3 vNormal);
     static inline    coreBool    Visible(const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
 
@@ -373,10 +373,10 @@ public:
 
     /* static functions */
     static constexpr coreFloat   Dot (const coreVector4 v1, const coreVector4 v2);
-    static inline    coreVector4 Rand();
-    static inline    coreVector4 Rand(const coreFloat fMax);
-    static inline    coreVector4 Rand(const coreFloat fMin,  const coreFloat fMax);
-    static inline    coreVector4 Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, const coreFloat fMinW, const coreFloat fMaxW);
+    static inline    coreVector4 Rand(coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector4 Rand(const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector4 Rand(const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector4 Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, const coreFloat fMinW, const coreFloat fMaxW, coreRand* OUTPUT pRand = Core::Rand);
 
     /* packing functions */
     constexpr        coreUint32  PackUnorm210   ()const;
@@ -440,28 +440,28 @@ inline coreVector2 coreVector2::Direction(const coreFloat fAngle)
 
 // ****************************************************************
 /* generate random vector */
-inline coreVector2 coreVector2::Rand()
+inline coreVector2 coreVector2::Rand(coreRand* OUTPUT pRand)
 {
-    return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized();
+    return coreVector2(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized();
 }
 
-inline coreVector2 coreVector2::Rand(const coreFloat fMax)
+inline coreVector2 coreVector2::Rand(const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMax);
+    return coreVector2(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMax);
 }
 
-inline coreVector2 coreVector2::Rand(const coreFloat fMin, const coreFloat fMax)
+inline coreVector2 coreVector2::Rand(const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector2(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMin, fMax);
+    return coreVector2(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMin, fMax);
 }
 
-inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY)
+inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand)
 {
-    return coreVector2(Core::Rand->Float(fMinX, fMaxX),
-                       Core::Rand->Float(fMinY, fMaxY));
+    return coreVector2(pRand->Float(fMinX, fMaxX),
+                       pRand->Float(fMinY, fMaxY));
 }
 
 
@@ -595,32 +595,32 @@ inline coreFloat coreVector3::Angle(const coreVector3 v1, const coreVector3 v2)
 
 // ****************************************************************
 /* generate random vector */
-inline coreVector3 coreVector3::Rand()
+inline coreVector3 coreVector3::Rand(coreRand* OUTPUT pRand)
 {
-    return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized();
+    return coreVector3(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized();
 }
 
-inline coreVector3 coreVector3::Rand(const coreFloat fMax)
+inline coreVector3 coreVector3::Rand(const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMax);
+    return coreVector3(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMax);
 }
 
-inline coreVector3 coreVector3::Rand(const coreFloat fMin, const coreFloat fMax)
+inline coreVector3 coreVector3::Rand(const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector3(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMin, fMax);
+    return coreVector3(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMin, fMax);
 }
 
-inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ)
+inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, coreRand* OUTPUT pRand)
 {
-    return coreVector3(Core::Rand->Float(fMinX, fMaxX),
-                       Core::Rand->Float(fMinY, fMaxY),
-                       Core::Rand->Float(fMinZ, fMaxZ));
+    return coreVector3(pRand->Float(fMinX, fMaxX),
+                       pRand->Float(fMinY, fMaxY),
+                       pRand->Float(fMinZ, fMaxZ));
 }
 
 
@@ -748,36 +748,36 @@ constexpr coreFloat coreVector4::Dot(const coreVector4 v1, const coreVector4 v2)
 
 // ****************************************************************
 /* generate random vector */
-inline coreVector4 coreVector4::Rand()
+inline coreVector4 coreVector4::Rand(coreRand* OUTPUT pRand)
 {
-    return coreVector4(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized();
+    return coreVector4(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized();
 }
 
-inline coreVector4 coreVector4::Rand(const coreFloat fMax)
+inline coreVector4 coreVector4::Rand(const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector4(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMax);
+    return coreVector4(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMax);
 }
 
-inline coreVector4 coreVector4::Rand(const coreFloat fMin, const coreFloat fMax)
+inline coreVector4 coreVector4::Rand(const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector4(Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f,
-                       Core::Rand->Float(2.0f) - 1.0f).Normalized() * Core::Rand->Float(fMin, fMax);
+    return coreVector4(pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f,
+                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMin, fMax);
 }
 
-inline coreVector4 coreVector4::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, const coreFloat fMinW, const coreFloat fMaxW)
+inline coreVector4 coreVector4::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, const coreFloat fMinW, const coreFloat fMaxW, coreRand* OUTPUT pRand)
 {
-    return coreVector4(Core::Rand->Float(fMinX, fMaxX),
-                       Core::Rand->Float(fMinY, fMaxY),
-                       Core::Rand->Float(fMinZ, fMaxZ),
-                       Core::Rand->Float(fMinW, fMaxW));
+    return coreVector4(pRand->Float(fMinX, fMaxX),
+                       pRand->Float(fMinY, fMaxY),
+                       pRand->Float(fMinZ, fMaxZ),
+                       pRand->Float(fMinW, fMaxW));
 }
 
 
