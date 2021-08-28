@@ -16,16 +16,27 @@
 class INTERFACE coreThread
 {
 private:
-    SDL_Thread* m_pThread;                                  // pointer to thread structure
-    coreString  m_sName;                                    // name of the thread
+    /* custom function structure */
+    struct coreCustomFunc final
+    {
+        std::function<coreStatus()> nFunction;   // actual function to execute
+        coreUint32                  iToken;      // unique token as identifier
+    };
 
-    coreFloat m_fFrequency;                                 // average number of iterations per second (0.0f = ignore)
-    coreBool  m_bActive;                                    // currently active and not forced to shut down
 
-    coreList<std::function<coreStatus()>> m_anFuncNew;      // new custom functions (separate, to allow attaching and executing at the same time)
-    coreList<std::function<coreStatus()>> m_anFuncActive;   // active custom functions
-    coreSpinLock m_LockNew;                                 // spinlock for collecting new functions
-    coreSpinLock m_LockActive;                              // spinlock for executing active functions
+private:
+    SDL_Thread* m_pThread;                     // pointer to thread structure
+    coreString  m_sName;                       // name of the thread
+
+    coreFloat m_fFrequency;                    // average number of iterations per second (0.0f = ignore)
+    coreBool  m_bActive;                       // currently active and not forced to shut down
+
+    coreList<coreCustomFunc> m_anFuncNew;      // new custom functions (separate, to allow attaching and executing at the same time)
+    coreList<coreCustomFunc> m_anFuncActive;   // active custom functions
+    coreSpinLock m_LockNew;                    // spinlock for collecting new functions
+    coreSpinLock m_LockActive;                 // spinlock for executing active functions
+
+    coreUint32 m_iTokenCount;                  // number of assigned function tokens
 
 
 public:
@@ -39,8 +50,9 @@ public:
     void        KillThread ();
 
     /* run custom functions within the thread */
-    void UpdateFunctions();
-    template <typename F> inline void AttachFunction(F&& nFunction) {m_LockNew.Lock(); m_anFuncNew.push_back(nFunction); m_LockNew.Unlock();}   // [](void) -> coreStatus (CORE_OK, CORE_BUSY)
+    template <typename F> coreUint32 AttachFunction(F&& nFunction);   // [](void) -> coreStatus (CORE_OK, CORE_BUSY)
+    coreBool DetachFunction(const coreUint32 iToken);
+    void     UpdateFunctions();
 
     /* set object properties */
     inline void SetFrequency(const coreFloat fFrequency) {m_fFrequency = fFrequency;}
@@ -61,6 +73,27 @@ private:
     /* entry-point function */
     friend coreInt32 SDLCALL coreThreadMain(void* pData);
 };
+
+
+// ****************************************************************
+/* attach custom function */
+template <typename F> coreUint32 coreThread::AttachFunction(F&& nFunction)
+{
+    coreSpinLocker oLocker(&m_LockNew);
+
+    // get unique token
+    const coreUint32 iToken = (++m_iTokenCount);
+
+    // create new custom function
+    coreCustomFunc oFunc;
+    oFunc.nFunction = nFunction;
+    oFunc.iToken    = iToken;
+
+    // add function to list
+    m_anFuncNew.push_back(std::move(oFunc));
+
+    return iToken;
+}
 
 
 #endif /* _CORE_GUARD_THREAD_H_ */

@@ -20,6 +20,7 @@ coreThread::coreThread(const coreChar* pcName)noexcept
 , m_anFuncActive {}
 , m_LockNew      ()
 , m_LockActive   ()
+, m_iTokenCount  (0u)
 {
 }
 
@@ -73,6 +74,46 @@ void coreThread::KillThread()
 
 
 // ****************************************************************
+/* detach custom function */
+coreBool coreThread::DetachFunction(const coreUint32 iToken)
+{
+    if(!m_anFuncNew.empty())
+    {
+        coreSpinLocker oLocker(&m_LockNew);
+
+        // search through new custom functions
+        FOR_EACH(it, m_anFuncNew)
+        {
+            if(it->iToken == iToken)
+            {
+                // remove function from list
+                m_anFuncNew.erase(it);
+                return true;
+            }
+        }
+    }
+
+    if(!m_anFuncActive.empty())
+    {
+        coreSpinLocker oLocker(&m_LockActive);
+
+        // search through active custom functions
+        FOR_EACH(it, m_anFuncActive)
+        {
+            if(it->iToken == iToken)
+            {
+                // remove function from list
+                m_anFuncActive.erase(it);
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
 /* call and manage custom functions */
 void coreThread::UpdateFunctions()
 {
@@ -80,21 +121,19 @@ void coreThread::UpdateFunctions()
 
     if(!m_anFuncNew.empty())
     {
-        m_LockNew.Lock();
-        {
-            // collect new custom functions
-            FOR_EACH(it, m_anFuncNew) m_anFuncActive.push_back(std::move(*it));
-            m_anFuncNew.clear();
-        }
-        m_LockNew.Unlock();
+        coreSpinLocker oLocker2(&m_LockNew);
+
+        // collect new custom functions
+        FOR_EACH(it, m_anFuncNew) m_anFuncActive.push_back(std::move(*it));
+        m_anFuncNew.clear();
     }
 
     // loop trough all functions
     FOR_EACH_DYN(it, m_anFuncActive)
     {
         // call function and remove when successful
-        if((*it)()) DYN_KEEP  (it)
-               else DYN_REMOVE(it, m_anFuncActive)
+        if(it->nFunction()) DYN_KEEP  (it)
+                       else DYN_REMOVE(it, m_anFuncActive)
     }
 }
 
