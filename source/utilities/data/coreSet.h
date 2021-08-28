@@ -40,6 +40,11 @@ public:
     inline coreBool count   (const T& tItem)const {return this->__check   (this->__retrieve   (tItem));}
     inline coreBool count_bs(const T& tItem)const {return this->__check_bs(this->__retrieve_bs(tItem), tItem);}
 
+    /* get internal index */
+    using coreList<T>::index;
+    inline coreUintW index   (const T& tItem)const {return this->index(this->__retrieve   (tItem));}
+    inline coreUintW index_bs(const T& tItem)const {return this->index(this->__retrieve_bs(tItem));}
+
 
 private:
     /* check for successful item lookup */
@@ -47,7 +52,7 @@ private:
     inline coreBool __check_bs(const coreConstIterator& it, const T& tItem)const {return (it != this->end()) && ((*it) == tItem);}
 
     /* lookup item */
-    inline coreConstIterator __retrieve   (const T& tItem)const {FOR_EACH(it, *this) if((*it) == tItem) return it; return this->end();}
+    inline coreConstIterator __retrieve   (const T& tItem)const {return std::find(this->begin(), this->end(), tItem);}
     inline coreConstIterator __retrieve_bs(const T& tItem)const {ASSERT(std::is_sorted(this->begin(), this->end())) return std::lower_bound(this->begin(), this->end(), tItem);}
 };
 

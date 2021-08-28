@@ -494,7 +494,7 @@ coreUintW CoreInput::__GetJoystickIndex(const SDL_JoystickID iID)const
     FOR_EACH(it, m_aJoystick)
     {
         if(it->pJoystick == pFind)
-            return (it - m_aJoystick.begin());
+            return m_aJoystick.index(it);
     }
 
     // return index to empty joystick object

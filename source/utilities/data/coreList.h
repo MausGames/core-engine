@@ -26,6 +26,12 @@ public:
 
     ENABLE_COPY(coreList)
 
+    /* get internal index */
+    inline coreUintW index      (const coreIterator&      it)const {return it - this->begin();}
+    inline coreUintW index      (const coreConstIterator& it)const {return it - this->begin();}
+    inline coreUintW first_index(const T& tItem)const              {return this->index(std::find(this->begin(),  this->end(),  tItem));}
+    inline coreUintW last_index (const T& tItem)const              {return this->index(std::find(this->rbegin(), this->rend(), tItem));}
+
     /* remove existing item */
     coreIterator erase_swap(const coreIterator& it);
 };
@@ -38,7 +44,7 @@ template <typename T> typename coreList<T>::coreIterator coreList<T>::erase_swap
     ASSERT(!this->empty())
 
     // remember current index
-    const coreUintW iIndex = it - this->begin();
+    const coreUintW iIndex = this->index(it);
 
     // swap and delete target item (but do not preserve ordering)
     std::swap(it, this->end() - 1u);

@@ -66,6 +66,10 @@ public:
     inline coreUintW size    ()const              {return m_atValueList.size ();}
     inline coreBool  empty   ()const              {return m_atValueList.empty();}
 
+    /* get internal index */
+    inline coreUintW index   (const I& tKey)const {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve   (tKey));}
+    inline coreUintW index_bs(const I& tKey)const {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve_bs(tKey));}
+
     /* control memory allocation */
     inline void      reserve(const coreUintW iReserve) {m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
     inline void      shrink_to_fit()                   {m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
@@ -108,10 +112,10 @@ public:
     inline coreValueConstIterator find_bs(const I& tKey)const {return this->get_value(this->_retrieve_bs(tKey));}
 
     /* operate between values and keys */
-    inline coreValueIterator      get_value    (const coreKeyIterator&        it)      {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
-    inline coreValueConstIterator get_value    (const coreKeyConstIterator&   it)const {return m_atValueList.begin() + (it-m_atKeyList  .begin());}
-    inline coreKeyIterator        get_key      (const coreValueIterator&      it)      {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
-    inline coreKeyConstIterator   get_key      (const coreValueConstIterator& it)const {return m_atKeyList  .begin() + (it-m_atValueList.begin());}
+    inline coreValueIterator      get_value    (const coreKeyIterator&        it)      {return m_atValueList.begin() + m_atKeyList  .index(it);}
+    inline coreValueConstIterator get_value    (const coreKeyConstIterator&   it)const {return m_atValueList.begin() + m_atKeyList  .index(it);}
+    inline coreKeyIterator        get_key      (const coreValueIterator&      it)      {return m_atKeyList  .begin() + m_atValueList.index(it);}
+    inline coreKeyConstIterator   get_key      (const coreValueConstIterator& it)const {return m_atKeyList  .begin() + m_atValueList.index(it);}
     inline const coreValueList&   get_valuelist()const                                 {return m_atValueList;}
     inline const coreKeyList&     get_keylist  ()const                                 {return m_atKeyList;}
 
@@ -174,7 +178,7 @@ public:
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
-    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
 
     /* return original string */
     inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
@@ -204,7 +208,7 @@ public:
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
-    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin()+iIndex); return this->m_atValueList.erase(this->m_atValueList.begin()+iIndex);}
+    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
 };
 
 
@@ -380,7 +384,7 @@ template <typename K, typename I, typename T> template <typename... A> void core
     it = m_atKeyList.insert(it, std::move(tKey));
 
     // cache current entry
-    this->_cache_set(it - m_atKeyList.begin());
+    this->_cache_set(m_atKeyList.index(it));
 }
 
 
@@ -434,7 +438,7 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
         if((*it) == tKey)
         {
             // cache current entry
-            this->_cache_set(it - m_atKeyList.begin());
+            this->_cache_set(m_atKeyList.index(it));
             return it;
         }
     }
@@ -468,7 +472,7 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
     if((it != m_atKeyList.end()) && ((*it) == tKey))
     {
         // cache current entry
-        this->_cache_set(it - m_atKeyList.begin());
+        this->_cache_set(m_atKeyList.index(it));
         return it;
     }
 
