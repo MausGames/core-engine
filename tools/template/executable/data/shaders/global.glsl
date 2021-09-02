@@ -165,12 +165,10 @@ struct coreLight
 #else
     #define coreMin3(a,b,c) (min(a, min(b, c)))
     #define coreMax3(a,b,c) (max(a, max(b, c)))
-    #define _CORE_MED3(t) t coreMed3(const in t a, const in t b, const in t c) {return max(min(max(a, b), c), min(a, b));}
-        _CORE_MED3(float)
-        _CORE_MED3(vec2)
-        _CORE_MED3(vec3)
-        _CORE_MED3(vec4)
-    #undef _CORE_MED3
+    float coreMed3(const in float a, const in float b, const in float c) {return max(min(max(a, b), c), min(a, b));}
+    vec2  coreMed3(const in vec2  a, const in vec2  b, const in vec2  c) {return max(min(max(a, b), c), min(a, b));}
+    vec3  coreMed3(const in vec3  a, const in vec3  b, const in vec3  c) {return max(min(max(a, b), c), min(a, b));}
+    vec4  coreMed3(const in vec4  a, const in vec4  b, const in vec4  c) {return max(min(max(a, b), c), min(a, b));}
 #endif
 
 // condition across group of shader invocations
@@ -185,13 +183,26 @@ struct coreLight
     #define coreAllInvocations(x) (x)
 #endif
 
+// clamp values between 0.0 and 1.0
+#define coreSaturate(x) (clamp(x, 0.0, 1.0))
+
 // linear interpolation between 0.0 and 1.0
-#define _CORE_LINEAR_STEP(t) t coreLinearStep(const in float e0, const in float e1, const in t x) {return clamp((x - e0) / (e1 - e0), 0.0, 1.0);}
-    _CORE_LINEAR_STEP(float)
-    _CORE_LINEAR_STEP(vec2)
-    _CORE_LINEAR_STEP(vec3)
-    _CORE_LINEAR_STEP(vec4)
-#undef _CORE_LINEAR_STEP
+float coreLinearStep(const in float e0, const in float e1, const in float v) {return coreSaturate((v - e0) / (e1 - e0));}
+vec2  coreLinearStep(const in float e0, const in float e1, const in vec2  v) {return coreSaturate((v - e0) / (e1 - e0));}
+vec3  coreLinearStep(const in float e0, const in float e1, const in vec3  v) {return coreSaturate((v - e0) / (e1 - e0));}
+vec4  coreLinearStep(const in float e0, const in float e1, const in vec4  v) {return coreSaturate((v - e0) / (e1 - e0));}
+
+// extract the sign without returning 0.0
+float coreSign(const in float v) {return (v >= 0.0) ? 1.0 : -1.0;}
+#if (__VERSION__) >= 130
+    vec2 coreSign(const in vec2 v) {return mix(vec2(-1.0), vec2(1.0), greaterThanEqual(v, vec2(0.0)));}
+    vec3 coreSign(const in vec3 v) {return mix(vec3(-1.0), vec3(1.0), greaterThanEqual(v, vec3(0.0)));}
+    vec4 coreSign(const in vec4 v) {return mix(vec4(-1.0), vec4(1.0), greaterThanEqual(v, vec4(0.0)));}
+#else
+    vec2 coreSign(const in vec2 v) {return vec2(coreSign(v.x), coreSign(v.y));}
+    vec3 coreSign(const in vec3 v) {return vec3(coreSign(v.x), coreSign(v.y), coreSign(v.z));}
+    vec4 coreSign(const in vec4 v) {return vec4(coreSign(v.x), coreSign(v.y), coreSign(v.z), coreSign(v.w));}
+#endif
 
 // color convert
 vec3 coreRgbToHsv(const in vec3 v3Rgb)
@@ -297,6 +308,18 @@ vec3 coreUnpackNormalMapDeriv(const in vec2 v)
 {
     vec2 A = v * 2.0 - 1.0;
     return normalize(vec3(A, 1.0));
+}
+vec2 corePackNormalOcta(const in vec3 v)
+{
+    vec2 A = v.xy / (abs(v.x) + abs(v.y) + abs(v.z));
+    A = (v.z >= 0.0) ? A : ((vec2(1.0) - abs(A.yx)) * coreSign(A));
+    return A;
+}
+vec3 coreUnpackNormalOcta(const in vec2 v)
+{
+    vec3 A = vec3(v, 1.0 - abs(v.x) - abs(v.y));
+    A.xy += coreSign(A.xy) * -coreSaturate(-A.z);
+    return normalize(A);
 }
 
 // quaternion transformation

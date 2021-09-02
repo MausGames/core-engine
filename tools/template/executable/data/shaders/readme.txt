@@ -149,7 +149,9 @@ Functions
     T     coreMed3                (in T, in T, in T)              // trinary median
     bool  coreAnyInvocation       (in bool)                       // condition across group of shader invocations
     bool  coreAllInvocations      (in bool)
+    T     coreSaturate            (in T)                          // clamp values between 0.0 and 1.0
     T     coreLinearStep          (in T, in T, in T)              // linear interpolation between 0.0 and 1.0
+    T     coreSign                (in T)                          // extract the sign without returning 0.0
     vec3  coreRgbToHsv            (in vec3)                       // RGB to HSV conversion
     vec3  coreHsvToRgb            (in vec3)                       // HSV to RGB conversion
     vec3  coreRgbToYiq            (in vec3)                       // RGB to YIQ conversion   (BT.601, NTSC)
@@ -165,6 +167,8 @@ Functions
     vec3  coreUnpackNormalSphere  (in vec2)                       // vector normal unpack (with Lambert azimuthal equal-area projection)
     vec3  coreUnpackNormalMap     (in vec2)                       // vector normal unpack (with z-reconstruction)
     vec3  coreUnpackNormalMapDeriv(in vec2)                       // vector normal unpack (with partial-derivative)
+    vec2  corePackNormalOcta      (in vec3)                       // vector normal pack   (with octahedron encoding)
+    vec3  coreUnpackNormalOcta    (in vec2)                       // vector normal unpack (with octahedron encoding)
     vec3  coreQuatApply           (in vec4, in vec3)              // quaternion transformation
     mat2  coreTranspose           (in mat2)                       // matrix transpose
     mat3  coreTranspose           (in mat3)

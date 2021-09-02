@@ -258,10 +258,12 @@ public:
     static inline    coreBool    Visible(const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
 
     /* packing functions */
-    constexpr        coreUint32  PackUnorm011  ()const;
-    constexpr        coreUint32  PackSnorm011  ()const;
-    static constexpr coreVector3 UnpackUnorm011(const coreUint32 iNumber);
-    static constexpr coreVector3 UnpackSnorm011(const coreUint32 iNumber);
+    constexpr        coreUint32  PackUnorm011   ()const;
+    constexpr        coreUint32  PackSnorm011   ()const;
+    inline           coreVector2 PackSnormOcta  ()const;
+    static constexpr coreVector3 UnpackUnorm011 (const coreUint32  iNumber);
+    static constexpr coreVector3 UnpackSnorm011 (const coreUint32  iNumber);
+    static inline    coreVector3 UnpackSnormOcta(const coreVector2 vVector);
 
     /* color functions */
     constexpr coreVector3 RgbToHsv  ()const;
@@ -668,6 +670,22 @@ constexpr coreUint32 coreVector3::PackSnorm011()const
 
 
 // ****************************************************************
+/* compress regular normal-vector into octahedron normal-vector */
+inline coreVector2 coreVector3::PackSnormOcta()const
+{
+    coreVector2 A = coreVector2(x, y) / (ABS(x) + ABS(y) + ABS(z));
+
+    if(z < 0.0f)
+    {
+        A = coreVector2((1.0f - ABS(A.y)) * SIGN(A.x),
+                        (1.0f - ABS(A.x)) * SIGN(A.y));
+    }
+
+    return A;
+}
+
+
+// ****************************************************************
 /* uncompress (own) 10_11_11_rev packed uint into 0.0 to 1.0 vector */
 constexpr coreVector3 coreVector3::UnpackUnorm011(const coreUint32 iNumber)
 {
@@ -688,6 +706,22 @@ constexpr coreVector3 coreVector3::UnpackSnorm011(const coreUint32 iNumber)
     return coreVector3((A.x >= 1024.0f) ? ((A.x - 2048.0f)/1024.0f) : (A.x/1023.0f),
                        (A.y >= 1024.0f) ? ((A.y - 2048.0f)/1024.0f) : (A.y/1023.0f),
                        (A.z >=  512.0f) ? ((A.z - 1024.0f)/ 512.0f) : (A.z/ 511.0f));
+}
+
+
+// ****************************************************************
+/* uncompress octahedron normal-vector into regular normal-vector */
+inline coreVector3 coreVector3::UnpackSnormOcta(const coreVector2 vVector)
+{
+    coreVector3 A = coreVector3(vVector, 1.0f - ABS(vVector.x) - ABS(vVector.y));
+
+    if(A.z < 0.0f)
+    {
+        A.x += SIGN(A.x) * A.z;
+        A.y += SIGN(A.y) * A.z;
+    }
+
+    return A.NormalizedUnsafe();
 }
 
 
