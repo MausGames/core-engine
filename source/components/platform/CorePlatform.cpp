@@ -66,7 +66,7 @@ void CorePlatform::DefineAchievement(const coreHashString& sName, const coreChar
     oData.sSteamName = pcSteamName;
 
     // add definition to map
-    m_aAchievement.emplace_bs(sName, oData);
+    m_aAchievement.emplace_bs(sName, std::move(oData));
 }
 
 

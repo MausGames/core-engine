@@ -70,7 +70,7 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
             CopyFileA("log.html", "crash.dmp", FALSE);
 
             // open log file for reading
-            const HANDLE pLog = CreateFileA("crash.dmp", GENERIC_READ, 0u, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+            const HANDLE pLog = CreateFileA("crash.dmp", GENERIC_READ, 0u, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
             if(pLog != INVALID_HANDLE_VALUE)
             {
                 // get log file size

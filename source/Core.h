@@ -32,7 +32,6 @@
 // TODO 3: check for performance penalties and alternatives for thread_local
 // TODO 3: unique pointers and move semantics for functions taking ownership of a pointer
 // TODO 3: video class
-// TODO 3: string class
 // TODO 5: path/url class
 // TODO 5: stack-allocator
 // TODO 3: fix constexpr msvc bug (or confirm already fixed) (constexpr-results are not saved after compilation, functions often re-evaluated at run-time)
@@ -136,7 +135,7 @@
     #define _CORE_64BIT_
 #endif
 
-// SSE3 instruction set
+// SSE instruction set
 #if defined(_CORE_X86_)
     #define _CORE_SSE_
 #endif
@@ -604,7 +603,7 @@ public:
 
         struct Platform final
         {
-            static const coreUint32 SteamAppID;
+            static const coreUint32 SteamAppID;    // Steam app ID (0 = ignore)
         }
         Platform;
     }

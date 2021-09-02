@@ -12,7 +12,7 @@
 
 // TODO 3: implement conditional rendering (e.g. occlusion queries)
 // TODO 3: array textures
-// TODO 3: wrap glDisable, glDepthMask, glCullFace, etc. within the class (reference-counter for nested calls ?)
+// TODO 3: wrap glDisable, glDepthMask, glCullFace, glClearColor, etc. within the class (reference-counter for nested calls ?)
 // TODO 3: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision, breaks depth-dependent rendering (water, shadow) in Project One
 // TODO 3: async glReadPixels, improve screenshot with pixel-pack-buffer
 // TODO 5: <old comment style>
