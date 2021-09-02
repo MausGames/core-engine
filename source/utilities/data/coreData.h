@@ -23,12 +23,6 @@
 #define CORE_DATA_STRING_NUM (32u)    // number of temp-strings
 #define CORE_DATA_STRING_LEN (512u)   // length of each temp-string
 
-#if defined(_CORE_WINDOWS_)
-    #define CORE_DATA_SLASH "\\"      // default path-delimiter of the operating system (as string)
-#else
-    #define CORE_DATA_SLASH "/"
-#endif
-
 #if defined(_CORE_DEBUG_)
     #define PRINT(...)   ([&]() {if(false) std::printf(__VA_ARGS__); return coreData::Print(__VA_ARGS__);}())   // enable format-specifier checking
 #else
@@ -108,14 +102,16 @@ public:
     static coreStatus CloseLibrary(void* pLibrary);
 
     /* handle physical files and folders */
-    static coreBool    FileExists   (const coreChar* pcPath);
-    static coreInt64   FileSize     (const coreChar* pcPath);
-    static std::time_t FileWriteTime(const coreChar* pcPath);
-    static coreStatus  FileCopy     (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  FileMove     (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  FileDelete   (const coreChar* pcPath);
-    static coreStatus  ScanFolder   (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
-    static coreStatus  CreateFolder (const coreChar* pcPath);
+    static coreBool    FileExists    (const coreChar* pcPath);
+    static coreInt64   FileSize      (const coreChar* pcPath);
+    static std::time_t FileWriteTime (const coreChar* pcPath);
+    static coreStatus  FileCopy      (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  FileMove      (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  FileDelete    (const coreChar* pcPath);
+    static coreBool    FolderExists  (const coreChar* pcPath);
+    static coreBool    FolderWritable(const coreChar* pcPath);
+    static coreStatus  FolderCreate  (const coreChar* pcPath);
+    static coreStatus  FolderScan    (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
 
     /* retrieve date and time */
     static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = TIMEMAP_CURRENT);
@@ -287,13 +283,13 @@ template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInp
 /* call function for each valid string token */
 template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction)
 {
-    coreChar* pcString = coreData::__NextTempString();
+    coreChar acString[512];
 
     // make local copy
-    coreData::StrCopy(pcString, CORE_DATA_STRING_LEN, pcInput);
+    coreData::StrCopy(acString, ARRAY_SIZE(acString), pcInput);
 
     // tokenize string and forward to function
-    const coreChar* pcToken = std::strtok(pcString, pcDelimiter);
+    const coreChar* pcToken = std::strtok(acString, pcDelimiter);
     while(pcToken != NULL)
     {
         nFunction(pcToken);

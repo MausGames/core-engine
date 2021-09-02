@@ -292,7 +292,7 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
 
     // retrieve files from the folder
     coreList<coreString> asFile;
-    coreData::ScanFolder(pcPath, pcFilter, &asFile);
+    coreData::FolderScan(pcPath, pcFilter, &asFile);
 
     // reserve some memory
     pasOutput->reserve(asFile.size());

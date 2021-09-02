@@ -388,7 +388,7 @@ coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreCha
 
     // get specific files from the folder
     coreList<coreString> asFolder;
-    coreData::ScanFolder(pcPath, pcFilter, &asFolder);
+    coreData::FolderScan(pcPath, pcFilter, &asFolder);
 
     // try to add all files to the music-player
     FOR_EACH(it, asFolder)

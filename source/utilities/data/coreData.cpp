@@ -334,16 +334,16 @@ const coreChar* coreData::SystemDirAppData()
     wchar_t* pcRoamingPath;
     if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &pcRoamingPath)))
     {
-        coreChar* pcString = coreData::__NextTempString();
+        coreChar acString[MAX_PATH];
 
         // convert characters
-        const coreInt32 iLen = WideCharToMultiByte(CP_UTF8, 0u, pcRoamingPath, -1, pcString, CORE_DATA_STRING_LEN - 1, NULL, NULL);
+        const coreInt32 iLen = WideCharToMultiByte(CP_UTF8, 0u, pcRoamingPath, -1, acString, MAX_PATH, NULL, NULL);
         CoTaskMemFree(pcRoamingPath);
 
         if(iLen)
         {
             // prepare path and return
-            const coreChar* pcPath = coreData::__PrepareSystemDir(pcString);
+            const coreChar* pcPath = coreData::__PrepareSystemDir(acString);
             if(pcPath) return pcPath;
         }
     }
@@ -440,7 +440,7 @@ const coreChar* coreData::GetCurDir()
     if(iLen)
     {
         // add path-delimiter and return (with known length)
-        std::memcpy(pcString + iLen, CORE_DATA_SLASH, ARRAY_SIZE(CORE_DATA_SLASH));
+        std::memcpy(pcString + iLen, "/", 2u);
         return pcString;
     }
 
@@ -450,7 +450,7 @@ const coreChar* coreData::GetCurDir()
     if(getcwd(pcString, CORE_DATA_STRING_LEN - 1u))
     {
         // add path-delimiter and return
-        return std::strcat(pcString, CORE_DATA_SLASH);
+        return std::strcat(pcString, "/");
     }
 
 #endif
@@ -493,14 +493,14 @@ void coreData::InitUserFolder()
     {
              if(!std::strcmp(pcPath, "!appdata")) pcPath = coreData::SystemDirAppData();
         else if(!std::strcmp(pcPath, "!temp"))    pcPath = coreData::SystemDirTemp();
-        else                                      pcPath = PRINT("%s" CORE_DATA_SLASH, pcPath);
+        else                                      pcPath = PRINT("%s/", pcPath);
     }
 
     // use default user folder (and create folder hierarchy)
-    if(!pcPath || !pcPath[0] || (coreData::CreateFolder(pcPath) != CORE_OK))
+    if(!pcPath || !pcPath[0] || (coreData::FolderCreate(pcPath) != CORE_OK) || !coreData::FolderWritable(pcPath))
     {
         pcPath = "user/";
-        coreData::CreateFolder(pcPath);
+        coreData::FolderCreate(pcPath);
     }
 
     // save selected user folder
@@ -615,15 +615,17 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 {
 #if defined(_CORE_WINDOWS_)
 
+    const coreUint32 iAttributes = GetFileAttributesA(pcPath);
+
     // quick Windows check
-    if(GetFileAttributesA(pcPath) != INVALID_FILE_ATTRIBUTES) return true;
+    if((iAttributes != INVALID_FILE_ATTRIBUTES) && !HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     struct stat oBuffer;
 
     // quick POSIX check
-    if(!stat(pcPath, &oBuffer)) return true;
+    if(!stat(pcPath, &oBuffer) && S_ISREG(oBuffer.st_mode)) return true;
 
 #else
 
@@ -802,8 +804,111 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* check if folder exists */
+coreBool coreData::FolderExists(const coreChar* pcPath)
+{
+#if defined(_CORE_WINDOWS_)
+
+    const coreUint32 iAttributes = GetFileAttributesA(pcPath);
+
+    // quick Windows check
+    if((iAttributes != INVALID_FILE_ATTRIBUTES) && HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+
+    struct stat oBuffer;
+
+    // quick POSIX check
+    if(!stat(pcPath, &oBuffer) && S_ISDIR(oBuffer.st_mode)) return true;
+
+#else
+
+    // try to write into presumed folder
+    if(coreData::FolderWritable(pcPath)) return true;
+
+#endif
+
+    return false;
+}
+
+
+// ****************************************************************
+/* check if folder is writable */
+coreBool coreData::FolderWritable(const coreChar* pcPath)
+{
+    // get temporary file name
+    const coreChar* pcTemp = PRINT("%s/check_%s", pcPath, coreData::DateTimePrint("%Y%m%d_%H%M%S"));
+
+#if defined(_CORE_WINDOWS_)
+
+    // create temporary file
+    const HANDLE pFile = CreateFileA(pcTemp, GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
+    if(pFile != INVALID_HANDLE_VALUE)
+    {
+        // close and (automatically) delete file again
+        CloseHandle(pFile);
+
+        return true;
+    }
+
+#else
+
+    // create temporary file
+    SDL_RWops* pFile = SDL_RWFromFile(pcTemp, "wb");
+    if(pFile)
+    {
+        // close and delete file again
+        SDL_RWclose(pFile);
+        coreData::FileDelete(pcTemp);
+
+        return true;
+    }
+
+#endif
+
+    return false;
+}
+
+
+// ****************************************************************
+/* create folder hierarchy */
+coreStatus coreData::FolderCreate(const coreChar* pcPath)
+{
+    // check if folder already exists (less expensive)
+    if(coreData::FolderExists(pcPath)) return CORE_OK;
+
+    coreChar  acString[512];
+    coreChar* pcCursor = acString;
+
+    // make local copy
+    coreData::StrCopy(acString, ARRAY_SIZE(acString), pcPath);
+
+    // loop through all sub-folders
+    for(; (*pcCursor) != '\0'; ++pcCursor)
+    {
+        if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
+        {
+            // build temporary path
+            (*pcCursor) = '\0';
+
+            // create sub-folder
+#if defined(_CORE_WINDOWS_)
+            if(!CreateDirectoryA(acString, NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
+#else
+            if(mkdir(acString, S_IRWXU) && (errno != EEXIST)) return CORE_ERROR_FILE;
+#endif
+            // reset path
+            (*pcCursor) = '/';
+        }
+    }
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
 /* retrieve relative paths of all files from a folder */
-coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
+coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
 {
     WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
 
@@ -824,7 +929,9 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     {
         // check and add file path
         if(oFile.cFileName[0] != '.')
+        {
             pasOutput->push_back(PRINT("%s/%s", pcPath, oFile.cFileName));
+        }
     }
     while(FindNextFileA(pFolder, &oFile));
 
@@ -851,10 +958,9 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     while((pEntry = readdir(pDir)))
     {
         // check and add file path
-        if(pEntry->d_name[0] != '.')
+        if((pEntry->d_name[0] != '.') && coreData::StrCmpLike(pEntry->d_name, pcFilter))
         {
-            if(coreData::StrCmpLike(pEntry->d_name, pcFilter))
-                pasOutput->push_back(PRINT("%s/%s", pcPath, pEntry->d_name));
+            pasOutput->push_back(PRINT("%s/%s", pcPath, pEntry->d_name));
         }
     }
 
@@ -862,40 +968,6 @@ coreStatus coreData::ScanFolder(const coreChar* pcPath, const coreChar* pcFilter
     closedir(pDir);
 
 #endif
-
-    return CORE_OK;
-}
-
-
-// ****************************************************************
-/* create folder hierarchy */
-coreStatus coreData::CreateFolder(const coreChar* pcPath)
-{
-    coreChar* pcString = coreData::__NextTempString();
-    coreChar* pcCursor = pcString;
-
-    // make local copy
-    coreData::StrCopy(pcString, CORE_DATA_STRING_LEN, pcPath);
-
-    // loop through all sub-folders
-    for(; (*pcCursor) != '\0'; ++pcCursor)
-    {
-        if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
-        {
-            // build temporary path
-            const coreChar cTemp = (*pcCursor);
-            (*pcCursor) = '\0';
-
-            // create sub-folder
-#if defined(_CORE_WINDOWS_)
-            if(!CreateDirectoryA(pcString, NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
-#else
-            if(mkdir(pcString, S_IRWXU) && (errno != EEXIST)) return CORE_ERROR_FILE;
-#endif
-            // reset path
-            (*pcCursor) = cTemp;
-        }
-    }
 
     return CORE_OK;
 }
@@ -1102,10 +1174,10 @@ const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
     }
 
     // create full path
-    const coreChar* pcFullPath = PRINT("%s" CORE_DATA_SLASH "%s" CORE_DATA_SLASH, pcPath, s_sIdentifier.c_str());
+    const coreChar* pcFullPath = PRINT("%s/%s/", pcPath, s_sIdentifier.c_str());
 
     // create folder hierarchy (and check if path is valid)
-    if(coreData::CreateFolder(pcFullPath) != CORE_OK) return NULL;
+    if(coreData::FolderCreate(pcFullPath) != CORE_OK) return NULL;
 
     return pcFullPath;
 }
