@@ -15,14 +15,15 @@ coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS] = {};
 
 // ****************************************************************
 /* constructor */
-coreTexture::coreTexture(const coreBool bLoadCompressed)noexcept
+coreTexture::coreTexture(const coreTextureLoad eLoad)noexcept
 : coreResource  ()
 , m_iIdentifier (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
-, m_iCompressed (bLoadCompressed ? 0 : -1)
+, m_bCompressed (false)
 , m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
 , m_Spec        (coreTextureSpec(0u, 0u, 0u))
+, m_eLoad       (eLoad)
 , m_Sync        ()
 {
 }
@@ -60,17 +61,19 @@ coreStatus coreTexture::Load(coreFile* pFile)
     const coreUint8  iComponents = pData->format->BytesPerPixel;
     const coreUint32 iDataSize   = pData->w * pData->h * iComponents;
 
-    // check for compression capability
-    const coreTextureMode eCompress = (coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h) && !m_iCompressed) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT;
+    // check load configuration
+    const coreTextureMode eMode = ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_COMPRESS) && coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h)) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT) |
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_FILTER))                                                             ? CORE_TEXTURE_MODE_FILTER   : CORE_TEXTURE_MODE_DEFAULT) |
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NEAREST))                                                               ? CORE_TEXTURE_MODE_DEFAULT  : CORE_TEXTURE_MODE_NEAREST);
 
     // create texture
-    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eCompress | CORE_TEXTURE_MODE_FILTER | CORE_TEXTURE_MODE_REPEAT);
+    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eMode | CORE_TEXTURE_MODE_REPEAT);
     this->Modify(0u, 0u, pData->w, pData->h, iDataSize, s_cast<coreByte*>(pData->pixels));
 
     // save properties
     m_sPath = pFile->GetPath();
 
-    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, eCompress ? "compressed" : "standard");
+    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, m_bCompressed ? "compressed" : "standard");
     return m_Sync.Create() ? CORE_BUSY : CORE_OK;
 }
 
@@ -97,7 +100,7 @@ coreStatus coreTexture::Unload()
     m_iIdentifier = 0u;
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
-    m_iCompressed = MIN(m_iCompressed, 0);
+    m_bCompressed = false;
     m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
     m_Spec        = coreTextureSpec(0u, 0u, 0u);
 
@@ -149,7 +152,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;  break;
             case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
             }
-            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_iCompressed = 1; if(bMipMap || bMipMapOld) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
+            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_bCompressed = true; if(bMipMap || bMipMapOld) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
     }
 
@@ -176,7 +179,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     else
     {
         // allocate mutable texture memory
-        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, (m_iCompressed > 0) ? GL_RGBA : m_Spec.iFormat, (m_iCompressed > 0) ? GL_UNSIGNED_BYTE : m_Spec.iType, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_bCompressed ? GL_RGBA : m_Spec.iFormat, m_bCompressed ? GL_UNSIGNED_BYTE : m_Spec.iType, NULL);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
     }
 }
@@ -193,7 +196,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
     const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1u);
 
-    if(m_iCompressed > 0)
+    if(m_bCompressed)
     {
         ASSERT((iWidth == F_TO_UI(m_vResolution.x)) && (iHeight == F_TO_UI(m_vResolution.y)))
 

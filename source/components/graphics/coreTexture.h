@@ -74,6 +74,15 @@ enum coreTextureMode : coreUint8
 };
 ENABLE_BITWISE(coreTextureMode)
 
+enum coreTextureLoad : coreUint8
+{
+    CORE_TEXTURE_LOAD_DEFAULT     = 0x00u,   // use default configuration
+    CORE_TEXTURE_LOAD_NO_COMPRESS = 0x01u,   // disable color texture compression
+    CORE_TEXTURE_LOAD_NO_FILTER   = 0x02u,   // disable anisotropic filtering and mipmapping
+    CORE_TEXTURE_LOAD_NEAREST     = 0x04u    // enable nearest texture sampling (instead of linear)
+};
+ENABLE_BITWISE(coreTextureLoad)
+
 
 // ****************************************************************
 /* texture specification structure */
@@ -97,10 +106,12 @@ private:
 
     coreVector2 m_vResolution;                           // resolution of the base level
     coreUint8   m_iLevels;                               // number of texture levels
-    coreInt8    m_iCompressed;                           // compression status
+    coreBool    m_bCompressed;                           // compression status
 
     coreTextureMode m_eMode;                             // texture mode (sampling)
     coreTextureSpec m_Spec;                              // texture specification (format)
+
+    coreTextureLoad m_eLoad;                             // resource load configuration
 
     coreSync m_Sync;                                     // sync object for asynchronous texture loading
 
@@ -109,7 +120,7 @@ private:
 
 
 public:
-    explicit coreTexture(const coreBool bLoadCompressed = true)noexcept;
+    explicit coreTexture(const coreTextureLoad eLoad = CORE_TEXTURE_LOAD_DEFAULT)noexcept;
     ~coreTexture()final;
 
     DISABLE_COPY(coreTexture)
