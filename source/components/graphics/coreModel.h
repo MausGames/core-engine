@@ -23,6 +23,14 @@
 #define CORE_MODEL_CLUSTERS_AXIS (5u)                               // number of clusters per axis
 #define CORE_MODEL_CLUSTERS_MAX  (POW3(CORE_MODEL_CLUSTERS_AXIS))   // maximum number of clusters per model
 
+enum coreModelLoad : coreUint8
+{
+    CORE_MODEL_LOAD_DEFAULT     = 0x00u,   // use default configuration
+    CORE_MODEL_LOAD_NO_BUFFERS  = 0x01u,   // disable vertex and index buffer creation
+    CORE_MODEL_LOAD_NO_CLUSTERS = 0x02u    // disable cluster creation
+};
+ENABLE_BITWISE(coreModelLoad)
+
 
 // ****************************************************************
 /* model class */
@@ -93,13 +101,15 @@ private:
     GLenum m_iPrimitiveType;                      // primitive type for draw calls (e.g. GL_TRIANGLES)
     GLenum m_iIndexType;                          // index type for draw calls (e.g. GL_UNSIGNED_SHORT)
 
+    coreModelLoad m_eLoad;                        // resource load configuration
+
     coreSync m_Sync;                              // sync object for asynchronous model loading
 
     static coreModel* s_pCurrent;                 // currently active model object
 
 
 public:
-    explicit coreModel(const coreBool bCreateClusters = true)noexcept;
+    explicit coreModel(const coreModelLoad eLoad = CORE_MODEL_LOAD_DEFAULT)noexcept;
     ~coreModel()final;
 
     DISABLE_COPY(coreModel)

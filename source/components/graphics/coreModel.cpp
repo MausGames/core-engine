@@ -16,7 +16,7 @@ coreModel* coreModel::s_pCurrent = NULL;
 
 // ****************************************************************
 /* constructor */
-coreModel::coreModel(const coreBool bCreateClusters)noexcept
+coreModel::coreModel(const coreModelLoad eLoad)noexcept
 : coreResource          ()
 , m_iVertexArray        (0u)
 , m_aVertexBuffer       {}
@@ -30,12 +30,13 @@ coreModel::coreModel(const coreBool bCreateClusters)noexcept
 , m_vNaturalRange       (coreVector3(0.0f,0.0f,0.0f))
 , m_vWeightedCenter     (coreVector3(0.0f,0.0f,0.0f))
 , m_pvVertexPosition    (NULL)
-, m_ppiClusterIndex     (bCreateClusters ? NULL : r_cast<coreUint16**>(-1))
+, m_ppiClusterIndex     (NULL)
 , m_piClusterNumIndices (NULL)
 , m_pvClusterPosition   (NULL)
 , m_pfClusterRadius     (NULL)
 , m_iPrimitiveType      (GL_TRIANGLES)
 , m_iIndexType          (0u)
+, m_eLoad               (eLoad)
 , m_Sync                ()
 {
 }
@@ -160,7 +161,7 @@ coreStatus coreModel::Load(coreFile* pFile)
                                      coreFloat(adSum[1] / coreDouble(m_iNumVertices)),
                                      coreFloat(adSum[2] / coreDouble(m_iNumVertices)));
 
-    if(!m_ppiClusterIndex)
+    if(!HAS_FLAG(m_eLoad, CORE_MODEL_LOAD_NO_CLUSTERS))
     {
         // store vertex positions
         m_pvVertexPosition = ALIGNED_NEW(coreVector3, m_iNumVertices, ALIGNMENT_CACHE);
@@ -253,76 +254,81 @@ coreStatus coreModel::Load(coreFile* pFile)
         }
     }
 
-    if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev) && CORE_GL_SUPPORT(ARB_half_float_vertex))
+    if(!HAS_FLAG(m_eLoad, CORE_MODEL_LOAD_NO_BUFFERS))
     {
-        // reduce total vertex size (high quality compression)
-        coreVertexPackedHigh* pPackedData = new coreVertexPackedHigh[m_iNumVertices];
-        for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
+        if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev) && CORE_GL_SUPPORT(ARB_half_float_vertex))
         {
-            const coreVertex& oVertex = oImport.aVertexData[i];
+            // reduce total vertex size (high quality compression)
+            coreVertexPackedHigh* pPackedData = new coreVertexPackedHigh[m_iNumVertices];
+            for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
+            {
+                const coreVertex& oVertex = oImport.aVertexData[i];
 
-            // convert vertex attributes
-            pPackedData[i].iPosition = coreVector4(oVertex.vPosition, 0.0f).PackFloat4x16();
-            pPackedData[i].iTexCoord = oVertex.vTexCoord                   .PackUnorm2x16();
-            pPackedData[i].iNormal   = coreVector4(oVertex.vNormal,   0.0f).PackSnorm210 ();
-            pPackedData[i].iTangent  = oVertex.vTangent                    .PackSnorm210 ();
+                // convert vertex attributes
+                pPackedData[i].iPosition = coreVector4(oVertex.vPosition, 0.0f).PackFloat4x16();
+                pPackedData[i].iTexCoord = oVertex.vTexCoord                   .PackUnorm2x16();
+                pPackedData[i].iNormal   = coreVector4(oVertex.vNormal,   0.0f).PackSnorm210 ();
+                pPackedData[i].iTangent  = oVertex.vTangent                    .PackSnorm210 ();
+            }
+
+            // create vertex buffer
+            coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPackedHigh), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 4u, GL_HALF_FLOAT,         false, 0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT,     false, 2u*sizeof(coreUint32));
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_INT_2_10_10_10_REV, false, 3u*sizeof(coreUint32));
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_INT_2_10_10_10_REV, false, 4u*sizeof(coreUint32));
+            SAFE_DELETE_ARRAY(pPackedData)
         }
-
-        // create vertex buffer
-        coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPackedHigh), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 4u, GL_HALF_FLOAT,         false, 0u);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT,     false, 2u*sizeof(coreUint32));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_INT_2_10_10_10_REV, false, 3u*sizeof(coreUint32));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_INT_2_10_10_10_REV, false, 4u*sizeof(coreUint32));
-        SAFE_DELETE_ARRAY(pPackedData)
-    }
-    else
-    {
-        // reduce total vertex size (low quality compression)
-        coreVertexPackedLow* pPackedData = new coreVertexPackedLow[m_iNumVertices];
-        for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
+        else
         {
-            const coreVertex& oVertex = oImport.aVertexData[i];
+            // reduce total vertex size (low quality compression)
+            coreVertexPackedLow* pPackedData = new coreVertexPackedLow[m_iNumVertices];
+            for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
+            {
+                const coreVertex& oVertex = oImport.aVertexData[i];
 
-            // convert vertex attributes
-            pPackedData[i].vPosition = oVertex.vPosition;
-            pPackedData[i].iTexCoord = oVertex.vTexCoord                 .PackUnorm2x16();
-            pPackedData[i].iNormal   = coreVector4(oVertex.vNormal, 0.0f).PackSnorm4x8 ();
-            pPackedData[i].iTangent  = oVertex.vTangent                  .PackSnorm4x8 ();
+                // convert vertex attributes
+                pPackedData[i].vPosition = oVertex.vPosition;
+                pPackedData[i].iTexCoord = oVertex.vTexCoord                 .PackUnorm2x16();
+                pPackedData[i].iNormal   = coreVector4(oVertex.vNormal, 0.0f).PackSnorm4x8 ();
+                pPackedData[i].iTangent  = oVertex.vTangent                  .PackSnorm4x8 ();
+            }
+
+            // create vertex buffer
+            coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPackedLow), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3u, GL_FLOAT,          false, 0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT, false, 3u*sizeof(coreFloat));
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_BYTE,           false, 3u*sizeof(coreFloat) + 1u*sizeof(coreUint32));
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_BYTE,           false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
+            SAFE_DELETE_ARRAY(pPackedData)
         }
-
-        // create vertex buffer
-        coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, sizeof(coreVertexPackedLow), pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3u, GL_FLOAT,          false, 0u);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT, false, 3u*sizeof(coreFloat));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_BYTE,           false, 3u*sizeof(coreFloat) + 1u*sizeof(coreUint32));
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_BYTE,           false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
-        SAFE_DELETE_ARRAY(pPackedData)
-    }
 
 #if defined(_CORE_GLES_)
 
-    if(m_iNumVertices <= 256u)
-    {
-        // reduce default index size
-        coreUint8* piSmallData = new coreUint8[m_iNumIndices];
-        for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
+        if(m_iNumVertices <= 256u)
         {
-            // convert all indices
-            ASSERT(piOptimizedData[i] < 256u)
-            piSmallData[i] = coreUint8(piOptimizedData[i]);
-        }
+            // reduce default index size
+            coreUint8* piSmallData = new coreUint8[m_iNumIndices];
+            for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
+            {
+                // convert all indices
+                ASSERT(piOptimizedData[i] < 256u)
+                piSmallData[i] = coreUint8(piOptimizedData[i]);
+            }
 
-        // create small index buffer
-        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint8), piSmallData, CORE_DATABUFFER_STORAGE_STATIC);
-        SAFE_DELETE_ARRAY(piSmallData)
-    }
-    else
+            // create small index buffer
+            this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint8), piSmallData, CORE_DATABUFFER_STORAGE_STATIC);
+            SAFE_DELETE_ARRAY(piSmallData)
+        }
+        else
 
 #endif
 
-    // create index buffer
-    this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), piOptimizedData, CORE_DATABUFFER_STORAGE_STATIC);
+        // create index buffer
+        this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), piOptimizedData, CORE_DATABUFFER_STORAGE_STATIC);
+    }
+
+    // free index data
     SAFE_DELETE_ARRAY(piOptimizedData)
 
     Core::Log->Info("Model (%s, %u vertices, %u indices, %u clusters, %.5f x %.5f x %.5f range, %.5f radius) loaded", pFile->GetPath(), m_iNumVertices, m_iNumIndices, m_iNumClusters, m_vBoundingRange.x, m_vBoundingRange.y, m_vBoundingRange.z, m_fBoundingRadius);
@@ -334,7 +340,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 /* unload model resource data */
 coreStatus coreModel::Unload()
 {
-    if(m_aVertexBuffer.empty()) return CORE_INVALID_CALL;
+    if(!m_iNumVertices) return CORE_INVALID_CALL;
 
     // disable still active model
     if(s_pCurrent == this) coreModel::Disable(true);
