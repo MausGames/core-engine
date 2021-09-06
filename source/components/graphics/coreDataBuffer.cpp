@@ -55,48 +55,50 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     glBindBuffer(m_iTarget, m_iIdentifier);
     s_aiBound[m_iTarget] = m_iIdentifier;
 
-    if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STREAM))
+    if(CORE_GL_SUPPORT(ARB_buffer_storage) && CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
-        // always allocate mutable when streaming
-        glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
-    }
-    else
-    {
-        if(CORE_GL_SUPPORT(ARB_buffer_storage))
+        if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
         {
-            if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
-            {
-                // allocate static immutable buffer memory
-                glBufferStorage(m_iTarget, m_iSize, pData, 0u);
-            }
-            else
-            {
-                // allocate dynamic immutable buffer memory
-                glBufferStorage(m_iTarget, m_iSize, NULL, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
+            // allocate static immutable buffer memory
+            glBufferStorage(m_iTarget, m_iSize, pData, 0u);
+        }
+        else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC))
+        {
+            // allocate dynamic immutable buffer memory
+            glBufferStorage(m_iTarget, m_iSize, NULL, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
 
-                // map persistent mapped buffer
-                m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
+            // map persistent mapped buffer
+            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
 
-                if(pData)
-                {
-                    // initialize buffer memory
-                    std::memcpy(m_pPersistentBuffer, pData, m_iSize);
-                    glFlushMappedBufferRange(m_iTarget, 0, m_iSize);
-                }
+            if(pData)
+            {
+                // initialize buffer memory
+                std::memcpy(m_pPersistentBuffer, pData, m_iSize);
+                glFlushMappedBufferRange(m_iTarget, 0, m_iSize);
             }
         }
         else
         {
-            if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
-            {
-                // allocate static mutable buffer memory
-                glBufferData(m_iTarget, m_iSize, pData, GL_STATIC_DRAW);
-            }
-            else
-            {
-                // allocate dynamic mutable buffer memory
-                glBufferData(m_iTarget, m_iSize, pData, GL_DYNAMIC_DRAW);
-            }
+            // allocate temporary immutable buffer memory
+            glBufferStorage(m_iTarget, m_iSize, pData, GL_CLIENT_STORAGE_BIT);
+        }
+    }
+    else
+    {
+        if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+        {
+            // allocate static mutable buffer memory
+            glBufferData(m_iTarget, m_iSize, pData, GL_STATIC_DRAW);
+        }
+        else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC))
+        {
+            // allocate dynamic mutable buffer memory
+            glBufferData(m_iTarget, m_iSize, pData, GL_DYNAMIC_DRAW);
+        }
+        else
+        {
+            // allocate temporary mutable buffer memory
+            glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
         }
     }
 
