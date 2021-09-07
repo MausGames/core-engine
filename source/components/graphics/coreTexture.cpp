@@ -407,6 +407,8 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
 {
     if(CORE_GL_SUPPORT(ARB_multi_bind))
     {
+        GLuint aiIdentifier[CORE_TEXTURE_UNITS] = {};
+
         coreInt8 iStart = -1;
         coreInt8 iEnd   = -1;
 
@@ -417,6 +419,9 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
             {
                 coreTexture* pTexture = ppTextureArray[i].GetResource();
 
+                // insert texture identifier
+                aiIdentifier[i] = pTexture->GetIdentifier();
+
                 // check texture binding
                 if(s_apBound[i] == pTexture) continue;
                 s_apBound[i] = pTexture;
@@ -425,26 +430,17 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
                 if(iStart < 0) iStart = i;
                 iEnd = i;
             }
-        }
-
-        if(iStart >= 0)
-        {
-            GLuint aiIdentifier[CORE_TEXTURE_UNITS] = {};
-
-            // prepare tight traversal
-            const coreUintW iCount = iEnd - iStart + 1u;
-            ppTextureArray += iStart;
-
-            // arrange texture identifiers
-            for(coreUintW i = 0u; i < iCount; ++i)
+            else
             {
-                if(ppTextureArray[i].IsUsable()) aiIdentifier[i] = ppTextureArray[i]->GetIdentifier();
-                else s_apBound[i] = NULL;
-            }
+                coreTexture* pTexture = s_apBound[i];
 
-            // enable all at once
-            glBindTextures(iStart, iCount, aiIdentifier);
+                // keep current texture identifier
+                if(pTexture) aiIdentifier[i] = pTexture->GetIdentifier();
+            }
         }
+
+        // enable all at once
+        if(iStart >= 0) glBindTextures(iStart, iEnd - iStart + 1, aiIdentifier + iStart);
     }
     else
     {
