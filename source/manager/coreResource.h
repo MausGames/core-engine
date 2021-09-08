@@ -223,10 +223,10 @@ public:
     coreFile*    RetrieveFile   (const coreHashString& sPath);
 
     /* point resource proxy to foreign handle */
-    void        AssignProxy(coreResourceHandle* OUTPUT pProxy, coreResourceHandle* OUTPUT pForeign);
-    inline void AssignProxy(coreResourceHandle* OUTPUT pProxy, const coreHashString&      sForeign) {this->AssignProxy(pProxy,                               this->Get<coreResourceDummy>(sForeign));}
-    inline void AssignProxy(const coreHashString&      sProxy, coreResourceHandle* OUTPUT pForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), pForeign);}
-    inline void AssignProxy(const coreHashString&      sProxy, const coreHashString&      sForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), this->Get<coreResourceDummy>(sForeign));}
+    void        AssignProxy(coreResourceHandle*   pProxy, coreResourceHandle*   pForeign);
+    inline void AssignProxy(coreResourceHandle*   pProxy, const coreHashString& sForeign) {this->AssignProxy(pProxy,                               this->Get<coreResourceDummy>(sForeign));}
+    inline void AssignProxy(const coreHashString& sProxy, coreResourceHandle*   pForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), pForeign);}
+    inline void AssignProxy(const coreHashString& sProxy, const coreHashString& sForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), this->Get<coreResourceDummy>(sForeign));}
 
     /* reset all resources and relation-objects */
     void Reset(const coreResourceReset eInit);

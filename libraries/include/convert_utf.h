@@ -134,7 +134,7 @@ ConversionResult ConvertUTF8toUTF16(const UTF8** sourceStart, const UTF8* source
 {
     ConversionResult result = conversionOK;
     const UTF8* source = *sourceStart;
-    UTF16* target = *targetStart;
+    UTF16* __restrict target = *targetStart;
     while (source < sourceEnd) {
         UTF32 ch = 0;
         unsigned short extraBytesToRead = trailingBytesForUTF8[*source];

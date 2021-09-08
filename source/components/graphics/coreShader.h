@@ -140,10 +140,10 @@ private:
 
     coreList<coreShaderPtr>       m_apShader;         // attached shader objects
     coreList<coreResourceHandle*> m_apShaderHandle;   // raw shader resource handles (to preserve while unloaded)
-    coreProgramStatus m_eStatus;                      // current status
+    coreProgramStatus             m_eStatus;          // current status
 
-    coreMapStr<coreInt8> m_aiUniform;                 // uniform locations
-    coreMapStrFull<coreInt8> m_aiAttribute;           // attribute locations
+    coreMapStr<coreInt8>           m_aiUniform;       // uniform locations
+    coreMapStrFull<coreInt8>       m_aiAttribute;     // attribute locations
     coreMap<coreInt8, coreVector4> m_avCache;         // cached uniform values
 
     coreSync m_Sync;                                  // sync object for asynchronous shader-program loading

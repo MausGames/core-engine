@@ -16,6 +16,7 @@
 // TODO 3: improve delta-time precision, double, similar to coreThread
 // TODO 3: toggling out of m_iFullscreen == 2u might cause issues with some options (e.g. disabled composition)
 // TODO 5: <old comment style>
+// TODO 2: on EGL backend, no-error and context-flags without support can fail context creation (by SDL), but not on WGX/GLX backend
 
 
 // ****************************************************************

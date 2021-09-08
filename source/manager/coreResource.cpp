@@ -195,14 +195,14 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
 // ****************************************************************
 /* point resource proxy to foreign handle */
-void coreResourceManager::AssignProxy(coreResourceHandle* OUTPUT pProxy, coreResourceHandle* OUTPUT pForeign)
+void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHandle* pForeign)
 {
-    ASSERT(m_apProxy.count(&*pProxy) && (pProxy != pForeign))
+    ASSERT(m_apProxy.count(pProxy) && !m_apProxy.count(pForeign) && (pProxy != pForeign))
 
     if(pProxy->m_pResource)
     {
         // decrease old reference-counter
-        m_apProxy.at(&*pProxy)->RefDecrease();
+        m_apProxy.at(pProxy)->RefDecrease();
     }
 
     // point resource proxy to foreign handle
@@ -219,7 +219,7 @@ void coreResourceManager::AssignProxy(coreResourceHandle* OUTPUT pProxy, coreRes
     }
 
     // save new foreign handle
-    m_apProxy.at(&*pProxy) = pForeign;
+    m_apProxy.at(pProxy) = pForeign;
 }
 
 

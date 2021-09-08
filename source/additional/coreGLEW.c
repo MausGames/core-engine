@@ -7,7 +7,6 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 
-// TODO 3: only include features actually used in the engine (glew.h and glew.c)
 // TODO 5: evaluate GLEW alternatives (again)
 
 
