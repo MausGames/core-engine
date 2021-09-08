@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_RESOURCE_H_
 #define _CORE_GUARD_RESOURCE_H_
 
-// TODO 3: replace reference-counter with atomic variable ?
 // TODO 3: call OnLoad directly after load instead with delayed function callback ?
 // TODO 4: resources exist only within handles, redefine all interfaces
 // TODO 5: investigate possible GPU memory fragmentation when streaming in and out lots of resources
@@ -72,15 +71,15 @@ public:
 class coreResourceHandle final
 {
 private:
-    coreResource* m_pResource;   // handled resource object
-    coreFile*     m_pFile;       // pointer to resource file
+    coreResource* m_pResource;             // handled resource object
+    coreFile*     m_pFile;                 // pointer to resource file
 
-    coreString m_sName;          // identifier of this resource handle
-    coreBool   m_bAutomatic;     // updated automatically by the resource manager
+    coreString m_sName;                    // identifier of this resource handle
+    coreBool   m_bAutomatic;               // updated automatically by the resource manager
 
-    coreStatus   m_eStatus;      // current resource status
-    coreUint16   m_iRefCount;    // simple reference-counter
-    coreSpinLock m_UpdateLock;   // spinlock to prevent concurrent resource loading
+    coreStatus             m_eStatus;      // current resource status
+    coreAtomic<coreUint16> m_iRefCount;    // simple reference-counter
+    coreSpinLock           m_UpdateLock;   // spinlock to prevent concurrent resource loading
 
 
 private:
@@ -99,8 +98,8 @@ public:
     inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
 
     /* control the reference-counter */
-    inline void RefIncrease() {++m_iRefCount;}
-    inline void RefDecrease() {--m_iRefCount; ASSERT(m_iRefCount != 0xFFFFu) if(!m_iRefCount && !Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE)) this->Nullify();}
+    inline void RefIncrease() {m_iRefCount.FetchAdd(1u);}
+    inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u) && !Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE)) this->Nullify();}
 
     /* handle resource loading */
     inline coreBool Update () {coreSpinLocker oLocker(&m_UpdateLock); if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic) {m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
@@ -113,7 +112,7 @@ public:
     /* get object properties */
     inline const coreChar*   GetName    ()const {return m_sName.c_str();}
     inline const coreStatus& GetStatus  ()const {return m_eStatus;}
-    inline const coreUint16& GetRefCount()const {return m_iRefCount;}
+    inline       coreUint16  GetRefCount()const {return m_iRefCount;}
 
 
 private:

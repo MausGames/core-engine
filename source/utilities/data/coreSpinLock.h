@@ -52,6 +52,36 @@ public:
 
 
 // ****************************************************************
+/* relaxed atomic class */
+template <typename T> class coreAtomic final
+{
+private:
+    std::atomic<T> m_tValue;   // atomic variable
+
+    STATIC_ASSERT(std::atomic<T>::is_always_lock_free)
+
+
+public:
+    coreAtomic() = default;
+    constexpr coreAtomic(const T& tValue)noexcept : m_tValue (tValue) {}
+
+    DISABLE_COPY(coreAtomic<T>)
+
+    /* assignment operations */
+    FORCE_INLINE coreAtomic<T>& operator = (const T& tValue)noexcept;
+
+    /* access atomic value */
+    FORCE_INLINE operator T ()const;
+
+    /* change atomic value */
+    FORCE_INLINE T FetchAdd(const T& tValue) {return m_tValue.fetch_add(tValue, std::memory_order::relaxed);}
+    FORCE_INLINE T FetchSub(const T& tValue) {return m_tValue.fetch_sub(tValue, std::memory_order::relaxed);}
+    FORCE_INLINE T AddFetch(const T& tValue) {return m_tValue.fetch_add(tValue, std::memory_order::relaxed) + tValue;}
+    FORCE_INLINE T SubFetch(const T& tValue) {return m_tValue.fetch_sub(tValue, std::memory_order::relaxed) - tValue;}
+};
+
+
+// ****************************************************************
 /* acquire the spinlock */
 FORCE_INLINE void coreSpinLock::Lock()
 {
@@ -70,7 +100,7 @@ FORCE_INLINE void coreSpinLock::Lock()
 /* release the spinlock */
 FORCE_INLINE void coreSpinLock::Unlock()
 {
-    m_bState.clear(std::memory_order_release);
+    m_bState.clear(std::memory_order::release);
 }
 
 
@@ -78,7 +108,7 @@ FORCE_INLINE void coreSpinLock::Unlock()
 /* try to acquire the spinlock */
 FORCE_INLINE coreBool coreSpinLock::TryLock()
 {
-    return !m_bState.test(std::memory_order_relaxed) && !m_bState.test_and_set(std::memory_order_acquire);
+    return !m_bState.test(std::memory_order::relaxed) && !m_bState.test_and_set(std::memory_order::acquire);
 }
 
 
@@ -86,7 +116,24 @@ FORCE_INLINE coreBool coreSpinLock::TryLock()
 /* check for current lock state */
 FORCE_INLINE coreBool coreSpinLock::IsLocked()const
 {
-    return m_bState.test(std::memory_order_relaxed);
+    return m_bState.test(std::memory_order::relaxed);
+}
+
+
+// ****************************************************************
+/* assignment operations */
+template <typename T> FORCE_INLINE coreAtomic<T>& coreAtomic<T>::operator = (const T& tValue)noexcept
+{
+    m_tValue.store(tValue, std::memory_order::relaxed);
+    return *this;
+}
+
+
+// ****************************************************************
+/* access atomic value */
+template <typename T> FORCE_INLINE coreAtomic<T>::operator T ()const
+{
+    return m_tValue.load(std::memory_order::relaxed);
 }
 
 
