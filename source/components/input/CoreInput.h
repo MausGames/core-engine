@@ -185,7 +185,7 @@ public:
     inline const coreFloat&   GetJoystickRelative (const coreUintW iIndex, const coreUint8 iAxis)const                                    {ASSERT(iAxis      < CORE_INPUT_AXIS)             return __CORE_INPUT_JOYSTICK(iIndex).afRelative[iAxis];}
     inline const coreVector2& GetJoystickRelativeL(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[0]);}
     inline const coreVector2& GetJoystickRelativeR(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[2]);}
-    inline void               RumbleJoystick      (const coreUintW iIndex, const coreFloat fStrength, const coreUint32 iLengthMs)         {ASSERT((fStrength > 0.0f) && (fStrength <= 1.0f) && (iLengthMs > 0u)) if(__CORE_INPUT_JOYSTICK(iIndex).pHaptic) SDL_HapticRumblePlay(__CORE_INPUT_JOYSTICK(iIndex).pHaptic, fStrength, iLengthMs);}
+    inline void               RumbleJoystick      (const coreUintW iIndex, const coreFloat fStrength, const coreUint32 iLengthMs)         {ASSERT((fStrength > 0.0f) && (fStrength <= 1.0f) && (iLengthMs > 0u)) if(__CORE_INPUT_JOYSTICK(iIndex).pHaptic && Core::Config->GetBool(CORE_CONFIG_INPUT_HAPTIC)) SDL_HapticRumblePlay(__CORE_INPUT_JOYSTICK(iIndex).pHaptic, fStrength, iLengthMs);}
 
     /* access touch input */
     inline void                SetTouchButton  (const coreUintW iIndex, const coreBool bStatus)         {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; SET_BIT(m_aTouch[iIndex].iButton, CORE_INPUT_DATA, bStatus)}

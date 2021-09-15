@@ -40,26 +40,31 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, (m_iFullscreen == 2u) ? "1" : "0");
 
-    // get SDL version
-    SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
-    const SDL_version* pVersionTTF = TTF_Linked_Version();
-    const SDL_version* pVersionIMG = IMG_Linked_Version();
-
-    // init SDL libraries
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | (Core::Config->GetBool(CORE_CONFIG_INPUT_HAPTIC) ? SDL_INIT_HAPTIC : 0u)) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
+    // load SDL only once (to improve reset performance, and prevent crashes)
+    UNUSED static coreBool s_bOnce = []()
     {
-        Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
-    }
-    else
-    {
-        Core::Log->Info("SDL initialized (%d.%d.%d %s, TTF %d.%d.%d, IMG %d.%d.%d)",
-                        oVersionSDL .major, oVersionSDL .minor, oVersionSDL .patch, SDL_GetRevision(),
-                        pVersionTTF->major, pVersionTTF->minor, pVersionTTF->patch,
-                        pVersionIMG->major, pVersionIMG->minor, pVersionIMG->patch);
-    }
+        // get SDL version
+        SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
+        const SDL_version* pVersionTTF = TTF_Linked_Version();
+        const SDL_version* pVersionIMG = IMG_Linked_Version();
 
-    // automatically shut down SDL libraries on exit
-    std::atexit([]() {IMG_Quit(); TTF_Quit(); SDL_Quit();});
+        // init SDL libraries
+        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
+        {
+            Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
+        }
+        else
+        {
+            Core::Log->Info("SDL initialized (%d.%d.%d %s, TTF %d.%d.%d, IMG %d.%d.%d)",
+                            oVersionSDL .major, oVersionSDL .minor, oVersionSDL .patch, SDL_GetRevision(),
+                            pVersionTTF->major, pVersionTTF->minor, pVersionTTF->patch,
+                            pVersionIMG->major, pVersionIMG->minor, pVersionIMG->patch);
+        }
+
+        // automatically shut down SDL libraries on exit
+        WARN_IF(std::atexit([]() {IMG_Quit(); TTF_Quit(); SDL_Quit();})) {}
+        return true;
+    }();
 
     // load all available displays
     const coreUintW iNumDisplays = SDL_GetNumVideoDisplays();
