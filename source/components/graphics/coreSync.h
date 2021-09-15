@@ -11,11 +11,12 @@
 #define _CORE_GUARD_SYNC_H_
 
 // TODO 3: implement CheckAsync which uses the function-attachment interface (which thread?)
-// TODO 4: wrap GL_TIMEOUT_IGNORED
 
 
 // ****************************************************************
 /* sync definitions */
+#define CORE_SYNC_WAIT_FOREVER (GL_TIMEOUT_IGNORED)
+
 enum coreSyncCheck : coreUint8
 {
     CORE_SYNC_CHECK_NORMAL  = 0u,                           // check only for current status

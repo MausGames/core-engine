@@ -149,7 +149,7 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
     m_iMapLength = iLength;
 
     // check for sync object status
-    m_Sync.Check(GL_TIMEOUT_IGNORED, CORE_SYNC_CHECK_NORMAL);
+    m_Sync.Check(CORE_SYNC_WAIT_FOREVER, CORE_SYNC_CHECK_NORMAL);
 
     // return persistent mapped buffer
     if(m_pPersistentBuffer) return (m_pPersistentBuffer + iOffset);
