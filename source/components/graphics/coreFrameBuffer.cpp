@@ -41,13 +41,13 @@ coreFrameBuffer::~coreFrameBuffer()
 
 // ****************************************************************
 /* create frame buffer object */
-void coreFrameBuffer::Create(const coreVector2 vResolution, const coreFrameBufferCreate eType)
+coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFrameBufferCreate eType)
 {
     WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(vResolution.x > 0.0f && vResolution.y > 0.0f)
 
     // check for OpenGL extensions
-    if(!CORE_GL_SUPPORT(EXT_framebuffer_object)) return;
+    if(!CORE_GL_SUPPORT(EXT_framebuffer_object)) return CORE_ERROR_SUPPORT;
 
     // generate frame buffer object
     glGenFramebuffers(1, &m_iIdentifier);
@@ -74,7 +74,7 @@ void coreFrameBuffer::Create(const coreVector2 vResolution, const coreFrameBuffe
     for(coreUintW i = 0u; i < ARRAY_SIZE(apTarget); ++i)
     {
         coreRenderTarget* pTarget = apTarget[i];
-        if(!pTarget->oSpec.iInternal) continue;
+        if(!pTarget->IsValid()) continue;
 
         // set attachment point (depending on target order)
         GLenum iAttachment;
@@ -112,7 +112,7 @@ void coreFrameBuffer::Create(const coreVector2 vResolution, const coreFrameBuffe
     }
 
     // ignore color drawings without color attachment
-    if(!m_aColorTarget[0].oSpec.iInternal) glDrawBuffer(GL_NONE);
+    if(!m_aColorTarget[0].IsValid()) glDrawBuffer(GL_NONE);
     else
     {
         GLenum aiAttachment[CORE_SHADER_OUTPUT_COLORS];
@@ -122,7 +122,7 @@ void coreFrameBuffer::Create(const coreVector2 vResolution, const coreFrameBuffe
         for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
         {
             // check for available color attachments
-            if(m_aColorTarget[i].oSpec.iInternal)
+            if(m_aColorTarget[i].IsValid())
                 aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
         }
         glDrawBuffers(iNum, aiAttachment);
@@ -137,7 +137,11 @@ void coreFrameBuffer::Create(const coreVector2 vResolution, const coreFrameBuffe
     {
         Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: 0x%08X)", iError);
         this->Delete();
+
+        return CORE_ERROR_SYSTEM;
     }
+
+    return CORE_OK;
 }
 
 
@@ -158,7 +162,10 @@ void coreFrameBuffer::Delete()
     for(coreUintW i = 0u; i < ARRAY_SIZE(apTarget); ++i)
     {
         // unload render target texture
-        if(apTarget[i]->pTexture) apTarget[i]->pTexture->Unload();
+        if(apTarget[i]->pTexture)
+        {
+            apTarget[i]->pTexture->Unload();
+        }
 
         // delete render target buffer
         if(apTarget[i]->iBuffer)
@@ -404,7 +411,7 @@ void coreFrameBuffer::Clear(const coreFrameBufferTarget eTargets)
 
 // ****************************************************************
 /* invalidate content of the frame buffer */
-void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
+coreStatus coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
 {
     ASSERT(m_iIdentifier)
 
@@ -419,13 +426,13 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
             for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             {
                 // check for available color attachments
-                if(m_aColorTarget[i].oSpec.iInternal)
+                if(m_aColorTarget[i].IsValid())
                     aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
             }
         }
-        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))   aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
-        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_STENCIL)) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
-        WARN_IF(!iNum) return;
+        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH)   && m_DepthTarget  .IsValid()) aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
+        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_STENCIL) && m_StencilTarget.IsValid()) aiAttachment[iNum++] = GL_STENCIL_ATTACHMENT;
+        WARN_IF(!iNum) return CORE_INVALID_INPUT;
 
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
@@ -444,7 +451,11 @@ void coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
             // switch back to old frame buffer
             if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
         }
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 

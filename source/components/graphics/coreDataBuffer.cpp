@@ -247,7 +247,7 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
 
 // ****************************************************************
 /* copy content of the data buffer object */
-void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const
+coreStatus coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const
 {
     ASSERT(m_iIdentifier && ((iReadOffset + iLength) <= m_iSize) && ((iWriteOffset + iLength) <= pDestination->GetSize()))
 
@@ -270,13 +270,17 @@ void coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteO
             coreDataBuffer::Bind(GL_COPY_WRITE_BUFFER, pDestination->GetIdentifier());
             glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, iReadOffset, iWriteOffset, iLength);
         }
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 
 // ****************************************************************
 /* clear content of the data buffer object */
-void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pData)
+coreStatus coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pData)
 {
     ASSERT(m_iIdentifier && this->IsWritable())
 
@@ -298,13 +302,17 @@ void coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pDat
             this->Bind();
             glClearBufferData(m_iTarget, oTextureSpec.iInternal, oTextureSpec.iFormat, oTextureSpec.iType, pData);
         }
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 
 // ****************************************************************
 /* invalidate content of the data buffer object */
-void coreDataBuffer::Invalidate()
+coreStatus coreDataBuffer::Invalidate()
 {
     ASSERT(m_iIdentifier && this->IsWritable())
 
@@ -312,7 +320,11 @@ void coreDataBuffer::Invalidate()
     {
         // invalidate the whole buffer
         glInvalidateBufferData(m_iIdentifier);
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 

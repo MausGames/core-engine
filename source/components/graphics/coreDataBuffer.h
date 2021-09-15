@@ -75,14 +75,14 @@ public:
     /* modify buffer memory */
     RETURN_RESTRICT coreByte* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType);
     void                      Unmap(const coreByte* pPointer);
-    void                      Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
+    coreStatus                Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
 
     /* protect buffer memory up to now */
     inline void Synchronize() {m_Sync.Create();}
 
     /* reset content of the data buffer object */
-    void Clear(const coreTextureSpec& oTextureSpec, const void* pData);
-    void Invalidate();
+    coreStatus Clear(const coreTextureSpec& oTextureSpec, const void* pData);
+    coreStatus Invalidate();
 
     /* check for current buffer status */
     inline coreBool IsWritable  ()const {return !HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC);}

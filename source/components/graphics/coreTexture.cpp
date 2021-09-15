@@ -317,7 +317,7 @@ void coreTexture::CopyFrameBuffer()
 
 // ****************************************************************
 /* bind texture level to image unit */
-void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess)
+coreStatus coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess)
 {
     ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
@@ -325,7 +325,11 @@ void coreTexture::BindImage(const coreUintW iUnit, const coreUint8 iLevel, const
     {
         // bind directly without layering
         glBindImageTexture(iUnit, m_iIdentifier, iLevel, false, 0, iAccess, m_Spec.iInternal);
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 
@@ -356,7 +360,7 @@ void coreTexture::ReadImage(const coreUint8 iLevel, const coreUint32 iDataSize, 
 
 // ****************************************************************
 /* copy image data to another image */
-void coreTexture::CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
+coreStatus coreTexture::CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const
 {
     ASSERT(m_iIdentifier)
     ASSERT((iSrcLevel < m_iLevels) && (iDstLevel < pDestination->GetLevels()) &&
@@ -369,12 +373,16 @@ void coreTexture::CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iS
         glCopyImageSubData(m_iIdentifier,                 GL_TEXTURE_2D, iSrcLevel, iSrcX, iSrcY, 0,
                            pDestination->GetIdentifier(), GL_TEXTURE_2D, iDstLevel, iDstX, iDstY, 0,
                            iWidth, iHeight, 0);
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
-void coreTexture::CopyImage(coreTexture* OUTPUT pDestination)const
+coreStatus coreTexture::CopyImage(coreTexture* OUTPUT pDestination)const
 {
-    this->CopyImage(pDestination, 0u, 0u, 0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
+    return this->CopyImage(pDestination, 0u, 0u, 0u, 0u, 0u, 0u, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y));
 }
 
 
@@ -472,7 +480,7 @@ void coreTexture::DisableAll()
 
 // ****************************************************************
 /* clear content of the texture */
-void coreTexture::Clear(const coreUint8 iLevel)
+coreStatus coreTexture::Clear(const coreUint8 iLevel)
 {
     ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
@@ -480,13 +488,17 @@ void coreTexture::Clear(const coreUint8 iLevel)
     {
         // clear the whole texture
         glClearTexImage(m_iIdentifier, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 
 // ****************************************************************
 /* invalidate content of the texture */
-void coreTexture::Invalidate(const coreUint8 iLevel)
+coreStatus coreTexture::Invalidate(const coreUint8 iLevel)
 {
     ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
@@ -494,7 +506,11 @@ void coreTexture::Invalidate(const coreUint8 iLevel)
     {
         // invalidate the whole texture
         glInvalidateTexImage(m_iIdentifier, iLevel);
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 

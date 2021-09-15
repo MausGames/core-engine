@@ -136,10 +136,10 @@ public:
     void CopyFrameBuffer();
 
     /* handle texture levels and images */
-    void BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess);
-    void ReadImage(const coreUint8 iLevel, const coreUint32 iDataSize, coreByte* OUTPUT pData);
-    void CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;
-    void CopyImage(coreTexture* OUTPUT pDestination)const;
+    coreStatus BindImage(const coreUintW iUnit, const coreUint8 iLevel, const GLenum iAccess);
+    void       ReadImage(const coreUint8 iLevel, const coreUint32 iDataSize, coreByte* OUTPUT pData);
+    coreStatus CopyImage(coreTexture* OUTPUT pDestination, const coreUint8 iSrcLevel, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint8 iDstLevel, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;
+    coreStatus CopyImage(coreTexture* OUTPUT pDestination)const;
 
     /* configure shadow sampling */
     void ShadowSampling(const coreBool bStatus);
@@ -151,8 +151,8 @@ public:
     static        void DisableAll();
 
     /* reset content of the texture */
-    void Clear     (const coreUint8 iLevel);
-    void Invalidate(const coreUint8 iLevel);
+    coreStatus Clear     (const coreUint8 iLevel);
+    coreStatus Invalidate(const coreUint8 iLevel);
 
     /* process and convert image data */
     static FUNC_NOALIAS void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);

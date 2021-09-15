@@ -464,15 +464,19 @@ void coreProgram::Disable(const coreBool bFull)
 
 // ****************************************************************
 /* execute a compute shader-program */
-void coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ)
+coreStatus coreProgram::DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ)
 {
-    ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this)
+    ASSERT((m_eStatus >= CORE_PROGRAM_FINISHED) && (s_pCurrent == this))
 
     if(CORE_GL_SUPPORT(ARB_compute_shader))
     {
         // launch one or more compute work groups
         glDispatchCompute(iGroupsX, iGroupsY, iGroupsZ);
+
+        return CORE_OK;
     }
+
+    return CORE_ERROR_SUPPORT;
 }
 
 

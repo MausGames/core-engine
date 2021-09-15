@@ -60,7 +60,8 @@ private:
 
         constexpr coreRenderTarget()noexcept;
         inline coreBool IsTexture()const {return pTexture ? true : false;}
-        inline coreBool IsBuffer ()const {return !this->IsTexture();}
+        inline coreBool IsBuffer ()const {return iBuffer;}
+        inline coreBool IsValid  ()const {return oSpec.iInternal;}
     };
 
 
@@ -88,8 +89,8 @@ public:
     DISABLE_COPY(coreFrameBuffer)
 
     /* control the frame buffer */
-    void Create(const coreVector2 vResolution, const coreFrameBufferCreate eType);
-    void Delete();
+    coreStatus Create(const coreVector2 vResolution, const coreFrameBufferCreate eType);
+    void       Delete();
 
     /* attach render targets */
     coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName = NULL);
@@ -105,8 +106,8 @@ public:
     void Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer* OUTPUT pDestination)const;
 
     /* reset content of the frame buffer */
-    void Clear     (const coreFrameBufferTarget eTargets);
-    void Invalidate(const coreFrameBufferTarget eTargets);
+    void       Clear     (const coreFrameBufferTarget eTargets);
+    coreStatus Invalidate(const coreFrameBufferTarget eTargets);
 
     /* set object properties */
     inline void SetFOV     (const coreFloat fFOV)      {m_fFOV      = fFOV;}
