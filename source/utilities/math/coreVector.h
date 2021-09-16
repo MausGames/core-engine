@@ -274,7 +274,7 @@ public:
     constexpr coreVector3 YuvToRgb  ()const;
     constexpr coreVector3 RgbToYcbcr()const;
     constexpr coreVector3 YcbcrToRgb()const;
-    constexpr coreFloat   Luminance ()const {return coreVector3::Dot(*this, coreVector3(0.212671f, 0.715160f, 0.072169f));}
+    constexpr coreFloat   Luminance ()const {return coreVector3::Dot(*this, coreVector3(0.2126f, 0.7152f, 0.0722f));}   // BT.709
 };
 
 

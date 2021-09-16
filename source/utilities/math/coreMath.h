@@ -692,11 +692,9 @@ inline void coreMath::EnableExceptions()
         // enable with Windows function (for x87 and SSE)
         _controlfp(~(_EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID) & _MCW_EM, _MCW_EM);
 
-    #endif
+    #elif defined(_CORE_LINUX_)
 
-    #if defined(_CORE_GCC_) || defined(_CORE_CLANG_)
-
-        // enable with GCC/Clang function (for x87 and SSE)
+        // enable with Linux/glibc function (for x87 and SSE)
         feenableexcept(FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
 
     #endif

@@ -70,6 +70,7 @@ public:
 
     /* get object properties */
     inline       coreFloat   GetValue   (const coreTimerGet eReversed)const {return eReversed ? (m_fEnd - m_fValue) : m_fValue;}
+    inline       coreFloat   GetValuePct(const coreTimerGet eReversed)const {return this->GetValue(eReversed) * RCP(m_fEnd);}
     inline const coreFloat&  GetEnd     ()const                             {return m_fEnd;}
     inline const coreFloat&  GetSpeed   ()const                             {return m_fSpeed;}
     inline const coreUint16& GetMaxLoops()const                             {return m_iMaxLoops;}

@@ -159,7 +159,7 @@ void coreLog::__Write(const coreBool bTimeStamp, coreString sText)
 
             // write time-value and thread-ID
             std::fprintf(m_pFile, "<span class=\"time\">[%02u:%02u.%03u - %3u]</span> <span class=\"%s\">[%04lX]</span> ",
-                         (iTime / (60u * 1000u)), (iTime / 1000u) % 60u, (iTime) % 1000u, coreUint32(MIN(iTime - m_iLastTime, 999u)),
+                         (iTime / 1000u) / 60u, (iTime / 1000u) % 60u, (iTime % 1000u), coreUint32(MIN(iTime - m_iLastTime, 999u)),
                          (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
 
             // save time-value (for duration approximations)

@@ -279,7 +279,7 @@ vec3 coreYcbcrToRgb(const in vec3 v3Ycbcr)
 }
 float coreLuminance(const in vec3 v3Rgb)
 {
-    return dot(v3Rgb, vec3(0.212671, 0.715160, 0.072169));
+    return dot(v3Rgb, vec3(0.2126, 0.7152, 0.0722));
 }
 
 // vector square length
