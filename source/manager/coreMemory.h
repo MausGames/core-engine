@@ -18,6 +18,7 @@
 // TODO 5: __declspec(allocator)
 // TODO 3: pointer to next free block inside unused block (linked list) instead of free-stack (consider sorting)
 // TODO 5: <old comment style>
+// TODO 3: try to prevent or assert 0-size allocations
 
 
 // ****************************************************************
@@ -37,9 +38,8 @@
 #define ZERO_NEW(t,c)       (ASSUME_ALIGNED(s_cast<t*>(std::calloc((c), sizeof(t))), ALIGNMENT_NEW))
 #define ZERO_DELETE(p)      {std::free(p); (p) = NULL;}
 
-#define DYNAMIC_NEW(t,c)    (ASSUME_ALIGNED(s_cast<t*>(std::malloc((c) * sizeof(t))), ALIGNMENT_NEW))
+#define DYNAMIC_RESIZE(p,c) {ASSERT(c) (p) = ASSUME_ALIGNED(s_cast<decltype(p)>(std::realloc((p), (c) * sizeof(*(p)))), ALIGNMENT_NEW);}
 #define DYNAMIC_DELETE(p)   {std::free(p); (p) = NULL;}
-#define DYNAMIC_RESIZE(p,c) {(p) = s_cast<decltype(p)>(std::realloc((p), (c) * sizeof(*(p))));}
 
 #define STATIC_MEMORY(t,p)  alignas(alignof(t)) static coreByte CONCAT(__m, __LINE__)[sizeof(t) + sizeof(coreBool)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));
 #define STATIC_ISVALID(p)   (*(r_cast<coreBool*>((p) + 1u)))
