@@ -29,6 +29,7 @@ coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer&& m)noexcept
     std::swap(m_eStorageType,      m.m_eStorageType);
     std::swap(m_iTarget,           m.m_iTarget);
     std::swap(m_iSize,             m.m_iSize);
+    std::swap(m_iFallbackSize,     m.m_iFallbackSize);
     std::swap(m_pPersistentBuffer, m.m_pPersistentBuffer);
     std::swap(m_iMapOffset,        m.m_iMapOffset);
     std::swap(m_iMapLength,        m.m_iMapLength);
@@ -55,7 +56,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     glBindBuffer(m_iTarget, m_iIdentifier);
     s_aiBound[m_iTarget] = m_iIdentifier;
 
-    if(CORE_GL_SUPPORT(ARB_buffer_storage) && CORE_GL_SUPPORT(ARB_map_buffer_range))
+    if(CORE_GL_SUPPORT(ARB_buffer_storage))
     {
         if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
         {
@@ -64,17 +65,18 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
         }
         else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC))
         {
-            // allocate dynamic immutable buffer memory
-            glBufferStorage(m_iTarget, m_iSize, NULL, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
-
-            // map persistent mapped buffer
-            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
-
-            if(pData)
+            if(CORE_GL_SUPPORT(ARB_map_buffer_range))
             {
-                // initialize buffer memory
-                std::memcpy(m_pPersistentBuffer, pData, m_iSize);
-                glFlushMappedBufferRange(m_iTarget, 0, m_iSize);
+                // allocate dynamic immutable buffer memory
+                glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
+
+                // map persistent mapped buffer
+                m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
+            }
+            else
+            {
+                // allocate dynamic immutable buffer memory (without persistent mapping)
+                glBufferStorage(m_iTarget, m_iSize, pData, GL_DYNAMIC_STORAGE_BIT);
             }
         }
         else
@@ -117,6 +119,13 @@ void coreDataBuffer::Delete()
 {
     if(!m_iIdentifier) return;
 
+    // delete fallback memory
+    if(m_iFallbackSize)
+    {
+        DYNAMIC_DELETE(m_pPersistentBuffer)
+        m_iFallbackSize = 0u;
+    }
+
     // unmap persistent mapped buffer
     if(m_pPersistentBuffer)
     {
@@ -148,14 +157,14 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
     m_iMapOffset = iOffset;
     m_iMapLength = iLength;
 
-    // check for sync object status
-    m_Sync.Check(CORE_SYNC_WAIT_FOREVER, CORE_SYNC_CHECK_NORMAL);
-
-    // return persistent mapped buffer
-    if(m_pPersistentBuffer) return (m_pPersistentBuffer + iOffset);
-
     if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
+        // check for sync object status
+        m_Sync.Check(CORE_SYNC_WAIT_FOREVER, CORE_SYNC_CHECK_NORMAL);
+
+        // return persistent mapped buffer
+        if(m_pPersistentBuffer) return (m_pPersistentBuffer + iOffset);
+
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
             // map buffer memory directly (new)
@@ -175,9 +184,13 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
     }
     else
     {
-        // create temporary memory
-        coreByte* pPointer = new coreByte[iLength];
-        return pPointer;
+        // create fallback memory
+        if(m_iFallbackSize < iLength)
+        {
+            DYNAMIC_RESIZE(m_pPersistentBuffer, iLength)
+            m_iFallbackSize = iLength;
+        }
+        return m_pPersistentBuffer;
     }
 }
 
@@ -188,28 +201,28 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
 {
     ASSERT(pPointer)
 
-    if(m_pPersistentBuffer)
+    if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
-        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        if(m_pPersistentBuffer)
         {
-            // flush persistent mapped buffer directly (new)
-            glFlushMappedNamedBufferRange(m_iIdentifier, m_iMapOffset, m_iMapLength);
-        }
-        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
-        {
-            // flush persistent mapped buffer directly (old)
-            glFlushMappedNamedBufferRangeEXT(m_iIdentifier, m_iMapOffset, m_iMapLength);
+            if(CORE_GL_SUPPORT(ARB_direct_state_access))
+            {
+                // flush persistent mapped buffer directly (new)
+                glFlushMappedNamedBufferRange(m_iIdentifier, m_iMapOffset, m_iMapLength);
+            }
+            else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+            {
+                // flush persistent mapped buffer directly (old)
+                glFlushMappedNamedBufferRangeEXT(m_iIdentifier, m_iMapOffset, m_iMapLength);
+            }
+            else
+            {
+                // bind and flush persistent mapped buffer
+                this->Bind();
+                glFlushMappedBufferRange(m_iTarget, m_iMapOffset, m_iMapLength);
+            }
         }
         else
-        {
-            // bind and flush persistent mapped buffer
-            this->Bind();
-            glFlushMappedBufferRange(m_iTarget, m_iMapOffset, m_iMapLength);
-        }
-    }
-    else
-    {
-        if(CORE_GL_SUPPORT(ARB_map_buffer_range))
         {
             if(CORE_GL_SUPPORT(ARB_direct_state_access))
             {
@@ -228,15 +241,12 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
                 glUnmapBuffer(m_iTarget);
             }
         }
-        else
-        {
-            // send new data to the data buffer
-            this->Bind();
-            glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, pPointer);
-
-            // delete temporary memory
-            SAFE_DELETE_ARRAY(pPointer)
-        }
+    }
+    else
+    {
+        // send new data to the data buffer
+        this->Bind();
+        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, pPointer);
     }
 
     // reset mapping attributes

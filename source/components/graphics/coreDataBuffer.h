@@ -12,7 +12,6 @@
 
 // TODO 3: implement read and copy operations (currently only static and write/dynamic)
 // TODO 3: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays
-// TODO 3: remove per-frame allocation on map/unmap-fallback
 // TODO 5: <old comment style>
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
@@ -45,8 +44,9 @@ private:
 
     GLenum     m_iTarget;                       // buffer target (e.g. GL_ARRAY_BUFFER)
     coreUint32 m_iSize;                         // data size in bytes
+    coreUint32 m_iFallbackSize;                 // current size of fallback memory (if regular mapping is not supported)
 
-    coreByte*  m_pPersistentBuffer;             // pointer to persistent mapped buffer
+    coreByte*  m_pPersistentBuffer;             // pointer to persistent mapped buffer (or fallback memory)
     coreUint32 m_iMapOffset;                    // current mapping offset
     coreUint32 m_iMapLength;                    // current mapping length
 
@@ -78,17 +78,16 @@ public:
     coreStatus                Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
 
     /* protect buffer memory up to now */
-    inline void Synchronize() {m_Sync.Create();}
+    inline void Synchronize() {if(CORE_GL_SUPPORT(ARB_map_buffer_range)) m_Sync.Create();}
 
     /* reset content of the data buffer object */
     coreStatus Clear(const coreTextureSpec& oTextureSpec, const void* pData);
     coreStatus Invalidate();
 
     /* check for current buffer status */
-    inline coreBool IsWritable  ()const {return !HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC);}
-    inline coreBool IsPersistent()const {return (m_pPersistentBuffer != NULL);}
-    inline coreBool IsMapped    ()const {return (m_iMapLength        != 0u);}
-    inline coreBool IsValid     ()const {return (m_iIdentifier       != 0u);}
+    inline coreBool IsWritable()const {return !HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC);}
+    inline coreBool IsMapped  ()const {return (m_iMapLength  != 0u);}
+    inline coreBool IsValid   ()const {return (m_iIdentifier != 0u);}
 
     /* get object properties */
     inline const GLuint&                GetIdentifier ()const {return m_iIdentifier;}
@@ -148,6 +147,7 @@ constexpr coreDataBuffer::coreDataBuffer()noexcept
 , m_eStorageType      (CORE_DATABUFFER_STORAGE_STATIC)
 , m_iTarget           (0u)
 , m_iSize             (0u)
+, m_iFallbackSize     (0u)
 , m_pPersistentBuffer (NULL)
 , m_iMapOffset        (0u)
 , m_iMapLength        (0u)
@@ -160,6 +160,7 @@ inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 , m_eStorageType      (m.m_eStorageType)
 , m_iTarget           (m.m_iTarget)
 , m_iSize             (m.m_iSize)
+, m_iFallbackSize     (m.m_iFallbackSize)
 , m_pPersistentBuffer (m.m_pPersistentBuffer)
 , m_iMapOffset        (m.m_iMapOffset)
 , m_iMapLength        (m.m_iMapLength)
