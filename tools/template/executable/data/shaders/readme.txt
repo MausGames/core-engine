@@ -196,11 +196,7 @@ Input
 
     vec4 u_v4Color         // color value
 
-    // light data
-    struct
-    {
-        vec4 v4Position
-        vec4 v4Direction
-        vec4 v4Value
-    }
-    u_aLight[CORE_NUM_LIGHTS]
+    // base light data
+    vec4 u_av4LightPos  [CORE_NUM_LIGHTS]
+    vec4 u_av4LightDir  [CORE_NUM_LIGHTS]
+    vec4 u_av4LightValue[CORE_NUM_LIGHTS]

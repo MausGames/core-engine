@@ -91,13 +91,16 @@ coreStatus coreShader::Load(coreFile* pFile)
     const coreChar* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobalCode();
 
+    // define separate entry-point (main-function needs to be at the bottom)
+    const coreChar acEntryPoint[] = "void main() {ShaderMain();}";
+
     // reduce shader code size
     coreString sMainCode(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
     coreShader::__ReduceCodeSize(&sMainCode);
 
     // assemble the shader
-    const coreChar* apcData[] = {s_asGlobalCode[0].c_str(),             pcTypeDef,                         pcQualityDef,                         m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),             sMainCode.c_str()};
-    const coreInt32 aiSize [] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()), coreInt32(sMainCode.length())};
+    const coreChar* apcData[] = {s_asGlobalCode[0].c_str(),             pcTypeDef,                         pcQualityDef,                         m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),             sMainCode.c_str(),             acEntryPoint};
+    const coreInt32 aiSize [] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()), coreInt32(sMainCode.length()), coreInt32(ARRAY_SIZE(acEntryPoint))};
     STATIC_ASSERT(ARRAY_SIZE(apcData) == ARRAY_SIZE(aiSize))
 
     // create and compile the shader

@@ -142,14 +142,6 @@
 #define SQRT2 (1.4142135623730950488016887242097)
 #define SQRT3 (1.7320508075688772935274463415059)
 
-// light structure
-struct coreLight
-{
-    vec4 v4Position;
-    vec4 v4Direction;
-    vec4 v4Value;
-};
-
 // evaluate shader per sample
 #if defined(GL_ARB_sample_shading)
     #define CORE_SAMPLE_SHADING {gl_SampleID;}
@@ -448,42 +440,46 @@ mat4 coreInvert(const in mat4 m)
     // transformation uniforms
     layout(std140) uniform b_Transform
     {
-        layoutEx(align = 16) mat4 u_m4ViewProj;
-        layoutEx(align = 16) mat4 u_m4Camera;
-        layoutEx(align = 16) mat4 u_m4Perspective;
-        layoutEx(align = 16) mat4 u_m4Ortho;
-        layoutEx(align = 16) vec4 u_v4Resolution;
-        layoutEx(align = 16) vec3 u_v3CamPosition;
+        layoutEx(align = 16) highp   mat4 u_m4ViewProj;
+        layoutEx(align = 16) highp   mat4 u_m4Camera;
+        layoutEx(align = 16) highp   mat4 u_m4Perspective;
+        layoutEx(align = 16) highp   mat4 u_m4Ortho;
+        layoutEx(align = 16) highp   vec4 u_v4Resolution;
+        layoutEx(align = 16) highp   vec3 u_v3CamPosition;
     };
 
     // ambient uniforms
     layout(std140) uniform b_Ambient
     {
-        layoutEx(align = 16) coreLight u_aLight[CORE_NUM_LIGHTS];
+        layoutEx(align = 16) highp   vec4 u_av4LightPos  [CORE_NUM_LIGHTS];
+        layoutEx(align = 16) mediump vec4 u_av4LightDir  [CORE_NUM_LIGHTS];
+        layoutEx(align = 16) mediump vec4 u_av4LightValue[CORE_NUM_LIGHTS];
     };
 
 #else
 
     // transformation uniforms
-    uniform mat4 u_m4ViewProj;
-    uniform mat4 u_m4Camera;
-    uniform mat4 u_m4Perspective;
-    uniform mat4 u_m4Ortho;
-    uniform vec4 u_v4Resolution;
-    uniform vec3 u_v3CamPosition;
+    uniform highp   mat4 u_m4ViewProj;
+    uniform highp   mat4 u_m4Camera;
+    uniform highp   mat4 u_m4Perspective;
+    uniform highp   mat4 u_m4Ortho;
+    uniform highp   vec4 u_v4Resolution;
+    uniform highp   vec3 u_v3CamPosition;
 
     // ambient uniforms
-    uniform coreLight u_aLight[CORE_NUM_LIGHTS];
+    uniform highp   vec4 u_av4LightPos  [CORE_NUM_LIGHTS];
+    uniform mediump vec4 u_av4LightDir  [CORE_NUM_LIGHTS];
+    uniform mediump vec4 u_av4LightValue[CORE_NUM_LIGHTS];
 
 #endif
 
 // 3d-object uniforms
-uniform vec3 u_v3Position;
-uniform vec3 u_v3Size;
-uniform vec4 u_v4Rotation;
+uniform highp   vec3 u_v3Position;
+uniform mediump vec3 u_v3Size;
+uniform mediump vec4 u_v4Rotation;
 
 // 2d-object uniforms
-uniform mat3 u_m3ScreenView;
+uniform highp   mat3 u_m3ScreenView;
 
 // default object uniforms
 uniform lowp    vec4 u_v4Color;
@@ -533,8 +529,8 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         attribute vec4 a_v4RawTangent;
 
         // instancing uniforms
-        uniform vec3 a_v3DivPosition;
-        uniform vec3 a_v3DivData;
+        uniform highp   vec3 a_v3DivPosition;
+        uniform mediump vec3 a_v3DivData;
 
         // shader output
         flat varying vec4 v_v4VarColor;
@@ -568,7 +564,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     // main function
     void VertexMain();
-    void main()
+    void ShaderMain()
     {
     #if defined(_CORE_OPTION_INSTANCING_)
         v_v4VarColor = a_v4DivColor;
@@ -587,7 +583,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     // main function
     void TessControlMain();
-    void main()
+    void ShaderMain()
     {
         TessControlMain();
     }
@@ -600,7 +596,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     // main function
     void TessEvaluationMain();
-    void main()
+    void ShaderMain()
     {
         TessEvaluationMain();
     }
@@ -635,7 +631,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     // main function
     void GeometryMain();
-    void main()
+    void ShaderMain()
     {
         GeometryMain();
     }
@@ -687,7 +683,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     // main function
     void FragmentMain();
-    void main()
+    void ShaderMain()
     {
         v_v3ViewDir = v_v3TangentCam - v_v3TangentPos;
         FragmentMain();
@@ -701,7 +697,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     // main function
     void ComputeMain();
-    void main()
+    void ShaderMain()
     {
         ComputeMain();
     }
@@ -769,8 +765,8 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         mat3 TBN = coreTangentSpaceMatrix();
         for(int i = 0; i < CORE_NUM_LIGHTS; ++i)
         {
-            v_av4LightPos[i] = vec4(TBN *  u_aLight[i].v4Position .xyz, u_aLight[i].v4Position .w);
-            v_av4LightDir[i] = vec4(TBN * -u_aLight[i].v4Direction.xyz, u_aLight[i].v4Direction.w);
+            v_av4LightPos[i] = vec4(TBN *  u_av4LightPos[i].xyz, u_av4LightPos[i].w);
+            v_av4LightDir[i] = vec4(TBN * -u_av4LightDir[i].xyz, u_av4LightDir[i].w);
         }
         v_v3TangentPos = TBN * v3Position;
         v_v3TangentCam = TBN * u_v3CamPosition;

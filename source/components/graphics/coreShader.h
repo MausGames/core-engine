@@ -34,9 +34,9 @@
 #define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
 #define CORE_SHADER_UNIFORM_CAMPOSITION         "u_v3CamPosition"
 
-#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_aLight[%zu].v4Position"
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_aLight[%zu].v4Direction"
-#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_aLight[%zu].v4Value"
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_av4LightPos[%zu]"
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_av4LightDir[%zu]"
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_av4LightValue[%zu]"
 
 #define CORE_SHADER_UNIFORM_3D_POSITION         "u_v3Position"
 #define CORE_SHADER_UNIFORM_3D_SIZE             "u_v3Size"
