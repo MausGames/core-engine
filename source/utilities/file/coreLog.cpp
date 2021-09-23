@@ -25,23 +25,23 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
     if(m_pFile)
     {
         // write basic style sheet
-        std::fputs("<!DOCTYPE html>                                 \n", m_pFile);
-        std::fputs("<style type=\"text/css\">                       \n", m_pFile);
-        std::fputs("  body    {font: 0.95em courier new;}           \n", m_pFile);
-        std::fputs(" .time    {color: #AAA; white-space: pre}       \n", m_pFile);
-        std::fputs(" .thread1 {color: green;}                       \n", m_pFile);
-        std::fputs(" .thread2 {color: olive;}                       \n", m_pFile);
-        std::fputs(" .data    {color: teal;}                        \n", m_pFile);
-        std::fputs(" .gl      {color: purple;}                      \n", m_pFile);
-        std::fputs(" .warning {font-weight: bold; color: coral;}    \n", m_pFile);
-        std::fputs(" .error   {font-weight: bold; color: red;}      \n", m_pFile);
-        std::fputs(" .header  {font-weight: bold; font-size: 1.4em;}\n", m_pFile);
-        std::fputs(" .list    {font-weight: bold;}                  \n", m_pFile);
-        std::fputs("</style>                                        \n", m_pFile);
+        std::fputs("<!DOCTYPE html>"                                  "\n", m_pFile);
+        std::fputs("<style>"                                          "\n", m_pFile);
+        std::fputs("  body    {font: 0.95em courier new;}"            "\n", m_pFile);
+        std::fputs(" .time    {color: #AAA; white-space: pre;}"       "\n", m_pFile);
+        std::fputs(" .thread1 {color: green;}"                        "\n", m_pFile);
+        std::fputs(" .thread2 {color: olive;}"                        "\n", m_pFile);
+        std::fputs(" .data    {color: teal;}"                         "\n", m_pFile);
+        std::fputs(" .gl      {color: purple;}"                       "\n", m_pFile);
+        std::fputs(" .warning {font-weight: bold; color: coral;}"     "\n", m_pFile);
+        std::fputs(" .error   {font-weight: bold; color: red;}"       "\n", m_pFile);
+        std::fputs(" .header  {font-weight: bold; font-size: 1.4em;}" "\n", m_pFile);
+        std::fputs(" .list    {font-weight: bold;}"                   "\n", m_pFile);
+        std::fputs("</style>"                                         "\n", m_pFile);
 
         // write application data and timestamp
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s, %s, %s-bit) <br />\n", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", DEFINED(_CORE_64BIT_) ? "64" : "32");
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s                  <br />\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s, %s, %s-bit)" "<br />\n", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", DEFINED(_CORE_64BIT_) ? "64" : "32");
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s"                  "<br />\n", coreData::DateString(), coreData::TimeString());
 
         // flush log file
         std::fflush(m_pFile);
@@ -76,7 +76,7 @@ void GL_APIENTRY WriteOpenGL(GLenum iSource, GLenum iType, GLuint iID, GLenum iS
     // write debug message
     pLog->ListStartWarning("OpenGL Debug Message");
     {
-        pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("ID:")       "     %d</span>", iID);
+        pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("ID:")           " %d</span>", iID);
         pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("Source:")   " 0x%04X</span>", iSource);
         pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("Type:")     " 0x%04X</span>", iType);
         pLog->ListAdd("<span class=\"gl\">" CORE_LOG_BOLD("Severity:") " 0x%04X</span>", iSeverity);

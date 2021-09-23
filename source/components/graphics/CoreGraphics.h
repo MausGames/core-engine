@@ -16,6 +16,7 @@
 // TODO 3: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision, breaks depth-dependent rendering (water, shadow) in Project One
 // TODO 3: async glReadPixels, improve screenshot with pixel-pack-buffer
 // TODO 5: <old comment style>
+// TODO 3: add debug labels to objects (glObjectLabel, glObjectPtrLabel(sync))
 
 
 // ****************************************************************

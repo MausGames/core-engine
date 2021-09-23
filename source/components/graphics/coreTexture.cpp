@@ -572,10 +572,10 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
     pInput  = ASSUME_ALIGNED(pInput,  ALIGNMENT_NEW);
     pOutput = ASSUME_ALIGNED(pOutput, ALIGNMENT_NEW);
 
-    // save memory offsets and alpha status
-    const coreUintW iInOffsetX = 4u * iComponents;
-    const coreUintW iInOffsetY = 3u * iComponents * iInWidth;
-    const coreUintW iOutOffset = 8u * (2u - (iComponents % 2u));
+    // save memory offsets
+    const coreUintW iInOffsetX =  4u * iComponents;
+    const coreUintW iInOffsetY =  3u * iComponents * iInWidth;
+    const coreUintW iOutOffset = 16u * iComponents / stb_compress_dxt_ratio(iComponents);   // size per block
 
     // loop through all input texels
     for(coreUintW y = 0u; y < iInHeight; y += 4u)

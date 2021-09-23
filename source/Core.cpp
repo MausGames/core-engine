@@ -243,7 +243,7 @@ coreStatus Core::Run()
         Core::System  ->__UpdateTime();
         Core::Input   ->__UpdateButtonsEnd();
 
-        // update the resource manager without resource thread
+        // update the resource manager on the main-thread
         if(!Core::Manager::Resource->GetActive())
         {
             Core::Manager::Resource->UpdateResources();

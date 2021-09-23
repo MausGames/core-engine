@@ -20,7 +20,7 @@ coreBool coreTimer::Update(const coreFloat fSpeedModifier)
         if(m_fValue >= m_fEnd)
         {
             // target value reached
-            if(++m_iCurLoops == m_iMaxLoops)
+            if(++m_iCurLoops == m_iMaxLoops)   // (0 = infinite)
             {
                 // halt the timer
                 m_fValue = m_fEnd;

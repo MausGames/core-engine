@@ -20,7 +20,7 @@ using uIsWow64Process = BOOL (WINAPI *) (HANDLE, PBOOL);
 
 
 // ****************************************************************
-static bool ScanFolder(const wchar_t* pcPath, std::vector<std::wstring>* __restrict pasOutput)
+static bool FolderScan(const wchar_t* pcPath, std::vector<std::wstring>* __restrict pasOutput)
 {
     HANDLE pFolder;
     WIN32_FIND_DATAW oFile;
@@ -99,7 +99,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
 
     // find executable name
     std::vector<std::wstring> asFile;
-    if(!ScanFolder(L"*.exe", &asFile) || asFile.empty())
+    if(!FolderScan(L"*.exe", &asFile) || asFile.empty())
     {
         MessageBoxW(NULL, L"Could not find executable!", NULL, MB_OK | MB_ICONERROR);
         return -1;
