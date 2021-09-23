@@ -7,8 +7,8 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #include "Core.h"
-#include "models/MD3.h"
-#include "models/MD5.h"
+#include "model/MD3.h"
+#include "model/MD5.h"
 #include <forsyth_too.h>
 
 coreModel* coreModel::s_pCurrent = NULL;

@@ -19,7 +19,7 @@
     <Filter Include="components\graphics">
       <UniqueIdentifier>{3539efa7-6ded-46a7-8593-4c89e6826158}</UniqueIdentifier>
     </Filter>
-    <Filter Include="components\graphics\models">
+    <Filter Include="components\graphics\model">
       <UniqueIdentifier>{2a998441-9cb4-429d-99c4-5df62697ddf2}</UniqueIdentifier>
     </Filter>
     <Filter Include="components\system">
@@ -61,7 +61,7 @@
     <Filter Include="additional\linux">
       <UniqueIdentifier>{0b560ded-0906-4ce4-8a1a-46863ea114da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="components\audio\codecs">
+    <Filter Include="components\audio\codec">
       <UniqueIdentifier>{465a3bc7-db3e-4f4b-814f-0d87676e3b37}</UniqueIdentifier>
     </Filter>
     <Filter Include="components\platform">
@@ -315,11 +315,11 @@
     <ClInclude Include="..\..\..\source\additional\coreGL.h">
       <Filter>additional</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\components\graphics\models\MD3.h">
-      <Filter>components\graphics\models</Filter>
+    <ClInclude Include="..\..\..\source\components\graphics\model\MD3.h">
+      <Filter>components\graphics\model</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\components\graphics\models\MD5.h">
-      <Filter>components\graphics\models</Filter>
+    <ClInclude Include="..\..\..\source\components\graphics\model\MD5.h">
+      <Filter>components\graphics\model</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreGLES.h">
       <Filter>additional</Filter>
@@ -358,11 +358,11 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreScope.h">
       <Filter>utilities\data</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\components\audio\codecs\ALAW.h">
-      <Filter>components\audio\codecs</Filter>
+    <ClInclude Include="..\..\..\source\components\audio\codec\ALAW.h">
+      <Filter>components\audio\codec</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\components\audio\codecs\MULAW.h">
-      <Filter>components\audio\codecs</Filter>
+    <ClInclude Include="..\..\..\source\components\audio\codec\MULAW.h">
+      <Filter>components\audio\codec</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\windows\header.h">
       <Filter>additional\windows</Filter>

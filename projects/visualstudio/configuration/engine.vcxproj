@@ -288,8 +288,8 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreGL.h" />
     <ClInclude Include="..\..\..\source\additional\windows\header.h" />
-    <ClInclude Include="..\..\..\source\components\audio\codecs\ALAW.h" />
-    <ClInclude Include="..\..\..\source\components\audio\codecs\MULAW.h" />
+    <ClInclude Include="..\..\..\source\components\audio\codec\ALAW.h" />
+    <ClInclude Include="..\..\..\source\components\audio\codec\MULAW.h" />
     <ClInclude Include="..\..\..\source\components\audio\CoreAudio.h" />
     <ClInclude Include="..\..\..\source\components\audio\coreMusic.h" />
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h" />
@@ -302,8 +302,8 @@
     <ClInclude Include="..\..\..\source\components\graphics\coreShader.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreSync.h" />
     <ClInclude Include="..\..\..\source\components\graphics\coreTexture.h" />
-    <ClInclude Include="..\..\..\source\components\graphics\models\MD3.h" />
-    <ClInclude Include="..\..\..\source\components\graphics\models\MD5.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\model\MD3.h" />
+    <ClInclude Include="..\..\..\source\components\graphics\model\MD5.h" />
     <ClInclude Include="..\..\..\source\components\input\CoreInput.h" />
     <ClInclude Include="..\..\..\source\components\platform\backend\steam.h" />
     <ClInclude Include="..\..\..\source\components\platform\backend\windows.h" />

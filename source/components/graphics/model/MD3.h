@@ -269,7 +269,8 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
         const coreVector2 B2 = pVertex[oTriangle.aiIndex[2]].vTexCoord - pVertex[oTriangle.aiIndex[0]].vTexCoord;
 
         // calculate local tangent vector parameters
-        const coreFloat   R  = RCP(B1.x*B2.y - B2.x*B1.y);
+        const coreFloat   C  = B1.x*B2.y - B2.x*B1.y;
+        const coreFloat   R  = RCP(C ? C : 1.0f);
         const coreVector3 D1 = (A1*B2.y - A2*B1.y) * R;
         const coreVector3 D2 = (A2*B1.x - A1*B2.x) * R;
 
@@ -282,6 +283,8 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     }
     for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
+        if(pvOrtho1[i].IsNull()) pvOrtho1[i] = coreVector3(0.0f,0.0f,1.0);
+        
         // finish the Gram-Schmidt process to calculate the tangent vector and bitangent sign (w)
         pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).NormalizedUnsafe(),
                                           SIGN(coreVector3::Dot(coreVector3::Cross(pVertex[i].vNormal, pvOrtho1[i]), pvOrtho2[i])));
