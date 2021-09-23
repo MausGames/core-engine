@@ -189,9 +189,9 @@ void Core::Reshape()
 /* main function */
 coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
 {
-    // set new working directory (bin/<OS>/<ARCH>)
+    // set new working directory (bin/<TARGET>)
     coreData::SetCurDir(coreData::AppDir());
-    coreData::SetCurDir("../../..");
+    coreData::SetCurDir("../..");
 
     // set command line arguments
     coreData::SetCommandLine(argc, argv);

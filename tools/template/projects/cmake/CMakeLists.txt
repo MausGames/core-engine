@@ -13,7 +13,7 @@ set_target_properties(
     CXX_STANDARD 20
     DEBUG_POSTFIX _debug
     SUFFIX .elf
-    RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/linux/x64/
+    RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/linux_x86_64/
 )
 
 

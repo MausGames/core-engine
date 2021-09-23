@@ -12,7 +12,7 @@ set_target_properties(
     CXX_STANDARD 20
     UNITY_BUILD ON
     DEBUG_POSTFIX _debug
-    ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux/x64/
+    ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux_x86_64/
 )
 
 
@@ -81,7 +81,7 @@ target_compile_options(
 
 target_link_directories(
     CoreEngine INTERFACE
-    ${BASE_DIRECTORY}/libraries/bin/linux/x64
+    ${BASE_DIRECTORY}/libraries/bin/linux_x86_64
 )
 
 

@@ -90,7 +90,7 @@ static bool IsWindows10OrGreater()
 extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPWSTR pcCmdLine, _In_ int iCmdShow)
 {
     // set working directory
-    const wchar_t* pcDirectory = (IsWow64() && IsWindows10OrGreater()) ? L"bin\\windows\\x64\\" : L"bin\\windows\\x86\\";
+    const wchar_t* pcDirectory = (IsWow64() && IsWindows10OrGreater()) ? L"bin\\windows_x86_64\\" : L"bin\\windows_x86_32\\";
     if(!SetCurrentDirectoryW(pcDirectory))
     {
         MessageBoxW(NULL, L"Could not set working directory!", NULL, MB_OK | MB_ICONERROR);

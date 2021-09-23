@@ -86,29 +86,29 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86\msvc;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\bin\windows\x86\</OutDir>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows_x86_32;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows_x86_32;$(LibraryPath)</LibraryPath>
+    <OutDir>..\..\..\executable\bin\windows_x86_32\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x64;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x64;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\bin\windows\x64\</OutDir>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows_x86_64;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows_x86_64;$(LibraryPath)</LibraryPath>
+    <OutDir>..\..\..\executable\bin\windows_x86_64\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x86\msvc;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\bin\windows\x86\</OutDir>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows_x86_32;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows_x86_32;$(LibraryPath)</LibraryPath>
+    <OutDir>..\..\..\executable\bin\windows_x86_32\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows\x64;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows\x64;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\executable\bin\windows\x64\</OutDir>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows_x86_64;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows_x86_64;$(LibraryPath)</LibraryPath>
+    <OutDir>..\..\..\executable\bin\windows_x86_64\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
