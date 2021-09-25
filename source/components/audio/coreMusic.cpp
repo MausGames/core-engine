@@ -59,7 +59,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     }
 
     // create sound buffers
-    alGenBuffers(2, m_aiBuffer);
+    alGenBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
 
     // retrieve music file information
     m_pInfo    = ov_info      (&m_Stream, -1);
@@ -75,8 +75,8 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 coreMusic::~coreMusic()
 {
     // clear audio source and sound buffers
-    this->Pause();
-    alDeleteBuffers(2, m_aiBuffer);
+    this->Stop();
+    alDeleteBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
 
     // close music stream
     ov_clear(&m_Stream);
@@ -93,37 +93,55 @@ coreBool coreMusic::Update()
 {
     if(!m_bStatus) return false;
 
-    // check for valid audio source
-    if(!m_iSource)
-    {
-        if(this->Play() != CORE_OK)
-            return false;
-    }
-
     // get number of processed sound buffers
     ALint iProcessed;
     alGetSourcei(m_iSource, AL_BUFFERS_PROCESSED, &iProcessed);
 
     if(iProcessed)
     {
-        ALuint iBuffer;
+        ALuint aiBuffer[CORE_MUSIC_BUFFERS];
 
-        // update the processed sound buffer
-        alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
-        if(!this->__Stream(iBuffer))
+        // retrieve processed sound buffers
+        alSourceUnqueueBuffers(m_iSource, iProcessed, aiBuffer);
+
+        // update processed sound buffers
+        ALint iUpdated = 0;
+        while(iUpdated < iProcessed)
         {
-            // music is finished
-            this->Stop();
-            if(m_bLoop) this->Play();
-
-            return true;
+            if(!this->__Stream(aiBuffer[iUpdated]))
+            {
+                if(m_bLoop)
+                {
+                    // rewind the music stream
+                    this->SeekRaw(0);
+                    continue;
+                }
+                break;
+            }
+            iUpdated += 1;
         }
-        alSourceQueueBuffers(m_iSource, 1, &iBuffer);
 
-        // check for wrong status
+        // queue updated sound buffers
+        if(iUpdated) alSourceQueueBuffers(m_iSource, iUpdated, aiBuffer);
+
+        // check current status
         ALint iStatus;
         alGetSourcei(m_iSource, AL_SOURCE_STATE, &iStatus);
-        if(iStatus != AL_PLAYING) alSourcePlay(m_iSource);
+
+        if(iStatus != AL_PLAYING)
+        {
+            if(iUpdated)
+            {
+                // music should continue
+                alSourcePlay(m_iSource);
+            }
+            else
+            {
+                // music is finished
+                this->Stop();
+                return true;
+            }
+        }
     }
 
     return false;
@@ -134,34 +152,35 @@ coreBool coreMusic::Update()
 /* play the music */
 coreStatus coreMusic::Play()
 {
-    if(m_iSource) return CORE_INVALID_CALL;
+    if(m_bStatus) return CORE_INVALID_CALL;
     if(!m_pFile)  return CORE_INVALID_DATA;
 
-    // retrieve next free audio source
-    m_iSource = Core::Audio->NextSource(CORE_AUDIO_MUSIC_BUFFER, m_fVolume, 0u);
-    if(m_iSource)
+    if(!m_iSource)
     {
-        // prepare sound buffers
-        this->__Stream(m_aiBuffer[0]);
-        this->__Stream(m_aiBuffer[1]);
+        // retrieve next free audio source
+        m_iSource = Core::Audio->NextSource(CORE_AUDIO_MUSIC_BUFFER, m_fVolume, 0u);
+        WARN_IF(!m_iSource) return CORE_ERROR_SYSTEM;
 
-        // remove old and queue new sound buffers
-        alSourcei(m_iSource, AL_BUFFER, 0);
-        alSourceQueueBuffers(m_iSource, 2, m_aiBuffer);
+        // prepare sound buffers
+        for(coreUintW i = 0u; i < CORE_MUSIC_BUFFERS; ++i)
+            this->__Stream(m_aiBuffer[i]);
+
+        // queue sound buffers
+        alSourceQueueBuffers(m_iSource, CORE_MUSIC_BUFFERS, m_aiBuffer);
 
         // set initial audio source properties
         alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
         alSourcef(m_iSource, AL_PITCH,           m_fPitch);
         alSourcei(m_iSource, AL_LOOPING,         false);
-
-        // start playback
-        alSourcePlay(m_iSource);
     }
 
-    // set playback status (after init)
+    // start playback
+    alSourcePlay(m_iSource);
+
+    // set playback status
     m_bStatus = true;
 
-    return m_iSource ? CORE_OK : CORE_BUSY;
+    return CORE_OK;
 }
 
 
@@ -169,9 +188,24 @@ coreStatus coreMusic::Play()
 /* stop the music */
 void coreMusic::Stop()
 {
-    // pause and rewind the music stream
-    this->Pause();
-    ov_time_seek_page_lap(&m_Stream, 0.0);
+    if(m_iSource)
+    {
+        ALuint iBuffer;
+
+        // stop and clear audio source
+        alSourceStop(m_iSource);
+        m_iSource = 0u;
+
+        // remove remaining sound buffers
+        for(coreUintW i = 0u; i < CORE_MUSIC_BUFFERS; ++i)
+            alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
+
+        // rewind the music stream
+        ov_raw_seek(&m_Stream, 0);   // no crosslap
+    }
+
+    // reset playback status
+    m_bStatus = false;
 }
 
 
@@ -181,17 +215,12 @@ void coreMusic::Pause()
 {
     if(m_iSource)
     {
-        ALuint iBuffer;
-
-        // stop and clear audio source
-        alSourceStop(m_iSource);
-        alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
-        alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
-        m_iSource = 0;
-
-        // reset playback status
-        m_bStatus = false;
+        // pause audio source
+        alSourcePause(m_iSource);
     }
+
+    // reset playback status
+    m_bStatus = false;
 }
 
 
@@ -462,8 +491,8 @@ void coreMusicPlayer::Select(const coreUintW iIndex)
         else
         {
             // stop old music object
-            m_pCurMusic->Stop();
             coreMusic::CrossLap(m_pCurMusic, m_apSequence[iIndex]);
+            m_pCurMusic->Stop();
         }
     }
 

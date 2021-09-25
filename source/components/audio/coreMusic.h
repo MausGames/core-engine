@@ -16,11 +16,13 @@
 // TODO 3: threaded music update (->coreMusicPlayer)
 // TODO 4: split up: coreMusicFile.cpp, coreMusicPlayer.cpp
 // TODO 5: <old comment style>
+// TODO 3: on play, only stream first buffer, and move streaming other buffers to next iterations (queue them empty ?) (on update still keep loop, to handle possible catch-up, to not decay to single-buffering and stuttering if chunks-per-iteration > 1.0)
 
 
 // ****************************************************************
 /* music definitions */
-#define CORE_MUSIC_CHUNK (0x2000u)   // size of a music stream chunk in bytes
+#define CORE_MUSIC_CHUNK   (0x2000u)   // size of a music stream chunk in bytes
+#define CORE_MUSIC_BUFFERS (3u)        // number of sound buffers (with chunks)
 
 enum coreMusicRepeat : coreUint8
 {
@@ -36,20 +38,20 @@ enum coreMusicRepeat : coreUint8
 class coreMusic final
 {
 private:
-    ALuint m_aiBuffer[2];         // sound buffers for streaming
-    ALuint m_iSource;             // currently used audio source
+    ALuint m_aiBuffer[CORE_MUSIC_BUFFERS];   // sound buffers for streaming
+    ALuint m_iSource;                        // currently used audio source
 
-    coreFloat m_fVolume;          // current volume
-    coreFloat m_fPitch;           // current playback speed
-    coreBool  m_bLoop;            // loop status
-    coreBool  m_bStatus;          // playback status
+    coreFloat m_fVolume;                     // current volume
+    coreFloat m_fPitch;                      // current playback speed
+    coreBool  m_bLoop;                       // loop status
+    coreBool  m_bStatus;                     // playback status
 
-    coreFile*      m_pFile;       // file object with streaming data
-    OggVorbis_File m_Stream;      // music stream object
+    coreFile*      m_pFile;                  // file object with streaming data
+    OggVorbis_File m_Stream;                 // music stream object
 
-    vorbis_info*    m_pInfo;      // format of the music file
-    vorbis_comment* m_pComment;   // meta-information
-    coreDouble      m_dMaxTime;   // length of the music track in seconds
+    vorbis_info*    m_pInfo;                 // format of the music file
+    vorbis_comment* m_pComment;              // meta-information
+    coreDouble      m_dMaxTime;              // length of the music track in seconds
 
 
 public:
@@ -71,15 +73,13 @@ public:
     /* set various audio source properties */
     inline void SetVolume(const coreFloat fVolume) {if(m_iSource && (m_fVolume != fVolume)) Core::Audio->UpdateSource(m_iSource, fVolume); m_fVolume = fVolume; ASSERT(fVolume >= 0.0f)}
     inline void SetPitch (const coreFloat fPitch)  {if(m_iSource && (m_fPitch  != fPitch))  alSourcef(m_iSource, AL_PITCH, fPitch);        m_fPitch  = fPitch;  ASSERT(fPitch  >= 0.0f)}
-    inline void SetLoop  (const coreBool  bLoop)   {m_bLoop = bLoop;}
+    inline void SetLoop  (const coreBool  bLoop)   {m_bLoop = bLoop; ASSERT(!m_iSource)}
 
     /* change and retrieve current music track position */
     inline void SeekRaw   (const coreInt64  iBytes)   {ov_raw_seek_lap (&m_Stream, iBytes);}
-    inline void SeekPcm   (const coreInt64  iSamples) {ov_pcm_seek_lap (&m_Stream, iSamples);}
     inline void SeekTime  (const coreDouble dSeconds) {ov_time_seek_lap(&m_Stream, dSeconds);}
     inline void SeekFactor(const coreDouble dFactor)  {ov_time_seek_lap(&m_Stream, dFactor * m_dMaxTime); ASSERT((dFactor >= 0.0) && (dFactor <= 1.0))}
     inline coreInt64  TellRaw   ()                    {return ov_raw_tell (&m_Stream);}
-    inline coreInt64  TellPcm   ()                    {return ov_pcm_tell (&m_Stream);}
     inline coreDouble TellTime  ()                    {return ov_time_tell(&m_Stream);}
     inline coreDouble TellFactor()                    {return ov_time_tell(&m_Stream) / m_dMaxTime;}
 
