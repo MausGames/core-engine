@@ -121,27 +121,29 @@ coreBool coreMusic::Update()
             iUpdated += 1;
         }
 
-        // queue updated sound buffers
-        if(iUpdated) alSourceQueueBuffers(m_iSource, iUpdated, aiBuffer);
-
-        // check current status
-        ALint iStatus;
-        alGetSourcei(m_iSource, AL_SOURCE_STATE, &iStatus);
-
-        if(iStatus != AL_PLAYING)
+        if(iUpdated)
         {
-            if(iUpdated)
-            {
-                // music should continue
-                alSourcePlay(m_iSource);
-            }
-            else
+            // queue updated sound buffers
+            alSourceQueueBuffers(m_iSource, iUpdated, aiBuffer);
+        }
+        else
+        {
+            // get number of queued sound buffers
+            ALint iQueued;
+            alGetSourcei(m_iSource, AL_BUFFERS_QUEUED, &iQueued);
+
+            if(!iQueued)
             {
                 // music is finished
                 this->Stop();
                 return true;
             }
         }
+
+        // keep music playing
+        ALint iStatus;
+        alGetSourcei(m_iSource, AL_SOURCE_STATE, &iStatus);
+        if(iStatus != AL_PLAYING) alSourcePlay(m_iSource);
     }
 
     return false;
@@ -190,15 +192,12 @@ void coreMusic::Stop()
 {
     if(m_iSource)
     {
-        ALuint iBuffer;
+        // remove remaining sound buffers
+        alSourcei(m_iSource, AL_BUFFER, 0);
 
         // stop and clear audio source
         alSourceStop(m_iSource);
         m_iSource = 0u;
-
-        // remove remaining sound buffers
-        for(coreUintW i = 0u; i < CORE_MUSIC_BUFFERS; ++i)
-            alSourceUnqueueBuffers(m_iSource, 1, &iBuffer);
 
         // rewind the music stream
         ov_raw_seek(&m_Stream, 0);   // no crosslap
@@ -260,9 +259,9 @@ coreBool coreMusic::__Stream(const ALuint iBuffer)
     {
         // read and decode data from the music track
         const coreInt32 iResult = ov_read(&m_Stream, s_acData + iReadSize, iChunkSize - iReadSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
+        if(iResult <= 0) break;
 
-        if(iResult > 0) iReadSize += iResult;
-        else break;
+        iReadSize += iResult;
     }
 
     // music track finished
@@ -328,10 +327,6 @@ coreBool coreMusicPlayer::Update()
     // update the current music object
     if(m_pCurMusic->Update())
     {
-        // handle unnecessary loop
-        if((m_eRepeat != CORE_MUSIC_SINGLE_REPEAT))
-            m_pCurMusic->Stop();
-
         // repeat, switch or stop as defined
         switch(m_eRepeat)
         {
@@ -341,8 +336,10 @@ coreBool coreMusicPlayer::Update()
         case CORE_MUSIC_SINGLE_REPEAT:   m_pCurMusic->Play();                              FALLTHROUGH
         case CORE_MUSIC_SINGLE_NOREPEAT: break;
         }
+
         return true;
     }
+
     return false;
 }
 
