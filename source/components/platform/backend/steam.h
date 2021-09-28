@@ -12,6 +12,8 @@
 
 #if defined(_CORE_MSVC_)
     #pragma warning(disable : 5204)   // class with virtual functions, but without virtual destructor
+#else
+    #pragma GCC diagnostic ignored "-Wnested-anon-types"
 #endif
 
 #include <steam/steam_api.h>
@@ -378,7 +380,7 @@ inline void coreBackendSteam::__OnUserStatsStored(const UserStatsStored_t* pCall
 
 // ****************************************************************
 /* exit the base system */
-void coreBackendSteam::__ExitBase()
+inline void coreBackendSteam::__ExitBase()
 {
     // shut down Steam library
     nSteamAPI_Shutdown();
