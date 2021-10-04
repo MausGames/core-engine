@@ -209,6 +209,7 @@
     #pragma warning(disable : 4244)   // implicit conversion to different precision #2
     #pragma warning(disable : 4266)   // virtual function not overridden
     #pragma warning(disable : 4267)   // implicit conversion of std::size_t
+    #pragma warning(disable : 4324)   // padding added due to alignment attribute
     #pragma warning(disable : 4365)   // implicit conversion between signed and unsigned
     #pragma warning(disable : 4514)   // unreferenced inline function removed
     #pragma warning(disable : 4557)   // __assume contains effect (# only false-positives)

@@ -41,7 +41,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, (m_iFullscreen == 2u) ? "1" : "0");
 
     // load SDL only once (to improve reset performance, and prevent crashes)
-    UNUSED static coreBool s_bOnce = []()
+    UNUSED static const coreBool s_bOnce = []()
     {
         // get SDL version
         SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
@@ -49,7 +49,7 @@ CoreSystem::CoreSystem()noexcept
         const SDL_version* pVersionIMG = IMG_Linked_Version();
 
         // init SDL libraries
-        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) || TTF_Init() || !IMG_Init(IMG_INIT_PNG))
+        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) || TTF_Init() || !IMG_Init(IMG_INIT_PNG) || SDL_GL_LoadLibrary(NULL))
         {
             Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
         }
@@ -62,7 +62,7 @@ CoreSystem::CoreSystem()noexcept
         }
 
         // automatically shut down SDL libraries on exit
-        WARN_IF(std::atexit([]() {IMG_Quit(); TTF_Quit(); SDL_Quit();})) {}
+        WARN_IF(std::atexit([]() {SDL_GL_UnloadLibrary(); IMG_Quit(); TTF_Quit(); SDL_Quit();})) {}
         return true;
     }();
 
@@ -97,14 +97,17 @@ CoreSystem::CoreSystem()noexcept
                 {
                     Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d Hz, %.1f DDPI, %d)", i+1u, SDL_GetDisplayName(i), oDesktop.refresh_rate, fDDPI, SDL_GetDisplayOrientation(i));
                     {
+                        // reserve some memory
+                        oDisplayData.avAvailableRes.reserve(iNumModes);
+
                         for(coreUintW j = 0u; j < iNumModes; ++j)
                         {
                             // retrieve resolution
                             SDL_DisplayMode oMode = {};
                             SDL_GetDisplayMode(i, j, &oMode);
-                            const coreVector2 vModeRes = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
 
                             // add new resolution
+                            const coreVector2 vModeRes = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
                             if(!oDisplayData.avAvailableRes.count(vModeRes))
                             {
                                 oDisplayData.avAvailableRes.push_back(vModeRes);
@@ -159,8 +162,8 @@ CoreSystem::CoreSystem()noexcept
     // check for core profile
     if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE) && !DEFINED(_CORE_GLES_))
     {
-        // create quick test-window and -context
-        m_pWindow = SDL_CreateWindow("OpenGL Test", 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        // create quick test-window and test-context
+        m_pWindow = SDL_CreateWindow(NULL, 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if(m_pWindow)
         {
             const SDL_GLContext pContext = SDL_GL_CreateContext(m_pWindow);
@@ -205,7 +208,7 @@ CoreSystem::CoreSystem()noexcept
     const coreUint32 iFlags   = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | (m_iFullscreen == 2u ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_INPUT_GRABBED) : (m_iFullscreen == 1u ? (bDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_BORDERLESS) : SDL_WINDOW_RESIZABLE));
 
     // create main window object
-    m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
+    m_pWindow = SDL_CreateWindow(NULL, iPos, iPos, iSizeX, iSizeY, iFlags);
     if(!m_pWindow)
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
@@ -217,7 +220,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,      0);
 
         // create another main window object
-        m_pWindow = SDL_CreateWindow(coreData::AppName(), iPos, iPos, iSizeX, iSizeY, iFlags);
+        m_pWindow = SDL_CreateWindow(NULL, iPos, iPos, iSizeX, iSizeY, iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%s, %.0f x %.0f, %d)", SDL_GetCurrentVideoDriver(), m_vResolution.x, m_vResolution.y, m_iFullscreen);

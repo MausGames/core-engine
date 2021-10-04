@@ -1166,12 +1166,10 @@ void coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const
 const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
 {
     // get folder name from application name
-    static coreString s_sIdentifier;
-    if(s_sIdentifier.empty())
+    static const coreString s_sIdentifier = []()
     {
-        s_sIdentifier = Core::Application->Settings.Name;
-        s_sIdentifier.replace(" ", "");
-    }
+        return coreString(Core::Application->Settings.Name).replace(" ", "");
+    }();
 
     // create full path
     const coreChar* pcFullPath = PRINT("%s/%s/", pcPath, s_sIdentifier.c_str());

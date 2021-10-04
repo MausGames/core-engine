@@ -12,6 +12,7 @@
 #pragma warning(disable : 4100)   // unreferenced formal parameter
 #pragma warning(disable : 4255)   // function prototype missing
 #pragma warning(disable : 4668)   // preprocessor macro not defined
+#pragma warning(disable : 4711)   // function automatically inlined
 #pragma warning(disable : 4820)   // padding after data member
 
 #include "additional/windows/header.h"

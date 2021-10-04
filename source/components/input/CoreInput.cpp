@@ -175,12 +175,12 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         {
         // window focus gained
         case SDL_WINDOWEVENT_FOCUS_GAINED:
-            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_FALSE);
+            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_TRUE);
             break;
 
         // window focus lost
         case SDL_WINDOWEVENT_FOCUS_LOST:
-            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_TRUE);
+            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_FALSE);
             break;
         }
         break;

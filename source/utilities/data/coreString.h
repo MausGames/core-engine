@@ -28,17 +28,17 @@ public:
     ENABLE_COPY(coreString)
 
     /* trim string on both sides */
-    void trim(const coreChar* pcRemove = " \n\r\t");
+    coreString& trim(const coreChar* pcRemove = " \n\r\t");
 
     /* replace all occurrences of a sub-string with another one */
     using std::string::replace;
-    void replace(const coreChar* pcOld, const coreChar* pcNew);
+    coreString& replace(const coreChar* pcOld, const coreChar* pcNew);
 };
 
 
 // ****************************************************************
 /* trim string on both sides */
-inline void coreString::trim(const coreChar* pcRemove)
+inline coreString& coreString::trim(const coreChar* pcRemove)
 {
     STATIC_ASSERT(coreString::npos == -1)
 
@@ -49,12 +49,14 @@ inline void coreString::trim(const coreChar* pcRemove)
     // trim left
     const coreUintW iFirst = this->find_first_not_of(pcRemove);
     if(iFirst != coreString::npos) this->erase(0u, iFirst);
+
+    return *this;
 }
 
 
 // ****************************************************************
 /* replace all occurrences of a sub-string with another one */
-inline void coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
+inline coreString& coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
 {
     coreUintW iPos = 0u;
 
@@ -68,6 +70,8 @@ inline void coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
         this->replace(iPos, iOldLen, pcNew);
         iPos += iNewLen;
     }
+
+    return *this;
 }
 
 

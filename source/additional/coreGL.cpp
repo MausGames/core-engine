@@ -278,10 +278,7 @@ void coreExtensions(coreString* OUTPUT psOutput)
             (*psOutput) += r_cast<const coreChar*>(glGetStringi(GL_EXTENSIONS, i));
             (*psOutput) += ' ';
         }
-
-        // reduce output size
         psOutput->pop_back();
-        psOutput->shrink_to_fit();
     }
     else
     {

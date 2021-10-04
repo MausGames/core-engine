@@ -60,8 +60,8 @@ private:
 
         constexpr coreRenderTarget()noexcept;
         inline coreBool IsTexture()const {return pTexture ? true : false;}
-        inline coreBool IsBuffer ()const {return iBuffer;}
-        inline coreBool IsValid  ()const {return oSpec.iInternal;}
+        inline coreBool IsBuffer ()const {return iBuffer         != 0u;}
+        inline coreBool IsValid  ()const {return oSpec.iInternal != 0u;}
     };
 
 
