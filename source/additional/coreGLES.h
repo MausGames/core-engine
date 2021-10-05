@@ -16,7 +16,8 @@
 // TODO 5: GL_OES_copy_image GL_EXT_tessellation_shader GL_OES_tessellation_shader GL_OES_framebuffer_object GL_NV_packed_float GL_EXT_map_buffer_range GL_EXT_sRGB_write_control GL_NV_pixel_buffer_object GL_KHR_parallel_shader_compile
 // TODO 5: GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_OES_vertex_array_object GL_OES_texture_stencil8 GL_NV_copy_buffer GL_OES_sample_shading GL_OES_packed_depth_stencil GL_EXT_instanced_arrays GL_NV_instanced_arrays
 // TODO 5: ANDROID_extension_pack_es31a
-// TODO 3: ES 3.X
+// TODO 3: ES 3.0, 3.1, 3.2
+// TODO 3: WebGL 1 & 2 (+ extensions, especially texture compression)
 
 
 // ****************************************************************
@@ -68,8 +69,8 @@
 
 typedef void (GL_APIENTRY *PFNGLDISCARDFRAMEBUFFEREXTPROC) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
 #define glInvalidateBufferData(...)
-#define glInvalidateBufferSubData(...)
-#define glInvalidateFramebuffer __CORE_GLES_FUNC(glDiscardFramebufferEXT)
+#define glInvalidateBufferSubData(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
+#define glInvalidateFramebuffer        __CORE_GLES_FUNC(glDiscardFramebufferEXT)
 #define glInvalidateSubFramebuffer(...)
 #define glInvalidateTexImage(...)
 #define glInvalidateTexSubImage(...)
@@ -94,6 +95,7 @@ typedef void (GL_APIENTRY *PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei lev
 
 typedef GLvoid*   (GL_APIENTRY *PFNGLMAPBUFFERRANGEEXTPROC) (GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
 typedef GLboolean (GL_APIENTRY *PFNGLUNMAPBUFFEROESPROC)    (GLenum target);
+#define glFlushMappedBufferRange(...)
 #define glMapBufferRange __CORE_GLES_FUNC(glMapBufferRangeEXT)
 #define glUnmapBuffer    __CORE_GLES_FUNC(glUnmapBufferOES)
 
@@ -208,107 +210,61 @@ typedef void (GL_APIENTRY *PFNGLGENVERTEXARRAYSOESPROC)    (GLsizei n, GLuint* a
 
 // ****************************************************************
 /* unused definitions and functions */
-typedef int32_t* GLsync;
-typedef uint64_t GLuint64;
+#define GL_CLIPPING_OUTPUT_PRIMITIVES  0x82F7
+#define GL_COMPRESSED_RED_RGTC1        0x8DBB
+#define GL_COMPRESSED_RG_RGTC2         0x8DBD
+#define GL_FRAGMENT_SHADER_INVOCATIONS 0x82F4
+#define GL_GENERATE_MIPMAP             0x8191
+#define GL_LUMINANCE8                  0x8040
+#define GL_LUMINANCE16                 0x8042
+#define GL_MAP_PERSISTENT_BIT          0x00000040
+#define GL_MULTISAMPLE_FILTER_HINT_NV  0x8534
+#define GL_PERSPECTIVE_CORRECTION_HINT 0x0C50
+#define GL_PRIMITIVES_SUBMITTED        0x82EF
+#define GL_R16                         0x822A
+#define GL_RG16                        0x822C
+#define GL_RGB16                       0x8054
+#define GL_RGBA16                      0x805B
+#define GL_TEXTURE_COMPRESSION_HINT    0x84EF
+#define GL_TIMESTAMP                   0x8E28
+#define GL_VERTEX_SHADER_INVOCATIONS   0x82F0
 
-#define GL_ACTIVE_RESOURCES                0x92F5
-#define GL_CLIPPING_OUTPUT_PRIMITIVES      0x82F7
-#define GL_COMPARE_REF_TO_TEXTURE          0x884E
-#define GL_COMPRESSED_RED_RGTC1            0x8DBB
-#define GL_COMPRESSED_RG_RGTC2             0x8DBD
-#define GL_COMPUTE_SHADER                  0x91B9
-#define GL_DEBUG_OUTPUT                    0x92E0
-#define GL_DEBUG_OUTPUT_SYNCHRONOUS        0x8242
-#define GL_DEPTH_STENCIL                   0x84F9
-#define GL_FRAGMENT_SHADER_DERIVATIVE_HINT 0x8B8B
-#define GL_FRAGMENT_SHADER_INVOCATIONS     0x82F4
-#define GL_GENERATE_MIPMAP                 0x8191
-#define GL_GEOMETRY_SHADER                 0x8DD9
-#define GL_HALF_FLOAT                      0x140B   // 0x8D61 in OES_vertex_half_float
-#define GL_INVALID_INDEX                   0xFFFFFFFF
-#define GL_LOCATION                        0x930E
-#define GL_MAP_COHERENT_BIT                0x00000080
-#define GL_MAP_FLUSH_EXPLICIT_BIT          0x0010
-#define GL_MAP_PERSISTENT_BIT              0x00000040
-#define GL_MULTISAMPLE_FILTER_HINT_NV      0x8534
-#define GL_OFFSET                          0x92FC
-#define GL_PERSPECTIVE_CORRECTION_HINT     0x0C50
-#define GL_PRIMITIVES_SUBMITTED            0x82EF
-#define GL_PROGRAM_INPUT                   0x92E3
-#define GL_QUERY_RESULT                    0x8866
-#define GL_R8                              0x8229
-#define GL_RED                             0x1903
-#define GL_RG                              0x8227
-#define GL_RG8                             0x822B
-#define GL_RGB8                            0x8051
-#define GL_RGBA8                           0x8058
-#define GL_SYNC_FLUSH_COMMANDS_BIT         0x00000001
-#define GL_SYNC_GPU_COMMANDS_COMPLETE      0x9117
-#define GL_TESS_CONTROL_SHADER             0x8E88
-#define GL_TESS_EVALUATION_SHADER          0x8E87
-#define GL_TEXTURE_COMPARE_FUNC            0x884D
-#define GL_TEXTURE_COMPARE_MODE            0x884C
-#define GL_TEXTURE_COMPRESSION_HINT        0x84EF
-#define GL_TIMEOUT_EXPIRED                 0x911B
-#define GL_TIMEOUT_IGNORED                 0xFFFFFFFFFFFFFFFF
-#define GL_TIMESTAMP                       0x8E28
-#define GL_UNIFORM                         0x92E1
-#define GL_UNIFORM_BUFFER                  0x8A11
-#define GL_VERTEX_SHADER_INVOCATIONS       0x82F0
-
-#define glBindBufferBase(...)
-#define glBindBufferRange(...)
 #define glBindFragDataLocation(...)
-#define glBindImageTexture(...)
 #define glBindMultiTextureEXT(...)
-#define glBindTextures(...)
+#define glBindTextures(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
 #define glBindTextureUnit(...)
-#define glBindVertexBuffer(...)
 #define glBlitNamedFramebuffer(...)
 #define glBufferStorage(...)
 #define glClearBufferData(...)
 #define glClearNamedBufferData(...)
 #define glClearNamedBufferDataEXT(...)
 #define glClearTexImage(...)
-#define glClientWaitSync(...) (0)
+#define glCopyNamedBufferSubData(...)
 #define glCopyTextureSubImage2D(...)
 #define glCopyTextureSubImage2DEXT(...)
-#define glDebugMessageCallback(...)
-#define glDebugMessageControl(...)
-#define glDeleteSync(...)
-#define glDispatchCompute(...)
 #define glDrawBuffer(...)
-#define glDrawBuffers(...)
-#define glFenceSync(...) (NULL)
-#define glFlushMappedBufferRange(...)
+#define glDrawBuffers(...)   // TODO 1: ES3
 #define glFlushMappedNamedBufferRange(...)
 #define glFlushMappedNamedBufferRangeEXT(...)
 #define glGenerateTextureMipmap(...)
 #define glGenerateTextureMipmapEXT(...)
-#define glGenQueries(...)
-#define glGetProgramInterfaceiv(...)
-#define glGetProgramResourceiv(...)
-#define glGetProgramResourceName(...)
 #define glGetQueryObjectui64v(...)
-#define glGetUniformBlockIndex(...) (0)
+#define glGetTexImage(...)
+#define glGetTextureImage(...)
+#define glGetTextureImageEXT(...)
 #define glInvalidateNamedFramebufferData(...)
-#define glMapNamedBufferRange(...) (NULL)
-#define glMapNamedBufferRangeEXT(...) (NULL)
+#define glMakeBufferResidentNV(...)
+#define glMapNamedBufferRange(...) (I_TO_P(-1))
+#define glMapNamedBufferRangeEXT(...) (I_TO_P(-1))
 #define glMaxShaderCompilerThreadsARB(...)
-#define glMinSampleShading(...)
+#define glNamedCopyBufferSubDataEXT(...)
 #define glQueryCounter(...)
 #define glRenderbufferStorageMultisampleAdvancedAMD(...)
 #define glRenderbufferStorageMultisampleCoverageNV(...)
 #define glTextureSubImage2D(...)
 #define glTextureSubImage2DEXT(...)
-#define glUniformBlockBinding(...)
 #define glUnmapNamedBuffer(...) (false)
 #define glUnmapNamedBufferEXT(...) (false)
-#define glVertexAttribBinding(...)
-#define glVertexAttribFormat(...)
-#define glVertexAttribIFormat(...)
-#define glVertexAttribIPointer(...)
-#define glVertexBindingDivisor(...)
 
 
 // ****************************************************************
@@ -360,6 +316,9 @@ extern coreContext g_CoreContext;   // context object
 #define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f ## a = r_cast<decltype(g_CoreContext.__ ## f ## a)>(eglGetProcAddress(b ? #f : #f #a));}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
 #define __CORE_GLES_VAR_SET(v,a)      {g_CoreContext.__ ## v = (a);}
+
+template <typename ...A> void __UNUSED_ARGS(A...) {}
+#define __CORE_GLES_UNUSED_ARGS(...) {if(false) __UNUSED_ARGS(__VA_ARGS__);}
 
 
 // ****************************************************************

@@ -50,6 +50,9 @@
     #define _aligned_malloc(c,a) std::aligned_alloc(a, coreMath::CeilAlign(c, a))
     #define _aligned_free(p)     std::free(p)
 #endif
+#if defined(_CORE_EMSCRIPTEN_)
+    namespace std {using ::aligned_alloc;}
+#endif
 
 
 // ****************************************************************

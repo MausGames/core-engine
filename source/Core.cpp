@@ -221,9 +221,25 @@ coreStatus Core::Run()
         Core::Log->Warning ("Logging level reduced");
     }
 
-    // update the event system (main loop)
-    while(Core::System->__UpdateEvents())
+#if defined(_CORE_EMSCRIPTEN_)
+
+    // execute with requestAnimationFrame (main loop)
+    emscripten_set_main_loop([]()
     {
+        // update the Emscripten canvas
+        Core::Graphics->__UpdateEmscripten();
+
+#else
+
+    // execute until terminated (main loop)
+    while(!Core::System->GetTerminated())
+
+#endif
+
+    {
+        // update the event system
+        Core::System->__UpdateEvents();
+
         // update the input button interface
         Core::Input->__UpdateButtonsStart();
 
@@ -250,6 +266,12 @@ coreStatus Core::Run()
             Core::Manager::Resource->UpdateFunctions();
         }
     }
+
+#if defined(_CORE_EMSCRIPTEN_)
+
+    }, 0, 1);
+
+#endif
 
     // reset logging level
     Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);

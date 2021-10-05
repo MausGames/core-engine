@@ -49,7 +49,7 @@ CoreSystem::CoreSystem()noexcept
         const SDL_version* pVersionIMG = IMG_Linked_Version();
 
         // init SDL libraries
-        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) || TTF_Init() || !IMG_Init(IMG_INIT_PNG) || SDL_GL_LoadLibrary(NULL))
+        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : SDL_INIT_HAPTIC)) || TTF_Init() || !IMG_Init(IMG_INIT_PNG) || SDL_GL_LoadLibrary(NULL))
         {
             Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
         }
@@ -137,13 +137,17 @@ CoreSystem::CoreSystem()noexcept
         coreDisplay& oDisplayData = (*it);
 
         if(oDisplayData.avAvailableRes.empty ()) oDisplayData.avAvailableRes.push_back(m_vResolution);
-        if(oDisplayData.vDesktopRes   .IsNull()) oDisplayData.vDesktopRes  = m_vResolution;
-        if(oDisplayData.vWorkAreaRes  .IsNull()) oDisplayData.vWorkAreaRes = m_vResolution;
-        if(oDisplayData.vMaximumRes   .IsNull()) oDisplayData.vMaximumRes  = m_vResolution;
+        if(oDisplayData.vDesktopRes   .IsNull()) oDisplayData.vDesktopRes  = oDisplayData.avAvailableRes.front();
+        if(oDisplayData.vWorkAreaRes  .IsNull()) oDisplayData.vWorkAreaRes = oDisplayData.avAvailableRes.front();
+        if(oDisplayData.vMaximumRes   .IsNull()) oDisplayData.vMaximumRes  = oDisplayData.avAvailableRes.front();
     }
 
-    // sanitize display index and screen resolution
+    // sanitize display index
     if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
+    const coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
+
+    // sanitize screen resolution
+    if(oPrimary.avAvailableRes.size() == 1u) m_vResolution = oPrimary.vWorkAreaRes;
     this->SetWindowResolution(m_vResolution);
 
     // configure the OpenGL context
@@ -159,8 +163,41 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
 
+#if defined(_CORE_GLES_)
+
+    // check for highest OpenGL ES version
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
+    {
+        // create quick test-window
+        m_pWindow = SDL_CreateWindow(NULL, 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        if(m_pWindow)
+        {
+            // test all available versions (descending)
+            constexpr coreInt32 aaiVersion[][2] = {{3, 2}, {3, 1}, {3, 0}, {2, 0}};
+
+            for(coreUintW i = 0u; i < ARRAY_SIZE(aaiVersion); ++i)
+            {
+                // try to use current version
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, aaiVersion[i][0]);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, aaiVersion[i][1]);
+
+                // create quick test-context
+                const SDL_GLContext pContext = SDL_GL_CreateContext(m_pWindow);
+                if(pContext)
+                {
+                    // select current version
+                    SDL_GL_DeleteContext(pContext);
+                    break;
+                }
+            }
+            SDL_DestroyWindow(m_pWindow);
+        }
+    }
+
+#else
+
     // check for core profile
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE) && !DEFINED(_CORE_GLES_))
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
     {
         // create quick test-window and test-context
         m_pWindow = SDL_CreateWindow(NULL, 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
@@ -184,7 +221,7 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // check for shared context
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))
     {
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
@@ -199,6 +236,8 @@ CoreSystem::CoreSystem()noexcept
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, 1);
     }
+
+#endif
 
     // define window properties
     const coreBool   bDesktop = (m_vResolution == m_aDisplayData[m_iDisplayIndex].vDesktopRes);
@@ -217,7 +256,6 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         16);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,      0);
 
         // create another main window object
         m_pWindow = SDL_CreateWindow(NULL, iPos, iPos, iSizeX, iSizeY, iFlags);
@@ -270,8 +308,12 @@ CoreSystem::CoreSystem()noexcept
     }
     Core::Log->ListEnd();
 
+#if !defined(_CORE_EMSCRIPTEN_)
+
     // log Zstandard library version
     Core::Log->Info("Zstandard initialized (%s)", ZSTD_versionString());
+
+#endif
 }
 
 
@@ -334,36 +376,37 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
 {
     const coreDisplay& oCurrent = m_aDisplayData[m_iDisplayIndex];
 
-    // save new resolution
-    m_vResolution = vResolution;
-
-    // override in specific situations
-    if(oCurrent.avAvailableRes.size() == 1u) m_vResolution = oCurrent.avAvailableRes.front();
-    if(m_vResolution.x <= 0.0f) m_vResolution.x = oCurrent.vDesktopRes.x;
-    if(m_vResolution.y <= 0.0f) m_vResolution.y = oCurrent.vDesktopRes.y;
-
-    // clamp to bounds
-    const coreVector2 vMaximum = (m_iFullscreen == 2u ? oCurrent.vMaximumRes : (m_iFullscreen == 1u ? oCurrent.vDesktopRes : (oCurrent.vWorkAreaRes - I_TO_F(CORE_SYSTEM_WINDOW_BORDER))));
-    m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
-    m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
-
-    if(m_pWindow)
+    // skip on restricted target systems
+    if(oCurrent.avAvailableRes.size() != 1u)
     {
-        // define window properties
-        const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
-        const coreInt32 iSizeX = F_TO_SI(m_vResolution.x);
-        const coreInt32 iSizeY = F_TO_SI(m_vResolution.y);
+        // save new resolution
+        m_vResolution = vResolution;
+        if(m_vResolution.x <= 0.0f) m_vResolution.x = oCurrent.vDesktopRes.x;
+        if(m_vResolution.y <= 0.0f) m_vResolution.y = oCurrent.vDesktopRes.y;
 
-        // set new size and position
-        SDL_SetWindowSize    (m_pWindow, iSizeX, iSizeY);
-        SDL_SetWindowPosition(m_pWindow, iPos,   iPos);
+        // clamp to bounds
+        const coreVector2 vMaximum = (m_iFullscreen == 2u ? oCurrent.vMaximumRes : (m_iFullscreen == 1u ? oCurrent.vDesktopRes : (oCurrent.vWorkAreaRes - I_TO_F(CORE_SYSTEM_WINDOW_BORDER))));
+        m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
+        m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
+
+        if(m_pWindow)
+        {
+            // define window properties
+            const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
+            const coreInt32 iSizeX = F_TO_SI(m_vResolution.x);
+            const coreInt32 iSizeY = F_TO_SI(m_vResolution.y);
+
+            // set new size and position
+            SDL_SetWindowSize    (m_pWindow, iSizeX, iSizeY);
+            SDL_SetWindowPosition(m_pWindow, iPos,   iPos);
+        }
     }
 }
 
 
 // ****************************************************************
 /* update the event system */
-coreBool CoreSystem::__UpdateEvents()
+void CoreSystem::__UpdateEvents()
 {
     // reset window states
     m_bWinFocusLost   = false;
@@ -428,10 +471,8 @@ coreBool CoreSystem::__UpdateEvents()
         }
 
         // forward event to input component
-        if(!Core::Input->ProcessEvent(oEvent)) return true;
+        if(!Core::Input->ProcessEvent(oEvent)) return;
     }
-
-    return !m_bTerminated;
 }
 
 

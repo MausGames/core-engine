@@ -292,6 +292,14 @@ const coreChar* coreData::SystemName()
     // return full operating system name
     return PRINT("Android %s (API Level %s)", acOS, acSDK);
 
+#elif defined(_CORE_IOS_)
+
+    return "iOS";
+
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    return PRINT("Emscripten %d.%d.%d", __EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__);
+
 #endif
 }
 
@@ -620,7 +628,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && !HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     struct stat oBuffer;
 
@@ -660,7 +668,7 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
                (coreInt64(oAttributes.nFileSizeLow));
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     struct stat oBuffer;
 
@@ -705,7 +713,7 @@ std::time_t coreData::FileWriteTime(const coreChar* pcPath)
         return r_cast<coreUint64&>(oAttributes.ftLastWriteTime) / 10000000ull - 11644473600ull;
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     struct stat oBuffer;
 
@@ -731,7 +739,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
     // copy directly (with attributes)
     if(CopyFileA(pcFrom, pcTo, false)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     // open source file
     std::FILE* pFileFrom = std::fopen(pcFrom, "rb");
@@ -775,7 +783,7 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 
     if(MoveFileExA(pcFrom, pcTo, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     if(!std::rename(pcFrom, pcTo)) return CORE_OK;
 
@@ -793,7 +801,7 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
     if(DeleteFileA(pcPath)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     if(!unlink(pcPath)) return CORE_OK;
 
@@ -814,7 +822,7 @@ coreBool coreData::FolderExists(const coreChar* pcPath)
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     struct stat oBuffer;
 
@@ -1005,6 +1013,12 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm*
 /* compress data with Zstandard library */
 coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel)
 {
+#if defined(_CORE_EMSCRIPTEN_)
+
+    return CORE_ERROR_SUPPORT;
+
+#else
+
     ASSERT(pInput && iInputSize && ppOutput && piOutputSize && (iLevel >= ZSTD_minCLevel()) && (iLevel <= ZSTD_maxCLevel()))
 
     // retrieve required output size
@@ -1026,6 +1040,8 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
     (*piOutputSize) = iWritten + sizeof(coreUint32);
 
     return CORE_OK;
+
+#endif
 }
 
 
@@ -1033,6 +1049,12 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
 /* decompress data with Zstandard library */
 coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
 {
+#if defined(_CORE_EMSCRIPTEN_)
+
+    return CORE_ERROR_SUPPORT;
+
+#else
+
     ASSERT(pInput && iInputSize && ppOutput && piOutputSize)
 
     // retrieve original size
@@ -1053,6 +1075,8 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
     (*piOutputSize) = iBound;
 
     return CORE_OK;
+
+#endif
 }
 
 

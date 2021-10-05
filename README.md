@@ -3,7 +3,7 @@
 [![software license: zlib](material/readme/badge_license_software.svg)](LICENSE.txt)
 [![content license: CC BY](material/readme/badge_license_content.svg)](https://creativecommons.org/licenses/by/4.0/)
 
-The Core Engine is an extensive C++ framework based on the SDL library, currently for **Windows and Linux games** and compatible with **OpenGL (ES) 2.x, 3.x and 4.x capable hardware**.
+The Core Engine is an extensive C++ framework based on the SDL library, currently for **Windows, Linux and Emscripten games** and compatible with **OpenGL (ES) 2.x, 3.x and 4.x capable hardware**.
 
 It is **designed to be supportive, versatile and powerful**, and to dynamically use efficient fallback methods where specific system features are not available.
 

@@ -169,8 +169,12 @@ void coreShader::__LoadGlobalCode()
 
     if(!s_asGlobalCode[0].empty()) return;
 
+    // determine best shader version
+    const coreUint16 iVersion = (CORE_GL_SUPPORT(ARB_uniform_buffer_object)) ? F_TO_UI(Core::Graphics->GetVersionGLSL() * 100.0f) : (DEFINED(_CORE_GLES_) ? 100u : 110u);
+    const coreChar*  pcType   = (DEFINED(_CORE_GLES_) && (iVersion >= 300u)) ? "es" : "";
+
     // set global shader definitions
-    s_asGlobalCode[0].assign(PRINT("#version %.0f \n", CORE_GL_SUPPORT(ARB_uniform_buffer_object) ? Core::Graphics->GetVersionGLSL()*100.0f : (DEFINED(_CORE_GLES_) ? 100.0f : 110.0f)));
+    s_asGlobalCode[0].assign(PRINT("#version %u %s"                         "\n", iVersion, pcType));
     s_asGlobalCode[1].assign(PRINT("#define CORE_NUM_TEXTURES_2D"     " (%u) \n", CORE_TEXTURE_UNITS_2D));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_TEXTURES_SHADOW" " (%u) \n", CORE_TEXTURE_UNITS_SHADOW));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS"          " (%u) \n", CORE_GRAPHICS_LIGHTS));

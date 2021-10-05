@@ -10,18 +10,14 @@ set_target_properties(
     CoreEngine PROPERTIES
     C_STANDARD 11
     CXX_STANDARD 20
-    UNITY_BUILD ON
     DEBUG_POSTFIX _debug
-    ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux_x86_64/
+    UNITY_BUILD ON
 )
 
 
 target_sources(
     CoreEngine PRIVATE
-    ${BASE_DIRECTORY}/source/additional/linux/main.c
     ${BASE_DIRECTORY}/source/additional/coreCPUID.cpp
-    ${BASE_DIRECTORY}/source/additional/coreGL.cpp
-    ${BASE_DIRECTORY}/source/additional/coreGLEW.c
     ${BASE_DIRECTORY}/source/components/audio/CoreAudio.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreMusic.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreSound.cpp
@@ -67,33 +63,84 @@ target_include_directories(
 
 
 target_precompile_headers(
-   CoreEngine PRIVATE
-   $<$<COMPILE_LANGUAGE:CXX>: ${BASE_DIRECTORY}/source/Core.h>
+    CoreEngine PRIVATE
+    $<$<COMPILE_LANGUAGE:CXX>: ${BASE_DIRECTORY}/source/Core.h>
 )
 
 
-target_compile_options(
-    CoreEngine PUBLIC
-    -msse3 -mf16c -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
-    $<IF:$<CONFIG:Debug>, -O0 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
-)
+if(EMSCRIPTEN)
 
 
-target_link_directories(
-    CoreEngine INTERFACE
-    ${BASE_DIRECTORY}/libraries/bin/linux_x86_64
-)
+    set_target_properties(
+        CoreEngine PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/emscripten/
+    )
 
 
-target_link_libraries(
-    CoreEngine INTERFACE
-    -ldl -lpthread -lX11 -lGL
-    -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libopenal.so.1 -l:libogg.so.0 -l:libvorbis.so.0 -l:libvorbisfile.so.3 -l:libzstd.so.1
-)
+    target_sources(
+        CoreEngine PRIVATE
+        ${BASE_DIRECTORY}/source/additional/emscripten/main.c
+        ${BASE_DIRECTORY}/source/additional/coreGLES.cpp
+    )
 
 
-target_link_options(
-    CoreEngine INTERFACE
-    -fuse-ld=lld ${SANITIZER_OPTIONS}
-    $<IF:$<CONFIG:Debug>, , -rdynamic -s>
-)
+    target_compile_options(
+        CoreEngine PUBLIC
+        -Wall -Wextra -pedantic
+        $<IF:$<CONFIG:Debug>, -O0 -g3, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
+    )
+
+
+    target_link_options(
+        CoreEngine INTERFACE
+        -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sUSE_OGG=1 -sUSE_VORBIS=1 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sALLOW_MEMORY_GROWTH=1
+        --preload-file ../../../executable/data@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
+        $<IF:$<CONFIG:Debug>, -O0 -g3, -Os --closure 1>
+    )
+
+
+else()
+
+
+    set_target_properties(
+        CoreEngine PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux_x86_64/
+    )
+
+
+    target_sources(
+        CoreEngine PRIVATE
+        ${BASE_DIRECTORY}/source/additional/linux/main.c
+        ${BASE_DIRECTORY}/source/additional/coreGL.cpp
+        ${BASE_DIRECTORY}/source/additional/coreGLEW.c
+    )
+
+
+    target_compile_options(
+        CoreEngine PUBLIC
+        -msse3 -mf16c -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
+        $<IF:$<CONFIG:Debug>, -O0 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
+    )
+
+
+    target_link_directories(
+        CoreEngine INTERFACE
+        ${BASE_DIRECTORY}/libraries/bin/linux_x86_64
+    )
+
+
+    target_link_libraries(
+        CoreEngine INTERFACE
+        -ldl -lpthread -lX11 -lGL
+        -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libopenal.so.1 -l:libogg.so.0 -l:libvorbis.so.0 -l:libvorbisfile.so.3 -l:libzstd.so.1
+    )
+
+
+    target_link_options(
+        CoreEngine INTERFACE
+        -fuse-ld=lld ${SANITIZER_OPTIONS}
+        $<IF:$<CONFIG:Debug>, , -rdynamic -s>
+    )
+
+
+endif()

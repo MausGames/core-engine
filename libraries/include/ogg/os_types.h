@@ -154,9 +154,9 @@
    typedef long long int ogg_int64_t;
    typedef unsigned long long int ogg_uint64_t;
 
-#elif defined(__linux__) || defined(__ANDROID__)
+#elif defined(__linux__) || defined(__ANDROID__) || defined(__EMSCRIPTEN__)
 
-   /* Linux and Android */
+   /* Linux, Android, and Emscripten */
 #  include <stdint.h>
    typedef int16_t ogg_int16_t;
    typedef uint16_t ogg_uint16_t;

@@ -156,7 +156,7 @@ CoreGraphics::CoreGraphics()noexcept
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))
     {
         // create resource context (after reset, because of flickering on Windows with fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
@@ -440,6 +440,23 @@ void CoreGraphics::__UpdateScene()
     SDL_GL_SwapWindow(Core::System->GetWindow());
     Core::Debug->MeasureStart(CORE_DEBUG_OVERALL_NAME);
 
+#if !defined(_CORE_EMSCRIPTEN_)
+
     // clear color, depth and stencil buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+#endif
+}
+
+
+// ****************************************************************
+/* update the Emscripten canvas */
+void CoreGraphics::__UpdateEmscripten()
+{
+#if defined(_CORE_EMSCRIPTEN_)
+
+    // clear color, depth and stencil buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+#endif
 }

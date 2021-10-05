@@ -16,7 +16,6 @@
 // TODO 3: improve delta-time precision, double, similar to coreThread
 // TODO 3: toggling out of m_iFullscreen == 2u might cause issues with some options (e.g. disabled composition)
 // TODO 5: <old comment style>
-// TODO 2: on EGL backend, no-error and context-flags without support can fail context creation (by SDL), but not on WGX/GLX backend
 
 
 // ****************************************************************
@@ -110,11 +109,12 @@ public:
     inline const coreBool&    GetWinFocusLost   ()const                    {return m_bWinFocusLost;}
     inline const coreBool&    GetWinPosChanged  ()const                    {return m_bWinPosChanged;}
     inline const coreBool&    GetWinSizeChanged ()const                    {return m_bWinSizeChanged;}
+    inline const coreBool&    GetTerminated     ()const                    {return m_bTerminated;}
 
 
 private:
     /* update the event system */
-    coreBool __UpdateEvents();
+    void __UpdateEvents();
 
     /* update the main window */
     void __UpdateWindow();

@@ -42,6 +42,10 @@
 // TODO 4: unify/clarify const void* and const coreByte*
 // TODO 4: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
 // TODO 3: overflow check in I_TO_F
+// TODO 3: automatic Core::Reshape() if not handled, currently it's explicit in every application, CoreApp callback ?
+// TODO 3: get ZStandard port for Emscripten target, or fallback to zlib (only interesting for storage, everything else uses transparent server-compression)
+// TODO 3: in emscripten, look into support for web-simd (-msse4.2/-mavx -msimd128)
+// TODO 3: in emscripten, try to add back FLTO to the linker-stage (some 3rd party libraries have undefined symbol "setjmp" and cause crash (SDL_img, freetype))
 
 
 // ****************************************************************
@@ -80,6 +84,9 @@
 #if defined(_M_ARM) || defined(__arm__) || defined(_M_ARM64) || defined(__aarch64__)
     #define _CORE_ARM_
 #endif
+#if defined(__EMSCRIPTEN__)
+    #define _CORE_WASM_
+#endif
 
 // operating system
 #if defined(_WIN32)
@@ -98,6 +105,9 @@
 #if defined(__APPLE__) && TARGET_OS_IPHONE
     #define _CORE_IOS_
     #undef  _CORE_MACOS_
+#endif
+#if defined(__EMSCRIPTEN__)
+    #define _CORE_EMSCRIPTEN_
 #endif
 
 // IDE code parsing
@@ -126,7 +136,7 @@
 #endif
 
 // OpenGL ES mode
-#if defined(_CORE_MOBILE_)
+#if defined(_CORE_MOBILE_) || defined(_CORE_EMSCRIPTEN_)
     #define _CORE_GLES_
 #endif
 
@@ -152,10 +162,10 @@
 #if !defined(_CORE_STL_) && !defined(_CORE_GLIBCXX_) && !defined(_CORE_LIBCPP_)
     #error Standard Library not supported!
 #endif
-#if !defined(_CORE_X86_) && !defined(_CORE_ARM_)
+#if !defined(_CORE_X86_) && !defined(_CORE_ARM_) && !defined(_CORE_WASM_)
     #error Architecture not supported!
 #endif
-#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_MACOS_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_)
+#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_MACOS_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_) && !defined(_CORE_EMSCRIPTEN_)
     #error Operating System not supported!
 #endif
 #if !defined(_CORE_DEBUG_) && (defined(_CORE_RTTI_) || defined(_CORE_EXCEPTIONS_))
@@ -271,6 +281,8 @@
 
 #if defined(_CORE_WINDOWS_)
     #include "additional/windows/header.h"
+#elif defined(_CORE_EMSCRIPTEN_)
+    #include <emscripten.h>
 #endif
 #if defined(_CORE_SSE_)
     #include <immintrin.h>
@@ -313,7 +325,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #if defined(_CORE_GLES_)
-    #include <GLES2/gl2.h>
+    #include <GLES3/gl32.h>
 #else
     #include <GL/glew.h>
 #endif

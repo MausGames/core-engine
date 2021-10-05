@@ -123,6 +123,9 @@ public:
 private:
     /* update the graphics scene */
     void __UpdateScene();
+
+    /* update the Emscripten canvas */
+    void __UpdateEmscripten();
 };
 
 

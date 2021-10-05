@@ -37,10 +37,10 @@
 #define CORE_TEXTURE_SPEC_RG8              (coreTextureSpec(GL_RG8,                GL_RG,              GL_UNSIGNED_BYTE))                  // ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RGB8             (coreTextureSpec(GL_RGB8,               GL_RGB,             GL_UNSIGNED_BYTE))                  // -
 #define CORE_TEXTURE_SPEC_RGBA8            (coreTextureSpec(GL_RGBA8,              GL_RGBA,            GL_UNSIGNED_BYTE))                  // -
-#define CORE_TEXTURE_SPEC_R16              (coreTextureSpec(GL_R16_LUMINANCE16,    GL_RED_LUMINANCE,   GL_UNSIGNED_SHORT))                 // ARB_texture_rg
-#define CORE_TEXTURE_SPEC_RG16             (coreTextureSpec(GL_RG16,               GL_RG,              GL_UNSIGNED_SHORT))                 // ARB_texture_rg
-#define CORE_TEXTURE_SPEC_RGB16            (coreTextureSpec(GL_RGB16,              GL_RGB,             GL_UNSIGNED_SHORT))                 // -
-#define CORE_TEXTURE_SPEC_RGBA16           (coreTextureSpec(GL_RGBA16,             GL_RGBA,            GL_UNSIGNED_SHORT))                 // -
+#define CORE_TEXTURE_SPEC_R16              (coreTextureSpec(GL_R16_LUMINANCE16,    GL_RED_LUMINANCE,   GL_UNSIGNED_SHORT))                 // !GLES ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RG16             (coreTextureSpec(GL_RG16,               GL_RG,              GL_UNSIGNED_SHORT))                 // !GLES ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RGB16            (coreTextureSpec(GL_RGB16,              GL_RGB,             GL_UNSIGNED_SHORT))                 // !GLES
+#define CORE_TEXTURE_SPEC_RGBA16           (coreTextureSpec(GL_RGBA16,             GL_RGBA,            GL_UNSIGNED_SHORT))                 // !GLES
 #define CORE_TEXTURE_SPEC_R16F             (coreTextureSpec(GL_R16F,               GL_RED,             GL_HALF_FLOAT))                     // ARB_texture_float ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RG16F            (coreTextureSpec(GL_RG16F,              GL_RG,              GL_HALF_FLOAT))                     // ARB_texture_float ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RGB16F           (coreTextureSpec(GL_RGB16F,             GL_RGB,             GL_HALF_FLOAT))                     // ARB_texture_float
