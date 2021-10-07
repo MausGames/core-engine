@@ -165,9 +165,9 @@ public:
     static constexpr coreUint16 ReverseBits16 (const coreUint16 iInput);
     static constexpr coreUint32 ReverseBits32 (const coreUint32 iInput);
     static constexpr coreUint64 ReverseBits64 (const coreUint64 iInput);
-    static inline    coreUint16 ReverseBytes16(const coreUint16 iInput);
-    static inline    coreUint32 ReverseBytes32(const coreUint32 iInput);
-    static inline    coreUint64 ReverseBytes64(const coreUint64 iInput);
+    static constexpr coreUint16 ReverseBytes16(const coreUint16 iInput);
+    static constexpr coreUint32 ReverseBytes32(const coreUint32 iInput);
+    static constexpr coreUint64 ReverseBytes64(const coreUint64 iInput);
 
     /* converting operations */
     static constexpr coreUint32 FloatToBits(const coreFloat  fInput);
@@ -534,12 +534,15 @@ constexpr coreUint64 coreMath::ReverseBits64(const coreUint64 iInput)
 
 // ****************************************************************
 /* reverse byte-order of a 2-byte sequence */
-inline coreUint16 coreMath::ReverseBytes16(const coreUint16 iInput)
+constexpr coreUint16 coreMath::ReverseBytes16(const coreUint16 iInput)
 {
 #if defined(_CORE_MSVC_)
 
-    // calculation with MSVC intrinsic
-    return _byteswap_ushort(iInput);
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        return _byteswap_ushort(iInput);
+    }
 
 #else
 
@@ -547,17 +550,25 @@ inline coreUint16 coreMath::ReverseBytes16(const coreUint16 iInput)
     return __builtin_bswap16(iInput);
 
 #endif
+
+    // normal calculation
+    coreUint16 iOutput = iInput;
+    iOutput = ((iOutput >> 8u) & 0x00FFu) | ((iOutput << 8u) & 0xFF00u);
+    return iOutput;
 }
 
 
 // ****************************************************************
 /* reverse byte-order of a 4-byte sequence */
-inline coreUint32 coreMath::ReverseBytes32(const coreUint32 iInput)
+constexpr coreUint32 coreMath::ReverseBytes32(const coreUint32 iInput)
 {
 #if defined(_CORE_MSVC_)
 
-    // calculation with MSVC intrinsic
-    return _byteswap_ulong(iInput);
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        return _byteswap_ulong(iInput);
+    }
 
 #else
 
@@ -565,17 +576,26 @@ inline coreUint32 coreMath::ReverseBytes32(const coreUint32 iInput)
     return __builtin_bswap32(iInput);
 
 #endif
+
+    // normal calculation
+    coreUint32 iOutput = iInput;
+    iOutput = ((iOutput >> 16u) & 0x0000FFFFu) | ((iOutput << 16u) & 0xFFFF0000u);
+    iOutput = ((iOutput >>  8u) & 0x00FF00FFu) | ((iOutput <<  8u) & 0xFF00FF00u);
+    return iOutput;
 }
 
 
 // ****************************************************************
 /* reverse byte-order of a 8-byte sequence */
-inline coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
+constexpr coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
 {
 #if defined(_CORE_MSVC_)
 
-    // calculation with MSVC intrinsic
-    return _byteswap_uint64(iInput);
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        return _byteswap_uint64(iInput);
+    }
 
 #else
 
@@ -583,6 +603,13 @@ inline coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
     return __builtin_bswap64(iInput);
 
 #endif
+
+    // normal calculation
+    coreUint64 iOutput = iInput;
+    iOutput = ((iOutput >> 32u) & 0x00000000FFFFFFFFu) | ((iOutput << 32u) & 0xFFFFFFFF00000000u);
+    iOutput = ((iOutput >> 16u) & 0x0000FFFF0000FFFFu) | ((iOutput << 16u) & 0xFFFF0000FFFF0000u);
+    iOutput = ((iOutput >>  8u) & 0x00FF00FF00FF00FFu) | ((iOutput <<  8u) & 0xFF00FF00FF00FF00u);
+    return iOutput;
 }
 
 
