@@ -1,0 +1,96 @@
+{
+    "version": 2,
+    "cmakeMinimumRequired":
+    {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+    "configurePresets":
+    [
+        {
+            "name": "base",
+            "generator": "Ninja",
+            "binaryDir": "cmake-${presetName}",
+            "vendor":
+            {
+                "jetbrains.com/clion":
+                {
+                    "toolchain": "Clang"
+                }
+            }
+        },
+        {
+            "name": "linux-x86-64-debug",
+            "inherits": "base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+                "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
+            }
+        },
+        {
+            "name": "linux-x86-64-release",
+            "inherits": "base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "linux-x86-64-test",
+            "inherits": "base",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "SANITIZER_OPTIONS": "-fsanitize=undefined,address"
+            }
+        },
+        {
+            "name": "emscripten",
+            "cacheVariables":
+            {
+                "EMSCRIPTEN": "1"
+            },
+            "vendor":
+            {
+                "jetbrains.com/clion":
+                {
+                    "toolchain": "Emscripten"
+                }
+            }
+        },
+        {
+            "name": "emscripten-debug",
+            "inherits": ["emscripten", "linux-x86-64-debug"]
+        },
+        {
+            "name": "emscripten-release",
+            "inherits": ["emscripten", "linux-x86-64-release"]
+        }
+    ],
+    "buildPresets":
+    [
+        {
+            "name": "linux_x86_64 (debug)",
+            "configurePreset": "linux-x86-64-debug"
+        },
+        {
+            "name": "linux_x86_64 (release)",
+            "configurePreset": "linux-x86-64-release"
+        },
+        {
+            "name": "linux_x86_64 (test)",
+            "configurePreset": "linux-x86-64-test"
+        },
+        {
+            "name": "emscripten (debug)",
+            "configurePreset": "emscripten-debug"
+        },
+        {
+            "name": "emscripten (release)",
+            "configurePreset": "emscripten-release"
+        }
+    ]
+}
