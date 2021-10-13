@@ -207,6 +207,16 @@ float coreSign(const in float v) {return (v >= 0.0) ? 1.0 : -1.0;}
     vec4 coreSign(const in vec4 v) {return vec4(coreSign(v.x), coreSign(v.y), coreSign(v.z), coreSign(v.w));}
 #endif
 
+// test if the parameter is not a number
+#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+    #define coreIsNan(x) (isnan(x))
+#else
+    bool  coreIsNan(const in float v) {return !((v == 0.0) || (v < 0.0) || (v > 0.0));}
+    bvec2 coreIsNan(const in vec2  v) {return bvec2(coreIsNan(v.x), coreIsNan(v.y));}
+    bvec3 coreIsNan(const in vec3  v) {return bvec3(coreIsNan(v.x), coreIsNan(v.y), coreIsNan(v.z));}
+    bvec4 coreIsNan(const in vec4  v) {return bvec4(coreIsNan(v.x), coreIsNan(v.y), coreIsNan(v.z), coreIsNan(v.w));}
+#endif
+
 // color convert
 vec3 coreRgbToHsv(const in vec3 v3Rgb)
 {
