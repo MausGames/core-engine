@@ -22,6 +22,7 @@
 #if defined(GL_ES)
     #extension GL_EXT_conservative_depth       : enable
     #extension GL_EXT_shadow_samplers          : enable
+    #extension GL_OES_sample_variables         : enable
 #else
     #extension GL_AMD_conservative_depth       : enable
     #extension GL_AMD_gpu_shader_half_float    : enable
@@ -38,13 +39,23 @@
     #extension GL_EXT_shader_image_load_store  : enable
     #extension GL_NV_gpu_shader5               : enable
 #endif
-#if defined(GL_EXT_gpu_shader4) || (__VERSION__) >= 130
-    #define CORE_GL_gpu_shader4
+#if defined(GL_ES)
+    #define CORE_GL_VERSION    (0)
+    #define CORE_GL_ES_VERSION (__VERSION__)
+#else
+    #define CORE_GL_VERSION    (__VERSION__)
+    #define CORE_GL_ES_VERSION (0)
 #endif
-#if defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth) || (__VERSION__) >= 420
+#if defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth) || (CORE_GL_VERSION >= 420)
     #define CORE_GL_conservative_depth
 #endif
-#if defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (__VERSION__) >= 420 || (defined(GL_ES) && (__VERSION__) >= 310)
+#if defined(GL_EXT_gpu_shader4) || (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+    #define CORE_GL_gpu_shader4
+#endif
+#if defined(GL_ARB_sample_shading) || defined(GL_OES_sample_variables) || (CORE_GL_VERSION >= 400) || (CORE_GL_ES_VERSION >= 320)
+    #define CORE_GL_sample_shading
+#endif
+#if defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (CORE_GL_VERSION >= 420) || (CORE_GL_ES_VERSION >= 310)
     #define CORE_GL_shader_image_load_store
 #endif
 #pragma optimize(on)
@@ -65,7 +76,7 @@
 #endif
 
 // layout qualifiers
-#if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_) && (__VERSION__) >= 130
+#if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_) && ((CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300))
     #if defined(CORE_GL_conservative_depth)
         layout(depth_unchanged) out float gl_FragDepth;
     #endif
@@ -80,7 +91,7 @@
 #endif
 
 // compatibility adjustments
-#if defined(GL_ES) && (__VERSION__) < 300
+#if defined(GL_ES) && (CORE_GL_ES_VERSION < 300)
     #if defined(GL_EXT_shadow_samplers)
         #define shadow2DProj(t,v) (shadow2DProjEXT(t, v))
     #else
@@ -88,7 +99,7 @@
         #define shadow2DProj(t,v) ((texture2DProj(t, v).r < (v.z / v.w)) ? 1.0 : 0.0)
     #endif
 #endif
-#if (__VERSION__) >= 130
+#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
     #if defined(_CORE_VERTEX_SHADER_)
         #define attribute in
         #define varying   out
@@ -110,7 +121,7 @@
     #define precise
     #define fma(a,b,c) ((a) * (b) + (c))
 #endif
-#if !defined(GL_ES) && (__VERSION__) < 120
+#if !defined(GL_ES) && (CORE_GL_VERSION < 120)
     #define invariant
 #endif
 
@@ -143,7 +154,7 @@
 #define SQRT3 (1.7320508075688772935274463415059)
 
 // evaluate shader per sample
-#if defined(GL_ARB_sample_shading)
+#if defined(CORE_GL_sample_shading)
     #define CORE_SAMPLE_SHADING {gl_SampleID;}
 #else
     #define CORE_SAMPLE_SHADING
@@ -186,7 +197,7 @@ vec4  coreLinearStep(const in float e0, const in float e1, const in vec4  v) {re
 
 // extract the sign without returning 0.0
 float coreSign(const in float v) {return (v >= 0.0) ? 1.0 : -1.0;}
-#if (__VERSION__) >= 130
+#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
     vec2 coreSign(const in vec2 v) {return mix(vec2(-1.0), vec2(1.0), greaterThanEqual(v, vec2(0.0)));}
     vec3 coreSign(const in vec3 v) {return mix(vec3(-1.0), vec3(1.0), greaterThanEqual(v, vec3(0.0)));}
     vec4 coreSign(const in vec4 v) {return mix(vec4(-1.0), vec4(1.0), greaterThanEqual(v, vec4(0.0)));}
@@ -323,7 +334,7 @@ vec3 coreQuatApply(const in vec4 q, const in vec3 v)
 // matrix transpose
 mat2 coreTranspose(const in mat2 m)
 {
-#if (__VERSION__) >= 120
+#if (CORE_GL_VERSION >= 120) || (CORE_GL_ES_VERSION >= 300)
     return transpose(m);
 #else
     return mat2(m[0][0], m[1][0],
@@ -332,7 +343,7 @@ mat2 coreTranspose(const in mat2 m)
 }
 mat3 coreTranspose(const in mat3 m)
 {
-#if (__VERSION__) >= 120
+#if (CORE_GL_VERSION >= 120) || (CORE_GL_ES_VERSION >= 300)
     return transpose(m);
 #else
     return mat3(m[0][0], m[1][0], m[2][0],
@@ -342,7 +353,7 @@ mat3 coreTranspose(const in mat3 m)
 }
 mat4 coreTranspose(const in mat4 m)
 {
-#if (__VERSION__) >= 120
+#if (CORE_GL_VERSION >= 120) || (CORE_GL_ES_VERSION >= 300)
     return transpose(m);
 #else
     return mat4(m[0][0], m[1][0], m[2][0], m[3][0],
@@ -355,7 +366,7 @@ mat4 coreTranspose(const in mat4 m)
 // matrix invert
 mat3 coreInvert(const in mat3 m)
 {
-#if (__VERSION__) >= 150
+#if (CORE_GL_VERSION >= 150) || (CORE_GL_ES_VERSION >= 300)
     return inverse(m);
 #else
     float A = m[1][1]*m[2][2] - m[1][2]*m[2][1];
@@ -370,7 +381,7 @@ mat3 coreInvert(const in mat3 m)
 }
 mat4 coreInvert(const in mat4 m)
 {
-#if (__VERSION__) >= 150
+#if (CORE_GL_VERSION >= 150) || (CORE_GL_ES_VERSION >= 300)
     return inverse(m);
 #else
     float A = m[0][0]*m[1][1] - m[0][1]*m[1][0];
@@ -395,7 +406,7 @@ mat4 coreInvert(const in mat4 m)
 }
 
 // matrix convert
-#if (__VERSION__) >= 120
+#if (CORE_GL_VERSION >= 120) || (CORE_GL_ES_VERSION >= 300)
     #define coreMat4to3(m) mat3(m)
     #define coreMat3to2(m) mat2(m)
 #else
@@ -435,7 +446,7 @@ mat4 coreInvert(const in mat4 m)
 
 
 // ****************************************************************
-#if (__VERSION__) >= 130
+#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
 
     // transformation uniforms
     layout(std140) uniform b_Transform
@@ -486,14 +497,14 @@ uniform lowp    vec4 u_v4Color;
 uniform mediump vec4 u_v4TexParam;
 
 // texture uniforms
-uniform sampler2D       u_as2Texture2D    [CORE_NUM_TEXTURES_2D];
-uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
+uniform lowp sampler2D       u_as2Texture2D    [CORE_NUM_TEXTURES_2D];
+uniform lowp sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 
 // ****************************************************************
 #if defined(_CORE_VERTEX_SHADER_)
 
-    #if (__VERSION__) >= 130
+    #if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
 
         // vertex attributes
         in vec3 a_v3RawPosition;
@@ -509,6 +520,22 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         in vec4 a_v4DivColor;
         in vec4 a_v4DivTexParam;
 
+    #else
+
+        // vertex attributes
+        attribute vec3 a_v3RawPosition;
+        attribute vec2 a_v2RawTexCoord;
+        attribute vec3 a_v3RawNormal;
+        attribute vec4 a_v4RawTangent;
+
+        // instancing uniforms
+        uniform highp   vec3 a_v3DivPosition;
+        uniform mediump vec3 a_v3DivData;
+
+    #endif
+
+    #if (CORE_GL_VERSION >= 140) || (CORE_GL_ES_VERSION >= 310)
+
         // shader output
         out b_Varying
         {
@@ -521,16 +548,6 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         };
 
     #else
-
-        // vertex attributes
-        attribute vec3 a_v3RawPosition;
-        attribute vec2 a_v2RawTexCoord;
-        attribute vec3 a_v3RawNormal;
-        attribute vec4 a_v4RawTangent;
-
-        // instancing uniforms
-        uniform highp   vec3 a_v3DivPosition;
-        uniform mediump vec3 a_v3DivData;
 
         // shader output
         flat varying vec4 v_v4VarColor;
@@ -616,7 +633,8 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         vec4 v_av4LightDir[CORE_NUM_LIGHTS];
         vec3 v_v3TangentPos;
         vec3 v_v3TangentCam;
-    } In[];
+    }
+    In[];
 
     // shader output
     out b_Varying
@@ -627,7 +645,8 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         vec4 v_av4LightDir[CORE_NUM_LIGHTS];
         vec3 v_v3TangentPos;
         vec3 v_v3TangentCam;
-    } Out;
+    }
+    Out;
 
     // main function
     void GeometryMain();
@@ -642,7 +661,15 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 // ****************************************************************
 #if defined(_CORE_FRAGMENT_SHADER_)
 
-    #if (__VERSION__) >= 130
+    #if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+
+        // shader output
+        out vec4 o_av4OutColor[CORE_NUM_OUTPUTS];
+        #define gl_FragColor (o_av4OutColor[0])
+
+    #endif
+
+    #if (CORE_GL_VERSION >= 140) || (CORE_GL_ES_VERSION >= 310)
 
         // shader input
         in b_Varying
@@ -654,10 +681,6 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
             vec3 v_v3TangentPos;
             vec3 v_v3TangentCam;
         };
-
-        // shader output
-        out vec4 o_av4OutColor[CORE_NUM_OUTPUTS];
-        #define gl_FragColor o_av4OutColor[0]
 
     #else
 
@@ -788,7 +811,7 @@ uniform sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 #endif // _CORE_FRAGMENT_SHADER_
 
 // recommended texture lookup
-#if (__VERSION__) >= 130
+#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
     #define coreTexture2D(u,c)     (texture      (u_as2Texture2D    [u], c))
     #define coreTextureProj(u,c)   (textureProj  (u_as2Texture2D    [u], c))
     #define coreTextureShadow(u,c) (textureProj  (u_as2TextureShadow[u], c))

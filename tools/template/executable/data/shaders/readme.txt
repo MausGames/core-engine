@@ -137,9 +137,14 @@ Definitions
     #define SQRT2                 // principal square root of 2
     #define SQRT3                 // principal square root of 3
 
+    // version wrappers
+    #define CORE_GL_VERSION
+    #define CORE_GL_ES_VERSION
+
     // extension wrappers
-    #define CORE_GL_gpu_shader4
     #define CORE_GL_conservative_depth
+    #define CORE_GL_gpu_shader4
+    #define CORE_GL_sample_shading
     #define CORE_GL_shader_image_load_store
 
 Functions
