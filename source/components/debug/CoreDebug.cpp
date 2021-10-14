@@ -303,7 +303,7 @@ void CoreDebug::__StatStart()
                 // write fragment statistics
                 if(m_aStat.index() == CORE_DEBUG_STAT_FRAGMENT)
                 {
-                    m_aStatOutput[2].SetText(PRINT("Fragment Invocations: %u (%.2f per pixel)", m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult) * RCP(Core::System->GetResolution().x * Core::System->GetResolution().y)));
+                    m_aStatOutput[2].SetText(PRINT("Fragment Invocations: %u (%.2f per pixel)", m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult) * RCP(Core::Graphics->GetViewResolution().x * Core::Graphics->GetViewResolution().y)));
                 }
             }
 

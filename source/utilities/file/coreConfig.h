@@ -20,14 +20,14 @@
 #define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (false)   // keep resources in memory
 
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
-#define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (800)
-#define CORE_CONFIG_SYSTEM_HEIGHT               "System",   "Height",             (600)
+#define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (0)
+#define CORE_CONFIG_SYSTEM_HEIGHT               "System",   "Height",             (0)
 #define CORE_CONFIG_SYSTEM_FULLSCREEN           "System",   "Fullscreen",         (0)
 #define CORE_CONFIG_SYSTEM_VSYNC                "System",   "Vsync",              (true)
 
-#define CORE_CONFIG_GRAPHICS_QUALITY            "Graphics", "Quality",            (0)
-#define CORE_CONFIG_GRAPHICS_ANTIALIASING       "Graphics", "AntiAliasing",       (2)
-#define CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY  "Graphics", "TextureAnisotropy",  (4)
+#define CORE_CONFIG_GRAPHICS_QUALITY            "Graphics", "Quality",            (1)
+#define CORE_CONFIG_GRAPHICS_ANTIALIASING       "Graphics", "AntiAliasing",       (4)
+#define CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY  "Graphics", "TextureAnisotropy",  (8)
 #define CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR   "Graphics", "TextureTrilinear",   (true)
 #define CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION "Graphics", "TextureCompression", (true)
 #define CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS   "Graphics", "EnableExtensions",   ("")

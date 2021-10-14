@@ -294,7 +294,7 @@ void CoreGraphics::UpdateTransformation()
         if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
         {
             const coreUint32 iOldOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
-            glInvalidateBufferSubData(m_TransformBuffer.GetIdentifier(), iOldOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
+            glInvalidateBufferSubData(m_TransformBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u));
         }
 
         // synchronize and switch to next sync object
@@ -304,7 +304,7 @@ void CoreGraphics::UpdateTransformation()
 
         // bind next buffer range
         const coreUint32 iNewOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer.GetIdentifier(), iNewOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer.GetIdentifier(), iNewOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 16u));
 
         // map required area of the UBO
         coreByte* pRange = m_TransformBuffer.Map(iNewOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
@@ -340,7 +340,7 @@ void CoreGraphics::UpdateAmbient()
         if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
         {
             const coreUint32 iOldOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
-            glInvalidateBufferSubData(m_AmbientBuffer.GetIdentifier(), iOldOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+            glInvalidateBufferSubData(m_AmbientBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u));
         }
 
         // synchronize and switch to next sync object
@@ -350,7 +350,7 @@ void CoreGraphics::UpdateAmbient()
 
         // bind next buffer range
         const coreUint32 iNewOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer.GetIdentifier(), iNewOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
+        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer.GetIdentifier(), iNewOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 16u));
 
         // map required area of the UBO
         coreByte* pRange = m_AmbientBuffer.Map(iNewOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
@@ -371,9 +371,9 @@ void CoreGraphics::UpdateAmbient()
 /* take screenshot */
 void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 {
-    const coreUintW iWidthSrc = coreMath::CeilAlign(F_TO_UI(Core::System->GetResolution().x), 4u);
-    const coreUintW iWidthDst = F_TO_UI(Core::System->GetResolution().x);
-    const coreUintW iHeight   = F_TO_UI(Core::System->GetResolution().y);
+    const coreUintW iWidthSrc = coreMath::CeilAlign(F_TO_UI(m_vViewResolution.x), 4u);
+    const coreUintW iWidthDst = F_TO_UI(m_vViewResolution.x);
+    const coreUintW iHeight   = F_TO_UI(m_vViewResolution.y);
     const coreUintW iPitchSrc = iWidthSrc * 3u;
     const coreUintW iPitchDst = iWidthDst * 3u;
     const coreUintW iSize     = iHeight * iPitchSrc;

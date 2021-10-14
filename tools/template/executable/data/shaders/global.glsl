@@ -191,9 +191,9 @@
 
 // linear interpolation between 0.0 and 1.0
 float coreLinearStep(const in float e0, const in float e1, const in float v) {return coreSaturate((v - e0) / (e1 - e0));}
-vec2  coreLinearStep(const in float e0, const in float e1, const in vec2  v) {return coreSaturate((v - e0) / (e1 - e0));}
-vec3  coreLinearStep(const in float e0, const in float e1, const in vec3  v) {return coreSaturate((v - e0) / (e1 - e0));}
-vec4  coreLinearStep(const in float e0, const in float e1, const in vec4  v) {return coreSaturate((v - e0) / (e1 - e0));}
+vec2  coreLinearStep(const in vec2  e0, const in vec2  e1, const in vec2  v) {return coreSaturate((v - e0) / (e1 - e0));}
+vec3  coreLinearStep(const in vec3  e0, const in vec3  e1, const in vec3  v) {return coreSaturate((v - e0) / (e1 - e0));}
+vec4  coreLinearStep(const in vec4  e0, const in vec4  e1, const in vec4  v) {return coreSaturate((v - e0) / (e1 - e0));}
 
 // extract the sign without returning 0.0
 float coreSign(const in float v) {return (v >= 0.0) ? 1.0 : -1.0;}
