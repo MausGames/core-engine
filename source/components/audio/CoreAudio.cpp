@@ -131,21 +131,29 @@ CoreAudio::~CoreAudio()
 /* control the listener */
 void CoreAudio::SetListener(const coreVector3 vPosition, const coreVector3 vVelocity, const coreVector3 vDirection, const coreVector3 vOrientation)
 {
-    this->DeferUpdates();
+    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
+
+    coreBool bNewPosition    = false;
+    coreBool bNewVelocity    = false;
+    coreBool bNewOrientation = false;
+
+    // set properties of the listener
+    if(m_vPosition      != vPosition)    {m_vPosition      = vPosition;    bNewPosition    = true;}
+    if(m_vVelocity      != vVelocity)    {m_vVelocity      = vVelocity;    bNewVelocity    = true;}
+    if(m_avDirection[0] != vDirection)   {m_avDirection[0] = vDirection;   bNewOrientation = true;}
+    if(m_avDirection[1] != vOrientation) {m_avDirection[1] = vOrientation; bNewOrientation = true;}
+
+    // update listener on demand
+    if(bNewPosition || bNewVelocity || bNewOrientation)
     {
-        coreBool bNewOrientation = false;
-
-        // set and update properties of the listener
-        ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
-        if(m_vPosition      != vPosition)    {m_vPosition      = vPosition;    alListenerfv(AL_POSITION, m_vPosition.ptr());}
-        if(m_vVelocity      != vVelocity)    {m_vVelocity      = vVelocity;    alListenerfv(AL_VELOCITY, m_vVelocity.ptr());}
-        if(m_avDirection[0] != vDirection)   {m_avDirection[0] = vDirection;   bNewOrientation = true;}
-        if(m_avDirection[1] != vOrientation) {m_avDirection[1] = vOrientation; bNewOrientation = true;}
-
-        // update direction and orientation
-        if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0].ptr());
+        this->DeferUpdates();
+        {
+            if(bNewPosition)    alListenerfv(AL_POSITION,    m_vPosition.ptr());
+            if(bNewVelocity)    alListenerfv(AL_VELOCITY,    m_vVelocity.ptr());
+            if(bNewOrientation) alListenerfv(AL_ORIENTATION, m_avDirection[0].ptr());
+        }
+        this->ProcessUpdates();
     }
-    this->ProcessUpdates();
 }
 
 void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
