@@ -12,6 +12,29 @@
 
 
 // ****************************************************************
+/* spinlock definitions */
+#if defined(_CORE_X86_)
+    #if defined(_CORE_MSVC_)
+        #define CORE_SPINLOCK_YIELD {_mm_pause();}             // processor level
+    #else
+        #define CORE_SPINLOCK_YIELD {asm volatile("pause");}   // processor level
+    #endif
+#elif defined(_CORE_ARM_)
+    #if defined(_CORE_MSVC_)
+        #define CORE_SPINLOCK_YIELD {__yield();}               // processor level
+    #else
+        #define CORE_SPINLOCK_YIELD {asm volatile("yield");}   // processor level
+    #endif
+#else
+    #if defined(_CORE_WINDOWS_)
+        #define CORE_SPINLOCK_YIELD {Sleep(0u);}               // OS level
+    #else
+        #define CORE_SPINLOCK_YIELD {sched_yield();}           // OS level
+    #endif
+#endif
+
+
+// ****************************************************************
 /* spinlock class */
 class coreSpinLock final
 {
@@ -85,14 +108,7 @@ public:
 /* acquire the spinlock */
 FORCE_INLINE void coreSpinLock::Lock()
 {
-    while(!this->TryLock())
-    {
-    #if defined(_CORE_SSE_)
-        _mm_pause();     // processor level spinning
-    #else
-        SDL_Delay(0u);   // OS level spinning
-    #endif
-    }
+    while(!this->TryLock()) CORE_SPINLOCK_YIELD
 }
 
 
