@@ -13,9 +13,9 @@
 // TODO 3: #include interface
 // TODO 3: better integration of instancing (allow instanced and non-instaced shaders to exist in the same program object (on demand, or per registry-attribute))
 // TODO 5: check for compressed uniform sends (e.g. colors as byte-array instead of float-vector)
-// TODO 3: support GLES shader versions other than 100 (GLES 3.0 uses "300 es", also version >= 140 is wrong for GLES 3.0)
 // TODO 5: <old comment style>
 // TODO 2: coreLightingTransform is super-confusing to use
+// TODO 4: Chromium shader compiler does not support attribute aliasing (though the standard allows it), remove and remap (#define) one of the variables ?
 
 // NOTE: GL below 3.0/130 or without UBO support has always GLSL version 110, GLES is currently always version 100
 
@@ -65,7 +65,7 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM  (4u)
 #define CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM      (5u)
 #define CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM  (6u)
-#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (5u)
+#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (DEFINED(_CORE_EMSCRIPTEN_) ? 9u : 5u)
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7u)
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
 

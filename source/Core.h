@@ -527,7 +527,7 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 // default color values
 #define COLOR_WHITE  (coreVector3(1.000f, 1.000f, 1.000f))
 #define COLOR_YELLOW (coreVector3(1.000f, 0.824f, 0.392f))
-#define COLOR_ORANGE (coreVector3(1.000f, 0.443f, 0.227f))
+#define COLOR_ORANGE (coreVector3(1.000f, 0.543f, 0.227f))
 #define COLOR_RED    (coreVector3(1.000f, 0.275f, 0.275f))
 #define COLOR_PURPLE (coreVector3(0.710f, 0.333f, 1.000f))
 #define COLOR_BLUE   (coreVector3(0.102f, 0.702f, 1.000f))

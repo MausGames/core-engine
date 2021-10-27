@@ -15,6 +15,7 @@
 // TODO 4: cleanup resource-manager reset of object-manager, change location of global resources/objects (incl. single triangle)
 // TODO 2: add pre-registering interface to object manager ? accessing a non-existing list can cause issues
 // TODO 4: [const coreObject3D*] should be [const coreObject3D&], but pointers are swapped (for performance reasons)
+// TODO 2: collision between precise and simple volume should actually do a sphere<>triangle intersection test
 
 
 // ****************************************************************

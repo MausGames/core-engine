@@ -98,7 +98,7 @@ public:
     inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
 
     /* control the reference-counter */
-    inline void RefIncrease() {m_iRefCount.FetchAdd(1u);}
+    inline void RefIncrease() {m_iRefCount.FetchAdd(1u); ASSERT(m_iRefCount)}
     inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u) && !Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE)) this->Nullify();}
 
     /* handle resource loading */

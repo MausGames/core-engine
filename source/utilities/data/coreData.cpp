@@ -283,7 +283,7 @@ const coreChar* coreData::SystemName()
 
 #elif defined(_CORE_ANDROID_)
 
-    coreChar acOS[PROP_VALUE_MAX], acSDK[PROP_VALUE_MAX];
+    coreChar acOS[PROP_VALUE_MAX] = {}, acSDK[PROP_VALUE_MAX] = {};
 
     // fetch operating system and SDK version strings
     __system_property_get("ro.build.version.release", acOS);
@@ -298,7 +298,7 @@ const coreChar* coreData::SystemName()
 
 #elif defined(_CORE_EMSCRIPTEN_)
 
-    return PRINT("Emscripten %d.%d.%d", __EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__);
+    return "Emscripten " STRING(__EMSCRIPTEN_major__) "." STRING(__EMSCRIPTEN_minor__) "." STRING(__EMSCRIPTEN_tiny__);
 
 #endif
 }

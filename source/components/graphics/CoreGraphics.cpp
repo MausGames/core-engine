@@ -246,7 +246,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
     {
         // create projection matrices
         m_mPerspective = coreMatrix4::Perspective(vResolution, m_fFOV, m_fNearClip, m_fFarClip);
-        m_mOrtho       = coreMatrix4::Ortho(vResolution);
+        m_mOrtho       = coreMatrix4::Ortho      (vResolution);
 
         // invoke transformation data update
         ADD_BIT(m_iUniformUpdate, 0u)

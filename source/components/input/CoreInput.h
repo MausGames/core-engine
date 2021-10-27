@@ -101,9 +101,9 @@ private:
     /* joystick structure */
     struct coreJoystick final
     {
-        SDL_GameController* pController;                     // game controller handle
-        SDL_Joystick*       pJoystick;                       // joystick device handle
-        SDL_Haptic*         pHaptic;                         // haptic device handle
+        SDL_GameController* pController;                   // game controller handle
+        SDL_Joystick*       pJoystick;                     // joystick device handle
+        SDL_Haptic*         pHaptic;                       // haptic device handle
 
         coreUint8 aiButton[CORE_INPUT_BUTTONS_JOYSTICK];   // status of the joystick buttons
         coreUint8 aiCount [CORE_INPUT_TYPES];              // number of joystick buttons with same status
