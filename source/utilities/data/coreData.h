@@ -142,7 +142,7 @@ public:
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
-    static void                   StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput);
+    static coreBool               StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput);
 
     /* operate with containers */
     template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}

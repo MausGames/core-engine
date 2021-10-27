@@ -1171,17 +1171,20 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
 
 // ****************************************************************
 /* copy string into another buffer */
-void coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput)
+coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput)
 {
-    ASSERT(pcInput && pcOutput)
+    ASSERT(pcOutput && iMaxLen && pcInput)
 
     // calculate string length
-    const coreUintW iLen = MIN(std::strlen(pcInput), iMaxLen - 1u);
-    WARN_IF(std::strlen(pcInput) >= iMaxLen) {}
+    const coreUintW iInputLen  = std::strlen(pcInput);
+    const coreUintW iOutputLen = MIN(iInputLen, iMaxLen - 1u);
 
     // copy string with guaranteed null-termination
-    std::memcpy(pcOutput, pcInput, iLen);
-    pcOutput[iLen] = '\0';
+    std::memcpy(pcOutput, pcInput, iOutputLen);
+    pcOutput[iOutputLen] = '\0';
+
+    WARN_IF(iInputLen >= iMaxLen) return false;
+    return true;
 }
 
 
