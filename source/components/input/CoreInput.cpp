@@ -46,23 +46,31 @@ CoreInput::~CoreInput()
 /* set the mouse cursor */
 void CoreInput::SetCursor(const coreChar* pcPath)
 {
-    // retrieve texture file
-    coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
-
-    // decompress file to plain pixel data
-    coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), true, coreData::StrExtension(pcPath));
-    if(!pData)
+    if(pcPath)
     {
-        Core::Log->Warning("Cursor (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
-        return;
+        // retrieve texture file
+        coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+
+        // decompress file to plain pixel data
+        coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), true, coreData::StrExtension(pcPath));
+        if(!pData)
+        {
+            Core::Log->Warning("Cursor (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
+            return;
+        }
+
+        // delete old mouse cursor
+        if(m_pCursor) SDL_FreeCursor(m_pCursor);
+
+        // create and set new mouse cursor
+        m_pCursor = SDL_CreateColorCursor(pData, 0, 0);
+        SDL_SetCursor(m_pCursor);
     }
-
-    // delete old mouse cursor
-    if(m_pCursor) SDL_FreeCursor(m_pCursor);
-
-    // create and set new mouse cursor
-    m_pCursor = SDL_CreateColorCursor(pData, 0, 0);
-    SDL_SetCursor(m_pCursor);
+    else
+    {
+        // reset to default cursor
+        SDL_SetCursor(SDL_GetDefaultCursor());
+    }
 
     Core::Log->Info("Cursor (%s) loaded", pcPath);
 }
