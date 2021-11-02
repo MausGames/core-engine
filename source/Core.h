@@ -290,6 +290,7 @@
     #include <arm_neon.h>
 #endif
 #include <cassert>
+#include <cctype>
 #include <cfenv>
 #include <cfloat>
 #include <cmath>
