@@ -43,16 +43,15 @@ class INTERFACE coreData final
 {
 private:
     /* temp-string structure */
-    struct coreTempString final
+    struct alignas(ALIGNMENT_CACHE) coreTempString final
     {
-        coreChar* pcPointer = coreMath::CeilAlignPtr(acData, ALIGNMENT_CACHE);             // manually aligned pointer (auto-aligning thread-local data is not supported by the Windows 7 PE-loader)
-        coreChar  acData[CORE_DATA_STRING_NUM * CORE_DATA_STRING_LEN + ALIGNMENT_CACHE];   // temp-string buffer
+        coreChar  aacData[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   // aligned temp-string buffer
+        coreUintW iCurrent;                                              // current temp-string
     };
 
 
 private:
-    static thread_local coreTempString s_TempString;       // manually aligned temp-string buffer
-    static thread_local coreUintW      s_iCurString;       // current temp-string
+    static thread_local coreTempString s_TempString;       // thread-local temp-string container
 
     static coreMapStr<const coreChar*> s_apcCommandLine;   // parsed command line arguments
     static coreString                  s_sUserFolder;      // selected user folder
@@ -153,7 +152,7 @@ public:
 
 private:
     /* access next temp-string */
-    static inline RETURN_RESTRICT coreChar* __NextTempString() {if(++s_iCurString >= CORE_DATA_STRING_NUM) s_iCurString = 0u; return &s_TempString.pcPointer[s_iCurString * CORE_DATA_STRING_LEN];}
+    static inline RETURN_RESTRICT coreChar* __NextTempString() {if(++s_TempString.iCurrent >= CORE_DATA_STRING_NUM) s_TempString.iCurrent = 0u; return s_TempString.aacData[s_TempString.iCurrent];}
 
     /* prepare path for system directory */
     static const coreChar* __PrepareSystemDir(const coreChar* pcPath);

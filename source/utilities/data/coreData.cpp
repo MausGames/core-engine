@@ -31,7 +31,6 @@
 #endif
 
 thread_local coreData::coreTempString coreData::s_TempString     = {};
-thread_local coreUintW                coreData::s_iCurString     = 0u;
 coreMapStr<const coreChar*>           coreData::s_apcCommandLine = {};
 coreString                            coreData::s_sUserFolder    = "";
 
