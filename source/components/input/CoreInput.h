@@ -15,6 +15,7 @@
 // TODO 3: pseudo-joystick should accumulate all input from other devices
 // TODO 3: press and release within the same frame gets ignored, but it is assumed that both cannot happen in the same loop
 // TODO 5: <old comment style>
+// TODO 5: expose touch input in emscripten
 
 
 // ****************************************************************
@@ -24,17 +25,18 @@
 #define __CORE_INPUT_COUNT(x,c)     {if(x) for(coreUintW j = 0u; j < CORE_INPUT_TYPES; ++j) if(HAS_BIT(x, j)) {++(c)[j]; ADD_BIT(m_iAnyButton, j)}}
 #define __CORE_INPUT_JOYSTICK(i)    (m_aJoystick[MIN(i, m_aJoystick.size() - 1u)])
 
-#define CORE_INPUT_BUTTONS_KEYBOARD (287u)   // number of regarded keyboard buttons (#SDL_NUM_SCANCODES)
-#define CORE_INPUT_BUTTONS_MOUSE    (16u)    // number of regarded mouse buttons
-#define CORE_INPUT_BUTTONS_JOYSTICK (32u)    // number of regarded joystick buttons
-#define CORE_INPUT_AXIS             (6u)     // number of regarded joystick axis
+#define CORE_INPUT_BUTTONS_KEYBOARD (287u)   // number of handled keyboard buttons (#SDL_NUM_SCANCODES)
+#define CORE_INPUT_BUTTONS_MOUSE    (16u)    // number of handled mouse buttons
+#define CORE_INPUT_BUTTONS_JOYSTICK (32u)    // number of handled joystick buttons
+#define CORE_INPUT_AXIS             (6u)     // number of handled joystick axis
+#define CORE_INPUT_DIRECTIONS       (4u)     // number of handled joystick (hat) directions
+#define CORE_INPUT_TYPES            (4u)     // number of different status types
+
 #if defined(_CORE_MOBILE_)
     #define CORE_INPUT_FINGERS      (5u)     // maximum number of simultaneous fingers
 #else
     #define CORE_INPUT_FINGERS      (1u)
 #endif
-#define CORE_INPUT_DIRECTIONS       (4u)
-#define CORE_INPUT_TYPES            (4u)
 
 #define CORE_INPUT_INVALID_KEYBOARD (CORE_INPUT_KEY(UNKNOWN))
 #define CORE_INPUT_INVALID_MOUSE    (0xFFu)

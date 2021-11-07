@@ -11,6 +11,7 @@
 #define _CORE_GUARD_GL_H_
 
 // TODO 3: also log function remapping (similar to extension override) (4. line in load-message)
+// TODO 3: reuse (pooled) resource names
 
 
 // ****************************************************************

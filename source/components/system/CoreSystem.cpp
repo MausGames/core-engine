@@ -528,7 +528,7 @@ void CoreSystem::__UpdateTime()
         m_dTotalTimeBefore = m_dTotalTime;
 
         // smooth last frame time and increase total time
-        m_fLastTime   = (fNewLastTime > 0.1f) ? 0.0f : LERP(m_fLastTime, fNewLastTime, 0.15f);
+        m_fLastTime   = (fNewLastTime > 0.1f) ? 0.001f : LERP(m_fLastTime, fNewLastTime, 0.15f);
         m_dTotalTime += coreDouble(m_fLastTime);
     }
 

@@ -110,7 +110,7 @@ CoreGraphics::CoreGraphics()noexcept
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    // setup alpha blending
+    // setup blending
     glEnable(GL_BLEND);
     glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -385,6 +385,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 
     // copy path into another thread
     coreString sPathCopy = pcPath;
+    ASSERT(!sPathCopy.empty())
 
     Core::Manager::Resource->AttachFunction([=, sPathCopy = std::move(sPathCopy)]()
     {

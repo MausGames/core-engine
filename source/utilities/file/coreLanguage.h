@@ -13,7 +13,7 @@
 // TODO 3: save current main language file to config
 // TODO 2: currently key-identifier $ may cause problems in normal text, maybe use $$
 // TODO 3: reduce memory consumption with all the redundant keys in containers
-// TODO 3: determine number of entries and call reserve(x)
+// TODO 3: determine number of entries and call reserve(x), or use property (e.g. RESERVE)
 // TODO 5: try to use strtok()
 
 

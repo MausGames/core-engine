@@ -26,7 +26,7 @@
 // ****************************************************************
 /* particle definitions */
 #define CORE_PARTICLE_INSTANCE_SIZE    (3u*sizeof(coreFloat) + 3u*sizeof(coreUint32))   // instancing per-particle size (position, data, color)
-#define CORE_PARTICLE_INSTANCE_BUFFERS (4u)                                             // number of concurrent instance data buffer
+#define CORE_PARTICLE_INSTANCE_BUFFERS (3u)                                             // number of concurrent instance data buffer
 
 
 // ****************************************************************
