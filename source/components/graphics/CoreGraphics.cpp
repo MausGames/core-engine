@@ -30,6 +30,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_aTransformSync   {}
 , m_aAmbientSync     {}
 , m_iUniformUpdate   (0u)
+, m_aiScissorData    {}
 , m_iMaxSamples      (0u)
 , m_iMaxAnisotropy   (0u)
 , m_fVersionOpenGL   (0.0f)
@@ -105,6 +106,11 @@ CoreGraphics::CoreGraphics()noexcept
     glDepthMask(true);
     glClearDepth(1.0f);
 
+    // setup stencil testing
+    glDisable(GL_STENCIL_TEST);
+    glStencilMask(0xFFu);
+    glClearStencil(0);
+
     // setup culling
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -123,6 +129,7 @@ CoreGraphics::CoreGraphics()noexcept
     if(CORE_GL_SUPPORT(ARB_framebuffer_sRGB))       glDisable(GL_FRAMEBUFFER_SRGB);
     glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
     glDisable(GL_DITHER);
+    glDisable(GL_SCISSOR_TEST);
     glColorMask(true, true, true, true);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -364,6 +371,104 @@ void CoreGraphics::UpdateAmbient()
         // invoke manual data forwarding
         coreProgram::Disable(false);
     }
+}
+
+
+// ****************************************************************
+/* handle stencil testing */
+void CoreGraphics::WriteStencilTest(const GLenum iBackZFail, const GLenum iBackZPass, const GLenum iFrontZFail, const GLenum iFrontZPass)
+{
+    // reset test function
+    glStencilFunc(GL_ALWAYS, 0, 0xFFu);
+
+    // set change operation
+    if((iBackZFail == iFrontZFail) && (iBackZPass == iFrontZPass))
+    {
+        glStencilOp(GL_KEEP, iBackZFail, iBackZPass);
+    }
+    else
+    {
+        glStencilOpSeparate(GL_BACK,  GL_KEEP, iBackZFail,  iBackZPass);
+        glStencilOpSeparate(GL_FRONT, GL_KEEP, iFrontZFail, iFrontZPass);
+    }
+
+    // enable stencil testing
+    glEnable(GL_STENCIL_TEST);
+}
+
+void CoreGraphics::WriteStencilTest(const GLenum iZFail, const GLenum iZPass)
+{
+    this->WriteStencilTest(iZFail, iZPass, iZFail, iZPass);
+}
+
+void CoreGraphics::ReadStencilTest(const GLenum iBackFunc, const coreUint8 iBackRef, const coreUint8 iBackMask, const GLenum iFrontFunc, const coreUint8 iFrontRef, const coreUint8 iFrontMask)
+{
+    // set test function
+    if((iBackFunc == iFrontFunc) && (iBackRef == iFrontRef) && (iBackMask == iFrontMask))
+    {
+        glStencilFunc(iBackFunc, iBackRef, iBackMask);
+    }
+    else
+    {
+        glStencilFuncSeparate(GL_BACK,  iBackFunc,  iBackRef,  iBackMask);
+        glStencilFuncSeparate(GL_FRONT, iFrontFunc, iFrontRef, iFrontMask);
+    }
+
+    // reset change operation
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+    // enable stencil testing
+    glEnable(GL_STENCIL_TEST);
+}
+
+void CoreGraphics::ReadStencilTest(const GLenum iFunc, const coreUint8 iRef, const coreUint8 iMask)
+{
+    this->ReadStencilTest(iFunc, iRef, iMask, iFunc, iRef, iMask);
+}
+
+void CoreGraphics::EndStencilTest()
+{
+    // disable stencil testing
+    glDisable(GL_STENCIL_TEST);
+}
+
+
+// ****************************************************************
+/* handle scissor testing */
+void CoreGraphics::StartScissorTest(const coreVector2 vLowerLeft, const coreVector2 vUpperRight)
+{
+    ASSERT(vLowerLeft <= vUpperRight)
+
+    // convert center coordinates to window coordinates
+    const coreVector2 vRealLowerLeft  = (vLowerLeft  + 0.5f).Processed(CLAMP, 0.0f, 1.0f);
+    const coreVector2 vRealUpperRight = (vUpperRight + 0.5f).Processed(CLAMP, 0.0f, 1.0f);
+    const coreVector2 vRealSize       = vRealUpperRight - vRealLowerLeft;
+
+    // calculate scissor properties
+    const coreUint32 iNewScissorData[] =
+    {
+        F_TO_UI(ROUND(vRealLowerLeft.x * m_vViewResolution.x)),
+        F_TO_UI(ROUND(vRealLowerLeft.y * m_vViewResolution.y)),
+        F_TO_UI(ROUND(vRealSize     .x * m_vViewResolution.x)),
+        F_TO_UI(ROUND(vRealSize     .y * m_vViewResolution.y))
+    };
+    STATIC_ASSERT(sizeof(m_aiScissorData) == sizeof(iNewScissorData))
+
+    // update scissor properties
+    if(std::memcmp(m_aiScissorData, iNewScissorData, sizeof(m_aiScissorData)))
+    {
+        std::memcpy(m_aiScissorData, iNewScissorData, sizeof(m_aiScissorData));
+        glScissor(iNewScissorData[0], iNewScissorData[1], iNewScissorData[2], iNewScissorData[3]);
+    }
+
+    // enable scissor testing
+    glEnable(GL_SCISSOR_TEST);
+}
+
+void CoreGraphics::EndScissorTest()
+{
+    // disable scissor testing
+    glDisable(GL_SCISSOR_TEST);
 }
 
 

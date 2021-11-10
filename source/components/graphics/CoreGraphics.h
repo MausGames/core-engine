@@ -66,6 +66,8 @@ private:
     coreRing<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     // ambient sync objects
     coreUint8 m_iUniformUpdate;                                           // update status for the UBOs (dirty flag)
 
+    coreUint32 m_aiScissorData[4];                                        // current scissor test properties
+
     coreUint8 m_iMaxSamples;                                              // max multisample anti aliasing level
     coreUint8 m_iMaxAnisotropy;                                           // max anisotropic texture filter level
     coreFloat m_fVersionOpenGL;                                           // available OpenGL version
@@ -91,6 +93,17 @@ public:
     /* update data for the uniform buffer objects */
     void UpdateTransformation();
     void UpdateAmbient();
+
+    /* handle stencil testing */
+    void WriteStencilTest(const GLenum iBackZFail, const GLenum iBackZPass, const GLenum iFrontZFail, const GLenum iFrontZPass);
+    void WriteStencilTest(const GLenum iZFail,     const GLenum iZPass);
+    void ReadStencilTest (const GLenum iBackFunc, const coreUint8 iBackRef, const coreUint8 iBackMask, const GLenum iFrontFunc, const coreUint8 iFrontRef, const coreUint8 iFrontMask);
+    void ReadStencilTest (const GLenum iFunc,     const coreUint8 iRef,     const coreUint8 iMask);
+    void EndStencilTest  ();
+
+    /* handle scissor testing */
+    void StartScissorTest(const coreVector2 vLowerLeft, const coreVector2 vUpperRight);
+    void EndScissorTest  ();
 
     /* take screenshot */
     void        TakeScreenshot(const coreChar* pcPath)const;
