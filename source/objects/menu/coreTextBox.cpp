@@ -133,18 +133,37 @@ coreBool coreTextBox::__Write()
     ASSERT(m_iLength)
 
     // get new text-input character
-    const coreInputChar& iChar = Core::Input->GetKeyboardChar();
+    const coreInputChar iChar = Core::Input->GetKeyboardChar();
     if(iChar)
     {
         if(iChar == CORE_INPUT_CHAR(RETURN))
         {
-            // finish the text-input
+            // finish text-input
             return true;
         }
         else if(iChar == CORE_INPUT_CHAR(BACKSPACE))
         {
             // remove last character
-            if(!m_sText.empty()) m_sText.pop_back();
+            if(!m_sText.empty())
+            {
+                if(HAS_FLAG(m_sText.back(), 0x80u))
+                {
+                    // handle UTF-8 encoding
+                    while(!HAS_FLAG(m_sText.back(), 0xC0u)) m_sText.pop_back();
+                }
+                m_sText.pop_back();
+            }
+        }
+        else if(iChar == CORE_INPUT_CHAR(CUT))
+        {
+            // move text to clipboard
+            if(!m_sText.empty()) SDL_SetClipboardText(m_sText.c_str());
+            m_sText.clear();
+        }
+        else if(iChar == CORE_INPUT_CHAR(COPY))
+        {
+            // copy text to clipboard
+            if(!m_sText.empty()) SDL_SetClipboardText(m_sText.c_str());
         }
         else if(iChar == CORE_INPUT_CHAR(PASTE))
         {
@@ -152,17 +171,20 @@ coreBool coreTextBox::__Write()
             coreChar* pcPaste = SDL_GetClipboardText();
             if(pcPaste)
             {
-                const coreUintW iLen = MIN(std::strlen(pcPaste), m_iLength - m_sText.length());
+                const coreUintW iLen = std::strlen(pcPaste);
 
-                // append and clamp to remaining string space
-                m_sText.append(pcPaste, iLen);
+                // append text
+                if(iLen <= m_iLength - m_sText.length()) m_sText.append(pcPaste, iLen);
                 SDL_free(pcPaste);
             }
         }
-        else if(m_sText.length() < m_iLength)
+        else
         {
+            const coreChar* pcChar = Core::Input->GetKeyboardCharUTF8();
+            const coreUintW iLen   = std::strlen(pcChar);
+
             // append new character
-            m_sText.append(1u, coreChar(iChar));
+            if(iLen <= m_iLength - m_sText.length()) m_sText.append(pcChar, iLen);
         }
 
         m_bDisplay = true;

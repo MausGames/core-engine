@@ -10,9 +10,12 @@
 #ifndef _CORE_GUARD_TEXTBOX_H_
 #define _CORE_GUARD_TEXTBOX_H_
 
-// TODO 3: enable text selection and clipboard copy/cut
+// TODO 3: enable text selection and correct clipboard cut/copy/paste
 // TODO 3: enable text-cursor positioning (mouse + arrow keys)
 // TODO 5: <old comment style>
+// TODO 3: only allow characters which exist in the font (though this may need to be handled by the label) (m_pCaption->GetFont()->IsGlyphProvided(pcText))
+// TODO 3: how to handle length with UTF8 support? there is a difference between storage requirements and characters to display
+// TODO 5: implement partial paste with UTF-8 support ?
 
 
 // ****************************************************************

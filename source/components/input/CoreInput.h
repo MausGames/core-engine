@@ -84,10 +84,12 @@ private:
     /* keyboard structure */
     struct coreKeyboard final
     {
-        coreUint8     aiButton[CORE_INPUT_BUTTONS_KEYBOARD];   // status of the keyboard buttons
-        coreUint16    aiCount [CORE_INPUT_TYPES];              // number of keyboard buttons with same status
-        coreInputKey  iLast;                                   // last pressed keyboard button
-        coreInputChar iChar;                                   // current text-input character
+        coreUint8    aiButton[CORE_INPUT_BUTTONS_KEYBOARD];   // status of the keyboard buttons
+        coreUint16   aiCount [CORE_INPUT_TYPES];              // number of keyboard buttons with same status
+        coreInputKey iLast;                                   // last pressed keyboard button
+        coreChar     acChar[5];                               // current text-input character (UTF-8, null-terminated)
+
+        STATIC_ASSERT(sizeof(acChar) > sizeof(coreInputChar))
     };
 
     /* mouse structure */
@@ -167,10 +169,12 @@ public:
     coreBool ProcessEvent(const SDL_Event& oEvent);
 
     /* access keyboard input */
-    inline void                 SetKeyboardButton(const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; SET_BIT(m_Keyboard.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Keyboard.iLast = iButton;}
-    inline void                 SetKeyboardChar  (const coreInputChar iChar)                                   {m_Keyboard.iChar = iChar;}
-    inline coreBool             GetKeyboardButton(const coreInputKey  iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_KEYBOARD) return HAS_BIT(m_Keyboard.aiButton[iButton], eType);}
-    inline const coreInputChar& GetKeyboardChar  ()const                                                       {return m_Keyboard.iChar;}
+    inline void            SetKeyboardButton  (const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; SET_BIT(m_Keyboard.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Keyboard.iLast = iButton;}
+    inline void            SetKeyboardChar    (const coreInputChar iChar)                                   {(*r_cast<coreInputChar*>(m_Keyboard.acChar)) = iChar;}
+    inline void            SetKeyboardCharUTF8(const coreChar*     pcChar)                                  {coreData::StrCopy(m_Keyboard.acChar, ARRAY_SIZE(m_Keyboard.acChar), pcChar);}
+    inline coreBool        GetKeyboardButton  (const coreInputKey  iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_KEYBOARD) return HAS_BIT(m_Keyboard.aiButton[iButton], eType);}
+    inline coreInputChar   GetKeyboardChar    ()const                                                       {return (*r_cast<const coreInputChar*>(m_Keyboard.acChar));}
+    inline const coreChar* GetKeyboardCharUTF8()const                                                       {return m_Keyboard.acChar;}
 
     /* access mouse input */
     inline void               SetMouseButton  (const coreUint8 iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE) return; SET_BIT(m_Mouse.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Mouse.iLast = iButton;}

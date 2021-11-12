@@ -195,7 +195,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // set text-input character
     case SDL_TEXTINPUT:
-        this->SetKeyboardChar(oEvent.text.text[0]);
+        this->SetKeyboardCharUTF8(oEvent.text.text);
         break;
 
     // press keyboard button
@@ -402,7 +402,7 @@ void CoreInput::__UpdateButtonsEnd()
         m_aTouch[i].vRelative = coreVector2(0.0f,0.0f);
 
     // clear current text-input character
-    m_Keyboard.iChar = CORE_INPUT_CHAR(UNKNOWN);
+    std::memset(m_Keyboard.acChar, 0, sizeof(m_Keyboard.acChar));
 
     // clear status of any available button
     this->ClearAnyButton();
