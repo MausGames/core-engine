@@ -21,7 +21,7 @@ void __coreInitOpenGLES()
     std::memset(&g_CoreContext, 0, sizeof(g_CoreContext));
 
     // get full extension string
-    if(g_sExtensions.empty()) g_sExtensions = r_cast<const coreChar*>(glGetString(GL_EXTENSIONS));
+    if(g_sExtensions.empty()) g_sExtensions.assign(r_cast<const coreChar*>(glGetString(GL_EXTENSIONS))).append(1, ' ');
 
     // get OpenGL ES version
     g_CoreContext.__fVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
@@ -55,7 +55,7 @@ void __coreInitOpenGLES()
 
     // implement GL_EXT_texture_compression_s3tc
     __CORE_GLES_CHECK(GL_EXT_texture_compression_s3tc, false);
-    if(g_sExtensions.find("GL_WEBGL_compressed_texture_s3tc") != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
+    if(g_sExtensions.find("GL_WEBGL_compressed_texture_s3tc ") != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
 
     // implement GL_NV_pixel_buffer_object
     __CORE_GLES_CHECK(GL_NV_pixel_buffer_object, bES30);

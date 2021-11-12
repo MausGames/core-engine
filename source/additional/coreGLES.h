@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_GLES_H_
 #define _CORE_GUARD_GLES_H_
 
-// TODO 2: __CORE_GLES_CHECK does not handle sub-strings
 // TODO 3: add name-pooling to OpenGL ES
 // TODO 5: GL_EXT_buffer_storage, GL_EXT_clear_texture, GL_EXT_copy_image, GL_EXT_draw_buffers, GL_EXT_geometry_shader, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_shadow_samplers, GL_EXT_texture_rg, GL_EXT_texture_type_2_10_10_10_rev, GL_NV_texture_compression_s3tc
 // TODO 5: GL_OES_copy_image GL_EXT_tessellation_shader GL_OES_tessellation_shader GL_OES_framebuffer_object GL_NV_packed_float GL_EXT_map_buffer_range GL_EXT_sRGB_write_control GL_NV_pixel_buffer_object GL_KHR_parallel_shader_compile
@@ -268,7 +267,7 @@ struct coreContext final
 extern coreString  g_sExtensions;   // full extension string
 extern coreContext g_CoreContext;   // context object
 
-#define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x) != coreString::npos) || b))
+#define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((g_sExtensions.find(#x " ") != coreString::npos) || b))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
 #define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f ## a = r_cast<decltype(g_CoreContext.__ ## f ## a)>(eglGetProcAddress(b ? #f : #f #a));}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
