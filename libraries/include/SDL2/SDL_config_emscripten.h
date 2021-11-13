@@ -22,11 +22,16 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef SDL_config_iphoneos_h_
-#define SDL_config_iphoneos_h_
-#define SDL_config_h_
+#ifndef _SDL_config_emscripten_h_
+#define _SDL_config_emscripten_h_
 
 #include "SDL_platform.h"
+
+/**
+ *  \file SDL_config_emscripten.h
+ *
+ *  This is a configuration that can be used to build SDL for Emscripten.
+ */
 
 #ifdef __LP64__
 #define SIZEOF_VOIDP 8
@@ -36,21 +41,28 @@
 
 #define HAVE_GCC_ATOMICS 1
 
+/* Useful headers */
 #define STDC_HEADERS 1
 #define HAVE_ALLOCA_H 1
 #define HAVE_CTYPE_H 1
+#define HAVE_ICONV_H 1
 #define HAVE_INTTYPES_H 1
 #define HAVE_LIMITS_H 1
+#define HAVE_MALLOC_H 1
 #define HAVE_MATH_H 1
+#define HAVE_MEMORY_H 1
 #define HAVE_SIGNAL_H 1
+#define HAVE_STDARG_H 1
 #define HAVE_STDINT_H 1
 #define HAVE_STDIO_H 1
+#define HAVE_STDLIB_H 1
+#define HAVE_STRINGS_H 1
 #define HAVE_STRING_H 1
 #define HAVE_SYS_TYPES_H 1
-/* The libunwind functions are only available on x86 */
-/* #undef HAVE_LIBUNWIND_H */
+#define HAVE_WCHAR_H 1
 
 /* C library functions */
+#define HAVE_DLOPEN 1
 #define HAVE_MALLOC 1
 #define HAVE_CALLOC 1
 #define HAVE_REALLOC 1
@@ -59,7 +71,6 @@
 #define HAVE_GETENV 1
 #define HAVE_SETENV 1
 #define HAVE_PUTENV 1
-#define HAVE_SETENV 1
 #define HAVE_UNSETENV 1
 #define HAVE_QSORT 1
 #define HAVE_ABS 1
@@ -68,6 +79,13 @@
 #define HAVE_MEMCPY 1
 #define HAVE_MEMMOVE 1
 #define HAVE_MEMCMP 1
+#define HAVE_WCSLEN 1
+#define HAVE_WCSDUP 1
+#define HAVE_WCSSTR 1
+#define HAVE_WCSCMP 1
+#define HAVE_WCSNCMP 1
+#define HAVE_WCSCASECMP 1
+#define HAVE_WCSNCASECMP 1
 #define HAVE_STRLEN 1
 #define HAVE_STRLCPY 1
 #define HAVE_STRLCAT 1
@@ -86,6 +104,7 @@
 #define HAVE_STRNCMP 1
 #define HAVE_STRCASECMP 1
 #define HAVE_STRNCASECMP 1
+#define HAVE_SSCANF 1
 #define HAVE_VSSCANF 1
 #define HAVE_VSNPRINTF 1
 #define HAVE_M_PI 1
@@ -119,7 +138,7 @@
 #define HAVE_LROUNDF 1
 #define HAVE_POW 1
 #define HAVE_POWF 1
-#define HAVE_ROUND 1
+#define HAVE_ROUND  1
 #define HAVE_ROUNDF 1
 #define HAVE_SCALBN 1
 #define HAVE_SCALBNF 1
@@ -131,86 +150,71 @@
 #define HAVE_TANF 1
 #define HAVE_TRUNC 1
 #define HAVE_TRUNCF 1
+#define HAVE_FSEEKO 1
+#define HAVE_FSEEKO64 1
 #define HAVE_SIGACTION 1
+#define HAVE_SA_SIGACTION 1
 #define HAVE_SETJMP 1
 #define HAVE_NANOSLEEP 1
 #define HAVE_SYSCONF 1
-#define HAVE_SYSCTLBYNAME 1
+#define HAVE_CLOCK_GETTIME 1
+/* #undef HAVE_GETPAGESIZE */
+#define HAVE_MPROTECT 1
+#define HAVE_ICONV 1
 
-/* Enable iPhone version of Core Audio driver */
-#define SDL_AUDIO_DRIVER_COREAUDIO 1
+/* SDL internal assertion support */
+/* #undef SDL_DEFAULT_ASSERT_LEVEL */
 
-/* Enable the dummy audio driver (src/audio/dummy/\*.c) */
-#define SDL_AUDIO_DRIVER_DUMMY 1
-
-/* Enable the stub haptic driver (src/haptic/dummy/\*.c) */
-#define SDL_HAPTIC_DUMMY 1
-
-/* Enable joystick support */
-#define SDL_JOYSTICK_MFI 1
-#define SDL_JOYSTICK_HIDAPI 1
-/* #undef SDL_JOYSTICK_VIRTUAL */
-
-/* Enable the CoreMotion sensor driver */
-#ifdef __TVOS__
-#define SDL_SENSOR_DUMMY 1
-#else
-#define SDL_SENSOR_COREMOTION 1
+#define SDL_CPUINFO_DISABLED 1
+#define SDL_HAPTIC_DISABLED 1
+#define SDL_HIDAPI_DISABLED 1
+#ifndef __EMSCRIPTEN_PTHREADS__
+#define SDL_THREADS_DISABLED 1
 #endif
 
-/* Enable Unix style SO loading */
+/* Enable various audio drivers */
+#define SDL_AUDIO_DRIVER_DISK 1
+#define SDL_AUDIO_DRIVER_DUMMY 1
+#define SDL_AUDIO_DRIVER_EMSCRIPTEN 1
+
+/* Enable various input drivers */
+#define SDL_JOYSTICK_EMSCRIPTEN 1
+
+/* Enable various sensor drivers */
+#define SDL_SENSOR_DUMMY 1
+
+/* Enable various shared object loading systems */
 #define SDL_LOADSO_DLOPEN 1
 
 /* Enable various threading systems */
+#ifdef __EMSCRIPTEN_PTHREADS__
 #define SDL_THREAD_PTHREAD 1
-#define SDL_THREAD_PTHREAD_RECURSIVE_MUTEX 1
+#endif
 
 /* Enable various timer systems */
 #define SDL_TIMER_UNIX 1
 
-/* Supported video drivers */
-#define SDL_VIDEO_DRIVER_UIKIT 1
-#define SDL_VIDEO_DRIVER_DUMMY 1
+/* Enable various video drivers */
+#define SDL_VIDEO_DRIVER_EMSCRIPTEN 1
 
-/* Enable OpenGL ES */
-#if !TARGET_OS_MACCATALYST
-#define SDL_VIDEO_OPENGL_ES2 1
-#define SDL_VIDEO_OPENGL_ES 1
-#define SDL_VIDEO_RENDER_OGL_ES 1
 #define SDL_VIDEO_RENDER_OGL_ES2 1
-#endif
 
-/* Metal supported on 64-bit devices running iOS 8.0 and tvOS 9.0 and newer
-   Also supported in simulator from iOS 13.0 and tvOS 13.0
- */
-#if (TARGET_OS_SIMULATOR && ((__IPHONE_OS_VERSION_MIN_REQUIRED >= 130000) || (__TV_OS_VERSION_MIN_REQUIRED >= 130000))) || (!TARGET_CPU_ARM && ((__IPHONE_OS_VERSION_MIN_REQUIRED >= 80000) || (__TV_OS_VERSION_MIN_REQUIRED >= 90000)))
-#define SDL_PLATFORM_SUPPORTS_METAL	1
-#else
-#define SDL_PLATFORM_SUPPORTS_METAL	0
-#endif
-
-#if SDL_PLATFORM_SUPPORTS_METAL
-#define SDL_VIDEO_RENDER_METAL 1
-#endif
-
-#if SDL_PLATFORM_SUPPORTS_METAL
-#define SDL_VIDEO_VULKAN 1
-#endif
-
-#if SDL_PLATFORM_SUPPORTS_METAL
-#define SDL_VIDEO_METAL 1
-#endif
+/* Enable OpenGL support */
+/* #undef SDL_VIDEO_OPENGL */
+/* #undef SDL_VIDEO_OPENGL_ES */
+#define SDL_VIDEO_OPENGL_ES2 1
+/* #undef SDL_VIDEO_OPENGL_BGL */
+/* #undef SDL_VIDEO_OPENGL_CGL */
+/* #undef SDL_VIDEO_OPENGL_GLX */
+/* #undef SDL_VIDEO_OPENGL_WGL */
+#define SDL_VIDEO_OPENGL_EGL 1
+/* #undef SDL_VIDEO_OPENGL_OSMESA */
+/* #undef SDL_VIDEO_OPENGL_OSMESA_DYNAMIC */
 
 /* Enable system power support */
-#define SDL_POWER_UIKIT 1
+#define SDL_POWER_EMSCRIPTEN 1
 
-/* Enable iPhone keyboard support */
-#define SDL_IPHONE_KEYBOARD 1
+/* Enable system filesystem support */
+#define SDL_FILESYSTEM_EMSCRIPTEN 1
 
-/* Enable iOS extended launch screen */
-#define SDL_IPHONE_LAUNCHSCREEN 1
-
-/* Enable filesystem support */
-#define SDL_FILESYSTEM_COCOA 1
-
-#endif /* SDL_config_iphoneos_h_ */
+#endif /* _SDL_config_emscripten_h_ */

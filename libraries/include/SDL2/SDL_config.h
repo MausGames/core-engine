@@ -42,6 +42,8 @@
 #include "SDL_config_android.h"
 #elif defined(__IPHONEOS__)
 #include "SDL_config_iphoneos.h"
+#elif defined(__EMSCRIPTEN__)
+#include "SDL_config_emscripten.h"
 #else
 /* This is a minimal configuration just to get SDL running on new platforms */
 #include "SDL_config_minimal.h"

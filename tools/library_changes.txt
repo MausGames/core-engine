@@ -1,89 +1,9 @@
 -------------------------------------------------------------------
-Linux SDL configuration:
-
-- install X11 libraries: xcursor xdbe xinerama xrandr xscrnsaver xshape xvidmode
-
-- SDL:
-  > export CFLAGS=-O3
-  > ./configure --prefix=/media/data/Entwicklung/libraries/temp --enable-x11-shared --disable-audio --disable-render --disable-video-opengles --disable-video-vulkan --disable-rpath
-
-- SDL IMG:
-  > export CFLAGS=-O3
-  > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/data/Entwicklung/libraries/temp
-  > ./configure --prefix=/media/data/Entwicklung/libraries/temp --enable-lbm=no --enable-pcx=no --enable-pnm=no --enable-svg=no --enable-tif=no --enable-xcf=no --enable-xpm=no --enable-xv=no --enable-webp=no --enable-png-shared=no --enable-jpg-shared=no
-
-- SDL TTF:
-  > export CFLAGS=-O3
-  > export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/media/data/Entwicklung/libraries/temp
-  > ./configure --prefix=/media/data/Entwicklung/libraries/temp
-
-
--------------------------------------------------------------------
 SDL:
 
-- use sequential scan and 4kb page-size in rwops
+- use sequential scan and 4kb page-size in rwops for Windows
   > #define READAHEAD_BUFFER_SIZE (0x1000)
   > FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN
-
-- do not use large magnitude for leftright haptic
-  > efx->leftright.large_magnitude = 0;
-  > efx->leftright.small_magnitude = magnitude;
-
-- add #define HAVE_LIBC 1 in config_windows
-
-- add #define HAVE_VSNPRINTF 1 in config_windows
-
-- add additional OpenGL attributes
-  > SDL_bool HAS_WGL_NV_multisample_coverage;
-  >
-  > /* Check for WGL_NV_multisample_coverage */
-  > if (HasExtension("WGL_NV_multisample_coverage", extensions)) {
-  >     _this->gl_data->HAS_WGL_NV_multisample_coverage = SDL_TRUE;
-  > }
-  >
-  > if ((_this->gl_data->HAS_WGL_NV_multisample_coverage) &&
-  >     (_this->gl_config.multisamplesamples == 4 ||
-  >      _this->gl_config.multisamplesamples == 8))
-  > {
-  >     #define WGL_COVERAGE_SAMPLES_NV 0x2042
-  >     #define WGL_COLOR_SAMPLES_NV    0x20B9
-  >
-  >     *iAttr++ = WGL_COVERAGE_SAMPLES_NV;
-  >     *iAttr++ = _this->gl_config.multisamplesamples * 2;
-  >     *iAttr++ = WGL_COLOR_SAMPLES_NV;
-  >     *iAttr++ = _this->gl_config.multisamplesamples;
-  > }
-  > else
-  > {
-  >     *iAttr++ = WGL_SAMPLES_ARB;
-  >     *iAttr++ = _this->gl_config.multisamplesamples;
-  > }
-  >
-  >
-  > SDL_bool HAS_GLX_NV_multisample_coverage;
-  >
-  > /* Check for GLX_NV_multisample_coverage */
-  > if (HasExtension("GLX_NV_multisample_coverage", extensions)) {
-  >     _this->gl_data->HAS_GLX_NV_multisample_coverage = SDL_TRUE;
-  > }
-  >
-  > if ((_this->gl_data->HAS_GLX_NV_multisample_coverage) &&
-  >     (_this->gl_config.multisamplesamples == 4 ||
-  >      _this->gl_config.multisamplesamples == 8))
-  > {
-  >     #define GLX_COVERAGE_SAMPLES_NV 100001
-  >     #define GLX_COLOR_SAMPLES_NV    0x20B3
-  >
-  >     attribs[i++] = GLX_COVERAGE_SAMPLES_NV;
-  >     attribs[i++] = _this->gl_config.multisamplesamples * 2;
-  >     attribs[i++] = GLX_COLOR_SAMPLES_NV;
-  >     attribs[i++] = _this->gl_config.multisamplesamples;
-  > }
-  > else
-  > {
-  >     attribs[i++] = GLX_SAMPLES_ARB;
-  >     attribs[i++] = _this->gl_config.multisamplesamples;
-  > }
 
 - center normal window based on work area instead of desktop size
   > if (flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS))                        // SDL_CreateWindow
@@ -95,10 +15,6 @@ SDL:
   > {
   >     SDL_GetDisplayUsableBounds(displayIndex, &bounds);
   > }
-
-- do not resize window when setting minimum and maximum size, if window size is already within bounds
-  > if((window->w < window->min_w) || (window->h < window->min_h))   // SDL_SetWindowMinimumSize
-  > if((window->w > window->max_w) || (window->h > window->max_h))   // SDL_SetWindowMaximumSize
 
 
 -------------------------------------------------------------------
@@ -112,39 +28,3 @@ SDL IMG:
   > #endif
   >
   > int png_color_type = PNG_COLOR_TYPE_RGB;
-
-
--------------------------------------------------------------------
-SDL TTF:
-
-- fix implementation-defined division on negative values
-  > (delta.x / 64)   // instead of (delta.x >> 6)
-
-
--------------------------------------------------------------------
-GLEW:
-
-- change _glewExtensionString array-size to 1 and remove check-functions
-
-- add new functions
-  > GLboolean GLEWAPIENTRY glewEnableExtension(const char* name)
-  > {
-  >     GLboolean* pBool = _glewGetExtensionEnable(name);
-  >     if(pBool)
-  >     {
-  >         (*pBool) = GL_TRUE;
-  >         return GL_TRUE;
-  >     }
-  >     return GL_FALSE;
-  > }
-  >
-  > GLboolean GLEWAPIENTRY glewDisableExtension(const char* name)
-  > {
-  >     GLboolean* pBool = _glewGetExtensionEnable(name);
-  >     if(pBool)
-  >     {
-  >         (*pBool) = GL_FALSE;
-  >         return GL_TRUE;
-  >     }
-  >     return GL_FALSE;
-  > }
