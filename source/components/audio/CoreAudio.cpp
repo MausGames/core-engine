@@ -31,11 +31,14 @@ CoreAudio::CoreAudio()noexcept
     Core::Log->Header("Audio Interface");
 
     // set OpenAL context attributes
-    constexpr ALCint aiAttributes[] =
+    const ALCint aiAttributes[] =
     {
         ALC_FREQUENCY,      48000,
         ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES,
-        ALC_STEREO_SOURCES, 0, 0
+        ALC_STEREO_SOURCES, CORE_AUDIO_SOURCES,
+        ALC_HRTF_SOFT,      Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTF),
+        ALC_HRTF_ID_SOFT,   Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTFINDEX),
+        0
     };
 
     // open audio device and create OpenAL context
@@ -93,12 +96,22 @@ CoreAudio::CoreAudio()noexcept
     // log audio device information
     Core::Log->ListStartInfo("Audio Device Information");
     {
-        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s)", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",      alGetString(AL_VENDOR));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",      alGetString(AL_RENDERER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",      alGetString(AL_VERSION));
+        ALCint aiStatus[7];
+        alcGetIntegerv(m_pDevice, ALC_FREQUENCY,        1, &aiStatus[0]);
+        alcGetIntegerv(m_pDevice, ALC_REFRESH,          1, &aiStatus[1]);
+        alcGetIntegerv(m_pDevice, ALC_SYNC,             1, &aiStatus[2]);
+        alcGetIntegerv(m_pDevice, ALC_MONO_SOURCES,     1, &aiStatus[3]);
+        alcGetIntegerv(m_pDevice, ALC_STEREO_SOURCES,   1, &aiStatus[4]);
+        alcGetIntegerv(m_pDevice, ALC_HRTF_SOFT,        1, &aiStatus[5]);
+        alcGetIntegerv(m_pDevice, ALC_HRTF_STATUS_SOFT, 1, &aiStatus[6]);
+
+        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s, HRTF %s %d)", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER), aiStatus[5] ? alcGetString(m_pDevice, ALC_HRTF_SPECIFIER_SOFT) : "disabled", aiStatus[6]);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",                  alGetString(AL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",                  alGetString(AL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",                  alGetString(AL_VERSION));
         Core::Log->ListAdd(alcGetString(m_pDevice, ALC_EXTENSIONS));
         Core::Log->ListAdd(alGetString(AL_EXTENSIONS));
+        Core::Log->ListAdd("ALC_FREQUENCY (%d) ALC_REFRESH (%d) ALC_SYNC (%d) ALC_MONO_SOURCES (%d) ALC_STEREO_SOURCES (%d)", aiStatus[0], aiStatus[1], aiStatus[2], aiStatus[3], aiStatus[4]);
     }
     Core::Log->ListEnd();
 
