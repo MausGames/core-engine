@@ -26,6 +26,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
     {
         // write basic style sheet
         std::fputs("<!DOCTYPE html>"                                  "\n", m_pFile);
+        std::fputs("<meta charset=\"utf-8\">"                         "\n", m_pFile);
         std::fputs("<style>"                                          "\n", m_pFile);
         std::fputs("  body    {font: 0.95em courier new;}"            "\n", m_pFile);
         std::fputs(" .time    {color: #AAA; white-space: pre;}"       "\n", m_pFile);
@@ -40,8 +41,8 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fputs("</style>"                                         "\n", m_pFile);
 
         // write application data and timestamp
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s, %s, %s-bit)" "<br />\n", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", DEFINED(_CORE_64BIT_) ? "64" : "32");
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s"                  "<br />\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s, %s, %s-bit)" "<br>\n", coreData::AppName(), __DATE__, __TIME__, DEFINED(_CORE_DEBUG_) ? "Debug" : "Release", DEFINED(_CORE_64BIT_) ? "64" : "32");
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s"                  "<br>\n", coreData::DateString(), coreData::TimeString());
 
         // flush log file
         std::fflush(m_pFile);
@@ -60,7 +61,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 coreLog::~coreLog()
 {
     // append final line
-    this->__Write(false, "<hr />");
+    this->__Write(false, "<hr>");
 
     // close log file
     if(m_pFile) std::fclose(m_pFile);
@@ -147,7 +148,7 @@ void coreLog::__Write(const coreBool bTimeStamp, coreString sText)
     if(m_pFile)
     {
         // convert new lines and color brackets
-        sText.replace("\n", "<br />");
+        sText.replace("\n", "<br>");
         sText.replace("(",  "<span class=\"data\">(");
         sText.replace(")",  ")</span>");
 

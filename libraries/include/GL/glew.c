@@ -143,7 +143,7 @@ static GLuint _glewStrCLen (const GLubyte* s, GLubyte c)
   return i;
 }
 
-static GLuint _glewStrCopy(char *d, const char *s, char c)
+static GLuint _glewStrCopy (char *d, const char *s, char c)
 {
   GLuint i=0;
   if (s == NULL) return 0;
@@ -3509,7 +3509,7 @@ static GLboolean _glewInit_GL_NV_shader_buffer_load ()
 
 /* ------------------------------------------------------------------------- */
 
-static int _glewExtensionCompare(const char *s1, const char *s2)
+static int _glewExtensionCompare (const char *s1, const char *s2)
 {
   /* http://www.chanduthedev.com/2012/07/strcmp-implementation-in-c.html */
   while (*s1 || *s2)
@@ -3524,7 +3524,7 @@ static int _glewExtensionCompare(const char *s1, const char *s2)
   return 0;
 }
 
-static ptrdiff_t _glewBsearchExtension(const char* name)
+static ptrdiff_t _glewBsearchExtension (const char* name)
 {
   ptrdiff_t lo = 0, hi = sizeof(_glewExtensionLookup) / sizeof(char*) - 2;
 
@@ -3539,21 +3539,21 @@ static ptrdiff_t _glewBsearchExtension(const char* name)
   return -1;
 }
 
-static GLboolean *_glewGetExtensionString(const char *name)
+static GLboolean *_glewGetExtensionString (const char *name)
 {
   ptrdiff_t n = _glewBsearchExtension(name);
   if (n >= 0) return &_glewExtensionString[n];
   return NULL;
 }
 
-static GLboolean *_glewGetExtensionEnable(const char *name)
+static GLboolean *_glewGetExtensionEnable (const char *name)
 {
   ptrdiff_t n = _glewBsearchExtension(name);
   if (n >= 0) return _glewExtensionEnabled[n];
   return NULL;
 }
 
-static const char *_glewNextSpace(const char *i)
+static const char *_glewNextSpace (const char *i)
 {
   const char *j = i;
   if (j)
@@ -3561,7 +3561,7 @@ static const char *_glewNextSpace(const char *i)
   return j;
 }
 
-static const char *_glewNextNonSpace(const char *i)
+static const char *_glewNextNonSpace (const char *i)
 {
   const char *j = i;
   if (j)
@@ -3577,7 +3577,7 @@ GLboolean GLEWAPIENTRY glewGetExtension (const char* name)
   return GL_FALSE;
 }
 
-GLboolean GLEWAPIENTRY glewEnableExtension(const char* name)
+GLboolean GLEWAPIENTRY glewEnableExtension (const char* name)
 {
   GLboolean* pBool = _glewGetExtensionEnable(name);
   if(pBool)
@@ -3588,7 +3588,7 @@ GLboolean GLEWAPIENTRY glewEnableExtension(const char* name)
   return GL_FALSE;
 }
 
-GLboolean GLEWAPIENTRY glewDisableExtension(const char* name)
+GLboolean GLEWAPIENTRY glewDisableExtension (const char* name)
 {
   GLboolean* pBool = _glewGetExtensionEnable(name);
   if(pBool)

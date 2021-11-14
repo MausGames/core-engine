@@ -12,10 +12,11 @@
 
 // TODO 4: fullscreen enumeration
 // TODO 3: some drivers may "merge" displays
-// TODO 5: handle display hot-plugging
+// TODO 3: handle display hot-plugging (SDL_DISPLAYEVENT_CONNECTED, SDL_DISPLAYEVENT_DISCONNECTED)
 // TODO 3: improve delta-time precision, double, similar to coreThread
 // TODO 3: toggling out of m_iFullscreen == 2u might cause issues with some options (e.g. disabled composition)
 // TODO 5: <old comment style>
+// TODO 3: use SDL_GetErrorMsg (which is thread-safe) instead of SDL_GetError (everywhere)
 
 
 // ****************************************************************

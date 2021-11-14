@@ -11,7 +11,7 @@
 #define _CORE_GUARD_FONT_H_
 
 // TODO 5: distance fields for sharper text
-// TODO 3: 4-byte UTF-8 is beyond U+10000 and therefore bigger than uint16, SDL_TTF needs to support it
+// TODO 3: 4-byte UTF-8 is beyond U+10000 and therefore bigger than uint16, ConvertUTF8toUTF16 needs to be adjusted
 // TODO 5: <old comment style>
 // TODO 5: replace old unmaintained unicode converter (e.g. with ICU ?)
 

@@ -13,6 +13,7 @@
 // TODO 5: instancing with more than one vertex array in the model ? (binding location)
 // TODO 5: compress rotation and texture parameters (2x16 ?), color 4b, position and size
 // TODO 3: add MoveNormal() and MoveSort() (with callback)
+// TODO 3: SetPosition2, SetPosition3, same for other properties, same for Get
 
 
 // ****************************************************************

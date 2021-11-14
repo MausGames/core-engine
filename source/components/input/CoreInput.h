@@ -112,7 +112,7 @@ private:
         coreUint8 aiButton[CORE_INPUT_BUTTONS_JOYSTICK];   // status of the joystick buttons
         coreUint8 aiCount [CORE_INPUT_TYPES];              // number of joystick buttons with same status
         coreUint8 iLast;                                   // last pressed joystick button
-        coreUint8 aiHat[CORE_INPUT_DIRECTIONS];            // status of the joystick hat
+        coreUint8 aiHat     [CORE_INPUT_DIRECTIONS];       // status of the joystick hat
         coreFloat afRelative[CORE_INPUT_AXIS];             // relative movement of the joystick axis (0|1 = left stick, 2|3 = right stick, 4 = left shoulder, 5 = right shoulder)
     };
 

@@ -86,7 +86,7 @@ if(EMSCRIPTEN)
 
     target_compile_options(
         CoreEngine PUBLIC
-        -Wall -Wextra -pedantic
+        -pipe -Wall -Wextra -pedantic
         $<IF:$<CONFIG:Debug>, -O0 -g3, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
     )
 
@@ -118,7 +118,7 @@ else()
 
     target_compile_options(
         CoreEngine PUBLIC
-        -msse3 -mf16c -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
+        -msse3 -mf16c -pipe -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
         $<IF:$<CONFIG:Debug>, -O0 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-rtti -fno-exceptions -Werror>
     )
 
