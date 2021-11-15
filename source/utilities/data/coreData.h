@@ -83,6 +83,10 @@ public:
     static const coreChar* SystemDirAppData();
     static const coreChar* SystemDirTemp   ();
 
+    /* get build properties */
+    static const coreChar* BuildCompiler();
+    static const coreChar* BuildLibrary ();
+
     /* control current working directory */
     static       coreStatus SetCurDir(const coreChar* pcPath);
     static const coreChar*  GetCurDir();

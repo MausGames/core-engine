@@ -417,6 +417,46 @@ const coreChar* coreData::SystemDirTemp()
 
 
 // ****************************************************************
+/* get compiler name and version */
+const coreChar* coreData::BuildCompiler()
+{
+#if defined(_CORE_MSVC_)
+
+    return PRINT("MSVC %d.%d.%d.%d", (_MSC_VER / 100u) % 100u, (_MSC_VER) % 100u, (_MSC_FULL_VER) % 100000u, _MSC_BUILD);
+
+#elif defined(_CORE_GCC_)
+
+    return "GCC " STRING(__GNUC__) "." STRING(__GNUC_MINOR__) "." STRING(__GNUC_PATCHLEVEL__);
+
+#elif defined(_CORE_CLANG_)
+
+    return "Clang " __clang_version__;
+
+#endif
+}
+
+
+// ****************************************************************
+/* get standard library name and version */
+const coreChar* coreData::BuildLibrary()
+{
+#if defined(_CORE_STL_)
+
+    return "STL " STRING(_MSVC_STL_VERSION) " (" STRING(_MSVC_STL_UPDATE) ")";
+
+#elif defined(_CORE_GLIBCXX_)
+
+    return "libstdc++ " STRING(_GLIBCXX_RELEASE) " (" STRING(__GLIBCXX__) ")";
+
+#elif defined(_CORE_LIBCPP_)
+
+    return "libc++ " STRING(_LIBCPP_VERSION) " (ABI " STRING(_LIBCPP_ABI_VERSION) ")";
+
+#endif
+}
+
+
+// ****************************************************************
 /* set current working directory */
 coreStatus coreData::SetCurDir(const coreChar* pcPath)
 {
