@@ -302,10 +302,23 @@ CoreSystem::CoreSystem()noexcept
         const coreUint64 iMemoryUsed = iMemoryTotal - iMemoryAvailable;
         const coreDouble dMemoryPct  = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(iMemoryTotal));
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:") " %s",                                             coreData::SystemName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")        " %s (%s, %d logical cores, %d bytes cache line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
-        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")    " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
-        Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")       " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
+        coreString  sLocaleStr  = "";
+        SDL_Locale* pLocaleList = SDL_GetPreferredLocales();
+        if(pLocaleList)
+        {
+            for(SDL_Locale* pCurrent = pLocaleList; pCurrent->language; ++pCurrent)
+            {
+                sLocaleStr += pCurrent->country ? PRINT("%s_%s", pCurrent->language, pCurrent->country) : pCurrent->language;
+                sLocaleStr += ' ';
+            }
+            SDL_free(pLocaleList);
+        }
+
+        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                             coreData::SystemName());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                             sLocaleStr.c_str());
     }
     Core::Log->ListEnd();
 
