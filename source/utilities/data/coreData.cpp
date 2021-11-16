@@ -79,7 +79,7 @@ coreUint64 coreData::AppMemory()
         coreUint64 iPages;
 
         // read resident set size (in pages)
-        std::fscanf(pFile, "%*s %lu", &iPages);
+        std::fscanf(pFile, "%*s %llu", &iPages);
         std::fclose(pFile);
 
         // multiply with page-size and return

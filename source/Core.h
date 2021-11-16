@@ -478,18 +478,20 @@
 using coreInt8   = std::int8_t;
 using coreInt16  = std::int16_t;
 using coreInt32  = std::int32_t;
-using coreInt64  = std::int64_t;
+using coreInt64  = long long;
 using coreIntW   = std::make_signed<std::size_t>::type;
 using coreUint8  = std::uint8_t;
 using coreUint16 = std::uint16_t;
 using coreUint32 = std::uint32_t;
-using coreUint64 = std::uint64_t;
+using coreUint64 = unsigned long long;
 using coreUintW  = std::size_t;
 using coreBool   = bool;
 using coreChar   = char;
 using coreFloat  = float;
 using coreDouble = double;
 using coreByte   = std::uint8_t;
+STATIC_ASSERT(sizeof(coreInt64)  == 8u)
+STATIC_ASSERT(sizeof(coreUint64) == 8u)
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
