@@ -179,25 +179,26 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     coreSurfaceScope pOutline = NULL;
     coreByte*        pData    = NULL;
 
-    // get relative font height
-    const coreUint16 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+    // get relative font height and outline
+    const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+    const coreUint8  iRelOutline = CORE_LABEL_HEIGHT_RELATIVE(m_iOutline);
 
     // create solid text surface data
     pSolid = m_pFont->CreateText(pcText, iRelHeight);
     ASSERT(pSolid->format->BitsPerPixel == 8u)
 
-    if(m_iOutline)
+    if(iRelOutline)
     {
         // create outlined text surface data
-        pOutline = m_pFont->CreateTextOutline(pcText, iRelHeight, m_iOutline);
+        pOutline = m_pFont->CreateTextOutline(pcText, iRelHeight, iRelOutline);
         ASSERT(pOutline->format->BitsPerPixel == 8u)
     }
 
     // set texture properties
     const coreUintW  iComponents = pOutline ? (CORE_GL_SUPPORT(ARB_texture_rg) ? 2u : 3u) : 1u;
-    const coreUint32 iWidth      = pOutline ?  pOutline->w                                : pSolid->w;
-    const coreUint32 iHeight     = pOutline ? (pSolid->h + 2u * m_iOutline)               : pSolid->h;
-    const coreUint32 iPitch      = pOutline ?  pOutline->pitch                            : pSolid->pitch;
+    const coreUint32 iWidth      = pOutline ? pOutline->w     : pSolid->w;
+    const coreUint32 iHeight     = pOutline ? pOutline->h     : pSolid->h;
+    const coreUint32 iPitch      = pOutline ? pOutline->pitch : pSolid->pitch;
     const coreUintW  iSize       = iPitch * iHeight * iComponents;
     ASSERT(!(iPitch % 4u))
 
@@ -210,7 +211,7 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
         pData = ZERO_NEW(coreByte, iSize);
 
         // insert solid pixels
-        const coreUintW iOffset = (pOutline->pitch + 1u) * iComponents * m_iOutline;
+        const coreUintW iOffset = (pOutline->pitch + 1u) * iComponents * iRelOutline;
         for(coreUintW j = 0u, je = pSolid->h; j < je; ++j)
         {
             const coreUintW b = j * pSolid  ->pitch;

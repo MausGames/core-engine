@@ -114,11 +114,12 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
         // check if requested font is loaded
         m_pFont.OnUsableOnce([=, this]()
         {
-            // get relative font height
-            const coreUint16 iRelHeight = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+            // get relative font height and outline
+            const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
+            const coreUint8  iRelOutline = CORE_LABEL_HEIGHT_RELATIVE(m_iOutline);
 
             // return the dimensions of the current text (may differ a bit)
-            const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, m_iOutline);
+            const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);
             nRetrieveFunc(vDimensions * (CORE_LABEL_SIZE_FACTOR * m_fScale));
         });
     }
