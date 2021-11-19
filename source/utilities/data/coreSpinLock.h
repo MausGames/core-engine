@@ -88,7 +88,7 @@ public:
     coreAtomic() = default;
     constexpr coreAtomic(const T& tValue)noexcept : m_tValue (tValue) {}
 
-    DISABLE_COPY(coreAtomic<T>)
+    DISABLE_COPY(coreAtomic)
 
     /* assignment operations */
     FORCE_INLINE coreAtomic<T>& operator = (const T& tValue)noexcept;

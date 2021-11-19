@@ -11,11 +11,12 @@
 #define _CORE_GUARD_SYNC_H_
 
 // TODO 3: implement CheckAsync which uses the function-attachment interface (which thread?)
+// TODO 3: how to handle MAX_CLIENT_WAIT_TIMEOUT_WEBGL? Firefox returns 1'000'000'000ns (1s), Chromium returns 0ns
 
 
 // ****************************************************************
 /* sync definitions */
-#define CORE_SYNC_WAIT_FOREVER (GL_TIMEOUT_IGNORED)
+#define CORE_SYNC_WAIT_FOREVER (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : GL_TIMEOUT_IGNORED)
 
 enum coreSyncCheck : coreUint8
 {

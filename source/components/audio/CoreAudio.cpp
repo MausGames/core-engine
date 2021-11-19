@@ -96,7 +96,7 @@ CoreAudio::CoreAudio()noexcept
     // log audio device information
     Core::Log->ListStartInfo("Audio Device Information");
     {
-        ALCint aiStatus[7];
+        ALCint aiStatus[7] = {};
         alcGetIntegerv(m_pDevice, ALC_FREQUENCY,        1, &aiStatus[0]);
         alcGetIntegerv(m_pDevice, ALC_REFRESH,          1, &aiStatus[1]);
         alcGetIntegerv(m_pDevice, ALC_SYNC,             1, &aiStatus[2]);
@@ -105,10 +105,10 @@ CoreAudio::CoreAudio()noexcept
         alcGetIntegerv(m_pDevice, ALC_HRTF_SOFT,        1, &aiStatus[5]);
         alcGetIntegerv(m_pDevice, ALC_HRTF_STATUS_SOFT, 1, &aiStatus[6]);
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s, HRTF %s %d)", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER), aiStatus[5] ? alcGetString(m_pDevice, ALC_HRTF_SPECIFIER_SOFT) : "disabled", aiStatus[6]);
-        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",                  alGetString(AL_VENDOR));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",                  alGetString(AL_RENDERER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",                  alGetString(AL_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s, %s (%d))", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER), aiStatus[5] ? alcGetString(m_pDevice, ALC_HRTF_SPECIFIER_SOFT) : "HRTF disabled", aiStatus[6]);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",               alGetString(AL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",               alGetString(AL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",               alGetString(AL_VERSION));
         Core::Log->ListAdd(alcGetString(m_pDevice, ALC_EXTENSIONS));
         Core::Log->ListAdd(alGetString(AL_EXTENSIONS));
         Core::Log->ListAdd("ALC_FREQUENCY (%d) ALC_REFRESH (%d) ALC_SYNC (%d) ALC_MONO_SOURCES (%d) ALC_STEREO_SOURCES (%d)", aiStatus[0], aiStatus[1], aiStatus[2], aiStatus[3], aiStatus[4]);

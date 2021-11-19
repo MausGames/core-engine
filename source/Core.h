@@ -46,6 +46,7 @@
 // TODO 3: get ZStandard port for Emscripten target, or fallback to zlib (only interesting for storage, everything else uses transparent server-compression)
 // TODO 3: in emscripten, look into support for web-simd (-msse4.2/-mavx -msimd128)
 // TODO 3: in emscripten, try to add back FLTO to the linker-stage (some 3rd party libraries have undefined symbol "setjmp" and cause crash (SDL_img, freetype))
+// TODO 5: __apple_build_version__ to identify Apple Clang
 
 
 // ****************************************************************

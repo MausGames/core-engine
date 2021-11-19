@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_LIST_H_
 #define _CORE_GUARD_LIST_H_
 
+// TODO 3: constexpr if libc++ supports it ? (what about other containers ?)
+
 
 // ****************************************************************
 /* list container class */

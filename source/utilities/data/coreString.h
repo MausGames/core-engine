@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_STRING_H_
 #define _CORE_GUARD_STRING_H_
 
-// TODO 3: constexpr, when std::string in libstdc++ supports it
+// TODO 3: constexpr, when std::string in libstdc++ and libc++ supports it
 // TODO 4: move code to .cpp (remove inline)
 
 
