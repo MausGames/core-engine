@@ -28,10 +28,23 @@
 
 #include "SDL_platform.h"
 
+/* winsdkver.h defines _WIN32_MAXVER for SDK version detection. It is present since at least the Windows 7 SDK,
+ * but out of caution we'll only use it if the compiler supports __has_include() to confirm its presence.
+ * If your compiler doesn't support __has_include() but you have winsdkver.h, define HAVE_WINSDKVER_H.  */
+#if !defined(HAVE_WINSDKVER_H) && defined(__has_include)
+#if __has_include(<winsdkver.h>)
+#define HAVE_WINSDKVER_H 1
+#endif
+#endif
+
+#ifdef HAVE_WINSDKVER_H
+#include <winsdkver.h>
+#endif
+
 /* This is a set of defines to configure the SDL features */
 
 #if !defined(_STDINT_H_) && (!defined(HAVE_STDINT_H) || !_HAVE_STDINT_H)
-#if defined(__GNUC__) || defined(__DMC__) || defined(__WATCOMC__) || defined(__clang__)
+#if defined(__GNUC__) || defined(__DMC__) || defined(__WATCOMC__) || defined(__clang__) || defined(__BORLANDC__) || defined(__CODEGEARC__)
 #define HAVE_STDINT_H 1
 #elif defined(_MSC_VER)
 typedef signed __int8 int8_t;
@@ -85,6 +98,12 @@ typedef unsigned int uintptr_t;
 #define HAVE_DSOUND_H 1
 #define HAVE_DXGI_H 1
 #define HAVE_XINPUT_H 1
+#if defined(_WIN32_MAXVER) && _WIN32_MAXVER >= 0x0A00  /* Windows 10 SDK */
+#define HAVE_WINDOWS_GAMING_INPUT_H 1
+#endif
+#if defined(_WIN32_MAXVER) && _WIN32_MAXVER >= 0x0602  /* Windows 8 SDK */
+#define HAVE_D3D11_H 1
+#endif
 #define HAVE_MMDEVICEAPI_H 1
 #define HAVE_AUDIOCLIENT_H 1
 #define HAVE_SENSORSAPI_H 1
@@ -132,7 +151,6 @@ typedef unsigned int uintptr_t;
 #define HAVE_STRRCHR 1
 #define HAVE_STRSTR 1
 /* #undef HAVE_STRTOK_R */
-#define HAVE_STRTOK_S 1
 /* These functions have security warnings, so we won't use them */
 /* #undef HAVE__LTOA */
 /* #undef HAVE__ULTOA */
@@ -210,20 +228,6 @@ typedef unsigned int uintptr_t;
 #define HAVE_STDDEF_H 1
 #endif /* HAVE_LIBC */
 
-/* Check to see if we have Windows 10 build environment */
-#if defined(_MSC_VER) && (_MSC_VER >= 1911)  /* Visual Studio 15.3 */
-#include <sdkddkver.h>
-#if _WIN32_WINNT >= 0x0601  /* Windows 7 */
-#define SDL_WINDOWS7_SDK
-#endif
-#if _WIN32_WINNT >= 0x0602  /* Windows 8 */
-#define SDL_WINDOWS8_SDK
-#endif
-#if _WIN32_WINNT >= 0x0A00  /* Windows 10 */
-#define SDL_WINDOWS10_SDK
-#endif
-#endif /* _MSC_VER >= 1911 */
-
 /* Enable various audio drivers */
 #define SDL_AUDIO_DRIVER_WASAPI 0
 #define SDL_AUDIO_DRIVER_DSOUND 0
@@ -239,7 +243,7 @@ typedef unsigned int uintptr_t;
 #ifndef __WINRT__
 #define SDL_JOYSTICK_RAWINPUT 1
 #endif
-#ifdef SDL_WINDOWS10_SDK
+#ifdef HAVE_WINDOWS_GAMING_INPUT_H
 #define SDL_JOYSTICK_WGI 1
 #endif
 #define SDL_HAPTIC_DINPUT 1
@@ -265,7 +269,7 @@ typedef unsigned int uintptr_t;
 #ifndef SDL_VIDEO_RENDER_D3D
 #define SDL_VIDEO_RENDER_D3D 0
 #endif
-#ifdef SDL_WINDOWS7_SDK
+#if !defined(SDL_VIDEO_RENDER_D3D11) && defined(HAVE_D3D11_H)
 #define SDL_VIDEO_RENDER_D3D11 0
 #endif
 
