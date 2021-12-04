@@ -89,14 +89,14 @@ CoreSystem::CoreSystem()noexcept
                 oDisplayData.vWorkAreaRes = coreVector2(I_TO_F(oWorkArea.w), I_TO_F(oWorkArea.h));
 
                 // retrieve display DDPI
-                coreFloat fDDPI = 0.0f;
-                SDL_GetDisplayDPI(i, &fDDPI, NULL, NULL);
+                coreFloat fDDPI = 0.0f, fHDPI = 0.0f, fVDPI = 0.0f;
+                SDL_GetDisplayDPI(i, &fDDPI, &fHDPI, &fVDPI);
 
                 // load all available screen resolutions
                 const coreUintW iNumModes = SDL_GetNumDisplayModes(i);
                 if(iNumModes)
                 {
-                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d Hz, %.1f DDPI, %d)", i+1u, SDL_GetDisplayName(i), oDesktop.refresh_rate, fDDPI, SDL_GetDisplayOrientation(i));
+                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d Hz, %.1f/%.1f/%.1f DPI, %d/%d offset)", i, SDL_GetDisplayName(i), oDesktop.refresh_rate, fDDPI, fHDPI, fVDPI, oWorkArea.x, oWorkArea.y);
                     {
                         // reserve some memory
                         oDisplayData.avAvailableRes.reserve(iNumModes);
@@ -262,7 +262,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindow(NULL, iPos, iPos, iSizeX, iSizeY, iFlags);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
-    Core::Log->Info("Main window created (%s, %.0f x %.0f, %d)", SDL_GetCurrentVideoDriver(), m_vResolution.x, m_vResolution.y, m_iFullscreen);
+    Core::Log->Info("Main window created (%s, %s, %.0f x %.0f, display %u, mode %u)", SDL_GetCurrentVideoDriver(), SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(m_pWindow)), m_vResolution.x, m_vResolution.y, m_iDisplayIndex, m_iFullscreen);
 
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
@@ -325,7 +325,7 @@ CoreSystem::CoreSystem()noexcept
 #if !defined(_CORE_EMSCRIPTEN_)
 
     // log Zstandard library version
-    Core::Log->Info("Zstandard initialized (%s)", ZSTD_versionString());
+    Core::Log->Info("Zstandard initialized (%s, %s-threaded)", ZSTD_versionString(), ZSTD_cParam_getBounds(ZSTD_c_nbWorkers).upperBound ? "multi" : "single");
 
 #endif
 }

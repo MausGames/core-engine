@@ -459,7 +459,7 @@ typedef struct {
  *         - an error status field, which must be tested using ZSTD_isError()
  *         - lower and upper bounds, both inclusive
  */
-ZSTDLIB_API ZSTD_bounds ZSTD_cParam_getBounds(ZSTD_cParameter cParam);
+ZSTDLIB_API ZSTD_bounds ZSTDLIB_CALL ZSTD_cParam_getBounds(ZSTD_cParameter cParam);
 
 /*! ZSTD_CCtx_setParameter() :
  *  Set one compression parameter, selected by enum ZSTD_cParameter.
