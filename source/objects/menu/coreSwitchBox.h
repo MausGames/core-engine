@@ -116,7 +116,7 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 , m_iUserSwitch (0)
 , m_bEndless    (false)
 , m_iOverride   (0)
-, m_Automatic   (coreTimer(1.0f, 10.0f, 1u))
+, m_Automatic   (coreTimer(1.0f, 10.0f, 0u))
 {
 }
 
@@ -164,9 +164,6 @@ template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sFo
 {
     // create the label
     m_Caption.Construct(sFont, iHeight, iOutline);
-
-    // init automatic forward behavior
-    m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
 
     // enable interaction handling
     m_bFocusable = true;
@@ -235,8 +232,7 @@ template <typename T> void coreSwitchBox<T>::Move()
     if(bLeft || bRight)
     {
         // update the automatic timer
-        m_Automatic.Update(1.0f);
-        if(!m_Automatic.GetStatus())
+        if(m_Automatic.Update(1.0f) || !m_Automatic.GetStatus())
         {
             const coreUintW iOldIndex = m_iCurIndex;
 
@@ -247,18 +243,15 @@ template <typename T> void coreSwitchBox<T>::Move()
             // set switch status
             if(m_iCurIndex != iOldIndex) m_iUserSwitch = bLeft ? -1 : 1;
 
-            // manually loop the automatic timer
-            m_Automatic.Play((m_Automatic.GetValue(CORE_TIMER_GET_NORMAL) > 0.0f) ? CORE_TIMER_PLAY_RESET : CORE_TIMER_PLAY_CURRENT);
+            // run the automatic timer
+            m_Automatic.Play(CORE_TIMER_PLAY_CURRENT);
         }
     }
     else
     {
         // reset the automatic timer
-        if(m_Automatic.GetStatus())
-        {
-            m_Automatic.Pause();
-            m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
-        }
+        m_Automatic.Pause();
+        m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
     }
 
     if(m_eUpdate)
