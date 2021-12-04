@@ -89,7 +89,7 @@ CoreGraphics::CoreGraphics()noexcept
     // enable vertical synchronization
     if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_VSYNC))
     {
-             if(!SDL_GL_SetSwapInterval(-1)) Core::Log->Info("Vertical synchronization enabled (extended)");
+             if(!SDL_GL_SetSwapInterval(-1)) Core::Log->Info("Vertical synchronization enabled (adaptive)");
         else if(!SDL_GL_SetSwapInterval( 1)) Core::Log->Info("Vertical synchronization enabled (normal)");
         else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
     }

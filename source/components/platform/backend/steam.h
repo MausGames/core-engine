@@ -29,6 +29,8 @@
     #endif
 #elif defined(_CORE_LINUX_)
     #define STEAM_LIBRARY_NAME "libsteam_api.so"
+#elif defined(_CORE_MACOS_)
+    #define STEAM_LIBRARY_NAME "libsteam_api.dylib"
 #endif
 
 #define __DEFINE_FUNCTION(x) static decltype(x)* n ## x = NULL;
