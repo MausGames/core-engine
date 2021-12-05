@@ -11,7 +11,9 @@
 #if defined(_CORE_WINDOWS_)
     #include <GL/wglew.h>
 #elif defined(_CORE_LINUX_)
-    #include <GL/glxew.h>
+    #include <EGL/egl.h>
+    #include <wayland-client.h>
+    #include <GL/glx.h>
 #endif
 
 coreBool GLEW_V2_compatibility = false;
@@ -310,16 +312,76 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
 
 #elif defined(_CORE_LINUX_)
 
-    // open connection to default display
-    Display* pDisplay = XOpenDisplay(NULL);
-    if(pDisplay)
+    #define __LOAD_FUNCTION(x,y) decltype(x)* __ ## x = r_cast<decltype(x)*>(coreData::GetAddress(y, #x));
     {
-        // get full extension string
-        (*psOutput) = glXQueryExtensionsString(pDisplay, DefaultScreen(pDisplay));
+        // open EGL library
+        void* pLibraryEGL = coreData::OpenLibrary("libEGL.so");
+        if(pLibraryEGL)
+        {
+            __LOAD_FUNCTION(eglGetCurrentContext, pLibraryEGL)
+            __LOAD_FUNCTION(eglGetDisplay,        pLibraryEGL)
+            __LOAD_FUNCTION(eglQueryString,       pLibraryEGL)
 
-        // close connection
-        XCloseDisplay(pDisplay);
+            if(__eglGetCurrentContext && __eglGetDisplay && __eglQueryString && (__eglGetCurrentContext() != EGL_NO_CONTEXT))
+            {
+                // open Wayland library
+                void* pLibraryWL = coreData::OpenLibrary("libwayland-client.so");
+                if(pLibraryWL)
+                {
+                    __LOAD_FUNCTION(wl_display_connect,    pLibraryWL)
+                    __LOAD_FUNCTION(wl_display_disconnect, pLibraryWL)
+
+                    if(__wl_display_connect && __wl_display_disconnect)
+                    {
+                        // open connection to default display
+                        wl_display* pDisplay = __wl_display_connect(NULL);
+                        if(pDisplay)
+                        {
+                            // get full extension string (EGL)
+                            (*psOutput) = __eglQueryString(__eglGetDisplay(pDisplay), EGL_EXTENSIONS);
+
+                            // close connection
+                            __wl_display_disconnect(pDisplay);
+                        }
+                    }
+
+                    // close Wayland library
+                    coreData::CloseLibrary(pLibraryWL);
+                }
+            }
+            else
+            {
+                // open X11 library
+                void* pLibraryX = coreData::OpenLibrary("libX11.so");
+                if(pLibraryX)
+                {
+                    __LOAD_FUNCTION(XOpenDisplay,  pLibraryX)
+                    __LOAD_FUNCTION(XCloseDisplay, pLibraryX)
+
+                    if(__XOpenDisplay && __XCloseDisplay)
+                    {
+                        // open connection to default display
+                        Display* pDisplay = __XOpenDisplay(NULL);
+                        if(pDisplay)
+                        {
+                            // get full extension string (GLX)
+                            (*psOutput) = glXQueryExtensionsString(pDisplay, DefaultScreen(pDisplay));
+
+                            // close connection
+                            __XCloseDisplay(pDisplay);
+                        }
+                    }
+
+                    // close X11 library
+                    coreData::CloseLibrary(pLibraryX);
+                }
+            }
+
+            // close EGL library
+            coreData::CloseLibrary(pLibraryEGL);
+        }
     }
+    #undef __LOAD_FUNCTION
 
 #endif
 }
