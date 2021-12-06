@@ -39,7 +39,7 @@
 #define CORE_CONFIG_AUDIO_MUSICVOLUME           "Audio",    "MusicVolume",        (1.0f)
 #define CORE_CONFIG_AUDIO_SOUNDVOLUME           "Audio",    "SoundVolume",        (1.0f)
 
-#define CORE_CONFIG_INPUT_HAPTIC                "Input",    "Haptic",             (true)
+#define CORE_CONFIG_INPUT_RUMBLE                "Input",    "Rumble",             (true)
 #define CORE_CONFIG_INPUT_JOYSTICKDEAD          "Input",    "JoystickDead",       (0x2000)
 #define CORE_CONFIG_INPUT_JOYSTICKMAX           "Input",    "JoystickMax",        (0x7000)
 

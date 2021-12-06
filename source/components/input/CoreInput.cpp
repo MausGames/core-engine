@@ -430,39 +430,25 @@ void CoreInput::__OpenJoysticks()
                 oJoystick.pController = SDL_GameControllerOpen(i);
                 oJoystick.pJoystick   = oJoystick.pController ? SDL_GameControllerGetJoystick(oJoystick.pController) : SDL_JoystickOpen(i);
 
-                // try to open haptic device
-                oJoystick.pHaptic = SDL_HapticOpenFromJoystick(oJoystick.pJoystick);
-                if(oJoystick.pHaptic)
-                {
-                    // check for simple rumble playback
-                    if(SDL_HapticRumbleInit(oJoystick.pHaptic))
-                    {
-                        SDL_HapticClose(oJoystick.pHaptic);
-                        oJoystick.pHaptic = NULL;
-                    }
-                }
-
                 // get device type
                 const SDL_GameControllerType eControllerType = SDL_GameControllerGetType(oJoystick.pController);
                 const SDL_JoystickType       eJoystickType   = SDL_JoystickGetType      (oJoystick.pJoystick);
 
                 // get device features
-                const coreInt32  iNumButtons   = SDL_JoystickNumButtons           (oJoystick.pJoystick);
-                const coreInt32  iNumAxes      = SDL_JoystickNumAxes              (oJoystick.pJoystick);
-                const coreInt32  iNumHats      = SDL_JoystickNumHats              (oJoystick.pJoystick);
-                const coreInt32  iNumBalls     = SDL_JoystickNumBalls             (oJoystick.pJoystick);
-                const coreInt32  iNumTouchpads = SDL_GameControllerGetNumTouchpads(oJoystick.pController);
-                const coreBool   bHasAccel     = SDL_GameControllerHasSensor      (oJoystick.pController, SDL_SENSOR_ACCEL) != SDL_FALSE;
-                const coreBool   bHasGyro      = SDL_GameControllerHasSensor      (oJoystick.pController, SDL_SENSOR_GYRO)  != SDL_FALSE;
-                const coreBool   bHasLed       = SDL_JoystickHasLED               (oJoystick.pJoystick)                     != SDL_FALSE;
-                const coreUint32 iQuery        = SDL_HapticQuery                  (oJoystick.pHaptic);
+                const coreInt32 iNumButtons   = SDL_JoystickNumButtons           (oJoystick.pJoystick);
+                const coreInt32 iNumAxes      = SDL_JoystickNumAxes              (oJoystick.pJoystick);
+                const coreInt32 iNumHats      = SDL_JoystickNumHats              (oJoystick.pJoystick);
+                const coreInt32 iNumBalls     = SDL_JoystickNumBalls             (oJoystick.pJoystick);
+                const coreInt32 iNumTouchpads = SDL_GameControllerGetNumTouchpads(oJoystick.pController);
+                const coreBool  bHasAccel     = SDL_GameControllerHasSensor      (oJoystick.pController, SDL_SENSOR_ACCEL) != SDL_FALSE;
+                const coreBool  bHasGyro      = SDL_GameControllerHasSensor      (oJoystick.pController, SDL_SENSOR_GYRO)  != SDL_FALSE;
 
                 // save joystick object
                 m_aJoystick.push_back(oJoystick);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %s, type %d-%d, %d buttons, %d axes, %d hats, %d balls, %d touchpads, %saccelerometer, %sgyroscope, %sled, %shaptic 0x%04X)",
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %s, type %d-%d, %d buttons, %d axes, %d hats, %d balls, %d touchpads, %srumble, %sled, %saccelerometer, %sgyroscope)",
                                    oJoystick.pController ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickSerial(i), this->GetJoystickGUID(i),
                                    eControllerType, eJoystickType, iNumButtons, iNumAxes, iNumHats, iNumBalls, iNumTouchpads,
-                                   bHasAccel ? "" : "no ", bHasGyro ? "" : "no ", bHasLed ? "" : "no ", oJoystick.pHaptic ? "" : "no ", iQuery);
+                                   this->GetJoystickHasRumble(i) ? "" : "NO ", this->GetJoystickHasLED(i) ? "" : "NO ", bHasAccel ? "" : "NO ", bHasGyro ? "" : "NO ");
             }
         }
         Core::Log->ListEnd();
@@ -484,10 +470,9 @@ void CoreInput::__OpenJoysticks()
 /* shut down joystick input */
 void CoreInput::__CloseJoysticks()
 {
-    // close all joystick and haptic devices
+    // close all joystick devices
     FOR_EACH(it, m_aJoystick)
     {
-             if(it->pHaptic)     SDL_HapticClose        (it->pHaptic);
              if(it->pController) SDL_GameControllerClose(it->pController);
         else if(it->pJoystick)   SDL_JoystickClose      (it->pJoystick);
     }
