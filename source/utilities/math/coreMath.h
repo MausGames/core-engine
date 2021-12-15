@@ -154,9 +154,9 @@ public:
     template <typename T> static constexpr coreBool IsNear(const T& x, const T& c, const T& r = CORE_MATH_PRECISION) {return POW2(x - c) <= POW2(r);}
 
     /* bit operations */
-    static constexpr coreUint32 PopCount      (const coreUint32 iInput);
-    static inline    coreUint32 BitScanFwd    (const coreUint32 iInput);
-    static inline    coreUint32 BitScanRev    (const coreUint32 iInput);
+    static constexpr coreUint32 PopCount      (const coreUint64 iInput);
+    static constexpr coreUint32 BitScanFwd    (const coreUint64 iInput);
+    static constexpr coreUint32 BitScanRev    (const coreUint64 iInput);
     static constexpr coreUint32 RotateLeft32  (const coreUint32 iInput, const coreUint8 iShift);
     static constexpr coreUint64 RotateLeft64  (const coreUint64 iInput, const coreUint8 iShift);
     static constexpr coreUint32 RotateRight32 (const coreUint32 iInput, const coreUint8 iShift);
@@ -273,64 +273,103 @@ constexpr coreFloat coreMath::Rcp(const coreFloat fInput)
 
 // ****************************************************************
 /* count the number of one-bits (population count) */
-constexpr coreUint32 coreMath::PopCount(coreUint32 iInput)
+constexpr coreUint32 coreMath::PopCount(coreUint64 iInput)
 {
 #if defined(_CORE_SSE_)
 
     if(!std::is_constant_evaluated() && coreCPUID::POPCNT())
     {
         // optimized calculation with POPCNT
-        return _mm_popcnt_u32(iInput);
+        return _mm_popcnt_u64(iInput);
     }
 
 #endif
 
     // normal calculation
-    iInput = (iInput)               - ((iInput >> 1u) & 0x55555555u);
-    iInput = (iInput & 0x33333333u) + ((iInput >> 2u) & 0x33333333u);
-    return (((iInput + (iInput >> 4u)) & 0xF0F0F0Fu) * 0x1010101u) >> 24u;
+    iInput = (iInput)                       - ((iInput >> 1u) & 0x5555555555555555u);
+    iInput = (iInput & 0x3333333333333333u) + ((iInput >> 2u) & 0x3333333333333333u);
+    return (((iInput + (iInput >> 4u)) & 0x0F0F0F0F0F0F0F0Fu) * 0x0101010101010101u) >> 56u;
 }
 
 
 // ****************************************************************
 /* get index of the least significant one-bit */
-inline coreUint32 coreMath::BitScanFwd(const coreUint32 iInput)
+constexpr coreUint32 coreMath::BitScanFwd(const coreUint64 iInput)
 {
-    if(!iInput) return 32u;
+    if(!iInput) return 64u;
 
 #if defined(_CORE_MSVC_)
 
-    // calculation with MSVC intrinsic
-    DWORD iOutput; _BitScanForward(&iOutput, iInput);
-    return iOutput;
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        DWORD iOutput; _BitScanForward64(&iOutput, iInput);
+        return iOutput;
+    }
 
 #else
 
     // calculation with other intrinsic
-    return __builtin_ctz(iInput);
+    return __builtin_ctzll(iInput);
 
 #endif
+
+    // normal calculation
+    constexpr coreUint32 aiTable[] =
+    {
+        0u, 47u,  1u, 56u, 48u, 27u,  2u, 60u,
+       57u, 49u, 41u, 37u, 28u, 16u,  3u, 61u,
+       54u, 58u, 35u, 52u, 50u, 42u, 21u, 44u,
+       38u, 32u, 29u, 23u, 17u, 11u,  4u, 62u,
+       46u, 55u, 26u, 59u, 40u, 36u, 15u, 53u,
+       34u, 51u, 20u, 43u, 31u, 22u, 10u, 45u,
+       25u, 39u, 14u, 33u, 19u, 30u,  9u, 24u,
+       13u, 18u,  8u, 12u,  7u,  6u,  5u, 63u
+    };
+
+    return aiTable[((iInput ^ (iInput - 1u)) * 0x03F79D71B4CB0A89u) >> 58u];
 }
 
 
 // ****************************************************************
 /* get index of the most significant one-bit */
-inline coreUint32 coreMath::BitScanRev(const coreUint32 iInput)
+constexpr coreUint32 coreMath::BitScanRev(const coreUint64 iInput)
 {
-    if(!iInput) return 32u;
+    if(!iInput) return 64u;
 
 #if defined(_CORE_MSVC_)
 
-    // calculation with MSVC intrinsic
-    DWORD iOutput; _BitScanReverse(&iOutput, iInput);
-    return iOutput;
+    if(!std::is_constant_evaluated())
+    {
+        // calculation with MSVC intrinsic
+        DWORD iOutput; _BitScanReverse64(&iOutput, iInput);
+        return iOutput;
+    }
 
 #else
 
     // calculation with other intrinsic
-    return 31u - __builtin_clz(iInput);
+    return 63u - __builtin_clzll(iInput);
 
 #endif
+
+    // normal calculation
+    constexpr coreUint32 aiTable[] =
+    {
+        0u, 47u,  1u, 56u, 48u, 27u,  2u, 60u,
+       57u, 49u, 41u, 37u, 28u, 16u,  3u, 61u,
+       54u, 58u, 35u, 52u, 50u, 42u, 21u, 44u,
+       38u, 32u, 29u, 23u, 17u, 11u,  4u, 62u,
+       46u, 55u, 26u, 59u, 40u, 36u, 15u, 53u,
+       34u, 51u, 20u, 43u, 31u, 22u, 10u, 45u,
+       25u, 39u, 14u, 33u, 19u, 30u,  9u, 24u,
+       13u, 18u,  8u, 12u,  7u,  6u,  5u, 63u
+    };
+
+    coreUint64 A = iInput;
+    A |= A >> 1u; A |= A >>  2u; A |= A >>  4u;
+    A |= A >> 8u; A |= A >> 16u; A |= A >> 32u;
+    return aiTable[(A * 0x03F79D71B4CB0A89u) >> 58u];
 }
 
 
