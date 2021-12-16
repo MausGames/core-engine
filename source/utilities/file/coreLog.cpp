@@ -20,6 +20,8 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_iMainThread (0u)
 , m_Lock        ()
 {
+#if !defined(_CORE_EMSCRIPTEN_)
+
     // open and reset log file
     m_pFile = std::fopen(m_sPath.c_str(), "wb");
     if(m_pFile)
@@ -54,6 +56,8 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         // save thread-ID from the creator
         m_iMainThread = SDL_ThreadID();
     }
+
+#endif
 }
 
 

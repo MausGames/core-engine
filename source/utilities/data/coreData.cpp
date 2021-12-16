@@ -460,6 +460,8 @@ const coreChar* coreData::BuildLibrary()
 /* set current working directory */
 coreStatus coreData::SetCurDir(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
 #if defined(_CORE_WINDOWS_)
 
     if(SetCurrentDirectoryA(pcPath)) return CORE_OK;
@@ -590,6 +592,8 @@ coreStatus coreData::OpenURL(const coreChar* pcURL)
 /* open dynamic library */
 void* coreData::OpenLibrary(const coreChar* pcName)
 {
+    ASSERT(pcName)
+
 #if defined(_CORE_WINDOWS_)
 
     return LoadLibraryA(pcName);
@@ -618,7 +622,7 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 /* find symbol in dynamic library */
 void* coreData::GetAddress(void* pLibrary, const coreChar* pcName)
 {
-    ASSERT(pLibrary)
+    ASSERT(pLibrary && pcName)
 
 #if defined(_CORE_WINDOWS_)
 
@@ -660,6 +664,8 @@ coreStatus coreData::CloseLibrary(void* pLibrary)
 /* check if file exists */
 coreBool coreData::FileExists(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
 #if defined(_CORE_WINDOWS_)
 
     const coreUint32 iAttributes = GetFileAttributesA(pcPath);
@@ -695,6 +701,8 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 /* retrieve file size */
 coreInt64 coreData::FileSize(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
 #if defined(_CORE_WINDOWS_)
 
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
@@ -741,6 +749,8 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
 /* retrieve file write time */
 std::time_t coreData::FileWriteTime(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
 #if defined(_CORE_WINDOWS_)
 
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
@@ -773,6 +783,8 @@ std::time_t coreData::FileWriteTime(const coreChar* pcPath)
 /* copy file from source to destination (and replace) */
 coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 {
+    ASSERT(pcFrom && pcTo)
+
 #if defined(_CORE_WINDOWS_)
 
     // copy directly (with attributes)
@@ -818,6 +830,8 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 /* move file from source to destination (and replace) */
 coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 {
+    ASSERT(pcFrom && pcTo)
+
 #if defined(_CORE_WINDOWS_)
 
     if(MoveFileExA(pcFrom, pcTo, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
@@ -836,6 +850,8 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 /* delete existing file */
 coreStatus coreData::FileDelete(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
 #if defined(_CORE_WINDOWS_)
 
     if(DeleteFileA(pcPath)) return CORE_OK;
@@ -854,6 +870,8 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 /* check if folder exists */
 coreBool coreData::FolderExists(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
 #if defined(_CORE_WINDOWS_)
 
     const coreUint32 iAttributes = GetFileAttributesA(pcPath);
@@ -883,6 +901,8 @@ coreBool coreData::FolderExists(const coreChar* pcPath)
 /* check if folder is writable */
 coreBool coreData::FolderWritable(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
     // get temporary file name
     const coreChar* pcTemp = PRINT("%s/check_%s", pcPath, coreData::DateTimePrint("%Y%m%d_%H%M%S"));
 
@@ -921,6 +941,8 @@ coreBool coreData::FolderWritable(const coreChar* pcPath)
 /* create folder hierarchy */
 coreStatus coreData::FolderCreate(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
     // check if folder already exists (less expensive)
     if(coreData::FolderExists(pcPath)) return CORE_OK;
 
@@ -957,7 +979,7 @@ coreStatus coreData::FolderCreate(const coreChar* pcPath)
 /* retrieve relative paths of all files from a folder */
 coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
 {
-    WARN_IF(!pcPath || !pcFilter || !pasOutput) return CORE_INVALID_INPUT;
+    ASSERT(pcPath && pcFilter && pasOutput)
 
 #if defined(_CORE_WINDOWS_)
 
@@ -1231,6 +1253,8 @@ coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, c
 /* prepare path for system directory */
 const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
 {
+    ASSERT(pcPath)
+
     // get folder name from application name
     static const coreString s_sIdentifier = []()
     {

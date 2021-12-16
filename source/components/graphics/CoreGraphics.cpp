@@ -476,6 +476,8 @@ void CoreGraphics::EndScissorTest()
 /* take screenshot */
 void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 {
+#if !defined(_CORE_EMSCRIPTEN_)
+
     const coreUintW iWidthSrc = coreMath::CeilAlign(F_TO_UI(m_vViewResolution.x), 4u);
     const coreUintW iWidthDst = F_TO_UI(m_vViewResolution.x);
     const coreUintW iHeight   = F_TO_UI(m_vViewResolution.y);
@@ -518,6 +520,8 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
         delete[] pData;
         return CORE_OK;
     });
+
+#endif
 }
 
 

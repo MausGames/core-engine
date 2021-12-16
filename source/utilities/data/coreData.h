@@ -16,6 +16,7 @@
 // TODO 3: --help, --version, --force-32, --force-64 (windows, launcher?)
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 // TODO 3: make !temp and !appdata replace instead
+// TODO 3: add compiled/included Windows SDK version to BuildLibrary string
 
 
 // ****************************************************************
@@ -202,6 +203,8 @@ template <typename T> const coreChar* coreData::ToChars(const T& tValue)
 /* convert string to trivial value */
 template <typename T> T coreData::FromChars(const coreChar* pcString, const coreUintW iLen)
 {
+    ASSERT(pcString)
+
     T tValue;
 
     // use high-performance conversion
@@ -212,7 +215,7 @@ template <typename T> T coreData::FromChars(const coreChar* pcString, const core
 }
 
 #if defined(_CORE_LIBCPP_)
-    template <> inline coreFloat coreData::FromChars(const coreChar* pcString, const coreUintW iLen) {return coreFloat(std::atof(pcString));}
+    template <> inline coreFloat coreData::FromChars(const coreChar* pcString, const coreUintW iLen) {ASSERT(pcString) return coreFloat(std::atof(pcString));}
 #endif
 
 
@@ -269,6 +272,8 @@ template <typename T> constexpr coreUint32 coreData::TypeId()
 /* process string with custom sub-function */
 template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInput, F&& nFunction)
 {
+    ASSERT(pcInput)
+
     coreChar* pcString = coreData::__NextTempString();
     coreChar* pcCursor = pcString;
 
@@ -289,6 +294,8 @@ template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInp
 /* call function for each valid string token */
 template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction)
 {
+    ASSERT(pcInput && pcDelimiter)
+
     coreChar acString[512];
 
     // make local copy

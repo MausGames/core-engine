@@ -70,6 +70,9 @@
     <Filter Include="components\platform\backend">
       <UniqueIdentifier>{88eee9a1-4c96-479b-99d1-f4f4239064c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="additional\emscripten">
+      <UniqueIdentifier>{e28246a5-c19a-4893-bdd5-3c1ed027ca80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -192,6 +195,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGLEW.c">
       <Filter>additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\emscripten\main.c">
+      <Filter>additional\emscripten</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -379,5 +385,13 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\natvis.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\source\additional\emscripten\pre.js">
+      <Filter>additional\emscripten</Filter>
+    </None>
+    <None Include="..\..\..\source\additional\emscripten\shell.html">
+      <Filter>additional\emscripten</Filter>
+    </None>
   </ItemGroup>
 </Project>

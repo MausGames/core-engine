@@ -72,7 +72,7 @@ coreResourceManager::coreResourceManager()noexcept
 , m_bActive      (false)
 {
     // configure resource thread
-    this->SetFrequency(100.0f);
+    this->SetFrequency(120.0f);
 
     // start up the resource manager
     this->Reset(CORE_RESOURCE_RESET_INIT);
