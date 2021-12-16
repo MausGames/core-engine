@@ -11,6 +11,7 @@
 #define _CORE_GUARD_AUDIO_H_
 
 // TODO 5: <old comment style>
+// TODO 3: emscripten exposes ALC_SOFT_HRTF, but cannot handle -1 (or other indices outside the HRTF list range)
 
 
 // ****************************************************************

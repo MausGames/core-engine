@@ -33,17 +33,17 @@ CoreAudio::CoreAudio()noexcept
     // set OpenAL context attributes
     const ALCint aiAttributes[] =
     {
+        ALC_HRTF_SOFT,      Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTF),
+        ALC_HRTF_ID_SOFT,   Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTFINDEX),
         ALC_FREQUENCY,      48000,
         ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES,
         ALC_STEREO_SOURCES, CORE_AUDIO_SOURCES,
-        ALC_HRTF_SOFT,      Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTF),
-        ALC_HRTF_ID_SOFT,   Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTFINDEX),
         0
     };
 
     // open audio device and create OpenAL context
     m_pDevice  = alcOpenDevice(NULL);
-    m_pContext = alcCreateContext(m_pDevice, aiAttributes);
+    m_pContext = alcCreateContext(m_pDevice, aiAttributes + 4u);   // skip HRTF attributes
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
@@ -52,6 +52,13 @@ CoreAudio::CoreAudio()noexcept
 
     // generate audio sources
     alGenSources(CORE_AUDIO_SOURCES, m_aiSource);
+
+    // init HRTF extension
+    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_HRTF") && !DEFINED(_CORE_EMSCRIPTEN_))
+    {
+        const LPALCRESETDEVICESOFT nResetDevice = r_cast<LPALCRESETDEVICESOFT>(alcGetProcAddress(m_pDevice, "alcResetDeviceSOFT"));
+        if(nResetDevice) nResetDevice(m_pDevice, aiAttributes);
+    }
 
     // init deferred-updates extension
     if(alIsExtensionPresent("AL_SOFT_deferred_updates"))
