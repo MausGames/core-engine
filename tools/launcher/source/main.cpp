@@ -20,6 +20,15 @@ using uIsWow64Process = BOOL (WINAPI *) (HANDLE, PBOOL);
 
 
 // ****************************************************************
+static bool FolderExists(const wchar_t* pcPath)
+{
+    // check if folder exists
+    const DWORD iAttributes = GetFileAttributesW(pcPath);
+    return ((iAttributes != INVALID_FILE_ATTRIBUTES) && ((iAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY));
+}
+
+
+// ****************************************************************
 static bool FolderScan(const wchar_t* pcPath, std::vector<std::wstring>* __restrict pasOutput)
 {
     HANDLE pFolder;
@@ -70,7 +79,7 @@ static bool IsWow64()
         }
     }
 
-    return iStatus ? true : false;
+    return (iStatus != 0);
 }
 
 
@@ -91,9 +100,14 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
 {
     // set working directory
     const wchar_t* pcDirectory = (IsWow64() && IsWindows10OrGreater()) ? L"bin\\windows_x86_64\\" : L"bin\\windows_x86_32\\";
+    if(!FolderExists(pcDirectory))
+    {
+        MessageBoxW(NULL, L"Could not find binary directory!", L"Launcher", MB_OK | MB_ICONERROR);
+        return -3;
+    }
     if(!SetCurrentDirectoryW(pcDirectory))
     {
-        MessageBoxW(NULL, L"Could not set working directory!", NULL, MB_OK | MB_ICONERROR);
+        MessageBoxW(NULL, L"Could not set working directory!", L"Launcher", MB_OK | MB_ICONERROR);
         return -2;
     }
 
@@ -101,7 +115,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
     std::vector<std::wstring> asFile;
     if(!FolderScan(L"*.exe", &asFile) || asFile.empty())
     {
-        MessageBoxW(NULL, L"Could not find executable!", NULL, MB_OK | MB_ICONERROR);
+        MessageBoxW(NULL, L"Could not find executable!", L"Launcher", MB_OK | MB_ICONERROR);
         return -1;
     }
 
