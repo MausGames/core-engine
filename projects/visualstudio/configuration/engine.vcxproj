@@ -163,6 +163,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
       <CallingConvention>VectorCall</CallingConvention>
+      <DisableSpecificWarnings>4577</DisableSpecificWarnings>
     </ClCompile>
     <PreBuildEvent>
       <Command>del $(IntDir)coreLog.obj</Command>
@@ -193,6 +194,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
       <CallingConvention>VectorCall</CallingConvention>
+      <DisableSpecificWarnings>4577</DisableSpecificWarnings>
     </ClCompile>
     <PreBuildEvent>
       <Command>del $(IntDir)coreLog.obj</Command>

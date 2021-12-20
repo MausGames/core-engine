@@ -225,7 +225,7 @@
     #pragma warning(disable : 4514)   // unreferenced inline function removed
     #pragma warning(disable : 4557)   // __assume contains effect (# only false-positives)
     #pragma warning(disable : 4571)   // semantic change of catch(...)
-    #pragma warning(disable : 4577)   // noexcept used without exception handling
+    #pragma warning(disable : 4577)   // noexcept used without exception handling (# also disabled with compiler-flag)
     #pragma warning(disable : 4623)   // default constructor implicitly deleted
     #pragma warning(disable : 4625)   // copy constructor implicitly deleted
     #pragma warning(disable : 4626)   // copy assignment operator implicitly deleted
