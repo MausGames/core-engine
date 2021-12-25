@@ -17,6 +17,7 @@
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 // TODO 3: make !temp and !appdata replace instead
 // TODO 3: add compiled/included Windows SDK version to BuildLibrary string
+// TODO 3: FolderScanTree should not allocate temporary list and string memory for (non-directory) entries outside the filter-pattern
 
 
 // ****************************************************************
@@ -119,6 +120,7 @@ public:
     static coreBool    FolderWritable(const coreChar* pcPath);
     static coreStatus  FolderCreate  (const coreChar* pcPath);
     static coreStatus  FolderScan    (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
+    static coreStatus  FolderScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
 
     /* retrieve date and time */
     static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = TIMEMAP_CURRENT);

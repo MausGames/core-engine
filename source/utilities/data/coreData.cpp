@@ -1043,6 +1043,34 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
 
 
 // ****************************************************************
+/* retrieve relative paths of all files from a folder tree */
+coreStatus coreData::FolderScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
+{
+    coreList<coreString> asLocalList;
+
+    // scan current folder
+    const coreStatus eError = coreData::FolderScan(pcPath, "*", &asLocalList);
+    if(eError != CORE_OK) return eError;   // only check here
+
+    FOR_EACH(it, asLocalList)
+    {
+        if(coreData::FolderExists(it->c_str()))
+        {
+            // scan deeper folder (recursively)
+            FolderScanTree(it->c_str(), pcFilter, pasOutput);
+        }
+        else if(coreData::StrCmpLike(it->c_str(), pcFilter))
+        {
+            // add file path
+            pasOutput->push_back(std::move(*it));
+        }
+    }
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
 /* retrieve date and time as values */
 void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap)
 {
