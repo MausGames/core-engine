@@ -97,6 +97,10 @@ public:
     static        void            SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv);
     static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
 
+    /* control environment variables */
+    static coreStatus      SetEnvironment(const coreChar* pcName, const coreChar* pcValue);
+    static const coreChar* GetEnvironment(const coreChar* pcName);
+
     /* control user folder */
     static        void            InitUserFolder();
     static inline const coreChar* UserFolder(const coreChar* pcPath) {ASSERT(pcPath) return PRINT("%s%s", s_sUserFolder.c_str(), pcPath);}

@@ -360,11 +360,11 @@ const coreChar* coreData::SystemDirAppData()
     const coreChar* pcPath;
 
     // get directory from XDG variable
-    if((pcPath = std::getenv("XDG_DATA_HOME")) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
+    if((pcPath = coreData::GetEnvironment("XDG_DATA_HOME")) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
         return pcPath;
 
     // get directory from home variable
-    if((pcPath = std::getenv("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.local/share", pcPath))))
+    if((pcPath = coreData::GetEnvironment("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.local/share", pcPath))))
         return pcPath;
 
     // get directory from password database
@@ -398,11 +398,11 @@ const coreChar* coreData::SystemDirTemp()
     const coreChar* pcPath;
 
     // get directory from XDG variable
-    if((pcPath = std::getenv("XDG_CACHE_HOME")) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
+    if((pcPath = coreData::GetEnvironment("XDG_CACHE_HOME")) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
         return pcPath;
 
     // get directory from home variable
-    if((pcPath = std::getenv("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.cache", pcPath))))
+    if((pcPath = coreData::GetEnvironment("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.cache", pcPath))))
         return pcPath;
 
     // get directory from password database
@@ -527,6 +527,60 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
             s_apcCommandLine[coreData::StrLower(pcCurrent)] = ((i+1u < ie) && ((*ppcArgv[i+1u]) != '-')) ? ppcArgv[i+1u] : "";
         }
     }
+}
+
+
+// ****************************************************************
+/* set environment variable (of current process) */
+coreStatus coreData::SetEnvironment(const coreChar* pcName, const coreChar* pcValue)
+{
+    ASSERT(pcName)
+
+#if defined(_CORE_WINDOWS_)
+
+    // create, replace, or remove (NULL) environment variable
+    if(SetEnvironmentVariableA(pcName, pcValue)) return CORE_OK;
+
+#elif defined(_CORE_LINUX_)
+
+    if(pcValue)
+    {
+        // create or replace environment variable
+        if(!setenv(pcName, pcValue, 1)) return CORE_OK;
+    }
+    else
+    {
+        // remove environment variable
+        if(!unsetenv(pcName)) return CORE_OK;
+    }
+
+#endif
+
+    return CORE_ERROR_SYSTEM;
+}
+
+
+// ****************************************************************
+/* get environment variable (of current process) */
+const coreChar* coreData::GetEnvironment(const coreChar* pcName)
+{
+    ASSERT(pcName)
+
+#if defined(_CORE_WINDOWS_)
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // retrieve content of environment variable
+    if((GetEnvironmentVariableA(pcName, pcString, CORE_DATA_STRING_LEN) < CORE_DATA_STRING_LEN) && (GetLastError() != ERROR_ENVVAR_NOT_FOUND)) return pcString;
+
+#elif defined(_CORE_LINUX_)
+
+    // return content of environment variable (NULL, if not found)
+    return std::getenv(pcName);
+
+#endif
+
+    return NULL;
 }
 
 
