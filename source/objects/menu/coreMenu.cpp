@@ -93,7 +93,6 @@ void coreMenu::Move()
             {
                 coreObject2D* pObject = (*it);
 
-                // update object
                 pObject->SetAlpha(afAlpha[i]);
                 pObject->Move();
             }
@@ -101,21 +100,27 @@ void coreMenu::Move()
     }
     else
     {
-        // move current surface
+        // find current object with input focus
         FOR_EACH_REV(it, m_papObject[m_iCurSurface])
         {
             coreObject2D* pObject = (*it);
 
-            // find current object with input focus
             if(!m_pCurObject)
             {
-                // interact and check status
                 pObject->Interact();
                 if(pObject->IsFocused()) m_pCurObject = pObject;
             }
-            else pObject->SetFocused(false);
+            else
+            {
+                pObject->SetFocused(false);
+            }
+        }
 
-            // update object
+        // move current surface
+        FOR_EACH(it, m_papObject[m_iCurSurface])
+        {
+            coreObject2D* pObject = (*it);
+
             pObject->SetAlpha(this->GetAlpha());
             pObject->Move();
         }
