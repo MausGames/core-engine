@@ -15,6 +15,8 @@
 // TODO 4: coreStatus on entry management
 // TODO 3: handle object-rotation on Move() (+ all menu objects)
 // TODO 5: <old comment style>
+// TODO 3: remove allocation for psText (currently it's required to keep the address stable, e.g. for _BindString)
+// TODO 3: split up entry struct into own arrays
 
 
 // ****************************************************************
@@ -80,8 +82,10 @@ public:
     void        Previous   ();
 
     /* access entries */
-    inline const coreEntry& GetEntry   (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex];}
-    inline const coreEntry& GetCurEntry()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex];}
+    inline const coreChar* GetText    (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .psText->c_str();}
+    inline const T&        GetValue   (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .tValue;}
+    inline const coreChar* GetCurText ()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex].psText->c_str();}
+    inline const T&        GetCurValue()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex].tValue;}
 
     /* set object properties */
     inline void SetEndless  (const coreBool  bEndless)  {m_bEndless  = bEndless;}
