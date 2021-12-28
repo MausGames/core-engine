@@ -11,7 +11,7 @@
 #define _CORE_GUARD_ARCHIVE_H_
 
 // TODO 4: make archive a file
-// TODO 3: archive check sum
+// TODO 3: archive check sum (would need to read full file, maybe just for header, or check for correct size with offsets)
 // TODO 2: reference-counting wrapper instead of coreFileScope
 // TODO 5: <old comment style>
 // TODO 4: "0 = does not exist physically" should be moved into own bool and -1 should become 0 ? (could simplify if-else, seeking)

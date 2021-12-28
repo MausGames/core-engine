@@ -381,7 +381,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     const coreUint16 iNumFiles = m_apFile.size();
     SDL_RWwrite(pArchive, &iNumFiles, sizeof(coreUint16), 1u);
 
-    // cache missing file data
+    // cache missing file data (works in place, due to temporary file)
     FOR_EACH(it, m_apFile)
         (*it)->LoadData();
 

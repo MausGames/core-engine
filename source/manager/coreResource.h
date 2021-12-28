@@ -14,7 +14,8 @@
 // TODO 4: resources exist only within handles, redefine all interfaces
 // TODO 5: investigate possible GPU memory fragmentation when streaming in and out lots of resources
 // TODO 2: reducing ref-count to 0 while resource-manager is waiting on (GL)sync-object may keep the resource half loaded (including shaders active within program), no issue as resource is recoverable, but it is not intended
-// TODO 3: defer resource-unload on ref-count 0 to an explicit call at the end of a frame
+// TODO 1: defer resource-unload on ref-count 0 to an explicit call at the end of a frame
+// TODO 3: set textures which are still loaded to default values (default_white.png, default_normal.png) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
 
 
 // ****************************************************************
@@ -107,7 +108,7 @@ public:
     inline coreBool Nullify() {coreSpinLocker oLocker(&m_UpdateLock); if( this->IsLoaded())          {m_pResource->Unload(); m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
 
     /* attach asynchronous callbacks */
-    template <typename F> void OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
+    template <typename F> coreUint32 OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
 
     /* get object properties */
     inline const coreChar*   GetName    ()const {return m_sName.c_str();}
@@ -153,7 +154,7 @@ public:
     inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded());}
 
     /* attach asynchronous callbacks */
-    template <typename F> void OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) m_pHandle->OnLoadedOnce(std::forward<F>(nFunction));}   // [](void) -> void
+    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) return m_pHandle->OnLoadedOnce(std::forward<F>(nFunction));}   // [](void) -> void
 };
 
 
@@ -249,14 +250,19 @@ private:
 
 // ****************************************************************
 /* attach asynchronous callbacks */
-template <typename F> void coreResourceHandle::OnLoadedOnce(F&& nFunction)const
+template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction)const
 {
-    // call function immediately
-    if(this->IsLoaded()) nFunction();
+
+    if(this->IsLoaded())
+    {
+        // call function immediately
+        nFunction();
+        return 0u;
+    }
     else
     {
         // attach wrapper to the resource thread
-        Core::Manager::Resource->AttachFunction([=, this]()
+        return Core::Manager::Resource->AttachFunction([=, this]()
         {
             if(this->IsLoaded())
             {

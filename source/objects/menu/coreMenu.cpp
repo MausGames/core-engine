@@ -132,7 +132,7 @@ void coreMenu::Move()
 /* bind menu object */
 void coreMenu::BindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
-    ASSERT(iSurface < m_iNumSurfaces)
+    ASSERT((iSurface < m_iNumSurfaces) && pObject)
 
     // add menu object
     pObject->SetAlpha(0.0f);
@@ -144,7 +144,7 @@ void coreMenu::BindObject(const coreUintW iSurface, coreObject2D* pObject)
 /* unbind menu object */
 void coreMenu::UnbindObject(const coreUintW iSurface, coreObject2D* pObject)
 {
-    ASSERT(iSurface < m_iNumSurfaces)
+    ASSERT((iSurface < m_iNumSurfaces) && pObject)
 
     // remove the requested object
     m_papObject[iSurface].erase(pObject);
@@ -161,7 +161,7 @@ coreBool coreMenu::ChangeSurface(const coreUint8 iNewSurface, const coreFloat fS
     if(fSpeed <= 0.0f)
     {
         // change surface without transition
-        FOR_EACH(it, m_papObject[m_iCurSurface]) {(*it)->SetAlpha(0.0f); (*it)->SetFocused(false); (*it)->Move();}
+        FOR_EACH(it, m_papObject[m_iCurSurface]) {(*it)->SetAlpha(0.0f); (*it)->SetFocused(false); (*it)->Move();}   // propagate alpha
         FOR_EACH(it, m_papObject[iNewSurface])   {(*it)->SetAlpha(this->GetAlpha());               (*it)->Move();}
     }
     else

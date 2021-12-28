@@ -223,7 +223,7 @@
     #pragma warning(disable : 4324)   // padding added due to alignment attribute
     #pragma warning(disable : 4365)   // implicit conversion between signed and unsigned
     #pragma warning(disable : 4514)   // unreferenced inline function removed
-    #pragma warning(disable : 4557)   // __assume contains effect (# only false-positives)
+    #pragma warning(disable : 4557)   // __assume contains side-effect (# only false-positives)
     #pragma warning(disable : 4571)   // semantic change of catch(...)
     #pragma warning(disable : 4577)   // noexcept used without exception handling (# also disabled with compiler-flag)
     #pragma warning(disable : 4623)   // default constructor implicitly deleted

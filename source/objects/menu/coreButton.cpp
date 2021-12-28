@@ -18,6 +18,8 @@ coreButton::coreButton()noexcept
 , m_bBusy        (false)
 , m_iOverride    (0)
 {
+    // enable interaction handling
+    m_bFocusable = true;
 }
 
 coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept
@@ -65,9 +67,6 @@ void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sB
 
     // load shader-program
     this->DefineProgram("default_2d_program");
-
-    // enable interaction handling
-    m_bFocusable = true;
 }
 
 
@@ -109,7 +108,7 @@ void coreButton::Move()
     // update the label
     if(m_pCaption)
     {
-        if(m_eUpdate)
+        if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
         {
             m_pCaption->SetPosition (this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment());
             m_pCaption->SetDirection(this->GetDirection());

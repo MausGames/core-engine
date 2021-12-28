@@ -122,6 +122,8 @@ template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 , m_iOverride   (0)
 , m_Automatic   (coreTimer(1.0f, 10.0f, 0u))
 {
+    // enable interaction handling
+    m_bFocusable = true;
 }
 
 template <typename T> coreSwitchBox<T>::coreSwitchBox(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)noexcept
@@ -168,9 +170,6 @@ template <typename T> void coreSwitchBox<T>::Construct(const coreHashString& sFo
 {
     // create the label
     m_Caption.Construct(sFont, iHeight, iOutline);
-
-    // enable interaction handling
-    m_bFocusable = true;
 }
 
 
@@ -258,7 +257,7 @@ template <typename T> void coreSwitchBox<T>::Move()
         m_Automatic.SetValue(CORE_SWITCHBOX_DELAY);
     }
 
-    if(m_eUpdate)
+    if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
     {
         ASSERT(this->GetSize().x > 2.0f*this->GetSize().y)
 
@@ -440,6 +439,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
 // ****************************************************************
 /* default switch-box types */
 using coreSwitchBoxU8  = coreSwitchBox<coreUint8>;
+using coreSwitchBoxU16 = coreSwitchBox<coreUint16>;
 using coreSwitchBoxStr = coreSwitchBox<coreString>;
 
 

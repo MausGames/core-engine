@@ -16,7 +16,7 @@ safe qualifiers (ignored, if not supported):
 - highp, mediump, lowp
 - flat, noperspective, smooth
 - centroid, sample
-- precise
+- precise (+ fma)
 - invariant
 
 
