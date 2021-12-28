@@ -193,6 +193,9 @@
     <ClCompile Include="..\..\..\source\additional\linux\main.c">
       <Filter>additional\linux</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreViewBox.cpp">
+      <Filter>objects\menu</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGLEW.c">
       <Filter>additional</Filter>
     </ClCompile>
@@ -381,6 +384,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\platform\backend\windows.h">
       <Filter>components\platform\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreViewBox.h">
+      <Filter>objects\menu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
