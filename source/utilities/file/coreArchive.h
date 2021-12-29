@@ -53,8 +53,8 @@ public:
     /* compress and decompress file data */
     coreStatus Compress  (const coreInt32 iLevel = ZSTD_CLEVEL_DEFAULT);
     coreStatus Decompress();
-    coreStatus Scramble  (const coreUint32 iKey = 0u);
-    coreStatus Unscramble(const coreUint32 iKey = 0u);
+    coreStatus Scramble  (const coreUint64 iKey = 0u);
+    coreStatus Unscramble(const coreUint64 iKey = 0u);
 
     /* create stream for reading file data */
     SDL_RWops* CreateReadStream()const;

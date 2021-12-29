@@ -1225,8 +1225,10 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 
 // ****************************************************************
 /* scramble data with 32-bit key */
-void coreData::Scramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey)
+void coreData::Scramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint64 iKey)
 {
+    ASSERT(pData)
+
     // create sequence
     coreRand oRand(iKey);
 
@@ -1235,8 +1237,10 @@ void coreData::Scramble(coreByte* OUTPUT pData, const coreUintW iSize, const cor
         pData[i] = (oRand.Raw() & 0xFFu) - pData[i];
 }
 
-void coreData::Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint32 iKey)
+void coreData::Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint64 iKey)
 {
+    ASSERT(pData)
+
     // scramble again (operation is involutory)
     coreData::Scramble(pData, iSize, iKey);
 }

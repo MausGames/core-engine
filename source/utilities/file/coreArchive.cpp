@@ -150,7 +150,7 @@ coreStatus coreFile::Decompress()
 
 // ****************************************************************
 /* scramble file data */
-coreStatus coreFile::Scramble(const coreUint32 iKey)
+coreStatus coreFile::Scramble(const coreUint64 iKey)
 {
     // check file data
     this->LoadData();
@@ -161,7 +161,7 @@ coreStatus coreFile::Scramble(const coreUint32 iKey)
     return CORE_OK;
 }
 
-coreStatus coreFile::Unscramble(const coreUint32 iKey)
+coreStatus coreFile::Unscramble(const coreUint64 iKey)
 {
     // check file data
     this->LoadData();
