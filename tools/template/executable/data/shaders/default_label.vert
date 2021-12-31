@@ -2,8 +2,8 @@
 //*-----------------------------------------------------*//
 //| Part of the Core Engine (https://www.maus-games.at) |//
 //*-----------------------------------------------------*//
+//| Copyright (c) 2013 Martin Mauersics                 |//
 //| Released under the zlib License                     |//
-//| More information available in the readme file       |//
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 
