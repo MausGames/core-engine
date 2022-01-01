@@ -16,7 +16,7 @@ static const ov_callbacks OV_CALLBACKS =
     [](void* pData, coreUintW iSize, coreUintW iCount, void* pFile) {return coreUintW(SDL_RWread (s_cast<SDL_RWops*>(pFile), pData, iSize, iCount));},
     [](void* pFile, coreInt64 iOffset, coreInt32 iWhence)           {return coreInt32(SDL_RWseek (s_cast<SDL_RWops*>(pFile), iOffset, iWhence));},
     [](void* pFile)                                                 {return coreInt32(SDL_RWclose(s_cast<SDL_RWops*>(pFile)));},
-    [](void* pFile)                                                 {return long     (SDL_RWtell (s_cast<SDL_RWops*>(pFile)));}
+    [](void* pFile)                                                 {return coreLong (SDL_RWtell (s_cast<SDL_RWops*>(pFile)));}
 };
 
 
@@ -192,11 +192,11 @@ void coreMusic::Stop()
 {
     if(m_iSource)
     {
-        // remove remaining sound buffers
-        alSourcei(m_iSource, AL_BUFFER, 0);
-
-        // stop and clear audio source
+        // stop audio source
         alSourceStop(m_iSource);
+
+        // remove remaining sound buffers
+        alSourcei(m_iSource, AL_BUFFER, 0);   // after stop
         m_iSource = 0u;
 
         // rewind the music stream

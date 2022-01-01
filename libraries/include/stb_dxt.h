@@ -603,7 +603,7 @@ inline int stb_compress_dxt_ratio(int components)
    case 1: return 2;
    }
 
-   return 0;
+   return 1;
 }
 
 #endif // STB_DXT_IMPLEMENTATION

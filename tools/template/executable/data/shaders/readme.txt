@@ -51,6 +51,8 @@ Functions
 
     // transform lighting properties into tangent-space
     void coreLightingTransform(in vec3 v3Position)
+    void coreLightingTransformRaw()
+    void coreLightingTransformLow()
 
 Input
 

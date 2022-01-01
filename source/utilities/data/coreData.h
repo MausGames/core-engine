@@ -163,7 +163,7 @@ public:
 
 private:
     /* access next temp-string */
-    static inline RETURN_RESTRICT coreChar* __NextTempString() {if(++s_TempString.iCurrent >= CORE_DATA_STRING_NUM) s_TempString.iCurrent = 0u; return s_TempString.aacData[s_TempString.iCurrent];}
+    static inline RETURN_RESTRICT coreChar* __NextTempString() {coreTempString& A = s_TempString; if(++A.iCurrent >= CORE_DATA_STRING_NUM) A.iCurrent = 0u; return A.aacData[A.iCurrent];}
 
     /* prepare path for system directory */
     static const coreChar* __PrepareSystemDir(const coreChar* pcPath);

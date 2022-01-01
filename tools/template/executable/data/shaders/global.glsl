@@ -804,6 +804,8 @@ uniform lowp sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         v_v3TangentPos = TBN * v3Position;
         v_v3TangentCam = TBN * u_v3CamPosition;
     }
+    void coreLightingTransformRaw() {coreLightingTransform(coreObject3DTransformRaw());}
+    void coreLightingTransformLow() {coreLightingTransform(coreObject3DTransformLow());}
 
 #endif // _CORE_VERTEX_SHADER_
 

@@ -60,6 +60,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     // calculate data size
     const coreUint8  iComponents = pData->format->BytesPerPixel;
     const coreUint32 iDataSize   = pData->w * pData->h * iComponents;
+    ASSERT(iComponents && iDataSize)
 
     // check load configuration
     const coreTextureMode eMode = ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_COMPRESS) && coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h)) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT) |
@@ -190,7 +191,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
 void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData)
 {
     WARN_IF(!m_iIdentifier) return;
-    ASSERT(((iOffsetX + iWidth) <= F_TO_UI(m_vResolution.x)) && ((iOffsetY + iHeight) <= F_TO_UI(m_vResolution.y)))
+    ASSERT((iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)) && (!iDataSize || (iDataSize >= iWidth * iHeight)))
 
     // check for OpenGL extensions
     const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
@@ -198,7 +199,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
 
     if(m_bCompressed)
     {
-        ASSERT((iWidth == F_TO_UI(m_vResolution.x)) && (iHeight == F_TO_UI(m_vResolution.y)))
+        ASSERT((iWidth == F_TO_UI(m_vResolution.x)) && (iHeight == F_TO_UI(m_vResolution.y)) && iDataSize && pData)
 
         // bind texture (simple)
         glBindTexture(GL_TEXTURE_2D, m_iIdentifier);

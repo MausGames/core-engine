@@ -1,6 +1,6 @@
 backup/
-# executable/bin/
-executable/user/screenshots/
+executable/bin/
+executable/user/**/
 executable/user/log.html
 projects/cmake/**/
 projects/visualstudio/.tmp/
