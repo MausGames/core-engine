@@ -34,7 +34,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 <table>
     <tr>
-        <td><a href="material/screenshots/p1_screen_001.jpg?raw=true"><img src="material/screenshots/p1_screen_001t.jpg"></a></td>
+        <td><a href="material/screenshots/p1_screen_007.jpg?raw=true"><img src="material/screenshots/p1_screen_007t.jpg"></a></td>
         <td><a href="material/screenshots/dr_screen_new_006.jpg?raw=true"><img src="material/screenshots/dr_screen_new_006t.jpg"></a></td>
         <td><a href="material/screenshots/fli_screen_003.jpg?raw=true"><img src="material/screenshots/fli_screen_003t.jpg"></a></td>
     </tr>
