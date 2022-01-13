@@ -1,6 +1,6 @@
 /*
   SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts
-  Copyright (C) 2001-2021 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 2001-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -43,7 +43,7 @@ extern "C" {
 */
 #define SDL_TTF_MAJOR_VERSION   2
 #define SDL_TTF_MINOR_VERSION   0
-#define SDL_TTF_PATCHLEVEL      15
+#define SDL_TTF_PATCHLEVEL      18
 
 /* This macro can be used to fill a version structure with the compile-time
  * version of the SDL_ttf library.
@@ -83,6 +83,16 @@ extern "C" {
    use the SDL_TTF_VERSION() macro.
  */
 extern DECLSPEC const SDL_version * SDLCALL TTF_Linked_Version(void);
+
+/* This function stores the version of the FreeType2 library in use.
+   TTF_Init() should be called before calling this function.
+ */
+extern DECLSPEC void SDLCALL TTF_GetFreeTypeVersion(int *major, int *minor, int *patch);
+
+/* This function stores the version of the HarfBuzz library in use,
+   or 0 if HarfBuzz is not available.
+ */
+extern DECLSPEC void SDLCALL TTF_GetHarfBuzzVersion(int *major, int *minor, int *patch);
 
 /* ZERO WIDTH NO-BREAKSPACE (Unicode byte order mark) */
 #define UNICODE_BOM_NATIVE  0xFEFF
@@ -222,6 +232,7 @@ extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderUNICODE_Solid(TTF_Font *font,
    to the text color.
    Text is wrapped to multiple lines on line endings and on word boundaries
    if it extends beyond wrapLength in pixels.
+   If wrapLength is 0, only wrap on new lines.
    This function returns the new surface, or NULL if there was an error.
 */
 extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderText_Solid_Wrapped(TTF_Font *font,
@@ -260,6 +271,7 @@ extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderUNICODE_Shaded(TTF_Font *font,
    while other pixels have varying degrees of the foreground color.
    Text is wrapped to multiple lines on line endings and on word boundaries
    if it extends beyond wrapLength in pixels.
+   If wrapLength is 0, only wrap on new lines.
    This function returns the new surface, or NULL if there was an error.
 */
 extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderText_Shaded_Wrapped(TTF_Font *font,
@@ -297,6 +309,7 @@ extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderUNICODE_Blended(TTF_Font *font,
    using alpha blending to dither the font with the given color.
    Text is wrapped to multiple lines on line endings and on word boundaries
    if it extends beyond wrapLength in pixels.
+   If wrapLength is 0, only wrap on new lines.
    This function returns the new surface, or NULL if there was an error.
 */
 extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderText_Blended_Wrapped(TTF_Font *font,
