@@ -280,7 +280,11 @@ constexpr coreUint32 coreMath::PopCount(coreUint64 iInput)
     if(!std::is_constant_evaluated() && coreCPUID::POPCNT())
     {
         // optimized calculation with POPCNT
+    #if defined(_CORE_64BIT_)
         return _mm_popcnt_u64(iInput);
+    #else
+        return _mm_popcnt_u32(iInput) + _mm_popcnt_u32(iInput >> 32u);
+    #endif
     }
 
 #endif
@@ -303,7 +307,7 @@ constexpr coreUint32 coreMath::BitScanFwd(const coreUint64 iInput)
     if(!std::is_constant_evaluated())
     {
         // calculation with MSVC intrinsic
-        DWORD iOutput; _BitScanForward64(&iOutput, iInput);
+        DWORD iOutput; BitScanForward64(&iOutput, iInput);
         return iOutput;
     }
 
@@ -342,7 +346,7 @@ constexpr coreUint32 coreMath::BitScanRev(const coreUint64 iInput)
     if(!std::is_constant_evaluated())
     {
         // calculation with MSVC intrinsic
-        DWORD iOutput; _BitScanReverse64(&iOutput, iInput);
+        DWORD iOutput; BitScanReverse64(&iOutput, iInput);
         return iOutput;
     }
 
