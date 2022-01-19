@@ -71,10 +71,6 @@ enum coreInputType : coreUint8
     CORE_INPUT_RELEASE = 3u
 };
 
-#if defined(_CORE_EMSCRIPTEN_)
-    #define SDL_GameControllerGetType(...) (SDL_CONTROLLER_TYPE_UNKNOWN)
-#endif
-
 
 // ****************************************************************
 /* main input component */

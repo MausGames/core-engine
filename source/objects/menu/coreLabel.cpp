@@ -204,8 +204,8 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
     if(pOutline)
     {
-        coreByte* pInput1 = s_cast<coreByte*>(pSolid  ->pixels);
-        coreByte* pInput2 = s_cast<coreByte*>(pOutline->pixels);
+        const coreByte* pInput1 = s_cast<const coreByte*>(pSolid  ->pixels);
+        const coreByte* pInput2 = s_cast<const coreByte*>(pOutline->pixels);
 
         // allocate buffer to merge solid and outlined pixels
         pData = ZERO_NEW(coreByte, iSize);

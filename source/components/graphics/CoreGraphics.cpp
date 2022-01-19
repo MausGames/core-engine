@@ -67,8 +67,8 @@ CoreGraphics::CoreGraphics()noexcept
         m_iMaxAnisotropy = F_TO_UI(MAX(fValue, 1.0f));
     }
 
-    // log video device information
-    Core::Log->ListStartInfo("Video Device Information");
+    // log graphics device information
+    Core::Log->ListStartInfo("Graphics Device Information");
     {
         coreString sExtensions;
         coreExtensions(&sExtensions);

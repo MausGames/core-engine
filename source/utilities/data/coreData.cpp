@@ -73,7 +73,7 @@ coreUint64 coreData::AppMemory()
 #elif defined(_CORE_LINUX_)
 
     // open memory pseudo-file
-    std::FILE* pFile = std::fopen("/proc/self/statm", "r");
+    std::FILE* pFile = std::fopen("/proc/self/statm", "rb");
     if(pFile)
     {
         coreUint64 iPages;
