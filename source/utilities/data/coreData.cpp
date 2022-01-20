@@ -13,6 +13,7 @@
     #include <shellapi.h>
     #include <Psapi.h>
     #include <Shlobj.h>
+    #include <Lmcons.h>
 #elif defined(_CORE_LINUX_)
     #include <sys/utsname.h>
     #include <sys/statvfs.h>
@@ -100,11 +101,13 @@ const coreChar* coreData::AppPath()
 
 #if defined(_CORE_WINDOWS_)
 
+    coreWchar acPath[CORE_DATA_MAX_PATH];
+
     // get path of the current executable
-    if(GetModuleFileNameA(NULL, pcString, CORE_DATA_STRING_LEN))
+    if(GetModuleFileNameW(NULL, acPath, CORE_DATA_MAX_PATH))
     {
         // return path
-        return pcString;
+        return coreData::__ToAnsiChar(acPath);
     }
 
 #elif defined(_CORE_LINUX_)
@@ -183,7 +186,7 @@ coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPU
     ULARGE_INTEGER iAvailable, iTotal;
 
     // retrieve disk volume information
-    if(GetDiskFreeSpaceExA(s_sUserFolder.c_str(), &iAvailable, &iTotal, NULL))
+    if(GetDiskFreeSpaceExW(coreData::__ToWideChar(s_sUserFolder.c_str()), &iAvailable, &iTotal, NULL))
     {
         if(piAvailable) (*piAvailable) = iAvailable.QuadPart;
         if(piTotal)     (*piTotal)     = iTotal    .QuadPart;
@@ -223,21 +226,21 @@ const coreChar* coreData::SystemName()
     coreUint16 iRevision = 0u;
 
     // fetch version from system library
-    coreChar acPath[MAX_PATH];
-    if(GetModuleFileNameA(GetModuleHandleA("kernel32.dll"), acPath, MAX_PATH))
+    coreWchar acPath[CORE_DATA_MAX_PATH];
+    if(GetModuleFileNameW(GetModuleHandleW(L"kernel32.dll"), acPath, CORE_DATA_MAX_PATH))
     {
         // get file version info size
-        const coreUint32 iDataSize = GetFileVersionInfoSizeA(acPath, NULL);
+        const coreUint32 iDataSize = GetFileVersionInfoSizeW(acPath, NULL);
         if(iDataSize)
         {
             // get file version info
             coreByte* pData = new coreByte[iDataSize];
-            if(GetFileVersionInfoA(acPath, 0u, iDataSize, pData))
+            if(GetFileVersionInfoW(acPath, 0u, iDataSize, pData))
             {
                 // access root block
                 VS_FIXEDFILEINFO* pInfo;
                 coreUint32        iInfoSize;
-                if(VerQueryValueA(pData, "\\", r_cast<void**>(&pInfo), &iInfoSize) && (pInfo->dwSignature == 0xFEEF04BDu))
+                if(VerQueryValueW(pData, L"\\", r_cast<void**>(&pInfo), &iInfoSize) && (pInfo->dwSignature == 0xFEEF04BDu))
                 {
                     // extract version numbers
                     iMajor    = HIWORD(pInfo->dwProductVersionMS);
@@ -309,11 +312,11 @@ const coreChar* coreData::SystemUserName()
 {
 #if defined(_CORE_WINDOWS_)
 
-    coreChar* pcString = coreData::__NextTempString();
+    coreWchar acName[UNLEN + 1u];
+    coreUlong iSize = ARRAY_SIZE(acName);
 
     // get user name associated with current thread
-    DWORD nSize = CORE_DATA_STRING_LEN;
-    if(GetUserNameA(pcString, &nSize)) return pcString;
+    if(GetUserNameW(acName, &iSize)) return coreData::__ToAnsiChar(acName);
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
@@ -338,21 +341,16 @@ const coreChar* coreData::SystemDirAppData()
 #if defined(_CORE_WINDOWS_)
 
     // get default roaming directory
-    wchar_t* pcRoamingPath;
-    if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &pcRoamingPath)))
+    coreWchar* pcRoamingPath = NULL;
+    if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &pcRoamingPath)) && pcRoamingPath)
     {
-        coreChar acString[MAX_PATH];
-
         // convert characters
-        const coreInt32 iLen = WideCharToMultiByte(CP_UTF8, 0u, pcRoamingPath, -1, acString, MAX_PATH, NULL, NULL);
+        const coreChar* pcConvert = coreData::__ToAnsiChar(pcRoamingPath);
         CoTaskMemFree(pcRoamingPath);
 
-        if(iLen)
-        {
-            // prepare path and return
-            const coreChar* pcPath = coreData::__PrepareSystemDir(acString);
-            if(pcPath) return pcPath;
-        }
+        // prepare path and return
+        const coreChar* pcPath = coreData::__PrepareSystemDir(pcConvert);
+        if(pcPath) return pcPath;
     }
 
 #elif defined(_CORE_LINUX_)
@@ -385,11 +383,11 @@ const coreChar* coreData::SystemDirTemp()
 #if defined(_CORE_WINDOWS_)
 
     // get default temporary directory
-    coreChar acTempPath[MAX_PATH];
-    if(GetTempPathA(MAX_PATH, acTempPath))
+    coreWchar acTempPath[CORE_DATA_MAX_PATH];
+    if(GetTempPathW(CORE_DATA_MAX_PATH, acTempPath))
     {
         // prepare path and return
-        const coreChar* pcPath = coreData::__PrepareSystemDir(acTempPath);
+        const coreChar* pcPath = coreData::__PrepareSystemDir(coreData::__ToAnsiChar(acTempPath));
         if(pcPath) return pcPath;
     }
 
@@ -464,7 +462,7 @@ coreStatus coreData::SetCurDir(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    if(SetCurrentDirectoryA(pcPath)) return CORE_OK;
+    if(SetCurrentDirectoryW(coreData::__ToWideChar(pcPath))) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
@@ -480,20 +478,22 @@ coreStatus coreData::SetCurDir(const coreChar* pcPath)
 /* get current working directory */
 const coreChar* coreData::GetCurDir()
 {
-    UNUSED coreChar* pcString = coreData::__NextTempString();
-
 #if defined(_CORE_WINDOWS_)
 
+    coreWchar acPath[CORE_DATA_MAX_PATH];
+
     // get raw working directory
-    const coreUint32 iLen = GetCurrentDirectoryA(CORE_DATA_STRING_LEN - 1u, pcString);
+    const coreUint32 iLen = GetCurrentDirectoryW(CORE_DATA_MAX_PATH - 1u, acPath);
     if(iLen)
     {
         // add path-delimiter and return (with known length)
-        std::memcpy(pcString + iLen, "/", 2u);
-        return pcString;
+        std::memcpy(acPath + iLen, L"/", 4u);
+        return coreData::__ToAnsiChar(acPath);
     }
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+
+    coreChar* pcString = coreData::__NextTempString();
 
     // get raw working directory
     if(getcwd(pcString, CORE_DATA_STRING_LEN - 1u))
@@ -538,12 +538,12 @@ coreStatus coreData::SetEnvironment(const coreChar* pcName, const coreChar* pcVa
 
 #if defined(_CORE_WINDOWS_)
 
-    // create, replace, or remove (NULL) environment variable
-    if(SetEnvironmentVariableA(pcName, pcValue)) return CORE_OK;
+    // create, replace, or remove environment variable
+    if(!_wputenv_s(coreData::__ToWideChar(pcName), pcValue ? coreData::__ToWideChar(pcValue) : L"")) return CORE_OK;   // SetEnvironmentVariable is unreliable
 
 #elif defined(_CORE_LINUX_)
 
-    if(pcValue)
+    if(pcValue && pcValue[0])
     {
         // create or replace environment variable
         if(!setenv(pcName, pcValue, 1)) return CORE_OK;
@@ -568,19 +568,17 @@ const coreChar* coreData::GetEnvironment(const coreChar* pcName)
 
 #if defined(_CORE_WINDOWS_)
 
-    coreChar* pcString = coreData::__NextTempString();
-
-    // retrieve content of environment variable
-    if((GetEnvironmentVariableA(pcName, pcString, CORE_DATA_STRING_LEN) < CORE_DATA_STRING_LEN) && (GetLastError() != ERROR_ENVVAR_NOT_FOUND)) return pcString;
+    return coreData::__ToAnsiChar(_wgetenv(coreData::__ToWideChar(pcName)));
 
 #elif defined(_CORE_LINUX_)
 
-    // return content of environment variable (NULL, if not found)
     return std::getenv(pcName);
 
-#endif
+#else
 
     return NULL;
+
+#endif
 }
 
 
@@ -624,7 +622,7 @@ coreStatus coreData::OpenURL(const coreChar* pcURL)
 #if defined(_CORE_WINDOWS_)
 
     // delegate request to the Windows Shell
-    if(P_TO_SI(ShellExecuteA(NULL, "open", pcURL, NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
+    if(P_TO_SI(ShellExecuteW(NULL, L"open", coreData::__ToWideChar(pcURL), NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
 
 #elif defined(_CORE_LINUX_)
 
@@ -650,7 +648,7 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 
 #if defined(_CORE_WINDOWS_)
 
-    return LoadLibraryA(pcName);
+    return LoadLibraryW(coreData::__ToWideChar(pcName));
 
 #elif defined(_CORE_LINUX_)
 
@@ -722,7 +720,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    const coreUint32 iAttributes = GetFileAttributesA(pcPath);
+    const coreUint32 iAttributes = GetFileAttributesW(coreData::__ToWideChar(pcPath));
 
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && !HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
@@ -762,7 +760,7 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
 
     // get extended file attributes
-    if(GetFileAttributesExA(pcPath, GetFileExInfoStandard, &oAttributes))
+    if(GetFileAttributesExW(coreData::__ToWideChar(pcPath), GetFileExInfoStandard, &oAttributes))
     {
         // return combined file size
         return (coreInt64(oAttributes.nFileSizeHigh) << 32u) |
@@ -810,7 +808,7 @@ std::time_t coreData::FileWriteTime(const coreChar* pcPath)
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
 
     // get extended file attributes
-    if(GetFileAttributesExA(pcPath, GetFileExInfoStandard, &oAttributes))
+    if(GetFileAttributesExW(coreData::__ToWideChar(pcPath), GetFileExInfoStandard, &oAttributes))
     {
         // return converted file write time
         return r_cast<coreUint64&>(oAttributes.ftLastWriteTime) / 10000000ull - 11644473600ull;
@@ -842,7 +840,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 #if defined(_CORE_WINDOWS_)
 
     // copy directly (with attributes)
-    if(CopyFileA(pcFrom, pcTo, false)) return CORE_OK;
+    if(CopyFileW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), false)) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
@@ -888,7 +886,7 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 
 #if defined(_CORE_WINDOWS_)
 
-    if(MoveFileExA(pcFrom, pcTo, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
+    if(MoveFileExW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
@@ -908,7 +906,7 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    if(DeleteFileA(pcPath)) return CORE_OK;
+    if(DeleteFileW(coreData::__ToWideChar(pcPath))) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
@@ -928,7 +926,7 @@ coreBool coreData::FolderExists(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    const coreUint32 iAttributes = GetFileAttributesA(pcPath);
+    const coreUint32 iAttributes = GetFileAttributesW(coreData::__ToWideChar(pcPath));
 
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
@@ -963,7 +961,7 @@ coreBool coreData::FolderWritable(const coreChar* pcPath)
 #if defined(_CORE_WINDOWS_)
 
     // create temporary file
-    const HANDLE pFile = CreateFileA(pcTemp, GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
+    const HANDLE pFile = CreateFileW(coreData::__ToWideChar(pcTemp), GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
     if(pFile != INVALID_HANDLE_VALUE)
     {
         // close and (automatically) delete file again
@@ -1000,7 +998,7 @@ coreStatus coreData::FolderCreate(const coreChar* pcPath)
     // check if folder already exists (less expensive)
     if(coreData::FolderExists(pcPath)) return CORE_OK;
 
-    coreChar  acString[512];
+    coreChar  acString[CORE_DATA_MAX_PATH];
     coreChar* pcCursor = acString;
 
     // make local copy
@@ -1016,7 +1014,7 @@ coreStatus coreData::FolderCreate(const coreChar* pcPath)
 
             // create sub-folder
 #if defined(_CORE_WINDOWS_)
-            if(!CreateDirectoryA(acString, NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
+            if(!CreateDirectoryW(coreData::__ToWideChar(acString), NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
 #else
             if(mkdir(acString, S_IRWXU) && (errno != EEXIST)) return CORE_ERROR_FILE;
 #endif
@@ -1038,10 +1036,10 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
 #if defined(_CORE_WINDOWS_)
 
     HANDLE pFolder;
-    WIN32_FIND_DATAA oFile;
+    WIN32_FIND_DATAW oFile;
 
     // open folder
-    pFolder = FindFirstFileExA(PRINT("%s/%s", pcPath, pcFilter), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
+    pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", pcPath, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
@@ -1053,10 +1051,10 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
         // check and add file path
         if(oFile.cFileName[0] != '.')
         {
-            pasOutput->push_back(PRINT("%s/%s", pcPath, oFile.cFileName));
+            pasOutput->push_back(PRINT("%s/%s", pcPath, coreData::__ToAnsiChar(oFile.cFileName)));
         }
     }
-    while(FindNextFileA(pFolder, &oFile));
+    while(FindNextFileW(pFolder, &oFile));
 
     // close folder
     FindClose(pFolder);
@@ -1354,4 +1352,54 @@ const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
     if(coreData::FolderCreate(pcFullPath) != CORE_OK) return NULL;
 
     return pcFullPath;
+}
+
+
+// ****************************************************************
+/* transform 8-bit ANSI to 16-bit Unicode (for Windows API) */
+const coreWchar* coreData::__ToWideChar(const coreChar* pcText)
+{
+#if defined(_CORE_WINDOWS_)
+
+    if(pcText)
+    {
+        STATIC_ASSERT(sizeof(coreWchar) == sizeof(coreChar) * 2u)
+
+        // use multiple temp-strings as single target
+        if(++s_TempString.iCurrent >= CORE_DATA_STRING_NUM - 1u) s_TempString.iCurrent = 0u;       // one less
+        coreWchar* pcString = r_cast<coreWchar*>(s_TempString.aacData[s_TempString.iCurrent++]);   // one more
+
+        // convert from UTF-8 string to UTF-16 string
+        const coreInt32 iReturn = MultiByteToWideChar(CP_UTF8, 0u, pcText, -1, pcString, CORE_DATA_STRING_LEN);
+        ASSERT(iReturn)
+
+        return pcString;
+    }
+
+#endif
+
+    return NULL;
+}
+
+
+// ****************************************************************
+/* transform 16-bit Unicode to 8-bit ANSI (for Windows API) */
+const coreChar* coreData::__ToAnsiChar(const coreWchar* pcText)
+{
+#if defined(_CORE_WINDOWS_)
+
+    if(pcText)
+    {
+        coreChar* pcString = coreData::__NextTempString();
+
+        // convert from UTF-16 string to UTF-8 string
+        const coreInt32 iReturn = WideCharToMultiByte(CP_UTF8, 0u, pcText, -1, pcString, CORE_DATA_STRING_LEN, NULL, NULL);
+        ASSERT(iReturn)
+
+        return pcString;
+    }
+
+#endif
+
+    return NULL;
 }

@@ -14,16 +14,24 @@
 #pragma warning(disable : 4668)   // preprocessor macro not defined
 #pragma warning(disable : 4711)   // function automatically inlined
 #pragma warning(disable : 4820)   // padding after data member
+#pragma warning(disable : 5045)   // possible Spectre vulnerability
 
 #include "additional/windows/header.h"
 #include <DbgHelp.h>
 #include <crtdbg.h>
 #include <stdlib.h>
+#include <malloc.h>
 
 typedef BOOL (WINAPI *uMiniDumpWriteDump) (HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION, PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
 
 extern int __cdecl coreMain(int argc, char** argv);
 extern const char* g_pcUserFolder;
+
+
+// ****************************************************************
+/* convert between UTF-8 and UTF-16 (on stack) */
+#define TO_WIDE_CHAR(t,f) {const size_t iSize = strlen(f) + 1u; (t) = (wchar_t*)_alloca(sizeof(wchar_t) * iSize); MultiByteToWideChar(CP_UTF8, 0u, f, -1, t, (int)iSize);}
+#define TO_ANSI_CHAR(t,f) {const size_t iSize = wcslen(f) + 1u; (t) = (char*)   _alloca(sizeof(char)    * iSize); WideCharToMultiByte(CP_UTF8, 0u, f, -1, t, (int)iSize, NULL, NULL);}
 
 
 // ****************************************************************
@@ -53,11 +61,15 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
     static int s_iRecover = 10;
     if(s_iRecover--) return EXCEPTION_CONTINUE_EXECUTION;
 
+    // convert user folder to UTF-16
+    wchar_t* pcWideFolder;
+    TO_WIDE_CHAR(pcWideFolder, g_pcUserFolder)
+
     // switch to user folder
-    SetCurrentDirectoryA(g_pcUserFolder);
+    SetCurrentDirectoryW(pcWideFolder);
 
     // load debug library
-    const HMODULE pLibrary = LoadLibraryA("dbghelp.dll");
+    const HMODULE pLibrary = LoadLibraryW(L"dbghelp.dll");
     if(pLibrary)
     {
         // get function pointer from debug library
@@ -68,10 +80,10 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
             DWORD iSize    = 0u;
 
             // copy log file (because it may still be open for writing)
-            CopyFileA("log.html", "crash.dmp", FALSE);
+            CopyFileW(L"log.html", L"crash.dmp", FALSE);
 
             // open log file for reading
-            const HANDLE pLog = CreateFileA("crash.dmp", GENERIC_READ, 0u, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+            const HANDLE pLog = CreateFileW(L"crash.dmp", GENERIC_READ, 0u, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
             if(pLog != INVALID_HANDLE_VALUE)
             {
                 // get log file size
@@ -88,7 +100,7 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
             }
 
             // open crash dump for writing
-            const HANDLE pDump = CreateFileA("crash.dmp", GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+            const HANDLE pDump = CreateFileW(L"crash.dmp", GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
             if(pDump != INVALID_HANDLE_VALUE)
             {
                 // prepare crash data
@@ -122,20 +134,20 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
     }
 
     // define user-friendly error messages
-    const char* const pcMessageSuccess =
-        "I'm really sorry, but the game just crashed. :(\n"
-        "A crash-dump was created in the user-folder, containing:\n"
-        "- the current process-state\n"
-        "- the exact location of the crash\n"
-        "- the log-file with your hardware-configuration";
+    const wchar_t* const pcMessageSuccess =
+        L"I'm really sorry, but the game just crashed. :(\n"
+        L"A crash-dump was created in the user-folder, containing:\n"
+        L"- the current process-state\n"
+        L"- the exact location of the crash\n"
+        L"- the log-file with your hardware-configuration";
 
-    const char* const pcMessageFail =
-        "I'm really sorry, but the game just crashed. :(\n"
-        "Unfortunately it was not possible to create a crash-dump.";
+    const wchar_t* const pcMessageFail =
+        L"I'm really sorry, but the game just crashed. :(\n"
+        L"Unfortunately it was not possible to create a crash-dump.";
 
     // show message box and exit application
-    const BOOL bDumpExists = (GetFileAttributesA("crash.dmp") != INVALID_FILE_ATTRIBUTES);
-    MessageBoxA(NULL, bDumpExists ? pcMessageSuccess : pcMessageFail, NULL, MB_OK | MB_ICONERROR);
+    const BOOL bDumpExists = (GetFileAttributesW(L"crash.dmp") != INVALID_FILE_ATTRIBUTES);
+    MessageBoxW(NULL, bDumpExists ? pcMessageSuccess : pcMessageFail, NULL, MB_OK | MB_ICONERROR);
 
     return EXCEPTION_EXECUTE_HANDLER;
 }
@@ -162,7 +174,7 @@ static void ImproveNuma(void)
 
 // ****************************************************************
 /* start up the application */
-extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPSTR pcCmdLine, _In_ int iCmdShow)
+extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPWSTR pcCmdLine, _In_ int iCmdShow)
 {
 #if defined(_DEBUG)
 
@@ -184,8 +196,15 @@ extern int WINAPI WinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInst
     // improve hardware utilization on NUMA systems
     ImproveNuma();
 
+    // convert command line arguments to UTF-8
+    char** ppcArgv = (char**)_alloca(sizeof(char*) * __argc);
+    for(size_t i = 0u, ie = __argc; i < ie; ++i)
+    {
+        TO_ANSI_CHAR(ppcArgv[i], __wargv[i])
+    }
+
     // run the application
-    return coreMain(__argc, __argv);
+    return coreMain(__argc, ppcArgv);
 }
 
 

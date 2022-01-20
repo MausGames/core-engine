@@ -144,7 +144,7 @@ coreBool coreFont::IsGlyphProvided(const coreUint16 iGlyph)
 
 coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
 {
-    // convert multibyte character to UTF-8 glyph
+    // convert multibyte UTF-8 character to UTF-16 glyph
     coreUint16 iGlyph;
     coreFont::__ConvertToGlyph(pcMultiByte, &iGlyph);
 
@@ -166,7 +166,7 @@ void coreFont::RetrieveGlyphMetrics(const coreUint16 iGlyph, const coreUint16 iH
 
 coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
-    // convert multibyte character to UTF-8 glyph
+    // convert multibyte UTF-8 character to UTF-16 glyph
     coreUint16 iGlyph;
     const coreUint8 iBytes = coreFont::__ConvertToGlyph(pcMultiByte, &iGlyph);
 
@@ -218,13 +218,13 @@ coreBool coreFont::__EnsureHeight(const coreUint16 iHeight, const coreUint8 iOut
 
 
 // ****************************************************************
-/* convert multibyte character to UTF-8 glyph */
+/* convert multibyte UTF-8 character to UTF-16 glyph */
 coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OUTPUT piGlyph)
 {
     ASSERT(pcMultiByte && piGlyph)
 
-    // handle multibyte UTF-8 encoding
-    if((*pcMultiByte) < 0)
+    // handle UTF-8 encoding
+    if(HAS_FLAG((*pcMultiByte), 0x80u))
     {
         // count number of bytes
         const coreUint8 iBytes = 2u + HAS_FLAG((*pcMultiByte), 0xE0u) + HAS_FLAG((*pcMultiByte), 0xF0u);

@@ -490,6 +490,7 @@ using coreUintW  = std::size_t;
 using coreUlong  = unsigned long;
 using coreBool   = bool;
 using coreChar   = char;
+using coreWchar  = wchar_t;
 using coreFloat  = float;
 using coreDouble = double;
 using coreByte   = std::uint8_t;

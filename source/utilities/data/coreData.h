@@ -17,12 +17,17 @@
 // TODO 3: make !temp and !appdata replace instead
 // TODO 3: add compiled/included Windows SDK version to BuildLibrary string
 // TODO 3: FolderScanTree should not allocate temporary list and string memory for (non-directory) entries outside the filter-pattern
+// TODO 2: implement checks and proper handling for paths exceeding the max length (currently they are truncated and might throw "not enough buffer-space" errors on some APIs)
+// TODO 3: manually convert Win32 paths to \\?\ format, only for absolute paths (expand relative paths ? similar to user-folder ?), and requires changing path-delimiter '/' to '\' (what about SDL RWops ?)
 
 
 // ****************************************************************
 /* data definitions */
 #define CORE_DATA_STRING_NUM (32u)    // number of temp-strings
 #define CORE_DATA_STRING_LEN (512u)   // length of each temp-string
+#define CORE_DATA_MAX_PATH   (512u)   // maximum supported file-path length
+
+STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
 
 #if defined(_CORE_DEBUG_)
     #define PRINT(...)   ([&]() {if(false) std::printf(__VA_ARGS__); return coreData::Print(__VA_ARGS__);}())   // enable format-specifier checking
@@ -166,6 +171,10 @@ private:
 
     /* prepare path for system directory */
     static const coreChar* __PrepareSystemDir(const coreChar* pcPath);
+
+    /* transform between 8-bit ANSI and 16-bit Unicode (for Windows API) */
+    static const coreWchar* __ToWideChar(const coreChar*  pcText);
+    static const coreChar*  __ToAnsiChar(const coreWchar* pcText);
 };
 
 

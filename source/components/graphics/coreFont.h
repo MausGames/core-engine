@@ -71,7 +71,7 @@ private:
     coreBool __InitHeight  (const coreUint16 iHeight, const coreUint8 iOutline);
     coreBool __EnsureHeight(const coreUint16 iHeight, const coreUint8 iOutline);
 
-    /* convert multibyte character to UTF-8 glyph */
+    /* convert multibyte UTF-8 character to UTF-16 glyph */
     static coreUint8 __ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OUTPUT piGlyph);
 };
 
