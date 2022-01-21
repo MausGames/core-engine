@@ -35,6 +35,7 @@ CoreSystem::CoreSystem()noexcept
 
     // set SDL behavior hints
     SDL_SetHint(SDL_HINT_APP_NAME,                           Core::Application->Settings.Name);
+    SDL_SetHint(SDL_HINT_EVENT_LOGGING,                      DEFINED(_CORE_DEBUG_) ? "1" : "0");
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD,                      "1");
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
     SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS,                 "0");
@@ -45,6 +46,29 @@ CoreSystem::CoreSystem()noexcept
     // load SDL only once (to improve reset performance, and prevent crashes)
     UNUSED static const coreBool s_bOnce = []()
     {
+        // enable SDL debug messages
+        SDL_LogSetAllPriority((Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? SDL_LOG_PRIORITY_INFO : SDL_LOG_PRIORITY_WARN);
+
+        // get default log callback (standard output)
+        SDL_LogOutputFunction nOldFunc;
+        SDL_LogGetOutputFunction(&nOldFunc, NULL);
+
+        // register new log callback
+        SDL_LogSetOutputFunction([](void* pUserData, const coreInt32 iCategory, const SDL_LogPriority ePriority, const coreChar* pcMessage)
+        {
+            if((iCategory == SDL_LOG_CATEGORY_APPLICATION) || (iCategory == SDL_LOG_CATEGORY_ASSERT))
+            {
+                // forward text to the standard output
+                r_cast<SDL_LogOutputFunction>(pUserData)(NULL, iCategory, ePriority, pcMessage);
+            }
+            else
+            {
+                // forward text to the log file
+                Core::Log->Warning(CORE_LOG_BOLD("SDL:") " %s (category %d, priority %d)", pcMessage, iCategory, ePriority);
+            }
+        },
+        r_cast<void*>(nOldFunc));
+
         // get SDL version
         SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
         const SDL_version* pVersionTTF = TTF_Linked_Version();
