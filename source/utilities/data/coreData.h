@@ -118,6 +118,7 @@ public:
     static coreStatus CloseLibrary(void* pLibrary);
 
     /* handle physical files and folders */
+    static std::FILE*  FileOpen      (const coreChar* pcPath, const coreChar* pcMode);
     static coreBool    FileExists    (const coreChar* pcPath);
     static coreInt64   FileSize      (const coreChar* pcPath);
     static std::time_t FileWriteTime (const coreChar* pcPath);

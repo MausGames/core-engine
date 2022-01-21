@@ -74,7 +74,7 @@ coreUint64 coreData::AppMemory()
 #elif defined(_CORE_LINUX_)
 
     // open memory pseudo-file
-    std::FILE* pFile = std::fopen("/proc/self/statm", "rb");
+    std::FILE* pFile = coreData::FileOpen("/proc/self/statm", "rb");
     if(pFile)
     {
         coreUint64 iPages;
@@ -713,6 +713,36 @@ coreStatus coreData::CloseLibrary(void* pLibrary)
 
 
 // ****************************************************************
+/* open regular file stream */
+std::FILE* coreData::FileOpen(const coreChar* pcPath, const coreChar* pcMode)
+{
+    ASSERT(pcPath && pcMode)
+
+#if defined(_CORE_WINDOWS_)
+
+    // optimize caching for sequential access
+    return _wfopen(coreData::__ToWideChar(pcPath), coreData::__ToWideChar(PRINT("%sS", pcMode)));
+
+#elif defined(_CORE_LINUX_)
+
+    // disable thread cancellation points
+    return std::fopen(pcPath, PRINT("%sc", pcMode));
+
+#elif defined(_CORE_ANDROID_)
+
+    // prepend internal storage path
+    return std::fopen(PRINT("%s/%s", SDL_AndroidGetInternalStoragePath(), pcPath), pcMode);
+
+#else
+
+    // just open regular file stream
+    return std::fopen(pcPath, pcMode);
+
+#endif
+}
+
+
+// ****************************************************************
 /* check if file exists */
 coreBool coreData::FileExists(const coreChar* pcPath)
 {
@@ -845,11 +875,11 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     // open source file
-    std::FILE* pFileFrom = std::fopen(pcFrom, "rb");
+    std::FILE* pFileFrom = coreData::FileOpen(pcFrom, "rb");
     if(pFileFrom)
     {
         // open destination file
-        std::FILE* pFileTo = std::fopen(pcTo, "wb");
+        std::FILE* pFileTo = coreData::FileOpen(pcTo, "wb");
         if(pFileTo)
         {
             alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aBuffer[0x4000u];

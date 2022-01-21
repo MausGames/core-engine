@@ -23,7 +23,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 #if !defined(_CORE_EMSCRIPTEN_)
 
     // open and reset log file
-    m_pFile = std::fopen(m_sPath.c_str(), "wb");
+    m_pFile = coreData::FileOpen(m_sPath.c_str(), "wb");
     if(m_pFile)
     {
         // write basic style sheet
