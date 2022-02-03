@@ -111,7 +111,9 @@ public:
     template <typename... A> void InspectValue(const coreHashString& sName, const coreChar* pcFormat, A&&... vArgs);
     inline void InspectValue(const coreHashString& sName, const coreBool    bValue) {this->InspectValue(sName, bValue ? "true" : "false");}
     inline void InspectValue(const coreHashString& sName, const coreInt32   iValue) {this->InspectValue(sName, "%d",                     iValue);}
+    inline void InspectValue(const coreHashString& sName, const coreInt64   iValue) {this->InspectValue(sName, "%lld",                   iValue);}
     inline void InspectValue(const coreHashString& sName, const coreUint32  iValue) {this->InspectValue(sName, "%u",                     iValue);}
+    inline void InspectValue(const coreHashString& sName, const coreUint64  iValue) {this->InspectValue(sName, "%llu",                   iValue);}
     inline void InspectValue(const coreHashString& sName, const coreFloat   fValue) {this->InspectValue(sName, "%.5f",                   fValue);}
     inline void InspectValue(const coreHashString& sName, const coreVector2 vValue) {this->InspectValue(sName, "%.5f, %.5f",             vValue.x, vValue.y);}
     inline void InspectValue(const coreHashString& sName, const coreVector3 vValue) {this->InspectValue(sName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}

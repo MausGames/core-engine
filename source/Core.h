@@ -45,7 +45,6 @@
 // TODO 3: automatic Core::Reshape() if not handled, currently it's explicit in every application, CoreApp callback ?
 // TODO 3: get ZStandard port for Emscripten target, or fallback to zlib (only interesting for storage, everything else uses transparent server-compression)
 // TODO 3: in emscripten, look into support for web-simd (-msse4.2/-mavx -msimd128)
-// TODO 3: in emscripten, try to add back FLTO to the linker-stage (some 3rd party libraries have undefined symbol "setjmp" and cause crash (SDL_img, freetype))
 // TODO 5: __apple_build_version__ to identify Apple Clang
 
 
@@ -85,7 +84,7 @@
 #if defined(_M_ARM) || defined(__arm__) || defined(_M_ARM64) || defined(__aarch64__)
     #define _CORE_ARM_
 #endif
-#if defined(__EMSCRIPTEN__)
+#if defined(__wasm__)
     #define _CORE_WASM_
 #endif
 
@@ -249,6 +248,7 @@
 #else
 
     // disable unwanted compiler warnings (with -Wall -Wextra)
+    #pragma GCC diagnostic ignored "-Wassume"
     #pragma GCC diagnostic ignored "-Wdefaulted-function-deleted"
     #pragma GCC diagnostic ignored "-Wformat-security"
     #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
@@ -389,8 +389,10 @@
 #else
     #if defined(_CORE_MSVC_)
         #define ASSERT(c)           {__assume(!!(c));}
-    #else
+    #elif defined(_CORE_GCC_)
         #define ASSERT(c)           {if(!(c)) __builtin_unreachable();}
+    #elif defined(_CORE_CLANG_)
+        #define ASSERT(c)           {__builtin_assume(!!(c));}
     #endif
 #endif
 

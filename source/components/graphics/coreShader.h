@@ -16,7 +16,7 @@
 // TODO 5: <old comment style>
 // TODO 4: Chromium shader compiler does not support attribute aliasing (though the standard allows it), remove and remap (#define) one of the variables ?
 
-// NOTE: GL below 3.0/130 or without UBO support has always GLSL version 110, GLES is currently always version 100
+// NOTE: GL/GLES below 3.0 (130/300) or without UBO support always has GLSL version 110/100
 
 
 // ****************************************************************

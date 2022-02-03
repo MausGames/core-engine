@@ -3,7 +3,7 @@
 [![software license: zlib](material/readme/badge_license_software.svg)](LICENSE.txt)
 [![content license: CC BY](material/readme/badge_license_content.svg)](https://creativecommons.org/licenses/by/4.0/)
 
-The Core Engine is an extensive C++ framework based on the [SDL library](https://libsdl.org/), currently for **Windows, Linux and Emscripten games** and compatible with **OpenGL (ES) 2.x, 3.x and 4.x capable hardware**.
+The Core Engine is an extensive C++ framework based on the [SDL](https://libsdl.org/) library, currently for **Windows, Linux and [Emscripten](https://emscripten.org/) games** and compatible with **OpenGL (ES) 2.x, 3.x and 4.x capable hardware**.
 
 It is **designed to be supportive, versatile and powerful**, and to dynamically use efficient fallback methods where specific system features are not available.
 
@@ -15,9 +15,9 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 > - Asynchronous Resource Management (Hot-Reloading, Indirections/Proxies), Memory Management (Global Sharing, Pool Allocations, Alignment)
 > - File Handling (Packaging, Mounting, Compression), HTML Log, Configuration and Language Files
 > - Compile-Time Hashing, Random Numbers, Specialized Containers, General Utilities (String, Time, OS, etc.)
-> - Vectors (2d, 3d, 4d/Quaternions), Matrices (2x2, 3x3, 4x4, other), Splines
+> - Vectors (2d, 3d, 4d/Quaternions, Colors), Matrices (2x2, 3x3, 4x4, other), Splines
 > - Game Objects (2d, 3d), Particle System, Batching, Precise Collision Detection
-> - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes)
+> - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes, View/Scroll Boxes)
 
 #
 

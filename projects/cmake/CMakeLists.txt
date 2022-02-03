@@ -96,7 +96,7 @@ if(EMSCRIPTEN)
         CoreEngine INTERFACE
         -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sUSE_OGG=1 -sUSE_VORBIS=1 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sALLOW_MEMORY_GROWTH=1
         --preload-file ../../../executable/data@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
-        $<IF:$<CONFIG:Debug>, -O0 -g3, -Os --closure 1>
+        $<IF:$<CONFIG:Debug>, -O0 -g3, -Os -flto --closure 1>
     )
 
 
@@ -120,7 +120,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -mf16c -pipe -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
-        $<IF:$<CONFIG:Debug>, -O0 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:Debug>, -O0 -g3 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
 
 
@@ -139,8 +139,8 @@ else()
 
     target_link_options(
         CoreEngine INTERFACE
-        -fuse-ld=lld ${SANITIZER_OPTIONS}
-        $<IF:$<CONFIG:Debug>, , -rdynamic -s>
+        ${SANITIZER_OPTIONS}
+        $<IF:$<CONFIG:Debug>, -fuse-ld=mold, -fuse-ld=lld -rdynamic -s>
     )
 
 
