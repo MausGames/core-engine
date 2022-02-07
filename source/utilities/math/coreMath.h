@@ -190,10 +190,15 @@ constexpr coreFloat coreMath::Sqrt(const coreFloat fInput)
 
     if(!std::is_constant_evaluated())
     {
-#if defined(_CORE_SSE_) || defined(_CORE_NEON_)
+#if defined(_CORE_SSE_)
 
-        // optimized calculation with SSE/NEON
-        return fInput ? (fInput * RSQRT(fInput)) : 0.0f;
+        // optimized calculation with SSE
+        return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(fInput)));
+
+#elif defined(_CORE_NEON_)
+
+        // optimized calculation with NEON
+        return vget_lane_f32(vsqrt_f32(vdup_n_f32(fInput)), 0);
 
 #else
 
