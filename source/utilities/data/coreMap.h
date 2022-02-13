@@ -51,12 +51,12 @@ public:
     coreMapGen<K, I, T>& operator = (coreMapGen<K, I, T> o)noexcept;
 
     /* access specific entry */
-    T& operator []    (const I& tKey);
-    T&          bs    (const I& tKey);
-    T&          at    (const I& tKey);
-    const T&    at    (const I& tKey)const;
-    T&          at_bs (const I& tKey);
-    const T&    at_bs (const I& tKey)const;
+    T& operator []   (const I& tKey);
+    T&          bs   (const I& tKey);
+    T&          at   (const I& tKey);
+    const T&    at   (const I& tKey)const;
+    T&          at_bs(const I& tKey);
+    const T&    at_bs(const I& tKey)const;
 
     /* check number of existing entries */
     inline coreBool  count   (const I& tKey)      {return this->_check(this->_retrieve   (tKey));}
@@ -71,9 +71,9 @@ public:
     inline coreUintW index_bs(const I& tKey)const {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve_bs(tKey));}
 
     /* control memory allocation */
-    inline void      reserve(const coreUintW iReserve) {m_atValueList.reserve(iReserve); m_atKeyList.reserve(iReserve);}
-    inline void      shrink_to_fit()                   {m_atValueList.shrink_to_fit();   m_atKeyList.shrink_to_fit();}
-    inline coreUintW capacity()const                   {return m_atValueList.capacity();}
+    inline void      reserve(const coreUintW iCapacity) {m_atValueList.reserve(iCapacity); m_atKeyList.reserve(iCapacity);}
+    inline void      shrink_to_fit()                    {m_atValueList.shrink_to_fit();    m_atKeyList.shrink_to_fit();}
+    inline coreUintW capacity()const                    {return m_atValueList.capacity();}
 
     /* manage container ordering */
     inline void sort_asc  () {this->_cache_clear(); this->_sort([](const K& a, const K& b) {return (a < b);});}

@@ -42,7 +42,7 @@ extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C file
 /* create formatted string */
 coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, ...)
 {
-    ASSERT(pcOutput && iMaxLen && pcFormat)
+    ASSERT(pcFormat)
 
     // prepare variable arguments
     va_list oArgs;
@@ -53,6 +53,14 @@ coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen
     va_end(oArgs);
 
     return iReturn;
+}
+
+coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, va_list oArgs)
+{
+    ASSERT(pcFormat)
+
+    // assemble string
+    return stbsp_vsnprintf(pcOutput, iMaxLen, pcFormat, oArgs);
 }
 
 

@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <execinfo.h>
 #include <malloc.h>
+#include <locale.h>
 #include <stdio.h>
 
 extern int coreMain(int argc, char** argv);
@@ -86,6 +87,9 @@ int main(int argc, char** argv)
     mallopt(M_PERTURB,      1);
 
 #endif
+
+    // enable UTF-8 locale
+    setlocale(LC_ALL, "C.UTF-8");
 
     // run the application
     return coreMain(argc, argv);

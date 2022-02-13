@@ -347,6 +347,8 @@ CoreSystem::CoreSystem()noexcept
     }
     Core::Log->ListEnd();
 
+#if !defined(_CORE_EMSCRIPTEN_)
+
     // log FreeType library version
     coreInt32 iMajorFT, iMinorFT, iPatchFT; TTF_GetFreeTypeVersion(&iMajorFT, &iMinorFT, &iPatchFT);
     if(iMajorFT) Core::Log->Info("FreeType initialized (%d.%d.%d)", iMajorFT, iMinorFT, iPatchFT);
@@ -354,8 +356,6 @@ CoreSystem::CoreSystem()noexcept
     // log HarfBuzz library version
     coreInt32 iMajorHB, iMinorHB, iPatchHB; TTF_GetHarfBuzzVersion(&iMajorHB, &iMinorHB, &iPatchHB);
     if(iMajorHB) Core::Log->Info("HarfBuzz initialized (%d.%d.%d)", iMajorHB, iMinorHB, iPatchHB);
-
-#if !defined(_CORE_EMSCRIPTEN_)
 
     // log Zstandard library version
     Core::Log->Info("Zstandard initialized (%s, %s-threaded)", ZSTD_versionString(), ZSTD_cParam_getBounds(ZSTD_c_nbWorkers).upperBound ? "multi" : "single");
