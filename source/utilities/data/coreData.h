@@ -273,11 +273,11 @@ template <typename T> constexpr coreUint32 coreData::TypeId()
 {
 #if defined(_CORE_MSVC_)
 
-    return FORCE_COMPILE_TIME(coreHashFNV1(__FUNCDNAME__));
+    return FORCE_COMPILE_TIME(coreHashFNV32(__FUNCDNAME__));
 
 #elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
 
-    return FORCE_COMPILE_TIME(coreHashFNV1(__PRETTY_FUNCTION__));
+    return FORCE_COMPILE_TIME(coreHashFNV32(__PRETTY_FUNCTION__));
 
 #endif
 }

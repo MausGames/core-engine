@@ -39,7 +39,7 @@ public:
 // ****************************************************************
 /* constructor */
 constexpr coreHashString::coreHashString(const coreChar* pcString)noexcept
-: m_iHash    (pcString ? coreHashFNV1(pcString) : 0u)
+: m_iHash    (pcString ? coreHashFNV32(pcString) : 0u)
 , m_pcString (pcString)
 {
 }
