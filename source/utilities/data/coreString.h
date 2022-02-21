@@ -10,8 +10,7 @@
 #ifndef _CORE_GUARD_STRING_H_
 #define _CORE_GUARD_STRING_H_
 
-// TODO 3: constexpr, when std::string in libstdc++ and libc++ supports it
-// TODO 4: move code to .cpp (remove inline)
+// TODO 3: constexpr coreString, when std::string in libstdc++ and libc++ supports it
 
 
 // ****************************************************************
@@ -37,41 +36,64 @@ public:
 
 
 // ****************************************************************
-/* trim string on both sides */
-inline coreString& coreString::trim(const coreChar* pcRemove)
+/* work-string class */
+class coreWorkString final
 {
-    STATIC_ASSERT(coreString::npos == -1)
+private:
+    coreChar* m_pcBuffer;     // string buffer (may be NULL)
 
-    // trim right
-    const coreUintW iLast = this->find_last_not_of(pcRemove);
-    this->erase(iLast + 1u);
+    coreUint32 m_iSize;       // string size (including null-terminator)
+    coreUint32 m_iCapacity;   // buffer capacity
 
-    // trim left
-    const coreUintW iFirst = this->find_first_not_of(pcRemove);
-    if(iFirst != coreString::npos) this->erase(0u, iFirst);
 
-    return *this;
-}
+public:
+    constexpr coreWorkString()noexcept;
+    coreWorkString(const coreChar* pcText)noexcept;
+    ~coreWorkString();
+
+    DISABLE_COPY(coreWorkString)
+
+    /* access string buffer */
+    inline const coreChar& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < m_iCapacity) return m_pcBuffer[iIndex];}
+    inline const coreChar* c_str       ()const                       {ASSERT(m_pcBuffer)           return m_pcBuffer;}
+
+    /* control memory allocation */
+    coreBool reserve(const coreUintW iCapacity);
+    void     shrink_to_fit();
+
+    /* add string data */
+    void assign (const coreChar* pcString);
+    void append (const coreChar* pcString);
+    void replace(const coreChar* pcOld, const coreChar* pcNew);
+
+    /* remove string data */
+    void erase(const coreUintW iIndex, const coreUintW iCount);
+    void clear();
+
+    /* create formatted string */
+    void print(const coreChar* pcFormat, ...);
+
+    /* get object properties */
+    inline coreUintW capacity()const {return m_iCapacity;}
+    inline coreUintW length  ()const {return m_iSize -  1u;}
+    inline coreBool  empty   ()const {return m_iSize == 1u;}
+};
 
 
 // ****************************************************************
-/* replace all occurrences of a sub-string with another one */
-inline coreString& coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
+/* constructor */
+constexpr coreWorkString::coreWorkString()noexcept
+: m_pcBuffer  (NULL)
+, m_iSize     (1u)
+, m_iCapacity (0u)
 {
-    coreUintW iPos = 0u;
+}
 
-    // get length of both sub-strings
-    const coreUintW iOldLen = std::strlen(pcOld);
-    const coreUintW iNewLen = std::strlen(pcNew);
-
-    // loop only once and replace all findings
-    while((iPos = this->find(pcOld, iPos, iOldLen)) != coreString::npos)
-    {
-        this->replace(iPos, iOldLen, pcNew);
-        iPos += iNewLen;
-    }
-
-    return *this;
+inline coreWorkString::coreWorkString(const coreChar* pcText)noexcept
+: coreWorkString ()
+{
+    // assign initial string
+    this->assign(pcText);
 }
 
 
