@@ -105,6 +105,10 @@ public:
     void StartScissorTest(const coreVector2 vLowerLeft, const coreVector2 vUpperRight);
     void EndScissorTest  ();
 
+    /* handle OpenGL debug output */
+    friend void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLuint iID, const GLenum iSeverity, const GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
+    void DebugOpenGL();
+
     /* take screenshot */
     void        TakeScreenshot(const coreChar* pcPath)const;
     inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolder(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}

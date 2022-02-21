@@ -169,9 +169,9 @@ void __coreInitOpenGL()
 
         Core::Log->ListStartInfo("Extensions loaded");
         {
-            Core::Log->ListAdd((CORE_LOG_BOLD("Detected:")     + A).c_str());   // avoid print-limit
-            Core::Log->ListAdd((CORE_LOG_BOLD("Not detected:") + B).c_str());
-            Core::Log->ListAdd((CORE_LOG_BOLD("Overridden:")   + C).c_str());
+            Core::Log->ListAdd(CORE_LOG_BOLD("Detected:")     "%s", A.c_str());
+            Core::Log->ListAdd(CORE_LOG_BOLD("Not detected:") "%s", B.c_str());
+            Core::Log->ListAdd(CORE_LOG_BOLD("Overridden:")   "%s", C.c_str());
         }
         Core::Log->ListEnd();
     }

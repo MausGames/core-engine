@@ -47,7 +47,7 @@ CoreGraphics::CoreGraphics()noexcept
     coreInitOpenGL();
 
     // enable OpenGL debug output
-    Core::Log->DebugOpenGL();
+    this->DebugOpenGL();
 
     // save version numbers
     m_fVersionOpenGL = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
@@ -469,6 +469,67 @@ void CoreGraphics::EndScissorTest()
 {
     // disable scissor testing
     glDisable(GL_SCISSOR_TEST);
+}
+
+
+// ****************************************************************
+/* write OpenGL debug message */
+void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLuint iID, const GLenum iSeverity, const GLsizei iLength, const GLchar* pcMessage, const void* pUserParam)
+{
+    // write debug message
+    Core::Log->ListStartWarning("OpenGL Debug Message");
+    {
+        Core::Log->ListAdd(CORE_LOG_BOLD("ID:")           " %d", iID);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Source:")   " 0x%04X", iSource);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Type:")     " 0x%04X", iType);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Severity:") " 0x%04X", iSeverity);
+        Core::Log->ListAdd(pcMessage);
+    }
+    Core::Log->ListEnd();
+
+#if defined(_CORE_DEBUG_)
+
+    // also show message box
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OpenGL Error", pcMessage, NULL);
+    WARN_IF(true) {}
+
+#endif
+}
+
+
+// ****************************************************************
+/* enable OpenGL debug output */
+void CoreGraphics::DebugOpenGL()
+{
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+
+    if(CORE_GL_SUPPORT(KHR_debug))
+    {
+        // enable synchronous debug output
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
+        // set callback function and filter
+        glDebugMessageCallback(&WriteOpenGL, NULL);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
+
+        // disable certain API messages
+        constexpr GLuint aiID[] = {131169u, 131185u, 131204u, 131222u};
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+
+        // disable all shader compiler messages
+        glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, false);
+
+        // 131169: Framebuffer detailed info: The driver allocated multisample storage for renderbuffer #.
+        // 131185: Buffer detailed info: Buffer object # (bound to #, usage hint is #) will use # memory as the source for buffer object operations.
+        // 131204: Texture state usage warning: Texture # is base level inconsistent. Check texture size.
+        // 131222: Program undefined behavior warning: Sampler object # is bound to non-depth texture #, yet it is used with a program that uses a shadow sampler. This is undefined behavior.
+
+        // 1: Shader Stats (SGPRs, VGPRs, Code Size, LDS, Scratch, Max Waves, Spilled SGPRs, Spilled VGPRs, PrivMem VGPRs)
+        // 2: LLVM Diagnostics (# instructions in function)
+        // #: extension # unsupported in # shader
+    }
 }
 
 

@@ -277,7 +277,7 @@ coreStatus coreResourceManager::__InitThread()
     else Core::Log->Info("Resource context assigned to resource thread");
 
     // enable OpenGL debug output
-    Core::Log->DebugOpenGL();
+    Core::Graphics->DebugOpenGL();
 
     // setup texturing and packing
     if(CORE_GL_SUPPORT(V2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
