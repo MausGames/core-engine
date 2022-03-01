@@ -587,9 +587,9 @@ void coreProgram::__WriteInterface()const
         if(CORE_GL_SUPPORT(ARB_program_interface_query))
         {
             coreChar acName[64];
-            GLint    aiValue[2];
+            GLint    aiValue[3];
 
-            constexpr GLenum aiProperty[] = {GL_LOCATION, GL_OFFSET};
+            constexpr GLenum aiProperty[] = {GL_LOCATION, GL_BLOCK_INDEX, GL_OFFSET};
 
             // get number of active shader-program resources
             glGetProgramInterfaceiv(m_iIdentifier, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &iNumInput);
@@ -602,7 +602,7 @@ void coreProgram::__WriteInterface()const
                 glGetProgramResourceName(m_iIdentifier, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
                 glGetProgramResourceiv  (m_iIdentifier, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
 
-                Core::Log->ListAdd("%s: %i", acName, aiValue[0]);
+                Core::Log->ListAdd("%s: %d", acName, aiValue[0]);
             }
             Core::Log->ListEnd();
 
@@ -611,9 +611,10 @@ void coreProgram::__WriteInterface()const
             for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
             {
                 glGetProgramResourceName(m_iIdentifier, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
-                glGetProgramResourceiv  (m_iIdentifier, GL_UNIFORM, i, 2, aiProperty, 2,   NULL, aiValue);
+                glGetProgramResourceiv  (m_iIdentifier, GL_UNIFORM, i, 3, aiProperty, 3,   NULL, aiValue);
 
-                Core::Log->ListAdd("%s: %i/%i", acName, aiValue[0], aiValue[1]);
+                if(aiValue[0] >= 0) Core::Log->ListAdd("%s: %d",    acName, aiValue[0]);
+                               else Core::Log->ListAdd("%s: %d/%d", acName, aiValue[1], aiValue[2]);
             }
             Core::Log->ListEnd();
         }

@@ -520,7 +520,7 @@ const coreChar* coreData::GetCurDir()
 /* set command line arguments */
 void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv)
 {
-    ASSERT(ppcArgv)
+    ASSERT(!iArgc || ppcArgv)
 
     // loop through all arguments
     for(coreUintW i = 1u, ie = iArgc; i < ie; ++i)

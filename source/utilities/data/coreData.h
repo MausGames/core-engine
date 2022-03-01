@@ -187,8 +187,8 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
     coreChar* pcString = coreData::__NextTempString();
 
     // forward arguments and assemble string
-    const coreInt32 iReturn = coreData::PrintBase(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
-    ASSERT((iReturn > -1) && (iReturn < coreInt32(CORE_DATA_STRING_LEN)))
+    const coreUint32 iReturn = coreData::PrintBase(pcString, CORE_DATA_STRING_LEN, pcFormat, std::forward<A>(vArgs)...);
+    ASSERT(iReturn < CORE_DATA_STRING_LEN)
 
     return pcString;
 }

@@ -712,7 +712,7 @@ constexpr coreUint16 coreMath::Float32To16(const coreFloat fInput)
 #elif defined(_CORE_NEON_)
 
     // optimized calculation with NEON
-    return std::bit_cast<coreUint16>(__fp16(fInput));
+    return __builtin_bit_cast(coreUint16, __fp16(fInput));
 
 #endif
 
@@ -738,7 +738,7 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 #elif defined(_CORE_NEON_)
 
     // optimized calculation with NEON
-    return coreFloat(std::bit_cast<__fp16>(fInput));
+    return coreFloat(__builtin_bit_cast(__fp16, iInput));
 
 #endif
 
