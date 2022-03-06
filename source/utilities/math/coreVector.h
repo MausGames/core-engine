@@ -507,17 +507,7 @@ constexpr coreUint32 coreVector2::PackFloat2x16()const
 /* safely convert vector into bit-representation */
 constexpr coreUint64 coreVector2::PackFloat2x32()const
 {
-#if defined(_CORE_LIBCPP_)
-
-    // conversion without library support
-    return __builtin_bit_cast(coreUint64, *this);
-
-#else
-
-    // conversion with standard function
     return std::bit_cast<coreUint64>(*this);
-
-#endif
 }
 
 
@@ -555,17 +545,7 @@ constexpr coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 /* safely convert bit-representation into vector */
 constexpr coreVector2 coreVector2::UnpackFloat2x32(const coreUint64 iNumber)
 {
-#if defined(_CORE_LIBCPP_)
-
-    // conversion without library support
-    return __builtin_bit_cast(coreVector2, iNumber);
-
-#else
-
-    // conversion with standard function
     return std::bit_cast<coreVector2>(iNumber);
-
-#endif
 }
 
 

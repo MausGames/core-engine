@@ -80,6 +80,10 @@
 #define FLOOR  coreMath::Floor
 #define ROUND  coreMath::Round
 
+#if defined(_CORE_LIBCPP_)
+    namespace std {template <typename T, typename S> FORCE_INLINE constexpr T bit_cast(const S& tValue) {return __builtin_bit_cast(T, tValue);}}
+#endif
+
 
 // ****************************************************************
 /* math utility collection */
@@ -665,17 +669,7 @@ constexpr coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
 /* safely convert float into bit-representation */
 constexpr coreUint32 coreMath::FloatToBits(const coreFloat fInput)
 {
-#if defined(_CORE_LIBCPP_)
-
-    // conversion without library support
-    return __builtin_bit_cast(coreUint32, fInput);
-
-#else
-
-    // conversion with standard function
     return std::bit_cast<coreUint32>(fInput);
-
-#endif
 }
 
 
@@ -683,17 +677,7 @@ constexpr coreUint32 coreMath::FloatToBits(const coreFloat fInput)
 /* safely convert bit-representation into float */
 constexpr coreFloat coreMath::BitsToFloat(const coreUint32 iInput)
 {
-#if defined(_CORE_LIBCPP_)
-
-    // conversion without library support
-    return __builtin_bit_cast(coreFloat, iInput);
-
-#else
-
-    // conversion with standard function
     return std::bit_cast<coreFloat>(iInput);
-
-#endif
 }
 
 
@@ -712,7 +696,7 @@ constexpr coreUint16 coreMath::Float32To16(const coreFloat fInput)
 #elif defined(_CORE_NEON_)
 
     // optimized calculation with NEON
-    return __builtin_bit_cast(coreUint16, __fp16(fInput));
+    return std::bit_cast<coreUint16>(__fp16(fInput));
 
 #endif
 
@@ -738,7 +722,7 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 #elif defined(_CORE_NEON_)
 
     // optimized calculation with NEON
-    return coreFloat(__builtin_bit_cast(__fp16, iInput));
+    return coreFloat(std::bit_cast<__fp16>(iInput));
 
 #endif
 
