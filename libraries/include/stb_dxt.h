@@ -557,7 +557,8 @@ static void stb__CompressAlphaBlock(unsigned char* __restrict dest, unsigned cha
    dist2 = dist*2;
    bias = (dist < 8) ? (dist - 1) : (dist/2 + 2);
    bias -= mn * 7;
-   bits = 0,mask=0;
+   bits = 0;
+   mask = 0;
 
    for (i=0;i<16;i++) {
       int a = src[i*4+3]*7 + bias;

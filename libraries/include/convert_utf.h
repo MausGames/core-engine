@@ -130,11 +130,11 @@ static bool isLegalUTF8(const UTF8* source, int length)
 
 /* --------------------------------------------------------------------- */
 
-ConversionResult ConvertUTF8toUTF16(const UTF8** sourceStart, const UTF8* sourceEnd, UTF16* __restrict* __restrict targetStart, const UTF16* targetEnd, const ConversionFlags flags)
+ConversionResult ConvertUTF8toUTF16(const UTF8* sourceStart, const UTF8* sourceEnd, UTF16* __restrict targetStart, const UTF16* targetEnd, const ConversionFlags flags)
 {
     ConversionResult result = conversionOK;
-    const UTF8* source = *sourceStart;
-    UTF16* __restrict target = *targetStart;
+    const UTF8* source = sourceStart;
+    UTF16* __restrict target = targetStart;
     while (source < sourceEnd) {
         UTF32 ch = 0;
         unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
@@ -195,7 +195,5 @@ ConversionResult ConvertUTF8toUTF16(const UTF8** sourceStart, const UTF8* source
             *target++ = (UTF16)((ch & halfMask) + UNI_SUR_LOW_START);
         }
     }
-    *sourceStart = source;
-    *targetStart = target;
     return result;
 }

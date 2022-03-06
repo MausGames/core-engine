@@ -231,7 +231,7 @@ coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OU
         ASSERT(iBytes <= 4u)
 
         // convert character
-        const ConversionResult eResult = ConvertUTF8toUTF16(r_cast<const coreUint8**>(&pcMultiByte), r_cast<const coreUint8*>(pcMultiByte) + iBytes, &piGlyph, piGlyph + 1u, lenientConversion);
+        const ConversionResult eResult = ConvertUTF8toUTF16(r_cast<const coreUint8*>(pcMultiByte), r_cast<const coreUint8*>(pcMultiByte) + iBytes, piGlyph, piGlyph + 1u, lenientConversion);
         ASSERT(eResult == conversionOK)
 
         return iBytes;

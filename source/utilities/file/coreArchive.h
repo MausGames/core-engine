@@ -17,6 +17,7 @@
 // TODO 4: "0 = does not exist physically" should be moved into own bool and -1 should become 0 ? (could simplify if-else, seeking)
 // TODO 3: allow referencing allocation instead of owning
 // TODO 4: get rid of Internal* functions ? but files should not be copied (normally)
+// TODO 3: mmap, CreateFileMapping+MapViewOfFile instead of reading into a buffer ? unbuffered reading ? batching (e.g. DirectStorage) ?
 
 
 // ****************************************************************

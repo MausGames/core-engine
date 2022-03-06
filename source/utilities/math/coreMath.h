@@ -124,14 +124,14 @@ public:
     static constexpr coreFloat Rcp  (const coreFloat fInput);
 
     /* exponential operations */
-    static inline coreFloat Pow  (const coreFloat fBase, const coreFloat fExp)  {return std::pow  (fBase, fExp);}
-    static inline coreFloat LogB (const coreFloat fVal,  const coreFloat fBase) {return LOG(fVal) * RCP(LOG(fBase));}
-    static inline coreFloat Log  (const coreFloat fInput)                       {return std::log  (fInput);}
-    static inline coreFloat Log2 (const coreFloat fInput)                       {return std::log2 (fInput);}
-    static inline coreFloat Log10(const coreFloat fInput)                       {return std::log10(fInput);}
-    static inline coreFloat Exp  (const coreFloat fInput)                       {return std::exp  (fInput);}
-    static inline coreFloat Exp2 (const coreFloat fInput)                       {return std::exp2 (fInput);}
-    static inline coreFloat Exp10(const coreFloat fInput)                       {return POW(10.0f, fInput);}
+    static inline coreFloat Pow  (const coreFloat fBase,  const coreFloat fExp)  {return std::pow  (fBase, fExp);}
+    static inline coreFloat LogB (const coreFloat fValue, const coreFloat fBase) {return LOG(fValue) * RCP(LOG(fBase));}
+    static inline coreFloat Log  (const coreFloat fInput)                        {return std::log  (fInput);}
+    static inline coreFloat Log2 (const coreFloat fInput)                        {return std::log2 (fInput);}
+    static inline coreFloat Log10(const coreFloat fInput)                        {return std::log10(fInput);}
+    static inline coreFloat Exp  (const coreFloat fInput)                        {return std::exp  (fInput);}
+    static inline coreFloat Exp2 (const coreFloat fInput)                        {return std::exp2 (fInput);}
+    static inline coreFloat Exp10(const coreFloat fInput)                        {return POW(10.0f, fInput);}
 
     /* trigonometric operations */
     static inline coreFloat Sin (const coreFloat fInput) {return std::sin (fInput);}

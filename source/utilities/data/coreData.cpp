@@ -1103,11 +1103,12 @@ coreStatus coreData::FolderCreate(const coreChar* pcPath)
             (*pcCursor) = '\0';
 
             // create sub-folder
-#if defined(_CORE_WINDOWS_)
-            if(!CreateDirectoryW(coreData::__ToWideChar(acString), NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
-#else
-            if(mkdir(acString, S_IRWXU) && (errno != EEXIST)) return CORE_ERROR_FILE;
-#endif
+            #if defined(_CORE_WINDOWS_)
+                if(!CreateDirectoryW(coreData::__ToWideChar(acString), NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
+            #else
+                if(mkdir(acString, S_IRWXU) && (errno != EEXIST)) return CORE_ERROR_FILE;
+            #endif
+
             // reset path
             (*pcCursor) = '/';
         }
