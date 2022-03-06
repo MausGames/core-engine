@@ -200,7 +200,7 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     const coreUint32 iHeight     = pOutline ? pOutline->h     : pSolid->h;
     const coreUint32 iPitch      = pOutline ? pOutline->pitch : pSolid->pitch;
     const coreUintW  iSize       = iPitch * iHeight * iComponents;
-    ASSERT(!(iPitch % 4u))
+    ASSERT(coreMath::IsAligned(iPitch, 4u))
 
     if(pOutline)
     {

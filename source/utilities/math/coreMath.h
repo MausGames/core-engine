@@ -154,8 +154,9 @@ public:
     template <typename T> static constexpr T* FloorAlignPtr(const T* tInput, const coreUintW iAlign) {const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(tInput))     & ~k));}
 
     /* analyzing operations */
-    template <typename T> static constexpr coreBool IsPot (const T& x)                                               {return x && !(x & (x - T(1)));}
-    template <typename T> static constexpr coreBool IsNear(const T& x, const T& c, const T& r = CORE_MATH_PRECISION) {return POW2(x - c) <= POW2(r);}
+    template <typename T> static constexpr coreBool IsPot    (const T& tInput)                                                           {return (tInput && !(tInput & (tInput - T(1))));}
+    template <typename T> static constexpr coreBool IsAligned(const T& tInput,  const coreUintW iAlign)                                  {return ((coreUintW(tInput) % iAlign) == 0u);}
+    template <typename T> static constexpr coreBool IsNear   (const T& tValue1, const T& tValue2, const T& tRange = CORE_MATH_PRECISION) {return (POW2(tValue1 - tValue2) <= POW2(tRange));}
 
     /* bit operations */
     static constexpr coreUint32 PopCount      (const coreUint64 iInput);

@@ -191,10 +191,10 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
 void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData)
 {
     WARN_IF(!m_iIdentifier) return;
-    ASSERT((iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)) && (!iDataSize || (iDataSize >= iWidth * iHeight)))
+    ASSERT(iWidth && iHeight && (iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)))
 
     // check for OpenGL extensions
-    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && coreMath::IsAligned(iDataSize / iHeight, 4u) && iDataSize && pData;
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1u);
 
     if(m_bCompressed)

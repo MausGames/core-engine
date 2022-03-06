@@ -408,7 +408,7 @@
 #endif
 
 #if defined(_CORE_DEBUG_)
-    #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT((P_TO_UI(pPointer) % iAlign) == 0u) return pPointer;}(p, a))
+    #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT(coreMath::IsAligned(pPointer, iAlign)) return pPointer;}(p, a))
 #else
     #if defined(_CORE_MSVC_)
         #define ASSUME_ALIGNED(p,a) (std::assume_aligned<a>(p))
