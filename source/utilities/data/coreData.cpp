@@ -10,7 +10,6 @@
 #include <stb_sprintf.h>
 
 #if defined(_CORE_WINDOWS_)
-    #include <shellapi.h>
     #include <Psapi.h>
     #include <Shlobj.h>
     #include <Lmcons.h>
@@ -620,31 +619,6 @@ void coreData::InitUserFolder()
     const coreChar* pcSource = "user/config.ini";
     const coreChar* pcTarget = coreData::UserFolder("config.ini");
     if(!coreData::FileExists(pcTarget)) coreData::FileCopy(pcSource, pcTarget);
-}
-
-
-// ****************************************************************
-/* open URL with default web-browser */
-coreStatus coreData::OpenURL(const coreChar* pcURL)
-{
-#if defined(_CORE_WINDOWS_)
-
-    // delegate request to the Windows Shell
-    if(P_TO_SI(ShellExecuteW(NULL, L"open", coreData::__ToWideChar(pcURL), NULL, NULL, SW_SHOWNORMAL)) > 32) return CORE_OK;
-
-#elif defined(_CORE_LINUX_)
-
-    // delegate request to the Linux command processor (/bin/sh)
-    if(std::system(NULL) && !std::system(PRINT("xdg-open %s", pcURL))) return CORE_OK;
-
-#elif defined(_CORE_MACOS_)
-
-    // delegate request to the MacOS command processor
-    if(std::system(NULL) && !std::system(PRINT("open %s", pcURL))) return CORE_OK;
-
-#endif
-
-    return CORE_ERROR_SYSTEM;
 }
 
 

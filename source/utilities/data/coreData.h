@@ -110,8 +110,6 @@ public:
     static        void            InitUserFolder();
     static inline const coreChar* UserFolder(const coreChar* pcPath) {ASSERT(pcPath) return PRINT("%s%s", s_sUserFolder.c_str(), pcPath);}
 
-    /* open URL with default web-browser */
-    static coreStatus OpenURL(const coreChar* pcURL);
 
     /* handle dynamic libraries */
     static void*      OpenLibrary (const coreChar* pcName);
