@@ -180,6 +180,11 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS"          " (%u) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS"         " (%u) \n", CORE_SHADER_OUTPUT_COLORS));
 
+    // include additional target adjustments
+#if defined(_CORE_MACOS_)
+    s_asGlobalCode[1].append("#define _CORE_TARGET_MACOS_ (1) \n");
+#endif
+
     const auto nRetrieveFunc = [](const coreChar* pcPath)
     {
         // retrieve shader file

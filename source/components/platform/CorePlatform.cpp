@@ -15,6 +15,8 @@ coreSet<coreBackend*> coreBackend::s_apBackendSet = {};
     #include "backend/windows.h"
 #elif defined(_CORE_LINUX_)
     #include "backend/steam.h"
+#elif defined(_CORE_MACOS_)
+    #include "backend/steam.h"
 #endif
 
 static class coreBackendDummy final : public coreBackend {inline const coreChar* GetIdentifier()const final {return "Dummy";}} s_BackendDummy;

@@ -1,0 +1,405 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5B06DF4927CAAA260036BB19 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B06DEA727CAAA260036BB19 /* main.cpp */; };
+		5B06DF6127CAAA260036BB19 /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B06DED127CAAA260036BB19 /* application.cpp */; };
+		5B06DFB927CAB3320036BB19 /* libCoreEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B06DFB827CAB3320036BB19 /* libCoreEngine.a */; };
+		5B42D8EA27D3A01F0075F2A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B42D8E827D3A01F0075F2A6 /* Assets.xcassets */; };
+		5B42D8EC27D3F7C20075F2A6 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 5B42D8EB27D3F7C20075F2A6 /* data */; };
+		5B5B7C8227D2A146003FD836 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */; };
+		5B5B7C8327D2A146003FD836 /* SDL2_image.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5B5B7C8427D2A146003FD836 /* libvorbis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */; };
+		5B5B7C8527D2A146003FD836 /* libvorbis.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5B5B7C8627D2A146003FD836 /* libzstd.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7C27D2A145003FD836 /* libzstd.dylib */; };
+		5B5B7C8727D2A146003FD836 /* libzstd.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7C27D2A145003FD836 /* libzstd.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5B5B7C8827D2A146003FD836 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */; };
+		5B5B7C8927D2A146003FD836 /* SDL2_ttf.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5B5B7C8A27D2A146003FD836 /* libvorbisfile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */; };
+		5B5B7C8B27D2A146003FD836 /* libvorbisfile.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5B5B7C8C27D2A146003FD836 /* libopenal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7F27D2A146003FD836 /* libopenal.dylib */; };
+		5B5B7C8D27D2A146003FD836 /* libopenal.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7F27D2A146003FD836 /* libopenal.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5B5B7C8E27D2A146003FD836 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8027D2A146003FD836 /* SDL2.framework */; };
+		5B5B7C8F27D2A146003FD836 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8027D2A146003FD836 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5B5B7C9027D2A146003FD836 /* libogg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8127D2A146003FD836 /* libogg.dylib */; };
+		5B5B7C9127D2A146003FD836 /* libogg.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8127D2A146003FD836 /* libogg.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5B5B7C9227D2A146003FD836 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				5B5B7C8927D2A146003FD836 /* SDL2_ttf.framework in Embed Frameworks */,
+				5B5B7C8727D2A146003FD836 /* libzstd.dylib in Embed Frameworks */,
+				5B5B7C9127D2A146003FD836 /* libogg.dylib in Embed Frameworks */,
+				5B5B7C8327D2A146003FD836 /* SDL2_image.framework in Embed Frameworks */,
+				5B5B7C8B27D2A146003FD836 /* libvorbisfile.dylib in Embed Frameworks */,
+				5B5B7C8527D2A146003FD836 /* libvorbis.dylib in Embed Frameworks */,
+				5B5B7C8D27D2A146003FD836 /* libopenal.dylib in Embed Frameworks */,
+				5B5B7C8F27D2A146003FD836 /* SDL2.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		5B06DE7627CAA48E0036BB19 /* CoreApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B06DEA627CAAA260036BB19 /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = main.h; path = ../../source/main.h; sourceTree = "<group>"; };
+		5B06DEA727CAAA260036BB19 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../source/main.cpp; sourceTree = "<group>"; };
+		5B06DED127CAAA260036BB19 /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = application.cpp; path = ../../source/application.cpp; sourceTree = "<group>"; };
+		5B06DFB827CAB3320036BB19 /* libCoreEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCoreEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B06DFCA27CAB5C30036BB19 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		5B42D8E827D3A01F0075F2A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5B42D8E927D3A01F0075F2A6 /* Entitlements.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Entitlements.entitlements; sourceTree = "<group>"; };
+		5B42D8EB27D3F7C20075F2A6 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../../executable/data; sourceTree = "<group>"; };
+		5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../CoreEngine/libraries/bin/macos/SDL2_image.framework; sourceTree = "<group>"; };
+		5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvorbis.dylib; path = ../../../CoreEngine/libraries/bin/macos/libvorbis.dylib; sourceTree = "<group>"; };
+		5B5B7C7C27D2A145003FD836 /* libzstd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzstd.dylib; path = ../../../CoreEngine/libraries/bin/macos/libzstd.dylib; sourceTree = "<group>"; };
+		5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../CoreEngine/libraries/bin/macos/SDL2_ttf.framework; sourceTree = "<group>"; };
+		5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvorbisfile.dylib; path = ../../../CoreEngine/libraries/bin/macos/libvorbisfile.dylib; sourceTree = "<group>"; };
+		5B5B7C7F27D2A146003FD836 /* libopenal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopenal.dylib; path = ../../../CoreEngine/libraries/bin/macos/libopenal.dylib; sourceTree = "<group>"; };
+		5B5B7C8027D2A146003FD836 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../CoreEngine/libraries/bin/macos/SDL2.framework; sourceTree = "<group>"; };
+		5B5B7C8127D2A146003FD836 /* libogg.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libogg.dylib; path = ../../../CoreEngine/libraries/bin/macos/libogg.dylib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5B06DE7327CAA48E0036BB19 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B5B7C8427D2A146003FD836 /* libvorbis.dylib in Frameworks */,
+				5B06DFB927CAB3320036BB19 /* libCoreEngine.a in Frameworks */,
+				5B5B7C8227D2A146003FD836 /* SDL2_image.framework in Frameworks */,
+				5B5B7C8C27D2A146003FD836 /* libopenal.dylib in Frameworks */,
+				5B5B7C8A27D2A146003FD836 /* libvorbisfile.dylib in Frameworks */,
+				5B5B7C8627D2A146003FD836 /* libzstd.dylib in Frameworks */,
+				5B5B7C9027D2A146003FD836 /* libogg.dylib in Frameworks */,
+				5B5B7C8827D2A146003FD836 /* SDL2_ttf.framework in Frameworks */,
+				5B5B7C8E27D2A146003FD836 /* SDL2.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5B06DE6D27CAA48E0036BB19 = {
+			isa = PBXGroup;
+			children = (
+				5B06DFB727CAB3320036BB19 /* Frameworks */,
+				5B06DE7727CAA48E0036BB19 /* Products */,
+				5B42D8E727D3A01F0075F2A6 /* configuration */,
+				5B42D8EB27D3F7C20075F2A6 /* data */,
+				5B06DED127CAAA260036BB19 /* application.cpp */,
+				5B06DEA727CAAA260036BB19 /* main.cpp */,
+				5B06DEA627CAAA260036BB19 /* main.h */,
+			);
+			sourceTree = "<group>";
+		};
+		5B06DE7727CAA48E0036BB19 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5B06DE7627CAA48E0036BB19 /* CoreApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5B06DFB727CAB3320036BB19 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5B5B7C8127D2A146003FD836 /* libogg.dylib */,
+				5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */,
+				5B5B7C7F27D2A146003FD836 /* libopenal.dylib */,
+				5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */,
+				5B5B7C7C27D2A145003FD836 /* libzstd.dylib */,
+				5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */,
+				5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */,
+				5B5B7C8027D2A146003FD836 /* SDL2.framework */,
+				5B06DFCA27CAB5C30036BB19 /* OpenGL.framework */,
+				5B06DFB827CAB3320036BB19 /* libCoreEngine.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5B42D8E727D3A01F0075F2A6 /* configuration */ = {
+			isa = PBXGroup;
+			children = (
+				5B42D8E827D3A01F0075F2A6 /* Assets.xcassets */,
+				5B42D8E927D3A01F0075F2A6 /* Entitlements.entitlements */,
+			);
+			path = configuration;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5B06DE7527CAA48E0036BB19 /* CoreApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5B06DE8627CAA48F0036BB19 /* Build configuration list for PBXNativeTarget "CoreApp" */;
+			buildPhases = (
+				5B06DE7227CAA48E0036BB19 /* Sources */,
+				5B06DE7327CAA48E0036BB19 /* Frameworks */,
+				5B06DE7427CAA48E0036BB19 /* Resources */,
+				5B5B7C9227D2A146003FD836 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CoreApp;
+			productName = CoreApp;
+			productReference = 5B06DE7627CAA48E0036BB19 /* CoreApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5B06DE6E27CAA48E0036BB19 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1320;
+				TargetAttributes = {
+					5B06DE7527CAA48E0036BB19 = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 5B06DE7127CAA48E0036BB19 /* Build configuration list for PBXProject "CoreApp" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5B06DE6D27CAA48E0036BB19;
+			productRefGroup = 5B06DE7727CAA48E0036BB19 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5B06DE7527CAA48E0036BB19 /* CoreApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5B06DE7427CAA48E0036BB19 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B42D8EC27D3F7C20075F2A6 /* data in Resources */,
+				5B42D8EA27D3A01F0075F2A6 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5B06DE7227CAA48E0036BB19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B06DF6127CAAA260036BB19 /* application.cpp in Sources */,
+				5B06DF4927CAAA260036BB19 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5B06DE8427CAA48F0036BB19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse3;
+				CODE_SIGN_ENTITLEMENTS = configuration/Entitlements.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = default;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8GQ7BP7X6B;
+				FRAMEWORK_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_PKGINFO_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					../../../CoreEngine/libraries/include,
+					../../../CoreEngine/source,
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) XXXX Martin Mauersics";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MARKETING_VERSION = 0.0.1;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-mf16c",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					SDL2,
+					"-framework",
+					SDL2_ttf,
+					"-framework",
+					SDL2_image,
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"-framework",
+					OpenGL,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = MausGames.CoreApp;
+				PRODUCT_NAME = CoreApp;
+				SDKROOT = macosx;
+				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+			};
+			name = Debug;
+		};
+		5B06DE8527CAA48F0036BB19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse3;
+				CODE_SIGN_ENTITLEMENTS = configuration/Entitlements.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CURRENT_PROJECT_VERSION = default;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 8GQ7BP7X6B;
+				FRAMEWORK_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_PKGINFO_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					../../../CoreEngine/libraries/include,
+					../../../CoreEngine/source,
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) XXXX Martin Mauersics";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				LLVM_LTO = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MARKETING_VERSION = 0.0.1;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-mf16c",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					SDL2,
+					"-framework",
+					SDL2_ttf,
+					"-framework",
+					SDL2_image,
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"-framework",
+					OpenGL,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = MausGames.CoreApp;
+				PRODUCT_NAME = CoreApp;
+				SDKROOT = macosx;
+				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+			};
+			name = Release;
+		};
+		5B06DE8727CAA48F0036BB19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		5B06DE8827CAA48F0036BB19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5B06DE7127CAA48E0036BB19 /* Build configuration list for PBXProject "CoreApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B06DE8427CAA48F0036BB19 /* Debug */,
+				5B06DE8527CAA48F0036BB19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5B06DE8627CAA48F0036BB19 /* Build configuration list for PBXNativeTarget "CoreApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B06DE8727CAA48F0036BB19 /* Debug */,
+				5B06DE8827CAA48F0036BB19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5B06DE6E27CAA48E0036BB19 /* Project object */;
+}

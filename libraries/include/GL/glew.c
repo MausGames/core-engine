@@ -92,6 +92,18 @@
  * Define glewGetProcAddress.
  */
 
+#if defined(__APPLE__)
+
+#include <dlfcn.h>
+
+static void* NSGLGetProcAddress (const char* name)
+{
+  static void* image = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
+  return image ? dlsym(image, name) : NULL;
+}
+
+#endif
+
 #if defined(_WIN32)
 
 /*
@@ -105,9 +117,11 @@
 #  endif
 #  include <GL/wglew.h>
 #  define glewGetProcAddress(name) wglGetProcAddress((LPCSTR)name)
-#else /* __linux */
+#elif defined(__linux__)
 #  include <GL/glx.h>
 #  define glewGetProcAddress(name) (*glXGetProcAddressARB)(name)
+#elif defined(__APPLE__)
+#  define glewGetProcAddress(name) NSGLGetProcAddress((const char*)name)
 #endif
 
 /*

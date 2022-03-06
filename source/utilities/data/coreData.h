@@ -19,6 +19,7 @@
 // TODO 3: FolderScanTree should not allocate temporary list and string memory for (non-directory) entries outside the filter-pattern
 // TODO 2: implement checks and proper handling for paths exceeding the max length (currently they are truncated and might throw "not enough buffer-space" errors on some APIs)
 // TODO 3: manually convert Win32 paths to \\?\ format, only for absolute paths (expand relative paths ? similar to user-folder ?), and requires changing path-delimiter '/' to '\' (what about SDL RWops ?)
+// TODO 1: handle distinction between user-folder (read+write) and data-folder (read only), for all platforms, and all file+directory functions
 
 
 // ****************************************************************
@@ -210,6 +211,12 @@ template <typename T> const coreChar* coreData::ToChars(const T& tValue)
 
 #if defined(_CORE_LIBCPP_)
     template <> inline const coreChar* coreData::ToChars(const coreFloat& tValue) {return PRINT("%f", tValue);}
+#endif
+
+#if defined(_CORE_MACOS_) && (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15)
+    template <> inline const coreChar* coreData::ToChars(const coreInt32&  tValue) {return PRINT("%d",  tValue);}
+    template <> inline const coreChar* coreData::ToChars(const coreUint32& tValue) {return PRINT("%u",  tValue);}
+    template <> inline const coreChar* coreData::ToChars(const coreUintW&  tValue) {return PRINT("%zu", tValue);}
 #endif
 
 

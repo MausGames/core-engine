@@ -383,5 +383,10 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
     }
     #undef __LOAD_FUNCTION
 
+#else
+
+    // return nothing
+    (*psOutput) = "Unknown Platform Extensions";
+
 #endif
 }

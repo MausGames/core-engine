@@ -108,5 +108,5 @@ void coreExtensions(coreString* OUTPUT psOutput)
 void corePlatformExtensions(coreString* OUTPUT psOutput)
 {
     // return nothing
-    (*psOutput) = "";
+    (*psOutput) = "Unknown Platform Extensions";
 }

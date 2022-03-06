@@ -14,12 +14,11 @@
     #include <Shlobj.h>
     #include <Lmcons.h>
 #elif defined(_CORE_LINUX_)
-    #include <sys/utsname.h>
-    #include <sys/statvfs.h>
     #include <gnu/libc-version.h>
-    #include <dlfcn.h>
 #elif defined(_CORE_MACOS_)
+    #include <mach/mach.h>
     #include <mach-o/dyld.h>
+    #include "additional/macos/cocoa.h"
 #elif defined(_CORE_ANDROID_)
     #include <sys/system_properties.h>
 #endif
@@ -27,6 +26,9 @@
     #include <unistd.h>
     #include <dirent.h>
     #include <pwd.h>
+    #include <dlfcn.h>
+    #include <sys/utsname.h>
+    #include <sys/statvfs.h>
     #include <sys/stat.h>
 #endif
 
@@ -92,6 +94,18 @@ coreUint64 coreData::AppMemory()
 
         // multiply with page-size and return
         return iPages * sysconf(_SC_PAGESIZE);
+    }
+
+#elif defined(_CORE_MACOS_)
+
+    mach_task_basic_info_data_t oInfo;
+    mach_msg_type_number_t iCount = MACH_TASK_BASIC_INFO_COUNT;
+
+    // retrieve basic task information
+    if(task_info(mach_task_self(), MACH_TASK_BASIC_INFO, r_cast<task_info_t>(&oInfo), &iCount) == KERN_SUCCESS)
+    {
+        // return resident set size (in bytes)
+        return oInfo.resident_size;
     }
 
 #endif
@@ -165,14 +179,35 @@ coreBool coreData::SystemMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTP
     // retrieve runtime system parameters
     const coreInt64 iPageSize  = sysconf(_SC_PAGESIZE);
     const coreInt64 iAvailable = sysconf(_SC_AVPHYS_PAGES);
-    const coreInt64 ITotal     = sysconf(_SC_PHYS_PAGES);
+    const coreInt64 iTotal     = sysconf(_SC_PHYS_PAGES);
 
     // only allow positive values (-1 on error)
-    if((iPageSize > 0) && (iAvailable > 0) && (ITotal > 0))
+    if((iPageSize > 0) && (iAvailable > 0) && (iTotal > 0))
     {
-        if(piAvailable) (*piAvailable) = iPageSize * iAvailable;
-        if(piTotal)     (*piTotal)     = iPageSize * ITotal;
+        if(piAvailable) (*piAvailable) = iPageSize * iAvailable;   // without file cache
+        if(piTotal)     (*piTotal)     = iPageSize * iTotal;
         return true;
+    }
+
+#elif defined(_CORE_MACOS_)
+
+    // retrieve runtime system parameters
+    const coreInt64 iPageSize = sysconf(_SC_PAGESIZE);
+    const coreInt64 iTotal    = sysconf(_SC_PHYS_PAGES);
+
+    // only allow positive values (-1 on error)
+    if((iPageSize > 0) && (iTotal > 0))
+    {
+        vm_statistics64_data_t oInfo;
+        mach_msg_type_number_t iCount = HOST_VM_INFO64_COUNT;
+
+        // retrieve virtual memory statistics
+        if(host_statistics64(mach_host_self(), HOST_VM_INFO64, r_cast<host_info64_t>(&oInfo), &iCount) == KERN_SUCCESS)
+        {
+            if(piAvailable) (*piAvailable) = iPageSize * oInfo.free_count;   // without file cache
+            if(piTotal)     (*piTotal)     = iPageSize * iTotal;
+            return true;
+        }
     }
 
 #endif
@@ -200,15 +235,15 @@ coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPU
         return true;
     }
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     struct statvfs oBuffer;
 
     // retrieve filesystem statistics
     if(!statvfs(s_sUserFolder.c_str(), &oBuffer))
     {
-        if(piAvailable) (*piAvailable) = oBuffer.f_bsize * oBuffer.f_bavail;
-        if(piTotal)     (*piTotal)     = oBuffer.f_bsize * oBuffer.f_blocks;
+        if(piAvailable) (*piAvailable) = oBuffer.f_frsize * oBuffer.f_bavail;
+        if(piTotal)     (*piTotal)     = oBuffer.f_frsize * oBuffer.f_blocks;
         return true;
     }
 
@@ -288,7 +323,12 @@ const coreChar* coreData::SystemName()
 
 #elif defined(_CORE_MACOS_)
 
-    return "macOS";
+    // fetch kernel information
+    utsname oInfo;
+    if(uname(&oInfo)) return "macOS";
+
+    // return full operating system name (Darwin)
+    return PRINT("%s %s (%s)", oInfo.sysname, oInfo.release, oInfo.version);
 
 #elif defined(_CORE_ANDROID_)
 
@@ -377,6 +417,23 @@ const coreChar* coreData::SystemDirAppData()
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.local/share", pRecord->pw_dir))))
         return pcPath;
 
+#elif defined(_CORE_MACOS_)
+
+    const coreChar* pcPath;
+
+    // get directory from Cocoa interface
+    if((pcPath = coreCocoaPathApplicationSupport()) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
+        return pcPath;
+
+    // get directory from home variable
+    if((pcPath = coreData::GetEnvironment("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Application Support", pcPath))))
+        return pcPath;
+
+    // get directory from password database
+    const passwd* pRecord = getpwuid(geteuid());
+    if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Application Support", pRecord->pw_dir))))
+        return pcPath;
+
 #endif
 
     return "";
@@ -413,6 +470,23 @@ const coreChar* coreData::SystemDirTemp()
     // get directory from password database
     const passwd* pRecord = getpwuid(geteuid());
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.cache", pRecord->pw_dir))))
+        return pcPath;
+
+#elif defined(_CORE_MACOS_)
+
+    const coreChar* pcPath;
+
+    // get directory from Cocoa interface
+    if((pcPath = coreCocoaPathCaches()) && (pcPath = coreData::__PrepareSystemDir(pcPath)))
+        return pcPath;
+
+    // get directory from home variable
+    if((pcPath = coreData::GetEnvironment("HOME")) && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Caches", pcPath))))
+        return pcPath;
+
+    // get directory from password database
+    const passwd* pRecord = getpwuid(geteuid());
+    if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Caches", pRecord->pw_dir))))
         return pcPath;
 
 #endif
@@ -548,7 +622,7 @@ coreStatus coreData::SetEnvironment(const coreChar* pcName, const coreChar* pcVa
     // create, replace, or remove environment variable
     if(!_wputenv_s(coreData::__ToWideChar(pcName), pcValue ? coreData::__ToWideChar(pcValue) : L"")) return CORE_OK;   // SetEnvironmentVariable is unreliable
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     if(pcValue && pcValue[0])
     {
@@ -577,7 +651,7 @@ const coreChar* coreData::GetEnvironment(const coreChar* pcName)
 
     return coreData::__ToAnsiChar(_wgetenv(coreData::__ToWideChar(pcName)));
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     return std::getenv(pcName);
 
@@ -632,10 +706,14 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 
     return LoadLibraryW(coreData::__ToWideChar(pcName));
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     // get absolute path near application
-    const coreChar* pcLocal = PRINT("%s/%s", coreData::AppDir(), pcName);
+    #if defined(_CORE_LINUX_)
+        const coreChar* pcLocal = PRINT("%s/%s", coreData::AppDir(), pcName);
+    #else
+        const coreChar* pcLocal = PRINT("%s/%s", coreCocoaPathFramework(), pcName);
+    #endif
 
     // try to open dynamic library
     void* pLibrary = NULL;
@@ -662,7 +740,7 @@ void* coreData::GetAddress(void* pLibrary, const coreChar* pcName)
 
     return GetProcAddress(s_cast<HMODULE>(pLibrary), pcName);
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     return dlsym(pLibrary, pcName);
 
@@ -684,7 +762,7 @@ coreStatus coreData::CloseLibrary(void* pLibrary)
 
     if(FreeLibrary(s_cast<HMODULE>(pLibrary))) return CORE_OK;
 
-#elif defined(_CORE_LINUX_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     if(!dlclose(pLibrary)) return CORE_OK;
 
@@ -1077,7 +1155,9 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
     dirent* pEntry;
 
     // open folder
-    #if defined(_CORE_ANDROID_)
+    #if defined(_CORE_MACOS_)
+        pDir = opendir(PRINT("%s/%s", coreCocoaPathResource(), pcPath));
+    #elif defined(_CORE_ANDROID_)
         pDir = opendir(PRINT("%s/%s", SDL_AndroidGetInternalStoragePath(), pcPath));
     #else
         pDir = opendir(pcPath);
