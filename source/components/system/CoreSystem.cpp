@@ -339,8 +339,8 @@ CoreSystem::CoreSystem()noexcept
             SDL_free(pLocaleList);
         }
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                             coreData::SystemName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line)", coreCPUID::Brand(), coreCPUID::Vendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                             coreData::SystemOsName());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
         Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                             sLocaleStr.c_str());

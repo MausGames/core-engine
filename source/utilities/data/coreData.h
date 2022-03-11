@@ -86,8 +86,10 @@ public:
     /* get operating system properties */
     static       coreBool  SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
     static       coreBool  SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static const coreChar* SystemName      ();
+    static const coreChar* SystemOsName    ();
     static const coreChar* SystemUserName  ();
+    static const coreChar* SystemCpuVendor ();
+    static const coreChar* SystemCpuBrand  ();
     static const coreChar* SystemDirAppData();
     static const coreChar* SystemDirTemp   ();
 

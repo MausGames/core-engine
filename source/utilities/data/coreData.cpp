@@ -18,6 +18,7 @@
 #elif defined(_CORE_MACOS_)
     #include <mach/mach.h>
     #include <mach-o/dyld.h>
+    #include <sys/sysctl.h>
     #include "additional/macos/cocoa.h"
 #elif defined(_CORE_ANDROID_)
     #include <sys/system_properties.h>
@@ -258,7 +259,7 @@ coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPU
 
 // ****************************************************************
 /* get operating system name */
-const coreChar* coreData::SystemName()
+const coreChar* coreData::SystemOsName()
 {
 #if defined(_CORE_WINDOWS_)
 
@@ -327,8 +328,13 @@ const coreChar* coreData::SystemName()
     utsname oInfo;
     if(uname(&oInfo)) return "macOS";
 
+    // fetch model identifier
+    coreChar  acModel[64] = {};
+    coreUintW iLen        = sizeof(acModel);
+    sysctlbyname("hw.model", acModel, &iLen, NULL, 0u);
+
     // return full operating system name (Darwin)
-    return PRINT("%s %s (%s)", oInfo.sysname, oInfo.release, oInfo.version);
+    return PRINT("%s %s (%s, on %s)", oInfo.sysname, oInfo.release, oInfo.version, acModel);
 
 #elif defined(_CORE_ANDROID_)
 
@@ -378,6 +384,50 @@ const coreChar* coreData::SystemUserName()
 #endif
 
     return "";
+}
+
+
+// ****************************************************************
+/* get processor vendor string */
+const coreChar* coreData::SystemCpuVendor()
+{
+#if defined(_CORE_MACOS_)
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // fetch OS processor vendor string (may not exist on ARM)
+    coreUintW iLen = CORE_DATA_STRING_LEN;
+    if(!sysctlbyname("machdep.cpu.vendor", pcString, &iLen, NULL, 0u))
+    {
+        return pcString;
+    }
+
+#endif
+
+    // return CPUID processor vendor string
+    return coreCPUID::Vendor();
+}
+
+
+// ****************************************************************
+/* get processor brand string */
+const coreChar* coreData::SystemCpuBrand()
+{
+#if defined(_CORE_MACOS_)
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // fetch OS processor brand string
+    coreUintW iLen = CORE_DATA_STRING_LEN;
+    if(!sysctlbyname("machdep.cpu.brand_string", pcString, &iLen, NULL, 0u))
+    {
+        return pcString;
+    }
+
+#endif
+
+    // return CPUID processor brand string
+    return coreCPUID::Brand();
 }
 
 
