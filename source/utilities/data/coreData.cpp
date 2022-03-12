@@ -714,9 +714,17 @@ const coreChar* coreData::GetEnvironment(const coreChar* pcName)
 
 
 // ****************************************************************
-/* initialize user folder */
-void coreData::InitUserFolder()
+/* initialize default folders */
+void coreData::InitDefaultFolders()
 {
+    // set working directory
+#if defined(_CORE_MACOS_)
+    coreData::SetCurDir(coreCocoaPathResource());
+#else
+    coreData::SetCurDir(coreData::AppDir());
+    coreData::SetCurDir("../..");
+#endif
+
     // get command line argument
     const coreChar* pcPath = coreData::GetCommandLine("user-folder-path");
 
@@ -731,7 +739,14 @@ void coreData::InitUserFolder()
     // use default user folder (and create folder hierarchy)
     if(!pcPath || !pcPath[0] || (coreData::FolderCreate(pcPath) != CORE_OK) || !coreData::FolderWritable(pcPath))
     {
-        pcPath = "user/";
+        #if defined(_CORE_MACOS_)
+            pcPath = coreData::SystemDirAppData();
+        #elif defined(_CORE_ANDROID_)
+            pcPath = SDL_AndroidGetInternalStoragePath();
+        #else
+            pcPath = "user/";
+        #endif
+
         coreData::FolderCreate(pcPath);
     }
 
@@ -837,11 +852,6 @@ std::FILE* coreData::FileOpen(const coreChar* pcPath, const coreChar* pcMode)
 
     // disable thread cancellation points
     return std::fopen(pcPath, PRINT("%sc", pcMode));
-
-#elif defined(_CORE_ANDROID_)
-
-    // prepend internal storage path
-    return std::fopen(PRINT("%s/%s", SDL_AndroidGetInternalStoragePath(), pcPath), pcMode);
 
 #else
 
@@ -1064,6 +1074,9 @@ coreBool coreData::FolderExists(const coreChar* pcPath)
 {
     ASSERT(pcPath)
 
+    // current working directory always exists
+    if(!pcPath[0]) return true;
+
 #if defined(_CORE_WINDOWS_)
 
     const coreUint32 iAttributes = GetFileAttributesW(coreData::__ToWideChar(pcPath));
@@ -1137,9 +1150,10 @@ coreStatus coreData::FolderCreate(const coreChar* pcPath)
 
     // check if folder already exists (less expensive)
     if(coreData::FolderExists(pcPath)) return CORE_OK;
+    ASSERT(pcPath[0])
 
     coreChar  acString[CORE_DATA_MAX_PATH];
-    coreChar* pcCursor = acString;
+    coreChar* pcCursor = acString + 1u;
 
     // make local copy
     coreData::StrCopy(acString, ARRAY_SIZE(acString), pcPath);
@@ -1176,21 +1190,21 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
 
 #if defined(_CORE_WINDOWS_)
 
-    HANDLE pFolder;
     WIN32_FIND_DATAW oFile;
 
     // open folder
-    pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", pcPath, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
+    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", pcPath, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
         return CORE_ERROR_FILE;
     }
 
+    // loop through all files
     do
     {
         // check and add file path
-        if(oFile.cFileName[0] != '.')
+        if(oFile.cFileName[0] != L'.')
         {
             pasOutput->push_back(PRINT("%s/%s", pcPath, coreData::__ToAnsiChar(oFile.cFileName)));
         }
@@ -1202,34 +1216,28 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
 
 #else
 
-    DIR* pDir;
-    dirent* pEntry;
+    dirent* pFile;
 
     // open folder
-    #if defined(_CORE_MACOS_)
-        pDir = opendir(PRINT("%s/%s", coreCocoaPathResource(), pcPath));
-    #elif defined(_CORE_ANDROID_)
-        pDir = opendir(PRINT("%s/%s", SDL_AndroidGetInternalStoragePath(), pcPath));
-    #else
-        pDir = opendir(pcPath);
-    #endif
-    if(!pDir)
+    DIR* pFolder = opendir(pcPath);
+    if(!pFolder)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
         return CORE_ERROR_FILE;
     }
 
-    while((pEntry = readdir(pDir)))
+    // loop through all files
+    while((pFile = readdir(pFolder)))
     {
         // check and add file path
-        if((pEntry->d_name[0] != '.') && coreData::StrCmpLike(pEntry->d_name, pcFilter))
+        if((pFile->d_name[0] != '.') && coreData::StrCmpLike(pFile->d_name, pcFilter))
         {
-            pasOutput->push_back(PRINT("%s/%s", pcPath, pEntry->d_name));
+            pasOutput->push_back(PRINT("%s/%s", pcPath, pFile->d_name));
         }
     }
 
     // close folder
-    closedir(pDir);
+    closedir(pFolder);
 
 #endif
 

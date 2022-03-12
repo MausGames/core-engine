@@ -109,10 +109,9 @@ public:
     static coreStatus      SetEnvironment(const coreChar* pcName, const coreChar* pcValue);
     static const coreChar* GetEnvironment(const coreChar* pcName);
 
-    /* control user folder */
-    static        void            InitUserFolder();
+    /* control default folders */
+    static        void            InitDefaultFolders();
     static inline const coreChar* UserFolder(const coreChar* pcPath) {ASSERT(pcPath) return PRINT("%s%s", s_sUserFolder.c_str(), pcPath);}
-
 
     /* handle dynamic libraries */
     static void*      OpenLibrary (const coreChar* pcName);

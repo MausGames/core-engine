@@ -192,13 +192,9 @@ coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
     // disable synchronization between standard streams
     std::ios_base::sync_with_stdio(false);
 
-    // set new working directory (bin/<TARGET>)
-    coreData::SetCurDir(coreData::AppDir());
-    coreData::SetCurDir("../..");
-
     // set command line arguments
     coreData::SetCommandLine(argc, argv);
-    coreData::InitUserFolder();
+    coreData::InitDefaultFolders();
 
     // set floating-point behavior
     coreMath::EnableExceptions();
