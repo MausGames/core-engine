@@ -205,6 +205,9 @@
     <ClCompile Include="..\..\..\source\additional\emscripten\main.c">
       <Filter>additional\emscripten</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\data\hash\XXH.cpp">
+      <Filter>utilities\data\hash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
@@ -390,6 +393,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\menu\coreViewBox.h">
       <Filter>objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\hash\XXH.h">
+      <Filter>utilities\data\hash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

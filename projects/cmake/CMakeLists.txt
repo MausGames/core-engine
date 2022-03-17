@@ -47,6 +47,7 @@ target_sources(
     ${BASE_DIRECTORY}/source/objects/menu/coreMenu.cpp
     ${BASE_DIRECTORY}/source/objects/menu/coreTextBox.cpp
     ${BASE_DIRECTORY}/source/objects/menu/coreViewBox.cpp
+    ${BASE_DIRECTORY}/source/utilities/data/hash/XXH.cpp
     ${BASE_DIRECTORY}/source/utilities/data/coreData.cpp
     ${BASE_DIRECTORY}/source/utilities/data/coreString.cpp
     ${BASE_DIRECTORY}/source/utilities/file/coreArchive.cpp

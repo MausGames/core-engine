@@ -46,6 +46,7 @@
 // TODO 3: get ZStandard port for Emscripten target, or fallback to zlib (only interesting for storage, everything else uses transparent server-compression)
 // TODO 3: in emscripten, look into support for web-simd (-msse4.2/-mavx -msimd128)
 // TODO 5: __apple_build_version__ to identify Apple Clang
+// TODO 3: in 128-bit hash functions, change byte-arrays to proper 128-bit type, change function-attributes and turn into constexpr if possible
 
 
 // ****************************************************************
@@ -714,6 +715,7 @@ private:
 #include "utilities/data/hash/CRC32.h"
 #include "utilities/data/hash/FNV1.h"
 #include "utilities/data/hash/Murmur.h"
+#include "utilities/data/hash/XXH.h"
 #include "utilities/data/coreString.h"
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreSpinLock.h"

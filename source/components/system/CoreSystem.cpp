@@ -361,6 +361,9 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->Info("Zstandard initialized (%s, %s-threaded)", ZSTD_versionString(), ZSTD_cParam_getBounds(ZSTD_c_nbWorkers).upperBound ? "multi" : "single");
 
 #endif
+
+    // log xxHash library version
+    Core::Log->Info("xxHash initialized (%s)", XXH_versionString());
 }
 
 

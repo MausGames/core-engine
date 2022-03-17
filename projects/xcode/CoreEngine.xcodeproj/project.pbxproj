@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B660CE727E0B7AB009BB1CB /* XXH.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B660CE527E0B7AB009BB1CB /* XXH.h */; };
+		5B660CE827E0B7AB009BB1CB /* XXH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B660CE627E0B7AB009BB1CB /* XXH.cpp */; };
 		5B77109B27CD488B00EB424C /* cocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B77109927CD488B00EB424C /* cocoa.h */; };
 		5B77109C27CD488B00EB424C /* cocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5B77109A27CD488B00EB424C /* cocoa.mm */; };
 		5BB8C34127C94E4200BBB338 /* coreGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C2B927C94E4100BBB338 /* coreGL.h */; };
@@ -116,6 +118,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5B660CE527E0B7AB009BB1CB /* XXH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XXH.h; sourceTree = "<group>"; };
+		5B660CE627E0B7AB009BB1CB /* XXH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XXH.cpp; sourceTree = "<group>"; };
 		5B77109927CD488B00EB424C /* cocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa.h; sourceTree = "<group>"; };
 		5B77109A27CD488B00EB424C /* cocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa.mm; sourceTree = "<group>"; };
 		5BB8C29827C9489900BBB338 /* libCoreEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoreEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -517,6 +521,8 @@
 				5BB8C31627C94E4100BBB338 /* CRC32.h */,
 				5BB8C31527C94E4100BBB338 /* FNV1.h */,
 				5BB8C31427C94E4100BBB338 /* Murmur.h */,
+				5B660CE627E0B7AB009BB1CB /* XXH.cpp */,
+				5B660CE527E0B7AB009BB1CB /* XXH.h */,
 			);
 			path = hash;
 			sourceTree = "<group>";
@@ -618,6 +624,7 @@
 				5BB8C3A927C94E4200BBB338 /* coreMemory.h in Headers */,
 				5BB8C36927C94E4200BBB338 /* coreModel.h in Headers */,
 				5BB8C39327C94E4200BBB338 /* coreParticle.h in Headers */,
+				5B660CE727E0B7AB009BB1CB /* XXH.h in Headers */,
 				5BB8C38D27C94E4200BBB338 /* coreData.h in Headers */,
 				5BB8C3AA27C94E4200BBB338 /* coreObject.h in Headers */,
 				5BB8C38127C94E4200BBB338 /* coreSpline.h in Headers */,
@@ -728,6 +735,7 @@
 				5BB8C3A427C94E4200BBB338 /* coreViewBox.cpp in Sources */,
 				5BB8C3AC27C94E4200BBB338 /* coreObject.cpp in Sources */,
 				5BB8C34E27C94E4200BBB338 /* CoreInput.cpp in Sources */,
+				5B660CE827E0B7AB009BB1CB /* XXH.cpp in Sources */,
 				5BB8C35327C94E4200BBB338 /* CorePlatform.cpp in Sources */,
 				5BB8C35827C94E4200BBB338 /* coreThread.cpp in Sources */,
 				5BB8C38C27C94E4200BBB338 /* coreData.cpp in Sources */,
