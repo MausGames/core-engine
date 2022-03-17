@@ -18,26 +18,27 @@ coreConfig::coreConfig(const coreChar* pcPath)noexcept
 , m_Lock       ()
 {
     // load configuration file
-    this->Load();
-
-    // write everything to log file
-    Core::Log->ListStartInfo("Configuration Values");
+    if(this->Load() == CORE_OK)
     {
-        // loop through all configuration sections
-        FOR_EACH(it, m_aasSection)
+        // write everything to log file
+        Core::Log->ListStartInfo("Configuration Values");
         {
-            Core::Log->ListDeeper(CORE_LOG_BOLD("%s"), m_aasSection.get_string(it));
+            // loop through all configuration sections
+            FOR_EACH(it, m_aasSection)
             {
-                // loop through all configuration entries
-                FOR_EACH(et, *it)
+                Core::Log->ListDeeper(CORE_LOG_BOLD("%s"), m_aasSection.get_string(it));
                 {
-                    Core::Log->ListAdd("%s: %s", it->get_string(et), et->c_str());
+                    // loop through all configuration entries
+                    FOR_EACH(et, *it)
+                    {
+                        Core::Log->ListAdd("%s: %s", it->get_string(et), et->c_str());
+                    }
                 }
+                Core::Log->ListEnd();
             }
-            Core::Log->ListEnd();
         }
+        Core::Log->ListEnd();
     }
-    Core::Log->ListEnd();
 }
 
 

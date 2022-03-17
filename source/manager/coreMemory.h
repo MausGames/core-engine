@@ -52,7 +52,8 @@
 #endif
 
 #if defined(_CORE_MACOS_) && (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15)
-    namespace std {FORCE_INLINE RETURN_RESTRICT void* aligned_alloc(const coreUintW iAlign, const coreUintW iSize) {void* P; posix_memalign(&P, iAlign, iSize); return P;}}
+    namespace std {FORCE_INLINE RETURN_RESTRICT void* aligned_alloc_macos(const coreUintW iAlign, const coreUintW iSize) {void* P; posix_memalign(&P, iAlign, iSize); return P;}}
+    #define aligned_alloc aligned_alloc_macos
 #endif
 
 

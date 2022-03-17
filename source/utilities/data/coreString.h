@@ -11,6 +11,7 @@
 #define _CORE_GUARD_STRING_H_
 
 // TODO 3: constexpr coreString, when std::string in libstdc++ and libc++ supports it
+// TODO 3: work-string should also handle NULL
 
 
 // ****************************************************************

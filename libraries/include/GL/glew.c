@@ -98,7 +98,8 @@
 
 static void* NSGLGetProcAddress (const char* name)
 {
-  static void* image = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
+  static void* image = NULL;
+  if (!image) image = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
   return image ? dlsym(image, name) : NULL;
 }
 
@@ -171,7 +172,7 @@ static GLuint _glewStrCopy (char *d, const char *s, char c)
 static GLboolean _glewStrSame (const GLubyte* a, const GLubyte* b, GLuint n)
 {
   GLuint i=0;
-  if(a == NULL || b == NULL)
+  if (a == NULL || b == NULL)
     return (a == NULL && b == NULL && n == 0) ? GL_TRUE : GL_FALSE;
   while (i < n && a[i] != '\0' && b[i] != '\0' && a[i] == b[i]) i++;
   return i == n ? GL_TRUE : GL_FALSE;
@@ -186,11 +187,11 @@ static GLboolean _glewStrSame1 (const GLubyte** a, GLuint* na, const GLubyte* b,
     (*a)++;
     (*na)--;
   }
-  if(*na >= nb)
+  if (*na >= nb)
   {
     GLuint i=0;
     while (i < nb && (*a)+i != NULL && b+i != NULL && (*a)[i] == b[i]) i++;
-    if(i == nb)
+    if (i == nb)
     {
       *a = *a + nb;
       *na = *na - nb;
@@ -202,11 +203,11 @@ static GLboolean _glewStrSame1 (const GLubyte** a, GLuint* na, const GLubyte* b,
 
 static GLboolean _glewStrSame2 (const GLubyte** a, GLuint* na, const GLubyte* b, GLuint nb)
 {
-  if(*na >= nb)
+  if (*na >= nb)
   {
     GLuint i=0;
     while (i < nb && (*a)+i != NULL && b+i != NULL && (*a)[i] == b[i]) i++;
-    if(i == nb)
+    if (i == nb)
     {
       *a = *a + nb;
       *na = *na - nb;
@@ -218,7 +219,7 @@ static GLboolean _glewStrSame2 (const GLubyte** a, GLuint* na, const GLubyte* b,
 
 static GLboolean _glewStrSame3 (const GLubyte** a, GLuint* na, const GLubyte* b, GLuint nb)
 {
-  if(*na >= nb)
+  if (*na >= nb)
   {
     GLuint i=0;
     while (i < nb && (*a)+i != NULL && b+i != NULL && (*a)[i] == b[i]) i++;

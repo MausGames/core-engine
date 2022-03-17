@@ -506,10 +506,14 @@ template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iS
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
 
 // retrieve compile-time function and lambda properties
-template <typename T>                            struct INTERFACE coreFunctionTraits final               : public coreFunctionTraits<decltype(&std::decay<T>::type::operator())> {};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const> : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)>      : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
-template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)>      : public coreFunctionTraits<R(A...)>                                    {};
+template <typename T>                            struct INTERFACE coreFunctionTraits final                        : public coreFunctionTraits<decltype(&std::decay<T>::type::operator())> {};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const noexcept> : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const>          : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)noexcept>       : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)>               : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)noexcept>       : public coreFunctionTraits<R(A...)>                                    {};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)>               : public coreFunctionTraits<R(A...)>                                    {};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)noexcept>       : public coreFunctionTraits<R(A...)>                                    {};
 template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)>
 {
     using coreFuncType   = R(*)(A...);                                                                             // function type (without class)

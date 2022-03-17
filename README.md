@@ -9,8 +9,8 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 > - **System:** Hardware, Window and Event Handling, Timer, Threads
 > - **Graphics:** Camera, View Frustum and Lighting Control, Frame Buffers, Data Buffers, Models (.md3, .md5, packed), Textures (.png, compressed), Shaders, Fonts
-> - **Audio:** Sound Effects (.wav, compressed), Music Files (.ogg), Music Player
-> - **Input:** Mouse, Keyboard, Joysticks/Gamepads, Touch, Haptic
+> - **Audio:** Sound Effects (.wav, compressed), Music Files (.ogg, streamed), Music Player
+> - **Input:** Mouse, Keyboard, Joysticks/Gamepads, Touch, Rumble
 > - **Debug:** CPU and GPU Performance Monitor, Run-Time Value and Texture Inspection, Pipeline Statistics
 > - Asynchronous Resource Management (Hot-Reloading, Indirections/Proxies), Memory Management (Global Sharing, Pool Allocations, Alignment)
 > - File Handling (Packaging, Mounting, Compression), HTML Log, Configuration and Language Files

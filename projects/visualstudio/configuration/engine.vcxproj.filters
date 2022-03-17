@@ -73,6 +73,9 @@
     <Filter Include="additional\emscripten">
       <UniqueIdentifier>{e28246a5-c19a-4893-bdd5-3c1ed027ca80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="additional\macos">
+      <UniqueIdentifier>{0eac98f1-d6b9-4ba9-b6fe-d5db834d737f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -207,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\utilities\data\hash\XXH.cpp">
       <Filter>utilities\data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\macos\main.c">
+      <Filter>additional\macos</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -397,6 +403,9 @@
     <ClInclude Include="..\..\..\source\utilities\data\hash\XXH.h">
       <Filter>utilities\data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\macos\cocoa.h">
+      <Filter>additional\macos</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\natvis.natvis" />
@@ -407,6 +416,9 @@
     </None>
     <None Include="..\..\..\source\additional\emscripten\shell.html">
       <Filter>additional\emscripten</Filter>
+    </None>
+    <None Include="..\..\..\source\additional\macos\cocoa.mm">
+      <Filter>additional\macos</Filter>
     </None>
   </ItemGroup>
 </Project>
