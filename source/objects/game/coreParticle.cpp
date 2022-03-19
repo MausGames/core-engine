@@ -116,7 +116,7 @@ void coreParticleSystem::Render()
             }
 
             // unmap buffer
-            m_aInstanceBuffer.current().Unmap(pRange);
+            m_aInstanceBuffer.current().Unmap();
 
             // reset the update status
             m_bUpdate = false;

@@ -602,7 +602,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             }
 
             // unmap buffer
-            m_aInstanceBuffer.current().Unmap(pRange);
+            m_aInstanceBuffer.current().Unmap();
 
             // reset the update status
             REMOVE_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)
@@ -687,7 +687,7 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
             }
 
             // unmap buffer
-            m_paCustomBuffer->current().Unmap(pRange);
+            m_paCustomBuffer->current().Unmap();
 
             // reset the update status
             REMOVE_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_CUSTOM)

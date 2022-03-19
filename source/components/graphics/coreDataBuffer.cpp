@@ -130,7 +130,7 @@ void coreDataBuffer::Delete()
     if(m_pPersistentBuffer)
     {
         m_pPersistentBuffer = NULL;
-        this->Unmap(r_cast<coreByte*>(-1));
+        this->Unmap();
     }
 
     // delete buffer
@@ -151,7 +151,7 @@ void coreDataBuffer::Delete()
 /* map buffer memory for writing operations */
 RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType)
 {
-    ASSERT(m_iIdentifier && this->IsWritable() && ((iOffset + iLength) <= m_iSize))
+    ASSERT(m_iIdentifier && this->IsWritable() && iLength && (iOffset + iLength <= m_iSize))
 
     // save mapping attributes
     m_iMapOffset = iOffset;
@@ -197,10 +197,8 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
 
 // ****************************************************************
 /* unmap buffer memory */
-void coreDataBuffer::Unmap(const coreByte* pPointer)
+void coreDataBuffer::Unmap()
 {
-    ASSERT(pPointer)
-
     if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
         if(m_pPersistentBuffer)
@@ -244,9 +242,11 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
     }
     else
     {
+        ASSERT(m_pPersistentBuffer)
+
         // send new data to the data buffer
         this->Bind();
-        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, pPointer);
+        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, m_pPersistentBuffer);
     }
 
     // reset mapping attributes
@@ -259,7 +259,7 @@ void coreDataBuffer::Unmap(const coreByte* pPointer)
 /* copy content of the data buffer object */
 coreStatus coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const
 {
-    ASSERT(m_iIdentifier && ((iReadOffset + iLength) <= m_iSize) && ((iWriteOffset + iLength) <= pDestination->GetSize()))
+    ASSERT(m_iIdentifier && iLength && (iReadOffset + iLength <= m_iSize) && (iWriteOffset + iLength <= pDestination->GetSize()))
 
     if(CORE_GL_SUPPORT(ARB_copy_buffer))
     {

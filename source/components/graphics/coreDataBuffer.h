@@ -74,7 +74,7 @@ public:
 
     /* modify buffer memory */
     RETURN_RESTRICT coreByte* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType);
-    void                      Unmap(const coreByte* pPointer);
+    void                      Unmap();
     coreStatus                Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
 
     /* protect buffer memory up to now */

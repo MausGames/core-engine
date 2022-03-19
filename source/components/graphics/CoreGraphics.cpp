@@ -323,7 +323,7 @@ void CoreGraphics::UpdateTransformation()
         std::memcpy(pRange + 3u*sizeof(coreMatrix4),                        &m_mOrtho,          sizeof(coreMatrix4));
         std::memcpy(pRange + 4u*sizeof(coreMatrix4),                        &m_vViewResolution, sizeof(coreVector4));
         std::memcpy(pRange + 4u*sizeof(coreMatrix4) + 4u*sizeof(coreFloat), &m_vCamPosition,    sizeof(coreVector3));
-        m_TransformBuffer.Unmap(pRange);
+        m_TransformBuffer.Unmap();
     }
     else
     {
@@ -364,7 +364,7 @@ void CoreGraphics::UpdateAmbient()
 
         // update ambient data
         std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
-        m_AmbientBuffer.Unmap(pRange);
+        m_AmbientBuffer.Unmap();
     }
     else
     {
