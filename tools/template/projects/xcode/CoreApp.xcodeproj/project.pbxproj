@@ -267,10 +267,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MARKETING_VERSION = 0.0.1;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-mf16c",
-				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					SDL2,
@@ -341,10 +337,6 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MARKETING_VERSION = 0.0.1;
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-mf16c",
-				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					SDL2,

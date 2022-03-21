@@ -121,7 +121,7 @@ else()
 
     target_compile_options(
         CoreEngine PUBLIC
-        -msse3 -mf16c -pipe -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
+        -msse3 -pipe -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
         $<IF:$<CONFIG:Debug>, -O0 -g3 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
 

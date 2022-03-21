@@ -285,7 +285,7 @@ constexpr coreFloat coreMath::Rcp(const coreFloat fInput)
 /* count the number of one-bits (population count) */
 constexpr coreUint32 coreMath::PopCount(coreUint64 iInput)
 {
-#if defined(_CORE_SSE_)
+#if defined(_CORE_SSE_) && defined(_CORE_MSVC_)
 
     if(!std::is_constant_evaluated() && coreCPUID::POPCNT())
     {
@@ -686,7 +686,7 @@ constexpr coreFloat coreMath::BitsToFloat(const coreUint32 iInput)
 /* convert single-precision float into half-precision */
 constexpr coreUint16 coreMath::Float32To16(const coreFloat fInput)
 {
-#if defined(_CORE_SSE_)
+#if defined(_CORE_SSE_) && defined(_CORE_MSVC_)
 
     if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {
@@ -712,7 +712,7 @@ constexpr coreUint16 coreMath::Float32To16(const coreFloat fInput)
 /* convert half-precision float into single-precision */
 constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 {
-#if defined(_CORE_SSE_)
+#if defined(_CORE_SSE_) && defined(_CORE_MSVC_)
 
     if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {

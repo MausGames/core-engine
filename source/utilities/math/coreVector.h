@@ -865,7 +865,7 @@ constexpr coreUint64 coreVector4::PackSnorm4x16()const
 /* compress arbitrary vector into WZYX packed uint64 */
 constexpr coreUint64 coreVector4::PackFloat4x16()const
 {
-#if defined(_CORE_SSE_) && defined(_CORE_64BIT_)
+#if defined(_CORE_SSE_) && defined(_CORE_MSVC_) && defined(_CORE_64BIT_)
 
     if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {
@@ -968,7 +968,7 @@ constexpr coreVector4 coreVector4::UnpackSnorm4x16(const coreUint64 iNumber)
 /* uncompress WZYX packed uint64 into arbitrary vector */
 constexpr coreVector4 coreVector4::UnpackFloat4x16(const coreUint64 iNumber)
 {
-#if defined(_CORE_SSE_)
+#if defined(_CORE_SSE_) && defined(_CORE_MSVC_)
 
     if(!std::is_constant_evaluated() && coreCPUID::F16C())
     {
