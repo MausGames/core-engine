@@ -17,7 +17,7 @@
 // ****************************************************************
 /* audio definitions */
 #define CORE_AUDIO_SOURCES_MUSIC (4u)                                                    // number of audio sources for music
-#define CORE_AUDIO_SOURCES_SOUND (16u)                                                   // number of audio sources for sound
+#define CORE_AUDIO_SOURCES_SOUND (32u)                                                   // number of audio sources for sound
 #define CORE_AUDIO_SOURCES       (CORE_AUDIO_SOURCES_MUSIC + CORE_AUDIO_SOURCES_SOUND)   // total number of audio sources
 #define CORE_AUDIO_TYPES         (8u)                                                    // number of sound types
 #define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    // sound buffer identifier for music

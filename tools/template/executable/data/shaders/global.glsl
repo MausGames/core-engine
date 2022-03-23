@@ -594,7 +594,7 @@ uniform lowp sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     void VertexMain();
     void ShaderMain()
     {
-    #if defined(_CORE_PLATFORM_MACOS_)
+    #if defined(_CORE_TARGET_MACOS_)
         v_v4VarColor   = vec4(0.0);
         for(int i = 0; i < CORE_NUM_TEXTURES_2D; ++i) v_av2TexCoord[i] = vec2(0.0);
         for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightPos[i] = vec4(0.0);

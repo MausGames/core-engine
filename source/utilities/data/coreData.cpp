@@ -182,7 +182,7 @@ coreBool coreData::SystemMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTP
     const coreInt64 iAvailable = sysconf(_SC_AVPHYS_PAGES);
     const coreInt64 iTotal     = sysconf(_SC_PHYS_PAGES);
 
-    // only allow positive values (-1 on error)
+    // only allow positive non-zero values (-1 on error)
     if((iPageSize > 0) && (iAvailable > 0) && (iTotal > 0))
     {
         if(piAvailable) (*piAvailable) = iPageSize * iAvailable;   // without file cache
@@ -196,7 +196,7 @@ coreBool coreData::SystemMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTP
     const coreInt64 iPageSize = sysconf(_SC_PAGESIZE);
     const coreInt64 iTotal    = sysconf(_SC_PHYS_PAGES);
 
-    // only allow positive values (-1 on error)
+    // only allow positive non-zero values (-1 on error)
     if((iPageSize > 0) && (iTotal > 0))
     {
         vm_statistics64_data_t oInfo;
@@ -1291,6 +1291,8 @@ void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon,
 /* retrieve date and time as formatted string */
 const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap)
 {
+    ASSERT(pcFormat && pTimeMap)
+
     coreChar* pcString = coreData::__NextTempString();
 
     // read arguments and assemble string
