@@ -50,6 +50,7 @@
 #define CORE_GL_EXT_gpu_shader4                      __CORE_GLES_VAR(bES30)
 #define CORE_GL_EXT_packed_float                     __CORE_GLES_VAR(bES30)
 #define CORE_GL_KHR_debug                            false
+#define CORE_GL_NVX_gpu_memory_info                  false
 #define CORE_GL_NV_framebuffer_multisample_coverage  false
 #define CORE_GL_NV_multisample_filter_hint           false
 #define CORE_GL_NV_shader_buffer_load                false
@@ -176,24 +177,26 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 
 // ****************************************************************
 /* unused definitions and functions */
-#define GL_CLIPPING_OUTPUT_PRIMITIVES  0x82F7
-#define GL_FRAGMENT_SHADER_INVOCATIONS 0x82F4
-#define GL_FRAMEBUFFER_SRGB            0x8DB9
-#define GL_GENERATE_MIPMAP             0x8191
-#define GL_LUMINANCE8                  0x8040
-#define GL_LUMINANCE16                 0x8042
-#define GL_MAP_PERSISTENT_BIT          0x00000040
-#define GL_MULTISAMPLE                 0x809D
-#define GL_MULTISAMPLE_FILTER_HINT_NV  0x8534
-#define GL_PERSPECTIVE_CORRECTION_HINT 0x0C50
-#define GL_PRIMITIVES_SUBMITTED        0x82EF
-#define GL_R16                         0x822A
-#define GL_RG16                        0x822C
-#define GL_RGB16                       0x8054
-#define GL_RGBA16                      0x805B
-#define GL_TEXTURE_COMPRESSION_HINT    0x84EF
-#define GL_TIMESTAMP                   0x8E28
-#define GL_VERTEX_SHADER_INVOCATIONS   0x82F0
+#define GL_CLIPPING_OUTPUT_PRIMITIVES                   0x82F7
+#define GL_FRAGMENT_SHADER_INVOCATIONS                  0x82F4
+#define GL_FRAMEBUFFER_SRGB                             0x8DB9
+#define GL_GENERATE_MIPMAP                              0x8191
+#define GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX 0x9049
+#define GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX         0x9047
+#define GL_LUMINANCE8                                   0x8040
+#define GL_LUMINANCE16                                  0x8042
+#define GL_MAP_PERSISTENT_BIT                           0x00000040
+#define GL_MULTISAMPLE                                  0x809D
+#define GL_MULTISAMPLE_FILTER_HINT_NV                   0x8534
+#define GL_PERSPECTIVE_CORRECTION_HINT                  0x0C50
+#define GL_PRIMITIVES_SUBMITTED                         0x82EF
+#define GL_R16                                          0x822A
+#define GL_RG16                                         0x822C
+#define GL_RGB16                                        0x8054
+#define GL_RGBA16                                       0x805B
+#define GL_TEXTURE_COMPRESSION_HINT                     0x84EF
+#define GL_TIMESTAMP                                    0x8E28
+#define GL_VERTEX_SHADER_INVOCATIONS                    0x82F0
 
 #define glBindFragDataLocation(...)
 #define glBindMultiTextureEXT(...)

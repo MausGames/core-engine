@@ -68,10 +68,11 @@ private:
 
     coreUint32 m_aiScissorData[4];                                        // current scissor test properties
 
-    coreUint8 m_iMaxSamples;                                              // max multisample anti aliasing level
-    coreUint8 m_iMaxAnisotropy;                                           // max anisotropic texture filter level
-    coreFloat m_fVersionOpenGL;                                           // available OpenGL version
-    coreFloat m_fVersionGLSL;                                             // available GLSL version
+    coreUint64 m_iMemoryStart;                                            // available graphics memory at the start of the application (in bytes)
+    coreUint8  m_iMaxSamples;                                             // max multisample anti aliasing level
+    coreUint8  m_iMaxAnisotropy;                                          // max anisotropic texture filter level
+    coreFloat  m_fVersionOpenGL;                                          // available OpenGL version
+    coreFloat  m_fVersionGLSL;                                            // available GLSL version
 
 
 private:
@@ -112,6 +113,10 @@ public:
     /* take screenshot */
     void        TakeScreenshot(const coreChar* pcPath)const;
     inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolder(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
+
+    /* retrieve graphics memory */
+    coreUint64 AppGpuMemory   ()const;
+    coreBool   SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const;
 
     /* get component properties */
     inline const SDL_GLContext&  GetRenderContext  ()const                       {return m_pRenderContext;}

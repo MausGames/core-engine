@@ -31,6 +31,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_aAmbientSync     {}
 , m_iUniformUpdate   (0u)
 , m_aiScissorData    {}
+, m_iMemoryStart     (0u)
 , m_iMaxSamples      (0u)
 , m_iMaxAnisotropy   (0u)
 , m_fVersionOpenGL   (0.0f)
@@ -70,16 +71,23 @@ CoreGraphics::CoreGraphics()noexcept
     // log graphics device information
     Core::Log->ListStartInfo("Graphics Device Information");
     {
+        coreUint64 iMemoryTotal;
+        this->SystemGpuMemory(&m_iMemoryStart, &iMemoryTotal);
+
+        const coreUint64 iMemoryUsed = iMemoryTotal - m_iMemoryStart;
+        const coreDouble dMemoryPct  = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(MAX(iMemoryTotal, 1u)));
+
         coreString sExtensions;
         coreExtensions(&sExtensions);
 
         coreString sPlatformExtensions;
         corePlatformExtensions(&sPlatformExtensions);
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")         " %s", glGetString(GL_VENDOR));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")       " %s", glGetString(GL_RENDERER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:") " %s", glGetString(GL_VERSION));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:") " %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")          " %s",                    glGetString(GL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")        " %s",                    glGetString(GL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:")  " %s",                    glGetString(GL_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:")  " %s",                    glGetString(GL_SHADING_LANGUAGE_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Graphics Memory:") " %llu/%llu MB (%.1f%%)", iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(sExtensions        .c_str());
         Core::Log->ListAdd(sPlatformExtensions.c_str());
         Core::Log->ListAdd("GL_MAX_SAMPLES (%u) GL_MAX_TEXTURE_MAX_ANISOTROPY (%u)", m_iMaxSamples, m_iMaxAnisotropy);
@@ -583,6 +591,50 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
     });
 
 #endif
+}
+
+
+// ****************************************************************
+/* get amount of graphics memory assigned to the application (approximation) */
+coreUint64 CoreGraphics::AppGpuMemory()const
+{
+    if(CORE_GL_SUPPORT(NVX_gpu_memory_info))
+    {
+        GLint iAvailable;
+
+        // retrieve GPU memory info (in KB)
+        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &iAvailable);
+
+        // convert to bytes and return
+        return (m_iMemoryStart - coreUint64(iAvailable) * 1024u);
+    }
+
+    return 0u;
+}
+
+
+// ****************************************************************
+/* get dedicated graphics memory */
+coreBool CoreGraphics::SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const
+{
+    if(CORE_GL_SUPPORT(NVX_gpu_memory_info))
+    {
+        GLint iAvailable, iTotal;
+
+        // retrieve GPU memory info (in KB)
+        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &iAvailable);
+        glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX,         &iTotal);
+
+        // convert to bytes and return
+        if(piAvailable) (*piAvailable) = coreUint64(iAvailable) * 1024u;
+        if(piTotal)     (*piTotal)     = coreUint64(iTotal)     * 1024u;
+        return true;
+    }
+
+    // could not get dedicated graphics memory
+    if(piAvailable) (*piAvailable) = 0u;
+    if(piTotal)     (*piTotal)     = 1u;
+    return false;
 }
 
 

@@ -325,7 +325,7 @@ CoreSystem::CoreSystem()noexcept
         coreData::SystemSpace (&iSpaceAvailable,  NULL);
 
         const coreUint64 iMemoryUsed = iMemoryTotal - iMemoryAvailable;
-        const coreDouble dMemoryPct  = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(iMemoryTotal));
+        const coreDouble dMemoryPct  = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(MAX(iMemoryTotal, 1u)));
 
         coreString  sLocaleStr  = "";
         SDL_Locale* pLocaleList = SDL_GetPreferredLocales();

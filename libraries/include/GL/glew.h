@@ -5215,6 +5215,21 @@ typedef void (GLAPIENTRY * PFNGLMAXSHADERCOMPILERTHREADSKHRPROC) (GLuint count);
 
 #endif /* GL_KHR_parallel_shader_compile */
 
+/* ------------------------- GL_NVX_gpu_memory_info ------------------------ */
+
+#ifndef GL_NVX_gpu_memory_info
+#define GL_NVX_gpu_memory_info 1
+
+#define GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX 0x9047
+#define GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX 0x9048
+#define GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX 0x9049
+#define GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX 0x904A
+#define GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX 0x904B
+
+#define GLEW_NVX_gpu_memory_info GLEW_GET_VAR(__GLEW_NVX_gpu_memory_info)
+
+#endif /* GL_NVX_gpu_memory_info */
+
 /* ---------------------------- GL_NV_copy_image --------------------------- */
 
 #ifndef GL_NV_copy_image
@@ -6455,6 +6470,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_filter_anisotropic;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_debug;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_parallel_shader_compile;
+GLEW_VAR_EXPORT GLboolean __GLEW_NVX_gpu_memory_info;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_copy_image;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_framebuffer_multisample_coverage;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_gpu_shader5;

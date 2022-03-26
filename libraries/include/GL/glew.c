@@ -1305,6 +1305,7 @@ GLboolean __GLEW_EXT_texture_filter_anisotropic = GL_FALSE;
 GLboolean __GLEW_KHR_debug = GL_FALSE;
 GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
+GLboolean __GLEW_NVX_gpu_memory_info = GL_FALSE;
 GLboolean __GLEW_NV_copy_image = GL_FALSE;
 GLboolean __GLEW_NV_framebuffer_multisample_coverage = GL_FALSE;
 GLboolean __GLEW_NV_gpu_shader5 = GL_FALSE;
@@ -1512,6 +1513,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_KHR_parallel_shader_compile
   "GL_KHR_parallel_shader_compile",
+#endif
+#ifdef GL_NVX_gpu_memory_info
+  "GL_NVX_gpu_memory_info",
 #endif
 #ifdef GL_NV_copy_image
   "GL_NV_copy_image",
@@ -1790,6 +1794,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_KHR_parallel_shader_compile
   &__GLEW_KHR_parallel_shader_compile,
+#endif
+#ifdef GL_NVX_gpu_memory_info
+  &__GLEW_NVX_gpu_memory_info,
 #endif
 #ifdef GL_NV_copy_image
   &__GLEW_NV_copy_image,
@@ -4668,6 +4675,16 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"parallel_shader_compile", 23))
         {
           ret = GLEW_KHR_parallel_shader_compile;
+          continue;
+        }
+#endif
+      }
+      if (_glewStrSame2(&pos, &len, (const GLubyte*)"NVX_", 4))
+      {
+#ifdef GL_NVX_gpu_memory_info
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"gpu_memory_info", 15))
+        {
+          ret = GLEW_NVX_gpu_memory_info;
           continue;
         }
 #endif
