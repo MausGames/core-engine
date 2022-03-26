@@ -15,11 +15,11 @@
 // TODO 5: GL_OES_copy_image GL_EXT_tessellation_shader GL_OES_tessellation_shader GL_OES_framebuffer_object GL_NV_packed_float GL_EXT_map_buffer_range GL_EXT_sRGB_write_control GL_NV_pixel_buffer_object GL_KHR_parallel_shader_compile
 // TODO 5: GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_OES_vertex_array_object GL_OES_texture_stencil8 GL_NV_copy_buffer GL_OES_sample_shading GL_OES_packed_depth_stencil GL_EXT_instanced_arrays GL_NV_instanced_arrays
 // TODO 5: ANDROID_extension_pack_es31a
+// TODO 5: WEBGL GL_OES_texture_float (but no filtering allowed)
 
 
 // ****************************************************************
 /* default extensions */
-#define CORE_GL_V2_compatibility                     false
 #define CORE_GL_AMD_framebuffer_multisample_advanced false
 #define CORE_GL_ARB_buffer_storage                   false
 #define CORE_GL_ARB_clear_buffer_object              false
@@ -274,6 +274,12 @@ extern coreContext g_CoreContext;   // context object
 
 template <typename ...A> void __UNUSED_ARGS(A...) {}
 #define __CORE_GLES_UNUSED_ARGS(...) {if(false) __UNUSED_ARGS(__VA_ARGS__);}
+
+
+// ****************************************************************
+/* support deprecated features */
+#define CORE_GL_V2_compatibility false
+extern coreBool CORE_GL_ES2_restriction;
 
 
 // ****************************************************************

@@ -12,6 +12,8 @@
 coreString  g_sExtensions = "";
 coreContext g_CoreContext = {};
 
+coreBool CORE_GL_ES2_restriction = false;
+
 
 // ****************************************************************
 /* init OpenGL ES */
@@ -29,6 +31,9 @@ void __coreInitOpenGLES()
     g_CoreContext.__bES31    = (g_CoreContext.__fVersion >= 3.1f);
     g_CoreContext.__bES32    = (g_CoreContext.__fVersion >= 3.2f);
     const coreBool  bES30    =  g_CoreContext.__bES30;
+
+    // handle support for deprecated features
+    CORE_GL_ES2_restriction = !bES30;
 
     // implement GL_EXT_discard_framebuffer
     if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))
@@ -85,6 +90,7 @@ void __coreInitOpenGLES()
 
     // implement GL_OES_depth_texture
     __CORE_GLES_CHECK(GL_OES_depth_texture, bES30);
+    if(g_sExtensions.find("GL_WEBGL_depth_texture ") != coreString::npos) g_CoreContext.__GL_OES_depth_texture = true;
 
     // implement GL_OES_texture_stencil8
     __CORE_GLES_CHECK(GL_OES_texture_stencil8, false);

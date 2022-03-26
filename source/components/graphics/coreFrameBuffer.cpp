@@ -465,12 +465,8 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
 {
     ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
-#if defined(_CORE_GLES_)
-
-    // currently only one color attachment supported
-    if(iColorIndex > 0u) return NULL;
-
-#endif
+    // only one color attachment supported
+    if(CORE_GL_SUPPORT(ES2_restriction) && (iColorIndex > 0u)) return NULL;
 
     // get requested render target structure
     coreRenderTarget* pTarget = NULL;

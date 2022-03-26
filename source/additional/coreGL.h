@@ -17,6 +17,7 @@
 // ****************************************************************
 /* support deprecated features */
 extern coreBool GLEW_V2_compatibility;
+#define GLEW_ES2_restriction false
 
 
 // ****************************************************************

@@ -116,11 +116,12 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     WARN_IF(m_iIdentifier) this->Unload();
 
     // check for OpenGL extensions
+    const coreBool bFilterable  = !DEFINED(_CORE_GLES_) || ((oSpec.iFormat != GL_DEPTH_COMPONENT) && (oSpec.iFormat != GL_DEPTH_STENCIL));
     const coreBool bAnisotropic = CORE_GL_SUPPORT(ARB_texture_filter_anisotropic)                && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
-    const coreBool bTrilinear   = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR);
+    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS) && !CORE_GL_SUPPORT(ES2_restriction);
+    const coreBool bTrilinear   = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR)   && bFilterable;
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
@@ -129,9 +130,9 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     m_Spec        = oSpec;
 
     // set filter mode
-    const GLenum iMagFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
-    const GLenum iMinFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? ((bMipMap || bMipMapOld) ? (bTrilinear ? GL_NEAREST_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST) : GL_NEAREST) :
-                                                                           ((bMipMap || bMipMapOld) ? (bTrilinear ? GL_LINEAR_MIPMAP_LINEAR  : GL_LINEAR_MIPMAP_NEAREST)  : GL_LINEAR);
+    const GLenum iMagFilter = (HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) || !bFilterable) ? GL_NEAREST : GL_LINEAR;
+    const GLenum iMinFilter = (HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) || !bFilterable) ? ((bMipMap || bMipMapOld) ? (bTrilinear ? GL_NEAREST_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST) : GL_NEAREST) :
+                                                                                             ((bMipMap || bMipMapOld) ? (bTrilinear ? GL_LINEAR_MIPMAP_LINEAR  : GL_LINEAR_MIPMAP_NEAREST)  : GL_LINEAR);
 
     // set wrap mode
     const GLenum iWrapMode = HAS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
@@ -180,7 +181,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     else
     {
         // allocate mutable texture memory
-        glTexImage2D(GL_TEXTURE_2D, 0, DEFINED(_CORE_GLES_) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_bCompressed ? GL_RGBA : m_Spec.iFormat, m_bCompressed ? GL_UNSIGNED_BYTE : m_Spec.iType, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, CORE_GL_SUPPORT(ES2_restriction) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_bCompressed ? GL_RGBA : m_Spec.iFormat, m_bCompressed ? GL_UNSIGNED_BYTE : m_Spec.iType, NULL);
         if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
     }
 }
@@ -389,24 +390,18 @@ coreStatus coreTexture::CopyImage(coreTexture* OUTPUT pDestination)const
 
 // ****************************************************************
 /* configure shadow sampling */
-void coreTexture::ShadowSampling(const coreBool bStatus)
+void coreTexture::EnableShadowSampling()
 {
-    ASSERT(m_iIdentifier && (m_Spec.iFormat == GL_DEPTH_COMPONENT || m_Spec.iFormat == GL_DEPTH_STENCIL))
+    ASSERT(m_iIdentifier && ((m_Spec.iFormat == GL_DEPTH_COMPONENT) || (m_Spec.iFormat == GL_DEPTH_STENCIL)))
 
     // bind texture
     this->Enable(0u);
 
-    if(bStatus)
-    {
-        // enable depth value comparison (with sampler2DShadow)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_GEQUAL);
-    }
-    else
-    {
-        // disable depth value comparison
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-    }
+    // enable depth value comparison (with sampler2DShadow)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_GEQUAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,   GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,   (m_iLevels > 1u) ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 }
 
 

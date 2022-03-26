@@ -503,11 +503,8 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix2& mM
         if(this->CheckCache(iLocation, coreVector4(mMatrix.arr(0u), mMatrix.arr(1u), mMatrix.arr(2u), mMatrix.arr(3u))))
         {
             // send new value
-#if defined(_CORE_GLES_)
-            glUniformMatrix2fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
-#else
-            glUniformMatrix2fv(iLocation, 1, bTranspose, mMatrix.ptr());
-#endif
+            if(CORE_GL_SUPPORT(ES2_restriction)) glUniformMatrix2fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
+                                            else glUniformMatrix2fv(iLocation, 1, bTranspose, mMatrix.ptr());
         }
     }
 }
@@ -522,11 +519,8 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix3& mM
     if(iLocation >= 0)
     {
         // send new value
-#if defined(_CORE_GLES_)
-        glUniformMatrix3fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
-#else
-        glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix.ptr());
-#endif
+        if(CORE_GL_SUPPORT(ES2_restriction)) glUniformMatrix3fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
+                                        else glUniformMatrix3fv(iLocation, 1, bTranspose, mMatrix.ptr());
     }
 }
 
@@ -540,11 +534,8 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mM
     if(iLocation >= 0)
     {
         // send new value
-#if defined(_CORE_GLES_)
-        glUniformMatrix4fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
-#else
-        glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix.ptr());
-#endif
+        if(CORE_GL_SUPPORT(ES2_restriction)) glUniformMatrix4fv(iLocation, 1, false, bTranspose ? mMatrix.Transposed().ptr() : mMatrix.ptr());
+                                        else glUniformMatrix4fv(iLocation, 1, bTranspose, mMatrix.ptr());
     }
 }
 

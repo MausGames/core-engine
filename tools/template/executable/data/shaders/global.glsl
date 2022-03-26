@@ -97,7 +97,8 @@
         #define shadow2DProj(t,v) (shadow2DProjEXT(t, v))
     #else
         #define sampler2DShadow   sampler2D
-        #define shadow2DProj(t,v) ((texture2DProj(t, v).r < (v.z / v.w)) ? 1.0 : 0.0)
+        #define shadow2DProj(t,v) (coreShadow2DProj(t, v))
+        vec4 coreShadow2DProj(const in sampler2DShadow t, const in vec4 v) {return (texture2DProj(t, v).r < (v.z / v.w)) ? vec4(1.0) : vec4(0.0);}
     #endif
 #endif
 #if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
@@ -508,8 +509,8 @@ uniform lowp    vec4 u_v4Color;
 uniform mediump vec4 u_v4TexParam;
 
 // texture uniforms
-uniform lowp sampler2D       u_as2Texture2D    [CORE_NUM_TEXTURES_2D];
-uniform lowp sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
+uniform lowp    sampler2D       u_as2Texture2D    [CORE_NUM_TEXTURES_2D];
+uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 
 // ****************************************************************
