@@ -35,7 +35,6 @@
 #define CORE_GL_ARB_instanced_arrays                 __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_multi_bind                       false
 #define CORE_GL_ARB_multisample                      false
-#define CORE_GL_ARB_parallel_shader_compile          false
 #define CORE_GL_ARB_pipeline_statistics_query        false
 #define CORE_GL_ARB_sample_shading                   false
 #define CORE_GL_ARB_shader_image_load_store          __CORE_GLES_VAR(bES31)
@@ -109,6 +108,16 @@ using PFNGLTEXSTORAGE2DEXTPROC = void (GL_APIENTRY *) (GLenum target, GLsizei le
 
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT  0x83F0
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
+
+
+// ****************************************************************
+/* GL_KHR_parallel_shader_compile (mapped on GL_ARB_parallel_shader_compile) */
+#define CORE_GL_ARB_parallel_shader_compile __CORE_GLES_VAR(GL_KHR_parallel_shader_compile)
+
+#define GL_COMPLETION_STATUS_ARB 0x91B1
+
+using PFNGLMAXSHADERCOMPILERTHREADSARBPROC = void (GL_APIENTRY *) (GLuint count);
+#define glMaxShaderCompilerThreadsARB __CORE_GLES_FUNC(glMaxShaderCompilerThreadsKHR)
 
 
 // ****************************************************************
@@ -224,7 +233,6 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glMakeBufferResidentNV(...)
 #define glMapNamedBufferRange(...) (I_TO_P(-1))
 #define glMapNamedBufferRangeEXT(...) (I_TO_P(-1))
-#define glMaxShaderCompilerThreadsARB(...)
 #define glNamedCopyBufferSubDataEXT(...)
 #define glQueryCounter(...)
 #define glRenderbufferStorageMultisampleAdvancedAMD(...)
@@ -249,6 +257,7 @@ struct coreContext final
     coreBool __GL_EXT_texture_filter_anisotropic;
     coreBool __GL_EXT_texture_compression_rgtc;
     coreBool __GL_EXT_texture_compression_s3tc;
+    coreBool __GL_KHR_parallel_shader_compile;
     coreBool __GL_NV_pixel_buffer_object;
     coreBool __GL_NV_framebuffer_blit;
     coreBool __GL_NV_framebuffer_multisample;
@@ -260,6 +269,7 @@ struct coreContext final
 
     PFNGLDISCARDFRAMEBUFFEREXTPROC            __glDiscardFramebufferEXT;
     PFNGLTEXSTORAGE2DEXTPROC                  __glTexStorage2DEXT;
+    PFNGLMAXSHADERCOMPILERTHREADSARBPROC      __glMaxShaderCompilerThreadsKHR;
     PFNGLBLITFRAMEBUFFERNVPROC                __glBlitFramebufferNV;
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC __glRenderbufferStorageMultisampleNV;
     PFNGLBINDVERTEXARRAYOESPROC               __glBindVertexArrayOES;

@@ -68,6 +68,8 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7u)
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
 
+#define CORE_SHADER_ATTRIBUTE_USER_NUM          (DEFINED(_CORE_EMSCRIPTEN_) ? 10u : 9u)
+
 #define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%zu]"
 #define CORE_SHADER_OUTPUT_COLORS               (2u)
 
@@ -77,9 +79,11 @@
 
 enum coreProgramStatus : coreUint8
 {
-    CORE_PROGRAM_NEW      = 0u,   // new and empty
-    CORE_PROGRAM_DEFINED  = 1u,   // ready for linking
-    CORE_PROGRAM_FINISHED = 2u    // texture units bound
+    CORE_PROGRAM_NEW        = 0u,   // shader-program not yet configured
+    CORE_PROGRAM_DEFINED    = 1u,   // shader-program configured and ready for linking
+    CORE_PROGRAM_LINKING    = 2u,   // currently linking (asynchronously)
+    CORE_PROGRAM_FAILED     = 3u,   // linking failed
+    CORE_PROGRAM_SUCCESSFUL = 4u    // linking successful
 };
 
 
@@ -164,8 +168,8 @@ public:
     coreBool Enable();
     static void Disable(const coreBool bFull);
 
-    /* execute a compute shader-program */
-    coreStatus DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ);
+    /* execute compute shader-program */
+    coreStatus DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ)const;
 
     /* define shader objects and attribute locations */
     inline coreProgram* AttachShader (const coreShaderPtr&  pShader)                          {WARN_IF(m_eStatus) return this; m_apShaderHandle.push_back(pShader.GetHandle());                             return this;}
@@ -185,8 +189,8 @@ public:
     void        SendUniform(const coreHashString& sName, const coreMatrix4& mMatrix, const coreBool bTranspose);
 
     /* retrieve uniform and attribute locations */
-    inline const coreInt8& RetrieveUniform  (const coreHashString& sName) {if(!m_aiUniform  .count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiUniform  .emplace(sName, glGetUniformLocation(m_iIdentifier, sName.GetString()));} ASSERT(m_aiUniform  .at(sName) >= -1) return m_aiUniform  .at(sName);}
-    inline const coreInt8& RetrieveAttribute(const coreHashString& sName) {if(!m_aiAttribute.count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_FINISHED && s_pCurrent == this) m_aiAttribute.emplace(sName, glGetAttribLocation (m_iIdentifier, sName.GetString()));} ASSERT(m_aiAttribute.at(sName) >= -1) return m_aiAttribute.at(sName);}
+    inline const coreInt8& RetrieveUniform  (const coreHashString& sName) {if(!m_aiUniform  .count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_SUCCESSFUL && s_pCurrent == this) m_aiUniform  .emplace(sName, glGetUniformLocation(m_iIdentifier, sName.GetString()));} ASSERT(m_aiUniform  .at(sName) >= -1) return m_aiUniform  .at(sName);}
+    inline const coreInt8& RetrieveAttribute(const coreHashString& sName) {if(!m_aiAttribute.count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_SUCCESSFUL && s_pCurrent == this) m_aiAttribute.emplace(sName, glGetAttribLocation (m_iIdentifier, sName.GetString()));} ASSERT(m_aiAttribute.at(sName) >= -1) return m_aiAttribute.at(sName);}
 
     /* check for cached uniform values */
     inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4 vVector) {if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
@@ -202,7 +206,7 @@ public:
 
 private:
     /* write debug information to log file */
-    void __WriteLog()const;
+    void __WriteLog      ()const;
     void __WriteInterface()const;
 };
 

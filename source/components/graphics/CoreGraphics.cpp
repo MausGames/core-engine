@@ -145,9 +145,9 @@ CoreGraphics::CoreGraphics()noexcept
     if(CORE_GL_SUPPORT(ARB_sample_shading))
         glMinSampleShading(1.0f);
 
-    // disable parallel shader compilation
+    // enable parallel shader compilation
     if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
-        glMaxShaderCompilerThreadsARB(0u);
+        glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
 
     // create uniform buffer objects
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))

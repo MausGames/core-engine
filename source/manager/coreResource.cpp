@@ -285,9 +285,9 @@ coreStatus coreResourceManager::__InitThread()
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-    // disable parallel shader compilation
+    // enable parallel shader compilation
     if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
-        glMaxShaderCompilerThreadsARB(0u);
+        glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
 
     return CORE_OK;
 }

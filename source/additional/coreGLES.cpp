@@ -62,6 +62,13 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_EXT_texture_compression_s3tc, false);
     if(g_sExtensions.find("GL_WEBGL_compressed_texture_s3tc ") != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
 
+    // implement GL_KHR_parallel_shader_compile
+    if(__CORE_GLES_CHECK(GL_KHR_parallel_shader_compile, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glMaxShaderCompilerThreads, KHR, false)
+        if(!g_CoreContext.__glMaxShaderCompilerThreadsKHR) g_CoreContext.__glMaxShaderCompilerThreadsKHR = [](GLuint){};   // not available in WebGL
+    }
+
     // implement GL_NV_pixel_buffer_object
     __CORE_GLES_CHECK(GL_NV_pixel_buffer_object, bES30);
 
