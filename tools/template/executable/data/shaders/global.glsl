@@ -24,6 +24,7 @@
     #extension GL_EXT_conservative_depth       : enable
     #extension GL_EXT_shadow_samplers          : enable
     #extension GL_OES_sample_variables         : enable
+    #extension GL_OES_standard_derivatives     : enable
 #else
     #extension GL_AMD_conservative_depth       : enable
     #extension GL_AMD_gpu_shader_half_float    : enable
@@ -58,6 +59,9 @@
 #endif
 #if defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (CORE_GL_VERSION >= 420) || (CORE_GL_ES_VERSION >= 310)
     #define CORE_GL_shader_image_load_store
+#endif
+#if defined(GL_OES_standard_derivatives) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300)
+    #define CORE_GL_standard_derivatives
 #endif
 #pragma optimize(on)
 #pragma debug(off)
@@ -125,6 +129,11 @@
 #endif
 #if !defined(GL_ES) && (CORE_GL_VERSION < 120)
     #define invariant
+#endif
+#if !defined(CORE_GL_standard_derivatives)
+    #define dFdx(x)   ((x) * 0.0)
+    #define dFdy(x)   ((x) * 0.0)
+    #define fwidth(x) ((x) * 0.0)
 #endif
 
 // type definitions
