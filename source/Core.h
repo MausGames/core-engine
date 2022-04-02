@@ -173,6 +173,14 @@
     #error Run-Time Type Information or Exception Handling still enabled!
 #endif
 
+// additional configuration checks
+#if defined(__SSSE3__) || defined(__SSE4_1__) || defined(__SSE4_2__) || defined(__AVX__) || defined(__AVX2__) || defined(__AVX512F__)
+    #warning SSSE3 or higher should not be enabled!
+#endif
+#if defined(_M_FP_FAST) || defined(__FAST_MATH__)
+    #warning Fast math should not be enabled!
+#endif
+
 
 // ****************************************************************
 /* compiler definitions */
