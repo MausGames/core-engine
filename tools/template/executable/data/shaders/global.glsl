@@ -844,13 +844,19 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 // recommended texture lookup
 #if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
-    #define coreTexture2D(u,c)     (texture      (u_as2Texture2D    [u], c))
-    #define coreTextureProj(u,c)   (textureProj  (u_as2Texture2D    [u], c))
-    #define coreTextureShadow(u,c) (textureProj  (u_as2TextureShadow[u], c))
+    #define coreTexture2D(u,c)         (texture       (u_as2Texture2D    [u], c))
+    #define coreTextureProj(u,c)       (textureProj   (u_as2Texture2D    [u], c))
+    #define coreTextureShadow(u,c)     (textureProj   (u_as2TextureShadow[u], c))
+    #define coreTextureBase2D(u,c)     (textureLod    (u_as2Texture2D    [u], c, 0.0))
+    #define coreTextureBaseProj(u,c)   (textureProjLod(u_as2Texture2D    [u], c, 0.0))
+    #define coreTextureBaseShadow(u,c) (textureProjLod(u_as2TextureShadow[u], c, 0.0))
 #else
-    #define coreTexture2D(u,c)     (texture2D    (u_as2Texture2D    [u], c))
-    #define coreTextureProj(u,c)   (texture2DProj(u_as2Texture2D    [u], c))
-    #define coreTextureShadow(u,c) (shadow2DProj (u_as2TextureShadow[u], c).r)
+    #define coreTexture2D(u,c)         (texture2D     (u_as2Texture2D    [u], c))
+    #define coreTextureProj(u,c)       (texture2DProj (u_as2Texture2D    [u], c))
+    #define coreTextureShadow(u,c)     (shadow2DProj  (u_as2TextureShadow[u], c).r)
+    #define coreTextureBase2D(u,c)     (coreTexture2D    (u, c))
+    #define coreTextureBaseProj(u,c)   (coreTextureProj  (u, c))
+    #define coreTextureBaseShadow(u,c) (coreTextureShadow(u, c))
 #endif
 
 
