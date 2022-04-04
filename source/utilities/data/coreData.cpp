@@ -34,7 +34,7 @@
 #endif
 
 thread_local coreData::coreTempString coreData::s_TempString     = {};
-coreMapStr<const coreChar*>           coreData::s_apcCommandLine = {};
+coreMapStrFull<const coreChar*>       coreData::s_apcCommandLine = {};
 coreString                            coreData::s_sUserFolder    = "";
 
 extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
@@ -636,6 +636,30 @@ const coreChar* coreData::GetCurDir()
 #endif
 
     return "";
+}
+
+
+// ****************************************************************
+/* log command line arguments  */
+void coreData::LogCommandLine()
+{
+    if(s_apcCommandLine.empty())
+    {
+        // log placeholder message
+        Core::Log->Info("No command line arguments");
+    }
+    else
+    {
+        // log all recognized arguments
+        Core::Log->ListStartInfo("Command Line Arguments");
+        {
+            FOR_EACH(it, s_apcCommandLine)
+            {
+                Core::Log->ListAdd("%s = %s", s_apcCommandLine.get_string(it), *it);
+            }
+        }
+        Core::Log->ListEnd();
+    }
 }
 
 

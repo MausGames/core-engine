@@ -58,10 +58,10 @@ private:
 
 
 private:
-    static thread_local coreTempString s_TempString;       // thread-local temp-string container
+    static thread_local coreTempString s_TempString;           // thread-local temp-string container
 
-    static coreMapStr<const coreChar*> s_apcCommandLine;   // parsed command line arguments
-    static coreString                  s_sUserFolder;      // selected user folder
+    static coreMapStrFull<const coreChar*> s_apcCommandLine;   // parsed command line arguments
+    static coreString                      s_sUserFolder;      // selected user folder
 
 
 public:
@@ -102,6 +102,7 @@ public:
     static const coreChar*  GetCurDir();
 
     /* control command line arguments */
+    static        void            LogCommandLine();
     static        void            SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv);
     static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
 
