@@ -111,6 +111,21 @@ using PFNGLTEXSTORAGE2DEXTPROC = void (GL_APIENTRY *) (GLenum target, GLsizei le
 
 
 // ****************************************************************
+/* GL_EXT_texture_norm16 */
+#define CORE_GL_EXT_texture_norm16 __CORE_GLES_VAR(GL_EXT_texture_norm16)
+
+#define GL_R16    0x822A
+#define GL_RG16   0x822C
+#define GL_RGB16  0x8054
+#define GL_RGBA16 0x805B
+
+
+// ****************************************************************
+/* GL_EXT_texture_type_2_10_10_10_rev */
+#define CORE_GL_EXT_texture_type_2_10_10_10_rev __CORE_GLES_VAR(GL_EXT_texture_type_2_10_10_10_rev)
+
+
+// ****************************************************************
 /* GL_KHR_parallel_shader_compile (mapped on GL_ARB_parallel_shader_compile) */
 #define CORE_GL_ARB_parallel_shader_compile __CORE_GLES_VAR(GL_KHR_parallel_shader_compile)
 
@@ -199,10 +214,6 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define GL_MULTISAMPLE_FILTER_HINT_NV                   0x8534
 #define GL_PERSPECTIVE_CORRECTION_HINT                  0x0C50
 #define GL_PRIMITIVES_SUBMITTED                         0x82EF
-#define GL_R16                                          0x822A
-#define GL_RG16                                         0x822C
-#define GL_RGB16                                        0x8054
-#define GL_RGBA16                                       0x805B
 #define GL_TEXTURE_COMPRESSION_HINT                     0x84EF
 #define GL_TIMESTAMP                                    0x8E28
 #define GL_VERTEX_SHADER_INVOCATIONS                    0x82F0
@@ -257,6 +268,8 @@ struct coreContext final
     coreBool __GL_EXT_texture_filter_anisotropic;
     coreBool __GL_EXT_texture_compression_rgtc;
     coreBool __GL_EXT_texture_compression_s3tc;
+    coreBool __GL_EXT_texture_norm16;
+    coreBool __GL_EXT_texture_type_2_10_10_10_rev;
     coreBool __GL_KHR_parallel_shader_compile;
     coreBool __GL_NV_pixel_buffer_object;
     coreBool __GL_NV_framebuffer_blit;

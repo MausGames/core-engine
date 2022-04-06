@@ -62,6 +62,12 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_EXT_texture_compression_s3tc, false);
     if(g_sExtensions.find("GL_WEBGL_compressed_texture_s3tc ") != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
 
+    // implement GL_EXT_texture_norm16
+    __CORE_GLES_CHECK(GL_EXT_texture_norm16, false);
+
+    // implement GL_EXT_texture_type_2_10_10_10_rev
+    __CORE_GLES_CHECK(GL_EXT_texture_type_2_10_10_10_rev, bES30);
+
     // implement GL_KHR_parallel_shader_compile
     if(__CORE_GLES_CHECK(GL_KHR_parallel_shader_compile, false))
     {

@@ -21,6 +21,12 @@ extern coreBool GLEW_V2_compatibility;
 
 
 // ****************************************************************
+/* handle OpenGL ES extensions */
+#define GLEW_EXT_texture_norm16              true
+#define GLEW_EXT_texture_type_2_10_10_10_rev true
+
+
+// ****************************************************************
 /* generate resource names */
 extern void coreGenTextures2D  (coreUintW iCount, GLuint* OUTPUT pNames);
 extern void coreGenBuffers     (coreUintW iCount, GLuint* OUTPUT pNames);
