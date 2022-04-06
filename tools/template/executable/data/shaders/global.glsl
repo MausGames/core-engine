@@ -166,7 +166,7 @@
 
 // evaluate shader per sample
 #if defined(CORE_GL_sample_shading)
-    #define CORE_SAMPLE_SHADING {gl_SampleID;}
+    #define CORE_SAMPLE_SHADING {int A = gl_SampleID;}
 #else
     #define CORE_SAMPLE_SHADING
 #endif

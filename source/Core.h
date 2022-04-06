@@ -360,6 +360,7 @@
 #define CONCAT(a,b)                 __CONCAT(a, b)
 #define __DEFINED(a,b)              FORCE_COMPILE_TIME(!coreData::StrCmpConst(#a, b))
 #define DEFINED(a)                  __DEFINED(a, #a)
+#define CALL(...)                   do {__VA_ARGS__} while(false)
 
 #define SAFE_DELETE(p)              {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p)        {delete[] (p); (p) = NULL;}
@@ -548,16 +549,18 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 #define CALL_DESTRUCTOR(p)      {using __t = typename std::decay<decltype(*(p))>::type; (p)->~__t();}
 
 // default color values
-#define COLOR_WHITE  (coreVector3(1.000f, 1.000f, 1.000f))
-#define COLOR_YELLOW (coreVector3(1.000f, 0.824f, 0.392f))
-#define COLOR_ORANGE (coreVector3(1.000f, 0.543f, 0.227f))
-#define COLOR_RED    (coreVector3(1.000f, 0.275f, 0.275f))
-#define COLOR_PURPLE (coreVector3(0.710f, 0.333f, 1.000f))
-#define COLOR_BLUE   (coreVector3(0.102f, 0.702f, 1.000f))
-#define COLOR_GREEN  (coreVector3(0.118f, 0.745f, 0.353f))
-#define COLOR_BRONZE (coreVector3(0.925f, 0.663f, 0.259f))
-#define COLOR_SILVER (coreVector3(0.855f, 0.855f, 0.878f))
-#define COLOR_GOLD   (coreVector3(1.000f, 0.859f, 0.000f))
+#define COLOR_WHITE   (coreVector3(1.000f, 1.000f, 1.000f))
+#define COLOR_YELLOW  (coreVector3(1.000f, 0.824f, 0.292f))
+#define COLOR_ORANGE  (coreVector3(1.000f, 0.543f, 0.177f))
+#define COLOR_RED     (coreVector3(0.950f, 0.225f, 0.225f))
+#define COLOR_MAGENTA (coreVector3(1.000f, 0.310f, 0.720f))
+#define COLOR_PURPLE  (coreVector3(0.760f, 0.333f, 1.000f))
+#define COLOR_BLUE    (coreVector3(0.102f, 0.602f, 1.000f))
+#define COLOR_CYAN    (coreVector3(0.000f, 0.776f, 0.806f))
+#define COLOR_GREEN   (coreVector3(0.253f, 0.745f, 0.253f))
+#define COLOR_BRONZE  (coreVector3(0.925f, 0.663f, 0.259f))
+#define COLOR_SILVER  (coreVector3(0.855f, 0.855f, 0.878f))
+#define COLOR_GOLD    (coreVector3(1.000f, 0.859f, 0.000f))
 
 // default alignment values
 #define ALIGNMENT_NEW   (alignof(std::max_align_t))

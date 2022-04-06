@@ -59,7 +59,7 @@ struct coreNamePool final
 {
     GLuint       aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
     coreUintW    iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
-    coreSpinLock oLock = coreSpinLock();       // spinlock to allow multiple threads accessing the pool
+    coreSpinLock oLock = coreSpinLock();       // spinlock to allow multiple threads to access the pool
 };
 
 static coreNamePool s_PoolTextures2D;

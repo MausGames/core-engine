@@ -60,6 +60,7 @@ void __coreInitOpenGLES()
 
     // implement GL_EXT_texture_compression_s3tc
     __CORE_GLES_CHECK(GL_EXT_texture_compression_s3tc, false);
+    if(g_sExtensions.find("GL_NV_texture_compression_s3tc ")   != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
     if(g_sExtensions.find("GL_WEBGL_compressed_texture_s3tc ") != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
 
     // implement GL_EXT_texture_norm16

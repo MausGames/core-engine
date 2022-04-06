@@ -11,11 +11,11 @@
 #define _CORE_GUARD_GLES_H_
 
 // TODO 3: add name-pooling to OpenGL ES
-// TODO 5: GL_EXT_buffer_storage, GL_EXT_clear_texture, GL_EXT_copy_image, GL_EXT_draw_buffers, GL_EXT_geometry_shader, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_shadow_samplers, GL_EXT_texture_rg, GL_EXT_texture_type_2_10_10_10_rev, GL_NV_texture_compression_s3tc
-// TODO 5: GL_OES_copy_image GL_EXT_tessellation_shader GL_OES_tessellation_shader GL_OES_framebuffer_object GL_NV_packed_float GL_EXT_map_buffer_range GL_EXT_sRGB_write_control GL_NV_pixel_buffer_object GL_KHR_parallel_shader_compile
-// TODO 5: GL_NV_framebuffer_multisample GL_NV_framebuffer_blit GL_OES_vertex_array_object GL_OES_texture_stencil8 GL_NV_copy_buffer GL_OES_sample_shading GL_OES_packed_depth_stencil GL_EXT_instanced_arrays GL_NV_instanced_arrays
+// TODO 5: GL_EXT_buffer_storage, GL_EXT_clear_texture, GL_EXT_copy_image, GL_EXT_draw_buffers, GL_EXT_geometry_shader, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_texture_rg
+// TODO 5: GL_OES_copy_image, GL_EXT_tessellation_shader, GL_OES_tessellation_shader, GL_OES_framebuffer_object, GL_NV_packed_float, GL_EXT_map_buffer_range, GL_EXT_sRGB_write_control
+// TODO 5: GL_NV_copy_buffer, GL_OES_sample_shading, GL_EXT_instanced_arrays, GL_NV_instanced_arrays, GL_EXT_disjoint_timer_query, GL_EXT_disjoint_timer_query_webgl2
 // TODO 5: ANDROID_extension_pack_es31a
-// TODO 5: WEBGL GL_OES_texture_float (but no filtering allowed)
+// TODO 5: WEBGL float textures: OES_texture_float(ES3), OES_texture_float_linear(not ES3!), OES_texture_half_float(ES3), OES_texture_half_float_linear(ES3), EXT_color_buffer_float(?), EXT_color_buffer_half_float(?), WEBGL_color_buffer_float(?)
 
 
 // ****************************************************************
@@ -195,8 +195,9 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 
 #define glClearDepth                     glClearDepthf
 #define glDepthRange                     glDepthRangef
-#define glDrawBuffers(a,b)               {if(__CORE_GLES_VAR(bES30)) __glDrawBuffers(a, b);}
-#define glDrawRangeElements(a,b,c,d,e,f) {if(__CORE_GLES_VAR(bES30)) __glDrawRangeElements(a, b, c, d, e, f); else glDrawElements(a, d, e, f);}
+#define glDrawBuffer(a)                  CALL(const GLenum A = (a); glDrawBuffers(1, &A);)
+#define glDrawBuffers(a,b)               CALL(if(__CORE_GLES_VAR(bES30)) __glDrawBuffers(a, b);)
+#define glDrawRangeElements(a,b,c,d,e,f) CALL(if(__CORE_GLES_VAR(bES30)) __glDrawRangeElements(a, b, c, d, e, f); else glDrawElements(a, d, e, f);)
 
 
 // ****************************************************************
@@ -231,7 +232,6 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glCopyNamedBufferSubData(...)
 #define glCopyTextureSubImage2D(...)
 #define glCopyTextureSubImage2DEXT(...)
-#define glDrawBuffer(...)
 #define glFlushMappedNamedBufferRange(...)
 #define glFlushMappedNamedBufferRangeEXT(...)
 #define glGenerateTextureMipmap(...)

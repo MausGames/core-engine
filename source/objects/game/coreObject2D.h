@@ -80,7 +80,7 @@ public:
     inline const coreBool& IsFocused()const {return m_bFocused;}
 
     /* transform the whole object */
-    inline void FitToScreen() {m_eUpdate = CORE_OBJECT_UPDATE_ALL; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = Core::System->GetResolution() / Core::System->GetResolution().Min(); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}
+    inline void FitToScreen() {m_eUpdate = CORE_OBJECT_UPDATE_ALL; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = Core::System->GetResolution() * RCP(Core::System->GetResolution().Min()); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}
 
     /* set object properties */
     inline void SetPosition     (const coreVector2       vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}

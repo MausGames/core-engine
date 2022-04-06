@@ -8,6 +8,8 @@
 ///////////////////////////////////////////////////////////
 #if defined(__APPLE__)
 
+#include <locale.h>
+
 extern int coreMain(int argc, char** argv);
 
 
@@ -15,6 +17,9 @@ extern int coreMain(int argc, char** argv);
 /* start up the application */
 int main(int argc, char** argv)
 {
+    // enable UTF-8 locale
+    setlocale(LC_ALL, "C.UTF-8");
+
     // run the application
     return coreMain(argc, argv);
 }
