@@ -138,6 +138,21 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
         Core::Log->Warning("Frame Buffer Object could not be created (GL Error Code: 0x%08X)", iError);
         this->Delete();
 
+        // check for common restrictions
+        coreBool bAgain = false;
+        for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+        {
+            coreRenderTarget& oTarget = m_aColorTarget[i];
+
+                 if(oTarget.oSpec.iInternal == GL_RGB8)     {oTarget.oSpec = CORE_TEXTURE_SPEC_RGBA8;   bAgain = true;}
+            else if(oTarget.oSpec.iInternal == GL_RGB16)    {oTarget.oSpec = CORE_TEXTURE_SPEC_RGBA16;  bAgain = true;}
+            else if(oTarget.oSpec.iInternal == GL_RGB16F)   {oTarget.oSpec = CORE_TEXTURE_SPEC_RGBA16F; bAgain = true;}
+            else if(oTarget.oSpec.iInternal == GL_RGB10_A2) {oTarget.oSpec = CORE_TEXTURE_SPEC_RGBA8;   bAgain = true;}
+        }
+
+        // try to create again
+        if(bAgain) return this->Create(vResolution, eType);
+
         return CORE_ERROR_SYSTEM;
     }
 
