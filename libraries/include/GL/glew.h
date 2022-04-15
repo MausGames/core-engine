@@ -4231,6 +4231,15 @@ typedef void (GLAPIENTRY * PFNGLVERTEXP4UIVPROC) (GLenum type, const GLuint* val
 
 #endif /* GL_ARB_vertex_type_2_10_10_10_rev */
 
+/* -------------------- GL_EXT_demote_to_helper_invocation -------------------- */
+
+#ifndef GL_EXT_demote_to_helper_invocation
+#define GL_EXT_demote_to_helper_invocation 1
+
+#define GLEW_EXT_demote_to_helper_invocation GLEW_GET_VAR(__GLEW_EXT_demote_to_helper_invocation)
+
+#endif /* GL_EXT_demote_to_helper_invocation */
+
 /* ----------------------- GL_EXT_direct_state_access ---------------------- */
 
 #ifndef GL_EXT_direct_state_access
@@ -6453,6 +6462,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_uniform_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_vertex_array_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_vertex_attrib_binding;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_vertex_type_2_10_10_10_rev;
+GLEW_VAR_EXPORT GLboolean __GLEW_EXT_demote_to_helper_invocation;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_direct_state_access;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_framebuffer_blit;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_framebuffer_multisample;

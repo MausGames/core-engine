@@ -44,6 +44,7 @@
 #define CORE_GL_ARB_texture_rg                       __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_timer_query                      false
 #define CORE_GL_ARB_uniform_buffer_object            __CORE_GLES_VAR(bES30)   // controls shader-handling
+#define CORE_GL_EXT_demote_to_helper_invocation      false
 #define CORE_GL_EXT_direct_state_access              false
 #define CORE_GL_EXT_framebuffer_object               true
 #define CORE_GL_EXT_gpu_shader4                      __CORE_GLES_VAR(bES30)

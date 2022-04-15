@@ -152,6 +152,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_vertex_array_object,              GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_vertex_attrib_binding,            GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_vertex_type_2_10_10_10_rev,       GLEW_VERSION_3_3)
+        __IMPROVE(GLEW_EXT_demote_to_helper_invocation,      false)                                                  // shader extension
         __IMPROVE(GLEW_EXT_direct_state_access,              false)
         __IMPROVE(GLEW_EXT_framebuffer_blit,                 GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
         __IMPROVE(GLEW_EXT_framebuffer_multisample,          GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up

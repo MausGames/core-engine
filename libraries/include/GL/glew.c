@@ -1288,6 +1288,7 @@ GLboolean __GLEW_ARB_uniform_buffer_object = GL_FALSE;
 GLboolean __GLEW_ARB_vertex_array_object = GL_FALSE;
 GLboolean __GLEW_ARB_vertex_attrib_binding = GL_FALSE;
 GLboolean __GLEW_ARB_vertex_type_2_10_10_10_rev = GL_FALSE;
+GLboolean __GLEW_EXT_demote_to_helper_invocation = GL_FALSE;
 GLboolean __GLEW_EXT_direct_state_access = GL_FALSE;
 GLboolean __GLEW_EXT_framebuffer_blit = GL_FALSE;
 GLboolean __GLEW_EXT_framebuffer_multisample = GL_FALSE;
@@ -1462,6 +1463,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_vertex_type_2_10_10_10_rev
   "GL_ARB_vertex_type_2_10_10_10_rev",
+#endif
+#ifdef GL_EXT_demote_to_helper_invocation
+  "GL_EXT_demote_to_helper_invocation",
 #endif
 #ifdef GL_EXT_direct_state_access
   "GL_EXT_direct_state_access",
@@ -1743,6 +1747,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_ARB_vertex_type_2_10_10_10_rev
   &__GLEW_ARB_vertex_type_2_10_10_10_rev,
+#endif
+#ifdef GL_EXT_demote_to_helper_invocation
+  &__GLEW_EXT_demote_to_helper_invocation,
 #endif
 #ifdef GL_EXT_direct_state_access
   &__GLEW_EXT_direct_state_access,
@@ -4556,6 +4563,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
       }
       if (_glewStrSame2(&pos, &len, (const GLubyte*)"EXT_", 4))
       {
+#ifdef GL_EXT_demote_to_helper_invocation
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"demote_to_helper_invocation", 27))
+        {
+          ret = GLEW_EXT_demote_to_helper_invocation;
+          continue;
+        }
+#endif
 #ifdef GL_EXT_direct_state_access
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"direct_state_access", 19))
         {

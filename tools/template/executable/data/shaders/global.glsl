@@ -21,26 +21,31 @@
 
 // compiler configuration
 #if defined(GL_ES)
-    #extension GL_EXT_conservative_depth       : enable
-    #extension GL_EXT_shadow_samplers          : enable
-    #extension GL_OES_sample_variables         : enable
-    #extension GL_OES_standard_derivatives     : enable
+    #extension GL_EXT_conservative_depth          : enable
+    #extension GL_EXT_shadow_samplers             : enable
+    #extension GL_OES_sample_variables            : enable
+    #extension GL_OES_standard_derivatives        : enable
 #else
-    #extension GL_AMD_conservative_depth       : enable
-    #extension GL_AMD_gpu_shader_half_float    : enable
-    #extension GL_AMD_shader_trinary_minmax    : enable
-    #extension GL_ARB_conservative_depth       : enable
-    #extension GL_ARB_enhanced_layouts         : enable
-    #extension GL_ARB_gpu_shader5              : enable
-    #extension GL_ARB_sample_shading           : enable
-    #extension GL_ARB_shader_group_vote        : enable
-    #extension GL_ARB_shader_image_load_store  : enable
-    #extension GL_ARB_shading_language_packing : enable
-    #extension GL_ARB_uniform_buffer_object    : enable
-    #extension GL_EXT_gpu_shader4              : enable
-    #extension GL_EXT_shader_image_load_store  : enable
-    #extension GL_NV_gpu_shader5               : enable
+    #extension GL_AMD_conservative_depth          : enable
+    #extension GL_AMD_gpu_shader_half_float       : enable
+    #extension GL_AMD_shader_trinary_minmax       : enable
+    #extension GL_ARB_conservative_depth          : enable
+    #extension GL_ARB_enhanced_layouts            : enable
+    #extension GL_ARB_gpu_shader5                 : enable
+    #extension GL_ARB_sample_shading              : enable
+    #extension GL_ARB_shader_group_vote           : enable
+    #extension GL_ARB_shader_image_load_store     : enable
+    #extension GL_ARB_shading_language_packing    : enable
+    #extension GL_ARB_uniform_buffer_object       : enable
+    #extension GL_EXT_demote_to_helper_invocation : enable
+    #extension GL_EXT_gpu_shader4                 : enable
+    #extension GL_EXT_shader_image_load_store     : enable
+    #extension GL_NV_gpu_shader5                  : enable
 #endif
+#pragma optimize(on)
+#pragma debug(off)
+
+// feature helper
 #if defined(GL_ES)
     #define CORE_GL_VERSION    (0)
     #define CORE_GL_ES_VERSION (__VERSION__)
@@ -63,8 +68,6 @@
 #if defined(GL_OES_standard_derivatives) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300)
     #define CORE_GL_standard_derivatives
 #endif
-#pragma optimize(on)
-#pragma debug(off)
 
 // precision qualifiers
 #if defined(GL_ES)
@@ -134,6 +137,9 @@
     #define dFdx(x)   ((x) * 0.0)
     #define dFdy(x)   ((x) * 0.0)
     #define fwidth(x) ((x) * 0.0)
+#endif
+#if defined(GL_EXT_demote_to_helper_invocation)
+    #define discard demote
 #endif
 
 // type definitions
