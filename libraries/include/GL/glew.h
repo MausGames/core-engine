@@ -5123,6 +5123,54 @@ typedef void (GLAPIENTRY * PFNGLMEMORYBARRIEREXTPROC) (GLbitfield barriers);
 
 #endif /* GL_EXT_texture_filter_anisotropic */
 
+/* ------------------------- GL_EXT_texture_storage ------------------------ */
+
+#ifndef GL_EXT_texture_storage
+#define GL_EXT_texture_storage 1
+
+#define GL_ALPHA8_EXT 0x803C
+#define GL_LUMINANCE8_EXT 0x8040
+#define GL_LUMINANCE8_ALPHA8_EXT 0x8045
+#define GL_RGB10_EXT 0x8052
+#define GL_RGB10_A2_EXT 0x8059
+#define GL_R8_EXT 0x8229
+#define GL_RG8_EXT 0x822B
+#define GL_R16F_EXT 0x822D
+#define GL_R32F_EXT 0x822E
+#define GL_RG16F_EXT 0x822F
+#define GL_RG32F_EXT 0x8230
+#define GL_RGBA32F_EXT 0x8814
+#define GL_RGB32F_EXT 0x8815
+#define GL_ALPHA32F_EXT 0x8816
+#define GL_LUMINANCE32F_EXT 0x8818
+#define GL_LUMINANCE_ALPHA32F_EXT 0x8819
+#define GL_RGBA16F_EXT 0x881A
+#define GL_RGB16F_EXT 0x881B
+#define GL_ALPHA16F_EXT 0x881C
+#define GL_LUMINANCE16F_EXT 0x881E
+#define GL_LUMINANCE_ALPHA16F_EXT 0x881F
+#define GL_RGB_RAW_422_APPLE 0x8A51
+#define GL_TEXTURE_IMMUTABLE_FORMAT_EXT 0x912F
+#define GL_BGRA8_EXT 0x93A1
+
+typedef void (GLAPIENTRY * PFNGLTEXSTORAGE1DEXTPROC) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width);
+typedef void (GLAPIENTRY * PFNGLTEXSTORAGE2DEXTPROC) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (GLAPIENTRY * PFNGLTEXSTORAGE3DEXTPROC) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
+typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE1DEXTPROC) (GLuint texture, GLenum target, GLsizei levels, GLenum internalformat, GLsizei width);
+typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE2DEXTPROC) (GLuint texture, GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE3DEXTPROC) (GLuint texture, GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
+
+#define glTexStorage1DEXT GLEW_GET_FUN(__glewTexStorage1DEXT)
+#define glTexStorage2DEXT GLEW_GET_FUN(__glewTexStorage2DEXT)
+#define glTexStorage3DEXT GLEW_GET_FUN(__glewTexStorage3DEXT)
+#define glTextureStorage1DEXT GLEW_GET_FUN(__glewTextureStorage1DEXT)
+#define glTextureStorage2DEXT GLEW_GET_FUN(__glewTextureStorage2DEXT)
+#define glTextureStorage3DEXT GLEW_GET_FUN(__glewTextureStorage3DEXT)
+
+#define GLEW_EXT_texture_storage GLEW_GET_VAR(__GLEW_EXT_texture_storage)
+
+#endif /* GL_EXT_texture_storage */
+
 /* ------------------------------ GL_KHR_debug ----------------------------- */
 
 #ifndef GL_KHR_debug
@@ -6327,6 +6375,13 @@ GLEW_FUN_EXPORT PFNGLVERTEXATTRIBIPOINTEREXTPROC __glewVertexAttribIPointerEXT;
 GLEW_FUN_EXPORT PFNGLBINDIMAGETEXTUREEXTPROC __glewBindImageTextureEXT;
 GLEW_FUN_EXPORT PFNGLMEMORYBARRIEREXTPROC __glewMemoryBarrierEXT;
 
+GLEW_FUN_EXPORT PFNGLTEXSTORAGE1DEXTPROC __glewTexStorage1DEXT;
+GLEW_FUN_EXPORT PFNGLTEXSTORAGE2DEXTPROC __glewTexStorage2DEXT;
+GLEW_FUN_EXPORT PFNGLTEXSTORAGE3DEXTPROC __glewTexStorage3DEXT;
+GLEW_FUN_EXPORT PFNGLTEXTURESTORAGE1DEXTPROC __glewTextureStorage1DEXT;
+GLEW_FUN_EXPORT PFNGLTEXTURESTORAGE2DEXTPROC __glewTextureStorage2DEXT;
+GLEW_FUN_EXPORT PFNGLTEXTURESTORAGE3DEXTPROC __glewTextureStorage3DEXT;
+
 GLEW_FUN_EXPORT PFNGLDEBUGMESSAGECALLBACKPROC __glewDebugMessageCallback;
 GLEW_FUN_EXPORT PFNGLDEBUGMESSAGECONTROLPROC __glewDebugMessageControl;
 GLEW_FUN_EXPORT PFNGLDEBUGMESSAGEINSERTPROC __glewDebugMessageInsert;
@@ -6477,6 +6532,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_shader_image_load_store;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_rgtc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_s3tc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_filter_anisotropic;
+GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_storage;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_debug;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_parallel_shader_compile;

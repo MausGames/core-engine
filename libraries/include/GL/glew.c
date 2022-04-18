@@ -1153,6 +1153,13 @@ PFNGLVERTEXATTRIBIPOINTEREXTPROC __glewVertexAttribIPointerEXT = NULL;
 PFNGLBINDIMAGETEXTUREEXTPROC __glewBindImageTextureEXT = NULL;
 PFNGLMEMORYBARRIEREXTPROC __glewMemoryBarrierEXT = NULL;
 
+PFNGLTEXSTORAGE1DEXTPROC __glewTexStorage1DEXT = NULL;
+PFNGLTEXSTORAGE2DEXTPROC __glewTexStorage2DEXT = NULL;
+PFNGLTEXSTORAGE3DEXTPROC __glewTexStorage3DEXT = NULL;
+PFNGLTEXTURESTORAGE1DEXTPROC __glewTextureStorage1DEXT = NULL;
+PFNGLTEXTURESTORAGE2DEXTPROC __glewTextureStorage2DEXT = NULL;
+PFNGLTEXTURESTORAGE3DEXTPROC __glewTextureStorage3DEXT = NULL;
+
 PFNGLDEBUGMESSAGECALLBACKPROC __glewDebugMessageCallback = NULL;
 PFNGLDEBUGMESSAGECONTROLPROC __glewDebugMessageControl = NULL;
 PFNGLDEBUGMESSAGEINSERTPROC __glewDebugMessageInsert = NULL;
@@ -1303,6 +1310,7 @@ GLboolean __GLEW_EXT_shader_image_load_store = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_s3tc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_filter_anisotropic = GL_FALSE;
+GLboolean __GLEW_EXT_texture_storage = GL_FALSE;
 GLboolean __GLEW_KHR_debug = GL_FALSE;
 GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
@@ -1508,6 +1516,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_EXT_texture_filter_anisotropic
   "GL_EXT_texture_filter_anisotropic",
+#endif
+#ifdef GL_EXT_texture_storage
+  "GL_EXT_texture_storage",
 #endif
 #ifdef GL_KHR_debug
   "GL_KHR_debug",
@@ -1793,6 +1804,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_EXT_texture_filter_anisotropic
   &__GLEW_EXT_texture_filter_anisotropic,
 #endif
+#ifdef GL_EXT_texture_storage
+  &__GLEW_EXT_texture_storage,
+#endif
 #ifdef GL_KHR_debug
   &__GLEW_KHR_debug,
 #endif
@@ -1928,6 +1942,7 @@ static GLboolean _glewInit_GL_EXT_framebuffer_object (void);
 static GLboolean _glewInit_GL_EXT_geometry_shader4 (void);
 static GLboolean _glewInit_GL_EXT_gpu_shader4 (void);
 static GLboolean _glewInit_GL_EXT_shader_image_load_store (void);
+static GLboolean _glewInit_GL_EXT_texture_storage (void);
 static GLboolean _glewInit_GL_KHR_debug (void);
 static GLboolean _glewInit_GL_KHR_parallel_shader_compile (void);
 static GLboolean _glewInit_GL_NV_copy_image (void);
@@ -3404,6 +3419,24 @@ static GLboolean _glewInit_GL_EXT_shader_image_load_store ()
 
 #endif /* GL_EXT_shader_image_load_store */
 
+#ifdef GL_EXT_texture_storage
+
+static GLboolean _glewInit_GL_EXT_texture_storage ()
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glTexStorage1DEXT = (PFNGLTEXSTORAGE1DEXTPROC)glewGetProcAddress((const GLubyte*)"glTexStorage1DEXT")) == NULL) || r;
+  r = ((glTexStorage2DEXT = (PFNGLTEXSTORAGE2DEXTPROC)glewGetProcAddress((const GLubyte*)"glTexStorage2DEXT")) == NULL) || r;
+  r = ((glTexStorage3DEXT = (PFNGLTEXSTORAGE3DEXTPROC)glewGetProcAddress((const GLubyte*)"glTexStorage3DEXT")) == NULL) || r;
+  r = ((glTextureStorage1DEXT = (PFNGLTEXTURESTORAGE1DEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureStorage1DEXT")) == NULL) || r;
+  r = ((glTextureStorage2DEXT = (PFNGLTEXTURESTORAGE2DEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureStorage2DEXT")) == NULL) || r;
+  r = ((glTextureStorage3DEXT = (PFNGLTEXTURESTORAGE3DEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureStorage3DEXT")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_EXT_texture_storage */
+
 #ifdef GL_KHR_debug
 
 static GLboolean _glewInit_GL_KHR_debug ()
@@ -3910,6 +3943,9 @@ static GLenum GLEWAPIENTRY glewContextInit ()
 #ifdef GL_EXT_shader_image_load_store
   if (glewExperimental || GLEW_EXT_shader_image_load_store) GLEW_EXT_shader_image_load_store = !_glewInit_GL_EXT_shader_image_load_store();
 #endif /* GL_EXT_shader_image_load_store */
+#ifdef GL_EXT_texture_storage
+  if (glewExperimental || GLEW_EXT_texture_storage) GLEW_EXT_texture_storage = !_glewInit_GL_EXT_texture_storage();
+#endif /* GL_EXT_texture_storage */
 #ifdef GL_KHR_debug
   if (glewExperimental || GLEW_KHR_debug) GLEW_KHR_debug = !_glewInit_GL_KHR_debug();
 #endif /* GL_KHR_debug */
@@ -4665,6 +4701,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_filter_anisotropic", 26))
         {
           ret = GLEW_EXT_texture_filter_anisotropic;
+          continue;
+        }
+#endif
+#ifdef GL_EXT_texture_storage
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_storage", 15))
+        {
+          ret = GLEW_EXT_texture_storage;
           continue;
         }
 #endif

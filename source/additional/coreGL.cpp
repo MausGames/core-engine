@@ -146,7 +146,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_texture_float,                    GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_texture_rg,                       GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_texture_stencil8,                 GLEW_VERSION_4_4)
-        __IMPROVE(GLEW_ARB_texture_storage,                  GLEW_VERSION_4_2)
+        __IMPROVE(GLEW_ARB_texture_storage,                  GLEW_VERSION_4_2 || GLEW_EXT_texture_storage)
         __IMPROVE(GLEW_ARB_timer_query,                      GLEW_VERSION_3_2)
         __IMPROVE(GLEW_ARB_uniform_buffer_object,            GLEW_VERSION_3_1)                                       // shader extension (also)
         __IMPROVE(GLEW_ARB_vertex_array_object,              GLEW_VERSION_3_0)
@@ -227,6 +227,11 @@ void __coreInitOpenGL()
     // remap GL_EXT_shader_image_load_store to GL_ARB_shader_image_load_store
     if(!glBindImageTexture) glBindImageTexture = r_cast<PFNGLBINDIMAGETEXTUREPROC>(glBindImageTextureEXT);
     if(!glMemoryBarrier)    glMemoryBarrier    = glMemoryBarrierEXT;
+
+    // remap GL_EXT_texture_storage to GL_ARB_texture_storage
+    if(!glTexStorage1D) glTexStorage1D = glTexStorage1DEXT;
+    if(!glTexStorage2D) glTexStorage2D = glTexStorage2DEXT;
+    if(!glTexStorage3D) glTexStorage3D = glTexStorage3DEXT;
 
     // remap GL_KHR_parallel_shader_compile to GL_ARB_parallel_shader_compile
     if(!glMaxShaderCompilerThreadsARB) glMaxShaderCompilerThreadsARB = glMaxShaderCompilerThreadsKHR;
