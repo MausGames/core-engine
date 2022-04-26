@@ -3,7 +3,7 @@
 
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2020 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -45,7 +45,7 @@
 #elif defined(__EMSCRIPTEN__)
 #include "SDL_config_emscripten.h"
 #else
-/* This is a minimal configuration just to get SDL running on new platforms */
+/* This is a minimal configuration just to get SDL running on new platforms. */
 #include "SDL_config_minimal.h"
 #endif /* platform config */
 
