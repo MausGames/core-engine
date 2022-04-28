@@ -11,9 +11,11 @@
 #define _CORE_GUARD_GLES_H_
 
 // TODO 3: add name-pooling to OpenGL ES
+// TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
 // TODO 5: GL_EXT_buffer_storage, GL_EXT_clear_texture, GL_EXT_copy_image, GL_EXT_draw_buffers, GL_EXT_geometry_shader, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_texture_rg
 // TODO 5: GL_OES_copy_image, GL_EXT_tessellation_shader, GL_OES_tessellation_shader, GL_OES_framebuffer_object, GL_NV_packed_float, GL_EXT_map_buffer_range, GL_EXT_sRGB_write_control
 // TODO 5: GL_NV_copy_buffer, GL_OES_sample_shading, GL_EXT_instanced_arrays, GL_NV_instanced_arrays, GL_EXT_disjoint_timer_query, GL_EXT_disjoint_timer_query_webgl2
+// TODO 5: GL_ANGLE_texture_usage (set before allocation), GL_AMD_framebuffer_multisample_advanced, GL_OES_geometry_shader, GL_OES_tessellation_shader, GL_WEBGL_draw_buffers, GL_OES_vertex_half_float (token value different)
 // TODO 5: ANDROID_extension_pack_es31a
 // TODO 5: WEBGL float textures: OES_texture_float(ES3), OES_texture_float_linear(not ES3!), OES_texture_half_float(ES3), OES_texture_half_float_linear(ES3), EXT_color_buffer_float(?), EXT_color_buffer_half_float(?), WEBGL_color_buffer_float(?)
 

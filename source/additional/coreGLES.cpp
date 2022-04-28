@@ -84,11 +84,23 @@ void __coreInitOpenGLES()
     {
         __CORE_GLES_FUNC_FETCH(glBlitFramebuffer, NV, bES30)
     }
+    else if(g_sExtensions.find("GL_ANGLE_framebuffer_blit "))
+    {
+        // override function
+        g_CoreContext.__GL_NV_framebuffer_blit = true;
+        g_CoreContext.__glBlitFramebufferNV = r_cast<decltype(g_CoreContext.__glBlitFramebufferNV)>(eglGetProcAddress("glBlitFramebufferANGLE"));
+    }
 
     // implement GL_NV_framebuffer_multisample
     if(__CORE_GLES_CHECK(GL_NV_framebuffer_multisample, bES30))
     {
         __CORE_GLES_FUNC_FETCH(glRenderbufferStorageMultisample, NV, bES30)
+    }
+    else if(g_sExtensions.find("GL_ANGLE_framebuffer_multisample "))
+    {
+        // override function
+        g_CoreContext.__GL_NV_framebuffer_multisample = true;
+        g_CoreContext.__glRenderbufferStorageMultisampleNV = r_cast<decltype(g_CoreContext.__glRenderbufferStorageMultisampleNV)>(eglGetProcAddress("glRenderbufferStorageMultisampleANGLE"));
     }
 
     // implement GL_OES_vertex_array_object
@@ -104,6 +116,7 @@ void __coreInitOpenGLES()
 
     // implement GL_OES_depth_texture
     __CORE_GLES_CHECK(GL_OES_depth_texture, bES30);
+    if(g_sExtensions.find("GL_ANGLE_depth_texture ") != coreString::npos) g_CoreContext.__GL_OES_depth_texture = true;
     if(g_sExtensions.find("GL_WEBGL_depth_texture ") != coreString::npos) g_CoreContext.__GL_OES_depth_texture = true;
 
     // implement GL_OES_texture_stencil8
@@ -111,6 +124,7 @@ void __coreInitOpenGLES()
 
     // implement GL_OES_packed_depth_stencil
     __CORE_GLES_CHECK(GL_OES_packed_depth_stencil, bES30);
+    if(g_sExtensions.find("GL_ANGLE_depth_texture ") != coreString::npos) g_CoreContext.__GL_OES_packed_depth_stencil = true;
 }
 
 
