@@ -330,7 +330,7 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
     else
     {
         // delete vertex array objects
-        glDeleteVertexArrays(3, m_aiVertexArray.data());
+        coreDelVertexArrays(3u, m_aiVertexArray.data());
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers

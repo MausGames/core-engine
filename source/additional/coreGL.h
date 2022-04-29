@@ -27,10 +27,13 @@ extern coreBool GLEW_V2_compatibility;
 
 
 // ****************************************************************
-/* generate resource names */
+/* generate and delete resource names */
 extern void coreGenTextures2D  (coreUintW iCount, GLuint* OUTPUT pNames);
 extern void coreGenBuffers     (coreUintW iCount, GLuint* OUTPUT pNames);
 extern void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames);
+extern void coreDelTextures2D  (coreUintW iCount, const GLuint*  pNames);
+extern void coreDelBuffers     (coreUintW iCount, const GLuint*  pNames);
+extern void coreDelVertexArrays(coreUintW iCount, const GLuint*  pNames);
 
 
 // ****************************************************************

@@ -514,7 +514,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
     else
     {
         // delete vertex array objects
-        if(m_aiVertexArray[0]) glDeleteVertexArrays(CORE_BATCHLIST_INSTANCE_BUFFERS, m_aiVertexArray.data());
+        if(m_aiVertexArray[0]) coreDelVertexArrays(CORE_BATCHLIST_INSTANCE_BUFFERS, m_aiVertexArray.data());
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers

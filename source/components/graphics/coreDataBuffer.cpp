@@ -134,7 +134,7 @@ void coreDataBuffer::Delete()
     }
 
     // delete buffer
-    glDeleteBuffers(1, &m_iIdentifier);
+    coreDelBuffers(1u, &m_iIdentifier);
 
     // delete sync object
     m_Sync.Delete();

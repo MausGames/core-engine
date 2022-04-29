@@ -90,7 +90,7 @@ coreStatus coreTexture::Unload()
         if(s_apBound[i] == this) coreTexture::Disable(i);
 
     // delete texture
-    glDeleteTextures(1, &m_iIdentifier);
+    coreDelTextures2D(1u, &m_iIdentifier);
     if(!m_sPath.empty()) Core::Log->Info("Texture (%s) unloaded", m_sPath.c_str());
 
     // delete sync object

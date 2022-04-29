@@ -360,7 +360,7 @@ coreStatus coreModel::Unload()
     }
 
     // delete vertex array object
-    if(m_iVertexArray) glDeleteVertexArrays(1, &m_iVertexArray);
+    if(m_iVertexArray) coreDelVertexArrays(1u, &m_iVertexArray);
     if(!m_sPath.empty()) Core::Log->Info("Model (%s) unloaded", m_sPath.c_str());
 
     // delete sync object

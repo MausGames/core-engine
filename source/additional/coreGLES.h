@@ -312,10 +312,13 @@ extern coreBool CORE_GL_ES2_restriction;
 
 
 // ****************************************************************
-/* generate resource names */
+/* generate and delete resource names */
 #define coreGenTextures2D   glGenTextures
 #define coreGenBuffers      glGenBuffers
 #define coreGenVertexArrays glGenVertexArrays
+#define coreDelTextures2D   glDeleteTextures
+#define coreDelBuffers      glDeleteBuffers
+#define coreDelVertexArrays glDeleteVertexArrays
 
 
 // ****************************************************************

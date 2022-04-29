@@ -25,7 +25,9 @@ coreBool GLEW_V2_compatibility = false;
 
 #define CORE_GL_POOL_GENERATE(n,c,g)                                               \
 {                                                                                  \
-    ASSERT(iCount && pNames && (iCount < CORE_GL_POOL_SIZE))                       \
+    ASSERT(iCount && pNames && (iCount <= CORE_GL_POOL_SIZE))                      \
+                                                                                   \
+    (n).iAll += iCount;                                                            \
                                                                                    \
     const coreUintW iRemaining = CORE_GL_POOL_SIZE - (n).iNext;                    \
     if(iCount > iRemaining)                                                        \
@@ -44,8 +46,19 @@ coreBool GLEW_V2_compatibility = false;
     (n).iNext += iCount;                                                           \
 }
 
+#define CORE_GL_POOL_DELETE(n,d)                                                   \
+{                                                                                  \
+    ASSERT((n).iAll >= iCount)                                                     \
+                                                                                   \
+    (n).iAll -= iCount;                                                            \
+                                                                                   \
+    (d)(iCount, pNames);                                                           \
+}
+
 #define CORE_GL_POOL_RESET(n,d)                                                    \
 {                                                                                  \
+    ASSERT((n).iAll == 0u)                                                         \
+                                                                                   \
     const coreUintW iRemaining = CORE_GL_POOL_SIZE - (n).iNext;                    \
     (d)(iRemaining, &(n).aiArray[(n).iNext]);                                      \
                                                                                    \
@@ -59,6 +72,7 @@ struct coreNamePool final
 {
     GLuint       aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
     coreUintW    iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
+    coreUintW    iAll  = 0u;                   // number of active resource names
     coreSpinLock oLock = coreSpinLock();       // spinlock to allow multiple threads to access the pool
 };
 
@@ -90,6 +104,29 @@ void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate vertex array names (without lock, because only executed on main-thread)
     CORE_GL_POOL_GENERATE(s_PoolVertexArrays, glCreateVertexArrays, glGenVertexArrays)
+}
+
+
+// ****************************************************************
+/* delete resource names */
+void coreDelTextures2D(coreUintW iCount, const GLuint* pNames)
+{
+    // delete 2D texture names
+    coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
+    CORE_GL_POOL_DELETE(s_PoolTextures2D, glDeleteTextures)
+}
+
+void coreDelBuffers(coreUintW iCount, const GLuint* pNames)
+{
+    // delete data buffer names
+    coreSpinLocker oLocker(&s_PoolBuffers.oLock);
+    CORE_GL_POOL_DELETE(s_PoolBuffers, glDeleteBuffers)
+}
+
+void coreDelVertexArrays(coreUintW iCount, const GLuint* pNames)
+{
+    // delete vertex array names (without lock)
+    CORE_GL_POOL_DELETE(s_PoolVertexArrays, glDeleteVertexArrays)
 }
 
 
@@ -162,7 +199,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
         __IMPROVE(GLEW_KHR_debug,                            GLEW_VERSION_4_3)
-        __IMPROVE(GLEW_KHR_no_error,                         false)                                                  // indirectly used
+        __IMPROVE(GLEW_KHR_no_error,                         GLEW_VERSION_4_6)                                       // indirectly used
         __IMPROVE(GLEW_NVX_gpu_memory_info,                  false)
         __IMPROVE(GLEW_NV_framebuffer_multisample_coverage,  false)
         __IMPROVE(GLEW_NV_gpu_shader5,                       false)                                                  // shader extension
@@ -263,7 +300,7 @@ void __coreExitOpenGL()
     // delete remaining resource names from the pools
     CORE_GL_POOL_RESET(s_PoolTextures2D,   glDeleteTextures)
     CORE_GL_POOL_RESET(s_PoolBuffers,      glDeleteBuffers)
-    CORE_GL_POOL_RESET(s_PoolVertexArrays, glDeleteTextures)
+    CORE_GL_POOL_RESET(s_PoolVertexArrays, glDeleteVertexArrays)
 }
 
 
