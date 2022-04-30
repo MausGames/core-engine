@@ -391,7 +391,7 @@ constexpr coreUint32 coreMath::BitScanRev(const coreUint64 iInput)
 /* rotate bits to the left in a 32-bit sequence */
 constexpr coreUint32 coreMath::RotateLeft32(const coreUint32 iInput, const coreUint8 iShift)
 {
-    ASSERT(iShift <= 32u)
+    ASSERT(iShift < 32u)
 
 #if defined(_CORE_MSVC_)
 
@@ -409,7 +409,7 @@ constexpr coreUint32 coreMath::RotateLeft32(const coreUint32 iInput, const coreU
 #endif
 
     // normal calculation
-    return (iInput << iShift) | (iInput >> (32u - iShift));
+    return iShift ? (iInput << iShift) | (iInput >> (32u - iShift)) : iInput;
 }
 
 
@@ -417,7 +417,7 @@ constexpr coreUint32 coreMath::RotateLeft32(const coreUint32 iInput, const coreU
 /* rotate bits to the left in a 64-bit sequence */
 constexpr coreUint64 coreMath::RotateLeft64(const coreUint64 iInput, const coreUint8 iShift)
 {
-    ASSERT(iShift <= 64u)
+    ASSERT(iShift < 64u)
 
 #if defined(_CORE_MSVC_)
 
@@ -435,7 +435,7 @@ constexpr coreUint64 coreMath::RotateLeft64(const coreUint64 iInput, const coreU
 #endif
 
     // normal calculation
-    return (iInput << iShift) | (iInput >> (64u - iShift));
+    return iShift ? (iInput << iShift) | (iInput >> (64u - iShift)) : iInput;
 }
 
 
@@ -443,7 +443,7 @@ constexpr coreUint64 coreMath::RotateLeft64(const coreUint64 iInput, const coreU
 /* rotate bits to the right in a 32-bit sequence */
 constexpr coreUint32 coreMath::RotateRight32(const coreUint32 iInput, const coreUint8 iShift)
 {
-    ASSERT(iShift <= 32u)
+    ASSERT(iShift < 32u)
 
 #if defined(_CORE_MSVC_)
 
@@ -461,7 +461,7 @@ constexpr coreUint32 coreMath::RotateRight32(const coreUint32 iInput, const core
 #endif
 
     // normal calculation
-    return (iInput >> iShift) | (iInput << (32u - iShift));
+    return iShift ? (iInput >> iShift) | (iInput << (32u - iShift)) : iInput;
 }
 
 
@@ -469,7 +469,7 @@ constexpr coreUint32 coreMath::RotateRight32(const coreUint32 iInput, const core
 /* rotate bits to the right in a 64-bit sequence */
 constexpr coreUint64 coreMath::RotateRight64(const coreUint64 iInput, const coreUint8 iShift)
 {
-    ASSERT(iShift <= 64u)
+    ASSERT(iShift < 64u)
 
 #if defined(_CORE_MSVC_)
 
@@ -487,7 +487,7 @@ constexpr coreUint64 coreMath::RotateRight64(const coreUint64 iInput, const core
 #endif
 
     // normal calculation
-    return (iInput >> iShift) | (iInput << (64u - iShift));
+    return iShift ? (iInput >> iShift) | (iInput << (64u - iShift)) : iInput;
 }
 
 
