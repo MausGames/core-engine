@@ -34,8 +34,8 @@ public:
     ENABLE_COPY(coreVector2)
 
     /* compare operations */
-    inline    coreBool operator == (const coreVector2 v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) == 0);}
-    inline    coreBool operator != (const coreVector2 v)const {return (std::memcmp(this, &v, sizeof(coreVector2)) != 0);}
+    constexpr coreBool operator == (const coreVector2 v)const {return (x == v.x) && (y == v.y);}
+    constexpr coreBool operator != (const coreVector2 v)const {return (x != v.x) || (y != v.y);}
     constexpr coreBool operator <  (const coreVector2 v)const {return (x <  v.x) && (y <  v.y);}
     constexpr coreBool operator <= (const coreVector2 v)const {return (x <= v.x) && (y <= v.y);}
     constexpr coreBool operator >  (const coreVector2 v)const {return (x >  v.x) && (y >  v.y);}
@@ -152,8 +152,8 @@ public:
     ENABLE_COPY(coreVector3)
 
     /* compare operations */
-    inline    coreBool operator == (const coreVector3 v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) == 0);}
-    inline    coreBool operator != (const coreVector3 v)const {return (std::memcmp(this, &v, sizeof(coreVector3)) != 0);}
+    constexpr coreBool operator == (const coreVector3 v)const {return (x == v.x) && (y == v.y) && (z == v.z);}
+    constexpr coreBool operator != (const coreVector3 v)const {return (x != v.x) || (y != v.y) || (z != v.z);}
     constexpr coreBool operator <  (const coreVector3 v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z);}
     constexpr coreBool operator <= (const coreVector3 v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z);}
     constexpr coreBool operator >  (const coreVector3 v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z);}
@@ -299,8 +299,8 @@ public:
     ENABLE_COPY(coreVector4)
 
     /* compare operations */
-    inline    coreBool operator == (const coreVector4 v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) == 0);}
-    inline    coreBool operator != (const coreVector4 v)const {return (std::memcmp(this, &v, sizeof(coreVector4)) != 0);}
+    constexpr coreBool operator == (const coreVector4 v)const {return (x == v.x) && (y == v.y) && (z == v.z) && (w == v.w);}
+    constexpr coreBool operator != (const coreVector4 v)const {return (x != v.x) || (y != v.y) || (z != v.z) || (w != v.w);}
     constexpr coreBool operator <  (const coreVector4 v)const {return (x <  v.x) && (y <  v.y) && (z <  v.z) && (w <  v.w);}
     constexpr coreBool operator <= (const coreVector4 v)const {return (x <= v.x) && (y <= v.y) && (z <= v.z) && (w <= v.w);}
     constexpr coreBool operator >  (const coreVector4 v)const {return (x >  v.x) && (y >  v.y) && (z >  v.z) && (w >  v.w);}

@@ -286,7 +286,9 @@
 #if defined(_CORE_DEBUG_)
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
-    #define _LIBCPP_DEBUG 0
+    #if !defined(_CORE_MACOS_)
+        #define _LIBCPP_DEBUG 0
+    #endif
 #endif
 
 #if defined(_CORE_WINDOWS_)
