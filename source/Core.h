@@ -46,7 +46,6 @@
 // TODO 3: get ZStandard port for Emscripten target, or fallback to zlib (only interesting for storage, everything else uses transparent server-compression)
 // TODO 3: in emscripten, look into support for web-simd (-msse4.2/-mavx -msimd128)
 // TODO 5: __apple_build_version__ to identify Apple Clang
-// TODO 3: in 128-bit hash functions, change byte-arrays to proper 128-bit type, change function-attributes and turn into constexpr if possible
 
 
 // ****************************************************************
@@ -509,8 +508,15 @@ using coreWchar  = wchar_t;
 using coreFloat  = float;
 using coreDouble = double;
 using coreByte   = std::uint8_t;
+
 STATIC_ASSERT(sizeof(coreInt64)  == 8u)
 STATIC_ASSERT(sizeof(coreUint64) == 8u)
+
+struct coreUint128 final
+{
+    coreUint64 iLow;
+    coreUint64 iHigh;
+};
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];

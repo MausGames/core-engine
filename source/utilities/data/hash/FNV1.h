@@ -15,6 +15,8 @@
 /* FNV-1a hash function (32-bit) */
 constexpr FUNC_LOCAL coreUint32 coreHashFNV32(const coreByte* pData, coreUint32 iLength)
 {
+    ASSERT(pData && iLength)
+
     coreUint32 iHash = 2166136261u;
 
     while(iLength)
@@ -29,6 +31,8 @@ constexpr FUNC_LOCAL coreUint32 coreHashFNV32(const coreByte* pData, coreUint32 
 
 constexpr FUNC_LOCAL coreUint32 coreHashFNV32(const coreChar* pcString)
 {
+    ASSERT(pcString)
+
     coreUint32 iHash = 2166136261u;
 
     while(*pcString)
@@ -45,6 +49,8 @@ constexpr FUNC_LOCAL coreUint32 coreHashFNV32(const coreChar* pcString)
 /* FNV-1a hash function (64-bit) */
 constexpr FUNC_LOCAL coreUint64 coreHashFNV64(const coreByte* pData, coreUint64 iLength)
 {
+    ASSERT(pData && iLength)
+
     coreUint64 iHash = 14695981039346656037u;
 
     while(iLength)
@@ -59,6 +65,8 @@ constexpr FUNC_LOCAL coreUint64 coreHashFNV64(const coreByte* pData, coreUint64 
 
 constexpr FUNC_LOCAL coreUint64 coreHashFNV64(const coreChar* pcString)
 {
+    ASSERT(pcString)
+
     coreUint64 iHash = 14695981039346656037u;
 
     while(*pcString)

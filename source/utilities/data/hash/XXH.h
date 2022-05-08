@@ -24,8 +24,8 @@ FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLeng
 
 // ****************************************************************
 /* XXH3_128 hash function (128-bit) */
-FUNC_NOALIAS void coreHashXXH128(coreByte* OUTPUT pHash, const coreByte* pData, const coreUintW iLength);
-FUNC_NOALIAS void coreHashXXH128(coreByte* OUTPUT pHash, const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
+FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength);
+FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
 
 
 // ****************************************************************

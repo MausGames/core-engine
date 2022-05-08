@@ -15,6 +15,8 @@
 /* Murmur3A hash function (x86, 32-bit) */
 constexpr FUNC_LOCAL coreUint32 coreHashMurmur32(const coreByte* pData, const coreUint32 iLength, const coreUint32 iSeed = 0u)
 {
+    ASSERT(pData && iLength)
+
     constexpr coreUint32 c1 = 0xCC9E2D51u;
     constexpr coreUint32 c2 = 0x1B873593u;
     constexpr coreUint32 c3 = 0x85EBCA6Bu;
@@ -68,6 +70,8 @@ constexpr FUNC_LOCAL coreUint32 coreHashMurmur32(const coreByte* pData, const co
 /* Murmur2B hash function (x64, 64-bit) */
 constexpr FUNC_LOCAL coreUint64 coreHashMurmur64(const coreByte* pData, coreUint64 iLength, const coreUint64 iSeed = 0u)
 {
+    ASSERT(pData && iLength)
+
     constexpr coreUint64 m = 0xC6A4A7935BD1E995u;
     constexpr coreUint64 r = 47u;
 
@@ -110,8 +114,10 @@ constexpr FUNC_LOCAL coreUint64 coreHashMurmur64(const coreByte* pData, coreUint
 
 // ****************************************************************
 /* Murmur3F hash function (x64, 128-bit) */
-inline FUNC_NOALIAS void coreHashMurmur128(coreByte* OUTPUT pHash, const coreByte* pData, const coreUint64 iLength, const coreUint32 iSeed = 0u)
+constexpr FUNC_LOCAL coreUint128 coreHashMurmur128(const coreByte* pData, const coreUint64 iLength, const coreUint32 iSeed = 0u)
 {
+    ASSERT(pData && iLength)
+
     constexpr coreUint64 c1 = 0x87C37B91114253D5u;
     constexpr coreUint64 c2 = 0x4CF5AD432745937Fu;
     constexpr coreUint64 c3 = 0xFF51AFD7ED558CCDu;
@@ -201,8 +207,7 @@ inline FUNC_NOALIAS void coreHashMurmur128(coreByte* OUTPUT pHash, const coreByt
     h1 += h2;
     h2 += h1;
 
-    r_cast<coreUint64*>(pHash)[0] = h1;
-    r_cast<coreUint64*>(pHash)[1] = h2;
+    return {h1, h2};
 }
 
 

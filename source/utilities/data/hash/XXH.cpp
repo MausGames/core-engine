@@ -41,16 +41,14 @@ FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLeng
 
 // ****************************************************************
 /* XXH3_128 hash function (128-bit) */
-FUNC_NOALIAS void coreHashXXH128(coreByte* OUTPUT pHash, const coreByte* pData, const coreUintW iLength)
+FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength)
 {
-    const XXH128_hash_t oHash = XXH3_128bits(pData, iLength);
-    std::memcpy(pHash, &oHash, sizeof(XXH128_hash_t));
+    return std::bit_cast<coreUint128>(XXH3_128bits(pData, iLength));
 }
 
-FUNC_NOALIAS void coreHashXXH128(coreByte* OUTPUT pHash, const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed)
+FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed)
 {
-    const XXH128_hash_t oHash = XXH3_128bits_withSeed(pData, iLength, iSeed);
-    std::memcpy(pHash, &oHash, sizeof(XXH128_hash_t));
+    return std::bit_cast<coreUint128>(XXH3_128bits_withSeed(pData, iLength, iSeed));
 }
 
 
