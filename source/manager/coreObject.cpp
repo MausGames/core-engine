@@ -172,17 +172,21 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
         const coreVector3 vPosition1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pVolume1->GetClusterPosition(k));
         const coreFloat   fRadius1   = pVolume1->GetClusterRadius(k) * vSizeMax1;
 
+       if(vPosition1.LengthSq() > POW2(fRadius1 + pObject2->GetCollisionRadius()))   // if cluster 1 is not intersecting sphere 2
+            continue;
+
         for(coreUintW m = 0u, me = pVolume2->GetNumClusters(); m < me; ++m)
         {
             const coreVector3 vPosition2 = vSize2 * pVolume2->GetClusterPosition(m);
             const coreFloat   fRadius2   = pVolume2->GetClusterRadius(m) * vSizeMax2;
-            const coreFloat   fRadius2Sq = POW2(fRadius2);
 
             const coreVector3 vClusterDiff   = vPosition1 - vPosition2;
             const coreFloat   fClusterRadius = fRadius1 + fRadius2;
 
-            if(vClusterDiff.LengthSq() > POW2(fClusterRadius))
+            if(vClusterDiff.LengthSq() > POW2(fClusterRadius))   // if cluster 1 is not intersecting cluster 2
                 continue;
+
+            const coreFloat fRadius2Sq = POW2(fRadius2);
 
             const coreVector3* pvVertexPosition1 = pVolume1->GetVertexPosition();
             const coreVector3* pvVertexPosition2 = pVolume2->GetVertexPosition();
@@ -197,7 +201,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
 
                 const coreVector3 vCross1 = coreVector3::Cross(A2 - A1, A3 - A1);
 
-                if(POW2(coreVector3::Dot(A1 - vPosition2, vCross1)) > fRadius2Sq * vCross1.LengthSq())
+                if(POW2(coreVector3::Dot(A1 - vPosition2, vCross1)) > fRadius2Sq * vCross1.LengthSq())   // if triangle 1 is not intersecting cluster 2
                     continue;
 
                 for(coreUintW j = 0u, je = pVolume2->GetClusterNumIndices(m); j < je; j += 3u)
