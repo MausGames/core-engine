@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.22)
 set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 
@@ -8,7 +8,7 @@ add_library(CoreEngine STATIC)
 
 set_target_properties(
     CoreEngine PROPERTIES
-    C_STANDARD 11
+    C_STANDARD 17
     CXX_STANDARD 20
     DEBUG_POSTFIX _debug
     UNITY_BUILD ON

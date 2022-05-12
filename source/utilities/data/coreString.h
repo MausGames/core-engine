@@ -12,6 +12,7 @@
 
 // TODO 3: constexpr coreString, when std::string in libstdc++ and libc++ supports it
 // TODO 3: work-string should also handle NULL
+// TODO 3: remove custom contains function with C++23
 
 
 // ****************************************************************
@@ -33,6 +34,9 @@ public:
     /* replace all occurrences of a sub-string with another one */
     using std::string::replace;
     coreString& replace(const coreChar* pcOld, const coreChar* pcNew);
+
+    /* check for existence of a sub-string */
+    inline coreBool contains(const coreChar* pcString)const {return (this->find(pcString) != coreString::npos);}
 };
 
 

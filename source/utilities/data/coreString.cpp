@@ -42,7 +42,7 @@ coreString& coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
     // loop only once and replace all findings
     while((iPos = this->find(pcOld, iPos, iOldLen)) != coreString::npos)
     {
-        this->replace(iPos, iOldLen, pcNew);
+        this->replace(iPos, iOldLen, pcNew, iNewLen);
         iPos += iNewLen;
     }
 

@@ -60,8 +60,8 @@ void __coreInitOpenGLES()
 
     // implement GL_EXT_texture_compression_s3tc
     __CORE_GLES_CHECK(GL_EXT_texture_compression_s3tc, false);
-    if(g_sExtensions.find("GL_NV_texture_compression_s3tc ")   != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
-    if(g_sExtensions.find("GL_WEBGL_compressed_texture_s3tc ") != coreString::npos) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
+    if(g_sExtensions.contains("GL_NV_texture_compression_s3tc "))   g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
+    if(g_sExtensions.contains("GL_WEBGL_compressed_texture_s3tc ")) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
 
     // implement GL_EXT_texture_norm16
     __CORE_GLES_CHECK(GL_EXT_texture_norm16, false);
@@ -84,7 +84,7 @@ void __coreInitOpenGLES()
     {
         __CORE_GLES_FUNC_FETCH(glBlitFramebuffer, NV, bES30)
     }
-    else if(g_sExtensions.find("GL_ANGLE_framebuffer_blit "))
+    else if(g_sExtensions.contains("GL_ANGLE_framebuffer_blit "))
     {
         // override function
         g_CoreContext.__GL_NV_framebuffer_blit = true;
@@ -96,7 +96,7 @@ void __coreInitOpenGLES()
     {
         __CORE_GLES_FUNC_FETCH(glRenderbufferStorageMultisample, NV, bES30)
     }
-    else if(g_sExtensions.find("GL_ANGLE_framebuffer_multisample "))
+    else if(g_sExtensions.contains("GL_ANGLE_framebuffer_multisample "))
     {
         // override function
         g_CoreContext.__GL_NV_framebuffer_multisample = true;
@@ -116,15 +116,15 @@ void __coreInitOpenGLES()
 
     // implement GL_OES_depth_texture
     __CORE_GLES_CHECK(GL_OES_depth_texture, bES30);
-    if(g_sExtensions.find("GL_ANGLE_depth_texture ") != coreString::npos) g_CoreContext.__GL_OES_depth_texture = true;
-    if(g_sExtensions.find("GL_WEBGL_depth_texture ") != coreString::npos) g_CoreContext.__GL_OES_depth_texture = true;
+    if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
+    if(g_sExtensions.contains("GL_WEBGL_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
 
     // implement GL_OES_texture_stencil8
     __CORE_GLES_CHECK(GL_OES_texture_stencil8, false);
 
     // implement GL_OES_packed_depth_stencil
     __CORE_GLES_CHECK(GL_OES_packed_depth_stencil, bES30);
-    if(g_sExtensions.find("GL_ANGLE_depth_texture ") != coreString::npos) g_CoreContext.__GL_OES_packed_depth_stencil = true;
+    if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_packed_depth_stencil = true;
 }
 
 
