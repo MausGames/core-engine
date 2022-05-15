@@ -99,7 +99,8 @@ public:
 
 private:
     /* read from music stream and update sound buffer */
-    coreBool __Stream(const ALuint iBuffer);
+    coreBool  __Stream    (const ALuint  iBuffer);
+    coreUintW __StreamList(const ALuint* piBuffer, const coreUintW iCount);
 };
 
 

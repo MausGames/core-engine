@@ -105,21 +105,7 @@ coreBool coreMusic::Update()
         alSourceUnqueueBuffers(m_iSource, iProcessed, aiBuffer);
 
         // update processed sound buffers
-        ALint iUpdated = 0;
-        while(iUpdated < iProcessed)
-        {
-            if(!this->__Stream(aiBuffer[iUpdated]))
-            {
-                if(m_bLoop)
-                {
-                    // rewind the music stream
-                    this->SeekRaw(0);
-                    continue;
-                }
-                break;
-            }
-            iUpdated += 1;
-        }
+        const coreUintW iUpdated = this->__StreamList(aiBuffer, iProcessed);
 
         if(iUpdated)
         {
@@ -164,11 +150,11 @@ coreStatus coreMusic::Play()
         WARN_IF(!m_iSource) return CORE_ERROR_SYSTEM;
 
         // prepare sound buffers
-        for(coreUintW i = 0u; i < CORE_MUSIC_BUFFERS; ++i)
-            this->__Stream(m_aiBuffer[i]);
+        const coreUintW iUpdated = this->__StreamList(m_aiBuffer, CORE_MUSIC_BUFFERS);
+        WARN_IF(!iUpdated) return CORE_INVALID_DATA;
 
         // queue sound buffers
-        alSourceQueueBuffers(m_iSource, CORE_MUSIC_BUFFERS, m_aiBuffer);
+        alSourceQueueBuffers(m_iSource, iUpdated, m_aiBuffer);
 
         // set initial audio source properties
         alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
@@ -236,7 +222,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
         {
             // check comment and extract meta-information
             if(!std::memcmp(pcName, m_pComment->user_comments[i], iLen))
-                return m_pComment->user_comments[i] + iLen + 1;
+                return m_pComment->user_comments[i] + iLen + 1u;
         }
     }
 
@@ -270,6 +256,30 @@ coreBool coreMusic::__Stream(const ALuint iBuffer)
     // write decoded data to sound buffer
     alBufferData(iBuffer, (m_pInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, s_acData, iReadSize, m_pInfo->rate);
     return true;
+}
+
+
+// ****************************************************************
+/* update multiple sound buffers */
+coreUintW coreMusic::__StreamList(const ALuint* piBuffer, const coreUintW iCount)
+{
+    coreUintW iUpdated = 0u;
+
+    // try to update all provided sound buffers
+    while(iUpdated < iCount)
+    {
+        if(!this->__Stream(piBuffer[iUpdated]))
+        {
+            if(!m_bLoop) break;
+
+            // rewind the music stream
+            this->SeekRaw(0);
+            WARN_IF(!this->__Stream(piBuffer[iUpdated])) break;
+        }
+        iUpdated += 1u;
+    }
+
+    return iUpdated;
 }
 
 
