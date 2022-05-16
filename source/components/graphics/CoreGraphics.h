@@ -109,14 +109,15 @@ public:
     /* handle OpenGL debug output */
     friend void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLuint iID, const GLenum iSeverity, const GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
     void DebugOpenGL();
-
-    /* take screenshot */
-    void        TakeScreenshot(const coreChar* pcPath)const;
-    inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolder(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
+    void CheckOpenGL();
 
     /* retrieve graphics memory */
     coreUint64 AppGpuMemory   ()const;
     coreBool   SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const;
+
+    /* take screenshot */
+    void        TakeScreenshot(const coreChar* pcPath)const;
+    inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolder(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
 
     /* get component properties */
     inline const SDL_GLContext&  GetRenderContext  ()const                       {return m_pRenderContext;}

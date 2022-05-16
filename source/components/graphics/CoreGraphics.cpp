@@ -517,7 +517,7 @@ void CoreGraphics::DebugOpenGL()
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-        // set callback function and filter
+        // set callback function and enable all messages
         glDebugMessageCallback(&WriteOpenGL, NULL);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
 
@@ -528,16 +528,76 @@ void CoreGraphics::DebugOpenGL()
 
         // disable all shader compiler messages
         glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, false);
-
-        // 131169: Framebuffer detailed info: The driver allocated multisample storage for renderbuffer #.
-        // 131185: Buffer detailed info: Buffer object # (bound to #, usage hint is #) will use # memory as the source for buffer object operations.
-        // 131204: Texture state usage warning: Texture # is base level inconsistent. Check texture size.
-        // 131222: Program undefined behavior warning: Sampler object # is bound to non-depth texture #, yet it is used with a program that uses a shadow sampler. This is undefined behavior.
-
-        // 1: Shader Stats (SGPRs, VGPRs, Code Size, LDS, Scratch, Max Waves, Spilled SGPRs, Spilled VGPRs, PrivMem VGPRs)
-        // 2: LLVM Diagnostics (# instructions in function)
-        // #: extension # unsupported in # shader
     }
+
+    // 131169: Framebuffer detailed info: The driver allocated multisample storage for renderbuffer #.
+    // 131185: Buffer detailed info: Buffer object # (bound to #, usage hint is #) will use # memory as the source for buffer object operations.
+    // 131204: Texture state usage warning: Texture # is base level inconsistent. Check texture size.
+    // 131222: Program undefined behavior warning: Sampler object # is bound to non-depth texture #, yet it is used with a program that uses a shadow sampler. This is undefined behavior.
+
+    // 1: Shader Stats (SGPRs, VGPRs, Code Size, LDS, Scratch, Max Waves, Spilled SGPRs, Spilled VGPRs, PrivMem VGPRs)
+    // 2: LLVM Diagnostics (# instructions in function)
+    // #: extension # unsupported in # shader
+}
+
+
+// ****************************************************************
+/* manually check for OpenGL errors */
+void CoreGraphics::CheckOpenGL()
+{
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+
+    // loop through all recent errors
+    GLenum iError;
+    while((iError = glGetError()) != GL_NO_ERROR)
+    {
+        Core::Log->Warning("OpenGL reported an error (GL Error Code: 0x%08X)", iError);
+        WARN_IF(true) {}
+    }
+}
+
+
+// ****************************************************************
+/* get amount of graphics memory assigned to the application (approximation) */
+coreUint64 CoreGraphics::AppGpuMemory()const
+{
+    if(CORE_GL_SUPPORT(NVX_gpu_memory_info))
+    {
+        GLint iAvailable;
+
+        // retrieve GPU memory info (in KB)
+        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &iAvailable);
+
+        // convert to bytes and return
+        return (m_iMemoryStart - coreUint64(iAvailable) * 1024u);
+    }
+
+    return 0u;
+}
+
+
+// ****************************************************************
+/* get dedicated graphics memory */
+coreBool CoreGraphics::SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const
+{
+    if(CORE_GL_SUPPORT(NVX_gpu_memory_info))
+    {
+        GLint iAvailable, iTotal;
+
+        // retrieve GPU memory info (in KB)
+        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &iAvailable);
+        glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX,         &iTotal);
+
+        // convert to bytes and return
+        if(piAvailable) (*piAvailable) = coreUint64(iAvailable) * 1024u;
+        if(piTotal)     (*piTotal)     = coreUint64(iTotal)     * 1024u;
+        return true;
+    }
+
+    // could not get dedicated graphics memory
+    if(piAvailable) (*piAvailable) = 0u;
+    if(piTotal)     (*piTotal)     = 1u;
+    return false;
 }
 
 
@@ -595,56 +655,15 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 
 
 // ****************************************************************
-/* get amount of graphics memory assigned to the application (approximation) */
-coreUint64 CoreGraphics::AppGpuMemory()const
-{
-    if(CORE_GL_SUPPORT(NVX_gpu_memory_info))
-    {
-        GLint iAvailable;
-
-        // retrieve GPU memory info (in KB)
-        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &iAvailable);
-
-        // convert to bytes and return
-        return (m_iMemoryStart - coreUint64(iAvailable) * 1024u);
-    }
-
-    return 0u;
-}
-
-
-// ****************************************************************
-/* get dedicated graphics memory */
-coreBool CoreGraphics::SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const
-{
-    if(CORE_GL_SUPPORT(NVX_gpu_memory_info))
-    {
-        GLint iAvailable, iTotal;
-
-        // retrieve GPU memory info (in KB)
-        glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &iAvailable);
-        glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX,         &iTotal);
-
-        // convert to bytes and return
-        if(piAvailable) (*piAvailable) = coreUint64(iAvailable) * 1024u;
-        if(piTotal)     (*piTotal)     = coreUint64(iTotal)     * 1024u;
-        return true;
-    }
-
-    // could not get dedicated graphics memory
-    if(piAvailable) (*piAvailable) = 0u;
-    if(piTotal)     (*piTotal)     = 1u;
-    return false;
-}
-
-
-// ****************************************************************
 /* update the graphics scene */
 void CoreGraphics::__UpdateScene()
 {
     // take screenshot
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(PRINTSCREEN), CORE_INPUT_PRESS))
         this->TakeScreenshot();
+
+    // check for OpenGL errors
+    this->CheckOpenGL();
 
     // disable last model, textures and shader-program
     coreModel  ::Disable(true);

@@ -300,6 +300,9 @@ coreStatus coreResourceManager::__RunThread()
     // update the resource manager
     this->UpdateResources();
 
+    // check for OpenGL errors
+    Core::Graphics->CheckOpenGL();
+
     return CORE_OK;
 }
 
