@@ -740,12 +740,24 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 /* enable relevant floating-point exceptions (per thread) */
 inline void coreMath::EnableExceptions()
 {
-#if defined(_CORE_DEBUG_)
+#if defined(_CORE_DEBUG_) && !defined(_CORE_MACOS_)
 
     #if defined(_CORE_SSE_)
 
         // enable in the MXCSR control register (for SSE)
         _MM_SET_EXCEPTION_MASK(~(_MM_MASK_OVERFLOW | _MM_MASK_DIV_ZERO | _MM_MASK_INVALID) & _MM_MASK_MASK);
+
+    #elif defined(_CORE_NEON_)
+
+        // enable in the FPCR control register (for NEON, on 64-bit only)
+        coreUint64 iValue;
+        asm volatile("mrs %0, fpcr" : "=r" (iValue));
+
+        ADD_BIT(iValue, 10u)   // OFE (overflow)
+        ADD_BIT(iValue, 9u)    // DZE (divide by zero)
+        ADD_BIT(iValue, 8u)    // IOE (invalid operation)
+
+        asm volatile("msr fpcr, %0" :: "r" (iValue));
 
     #endif
 
@@ -774,6 +786,16 @@ inline void coreMath::EnableRoundToNearest()
     // enable in the MXCSR control register (for SSE)
     _MM_SET_ROUNDING_MODE(_MM_ROUND_NEAREST);
 
+#elif defined(_CORE_NEON_)
+
+    // enable in the FPCR control register (for NEON, on 64-bit only)
+    coreUint64 iValue;
+    asm volatile("mrs %0, fpcr" : "=r" (iValue));
+
+    SET_BITVALUE(iValue, 2u, 22u, 0u)   // RMode (bits [23:22], 0 = round to nearest)
+
+    asm volatile("msr fpcr, %0" :: "r" (iValue));
+
 #endif
 
 #if defined(_CORE_WINDOWS_)
@@ -797,6 +819,17 @@ inline void coreMath::DisableDenormals()
     // disable in the MXCSR control register (for SSE)
     _MM_SET_FLUSH_ZERO_MODE    (_MM_FLUSH_ZERO_ON);       // calculation results
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);   // instruction inputs
+
+#elif defined(_CORE_NEON_)
+
+    // disable in the FPCR control register (for NEON, on 64-bit only)
+    coreUint64 iValue;
+    asm volatile("mrs %0, fpcr" : "=r" (iValue));
+
+    ADD_BIT(iValue, 24u)   // FZ   (single and double)
+    ADD_BIT(iValue, 19u)   // FZ16 (half)
+
+    asm volatile("msr fpcr, %0" :: "r" (iValue));
 
 #endif
 
