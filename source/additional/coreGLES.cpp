@@ -43,7 +43,7 @@ void __coreInitOpenGLES()
     else if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, bES30))
     {
         // override function
-        g_CoreContext.__glDiscardFramebufferEXT = r_cast<decltype(g_CoreContext.__glDiscardFramebufferEXT)>(eglGetProcAddress("glInvalidateFramebuffer"));
+        g_CoreContext.__glDiscardFramebuffer = r_cast<decltype(g_CoreContext.__glDiscardFramebuffer)>(eglGetProcAddress("glInvalidateFramebuffer"));
     }
 
     // implement GL_EXT_texture_storage
@@ -73,7 +73,7 @@ void __coreInitOpenGLES()
     if(__CORE_GLES_CHECK(GL_KHR_parallel_shader_compile, false))
     {
         __CORE_GLES_FUNC_FETCH(glMaxShaderCompilerThreads, KHR, false)
-        if(!g_CoreContext.__glMaxShaderCompilerThreadsKHR) g_CoreContext.__glMaxShaderCompilerThreadsKHR = [](GLuint){};   // not available in WebGL
+        if(!g_CoreContext.__glMaxShaderCompilerThreads) g_CoreContext.__glMaxShaderCompilerThreads = [](GLuint){};   // not available in WebGL
     }
 
     // implement GL_NV_pixel_buffer_object
@@ -88,7 +88,7 @@ void __coreInitOpenGLES()
     {
         // override function
         g_CoreContext.__GL_NV_framebuffer_blit = true;
-        g_CoreContext.__glBlitFramebufferNV = r_cast<decltype(g_CoreContext.__glBlitFramebufferNV)>(eglGetProcAddress("glBlitFramebufferANGLE"));
+        g_CoreContext.__glBlitFramebuffer = r_cast<decltype(g_CoreContext.__glBlitFramebuffer)>(eglGetProcAddress("glBlitFramebufferANGLE"));
     }
 
     // implement GL_NV_framebuffer_multisample
@@ -100,7 +100,7 @@ void __coreInitOpenGLES()
     {
         // override function
         g_CoreContext.__GL_NV_framebuffer_multisample = true;
-        g_CoreContext.__glRenderbufferStorageMultisampleNV = r_cast<decltype(g_CoreContext.__glRenderbufferStorageMultisampleNV)>(eglGetProcAddress("glRenderbufferStorageMultisampleANGLE"));
+        g_CoreContext.__glRenderbufferStorageMultisample = r_cast<decltype(g_CoreContext.__glRenderbufferStorageMultisample)>(eglGetProcAddress("glRenderbufferStorageMultisampleANGLE"));
     }
 
     // implement GL_OES_vertex_array_object

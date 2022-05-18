@@ -343,6 +343,7 @@ inline const coreChar* coreBackendSteam::GetLanguage()const
         if(!std::strcmp(pcLanguage, "schinese"))   return CORE_LANGUAGE_SCHINESE;
         if(!std::strcmp(pcLanguage, "spanish"))    return CORE_LANGUAGE_SPANISH;
         if(!std::strcmp(pcLanguage, "tchinese"))   return CORE_LANGUAGE_TCHINESE;
+        if(!std::strcmp(pcLanguage, "ukrainian"))  return CORE_LANGUAGE_UKRAINIAN;
     }
 
     return this->coreBackend::GetLanguage();

@@ -35,6 +35,7 @@
 #define CORE_LANGUAGE_SCHINESE   "schinese"
 #define CORE_LANGUAGE_SPANISH    "spanish"
 #define CORE_LANGUAGE_TCHINESE   "tchinese"
+#define CORE_LANGUAGE_UKRAINIAN  "ukrainian"
 
 
 // ****************************************************************

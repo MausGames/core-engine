@@ -49,6 +49,7 @@ inline const coreChar* coreWindowsBackend::GetLanguage()const
     case 0x15u: return CORE_LANGUAGE_POLISH;
     case 0x16u: return (iLanguage == 0x0416u) ? CORE_LANGUAGE_BRAZILIAN : CORE_LANGUAGE_PORTUGUESE;
     case 0x19u: return CORE_LANGUAGE_RUSSIAN;
+    case 0x22u: return CORE_LANGUAGE_UKRAINIAN;
     }
 
     return this->coreBackend::GetLanguage();

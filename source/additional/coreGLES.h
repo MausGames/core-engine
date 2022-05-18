@@ -72,10 +72,10 @@
 /* GL_EXT_discard_framebuffer (mapped on GL_ARB_invalidate_subdata) */
 #define CORE_GL_ARB_invalidate_subdata __CORE_GLES_VAR(GL_EXT_discard_framebuffer)
 
-using PFNGLDISCARDFRAMEBUFFEREXTPROC = void (GL_APIENTRY *) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
+using PFNGLDISCARDFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
 #define glInvalidateBufferData(...)
 #define glInvalidateBufferSubData(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
-#define glInvalidateFramebuffer        __CORE_GLES_FUNC(glDiscardFramebufferEXT)
+#define glInvalidateFramebuffer        __CORE_GLES_FUNC(glDiscardFramebuffer)
 #define glInvalidateSubFramebuffer(...)
 #define glInvalidateTexImage(...)
 #define glInvalidateTexSubImage(...)
@@ -85,8 +85,8 @@ using PFNGLDISCARDFRAMEBUFFEREXTPROC = void (GL_APIENTRY *) (GLenum target, GLsi
 /* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage)  */
 #define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
 
-using PFNGLTEXSTORAGE2DEXTPROC = void (GL_APIENTRY *) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
-#define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2DEXT)
+using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+#define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2D)
 
 
 // ****************************************************************
@@ -134,8 +134,8 @@ using PFNGLTEXSTORAGE2DEXTPROC = void (GL_APIENTRY *) (GLenum target, GLsizei le
 
 #define GL_COMPLETION_STATUS_ARB 0x91B1
 
-using PFNGLMAXSHADERCOMPILERTHREADSARBPROC = void (GL_APIENTRY *) (GLuint count);
-#define glMaxShaderCompilerThreadsARB __CORE_GLES_FUNC(glMaxShaderCompilerThreadsKHR)
+using PFNGLMAXSHADERCOMPILERTHREADSPROC = void (GL_APIENTRY *) (GLuint count);
+#define glMaxShaderCompilerThreadsARB __CORE_GLES_FUNC(glMaxShaderCompilerThreads)
 
 
 // ****************************************************************
@@ -147,28 +147,28 @@ using PFNGLMAXSHADERCOMPILERTHREADSARBPROC = void (GL_APIENTRY *) (GLuint count)
 /* GL_NV_framebuffer_blit (mapped on GL_EXT_framebuffer_blit) */
 #define CORE_GL_EXT_framebuffer_blit __CORE_GLES_VAR(GL_NV_framebuffer_blit)
 
-using PFNGLBLITFRAMEBUFFERNVPROC = void (GL_APIENTRY *) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-#define glBlitFramebuffer __CORE_GLES_FUNC(glBlitFramebufferNV)
+using PFNGLBLITFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+#define glBlitFramebuffer __CORE_GLES_FUNC(glBlitFramebuffer)
 
 
 // ****************************************************************
 /* GL_NV_framebuffer_multisample (mapped on GL_EXT_framebuffer_multisample) */
 #define CORE_GL_EXT_framebuffer_multisample __CORE_GLES_VAR(GL_NV_framebuffer_multisample)
 
-using PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
-#define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisampleNV)
+using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+#define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisample)
 
 
 // ****************************************************************
 /* GL_OES_vertex_array_object (mapped on GL_ARB_vertex_array_object) */
 #define CORE_GL_ARB_vertex_array_object __CORE_GLES_VAR(GL_OES_vertex_array_object)
 
-using PFNGLBINDVERTEXARRAYOESPROC    = void (GL_APIENTRY *) (GLuint array);
-using PFNGLDELETEVERTEXARRAYSOESPROC = void (GL_APIENTRY *) (GLsizei n, const GLuint* arrays);
-using PFNGLGENVERTEXARRAYSOESPROC    = void (GL_APIENTRY *) (GLsizei n, GLuint* arrays);
-#define glBindVertexArray    __CORE_GLES_FUNC(glBindVertexArrayOES)
-#define glDeleteVertexArrays __CORE_GLES_FUNC(glDeleteVertexArraysOES)
-#define glGenVertexArrays    __CORE_GLES_FUNC(glGenVertexArraysOES)
+using PFNGLBINDVERTEXARRAYPROC    = void (GL_APIENTRY *) (GLuint array);
+using PFNGLDELETEVERTEXARRAYSPROC = void (GL_APIENTRY *) (GLsizei n, const GLuint* arrays);
+using PFNGLGENVERTEXARRAYSPROC    = void (GL_APIENTRY *) (GLsizei n, GLuint* arrays);
+#define glBindVertexArray    __CORE_GLES_FUNC(glBindVertexArray)
+#define glDeleteVertexArrays __CORE_GLES_FUNC(glDeleteVertexArrays)
+#define glGenVertexArrays    __CORE_GLES_FUNC(glGenVertexArrays)
 
 
 // ****************************************************************
@@ -206,6 +206,7 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 // ****************************************************************
 /* unused definitions and functions */
 #define GL_CLIPPING_OUTPUT_PRIMITIVES                   0x82F7
+#define GL_CONTEXT_PROFILE_MASK                         0x9126
 #define GL_FRAGMENT_SHADER_INVOCATIONS                  0x82F4
 #define GL_FRAMEBUFFER_SRGB                             0x8DB9
 #define GL_GENERATE_MIPMAP                              0x8191
@@ -283,14 +284,14 @@ struct coreContext final
     coreBool __GL_OES_texture_stencil8;
     coreBool __GL_OES_packed_depth_stencil;
 
-    PFNGLDISCARDFRAMEBUFFEREXTPROC            __glDiscardFramebufferEXT;
-    PFNGLTEXSTORAGE2DEXTPROC                  __glTexStorage2DEXT;
-    PFNGLMAXSHADERCOMPILERTHREADSARBPROC      __glMaxShaderCompilerThreadsKHR;
-    PFNGLBLITFRAMEBUFFERNVPROC                __glBlitFramebufferNV;
-    PFNGLRENDERBUFFERSTORAGEMULTISAMPLENVPROC __glRenderbufferStorageMultisampleNV;
-    PFNGLBINDVERTEXARRAYOESPROC               __glBindVertexArrayOES;
-    PFNGLDELETEVERTEXARRAYSOESPROC            __glDeleteVertexArraysOES;
-    PFNGLGENVERTEXARRAYSOESPROC               __glGenVertexArraysOES;
+    PFNGLDISCARDFRAMEBUFFERPROC             __glDiscardFramebuffer;
+    PFNGLTEXSTORAGE2DPROC                   __glTexStorage2D;
+    PFNGLMAXSHADERCOMPILERTHREADSPROC       __glMaxShaderCompilerThreads;
+    PFNGLBLITFRAMEBUFFERPROC                __glBlitFramebuffer;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC __glRenderbufferStorageMultisample;
+    PFNGLBINDVERTEXARRAYPROC                __glBindVertexArray;
+    PFNGLDELETEVERTEXARRAYSPROC             __glDeleteVertexArrays;
+    PFNGLGENVERTEXARRAYSPROC                __glGenVertexArrays;
 };
 
 extern coreString  g_sExtensions;   // full extension string
@@ -298,7 +299,7 @@ extern coreContext g_CoreContext;   // context object
 
 #define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = (g_sExtensions.contains(#x " ") || b))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
-#define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f ## a = r_cast<decltype(g_CoreContext.__ ## f ## a)>(eglGetProcAddress(b ? #f : #f #a));}
+#define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f = r_cast<decltype(g_CoreContext.__ ## f)>(eglGetProcAddress(b ? #f : #f #a));}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
 
 template <typename ...A> void __UNUSED_ARGS(A...) {}

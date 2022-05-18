@@ -83,6 +83,10 @@ CoreGraphics::CoreGraphics()noexcept
         coreString sPlatformExtensions;
         corePlatformExtensions(&sPlatformExtensions);
 
+        GLint aiStatus[2] = {};
+        glGetIntegerv(GL_CONTEXT_FLAGS,        &aiStatus[0]);
+        glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &aiStatus[1]);
+
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")          " %s",                    glGetString(GL_VENDOR));
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")        " %s",                    glGetString(GL_RENDERER));
         Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:")  " %s",                    glGetString(GL_VERSION));
@@ -90,7 +94,7 @@ CoreGraphics::CoreGraphics()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("Graphics Memory:") " %llu/%llu MB (%.1f%%)", iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(sExtensions        .c_str());
         Core::Log->ListAdd(sPlatformExtensions.c_str());
-        Core::Log->ListAdd("GL_MAX_SAMPLES (%u) GL_MAX_TEXTURE_MAX_ANISOTROPY (%u)", m_iMaxSamples, m_iMaxAnisotropy);
+        Core::Log->ListAdd("GL_MAX_SAMPLES (%u) GL_MAX_TEXTURE_MAX_ANISOTROPY (%u) GL_CONTEXT_FLAGS (0x%02X) GL_CONTEXT_PROFILE_MASK (0x%02X)", m_iMaxSamples, m_iMaxAnisotropy, aiStatus[0], aiStatus[1]);
     }
     Core::Log->ListEnd();
 
