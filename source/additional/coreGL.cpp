@@ -347,7 +347,7 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
     const HDC pDC = GetDC(NULL);
     if(pDC)
     {
-        // get full extension string
+        // get full extension string (WGL)
         (*psOutput) = wglGetExtensionsStringARB(pDC);
 
         // release device context
@@ -364,9 +364,11 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
         {
             __LOAD_FUNCTION(eglGetCurrentContext, pLibraryEGL)
             __LOAD_FUNCTION(eglGetDisplay,        pLibraryEGL)
+            __LOAD_FUNCTION(eglInitialize,        pLibraryEGL)
+            __LOAD_FUNCTION(eglTerminate,         pLibraryEGL)
             __LOAD_FUNCTION(eglQueryString,       pLibraryEGL)
 
-            if(__eglGetCurrentContext && __eglGetDisplay && __eglQueryString && (__eglGetCurrentContext() != EGL_NO_CONTEXT))
+            if(__eglGetCurrentContext && __eglGetDisplay && __eglInitialize && __eglTerminate && __eglQueryString && (__eglGetCurrentContext() != EGL_NO_CONTEXT))
             {
                 // open Wayland library
                 void* pLibraryWL = coreData::OpenLibrary("libwayland-client.so");
@@ -378,14 +380,24 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
                     if(__wl_display_connect && __wl_display_disconnect)
                     {
                         // open connection to default display
-                        wl_display* pDisplay = __wl_display_connect(NULL);
-                        if(pDisplay)
+                        wl_display* pDisplayWL = __wl_display_connect(NULL);
+                        if(pDisplayWL)
                         {
-                            // get full extension string (EGL)
-                            (*psOutput) = __eglQueryString(__eglGetDisplay(pDisplay), EGL_EXTENSIONS);
+                            // initialize connection
+                            EGLDisplay pDisplayEGL = __eglGetDisplay(pDisplayWL);
+                            if(__eglInitialize(pDisplayEGL, NULL, NULL))
+                            {
+                                // get full extension string (EGL)
+                                (*psOutput) += __eglQueryString(pDisplayEGL,    EGL_EXTENSIONS);   // display extensions
+                                (*psOutput) += ' ';
+                                (*psOutput) += __eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);   // client extensions
+
+                                // terminate connection
+                                __eglTerminate(pDisplayEGL);
+                            }
 
                             // close connection
-                            __wl_display_disconnect(pDisplay);
+                            __wl_display_disconnect(pDisplayWL);
                         }
                     }
 
@@ -405,14 +417,14 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
                     if(__XOpenDisplay && __XCloseDisplay)
                     {
                         // open connection to default display
-                        Display* pDisplay = __XOpenDisplay(NULL);
-                        if(pDisplay)
+                        Display* pDisplayX = __XOpenDisplay(NULL);
+                        if(pDisplayX)
                         {
                             // get full extension string (GLX)
-                            (*psOutput) = glXQueryExtensionsString(pDisplay, DefaultScreen(pDisplay));
+                            (*psOutput) = glXQueryExtensionsString(pDisplayX, DefaultScreen(pDisplayX));
 
                             // close connection
-                            __XCloseDisplay(pDisplay);
+                            __XCloseDisplay(pDisplayX);
                         }
                     }
 
