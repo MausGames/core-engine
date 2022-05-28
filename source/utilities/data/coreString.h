@@ -13,6 +13,7 @@
 // TODO 3: constexpr coreString, when std::string in libstdc++ and libc++ supports it
 // TODO 3: work-string should also handle NULL
 // TODO 3: remove custom contains function with C++23
+// TODO 4: when to use append, when to use += (which is only used rarely) ? change everything to append ?
 
 
 // ****************************************************************
@@ -28,15 +29,29 @@ public:
 
     ENABLE_COPY(coreString)
 
-    /* trim string on both sides */
-    coreString& trim(const coreChar* pcRemove = " \n\r\t");
+    /* assign new string */
+    using std::string::assign;
+    inline coreString& assign(const coreChar* pcText)                       {this->std::string::assign(pcText ? pcText : "");       return *this;}
+    inline coreString& assign(const coreChar* pcText, const coreUintW iNum) {this->std::string::assign(pcText ? pcText : "", iNum); return *this;}
+
+    /* append new string */
+    using std::string::append;
+    inline coreString& append(const coreChar* pcText)                       {this->std::string::append(pcText ? pcText : "");       return *this;}
+    inline coreString& append(const coreChar* pcText, const coreUintW iNum) {this->std::string::append(pcText ? pcText : "", iNum); return *this;}
+
+    /* append new string with operator */
+    using std::string::operator +=;
+    inline coreString& operator += (const coreChar* pcText) {return this->append(pcText);}
 
     /* replace all occurrences of a sub-string with another one */
     using std::string::replace;
     coreString& replace(const coreChar* pcOld, const coreChar* pcNew);
 
+    /* trim string on both sides */
+    coreString& trim(const coreChar* pcRemove = " \n\r\t");
+
     /* check for existence of a sub-string */
-    inline coreBool contains(const coreChar* pcString)const {return (this->find(pcString) != coreString::npos);}
+    inline coreBool contains(const coreChar* pcText)const {return (this->find(pcText) != coreString::npos);}
 };
 
 
@@ -67,8 +82,8 @@ public:
     void     shrink_to_fit();
 
     /* add string data */
-    void assign (const coreChar* pcString);
-    void append (const coreChar* pcString);
+    void assign (const coreChar* pcText);
+    void append (const coreChar* pcText);
     void replace(const coreChar* pcOld, const coreChar* pcNew);
 
     /* remove string data */

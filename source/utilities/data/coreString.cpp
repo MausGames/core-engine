@@ -10,24 +10,6 @@
 
 
 // ****************************************************************
-/* trim string on both sides */
-coreString& coreString::trim(const coreChar* pcRemove)
-{
-    STATIC_ASSERT(coreString::npos == -1)
-
-    // trim right
-    const coreUintW iLast = this->find_last_not_of(pcRemove);
-    this->erase(iLast + 1u);
-
-    // trim left
-    const coreUintW iFirst = this->find_first_not_of(pcRemove);
-    if(iFirst != coreString::npos) this->erase(0u, iFirst);
-
-    return *this;
-}
-
-
-// ****************************************************************
 /* replace all occurrences of a sub-string with another one */
 coreString& coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
 {
@@ -45,6 +27,24 @@ coreString& coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
         this->replace(iPos, iOldLen, pcNew, iNewLen);
         iPos += iNewLen;
     }
+
+    return *this;
+}
+
+
+// ****************************************************************
+/* trim string on both sides */
+coreString& coreString::trim(const coreChar* pcRemove)
+{
+    STATIC_ASSERT(coreString::npos == -1)
+
+    // trim right
+    const coreUintW iLast = this->find_last_not_of(pcRemove);
+    this->erase(iLast + 1u);
+
+    // trim left
+    const coreUintW iFirst = this->find_first_not_of(pcRemove);
+    if(iFirst != coreString::npos) this->erase(0u, iFirst);
 
     return *this;
 }
@@ -102,35 +102,35 @@ void coreWorkString::shrink_to_fit()
 
 // ****************************************************************
 /* assign new string */
-void coreWorkString::assign(const coreChar* pcString)
+void coreWorkString::assign(const coreChar* pcText)
 {
-    ASSERT(pcString)
+    ASSERT(pcText)
 
-    const coreUintW iLen = std::strlen(pcString);
+    const coreUintW iLen = std::strlen(pcText);
 
     // adjust size and capacity
     m_iSize = iLen + 1u;
     this->reserve(m_iSize);
 
     // copy new string over string buffer
-    std::memcpy(m_pcBuffer, pcString, iLen + 1u);
+    std::memcpy(m_pcBuffer, pcText, iLen + 1u);
 }
 
 
 // ****************************************************************
 /* append new string */
-void coreWorkString::append(const coreChar* pcString)
+void coreWorkString::append(const coreChar* pcText)
 {
-    ASSERT(pcString)
+    ASSERT(pcText)
 
-    const coreUintW iLen = std::strlen(pcString);
+    const coreUintW iLen = std::strlen(pcText);
 
     // adjust size and capacity
     m_iSize += iLen;
     this->reserve(m_iSize);
 
     // copy new string to the end of string buffer
-    std::memcpy(m_pcBuffer + m_iSize - iLen - 1u, pcString, iLen + 1u);
+    std::memcpy(m_pcBuffer + m_iSize - iLen - 1u, pcText, iLen + 1u);
 }
 
 
