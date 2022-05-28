@@ -35,6 +35,18 @@ void __coreInitOpenGLES()
     // handle support for deprecated features
     CORE_GL_ES2_restriction = !bES30;
 
+    // implement GL_EXT_buffer_storage
+    if(__CORE_GLES_CHECK(GL_EXT_buffer_storage, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glBufferStorage, EXT, false)
+    }
+
+    // implement GL_EXT_color_buffer_float
+    __CORE_GLES_CHECK(GL_EXT_color_buffer_float, false);
+
+    // implement GL_EXT_color_buffer_half_float
+    __CORE_GLES_CHECK(GL_EXT_color_buffer_half_float, false);
+
     // implement GL_EXT_discard_framebuffer
     if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))
     {
@@ -103,6 +115,30 @@ void __coreInitOpenGLES()
         g_CoreContext.__glRenderbufferStorageMultisample = r_cast<decltype(g_CoreContext.__glRenderbufferStorageMultisample)>(eglGetProcAddress("glRenderbufferStorageMultisampleANGLE"));
     }
 
+    // implement GL_OES_depth_texture
+    __CORE_GLES_CHECK(GL_OES_depth_texture, bES30);
+    if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
+    if(g_sExtensions.contains("GL_WEBGL_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
+
+    // implement GL_OES_packed_depth_stencil
+    __CORE_GLES_CHECK(GL_OES_packed_depth_stencil, bES30);
+    if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_packed_depth_stencil = true;
+
+    // implement GL_OES_texture_float
+    __CORE_GLES_CHECK(GL_OES_texture_float, bES30);
+
+    // implement GL_OES_texture_float_linear
+    __CORE_GLES_CHECK(GL_OES_texture_float_linear, false);
+
+    // implement GL_OES_texture_half_float
+    __CORE_GLES_CHECK(GL_OES_texture_half_float, bES30);
+
+    // implement GL_OES_texture_half_float_linear
+    __CORE_GLES_CHECK(GL_OES_texture_half_float_linear, bES30);
+
+    // implement GL_OES_texture_stencil8
+    __CORE_GLES_CHECK(GL_OES_texture_stencil8, false);
+
     // implement GL_OES_vertex_array_object
     if(__CORE_GLES_CHECK(GL_OES_vertex_array_object, bES30))
     {
@@ -111,20 +147,18 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glGenVertexArrays,    OES, bES30)
     }
 
+    // implement GL_OES_vertex_half_float
+    __CORE_GLES_CHECK(GL_OES_vertex_half_float, bES30);
+
     // implement GL_OES_vertex_type_2_10_10_10_rev
     __CORE_GLES_CHECK(GL_OES_vertex_type_2_10_10_10_rev, bES30);
 
-    // implement GL_OES_depth_texture
-    __CORE_GLES_CHECK(GL_OES_depth_texture, bES30);
-    if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
-    if(g_sExtensions.contains("GL_WEBGL_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
+    // implement GL_WEBGL_color_buffer_float
+    __CORE_GLES_CHECK(GL_WEBGL_color_buffer_float, false);
 
-    // implement GL_OES_texture_stencil8
-    __CORE_GLES_CHECK(GL_OES_texture_stencil8, false);
-
-    // implement GL_OES_packed_depth_stencil
-    __CORE_GLES_CHECK(GL_OES_packed_depth_stencil, bES30);
-    if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_packed_depth_stencil = true;
+    // map various extensions to GL_CORE_texture_float (# only for half-float)
+    if(g_CoreContext.__GL_OES_texture_half_float && g_CoreContext.__GL_OES_texture_half_float_linear && (g_CoreContext.__GL_EXT_color_buffer_float || g_CoreContext.__GL_EXT_color_buffer_half_float))
+        g_CoreContext.__GL_CORE_texture_float = true;
 }
 
 
