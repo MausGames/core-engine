@@ -2760,6 +2760,17 @@ typedef void (GLAPIENTRY * PFNGLCOPYIMAGESUBDATAPROC) (GLuint srcName, GLenum sr
 
 #endif /* GL_ARB_depth_buffer_float */
 
+/* --------------------------- GL_ARB_depth_clamp -------------------------- */
+
+#ifndef GL_ARB_depth_clamp
+#define GL_ARB_depth_clamp 1
+
+#define GL_DEPTH_CLAMP 0x864F
+
+#define GLEW_ARB_depth_clamp GLEW_GET_VAR(__GLEW_ARB_depth_clamp)
+
+#endif /* GL_ARB_depth_clamp */
+
 /* -------------------------- GL_ARB_depth_texture ------------------------- */
 
 #ifndef GL_ARB_depth_texture
@@ -5295,6 +5306,17 @@ typedef void (GLAPIENTRY * PFNGLCOPYIMAGESUBDATANVPROC) (GLuint srcName, GLenum 
 
 #endif /* GL_NV_copy_image */
 
+/* --------------------------- GL_NV_depth_clamp --------------------------- */
+
+#ifndef GL_NV_depth_clamp
+#define GL_NV_depth_clamp 1
+
+#define GL_DEPTH_CLAMP_NV 0x864F
+
+#define GLEW_NV_depth_clamp GLEW_GET_VAR(__GLEW_NV_depth_clamp)
+
+#endif /* GL_NV_depth_clamp */
+
 /* ----------------- GL_NV_framebuffer_multisample_coverage ---------------- */
 
 #ifndef GL_NV_framebuffer_multisample_coverage
@@ -6474,6 +6496,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_conservative_depth;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_copy_buffer;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_copy_image;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_depth_buffer_float;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_depth_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_depth_texture;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_direct_state_access;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_draw_elements_base_vertex;
@@ -6533,6 +6556,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_parallel_shader_compile;
 GLEW_VAR_EXPORT GLboolean __GLEW_NVX_gpu_memory_info;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_copy_image;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_depth_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_framebuffer_multisample_coverage;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_gpu_shader5;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_multisample_filter_hint;

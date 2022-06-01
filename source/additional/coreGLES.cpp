@@ -47,6 +47,9 @@ void __coreInitOpenGLES()
     // implement GL_EXT_color_buffer_half_float
     __CORE_GLES_CHECK(GL_EXT_color_buffer_half_float, false);
 
+    // implement GL_EXT_depth_clamp
+    __CORE_GLES_CHECK(GL_EXT_depth_clamp, false);
+
     // implement GL_EXT_discard_framebuffer
     if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))
     {

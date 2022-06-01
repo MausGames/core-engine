@@ -1257,6 +1257,7 @@ GLboolean __GLEW_ARB_conservative_depth = GL_FALSE;
 GLboolean __GLEW_ARB_copy_buffer = GL_FALSE;
 GLboolean __GLEW_ARB_copy_image = GL_FALSE;
 GLboolean __GLEW_ARB_depth_buffer_float = GL_FALSE;
+GLboolean __GLEW_ARB_depth_clamp = GL_FALSE;
 GLboolean __GLEW_ARB_depth_texture = GL_FALSE;
 GLboolean __GLEW_ARB_direct_state_access = GL_FALSE;
 GLboolean __GLEW_ARB_draw_elements_base_vertex = GL_FALSE;
@@ -1316,6 +1317,7 @@ GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
 GLboolean __GLEW_NVX_gpu_memory_info = GL_FALSE;
 GLboolean __GLEW_NV_copy_image = GL_FALSE;
+GLboolean __GLEW_NV_depth_clamp = GL_FALSE;
 GLboolean __GLEW_NV_framebuffer_multisample_coverage = GL_FALSE;
 GLboolean __GLEW_NV_gpu_shader5 = GL_FALSE;
 GLboolean __GLEW_NV_multisample_filter_hint = GL_FALSE;
@@ -1357,6 +1359,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_depth_buffer_float
   "GL_ARB_depth_buffer_float",
+#endif
+#ifdef GL_ARB_depth_clamp
+  "GL_ARB_depth_clamp",
 #endif
 #ifdef GL_ARB_depth_texture
   "GL_ARB_depth_texture",
@@ -1535,6 +1540,9 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_NV_copy_image
   "GL_NV_copy_image",
 #endif
+#ifdef GL_NV_depth_clamp
+  "GL_NV_depth_clamp",
+#endif
 #ifdef GL_NV_framebuffer_multisample_coverage
   "GL_NV_framebuffer_multisample_coverage",
 #endif
@@ -1644,6 +1652,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_ARB_depth_buffer_float
   &__GLEW_ARB_depth_buffer_float,
+#endif
+#ifdef GL_ARB_depth_clamp
+  &__GLEW_ARB_depth_clamp,
 #endif
 #ifdef GL_ARB_depth_texture
   &__GLEW_ARB_depth_texture,
@@ -1821,6 +1832,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_NV_copy_image
   &__GLEW_NV_copy_image,
+#endif
+#ifdef GL_NV_depth_clamp
+  &__GLEW_NV_depth_clamp,
 #endif
 #ifdef GL_NV_framebuffer_multisample_coverage
   &__GLEW_NV_framebuffer_multisample_coverage,
@@ -4331,6 +4345,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
+#ifdef GL_ARB_depth_clamp
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"depth_clamp", 11))
+        {
+          ret = GLEW_ARB_depth_clamp;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_depth_texture
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"depth_texture", 13))
         {
@@ -4753,6 +4774,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"copy_image", 10))
         {
           ret = GLEW_NV_copy_image;
+          continue;
+        }
+#endif
+#ifdef GL_NV_depth_clamp
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"depth_clamp", 11))
+        {
+          ret = GLEW_NV_depth_clamp;
           continue;
         }
 #endif

@@ -156,6 +156,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_copy_buffer,                      GLEW_VERSION_3_1)
         __IMPROVE(GLEW_ARB_copy_image,                       GLEW_VERSION_4_3 || GLEW_NV_copy_image)
         __IMPROVE(GLEW_ARB_depth_buffer_float,               GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_depth_clamp,                      GLEW_VERSION_3_2 || GLEW_NV_depth_clamp)
         __IMPROVE(GLEW_ARB_depth_texture,                    GLEW_VERSION_1_4)                                       // below minimum
         __IMPROVE(GLEW_ARB_direct_state_access,              GLEW_VERSION_4_5)
         __IMPROVE(GLEW_ARB_enhanced_layouts,                 GLEW_VERSION_4_4)                                       // shader extension

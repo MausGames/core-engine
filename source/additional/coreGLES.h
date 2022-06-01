@@ -90,6 +90,13 @@ using PFNGLBUFFERSTORAGEPROC = void (GL_APIENTRY *) (GLenum target, GLsizeiptr s
 
 
 // ****************************************************************
+/* GL_EXT_depth_clamp (mapped on GL_ARB_depth_clamp) */
+#define CORE_GL_ARB_depth_clamp __CORE_GLES_VAR(GL_EXT_depth_clamp)
+
+#define GL_DEPTH_CLAMP 0x864F
+
+
+// ****************************************************************
 /* GL_EXT_discard_framebuffer (mapped on GL_ARB_invalidate_subdata) */
 #define CORE_GL_ARB_invalidate_subdata __CORE_GLES_VAR(GL_EXT_discard_framebuffer)
 
@@ -298,6 +305,7 @@ struct coreContext final
     coreBool __GL_EXT_buffer_storage;
     coreBool __GL_EXT_color_buffer_float;
     coreBool __GL_EXT_color_buffer_half_float;
+    coreBool __GL_EXT_depth_clamp;
     coreBool __GL_EXT_discard_framebuffer;
     coreBool __GL_EXT_texture_storage;
     coreBool __GL_EXT_texture_filter_anisotropic;
