@@ -85,7 +85,7 @@ public:
     void Free(void** OUTPUT ppPointer);
 
     /* check if pointer belongs to the memory-pool */
-    bool Contains(const void* pPointer)const;
+    coreBool Contains(const void* pPointer)const;
 
 
 private:

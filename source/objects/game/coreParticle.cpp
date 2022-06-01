@@ -27,7 +27,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
     ASSERT(iNumParticles)
 
     // pre-allocate particles (with one additional safety particle)
-    m_pParticle = ALIGNED_NEW(coreParticle, m_iNumParticles + 1u, ALIGNMENT_CACHE);
+    m_pParticle = new coreParticle[m_iNumParticles + 1u];
     std::memset(m_pParticle, 0, sizeof(coreParticle) * (m_iNumParticles + 1u));
 
     // create default particle effect object
@@ -46,7 +46,7 @@ coreParticleSystem::~coreParticleSystem()
 {
     // delete particles
     this->ClearAll();
-    ALIGNED_DELETE(m_pParticle)
+    SAFE_DELETE_ARRAY(m_pParticle)
 
     // delete default particle effect object
     SAFE_DELETE(m_pDefaultEffect)

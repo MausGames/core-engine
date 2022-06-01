@@ -28,9 +28,12 @@ private:
     static coreSet<coreBackend*> s_apBackendSet;   // registered backends
 
 
-public:
+protected:
     coreBackend()noexcept {s_apBackendSet.insert(this);}
+    ~coreBackend() = default;
 
+
+public:
     FRIEND_CLASS(CorePlatform)
     DISABLE_COPY(coreBackend)
 

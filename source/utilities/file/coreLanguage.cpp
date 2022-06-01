@@ -83,6 +83,9 @@ void coreTranslate::_BindString(coreString* psString, const coreHashString& sKey
 {
     ASSERT(psString && sKey)
 
+    // check current pointer
+    if(m_apsPointer[psString] == sKey.GetString()) return;
+
     if(!m_pLanguage)
     {
         // associate object with default language
@@ -92,7 +95,7 @@ void coreTranslate::_BindString(coreString* psString, const coreHashString& sKey
 
     // bind string to language and save it internally
     m_pLanguage->BindForeign(psString, sKey);
-    m_apsPointer[psString] = sKey.GetString();
+    m_apsPointer.at(psString) = sKey.GetString();
 
     // invoke object update
     this->__Update();

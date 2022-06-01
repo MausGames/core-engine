@@ -105,7 +105,7 @@ void coreMemoryPool::Free(void** OUTPUT ppPointer)
 
 // ****************************************************************
 /* check if pointer belongs to the memory-pool */
-bool coreMemoryPool::Contains(const void* pPointer)const
+coreBool coreMemoryPool::Contains(const void* pPointer)const
 {
     const coreUintW iTotalSize = m_iBlockSize * m_iPageSize;
     return std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(pPointer) - P_TO_UI(pPage) < iTotalSize);});
