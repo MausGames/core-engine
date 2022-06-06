@@ -18,7 +18,6 @@
 // TODO 5: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
 // TODO 5: low systems: merge geometry to reduce draw calls
 // TODO 3: sorting based on position
-// TODO 3: automatic list resizing (preserve old values)
 // TODO 3: culling (also on instancing)
 // TODO 5: <old comment style>
 
@@ -54,12 +53,9 @@ private:
     coreParticleEffect* m_pEffect;   // associated particle effect object
 
 
-private:
-    coreParticle() = default;
-    ~coreParticle() = default;
-
-
 public:
+    coreParticle() = default;
+
     FRIEND_CLASS(coreParticleSystem)
     ENABLE_COPY (coreParticle)
 
@@ -112,9 +108,9 @@ private:
 class coreParticleSystem final : public coreResourceRelation
 {
 private:
-    coreParticle* m_pParticle;                                                      // pre-allocated particles
-    coreUint32    m_iNumParticles;                                                  // number of particles
-    coreUint32    m_iCurParticle;                                                   // current particle
+    coreList<coreParticle> m_aParticle;                                             // pre-allocated particles
+    coreUint32             m_iNumParticles;                                         // number of particles
+    coreUint32             m_iCurParticle;                                          // current particle
 
     coreTexturePtr m_apTexture[CORE_TEXTURE_UNITS];                                 // multiple texture objects
     coreProgramPtr m_pProgram;                                                      // shader-program object
@@ -129,7 +125,7 @@ private:
 
 
 public:
-    explicit coreParticleSystem(const coreUint32 iNumParticles)noexcept;
+    explicit coreParticleSystem(const coreUint32 iStartSize = 0u)noexcept;
     ~coreParticleSystem()final;
 
     DISABLE_COPY(coreParticleSystem)
@@ -156,6 +152,9 @@ public:
     void Clear (coreParticleEffect* pEffect);
     void UnbindAll();
     void ClearAll ();
+
+    /* control memory allocation */
+    void Reallocate(const coreUint32 iNewSize);
 
     /* update particles with custom simulation */
     template <typename F> void ForEachParticle   (coreParticleEffect* pEffect, F&& nUpdateFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
@@ -300,6 +299,11 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
     for(coreUintW i = iNum; i--; )
         nInitFunc(this->CreateParticle());
 }
+
+
+// ****************************************************************
+/* additional checks */
+STATIC_ASSERT(std::is_trivial<coreParticle>::value)
 
 
 #endif /* _CORE_GUARD_PARTICLE_H_ */

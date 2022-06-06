@@ -11,10 +11,10 @@
 
 // ****************************************************************
 /* constructor */
-coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
+coreParticleSystem::coreParticleSystem(const coreUint32 iStartSize)noexcept
 : coreResourceRelation ()
-, m_pParticle          (NULL)
-, m_iNumParticles      (iNumParticles)
+, m_aParticle          {}
+, m_iNumParticles      (iStartSize)
 , m_iCurParticle       (0u)
 , m_apTexture          {}
 , m_pProgram           (NULL)
@@ -24,11 +24,8 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 , m_aInstanceBuffer    {}
 , m_bUpdate            (false)
 {
-    ASSERT(iNumParticles)
-
-    // pre-allocate particles (with one additional safety particle)
-    m_pParticle = new coreParticle[m_iNumParticles + 1u];
-    std::memset(m_pParticle, 0, sizeof(coreParticle) * (m_iNumParticles + 1u));
+    // pre-allocate particles
+    m_aParticle.resize(iStartSize);
 
     // create default particle effect object
     m_pDefaultEffect = new coreParticleEffect(this);
@@ -36,7 +33,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iNumParticles)noexcept
 
     // create vertex array objects and instance data buffers
     m_aiVertexArray.fill(0u);
-    this->__Reset(CORE_RESOURCE_RESET_INIT);
+    if(iStartSize) this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
 
@@ -46,7 +43,7 @@ coreParticleSystem::~coreParticleSystem()
 {
     // delete particles
     this->ClearAll();
-    SAFE_DELETE_ARRAY(m_pParticle)
+    m_aParticle.clear();
 
     // delete default particle effect object
     SAFE_DELETE(m_pDefaultEffect)
@@ -189,7 +186,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         if(++m_iCurParticle >= m_iNumParticles) m_iCurParticle = 0u;
 
         // check current particle status
-        coreParticle* pParticle = &m_pParticle[m_iCurParticle];
+        coreParticle* pParticle = &m_aParticle[m_iCurParticle];
         if(!pParticle->IsActive())
         {
             // prepare particle and add to render list
@@ -200,14 +197,18 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         }
     }
 
-    // no free particle available
-    WARN_IF(true) {}
-    return &m_pParticle[m_iNumParticles];   // # safety particle
+    // increase current size by 50%
+    const coreUint32 iSize = m_iNumParticles;   // might be 0
+    this->Reallocate(iSize + iSize / 2u + 1u);
+
+    // execute again with first new particle
+    m_iCurParticle = iSize - 1u;
+    return this->CreateParticle(pEffect);
 }
 
 
 // ****************************************************************
-/* unsbind particles */
+/* unbind particles */
 void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
@@ -260,7 +261,7 @@ void coreParticleSystem::Clear(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
-/* unsbind all particles */
+/* unbind all particles */
 void coreParticleSystem::UnbindAll()
 {
     FOR_EACH(it, m_apRenderList)
@@ -291,6 +292,34 @@ void coreParticleSystem::ClearAll()
 
     // clear memory
     m_apRenderList.clear();
+}
+
+
+// ****************************************************************
+/* change current size */
+void coreParticleSystem::Reallocate(const coreUint32 iNewSize)
+{
+         if(iNewSize == m_iNumParticles)       return;
+    WARN_IF(iNewSize <  m_apRenderList.size()) return;
+
+    const coreUintW iBefore = P_TO_UI(m_aParticle.data());
+
+    // change current size
+    m_iNumParticles = iNewSize;
+    m_iCurParticle  = 0u;
+    m_aParticle.resize(iNewSize);
+
+    const coreUintW iAfter = P_TO_UI(m_aParticle.data());
+
+    // fix addresses for all active particles
+    FOR_EACH(it, m_apRenderList)
+    {
+        (*it) = s_cast<coreParticle*>(I_TO_P(P_TO_UI(*it) - iBefore + iAfter));
+    }
+
+    // reallocate the instance data buffers
+    this->__Reset(CORE_RESOURCE_RESET_EXIT);
+    this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
 
@@ -330,7 +359,7 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
     else
     {
         // delete vertex array objects
-        coreDelVertexArrays(3u, m_aiVertexArray.data());
+        if(m_aiVertexArray[0]) coreDelVertexArrays(3u, m_aiVertexArray.data());
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
