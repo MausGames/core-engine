@@ -112,8 +112,8 @@ public:
     void CheckOpenGL();
 
     /* retrieve graphics memory */
-    coreUint64 AppGpuMemory   ()const;
-    coreBool   SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const;
+    coreUint64 ProcessGpuMemory()const;
+    coreBool   SystemGpuMemory (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const;
 
     /* take screenshot */
     void        TakeScreenshot(const coreChar* pcPath)const;

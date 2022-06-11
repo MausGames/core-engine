@@ -64,7 +64,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     coreData::FolderCreate(m_sPath.c_str());
 
     // write to temporary file (to prevent corruption)
-    const coreChar* pcTemp = PRINT("%s.temp_%s", m_sPath.c_str(), coreData::DateTimePrint("%Y%m%d_%H%M%S"));
+    const coreChar* pcTemp = PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID());
 
     // open file
     SDL_RWops* pFile = SDL_RWFromFile(pcTemp, "wb");
@@ -363,7 +363,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     coreData::FolderCreate(m_sPath.c_str());
 
     // write to temporary file (to prevent corruption)
-    const coreChar* pcTemp = PRINT("%s.temp_%s", m_sPath.c_str(), coreData::DateTimePrint("%Y%m%d_%H%M%S"));
+    const coreChar* pcTemp = PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID());
 
     // open archive
     SDL_RWops* pArchive = SDL_RWFromFile(pcTemp, "wb");

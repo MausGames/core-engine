@@ -67,8 +67,24 @@ coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen
 
 
 // ****************************************************************
+/* get process identifier for the current process */
+coreUint32 coreData::ProcessID()
+{
+#if defined(_CORE_WINDOWS_)
+
+    return GetCurrentProcessId();
+
+#else
+
+    return getpid();
+
+#endif
+}
+
+
+// ****************************************************************
 /* get amount of memory physically mapped to the application */
-coreUint64 coreData::AppMemory()
+coreUint64 coreData::ProcessMemory()
 {
 #if defined(_CORE_WINDOWS_)
 
@@ -117,7 +133,7 @@ coreUint64 coreData::AppMemory()
 
 // ****************************************************************
 /* get full application path */
-const coreChar* coreData::AppPath()
+const coreChar* coreData::ProcessPath()
 {
     UNUSED coreChar* pcString = coreData::__NextTempString();
 
@@ -745,7 +761,7 @@ void coreData::InitDefaultFolders()
 #if defined(_CORE_MACOS_)
     coreData::SetCurDir(coreCocoaPathResource());
 #else
-    coreData::SetCurDir(coreData::AppDir());
+    coreData::SetCurDir(coreData::ProcessDir());
     coreData::SetCurDir("../..");
 #endif
 
@@ -799,7 +815,7 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 
     // get absolute path near application
     #if defined(_CORE_LINUX_)
-        const coreChar* pcLocal = PRINT("%s/%s", coreData::AppDir(), pcName);
+        const coreChar* pcLocal = PRINT("%s/%s", coreData::ProcessDir(), pcName);
     #else
         const coreChar* pcLocal = PRINT("%s/%s", coreCocoaPathFramework(), pcName);
     #endif

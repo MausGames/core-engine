@@ -78,10 +78,11 @@ public:
     template <typename T> static T               FromChars(const coreChar* pcString, const coreUintW iLen);
 
     /* get application properties */
-    static              coreUint64 AppMemory();
-    static        const coreChar*  AppPath  ();
-    static inline const coreChar*  AppName  () {return coreData::StrFilename (coreData::AppPath());}
-    static inline const coreChar*  AppDir   () {return coreData::StrDirectory(coreData::AppPath());}
+    static              coreUint32 ProcessID    ();
+    static              coreUint64 ProcessMemory();
+    static        const coreChar*  ProcessPath  ();
+    static inline const coreChar*  ProcessName  () {return coreData::StrFilename (coreData::ProcessPath());}
+    static inline const coreChar*  ProcessDir   () {return coreData::StrDirectory(coreData::ProcessPath());}
 
     /* get operating system properties */
     static       coreBool  SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);

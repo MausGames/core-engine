@@ -563,7 +563,7 @@ void CoreGraphics::CheckOpenGL()
 
 // ****************************************************************
 /* get amount of graphics memory assigned to the application (approximation) */
-coreUint64 CoreGraphics::AppGpuMemory()const
+coreUint64 CoreGraphics::ProcessGpuMemory()const
 {
     if(CORE_GL_SUPPORT(NVX_gpu_memory_info))
     {

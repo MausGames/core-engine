@@ -43,9 +43,9 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fputs("</style>"                                         "\n", m_pFile);
 
         // write application data and timestamp
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s)" "<br>\n", coreData::AppPath(), __DATE__, __TIME__);
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Built with:") " %s, %s"     "<br>\n", coreData::BuildCompiler(), coreData::BuildLibrary());
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s"      "<br>\n", coreData::DateString(), coreData::TimeString());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s %s)"     "<br>\n", coreData::ProcessPath(), __DATE__, __TIME__);
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Built with:") " %s, %s"         "<br>\n", coreData::BuildCompiler(), coreData::BuildLibrary());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s %s (PID %u)" "<br>\n", coreData::DateString(), coreData::TimeString(), coreData::ProcessID());
 
         // flush log file
         std::fflush(m_pFile);
