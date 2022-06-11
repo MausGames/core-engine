@@ -271,10 +271,15 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
 /* init resource thread */
 coreStatus coreResourceManager::__InitThread()
 {
+    const SDL_GLContext& pContext = Core::Graphics->GetResourceContext();
+
     // assign resource context to resource thread
-    if(SDL_GL_MakeCurrent(Core::System->GetWindow(), Core::Graphics->GetResourceContext()))
-        Core::Log->Error("Resource context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
-    else Core::Log->Info("Resource context assigned to resource thread");
+    if((SDL_GL_MakeCurrent(Core::System->GetWindow(), pContext) && SDL_GL_MakeCurrent(NULL, pContext)) || (SDL_GL_GetCurrentContext() != pContext))
+    {
+        Core::Log->Warning("Resource context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
+        return CORE_ERROR_SYSTEM;
+    }
+    Core::Log->Info("Resource context assigned to resource thread");
 
     // enable OpenGL debug output
     Core::Graphics->DebugOpenGL();
