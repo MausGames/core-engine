@@ -14,6 +14,7 @@
 
     #pragma warning(push, 3)
 
+    #pragma warning(disable : 4191)   // unsafe conversion between function types
     #pragma warning(disable : 4711)   // function automatically inlined
     #pragma warning(disable : 5045)   // possible Spectre vulnerability
 

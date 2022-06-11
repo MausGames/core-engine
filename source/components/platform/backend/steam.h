@@ -14,6 +14,8 @@
     #pragma warning(disable : 5204)   // class with virtual functions, but without virtual destructor
 #else
     #pragma GCC diagnostic ignored "-Wnested-anon-types"
+    #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+    #pragma GCC diagnostic ignored "-Wsigned-enum-bitfield"
 #endif
 
 #include <steam/steam_api.h>

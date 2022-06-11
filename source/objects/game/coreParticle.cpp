@@ -332,29 +332,35 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
 
     if(eInit)
     {
-        FOR_EACH(it, m_aInstanceBuffer)
+        WARN_IF(m_aInstanceBuffer[0].IsValid()) return;
+
+        // only allocate with enough size
+        if(m_iNumParticles)
         {
-            // create vertex array objects
-            coreGenVertexArrays(1u, &m_aiVertexArray.current());
-            glBindVertexArray(m_aiVertexArray.current());
-            m_aiVertexArray.next();
+            FOR_EACH(it, m_aInstanceBuffer)
+            {
+                // create vertex array objects
+                coreGenVertexArrays(1u, &m_aiVertexArray.current());
+                glBindVertexArray(m_aiVertexArray.current());
+                m_aiVertexArray.next();
 
-            // create instance data buffers
-            it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
-            it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
+                // create instance data buffers
+                it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
 
-            // set vertex data
-            Core::Manager::Object->GetLowQuad()->GetVertexBuffer(0u)->Activate(0u);
-            it->ActivateDivided(1u, 1u);
+                // set vertex data
+                Core::Manager::Object->GetLowQuad()->GetVertexBuffer(0u)->Activate(0u);
+                it->ActivateDivided(1u, 1u);
+            }
+
+            // disable current model object (to fully enable the next model)
+            coreModel::Disable(false);
+
+            // invoke buffer update
+            m_bUpdate = true;
         }
-
-        // disable current model object (to fully enable the next model)
-        coreModel::Disable(false);
-
-        // invoke buffer update
-        m_bUpdate = true;
     }
     else
     {

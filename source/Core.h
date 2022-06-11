@@ -28,7 +28,6 @@
 #define _CORE_GUARD_H_
 
 // TODO 3: define standard-path (data/) were everything is loaded from
-// TODO 3: implement GL_KHR_robustness (performance penalties ? Win+Ctrl+Shift+B to reset driver)
 // TODO 3: check for performance penalties and alternatives for thread_local
 // TODO 3: unique pointers and move semantics for functions taking ownership of a pointer
 // TODO 3: video class
@@ -46,6 +45,7 @@
 // TODO 3: get ZStandard port for Emscripten target, or fallback to zlib (only interesting for storage, everything else uses transparent server-compression)
 // TODO 5: in emscripten, look into support for web-simd (-msse4.2/-mavx -msimd128)
 // TODO 3: with OpenGL 4.2 or higher, normalized floating-point data is actually mapped to [-MAX,MAX] instead of [MIN,MAX], and the current conversion doesn't fit any of those, what about ES and WebGL ? is there an extension to check ?
+// TODO 4: noexcept = default, ~T()noexcept
 
 
 // ****************************************************************
@@ -222,6 +222,7 @@
     // disable unwanted compiler warnings (with /Wall)
     #pragma warning(disable : 4061)   // enumerator not handled in switch
     #pragma warning(disable : 4100)   // unreferenced formal parameter
+    #pragma warning(disable : 4127)   // conditional expression is constant
     #pragma warning(disable : 4201)   // nameless struct or union
     #pragma warning(disable : 4242)   // implicit conversion to different precision #1
     #pragma warning(disable : 4244)   // implicit conversion to different precision #2
@@ -446,17 +447,23 @@
     c& operator = (c&&)      = delete;
 
 // disable heap-operations with the defined class
-#define DISABLE_HEAP                                       \
-    void* operator new      (std::size_t)        = delete; \
-    void* operator new      (std::size_t, void*) = delete; \
-    void* operator new[]    (std::size_t)        = delete; \
-    void* operator new[]    (std::size_t, void*) = delete; \
-    void  operator delete   (void*)              = delete; \
-    void  operator delete   (void*, void*)       = delete; \
-    void  operator delete   (void*, std::size_t) = delete; \
-    void  operator delete[] (void*)              = delete; \
-    void  operator delete[] (void*, void*)       = delete; \
-    void  operator delete[] (void*, std::size_t) = delete;
+#define DISABLE_HEAP                                                         \
+    void* operator new      (std::size_t)                          = delete; \
+    void* operator new      (std::size_t, void*)                   = delete; \
+    void* operator new      (std::size_t, std::align_val_t)        = delete; \
+    void* operator new[]    (std::size_t)                          = delete; \
+    void* operator new[]    (std::size_t, void*)                   = delete; \
+    void* operator new[]    (std::size_t, std::align_val_t)        = delete; \
+    void  operator delete   (void*)                                = delete; \
+    void  operator delete   (void*, void*)                         = delete; \
+    void  operator delete   (void*, std::align_val_t)              = delete; \
+    void  operator delete   (void*, std::size_t)                   = delete; \
+    void  operator delete   (void*, std::size_t, std::align_val_t) = delete; \
+    void  operator delete[] (void*)                                = delete; \
+    void  operator delete[] (void*, void*)                         = delete; \
+    void  operator delete[] (void*, std::align_val_t)              = delete; \
+    void  operator delete[] (void*, std::size_t)                   = delete; \
+    void  operator delete[] (void*, std::size_t, std::align_val_t) = delete;
 
 // enable bitwise-operations with the defined enumeration
 #define ENABLE_BITWISE(e)                                                                                                                                       \

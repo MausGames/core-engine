@@ -14,6 +14,7 @@
 // TODO 5: TryGet function ?
 // TODO 3: implement swap-erase ?
 // TODO 3: erase and clear strings in coreMapStrFull ?
+// TODO 3: reserve and shrink_to_fit strings in coreMapStrFull ?
 
 
 // ****************************************************************

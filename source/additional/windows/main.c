@@ -10,6 +10,7 @@
 
 #pragma warning(disable : 4091)   // missing variable declaration
 #pragma warning(disable : 4100)   // unreferenced formal parameter
+#pragma warning(disable : 4191)   // unsafe conversion between function types
 #pragma warning(disable : 4255)   // function prototype missing
 #pragma warning(disable : 4668)   // preprocessor macro not defined
 #pragma warning(disable : 4711)   // function automatically inlined

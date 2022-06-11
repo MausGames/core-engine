@@ -36,7 +36,7 @@
 #define M_TO_FT(x)    ((x) * 0.304800000f)                         // convert meters to feet
 #define FT_TO_M(x)    ((x) * 3.280839895f)                         // convert feet to meters
 
-#define MIN    coreMath::Min                                       // for easier distinction in formulas
+#define MIN    coreMath::Min                                       // for better visibility in formulas
 #define MAX    coreMath::Max
 #define MED    coreMath::Med
 #define CLAMP  coreMath::Clamp
