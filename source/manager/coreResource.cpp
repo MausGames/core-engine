@@ -305,6 +305,9 @@ coreStatus coreResourceManager::__RunThread()
     // update the resource manager
     this->UpdateResources();
 
+    // check for system errors
+    coreData::CheckLastError();
+
     // check for OpenGL errors
     Core::Graphics->CheckOpenGL();
 

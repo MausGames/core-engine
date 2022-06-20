@@ -1314,6 +1314,62 @@ coreStatus coreData::FolderScanTree(const coreChar* pcPath, const coreChar* pcFi
 
 
 // ****************************************************************
+/* check for system errors (per thread) */
+coreBool coreData::CheckLastError()
+{
+    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return false;
+
+#if defined(_CORE_WINDOWS_)
+
+    // get last error code
+    const coreUint32 iError = GetLastError();
+    if(iError != NO_ERROR)
+    {
+        SetLastError(NO_ERROR);
+
+        // convert error code to readable message
+        coreWchar acBuffer[512];
+        FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK, NULL, iError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), acBuffer, ARRAY_SIZE(acBuffer), NULL);
+
+        // write message to log file
+        Core::Log->Warning(CORE_LOG_BOLD("System:") " %s (error code %u)", coreData::__ToAnsiChar(acBuffer), iError);
+        return true;
+    }
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+
+    // get last error code
+    const coreInt32 iError = errno;
+    if((iError != 0) && (iError != EAGAIN))
+    {
+        errno = 0;
+
+    #if defined(__USE_GNU)
+
+        // convert error code to readable message (GNU specific)
+        coreChar acBuffer[512];
+        const coreChar* pcString = strerror_r(iError, acBuffer, ARRAY_SIZE(acBuffer));
+
+    #else
+
+        // convert error code to readable message (XSI compliant)
+        coreChar acBuffer[512];
+        const coreChar* pcString = (strerror_r(iError, acBuffer, ARRAY_SIZE(acBuffer)), acBuffer);
+
+    #endif
+
+        // write message to log file
+        Core::Log->Warning(CORE_LOG_BOLD("System:") " %s (error code %d)", pcString, iError);
+        return true;
+    }
+
+#endif
+
+    return false;
+}
+
+
+// ****************************************************************
 /* retrieve date and time as values */
 void coreData::DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap)
 {

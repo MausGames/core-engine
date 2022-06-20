@@ -463,6 +463,9 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
 /* update the event system */
 void CoreSystem::__UpdateEvents()
 {
+    // check for system errors
+    coreData::CheckLastError();
+
     // reset window states
     m_bWinFocusLost   = false;
     m_bWinPosChanged  = false;
