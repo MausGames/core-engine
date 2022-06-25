@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B5594D12867136000509370 /* coreImGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B5594D02867136000509370 /* coreImGui.cpp */; };
 		5B660CE727E0B7AB009BB1CB /* XXH.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B660CE527E0B7AB009BB1CB /* XXH.h */; };
 		5B660CE827E0B7AB009BB1CB /* XXH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B660CE627E0B7AB009BB1CB /* XXH.cpp */; };
 		5B77109B27CD488B00EB424C /* cocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B77109927CD488B00EB424C /* cocoa.h */; };
@@ -118,6 +119,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5B5594D02867136000509370 /* coreImGui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreImGui.cpp; sourceTree = "<group>"; };
 		5B660CE527E0B7AB009BB1CB /* XXH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XXH.h; sourceTree = "<group>"; };
 		5B660CE627E0B7AB009BB1CB /* XXH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XXH.cpp; sourceTree = "<group>"; };
 		5B77109927CD488B00EB424C /* cocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa.h; sourceTree = "<group>"; };
@@ -285,6 +287,7 @@
 				5BB8C2BD27C94E4100BBB338 /* coreGLES.cpp */,
 				5BB8C2BA27C94E4100BBB338 /* coreGLES.h */,
 				5BB8C2C527C94E4100BBB338 /* coreGLEW.c */,
+				5B5594D02867136000509370 /* coreImGui.cpp */,
 			);
 			name = additional;
 			path = ../../source/additional;
@@ -744,6 +747,7 @@
 				5BB8C36127C94E4200BBB338 /* CoreAudio.cpp in Sources */,
 				5BB8C35527C94E4200BBB338 /* CoreSystem.cpp in Sources */,
 				5BB8C3A827C94E4200BBB338 /* coreResource.cpp in Sources */,
+				5B5594D12867136000509370 /* coreImGui.cpp in Sources */,
 				5BB8C39C27C94E4200BBB338 /* coreCheckBox.cpp in Sources */,
 				5BB8C37327C94E4200BBB338 /* CoreGraphics.cpp in Sources */,
 				5BB8C37427C94E4200BBB338 /* CoreDebug.cpp in Sources */,

@@ -214,6 +214,9 @@
     <ClCompile Include="..\..\..\source\additional\macos\main.c">
       <Filter>additional\macos</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreImGui.cpp">
+      <Filter>additional</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\components\audio\coreSound.h">
