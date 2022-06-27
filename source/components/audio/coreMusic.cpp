@@ -156,10 +156,14 @@ coreStatus coreMusic::Play()
         // queue sound buffers
         alSourceQueueBuffers(m_iSource, iUpdated, m_aiBuffer);
 
-        // set initial audio source properties
-        alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
-        alSourcef(m_iSource, AL_PITCH,           m_fPitch);
-        alSourcei(m_iSource, AL_LOOPING,         false);
+        Core::Audio->DeferUpdates();
+        {
+            // set initial audio source properties
+            alSourcei(m_iSource, AL_SOURCE_RELATIVE, true);
+            alSourcef(m_iSource, AL_PITCH,           m_fPitch);
+            alSourcei(m_iSource, AL_LOOPING,         false);
+        }
+        Core::Audio->ProcessUpdates();
     }
 
     // start playback

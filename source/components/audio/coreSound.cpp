@@ -161,18 +161,22 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
         // save audio source
         if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
 
-        // set initial audio source properties
-        alSourcei (m_iCurSource, AL_BUFFER,             m_iBuffer);
-        alSourcei (m_iCurSource, AL_SOURCE_RELATIVE,    false);
+        Core::Audio->DeferUpdates();
+        {
+            // set initial audio source properties
+            alSourcei (m_iCurSource, AL_BUFFER,             m_iBuffer);
+            alSourcei (m_iCurSource, AL_SOURCE_RELATIVE,    false);
 
-        alSourcef (m_iCurSource, AL_PITCH,              fPitch);
-        alSourcei (m_iCurSource, AL_LOOPING,            bLoop);
+            alSourcef (m_iCurSource, AL_PITCH,              fPitch);
+            alSourcei (m_iCurSource, AL_LOOPING,            bLoop);
 
-        alSourcefv(m_iCurSource, AL_POSITION,           vPosition.ptr());
-        alSourcefv(m_iCurSource, AL_VELOCITY,           coreVector3(0.0f,0.0f,0.0f).ptr());
-        alSourcef (m_iCurSource, AL_REFERENCE_DISTANCE, 1.0f);
-        alSourcef (m_iCurSource, AL_MAX_DISTANCE,       5.0f);
-        alSourcef (m_iCurSource, AL_ROLLOFF_FACTOR,     1.0f);
+            alSourcefv(m_iCurSource, AL_POSITION,           vPosition.ptr());
+            alSourcefv(m_iCurSource, AL_VELOCITY,           coreVector3(0.0f,0.0f,0.0f).ptr());
+            alSourcef (m_iCurSource, AL_REFERENCE_DISTANCE, 1.0f);
+            alSourcef (m_iCurSource, AL_MAX_DISTANCE,       5.0f);
+            alSourcef (m_iCurSource, AL_ROLLOFF_FACTOR,     1.0f);
+        }
+        Core::Audio->ProcessUpdates();
 
         // start playback
         alSourcePlay(m_iCurSource);
@@ -197,15 +201,19 @@ void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const co
         // save audio source
         if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
 
-        // set initial audio source properties
-        alSourcei (m_iCurSource, AL_BUFFER,          m_iBuffer);
-        alSourcei (m_iCurSource, AL_SOURCE_RELATIVE, true);
+        Core::Audio->DeferUpdates();
+        {
+            // set initial audio source properties
+            alSourcei (m_iCurSource, AL_BUFFER,          m_iBuffer);
+            alSourcei (m_iCurSource, AL_SOURCE_RELATIVE, true);
 
-        alSourcef (m_iCurSource, AL_PITCH,           fPitch);
-        alSourcei (m_iCurSource, AL_LOOPING,         bLoop);
+            alSourcef (m_iCurSource, AL_PITCH,           fPitch);
+            alSourcei (m_iCurSource, AL_LOOPING,         bLoop);
 
-        alSourcefv(m_iCurSource, AL_POSITION,        coreVector3(0.0f,0.0f,0.0f).ptr());
-        alSourcefv(m_iCurSource, AL_VELOCITY,        coreVector3(0.0f,0.0f,0.0f).ptr());
+            alSourcefv(m_iCurSource, AL_POSITION,        coreVector3(0.0f,0.0f,0.0f).ptr());
+            alSourcefv(m_iCurSource, AL_VELOCITY,        coreVector3(0.0f,0.0f,0.0f).ptr());
+        }
+        Core::Audio->ProcessUpdates();
 
         // start playback
         alSourcePlay(m_iCurSource);
