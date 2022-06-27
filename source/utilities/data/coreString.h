@@ -91,7 +91,7 @@ public:
     void clear();
 
     /* create formatted string */
-    void print(const coreChar* pcFormat, ...);
+    void print(SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, ...) SDL_PRINTF_VARARG_FUNC(2);
 
     /* get object properties */
     inline coreUintW capacity()const {return m_iCapacity;}

@@ -13,7 +13,6 @@
 // TODO 4: define more log capturing spots, not only resource-loading/unloading and (few) errors
 // TODO 5: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts
 // TODO 2: should it be possible to create many log files ? console output and file header then ?
-// TODO 3: add format checks, __attribute__ ((__format__ (__printf__, 2, 3))), or if(false)
 
 
 // ****************************************************************
