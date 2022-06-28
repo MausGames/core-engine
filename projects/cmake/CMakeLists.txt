@@ -123,7 +123,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
-        $<IF:$<CONFIG:Debug>, -O0 -g3 -glldb, -Os -flto=thin -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:Debug>, -O0 -g3 -glldb, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
 
 
@@ -142,8 +142,8 @@ else()
 
     target_link_options(
         CoreEngine INTERFACE
-        ${SANITIZER_OPTIONS}
-        $<IF:$<CONFIG:Debug>, -fuse-ld=mold, -fuse-ld=lld -rdynamic -s>
+        -fuse-ld=mold ${SANITIZER_OPTIONS}
+        $<IF:$<CONFIG:Debug>, , -flto -rdynamic -s LINKER:--gc-sections LINKER:--icf=safe>
     )
 
 
