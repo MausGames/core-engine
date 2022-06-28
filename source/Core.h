@@ -111,7 +111,7 @@
 #endif
 
 // IDE code parsing
-#if defined(__INTELLISENSE__) || defined(__JETBRAINS_IDE__)
+#if defined(__INTELLISENSE__) || defined(__JETBRAINS_IDE__) || defined(__clang_analyzer__)
     #define _CORE_IDE_
 #endif
 
@@ -280,15 +280,14 @@
 // ****************************************************************
 /* standard libraries */
 #define _CRT_SECURE_NO_WARNINGS
+#define _LIBCPP_ENABLE_NODISCARD
 #if !defined(_CORE_EXCEPTIONS_)
     #define _HAS_EXCEPTIONS 0
 #endif
 #if defined(_CORE_DEBUG_)
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
-    #if !defined(_CORE_MACOS_)
-        #define _LIBCPP_DEBUG 0
-    #endif
+    #define _LIBCPP_ENABLE_ASSERTIONS 1
 #endif
 
 #if defined(_CORE_WINDOWS_)

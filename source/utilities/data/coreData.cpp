@@ -1340,7 +1340,7 @@ coreBool coreData::CheckLastError()
 
     // get last error code
     const coreInt32 iError = errno;
-    if((iError != 0) && (iError != EAGAIN))
+    if((iError != 0) && (iError != EAGAIN) && (iError != ETIMEDOUT))
     {
         errno = 0;
 

@@ -215,14 +215,11 @@ template <typename T> const coreChar* coreData::ToChars(const T& tValue)
     return pcString;
 }
 
-#if defined(_CORE_LIBCPP_)
-    template <> inline const coreChar* coreData::ToChars(const coreFloat& tValue) {return PRINT("%f", tValue);}
-#endif
-
 #if defined(_CORE_MACOS_) && (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15)
     template <> inline const coreChar* coreData::ToChars(const coreInt32&  tValue) {return PRINT("%d",  tValue);}
     template <> inline const coreChar* coreData::ToChars(const coreUint32& tValue) {return PRINT("%u",  tValue);}
     template <> inline const coreChar* coreData::ToChars(const coreUintW&  tValue) {return PRINT("%zu", tValue);}
+    template <> inline const coreChar* coreData::ToChars(const coreFloat&  tValue) {return PRINT("%f",  tValue);}
 #endif
 
 
