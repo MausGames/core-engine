@@ -15,12 +15,10 @@
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
 // TODO 5: GL_EXT_clear_texture, GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_EXT_shader_group_vote, GL_EXT_texture_rg
 // TODO 5: GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range, GL_EXT_sRGB_write_control
-// TODO 5: GL_OES_sample_shading, GL_EXT_instanced_arrays, GL_NV_instanced_arrays, GL_EXT_disjoint_timer_query, GL_EXT_disjoint_timer_query_webgl2
+// TODO 5: GL_OES_sample_shading, GL_EXT_disjoint_timer_query, GL_EXT_disjoint_timer_query_webgl2
 // TODO 5: GL_ANGLE_texture_usage (set before allocation), GL_AMD_framebuffer_multisample_advanced
-// TODO 5: GL_EXT_tessellation_shader, GL_OES_tessellation_shader
-// TODO 5: GL_EXT_geometry_shader, GL_OES_geometry_shader
+// TODO 5: GL_ANGLE_instanced_arrays, GL_EXT_instanced_arrays, GL_NV_instanced_arrays
 // TODO 5: GL_EXT_draw_buffers, GL_WEBGL_draw_buffers
-// TODO 5: ANDROID_extension_pack_es31a
 
 
 // ****************************************************************
@@ -34,7 +32,6 @@
 #define CORE_GL_ARB_depth_buffer_float               __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_direct_state_access              false
 #define CORE_GL_ARB_framebuffer_sRGB                 false
-#define CORE_GL_ARB_geometry_shader4                 __CORE_GLES_VAR(bES32)
 #define CORE_GL_ARB_instanced_arrays                 __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_multi_bind                       false
 #define CORE_GL_ARB_multisample                      false
@@ -42,15 +39,13 @@
 #define CORE_GL_ARB_sample_shading                   false
 #define CORE_GL_ARB_shader_image_load_store          __CORE_GLES_VAR(bES31)
 #define CORE_GL_ARB_sync                             __CORE_GLES_VAR(bES30)
-#define CORE_GL_ARB_tessellation_shader              __CORE_GLES_VAR(bES32)
 #define CORE_GL_ARB_texture_rg                       __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_timer_query                      false
 #define CORE_GL_ARB_uniform_buffer_object            __CORE_GLES_VAR(bES30)   // controls shader-handling
 #define CORE_GL_EXT_demote_to_helper_invocation      false
 #define CORE_GL_EXT_direct_state_access              false
-#define CORE_GL_EXT_framebuffer_object               true
+#define CORE_GL_EXT_framebuffer_object               true                     // always available
 #define CORE_GL_EXT_gpu_shader4                      __CORE_GLES_VAR(bES30)
-#define CORE_GL_KHR_debug                            false
 #define CORE_GL_NVX_gpu_memory_info                  false
 #define CORE_GL_NV_framebuffer_multisample_coverage  false
 #define CORE_GL_NV_multisample_filter_hint           false
@@ -157,6 +152,16 @@ using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei level
 
 
 // ****************************************************************
+/* GL_KHR_debug */
+#define CORE_GL_KHR_debug __CORE_GLES_VAR(GL_KHR_debug)
+
+using PFNGLDEBUGMESSAGECALLBACKPROC = void (GL_APIENTRY *) (GLDEBUGPROC callback, const void* userParam);
+using PFNGLDEBUGMESSAGECONTROLPROC  = void (GL_APIENTRY *) (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
+#define glDebugMessageCallback __CORE_GLES_FUNC(glDebugMessageCallback)
+#define glDebugMessageControl  __CORE_GLES_FUNC(glDebugMessageControl)
+
+
+// ****************************************************************
 /* GL_KHR_parallel_shader_compile (mapped on GL_ARB_parallel_shader_compile) */
 #define CORE_GL_ARB_parallel_shader_compile __CORE_GLES_VAR(GL_KHR_parallel_shader_compile)
 
@@ -193,8 +198,18 @@ using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum tar
 
 
 // ****************************************************************
+/* GL_OES_geometry_shader (mapped on GL_ARB_geometry_shader4) */
+#define CORE_GL_ARB_geometry_shader4 __CORE_GLES_VAR(GL_OES_geometry_shader)
+
+
+// ****************************************************************
 /* GL_OES_packed_depth_stencil (mapped on GL_EXT_packed_depth_stencil) */
 #define CORE_GL_EXT_packed_depth_stencil __CORE_GLES_VAR(GL_OES_packed_depth_stencil)
+
+
+// ****************************************************************
+/* GL_OES_tessellation_shader (mapped on GL_ARB_tessellation_shader) */
+#define CORE_GL_ARB_tessellation_shader __CORE_GLES_VAR(GL_OES_tessellation_shader)
 
 
 // ****************************************************************
@@ -301,6 +316,7 @@ struct coreContext final
     coreBool  __bES31;
     coreBool  __bES32;
 
+    coreBool __GL_ANDROID_extension_pack_es31a;
     coreBool __GL_CORE_texture_float;
     coreBool __GL_EXT_buffer_storage;
     coreBool __GL_EXT_color_buffer_float;
@@ -313,12 +329,15 @@ struct coreContext final
     coreBool __GL_EXT_texture_compression_s3tc;
     coreBool __GL_EXT_texture_norm16;
     coreBool __GL_EXT_texture_type_2_10_10_10_rev;
+    coreBool __GL_KHR_debug;
     coreBool __GL_KHR_parallel_shader_compile;
     coreBool __GL_NV_pixel_buffer_object;
     coreBool __GL_NV_framebuffer_blit;
     coreBool __GL_NV_framebuffer_multisample;
     coreBool __GL_OES_depth_texture;
+    coreBool __GL_OES_geometry_shader;
     coreBool __GL_OES_packed_depth_stencil;
+    coreBool __GL_OES_tessellation_shader;
     coreBool __GL_OES_texture_float;
     coreBool __GL_OES_texture_float_linear;
     coreBool __GL_OES_texture_half_float;
@@ -332,6 +351,8 @@ struct coreContext final
     PFNGLBUFFERSTORAGEPROC                  __glBufferStorage;
     PFNGLDISCARDFRAMEBUFFERPROC             __glDiscardFramebuffer;
     PFNGLTEXSTORAGE2DPROC                   __glTexStorage2D;
+    PFNGLDEBUGMESSAGECALLBACKPROC           __glDebugMessageCallback;
+    PFNGLDEBUGMESSAGECONTROLPROC            __glDebugMessageControl;
     PFNGLMAXSHADERCOMPILERTHREADSPROC       __glMaxShaderCompilerThreads;
     PFNGLBLITFRAMEBUFFERPROC                __glBlitFramebuffer;
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC __glRenderbufferStorageMultisample;

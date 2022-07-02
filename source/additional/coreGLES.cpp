@@ -31,9 +31,14 @@ void __coreInitOpenGLES()
     g_CoreContext.__bES31    = (g_CoreContext.__fVersion >= 3.1f);
     g_CoreContext.__bES32    = (g_CoreContext.__fVersion >= 3.2f);
     const coreBool  bES30    =  g_CoreContext.__bES30;
+    const coreBool  bES32    =  g_CoreContext.__bES32;
 
     // handle support for deprecated features
     CORE_GL_ES2_restriction = !bES30;
+
+    // implement GL_ANDROID_extension_pack_es31a
+    __CORE_GLES_CHECK(GL_ANDROID_extension_pack_es31a, false);
+    const coreBool bAndroidPack = g_CoreContext.__GL_ANDROID_extension_pack_es31a;
 
     // implement GL_EXT_buffer_storage
     if(__CORE_GLES_CHECK(GL_EXT_buffer_storage, false))
@@ -42,7 +47,7 @@ void __coreInitOpenGLES()
     }
 
     // implement GL_EXT_color_buffer_float
-    __CORE_GLES_CHECK(GL_EXT_color_buffer_float, false);
+    __CORE_GLES_CHECK(GL_EXT_color_buffer_float, bES32);
 
     // implement GL_EXT_color_buffer_half_float
     __CORE_GLES_CHECK(GL_EXT_color_buffer_half_float, false);
@@ -75,6 +80,8 @@ void __coreInitOpenGLES()
 
     // implement GL_EXT_texture_compression_s3tc
     __CORE_GLES_CHECK(GL_EXT_texture_compression_s3tc, false);
+    if(g_sExtensions.contains("GL_ANGLE_texture_compression_dxt5 ") &&
+       g_sExtensions.contains("GL_EXT_texture_compression_dxt1 "))  g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
     if(g_sExtensions.contains("GL_NV_texture_compression_s3tc "))   g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
     if(g_sExtensions.contains("GL_WEBGL_compressed_texture_s3tc ")) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
 
@@ -83,6 +90,13 @@ void __coreInitOpenGLES()
 
     // implement GL_EXT_texture_type_2_10_10_10_rev
     __CORE_GLES_CHECK(GL_EXT_texture_type_2_10_10_10_rev, bES30);
+
+    // implement GL_KHR_debug
+    if(__CORE_GLES_CHECK(GL_KHR_debug, bES32 || bAndroidPack))
+    {
+        __CORE_GLES_FUNC_FETCH(glDebugMessageCallback, KHR, bES32)
+        __CORE_GLES_FUNC_FETCH(glDebugMessageControl,  KHR, bES32)
+    }
 
     // implement GL_KHR_parallel_shader_compile
     if(__CORE_GLES_CHECK(GL_KHR_parallel_shader_compile, false))
@@ -101,9 +115,8 @@ void __coreInitOpenGLES()
     }
     else if(g_sExtensions.contains("GL_ANGLE_framebuffer_blit "))
     {
-        // override function
         g_CoreContext.__GL_NV_framebuffer_blit = true;
-        g_CoreContext.__glBlitFramebuffer = r_cast<decltype(g_CoreContext.__glBlitFramebuffer)>(eglGetProcAddress("glBlitFramebufferANGLE"));
+        __CORE_GLES_FUNC_FETCH(glBlitFramebuffer, ANGLE, false)
     }
 
     // implement GL_NV_framebuffer_multisample
@@ -113,9 +126,8 @@ void __coreInitOpenGLES()
     }
     else if(g_sExtensions.contains("GL_ANGLE_framebuffer_multisample "))
     {
-        // override function
         g_CoreContext.__GL_NV_framebuffer_multisample = true;
-        g_CoreContext.__glRenderbufferStorageMultisample = r_cast<decltype(g_CoreContext.__glRenderbufferStorageMultisample)>(eglGetProcAddress("glRenderbufferStorageMultisampleANGLE"));
+        __CORE_GLES_FUNC_FETCH(glRenderbufferStorageMultisample, ANGLE, false)
     }
 
     // implement GL_OES_depth_texture
@@ -123,15 +135,23 @@ void __coreInitOpenGLES()
     if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
     if(g_sExtensions.contains("GL_WEBGL_depth_texture ")) g_CoreContext.__GL_OES_depth_texture = true;
 
+    // implement GL_OES_geometry_shader
+    __CORE_GLES_CHECK(GL_OES_geometry_shader, bES32 || bAndroidPack);
+    if(g_sExtensions.contains("GL_EXT_geometry_shader ")) g_CoreContext.__GL_OES_geometry_shader = true;
+
     // implement GL_OES_packed_depth_stencil
     __CORE_GLES_CHECK(GL_OES_packed_depth_stencil, bES30);
     if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_packed_depth_stencil = true;
 
+    // implement GL_OES_tessellation_shader
+    __CORE_GLES_CHECK(GL_OES_tessellation_shader, bES32 || bAndroidPack);
+    if(g_sExtensions.contains("GL_EXT_tessellation_shader ")) g_CoreContext.__GL_OES_tessellation_shader = true;
+
     // implement GL_OES_texture_float
-    __CORE_GLES_CHECK(GL_OES_texture_float, bES30);
+    __CORE_GLES_CHECK(GL_OES_texture_float, bES30);   // not used
 
     // implement GL_OES_texture_float_linear
-    __CORE_GLES_CHECK(GL_OES_texture_float_linear, false);
+    __CORE_GLES_CHECK(GL_OES_texture_float_linear, false);   // not used
 
     // implement GL_OES_texture_half_float
     __CORE_GLES_CHECK(GL_OES_texture_half_float, bES30);
@@ -140,7 +160,7 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_OES_texture_half_float_linear, bES30);
 
     // implement GL_OES_texture_stencil8
-    __CORE_GLES_CHECK(GL_OES_texture_stencil8, false);
+    __CORE_GLES_CHECK(GL_OES_texture_stencil8, bES32 || bAndroidPack);
 
     // implement GL_OES_vertex_array_object
     if(__CORE_GLES_CHECK(GL_OES_vertex_array_object, bES30))
@@ -157,7 +177,7 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_OES_vertex_type_2_10_10_10_rev, bES30);
 
     // implement GL_WEBGL_color_buffer_float
-    __CORE_GLES_CHECK(GL_WEBGL_color_buffer_float, false);
+    __CORE_GLES_CHECK(GL_WEBGL_color_buffer_float, false);   // not used
 
     // map various extensions to GL_CORE_texture_float (# only for half-float)
     if(g_CoreContext.__GL_OES_texture_half_float && g_CoreContext.__GL_OES_texture_half_float_linear && (g_CoreContext.__GL_EXT_color_buffer_float || g_CoreContext.__GL_EXT_color_buffer_half_float))
