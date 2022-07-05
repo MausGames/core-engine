@@ -66,6 +66,45 @@ void __coreInitOpenGLES()
         g_CoreContext.__glDiscardFramebuffer = r_cast<decltype(g_CoreContext.__glDiscardFramebuffer)>(eglGetProcAddress("glInvalidateFramebuffer"));
     }
 
+    // implement GL_EXT_disjoint_timer_query
+    if(__CORE_GLES_CHECK(GL_EXT_disjoint_timer_query, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glDeleteQueries,       EXT, false)
+        __CORE_GLES_FUNC_FETCH(glGenQueries,          EXT, false)
+        __CORE_GLES_FUNC_FETCH(glGetQueryObjectui64v, EXT, false)
+        __CORE_GLES_FUNC_FETCH(glQueryCounter,        EXT, false)
+    }
+    else if(g_sExtensions.contains("GL_ANGLE_timer_query "))
+    {
+        g_CoreContext.__GL_EXT_disjoint_timer_query = true;
+        __CORE_GLES_FUNC_FETCH(glDeleteQueries,       ANGLE, false)
+        __CORE_GLES_FUNC_FETCH(glGenQueries,          ANGLE, false)
+        __CORE_GLES_FUNC_FETCH(glGetQueryObjectui64v, ANGLE, false)
+        __CORE_GLES_FUNC_FETCH(glQueryCounter,        ANGLE, false)
+    }
+
+    // implement GL_EXT_draw_buffers
+    if(__CORE_GLES_CHECK(GL_EXT_draw_buffers, bES30))
+    {
+        __CORE_GLES_FUNC_FETCH(glDrawBuffers, EXT, bES30)
+    }
+    else if(g_sExtensions.contains("GL_NV_draw_buffers ") && g_sExtensions.contains("GL_NV_fbo_color_attachments "))
+    {
+        g_CoreContext.__GL_EXT_draw_buffers = true;
+        __CORE_GLES_FUNC_FETCH(glDrawBuffers, NV, false)
+    }
+    else if(g_sExtensions.contains("GL_WEBGL_draw_buffers "))
+    {
+        g_CoreContext.__GL_EXT_draw_buffers = true;
+        __CORE_GLES_FUNC_FETCH(glDrawBuffers, WEBGL, false)
+    }
+
+    // implement GL_EXT_sRGB_write_control
+    __CORE_GLES_CHECK(GL_EXT_sRGB_write_control, false);
+
+    // implement GL_EXT_texture_rg
+    __CORE_GLES_CHECK(GL_EXT_texture_rg, bES30);
+
     // implement GL_EXT_texture_storage
     if(__CORE_GLES_CHECK(GL_EXT_texture_storage, bES30))
     {
@@ -142,6 +181,12 @@ void __coreInitOpenGLES()
     // implement GL_OES_packed_depth_stencil
     __CORE_GLES_CHECK(GL_OES_packed_depth_stencil, bES30);
     if(g_sExtensions.contains("GL_ANGLE_depth_texture ")) g_CoreContext.__GL_OES_packed_depth_stencil = true;
+
+    // implement GL_OES_sample_shading
+    if(__CORE_GLES_CHECK(GL_OES_sample_shading, bES32 || bAndroidPack))
+    {
+        __CORE_GLES_FUNC_FETCH(glMinSampleShading, OES, bES32)
+    }
 
     // implement GL_OES_tessellation_shader
     __CORE_GLES_CHECK(GL_OES_tessellation_shader, bES32 || bAndroidPack);

@@ -14,7 +14,6 @@
 // TODO 5: check for multipl-viewport-rendering
 // TODO 2: certain formats, format-combinations, as texture or rendertarget or with multisampling, may not be supported (GL_FRAMEBUFFER_UNSUPPORTED), implement transparent fallback
 // TODO 3: fully implement multiple color attachment handling (esp. in blit, clear, invalidate)
-// TODO 3: handle multiple color attachments for ES2 (EXT_draw_buffers and WEBGL_draw_buffers)
 // TODO 3: handle depth/stencil-blitting to default frame buffer on fallback-blitting
 // TODO 3: save and restore OpenGL states (GL_DEPTH_TEST/GL_BLEND) on fallback-blitting
 // TODO 3: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)

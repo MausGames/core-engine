@@ -22,7 +22,11 @@
 // compiler configuration
 #if defined(GL_ES)
     #extension GL_EXT_conservative_depth          : enable
+    #extension GL_EXT_demote_to_helper_invocation : enable
+    #extension GL_EXT_draw_buffers                : enable
+    #extension GL_EXT_shader_group_vote           : enable
     #extension GL_EXT_shadow_samplers             : enable
+    #extension GL_NV_draw_buffers                 : enable
     #extension GL_OES_sample_variables            : enable
     #extension GL_OES_standard_derivatives        : enable
 #else
@@ -55,6 +59,9 @@
 #endif
 #if defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth) || (CORE_GL_VERSION >= 420)
     #define CORE_GL_conservative_depth
+#endif
+#if defined(GL_EXT_draw_buffers) || defined(GL_NV_draw_buffers) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300)
+    #define CORE_GL_draw_buffers
 #endif
 #if defined(GL_EXT_gpu_shader4) || (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
     #define CORE_GL_gpu_shader4
@@ -195,6 +202,9 @@
 #if defined(GL_ARB_shader_group_vote)
     #define coreAnyInvocation(x)  (anyInvocationARB (x))
     #define coreAllInvocations(x) (allInvocationsARB(x))
+#elif defined(GL_EXT_shader_group_vote)
+    #define coreAnyInvocation(x)  (anyInvocationEXT (x))
+    #define coreAllInvocations(x) (allInvocationsEXT(x))
 #elif defined(GL_NV_gpu_shader5)
     #define coreAnyInvocation(x)  (anyThreadNV (x))
     #define coreAllInvocations(x) (allThreadsNV(x))
@@ -702,6 +712,11 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         // shader output
         out vec4 o_av4OutColor[CORE_NUM_OUTPUTS];
         #define gl_FragColor (o_av4OutColor[0])
+
+    #else
+
+        // shader output
+        #define o_av4OutColor (gl_FragData)
 
     #endif
 

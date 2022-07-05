@@ -111,21 +111,24 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
         }
     }
 
-    // ignore color drawings without color attachment
-    if(!m_aColorTarget[0].IsValid()) glDrawBuffer(GL_NONE);
-    else
+    if(CORE_GL_SUPPORT(EXT_draw_buffers))
     {
-        GLenum aiAttachment[CORE_SHADER_OUTPUT_COLORS];
-        coreInt32 iNum = 0;
-
-        // enable color drawings with all target buffers
-        for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+        // ignore color drawings without color attachment
+        if(!m_aColorTarget[0].IsValid()) glDrawBuffer(GL_NONE);
+        else
         {
-            // check for available color attachments
-            if(m_aColorTarget[i].IsValid())
-                aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
+            GLenum aiAttachment[CORE_SHADER_OUTPUT_COLORS];
+            coreInt32 iNum = 0;
+
+            // enable color drawings with all target buffers
+            for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+            {
+                // check for available color attachments
+                if(m_aColorTarget[i].IsValid())
+                    aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
+            }
+            glDrawBuffers(iNum, aiAttachment);
         }
-        glDrawBuffers(iNum, aiAttachment);
     }
 
     // retrieve frame buffer status
@@ -481,7 +484,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
     ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
     // only one color attachment supported
-    if(CORE_GL_SUPPORT(ES2_restriction) && (iColorIndex > 0u)) return NULL;
+    if(!CORE_GL_SUPPORT(EXT_draw_buffers) && (iColorIndex > 0u)) return NULL;
 
     // get requested render target structure
     coreRenderTarget* pTarget = NULL;
