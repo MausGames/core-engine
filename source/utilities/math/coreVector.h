@@ -112,6 +112,8 @@ public:
     constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f);}
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
+    constexpr coreBool  IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f);}
+    constexpr coreBool  IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f);}
 
     /* static functions */
     static constexpr coreFloat   Dot      (const coreVector2 v1, const coreVector2 v2);
@@ -124,10 +126,14 @@ public:
     static constexpr coreVector2 Reflect  (const coreVector2 vVelocity, const coreVector2 vNormal);
 
     /* packing functions */
+    constexpr        coreUint16  PackUnorm2x8   ()const;
+    constexpr        coreUint16  PackSnorm2x8   ()const;
     constexpr        coreUint32  PackUnorm2x16  ()const;
     constexpr        coreUint32  PackSnorm2x16  ()const;
     constexpr        coreUint32  PackFloat2x16  ()const;
     constexpr        coreUint64  PackFloat2x32  ()const;
+    static constexpr coreVector2 UnpackUnorm2x8 (const coreUint16 iNumber);
+    static constexpr coreVector2 UnpackSnorm2x8 (const coreUint16 iNumber);
     static constexpr coreVector2 UnpackUnorm2x16(const coreUint32 iNumber);
     static constexpr coreVector2 UnpackSnorm2x16(const coreUint32 iNumber);
     static constexpr coreVector2 UnpackFloat2x16(const coreUint32 iNumber);
@@ -245,6 +251,8 @@ public:
     constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (y*z == 0.0f);}
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
+    constexpr coreBool  IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f) && (z >=  0.0f) && (z <= 1.0f);}
+    constexpr coreBool  IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f) && (z >= -1.0f) && (z <= 1.0f);}
 
     /* static functions */
     static constexpr coreFloat   Dot    (const coreVector3 v1, const coreVector3 v2);
@@ -258,9 +266,13 @@ public:
     static inline    coreBool    Visible(const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
 
     /* packing functions */
+    constexpr        coreUint16  PackUnorm565   ()const;
+    constexpr        coreUint16  PackSnorm565   ()const;
     constexpr        coreUint32  PackUnorm011   ()const;
     constexpr        coreUint32  PackSnorm011   ()const;
     inline           coreVector2 PackSnormOcta  ()const;
+    static constexpr coreVector3 UnpackUnorm565 (const coreUint16  iNumber);
+    static constexpr coreVector3 UnpackSnorm565 (const coreUint16  iNumber);
     static constexpr coreVector3 UnpackUnorm011 (const coreUint32  iNumber);
     static constexpr coreVector3 UnpackSnorm011 (const coreUint32  iNumber);
     static inline    coreVector3 UnpackSnormOcta(const coreVector2 vVector);
@@ -372,6 +384,8 @@ public:
     constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (x*w == 0.0f) && (y*z == 0.0f) && (y*w == 0.0f) && (z*w == 0.0f);}
     constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
+    constexpr coreBool  IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f) && (z >=  0.0f) && (z <= 1.0f) && (w >=  0.0f) && (w <= 1.0f);}
+    constexpr coreBool  IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f) && (z >= -1.0f) && (z <= 1.0f) && (w >= -1.0f) && (w <= 1.0f);}
 
     /* static functions */
     static constexpr coreFloat   Dot (const coreVector4 v1, const coreVector4 v2);
@@ -477,25 +491,47 @@ constexpr coreVector2 coreVector2::Reflect(const coreVector2 vVelocity, const co
 
 
 // ****************************************************************
-/* compress 0.0 to 1.0 vector into YX packed uint */
+/* compress 0.0 to 1.0 vector into YX packed uint16 */
+constexpr coreUint16 coreVector2::PackUnorm2x8()const
+{
+    ASSERT(this->IsUnorm())
+    return (coreUint16(y * 255.0f) << 8u) |
+           (coreUint16(x * 255.0f));
+}
+
+
+// ****************************************************************
+/* compress -1.0 to 1.0 vector into YX packed uint16 */
+constexpr coreUint16 coreVector2::PackSnorm2x8()const
+{
+    ASSERT(this->IsSnorm())
+    return (coreUint16((y < 0.0f) ? (256.0f + y*128.0f) : (y*127.0f)) << 8u) |
+           (coreUint16((x < 0.0f) ? (256.0f + x*128.0f) : (x*127.0f)));
+}
+
+
+// ****************************************************************
+/* compress 0.0 to 1.0 vector into YX packed uint32 */
 constexpr coreUint32 coreVector2::PackUnorm2x16()const
 {
+    ASSERT(this->IsUnorm())
     return (F_TO_UI(y * 65535.0f) << 16u) |
            (F_TO_UI(x * 65535.0f));
 }
 
 
 // ****************************************************************
-/* compress -1.0 to 1.0 vector into YX packed uint */
+/* compress -1.0 to 1.0 vector into YX packed uint32 */
 constexpr coreUint32 coreVector2::PackSnorm2x16()const
 {
+    ASSERT(this->IsSnorm())
     return (F_TO_UI((y < 0.0f) ? (65536.0f + y*32768.0f) : (y*32767.0f)) << 16u) |
            (F_TO_UI((x < 0.0f) ? (65536.0f + x*32768.0f) : (x*32767.0f)));
 }
 
 
 // ****************************************************************
-/* compress arbitrary vector into YX packed uint */
+/* compress arbitrary vector into YX packed uint32 */
 constexpr coreUint32 coreVector2::PackFloat2x16()const
 {
     return (coreUint32(coreMath::Float32To16(y)) << 16u) |
@@ -512,7 +548,28 @@ constexpr coreUint64 coreVector2::PackFloat2x32()const
 
 
 // ****************************************************************
-/* uncompress YX packed uint into 0.0 to 1.0 vector */
+/* uncompress YX packed uint16 into 0.0 to 1.0 vector */
+constexpr coreVector2 coreVector2::UnpackUnorm2x8(const coreUint16 iNumber)
+{
+    return coreVector2(I_TO_F( iNumber        & 0xFFu),
+                       I_TO_F((iNumber >> 8u) & 0xFFu)) * 3.921568627e-3f;
+}
+
+
+// ****************************************************************
+/* uncompress YX packed uint16 into -1.0 to 1.0 vector */
+constexpr coreVector2 coreVector2::UnpackSnorm2x8(const coreUint16 iNumber)
+{
+    const coreVector2 A = coreVector2(I_TO_F( iNumber        & 0xFFu),
+                                      I_TO_F((iNumber >> 8u) & 0xFFu));
+
+    return coreVector2((A.x >= 128.0f) ? ((A.x - 256.0f)/128.0f) : (A.x/127.0f),
+                       (A.y >= 128.0f) ? ((A.y - 256.0f)/128.0f) : (A.y/127.0f));
+}
+
+
+// ****************************************************************
+/* uncompress YX packed uint32 into 0.0 to 1.0 vector */
 constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32 iNumber)
 {
     return coreVector2(I_TO_F( iNumber         & 0xFFFFu),
@@ -521,7 +578,7 @@ constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32 iNumber)
 
 
 // ****************************************************************
-/* uncompress YX packed uint into -1.0 to 1.0 vector */
+/* uncompress YX packed uint32 into -1.0 to 1.0 vector */
 constexpr coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32 iNumber)
 {
     const coreVector2 A = coreVector2(I_TO_F( iNumber         & 0xFFFFu),
@@ -533,7 +590,7 @@ constexpr coreVector2 coreVector2::UnpackSnorm2x16(const coreUint32 iNumber)
 
 
 // ****************************************************************
-/* uncompress YX packed uint into arbitrary vector */
+/* uncompress YX packed uint32 into arbitrary vector */
 constexpr coreVector2 coreVector2::UnpackFloat2x16(const coreUint32 iNumber)
 {
     return coreVector2(coreMath::Float16To32( iNumber         & 0xFFFFu),
@@ -630,9 +687,32 @@ inline coreBool coreVector3::Visible(const coreVector3 vPosition, const coreFloa
 
 
 // ****************************************************************
-/* compress 0.0 to 1.0 vector into (own) 10_11_11_rev packed uint */
+/* compress 0.0 to 1.0 vector into 5_6_5_rev packed uint16 */
+constexpr coreUint16 coreVector3::PackUnorm565()const
+{
+    ASSERT(this->IsUnorm())
+    return (coreUint16(z * 31.0f) << 11u) |
+           (coreUint16(y * 63.0f) <<  5u) |
+           (coreUint16(x * 31.0f));
+}
+
+
+// ****************************************************************
+/* compress -1.0 to 1.0 vector into 5_6_5_rev packed uint16 */
+constexpr coreUint16 coreVector3::PackSnorm565()const
+{
+    ASSERT(this->IsSnorm())
+    return (coreUint16((z < 0.0f) ? (32.0f + z*16.0f) : (z*15.0f)) << 11u) |
+           (coreUint16((y < 0.0f) ? (64.0f + y*32.0f) : (y*31.0f)) <<  5u) |
+           (coreUint16((x < 0.0f) ? (32.0f + x*16.0f) : (x*15.0f)));
+}
+
+
+// ****************************************************************
+/* compress 0.0 to 1.0 vector into (own) 10_11_11_rev packed uint32 */
 constexpr coreUint32 coreVector3::PackUnorm011()const
 {
+    ASSERT(this->IsUnorm())
     return (F_TO_UI(z * 1023.0f) << 22u) |
            (F_TO_UI(y * 2047.0f) << 11u) |
            (F_TO_UI(x * 2047.0f));
@@ -640,9 +720,10 @@ constexpr coreUint32 coreVector3::PackUnorm011()const
 
 
 // ****************************************************************
-/* compress -1.0 to 1.0 vector into (own) 10_11_11_rev packed uint */
+/* compress -1.0 to 1.0 vector into (own) 10_11_11_rev packed uint32 */
 constexpr coreUint32 coreVector3::PackSnorm011()const
 {
+    ASSERT(this->IsSnorm())
     return (F_TO_UI((z < 0.0f) ? (1024.0f + z* 512.0f) : (z* 511.0f)) << 22u) |
            (F_TO_UI((y < 0.0f) ? (2048.0f + y*1024.0f) : (y*1023.0f)) << 11u) |
            (F_TO_UI((x < 0.0f) ? (2048.0f + x*1024.0f) : (x*1023.0f)));
@@ -653,6 +734,8 @@ constexpr coreUint32 coreVector3::PackSnorm011()const
 /* compress regular normal-vector into octahedron normal-vector */
 inline coreVector2 coreVector3::PackSnormOcta()const
 {
+    ASSERT(this->IsNormalized())
+
     coreVector2 A = coreVector2(x, y) / (ABS(x) + ABS(y) + ABS(z));
 
     if(z < 0.0f)
@@ -666,7 +749,31 @@ inline coreVector2 coreVector3::PackSnormOcta()const
 
 
 // ****************************************************************
-/* uncompress (own) 10_11_11_rev packed uint into 0.0 to 1.0 vector */
+/* uncompress 5_6_5_rev packed uint16 into 0.0 to 1.0 vector */
+constexpr coreVector3 coreVector3::UnpackUnorm565(const coreUint16 iNumber)
+{
+    return coreVector3(I_TO_F( iNumber         & 0x1Fu) * 3.225806452e-2f,
+                       I_TO_F((iNumber >>  5u) & 0x3Fu) * 1.587301587e-2f,
+                       I_TO_F((iNumber >> 11u) & 0x1Fu) * 3.225806452e-2f);
+}
+
+
+// ****************************************************************
+/* uncompress 5_6_5_rev packed uint16 into -1.0 to 1.0 vector */
+constexpr coreVector3 coreVector3::UnpackSnorm565(const coreUint16 iNumber)
+{
+    const coreVector3 A = coreVector3(I_TO_F( iNumber         & 0x1Fu),
+                                      I_TO_F((iNumber >>  5u) & 0x3Fu),
+                                      I_TO_F((iNumber >> 11u) & 0x1Fu));
+
+    return coreVector3((A.x >= 16.0f) ? ((A.x - 32.0f)/16.0f) : (A.x/15.0f),
+                       (A.y >= 32.0f) ? ((A.y - 64.0f)/32.0f) : (A.y/31.0f),
+                       (A.z >= 16.0f) ? ((A.z - 32.0f)/16.0f) : (A.z/15.0f));
+}
+
+
+// ****************************************************************
+/* uncompress (own) 10_11_11_rev packed uint32 into 0.0 to 1.0 vector */
 constexpr coreVector3 coreVector3::UnpackUnorm011(const coreUint32 iNumber)
 {
     return coreVector3(coreVector2(I_TO_F( iNumber         & 0x7FFu),
@@ -676,7 +783,7 @@ constexpr coreVector3 coreVector3::UnpackUnorm011(const coreUint32 iNumber)
 
 
 // ****************************************************************
-/* uncompress (own) 10_11_11_rev packed uint into -1.0 to 1.0 vector */
+/* uncompress (own) 10_11_11_rev packed uint32 into -1.0 to 1.0 vector */
 constexpr coreVector3 coreVector3::UnpackSnorm011(const coreUint32 iNumber)
 {
     const coreVector3 A = coreVector3(I_TO_F( iNumber         & 0x7FFu),
@@ -796,9 +903,10 @@ inline coreVector4 coreVector4::Rand(const coreFloat fMinX, const coreFloat fMax
 
 
 // ****************************************************************
-/* compress 0.0 to 1.0 vector into 2_10_10_10_rev packed uint */
+/* compress 0.0 to 1.0 vector into 2_10_10_10_rev packed uint32 */
 constexpr coreUint32 coreVector4::PackUnorm210()const
 {
+    ASSERT(this->IsUnorm())
     return (F_TO_UI(w *    3.0f) << 30u) |
            (F_TO_UI(z * 1023.0f) << 20u) |
            (F_TO_UI(y * 1023.0f) << 10u) |
@@ -807,9 +915,10 @@ constexpr coreUint32 coreVector4::PackUnorm210()const
 
 
 // ****************************************************************
-/* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint */
+/* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint32 */
 constexpr coreUint32 coreVector4::PackSnorm210()const
 {
+    ASSERT(this->IsSnorm())
     return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : (w*  1.0f)) << 30u) |
            (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : (z*511.0f)) << 20u) |
            (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : (y*511.0f)) << 10u) |
@@ -818,9 +927,10 @@ constexpr coreUint32 coreVector4::PackSnorm210()const
 
 
 // ****************************************************************
-/* compress 0.0 to 1.0 vector into WZYX packed uint */
+/* compress 0.0 to 1.0 vector into WZYX packed uint32 */
 constexpr coreUint32 coreVector4::PackUnorm4x8()const
 {
+    ASSERT(this->IsUnorm())
     return (F_TO_UI(w * 255.0f) << 24u) |
            (F_TO_UI(z * 255.0f) << 16u) |
            (F_TO_UI(y * 255.0f) <<  8u) |
@@ -829,9 +939,10 @@ constexpr coreUint32 coreVector4::PackUnorm4x8()const
 
 
 // ****************************************************************
-/* compress -1.0 to 1.0 vector into WZYX packed uint */
+/* compress -1.0 to 1.0 vector into WZYX packed uint32 */
 constexpr coreUint32 coreVector4::PackSnorm4x8()const
 {
+    ASSERT(this->IsSnorm())
     return (F_TO_UI((w < 0.0f) ? (256.0f + w*128.0f) : (w*127.0f)) << 24u) |
            (F_TO_UI((z < 0.0f) ? (256.0f + z*128.0f) : (z*127.0f)) << 16u) |
            (F_TO_UI((y < 0.0f) ? (256.0f + y*128.0f) : (y*127.0f)) <<  8u) |
@@ -843,6 +954,7 @@ constexpr coreUint32 coreVector4::PackSnorm4x8()const
 /* compress 0.0 to 1.0 vector into WZYX packed uint64 */
 constexpr coreUint64 coreVector4::PackUnorm4x16()const
 {
+    ASSERT(this->IsUnorm())
     return (coreUint64(w * 65535.0f) << 48u) |
            (coreUint64(z * 65535.0f) << 32u) |
            (coreUint64(y * 65535.0f) << 16u) |
@@ -854,6 +966,7 @@ constexpr coreUint64 coreVector4::PackUnorm4x16()const
 /* compress -1.0 to 1.0 vector into WZYX packed uint64 */
 constexpr coreUint64 coreVector4::PackSnorm4x16()const
 {
+    ASSERT(this->IsSnorm())
     return (coreUint64((w < 0.0f) ? (65536.0f + w*32768.0f) : (w*32767.0f)) << 48u) |
            (coreUint64((z < 0.0f) ? (65536.0f + z*32768.0f) : (z*32767.0f)) << 32u) |
            (coreUint64((y < 0.0f) ? (65536.0f + y*32768.0f) : (y*32767.0f)) << 16u) |
@@ -884,7 +997,7 @@ constexpr coreUint64 coreVector4::PackFloat4x16()const
 
 
 // ****************************************************************
-/* uncompress 2_10_10_10_rev packed uint into 0.0 to 1.0 vector */
+/* uncompress 2_10_10_10_rev packed uint32 into 0.0 to 1.0 vector */
 constexpr coreVector4 coreVector4::UnpackUnorm210(const coreUint32 iNumber)
 {
     return coreVector4(coreVector3(I_TO_F( iNumber         & 0x3FFu),
@@ -895,7 +1008,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm210(const coreUint32 iNumber)
 
 
 // ****************************************************************
-/* uncompress 2_10_10_10_rev packed uint into -1.0 to 1.0 vector */
+/* uncompress 2_10_10_10_rev packed uint32 into -1.0 to 1.0 vector */
 constexpr coreVector4 coreVector4::UnpackSnorm210(const coreUint32 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0x3FFu),
@@ -911,7 +1024,7 @@ constexpr coreVector4 coreVector4::UnpackSnorm210(const coreUint32 iNumber)
 
 
 // ****************************************************************
-/* uncompress WZYX packed uint into 0.0 to 1.0 vector */
+/* uncompress WZYX packed uint32 into 0.0 to 1.0 vector */
 constexpr coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32 iNumber)
 {
     return coreVector4(I_TO_F( iNumber         & 0xFFu),
@@ -922,7 +1035,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32 iNumber)
 
 
 // ****************************************************************
-/* uncompress WZYX packed uint into -1.0 to 1.0 vector */
+/* uncompress WZYX packed uint32 into -1.0 to 1.0 vector */
 constexpr coreVector4 coreVector4::UnpackSnorm4x8(const coreUint32 iNumber)
 {
     const coreVector4 A = coreVector4(I_TO_F( iNumber         & 0xFFu),
