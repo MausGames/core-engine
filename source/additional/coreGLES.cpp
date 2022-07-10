@@ -99,6 +99,28 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glDrawBuffers, WEBGL, false)
     }
 
+    // implement GL_EXT_instanced_arrays
+    if(__CORE_GLES_CHECK(GL_EXT_instanced_arrays, bES30))
+    {
+        __CORE_GLES_FUNC_FETCH(glDrawArraysInstanced,   EXT, bES30)
+        __CORE_GLES_FUNC_FETCH(glDrawElementsInstanced, EXT, bES30)
+        __CORE_GLES_FUNC_FETCH(glVertexAttribDivisor,   EXT, bES30)
+    }
+    else if(g_sExtensions.contains("GL_ANGLE_instanced_arrays "))
+    {
+        g_CoreContext.__GL_EXT_instanced_arrays = true;
+        __CORE_GLES_FUNC_FETCH(glDrawArraysInstanced,   ANGLE, false)
+        __CORE_GLES_FUNC_FETCH(glDrawElementsInstanced, ANGLE, false)
+        __CORE_GLES_FUNC_FETCH(glVertexAttribDivisor,   ANGLE, false)
+    }
+    else if(g_sExtensions.contains("GL_NV_draw_instanced ") && g_sExtensions.contains("GL_NV_instanced_arrays "))
+    {
+        g_CoreContext.__GL_EXT_instanced_arrays = true;
+        __CORE_GLES_FUNC_FETCH(glDrawArraysInstanced,   NV, false)
+        __CORE_GLES_FUNC_FETCH(glDrawElementsInstanced, NV, false)
+        __CORE_GLES_FUNC_FETCH(glVertexAttribDivisor,   NV, false)
+    }
+
     // implement GL_EXT_sRGB_write_control
     __CORE_GLES_CHECK(GL_EXT_sRGB_write_control, false);
 

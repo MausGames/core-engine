@@ -14,8 +14,7 @@
 // TODO 3: always disable extensions which are only available in either GLES or WebGL in their specific mode, to improve dead-code removal
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
 // TODO 5: GL_EXT_clear_texture, GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
-// TODO 5: GL_ANGLE_texture_usage (set before allocation), GL_AMD_framebuffer_multisample_advanced
-// TODO 5: GL_ANGLE_instanced_arrays, GL_EXT_instanced_arrays, GL_NV_instanced_arrays
+// TODO 5: GL_ANGLE_texture_usage (set before allocation, coreTextureMode), GL_AMD_framebuffer_multisample_advanced
 // TODO 5: GL_EXT_disjoint_timer_query_webgl2
 
 
@@ -29,7 +28,6 @@
 #define CORE_GL_ARB_copy_image                       false
 #define CORE_GL_ARB_depth_buffer_float               __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_direct_state_access              false
-#define CORE_GL_ARB_instanced_arrays                 __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_multi_bind                       false
 #define CORE_GL_ARB_multisample                      false
 #define CORE_GL_ARB_pipeline_statistics_query        false
@@ -119,6 +117,18 @@ using PFNGLQUERYCOUNTERPROC        = void (GL_APIENTRY *) (GLuint id, GLenum tar
 
 using PFNGLDRAWBUFFERSPROC = void (GL_APIENTRY *) (GLsizei n, const GLenum* bufs);
 #define glDrawBuffers __CORE_GLES_FUNC(glDrawBuffers)
+
+
+// ****************************************************************
+/* GL_EXT_instanced_arrays (mapped on GL_ARB_instanced_arrays) */
+#define CORE_GL_ARB_instanced_arrays __CORE_GLES_VAR(GL_EXT_instanced_arrays)
+
+using PFNGLDRAWARRAYSINSTANCEDARBPROC   = void (GL_APIENTRY *) (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
+using PFNGLDRAWELEMENTSINSTANCEDARBPROC = void (GL_APIENTRY *) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount);
+using PFNGLVERTEXATTRIBDIVISORARBPROC   = void (GL_APIENTRY *) (GLuint index, GLuint divisor);
+#define glDrawArraysInstanced   __CORE_GLES_FUNC(glDrawArraysInstanced)
+#define glDrawElementsInstanced __CORE_GLES_FUNC(glDrawElementsInstanced)
+#define glVertexAttribDivisor   __CORE_GLES_FUNC(glVertexAttribDivisor)
 
 
 // ****************************************************************
@@ -356,6 +366,7 @@ struct coreContext final
     coreBool __GL_EXT_discard_framebuffer;
     coreBool __GL_EXT_disjoint_timer_query;
     coreBool __GL_EXT_draw_buffers;
+    coreBool __GL_EXT_instanced_arrays;
     coreBool __GL_EXT_sRGB_write_control;
     coreBool __GL_EXT_texture_rg;
     coreBool __GL_EXT_texture_storage;
@@ -391,6 +402,9 @@ struct coreContext final
     PFNGLGETQUERYOBJECTUI64VPROC            __glGetQueryObjectui64v;
     PFNGLQUERYCOUNTERPROC                   __glQueryCounter;
     PFNGLDRAWBUFFERSPROC                    __glDrawBuffers;
+    PFNGLDRAWARRAYSINSTANCEDARBPROC         __glDrawArraysInstanced;
+    PFNGLDRAWELEMENTSINSTANCEDARBPROC       __glDrawElementsInstanced;
+    PFNGLVERTEXATTRIBDIVISORARBPROC         __glVertexAttribDivisor;
     PFNGLTEXSTORAGE2DPROC                   __glTexStorage2D;
     PFNGLDEBUGMESSAGECALLBACKPROC           __glDebugMessageCallback;
     PFNGLDEBUGMESSAGECONTROLPROC            __glDebugMessageControl;
