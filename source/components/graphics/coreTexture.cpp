@@ -605,6 +605,7 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
 void coreTexture::__BindTexture(const coreUintW iUnit, coreTexture* pTexture)
 {
     ASSERT(iUnit < CORE_TEXTURE_UNITS)
+    ASSERT(iUnit < Core::Graphics->GetMaxTextures())
 
     // check texture binding
     if(s_apBound[iUnit] == pTexture) return;

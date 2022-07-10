@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_TEXTURE_H_
 #define _CORE_GUARD_TEXTURE_H_
 
-// TODO 5: check for max available texture units (only at start?)
 // TODO 3: implement sampler objects
 // TODO 3: implement light unbind (like in model and program)
 // TODO 3: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)

@@ -71,6 +71,7 @@ private:
     coreUint64 m_iMemoryStart;                                            // available graphics memory at the start of the application (in bytes)
     coreUint8  m_iMaxSamples;                                             // max multisample anti aliasing level
     coreUint8  m_iMaxAnisotropy;                                          // max anisotropic texture filter level
+    coreUint8  m_iMaxTextures;                                            // max number of texture units (vertex shader and fragment shader combined)
     coreFloat  m_fVersionOpenGL;                                          // available OpenGL version
     coreFloat  m_fVersionGLSL;                                            // available GLSL version
 
@@ -139,6 +140,7 @@ public:
     /* check OpenGL properties */
     inline const coreUint8& GetMaxSamples   ()const {return m_iMaxSamples;}
     inline const coreUint8& GetMaxAnisotropy()const {return m_iMaxAnisotropy;}
+    inline const coreUint8& GetMaxTextures  ()const {return m_iMaxTextures;}
     inline const coreFloat& GetVersionOpenGL()const {return m_fVersionOpenGL;}
     inline const coreFloat& GetVersionGLSL  ()const {return m_fVersionGLSL;}
 
