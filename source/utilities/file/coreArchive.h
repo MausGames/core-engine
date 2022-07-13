@@ -18,6 +18,7 @@
 // TODO 3: allow referencing allocation instead of owning
 // TODO 4: get rid of Internal* functions ? but files should not be copied (normally)
 // TODO 3: mmap, CreateFileMapping+MapViewOfFile instead of reading into a buffer ? unbuffered reading ? batching (e.g. DirectStorage) ?
+// TODO 2: when saving an archive fails late, file-state was already adjusted and cannot be recovered (archive-pos)
 
 
 // ****************************************************************
@@ -72,6 +73,12 @@ public:
     /* handle explicit copy (for internal use) */
     static void InternalNew   (coreFile** OUTPUT ppTarget, const coreFile* pSource);
     static void InternalDelete(coreFile** OUTPUT ppTarget);
+
+
+private:
+    /* safely read and write */
+    static void __Read (SDL_RWops* pFile, void*       pPointer, const coreUintW iSize, const coreUintW iNum, coreBool* OUTPUT pbSuccess);
+    static void __Write(SDL_RWops* pFile, const void* pPointer, const coreUintW iSize, const coreUintW iNum, coreBool* OUTPUT pbSuccess);
 };
 
 
