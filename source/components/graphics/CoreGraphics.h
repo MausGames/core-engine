@@ -17,6 +17,7 @@
 // TODO 3: async glReadPixels, improve screenshot with pixel-pack-buffer
 // TODO 5: <old comment style>
 // TODO 3: add debug labels to objects (glObjectLabel, glObjectPtrLabel(sync))
+// TODO 3: check for max number of draw buffers and color attachments, max render buffer size and view-port dimension, max number of vertex attributes, max texture size
 
 
 // ****************************************************************
@@ -71,7 +72,7 @@ private:
     coreUint64 m_iMemoryStart;                                            // available graphics memory at the start of the application (in bytes)
     coreUint8  m_iMaxSamples;                                             // max multisample anti aliasing level
     coreUint8  m_iMaxAnisotropy;                                          // max anisotropic texture filter level
-    coreUint8  m_iMaxTextures;                                            // max number of texture units (vertex shader and fragment shader combined)
+    coreUint8  m_iMaxTextures;                                            // max number of texture units (only for fragment shader)
     coreFloat  m_fVersionOpenGL;                                          // available OpenGL version
     coreFloat  m_fVersionGLSL;                                            // available GLSL version
 

@@ -15,6 +15,7 @@
 // TODO 5: check for compressed uniform sends (e.g. colors as byte-array instead of float-vector)
 // TODO 5: <old comment style>
 // TODO 4: Chromium shader compiler does not support attribute aliasing (though the standard allows it), remove and remap (#define) one of the variables ?
+// TODO 5: shared uniform-buffer layout might be more efficient, but needs many queries
 
 // NOTE: GL/GLES below 3.0 (130/300) or without UBO support always has GLSL version 110/100
 

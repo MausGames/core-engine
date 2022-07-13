@@ -252,7 +252,6 @@ private:
 /* attach asynchronous callbacks */
 template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction)const
 {
-
     if(this->IsLoaded())
     {
         // call function immediately

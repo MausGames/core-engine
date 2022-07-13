@@ -16,7 +16,7 @@
 
 // ****************************************************************
 /* sync definitions */
-#define CORE_SYNC_WAIT_FOREVER (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : GL_TIMEOUT_IGNORED)
+#define CORE_SYNC_WAIT_FOREVER (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : 50'000'000u)
 
 enum coreSyncCheck : coreUint8
 {

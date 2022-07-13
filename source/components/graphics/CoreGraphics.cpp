@@ -69,8 +69,8 @@ CoreGraphics::CoreGraphics()noexcept
         m_iMaxAnisotropy = F_TO_UI(MAX(fValue, 1.0f));
     }
 
-    // get max number of texture units
-    GLint iValue = 0; glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &iValue);
+    // get max number of texture units (only for fragment shader)
+    GLint iValue = 0; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iValue);
     m_iMaxTextures = MAX(iValue, 8);
 
     // log graphics device information
@@ -99,7 +99,7 @@ CoreGraphics::CoreGraphics()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("Graphics Memory:") " %llu/%llu MB (%.1f%%)", iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(sExtensions        .c_str());
         Core::Log->ListAdd(sPlatformExtensions.c_str());
-        Core::Log->ListAdd("GL_MAX_SAMPLES (%u) GL_MAX_TEXTURE_MAX_ANISOTROPY (%u) GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS (%u) GL_CONTEXT_FLAGS (0x%02X) GL_CONTEXT_PROFILE_MASK (0x%02X)", m_iMaxSamples, m_iMaxAnisotropy, m_iMaxTextures, aiStatus[0], aiStatus[1]);
+        Core::Log->ListAdd("GL_MAX_SAMPLES (%u) GL_MAX_TEXTURE_MAX_ANISOTROPY (%u) GL_MAX_TEXTURE_IMAGE_UNITS (%u) GL_CONTEXT_FLAGS (0x%02X) GL_CONTEXT_PROFILE_MASK (0x%02X)", m_iMaxSamples, m_iMaxAnisotropy, m_iMaxTextures, aiStatus[0], aiStatus[1]);
     }
     Core::Log->ListEnd();
 

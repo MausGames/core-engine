@@ -316,14 +316,14 @@ const coreChar* coreData::SystemOsName()
     const coreChar* pcSubName;
     switch(iMajor*10u + iMinor)
     {
-    case 100u: pcSubName = "10";    break;
-    case  63u: pcSubName = "8.1";   break;
-    case  62u: pcSubName = "8";     break;
-    case  61u: pcSubName = "7";     break;
-    case  60u: pcSubName = "Vista"; break;
-    case  51u: pcSubName = "XP";    break;
-    case  50u: pcSubName = "2000";  break;
-    default:   pcSubName = "-";     break;
+    case 100u: pcSubName = (iBuild >= 22000u) ? "11" : "10"; break;
+    case  63u: pcSubName = "8.1";                            break;
+    case  62u: pcSubName = "8";                              break;
+    case  61u: pcSubName = "7";                              break;
+    case  60u: pcSubName = "Vista";                          break;
+    case  51u: pcSubName = "XP";                             break;
+    case  50u: pcSubName = "2000";                           break;
+    default:   pcSubName = "-";                              break;
     }
 
     // return full operating system name
