@@ -14,8 +14,8 @@
 // TODO 3: add animation support
 // TODO 5: check out (Multi)Draw(Array|Elements)Indirect
 // TODO 4: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
-// TODO 3: de-interleaved vertex data
 // TODO 5: <old comment style>
+// TODO 3: separate compression checks between ARB_vertex_type_2_10_10_10_rev and ARB_half_float_vertex
 
 
 // ****************************************************************
@@ -45,26 +45,6 @@ public:
         coreVector3 vNormal;     // normal vector
         coreVector4 vTangent;    // additional tangent vector
     };
-
-    /* compressed vertex structure */
-    #pragma pack(push, 4)
-    struct coreVertexPackedHigh final
-    {
-        coreUint64 iPosition;    // vertex position           (Float4x16)
-        coreUint32 iTexCoord;    // texture coordinate        (Unorm2x16)
-        coreUint32 iNormal;      // normal vector             (Snorm210)
-        coreUint32 iTangent;     // additional tangent vector (Snorm210)
-    };
-    struct coreVertexPackedLow final
-    {
-        coreVector3 vPosition;   // vertex position
-        coreUint32  iTexCoord;   // texture coordinate        (Unorm2x16)
-        coreUint32  iNormal;     // normal vector             (Snorm4x8)
-        coreUint32  iTangent;    // additional tangent vector (Snorm4x8)
-    };
-    STATIC_ASSERT(sizeof(coreVertexPackedHigh) == 20u)
-    STATIC_ASSERT(sizeof(coreVertexPackedLow)  == 24u)
-    #pragma pack(pop)
 
     /* import structure */
     struct coreImport final
@@ -133,10 +113,11 @@ public:
     static void Disable(const coreBool bFull);
 
     /* generate custom model resource data */
-    coreVertexBuffer*        CreateVertexBuffer(const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType);
-    coreDataBuffer*          CreateIndexBuffer (const coreUint32 iNumIndices,  const coreUint8 iIndexSize,  const void* pIndexData,  const coreDataBufferStorage eStorageType);
-    inline coreVertexBuffer* GetVertexBuffer   (const coreUintW iIndex) {return &m_aVertexBuffer[iIndex];}
-    inline coreDataBuffer*   GetIndexBuffer    ()                       {return &m_IndexBuffer;}
+    coreVertexBuffer*        CreateVertexBuffer (const coreUint32 iNumVertices, const coreUint8 iVertexSize, const void* pVertexData, const coreDataBufferStorage eStorageType);
+    coreDataBuffer*          CreateIndexBuffer  (const coreUint32 iNumIndices,  const coreUint8 iIndexSize,  const void* pIndexData,  const coreDataBufferStorage eStorageType);
+    inline coreVertexBuffer* GetVertexBuffer    (const coreUintW iIndex) {return &m_aVertexBuffer[iIndex];}
+    inline coreDataBuffer*   GetIndexBuffer     ()                       {return &m_IndexBuffer;}
+    inline coreUintW         GetNumVertexBuffers()const                  {return m_aVertexBuffer.size();}
 
     /* set object properties */
     inline void SetBoundingRange (const coreVector3 vBoundingRange)  {ASSERT( m_vBoundingRange.IsNull()) m_vBoundingRange  = vBoundingRange;}

@@ -22,10 +22,10 @@
 
 // ****************************************************************
 /* graphics definitions */
-#define CORE_GRAPHICS_LIGHTS                 (2u)                                              // number of ambient lights
-#define CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE (4u*sizeof(coreMatrix4) + 7u*sizeof(coreFloat))   // transformation uniform data size (view-projection, camera matrix, perspective, ortho, resolution, camera position)
-#define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE   (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))        // ambient uniform data size (light-positions, light-directions, light-values)
-#define CORE_GRAPHICS_UNIFORM_BUFFERS        (32u)                                             // number of concurrent uniform buffer objects
+#define CORE_GRAPHICS_LIGHTS                 (2u)                                         // number of ambient lights
+#define CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE (284u)                                       // transformation uniform data size (view-projection (64), camera matrix (64), perspective (64), ortho (64), resolution (16), camera position (12))
+#define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE   (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))   // ambient uniform data size (light-positions (N*16), light-directions (N*16), light-values (N*16))
+#define CORE_GRAPHICS_UNIFORM_BUFFERS        (32u)                                        // number of concurrent uniform buffer objects
 
 
 // ****************************************************************

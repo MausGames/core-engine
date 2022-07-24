@@ -106,9 +106,9 @@ void coreParticleSystem::Render()
                 ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
 
                 // write data to the buffer
-                std::memcpy(pCursor,                                                &vPosition, sizeof(coreVector3));
-                std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iData,     sizeof(coreUint64));
-                std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iColor,    sizeof(coreUint32));
+                std::memcpy(pCursor,       &vPosition, sizeof(coreVector3));
+                std::memcpy(pCursor + 12u, &iData,     sizeof(coreUint64));
+                std::memcpy(pCursor + 20u, &iColor,    sizeof(coreUint32));
                 pCursor += CORE_PARTICLE_INSTANCE_SIZE;
             }
 
@@ -346,13 +346,13 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
 
                 // create instance data buffers
                 it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    8u,  false, 0u, 12u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 20u);
 
                 // set vertex data
                 Core::Manager::Object->GetLowQuad()->GetVertexBuffer(0u)->Activate(0u);
-                it->ActivateDivided(1u, 1u);
+                it->Activate(1u);
             }
 
             // disable current model object (to fully enable the next model)

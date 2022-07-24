@@ -19,6 +19,8 @@
 
 // ****************************************************************
 /* data buffer definitions */
+#define CORE_VERTEXBUFFER_ATTRIBUTES (16u)   // max number of vertex attribute locations
+
 enum coreDataBufferStorage : coreUint8
 {
     CORE_DATABUFFER_STORAGE_STATIC  = 0x01u,   // fast static buffer (STATIC_DRAW)
@@ -105,17 +107,28 @@ private:
     /* vertex attribute array structure */
     struct coreAttribute final
     {
-        GLenum    iType;         // component type (e.g. GL_FLOAT)
-        coreUint8 iLocation;     // attribute location
-        coreUint8 iComponents;   // number of components
-        coreBool  bInteger;      // pure integer attribute
-        coreUint8 iOffset;       // offset within the vertex
+        GLenum    iType;           // component type (e.g. GL_FLOAT)
+        coreUint8 iLocation;       // attribute location
+        coreUint8 iComponents;     // number of components
+        coreBool  bInteger;        // pure integer attribute
+        coreUint8 iBufferOffset;   // offset within the vertex buffer (multiplied with number of vertices)
+        coreUint8 iVertexOffset;   // offset within the vertex
+    };
+
+    /* vertex stream structure */
+    struct coreStream final
+    {
+        coreUint8 iBinding;   // vertex buffer binding point index
+        coreUint8 iStride;    // stride between vertices
     };
 
 
 private:
-    coreUint8 m_iVertexSize;                // size of each vertex in bytes
-    coreList<coreAttribute> m_aAttribute;   // defined vertex attribute arrays
+    coreUint32 m_iNumVertices;                     // number of vertices
+    coreUint8  m_iVertexSize;                      // size of each vertex in bytes
+
+    coreList<coreAttribute>        m_aAttribute;   // defined vertex attribute arrays
+    coreMap<coreUint8, coreStream> m_aStream;      // accumulated vertex streams <buffer offset, data>
 
 
 public:
@@ -131,12 +144,12 @@ public:
     void Delete();
 
     /* define and activate the vertex structure */
-    void DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreBool bInteger, const coreUint8 iOffset);
-    void Activate       (const coreUint8 iBinding);
-    void ActivateDivided(const coreUint8 iBinding, const coreUint8 iDivisor);
+    void DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreUint8 iSize, const coreBool bInteger, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset);
+    void Activate       (const coreUint8 iDivisor);
 
     /* get object properties */
-    inline const coreUint8& GetVertexSize()const {return m_iVertexSize;}
+    inline const coreUint32& GetNumVertices()const {return m_iNumVertices;}
+    inline const coreUint8&  GetVertexSize ()const {return m_iVertexSize;}
 };
 
 

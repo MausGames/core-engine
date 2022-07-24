@@ -18,9 +18,9 @@
 
 // ****************************************************************
 /* 3d-object definitions */
-#define CORE_BATCHLIST_INSTANCE_SIZE      (3u*sizeof(coreFloat) + 7u*sizeof(coreUint32))   // instancing per-object size (position, size, rotation, color, texture-parameters)
-#define CORE_BATCHLIST_INSTANCE_BUFFERS   (3u)                                             // number of concurrent instance data buffer
-#define CORE_BATCHLIST_INSTANCE_THRESHOLD (4u)                                             // minimum number of objects to draw instanced
+#define CORE_BATCHLIST_INSTANCE_SIZE      (40u)   // instancing per-object size (position (12), size (8), rotation (8), color (4), texture-parameters (8))
+#define CORE_BATCHLIST_INSTANCE_BUFFERS   (3u)    // number of concurrent instance data buffer
+#define CORE_BATCHLIST_INSTANCE_THRESHOLD (4u)    // minimum number of objects to draw instanced
 
 enum coreBatchListUpdate : coreUint8
 {
@@ -224,7 +224,7 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
             m_nDefineBufferFunc(&oBuffer);
 
             // set vertex data (custom only)
-            oBuffer.ActivateDivided(2u, 1u);
+            oBuffer.Activate(1u);
         }
 
         // disable current model object (to fully enable the next model)

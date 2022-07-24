@@ -334,12 +334,12 @@ void CoreGraphics::UpdateTransformation()
         coreByte* pRange = m_TransformBuffer.Map(iNewOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 
         // update transformation data
-        std::memcpy(pRange,                                                 &mViewProj,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 1u*sizeof(coreMatrix4),                        &m_mCamera,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 2u*sizeof(coreMatrix4),                        &m_mPerspective,    sizeof(coreMatrix4));
-        std::memcpy(pRange + 3u*sizeof(coreMatrix4),                        &m_mOrtho,          sizeof(coreMatrix4));
-        std::memcpy(pRange + 4u*sizeof(coreMatrix4),                        &m_vViewResolution, sizeof(coreVector4));
-        std::memcpy(pRange + 4u*sizeof(coreMatrix4) + 4u*sizeof(coreFloat), &m_vCamPosition,    sizeof(coreVector3));
+        std::memcpy(pRange,        &mViewProj,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 64u,  &m_mCamera,         sizeof(coreMatrix4));
+        std::memcpy(pRange + 128u, &m_mPerspective,    sizeof(coreMatrix4));
+        std::memcpy(pRange + 192u, &m_mOrtho,          sizeof(coreMatrix4));
+        std::memcpy(pRange + 256u, &m_vViewResolution, sizeof(coreVector4));
+        std::memcpy(pRange + 272u, &m_vCamPosition,    sizeof(coreVector3));
         m_TransformBuffer.Unmap();
     }
     else

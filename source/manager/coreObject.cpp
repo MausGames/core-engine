@@ -457,7 +457,7 @@ void coreObjectManager::__Reset(const coreResourceReset eInit)
 
         // define vertex data
         coreVertexBuffer* pBuffer = m_pLowQuad->CreateVertexBuffer(ARRAY_SIZE(aiQuadData), sizeof(coreUint32), aiQuadData, CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_SHORT, false, 0u);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_SHORT, sizeof(coreUint32), false, 0u, 0u);
 
         // create low-memory triangle model
         m_pLowTriangle->SetBoundingRange (coreVector3(1.5f,1.5f,0.0f));
@@ -466,7 +466,7 @@ void coreObjectManager::__Reset(const coreResourceReset eInit)
 
         // define vertex data
         pBuffer = m_pLowTriangle->CreateVertexBuffer(ARRAY_SIZE(avTriangleData), sizeof(coreVector2), avTriangleData, CORE_DATABUFFER_STORAGE_STATIC);
-        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_FLOAT, false, 0u);
+        pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 2u, GL_FLOAT, sizeof(coreVector2), false, 0u, 0u);
 
         Core::Log->Info("Low-Memory models created");
 

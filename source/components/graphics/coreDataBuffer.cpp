@@ -342,15 +342,19 @@ coreStatus coreDataBuffer::Invalidate()
 /* constructor */
 coreVertexBuffer::coreVertexBuffer()noexcept
 : coreDataBuffer ()
+, m_iNumVertices (0u)
 , m_iVertexSize  (0u)
 , m_aAttribute   {}
+, m_aStream      {}
 {
 }
 
 coreVertexBuffer::coreVertexBuffer(coreVertexBuffer&& m)noexcept
 : coreDataBuffer (std::move(m))
+, m_iNumVertices (m.m_iNumVertices)
 , m_iVertexSize  (m.m_iVertexSize)
 , m_aAttribute   (std::move(m.m_aAttribute))
+, m_aStream      (std::move(m.m_aStream))
 {
 }
 
@@ -370,8 +374,10 @@ coreVertexBuffer& coreVertexBuffer::operator = (coreVertexBuffer&& m)noexcept
 {
     // swap properties
     this->coreDataBuffer::operator = (std::move(m));
-    std::swap(m_iVertexSize, m.m_iVertexSize);
-    std::swap(m_aAttribute,  m.m_aAttribute);
+    std::swap(m_iNumVertices, m.m_iNumVertices);
+    std::swap(m_iVertexSize,  m.m_iVertexSize);
+    std::swap(m_aAttribute,   m.m_aAttribute);
+    std::swap(m_aStream,      m.m_aStream);
 
     return *this;
 }
@@ -385,7 +391,8 @@ void coreVertexBuffer::Create(const coreUint32 iNumVertices, const coreUint8 iVe
     this->coreDataBuffer::Create(GL_ARRAY_BUFFER, iNumVertices * iVertexSize, pVertexData, eStorageType);
 
     // save properties
-    m_iVertexSize = iVertexSize;
+    m_iNumVertices = iNumVertices;
+    m_iVertexSize  = iVertexSize;
 }
 
 
@@ -399,16 +406,18 @@ void coreVertexBuffer::Delete()
     this->coreDataBuffer::Delete();
 
     // reset properties
-    m_iVertexSize = 0u;
+    m_iNumVertices = 0u;
+    m_iVertexSize  = 0u;
     m_aAttribute.clear();
+    m_aStream   .clear();
 }
 
 
 // ****************************************************************
 /* define vertex attribute array */
-void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreBool bInteger, const coreUint8 iOffset)
+void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreUint8 iSize, const coreBool bInteger, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset)
 {
-    ASSERT(this->GetIdentifier())
+    ASSERT(this->GetIdentifier() && (iLocation < CORE_VERTEXBUFFER_ATTRIBUTES))
 
 #if defined(_CORE_DEBUG_)
 
@@ -420,40 +429,52 @@ void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint
 
     // create new vertex attribute array definition
     coreAttribute oNewAttribute;
-    oNewAttribute.iType       = iType;
-    oNewAttribute.iLocation   = iLocation;
-    oNewAttribute.iComponents = iComponents;
-    oNewAttribute.bInteger    = bInteger;
-    oNewAttribute.iOffset     = iOffset;
+    oNewAttribute.iType         = iType;
+    oNewAttribute.iLocation     = iLocation;
+    oNewAttribute.iComponents   = iComponents;
+    oNewAttribute.bInteger      = bInteger;
+    oNewAttribute.iBufferOffset = iBufferOffset;
+    oNewAttribute.iVertexOffset = iVertexOffset;
 
     // add definition to list
     m_aAttribute.push_back(oNewAttribute);
+
+    // accumulate vertex stream
+    coreStream& oStream = m_aStream[iBufferOffset];
+    oStream.iBinding = iLocation;   // any
+    oStream.iStride += iSize;
 }
 
 
 // ****************************************************************
 /* activate the vertex structure */
-void coreVertexBuffer::Activate(const coreUint8 iBinding)
+void coreVertexBuffer::Activate(const coreUint8 iDivisor)
 {
     ASSERT(this->GetIdentifier() && !m_aAttribute.empty())
 
     if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding))
     {
-        // bind the vertex buffer
-        glBindVertexBuffer(iBinding, this->GetIdentifier(), 0, m_iVertexSize);
+        FOR_EACH(it, m_aStream)
+        {
+            // bind the vertex buffer
+            glBindVertexBuffer(it->iBinding, this->GetIdentifier(), (*m_aStream.get_key(it)) * m_iNumVertices, it->iStride);
+        }
 
         FOR_EACH(it, m_aAttribute)
         {
             // enable each defined vertex attribute array
             glEnableVertexAttribArray(it->iLocation);
-            glVertexAttribBinding(it->iLocation, iBinding);
+            glVertexAttribBinding(it->iLocation, m_aStream.at(it->iBufferOffset).iBinding);
 
             // specify the vertex format
-            if(it->bInteger) glVertexAttribIFormat(it->iLocation, it->iComponents, it->iType, it->iOffset);
+            if(it->bInteger)
+            {
+                glVertexAttribIFormat(it->iLocation, it->iComponents, it->iType, it->iVertexOffset);
+            }
             else
             {
                 const coreBool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
-                glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, bNormalized, it->iOffset);
+                glVertexAttribFormat(it->iLocation, it->iComponents, it->iType, bNormalized, it->iVertexOffset);
             }
         }
     }
@@ -468,27 +489,24 @@ void coreVertexBuffer::Activate(const coreUint8 iBinding)
             glEnableVertexAttribArray(it->iLocation);
 
             // specify the vertex format
-            if(it->bInteger && CORE_GL_SUPPORT(EXT_gpu_shader4)) glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType, m_iVertexSize, I_TO_P(it->iOffset));
+            if(it->bInteger && CORE_GL_SUPPORT(EXT_gpu_shader4))
+            {
+                glVertexAttribIPointer(it->iLocation, it->iComponents, it->iType, m_aStream.at(it->iBufferOffset).iStride, I_TO_P(it->iBufferOffset * m_iNumVertices + it->iVertexOffset));
+            }
             else
             {
                 const coreBool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
-                glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bNormalized, m_iVertexSize, I_TO_P(it->iOffset));
+                glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bNormalized, m_aStream.at(it->iBufferOffset).iStride, I_TO_P(it->iBufferOffset * m_iNumVertices + it->iVertexOffset));
             }
         }
     }
-}
 
-void coreVertexBuffer::ActivateDivided(const coreUint8 iBinding, const coreUint8 iDivisor)
-{
-    // activate the vertex structure
-    this->Activate(iBinding);
-
-    if(CORE_GL_SUPPORT(ARB_instanced_arrays))
+    if(iDivisor && CORE_GL_SUPPORT(ARB_instanced_arrays))
     {
         if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding))
         {
             // enable array division per binding
-            glVertexBindingDivisor(iBinding, iDivisor);
+            FOR_EACH(it, m_aStream) glVertexBindingDivisor(it->iBinding, iDivisor);
         }
         else
         {

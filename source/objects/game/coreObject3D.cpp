@@ -480,14 +480,14 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
 
                 // create instance data buffer
                 it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         false, 0u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         false, 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, false, 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32));
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    false, 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32));
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    8u,  false, 0u, 12u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         8u,  false, 0u, 20u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 28u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    8u,  false, 0u, 32u);
 
                 // set vertex data (instancing only)
-                it->ActivateDivided(1u, 1u);
+                it->Activate(1u);
 
                 if(this->IsCustom())
                 {
@@ -499,7 +499,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                     m_nDefineBufferFunc(&oBuffer);
 
                     // set vertex data (custom only)
-                    oBuffer.ActivateDivided(2u, 1u);
+                    oBuffer.Activate(1u);
                 }
             }
 
@@ -592,11 +592,11 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                     ASSERT((pObject->GetTexOffset().Min() >= -15.0f) && (pObject->GetTexOffset().Max() <= 15.0f))
 
                     // write data to the buffer
-                    std::memcpy(pCursor,                                                &pObject->GetPosition(), sizeof(coreVector3));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat),                         &iSize,                  sizeof(coreUint64));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 2u*sizeof(coreUint32), &iRotation,              sizeof(coreUint64));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 4u*sizeof(coreUint32), &iColor,                 sizeof(coreUint32));
-                    std::memcpy(pCursor + 3u*sizeof(coreFloat) + 5u*sizeof(coreUint32), &iTexParams,             sizeof(coreUint64));
+                    std::memcpy(pCursor,       &pObject->GetPosition(), sizeof(coreVector3));
+                    std::memcpy(pCursor + 12u, &iSize,                  sizeof(coreUint64));
+                    std::memcpy(pCursor + 20u, &iRotation,              sizeof(coreUint64));
+                    std::memcpy(pCursor + 28u, &iColor,                 sizeof(coreUint32));
+                    std::memcpy(pCursor + 32u, &iTexParams,             sizeof(coreUint64));
                     pCursor += CORE_BATCHLIST_INSTANCE_SIZE;
                 }
             }
@@ -621,7 +621,8 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_BATCHLIST_INSTANCE_BUFFERS)
 
             // set vertex data (model only)
-            pModel->GetVertexBuffer(0u)->Activate(0u);
+            for(coreUintW i = 0u, ie = pModel->GetNumVertexBuffers(); i < ie; ++i)
+                pModel->GetVertexBuffer(i)->Activate(0u);
 
             // set index data
             if(pModel->GetIndexBuffer()->IsValid())
