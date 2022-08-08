@@ -11,6 +11,17 @@
 #define _CORE_GUARD_HASHSTRING_H_
 
 // TODO 3: add debug-logging to catch global hash-collisions (currently only in map-container)
+// TODO 3: implement and test constexpr support for faster (string) hash functions (reinterpret_cast is problematic)
+// TODO 3: get constexpr evaluation in implicit contructors working on MSVC (and GCC) (>90% of all hash-strings benefit from compile-time hashing)
+
+
+// ****************************************************************
+/* hash-string definitions */
+#if defined(_CORE_CLANG_)
+    #define CORE_HASHSTRING_FUNC coreHashFNV32   // slow runtime, constexpr support
+#else
+    #define CORE_HASHSTRING_FUNC coreHashXXH32   // fast runtime
+#endif
 
 
 // ****************************************************************
@@ -18,7 +29,7 @@
 class coreHashString final
 {
 private:
-    coreUint32      m_iHash;      // calculated FNV-1a hash-value
+    coreUint32      m_iHash;      // calculated hash-value
     const coreChar* m_pcString;   // original string
 
 
@@ -39,7 +50,7 @@ public:
 // ****************************************************************
 /* constructor */
 constexpr coreHashString::coreHashString(const coreChar* pcString)noexcept
-: m_iHash    (pcString ? coreHashFNV32(pcString) : 0u)
+: m_iHash    (pcString ? CORE_HASHSTRING_FUNC(pcString) : 0u)
 , m_pcString (pcString)
 {
 }

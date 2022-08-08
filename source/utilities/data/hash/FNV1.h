@@ -35,11 +35,11 @@ constexpr FUNC_LOCAL coreUint32 coreHashFNV32(const coreChar* pcString)
 
     coreUint32 iHash = 2166136261u;
 
-    while(*pcString)
+    do
     {
         iHash = ((*pcString) ^ iHash) * 16777619u;
-        ++pcString;
     }
+    while(*(pcString++));
 
     return iHash;
 }
@@ -69,11 +69,11 @@ constexpr FUNC_LOCAL coreUint64 coreHashFNV64(const coreChar* pcString)
 
     coreUint64 iHash = 14695981039346656037u;
 
-    while(*pcString)
+    do
     {
         iHash = ((*pcString) ^ iHash) * 1099511628211u;
-        ++pcString;
     }
+    while(*(pcString++));
 
     return iHash;
 }

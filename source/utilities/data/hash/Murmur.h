@@ -65,6 +65,11 @@ constexpr FUNC_LOCAL coreUint32 coreHashMurmur32(const coreByte* pData, const co
     return h1;
 }
 
+inline FUNC_LOCAL coreUint32 coreHashMurmur32(const coreChar* pcString, const coreUint32 iSeed = 0u)
+{
+    return coreHashMurmur32(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
+}
+
 
 // ****************************************************************
 /* Murmur2B hash function (x64, 64-bit) */
@@ -109,6 +114,11 @@ constexpr FUNC_LOCAL coreUint64 coreHashMurmur64(const coreByte* pData, coreUint
     h ^= h >> r;
 
     return h;
+}
+
+inline FUNC_LOCAL coreUint64 coreHashMurmur64(const coreChar* pcString, const coreUint64 iSeed = 0u)
+{
+    return coreHashMurmur64(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }
 
 
@@ -208,6 +218,11 @@ constexpr FUNC_LOCAL coreUint128 coreHashMurmur128(const coreByte* pData, const 
     h2 += h1;
 
     return {h1, h2};
+}
+
+inline FUNC_LOCAL coreUint128 coreHashMurmur128(const coreChar* pcString, const coreUint32 iSeed = 0u)
+{
+    return coreHashMurmur128(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }
 
 

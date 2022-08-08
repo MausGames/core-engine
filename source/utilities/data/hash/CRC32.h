@@ -106,11 +106,11 @@ constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
 
     coreUint32 iHash = 0xFFFFFFFFu;
 
-    while(*pcString)
+    do
     {
         iHash = g_aiTableCRC32[(*pcString) ^ ((iHash >> 24u) & 0xFFu)] ^ (iHash << 8u);
-        ++pcString;
     }
+    while(*(pcString++));
 
     return iHash ^ 0xFFFFFFFFu;
 }

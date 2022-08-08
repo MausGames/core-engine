@@ -14,18 +14,23 @@
 // ****************************************************************
 /* XXH32 hash function (32-bit) */
 FUNC_LOCAL coreUint32 coreHashXXH32(const coreByte* pData, const coreUintW iLength, const coreUint32 iSeed = 0u);
+FUNC_LOCAL coreUint32 coreHashXXH32(const coreChar* pcString, const coreUint32 iSeed = 0u);
 
 
 // ****************************************************************
 /* XXH3_64 hash function (64-bit) */
 FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength);
 FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
+FUNC_LOCAL coreUint64 coreHashXXH64(const coreChar* pcString);
+FUNC_LOCAL coreUint64 coreHashXXH64(const coreChar* pcString, const coreUint64 iSeed);
 
 
 // ****************************************************************
 /* XXH3_128 hash function (128-bit) */
 FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength);
 FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
+FUNC_LOCAL coreUint128 coreHashXXH128(const coreChar* pcString);
+FUNC_LOCAL coreUint128 coreHashXXH128(const coreChar* pcString, const coreUint64 iSeed);
 
 
 // ****************************************************************
