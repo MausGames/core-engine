@@ -34,7 +34,7 @@ CoreAudio::CoreAudio()noexcept
     if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
     {
         coreData::SetEnvironment("ALSOFT_LOGLEVEL", "3");
-        coreData::SetEnvironment("ALSOFT_LOGFILE",  coreData::UserFolder("log_openal.txt"));
+        coreData::SetEnvironment("ALSOFT_LOGFILE",  coreData::UserFolderShared("log_openal.txt"));
     }
 
     // set OpenAL context attributes

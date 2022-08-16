@@ -28,16 +28,18 @@ STATIC_MEMORY(CoreApp,             Core::Application)
 /* constructor */
 Core::Core()noexcept
 {
-    // init utilities
-    STATIC_NEW(Log,    coreData::UserFolder("log.html"))
-    Log->Header("Configuration");
-    STATIC_NEW(Config, coreData::UserFolder("config.ini"))
-    STATIC_NEW(Language)
-    STATIC_NEW(Rand)
-    coreData::LogCommandLine();
+    // init log file
+    STATIC_NEW(Log, coreData::UserFolderShared("log.html"))
 
     // init platform component
     STATIC_NEW(Platform)
+
+    // init utilities
+    Log->Header("Configuration");
+    STATIC_NEW(Config, coreData::UserFolderPrivate("config.ini"))
+    STATIC_NEW(Language)
+    STATIC_NEW(Rand)
+    coreData::LogCommandLine();
 
     // init main components
     STATIC_NEW(System)

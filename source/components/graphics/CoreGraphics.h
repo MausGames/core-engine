@@ -119,7 +119,7 @@ public:
 
     /* take screenshot */
     void        TakeScreenshot(const coreChar* pcPath)const;
-    inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolder(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
+    inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolderPrivate(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
 
     /* get component properties */
     inline const SDL_GLContext&  GetRenderContext  ()const                       {return m_pRenderContext;}

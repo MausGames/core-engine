@@ -640,9 +640,10 @@ public:
     /* project settings */
     struct Settings final
     {
-        static const coreChar* const Name;         // project name
-        static const coreChar* const IconPath;     // window icon file path
-        static const coreChar* const CursorPath;   // mouse cursor file path
+        static const coreChar* const Name;             // project name
+        static const coreChar* const IconPath;         // window icon file path
+        static const coreChar* const CursorPath;       // mouse cursor file path
+        static const coreBool        UserManagement;   // enable user-management (OS and platform)
 
         struct Graphics final
         {

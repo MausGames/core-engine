@@ -36,7 +36,7 @@
 #endif
 
 #define __DEFINE_FUNCTION(x) static decltype(x)* n ## x = NULL;
-#define __LOAD_FUNCTION(x)   n ## x = r_cast<decltype(x)*>(coreData::GetAddress(s_pSteamLibrary, #x)); if(!n ## x) return false;
+#define __LOAD_FUNCTION(x)   n ## x = r_cast<decltype(x)*>(coreData::GetAddress(s_pSteamLibrary, #x)); WARN_IF(!n ## x) return false;
 #define __CALLBACK(x)        case x ## _t::k_iCallback: if(oMessage.m_pubParam) {ASSERT(oMessage.m_cubParam == sizeof(x ## _t)) this->__On ## x(r_cast<const x ## _t*>(oMessage.m_pubParam));} break;
 
 
@@ -135,6 +135,7 @@ public:
     coreBool UnlockAchievement(const coreAchievement& oData)final;
 
     /* process general features */
+    coreUint32      GetUserID  ()const final;
     const coreChar* GetUserName()const final;
     const coreChar* GetLanguage()const final;
 
@@ -236,7 +237,7 @@ inline coreBool coreBackendSteam::Init()
     m_iStatsRequest = 1u;
     m_iStatsStore   = 0u;
 
-    Core::Log->Info("Steam initialized (app %u, user %llu)", m_pUtils->GetAppID(), m_pUser->GetSteamID().ConvertToUint64());
+    Core::Log->Info("Steam initialized (app %u, user %u)", m_pUtils->GetAppID(), this->GetUserID());
     return true;
 }
 
@@ -305,6 +306,20 @@ inline coreBool coreBackendSteam::UnlockAchievement(const coreAchievement& oData
     }
 
     return false;
+}
+
+
+// ****************************************************************
+/* get user identifier */
+inline coreUint32 coreBackendSteam::GetUserID()const
+{
+    if(m_pClient)
+    {
+        // retrieve Steam player identifier
+        return m_pUser->GetSteamID().GetAccountID();
+    }
+
+    return this->coreBackend::GetUserID();
 }
 
 

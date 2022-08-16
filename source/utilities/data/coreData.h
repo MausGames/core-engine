@@ -85,14 +85,15 @@ public:
     static inline const coreChar*  ProcessDir   () {return coreData::StrDirectory(coreData::ProcessPath());}
 
     /* get operating system properties */
-    static       coreBool  SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static       coreBool  SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static const coreChar* SystemOsName    ();
-    static const coreChar* SystemUserName  ();
-    static const coreChar* SystemCpuVendor ();
-    static const coreChar* SystemCpuBrand  ();
-    static const coreChar* SystemDirAppData();
-    static const coreChar* SystemDirTemp   ();
+    static       coreBool   SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static       coreBool   SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static const coreChar*  SystemOsName    ();
+    static       coreUint32 SystemUserID    ();
+    static const coreChar*  SystemUserName  ();
+    static const coreChar*  SystemCpuVendor ();
+    static const coreChar*  SystemCpuBrand  ();
+    static const coreChar*  SystemDirAppData();
+    static const coreChar*  SystemDirTemp   ();
 
     /* get build properties */
     static const coreChar* BuildCompiler();
@@ -112,8 +113,9 @@ public:
     static const coreChar* GetEnvironment(const coreChar* pcName);
 
     /* control default folders */
-    static        void            InitDefaultFolders();
-    static inline const coreChar* UserFolder(const coreChar* pcPath) {ASSERT(pcPath) return PRINT("%s%s", s_sUserFolder.c_str(), pcPath);}
+    static void            InitDefaultFolders();
+    static const coreChar* UserFolderShared (const coreChar* pcPath);
+    static const coreChar* UserFolderPrivate(const coreChar* pcPath);
 
     /* handle dynamic libraries */
     static void*      OpenLibrary (const coreChar* pcName);

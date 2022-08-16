@@ -376,6 +376,28 @@ const coreChar* coreData::SystemOsName()
 
 
 // ****************************************************************
+/* get user identifier */
+coreUint32 coreData::SystemUserID()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // get user name hash (as substitute)
+    return coreHashXXH32(coreData::SystemUserName());
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+
+    // get effective user identifier of calling process
+    return geteuid();
+
+#else
+
+    return 0u;
+
+#endif
+}
+
+
+// ****************************************************************
 /* get user name */
 const coreChar* coreData::SystemUserName()
 {
@@ -499,6 +521,11 @@ const coreChar* coreData::SystemDirAppData()
     const passwd* pRecord = getpwuid(geteuid());
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Application Support", pRecord->pw_dir))))
         return pcPath;
+
+#elif defined(_CORE_ANDROID_)
+
+    // get internal storage path for this application
+    return SDL_AndroidGetInternalStoragePath();
 
 #endif
 
@@ -771,20 +798,16 @@ void coreData::InitDefaultFolders()
     // use specific user folder
     if(pcPath && pcPath[0])
     {
-             if(!std::strcmp(pcPath, "!appdata")) pcPath = coreData::SystemDirAppData();
-        else if(!std::strcmp(pcPath, "!temp"))    pcPath = coreData::SystemDirTemp();
-        else                                      pcPath = PRINT("%s/", pcPath);
+        pcPath = std::strcmp(pcPath, "!appdata") ? PRINT("%s/", pcPath) : coreData::SystemDirAppData();
     }
 
     // use default user folder (and create folder hierarchy)
     if(!pcPath || !pcPath[0] || (coreData::FolderCreate(pcPath) != CORE_OK) || !coreData::FolderWritable(pcPath))
     {
-        #if defined(_CORE_MACOS_)
+        #if defined(_CORE_MACOS_) || defined(_CORE_ANDROID_)
             pcPath = coreData::SystemDirAppData();
-        #elif defined(_CORE_ANDROID_)
-            pcPath = SDL_AndroidGetInternalStoragePath();
         #else
-            pcPath = "user/";
+            pcPath = CoreApp::Settings::UserManagement ? coreData::SystemDirAppData() : "user/";
         #endif
 
         coreData::FolderCreate(pcPath);
@@ -793,11 +816,34 @@ void coreData::InitDefaultFolders()
     // save selected user folder
     s_sUserFolder  = pcPath;
     g_pcUserFolder = s_sUserFolder.c_str();
+}
 
-    // copy configuration file
-    const coreChar* pcSource = "user/config.ini";
-    const coreChar* pcTarget = coreData::UserFolder("config.ini");
-    if(!coreData::FileExists(pcTarget)) coreData::FileCopy(pcSource, pcTarget);
+
+// ****************************************************************
+/* create path into selected user folder */
+const coreChar* coreData::UserFolderShared(const coreChar* pcPath)
+{
+    ASSERT(pcPath)
+
+    // forward to user-shared location
+    return PRINT("%s%s", s_sUserFolder.c_str(), pcPath);
+}
+
+const coreChar* coreData::UserFolderPrivate(const coreChar* pcPath)
+{
+    ASSERT(pcPath)
+
+    if(CoreApp::Settings::UserManagement)
+    {
+        // forward to user-private location
+        const coreUint32 iUserID = Core::Platform->GetUserID();
+        return PRINT("%s%s%s", s_sUserFolder.c_str(), iUserID ? PRINT("user_%u/", iUserID) : "default/", pcPath);
+    }
+    else
+    {
+        // forward to user-shared location
+        return coreData::UserFolderShared(pcPath);
+    }
 }
 
 
