@@ -169,9 +169,10 @@ public:
     ENABLE_COPY(coreMapStrFull)
 
     /* access specific entry */
-    inline T& operator [] (const coreUintW       iIndex) {return this->m_atValueList[iIndex];}
-    inline T& operator [] (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreMapStrBase<T>::operator [] (sKey);}
-    inline T&          bs (const coreHashString& sKey)   {this->__save_string(sKey); return this->coreMapStrBase<T>::         bs (sKey);}
+    inline       T& operator [] (const coreUintW       iIndex)      {return this->m_atValueList[iIndex];}
+    inline const T& operator [] (const coreUintW       iIndex)const {return this->m_atValueList[iIndex];}
+    inline       T& operator [] (const coreHashString& sKey)        {this->__save_string(sKey); return this->coreMapStrBase<T>::operator [] (sKey);}
+    inline       T&          bs (const coreHashString& sKey)        {this->__save_string(sKey); return this->coreMapStrBase<T>::         bs (sKey);}
 
     /* create new entry */
     template <typename... A> inline void emplace   (const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (sKey, std::forward<A>(vArgs)...);}
@@ -205,7 +206,8 @@ public:
 
     /* access specific entry */
     using coreMapStrBase<T>::operator [];
-    inline T& operator [] (const coreUintW iIndex) {return this->m_atValueList[iIndex];}
+    inline       T& operator [] (const coreUintW iIndex)      {return this->m_atValueList[iIndex];}
+    inline const T& operator [] (const coreUintW iIndex)const {return this->m_atValueList[iIndex];}
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;

@@ -303,27 +303,6 @@ coreStatus coreModel::Load(coreFile* pFile)
             SAFE_DELETE_ARRAY(pPackedData)
         }
 
-#if defined(_CORE_GLES_)
-
-        if(m_iNumVertices <= 256u)
-        {
-            // reduce default index size
-            coreUint8* piSmallData = new coreUint8[m_iNumIndices];
-            for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
-            {
-                // convert all indices
-                ASSERT(piOptimizedData[i] < 256u)
-                piSmallData[i] = coreUint8(piOptimizedData[i]);
-            }
-
-            // create small index buffer
-            this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint8), piSmallData, CORE_DATABUFFER_STORAGE_STATIC);
-            SAFE_DELETE_ARRAY(piSmallData)
-        }
-        else
-
-#endif
-
         // create index buffer
         this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), piOptimizedData, CORE_DATABUFFER_STORAGE_STATIC);
     }
@@ -406,14 +385,14 @@ void coreModel::DrawElements()const
 void coreModel::DrawArraysInstanced(const coreUint32 iCount)const
 {
     // draw the model instanced (without index buffer)
-    ASSERT((s_pCurrent == this) || !s_pCurrent)
+    ASSERT(((s_pCurrent == this) || !s_pCurrent) && iCount)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
 }
 
 void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
 {
     // draw the model instanced (with index buffer)
-    ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer.IsValid())
+    ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer.IsValid() && iCount)
     glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, NULL, iCount);
 }
 

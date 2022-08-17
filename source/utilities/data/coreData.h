@@ -43,6 +43,8 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
 #define TO_UPPER(c)      (coreChar(std::toupper(coreUint8(c))))
 #define TO_LOWER(c)      (coreChar(std::tolower(coreUint8(c))))
 
+STATIC_ASSERT(sizeof(std::time_t) == 8u)
+
 
 // ****************************************************************
 /* data utility collection */

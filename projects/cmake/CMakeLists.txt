@@ -91,7 +91,7 @@ if(EMSCRIPTEN)
     target_compile_options(
         CoreEngine PUBLIC
         -pipe -Wall -Wextra -pedantic
-        $<IF:$<CONFIG:Debug>, -O0 -g3, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:Debug>, -O0 -g3 -gsplit-dwarf, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
 
 
@@ -123,7 +123,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
-        $<IF:$<CONFIG:Debug>, -O0 -g3 -glldb, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:Debug>, -O0 -g3 -gsplit-dwarf -glldb, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
 
 

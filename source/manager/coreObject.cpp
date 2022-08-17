@@ -134,11 +134,11 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     const coreVector3 vRelPosition = bSwap ? D2                : D1;
     const coreVector4 vRelRotation = bSwap ? Q.QuatConjugate() : Q;
 
-    // get volumes and object sizes (precise collision detection does not use size-modifiers)
+    // get volumes and object sizes
     const coreModel*  pVolume1  = pObject1->GetVolume().IsUsable() ? pObject1->GetVolume().GetResource() : NULL;
     const coreModel*  pVolume2  = pObject2->GetVolume().GetResource();
-    const coreVector3 vSize1    = pObject1->GetSize();
-    const coreVector3 vSize2    = pObject2->GetSize();
+    const coreVector3 vSize1    = pObject1->GetSize() * pObject1->GetCollisionModifier();
+    const coreVector3 vSize2    = pObject2->GetSize() * pObject2->GetCollisionModifier();
     const coreFloat   vSizeMax1 = vSize1.Max();
     const coreFloat   vSizeMax2 = vSize2.Max();
 
@@ -333,9 +333,9 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
     const coreVector3 vRelRayPos   = vRevRotation.QuatApply(-vDiff);
     const coreVector3 vRelRayDir   = vRevRotation.QuatApply(vRayDir);
 
-    // get volume and object size (precise collision detection does not use size-modifiers)
+    // get volume and object size
     const coreModel*  pVolume  = pObject->GetVolume().GetResource();
-    const coreVector3 vSize    = pObject->GetSize();
+    const coreVector3 vSize    = pObject->GetSize() * pObject->GetCollisionModifier();
     const coreFloat   vSizeMax = vSize.Max();
 
     // calculate collision with precise volume (MoellerTrumbore97)
