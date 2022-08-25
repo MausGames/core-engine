@@ -219,7 +219,7 @@ ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume, cons
         {
             // set current volume
             const coreFloat fBase = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[1] : (m_afSoundVolume[1] * m_afTypeVolume[iType]);
-            alSourcef(iSource, AL_GAIN, fVolume * fBase);
+            alSourcef(iSource, AL_GAIN, fVolume * fBase / CORE_AUDIO_MAX_GAIN);
 
             // save audio source data
             m_aSourceData[i].iBuffer = iBuffer;
@@ -278,7 +278,7 @@ void CoreAudio::UpdateSource(const ALuint iSource, const coreFloat fVolume)
             {
                 // update current volume
                 const coreFloat fBase = (m_aSourceData[i].iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[1] : (m_afSoundVolume[1] * m_afTypeVolume[m_aSourceData[i].iType]);
-                alSourcef(iSource, AL_GAIN, fVolume * fBase);
+                alSourcef(iSource, AL_GAIN, fVolume * fBase / CORE_AUDIO_MAX_GAIN);
 
                 // save new audio source data
                 m_aSourceData[i].fVolume = fVolume;
@@ -358,7 +358,7 @@ void CoreAudio::__UpdateSources()
     // update listener volume
     if(nUpdateVolumeFunc(m_afGlobalVolume, CORE_CONFIG_AUDIO_GLOBALVOLUME))
     {
-        alListenerf(AL_GAIN, m_afGlobalVolume[0]);
+        alListenerf(AL_GAIN, m_afGlobalVolume[0] * CORE_AUDIO_MAX_GAIN);
     }
 
     // update music volume
@@ -367,7 +367,7 @@ void CoreAudio::__UpdateSources()
         this->DeferUpdates();
         {
             for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES_MUSIC; ++i)
-                alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afMusicVolume[0]);
+                alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afMusicVolume[0] / CORE_AUDIO_MAX_GAIN);
         }
         this->ProcessUpdates();
     }
@@ -378,7 +378,7 @@ void CoreAudio::__UpdateSources()
         this->DeferUpdates();
         {
             for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
-                alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afSoundVolume[0] * m_afTypeVolume[m_aSourceData[i].iType]);
+                alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afSoundVolume[0] * m_afTypeVolume[m_aSourceData[i].iType] / CORE_AUDIO_MAX_GAIN);
         }
         this->ProcessUpdates();
     }
