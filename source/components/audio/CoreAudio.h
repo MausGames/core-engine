@@ -82,9 +82,9 @@ public:
     inline void SetTypeVolume  (const coreFloat fVolume, const coreUint8 iType) {ASSERT(fVolume >= 0.0f && iType < CORE_AUDIO_TYPES) if(m_afTypeVolume[iType] != fVolume) {m_afTypeVolume[iType] = fVolume; m_afSoundVolume[0] = -1.0f;}}
 
     /* control sound playback */
-    void PauseSound ();
-    void ResumeSound();
-    void CancelSound();
+    void PauseSound (const coreUint8 iType = CORE_AUDIO_TYPES);
+    void ResumeSound(const coreUint8 iType = CORE_AUDIO_TYPES);
+    void CancelSound(const coreUint8 iType = CORE_AUDIO_TYPES);
 
     /* handle audio sources */
     ALuint   NextSource  (const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType);

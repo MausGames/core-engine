@@ -198,6 +198,67 @@ void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
 
 
 // ****************************************************************
+/* control sound playback */
+void CoreAudio::PauseSound(const coreUint8 iType)
+{
+    ALuint    aiSource[CORE_AUDIO_SOURCES_SOUND];
+    coreUintW iNum = 0u;
+
+    for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
+    {
+        if((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType))
+        {
+            // collect audio sources
+            aiSource[iNum++] = m_aiSource[i];
+        }
+    }
+
+    // pause audio sources
+    if(iNum) alSourcePausev(iNum, aiSource);
+}
+
+void CoreAudio::ResumeSound(const coreUint8 iType)
+{
+    ALuint    aiSource[CORE_AUDIO_SOURCES_SOUND];
+    coreUintW iNum = 0u;
+
+    for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
+    {
+        if((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType))
+        {
+            // check status
+            ALint iStatus;
+            alGetSourcei(m_aiSource[i], AL_SOURCE_STATE, &iStatus);
+
+            // collect paused audio sources
+            if(iStatus == AL_PAUSED) aiSource[iNum++] = m_aiSource[i];
+        }
+    }
+
+    // resume paused audio sources
+    if(iNum) alSourcePlayv(iNum, aiSource);
+}
+
+void CoreAudio::CancelSound(const coreUint8 iType)
+{
+    ALuint    aiSource[CORE_AUDIO_SOURCES_SOUND];
+    coreUintW iNum = 0u;
+
+    for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
+    {
+        if((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType))
+        {
+            // collect audio sources
+            aiSource[iNum++] = m_aiSource[i];
+        }
+    }
+
+    // stop audio sources
+    if(iNum) alSourceStopv(iNum, aiSource);
+}
+
+
+// ****************************************************************
 /* retrieve next free audio source */
 ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType)
 {
@@ -302,40 +363,6 @@ coreBool CoreAudio::CheckSource(const ALuint iBuffer, const ALuint iSource)const
         }
     }
     return false;
-}
-
-
-// ****************************************************************
-/* control sound playback */
-void CoreAudio::PauseSound()
-{
-    // pause all audio sources
-    alSourcePausev(CORE_AUDIO_SOURCES_SOUND, m_aiSource + CORE_AUDIO_SOURCES_MUSIC);
-}
-
-void CoreAudio::ResumeSound()
-{
-    ALuint    aiPaused[CORE_AUDIO_SOURCES_SOUND];
-    coreUintW iNum = 0u;
-
-    for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
-    {
-        // check status
-        ALint iStatus;
-        alGetSourcei(m_aiSource[i], AL_SOURCE_STATE, &iStatus);
-
-        // collect paused audio sources
-        if(iStatus == AL_PAUSED) aiPaused[iNum++] = m_aiSource[i];
-    }
-
-    // resume paused audio sources
-    if(iNum) alSourcePlayv(iNum, aiPaused);
-}
-
-void CoreAudio::CancelSound()
-{
-    // stop all audio sources
-    alSourceStopv(CORE_AUDIO_SOURCES_SOUND, m_aiSource + CORE_AUDIO_SOURCES_MUSIC);
 }
 
 
