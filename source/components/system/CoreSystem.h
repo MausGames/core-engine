@@ -10,21 +10,27 @@
 #ifndef _CORE_GUARD_SYSTEM_H_
 #define _CORE_GUARD_SYSTEM_H_
 
-// TODO 4: fullscreen enumeration
 // TODO 3: some drivers may "merge" displays
 // TODO 3: handle display hot-plugging (SDL_DISPLAYEVENT_CONNECTED, SDL_DISPLAYEVENT_DISCONNECTED)
 // TODO 3: improve delta-time precision, double, similar to coreThread
-// TODO 3: toggling out of m_iFullscreen == 2u might cause issues with some options (e.g. disabled composition)
+// TODO 3: there should be no borderless window mode, only borderless fullscreen mode with adjusted resolution
 // TODO 5: <old comment style>
 
 
 // ****************************************************************
 /* system definitions */
 #define CORE_SYSTEM_TIMES          (4u)     // number of dynamic frame times
-#define CORE_SYSTEM_WINDOW_BORDER  (20u)    // border width used for restricting window size
+#define CORE_SYSTEM_WINDOW_BORDER  (36u)    // border width used for restricting window size
 #define CORE_SYSTEM_WINDOW_MINIMUM (128u)   // minimum size of the main window
 
 #define TIME (Core::System->GetTime())
+
+enum coreSystemMode : coreUint8
+{
+    CORE_SYSTEM_MODE_WINDOWED   = 0u,   // window mode (with resizable border)
+    CORE_SYSTEM_MODE_BORDERLESS = 1u,   // borderless fullscreen mode
+    CORE_SYSTEM_MODE_FULLSCREEN = 2u    // exclusive fullscreen mode (with grabbed mouse)
+};
 
 
 // ****************************************************************
@@ -48,8 +54,8 @@ private:
     coreList<coreDisplay> m_aDisplayData;          // all available displays
     coreUint8             m_iDisplayIndex;         // current display index
 
-    coreVector2 m_vResolution;                     // width and height of the window
-    coreUint8   m_iFullscreen;                     // fullscreen status (0 = window | 1 = borderless | 2 = fullscreen)
+    coreVector2    m_vResolution;                  // width and height of the window
+    coreSystemMode m_eMode;                        // fullscreen mode
 
     coreDouble m_dTotalTime;                       // total time since start of the application
     coreDouble m_dTotalTimeBefore;                 // total time of the previous frame
@@ -63,9 +69,9 @@ private:
     coreDouble m_dPerfFrequency;                   // high-precision time coefficient
     coreUint64 m_iPerfTime;                        // high-precision time value
 
-    coreBool m_bWinFocusLost;                      // window/application lost focus
-    coreBool m_bWinPosChanged;                     // window position changed
-    coreBool m_bWinSizeChanged;                    // window size changed
+    coreBool m_bWinFocusLost;                      // window/application lost focus (through event)
+    coreBool m_bWinPosChanged;                     // window position changed (through event)
+    coreBool m_bWinSizeChanged;                    // window size changed (through event)
     coreBool m_bTerminated;                        // application will be terminated
 
 
@@ -82,6 +88,7 @@ public:
     void SetWindowTitle     (const coreChar*   pcTitle);
     void SetWindowIcon      (const coreChar*   pcPath);
     void SetWindowResolution(const coreVector2 vResolution);
+    void SetWindowAll       (const coreUint8   iDisplayIndex, const coreVector2 vResolution, const coreSystemMode eMode);
 
     /* control time */
     inline void SetTimeSpeed(const coreUintW iID, const coreFloat fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
@@ -91,25 +98,25 @@ public:
     inline void Quit() {m_bTerminated = true;}
 
     /* get component properties */
-    inline       SDL_Window*  GetWindow         ()const                    {return m_pWindow;}
-    inline const coreDisplay& GetDisplayData    ()const                    {return m_aDisplayData[m_iDisplayIndex];}
-    inline const coreDisplay& GetDisplayData    (const coreUintW iID)const {ASSERT(iID < m_aDisplayData.size()) return m_aDisplayData[iID];}
-    inline       coreUintW    GetDisplayCount   ()const                    {return m_aDisplayData.size();}
-    inline const coreUint8&   GetDisplayIndex   ()const                    {return m_iDisplayIndex;}
-    inline const coreVector2& GetResolution     ()const                    {return m_vResolution;}
-    inline const coreUint8&   GetFullscreen     ()const                    {return m_iFullscreen;}
-    inline const coreDouble&  GetTotalTime      ()const                    {return m_dTotalTime;}
-    inline const coreDouble&  GetTotalTimeBefore()const                    {return m_dTotalTimeBefore;}
-    inline const coreFloat&   GetTime           ()const                    {return m_fLastTime;}
-    inline const coreFloat&   GetTime           (const coreInt8  iID)const {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const coreFloat&   GetTimeSpeed      (const coreUintW iID)const {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
-    inline const coreUint32&  GetCurFrame       ()const                    {return m_iCurFrame;}
-    inline const coreDouble&  GetPerfFrequency  ()const                    {return m_dPerfFrequency;}
-    inline const coreUint64&  GetPerfTime       ()const                    {return m_iPerfTime;}
-    inline const coreBool&    GetWinFocusLost   ()const                    {return m_bWinFocusLost;}
-    inline const coreBool&    GetWinPosChanged  ()const                    {return m_bWinPosChanged;}
-    inline const coreBool&    GetWinSizeChanged ()const                    {return m_bWinSizeChanged;}
-    inline const coreBool&    GetTerminated     ()const                    {return m_bTerminated;}
+    inline       SDL_Window*     GetWindow         ()const                    {return m_pWindow;}
+    inline const coreDisplay&    GetDisplayData    ()const                    {return m_aDisplayData[m_iDisplayIndex];}
+    inline const coreDisplay&    GetDisplayData    (const coreUintW iID)const {ASSERT(iID < m_aDisplayData.size()) return m_aDisplayData[iID];}
+    inline       coreUintW       GetDisplayCount   ()const                    {return m_aDisplayData.size();}
+    inline const coreUint8&      GetDisplayIndex   ()const                    {return m_iDisplayIndex;}
+    inline const coreVector2&    GetResolution     ()const                    {return m_vResolution;}
+    inline const coreSystemMode& GetMode           ()const                    {return m_eMode;}
+    inline const coreDouble&     GetTotalTime      ()const                    {return m_dTotalTime;}
+    inline const coreDouble&     GetTotalTimeBefore()const                    {return m_dTotalTimeBefore;}
+    inline const coreFloat&      GetTime           ()const                    {return m_fLastTime;}
+    inline const coreFloat&      GetTime           (const coreInt8  iID)const {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const coreFloat&      GetTimeSpeed      (const coreUintW iID)const {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
+    inline const coreUint32&     GetCurFrame       ()const                    {return m_iCurFrame;}
+    inline const coreDouble&     GetPerfFrequency  ()const                    {return m_dPerfFrequency;}
+    inline const coreUint64&     GetPerfTime       ()const                    {return m_iPerfTime;}
+    inline const coreBool&       GetWinFocusLost   ()const                    {return m_bWinFocusLost;}
+    inline const coreBool&       GetWinPosChanged  ()const                    {return m_bWinPosChanged;}
+    inline const coreBool&       GetWinSizeChanged ()const                    {return m_bWinSizeChanged;}
+    inline const coreBool&       GetTerminated     ()const                    {return m_bTerminated;}
 
 
 private:
