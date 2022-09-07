@@ -515,8 +515,15 @@ using coreFloat  = float;
 using coreDouble = double;
 using coreByte   = std::uint8_t;
 
+STATIC_ASSERT(sizeof(coreInt8)   == 1u)
+STATIC_ASSERT(sizeof(coreInt16)  == 2u)
+STATIC_ASSERT(sizeof(coreInt32)  == 4u)
 STATIC_ASSERT(sizeof(coreInt64)  == 8u)
+STATIC_ASSERT(sizeof(coreUint8)  == 1u)
+STATIC_ASSERT(sizeof(coreUint16) == 2u)
+STATIC_ASSERT(sizeof(coreUint32) == 4u)
 STATIC_ASSERT(sizeof(coreUint64) == 8u)
+STATIC_ASSERT(sizeof(coreByte)   == 1u)
 
 struct coreUint128 final
 {

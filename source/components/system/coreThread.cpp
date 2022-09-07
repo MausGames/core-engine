@@ -64,12 +64,15 @@ SDL_Thread* coreThread::StartThread()
 /* kill the thread */
 void coreThread::KillThread()
 {
-    // signal thread to shut down
-    m_bActive = false;
+    if(m_pThread)
+    {
+        // signal thread to shut down
+        m_bActive = false;
 
-    // wait for thread to finish
-    SDL_WaitThread(m_pThread, NULL);
-    m_pThread = NULL;
+        // wait for thread to finish
+        SDL_WaitThread(m_pThread, NULL);
+        m_pThread = NULL;
+    }
 }
 
 

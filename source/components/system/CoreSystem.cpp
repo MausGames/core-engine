@@ -196,6 +196,9 @@ CoreSystem::CoreSystem()noexcept
 
 #if defined(_CORE_GLES_)
 
+    // always request ES profile
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+
     // check for highest OpenGL ES version
     if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
     {

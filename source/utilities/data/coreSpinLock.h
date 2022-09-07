@@ -15,21 +15,21 @@
 /* spinlock definitions */
 #if defined(_CORE_X86_)
     #if defined(_CORE_MSVC_)
-        #define CORE_SPINLOCK_YIELD {_mm_pause();}             // processor level
+        #define CORE_SPINLOCK_YIELD {_mm_pause();}                          // processor level
     #else
-        #define CORE_SPINLOCK_YIELD {asm volatile("pause");}   // processor level
+        #define CORE_SPINLOCK_YIELD {asm volatile("pause");}                // processor level
     #endif
 #elif defined(_CORE_ARM_)
     #if defined(_CORE_MSVC_)
-        #define CORE_SPINLOCK_YIELD {__yield();}               // processor level
+        #define CORE_SPINLOCK_YIELD {__yield();}                            // processor level
     #else
-        #define CORE_SPINLOCK_YIELD {asm volatile("yield");}   // processor level
+        #define CORE_SPINLOCK_YIELD {asm volatile("yield" ::: "memory");}   // processor level
     #endif
 #else
     #if defined(_CORE_WINDOWS_)
-        #define CORE_SPINLOCK_YIELD {Sleep(0u);}               // OS level
+        #define CORE_SPINLOCK_YIELD {Sleep(0u);}                            // OS level
     #else
-        #define CORE_SPINLOCK_YIELD {sched_yield();}           // OS level
+        #define CORE_SPINLOCK_YIELD {sched_yield();}                        // OS level
     #endif
 #endif
 

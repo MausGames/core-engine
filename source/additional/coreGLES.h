@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_GLES_H_
 #define _CORE_GUARD_GLES_H_
 
-// TODO 3: add name-pooling to OpenGL ES
+// TODO 3: add name-pooling to OpenGL ES (but not for WebGL, as there are no multi-gen functions)
 // TODO 3: always disable extensions which are only available in either GLES or WebGL in their specific mode, to improve dead-code removal
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
 // TODO 5: GL_EXT_clear_texture, GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range

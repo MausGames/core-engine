@@ -333,14 +333,29 @@ void coreResourceManager::__LoadDefault()
     this->Load<coreTexture>("default_white.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.png",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
     this->Load<coreShader> ("default_2d.vert",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert");
     this->Load<coreShader> ("default_2d.frag",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag");
+    this->Load<coreShader> ("default_3d_low.vert",       CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_low.vert");
+    this->Load<coreShader> ("default_3d_raw.vert",       CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_raw.vert");
+    this->Load<coreShader> ("default_3d.frag",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d.frag");
     this->Load<coreShader> ("default_label.vert",        CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.vert");
     this->Load<coreShader> ("default_label_sharp.frag",  CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_sharp.frag");
     this->Load<coreShader> ("default_label_smooth.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_smooth.frag");
+    this->Load<coreShader> ("default_particle.vert",     CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.vert");
+    this->Load<coreShader> ("default_particle.frag",     CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.frag");
     this->Load<coreFont>   ("default.ttf",               CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
 
     d_cast<coreProgram*>(this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
         ->AttachShader  (this->Get <coreShader> ("default_2d.vert"))
         ->AttachShader  (this->Get <coreShader> ("default_2d.frag"))
+        ->Finish();
+
+    d_cast<coreProgram*>(this->Load<coreProgram>("default_3d_low_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
+        ->AttachShader  (this->Get <coreShader> ("default_3d_low.vert"))
+        ->AttachShader  (this->Get <coreShader> ("default_3d.frag"))
+        ->Finish();
+
+    d_cast<coreProgram*>(this->Load<coreProgram>("default_3d_raw_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
+        ->AttachShader  (this->Get <coreShader> ("default_3d_raw.vert"))
+        ->AttachShader  (this->Get <coreShader> ("default_3d.frag"))
         ->Finish();
 
     d_cast<coreProgram*>(this->Load<coreProgram>("default_label_sharp_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
@@ -351,6 +366,11 @@ void coreResourceManager::__LoadDefault()
     d_cast<coreProgram*>(this->Load<coreProgram>("default_label_smooth_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
         ->AttachShader  (this->Get <coreShader> ("default_label.vert"))
         ->AttachShader  (this->Get <coreShader> ("default_label_smooth.frag"))
+        ->Finish();
+
+    d_cast<coreProgram*>(this->Load<coreProgram>("default_particle_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
+        ->AttachShader  (this->Get <coreShader> ("default_particle.vert"))
+        ->AttachShader  (this->Get <coreShader> ("default_particle.frag"))
         ->Finish();
 
     Core::Log->Info("Default resources loaded");

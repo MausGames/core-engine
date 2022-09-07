@@ -21,7 +21,7 @@
 #define CORE_AUDIO_SOURCES       (CORE_AUDIO_SOURCES_MUSIC + CORE_AUDIO_SOURCES_SOUND)   // total number of audio sources
 #define CORE_AUDIO_TYPES         (8u)                                                    // number of sound types
 #define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    // sound buffer identifier for music
-#define CORE_AUDIO_MAX_GAIN      (8.0f)                                                  // maximum supported gain per audio source
+#define CORE_AUDIO_MAX_GAIN      (4.0f)                                                  // maximum supported gain per audio source
 
 
 // ****************************************************************
