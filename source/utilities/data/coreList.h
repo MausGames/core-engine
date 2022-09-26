@@ -34,6 +34,10 @@ public:
     inline coreUintW first_index(const T& tItem)const              {return this->index(std::find(this->begin(),  this->end(),  tItem));}
     inline coreUintW last_index (const T& tItem)const              {return this->index(std::find(this->rbegin(), this->rend(), tItem));}
 
+    /* change front item */
+    inline void push_front(const T& tItem) {this->insert(this->begin(), tItem);}
+    inline void pop_front ()               {ASSERT(!this->empty()) this->erase(this->begin());}
+
     /* remove existing item */
     coreIterator erase_swap(const coreIterator& it);
 };
