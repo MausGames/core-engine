@@ -490,6 +490,41 @@ void CoreGraphics::EndScissorTest()
 
 
 // ****************************************************************
+/* handle conservative rasterization */
+coreStatus CoreGraphics::StartConservativeRaster()
+{
+    if(CORE_GL_SUPPORT(INTEL_conservative_rasterization))
+    {
+        // enable Intel extension
+        glEnable(GL_CONSERVATIVE_RASTERIZATION_INTEL);
+        return CORE_OK;
+    }
+    else if(CORE_GL_SUPPORT(NV_conservative_raster))
+    {
+        // enable Nvidia extension
+        glEnable(GL_CONSERVATIVE_RASTERIZATION_NV);
+        return CORE_OK;
+    }
+
+    return CORE_ERROR_SUPPORT;
+}
+
+void CoreGraphics::EndConservativeRaster()
+{
+    if(CORE_GL_SUPPORT(INTEL_conservative_rasterization))
+    {
+        // disable Intel extension
+        glDisable(GL_CONSERVATIVE_RASTERIZATION_INTEL);
+    }
+    else if(CORE_GL_SUPPORT(NV_conservative_raster))
+    {
+        // disable Nvidia extension
+        glDisable(GL_CONSERVATIVE_RASTERIZATION_NV);
+    }
+}
+
+
+// ****************************************************************
 /* write OpenGL debug message */
 void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLuint iID, const GLenum iSeverity, const GLsizei iLength, const GLchar* pcMessage, const void* pUserParam)
 {

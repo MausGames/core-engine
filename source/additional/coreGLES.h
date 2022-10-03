@@ -139,27 +139,6 @@ using PFNGLVERTEXATTRIBDIVISORARBPROC   = void (GL_APIENTRY *) (GLuint index, GL
 
 
 // ****************************************************************
-/* GL_EXT_texture_rg (mapped on GL_ARB_texture_rg) */
-#define CORE_GL_ARB_texture_rg __CORE_GLES_VAR(GL_EXT_texture_rg)
-
-
-// ****************************************************************
-/* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage)  */
-#define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
-
-using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
-#define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2D)
-
-
-// ****************************************************************
-/* GL_EXT_texture_filter_anisotropic (mapped on GL_ARB_texture_filter_anisotropic) */
-#define CORE_GL_ARB_texture_filter_anisotropic __CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic)
-
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY 0x84FF
-#define GL_TEXTURE_MAX_ANISOTROPY     0x84FE
-
-
-// ****************************************************************
 /* GL_EXT_texture_compression_rgtc (mapped on GL_ARB_texture_compression_rgtc) */
 #define CORE_GL_ARB_texture_compression_rgtc __CORE_GLES_VAR(GL_EXT_texture_compression_rgtc)
 
@@ -176,6 +155,14 @@ using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei level
 
 
 // ****************************************************************
+/* GL_EXT_texture_filter_anisotropic (mapped on GL_ARB_texture_filter_anisotropic) */
+#define CORE_GL_ARB_texture_filter_anisotropic __CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic)
+
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY 0x84FF
+#define GL_TEXTURE_MAX_ANISOTROPY     0x84FE
+
+
+// ****************************************************************
 /* GL_EXT_texture_norm16 */
 #define CORE_GL_EXT_texture_norm16 __CORE_GLES_VAR(GL_EXT_texture_norm16)
 
@@ -186,8 +173,28 @@ using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei level
 
 
 // ****************************************************************
+/* GL_EXT_texture_rg (mapped on GL_ARB_texture_rg) */
+#define CORE_GL_ARB_texture_rg __CORE_GLES_VAR(GL_EXT_texture_rg)
+
+
+// ****************************************************************
+/* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage)  */
+#define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
+
+using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+#define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2D)
+
+
+// ****************************************************************
 /* GL_EXT_texture_type_2_10_10_10_rev */
 #define CORE_GL_EXT_texture_type_2_10_10_10_rev __CORE_GLES_VAR(GL_EXT_texture_type_2_10_10_10_rev)
+
+
+// ****************************************************************
+/* GL_INTEL_conservative_rasterization */
+#define CORE_GL_INTEL_conservative_rasterization __CORE_GLES_VAR(GL_INTEL_conservative_rasterization)
+
+#define GL_CONSERVATIVE_RASTERIZATION_INTEL 0x83FE
 
 
 // ****************************************************************
@@ -211,8 +218,10 @@ using PFNGLMAXSHADERCOMPILERTHREADSPROC = void (GL_APIENTRY *) (GLuint count);
 
 
 // ****************************************************************
-/* GL_NV_pixel_buffer_object (mapped on GL_ARB_pixel_buffer_object) */
-#define CORE_GL_ARB_pixel_buffer_object __CORE_GLES_VAR(GL_NV_pixel_buffer_object)
+/* GL_NV_conservative_raster */
+#define CORE_GL_NV_conservative_raster __CORE_GLES_VAR(GL_NV_conservative_raster)
+
+#define GL_CONSERVATIVE_RASTERIZATION_NV 0x9346
 
 
 // ****************************************************************
@@ -229,6 +238,11 @@ using PFNGLBLITFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLint srcX0, GLint srcY0,
 
 using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
 #define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisample)
+
+
+// ****************************************************************
+/* GL_NV_pixel_buffer_object (mapped on GL_ARB_pixel_buffer_object) */
+#define CORE_GL_ARB_pixel_buffer_object __CORE_GLES_VAR(GL_NV_pixel_buffer_object)
 
 
 // ****************************************************************
@@ -368,18 +382,20 @@ struct coreContext final
     coreBool __GL_EXT_draw_buffers;
     coreBool __GL_EXT_instanced_arrays;
     coreBool __GL_EXT_sRGB_write_control;
-    coreBool __GL_EXT_texture_rg;
-    coreBool __GL_EXT_texture_storage;
-    coreBool __GL_EXT_texture_filter_anisotropic;
     coreBool __GL_EXT_texture_compression_rgtc;
     coreBool __GL_EXT_texture_compression_s3tc;
+    coreBool __GL_EXT_texture_filter_anisotropic;
     coreBool __GL_EXT_texture_norm16;
+    coreBool __GL_EXT_texture_rg;
+    coreBool __GL_EXT_texture_storage;
     coreBool __GL_EXT_texture_type_2_10_10_10_rev;
+    coreBool __GL_INTEL_conservative_rasterization;
     coreBool __GL_KHR_debug;
     coreBool __GL_KHR_parallel_shader_compile;
-    coreBool __GL_NV_pixel_buffer_object;
+    coreBool __GL_NV_conservative_raster;
     coreBool __GL_NV_framebuffer_blit;
     coreBool __GL_NV_framebuffer_multisample;
+    coreBool __GL_NV_pixel_buffer_object;
     coreBool __GL_OES_depth_texture;
     coreBool __GL_OES_geometry_shader;
     coreBool __GL_OES_packed_depth_stencil;

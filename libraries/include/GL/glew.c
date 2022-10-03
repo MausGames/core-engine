@@ -1173,6 +1173,8 @@ PFNGLPUSHDEBUGGROUPPROC __glewPushDebugGroup = NULL;
 
 PFNGLMAXSHADERCOMPILERTHREADSKHRPROC __glewMaxShaderCompilerThreadsKHR = NULL;
 
+PFNGLSUBPIXELPRECISIONBIASNVPROC __glewSubpixelPrecisionBiasNV = NULL;
+
 PFNGLCOPYIMAGESUBDATANVPROC __glewCopyImageSubDataNV = NULL;
 
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLECOVERAGENVPROC __glewRenderbufferStorageMultisampleCoverageNV = NULL;
@@ -1312,10 +1314,12 @@ GLboolean __GLEW_EXT_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_s3tc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_filter_anisotropic = GL_FALSE;
 GLboolean __GLEW_EXT_texture_storage = GL_FALSE;
+GLboolean __GLEW_INTEL_conservative_rasterization = GL_FALSE;
 GLboolean __GLEW_KHR_debug = GL_FALSE;
 GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
 GLboolean __GLEW_NVX_gpu_memory_info = GL_FALSE;
+GLboolean __GLEW_NV_conservative_raster = GL_FALSE;
 GLboolean __GLEW_NV_copy_image = GL_FALSE;
 GLboolean __GLEW_NV_depth_clamp = GL_FALSE;
 GLboolean __GLEW_NV_framebuffer_multisample_coverage = GL_FALSE;
@@ -1525,6 +1529,9 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_EXT_texture_storage
   "GL_EXT_texture_storage",
 #endif
+#ifdef GL_INTEL_conservative_rasterization
+  "GL_INTEL_conservative_rasterization",
+#endif
 #ifdef GL_KHR_debug
   "GL_KHR_debug",
 #endif
@@ -1536,6 +1543,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_NVX_gpu_memory_info
   "GL_NVX_gpu_memory_info",
+#endif
+#ifdef GL_NV_conservative_raster
+  "GL_NV_conservative_raster",
 #endif
 #ifdef GL_NV_copy_image
   "GL_NV_copy_image",
@@ -1818,6 +1828,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_EXT_texture_storage
   &__GLEW_EXT_texture_storage,
 #endif
+#ifdef GL_INTEL_conservative_rasterization
+  &__GLEW_INTEL_conservative_rasterization,
+#endif
 #ifdef GL_KHR_debug
   &__GLEW_KHR_debug,
 #endif
@@ -1829,6 +1842,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_NVX_gpu_memory_info
   &__GLEW_NVX_gpu_memory_info,
+#endif
+#ifdef GL_NV_conservative_raster
+  &__GLEW_NV_conservative_raster,
 #endif
 #ifdef GL_NV_copy_image
   &__GLEW_NV_copy_image,
@@ -1959,6 +1975,7 @@ static GLboolean _glewInit_GL_EXT_shader_image_load_store (void);
 static GLboolean _glewInit_GL_EXT_texture_storage (void);
 static GLboolean _glewInit_GL_KHR_debug (void);
 static GLboolean _glewInit_GL_KHR_parallel_shader_compile (void);
+static GLboolean _glewInit_GL_NV_conservative_raster (void);
 static GLboolean _glewInit_GL_NV_copy_image (void);
 static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage (void);
 static GLboolean _glewInit_GL_NV_gpu_shader5 (void);
@@ -3486,6 +3503,19 @@ static GLboolean _glewInit_GL_KHR_parallel_shader_compile ()
 
 #endif /* GL_KHR_parallel_shader_compile */
 
+#ifdef GL_NV_conservative_raster
+
+static GLboolean _glewInit_GL_NV_conservative_raster ()
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glSubpixelPrecisionBiasNV = (PFNGLSUBPIXELPRECISIONBIASNVPROC)glewGetProcAddress((const GLubyte*)"glSubpixelPrecisionBiasNV")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_NV_conservative_raster */
+
 #ifdef GL_NV_copy_image
 
 static GLboolean _glewInit_GL_NV_copy_image ()
@@ -3966,6 +3996,9 @@ static GLenum GLEWAPIENTRY glewContextInit ()
 #ifdef GL_KHR_parallel_shader_compile
   if (glewExperimental || GLEW_KHR_parallel_shader_compile) GLEW_KHR_parallel_shader_compile = !_glewInit_GL_KHR_parallel_shader_compile();
 #endif /* GL_KHR_parallel_shader_compile */
+#ifdef GL_NV_conservative_raster
+  if (glewExperimental || GLEW_NV_conservative_raster) GLEW_NV_conservative_raster = !_glewInit_GL_NV_conservative_raster();
+#endif /* GL_NV_conservative_raster */
 #ifdef GL_NV_copy_image
   if (glewExperimental || GLEW_NV_copy_image) GLEW_NV_copy_image = !_glewInit_GL_NV_copy_image();
 #endif /* GL_NV_copy_image */
@@ -4734,6 +4767,16 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         }
 #endif
       }
+      if (_glewStrSame2(&pos, &len, (const GLubyte*)"INTEL_", 6))
+      {
+#ifdef GL_INTEL_conservative_rasterization
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"conservative_rasterization", 26))
+        {
+          ret = GLEW_INTEL_conservative_rasterization;
+          continue;
+        }
+#endif
+      }
       if (_glewStrSame2(&pos, &len, (const GLubyte*)"KHR_", 4))
       {
 #ifdef GL_KHR_debug
@@ -4770,6 +4813,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
       }
       if (_glewStrSame2(&pos, &len, (const GLubyte*)"NV_", 3))
       {
+#ifdef GL_NV_conservative_raster
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"conservative_raster", 19))
+        {
+          ret = GLEW_NV_conservative_raster;
+          continue;
+        }
+#endif
 #ifdef GL_NV_copy_image
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"copy_image", 10))
         {

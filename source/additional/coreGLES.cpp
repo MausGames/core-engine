@@ -124,18 +124,6 @@ void __coreInitOpenGLES()
     // implement GL_EXT_sRGB_write_control
     __CORE_GLES_CHECK(GL_EXT_sRGB_write_control, false);
 
-    // implement GL_EXT_texture_rg
-    __CORE_GLES_CHECK(GL_EXT_texture_rg, bES30);
-
-    // implement GL_EXT_texture_storage
-    if(__CORE_GLES_CHECK(GL_EXT_texture_storage, bES30))
-    {
-        __CORE_GLES_FUNC_FETCH(glTexStorage2D, EXT, bES30)
-    }
-
-    // implement GL_EXT_texture_filter_anisotropic
-    __CORE_GLES_CHECK(GL_EXT_texture_filter_anisotropic, false);
-
     // implement GL_EXT_texture_compression_rgtc
     __CORE_GLES_CHECK(GL_EXT_texture_compression_rgtc, false);
 
@@ -146,11 +134,26 @@ void __coreInitOpenGLES()
     if(g_sExtensions.contains("GL_NV_texture_compression_s3tc "))   g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
     if(g_sExtensions.contains("GL_WEBGL_compressed_texture_s3tc ")) g_CoreContext.__GL_EXT_texture_compression_s3tc = true;
 
+    // implement GL_EXT_texture_filter_anisotropic
+    __CORE_GLES_CHECK(GL_EXT_texture_filter_anisotropic, false);
+
     // implement GL_EXT_texture_norm16
     __CORE_GLES_CHECK(GL_EXT_texture_norm16, false);
 
+    // implement GL_EXT_texture_rg
+    __CORE_GLES_CHECK(GL_EXT_texture_rg, bES30);
+
+    // implement GL_EXT_texture_storage
+    if(__CORE_GLES_CHECK(GL_EXT_texture_storage, bES30))
+    {
+        __CORE_GLES_FUNC_FETCH(glTexStorage2D, EXT, bES30)
+    }
+
     // implement GL_EXT_texture_type_2_10_10_10_rev
     __CORE_GLES_CHECK(GL_EXT_texture_type_2_10_10_10_rev, bES30);
+
+    // implement GL_INTEL_conservative_rasterization
+    __CORE_GLES_CHECK(GL_INTEL_conservative_rasterization, false);
 
     // implement GL_KHR_debug
     if(__CORE_GLES_CHECK(GL_KHR_debug, bES32 || bAndroidPack))
@@ -166,8 +169,8 @@ void __coreInitOpenGLES()
         if(!g_CoreContext.__glMaxShaderCompilerThreads) g_CoreContext.__glMaxShaderCompilerThreads = [](GLuint){};   // not available in WebGL
     }
 
-    // implement GL_NV_pixel_buffer_object
-    __CORE_GLES_CHECK(GL_NV_pixel_buffer_object, bES30);
+    // implement GL_NV_conservative_raster
+    __CORE_GLES_CHECK(GL_NV_conservative_raster, false);
 
     // implement GL_NV_framebuffer_blit
     if(__CORE_GLES_CHECK(GL_NV_framebuffer_blit, bES30))
@@ -190,6 +193,9 @@ void __coreInitOpenGLES()
         g_CoreContext.__GL_NV_framebuffer_multisample = true;
         __CORE_GLES_FUNC_FETCH(glRenderbufferStorageMultisample, ANGLE, false)
     }
+
+    // implement GL_NV_pixel_buffer_object
+    __CORE_GLES_CHECK(GL_NV_pixel_buffer_object, bES30);
 
     // implement GL_OES_depth_texture
     __CORE_GLES_CHECK(GL_OES_depth_texture, bES30);

@@ -5177,6 +5177,17 @@ typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE3DEXTPROC) (GLuint texture, GLenum
 
 #endif /* GL_EXT_texture_storage */
 
+/* ------------------ GL_INTEL_conservative_rasterization ------------------ */
+
+#ifndef GL_INTEL_conservative_rasterization
+#define GL_INTEL_conservative_rasterization 1
+
+#define GL_CONSERVATIVE_RASTERIZATION_INTEL 0x83FE
+
+#define GLEW_INTEL_conservative_rasterization GLEW_GET_VAR(__GLEW_INTEL_conservative_rasterization)
+
+#endif /* GL_INTEL_conservative_rasterization */
+
 /* ------------------------------ GL_KHR_debug ----------------------------- */
 
 #ifndef GL_KHR_debug
@@ -5292,6 +5303,24 @@ typedef void (GLAPIENTRY * PFNGLMAXSHADERCOMPILERTHREADSKHRPROC) (GLuint count);
 #define GLEW_NVX_gpu_memory_info GLEW_GET_VAR(__GLEW_NVX_gpu_memory_info)
 
 #endif /* GL_NVX_gpu_memory_info */
+
+/* ----------------------- GL_NV_conservative_raster ----------------------- */
+
+#ifndef GL_NV_conservative_raster
+#define GL_NV_conservative_raster 1
+
+#define GL_CONSERVATIVE_RASTERIZATION_NV 0x9346
+#define GL_SUBPIXEL_PRECISION_BIAS_X_BITS_NV 0x9347
+#define GL_SUBPIXEL_PRECISION_BIAS_Y_BITS_NV 0x9348
+#define GL_MAX_SUBPIXEL_PRECISION_BIAS_BITS_NV 0x9349
+
+typedef void (GLAPIENTRY * PFNGLSUBPIXELPRECISIONBIASNVPROC) (GLuint xbits, GLuint ybits);
+
+#define glSubpixelPrecisionBiasNV GLEW_GET_FUN(__glewSubpixelPrecisionBiasNV)
+
+#define GLEW_NV_conservative_raster GLEW_GET_VAR(__GLEW_NV_conservative_raster)
+
+#endif /* GL_NV_conservative_raster */
 
 /* ---------------------------- GL_NV_copy_image --------------------------- */
 
@@ -6412,6 +6441,8 @@ GLEW_FUN_EXPORT PFNGLPUSHDEBUGGROUPPROC __glewPushDebugGroup;
 
 GLEW_FUN_EXPORT PFNGLMAXSHADERCOMPILERTHREADSKHRPROC __glewMaxShaderCompilerThreadsKHR;
 
+GLEW_FUN_EXPORT PFNGLSUBPIXELPRECISIONBIASNVPROC __glewSubpixelPrecisionBiasNV;
+
 GLEW_FUN_EXPORT PFNGLCOPYIMAGESUBDATANVPROC __glewCopyImageSubDataNV;
 
 GLEW_FUN_EXPORT PFNGLRENDERBUFFERSTORAGEMULTISAMPLECOVERAGENVPROC __glewRenderbufferStorageMultisampleCoverageNV;
@@ -6551,10 +6582,12 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_rgtc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_s3tc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_filter_anisotropic;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_storage;
+GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_conservative_rasterization;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_debug;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_parallel_shader_compile;
 GLEW_VAR_EXPORT GLboolean __GLEW_NVX_gpu_memory_info;
+GLEW_VAR_EXPORT GLboolean __GLEW_NV_conservative_raster;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_copy_image;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_depth_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_framebuffer_multisample_coverage;

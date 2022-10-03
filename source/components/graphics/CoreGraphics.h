@@ -108,6 +108,10 @@ public:
     void StartScissorTest(const coreVector2 vLowerLeft, const coreVector2 vUpperRight);
     void EndScissorTest  ();
 
+    /* handle conservative rasterization */
+    coreStatus StartConservativeRaster();
+    void       EndConservativeRaster();
+
     /* handle OpenGL debug output */
     friend void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLuint iID, const GLenum iSeverity, const GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
     void DebugOpenGL();

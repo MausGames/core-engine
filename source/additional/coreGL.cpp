@@ -199,9 +199,11 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_EXT_packed_depth_stencil,             GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
         __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
+        __IMPROVE(GLEW_INTEL_conservative_rasterization,     false)
         __IMPROVE(GLEW_KHR_debug,                            GLEW_VERSION_4_3)
         __IMPROVE(GLEW_KHR_no_error,                         GLEW_VERSION_4_6)                                       // indirectly used
         __IMPROVE(GLEW_NVX_gpu_memory_info,                  false)
+        __IMPROVE(GLEW_NV_conservative_raster,               false)
         __IMPROVE(GLEW_NV_framebuffer_multisample_coverage,  false)
         __IMPROVE(GLEW_NV_gpu_shader5,                       false)                                                  // shader extension
         __IMPROVE(GLEW_NV_multisample_filter_hint,           false)
