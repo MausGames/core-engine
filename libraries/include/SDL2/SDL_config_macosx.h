@@ -66,6 +66,7 @@
 #define HAVE_PUTENV 1
 #define HAVE_UNSETENV 1
 #define HAVE_QSORT 1
+#define HAVE_BSEARCH 1
 #define HAVE_ABS 1
 #define HAVE_BCOPY 1
 #define HAVE_MEMSET 1
@@ -224,7 +225,6 @@
 #define SDL_FILESYSTEM_COCOA 1
 
 /* Enable assembly routines */
-#define SDL_ASSEMBLY_ROUTINES 1
 #ifdef __ppc__
 #define SDL_ALTIVEC_BLITTERS 1
 #endif
