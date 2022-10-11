@@ -231,6 +231,7 @@
 /* #undef HAVE_IBUS_IBUS_H */
 #define HAVE_IMMINTRIN_H 1
 #define HAVE_LIBUDEV_H 1
+/* #undef HAVE_LIBUSB */
 /* #undef HAVE_LIBSAMPLERATE_H */
 #define HAVE_LIBDECOR_H 1
 /* #undef HAVE_LSXINTRIN_H */
