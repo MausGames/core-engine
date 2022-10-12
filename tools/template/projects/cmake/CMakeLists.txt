@@ -12,6 +12,8 @@ set_target_properties(
     C_STANDARD 17
     CXX_STANDARD 20
     DEBUG_POSTFIX _debug
+    BUILD_WITH_INSTALL_RPATH TRUE
+    INSTALL_RPATH $ORIGIN
 )
 
 
