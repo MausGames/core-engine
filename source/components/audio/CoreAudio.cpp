@@ -27,6 +27,7 @@ CoreAudio::CoreAudio()noexcept
 , m_nProcessUpdates (NULL)
 , m_bSupportALAW    (false)
 , m_bSupportMULAW   (false)
+, m_bSupportFloat   (false)
 {
     Core::Log->Header("Audio Interface");
 
@@ -87,8 +88,9 @@ CoreAudio::CoreAudio()noexcept
     }
 
     // init format extensions
-    if(alIsExtensionPresent("AL_EXT_ALAW"))  m_bSupportALAW  = true;
-    if(alIsExtensionPresent("AL_EXT_MULAW")) m_bSupportMULAW = true;
+    if(alIsExtensionPresent("AL_EXT_ALAW"))    m_bSupportALAW  = true;
+    if(alIsExtensionPresent("AL_EXT_MULAW"))   m_bSupportMULAW = true;
+    if(alIsExtensionPresent("AL_EXT_FLOAT32")) m_bSupportFloat = true;
 
     // reset listener
     this->DeferUpdates();
@@ -128,9 +130,6 @@ CoreAudio::CoreAudio()noexcept
         Core::Log->ListAdd("ALC_FREQUENCY (%d) ALC_REFRESH (%d) ALC_SYNC (%d) ALC_MONO_SOURCES (%d) ALC_STEREO_SOURCES (%d)", aiStatus[0], aiStatus[1], aiStatus[2], aiStatus[3], aiStatus[4]);
     }
     Core::Log->ListEnd();
-
-    // log Ogg Vorbis library version
-    Core::Log->Info("Ogg Vorbis initialized (%s)", vorbis_version_string());
 
     // check for errors
     const ALenum iError = alGetError();

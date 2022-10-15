@@ -329,7 +329,8 @@
 /* external libraries */
 #define GLEW_NO_GLU
 #define GLEW_STATIC
-#define OV_EXCLUDE_STATIC_CALLBACKS
+#define STB_VORBIS_HEADER_ONLY
+#define STB_VORBIS_NO_PUSHDATA_API
 #if defined(_CORE_MSVC_)
     #define ZSTD_DLL_IMPORT 1
 #endif
@@ -343,9 +344,8 @@
     #include <GL/glew.h>
 #endif
 #include <AL/alext.h>
-#include <ogg/ogg.h>
-#include <vorbis/vorbisfile.h>
 #include <zstd/zstd.h>
+#include <stb_vorbis.h>
 
 
 // ****************************************************************

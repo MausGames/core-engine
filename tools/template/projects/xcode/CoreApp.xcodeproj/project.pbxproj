@@ -14,20 +14,14 @@
 		5B42D8EC27D3F7C20075F2A6 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 5B42D8EB27D3F7C20075F2A6 /* data */; };
 		5B5B7C8227D2A146003FD836 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */; };
 		5B5B7C8327D2A146003FD836 /* SDL2_image.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5B5B7C8427D2A146003FD836 /* libvorbis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */; };
-		5B5B7C8527D2A146003FD836 /* libvorbis.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5B5B7C8627D2A146003FD836 /* libzstd.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7C27D2A145003FD836 /* libzstd.dylib */; };
 		5B5B7C8727D2A146003FD836 /* libzstd.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7C27D2A145003FD836 /* libzstd.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5B5B7C8827D2A146003FD836 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */; };
 		5B5B7C8927D2A146003FD836 /* SDL2_ttf.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5B5B7C8A27D2A146003FD836 /* libvorbisfile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */; };
-		5B5B7C8B27D2A146003FD836 /* libvorbisfile.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5B5B7C8C27D2A146003FD836 /* libopenal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7F27D2A146003FD836 /* libopenal.dylib */; };
 		5B5B7C8D27D2A146003FD836 /* libopenal.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7F27D2A146003FD836 /* libopenal.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5B5B7C8E27D2A146003FD836 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8027D2A146003FD836 /* SDL2.framework */; };
 		5B5B7C8F27D2A146003FD836 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8027D2A146003FD836 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5B5B7C9027D2A146003FD836 /* libogg.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8127D2A146003FD836 /* libogg.dylib */; };
-		5B5B7C9127D2A146003FD836 /* libogg.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C8127D2A146003FD836 /* libogg.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,10 +33,7 @@
 			files = (
 				5B5B7C8927D2A146003FD836 /* SDL2_ttf.framework in Embed Frameworks */,
 				5B5B7C8727D2A146003FD836 /* libzstd.dylib in Embed Frameworks */,
-				5B5B7C9127D2A146003FD836 /* libogg.dylib in Embed Frameworks */,
 				5B5B7C8327D2A146003FD836 /* SDL2_image.framework in Embed Frameworks */,
-				5B5B7C8B27D2A146003FD836 /* libvorbisfile.dylib in Embed Frameworks */,
-				5B5B7C8527D2A146003FD836 /* libvorbis.dylib in Embed Frameworks */,
 				5B5B7C8D27D2A146003FD836 /* libopenal.dylib in Embed Frameworks */,
 				5B5B7C8F27D2A146003FD836 /* SDL2.framework in Embed Frameworks */,
 			);
@@ -62,13 +53,10 @@
 		5B42D8E927D3A01F0075F2A6 /* Entitlements.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Entitlements.entitlements; sourceTree = "<group>"; };
 		5B42D8EB27D3F7C20075F2A6 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../../executable/data; sourceTree = "<group>"; };
 		5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../CoreEngine/libraries/bin/macos/SDL2_image.framework; sourceTree = "<group>"; };
-		5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvorbis.dylib; path = ../../../CoreEngine/libraries/bin/macos/libvorbis.dylib; sourceTree = "<group>"; };
 		5B5B7C7C27D2A145003FD836 /* libzstd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzstd.dylib; path = ../../../CoreEngine/libraries/bin/macos/libzstd.dylib; sourceTree = "<group>"; };
 		5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_ttf.framework; path = ../../../CoreEngine/libraries/bin/macos/SDL2_ttf.framework; sourceTree = "<group>"; };
-		5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvorbisfile.dylib; path = ../../../CoreEngine/libraries/bin/macos/libvorbisfile.dylib; sourceTree = "<group>"; };
 		5B5B7C7F27D2A146003FD836 /* libopenal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopenal.dylib; path = ../../../CoreEngine/libraries/bin/macos/libopenal.dylib; sourceTree = "<group>"; };
 		5B5B7C8027D2A146003FD836 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../CoreEngine/libraries/bin/macos/SDL2.framework; sourceTree = "<group>"; };
-		5B5B7C8127D2A146003FD836 /* libogg.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libogg.dylib; path = ../../../CoreEngine/libraries/bin/macos/libogg.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,13 +64,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5B5B7C8427D2A146003FD836 /* libvorbis.dylib in Frameworks */,
 				5B06DFB927CAB3320036BB19 /* libCoreEngine.a in Frameworks */,
 				5B5B7C8227D2A146003FD836 /* SDL2_image.framework in Frameworks */,
 				5B5B7C8C27D2A146003FD836 /* libopenal.dylib in Frameworks */,
-				5B5B7C8A27D2A146003FD836 /* libvorbisfile.dylib in Frameworks */,
 				5B5B7C8627D2A146003FD836 /* libzstd.dylib in Frameworks */,
-				5B5B7C9027D2A146003FD836 /* libogg.dylib in Frameworks */,
 				5B5B7C8827D2A146003FD836 /* SDL2_ttf.framework in Frameworks */,
 				5B5B7C8E27D2A146003FD836 /* SDL2.framework in Frameworks */,
 			);
@@ -115,10 +100,7 @@
 		5B06DFB727CAB3320036BB19 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5B5B7C8127D2A146003FD836 /* libogg.dylib */,
-				5B5B7C7E27D2A145003FD836 /* libvorbisfile.dylib */,
 				5B5B7C7F27D2A146003FD836 /* libopenal.dylib */,
-				5B5B7C7B27D2A145003FD836 /* libvorbis.dylib */,
 				5B5B7C7C27D2A145003FD836 /* libzstd.dylib */,
 				5B5B7C7A27D2A145003FD836 /* SDL2_image.framework */,
 				5B5B7C7D27D2A145003FD836 /* SDL2_ttf.framework */,

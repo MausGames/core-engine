@@ -97,7 +97,7 @@ if(EMSCRIPTEN)
 
     target_link_options(
         CoreEngine INTERFACE
-        -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sUSE_OGG=1 -sUSE_VORBIS=1 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sALLOW_MEMORY_GROWTH=1
+        -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sALLOW_MEMORY_GROWTH=1
         --preload-file ../../../executable/data@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
         $<IF:$<CONFIG:Debug>, -O0 -g3 -sGL_ASSERTIONS=1 -sGL_DEBUG=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
     )
@@ -136,7 +136,7 @@ else()
     target_link_libraries(
         CoreEngine INTERFACE
         -ldl -lpthread -lGL
-        -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libopenal.so.1 -l:libogg.so.0 -l:libvorbis.so.0 -l:libvorbisfile.so.3 -l:libzstd.so.1
+        -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libopenal.so.1 -l:libzstd.so.1
     )
 
 

@@ -60,6 +60,7 @@ private:
 
     coreBool m_bSupportALAW;                            // support for A-law compression
     coreBool m_bSupportMULAW;                           // support for MU-law compression
+    coreBool m_bSupportFloat;                           // support for raw float-data
 
 
 private:
@@ -99,6 +100,7 @@ public:
     /* check OpenAL properties */
     inline const coreBool& GetSupportALAW ()const {return m_bSupportALAW;}
     inline const coreBool& GetSupportMULAW()const {return m_bSupportMULAW;}
+    inline const coreBool& GetSupportFloat()const {return m_bSupportFloat;}
 
 
 private:

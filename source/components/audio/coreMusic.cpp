@@ -8,16 +8,8 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
-
-// ****************************************************************
-/* callback functions for the music stream object */
-static const ov_callbacks OV_CALLBACKS =
-{
-    [](void* pData, coreUintW iSize, coreUintW iCount, void* pFile) {return coreUintW(SDL_RWread (s_cast<SDL_RWops*>(pFile), pData, iSize, iCount));},
-    [](void* pFile, coreInt64 iOffset, coreInt32 iWhence)           {return coreInt32(SDL_RWseek (s_cast<SDL_RWops*>(pFile), iOffset, iWhence));},
-    [](void* pFile)                                                 {return coreInt32(SDL_RWclose(s_cast<SDL_RWops*>(pFile)));},
-    [](void* pFile)                                                 {return coreLong (SDL_RWtell (s_cast<SDL_RWops*>(pFile)));}
-};
+#undef STB_VORBIS_HEADER_ONLY
+#include <stb_vorbis.h>
 
 
 // ****************************************************************
@@ -28,17 +20,18 @@ coreMusic::coreMusic(const coreChar* pcPath)noexcept
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
-: m_aiBuffer {}
-, m_iSource  (0u)
-, m_fVolume  (1.0f)
-, m_fPitch   (1.0f)
-, m_bLoop    (false)
-, m_bStatus  (false)
-, m_pFile    (NULL)
-, m_Stream   {}
-, m_pInfo    (NULL)
-, m_pComment (NULL)
-, m_dMaxTime (0.0)
+: m_aiBuffer   {}
+, m_iSource    (0u)
+, m_fVolume    (1.0f)
+, m_fPitch     (1.0f)
+, m_bLoop      (false)
+, m_bStatus    (false)
+, m_pFile      (NULL)
+, m_pStream    (NULL)
+, m_Info       {}
+, m_Comment    {}
+, m_iMaxSample (0u)
+, m_fMaxTime   (0.0f)
 {
     if(!pFile)            return;
     if(!pFile->GetSize()) return;   // do not load file data
@@ -47,12 +40,11 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     coreFile::InternalNew(&m_pFile, pFile);
 
     // test file format and open music stream
-    coreInt32   iError = ov_test_callbacks(m_pFile->CreateReadStream(), &m_Stream, NULL, 0, OV_CALLBACKS);
-    if(!iError) iError = ov_test_open(&m_Stream);
-    if( iError)
+    coreInt32 iError;
+    m_pStream = stb_vorbis_open_file_section(m_pFile->CreateReadStream(), 1, &iError, NULL, pFile->GetSize());
+    if(!m_pStream)
     {
-        Core::Log->Warning("Music (%s) is not a valid OGG-file (OV Error Code: 0x%08X)", pFile->GetPath(), iError);
-        ov_clear(&m_Stream);
+        Core::Log->Warning("Music (%s) is not a valid OGG-file (STB Error Code: 0x%08X)", pFile->GetPath(), iError);
         coreFile::InternalDelete(&m_pFile);
 
         return;
@@ -62,11 +54,12 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     alGenBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
 
     // retrieve music file information
-    m_pInfo    = ov_info      (&m_Stream, -1);
-    m_pComment = ov_comment   (&m_Stream, -1);
-    m_dMaxTime = ov_time_total(&m_Stream, -1);
+    m_Info       = stb_vorbis_get_info                (m_pStream);
+    m_Comment    = stb_vorbis_get_comment             (m_pStream);
+    m_iMaxSample = stb_vorbis_stream_length_in_samples(m_pStream);
+    m_fMaxTime   = stb_vorbis_stream_length_in_seconds(m_pStream);
 
-    Core::Log->Info("Music (%s, %.1f seconds, %.1f KB/s, %d channels, %d rate) loaded", pFile->GetPath(), m_dMaxTime, I_TO_F(m_pInfo->bitrate_nominal) / 1000.0f, m_pInfo->channels, m_pInfo->rate);
+    Core::Log->Info("Music (%s, %.1f seconds, %d channels, %d rate) loaded", pFile->GetPath(), m_fMaxTime, m_Info.channels, m_Info.sample_rate);
 }
 
 
@@ -79,7 +72,7 @@ coreMusic::~coreMusic()
     alDeleteBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
 
     // close music stream
-    ov_clear(&m_Stream);
+    stb_vorbis_close(m_pStream);
     if(m_pFile) Core::Log->Info("Music (%s) unloaded", m_pFile->GetPath());
 
     // delete file object
@@ -190,7 +183,7 @@ void coreMusic::Stop()
         m_iSource = 0u;
 
         // rewind the music stream
-        ov_raw_seek(&m_Stream, 0);   // no crosslap
+        this->Rewind();
     }
 
     // reset playback status
@@ -217,17 +210,14 @@ void coreMusic::Pause()
 /* get specific meta-information */
 const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 {
-    if(m_pComment)
-    {
-        const coreUintW iLen = std::strlen(pcName);
+    const coreUintW iLen = std::strlen(pcName);
 
-        // loop through all comments
-        for(coreUintW i = 0u, ie = m_pComment->comments; i < ie; ++i)
-        {
-            // check comment and extract meta-information
-            if(!std::memcmp(pcName, m_pComment->user_comments[i], iLen))
-                return m_pComment->user_comments[i] + iLen + 1u;
-        }
+    // loop through all comments
+    for(coreUintW i = 0u, ie = m_Comment.comment_list_length; i < ie; ++i)
+    {
+        // check comment and extract meta-information
+        if(!std::memcmp(pcName, m_Comment.comment_list[i], iLen))
+            return m_Comment.comment_list[i] + iLen + 1u;
     }
 
     // specific meta-information not found
@@ -239,7 +229,7 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 /* read from music stream and update sound buffer */
 coreBool coreMusic::__Stream(const ALuint iBuffer)
 {
-    alignas(ALIGNMENT_PAGE) BIG_STATIC coreChar s_acData[4u * CORE_MUSIC_CHUNK];
+    alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aData[4u * CORE_MUSIC_CHUNK * sizeof(coreFloat)];
 
     const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4u * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;
@@ -247,10 +237,13 @@ coreBool coreMusic::__Stream(const ALuint iBuffer)
     // process the defined music stream chunk size
     while(iReadSize < iChunkSize)
     {
-        // read and decode data from the music track
-        const coreInt32 iResult = ov_read(&m_Stream, s_acData + iReadSize, iChunkSize - iReadSize, (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? 1 : 0, 2, 1, NULL);
-        if(iResult <= 0) break;
+        coreInt32 iResult;
 
+        // read and decode data from the music track
+        if(Core::Audio->GetSupportFloat()) iResult = stb_vorbis_get_samples_float_interleaved(m_pStream, m_Info.channels, r_cast<coreFloat*>(s_aData) + iReadSize, iChunkSize - iReadSize) * m_Info.channels;
+                                      else iResult = stb_vorbis_get_samples_short_interleaved(m_pStream, m_Info.channels, r_cast<coreInt16*>(s_aData) + iReadSize, iChunkSize - iReadSize) * m_Info.channels;
+
+        if(iResult <= 0) break;
         iReadSize += iResult;
     }
 
@@ -258,7 +251,8 @@ coreBool coreMusic::__Stream(const ALuint iBuffer)
     if(iReadSize == 0) return false;
 
     // write decoded data to sound buffer
-    alBufferData(iBuffer, (m_pInfo->channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, s_acData, iReadSize, m_pInfo->rate);
+    if(Core::Audio->GetSupportFloat()) alBufferData(iBuffer, (m_Info.channels == 1) ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32, s_aData, iReadSize * sizeof(coreFloat), m_Info.sample_rate);
+                                  else alBufferData(iBuffer, (m_Info.channels == 1) ? AL_FORMAT_MONO16       : AL_FORMAT_STEREO16,       s_aData, iReadSize * sizeof(coreInt16), m_Info.sample_rate);
     return true;
 }
 
@@ -277,7 +271,7 @@ coreUintW coreMusic::__StreamList(const ALuint* piBuffer, const coreUintW iCount
             if(!m_bLoop) break;
 
             // rewind the music stream
-            this->SeekRaw(0);
+            this->Rewind();
             WARN_IF(!this->__Stream(piBuffer[iUpdated])) break;
         }
         iUpdated += 1u;
@@ -502,7 +496,6 @@ void coreMusicPlayer::Select(const coreUintW iIndex)
         else
         {
             // stop old music object
-            coreMusic::CrossLap(m_pCurMusic, m_apSequence[iIndex]);
             m_pCurMusic->Stop();
         }
     }
@@ -557,7 +550,7 @@ coreStatus coreMusicPlayer::__AddMusic(coreFile* pFile)
 {
     // create new music object
     coreMusic* pNewMusic = new coreMusic(pFile);
-    if(!pNewMusic->GetInfo())
+    if(!pNewMusic->GetMaxSample())
     {
         // remove invalid file
         SAFE_DELETE(pNewMusic)

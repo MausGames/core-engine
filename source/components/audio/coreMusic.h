@@ -21,7 +21,7 @@
 
 // ****************************************************************
 /* music definitions */
-#define CORE_MUSIC_CHUNK   (0x2000u)   // size of a music stream chunk in bytes
+#define CORE_MUSIC_CHUNK   (0x1000u)   // size of a music stream chunk in floats/shorts (on speed 1.0x)
 #define CORE_MUSIC_BUFFERS (3u)        // number of sound buffers (with chunks)
 
 enum coreMusicRepeat : coreUint8
@@ -46,12 +46,13 @@ private:
     coreBool  m_bLoop;                       // loop status
     coreBool  m_bStatus;                     // playback status
 
-    coreFile*      m_pFile;                  // file object with streaming data
-    OggVorbis_File m_Stream;                 // music stream object
+    coreFile*   m_pFile;                     // file object with streaming data
+    stb_vorbis* m_pStream;                   // music stream object
 
-    vorbis_info*    m_pInfo;                 // format of the music file
-    vorbis_comment* m_pComment;              // meta-information
-    coreDouble      m_dMaxTime;              // length of the music track in seconds
+    stb_vorbis_info    m_Info;               // format of the music file
+    stb_vorbis_comment m_Comment;            // meta-information
+    coreUint32         m_iMaxSample;         // length of the music track (in samples)
+    coreFloat          m_fMaxTime;           // length of the music track (in seconds)
 
 
 public:
@@ -76,12 +77,13 @@ public:
     inline void SetLoop  (const coreBool  bLoop)   {m_bLoop = bLoop; ASSERT(!m_iSource)}
 
     /* change and retrieve current music track position */
-    inline void SeekRaw   (const coreInt64  iBytes)   {ov_raw_seek_lap (&m_Stream, iBytes);}
-    inline void SeekTime  (const coreDouble dSeconds) {ov_time_seek_lap(&m_Stream, dSeconds);}
-    inline void SeekFactor(const coreDouble dFactor)  {ov_time_seek_lap(&m_Stream, dFactor * m_dMaxTime); ASSERT((dFactor >= 0.0) && (dFactor <= 1.0))}
-    inline coreInt64  TellRaw   ()                    {return ov_raw_tell (&m_Stream);}
-    inline coreDouble TellTime  ()                    {return ov_time_tell(&m_Stream);}
-    inline coreDouble TellFactor()                    {return ov_time_tell(&m_Stream) / m_dMaxTime;}
+    inline void Rewind    ()                          {stb_vorbis_seek_start(m_pStream);}
+    inline void SeekSample(const coreUint32 iSamples) {stb_vorbis_seek(m_pStream, iSamples); ASSERT(iSamples <= m_iMaxSample)}
+    inline void SeekFactor(const coreDouble dFactor)  {this->SeekSample(F_TO_UI   (dFactor   * coreDouble(m_iMaxSample)));}
+    inline void SeekTime  (const coreFloat  fSeconds) {this->SeekFactor(coreDouble(fSeconds) / coreDouble(m_fMaxTime));}
+    inline coreUint32 TellSample()const               {return stb_vorbis_get_sample_offset(m_pStream);}
+    inline coreDouble TellFactor()const               {return coreDouble(this->TellSample()) / coreDouble(m_iMaxSample);}
+    inline coreFloat  TellTime  ()const               {return coreFloat (this->TellFactor()  * coreDouble(m_fMaxTime));}
 
     /* get meta-information */
     const coreChar* GetComment(const coreChar* pcName)const;
@@ -89,12 +91,10 @@ public:
     inline const coreChar* GetTitle ()const {return this->GetComment("TITLE");}
 
     /* get object properties */
-    inline const coreChar*    GetPath   ()const {return m_pFile ? m_pFile->GetPath() : "";}
-    inline const vorbis_info* GetInfo   ()const {return m_pInfo;}
-    inline const coreDouble&  GetMaxTime()const {return m_dMaxTime;}
-
-    /* lap streams between two different music objects */
-    static coreBool CrossLap(coreMusic* pFirst, coreMusic* pSecond) {ASSERT(pFirst != pSecond) return !ov_crosslap(&pFirst->m_Stream, &pSecond->m_Stream);}
+    inline const coreChar*        GetPath     ()const {return m_pFile ? m_pFile->GetPath() : "";}
+    inline const stb_vorbis_info& GetInfo     ()const {return m_Info;}
+    inline const coreUint32&      GetMaxSample()const {return m_iMaxSample;}
+    inline const coreFloat&       GetMaxTime  ()const {return m_fMaxTime;}
 
 
 private:
