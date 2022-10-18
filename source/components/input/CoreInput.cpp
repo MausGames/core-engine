@@ -261,12 +261,9 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     case SDL_JOYAXISMOTION:
         if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jaxis.which)).pController) break; FALLTHROUGH
     case SDL_CONTROLLERAXISMOTION:
-        if(oEvent.jaxis.axis < CORE_INPUT_AXIS)
-        {
-            if(ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD))
-                 this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(MAX(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX), 1))) * (((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)) ? -1.0f : 1.0f), -1.0f, 1.0f));
-            else this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, 0.0f);
-        }
+        if(ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD))
+             this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(MAX(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX), 1))) * (((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)) ? -1.0f : 1.0f), -1.0f, 1.0f));
+        else this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, 0.0f);
         break;
 
     // move joystick hat
@@ -430,6 +427,9 @@ void CoreInput::__OpenJoysticks()
                 oJoystick.pController = SDL_GameControllerOpen(i);
                 oJoystick.pJoystick   = oJoystick.pController ? SDL_GameControllerGetJoystick(oJoystick.pController) : SDL_JoystickOpen(i);
 
+                // get current power-level
+                const SDL_JoystickPowerLevel ePowerLevel = SDL_JoystickCurrentPowerLevel(oJoystick.pJoystick);
+
                 // get device type
                 const SDL_GameControllerType eControllerType = SDL_GameControllerGetType(oJoystick.pController);
                 const SDL_JoystickType       eJoystickType   = SDL_JoystickGetType      (oJoystick.pJoystick);
@@ -445,9 +445,9 @@ void CoreInput::__OpenJoysticks()
 
                 // save joystick object
                 m_aJoystick.push_back(oJoystick);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %s, type %d-%d, %d buttons, %d axes, %d hats, %d balls, %d touchpads, %srumble, %sled, %saccelerometer, %sgyroscope)",
-                                   oJoystick.pController ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickSerial(i), this->GetJoystickGUID(i),
-                                   eControllerType, eJoystickType, iNumButtons, iNumAxes, iNumHats, iNumBalls, iNumTouchpads,
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %s, %s, powerlevel %d, type %d+%d, %d buttons, %d axes, %d hats, %d balls, %d touchpads, %srumble, %sled, %saccelerometer, %sgyroscope)",
+                                   oJoystick.pController ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickSerial(i), this->GetJoystickPath(i), this->GetJoystickGUID(i),
+                                   ePowerLevel, eControllerType, eJoystickType, iNumButtons, iNumAxes, iNumHats, iNumBalls, iNumTouchpads,
                                    this->GetJoystickHasRumble(i) ? "" : "NO ", this->GetJoystickHasLED(i) ? "" : "NO ", bHasAccel ? "" : "NO ", bHasGyro ? "" : "NO ");
             }
         }

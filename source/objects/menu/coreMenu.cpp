@@ -31,8 +31,8 @@ coreMenu::coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)n
 coreMenu::~coreMenu()
 {
     // remove all menu objects
-    for(coreUintW i = 0u; i < m_iNumSurfaces; ++i) m_papObject[i].clear();
-    for(coreUintW i = 0u; i < 3u;             ++i) m_aapRender[i].clear();
+    for(coreUintW i = 0u; i < m_iNumSurfaces;          ++i) m_papObject[i].clear();
+    for(coreUintW i = 0u; i < ARRAY_SIZE(m_aapRender); ++i) m_aapRender[i].clear();
 
     // delete surfaces
     SAFE_DELETE_ARRAY(m_papObject)
@@ -48,7 +48,7 @@ void coreMenu::Render()
     if(m_Transition.GetStatus())
     {
         // render transition between surfaces
-        for(coreUintW i = 0u; i < 3u; ++i)
+        for(coreUintW i = 0u; i < ARRAY_SIZE(m_aapRender); ++i)
         {
             FOR_EACH(it, m_aapRender[i])
                 (*it)->Render();
@@ -87,7 +87,7 @@ void coreMenu::Move()
                                       this->GetAlpha() * m_Transition.GetValue(CORE_TIMER_GET_NORMAL)};
 
         // move transition between surfaces
-        for(coreUintW i = 0u; i < 3u; ++i)
+        for(coreUintW i = 0u; i < ARRAY_SIZE(m_aapRender); ++i)
         {
             FOR_EACH(it, m_aapRender[i])
             {
@@ -173,7 +173,7 @@ coreBool coreMenu::ChangeSurface(const coreUint8 iNewSurface, const coreFloat fS
         }
 
         // clear and refill all render-lists
-        for(coreUintW i = 0u; i < 3u; ++i) m_aapRender[i].clear();
+        for(coreUintW i = 0u; i < ARRAY_SIZE(m_aapRender); ++i) m_aapRender[i].clear();
         FOR_EACH(it, m_papObject[m_iCurSurface]) m_aapRender[1].push_back(*it);
         FOR_EACH(it, m_papObject[iNewSurface])   m_aapRender[2].push_back(*it);
 

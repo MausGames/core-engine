@@ -13,9 +13,10 @@
 // TODO 5: touch-related functions empty on non-mobile
 // TODO 3: remove the 1-frame delay when using the Set* interface from game-code
 // TODO 3: pseudo-joystick should accumulate all input from other devices
-// TODO 3: press and release within the same frame gets ignored, but it is assumed that both cannot happen in the same loop
+// TODO 2: press and release within the same frame gets ignored, but it is assumed that both cannot happen in the same loop
 // TODO 5: <old comment style>
-// TODO 5: expose touch input in emscripten
+// TODO 3: mouse button 0 is not used
+// TODO 2: in browser (Firefox?), xbox 360 controller: right stick is axis 3+4 (instead of 2+3), and d-pad is converted to another axis-pair 6+7
 
 
 // ****************************************************************
@@ -157,6 +158,7 @@ public:
     /* get joystick data */
     inline const coreChar* GetJoystickName     (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerName     (__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickName     (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
     inline const coreChar* GetJoystickSerial   (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerGetSerial(__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickGetSerial(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
+    inline const coreChar* GetJoystickPath     (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerPath     (__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickPath     (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
     inline const coreChar* GetJoystickGUID     (const coreUintW iIndex)const {if(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) {static coreChar s_acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), s_acGUID, ARRAY_SIZE(s_acGUID)); return s_acGUID;} return "";}
     inline coreBool        GetJoystickHasRumble(const coreUintW iIndex)const {return (SDL_JoystickHasRumble(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}
     inline coreBool        GetJoystickHasLED   (const coreUintW iIndex)const {return (SDL_JoystickHasLED   (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}

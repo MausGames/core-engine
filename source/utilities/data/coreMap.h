@@ -77,8 +77,8 @@ public:
     inline coreUintW capacity()const                    {return m_atValueList.capacity();}
 
     /* manage container ordering */
-    inline void sort_asc  () {this->_cache_clear(); this->_sort([](const K& a, const K& b) {return (a < b);});}
-    inline void sort_desc () {this->_cache_clear(); this->_sort([](const K& a, const K& b) {return (a > b);});}
+    inline void sort_asc  () {this->_cache_clear(); if(!this->empty()) this->_sort([](const K& a, const K& b) {return (a < b);});}
+    inline void sort_desc () {this->_cache_clear(); if(!this->empty()) this->_sort([](const K& a, const K& b) {return (a > b);});}
     inline void reverse   () {this->_cache_clear(); std::reverse(m_atValueList.begin(), m_atValueList.end()); std::reverse(m_atKeyList.begin(), m_atKeyList.end());}
     inline void prepare_bs() {this->sort_asc();}
 
@@ -500,6 +500,7 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
 /* sort entries with comparison function */
 template <typename K, typename I, typename T> template <typename F> void coreMapGen<K, I, T>::_sort(F&& nCompareFunc)
 {
+    ASSERT(!this->empty())
     this->_sort(nCompareFunc, 0u, m_atKeyList.size() - 1u);
 }
 

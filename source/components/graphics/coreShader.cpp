@@ -25,7 +25,7 @@ template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct co
 };
 
 #define __STRING_LIST(s,n,v)              \
-    extern const coreChar v ## __a[] = s; \
+    static const coreChar v ## __a[] = s; \
     static const coreStringList<v ## __a, ARRAY_SIZE(v ## __a), n> v;
 
 __STRING_LIST(CORE_SHADER_UNIFORM_LIGHT_POSITION,  CORE_GRAPHICS_LIGHTS,      s_asLightPosition)

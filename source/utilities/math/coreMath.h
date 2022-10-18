@@ -315,7 +315,7 @@ constexpr coreUint32 coreMath::PopCount(coreUint64 iInput)
 
 
 // ****************************************************************
-/* get index of the least significant one-bit */
+/* get index of the least significant one-bit (smallest) */
 constexpr coreUint32 coreMath::BitScanFwd(const coreUint64 iInput)
 {
     if(!iInput) return 64u;
@@ -354,7 +354,7 @@ constexpr coreUint32 coreMath::BitScanFwd(const coreUint64 iInput)
 
 
 // ****************************************************************
-/* get index of the most significant one-bit */
+/* get index of the most significant one-bit (biggest) */
 constexpr coreUint32 coreMath::BitScanRev(const coreUint64 iInput)
 {
     if(!iInput) return 64u;

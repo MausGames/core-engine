@@ -294,7 +294,7 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 , m_iCurIndex     (0u)
 {
     // create empty music object
-    m_pEmptyMusic = new coreMusic(r_cast<coreFile*>(0));
+    m_pEmptyMusic = new coreMusic(s_cast<coreFile*>(NULL));
     m_pCurMusic   = m_pEmptyMusic;
 }
 

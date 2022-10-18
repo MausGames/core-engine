@@ -2276,7 +2276,6 @@ static GLboolean _glewInit_GL_VERSION_3_0 ()
 
   r = _glewInit_GL_ARB_framebuffer_object() || r;
   r = _glewInit_GL_ARB_map_buffer_range() || r;
-  r = _glewInit_GL_ARB_uniform_buffer_object() || r;
   r = _glewInit_GL_ARB_vertex_array_object() || r;
 
   r = ((glBeginConditionalRender = (PFNGLBEGINCONDITIONALRENDERPROC)glewGetProcAddress((const GLubyte*)"glBeginConditionalRender")) == NULL) || r;
@@ -2347,6 +2346,7 @@ static GLboolean _glewInit_GL_VERSION_3_1 ()
   GLboolean r = GL_FALSE;
 
   r = _glewInit_GL_ARB_copy_buffer() || r;
+  r = _glewInit_GL_ARB_uniform_buffer_object() || r;
 
   r = ((glDrawArraysInstanced = (PFNGLDRAWARRAYSINSTANCEDPROC)glewGetProcAddress((const GLubyte*)"glDrawArraysInstanced")) == NULL) || r;
   r = ((glDrawElementsInstanced = (PFNGLDRAWELEMENTSINSTANCEDPROC)glewGetProcAddress((const GLubyte*)"glDrawElementsInstanced")) == NULL) || r;
