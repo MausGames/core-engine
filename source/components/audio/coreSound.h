@@ -69,8 +69,8 @@ public:
 
     /* set various audio source properties */
     void SetSource(const coreVector3 vPosition, const coreVector3 vVelocity);
-    inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); ASSERT(fVolume >= 0.0f)}
-    inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      ASSERT(fPitch  >= 0.0f)}
+    inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); ASSERT((fVolume >= 0.0f) && (fVolume <= CORE_AUDIO_MAX_GAIN))}
+    inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      ASSERT((fPitch  >= 0.5f) && (fPitch  <= 2.0f))}
     inline void SetLoop  (const coreBool  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
 
     /* enable active audio source with reference pointer */

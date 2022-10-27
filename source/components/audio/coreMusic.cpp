@@ -20,18 +20,13 @@ coreMusic::coreMusic(const coreChar* pcPath)noexcept
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
-: m_aiBuffer   {}
-, m_iSource    (0u)
-, m_fVolume    (1.0f)
-, m_fPitch     (1.0f)
-, m_bLoop      (false)
-, m_bStatus    (false)
-, m_pFile      (NULL)
+: m_pFile      (NULL)
 , m_pStream    (NULL)
 , m_Info       {}
 , m_Comment    {}
 , m_iMaxSample (0u)
 , m_fMaxTime   (0.0f)
+, m_bLoop      (false)
 {
     if(!pFile)            return;
     if(!pFile->GetSize()) return;   // do not load file data
@@ -39,7 +34,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     // copy file object as streaming source
     coreFile::InternalNew(&m_pFile, pFile);
 
-    // test file format and open music stream
+    // open music stream
     coreInt32 iError;
     m_pStream = stb_vorbis_open_file_section(m_pFile->CreateReadStream(), 1, &iError, NULL, pFile->GetSize());
     if(!m_pStream)
@@ -49,9 +44,6 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 
         return;
     }
-
-    // create sound buffers
-    alGenBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
 
     // retrieve music file information
     m_Info       = stb_vorbis_get_info                (m_pStream);
@@ -67,10 +59,6 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 /* destructor */
 coreMusic::~coreMusic()
 {
-    // clear audio source and sound buffers
-    this->Stop();
-    alDeleteBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
-
     // close music stream
     stb_vorbis_close(m_pStream);
     if(m_pFile) Core::Log->Info("Music (%s) unloaded", m_pFile->GetPath());
@@ -81,72 +69,93 @@ coreMusic::~coreMusic()
 
 
 // ****************************************************************
-/* update the music object */
-coreBool coreMusic::Update()
+/* get specific meta-information */
+const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 {
-    if(!m_bStatus) return false;
+    const coreUintW iLen = std::strlen(pcName);
 
-    // get number of processed sound buffers
-    ALint iProcessed;
-    alGetSourcei(m_iSource, AL_BUFFERS_PROCESSED, &iProcessed);
-
-    if(iProcessed)
+    // loop through all comments
+    for(coreUintW i = 0u, ie = m_Comment.comment_list_length; i < ie; ++i)
     {
-        ALuint aiBuffer[CORE_MUSIC_BUFFERS];
-
-        // retrieve processed sound buffers
-        alSourceUnqueueBuffers(m_iSource, iProcessed, aiBuffer);
-
-        // update processed sound buffers
-        const coreUintW iUpdated = this->__StreamList(aiBuffer, iProcessed);
-
-        if(iUpdated)
-        {
-            // queue updated sound buffers
-            alSourceQueueBuffers(m_iSource, iUpdated, aiBuffer);
-        }
-        else
-        {
-            // get number of queued sound buffers
-            ALint iQueued;
-            alGetSourcei(m_iSource, AL_BUFFERS_QUEUED, &iQueued);
-
-            if(!iQueued)
-            {
-                // music is finished
-                this->Stop();
-                return true;
-            }
-        }
-
-        // keep music playing
-        ALint iStatus;
-        alGetSourcei(m_iSource, AL_SOURCE_STATE, &iStatus);
-        if(iStatus != AL_PLAYING) alSourcePlay(m_iSource);
+        // check comment and extract meta-information
+        if(!std::memcmp(pcName, m_Comment.comment_list[i], iLen))
+            return m_Comment.comment_list[i] + iLen + 1u;
     }
 
-    return false;
+    // specific meta-information not found
+    return "";
+}
+
+
+// ****************************************************************
+/* constructor */
+coreMusicPlayer::coreMusicPlayer()noexcept
+: coreThread  ("music_thread")
+, m_aiBuffer  {UINT32_MAX}
+, m_iSource   (0u)
+, m_fVolume   (1.0f)
+, m_fPitch    (1.0f)
+, m_bStatus   (false)
+, m_apMusic   {}
+, m_eRepeat   (CORE_MUSIC_ALL_REPEAT)
+, m_pCurMusic (NULL)
+, m_iCurIndex (0u)
+, m_Mutex     ()
+{
+    // configure music thread
+    this->SetFrequency(60.0f);
+}
+
+
+// ****************************************************************
+/* destructor */
+coreMusicPlayer::~coreMusicPlayer()
+{
+    // kill music thread
+    this->KillThread();
+
+    // clear audio source and sound buffers
+    this->Stop();
+    if(m_aiBuffer[0] != UINT32_MAX) alDeleteBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
+
+    // remove all music objects
+    this->ClearMusic();
+}
+
+
+// ****************************************************************
+/* update the music-player */
+coreBool coreMusicPlayer::Update()
+{
+    // process without music thread
+    return this->GetActive() ? false : this->__ProcessQueue();
 }
 
 
 // ****************************************************************
 /* play the music */
-coreStatus coreMusic::Play()
+coreStatus coreMusicPlayer::Play()
 {
-    if(m_bStatus) return CORE_INVALID_CALL;
-    if(!m_pFile)  return CORE_INVALID_DATA;
+    if(m_bStatus)    return CORE_BUSY;
+    if(!m_pCurMusic) return CORE_INVALID_CALL;
+
+    __CORE_MUSIC_LOCKER
 
     if(!m_iSource)
     {
         // retrieve next free audio source
-        m_iSource = Core::Audio->NextSource(CORE_AUDIO_MUSIC_BUFFER, m_fVolume, 0u);
-        WARN_IF(!m_iSource) return CORE_ERROR_SYSTEM;
+        const ALuint iSource = Core::Audio->NextSource(CORE_AUDIO_MUSIC_BUFFER, m_fVolume, 0u);
+        WARN_IF(!iSource) return CORE_ERROR_SYSTEM;
+
+        // create sound buffers
+        if(m_aiBuffer[0] == UINT32_MAX) alGenBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
 
         // prepare sound buffers
         const coreUintW iUpdated = this->__StreamList(m_aiBuffer, CORE_MUSIC_BUFFERS);
         WARN_IF(!iUpdated) return CORE_INVALID_DATA;
 
         // queue sound buffers
+        m_iSource = iSource;
         alSourceQueueBuffers(m_iSource, iUpdated, m_aiBuffer);
 
         Core::Audio->DeferUpdates();
@@ -171,8 +180,10 @@ coreStatus coreMusic::Play()
 
 // ****************************************************************
 /* stop the music */
-void coreMusic::Stop()
+void coreMusicPlayer::Stop()
 {
+    __CORE_MUSIC_LOCKER
+
     if(m_iSource)
     {
         // stop audio source
@@ -183,7 +194,7 @@ void coreMusic::Stop()
         m_iSource = 0u;
 
         // rewind the music stream
-        this->Rewind();
+        m_pCurMusic->Rewind();
     }
 
     // reset playback status
@@ -193,8 +204,10 @@ void coreMusic::Stop()
 
 // ****************************************************************
 /* pause the music */
-void coreMusic::Pause()
+void coreMusicPlayer::Pause()
 {
+    __CORE_MUSIC_LOCKER
+
     if(m_iSource)
     {
         // pause audio source
@@ -203,181 +216,6 @@ void coreMusic::Pause()
 
     // reset playback status
     m_bStatus = false;
-}
-
-
-// ****************************************************************
-/* get specific meta-information */
-const coreChar* coreMusic::GetComment(const coreChar* pcName)const
-{
-    const coreUintW iLen = std::strlen(pcName);
-
-    // loop through all comments
-    for(coreUintW i = 0u, ie = m_Comment.comment_list_length; i < ie; ++i)
-    {
-        // check comment and extract meta-information
-        if(!std::memcmp(pcName, m_Comment.comment_list[i], iLen))
-            return m_Comment.comment_list[i] + iLen + 1u;
-    }
-
-    // specific meta-information not found
-    return "";
-}
-
-
-// ****************************************************************
-/* read from music stream and update sound buffer */
-coreBool coreMusic::__Stream(const ALuint iBuffer)
-{
-    alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aData[4u * CORE_MUSIC_CHUNK * sizeof(coreFloat)];
-
-    const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4u * CORE_MUSIC_CHUNK);
-    coreInt32       iReadSize  = 0;
-
-    // process the defined music stream chunk size
-    while(iReadSize < iChunkSize)
-    {
-        coreInt32 iResult;
-
-        // read and decode data from the music track
-        if(Core::Audio->GetSupportFloat()) iResult = stb_vorbis_get_samples_float_interleaved(m_pStream, m_Info.channels, r_cast<coreFloat*>(s_aData) + iReadSize, iChunkSize - iReadSize) * m_Info.channels;
-                                      else iResult = stb_vorbis_get_samples_short_interleaved(m_pStream, m_Info.channels, r_cast<coreInt16*>(s_aData) + iReadSize, iChunkSize - iReadSize) * m_Info.channels;
-
-        if(iResult <= 0) break;
-        iReadSize += iResult;
-    }
-
-    // music track finished
-    if(iReadSize == 0) return false;
-
-    // write decoded data to sound buffer
-    if(Core::Audio->GetSupportFloat()) alBufferData(iBuffer, (m_Info.channels == 1) ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32, s_aData, iReadSize * sizeof(coreFloat), m_Info.sample_rate);
-                                  else alBufferData(iBuffer, (m_Info.channels == 1) ? AL_FORMAT_MONO16       : AL_FORMAT_STEREO16,       s_aData, iReadSize * sizeof(coreInt16), m_Info.sample_rate);
-    return true;
-}
-
-
-// ****************************************************************
-/* update multiple sound buffers */
-coreUintW coreMusic::__StreamList(const ALuint* piBuffer, const coreUintW iCount)
-{
-    coreUintW iUpdated = 0u;
-
-    // try to update all provided sound buffers
-    while(iUpdated < iCount)
-    {
-        if(!this->__Stream(piBuffer[iUpdated]))
-        {
-            if(!m_bLoop) break;
-
-            // rewind the music stream
-            this->Rewind();
-            WARN_IF(!this->__Stream(piBuffer[iUpdated])) break;
-        }
-        iUpdated += 1u;
-    }
-
-    return iUpdated;
-}
-
-
-// ****************************************************************
-/* constructor */
-coreMusicPlayer::coreMusicPlayer()noexcept
-: m_apMusic       {}
-, m_pEmptyMusic   (NULL)
-, m_apSequence    {}
-, m_eRepeat       (CORE_MUSIC_ALL_REPEAT)
-, m_FadeTimer     (coreTimer(1.0f, 0.0f, 1u))
-, m_pFadePrevious (NULL)
-, m_pCurMusic     (NULL)
-, m_iCurIndex     (0u)
-{
-    // create empty music object
-    m_pEmptyMusic = new coreMusic(s_cast<coreFile*>(NULL));
-    m_pCurMusic   = m_pEmptyMusic;
-}
-
-
-// ****************************************************************
-/* destructor */
-coreMusicPlayer::~coreMusicPlayer()
-{
-    // remove all music objects
-    this->ClearMusic();
-
-    // delete empty music object
-    SAFE_DELETE(m_pEmptyMusic)
-}
-
-
-// ****************************************************************
-/* update the music-player */
-coreBool coreMusicPlayer::Update()
-{
-    if(m_apMusic.empty()) return false;
-    ASSERT(m_pCurMusic != m_pEmptyMusic)
-
-    // update transition between two music objects
-    if(m_FadeTimer.GetStatus())
-    {
-        if(m_FadeTimer.Update(1.0f))
-            m_pFadePrevious->Stop();
-
-        // adjust their volume
-        m_pFadePrevious->SetVolume(m_FadeTimer.GetValue(CORE_TIMER_GET_REVERSED));
-        m_pCurMusic    ->SetVolume(m_FadeTimer.GetValue(CORE_TIMER_GET_NORMAL));
-
-        // update the previous music object
-        m_pFadePrevious->Update();
-    }
-
-    // update the current music object
-    if(m_pCurMusic->Update())
-    {
-        // repeat, switch or stop as defined
-        switch(m_eRepeat)
-        {
-        default: ASSERT(false)
-        case CORE_MUSIC_ALL_NOREPEAT:    if((m_iCurIndex + 1u) >= m_apMusic.size()) break; FALLTHROUGH
-        case CORE_MUSIC_ALL_REPEAT:      this->Next();                                     FALLTHROUGH
-        case CORE_MUSIC_SINGLE_REPEAT:   m_pCurMusic->Play();                              FALLTHROUGH
-        case CORE_MUSIC_SINGLE_NOREPEAT: break;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-
-// ****************************************************************
-/* order the playback sequence */
-void coreMusicPlayer::Order()
-{
-    // reset playback sequence
-    m_apSequence.clear();
-    m_apSequence = m_apMusic;
-
-    // switch to first music object
-    this->Select(0u);
-}
-
-
-// ****************************************************************
-/* shuffle the playback sequence */
-void coreMusicPlayer::Shuffle()
-{
-    // reset playback sequence
-    m_apSequence.clear();
-    m_apSequence = m_apMusic;
-
-    // shuffle the list
-    coreData::Shuffle(m_apSequence.begin(), m_apSequence.end());
-
-    // switch to first music object
-    this->Select(0u);
 }
 
 
@@ -441,18 +279,25 @@ coreStatus coreMusicPlayer::DeleteMusic(const coreUintW iIndex)
 {
     WARN_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
 
-    coreMusic* pMusic = m_apMusic[iIndex];
+    __CORE_MUSIC_LOCKER
 
-    // remove music object
-    m_apMusic   .erase(m_apMusic.begin() + iIndex);
-    m_apSequence.erase(std::find(m_apSequence.begin(), m_apSequence.end(), pMusic));
+    // stop the music (if currently selected)
+    if(iIndex == m_iCurIndex) this->Stop();
 
     // delete music object
-    SAFE_DELETE(pMusic)
+    MANAGED_DELETE(m_apMusic[iIndex])
+
+    // remove music object
+    m_apMusic.erase(iIndex);
 
     // check and switch the current music object
-    if(m_apMusic.empty()) m_pCurMusic = m_pEmptyMusic;
-    else this->Select(0u);
+    if(m_apMusic.empty())
+    {
+        m_pCurMusic = NULL;
+        m_iCurIndex = 0u;
+    }
+    else if(iIndex <  m_iCurIndex) m_iCurIndex = m_iCurIndex - 1u;
+    else if(iIndex == m_iCurIndex) this->Select(0u);
 
     return CORE_OK;
 }
@@ -462,16 +307,21 @@ coreStatus coreMusicPlayer::DeleteMusic(const coreUintW iIndex)
 /* remove all music objects */
 void coreMusicPlayer::ClearMusic()
 {
+    __CORE_MUSIC_LOCKER
+
+    // stop the music
+    this->Stop();
+
     // delete music objects
     FOR_EACH(it, m_apMusic)
-        SAFE_DELETE(*it)
+        MANAGED_DELETE(*it)
 
     // clear memory
-    m_apMusic   .clear();
-    m_apSequence.clear();
+    m_apMusic.clear();
 
     // reset current music object
-    m_pCurMusic = m_pEmptyMusic;
+    m_pCurMusic = NULL;
+    m_iCurIndex = 0u;
 }
 
 
@@ -479,34 +329,30 @@ void coreMusicPlayer::ClearMusic()
 /* switch to specific music object */
 void coreMusicPlayer::Select(const coreUintW iIndex)
 {
-    WARN_IF(iIndex >= m_apMusic.size())     return;
-    if(m_pCurMusic == m_apSequence[iIndex]) return;
+    WARN_IF(iIndex >= m_apMusic.size())  return;
+    if(m_pCurMusic == m_apMusic[iIndex]) return;
 
-    // get playback status
-    const coreBool bStatus = m_pCurMusic->IsPlaying();
+    __CORE_MUSIC_LOCKER
 
-    if(bStatus)
-    {
-        if(m_FadeTimer.GetSpeed())
-        {
-            // start transition to new music object
-            m_FadeTimer.Play(CORE_TIMER_PLAY_RESET);
-            m_pFadePrevious = m_pCurMusic;
-        }
-        else
-        {
-            // stop old music object
-            m_pCurMusic->Stop();
-        }
-    }
+    // stop the music (if currently paused)
+    if(m_iSource && !m_bStatus) this->Stop();
+
+    // rewind the old music stream
+    if(m_bStatus) m_pCurMusic->Rewind();
 
     // set new music object
+    m_pCurMusic = m_apMusic[iIndex];
     m_iCurIndex = iIndex;
-    m_pCurMusic = m_apSequence[iIndex];
+}
 
-    // adjust volume and status
-    m_pCurMusic->SetVolume(m_FadeTimer.GetStatus() ? 0.0f : 1.0f);
-    if(bStatus) m_pCurMusic->Play();
+void coreMusicPlayer::SelectName(const coreHashString& sName)
+{
+    // search for file name
+    const coreUintW iIndex = m_apMusic.index(sName);
+    WARN_IF(iIndex >= m_apMusic.size()) return;
+
+    // go to selected music object
+    this->Select(iIndex);
 }
 
 
@@ -514,6 +360,8 @@ void coreMusicPlayer::Select(const coreUintW iIndex)
 /* switch to next music object */
 coreBool coreMusicPlayer::Next()
 {
+    __CORE_MUSIC_LOCKER
+
     if((m_iCurIndex + 1u) >= m_apMusic.size())
     {
         // back to the beginning
@@ -531,6 +379,8 @@ coreBool coreMusicPlayer::Next()
 /* switch to previous music object */
 coreBool coreMusicPlayer::Previous()
 {
+    __CORE_MUSIC_LOCKER
+
     if(m_iCurIndex == 0u)
     {
         // back to the end
@@ -545,24 +395,177 @@ coreBool coreMusicPlayer::Previous()
 
 
 // ****************************************************************
+/* init music thread */
+coreStatus coreMusicPlayer::__InitThread()
+{
+    return CORE_OK;
+}
+
+
+// ****************************************************************
+/* run music thread */
+coreStatus coreMusicPlayer::__RunThread()
+{
+    __CORE_MUSIC_LOCKER
+
+    // process with music thread
+    this->__ProcessQueue();
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
+/* exit music thread */
+void coreMusicPlayer::__ExitThread()
+{
+}
+
+
+// ****************************************************************
+/* process sound queue */
+coreBool coreMusicPlayer::__ProcessQueue()
+{
+    if(!m_bStatus) return false;
+    ASSERT(m_pCurMusic)
+
+    // get number of processed sound buffers
+    ALint iProcessed;
+    alGetSourcei(m_iSource, AL_BUFFERS_PROCESSED, &iProcessed);
+
+    if(iProcessed)
+    {
+        ALuint aiBuffer[CORE_MUSIC_BUFFERS];
+
+        // retrieve processed sound buffers
+        alSourceUnqueueBuffers(m_iSource, iProcessed, aiBuffer);
+
+        // update processed sound buffers
+        const coreUintW iUpdated = this->__StreamList(aiBuffer, iProcessed);
+
+        if(iUpdated)
+        {
+            // queue updated sound buffers
+            alSourceQueueBuffers(m_iSource, iUpdated, aiBuffer);
+        }
+        else
+        {
+            // get number of queued sound buffers
+            ALint iQueued;
+            alGetSourcei(m_iSource, AL_BUFFERS_QUEUED, &iQueued);
+
+            if(!iQueued)
+            {
+                // music is finished
+                this->Stop();
+                return true;
+            }
+        }
+
+        // keep music playing
+        ALint iStatus;
+        alGetSourcei(m_iSource, AL_SOURCE_STATE, &iStatus);
+        if(iStatus != AL_PLAYING) alSourcePlay(m_iSource);
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* read from music stream and update sound buffer */
+coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
+{
+    alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aData[4u * CORE_MUSIC_CHUNK * sizeof(coreFloat)];
+
+    const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4u * CORE_MUSIC_CHUNK);
+    coreInt32       iReadSize  = 0;
+
+    // process the defined music stream chunk size
+    while(iReadSize < iChunkSize)
+    {
+        coreInt32 iResult;
+
+        // read and decode data from the music track
+        if(Core::Audio->GetSupportFloat()) iResult = stb_vorbis_get_samples_float_interleaved(m_pCurMusic->m_pStream, m_pCurMusic->m_Info.channels, r_cast<coreFloat*>(s_aData) + iReadSize, iChunkSize - iReadSize) * m_pCurMusic->m_Info.channels;
+                                      else iResult = stb_vorbis_get_samples_short_interleaved(m_pCurMusic->m_pStream, m_pCurMusic->m_Info.channels, r_cast<coreInt16*>(s_aData) + iReadSize, iChunkSize - iReadSize) * m_pCurMusic->m_Info.channels;
+
+        if(iResult <= 0) break;
+        iReadSize += iResult;
+    }
+
+    // music track finished
+    if(iReadSize == 0) return false;
+
+    // write decoded data to sound buffer
+    if(Core::Audio->GetSupportFloat()) alBufferData(iBuffer, (m_pCurMusic->m_Info.channels == 1) ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32, s_aData, iReadSize * sizeof(coreFloat), m_pCurMusic->m_Info.sample_rate);
+                                  else alBufferData(iBuffer, (m_pCurMusic->m_Info.channels == 1) ? AL_FORMAT_MONO16       : AL_FORMAT_STEREO16,       s_aData, iReadSize * sizeof(coreInt16), m_pCurMusic->m_Info.sample_rate);
+    return true;
+}
+
+
+// ****************************************************************
+/* update multiple sound buffers */
+coreUintW coreMusicPlayer::__StreamList(const ALuint* piBuffer, const coreUintW iCount)
+{
+    coreUintW iUpdated = 0u;
+
+    // try to update all provided sound buffers
+    while(iUpdated < iCount)
+    {
+        if(!this->__Stream(piBuffer[iUpdated]))
+        {
+            if(m_pCurMusic->m_bLoop)
+            {
+                // rewind the music stream
+                m_pCurMusic->Rewind();
+            }
+            else
+            {
+                // repeat, switch or stop as defined
+                     if(m_eRepeat == CORE_MUSIC_SINGLE_NOREPEAT) {break;}
+                else if(m_eRepeat == CORE_MUSIC_SINGLE_REPEAT)   {m_pCurMusic->Rewind();}
+                else if(m_eRepeat == CORE_MUSIC_ALL_NOREPEAT)    {if((m_iCurIndex + 1u) >= m_apMusic.size()) break; this->Next();}
+                else if(m_eRepeat == CORE_MUSIC_ALL_REPEAT)      {this->Next();}
+            }
+
+            // cancel on further failure
+            WARN_IF(!this->__Stream(piBuffer[iUpdated])) break;
+        }
+        iUpdated += 1u;
+    }
+
+    return iUpdated;
+}
+
+
+// ****************************************************************
 /* add music object */
 coreStatus coreMusicPlayer::__AddMusic(coreFile* pFile)
 {
     // create new music object
-    coreMusic* pNewMusic = new coreMusic(pFile);
-    if(!pNewMusic->GetMaxSample())
+    coreMusic* pNewMusic = MANAGED_NEW(coreMusic, pFile);
+    if(!pNewMusic->GetMaxSample())   // invalid file
     {
-        // remove invalid file
-        SAFE_DELETE(pNewMusic)
+        MANAGED_DELETE(pNewMusic)
+        return CORE_ERROR_FILE;
+    }
+
+    __CORE_MUSIC_LOCKER
+
+    // extract and store file name
+    const coreChar* pcName = coreData::StrFilename(pFile->GetPath());
+    WARN_IF(m_apMusic.count(pcName))
+    {
+        MANAGED_DELETE(pNewMusic)
         return CORE_INVALID_INPUT;
     }
 
     // add music object to the music-player
-    m_apMusic   .push_back(pNewMusic);
-    m_apSequence.push_back(pNewMusic);
+    m_apMusic.emplace(pcName, pNewMusic);
 
     // init the access pointer
-    if(m_pCurMusic == m_pEmptyMusic) m_pCurMusic = pNewMusic;
+    if(!m_pCurMusic) m_pCurMusic = pNewMusic;
 
     return CORE_OK;
 }
