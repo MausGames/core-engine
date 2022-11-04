@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_STRING_H_
 #define _CORE_GUARD_STRING_H_
 
-// TODO 3: constexpr coreString, when std::string in libstdc++ and libc++ supports it
 // TODO 3: work-string should also handle NULL
 // TODO 3: remove custom contains function with C++23
 // TODO 4: when to use append, when to use += (which is only used rarely) ? change everything to append ?
@@ -22,26 +21,26 @@ class coreString final : public std::string
 {
 public:
     coreString() = default;
-    coreString(const coreChar* pcText)noexcept                       : std::string (pcText ? pcText : "")       {}
-    coreString(const coreChar* pcText, const coreUintW iNum)noexcept : std::string (pcText ? pcText : "", iNum) {}
-    coreString(const coreUintW iNum, const coreChar cChar)noexcept   : std::string (iNum, cChar)                {}
-    coreString(std::string&& m)noexcept                              : std::string (std::move(m))               {}
+    constexpr coreString(const coreChar* pcText)noexcept                       : std::string (pcText ? pcText : "")       {}
+    constexpr coreString(const coreChar* pcText, const coreUintW iNum)noexcept : std::string (pcText ? pcText : "", iNum) {}
+    constexpr coreString(const coreUintW iNum, const coreChar cChar)noexcept   : std::string (iNum, cChar)                {}
+    constexpr coreString(std::string&& m)noexcept                              : std::string (std::move(m))               {}
 
     ENABLE_COPY(coreString)
 
     /* assign new string */
     using std::string::assign;
-    inline coreString& assign(const coreChar* pcText)                       {this->std::string::assign(pcText ? pcText : "");       return *this;}
-    inline coreString& assign(const coreChar* pcText, const coreUintW iNum) {this->std::string::assign(pcText ? pcText : "", iNum); return *this;}
+    constexpr coreString& assign(const coreChar* pcText)                       {this->std::string::assign(pcText ? pcText : "");       return *this;}
+    constexpr coreString& assign(const coreChar* pcText, const coreUintW iNum) {this->std::string::assign(pcText ? pcText : "", iNum); return *this;}
 
     /* append new string */
     using std::string::append;
-    inline coreString& append(const coreChar* pcText)                       {this->std::string::append(pcText ? pcText : "");       return *this;}
-    inline coreString& append(const coreChar* pcText, const coreUintW iNum) {this->std::string::append(pcText ? pcText : "", iNum); return *this;}
+    constexpr coreString& append(const coreChar* pcText)                       {this->std::string::append(pcText ? pcText : "");       return *this;}
+    constexpr coreString& append(const coreChar* pcText, const coreUintW iNum) {this->std::string::append(pcText ? pcText : "", iNum); return *this;}
 
     /* append new string with operator */
     using std::string::operator +=;
-    inline coreString& operator += (const coreChar* pcText) {return this->append(pcText);}
+    constexpr coreString& operator += (const coreChar* pcText) {return this->append(pcText);}
 
     /* replace all occurrences of a sub-string with another one */
     using std::string::replace;
@@ -51,7 +50,7 @@ public:
     coreString& trim(const coreChar* pcRemove = " \n\r\t");
 
     /* check for existence of a sub-string */
-    inline coreBool contains(const coreChar* pcText)const {return (this->find(pcText) != coreString::npos);}
+    constexpr coreBool contains(const coreChar* pcText)const {return (this->find(pcText) != coreString::npos);}
 };
 
 

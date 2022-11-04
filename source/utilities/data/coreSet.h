@@ -28,32 +28,32 @@ public:
 
     /* insert new unique item */
     using coreList<T>::insert;
-    inline void insert   (const T& tItem) {ASSERT(!this->count   (tItem)) this->push_back(tItem);}
-    inline void insert_bs(const T& tItem) {ASSERT(!this->count_bs(tItem)) this->insert(this->__retrieve_bs(tItem), tItem);}
+    constexpr void insert   (const T& tItem) {ASSERT(!this->count   (tItem)) this->push_back(tItem);}
+    constexpr void insert_bs(const T& tItem) {ASSERT(!this->count_bs(tItem)) this->insert(this->__retrieve_bs(tItem), tItem);}
 
     /* remove existing item */
     using coreList<T>::erase;
-    inline coreIterator erase   (const T& tItem) {const auto it = this->__retrieve   (tItem); if(this->__check   (it))        return this->erase(it); return this->end();}
-    inline coreIterator erase_bs(const T& tItem) {const auto it = this->__retrieve_bs(tItem); if(this->__check_bs(it, tItem)) return this->erase(it); return this->end();}
+    constexpr coreIterator erase   (const T& tItem) {const auto it = this->__retrieve   (tItem); if(this->__check   (it))        return this->erase(it); return this->end();}
+    constexpr coreIterator erase_bs(const T& tItem) {const auto it = this->__retrieve_bs(tItem); if(this->__check_bs(it, tItem)) return this->erase(it); return this->end();}
 
     /* check for existing item */
-    inline coreBool count   (const T& tItem)const {return this->__check   (this->__retrieve   (tItem));}
-    inline coreBool count_bs(const T& tItem)const {return this->__check_bs(this->__retrieve_bs(tItem), tItem);}
+    constexpr coreBool count   (const T& tItem)const {return this->__check   (this->__retrieve   (tItem));}
+    constexpr coreBool count_bs(const T& tItem)const {return this->__check_bs(this->__retrieve_bs(tItem), tItem);}
 
     /* get internal index */
     using coreList<T>::index;
-    inline coreUintW index   (const T& tItem)const {return this->index(this->__retrieve   (tItem));}
-    inline coreUintW index_bs(const T& tItem)const {return this->index(this->__retrieve_bs(tItem));}
+    constexpr coreUintW index   (const T& tItem)const {return this->index(this->__retrieve   (tItem));}
+    constexpr coreUintW index_bs(const T& tItem)const {return this->index(this->__retrieve_bs(tItem));}
 
 
 private:
     /* check for successful item lookup */
-    inline coreBool __check   (const coreConstIterator& it)const                 {return (it != this->end());}
-    inline coreBool __check_bs(const coreConstIterator& it, const T& tItem)const {return (it != this->end()) && ((*it) == tItem);}
+    constexpr coreBool __check   (const coreConstIterator& it)const                 {return (it != this->end());}
+    constexpr coreBool __check_bs(const coreConstIterator& it, const T& tItem)const {return (it != this->end()) && ((*it) == tItem);}
 
     /* lookup item */
-    inline coreConstIterator __retrieve   (const T& tItem)const {return std::find(this->begin(), this->end(), tItem);}
-    inline coreConstIterator __retrieve_bs(const T& tItem)const {ASSERT(std::is_sorted(this->begin(), this->end())) return std::lower_bound(this->begin(), this->end(), tItem);}
+    constexpr coreConstIterator __retrieve   (const T& tItem)const {return std::find(this->begin(), this->end(), tItem);}
+    constexpr coreConstIterator __retrieve_bs(const T& tItem)const {ASSERT(std::is_sorted(this->begin(), this->end())) return std::lower_bound(this->begin(), this->end(), tItem);}
 };
 
 
