@@ -351,7 +351,8 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
     if(pDC)
     {
         // get full extension string (WGL)
-        (*psOutput) = wglGetExtensionsStringARB(pDC);
+             if(wglGetExtensionsStringARB) (*psOutput) = wglGetExtensionsStringARB(pDC);
+        else if(wglGetExtensionsStringEXT) (*psOutput) = wglGetExtensionsStringEXT();
 
         // release device context
         ReleaseDC(NULL, pDC);
