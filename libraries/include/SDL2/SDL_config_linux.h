@@ -79,6 +79,7 @@
 #define HAVE_STRING_H 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_WCHAR_H 1
+#define HAVE_LINUX_INPUT_H 1
 /* #undef HAVE_PTHREAD_NP_H */
 /* #undef HAVE_LIBUNWIND_H */
 
@@ -146,6 +147,7 @@
 #define HAVE_STRCASECMP 1
 /* #undef HAVE__STRNICMP */
 #define HAVE_STRNCASECMP 1
+#define HAVE_STRCASESTR 1
 /* #undef HAVE_SSCANF */
 #define HAVE_VSSCANF 1
 /* #undef HAVE_SNPRINTF */
@@ -301,7 +303,6 @@
 /* #undef SDL_AUDIO_DRIVER_NETBSD */
 /* #undef SDL_AUDIO_DRIVER_OPENSLES */
 /* #undef SDL_AUDIO_DRIVER_OSS */
-/* #undef SDL_AUDIO_DRIVER_OSS_SOUNDCARD_H */
 /* #undef SDL_AUDIO_DRIVER_PAUDIO */
 /* #undef SDL_AUDIO_DRIVER_PIPEWIRE */
 /* #undef SDL_AUDIO_DRIVER_PIPEWIRE_DYNAMIC */
