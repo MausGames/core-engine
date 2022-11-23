@@ -5568,6 +5568,7 @@ int stb_vorbis_get_samples_float(stb_vorbis *f, int channels, float **buffer, in
 
     #undef FILE
     #undef fopen
+    #undef fopen_s
     #undef fclose
     #undef fread
     #undef fseek

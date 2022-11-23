@@ -25,7 +25,7 @@
 #define PI    (3.1415926535897932384626433832795f)                 // Archimedes' constant
 #define EU    (2.7182818284590452353602874713527f)                 // Euler's number
 #define GR    (1.6180339887498948482045868343656f)                 // golden ratio ((a+b)/a = a/b)
-#define GA    (2.3999632297286533222315555066336f)                 // golden angle (radians)
+#define GA    (2.3999632297286533222315555066336f)                 // golden angle (radians, PI * (3 - SQRT(5)))
 #define SQRT2 (1.4142135623730950488016887242097f)                 // principal square root of 2
 #define SQRT3 (1.7320508075688772935274463415059f)                 // principal square root of 3
 

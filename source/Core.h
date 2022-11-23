@@ -207,7 +207,7 @@
     #define DONT_INLINE      __attribute__((noinline))
     #define WITHIN_INLINE    __attribute__((flatten))
     #define FALLTHROUGH      [[fallthrough]];
-    #define RETURN_RESTRICT  __attribute__((returns_nonnull, malloc))
+    #define RETURN_RESTRICT  __attribute__((returns_nonnull))
     #define RETURN_NONNULL   __attribute__((returns_nonnull))
     #define RETURN_NODISCARD [[nodiscard]]
     #define FUNC_PURE        __attribute__((pure))

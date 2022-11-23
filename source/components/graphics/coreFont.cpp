@@ -183,7 +183,7 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
     ASSERT(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
 
     // create new sub-font
-    TTF_Font* pNewFont = TTF_OpenFontRW(m_pFile->CreateReadStream(), true, iHeight);
+    TTF_Font* pNewFont = TTF_OpenFontRW(m_pFile->CreateReadStream(), 1, iHeight);
     if(!pNewFont)
     {
         Core::Log->Warning("Sub-Font (%s, %u height, %u outline) could not be loaded", m_pFile->GetPath(), iHeight, iOutline);
