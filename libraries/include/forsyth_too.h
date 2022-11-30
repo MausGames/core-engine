@@ -243,7 +243,7 @@ namespace Forsyth
                         for (uint32_t k=0; k<3; ++k)
                         {
                             uint16_t index = indexList[face+k];
-                            OptimizeVertexData& vertexData = vertexDataList[index];
+                            const OptimizeVertexData& vertexData = vertexDataList[index];
                             assert(vertexData.activeFaceListSize > 0);
                             assert(vertexData.cachePos0 >= lruCacheSize);
                             faceScore += vertexData.score;
@@ -329,7 +329,7 @@ namespace Forsyth
                     for (uint32_t v=0; v<3; v++)
                     {
                         uint16_t faceIndex = indexList[face+v];
-                        OptimizeVertexData& faceVertexData = vertexDataList[faceIndex];
+                        const OptimizeVertexData& faceVertexData = vertexDataList[faceIndex];
                         faceScore += faceVertexData.score;
                     }
                     if (faceScore > bestScore)

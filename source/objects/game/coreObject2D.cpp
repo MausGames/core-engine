@@ -207,8 +207,8 @@ void coreObject2D::Move()
         m_mTransform._31 = vScreenPosition.x;               m_mTransform._32 = vScreenPosition.y;
 
         // add alignment-offset to position
-        m_mTransform._31 += 0.5f * m_vAlignment.x * ABS(m_mTransform._11 + m_mTransform._21);
-        m_mTransform._32 += 0.5f * m_vAlignment.y * ABS(m_mTransform._12 + m_mTransform._22);
+        m_mTransform._31 += 0.5f * m_vAlignment.x * coreVector2(m_mTransform._11, m_mTransform._21).Length();
+        m_mTransform._32 += 0.5f * m_vAlignment.y * coreVector2(m_mTransform._12, m_mTransform._22).Length();
 
         // apply global rotation
         if(vViewDir.y != 1.0f) m_mTransform = (coreMatrix3(m_mTransform) * coreMatrix3::Rotation(vViewDir)).m3x2();

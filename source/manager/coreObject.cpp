@@ -237,7 +237,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                             std::swap(B1, B2);
                             std::swap(F1, F2);
                         }
-                        else if(F1 != F3)
+                        else
                         {
                             std::swap(B1, B3);
                             std::swap(F1, F3);
@@ -251,7 +251,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                             std::swap(C1, C2);
                             std::swap(G1, G2);
                         }
-                        else if(G1 != G3)
+                        else
                         {
                             std::swap(C1, C3);
                             std::swap(G1, G3);

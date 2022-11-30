@@ -216,7 +216,7 @@ public:
     template <typename T, typename... A>                 coreResourceHandle* Load     (const coreHashString& sName, const coreResourceUpdate eUpdate, const coreHashString& sPath, A&&... vArgs);
     template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew  (A&&... vArgs)const;
     inline                                               coreResourceHandle* LoadProxy(const coreHashString& sName);
-    template <typename T> void Free(coreResourcePtr<T>* OUTPUT pptResourcePtr);
+    template <typename T>                                void                Free     (coreResourcePtr<T>* OUTPUT pptResourcePtr);
 
     /* get existing resource handle */
     template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count_bs(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_AUTO, NULL);}

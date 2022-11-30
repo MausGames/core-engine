@@ -148,8 +148,8 @@ public:
     inline coreParticle* CreateParticle() {return this->CreateParticle(m_pDefaultEffect);}
 
     /* unbind and remove particles */
-    void Unbind(coreParticleEffect* pEffect);
-    void Clear (coreParticleEffect* pEffect);
+    void Unbind(const coreParticleEffect* pEffect);
+    void Clear (const coreParticleEffect* pEffect);
     void UnbindAll();
     void ClearAll ();
 
@@ -157,8 +157,8 @@ public:
     void Reallocate(const coreUint32 iNewSize);
 
     /* update particles with custom simulation */
-    template <typename F> void ForEachParticle   (coreParticleEffect* pEffect, F&& nUpdateFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
-    template <typename F> void ForEachParticleAll(F&& nUpdateFunc);                                // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
+    template <typename F> void ForEachParticle   (const coreParticleEffect* pEffect, F&& nUpdateFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
+    template <typename F> void ForEachParticleAll(F&& nUpdateFunc);                                      // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
     /* get object properties */
     inline const coreTexturePtr& GetTexture           (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
@@ -243,7 +243,7 @@ inline void coreParticle::__Update()
 
 // ****************************************************************
 /* update particles with custom simulation */
-template <typename F> void coreParticleSystem::ForEachParticle(coreParticleEffect* pEffect, F&& nUpdateFunc)
+template <typename F> void coreParticleSystem::ForEachParticle(const coreParticleEffect* pEffect, F&& nUpdateFunc)
 {
     ASSERT(pEffect)
 

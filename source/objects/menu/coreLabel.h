@@ -95,7 +95,7 @@ private:
     void __Reset(const coreResourceReset eInit)final;
 
     /* reshape with the resource manager */
-    void __Reshape()final
+    void __Reshape()final;
 
     /* update object after modification */
     inline void __Update()final {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)}

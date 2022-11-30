@@ -294,12 +294,14 @@ void coreLabel::__MoveRectified()
         // align texture with screen pixels
         if(m_bRectify)
         {
+            const coreVector2 vResolution = Core::System->GetResolution();
+
             m_mTransform._11 = ROUND(m_mTransform._11);
             m_mTransform._12 = ROUND(m_mTransform._12);
             m_mTransform._21 = ROUND(m_mTransform._21);
             m_mTransform._22 = ROUND(m_mTransform._22);
-            m_mTransform._31 = FLOOR(m_mTransform._31) + FRACT(0.5f * ABS(m_mTransform._11 + m_mTransform._21));
-            m_mTransform._32 = CEIL (m_mTransform._32) - FRACT(0.5f * ABS(m_mTransform._12 + m_mTransform._22));
+            m_mTransform._31 = FLOOR(m_mTransform._31) + FRACT(0.5f * ABS(m_mTransform._11 + m_mTransform._21 + vResolution.x));
+            m_mTransform._32 = CEIL (m_mTransform._32) - FRACT(0.5f * ABS(m_mTransform._12 + m_mTransform._22 + vResolution.y));
         }
     }
 }

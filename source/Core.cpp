@@ -120,14 +120,15 @@ void Core::Reset()
     coreSync::Finish();
 
     // save current state
-    const coreDouble  dTotalTime      = System  ->m_dTotalTime;
-    const coreUint32  iCurFrame       = System  ->m_iCurFrame;
-    const coreFloat   fFOV            = Graphics->m_fFOV;
-    const coreFloat   fNearClip       = Graphics->m_fNearClip;
-    const coreFloat   fFarClip        = Graphics->m_fFarClip;
-    const coreVector3 vCamPosition    = Graphics->m_vCamPosition;
-    const coreVector3 vCamDirection   = Graphics->m_vCamDirection;
-    const coreVector3 vCamOrientation = Graphics->m_vCamOrientation;
+    const coreDouble  dTotalTime       = System  ->m_dTotalTime;
+    const coreDouble  dTotalTimeBefore = System  ->m_dTotalTimeBefore;
+    const coreUint32  iCurFrame        = System  ->m_iCurFrame;
+    const coreFloat   fFOV             = Graphics->m_fFOV;
+    const coreFloat   fNearClip        = Graphics->m_fNearClip;
+    const coreFloat   fFarClip         = Graphics->m_fFarClip;
+    const coreVector3 vCamPosition     = Graphics->m_vCamPosition;
+    const coreVector3 vCamDirection    = Graphics->m_vCamDirection;
+    const coreVector3 vCamOrientation  = Graphics->m_vCamOrientation;
     coreFloat               afTimeSpeed[CORE_SYSTEM_TIMES];    std::memcpy(afTimeSpeed, System  ->m_afTimeSpeed, sizeof(afTimeSpeed));
     CoreGraphics::coreLight aLight     [CORE_GRAPHICS_LIGHTS]; std::memcpy(aLight,      Graphics->m_aLight,      sizeof(aLight));
 
@@ -148,8 +149,9 @@ void Core::Reset()
     STATIC_NEW(Debug)
 
     // load former state
-    System  ->m_dTotalTime = dTotalTime;
-    System  ->m_iCurFrame  = iCurFrame;
+    System  ->m_dTotalTime       = dTotalTime;
+    System  ->m_dTotalTimeBefore = dTotalTimeBefore;
+    System  ->m_iCurFrame        = iCurFrame;
     Graphics->SetView  (System->m_vResolution, fFOV, fNearClip, fFarClip);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
     for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System  ->SetTimeSpeed(i, afTimeSpeed[i]);

@@ -209,7 +209,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
 
 // ****************************************************************
 /* unbind particles */
-void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
+void coreParticleSystem::Unbind(const coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
 
@@ -238,7 +238,7 @@ void coreParticleSystem::Unbind(coreParticleEffect* pEffect)
 
 // ****************************************************************
 /* remove particles */
-void coreParticleSystem::Clear(coreParticleEffect* pEffect)
+void coreParticleSystem::Clear(const coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
 
