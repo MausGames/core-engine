@@ -172,6 +172,17 @@ void coreLabel::__Reset(const coreResourceReset eInit)
 
 
 // ****************************************************************
+/* reshape with the resource manager */
+void coreLabel::__Reshape()
+{
+    if(!m_pFont) return;
+
+    // invoke texture generation
+    this->RegenerateTexture();
+}
+
+
+// ****************************************************************
 /* generate the texture */
 void coreLabel::__GenerateTexture(const coreChar* pcText)
 {

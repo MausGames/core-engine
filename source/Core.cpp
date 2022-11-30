@@ -172,16 +172,14 @@ void Core::Reset()
 /* reshape engine */
 void Core::Reshape()
 {
-    // shut down managers
-    Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
-    Manager::Object->__Reset(CORE_RESOURCE_RESET_EXIT);
-
     // reset view frustum
     Graphics->SetView(System->m_vResolution, Graphics->m_fFOV, Graphics->m_fNearClip, Graphics->m_fFarClip);
 
-    // start up managers
-    Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
-    Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
+    // reshape resources
+    Manager::Resource->Reshape();
+
+    // refresh all existing 2d-objects
+    Manager::Object->RefreshSprites();
 
     // apply project settings
     System->SetWindowTitle(Application->Settings.Name);

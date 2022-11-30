@@ -59,6 +59,16 @@ coreResourceRelation::~coreResourceRelation()
 
 
 // ****************************************************************
+/* reshape with the resource manager */
+void coreResourceRelation::__Reshape()
+{
+    // reset by default
+    this->__Reset(CORE_RESOURCE_RESET_EXIT);
+    this->__Reset(CORE_RESOURCE_RESET_INIT);
+}
+
+
+// ****************************************************************
 /* constructor */
 coreResourceManager::coreResourceManager()noexcept
 : coreThread     ("resource_thread")
@@ -264,6 +274,28 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
         FOR_EACH(it, m_apHandle)
             (*it)->Nullify();
     }
+}
+
+void coreResourceManager::Reset()
+{
+    ASSERT(m_bActive)
+
+    // reset without separation
+    this->Reset(CORE_RESOURCE_RESET_EXIT);
+    this->Reset(CORE_RESOURCE_RESET_INIT);
+}
+
+
+// ****************************************************************
+/* reshape all resources and relation-objects */
+void coreResourceManager::Reshape()
+{
+    // copy list with relation-objects (container may change)
+    const coreSet<coreResourceRelation*> apRelationCopy = m_apRelation;
+
+    // reshape relation-objects
+    FOR_EACH(it, apRelationCopy)
+        if(m_apRelation.count_bs(*it)) (*it)->__Reshape();
 }
 
 

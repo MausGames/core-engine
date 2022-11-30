@@ -173,6 +173,9 @@ public:
 private:
     /* reset with the resource manager */
     virtual void __Reset(const coreResourceReset eInit) = 0;
+
+    /* reshape with the resource manager */
+    virtual void __Reshape();
 };
 
 
@@ -231,6 +234,10 @@ public:
 
     /* reset all resources and relation-objects */
     void Reset(const coreResourceReset eInit);
+    void Reset();
+
+    /* reshape all resources and relation-objects */
+    void Reshape();
 
 
 private:

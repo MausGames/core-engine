@@ -358,8 +358,7 @@ void CoreDebug::__UpdateOutput()
     // reset resources
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F10), CORE_INPUT_PRESS))
     {
-        Core::Manager::Resource->Reset(CORE_RESOURCE_RESET_EXIT);
-        Core::Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
+        Core::Manager::Resource->Reset();
         return;
     }
 

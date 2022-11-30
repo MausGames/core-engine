@@ -188,6 +188,9 @@ private:
     /* reset with the resource manager */
     void __Reset(const coreResourceReset eInit)final;
 
+    /* reshape with the resource manager */
+    inline void __Reshape()final {}
+
     /* render the batch list */
     void __RenderDefault(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle, const coreUint32 iRenderCount);
     void __RenderCustom (const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle, const coreUint32 iRenderCount);
