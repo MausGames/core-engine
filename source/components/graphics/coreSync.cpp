@@ -70,7 +70,7 @@ coreStatus coreSync::Check(const coreUint64 iNanoWait, const coreSyncCheck eChec
     if(!m_pSync) return CORE_INVALID_CALL;
 
     // retrieve and compare status
-    if(glClientWaitSync(m_pSync, eCheck, iNanoWait) != GL_TIMEOUT_EXPIRED)
+    if(glClientWaitSync(m_pSync, eCheck, MAX(iNanoWait, CORE_SYNC_MINIMUM)) != GL_TIMEOUT_EXPIRED)
     {
         // delete sync object
         this->Delete();

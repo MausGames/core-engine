@@ -17,6 +17,7 @@
 // ****************************************************************
 /* sync definitions */
 #define CORE_SYNC_WAIT_FOREVER (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : 50'000'000u)
+#define CORE_SYNC_MINIMUM      (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : 1u)
 
 enum coreSyncCheck : coreUint8
 {
