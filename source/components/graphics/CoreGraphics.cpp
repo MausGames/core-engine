@@ -104,12 +104,10 @@ CoreGraphics::CoreGraphics()noexcept
     Core::Log->ListEnd();
 
     // enable vertical synchronization
-    if(Core::Config->GetBool(CORE_CONFIG_SYSTEM_VSYNC))
-    {
-             if(!SDL_GL_SetSwapInterval(-1)) Core::Log->Info("Vertical synchronization enabled (adaptive)");
-        else if(!SDL_GL_SetSwapInterval( 1)) Core::Log->Info("Vertical synchronization enabled (normal)");
-        else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
-    }
+    const coreInt32 iVsync = Core::Config->GetInt(CORE_CONFIG_SYSTEM_VSYNC);
+         if(!SDL_GL_SetSwapInterval(iVsync)) Core::Log->Info("Vertical synchronization configured (interval %d)", iVsync);
+    else if(!SDL_GL_SetSwapInterval(1))      Core::Log->Info("Vertical synchronization configured (default)");
+    else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
 
     // setup texturing and packing
     if(CORE_GL_SUPPORT(V2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);

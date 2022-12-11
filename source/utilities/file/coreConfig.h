@@ -22,8 +22,8 @@
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (0)
 #define CORE_CONFIG_SYSTEM_HEIGHT               "System",   "Height",             (0)
-#define CORE_CONFIG_SYSTEM_FULLSCREEN           "System",   "Fullscreen",         (0)
-#define CORE_CONFIG_SYSTEM_VSYNC                "System",   "Vsync",              (true)
+#define CORE_CONFIG_SYSTEM_FULLSCREEN           "System",   "Fullscreen",         (1)
+#define CORE_CONFIG_SYSTEM_VSYNC                "System",   "Vsync",              (1)
 
 #define CORE_CONFIG_GRAPHICS_QUALITY            "Graphics", "Quality",            (1)
 #define CORE_CONFIG_GRAPHICS_ANTIALIASING       "Graphics", "AntiAliasing",       (4)

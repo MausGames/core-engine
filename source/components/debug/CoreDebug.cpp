@@ -341,8 +341,7 @@ void CoreDebug::__UpdateOutput()
     // toggle vertical synchronization
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F2), CORE_INPUT_PRESS))
     {
-             if(SDL_GL_GetSwapInterval())   SDL_GL_SetSwapInterval(0);
-        else if(SDL_GL_SetSwapInterval(-1)) SDL_GL_SetSwapInterval(1);
+        SDL_GL_SetSwapInterval(SDL_GL_GetSwapInterval() ? 0 : 1);
     }
 
     // hold and skip frame
