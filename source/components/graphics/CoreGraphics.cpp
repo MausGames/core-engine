@@ -60,6 +60,9 @@ CoreGraphics::CoreGraphics()noexcept
     {
         GLint iValue = 0; glGetIntegerv(GL_MAX_SAMPLES, &iValue);
         m_iMaxSamples = MAX(iValue, 0);
+
+        // handle coverage extension
+        if(CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)) m_iMaxSamples /= 2u;
     }
 
     // get max texture filter level
