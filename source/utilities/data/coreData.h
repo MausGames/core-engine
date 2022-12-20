@@ -137,6 +137,7 @@ public:
     static coreStatus  FolderCreate  (const coreChar* pcPath);
     static coreStatus  FolderScan    (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
     static coreStatus  FolderScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
+    static coreStatus  SymlinkCreate (const coreChar* pcPath, const coreChar* pcTarget);
 
     /* check for system errors */
     static coreBool CheckLastError();

@@ -1360,6 +1360,31 @@ coreStatus coreData::FolderScanTree(const coreChar* pcPath, const coreChar* pcFi
 
 
 // ****************************************************************
+/* create symbolic link to file or folder */
+coreStatus coreData::SymlinkCreate(const coreChar* pcPath, const coreChar* pcTarget)
+{
+#if defined(_CORE_WINDOWS_)
+
+    const wchar_t* pcWidePath   = coreData::__ToWideChar(pcPath);
+    const wchar_t* pcWideTarget = coreData::__ToWideChar(pcTarget);
+
+    // check for directory attribute
+    const coreUint32 iFlags = HAS_FLAG(GetFileAttributesW(pcWideTarget), FILE_ATTRIBUTE_DIRECTORY) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0u;
+
+    // create symbolic link
+    if(CreateSymbolicLinkW(pcWidePath, pcWideTarget, iFlags)) return CORE_OK;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+
+    if(!symlink(pcTarget, pcPath)) return CORE_OK;
+
+#endif
+
+    return CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
 /* check for system errors (per thread) */
 coreBool coreData::CheckLastError()
 {
