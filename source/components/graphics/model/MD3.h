@@ -208,7 +208,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     const coreUintW iNumVertices  = oSurface.oMesh.iNumVertices;
     const coreUintW iNumIndices   = oSurface.oMesh.iNumTriangles * 3u;
     const coreUintW iNumTriangles = oSurface.oMesh.iNumTriangles;
-    ASSERT(iNumVertices <= 0xFFFFu)
+    ASSERT((iNumVertices > 0u) && (iNumVertices <= 0xFFFFu) && iNumIndices && iNumTriangles)
 
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);

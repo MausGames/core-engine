@@ -207,7 +207,7 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     const coreUintW iNumVertices  = oMesh.aVertex  .size();
     const coreUintW iNumIndices   = oMesh.aTriangle.size() * 3u;
     const coreUintW iNumTriangles = oMesh.aTriangle.size();
-    ASSERT(iNumVertices <= 0xFFFFu)
+    ASSERT((iNumVertices > 0u) && (iNumVertices <= 0xFFFFu) && iNumIndices && iNumTriangles)
 
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);

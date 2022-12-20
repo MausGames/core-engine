@@ -352,7 +352,7 @@ coreStatus coreResourceManager::__RunThread()
 void coreResourceManager::__ExitThread()
 {
     // dissociate resource context from resource thread
-    SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
+    if(SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL)) SDL_GL_MakeCurrent(NULL, NULL);
 }
 
 

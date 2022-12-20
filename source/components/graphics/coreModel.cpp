@@ -88,7 +88,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     m_iNumVertices = oImport.aVertexData.size();
     m_iNumIndices  = oImport.aiIndexData.size();
     m_sPath        = pFile->GetPath();
-    ASSERT((m_iNumVertices > 0u) && (m_iNumVertices <= 0xFFFFu))
+    ASSERT((m_iNumVertices > 0u) && (m_iNumVertices <= 0xFFFFu) && m_iNumIndices)
 
     // prepare index-map (for deferred remapping)
     alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 s_aiMap[0x10000u];
@@ -207,6 +207,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
         // save number of clusters
         m_iNumClusters = std::find_if(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& a) {return a.empty();}) - aiTempIndex;
+        ASSERT(m_iNumClusters)
 
         // allocate cluster memory
         coreByte* pIndexMemory = ALIGNED_NEW(coreByte,    m_iNumClusters * sizeof(coreUint16*) + m_iNumIndices * sizeof(coreUint16), ALIGNMENT_CACHE);

@@ -345,22 +345,24 @@ inline const coreChar* coreBackendSteam::GetLanguage()const
     {
         // retrieve Steam language
         const coreChar* pcLanguage = m_pApps->GetCurrentGameLanguage();
-
-        // map Steam language to common language
-        if(!std::strcmp(pcLanguage, "brazilian"))  return CORE_LANGUAGE_BRAZILIAN;
-        if(!std::strcmp(pcLanguage, "english"))    return CORE_LANGUAGE_ENGLISH;
-        if(!std::strcmp(pcLanguage, "french"))     return CORE_LANGUAGE_FRENCH;
-        if(!std::strcmp(pcLanguage, "german"))     return CORE_LANGUAGE_GERMAN;
-        if(!std::strcmp(pcLanguage, "italian"))    return CORE_LANGUAGE_ITALIAN;
-        if(!std::strcmp(pcLanguage, "japanese"))   return CORE_LANGUAGE_JAPANESE;
-        if(!std::strcmp(pcLanguage, "koreana"))    return CORE_LANGUAGE_KOREAN;   // with a
-        if(!std::strcmp(pcLanguage, "polish"))     return CORE_LANGUAGE_POLISH;
-        if(!std::strcmp(pcLanguage, "portuguese")) return CORE_LANGUAGE_PORTUGUESE;
-        if(!std::strcmp(pcLanguage, "russian"))    return CORE_LANGUAGE_RUSSIAN;
-        if(!std::strcmp(pcLanguage, "schinese"))   return CORE_LANGUAGE_SCHINESE;
-        if(!std::strcmp(pcLanguage, "spanish"))    return CORE_LANGUAGE_SPANISH;
-        if(!std::strcmp(pcLanguage, "tchinese"))   return CORE_LANGUAGE_TCHINESE;
-        if(!std::strcmp(pcLanguage, "ukrainian"))  return CORE_LANGUAGE_UKRAINIAN;
+        if(pcLanguage)
+        {
+            // map Steam language to common language
+            if(!std::strcmp(pcLanguage, "brazilian"))  return CORE_LANGUAGE_BRAZILIAN;
+            if(!std::strcmp(pcLanguage, "english"))    return CORE_LANGUAGE_ENGLISH;
+            if(!std::strcmp(pcLanguage, "french"))     return CORE_LANGUAGE_FRENCH;
+            if(!std::strcmp(pcLanguage, "german"))     return CORE_LANGUAGE_GERMAN;
+            if(!std::strcmp(pcLanguage, "italian"))    return CORE_LANGUAGE_ITALIAN;
+            if(!std::strcmp(pcLanguage, "japanese"))   return CORE_LANGUAGE_JAPANESE;
+            if(!std::strcmp(pcLanguage, "koreana"))    return CORE_LANGUAGE_KOREAN;   // with a
+            if(!std::strcmp(pcLanguage, "polish"))     return CORE_LANGUAGE_POLISH;
+            if(!std::strcmp(pcLanguage, "portuguese")) return CORE_LANGUAGE_PORTUGUESE;
+            if(!std::strcmp(pcLanguage, "russian"))    return CORE_LANGUAGE_RUSSIAN;
+            if(!std::strcmp(pcLanguage, "schinese"))   return CORE_LANGUAGE_SCHINESE;
+            if(!std::strcmp(pcLanguage, "spanish"))    return CORE_LANGUAGE_SPANISH;
+            if(!std::strcmp(pcLanguage, "tchinese"))   return CORE_LANGUAGE_TCHINESE;
+            if(!std::strcmp(pcLanguage, "ukrainian"))  return CORE_LANGUAGE_UKRAINIAN;
+        }
     }
 
     return this->coreBackend::GetLanguage();

@@ -78,7 +78,8 @@ public:
     /* interact with the 2d-object */
     void Interact();
     coreBool IsClicked(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType eType = CORE_INPUT_PRESS)const;
-    inline const coreBool& IsFocused()const {return m_bFocused;}
+    inline const coreBool& IsFocused  ()const {return m_bFocused;}
+    inline const coreBool& IsFocusable()const {return m_bFocusable;}
 
     /* transform the whole object */
     inline void FitToScreen() {m_eUpdate = CORE_OBJECT_UPDATE_ALL; m_vPosition = coreVector2(0.0f,0.0f); m_vSize = Core::System->GetResolution() * RCP(Core::System->GetResolution().Min()); m_vDirection = coreVector2(0.0f,1.0f); m_vCenter = coreVector2(0.0f,0.0f); m_vAlignment = coreVector2(0.0f,0.0f);}

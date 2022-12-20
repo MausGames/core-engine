@@ -1,13 +1,16 @@
 -------------------------------------------------------------------
 SDL:
 
-- use sequential scan and 4kb page-size in rwops for Windows
+- use sequential scan and 4kb page-size in RWops for Windows
   > #define READAHEAD_BUFFER_SIZE (0x1000)
   > FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN
 
 - center normal window based on work area instead of desktop size
-  > if (flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS))                        // SDL_CreateWindow
-  > if (SDL_GetWindowFlags(window) & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS))   // SDL_SetWindowPosition
+  > // SDL_CreateWindow
+  > if (flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS))
+  >
+  > // SDL_SetWindowPosition
+  > if (SDL_GetWindowFlags(window) & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS))
   > {
   >     SDL_GetDisplayBounds(displayIndex, &bounds);
   > }
@@ -16,7 +19,7 @@ SDL:
   >     SDL_GetDisplayUsableBounds(displayIndex, &bounds);
   > }
 
-- allow context assignment without window on Wayland
+- allow GL context assignment without window on Wayland
   > // Wayland_GLES_MakeCurrent
   > if (window) {
   >     ret = SDL_EGL_MakeCurrent(_this, ((SDL_WindowData *) window->driverdata)->egl_surface, context);
@@ -24,6 +27,26 @@ SDL:
   > else {
   >     ret = SDL_EGL_MakeCurrent(_this, NULL, context);
   > }
+  >
+  > // X11_GL_MakeCurrent (related fix)
+  > (window ? ((SDL_WindowData *) window->driverdata)->xwindow : None);
+
+- fallback to WGL_EXT_extensions_string, if WGL_ARB_extensions_string is not available
+  > // WIN_GL_InitExtensions
+  > const char *(WINAPI * wglGetExtensionsStringEXT) () = 0;
+  >
+  > wglGetExtensionsStringEXT = (const char *(WINAPI *) ())
+  >     _this->gl_data->wglGetProcAddress("wglGetExtensionsStringEXT");
+  > if (wglGetExtensionsStringEXT) {
+  >     extensions = wglGetExtensionsStringEXT();
+  > } else {
+  >     extensions = NULL;
+  > }
+
+- remove filter for modifier keys again (as it breaks screenshot hotkeys)
+  > // X11_ReconcileKeyboardState
+  > SDL_SendKeyboardKey(SDL_PRESSED, scancode);
+
 
 -------------------------------------------------------------------
 SDL IMG:

@@ -246,12 +246,12 @@ float coreSign(const in float v) {return (v >= 0.0) ? 1.0 : -1.0;}
 
 // integer modulo operation
 #if defined(CORE_GL_gpu_shader4)
-    #define coreModInt(a,b) ((a) % (b))
+    #define coreIntMod(a,b) ((a) % (b))
 #else
-    int   coreModInt(const in int   a, const in int b) {return (a - (b * (a / b)));}
-    ivec2 coreModInt(const in ivec2 a, const in int b) {return (a - (b * (a / b)));}
-    ivec3 coreModInt(const in ivec3 a, const in int b) {return (a - (b * (a / b)));}
-    ivec4 coreModInt(const in ivec4 a, const in int b) {return (a - (b * (a / b)));}
+    int   coreIntMod(const in int   a, const in int b) {return (a - (b * (a / b)));}
+    ivec2 coreIntMod(const in ivec2 a, const in int b) {return (a - (b * (a / b)));}
+    ivec3 coreIntMod(const in ivec3 a, const in int b) {return (a - (b * (a / b)));}
+    ivec4 coreIntMod(const in ivec4 a, const in int b) {return (a - (b * (a / b)));}
 #endif
 
 // color convert
@@ -879,7 +879,7 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
                                       3.0, 11.0,  1.0,  9.0,
                                      15.0,  7.0, 13.0,  5.0) / 15.0 - 0.5;
 
-        ivec2 i2Index = coreModInt(i2PixelCoord, 4);
+        ivec2 i2Index = coreIntMod(i2PixelCoord, 4);
         return c_m4Matrix[i2Index.y][i2Index.x];
     }
     float coreDither() {return coreDither(ivec2(gl_FragCoord.xy));}

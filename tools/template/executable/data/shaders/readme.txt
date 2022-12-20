@@ -163,7 +163,7 @@ Functions
     T     coreLinearStep          (in T, in T, in T)                  // linear interpolation between 0.0 and 1.0
     T     coreSign                (in T)                              // extract the sign without returning 0.0
     S     coreIsNan               (in T)                              // test if the parameter is not a number
-    T     coreModInt              (in T, in S)                        // integer modulo operation
+    T     coreIntMod              (in T, in S)                        // integer modulo operation
     vec3  coreRgbToHsv            (in vec3)                           // RGB to HSV conversion
     vec3  coreHsvToRgb            (in vec3)                           // HSV to RGB conversion
     vec3  coreRgbToYiq            (in vec3)                           // RGB to YIQ conversion   (BT.601, NTSC)
