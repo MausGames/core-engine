@@ -244,6 +244,16 @@ float coreSign(const in float v) {return (v >= 0.0) ? 1.0 : -1.0;}
     bvec4 coreIsNan(const in vec4  v) {return bvec4(coreIsNan(v.x), coreIsNan(v.y), coreIsNan(v.z), coreIsNan(v.w));}
 #endif
 
+// integer modulo operation
+#if defined(CORE_GL_gpu_shader4)
+    #define coreModInt(a,b) ((a) % (b))
+#else
+    int   coreModInt(const in int   a, const in int b) {return (a - (b * (a / b)));}
+    ivec2 coreModInt(const in ivec2 a, const in int b) {return (a - (b * (a / b)));}
+    ivec3 coreModInt(const in ivec3 a, const in int b) {return (a - (b * (a / b)));}
+    ivec4 coreModInt(const in ivec4 a, const in int b) {return (a - (b * (a / b)));}
+#endif
+
 // color convert
 vec3 coreRgbToHsv(const in vec3 v3Rgb)
 {
@@ -860,6 +870,19 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
         float v1Value   = 1.0 + v1DotSq * (v1RoughSq - 1.0);
         return v1RoughSq / (PI * v1Value * v1Value);
     }
+
+    // ordered dithering function (modified)
+    float coreDither(const in ivec2 i2PixelCoord)
+    {
+        const mat4 c_m4Matrix = mat4( 0.0,  8.0,  2.0, 10.0,
+                                     12.0,  4.0, 14.0,  6.0,
+                                      3.0, 11.0,  1.0,  9.0,
+                                     15.0,  7.0, 13.0,  5.0) / 15.0 - 0.5;
+
+        ivec2 i2Index = coreModInt(i2PixelCoord, 4);
+        return c_m4Matrix[i2Index.y][i2Index.x];
+    }
+    float coreDither() {return coreDither(ivec2(gl_FragCoord.xy));}
 
 #endif // _CORE_FRAGMENT_SHADER_
 

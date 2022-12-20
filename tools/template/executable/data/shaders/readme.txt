@@ -103,8 +103,9 @@ Definitions
 
 Functions
 
-    // GGX specular function
-    float coreGGX(in float v1Dot, in float v1Rough)
+    float coreGGX   (in float v1Dot, in float v1Rough)   // GGX specular function
+    float coreDither(in ivec2 i2PixelCoord)              // ordered dithering function (modified)
+    float coreDither()
 
 Input
 
@@ -120,7 +121,7 @@ Input
 
 Output
 
-    // multiple output colors (only with version >= 130)
+    // multiple output colors (only with GL >= 130, GLES >= 300)
     vec4 o_av4OutColor[CORE_NUM_OUTPUTS]
 
 
@@ -135,7 +136,7 @@ Definitions
     #define PI                    // Archimedes' constant
     #define EU                    // Euler's number
     #define GR                    // golden ratio ((a+b)/a = a/b)
-    #define GA                    // golden angle (radians)
+    #define GA                    // golden angle (radians, PI * (3 - SQRT(5)))
     #define SQRT2                 // principal square root of 2
     #define SQRT3                 // principal square root of 3
 
@@ -145,6 +146,7 @@ Definitions
 
     // extension wrappers
     #define CORE_GL_conservative_depth
+    #define CORE_GL_draw_buffers
     #define CORE_GL_gpu_shader4
     #define CORE_GL_sample_shading
     #define CORE_GL_shader_image_load_store
@@ -161,6 +163,7 @@ Functions
     T     coreLinearStep          (in T, in T, in T)                  // linear interpolation between 0.0 and 1.0
     T     coreSign                (in T)                              // extract the sign without returning 0.0
     S     coreIsNan               (in T)                              // test if the parameter is not a number
+    T     coreModInt              (in T, in S)                        // integer modulo operation
     vec3  coreRgbToHsv            (in vec3)                           // RGB to HSV conversion
     vec3  coreHsvToRgb            (in vec3)                           // HSV to RGB conversion
     vec3  coreRgbToYiq            (in vec3)                           // RGB to YIQ conversion   (BT.601, NTSC)
