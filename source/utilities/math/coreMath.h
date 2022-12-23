@@ -84,7 +84,16 @@
 #define FLOOR  coreMath::Floor
 #define ROUND  coreMath::Round
 
-#if defined(_CORE_LIBCPP_)
+#define MIN1(x)    (MIN   (x, 1.0f))
+#define MAX0(x)    (MAX   (x, 0.0f))
+#define CLAMP01(x) (CLAMP (x, 0.0f, 1.0f))
+#define BLENDS(x)  (LERPS (0.0f, 1.0f, x))
+#define BLENDB(x)  (LERPB (0.0f, 1.0f, x))
+#define BLENDBR(x) (LERPBR(0.0f, 1.0f, x))
+#define BLENDH3(x) (LERPH3(0.0f, 1.0f, x))
+#define BLENDH5(x) (LERPH5(0.0f, 1.0f, x))
+
+#if defined(_CORE_MACOS_)
     namespace std {template <typename T, typename S> FORCE_INLINE constexpr T bit_cast(const S& tValue) {return __builtin_bit_cast(T, tValue);}}
 #endif
 
@@ -111,16 +120,16 @@ public:
     template <typename T> static constexpr T Lerp        (const T& x, const T& y, const coreFloat s)                     {return x * (1.0f - s) + y * s;}   // better precision than (x + (y - x) * s)
     template <typename T> static inline    T LerpSmooth  (const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
     template <typename T> static inline    T LerpBreak   (const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, SIN(s * (PI * 0.5f)));}
-    template <typename T> static inline    T LerpBreakRev(const T& x, const T& y, const coreFloat s)                     {return LERP(y, x, COS(s * (PI * 0.5f)));}
+    template <typename T> static inline    T LerpBreakRev(const T& x, const T& y, const coreFloat s)                     {return LERP(y, x, COS(s * (PI * 0.5f)));}   // y, x
     template <typename T> static constexpr T LerpHermite3(const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
     template <typename T> static constexpr T LerpHermite5(const T& x, const T& y, const coreFloat s)                     {return LERP(x, y, (10.0f + (-15.0f + 6.0f * s) * s) * s * s * s);}
     template <typename T> static inline    T LerpExp     (const T& x, const T& y, const coreFloat s)                     {return POW(x, 1.0f - s) * POW(y, s);}
-    static constexpr coreFloat               Step        (const coreFloat a, const coreFloat b, const coreFloat x)       {return CLAMP((x - a) * RCP(b - a), 0.0f, 1.0f);}   // linearstep
-    static constexpr coreFloat               StepSmooth  (const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPS (0.0f, 1.0f, STEP(a, b, x));}
-    static constexpr coreFloat               StepBreak   (const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPB (0.0f, 1.0f, STEP(a, b, x));}
-    static constexpr coreFloat               StepBreakRev(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPBR(0.0f, 1.0f, STEP(a, b, x));}
-    static constexpr coreFloat               StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH3(0.0f, 1.0f, STEP(a, b, x));}         // smoothstep
-    static constexpr coreFloat               StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)       {return LERPH5(0.0f, 1.0f, STEP(a, b, x));}         // smootherstep
+    static constexpr coreFloat               Step        (const coreFloat a, const coreFloat b, const coreFloat x)       {return CLAMP01((x - a) * RCP(b - a));}   // linearstep
+    static inline    coreFloat               StepSmooth  (const coreFloat a, const coreFloat b, const coreFloat x)       {return BLENDS (STEP(a, b, x));}
+    static inline    coreFloat               StepBreak   (const coreFloat a, const coreFloat b, const coreFloat x)       {return BLENDB (STEP(a, b, x));}
+    static inline    coreFloat               StepBreakRev(const coreFloat a, const coreFloat b, const coreFloat x)       {return BLENDBR(STEP(a, b, x));}
+    static constexpr coreFloat               StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)       {return BLENDH3(STEP(a, b, x));}          // smoothstep
+    static constexpr coreFloat               StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)       {return BLENDH5(STEP(a, b, x));}          // smootherstep
 
     /* base operations */
     static inline    coreFloat Fmod (const coreFloat fNum, const coreFloat fDenom) {return std::fmod (fNum, fDenom);}
