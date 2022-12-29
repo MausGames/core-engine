@@ -246,7 +246,7 @@ coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 , m_aiVertexArray      {}
 , m_aInstanceBuffer    {}
 , m_paCustomBuffer     (NULL)
-, m_pLastModel         (NULL)
+, m_iLastModel         (UINT32_MAX)
 , m_nDefineBufferFunc  (NULL)
 , m_nUpdateDataFunc    (NULL)
 , m_nUpdateShaderFunc  (NULL)
@@ -551,8 +551,9 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         if(!pModel.IsUsable()) return;
 
         // detect model changes and invoke update
-        if(m_pLastModel != pModel.GetHandle()) m_iFilled = 0u;
-        m_pLastModel = pModel.GetHandle();
+        const GLuint iIdentifier = pModel->GetVertexBuffer(0u)->GetIdentifier();
+        if(m_iLastModel != iIdentifier) m_iFilled = 0u;
+        m_iLastModel = iIdentifier;
 
         // enable the shader-program
         ASSERT(pProgramInstanced)
