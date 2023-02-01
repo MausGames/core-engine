@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
+    <Type Name="coreResourcePtr&lt;*&gt;">
+        <DisplayString Condition="m_pHandle-&gt;m_sName._Mypair._Myval2._Mysize == 0">{{&lt;custom&gt;}}</DisplayString>
+        <DisplayString Condition="m_pHandle == 0">{{&lt;null&gt;}}</DisplayString>
+        <DisplayString>{{{m_pHandle-&gt;m_sName}}}</DisplayString>
+        <Expand>
+            <Item Name="[resource]">($T1*)m_pHandle-&gt;m_pResource</Item>
+            <Item Name="[handle]">m_pHandle</Item>
+        </Expand>
+    </Type>
+
     <Type Name="coreMapGen&lt;*,*,*&gt;">
 
         <DisplayString>{{ size={m_atValueList._Mypair._Myval2._Mylast - m_atValueList._Mypair._Myval2._Myfirst} }}</DisplayString>
@@ -57,16 +67,6 @@
 
     </Type>
 
-    <Type Name="coreResourcePtr&lt;*&gt;">
-        <DisplayString Condition="m_pHandle-&gt;m_sName._Mypair._Myval2._Mysize == 0">{{&lt;custom&gt;}}</DisplayString>
-        <DisplayString Condition="m_pHandle == 0">{{&lt;null&gt;}}</DisplayString>
-        <DisplayString>{{{m_pHandle-&gt;m_sName}}}</DisplayString>
-        <Expand>
-            <Item Name="[resource]">($T1*)m_pHandle-&gt;m_pResource</Item>
-            <Item Name="[handle]">m_pHandle</Item>
-        </Expand>
-    </Type>
-
     <Type Name="coreVariant&lt;*&gt;">
         <DisplayString Condition="m_sTypeName._Mypair._Myval2._Mysize == 0">{{&lt;empty&gt;}}</DisplayString>
         <DisplayString Condition="m_sTypeName._Mypair._Myval2._Myres &lt;  m_sTypeName._Mypair._Myval2._BUF_SIZE">{{{m_sTypeName._Mypair._Myval2._Bx._Buf,na}}}</DisplayString>
@@ -105,6 +105,10 @@
 
     <Type Name="coreFlow">
         <DisplayString>{m_fValue}</DisplayString>
+    </Type>
+
+    <Type Name="coreHashString">
+        <DisplayString>{{{m_iHash}, {m_pcString,na}}}</DisplayString>
     </Type>
 
 </AutoVisualizer>

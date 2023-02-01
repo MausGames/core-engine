@@ -22,10 +22,16 @@ def coreResourcePtrVisualizer(value, internal_dict):
 def __lldb_init_module(debugger, internal_dict):
 
     debugger.HandleCommand("type summary add --python-function " + __name__ + ".coreResourcePtrVisualizer -x \"coreResourcePtr<.+>\"")
+    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreList<.+>\"")
+    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreSet<.+>\"")
+    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreMapGen<.+>\"")
+    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreMapStr<.+>\"")
     debugger.HandleCommand("type summary add --inline-children --omit-names coreVector2")
     debugger.HandleCommand("type summary add --inline-children --omit-names coreVector3")
     debugger.HandleCommand("type summary add --inline-children --omit-names coreVector4")
     debugger.HandleCommand("type summary add --inline-children --omit-names coreFlow")
+    debugger.HandleCommand("type summary add --inline-children --omit-names coreString")
+    debugger.HandleCommand("type summary add --inline-children --omit-names coreHashString")
 
 
 # command script import <path>/CoreEngine/projects/cmake/visualizer.py
