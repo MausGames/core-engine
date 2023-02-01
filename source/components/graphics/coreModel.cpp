@@ -198,15 +198,15 @@ coreStatus coreModel::Load(coreFile* pFile)
         }
 
         // reorder clusters to compact list
-        std::sort(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& a, const coreList<coreUint16>& b)
+        std::sort(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& A, const coreList<coreUint16>& B)
         {
-            if(a.empty()) return false;
-            if(b.empty()) return true;
-            return (a.front() < b.front());
+            if(A.empty()) return false;
+            if(B.empty()) return true;
+            return (A.front() < B.front());
         });
 
         // save number of clusters
-        m_iNumClusters = std::find_if(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& a) {return a.empty();}) - aiTempIndex;
+        m_iNumClusters = std::find_if(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& A) {return A.empty();}) - aiTempIndex;
         ASSERT(m_iNumClusters)
 
         // allocate cluster memory

@@ -454,9 +454,9 @@ void CoreInput::__OpenJoysticks()
         Core::Log->ListEnd();
 
         // sort correctly by joystick instance ID
-        std::sort(m_aJoystick.begin(), m_aJoystick.end(), [](const coreJoystick& a, const coreJoystick& b)
+        std::sort(m_aJoystick.begin(), m_aJoystick.end(), [](const coreJoystick& A, const coreJoystick& B)
         {
-            return (SDL_JoystickInstanceID(a.pJoystick) < SDL_JoystickInstanceID(b.pJoystick));
+            return (SDL_JoystickInstanceID(A.pJoystick) < SDL_JoystickInstanceID(B.pJoystick));
         });
     }
     else Core::Log->Info("No Joysticks or Gamepads found");

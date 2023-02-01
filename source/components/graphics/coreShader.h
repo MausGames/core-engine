@@ -14,7 +14,7 @@
 // TODO 3: better integration of instancing (allow instanced and non-instaced shaders to exist in the same program object (on demand, or per registry-attribute))
 // TODO 5: check for compressed uniform sends (e.g. colors as byte-array instead of float-vector)
 // TODO 5: <old comment style>
-// TODO 4: Chromium shader compiler does not support attribute aliasing (though the standard allows it), remove and remap (#define) one of the variables ?
+// TODO 4: GLSL ES 3.00 does not support attribute aliasing, remove and remap (#define) one of the variables ?
 // TODO 5: shared uniform-buffer layout might be more efficient, but needs many queries
 
 // NOTE: GL/GLES below 3.0 (130/300) or without UBO support always has GLSL version 110/100
@@ -65,11 +65,11 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM  (4u)
 #define CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM      (5u)
 #define CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM  (6u)
-#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (DEFINED(_CORE_EMSCRIPTEN_) ? 9u : 5u)
+#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (DEFINED(_CORE_GLES_) ? 9u : 5u)
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7u)
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
 
-#define CORE_SHADER_ATTRIBUTE_USER_NUM          (DEFINED(_CORE_EMSCRIPTEN_) ? 10u : 9u)
+#define CORE_SHADER_ATTRIBUTE_USER_NUM          (DEFINED(_CORE_GLES_) ? 10u : 9u)
 
 #define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%zu]"
 #define CORE_SHADER_OUTPUT_COLORS               (2u)

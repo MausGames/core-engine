@@ -83,21 +83,3 @@ function SetStatus(sText)
 }
 
 Module["setStatus"] = SetStatus;
-
-
-// ****************************************************************
-function MonitorRunDependencies(iLeft)
-{
-    this.iOldLeft = (this.iOldLeft || 0);
-    this.iTotal   = (this.iTotal   || 0);
-
-    if(this.iOldLeft < iLeft) this.iTotal += iLeft - this.iOldLeft;
-    this.iOldLeft = iLeft;
-
-    if(this.iTotal >= 2)
-    {
-        SetStatus("Preparing... (" + (this.iTotal - iLeft) + "/" + this.iTotal + ")");
-    }
-}
-
-Module["monitorRunDependencies"] = MonitorRunDependencies;

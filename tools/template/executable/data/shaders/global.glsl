@@ -880,7 +880,11 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
                                      15.0,  7.0, 13.0,  5.0) / 15.0 - 0.5;
 
         ivec2 i2Index = coreIntMod(i2PixelCoord, 4);
-        return c_m4Matrix[i2Index.y][i2Index.x];
+        #if defined(GL_ES)
+            for(int i = 0; i < 4; ++i) for(int j = 0; j < 4; ++j) if((i == i2Index.y) && (j == i2Index.x)) return c_m4Matrix[i][j];
+        #else
+            return c_m4Matrix[i2Index.y][i2Index.x];
+        #endif
     }
     float coreDither() {return coreDither(ivec2(gl_FragCoord.xy));}
 

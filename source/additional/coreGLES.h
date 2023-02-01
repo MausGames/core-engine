@@ -441,7 +441,7 @@ extern coreContext g_CoreContext;   // context object
 #define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f = r_cast<decltype(g_CoreContext.__ ## f)>(eglGetProcAddress(b ? #f : #f #a));}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
 
-template <typename ...A> void __UNUSED_ARGS(A...) {}
+template <typename... A> void __UNUSED_ARGS(A...) {}
 #define __CORE_GLES_UNUSED_ARGS(...) {if(false) __UNUSED_ARGS(__VA_ARGS__);}
 
 
