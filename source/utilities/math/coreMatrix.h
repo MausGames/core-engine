@@ -1007,15 +1007,15 @@ constexpr coreMatrix4 coreMatrix4::Orientation(const coreVector3 vDirection, con
 /* calculate perspective projection matrix */
 inline coreMatrix4 coreMatrix4::Perspective(const coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
 {
-    const coreFloat Y = COT(fFOV * 0.5f);
-    const coreFloat X = Y * vResolution.yx().AspectRatio();
+    const coreFloat   A = COT(fFOV * 0.5f);
+    const coreVector2 B = vResolution.yx().LowRatio() * A;
 
     const coreFloat N = fNearClip;
     const coreFloat F = fFarClip;
     const coreFloat I = RCP(N-F);
 
-    return coreMatrix4(   X, 0.0f,       0.0f,  0.0f,
-                       0.0f,    Y,       0.0f,  0.0f,
+    return coreMatrix4( B.x, 0.0f,       0.0f,  0.0f,
+                       0.0f,  B.y,       0.0f,  0.0f,
                        0.0f, 0.0f,    (N+F)*I, -1.0f,
                        0.0f, 0.0f, 2.0f*N*F*I,  0.0f);
 }

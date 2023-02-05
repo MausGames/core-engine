@@ -101,19 +101,21 @@ public:
     inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector2(nFunction(x, f1, f2),                    nFunction(y, f1, f2));}
 
     /* direct functions */
-    constexpr coreFloat Length      ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat LengthSq    ()const {return (x*x + y*y);}
-    constexpr coreFloat Min         ()const {return MIN(x, y);}
-    constexpr coreFloat Max         ()const {return MAX(x, y);}
-    constexpr coreUintW MinDimension()const {return (x < y) ? 0u : 1u;}
-    constexpr coreUintW MaxDimension()const {return (x > y) ? 0u : 1u;}
-    constexpr coreFloat AspectRatio ()const {return (x * RCP(y));}
-    inline    coreFloat Angle       ()const {return (-std::atan2(x, y));}
-    constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
-    constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f);}
-    constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
-    constexpr coreBool  IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f);}
-    constexpr coreBool  IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f);}
+    constexpr coreFloat   Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat   LengthSq    ()const {return (x*x + y*y);}
+    constexpr coreFloat   Min         ()const {return MIN(x, y);}
+    constexpr coreFloat   Max         ()const {return MAX(x, y);}
+    constexpr coreUintW   MinDimension()const {return (x < y) ? 0u : 1u;}
+    constexpr coreUintW   MaxDimension()const {return (x > y) ? 0u : 1u;}
+    constexpr coreVector2 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
+    constexpr coreVector2 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
+    constexpr coreFloat   AspectRatio ()const {return (x * RCP(y));}
+    inline    coreFloat   Angle       ()const {return (-std::atan2(x, y));}
+    constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f);}
+    constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}
+    constexpr coreBool    IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f);}
+    constexpr coreBool    IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f);}
 
     /* static functions */
     static constexpr coreFloat   Dot      (const coreVector2 v1, const coreVector2 v2);
@@ -242,17 +244,19 @@ public:
     inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector3(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2));}
 
     /* direct functions */
-    constexpr coreFloat Length      ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z);}
-    constexpr coreFloat Min         ()const {return MIN(x, y, z);}
-    constexpr coreFloat Max         ()const {return MAX(x, y, z);}
-    constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
-    constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
-    constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
-    constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (y*z == 0.0f);}
-    constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
-    constexpr coreBool  IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f) && (z >=  0.0f) && (z <= 1.0f);}
-    constexpr coreBool  IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f) && (z >= -1.0f) && (z <= 1.0f);}
+    constexpr coreFloat   Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat   LengthSq    ()const {return (x*x + y*y + z*z);}
+    constexpr coreFloat   Min         ()const {return MIN(x, y, z);}
+    constexpr coreFloat   Max         ()const {return MAX(x, y, z);}
+    constexpr coreUintW   MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
+    constexpr coreUintW   MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
+    constexpr coreVector3 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
+    constexpr coreVector3 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
+    constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (y*z == 0.0f);}
+    constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}
+    constexpr coreBool    IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f) && (z >=  0.0f) && (z <= 1.0f);}
+    constexpr coreBool    IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f) && (z >= -1.0f) && (z <= 1.0f);}
 
     /* static functions */
     static constexpr coreFloat   Dot    (const coreVector3 v1, const coreVector3 v2);
@@ -375,17 +379,19 @@ public:
     inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector4(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2),                    nFunction(w, f1, f2));}
 
     /* direct functions */
-    constexpr coreFloat Length      ()const {return SQRT(this->LengthSq());}
-    constexpr coreFloat LengthSq    ()const {return (x*x + y*y + z*z + w*w);}
-    constexpr coreFloat Min         ()const {return MIN(x, y, z, w);}
-    constexpr coreFloat Max         ()const {return MAX(x, y, z, w);}
-    constexpr coreUintW MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
-    constexpr coreUintW MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
-    constexpr coreBool  IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
-    constexpr coreBool  IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (x*w == 0.0f) && (y*z == 0.0f) && (y*w == 0.0f) && (z*w == 0.0f);}
-    constexpr coreBool  IsNull      ()const {return (this->LengthSq() == 0.0f);}
-    constexpr coreBool  IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f) && (z >=  0.0f) && (z <= 1.0f) && (w >=  0.0f) && (w <= 1.0f);}
-    constexpr coreBool  IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f) && (z >= -1.0f) && (z <= 1.0f) && (w >= -1.0f) && (w <= 1.0f);}
+    constexpr coreFloat   Length      ()const {return SQRT(this->LengthSq());}
+    constexpr coreFloat   LengthSq    ()const {return (x*x + y*y + z*z + w*w);}
+    constexpr coreFloat   Min         ()const {return MIN(x, y, z, w);}
+    constexpr coreFloat   Max         ()const {return MAX(x, y, z, w);}
+    constexpr coreUintW   MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
+    constexpr coreUintW   MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
+    constexpr coreVector4 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
+    constexpr coreVector4 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
+    constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
+    constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (x*w == 0.0f) && (y*z == 0.0f) && (y*w == 0.0f) && (z*w == 0.0f);}
+    constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}
+    constexpr coreBool    IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f) && (z >=  0.0f) && (z <= 1.0f) && (w >=  0.0f) && (w <= 1.0f);}
+    constexpr coreBool    IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f) && (z >= -1.0f) && (z <= 1.0f) && (w >= -1.0f) && (w <= 1.0f);}
 
     /* static functions */
     static constexpr coreFloat   Dot (const coreVector4 v1, const coreVector4 v2);
