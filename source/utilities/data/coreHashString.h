@@ -11,17 +11,12 @@
 #define _CORE_GUARD_HASHSTRING_H_
 
 // TODO 3: add debug-logging to catch global hash-collisions (currently only in map-container)
-// TODO 3: implement and test constexpr support for faster (string) hash functions (reinterpret_cast is problematic)
 // TODO 3: get constexpr evaluation in implicit contructors working on MSVC (and GCC) (>90% of all hash-strings benefit from compile-time hashing)
 
 
 // ****************************************************************
 /* hash-string definitions */
-#if defined(_CORE_CLANG_)
-    #define CORE_HASHSTRING_FUNC coreHashFNV32   // slow runtime, constexpr support
-#else
-    #define CORE_HASHSTRING_FUNC coreHashXXH32   // fast runtime
-#endif
+#define CORE_HASHSTRING_FUNC coreHashXXH32
 
 
 // ****************************************************************

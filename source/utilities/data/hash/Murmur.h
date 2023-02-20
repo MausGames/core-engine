@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* Murmur3A hash function (x86, 32-bit) */
-constexpr FUNC_LOCAL coreUint32 coreHashMurmur32(const coreByte* pData, const coreUint32 iLength, const coreUint32 iSeed = 0u)
+inline FUNC_LOCAL coreUint32 coreHashMurmur32(const coreByte* pData, const coreUint32 iLength, const coreUint32 iSeed = 0u)
 {
     ASSERT(pData && iLength)
 
@@ -73,7 +73,7 @@ inline FUNC_LOCAL coreUint32 coreHashMurmur32(const coreChar* pcString, const co
 
 // ****************************************************************
 /* Murmur2B hash function (x64, 64-bit) */
-constexpr FUNC_LOCAL coreUint64 coreHashMurmur64(const coreByte* pData, coreUint64 iLength, const coreUint64 iSeed = 0u)
+inline FUNC_LOCAL coreUint64 coreHashMurmur64(const coreByte* pData, coreUint64 iLength, const coreUint64 iSeed = 0u)
 {
     ASSERT(pData && iLength)
 
@@ -124,7 +124,7 @@ inline FUNC_LOCAL coreUint64 coreHashMurmur64(const coreChar* pcString, const co
 
 // ****************************************************************
 /* Murmur3F hash function (x64, 128-bit) */
-constexpr FUNC_LOCAL coreUint128 coreHashMurmur128(const coreByte* pData, const coreUint64 iLength, const coreUint32 iSeed = 0u)
+inline FUNC_LOCAL coreUint128 coreHashMurmur128(const coreByte* pData, const coreUint64 iLength, const coreUint32 iSeed = 0u)
 {
     ASSERT(pData && iLength)
 

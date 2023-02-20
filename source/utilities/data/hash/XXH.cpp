@@ -20,14 +20,9 @@
 
 // ****************************************************************
 /* XXH32 hash function (32-bit) */
-FUNC_LOCAL coreUint32 coreHashXXH32(const coreByte* pData, const coreUintW iLength, const coreUint32 iSeed)
+FUNC_LOCAL coreUint32 __coreHashXXH32(const coreByte* pData, const coreUintW iLength, const coreUint32 iSeed)
 {
     return XXH32(pData, iLength, iSeed);
-}
-
-FUNC_LOCAL coreUint32 coreHashXXH32(const coreChar* pcString, const coreUint32 iSeed)
-{
-    return coreHashXXH32(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }
 
 

@@ -361,7 +361,7 @@
 #define STRING(a)                   __STRING(a)
 #define __CONCAT(a,b)               a ## b
 #define CONCAT(a,b)                 __CONCAT(a, b)
-#define __DEFINED(a,b)              FORCE_COMPILE_TIME(!coreData::StrCmpConst(#a, b))
+#define __DEFINED(a,b)              FORCE_COMPILE_TIME(coreStrCmpConst(#a, b))
 #define DEFINED(a)                  __DEFINED(a, #a)
 #define CALL(...)                   do {__VA_ARGS__} while(false)
 
@@ -532,6 +532,10 @@ struct coreUint128 final
     coreUint64 iLow;
     coreUint64 iHigh;
 };
+
+// retrieve compile-time string properties
+constexpr coreUintW coreStrLenConst(const coreChar* s)                    {ASSERT(s)      if(std::is_constant_evaluated()) {coreUintW i = 0u; while(s[i]) ++i; return i;}                return std::strlen(s);}
+constexpr coreInt32 coreStrCmpConst(const coreChar* s, const coreChar* t) {ASSERT(s && t) if(std::is_constant_evaluated()) {while((*s) == (*t) && (*s)) {++s; ++t;} return (*s) - (*t);} return std::strcmp(s, t);}
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];

@@ -161,8 +161,6 @@ public:
     /* operate with string data */
     template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   // [](const coreChar  cChar)   -> coreChar
     template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   // [](const coreChar* pcToken) -> void
-    static constexpr    coreUintW StrLenConst (const coreChar* s)                    {return (*s) ? 1u + StrLenConst(s+1u) : 0u;}
-    static constexpr    coreBool  StrCmpConst (const coreChar* s, const coreChar* t) {return (*s) ? ((*s) == (*t)) && StrCmpConst(s+1u, t+1u) : !(*t);}
     static inline       coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return ((*t) == '*') ? StrCmpLike(s, t+1u) || ((*s) && StrCmpLike(s+1u, t)) : (*s) ? (((*t) == '?') || (TO_LOWER(*s) == TO_LOWER(*t))) && StrCmpLike(s+1u, t+1u) : !(*t);}
     static inline const coreChar* StrUpper    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_UPPER(c);});}
     static inline const coreChar* StrLower    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_LOWER(c);});}
