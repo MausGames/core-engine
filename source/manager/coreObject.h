@@ -113,8 +113,7 @@ private:
         const coreObject3D* pObject1;   // first 3d-object
         const coreObject3D* pObject2;   // second 3d-object
 
-        inline coreBool operator == (const coreObjectCollision& o)const {return (std::memcmp(this, &o, sizeof(coreObjectCollision)) == 0);}
-        inline coreBool operator <  (const coreObjectCollision& o)const {return (std::memcmp(this, &o, sizeof(coreObjectCollision)) <  0);}
+        ENABLE_COMPARISON(coreObjectCollision)
     };
 
 

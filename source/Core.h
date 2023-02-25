@@ -436,35 +436,27 @@
     ~c() = delete;
 
 // enable (explicitly) or disable copy- and move-operations with the defined class
-#define ENABLE_COPY(c)                  \
-    c             (const c&) = default; \
-    c& operator = (const c&) = default; \
-    c             (c&&)      = default; \
-    c& operator = (c&&)      = default;
-#define DISABLE_COPY(c)                 \
-    c             (const c&) = delete;  \
-    c& operator = (const c&) = delete;  \
-    c             (c&&)      = delete;  \
+#define ENABLE_COPY(c)                          \
+    c             (const c&)noexcept = default; \
+    c& operator = (const c&)noexcept = default; \
+    c             (c&&)     noexcept = default; \
+    c& operator = (c&&)     noexcept = default;
+#define DISABLE_COPY(c)                         \
+    c             (const c&) = delete;          \
+    c& operator = (const c&) = delete;          \
+    c             (c&&)      = delete;          \
     c& operator = (c&&)      = delete;
 
+// enable per-member comparison-operations with the defined class
+#define ENABLE_COMPARISON(c) \
+    constexpr auto operator <=> (const c&)const = default;
+
 // disable heap-operations with the defined class
-#define DISABLE_HEAP                                                         \
-    void* operator new      (std::size_t)                          = delete; \
-    void* operator new      (std::size_t, void*)                   = delete; \
-    void* operator new      (std::size_t, std::align_val_t)        = delete; \
-    void* operator new[]    (std::size_t)                          = delete; \
-    void* operator new[]    (std::size_t, void*)                   = delete; \
-    void* operator new[]    (std::size_t, std::align_val_t)        = delete; \
-    void  operator delete   (void*)                                = delete; \
-    void  operator delete   (void*, void*)                         = delete; \
-    void  operator delete   (void*, std::align_val_t)              = delete; \
-    void  operator delete   (void*, std::size_t)                   = delete; \
-    void  operator delete   (void*, std::size_t, std::align_val_t) = delete; \
-    void  operator delete[] (void*)                                = delete; \
-    void  operator delete[] (void*, void*)                         = delete; \
-    void  operator delete[] (void*, std::align_val_t)              = delete; \
-    void  operator delete[] (void*, std::size_t)                   = delete; \
-    void  operator delete[] (void*, std::size_t, std::align_val_t) = delete;
+#define DISABLE_HEAP                                \
+    void* operator new      (std::size_t) = delete; \
+    void* operator new[]    (std::size_t) = delete; \
+    void  operator delete   (void*)       = delete; \
+    void  operator delete[] (void*)       = delete;
 
 // enable bitwise-operations with the defined enumeration
 #define ENABLE_BITWISE(e)                                                                                                                                       \

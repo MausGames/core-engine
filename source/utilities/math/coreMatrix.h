@@ -36,10 +36,7 @@ public:
                                          const coreFloat f31, const coreFloat f32)noexcept;
 
     ENABLE_COPY(coreMatrix3x2)
-
-    /* compare operations */
-    inline coreBool operator == (const coreMatrix3x2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3x2)) == 0);}
-    inline coreBool operator != (const coreMatrix3x2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3x2)) != 0);}
+    ENABLE_COMPARISON(coreMatrix3x2)
 
     /* static functions */
     static constexpr coreMatrix3x2 Identity();
@@ -65,10 +62,7 @@ public:
                                          const coreFloat f41, const coreFloat f42, const coreFloat f43)noexcept;
 
     ENABLE_COPY(coreMatrix4x3)
-
-    /* compare operations */
-    inline coreBool operator == (const coreMatrix4x3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4x3)) == 0);}
-    inline coreBool operator != (const coreMatrix4x3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4x3)) != 0);}
+    ENABLE_COMPARISON(coreMatrix4x3)
 
     /* static functions */
     static constexpr coreMatrix4x3 Identity();
@@ -90,10 +84,7 @@ public:
                                        const coreFloat f21, const coreFloat f22)noexcept;
 
     ENABLE_COPY(coreMatrix2)
-
-    /* compare operations */
-    inline coreBool operator == (const coreMatrix2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix2)) == 0);}
-    inline coreBool operator != (const coreMatrix2& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix2)) != 0);}
+    ENABLE_COMPARISON(coreMatrix2)
 
     /* matrix operations */
     constexpr coreMatrix2 operator +  (const coreMatrix2& m)const;
@@ -153,10 +144,7 @@ public:
     constexpr FORCE_INLINE explicit coreMatrix3(const coreMatrix2&   m)noexcept;
 
     ENABLE_COPY(coreMatrix3)
-
-    /* compare operations */
-    inline coreBool operator == (const coreMatrix3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3)) == 0);}
-    inline coreBool operator != (const coreMatrix3& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix3)) != 0);}
+    ENABLE_COMPARISON(coreMatrix3)
 
     /* matrix operations */
     constexpr coreMatrix3 operator +  (const coreMatrix3& m)const;
@@ -234,10 +222,7 @@ public:
     constexpr FORCE_INLINE explicit coreMatrix4(const coreMatrix2&   m)noexcept;
 
     ENABLE_COPY(coreMatrix4)
-
-    /* compare operations */
-    inline coreBool operator == (const coreMatrix4& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4)) == 0);}
-    inline coreBool operator != (const coreMatrix4& m)const {return (std::memcmp(this, &m, sizeof(coreMatrix4)) != 0);}
+    ENABLE_COMPARISON(coreMatrix4)
 
     /* matrix operations */
     constexpr coreMatrix4 operator +  (const coreMatrix4& m)const;
