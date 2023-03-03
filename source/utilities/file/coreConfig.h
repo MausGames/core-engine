@@ -33,8 +33,9 @@
 #define CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS   "Graphics", "EnableExtensions",   ("")
 #define CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS  "Graphics", "DisableExtensions",  ("")
 
-#define CORE_CONFIG_AUDIO_HRTF                  "Audio",    "HRTF",               (2)
+#define CORE_CONFIG_AUDIO_MODE                  "Audio",    "Mode",               (0)
 #define CORE_CONFIG_AUDIO_HRTFINDEX             "Audio",    "HRTFIndex",          (-1)
+#define CORE_CONFIG_AUDIO_RESAMPLERINDEX        "Audio",    "ResamplerIndex",     (-1)
 #define CORE_CONFIG_AUDIO_GLOBALVOLUME          "Audio",    "GlobalVolume",       (1.0f)
 #define CORE_CONFIG_AUDIO_MUSICVOLUME           "Audio",    "MusicVolume",        (1.0f)
 #define CORE_CONFIG_AUDIO_SOUNDVOLUME           "Audio",    "SoundVolume",        (1.0f)

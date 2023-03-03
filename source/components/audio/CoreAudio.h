@@ -11,7 +11,6 @@
 #define _CORE_GUARD_AUDIO_H_
 
 // TODO 5: <old comment style>
-// TODO 3: emscripten exposes ALC_SOFT_HRTF, but cannot handle -1 (or other indices outside the HRTF list range)
 
 
 // ****************************************************************
@@ -22,6 +21,14 @@
 #define CORE_AUDIO_TYPES         (8u)                                                    // number of sound types
 #define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    // sound buffer identifier for music
 #define CORE_AUDIO_MAX_GAIN      (4.0f)                                                  // maximum supported gain per audio source
+
+enum coreAudioMode : coreUint8
+{
+    CORE_AUDIO_MODE_AUTO       = 0u,   // auto-detect from system when possible
+    CORE_AUDIO_MODE_MONO       = 1u,   // force monaural output     (HRTF disabled)
+    CORE_AUDIO_MODE_SPEAKERS   = 2u,   // allow any output          (HRTF disabled)
+    CORE_AUDIO_MODE_HEADPHONES = 3u    // force stereophonic output (HRTF enabled)
+};
 
 
 // ****************************************************************
@@ -57,10 +64,13 @@ private:
 
     LPALDEFERUPDATESSOFT   m_nDeferUpdates;             // suspend immediate playback state changes
     LPALPROCESSUPDATESSOFT m_nProcessUpdates;           // catch-up and resume playback state changes
+    LPALCRESETDEVICESOFT   m_nResetDevice;              // reset audio device with different attributes
 
     coreBool m_bSupportALAW;                            // support for A-law compression
     coreBool m_bSupportMULAW;                           // support for MU-law compression
     coreBool m_bSupportFloat;                           // support for raw float-data
+
+    ALint m_aiAttributes[11];                           // OpenAL context attributes
 
 
 private:
@@ -97,6 +107,15 @@ public:
     inline void DeferUpdates  ()const {m_nDeferUpdates  ();}
     inline void ProcessUpdates()const {m_nProcessUpdates();}
 
+    /* reconfigure audio interface */
+    void Reconfigure();
+
+    /* get component properties */
+    inline const coreVector3& GetListenerPosition   ()const {return m_vPosition;}
+    inline const coreVector3& GetListenerVelocity   ()const {return m_vVelocity;}
+    inline const coreVector3& GetListenerDirection  ()const {return m_avDirection[0];}
+    inline const coreVector3& GetListenerOrientation()const {return m_avDirection[1];}
+
     /* check OpenAL properties */
     inline const coreBool& GetSupportALAW ()const {return m_bSupportALAW;}
     inline const coreBool& GetSupportMULAW()const {return m_bSupportMULAW;}
@@ -106,6 +125,12 @@ public:
 private:
     /* update all audio sources */
     void __UpdateSources();
+
+    /* change resampler of all audio sources */
+    void __ChangeResampler(const ALint iResampler);
+
+    /* assemble OpenAL context attributes */
+    const ALint* __RetrieveAttributes();
 };
 
 

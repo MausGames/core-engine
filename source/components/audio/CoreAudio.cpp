@@ -25,33 +25,28 @@ CoreAudio::CoreAudio()noexcept
 , m_aSourceData     {}
 , m_nDeferUpdates   (NULL)
 , m_nProcessUpdates (NULL)
+, m_nResetDevice    (NULL)
 , m_bSupportALAW    (false)
 , m_bSupportMULAW   (false)
 , m_bSupportFloat   (false)
+, m_aiAttributes    {}
 {
     Core::Log->Header("Audio Interface");
 
     // enable OpenAL logging
     if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
     {
-        coreData::SetEnvironment("ALSOFT_LOGLEVEL", "3");
-        coreData::SetEnvironment("ALSOFT_LOGFILE",  coreData::UserFolderShared("log_openal.txt"));
+        coreData::SetEnvironment("ALSOFT_TRAP_ERROR", "1");
+        coreData::SetEnvironment("ALSOFT_LOGLEVEL",   "3");
+        coreData::SetEnvironment("ALSOFT_LOGFILE",    coreData::UserFolderShared("log_openal.txt"));
     }
 
-    // set OpenAL context attributes
-    const ALCint aiAttributes[] =
-    {
-        ALC_HRTF_SOFT,      Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTF),
-        ALC_HRTF_ID_SOFT,   Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTFINDEX),
-        ALC_FREQUENCY,      48000,
-        ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES,
-        ALC_STEREO_SOURCES, CORE_AUDIO_SOURCES,
-        0
-    };
+    // include additional config file
+    coreData::SetEnvironment("ALSOFT_CONF", coreData::UserFolderPrivate("config_openal.ini"));
 
     // open audio device and create OpenAL context
     m_pDevice  = alcOpenDevice(NULL);
-    m_pContext = alcCreateContext(m_pDevice, aiAttributes + 4u);   // skip HRTF attributes
+    m_pContext = alcCreateContext(m_pDevice, this->__RetrieveAttributes());
 
     // activate OpenAL context
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
@@ -62,10 +57,29 @@ CoreAudio::CoreAudio()noexcept
     alGenSources(CORE_AUDIO_SOURCES, m_aiSource);
 
     // init HRTF extension
-    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_HRTF") && !DEFINED(_CORE_EMSCRIPTEN_))
+    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_HRTF"))
     {
-        const LPALCRESETDEVICESOFT nResetDevice = r_cast<LPALCRESETDEVICESOFT>(alcGetProcAddress(m_pDevice, "alcResetDeviceSOFT"));
-        if(nResetDevice) nResetDevice(m_pDevice, aiAttributes);
+        // get function pointer to reset audio device
+        m_nResetDevice = r_cast<LPALCRESETDEVICESOFT>(alcGetProcAddress(m_pDevice, "alcResetDeviceSOFT"));
+
+        // log all available HRTFs
+        const LPALCGETSTRINGISOFT nGetStringi = r_cast<LPALCGETSTRINGISOFT>(alcGetProcAddress(m_pDevice, "alcGetStringiSOFT"));
+        if(nGetStringi)
+        {
+            // retrieve number of HRTFs
+            ALCint iNum = 0; alcGetIntegerv(m_pDevice, ALC_NUM_HRTF_SPECIFIERS_SOFT, 1, &iNum);
+            if(iNum > 0)
+            {
+                Core::Log->ListStartInfo("Available HRTFs");
+                {
+                    for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
+                    {
+                        Core::Log->ListAdd("%zu: %s", i, nGetStringi(m_pDevice, ALC_HRTF_SPECIFIER_SOFT, i));
+                    }
+                }
+                Core::Log->ListEnd();
+            }
+        }
     }
 
     // init deferred-updates extension
@@ -80,11 +94,50 @@ CoreAudio::CoreAudio()noexcept
         m_nProcessUpdates = []() {alcProcessContext(alcGetCurrentContext());};
     }
 
-    // init direct-channels extension
-    if(alIsExtensionPresent("AL_SOFT_direct_channels"))
+    // init source-resampler extension
+    const coreChar* pcResamplerName = NULL;
+    if(alIsExtensionPresent("AL_SOFT_source_resampler"))
     {
-        for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
-            alSourcei(m_aiSource[i], AL_DIRECT_CHANNELS_SOFT, true);
+        // change resampler of all audio sources
+        this->__ChangeResampler(Core::Config->GetInt(CORE_CONFIG_AUDIO_RESAMPLERINDEX));
+
+        // log all available resamplers
+        const LPALGETSTRINGISOFT nGetStringi = r_cast<LPALGETSTRINGISOFT>(alGetProcAddress("alGetStringiSOFT"));
+        if(nGetStringi)
+        {
+            // retrieve number of resamplers
+            const ALint iNum = alGetInteger(AL_NUM_RESAMPLERS_SOFT);
+            if(iNum > 0)
+            {
+                const ALint iDefault = alGetInteger(AL_DEFAULT_RESAMPLER_SOFT);
+
+                Core::Log->ListStartInfo("Available Resamplers");
+                {
+                    for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
+                    {
+                        Core::Log->ListAdd("%zu: %s%s", i, nGetStringi(AL_RESAMPLER_NAME_SOFT, i), (ALint(i) == iDefault) ? "*" : "");
+                    }
+                }
+                Core::Log->ListEnd();
+            }
+
+            // retrieve selected resampler name
+            ALint iSelect = 0; alGetSourcei(m_aiSource[0], AL_SOURCE_RESAMPLER_SOFT, &iSelect);
+            pcResamplerName = nGetStringi(AL_RESAMPLER_NAME_SOFT, iSelect);
+        }
+    }
+
+    // init direct-channels extension
+    if(alIsExtensionPresent("AL_SOFT_direct_channels") && alIsExtensionPresent("AL_SOFT_direct_channels_remix"))
+    {
+        this->DeferUpdates();
+        {
+            for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
+            {
+                alSourcei(m_aiSource[i], AL_DIRECT_CHANNELS_SOFT, AL_REMIX_UNMATCHED_SOFT);
+            }
+        }
+        this->ProcessUpdates();
     }
 
     // init format extensions
@@ -112,22 +165,24 @@ CoreAudio::CoreAudio()noexcept
     // log audio device information
     Core::Log->ListStartInfo("Audio Device Information");
     {
-        ALCint aiStatus[7] = {};
-        alcGetIntegerv(m_pDevice, ALC_FREQUENCY,        1, &aiStatus[0]);
-        alcGetIntegerv(m_pDevice, ALC_REFRESH,          1, &aiStatus[1]);
-        alcGetIntegerv(m_pDevice, ALC_SYNC,             1, &aiStatus[2]);
-        alcGetIntegerv(m_pDevice, ALC_MONO_SOURCES,     1, &aiStatus[3]);
-        alcGetIntegerv(m_pDevice, ALC_STEREO_SOURCES,   1, &aiStatus[4]);
-        alcGetIntegerv(m_pDevice, ALC_HRTF_SOFT,        1, &aiStatus[5]);
-        alcGetIntegerv(m_pDevice, ALC_HRTF_STATUS_SOFT, 1, &aiStatus[6]);
+        ALCint aiStatus[9] = {};
+        alcGetIntegerv(m_pDevice, ALC_FREQUENCY,           1, &aiStatus[0]);
+        alcGetIntegerv(m_pDevice, ALC_REFRESH,             1, &aiStatus[1]);
+        alcGetIntegerv(m_pDevice, ALC_SYNC,                1, &aiStatus[2]);
+        alcGetIntegerv(m_pDevice, ALC_MONO_SOURCES,        1, &aiStatus[3]);
+        alcGetIntegerv(m_pDevice, ALC_STEREO_SOURCES,      1, &aiStatus[4]);
+        alcGetIntegerv(m_pDevice, ALC_OUTPUT_MODE_SOFT,    1, &aiStatus[5]);
+        alcGetIntegerv(m_pDevice, ALC_OUTPUT_LIMITER_SOFT, 1, &aiStatus[6]);
+        alcGetIntegerv(m_pDevice, ALC_HRTF_SOFT,           1, &aiStatus[7]);
+        alcGetIntegerv(m_pDevice, ALC_HRTF_STATUS_SOFT,    1, &aiStatus[8]);
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s, %s (%d))", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER), aiStatus[5] ? alcGetString(m_pDevice, ALC_HRTF_SPECIFIER_SOFT) : "HRTF disabled", aiStatus[6]);
-        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",               alGetString(AL_VENDOR));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",               alGetString(AL_RENDERER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",               alGetString(AL_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s, %s (%d), %s)", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER), aiStatus[7] ? alcGetString(m_pDevice, ALC_HRTF_SPECIFIER_SOFT) : "HRTF disabled", aiStatus[8], pcResamplerName ? pcResamplerName : "Unknown Resampler");
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",                   alGetString(AL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",                   alGetString(AL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",                   alGetString(AL_VERSION));
         Core::Log->ListAdd(alcGetString(m_pDevice, ALC_EXTENSIONS));
         Core::Log->ListAdd(alGetString(AL_EXTENSIONS));
-        Core::Log->ListAdd("ALC_FREQUENCY (%d) ALC_REFRESH (%d) ALC_SYNC (%d) ALC_MONO_SOURCES (%d) ALC_STEREO_SOURCES (%d)", aiStatus[0], aiStatus[1], aiStatus[2], aiStatus[3], aiStatus[4]);
+        Core::Log->ListAdd("ALC_FREQUENCY (%d) ALC_REFRESH (%d) ALC_SYNC (%d) ALC_MONO_SOURCES (%d) ALC_STEREO_SOURCES (%d) ALC_OUTPUT_MODE_SOFT (0x%04X) ALC_OUTPUT_LIMITER_SOFT (%d)", aiStatus[0], aiStatus[1], aiStatus[2], aiStatus[3], aiStatus[4], aiStatus[5], aiStatus[6]);
     }
     Core::Log->ListEnd();
 
@@ -366,6 +421,20 @@ coreBool CoreAudio::CheckSource(const ALuint iBuffer, const ALuint iSource)const
 
 
 // ****************************************************************
+/* reconfigure audio interface */
+void CoreAudio::Reconfigure()
+{
+    // reset audio device with different attributes
+    if(m_nResetDevice) m_nResetDevice(m_pDevice, this->__RetrieveAttributes());
+
+    // change resampler of all audio sources
+    this->__ChangeResampler(Core::Config->GetInt(CORE_CONFIG_AUDIO_RESAMPLERINDEX));
+
+    Core::Log->Info("Audio Interface reconfigured");
+}
+
+
+// ****************************************************************
 /* update all audio sources */
 void CoreAudio::__UpdateSources()
 {
@@ -393,7 +462,9 @@ void CoreAudio::__UpdateSources()
         this->DeferUpdates();
         {
             for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES_MUSIC; ++i)
+            {
                 alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afMusicVolume[0] / CORE_AUDIO_MAX_GAIN);
+            }
         }
         this->ProcessUpdates();
     }
@@ -404,8 +475,94 @@ void CoreAudio::__UpdateSources()
         this->DeferUpdates();
         {
             for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
+            {
                 alSourcef(m_aiSource[i], AL_GAIN, m_aSourceData[i].fVolume * m_afSoundVolume[0] * m_afTypeVolume[m_aSourceData[i].iType] / CORE_AUDIO_MAX_GAIN);
+            }
         }
         this->ProcessUpdates();
     }
+}
+
+
+// ****************************************************************
+/* change resampler of all audio sources */
+void CoreAudio::__ChangeResampler(const ALint iResampler)
+{
+    if(alIsExtensionPresent("AL_SOFT_source_resampler"))
+    {
+        // retrieve number of resamplers
+        const ALint iNum = alGetInteger(AL_NUM_RESAMPLERS_SOFT);
+        if(iNum > 0)
+        {
+            // clamp and check for default resampler
+            const ALint iIndex = (iResampler > -1) ? MIN(iResampler, iNum - 1) : alGetInteger(AL_DEFAULT_RESAMPLER_SOFT);
+
+            // update resamplers
+            this->DeferUpdates();
+            {
+                for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
+                {
+                    alSourcei(m_aiSource[i], AL_SOURCE_RESAMPLER_SOFT, iIndex);
+                }
+            }
+            this->ProcessUpdates();
+        }
+    }
+}
+
+
+// ****************************************************************
+/* assemble OpenAL context attributes */
+const ALint* CoreAudio::__RetrieveAttributes()
+{
+    coreUintW i = 0u;
+    const auto nAttributeFunc = [&](const ALCint iAttribute, const ALCint iValue)
+    {
+        ASSERT(i + 3u < ARRAY_SIZE(m_aiAttributes))
+
+        // add new attribute
+        m_aiAttributes[i++] = iAttribute;
+        m_aiAttributes[i++] = iValue;
+    };
+
+    // reset all attributes
+    std::memset(m_aiAttributes, 0, sizeof(m_aiAttributes));
+
+    // select audio configuration
+    ALCint iOutputMode, iHRTF;
+    switch(Core::Config->GetInt(CORE_CONFIG_AUDIO_MODE))
+    {
+    default:
+    case CORE_AUDIO_MODE_AUTO:       iOutputMode = ALC_ANY_SOFT;         iHRTF = ALC_DONT_CARE_SOFT; break;
+    case CORE_AUDIO_MODE_MONO:       iOutputMode = ALC_MONO_SOFT;        iHRTF = ALC_FALSE;          break;
+    case CORE_AUDIO_MODE_SPEAKERS:   iOutputMode = ALC_ANY_SOFT;         iHRTF = ALC_FALSE;          break;
+    case CORE_AUDIO_MODE_HEADPHONES: iOutputMode = ALC_STEREO_HRTF_SOFT; iHRTF = ALC_TRUE;           break;
+    }
+
+    // set audio source numbers
+    nAttributeFunc(ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES);
+    nAttributeFunc(ALC_STEREO_SOURCES, CORE_AUDIO_SOURCES);
+
+    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_output_mode"))
+    {
+        // set output mode
+        nAttributeFunc(ALC_OUTPUT_MODE_SOFT, iOutputMode);
+    }
+
+    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_HRTF"))
+    {
+        // set HRTF state
+        nAttributeFunc(ALC_HRTF_SOFT, iHRTF);
+
+        // retrieve number of HRTFs
+        ALCint iNum = 0; alcGetIntegerv(m_pDevice, ALC_NUM_HRTF_SPECIFIERS_SOFT, 1, &iNum);
+        if(iNum > 0)
+        {
+            // set HRTF index (if requested)
+            const ALCint iIndex = MIN(Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTFINDEX), iNum - 1);
+            if(iIndex > -1) nAttributeFunc(ALC_HRTF_ID_SOFT, iIndex);
+        }
+    }
+
+    return m_aiAttributes;
 }
