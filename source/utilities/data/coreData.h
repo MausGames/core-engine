@@ -43,6 +43,10 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
 #define TO_UPPER(c)      (coreChar(std::toupper(coreUint8(c))))
 #define TO_LOWER(c)      (coreChar(std::tolower(coreUint8(c))))
 
+#if defined(_CORE_MSVC_)
+    #define strtok_r strtok_s
+#endif
+
 STATIC_ASSERT(sizeof(std::time_t) == 8u)
 
 
@@ -333,17 +337,18 @@ template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, co
 {
     ASSERT(pcInput && pcDelimiter)
 
-    coreChar acString[512];
+    coreChar  acString[512];
+    coreChar* pcContext = NULL;
 
     // make local copy
     coreData::StrCopy(acString, ARRAY_SIZE(acString), pcInput);
 
     // tokenize string and forward to function
-    const coreChar* pcToken = std::strtok(acString, pcDelimiter);
+    const coreChar* pcToken = strtok_r(acString, pcDelimiter, &pcContext);
     while(pcToken != NULL)
     {
         nFunction(pcToken);
-        pcToken = std::strtok(NULL, pcDelimiter);
+        pcToken = strtok_r(NULL, pcDelimiter, &pcContext);
     }
 }
 
