@@ -286,8 +286,7 @@ void __coreInitOpenGL()
     if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
         __GLEW_ARB_uniform_buffer_object = false;
 
-    // change extension status through configuration file
-    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_ENABLEEXTENSIONS),  " ,;", [](const coreChar* pcToken) {glewEnableExtension (pcToken);});
+    // change extension status through configuration file (e.g. GL_EXT_framebuffer_object)
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});
 
     // check for minimum OpenGL support
