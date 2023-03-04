@@ -71,13 +71,17 @@ private:
     coreUintW m_iBlockSize;              // memory-block size (in bytes)
     coreUintW m_iPageSize;               // memory-page size (in number of containing memory-blocks)
 
+    void* m_pHeap;                       // private heap object
+
 
 public:
     coreMemoryPool()noexcept;
     coreMemoryPool(const coreUintW iBlockSize, const coreUintW iPageSize)noexcept;
+    coreMemoryPool(coreMemoryPool&& m)noexcept;
     ~coreMemoryPool();
 
-    ENABLE_COPY(coreMemoryPool)
+    /* assignment operations */
+    coreMemoryPool& operator = (coreMemoryPool&& m)noexcept;
 
     /* control state of the memory-pool */
     void Configure(const coreUintW iBlockSize, const coreUintW iPageSize);

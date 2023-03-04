@@ -16,17 +16,24 @@ coreMemoryPool::coreMemoryPool()noexcept
 , m_apFreeStack {}
 , m_iBlockSize  (0u)
 , m_iPageSize   (0u)
+, m_pHeap       (NULL)
 {
 }
 
 coreMemoryPool::coreMemoryPool(const coreUintW iBlockSize, const coreUintW iPageSize)noexcept
-: m_apPageList  {}
-, m_apFreeStack {}
-, m_iBlockSize  (iBlockSize)
-, m_iPageSize   (iPageSize)
+: coreMemoryPool ()
 {
-    // reserve memory for the free-stack
-    m_apFreeStack.reserve(iPageSize);
+    this->Configure(iBlockSize, iPageSize);
+}
+
+coreMemoryPool::coreMemoryPool(coreMemoryPool&& m)noexcept
+: m_apPageList  (std::move(m.m_apPageList))
+, m_apFreeStack (std::move(m.m_apFreeStack))
+, m_iBlockSize  (m.m_iBlockSize)
+, m_iPageSize   (m.m_iPageSize)
+, m_pHeap       (m.m_pHeap)
+{
+    m.m_pHeap = NULL;
 }
 
 
@@ -34,7 +41,26 @@ coreMemoryPool::coreMemoryPool(const coreUintW iBlockSize, const coreUintW iPage
 /* destructor */
 coreMemoryPool::~coreMemoryPool()
 {
+    // reset memory-pool
     this->Reset();
+
+    // destroy private heap object
+    if(m_pHeap) coreData::HeapDestroy(m_pHeap);
+}
+
+
+// ****************************************************************
+/* assignment operations */
+coreMemoryPool& coreMemoryPool::operator = (coreMemoryPool&& m)noexcept
+{
+    // swap properties
+    std::swap(m_apPageList,  m.m_apPageList);
+    std::swap(m_apFreeStack, m.m_apFreeStack);
+    std::swap(m_iBlockSize,  m.m_iBlockSize);
+    std::swap(m_iPageSize,   m.m_iPageSize);
+    std::swap(m_pHeap,       m.m_pHeap);
+
+    return *this;
 }
 
 
@@ -42,6 +68,7 @@ coreMemoryPool::~coreMemoryPool()
 /* set required memory-pool properties */
 void coreMemoryPool::Configure(const coreUintW iBlockSize, const coreUintW iPageSize)
 {
+    ASSERT(iBlockSize && iPageSize)
     ASSERT(m_apPageList.empty())
 
     // save memory-block and memory-page size
@@ -50,6 +77,9 @@ void coreMemoryPool::Configure(const coreUintW iBlockSize, const coreUintW iPage
 
     // reserve memory for the free-stack
     m_apFreeStack.reserve(iPageSize);
+
+    // create private heap object
+    if(!m_pHeap) m_pHeap = coreData::HeapCreate(false);
 }
 
 
@@ -61,7 +91,7 @@ void coreMemoryPool::Reset()
 
     // delete all memory-pages
     FOR_EACH(it, m_apPageList)
-        ALIGNED_DELETE(*it)
+        coreData::HeapFree(m_pHeap, r_cast<void**>(&(*it)));
 
     // clear memory
     m_apPageList .clear();
@@ -116,8 +146,10 @@ coreBool coreMemoryPool::Contains(const void* pPointer)const
 /* add new memory-page to memory-pool */
 void coreMemoryPool::__AddPage()
 {
+    ASSERT(m_iBlockSize && m_iPageSize && m_pHeap)
+
     // create new memory-page
-    coreByte* pNewPage = ALIGNED_NEW(coreByte, m_iBlockSize * m_iPageSize, ALIGNMENT_CACHE);
+    coreByte* pNewPage = s_cast<coreByte*>(coreData::HeapMalloc(m_pHeap, m_iBlockSize * m_iPageSize));
     m_apPageList.push_back(pNewPage);
 
     // add all containing memory-blocks to the free-stack

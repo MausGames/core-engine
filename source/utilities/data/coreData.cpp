@@ -924,6 +924,120 @@ coreStatus coreData::CloseLibrary(void* pLibrary)
 
 
 // ****************************************************************
+/* create private heap object */
+void* coreData::HeapCreate(const coreBool bThreadSafe)
+{
+#if defined(_CORE_WINDOWS_)
+
+    return ::HeapCreate((bThreadSafe ? 0u : HEAP_NO_SERIALIZE) | (DEFINED(_CORE_DEBUG_) ? HEAP_GENERATE_EXCEPTIONS : 0u), 0u, 0u);
+
+#else
+
+    return I_TO_P(-1);
+
+#endif
+}
+
+
+// ****************************************************************
+/* destroy private heap object */
+void coreData::HeapDestroy(void* pHeap)
+{
+    ASSERT(pHeap)
+
+#if defined(_CORE_WINDOWS_)
+
+    #if defined(_CORE_DEBUG_)
+        ASSERT(::HeapValidate(pHeap, 0u, NULL))
+    #endif
+
+    WARN_IF(!::HeapDestroy(pHeap)) {}
+
+#else
+
+    ASSERT(pHeap == I_TO_P(-1))
+
+#endif
+}
+
+
+// ****************************************************************
+/* allocate memory from private heap */
+RETURN_RESTRICT void* coreData::HeapMalloc(void* pHeap, const coreUintW iSize)
+{
+    ASSERT(pHeap && iSize)
+
+#if defined(_CORE_WINDOWS_)
+
+    return ::HeapAlloc(pHeap, 0u, iSize);
+
+#else
+
+    return std::malloc(iSize);
+
+#endif
+}
+
+// ****************************************************************
+/* allocate zero-initialized memory from private heap */
+RETURN_RESTRICT void* coreData::HeapCalloc(void* pHeap, const coreUintW iSize)
+{
+    ASSERT(pHeap && iSize)
+
+#if defined(_CORE_WINDOWS_)
+
+    return ::HeapAlloc(pHeap, HEAP_ZERO_MEMORY, iSize);
+
+#else
+
+    return std::calloc(iSize, 1u);
+
+#endif
+}
+
+// ****************************************************************
+/* allocate dynamic-sized memory from private heap */
+void coreData::HeapRealloc(void* pHeap, void** OUTPUT ppPointer, const coreUintW iSize)
+{
+    ASSERT(pHeap && ppPointer && iSize)
+
+#if defined(_CORE_WINDOWS_)
+
+    (*ppPointer) = (*ppPointer) ? ::HeapReAlloc(pHeap, 0u, *ppPointer, iSize) : ::HeapAlloc(pHeap, 0u, iSize);
+
+#else
+
+    (*ppPointer) = std::realloc(*ppPointer, iSize);
+
+#endif
+}
+
+
+// ****************************************************************
+/* free memory from private heap */
+void coreData::HeapFree(void* pHeap, void** OUTPUT ppPointer)
+{
+    ASSERT(pHeap && ppPointer)
+
+#if defined(_CORE_WINDOWS_)
+
+    #if defined(_CORE_DEBUG_)
+        ASSERT(::HeapValidate(pHeap, 0u, *ppPointer))
+    #endif
+
+    WARN_IF(!::HeapFree(pHeap, 0u, *ppPointer)) {}
+
+#else
+
+    std::free(*ppPointer);
+
+#endif
+
+    (*ppPointer) = NULL;
+}
+
+
+// ****************************************************************
 /* open regular file stream */
 std::FILE* coreData::FileOpen(const coreChar* pcPath, const coreChar* pcMode)
 {

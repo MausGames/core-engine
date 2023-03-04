@@ -124,6 +124,14 @@ public:
     static void*      GetAddress  (void* pLibrary, const coreChar* pcName);
     static coreStatus CloseLibrary(void* pLibrary);
 
+    /* handle dynamic memory */
+    static                 void* HeapCreate (const coreBool bThreadSafe);
+    static                 void  HeapDestroy(void* pHeap);
+    static RETURN_RESTRICT void* HeapMalloc (void* pHeap, const coreUintW iSize);
+    static RETURN_RESTRICT void* HeapCalloc (void* pHeap, const coreUintW iSize);
+    static                 void  HeapRealloc(void* pHeap, void** OUTPUT ppPointer, const coreUintW iSize);
+    static                 void  HeapFree   (void* pHeap, void** OUTPUT ppPointer);
+
     /* handle physical files and folders */
     static std::FILE*  FileOpen      (const coreChar* pcPath, const coreChar* pcMode);
     static coreBool    FileExists    (const coreChar* pcPath);
