@@ -238,7 +238,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // move mouse wheel
     case SDL_MOUSEWHEEL:
-        this->SetMouseWheel(I_TO_F(oEvent.wheel.preciseY));
+        this->SetMouseWheel(oEvent.wheel.preciseY);
         break;
 
 #endif

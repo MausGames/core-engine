@@ -12,13 +12,18 @@
 
 
 // ****************************************************************
+/* base list container type */
+template <typename T> using coreListBase = std::vector<T>;
+
+
+// ****************************************************************
 /* list container class */
-template <typename T> class coreList : public std::vector<T>
+template <typename T> class coreList : public coreListBase<T>
 {
 private:
     /* internal types */
-    using coreIterator      = typename std::vector<T>::iterator;
-    using coreConstIterator = typename std::vector<T>::const_iterator;
+    using coreIterator      = typename coreListBase<T>::iterator;
+    using coreConstIterator = typename coreListBase<T>::const_iterator;
 
 
 public:

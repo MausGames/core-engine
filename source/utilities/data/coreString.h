@@ -16,34 +16,39 @@
 
 
 // ****************************************************************
+/* base string type */
+using coreStringBase = std::string;
+
+
+// ****************************************************************
 /* string class */
-class coreString final : public std::string
+class coreString final : public coreStringBase
 {
 public:
     coreString() = default;
-    constexpr coreString(const coreChar* pcText)noexcept                       : std::string (pcText ? pcText : "")       {}
-    constexpr coreString(const coreChar* pcText, const coreUintW iNum)noexcept : std::string (pcText ? pcText : "", iNum) {}
-    constexpr coreString(const coreUintW iNum, const coreChar cChar)noexcept   : std::string (iNum, cChar)                {}
-    constexpr coreString(std::string&& m)noexcept                              : std::string (std::move(m))               {}
+    constexpr coreString(const coreChar* pcText)noexcept                       : coreStringBase (pcText ? pcText : "")       {}
+    constexpr coreString(const coreChar* pcText, const coreUintW iNum)noexcept : coreStringBase (pcText ? pcText : "", iNum) {}
+    constexpr coreString(const coreUintW iNum, const coreChar cChar)noexcept   : coreStringBase (iNum, cChar)                {}
+    constexpr coreString(coreStringBase&& m)noexcept                           : coreStringBase (std::move(m))               {}
 
     ENABLE_COPY(coreString)
 
     /* assign new string */
-    using std::string::assign;
-    constexpr coreString& assign(const coreChar* pcText)                       {this->std::string::assign(pcText ? pcText : "");       return *this;}
-    constexpr coreString& assign(const coreChar* pcText, const coreUintW iNum) {this->std::string::assign(pcText ? pcText : "", iNum); return *this;}
+    using coreStringBase::assign;
+    constexpr coreString& assign(const coreChar* pcText)                       {this->coreStringBase::assign(pcText ? pcText : "");       return *this;}
+    constexpr coreString& assign(const coreChar* pcText, const coreUintW iNum) {this->coreStringBase::assign(pcText ? pcText : "", iNum); return *this;}
 
     /* append new string */
-    using std::string::append;
-    constexpr coreString& append(const coreChar* pcText)                       {this->std::string::append(pcText ? pcText : "");       return *this;}
-    constexpr coreString& append(const coreChar* pcText, const coreUintW iNum) {this->std::string::append(pcText ? pcText : "", iNum); return *this;}
+    using coreStringBase::append;
+    constexpr coreString& append(const coreChar* pcText)                       {this->coreStringBase::append(pcText ? pcText : "");       return *this;}
+    constexpr coreString& append(const coreChar* pcText, const coreUintW iNum) {this->coreStringBase::append(pcText ? pcText : "", iNum); return *this;}
 
     /* append new string with operator */
-    using std::string::operator +=;
+    using coreStringBase::operator +=;
     constexpr coreString& operator += (const coreChar* pcText) {return this->append(pcText);}
 
     /* replace all occurrences of a sub-string with another one */
-    using std::string::replace;
+    using coreStringBase::replace;
     coreString& replace(const coreChar* pcOld, const coreChar* pcNew);
 
     /* trim string on both sides */

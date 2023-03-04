@@ -414,7 +414,7 @@
     #define WARN_IF(c)              if([](const coreBool bCondition) {ASSERT(!bCondition) return bCondition;}(!!(c)))   // weak
 #else
     #if defined(_CORE_MSVC_)
-        #define WARN_IF(c)          if(c) [[unlikely]]
+        #define WARN_IF(c)          if(!!(c)) [[unlikely]]
     #else
         #define WARN_IF(c)          if(__builtin_expect(!!(c), 0))
     #endif
