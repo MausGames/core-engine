@@ -15,9 +15,11 @@
 
     #pragma warning(push, 3)
 
+    #pragma warning(disable : 4355)   // 'this' used in base member initializer list
     #pragma warning(disable : 5039)   // potentially throwing function passed to extern C function
     #pragma warning(disable : 5045)   // possible Spectre vulnerability
     #pragma warning(disable : 5219)   // implicit conversion between different types
+    #pragma warning(disable : 5262)   // implicit fall-through
 
 #endif
 
@@ -42,7 +44,7 @@
 #include <imgui/imgui_draw.cpp>
 #include <imgui/imgui_tables.cpp>
 #include <imgui/imgui_widgets.cpp>
-#include <imgui/imgui_impl_sdl.cpp>
+#include <imgui/imgui_impl_sdl2.cpp>
 #include <imgui/imgui_impl_opengl3.cpp>
 
 
