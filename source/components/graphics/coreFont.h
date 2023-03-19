@@ -11,9 +11,7 @@
 #define _CORE_GUARD_FONT_H_
 
 // TODO 5: distance fields for sharper text
-// TODO 3: 4-byte UTF-8 is beyond U+10000 and therefore bigger than uint16, ConvertUTF8toUTF16 needs to be adjusted
 // TODO 5: <old comment style>
-// TODO 5: replace old unmaintained unicode converter (e.g. with ICU ?)
 
 
 // ****************************************************************
@@ -46,19 +44,19 @@ public:
 
     /* create solid text with the font */
     SDL_Surface* CreateText (const coreChar*  pcText, const coreUint16 iHeight);
-    SDL_Surface* CreateGlyph(const coreUint16 iGlyph, const coreUint16 iHeight);
+    SDL_Surface* CreateGlyph(const coreChar32 iGlyph, const coreUint16 iHeight);
 
     /* create outlined text with the font */
     SDL_Surface* CreateTextOutline (const coreChar*  pcText, const coreUint16 iHeight, const coreUint8 iOutline);
-    SDL_Surface* CreateGlyphOutline(const coreUint16 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline);
+    SDL_Surface* CreateGlyphOutline(const coreChar32 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline);
 
     /* retrieve text-related attributes */
     coreVector2 RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
 
     /* retrieve glyph-related attributes */
-    coreBool  IsGlyphProvided     (const coreUint16 iGlyph);
+    coreBool  IsGlyphProvided     (const coreChar32 iGlyph);
     coreBool  IsGlyphProvided     (const coreChar*  pcMultiByte);
-    void      RetrieveGlyphMetrics(const coreUint16 iGlyph,      const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
+    void      RetrieveGlyphMetrics(const coreChar32 iGlyph,      const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
     coreUint8 RetrieveGlyphMetrics(const coreChar*  pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
 
     /* retrieve font-related attributes */
@@ -71,8 +69,8 @@ private:
     coreBool __InitHeight  (const coreUint16 iHeight, const coreUint8 iOutline);
     coreBool __EnsureHeight(const coreUint16 iHeight, const coreUint8 iOutline);
 
-    /* convert multibyte UTF-8 character to UTF-16 glyph */
-    static coreUint8 __ConvertToGlyph(const coreChar* pcMultiByte, coreUint16* OUTPUT piGlyph);
+    /* convert multibyte UTF-8 character to UTF-32 glyph */
+    static coreUint8 __ConvertToGlyph(const coreChar* pcMultiByte, coreChar32* OUTPUT piGlyph);
 };
 
 

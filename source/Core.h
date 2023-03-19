@@ -310,6 +310,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <cuchar>
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -504,6 +505,9 @@ using coreUintW  = std::size_t;
 using coreUlong  = unsigned long;
 using coreBool   = bool;
 using coreChar   = char;
+using coreChar8  = char8_t;
+using coreChar16 = char16_t;
+using coreChar32 = char32_t;
 using coreWchar  = wchar_t;
 using coreFloat  = float;
 using coreDouble = double;
