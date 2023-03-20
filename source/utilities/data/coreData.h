@@ -115,7 +115,7 @@ public:
     /* control command line arguments */
     static        void            LogCommandLine();
     static        void            SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv);
-    static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
+    static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {ASSERT(coreData::StrIsLower(sArgument.GetString())) return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
 
     /* control environment variables */
     static coreStatus      SetEnvironment(const coreChar* pcName, const coreChar* pcValue);

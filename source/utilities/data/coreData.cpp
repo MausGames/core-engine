@@ -722,7 +722,17 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
         if((*pcCurrent) == '-')
         {
             while((*(++pcCurrent)) == '-') {}
-            s_apcCommandLine[coreData::StrLower(pcCurrent)] = ((i+1u < ie) && ((*ppcArgv[i+1u]) != '-')) ? ppcArgv[i+1u] : "";
+
+            // handle assignment syntax
+            const coreChar* pcAssign = std::strchr(pcCurrent, '=');
+            if(pcAssign)
+            {
+                s_apcCommandLine[coreData::StrToLower(coreData::StrLeft(pcCurrent, pcAssign - pcCurrent))] = pcAssign + 1u;
+            }
+            else
+            {
+                s_apcCommandLine[coreData::StrToLower(pcCurrent)] = ((i+1u < ie) && ((*ppcArgv[i+1u]) != '-')) ? ppcArgv[i+1u] : "";
+            }
         }
     }
 }
