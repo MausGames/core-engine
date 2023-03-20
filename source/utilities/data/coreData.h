@@ -20,6 +20,7 @@
 // TODO 2: implement checks and proper handling for paths exceeding the max length (currently they are truncated and might throw "not enough buffer-space" errors on some APIs)
 // TODO 3: manually convert Win32 paths to \\?\ format, only for absolute paths (expand relative paths ? similar to user-folder ?), and requires changing path-delimiter '/' to '\' (what about SDL RWops ?)
 // TODO 1: handle distinction between user-folder (read+write) and data-folder (read only), for all platforms, and all file+directory functions
+// TODO 3: implement proper UTF8 versions for toupper, tolower, isupper, islower (wchar_t is only 2-bytes on Windows)
 
 
 // ****************************************************************
@@ -42,6 +43,8 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
 
 #define TO_UPPER(c)      (coreChar(std::toupper(coreUint8(c))))
 #define TO_LOWER(c)      (coreChar(std::tolower(coreUint8(c))))
+#define IS_UPPER(c)      (std::isupper(coreUint8(c)))
+#define IS_LOWER(c)      (std::islower(coreUint8(c)))
 
 #if defined(_CORE_MSVC_)
     #define strtok_r strtok_s
@@ -174,8 +177,11 @@ public:
     template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   // [](const coreChar  cChar)   -> coreChar
     template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   // [](const coreChar* pcToken) -> void
     static inline       coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return ((*t) == '*') ? StrCmpLike(s, t+1u) || ((*s) && StrCmpLike(s+1u, t)) : (*s) ? (((*t) == '?') || (TO_LOWER(*s) == TO_LOWER(*t))) && StrCmpLike(s+1u, t+1u) : !(*t);}
-    static inline const coreChar* StrUpper    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_UPPER(c);});}
-    static inline const coreChar* StrLower    (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_LOWER(c);});}
+    static inline const coreChar* StrToUpper  (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_UPPER(c);});}
+    static inline const coreChar* StrToLower  (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_LOWER(c);});}
+    static inline       coreBool  StrIsUpper  (const coreChar* pcInput)              {while(*pcInput) if(IS_LOWER(*(pcInput++))) return false; return true;}
+    static inline       coreBool  StrIsLower  (const coreChar* pcInput)              {while(*pcInput) if(IS_UPPER(*(pcInput++))) return false; return true;}
+    static const coreChar*        StrLeft     (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrRight    (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrFilename (const coreChar* pcInput);
     static const coreChar*        StrDirectory(const coreChar* pcInput);

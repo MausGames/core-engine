@@ -1679,6 +1679,20 @@ void coreData::Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const c
 
 
 // ****************************************************************
+/* safely get first characters of a string */
+const coreChar* coreData::StrLeft(const coreChar* pcInput, const coreUintW iNum)
+{
+    WARN_IF(!pcInput) return "";
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // copy characters into new string
+    coreData::StrCopy(pcString, MIN(iNum + 1u, CORE_DATA_STRING_LEN), pcInput);
+    return pcString;
+}
+
+
+// ****************************************************************
 /* safely get last characters of a string */
 const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW iNum)
 {
@@ -1750,19 +1764,19 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
 
 // ****************************************************************
 /* copy string into another buffer */
-coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput)
+coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxSize, const coreChar* pcInput)
 {
-    ASSERT(pcOutput && iMaxLen && pcInput)
+    ASSERT(pcOutput && iMaxSize && pcInput)
 
     // calculate string length
     const coreUintW iInputLen  = std::strlen(pcInput);
-    const coreUintW iOutputLen = MIN(iInputLen, iMaxLen - 1u);
+    const coreUintW iOutputLen = MIN(iInputLen, iMaxSize - 1u);
 
     // copy string with guaranteed null-termination
     std::memcpy(pcOutput, pcInput, iOutputLen);
     pcOutput[iOutputLen] = '\0';
 
-    WARN_IF(iInputLen >= iMaxLen) return false;
+    WARN_IF(iInputLen >= iMaxSize) return false;
     return true;
 }
 

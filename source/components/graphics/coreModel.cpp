@@ -65,7 +65,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     if(!pFile->GetData())             return CORE_ERROR_FILE;
 
     // extract file extension
-    const coreChar* pcExtension = coreData::StrLower(coreData::StrExtension(pFile->GetPath()));
+    const coreChar* pcExtension = coreData::StrToLower(coreData::StrExtension(pFile->GetPath()));
 
     // import model file
     coreImport oImport;
