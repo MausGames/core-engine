@@ -53,6 +53,9 @@
 #if defined(__APPLE__)
     #include <TargetConditionals.h>
 #endif
+#if !defined(__has_feature)
+    #define __has_feature(...) 0
+#endif
 
 // compiler
 #if defined(_MSC_VER)
@@ -128,6 +131,11 @@
 // debug mode
 #if defined(_DEBUG) || ((defined(_CORE_GCC_) || defined(_CORE_CLANG_)) && !defined(__OPTIMIZE__))
     #define _CORE_DEBUG_
+#endif
+
+// test mode
+#if defined(__SANITIZE_ADDRESS__) || __has_feature(address_sanitizer)
+    #define _CORE_TEST_
 #endif
 
 // mobile mode
@@ -289,6 +297,10 @@
     #define _GLIBCXX_ASSERTIONS
     #define _LIBCPP_ENABLE_ASSERTIONS 1
 #endif
+#if defined(_CORE_TEST_)
+    #define _GLIBCXX_DEBUG
+    #define _GLIBCXX_SANITIZE_VECTOR 1
+#endif
 
 #if defined(_CORE_WINDOWS_)
     #include "additional/windows/header.h"
@@ -336,6 +348,9 @@
 #define STB_VORBIS_MAX_CHANNELS 2
 #if defined(_CORE_MSVC_)
     #define ZSTD_DLL_IMPORT 1
+#endif
+#if defined(_CORE_TEST_)
+    #define STB_SPRINTF_NOUNALIGNED
 #endif
 
 #include <SDL2/SDL.h>
