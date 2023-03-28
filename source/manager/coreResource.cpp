@@ -204,6 +204,36 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
 
 // ****************************************************************
+/* retrieve relative paths of all available resource files */
+void coreResourceManager::FolderScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
+{
+    ASSERT(pcPath && pcFilter && pasOutput)
+
+    // find direct resource files
+    coreData::FolderScan(pcPath, pcFilter, pasOutput);
+
+    // find resources files in archives
+    const coreChar* pcPattern = PRINT("%s/%s", pcPath, pcFilter);
+    FOR_EACH(it, m_apArchive)
+    {
+        for(coreUintW i = 0u, ie = (*it)->GetNumFiles(); i < ie; ++i)
+        {
+            // check and add file path
+            const coreChar* pcFile = (*it)->GetFile(i)->GetPath();
+            if(coreData::StrCmpLike(pcFile, pcPattern))
+            {
+                pasOutput->push_back(pcFile);
+            }
+        }
+    }
+
+    // sort and remove duplicates
+    std::sort(pasOutput->begin(), pasOutput->end());
+    pasOutput->erase(std::unique(pasOutput->begin(), pasOutput->end()), pasOutput->end());
+}
+
+
+// ****************************************************************
 /* point resource proxy to foreign handle */
 void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHandle* pForeign)
 {

@@ -224,6 +224,7 @@ public:
     /* retrieve archives and resource files */
     coreArchive* RetrieveArchive(const coreHashString& sPath);
     coreFile*    RetrieveFile   (const coreHashString& sPath);
+    void         FolderScan     (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
 
     /* point resource proxy to foreign handle */
     void        AssignProxy(coreResourceHandle*   pProxy, coreResourceHandle*   pForeign);
