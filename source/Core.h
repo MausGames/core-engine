@@ -288,7 +288,6 @@
 // ****************************************************************
 /* standard libraries */
 #define _CRT_SECURE_NO_WARNINGS
-#define _LIBCPP_ENABLE_NODISCARD
 #if !defined(_CORE_EXCEPTIONS_)
     #define _HAS_EXCEPTIONS 0
 #endif
@@ -549,7 +548,7 @@ constexpr coreUintW coreStrLenConst(const coreChar* s)                    {ASSER
 constexpr coreInt32 coreStrCmpConst(const coreChar* s, const coreChar* t) {ASSERT(s && t) if(std::is_constant_evaluated()) {while((*s) == (*t) && (*s)) {++s; ++t;} return (*s) - (*t);} return std::strcmp(s, t);}
 
 // retrieve compile-time pointer-safe array size
-template <typename T, coreUintW iSize> coreChar (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
+template <typename T, coreUintW iSize> coreByte (&__ARRAY_SIZE(T (&)[iSize]))[iSize];
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
 
 // retrieve compile-time function and lambda properties

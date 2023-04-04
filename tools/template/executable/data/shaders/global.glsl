@@ -49,7 +49,7 @@
 #pragma optimize(on)
 #pragma debug(off)
 
-// feature helper
+// feature helpers
 #if defined(GL_ES)
     #define CORE_GL_VERSION    (0)
     #define CORE_GL_ES_VERSION (__VERSION__)

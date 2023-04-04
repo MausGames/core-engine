@@ -1696,8 +1696,13 @@ const coreChar* coreData::StrLeft(const coreChar* pcInput, const coreUintW iNum)
 
     coreChar* pcString = coreData::__NextTempString();
 
+    // calculate string length
+    const coreUintW iLen = MIN(iNum, std::strlen(pcInput), CORE_DATA_STRING_LEN - 1u);
+
     // copy characters into new string
-    coreData::StrCopy(pcString, MIN(iNum + 1u, CORE_DATA_STRING_LEN), pcInput);
+    std::memcpy(pcString, pcInput, iLen);
+    pcString[iLen] = '\0';
+
     return pcString;
 }
 

@@ -300,7 +300,7 @@ constexpr coreFloat coreMath::Rcp(const coreFloat fInput)
 
 // ****************************************************************
 /* count the number of one-bits (population count) */
-constexpr coreUint32 coreMath::PopCount(coreUint64 iInput)
+constexpr coreUint32 coreMath::PopCount(const coreUint64 iInput)
 {
 #if defined(_CORE_SSE_) && defined(_CORE_MSVC_)
 
@@ -317,9 +317,10 @@ constexpr coreUint32 coreMath::PopCount(coreUint64 iInput)
 #endif
 
     // normal calculation
-    iInput = (iInput)                       - ((iInput >> 1u) & 0x5555555555555555u);
-    iInput = (iInput & 0x3333333333333333u) + ((iInput >> 2u) & 0x3333333333333333u);
-    return (((iInput + (iInput >> 4u)) & 0x0F0F0F0F0F0F0F0Fu) * 0x0101010101010101u) >> 56u;
+    coreUint64 iOutput = iInput;
+    iOutput = (iOutput)                       - ((iOutput >> 1u) & 0x5555555555555555u);
+    iOutput = (iOutput & 0x3333333333333333u) + ((iOutput >> 2u) & 0x3333333333333333u);
+    return  (((iOutput + (iOutput >> 4u)) & 0x0F0F0F0F0F0F0F0Fu) * 0x0101010101010101u) >> 56u;
 }
 
 

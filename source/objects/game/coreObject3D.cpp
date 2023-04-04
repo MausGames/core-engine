@@ -322,12 +322,12 @@ void coreBatchList::MoveNormal()
     {
         coreObject3D* pObject = (*it);
 
-        // increase render-count
-        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-            ++m_iCurEnabled;
-
         // move object
         pObject->Move();
+
+        // increase render-count (# after move)
+        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            ++m_iCurEnabled;
     }
 
     // set the update status
@@ -351,10 +351,6 @@ void coreBatchList::MoveSort()
     FOR_EACH(it, m_apObjectList)
     {
         coreObject3D* pObject = (*it);
-
-        // increase render-count
-        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-            ++m_iCurEnabled;
 
         // move only enabled objects
         if(pObject->IsEnabled(CORE_OBJECT_ENABLE_MOVE))
@@ -382,6 +378,10 @@ void coreBatchList::MoveSort()
             // compare current object with next object
             et = it;
         }
+
+        // increase render-count (# after move)
+        if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+            ++m_iCurEnabled;
     }
 
     // set the update status
