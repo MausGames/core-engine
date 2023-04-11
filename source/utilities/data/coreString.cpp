@@ -196,7 +196,7 @@ void coreWorkString::print(const coreChar* pcFormat, ...)
         va_start(oArgs, pcFormat);
 
         // assemble string
-        m_iSize = coreData::PrintBase(m_pcBuffer, m_iCapacity, pcFormat, oArgs) + 1u;
+        m_iSize = coreData::PrintBaseV(m_pcBuffer, m_iCapacity, pcFormat, oArgs) + 1u;
         va_end(oArgs);
 
         // check for success

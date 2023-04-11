@@ -77,8 +77,8 @@ public:
     DISABLE_CONSTRUCTION(coreData)
 
     /* create formatted string */
-    static coreInt32 PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, ...) SDL_PRINTF_VARARG_FUNC(3);
-    static coreInt32 PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, va_list oArgs);
+    static coreInt32 PrintBase (coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, ...) SDL_PRINTF_VARARG_FUNC(3);
+    static coreInt32 PrintBaseV(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, va_list oArgs);
     template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
     static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
 

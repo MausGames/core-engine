@@ -57,7 +57,7 @@ coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen
     return iReturn;
 }
 
-coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, va_list oArgs)
+coreInt32 coreData::PrintBaseV(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, va_list oArgs)
 {
     ASSERT(pcFormat)
 
