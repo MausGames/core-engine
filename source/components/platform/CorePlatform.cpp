@@ -90,7 +90,7 @@ void CorePlatform::UnlockAchievement(const coreHashString& sName)
 
 // ****************************************************************
 /* get user identifier */
-coreUint32 CorePlatform::GetUserID()const
+const coreChar* CorePlatform::GetUserID()const
 {
     // get user identifier from backend
     return m_pBackend->GetUserID();

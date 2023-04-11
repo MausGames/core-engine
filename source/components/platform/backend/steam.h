@@ -135,7 +135,7 @@ public:
     coreBool UnlockAchievement(const coreAchievement& oData)final;
 
     /* process general features */
-    coreUint32      GetUserID  ()const final;
+    const coreChar* GetUserID  ()const final;
     const coreChar* GetUserName()const final;
     const coreChar* GetLanguage()const final;
 
@@ -237,7 +237,7 @@ inline coreBool coreBackendSteam::Init()
     m_iStatsRequest = 1u;
     m_iStatsStore   = 0u;
 
-    Core::Log->Info("Steam initialized (app %u, user %u)", m_pUtils->GetAppID(), this->GetUserID());
+    Core::Log->Info("Steam initialized (app %u, user %s)", m_pUtils->GetAppID(), this->GetUserID());
     return true;
 }
 
@@ -311,12 +311,12 @@ inline coreBool coreBackendSteam::UnlockAchievement(const coreAchievement& oData
 
 // ****************************************************************
 /* get user identifier */
-inline coreUint32 coreBackendSteam::GetUserID()const
+inline const coreChar* coreBackendSteam::GetUserID()const
 {
     if(m_pClient)
     {
         // retrieve Steam player identifier
-        return m_pUser->GetSteamID().GetAccountID();
+        return coreData::ToChars(m_pUser->GetSteamID().GetAccountID());
     }
 
     return this->coreBackend::GetUserID();

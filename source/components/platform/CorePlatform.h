@@ -46,7 +46,7 @@ public:
     virtual coreBool UnlockAchievement(const coreAchievement& oData) {return true;}
 
     /* process general features */
-    virtual coreUint32      GetUserID  ()const {return 0u;}
+    virtual const coreChar* GetUserID  ()const {return NULL;}
     virtual const coreChar* GetUserName()const {return NULL;}
     virtual const coreChar* GetLanguage()const {return NULL;}
 
@@ -79,7 +79,7 @@ public:
     void UnlockAchievement(const coreHashString& sName);
 
     /* handle general features */
-    coreUint32      GetUserID  ()const;
+    const coreChar* GetUserID  ()const;
     const coreChar* GetUserName()const;
     const coreChar* GetLanguage()const;
 
