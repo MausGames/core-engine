@@ -476,11 +476,11 @@
 // enable bitwise-operations with the defined enumeration
 #define ENABLE_BITWISE(e)                                                                                                                                       \
     constexpr e  operator ~  (const e   a)            {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
-    constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
     constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
+    constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
     constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
-    inline    e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                                     \
     inline    e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                                     \
+    inline    e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                                     \
     inline    e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
 
 // safely convert pointers and references along the inheritance hierarchy

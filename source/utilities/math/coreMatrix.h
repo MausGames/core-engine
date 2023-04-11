@@ -87,18 +87,18 @@ public:
     ENABLE_COMPARISON(coreMatrix2)
 
     /* matrix operations */
-    constexpr coreMatrix2 operator +  (const coreMatrix2& m)const;
-    constexpr coreMatrix2 operator -  (const coreMatrix2& m)const;
-    constexpr coreMatrix2 operator *  (const coreMatrix2& m)const;
-    inline    void        operator += (const coreMatrix2& m) {*this = *this + m;}
-    inline    void        operator -= (const coreMatrix2& m) {*this = *this - m;}
-    inline    void        operator *= (const coreMatrix2& m) {*this = *this * m;}
+    constexpr coreMatrix2  operator +  (const coreMatrix2& m)const;
+    constexpr coreMatrix2  operator -  (const coreMatrix2& m)const;
+    constexpr coreMatrix2  operator *  (const coreMatrix2& m)const;
+    inline    coreMatrix2& operator += (const coreMatrix2& m) {return (*this = *this + m);}
+    inline    coreMatrix2& operator -= (const coreMatrix2& m) {return (*this = *this - m);}
+    inline    coreMatrix2& operator *= (const coreMatrix2& m) {return (*this = *this * m);}
 
     /* scalar operations */
-    constexpr coreMatrix2 operator *  (const coreFloat f)const;
-    constexpr coreMatrix2 operator /  (const coreFloat f)const {return  *this * RCP(f);}
-    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
-    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
+    constexpr coreMatrix2  operator *  (const coreFloat f)const;
+    constexpr coreMatrix2  operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    coreMatrix2& operator *= (const coreFloat f)      {return (*this = *this * f);}
+    inline    coreMatrix2& operator /= (const coreFloat f)      {return (*this = *this / f);}
 
     /* convert matrix */
     inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 4u) return (&_11)[i];}
@@ -147,18 +147,18 @@ public:
     ENABLE_COMPARISON(coreMatrix3)
 
     /* matrix operations */
-    constexpr coreMatrix3 operator +  (const coreMatrix3& m)const;
-    constexpr coreMatrix3 operator -  (const coreMatrix3& m)const;
-    constexpr coreMatrix3 operator *  (const coreMatrix3& m)const;
-    inline    void        operator += (const coreMatrix3& m) {*this = *this + m;}
-    inline    void        operator -= (const coreMatrix3& m) {*this = *this - m;}
-    inline    void        operator *= (const coreMatrix3& m) {*this = *this * m;}
+    constexpr coreMatrix3  operator +  (const coreMatrix3& m)const;
+    constexpr coreMatrix3  operator -  (const coreMatrix3& m)const;
+    constexpr coreMatrix3  operator *  (const coreMatrix3& m)const;
+    inline    coreMatrix3& operator += (const coreMatrix3& m) {return (*this = *this + m);}
+    inline    coreMatrix3& operator -= (const coreMatrix3& m) {return (*this = *this - m);}
+    inline    coreMatrix3& operator *= (const coreMatrix3& m) {return (*this = *this * m);}
 
     /* scalar operations */
-    constexpr coreMatrix3 operator *  (const coreFloat f)const;
-    constexpr coreMatrix3 operator /  (const coreFloat f)const {return  *this * RCP(f);}
-    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
-    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
+    constexpr coreMatrix3  operator *  (const coreFloat f)const;
+    constexpr coreMatrix3  operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    coreMatrix3& operator *= (const coreFloat f)      {return (*this = *this * f);}
+    inline    coreMatrix3& operator /= (const coreFloat f)      {return (*this = *this / f);}
 
     /* convert matrix */
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
@@ -225,18 +225,18 @@ public:
     ENABLE_COMPARISON(coreMatrix4)
 
     /* matrix operations */
-    constexpr coreMatrix4 operator +  (const coreMatrix4& m)const;
-    constexpr coreMatrix4 operator -  (const coreMatrix4& m)const;
-    constexpr coreMatrix4 operator *  (const coreMatrix4& m)const;
-    inline    void        operator += (const coreMatrix4& m) {*this = *this + m;}
-    inline    void        operator -= (const coreMatrix4& m) {*this = *this - m;}
-    inline    void        operator *= (const coreMatrix4& m) {*this = *this * m;}
+    constexpr coreMatrix4  operator +  (const coreMatrix4& m)const;
+    constexpr coreMatrix4  operator -  (const coreMatrix4& m)const;
+    constexpr coreMatrix4  operator *  (const coreMatrix4& m)const;
+    inline    coreMatrix4& operator += (const coreMatrix4& m) {return (*this = *this + m);}
+    inline    coreMatrix4& operator -= (const coreMatrix4& m) {return (*this = *this - m);}
+    inline    coreMatrix4& operator *= (const coreMatrix4& m) {return (*this = *this * m);}
 
     /* scalar operations */
-    constexpr coreMatrix4 operator *  (const coreFloat f)const;
-    constexpr coreMatrix4 operator /  (const coreFloat f)const {return  *this * RCP(f);}
-    inline    void        operator *= (const coreFloat f)      {*this = *this * f;}
-    inline    void        operator /= (const coreFloat f)      {*this = *this / f;}
+    constexpr coreMatrix4  operator *  (const coreFloat f)const;
+    constexpr coreMatrix4  operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    inline    coreMatrix4& operator *= (const coreFloat f)      {return (*this = *this * f);}
+    inline    coreMatrix4& operator /= (const coreFloat f)      {return (*this = *this / f);}
 
     /* convert matrix */
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 16u) return (&_11)[i];}

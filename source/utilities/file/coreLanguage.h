@@ -29,6 +29,7 @@
 #define CORE_LANGUAGE_ITALIAN    "italian"
 #define CORE_LANGUAGE_JAPANESE   "japanese"
 #define CORE_LANGUAGE_KOREAN     "korean"
+#define CORE_LANGUAGE_LATAM      "latam"
 #define CORE_LANGUAGE_POLISH     "polish"
 #define CORE_LANGUAGE_PORTUGUESE "portuguese"
 #define CORE_LANGUAGE_RUSSIAN    "russian"

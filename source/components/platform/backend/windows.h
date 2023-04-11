@@ -41,7 +41,7 @@ inline const coreChar* coreWindowsBackend::GetLanguage()const
     case 0x04u: return (iLanguage == 0x0404u || iLanguage == 0x0C04u || iLanguage == 0x1404u || iLanguage == 0x7C04u) ? CORE_LANGUAGE_TCHINESE : CORE_LANGUAGE_SCHINESE;
     case 0x07u: return CORE_LANGUAGE_GERMAN;
     case 0x09u: return CORE_LANGUAGE_ENGLISH;
-    case 0x0Au: return CORE_LANGUAGE_SPANISH;
+    case 0x0Au: return (iLanguage == 0x000Au || iLanguage == 0x040Au || iLanguage == 0x0C0Au) ? CORE_LANGUAGE_SPANISH : CORE_LANGUAGE_LATAM;
     case 0x0Cu: return CORE_LANGUAGE_FRENCH;
     case 0x10u: return CORE_LANGUAGE_ITALIAN;
     case 0x11u: return CORE_LANGUAGE_JAPANESE;

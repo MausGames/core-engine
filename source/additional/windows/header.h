@@ -65,6 +65,7 @@
 #undef CreateFile
 #undef DeleteFile
 #undef GetCommandLine
+#undef GetUserName
 #undef RotateLeft32
 #undef RotateLeft64
 #undef RotateRight32

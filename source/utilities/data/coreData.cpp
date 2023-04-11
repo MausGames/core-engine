@@ -878,7 +878,7 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 
     // try to open dynamic library
     void* pLibrary = NULL;
-    if(!pLibrary) pLibrary = dlopen(pcLocal, RTLD_LAZY);   // independent of current working directory
+    if(!pLibrary) pLibrary = dlopen(pcLocal, RTLD_LAZY);   // independent of library paths (DT_RPATH, LD_LIBRARY_PATH, etc.)
     if(!pLibrary) pLibrary = dlopen(pcName,  RTLD_LAZY);
 
     return pLibrary;

@@ -44,17 +44,17 @@
 /* dynamic library loading */
 static void* s_pSteamLibrary = NULL;   // Steam library handle
 
-__DEFINE_FUNCTION(SteamClient)
-__DEFINE_FUNCTION(SteamAPI_Init)
-__DEFINE_FUNCTION(SteamAPI_Shutdown)
-__DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
-__DEFINE_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
 __DEFINE_FUNCTION(SteamAPI_GetHSteamPipe)
 __DEFINE_FUNCTION(SteamAPI_GetHSteamUser)
+__DEFINE_FUNCTION(SteamAPI_Init)
+__DEFINE_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+__DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
 __DEFINE_FUNCTION(SteamAPI_ManualDispatch_Init)
 __DEFINE_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
-__DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
-__DEFINE_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+__DEFINE_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
+__DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
+__DEFINE_FUNCTION(SteamAPI_Shutdown)
+__DEFINE_FUNCTION(SteamClient)
 
 static coreBool InitSteamLibrary()
 {
@@ -65,17 +65,17 @@ static coreBool InitSteamLibrary()
     if(s_pSteamLibrary)
     {
         // load all required functions
-        __LOAD_FUNCTION(SteamClient)
-        __LOAD_FUNCTION(SteamAPI_Init)
-        __LOAD_FUNCTION(SteamAPI_Shutdown)
-        __LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
-        __LOAD_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
         __LOAD_FUNCTION(SteamAPI_GetHSteamPipe)
         __LOAD_FUNCTION(SteamAPI_GetHSteamUser)
+        __LOAD_FUNCTION(SteamAPI_Init)
+        __LOAD_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+        __LOAD_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
         __LOAD_FUNCTION(SteamAPI_ManualDispatch_Init)
         __LOAD_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
-        __LOAD_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
-        __LOAD_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+        __LOAD_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
+        __LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
+        __LOAD_FUNCTION(SteamAPI_Shutdown)
+        __LOAD_FUNCTION(SteamClient)
 
         return true;
     }
@@ -96,7 +96,7 @@ static void ExitSteamLibrary()
 
 // ****************************************************************
 /* write Steam debug message */
-extern "C" void __cdecl WarningMessageCallback(const coreInt32 iSeverity, const coreChar* pcMessage)
+extern "C" void S_CALLTYPE WarningMessageCallback(const coreInt32 iSeverity, const coreChar* pcMessage)
 {
     Core::Log->Warning(CORE_LOG_BOLD("Steam:") " %s (severity %d)", pcMessage, iSeverity);
 }
@@ -355,6 +355,7 @@ inline const coreChar* coreBackendSteam::GetLanguage()const
             if(!std::strcmp(pcLanguage, "italian"))    return CORE_LANGUAGE_ITALIAN;
             if(!std::strcmp(pcLanguage, "japanese"))   return CORE_LANGUAGE_JAPANESE;
             if(!std::strcmp(pcLanguage, "koreana"))    return CORE_LANGUAGE_KOREAN;   // with a
+            if(!std::strcmp(pcLanguage, "latam"))      return CORE_LANGUAGE_LATAM;
             if(!std::strcmp(pcLanguage, "polish"))     return CORE_LANGUAGE_POLISH;
             if(!std::strcmp(pcLanguage, "portuguese")) return CORE_LANGUAGE_PORTUGUESE;
             if(!std::strcmp(pcLanguage, "russian"))    return CORE_LANGUAGE_RUSSIAN;
