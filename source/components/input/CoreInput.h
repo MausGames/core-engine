@@ -15,6 +15,7 @@
 // TODO 3: pseudo-joystick should accumulate all input from other devices
 // TODO 2: press and release within the same frame gets ignored, but it is assumed that both cannot happen in the same loop
 // TODO 5: <old comment style>
+// TODO 3: allow loading game controller databases from archives
 // TODO 3: mouse button 0 is not used
 // TODO 2: in browser (Firefox?), xbox 360 controller: right stick is axis 3+4 (instead of 2+3), and d-pad is converted to another axis-pair 6+7
 

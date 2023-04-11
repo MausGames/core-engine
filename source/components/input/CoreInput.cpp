@@ -23,6 +23,20 @@ CoreInput::CoreInput()noexcept
 {
     Core::Log->Header("Input Interface");
 
+    const auto nLoadFunc = [](const coreChar* pcPath)
+    {
+        // retrieve game controller database file
+        if(!coreData::FileExists(pcPath)) return;
+        const coreFile oFile(pcPath);
+
+        // load additional game controller mappings
+        const coreInt32 iNum = SDL_GameControllerAddMappingsFromRW(oFile.CreateReadStream(), 1);
+        if(iNum < 0) Core::Log->Warning("Game controller database could not be loaded (SDL: %s)", SDL_GetError());
+                else Core::Log->Info   ("Game controller database loaded (%d added, %d total)",   iNum, SDL_GameControllerNumMappings());
+    };
+    nLoadFunc("data/other/gamecontrollerdb.txt");
+    nLoadFunc(coreData::UserFolderPrivate("gamecontrollerdb.txt"));
+
     // start up joystick input
     this->__OpenJoysticks();
 }
