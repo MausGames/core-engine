@@ -94,6 +94,7 @@ public:
     /* access resource object and status */
     inline coreResource*   GetRawResource()const {return m_pResource;}
     inline const coreBool& IsAutomatic   ()const {return m_bAutomatic;}
+    inline       coreBool  IsSuccessful  ()const {return (m_eStatus == CORE_OK);}
     inline       coreBool  IsLoaded      ()const {return (m_eStatus != CORE_BUSY);}
     inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
 
@@ -150,10 +151,10 @@ public:
     inline T&       operator *            ()const {return *this->GetResource();}
 
     /* check for usable resource object */
-    inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsLoaded());}
+    inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsSuccessful());}
 
     /* attach asynchronous callbacks */
-    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) return m_pHandle->OnLoadedOnce(std::forward<F>(nFunction));}   // [](void) -> void
+    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) return m_pHandle->OnLoadedOnce([=, pHandle = m_pHandle]() {if(pHandle->IsSuccessful()) nFunction();});}   // [](void) -> void
 };
 
 

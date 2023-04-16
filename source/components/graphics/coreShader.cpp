@@ -241,7 +241,11 @@ coreStatus coreProgram::Load(coreFile* pFile)
         FOR_EACH(it, m_apShader)
         {
             it->GetHandle()->Update();
-            if(!it->IsUsable()) return CORE_BUSY;
+            if(!it->GetHandle()->IsSuccessful())
+            {
+                m_apShader.clear();
+                return CORE_INVALID_DATA;
+            }
         }
 
         // create shader-program
