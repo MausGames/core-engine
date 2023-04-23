@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.22)
-set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+cmake_minimum_required(VERSION 3.25)
 
+set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 project(CoreEngine VERSION 1.0.0)
 add_library(CoreEngine STATIC)
-
 
 set_target_properties(
     CoreEngine PROPERTIES
@@ -13,7 +12,6 @@ set_target_properties(
     DEBUG_POSTFIX _debug
     UNITY_BUILD ON
 )
-
 
 target_sources(
     CoreEngine PRIVATE
@@ -58,28 +56,23 @@ target_sources(
     ${BASE_DIRECTORY}/source/Core.cpp
 )
 
-
 target_include_directories(
     CoreEngine PUBLIC
     ${BASE_DIRECTORY}/source
     ${BASE_DIRECTORY}/libraries/include
 )
 
-
 target_precompile_headers(
     CoreEngine PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>: ${BASE_DIRECTORY}/source/Core.h>
 )
 
-
-if(EMSCRIPTEN)
-
+if(CORE_EMSCRIPTEN)
 
     set_target_properties(
         CoreEngine PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/emscripten/
     )
-
 
     target_sources(
         CoreEngine PRIVATE
@@ -87,30 +80,25 @@ if(EMSCRIPTEN)
         ${BASE_DIRECTORY}/source/additional/coreGLES.cpp
     )
 
-
     target_compile_options(
         CoreEngine PUBLIC
-        -pipe -Wall -Wextra -pedantic
-        $<IF:$<CONFIG:Debug>, -O0 -g3 -gsplit-dwarf, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
+        -pipe -Wall -Wextra -Wpedantic
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
-
 
     target_link_options(
         CoreEngine INTERFACE
         -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
         --preload-file ../../../executable/data@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
-        $<IF:$<CONFIG:Debug>, -O0 -g3 -sGL_ASSERTIONS=1 -sGL_DEBUG=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -sGL_ASSERTIONS=1 -sGL_DEBUG=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
     )
 
-
 else()
-
 
     set_target_properties(
         CoreEngine PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux_x86_64/
     )
-
 
     target_sources(
         CoreEngine PRIVATE
@@ -119,19 +107,16 @@ else()
         ${BASE_DIRECTORY}/source/additional/coreGLEW.c
     )
 
-
     target_compile_options(
         CoreEngine PUBLIC
-        -msse3 -pipe -Wall -Wextra -pedantic ${SANITIZER_OPTIONS}
-        $<IF:$<CONFIG:Debug>, -O0 -g3 -gsplit-dwarf -glldb, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
+        -msse3 -pipe -Wall -Wextra -Wpedantic
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib -glldb, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
-
 
     target_link_directories(
         CoreEngine INTERFACE
         ${BASE_DIRECTORY}/libraries/bin/linux_x86_64
     )
-
 
     target_link_libraries(
         CoreEngine INTERFACE
@@ -139,12 +124,65 @@ else()
         -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libopenal.so.1 -l:libzstd.so.1
     )
 
+    target_link_options(
+        CoreEngine INTERFACE
+        -fuse-ld=mold LINKER:--compress-debug-sections=zlib
+        $<IF:$<CONFIG:DEBUG>, , -flto -rdynamic LINKER:--gc-sections LINKER:--icf=all LINKER:--ignore-data-address-equality>
+    )
+
+    if(NOT CORE_DEBUG)
+
+        set(LIBCXX_DIRECTORY ${BASE_DIRECTORY}/../../libraries/_libcxx)
+        set(GLIBC_DIRECTORY ${BASE_DIRECTORY}/../../libraries/_glibc)
+
+        target_sources(
+            CoreEngine INTERFACE
+            ${GLIBC_DIRECTORY}/lib/crt1.o
+            ${GLIBC_DIRECTORY}/lib/crti.o
+            ${GLIBC_DIRECTORY}/lib/crtn.o
+        )
+
+        target_include_directories(
+            CoreEngine SYSTEM PUBLIC
+            ${LIBCXX_DIRECTORY}/include/c++/v1
+            ${GLIBC_DIRECTORY}/include
+        )
+
+        target_compile_options(
+            CoreEngine PUBLIC
+            -nostdinc++
+        )
+
+        target_link_directories(
+            CoreEngine INTERFACE
+            ${LIBCXX_DIRECTORY}/lib
+            ${GLIBC_DIRECTORY}/lib
+        )
+
+        target_link_libraries(
+            CoreEngine INTERFACE
+            -lm -lc -lc++
+        )
+
+        target_link_options(
+            CoreEngine INTERFACE
+            -nostdlib -nostdlib++
+        )
+
+    endif()
+
+endif()
+
+if(CORE_TEST)
+
+    target_compile_options(
+        CoreEngine PUBLIC
+        -fsanitize=undefined,address
+    )
 
     target_link_options(
         CoreEngine INTERFACE
-        -fuse-ld=mold ${SANITIZER_OPTIONS}
-        $<IF:$<CONFIG:Debug>, , -flto -rdynamic -s LINKER:--gc-sections LINKER:--icf=safe>
+        -fsanitize=undefined,address
     )
-
 
 endif()

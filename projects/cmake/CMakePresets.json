@@ -1,9 +1,9 @@
 {
-    "version": 3,
+    "version": 6,
     "cmakeMinimumRequired":
     {
         "major": 3,
-        "minor": 22,
+        "minor": 25,
         "patch": 0
     },
     "configurePresets":
@@ -12,6 +12,41 @@
             "name": "base",
             "generator": "Ninja",
             "binaryDir": "cmake-${presetName}",
+            "warnings":
+            {
+                "unusedCli": false
+            }
+        },
+        {
+            "name": "debug",
+            "cacheVariables":
+            {
+                "CORE_DEBUG": "1",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "cacheVariables":
+            {
+                "CORE_RELEASE": "1",
+                "CMAKE_BUILD_TYPE": "MinSizeRel"
+            }
+        },
+        {
+            "name": "test",
+            "inherits": "debug",
+            "cacheVariables":
+            {
+                "CORE_TEST": "1"
+            }
+        },
+        {
+            "name": "linux",
+            "cacheVariables":
+            {
+                "CORE_LINUX": "1"
+            },
             "vendor":
             {
                 "jetbrains.com/clion":
@@ -21,35 +56,10 @@
             }
         },
         {
-            "name": "linux-x86-64-debug",
-            "inherits": "base",
-            "cacheVariables":
-            {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "linux-x86-64-release",
-            "inherits": "base",
-            "cacheVariables":
-            {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "linux-x86-64-test",
-            "inherits": "base",
-            "cacheVariables":
-            {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "SANITIZER_OPTIONS": "-fsanitize=undefined,address"
-            }
-        },
-        {
             "name": "emscripten",
             "cacheVariables":
             {
-                "EMSCRIPTEN": "1"
+                "CORE_EMSCRIPTEN": "1"
             },
             "vendor":
             {
@@ -60,12 +70,24 @@
             }
         },
         {
+            "name": "linux-x86-64-debug",
+            "inherits": ["linux", "debug", "base"]
+        },
+        {
+            "name": "linux-x86-64-release",
+            "inherits": ["linux", "release", "base"]
+        },
+        {
+            "name": "linux-x86-64-test",
+            "inherits": ["linux", "test", "base"]
+        },
+        {
             "name": "emscripten-debug",
-            "inherits": ["emscripten", "linux-x86-64-debug"]
+            "inherits": ["emscripten", "debug", "base"]
         },
         {
             "name": "emscripten-release",
-            "inherits": ["emscripten", "linux-x86-64-release"]
+            "inherits": ["emscripten", "release", "base"]
         }
     ],
     "buildPresets":
