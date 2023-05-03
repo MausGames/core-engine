@@ -716,13 +716,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 
 -------------------------------------------------------------------
-steamworks (proprietary)
-
-Copyright (c) 1996, Valve Corporation
-All rights reserved.
-
-
--------------------------------------------------------------------
 xxhash (BSD-2)
 
 Copyright (c) 2012, Yann Collet

@@ -1,2 +1,0 @@
-Copyright (c) 1996, Valve Corporation
-All rights reserved.
