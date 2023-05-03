@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_STEAM_H_
 #define _CORE_GUARD_STEAM_H_
 
+#if __has_include(<steam/steam_api.h>)
+
 #if defined(_CORE_MSVC_)
     #pragma warning(disable : 5204)   // class with virtual functions, but without virtual destructor
 #else
@@ -35,26 +37,26 @@
     #define STEAM_LIBRARY_NAME "libsteam_api.dylib"
 #endif
 
-#define __DEFINE_FUNCTION(x) static decltype(x)* n ## x = NULL;
-#define __LOAD_FUNCTION(x)   n ## x = r_cast<decltype(x)*>(coreData::GetAddress(s_pSteamLibrary, #x)); WARN_IF(!n ## x) return false;
-#define __CALLBACK(x)        case x ## _t::k_iCallback: if(oMessage.m_pubParam) {ASSERT(oMessage.m_cubParam == sizeof(x ## _t)) this->__On ## x(r_cast<const x ## _t*>(oMessage.m_pubParam));} break;
+#define __STEAM_DEFINE_FUNCTION(x) static decltype(x)* n ## x = NULL;
+#define __STEAM_LOAD_FUNCTION(x)   n ## x = r_cast<decltype(x)*>(coreData::GetAddress(s_pSteamLibrary, #x)); WARN_IF(!n ## x) return false;
+#define __STEAM_CALLBACK(x)        case x ## _t::k_iCallback: if(oMessage.m_pubParam) {ASSERT(oMessage.m_cubParam >= coreInt32(sizeof(x ## _t))) this->__On ## x(r_cast<const x ## _t*>(oMessage.m_pubParam));} break;
 
 
 // ****************************************************************
 /* dynamic library loading */
 static void* s_pSteamLibrary = NULL;   // Steam library handle
 
-__DEFINE_FUNCTION(SteamAPI_GetHSteamPipe)
-__DEFINE_FUNCTION(SteamAPI_GetHSteamUser)
-__DEFINE_FUNCTION(SteamAPI_Init)
-__DEFINE_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
-__DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
-__DEFINE_FUNCTION(SteamAPI_ManualDispatch_Init)
-__DEFINE_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
-__DEFINE_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
-__DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
-__DEFINE_FUNCTION(SteamAPI_Shutdown)
-__DEFINE_FUNCTION(SteamClient)
+__STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamPipe)
+__STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamUser)
+__STEAM_DEFINE_FUNCTION(SteamAPI_Init)
+__STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+__STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
+__STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_Init)
+__STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
+__STEAM_DEFINE_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
+__STEAM_DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
+__STEAM_DEFINE_FUNCTION(SteamAPI_Shutdown)
+__STEAM_DEFINE_FUNCTION(SteamClient)
 
 static coreBool InitSteamLibrary()
 {
@@ -65,17 +67,17 @@ static coreBool InitSteamLibrary()
     if(s_pSteamLibrary)
     {
         // load all required functions
-        __LOAD_FUNCTION(SteamAPI_GetHSteamPipe)
-        __LOAD_FUNCTION(SteamAPI_GetHSteamUser)
-        __LOAD_FUNCTION(SteamAPI_Init)
-        __LOAD_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
-        __LOAD_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
-        __LOAD_FUNCTION(SteamAPI_ManualDispatch_Init)
-        __LOAD_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
-        __LOAD_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
-        __LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
-        __LOAD_FUNCTION(SteamAPI_Shutdown)
-        __LOAD_FUNCTION(SteamClient)
+        __STEAM_LOAD_FUNCTION(SteamAPI_GetHSteamPipe)
+        __STEAM_LOAD_FUNCTION(SteamAPI_GetHSteamUser)
+        __STEAM_LOAD_FUNCTION(SteamAPI_Init)
+        __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+        __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
+        __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_Init)
+        __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
+        __STEAM_LOAD_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
+        __STEAM_LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
+        __STEAM_LOAD_FUNCTION(SteamAPI_Shutdown)
+        __STEAM_LOAD_FUNCTION(SteamClient)
 
         return true;
     }
@@ -96,7 +98,7 @@ static void ExitSteamLibrary()
 
 // ****************************************************************
 /* write Steam debug message */
-extern "C" void S_CALLTYPE WarningMessageCallback(const coreInt32 iSeverity, const coreChar* pcMessage)
+static void S_CALLTYPE WarningMessageCallback(const coreInt32 iSeverity, const coreChar* pcMessage)
 {
     Core::Log->Warning(CORE_LOG_BOLD("Steam:") " %s (severity %d)", pcMessage, iSeverity);
 }
@@ -276,9 +278,9 @@ inline void coreBackendSteam::Update()
             // dispatch to callback handler
             switch(oMessage.m_iCallback)
             {
-            __CALLBACK(GameOverlayActivated)
-            __CALLBACK(UserStatsReceived)
-            __CALLBACK(UserStatsStored)
+            __STEAM_CALLBACK(GameOverlayActivated)
+            __STEAM_CALLBACK(UserStatsReceived)
+            __STEAM_CALLBACK(UserStatsStored)
             }
 
             // finish callback
@@ -418,5 +420,7 @@ inline void coreBackendSteam::__ExitBase()
 /* Steam backend instance */
 static coreBackendSteam s_BackendSteam;
 
+
+#endif
 
 #endif /* _CORE_GUARD_STEAM_H_ */

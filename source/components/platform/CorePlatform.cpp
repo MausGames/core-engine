@@ -12,11 +12,13 @@ coreSet<coreBackend*> coreBackend::s_apBackendSet = {};
 
 #if defined(_CORE_WINDOWS_)
     #include "backend/steam.h"
+    #include "backend/epic.h"
     #include "backend/windows.h"
 #elif defined(_CORE_LINUX_)
     #include "backend/steam.h"
 #elif defined(_CORE_MACOS_)
     #include "backend/steam.h"
+    #include "backend/epic.h"
 #endif
 
 static class coreBackendDummy final : public coreBackend {inline const coreChar* GetIdentifier()const final {return "Dummy";}} s_BackendDummy;
@@ -61,11 +63,12 @@ CorePlatform::~CorePlatform()
 
 // ****************************************************************
 /* define achievement */
-void CorePlatform::DefineAchievement(const coreHashString& sName, const coreChar* pcSteamName)
+void CorePlatform::DefineAchievement(const coreHashString& sName, const coreChar* pcSteamName, const coreChar* pcEpicName)
 {
     // create new achievement definition
     coreAchievement oData = {};
     oData.sSteamName = pcSteamName;
+    oData.sEpicName  = pcEpicName;
 
     // add definition to map
     m_aAchievement.emplace_bs(sName, std::move(oData));

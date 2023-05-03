@@ -680,7 +680,12 @@ public:
 
         struct Platform final
         {
-            static const coreUint32 SteamAppID;    // Steam app ID (0 = ignore)
+            static const coreUint32      SteamAppID;         // Steam app ID       (0 = ignore)
+            static const coreChar* const EpicProductID;      // Epic product ID    (NULL = ignore)
+            static const coreChar* const EpicSandboxID;      // Epic sandbox ID    (for store-related information)
+            static const coreChar* const EpicDeploymentID;   // Epic deployment ID (for user-related information)
+            static const coreChar* const EpicClientID;       // Epic client ID
+            static const coreChar* const EpicClientSecret;   // Epic client secret
         }
         Platform;
     }

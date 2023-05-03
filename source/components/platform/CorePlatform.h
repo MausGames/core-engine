@@ -16,6 +16,7 @@
 struct coreAchievement final
 {
     coreString sSteamName;   // internal Steam name
+    coreString sEpicName;    // internal Epic name
     coreUint8  iStatus;      // current unlock status (0 = not unlocked | 1 = unlocked | 2 = verified)
 };
 
@@ -75,7 +76,7 @@ public:
     DISABLE_COPY(CorePlatform)
 
     /* handle achievements */
-    void DefineAchievement(const coreHashString& sName, const coreChar* pcSteamName);
+    void DefineAchievement(const coreHashString& sName, const coreChar* pcSteamName, const coreChar* pcEpicName);
     void UnlockAchievement(const coreHashString& sName);
 
     /* handle general features */
