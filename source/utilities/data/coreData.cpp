@@ -1805,7 +1805,7 @@ const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
     // get folder name from application name
     static const coreString s_sIdentifier = []()
     {
-        return coreString(Core::Application->Settings.Name).replace(" ", "");
+        return coreString(CoreApp::Settings::Name).replace(" ", "");
     }();
 
     // create full path

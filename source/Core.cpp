@@ -60,9 +60,9 @@ Core::Core()noexcept
     Language->Load(Config->GetString(CORE_CONFIG_BASE_LANGUAGE));
 
     // apply project settings
-    System->SetWindowTitle(Application->Settings.Name);
-    System->SetWindowIcon (Application->Settings.IconPath);
-    Input ->SetCursor     (Application->Settings.CursorPath);
+    System->SetWindowTitle(CoreApp::Settings::Name);
+    System->SetWindowIcon (CoreApp::Settings::IconPath);
+    Input ->SetCursor     (CoreApp::Settings::CursorPath);
 
     // init application
     Log->Header("Application Setup");
@@ -162,9 +162,9 @@ void Core::Reset()
     Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
 
     // apply project settings
-    System->SetWindowTitle(Application->Settings.Name);
-    System->SetWindowIcon (Application->Settings.IconPath);
-    Input ->SetCursor     (Application->Settings.CursorPath);
+    System->SetWindowTitle(CoreApp::Settings::Name);
+    System->SetWindowIcon (CoreApp::Settings::IconPath);
+    Input ->SetCursor     (CoreApp::Settings::CursorPath);
 
     Log->Header("Reset finished");
 }
@@ -184,7 +184,7 @@ void Core::Reshape()
     Manager::Object->RefreshSprites();
 
     // apply project settings
-    System->SetWindowTitle(Application->Settings.Name);
+    System->SetWindowTitle(CoreApp::Settings::Name);
 }
 
 

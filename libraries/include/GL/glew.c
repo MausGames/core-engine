@@ -120,7 +120,7 @@ static void* NSGLGetProcAddress (const char* name)
 #  define glewGetProcAddress(name) wglGetProcAddress((LPCSTR)name)
 #elif defined(__linux__)
 #  include <GL/glx.h>
-#  define glewGetProcAddress(name) (*glXGetProcAddressARB)(name)
+#  define glewGetProcAddress(name) glXGetProcAddressARB(name)
 #elif defined(__APPLE__)
 #  define glewGetProcAddress(name) NSGLGetProcAddress((const char*)name)
 #endif

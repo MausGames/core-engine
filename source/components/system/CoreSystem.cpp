@@ -34,7 +34,7 @@ CoreSystem::CoreSystem()noexcept
     Core::Log->Header("System Interface");
 
     // set SDL behavior hints
-    SDL_SetHint(SDL_HINT_APP_NAME,                           Core::Application->Settings.Name);
+    SDL_SetHint(SDL_HINT_APP_NAME,                           CoreApp::Settings::Name);
     SDL_SetHint(SDL_HINT_EVENT_LOGGING,                      DEFINED(_CORE_DEBUG_) ? "1" : "0");
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
     SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE,                 "0");
@@ -184,11 +184,11 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,         8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,          8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         Core::Application->Settings.Graphics.AlphaChannel       ? 8 : 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         Core::Application->Settings.Graphics.DepthSize);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       Core::Application->Settings.Graphics.StencilSize);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       Core::Application->Settings.Graphics.DoubleBuffer       ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_STEREO,             Core::Application->Settings.Graphics.StereoRender       ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         CoreApp::Settings::Graphics::AlphaChannel               ? 8 : 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         CoreApp::Settings::Graphics::DepthSize);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       CoreApp::Settings::Graphics::StencilSize);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       CoreApp::Settings::Graphics::DoubleBuffer               ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_STEREO,             CoreApp::Settings::Graphics::StereoRender               ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
 
