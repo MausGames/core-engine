@@ -83,10 +83,12 @@ public:
     inline void prepare_bs() {this->sort_asc();}
 
     /* create new entry */
-    template <typename... A> void emplace   (const I& tKey, A&&... vArgs);
-    template <typename... A> void emplace   (I&&      tKey, A&&... vArgs);
-    template <typename... A> void emplace_bs(const I& tKey, A&&... vArgs);
-    template <typename... A> void emplace_bs(I&&      tKey, A&&... vArgs);
+    template <typename... A> void emplace   (const I& tKey,                              A&&... vArgs);
+    template <typename... A> void emplace   (I&&      tKey,                              A&&... vArgs);
+    template <typename... A> void emplace_bs(const I& tKey,                              A&&... vArgs);
+    template <typename... A> void emplace_bs(I&&      tKey,                              A&&... vArgs);
+    template <typename... A> void emplace   (const coreValueIterator& it, const I& tKey, A&&... vArgs);
+    template <typename... A> void emplace   (const coreValueIterator& it, I&&      tKey, A&&... vArgs);
 
     /* remove existing entry */
     coreBool                 erase    (const I& tKey);
@@ -175,8 +177,9 @@ public:
     inline       T&          bs (const coreHashString& sKey)        {this->__save_string(sKey); return this->coreMapStrBase<T>::         bs (sKey);}
 
     /* create new entry */
-    template <typename... A> inline void emplace   (const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (sKey, std::forward<A>(vArgs)...);}
-    template <typename... A> inline void emplace_bs(const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace_bs(sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace   (const coreHashString& sKey,                                                          A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace_bs(const coreHashString& sKey,                                                          A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace_bs(sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace   (const typename coreMapStrBase<T>::coreValueIterator& it, const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (it, sKey, std::forward<A>(vArgs)...);}
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
@@ -388,6 +391,24 @@ template <typename K, typename I, typename T> template <typename... A> void core
 
     // cache current entry
     this->_cache_set(m_atKeyList.index(it));
+}
+
+template <typename K, typename I, typename T> template <typename... A> void coreMapGen<K, I, T>::emplace(const coreValueIterator& it, const I& tKey, A&&... vArgs)
+{
+    // copy and move key
+    return this->emplace(it, std::move(I(tKey)), std::forward<A>(vArgs)...);
+}
+
+template <typename K, typename I, typename T> template <typename... A> void coreMapGen<K, I, T>::emplace(const coreValueIterator& it, I&& tKey, A&&... vArgs)
+{
+    ASSERT(!this->count(tKey))
+
+    // create new entry
+    const auto et = m_atKeyList.insert(this->get_key(it), std::move(tKey));
+    m_atValueList.emplace(it, std::forward<A>(vArgs)...);
+
+    // cache current entry
+    this->_cache_set(m_atKeyList.index(et));
 }
 
 
