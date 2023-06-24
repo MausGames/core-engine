@@ -200,6 +200,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
         __IMPROVE(GLEW_INTEL_conservative_rasterization,     false)
+        __IMPROVE(GLEW_INTEL_framebuffer_CMAA,               false)
         __IMPROVE(GLEW_KHR_debug,                            GLEW_VERSION_4_3)
         __IMPROVE(GLEW_KHR_no_error,                         GLEW_VERSION_4_6)                                       // indirectly used
         __IMPROVE(GLEW_NVX_gpu_memory_info,                  false)

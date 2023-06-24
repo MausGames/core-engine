@@ -1160,6 +1160,8 @@ PFNGLTEXTURESTORAGE1DEXTPROC __glewTextureStorage1DEXT = NULL;
 PFNGLTEXTURESTORAGE2DEXTPROC __glewTextureStorage2DEXT = NULL;
 PFNGLTEXTURESTORAGE3DEXTPROC __glewTextureStorage3DEXT = NULL;
 
+PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAINTELPROC __glewApplyFramebufferAttachmentCMAAINTEL = NULL;
+
 PFNGLDEBUGMESSAGECALLBACKPROC __glewDebugMessageCallback = NULL;
 PFNGLDEBUGMESSAGECONTROLPROC __glewDebugMessageControl = NULL;
 PFNGLDEBUGMESSAGEINSERTPROC __glewDebugMessageInsert = NULL;
@@ -1315,6 +1317,7 @@ GLboolean __GLEW_EXT_texture_compression_s3tc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_filter_anisotropic = GL_FALSE;
 GLboolean __GLEW_EXT_texture_storage = GL_FALSE;
 GLboolean __GLEW_INTEL_conservative_rasterization = GL_FALSE;
+GLboolean __GLEW_INTEL_framebuffer_CMAA = GL_FALSE;
 GLboolean __GLEW_KHR_debug = GL_FALSE;
 GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
@@ -1531,6 +1534,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_INTEL_conservative_rasterization
   "GL_INTEL_conservative_rasterization",
+#endif
+#ifdef GL_INTEL_framebuffer_CMAA
+  "GL_INTEL_framebuffer_CMAA",
 #endif
 #ifdef GL_KHR_debug
   "GL_KHR_debug",
@@ -1831,6 +1837,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_INTEL_conservative_rasterization
   &__GLEW_INTEL_conservative_rasterization,
 #endif
+#ifdef GL_INTEL_framebuffer_CMAA
+  &__GLEW_INTEL_framebuffer_CMAA,
+#endif
 #ifdef GL_KHR_debug
   &__GLEW_KHR_debug,
 #endif
@@ -1973,6 +1982,7 @@ static GLboolean _glewInit_GL_EXT_geometry_shader4 (void);
 static GLboolean _glewInit_GL_EXT_gpu_shader4 (void);
 static GLboolean _glewInit_GL_EXT_shader_image_load_store (void);
 static GLboolean _glewInit_GL_EXT_texture_storage (void);
+static GLboolean _glewInit_GL_INTEL_framebuffer_CMAA (void);
 static GLboolean _glewInit_GL_KHR_debug (void);
 static GLboolean _glewInit_GL_KHR_parallel_shader_compile (void);
 static GLboolean _glewInit_GL_NV_conservative_raster (void);
@@ -3468,6 +3478,19 @@ static GLboolean _glewInit_GL_EXT_texture_storage (void)
 
 #endif /* GL_EXT_texture_storage */
 
+#ifdef GL_INTEL_framebuffer_CMAA
+
+static GLboolean _glewInit_GL_INTEL_framebuffer_CMAA (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glApplyFramebufferAttachmentCMAAINTEL = (PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAINTELPROC)glewGetProcAddress((const GLubyte*)"glApplyFramebufferAttachmentCMAAINTEL")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_INTEL_framebuffer_CMAA */
+
 #ifdef GL_KHR_debug
 
 static GLboolean _glewInit_GL_KHR_debug (void)
@@ -3990,6 +4013,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_EXT_texture_storage
   if (glewExperimental || GLEW_EXT_texture_storage) GLEW_EXT_texture_storage = !_glewInit_GL_EXT_texture_storage();
 #endif /* GL_EXT_texture_storage */
+#ifdef GL_INTEL_framebuffer_CMAA
+  if (glewExperimental || GLEW_INTEL_framebuffer_CMAA) GLEW_INTEL_framebuffer_CMAA = !_glewInit_GL_INTEL_framebuffer_CMAA();
+#endif /* GL_INTEL_framebuffer_CMAA */
 #ifdef GL_KHR_debug
   if (glewExperimental || GLEW_KHR_debug) GLEW_KHR_debug = !_glewInit_GL_KHR_debug();
 #endif /* GL_KHR_debug */
@@ -4773,6 +4799,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"conservative_rasterization", 26))
         {
           ret = GLEW_INTEL_conservative_rasterization;
+          continue;
+        }
+#endif
+#ifdef GL_INTEL_framebuffer_CMAA
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"framebuffer_CMAA", 16))
+        {
+          ret = GLEW_INTEL_framebuffer_CMAA;
           continue;
         }
 #endif

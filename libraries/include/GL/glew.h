@@ -5188,6 +5188,19 @@ typedef void (GLAPIENTRY * PFNGLTEXTURESTORAGE3DEXTPROC) (GLuint texture, GLenum
 
 #endif /* GL_INTEL_conservative_rasterization */
 
+/* ------------------ GL_INTEL_framebuffer_CMAA ------------------ */
+
+#ifndef GL_INTEL_framebuffer_CMAA
+#define GL_INTEL_framebuffer_CMAA 1
+
+typedef void (GLAPIENTRY * PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAINTELPROC) (void);
+
+#define glApplyFramebufferAttachmentCMAAINTEL GLEW_GET_FUN(__glewApplyFramebufferAttachmentCMAAINTEL)
+
+#define GLEW_INTEL_framebuffer_CMAA GLEW_GET_VAR(__GLEW_INTEL_framebuffer_CMAA)
+
+#endif /* GL_INTEL_framebuffer_CMAA */
+
 /* ------------------------------ GL_KHR_debug ----------------------------- */
 
 #ifndef GL_KHR_debug
@@ -6428,6 +6441,8 @@ GLEW_FUN_EXPORT PFNGLTEXTURESTORAGE1DEXTPROC __glewTextureStorage1DEXT;
 GLEW_FUN_EXPORT PFNGLTEXTURESTORAGE2DEXTPROC __glewTextureStorage2DEXT;
 GLEW_FUN_EXPORT PFNGLTEXTURESTORAGE3DEXTPROC __glewTextureStorage3DEXT;
 
+GLEW_FUN_EXPORT PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAINTELPROC __glewApplyFramebufferAttachmentCMAAINTEL;
+
 GLEW_FUN_EXPORT PFNGLDEBUGMESSAGECALLBACKPROC __glewDebugMessageCallback;
 GLEW_FUN_EXPORT PFNGLDEBUGMESSAGECONTROLPROC __glewDebugMessageControl;
 GLEW_FUN_EXPORT PFNGLDEBUGMESSAGEINSERTPROC __glewDebugMessageInsert;
@@ -6583,6 +6598,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_s3tc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_filter_anisotropic;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_storage;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_conservative_rasterization;
+GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_framebuffer_CMAA;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_debug;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_parallel_shader_compile;

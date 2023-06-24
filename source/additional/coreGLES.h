@@ -198,6 +198,14 @@ using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei level
 
 
 // ****************************************************************
+/* GL_INTEL_framebuffer_CMAA */
+#define CORE_GL_INTEL_framebuffer_CMAA __CORE_GLES_VAR(GL_INTEL_framebuffer_CMAA)
+
+using PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC = void (GL_APIENTRY *) (void);
+#define glApplyFramebufferAttachmentCMAAINTEL __CORE_GLES_FUNC(glApplyFramebufferAttachmentCMAA)
+
+
+// ****************************************************************
 /* GL_KHR_debug */
 #define CORE_GL_KHR_debug __CORE_GLES_VAR(GL_KHR_debug)
 
@@ -390,6 +398,7 @@ struct coreContext final
     coreBool __GL_EXT_texture_storage;
     coreBool __GL_EXT_texture_type_2_10_10_10_rev;
     coreBool __GL_INTEL_conservative_rasterization;
+    coreBool __GL_INTEL_framebuffer_CMAA;
     coreBool __GL_KHR_debug;
     coreBool __GL_KHR_parallel_shader_compile;
     coreBool __GL_NV_conservative_raster;
@@ -422,6 +431,7 @@ struct coreContext final
     PFNGLDRAWELEMENTSINSTANCEDARBPROC       __glDrawElementsInstanced;
     PFNGLVERTEXATTRIBDIVISORARBPROC         __glVertexAttribDivisor;
     PFNGLTEXSTORAGE2DPROC                   __glTexStorage2D;
+    PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC __glApplyFramebufferAttachmentCMAA;
     PFNGLDEBUGMESSAGECALLBACKPROC           __glDebugMessageCallback;
     PFNGLDEBUGMESSAGECONTROLPROC            __glDebugMessageControl;
     PFNGLMAXSHADERCOMPILERTHREADSPROC       __glMaxShaderCompilerThreads;

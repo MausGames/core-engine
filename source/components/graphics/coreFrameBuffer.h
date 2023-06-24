@@ -18,7 +18,6 @@
 // TODO 3: save and restore OpenGL states (GL_DEPTH_TEST/GL_BLEND) on fallback-blitting
 // TODO 3: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)
 // TODO 3: change R and RG targets to RGB if not supported ? also change some other targets if not supported
-// TODO 5: INTEL_framebuffer_CMAA, post-processing AA on non-multisampled framebuffers
 // TODO 5: <old comment style>
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
@@ -76,6 +75,8 @@ private:
     coreFloat m_fFOV;                                             // field-of-view
     coreFloat m_fNearClip;                                        // near clipping plane
     coreFloat m_fFarClip;                                         // far clipping plane
+
+    coreBool m_bIntelMorph;                                       // apply conservative morphological anti aliasing
 
     static coreFrameBuffer* s_pCurrent;                           // currently active frame buffer object
     static coreFloat s_afViewData[5];                             // view properties of the default frame buffer

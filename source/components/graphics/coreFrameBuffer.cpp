@@ -23,6 +23,7 @@ coreFrameBuffer::coreFrameBuffer()noexcept
 , m_fFOV          (0.0f)
 , m_fNearClip     (0.0f)
 , m_fFarClip      (0.0f)
+, m_bIntelMorph   (false)
 {
 }
 
@@ -65,9 +66,13 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
 
     // check for multisampling
     const coreUint8 iSamples     = CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING), 0, Core::Graphics->GetMaxSamples());
+    const coreBool  bIntelMorph  = CORE_GL_SUPPORT(INTEL_framebuffer_CMAA)               && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 1u);
     const coreBool  bAmdAdvanced = CORE_GL_SUPPORT(AMD_framebuffer_multisample_advanced) && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 8u || iSamples == 4u || iSamples == 2u);
     const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)  && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 8u || iSamples == 4u);
-    const coreBool  bMultisample = CORE_GL_SUPPORT(EXT_framebuffer_multisample)          && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 2u);
+    const coreBool  bMultisample = CORE_GL_SUPPORT(EXT_framebuffer_multisample)          && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 1u);
+
+    // set additional properties
+    m_bIntelMorph = bIntelMorph;
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
@@ -100,7 +105,8 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
             glBindRenderbuffer(GL_RENDERBUFFER, pTarget->iBuffer);
 
             // allocate buffer memory
-                 if(bAmdAdvanced) glRenderbufferStorageMultisampleAdvancedAMD(GL_RENDERBUFFER, iSamples * ((i >= 2u) ? 2u : 1u), iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
+                 if(bIntelMorph)  glRenderbufferStorage                      (GL_RENDERBUFFER,                                             pTarget->oSpec.iInternal, iWidth, iHeight);
+            else if(bAmdAdvanced) glRenderbufferStorageMultisampleAdvancedAMD(GL_RENDERBUFFER, iSamples * ((i >= 2u) ? 2u : 1u), iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
             else if(bNvCoverage)  glRenderbufferStorageMultisampleCoverageNV (GL_RENDERBUFFER, iSamples * 2u,                    iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
             else if(bMultisample) glRenderbufferStorageMultisample           (GL_RENDERBUFFER,                                   iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
             else                  glRenderbufferStorage                      (GL_RENDERBUFFER,                                             pTarget->oSpec.iInternal, iWidth, iHeight);
@@ -308,6 +314,19 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer
                                    iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                                    iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
                                    eTargets, GL_NEAREST);
+
+            if(m_bIntelMorph)
+            {
+                // switch to destination frame buffer
+                const coreBool bToggle = (s_pCurrent != pDestination);
+                if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, pDestination ? pDestination->GetIdentifier() : 0u);
+
+                // apply conservative morphological anti aliasing
+                glApplyFramebufferAttachmentCMAAINTEL();
+
+                // switch back to old frame buffer
+                if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
+            }
         }
         else
         {
@@ -319,6 +338,9 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer
             glBlitFramebuffer(iSrcX, iSrcY, iSrcX + iWidth, iSrcY + iHeight,
                               iDstX, iDstY, iDstX + iWidth, iDstY + iHeight,
                               eTargets, GL_NEAREST);
+
+            // apply conservative morphological anti aliasing
+            if(m_bIntelMorph) glApplyFramebufferAttachmentCMAAINTEL();
 
             // switch back to old frame buffer
             glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);

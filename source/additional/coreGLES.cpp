@@ -155,6 +155,12 @@ void __coreInitOpenGLES()
     // implement GL_INTEL_conservative_rasterization
     __CORE_GLES_CHECK(GL_INTEL_conservative_rasterization, false);
 
+    // implement GL_INTEL_framebuffer_CMAA
+    if(__CORE_GLES_CHECK(GL_INTEL_framebuffer_CMAA, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glApplyFramebufferAttachmentCMAA, INTEL, false)
+    }
+
     // implement GL_KHR_debug
     if(__CORE_GLES_CHECK(GL_KHR_debug, bES32 || bAndroidPack))
     {
