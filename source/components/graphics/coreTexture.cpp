@@ -42,7 +42,7 @@ coreTexture::~coreTexture()
 coreStatus coreTexture::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
+    const coreStatus eCheck = m_Sync.Check(0u);
     if(eCheck >= CORE_OK) return eCheck;
 
     WARN_IF(m_iIdentifier) return CORE_INVALID_CALL;
@@ -75,7 +75,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     m_sPath = pFile->GetPath();
 
     Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, m_bCompressed ? "compressed" : "standard");
-    return m_Sync.Create() ? CORE_BUSY : CORE_OK;
+    return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_OK;
 }
 
 

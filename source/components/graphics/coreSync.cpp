@@ -31,7 +31,7 @@ coreSync& coreSync::operator = (coreSync&& m)noexcept
 
 // ****************************************************************
 /* create sync object */
-coreBool coreSync::Create()
+coreBool coreSync::Create(const coreSyncCreate eCreate)
 {
     if(!m_pSync)
     {
@@ -39,6 +39,7 @@ coreBool coreSync::Create()
         {
             // generate new sync object
             m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0u);
+            if(eCreate) glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, 0u);   // # flush needs to happen on the same thread/context
             return true;
         }
 
@@ -65,12 +66,12 @@ void coreSync::Delete()
 
 // ****************************************************************
 /* check for sync object status */
-coreStatus coreSync::Check(const coreUint64 iNanoWait, const coreSyncCheck eCheck)
+coreStatus coreSync::Check(const coreUint64 iNanoWait)
 {
     if(!m_pSync) return CORE_INVALID_CALL;
 
     // retrieve and compare status
-    if(glClientWaitSync(m_pSync, eCheck, MAX(iNanoWait, CORE_SYNC_MINIMUM)) != GL_TIMEOUT_EXPIRED)
+    if(glClientWaitSync(m_pSync, 0u, MAX(iNanoWait, CORE_SYNC_MINIMUM)) != GL_TIMEOUT_EXPIRED)
     {
         // delete sync object
         this->Delete();

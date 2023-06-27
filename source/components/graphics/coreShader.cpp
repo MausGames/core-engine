@@ -231,7 +231,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     ASSERT(!pFile)
 
     // check for sync object status
-    const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
+    const coreStatus eCheck = m_Sync.Check(0u);
     if(eCheck == CORE_BUSY) return CORE_BUSY;
 
     if(m_eStatus == CORE_PROGRAM_DEFINED)
@@ -296,7 +296,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
         FOR_EACH(it, m_apShader) m_sPath += PRINT("%s%s:%u", m_sPath.empty() ? "" : ", ", (*it).GetHandle()->GetName(), (*it)->GetIdentifier());
 
         m_eStatus = CORE_PROGRAM_LINKING;
-        m_Sync.Create();
+        m_Sync.Create(CORE_SYNC_CREATE_FLUSHED);
         return CORE_BUSY;
     }
     else if(m_eStatus == CORE_PROGRAM_LINKING)
@@ -342,7 +342,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
         this->__WriteInterface();
 
         m_eStatus = CORE_PROGRAM_SUCCESSFUL;
-        return m_Sync.Create() ? CORE_BUSY : CORE_OK;
+        return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_OK;
     }
 
     return eCheck;

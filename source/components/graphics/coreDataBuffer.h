@@ -80,7 +80,7 @@ public:
     coreStatus                Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
 
     /* protect buffer memory up to now */
-    inline void Synchronize() {if(CORE_GL_SUPPORT(ARB_map_buffer_range)) m_Sync.Create();}
+    inline void Synchronize() {if(CORE_GL_SUPPORT(ARB_map_buffer_range)) m_Sync.Create(CORE_SYNC_CREATE_NORMAL);}
 
     /* reset content of the data buffer object */
     coreStatus Clear(const coreTextureSpec& oTextureSpec, const void* pData);

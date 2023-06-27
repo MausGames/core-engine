@@ -160,7 +160,7 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
     if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
         // check for sync object status
-        m_Sync.Check(CORE_SYNC_WAIT_FOREVER, CORE_SYNC_CHECK_NORMAL);
+        m_Sync.Check(CORE_SYNC_WAIT_FOREVER);
 
         // return persistent mapped buffer
         if(m_pPersistentBuffer) return (m_pPersistentBuffer + iOffset);

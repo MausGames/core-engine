@@ -55,7 +55,7 @@ coreModel::~coreModel()
 coreStatus coreModel::Load(coreFile* pFile)
 {
     // check for sync object status
-    const coreStatus eCheck = m_Sync.Check(0u, CORE_SYNC_CHECK_FLUSHED);
+    const coreStatus eCheck = m_Sync.Check(0u);
     if(eCheck >= CORE_OK) return eCheck;
 
     coreFileScope oUnloader(pFile);
@@ -312,7 +312,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     SAFE_DELETE_ARRAY(piOptimizedData)
 
     Core::Log->Info("Model (%s, %u vertices, %u indices, %u clusters, %.5f x %.5f x %.5f range, %.5f radius) loaded", pFile->GetPath(), m_iNumVertices, m_iNumIndices, m_iNumClusters, m_vBoundingRange.x, m_vBoundingRange.y, m_vBoundingRange.z, m_fBoundingRadius);
-    return m_Sync.Create() ? CORE_BUSY : CORE_OK;
+    return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_OK;
 }
 
 

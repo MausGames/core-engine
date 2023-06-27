@@ -324,9 +324,9 @@ void CoreGraphics::UpdateTransformation()
         }
 
         // synchronize and switch to next sync object
-        m_aTransformSync.current().Create();
+        m_aTransformSync.current().Create(CORE_SYNC_CREATE_NORMAL);
         m_aTransformSync.next();
-        m_aTransformSync.current().Check(CORE_SYNC_WAIT_FOREVER, CORE_SYNC_CHECK_NORMAL);
+        m_aTransformSync.current().Check(CORE_SYNC_WAIT_FOREVER);
 
         // bind next buffer range
         const coreUint32 iNewOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
@@ -370,9 +370,9 @@ void CoreGraphics::UpdateAmbient()
         }
 
         // synchronize and switch to next sync object
-        m_aAmbientSync.current().Create();
+        m_aAmbientSync.current().Create(CORE_SYNC_CREATE_NORMAL);
         m_aAmbientSync.next();
-        m_aAmbientSync.current().Check(CORE_SYNC_WAIT_FOREVER, CORE_SYNC_CHECK_NORMAL);
+        m_aAmbientSync.current().Check(CORE_SYNC_WAIT_FOREVER);
 
         // bind next buffer range
         const coreUint32 iNewOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);

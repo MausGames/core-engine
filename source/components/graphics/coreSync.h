@@ -19,10 +19,10 @@
 #define CORE_SYNC_WAIT_FOREVER (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : 50'000'000u)
 #define CORE_SYNC_MINIMUM      (DEFINED(_CORE_EMSCRIPTEN_) ? 0u : 1u)
 
-enum coreSyncCheck : coreUint8
+enum coreSyncCreate : coreBool
 {
-    CORE_SYNC_CHECK_NORMAL  = 0u,                           // check only for current status
-    CORE_SYNC_CHECK_FLUSHED = GL_SYNC_FLUSH_COMMANDS_BIT    // check and flush the command buffer
+    CORE_SYNC_CREATE_NORMAL  = false,   // create only the sync object
+    CORE_SYNC_CREATE_FLUSHED = true     // create and flush the command buffer
 };
 
 
@@ -43,11 +43,11 @@ public:
     coreSync& operator = (coreSync&& m)noexcept;
 
     /* handle the sync object */
-    coreBool Create();
+    coreBool Create(const coreSyncCreate eCreate);
     void     Delete();
 
     /* check for sync object status */
-    coreStatus Check(const coreUint64 iNanoWait, const coreSyncCheck eCheck);
+    coreStatus Check(const coreUint64 iNanoWait);
 
     /* invoke explicit synchronization */
     static inline void Flush () {glFlush ();}
