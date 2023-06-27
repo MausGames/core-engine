@@ -319,8 +319,11 @@ void CoreGraphics::UpdateTransformation()
         // invalidate previous buffer range
         if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
         {
-            const coreUint32 iOldOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
-            glInvalidateBufferSubData(m_TransformBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u));
+            if(!m_TransformBuffer.IsPersistent())
+            {
+                const coreUint32 iOldOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
+                glInvalidateBufferSubData(m_TransformBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u));
+            }
         }
 
         // synchronize and switch to next sync object
@@ -365,8 +368,11 @@ void CoreGraphics::UpdateAmbient()
         // invalidate previous buffer range
         if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
         {
-            const coreUint32 iOldOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
-            glInvalidateBufferSubData(m_AmbientBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u));
+            if(!m_AmbientBuffer.IsPersistent())
+            {
+                const coreUint32 iOldOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
+                glInvalidateBufferSubData(m_AmbientBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u));
+            }
         }
 
         // synchronize and switch to next sync object

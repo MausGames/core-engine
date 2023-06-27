@@ -326,6 +326,9 @@ coreStatus coreDataBuffer::Invalidate()
 {
     ASSERT(m_iIdentifier && this->IsWritable())
 
+    // not possible during mapping
+    if(this->IsPersistent() || this->IsMapped()) return CORE_INVALID_CALL;
+
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
         // invalidate the whole buffer

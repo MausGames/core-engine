@@ -87,9 +87,10 @@ public:
     coreStatus Invalidate();
 
     /* check for current buffer status */
-    inline coreBool IsWritable()const {return !HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC);}
-    inline coreBool IsMapped  ()const {return (m_iMapLength  != 0u);}
-    inline coreBool IsValid   ()const {return (m_iIdentifier != 0u);}
+    inline coreBool IsWritable  ()const {return !HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC);}
+    inline coreBool IsPersistent()const {return (m_pPersistentBuffer && !m_iFallbackSize);}
+    inline coreBool IsMapped    ()const {return (m_iMapLength  != 0u);}
+    inline coreBool IsValid     ()const {return (m_iIdentifier != 0u);}
 
     /* get object properties */
     inline const GLuint&                GetIdentifier ()const {return m_iIdentifier;}
