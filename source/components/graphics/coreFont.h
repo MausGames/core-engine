@@ -60,8 +60,8 @@ public:
     coreUint8 RetrieveGlyphMetrics(const coreChar*  pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
 
     /* retrieve font-related attributes */
-    inline const coreChar* RetrieveFamilyName() {ASSERT(!m_aapFont.empty()) return TTF_FontFaceFamilyName(m_aapFont.front().front());}
-    inline const coreChar* RetrieveStyleName () {ASSERT(!m_aapFont.empty()) return TTF_FontFaceStyleName (m_aapFont.front().front());}
+    inline const coreChar* RetrieveFamilyName()const {ASSERT(!m_aapFont.empty()) return TTF_FontFaceFamilyName(m_aapFont.front().front());}
+    inline const coreChar* RetrieveStyleName ()const {ASSERT(!m_aapFont.empty()) return TTF_FontFaceStyleName (m_aapFont.front().front());}
 
 
 private:

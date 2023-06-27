@@ -27,7 +27,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 | Name | Description | Links |
 | --- | --- | --- |
-| [Eigengrau](https://store.steampowered.com/app/1624320/Eigengrau/) | Colorful shoot'em up with varied and non-repetitive gameplay | [GitHub](https://github.com/MausGames/project-one), [GitLab](https://gitlab.com/MausGames/project-one) |
+| [Eigengrau](https://store.steampowered.com/app/1624320/Eigengrau/) | Colorful shoot'em up with varied and diverse gameplay | [GitHub](https://github.com/MausGames/project-one), [GitLab](https://gitlab.com/MausGames/project-one) |
 | [Disco Rock](https://gamejolt.com/games/disco-rock/18996/) | Very simple endless-runner inspired by the 70s disco era | [GitHub](https://github.com/MausGames/disco-rock), [GitLab](https://gitlab.com/MausGames/disco-rock) |
 | Flip It | Competitive territory game made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/flip-it), [GitLab](https://gitlab.com/MausGames/flip-it) |
 | Party Raider | Multiplayer platform shooter made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/party-raider), [GitLab](https://gitlab.com/MausGames/party-raider) |
@@ -38,7 +38,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 <table>
     <tr>
-        <td><a href="material/screenshots/p1_screen_015.jpg?raw=true"><img src="material/screenshots/p1_screen_015t.jpg"></a></td>
+        <td><a href="material/screenshots/p1_screen_021.jpg?raw=true"><img src="material/screenshots/p1_screen_021t.jpg"></a></td>
         <td><a href="material/screenshots/dr_screen_new_006.jpg?raw=true"><img src="material/screenshots/dr_screen_new_006t.jpg"></a></td>
         <td><a href="material/screenshots/fli_screen_003.jpg?raw=true"><img src="material/screenshots/fli_screen_003t.jpg"></a></td>
     </tr>

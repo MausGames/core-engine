@@ -411,7 +411,7 @@
 
 #define BIG_STATIC                  static thread_local
 #define FRIEND_CLASS(c)             friend class c;
-#define STATIC_ASSERT(c)            static_assert(c, "Static Assert [" #c "]");
+#define STATIC_ASSERT(c)            static_assert(c, "STATIC ASSERT [" #c "]");
 
 #if defined(_CORE_DEBUG_) && !defined(_CORE_IDE_)
     #define ASSERT(c)               {if(false) assert(c); SDL_assert_core(c);}   // strong
@@ -661,14 +661,14 @@ class CoreApp final
 {
 public:
     /* project settings */
-    struct Settings final
+    struct INTERFACE Settings final
     {
         static const coreChar* const Name;             // project name
         static const coreChar* const IconPath;         // window icon file path
         static const coreChar* const CursorPath;       // mouse cursor file path
         static const coreBool        UserManagement;   // enable user-management (OS and platform)
 
-        struct Graphics final
+        struct INTERFACE Graphics final
         {
             static const coreUint8 DepthSize;      // depth buffer size (0, 16, 24, 32)
             static const coreUint8 StencilSize;    // stencil buffer size (0, 8)
@@ -678,7 +678,7 @@ public:
         }
         Graphics;
 
-        struct Platform final
+        struct INTERFACE Platform final
         {
             static const coreUint32      SteamAppID;         // Steam app ID       (0 = ignore)
             static const coreChar* const EpicProductID;      // Epic product ID    (NULL = ignore)

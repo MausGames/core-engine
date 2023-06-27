@@ -39,7 +39,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
     SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE,                 "0");
     SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
-    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, DEFINED(_CORE_DEBUG_) ? "0" : "1");
+    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING,      DEFINED(_CORE_DEBUG_) ? "0" : "1");
 
     // load SDL only once (to improve reset performance, and prevent crashes)

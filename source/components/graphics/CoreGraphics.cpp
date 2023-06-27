@@ -574,14 +574,17 @@ void CoreGraphics::DebugOpenGL()
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
 
         // disable certain API messages
-        constexpr GLuint aiID[] = {131169u, 131185u, 131204u, 131222u};
-        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+        constexpr GLuint aiID[] = {131076u, 131154u, 131169u, 131185u, 131204u, 131222u};
         glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE,        GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
 
         // disable all shader compiler messages
         glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, false);
     }
 
+    // 131076: Usage warning: glClear() called with GL_STENCIL_BUFFER_BIT, but there is no stencil buffer. Operation will have no effect.
+    // 131154: Pixel-path performance warning: Pixel transfer is synchronized with 3D rendering.
     // 131169: Framebuffer detailed info: The driver allocated multisample storage for renderbuffer #.
     // 131185: Buffer detailed info: Buffer object # (bound to #, usage hint is #) will use # memory as the source for buffer object operations.
     // 131204: Texture state usage warning: Texture # is base level inconsistent. Check texture size.

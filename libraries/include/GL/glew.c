@@ -123,6 +123,9 @@ static void* NSGLGetProcAddress (const char* name)
 #  define glewGetProcAddress(name) glXGetProcAddressARB(name)
 #elif defined(__APPLE__)
 #  define glewGetProcAddress(name) NSGLGetProcAddress((const char*)name)
+#else
+#  include <EGL/egl.h>
+#  define glewGetProcAddress(name) eglGetProcAddress((const char*)name)
 #endif
 
 /*

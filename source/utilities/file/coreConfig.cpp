@@ -154,7 +154,7 @@ coreStatus coreConfig::Save()
     FOR_EACH(it, m_aasSection)
     {
         // write configuration section
-        if(it != m_aasSection.begin()) sBuffer.append("\n\n\n");
+        if(it != m_aasSection.begin()) sBuffer.append("\n\n");
         sBuffer.append(PRINT("[%s]", m_aasSection.get_string(it)));
 
         // write configuration entries

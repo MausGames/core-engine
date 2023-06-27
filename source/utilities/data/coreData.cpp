@@ -386,8 +386,8 @@ coreUint32 coreData::SystemUserID()
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
-    // get effective user identifier of calling process
-    return geteuid();
+    // get real user identifier of calling process
+    return getuid();
 
 #else
 
@@ -412,7 +412,7 @@ const coreChar* coreData::SystemUserName()
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
     // get user name from password database
-    const passwd* pRecord = getpwuid(geteuid());
+    const passwd* pRecord = getpwuid(getuid());
     if(pRecord && pRecord->pw_name) return pRecord->pw_name;
 
     // get user name from controlling terminal
@@ -501,7 +501,7 @@ const coreChar* coreData::SystemDirAppData()
         return pcPath;
 
     // get directory from password database
-    const passwd* pRecord = getpwuid(geteuid());
+    const passwd* pRecord = getpwuid(getuid());
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.local/share", pRecord->pw_dir))))
         return pcPath;
 
@@ -518,7 +518,7 @@ const coreChar* coreData::SystemDirAppData()
         return pcPath;
 
     // get directory from password database
-    const passwd* pRecord = getpwuid(geteuid());
+    const passwd* pRecord = getpwuid(getuid());
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Application Support", pRecord->pw_dir))))
         return pcPath;
 
@@ -561,7 +561,7 @@ const coreChar* coreData::SystemDirTemp()
         return pcPath;
 
     // get directory from password database
-    const passwd* pRecord = getpwuid(geteuid());
+    const passwd* pRecord = getpwuid(getuid());
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.cache", pRecord->pw_dir))))
         return pcPath;
 
@@ -578,7 +578,7 @@ const coreChar* coreData::SystemDirTemp()
         return pcPath;
 
     // get directory from password database
-    const passwd* pRecord = getpwuid(geteuid());
+    const passwd* pRecord = getpwuid(getuid());
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Caches", pRecord->pw_dir))))
         return pcPath;
 
