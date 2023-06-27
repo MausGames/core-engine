@@ -589,44 +589,44 @@ constexpr coreMatrix3 coreMatrix3::ShearYX(const coreFloat fFactor)
 
 
 // ****************************************************************
-/* convert matrix to quaternion */
+/* convert matrix to quaternion (# only use precise calculations) */
 constexpr coreVector4 coreMatrix3::ToQuat()const
 {
     const coreFloat fTrace = _11 + _22 + _33;
 
     if(fTrace > 0.0f)
     {
-        const coreFloat F = 0.5f * RSQRT(fTrace + 1.0f);
-        return coreVector4((_23 - _32) *     F,
-                           (_31 - _13) *     F,
-                           (_12 - _21) *     F,
-                                 0.25f * RCP(F));
+        const coreFloat F = 0.5f / SQRT(fTrace + 1.0f);
+        return coreVector4((_23 - _32) * F,
+                           (_31 - _13) * F,
+                           (_12 - _21) * F,
+                                 0.25f / F);
     }
     else
     {
         if((_11 > _22) && (_11 > _33))
         {
-            const coreFloat F = 0.5f * RSQRT(_11 - _22 - _33 + 1.0f);
-            return coreVector4(      0.25f * RCP(F),
-                               (_21 + _12) *     F,
-                               (_31 + _13) *     F,
-                               (_23 - _32) *     F);
+            const coreFloat F = 0.5f / SQRT(_11 - _22 - _33 + 1.0f);
+            return coreVector4(      0.25f / F,
+                               (_21 + _12) * F,
+                               (_31 + _13) * F,
+                               (_23 - _32) * F);
         }
         else if(_22 > _33)
         {
-            const coreFloat F = 0.5f * RSQRT(_22 - _11 - _33 + 1.0f);
-            return coreVector4((_21 + _12) *     F,
-                                     0.25f * RCP(F),
-                               (_32 + _23) *     F,
-                               (_31 - _13) *     F);
+            const coreFloat F = 0.5f / SQRT(_22 - _11 - _33 + 1.0f);
+            return coreVector4((_21 + _12) * F,
+                                     0.25f / F,
+                               (_32 + _23) * F,
+                               (_31 - _13) * F);
         }
         else
         {
-            const coreFloat F = 0.5f * RSQRT(_33 - _11 - _22 + 1.0f);
-            return coreVector4((_31 + _13) *     F,
-                               (_32 + _23) *     F,
-                                     0.25f * RCP(F),
-                               (_12 - _21) *     F);
+            const coreFloat F = 0.5f / SQRT(_33 - _11 - _22 + 1.0f);
+            return coreVector4((_31 + _13) * F,
+                               (_32 + _23) * F,
+                                     0.25f / F,
+                               (_12 - _21) * F);
         }
     }
 }
