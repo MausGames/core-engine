@@ -1219,20 +1219,6 @@ PFNGLUNIFORM4I64VNVPROC __glewUniform4i64vNV = NULL;
 PFNGLUNIFORM4UI64NVPROC __glewUniform4ui64NV = NULL;
 PFNGLUNIFORM4UI64VNVPROC __glewUniform4ui64vNV = NULL;
 
-PFNGLGETBUFFERPARAMETERUI64VNVPROC __glewGetBufferParameterui64vNV = NULL;
-PFNGLGETINTEGERUI64VNVPROC __glewGetIntegerui64vNV = NULL;
-PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC __glewGetNamedBufferParameterui64vNV = NULL;
-PFNGLISBUFFERRESIDENTNVPROC __glewIsBufferResidentNV = NULL;
-PFNGLISNAMEDBUFFERRESIDENTNVPROC __glewIsNamedBufferResidentNV = NULL;
-PFNGLMAKEBUFFERNONRESIDENTNVPROC __glewMakeBufferNonResidentNV = NULL;
-PFNGLMAKEBUFFERRESIDENTNVPROC __glewMakeBufferResidentNV = NULL;
-PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC __glewMakeNamedBufferNonResidentNV = NULL;
-PFNGLMAKENAMEDBUFFERRESIDENTNVPROC __glewMakeNamedBufferResidentNV = NULL;
-PFNGLPROGRAMUNIFORMUI64NVPROC __glewProgramUniformui64NV = NULL;
-PFNGLPROGRAMUNIFORMUI64VNVPROC __glewProgramUniformui64vNV = NULL;
-PFNGLUNIFORMUI64NVPROC __glewUniformui64NV = NULL;
-PFNGLUNIFORMUI64VNVPROC __glewUniformui64vNV = NULL;
-
 GLboolean __GLEW_VERSION_1_1 = GL_FALSE;
 GLboolean __GLEW_VERSION_1_2 = GL_FALSE;
 GLboolean __GLEW_VERSION_1_2_1 = GL_FALSE;
@@ -1331,7 +1317,6 @@ GLboolean __GLEW_NV_depth_clamp = GL_FALSE;
 GLboolean __GLEW_NV_framebuffer_multisample_coverage = GL_FALSE;
 GLboolean __GLEW_NV_gpu_shader5 = GL_FALSE;
 GLboolean __GLEW_NV_multisample_filter_hint = GL_FALSE;
-GLboolean __GLEW_NV_shader_buffer_load = GL_FALSE;
 
 static const char * _glewExtensionLookup[] = {
 #ifdef GL_AMD_conservative_depth
@@ -1570,9 +1555,6 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_NV_multisample_filter_hint
   "GL_NV_multisample_filter_hint",
-#endif
-#ifdef GL_NV_shader_buffer_load
-  "GL_NV_shader_buffer_load",
 #endif
 #ifdef GL_VERSION_1_2
   "GL_VERSION_1_2",
@@ -1873,9 +1855,6 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_NV_multisample_filter_hint
   &__GLEW_NV_multisample_filter_hint,
 #endif
-#ifdef GL_NV_shader_buffer_load
-  &__GLEW_NV_shader_buffer_load,
-#endif
 #ifdef GL_VERSION_1_2
   &__GLEW_VERSION_1_2,
 #endif
@@ -1992,7 +1971,6 @@ static GLboolean _glewInit_GL_NV_conservative_raster (void);
 static GLboolean _glewInit_GL_NV_copy_image (void);
 static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage (void);
 static GLboolean _glewInit_GL_NV_gpu_shader5 (void);
-static GLboolean _glewInit_GL_NV_shader_buffer_load (void);
 
 #ifdef GL_VERSION_1_2
 
@@ -3614,31 +3592,6 @@ static GLboolean _glewInit_GL_NV_gpu_shader5 (void)
 
 #endif /* GL_NV_gpu_shader5 */
 
-#ifdef GL_NV_shader_buffer_load
-
-static GLboolean _glewInit_GL_NV_shader_buffer_load (void)
-{
-  GLboolean r = GL_FALSE;
-
-  r = ((glGetBufferParameterui64vNV = (PFNGLGETBUFFERPARAMETERUI64VNVPROC)glewGetProcAddress((const GLubyte*)"glGetBufferParameterui64vNV")) == NULL) || r;
-  r = ((glGetIntegerui64vNV = (PFNGLGETINTEGERUI64VNVPROC)glewGetProcAddress((const GLubyte*)"glGetIntegerui64vNV")) == NULL) || r;
-  r = ((glGetNamedBufferParameterui64vNV = (PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC)glewGetProcAddress((const GLubyte*)"glGetNamedBufferParameterui64vNV")) == NULL) || r;
-  r = ((glIsBufferResidentNV = (PFNGLISBUFFERRESIDENTNVPROC)glewGetProcAddress((const GLubyte*)"glIsBufferResidentNV")) == NULL) || r;
-  r = ((glIsNamedBufferResidentNV = (PFNGLISNAMEDBUFFERRESIDENTNVPROC)glewGetProcAddress((const GLubyte*)"glIsNamedBufferResidentNV")) == NULL) || r;
-  r = ((glMakeBufferNonResidentNV = (PFNGLMAKEBUFFERNONRESIDENTNVPROC)glewGetProcAddress((const GLubyte*)"glMakeBufferNonResidentNV")) == NULL) || r;
-  r = ((glMakeBufferResidentNV = (PFNGLMAKEBUFFERRESIDENTNVPROC)glewGetProcAddress((const GLubyte*)"glMakeBufferResidentNV")) == NULL) || r;
-  r = ((glMakeNamedBufferNonResidentNV = (PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC)glewGetProcAddress((const GLubyte*)"glMakeNamedBufferNonResidentNV")) == NULL) || r;
-  r = ((glMakeNamedBufferResidentNV = (PFNGLMAKENAMEDBUFFERRESIDENTNVPROC)glewGetProcAddress((const GLubyte*)"glMakeNamedBufferResidentNV")) == NULL) || r;
-  r = ((glProgramUniformui64NV = (PFNGLPROGRAMUNIFORMUI64NVPROC)glewGetProcAddress((const GLubyte*)"glProgramUniformui64NV")) == NULL) || r;
-  r = ((glProgramUniformui64vNV = (PFNGLPROGRAMUNIFORMUI64VNVPROC)glewGetProcAddress((const GLubyte*)"glProgramUniformui64vNV")) == NULL) || r;
-  r = ((glUniformui64NV = (PFNGLUNIFORMUI64NVPROC)glewGetProcAddress((const GLubyte*)"glUniformui64NV")) == NULL) || r;
-  r = ((glUniformui64vNV = (PFNGLUNIFORMUI64VNVPROC)glewGetProcAddress((const GLubyte*)"glUniformui64vNV")) == NULL) || r;
-
-  return r;
-}
-
-#endif /* GL_NV_shader_buffer_load */
-
 /* ------------------------------------------------------------------------- */
 
 static int _glewExtensionCompare (const char *s1, const char *s2)
@@ -4037,9 +3990,6 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_NV_gpu_shader5
   if (glewExperimental || GLEW_NV_gpu_shader5) GLEW_NV_gpu_shader5 = !_glewInit_GL_NV_gpu_shader5();
 #endif /* GL_NV_gpu_shader5 */
-#ifdef GL_NV_shader_buffer_load
-  if (glewExperimental || GLEW_NV_shader_buffer_load) GLEW_NV_shader_buffer_load = !_glewInit_GL_NV_shader_buffer_load();
-#endif /* GL_NV_shader_buffer_load */
 
   return GLEW_OK;
 }
@@ -4888,13 +4838,6 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"multisample_filter_hint", 23))
         {
           ret = GLEW_NV_multisample_filter_hint;
-          continue;
-        }
-#endif
-#ifdef GL_NV_shader_buffer_load
-        if (_glewStrSame3(&pos, &len, (const GLubyte*)"shader_buffer_load", 18))
-        {
-          ret = GLEW_NV_shader_buffer_load;
           continue;
         }
 #endif

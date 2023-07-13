@@ -40,7 +40,6 @@
 #define CORE_GL_NVX_gpu_memory_info                  false
 #define CORE_GL_NV_framebuffer_multisample_coverage  false
 #define CORE_GL_NV_multisample_filter_hint           false
-#define CORE_GL_NV_shader_buffer_load                false
 
 #if defined(_CORE_EMSCRIPTEN_)
     #define CORE_GL_ARB_map_buffer_range             false
@@ -358,7 +357,6 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glGetTextureImage(...)
 #define glGetTextureImageEXT(...)
 #define glInvalidateNamedFramebufferData(...)
-#define glMakeBufferResidentNV(...)
 #define glMapNamedBufferRange(...) (I_TO_P(-1))
 #define glMapNamedBufferRangeEXT(...) (I_TO_P(-1))
 #define glNamedCopyBufferSubDataEXT(...)

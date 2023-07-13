@@ -208,7 +208,6 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_NV_framebuffer_multisample_coverage,  false)
         __IMPROVE(GLEW_NV_gpu_shader5,                       false)                                                  // shader extension
         __IMPROVE(GLEW_NV_multisample_filter_hint,           false)
-        __IMPROVE(GLEW_NV_shader_buffer_load,                false)
 
         Core::Log->ListStartInfo("Extensions loaded");
         {

@@ -103,13 +103,6 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
             glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
         }
     }
-
-    if(CORE_GL_SUPPORT(NV_shader_buffer_load))
-    {
-        // make sure static buffers are in GPU memory
-        if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
-            glMakeBufferResidentNV(m_iTarget, GL_READ_ONLY);
-    }
 }
 
 
