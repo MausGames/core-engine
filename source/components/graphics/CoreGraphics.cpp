@@ -192,6 +192,9 @@ CoreGraphics::CoreGraphics()noexcept
         // re-assign render context to main window
         SDL_GL_MakeCurrent(Core::System->GetWindow(), m_pRenderContext);
     }
+
+    // load shader-cache
+    coreProgram::LoadShaderCache();
 }
 
 
@@ -199,6 +202,10 @@ CoreGraphics::CoreGraphics()noexcept
 /* destructor */
 CoreGraphics::~CoreGraphics()
 {
+    // save and clear shader-cache
+    coreProgram::SaveShaderCache();
+    coreProgram::ClearShaderCache();
+
     // delete uniform buffer objects
     m_TransformBuffer.Delete();
     m_AmbientBuffer  .Delete();

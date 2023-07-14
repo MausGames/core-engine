@@ -8,9 +8,12 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreString   coreShader ::s_asGlobalCode[2] = {"", ""};
-coreSpinLock coreShader ::s_GlobalLock      = coreSpinLock();
-coreProgram* coreProgram::s_pCurrent        = NULL;
+coreString                 coreShader ::s_asGlobalCode[2] = {"", ""};
+coreSpinLock               coreShader ::s_GlobalLock      = coreSpinLock();
+coreProgram*               coreProgram::s_pCurrent        = NULL;
+coreProgram::coreBinaryMap coreProgram::s_aBinaryMap      = {};
+coreUint32                 coreProgram::s_iBinarySize     = 0u;
+coreSpinLock               coreProgram::s_BinaryLock      = coreSpinLock();
 
 
 // ****************************************************************
@@ -42,6 +45,7 @@ coreShader::coreShader(const coreChar* pcCustomCode)noexcept
 : coreResource  ()
 , m_iIdentifier (0u)
 , m_iType       (0u)
+, m_iHash       (0u)
 , m_sCustomCode (pcCustomCode)
 {
 }
@@ -108,6 +112,13 @@ coreStatus coreShader::Load(coreFile* pFile)
     glShaderSource (m_iIdentifier, ARRAY_SIZE(apcData), apcData, aiSize);
     glCompileShader(m_iIdentifier);
 
+    // generate shader code hash-value
+    ASSERT(!m_iHash)
+    for(coreUintW i = 0u; i < ARRAY_SIZE(apcData); ++i)
+    {
+        m_iHash = coreMath::HashCombine64(m_iHash, coreHashXXH64(r_cast<const coreByte*>(apcData[i]), aiSize[i]));
+    }
+
     // save properties
     m_sPath = pFile->GetPath();
 
@@ -130,6 +141,7 @@ coreStatus coreShader::Unload()
     m_sPath       = "";
     m_iIdentifier = 0u;
     m_iType       = 0u;
+    m_iHash       = 0u;
 
     return CORE_OK;
 }
@@ -205,6 +217,8 @@ coreProgram::coreProgram()noexcept
 , m_aiUniform      {}
 , m_aiAttribute    {}
 , m_avCache        {}
+, m_iHash          (0u)
+, m_bBinary        (false)
 , m_Sync           ()
 {
 }
@@ -251,46 +265,59 @@ coreStatus coreProgram::Load(coreFile* pFile)
         // create shader-program
         m_iIdentifier = glCreateProgram();
 
-        // attach shader objects
+        // combine all shader code hash-values
+        ASSERT(!m_iHash)
         FOR_EACH(it, m_apShader)
         {
-            if((*it)->GetIdentifier()) glAttachShader(m_iIdentifier, (*it)->GetIdentifier());
+            m_iHash = coreMath::HashCombine64(m_iHash, (*it)->GetHash());
         }
 
-        // bind default attribute locations
-        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
-        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, CORE_SHADER_ATTRIBUTE_TEXCOORD);
-        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
-        glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
+        // try to load shader-program binary
+        m_bBinary = this->__LoadBinary();
 
-        // bind instancing attribute locations
-        if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object) && CORE_GL_SUPPORT(ARB_half_float_vertex))
+        if(!m_bBinary)
         {
-            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_SHADER_ATTRIBUTE_DIV_POSITION);
-            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_SHADER_ATTRIBUTE_DIV_SIZE);
-            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, CORE_SHADER_ATTRIBUTE_DIV_ROTATION);
-            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     CORE_SHADER_ATTRIBUTE_DIV_DATA);
-            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_SHADER_ATTRIBUTE_DIV_COLOR);
-            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
-        }
-
-        // bind custom attribute locations
-        FOR_EACH(it, m_aiAttribute)
-        {
-            if((*it) >= 0) glBindAttribLocation(m_iIdentifier, (*it), m_aiAttribute.get_string(it));
-        }
-
-        // bind output locations
-        if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
-        {
-            for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+            // attach shader objects
+            FOR_EACH(it, m_apShader)
             {
-                glBindFragDataLocation(m_iIdentifier, i, s_asOutColor[i].GetString());
+                if((*it)->GetIdentifier()) glAttachShader(m_iIdentifier, (*it)->GetIdentifier());
             }
-        }
 
-        // link shader-program
-        glLinkProgram(m_iIdentifier);
+            // bind default attribute locations
+            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_SHADER_ATTRIBUTE_POSITION);
+            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, CORE_SHADER_ATTRIBUTE_TEXCOORD);
+            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_SHADER_ATTRIBUTE_NORMAL);
+            glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
+
+            // bind instancing attribute locations
+            if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object) && CORE_GL_SUPPORT(ARB_half_float_vertex))
+            {
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_SHADER_ATTRIBUTE_DIV_POSITION);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_SHADER_ATTRIBUTE_DIV_SIZE);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, CORE_SHADER_ATTRIBUTE_DIV_ROTATION);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     CORE_SHADER_ATTRIBUTE_DIV_DATA);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_SHADER_ATTRIBUTE_DIV_COLOR);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
+            }
+
+            // bind custom attribute locations
+            FOR_EACH(it, m_aiAttribute)
+            {
+                if((*it) >= 0) glBindAttribLocation(m_iIdentifier, (*it), m_aiAttribute.get_string(it));
+            }
+
+            // bind output locations
+            if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
+            {
+                for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
+                {
+                    glBindFragDataLocation(m_iIdentifier, i, s_asOutColor[i].GetString());
+                }
+            }
+
+            // link shader-program
+            glLinkProgram(m_iIdentifier);
+        }
 
         // save properties
         FOR_EACH(it, m_apShader) m_sPath += PRINT("%s%s:%u", m_sPath.empty() ? "" : ", ", (*it).GetHandle()->GetName(), (*it)->GetIdentifier());
@@ -301,24 +328,27 @@ coreStatus coreProgram::Load(coreFile* pFile)
     }
     else if(m_eStatus == CORE_PROGRAM_LINKING)
     {
-        GLint iStatus;
-
-        // check for completion status
-        if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
+        if(!m_bBinary)
         {
-            glGetProgramiv(m_iIdentifier, GL_COMPLETION_STATUS_ARB, &iStatus);
-            if(!iStatus) return CORE_BUSY;
-        }
+            GLint iStatus;
 
-        // check for link status
-        glGetProgramiv(m_iIdentifier, GL_LINK_STATUS, &iStatus);
-        WARN_IF(!iStatus)
-        {
-            Core::Log->Warning("Program (%s) could not be linked", m_sPath.c_str());
-            this->__WriteLog();
+            // check for completion status
+            if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
+            {
+                glGetProgramiv(m_iIdentifier, GL_COMPLETION_STATUS_ARB, &iStatus);
+                if(!iStatus) return CORE_BUSY;
+            }
 
-            m_eStatus = CORE_PROGRAM_FAILED;
-            return CORE_INVALID_DATA;
+            // check for link status
+            glGetProgramiv(m_iIdentifier, GL_LINK_STATUS, &iStatus);
+            WARN_IF(!iStatus)
+            {
+                Core::Log->Warning("Program (%s) could not be linked", m_sPath.c_str());
+                this->__WriteLog();
+
+                m_eStatus = CORE_PROGRAM_FAILED;
+                return CORE_INVALID_DATA;
+            }
         }
 
         // set current shader-program
@@ -338,7 +368,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
             if(iAmbientBlock   != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
         }
 
-        Core::Log->Info("Program (%s) loaded", m_sPath.c_str());
+        Core::Log->Info("Program (%u, %s) loaded", m_iIdentifier, m_sPath.c_str());
         this->__WriteInterface();
 
         m_eStatus = CORE_PROGRAM_SUCCESSFUL;
@@ -358,6 +388,9 @@ coreStatus coreProgram::Unload()
     // disable still active shader-program
     if(s_pCurrent == this) coreProgram::Disable(true);
 
+    // save shader-program binary
+    this->__SaveBinary();
+
     // disable shader objects
     m_apShader.clear();
 
@@ -372,6 +405,8 @@ coreStatus coreProgram::Unload()
     m_sPath       = "";
     m_iIdentifier = 0u;
     m_eStatus     = CORE_PROGRAM_DEFINED;
+    m_iHash       = 0u;
+    m_bBinary     = false;
 
     // clear uniform locations and cache
     m_aiUniform.clear();
@@ -502,6 +537,213 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mM
 
 
 // ****************************************************************
+/* load shader-cache from file */
+coreBool coreProgram::LoadShaderCache()
+{
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return false;
+
+    ASSERT(s_aBinaryMap.empty() && !s_iBinarySize)
+
+    // load and decompress file
+    coreFile oFile(coreData::UserFolderShared(CORE_SHADER_CACHE_NAME));
+    oFile.Decompress();
+
+    // get file data
+    const coreByte* pData   = oFile.GetData();
+    const coreByte* pCursor = pData;
+    if(!pData)
+    {
+        Core::Log->Warning("Shader cache could not be loaded");
+        return false;
+    }
+
+    coreUint32 iMagic;
+    coreUint32 iVersion;
+    coreUint32 iTotalSize;
+    coreUint32 iCheck;
+    coreUint16 iNum;
+
+    // read header values
+    std::memcpy(&iMagic,     pCursor, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+    std::memcpy(&iVersion,   pCursor, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+    std::memcpy(&iTotalSize, pCursor, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+    std::memcpy(&iCheck,     pCursor, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+    std::memcpy(&iNum,       pCursor, sizeof(coreUint16)); pCursor += sizeof(coreUint16);
+
+    // check header values
+    if((iMagic != CORE_SHADER_CACHE_MAGIC) || (iVersion != CORE_SHADER_CACHE_VERSION) || (iTotalSize != oFile.GetSize()) || (iCheck != coreProgram::__GetShaderCacheCheck()))
+    {
+        Core::Log->Warning("Shader cache is not valid");
+        return false;
+    }
+
+    s_BinaryLock.Lock();
+    {
+        for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
+        {
+            coreUint64 iKey;
+            coreBinary oEntry;
+
+            // read entry values
+            std::memcpy(&iKey,           pCursor, sizeof(coreUint64)); pCursor += sizeof(coreUint64);
+            std::memcpy(&oEntry.iSize,   pCursor, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+            std::memcpy(&oEntry.iFormat, pCursor, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+
+            // read shader-program binary data
+            oEntry.pData = NULL; DYNAMIC_RESIZE(oEntry.pData, oEntry.iSize)
+            std::memcpy(oEntry.pData, pCursor, oEntry.iSize); pCursor += oEntry.iSize;
+
+            // add entry to map
+            s_aBinaryMap.emplace_bs(iKey, oEntry);
+            s_iBinarySize += oEntry.iSize;
+        }
+    }
+    s_BinaryLock.Unlock();
+
+    ASSERT(iTotalSize == coreUint32(pCursor - pData))
+
+    Core::Log->Info("Shader cache loaded (%u entries, %.1f KB)", iNum, I_TO_F(s_iBinarySize) / 1024.0f);
+    return true;
+}
+
+
+// ****************************************************************
+/* save shader-cache to file */
+void coreProgram::SaveShaderCache()
+{
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return;
+
+    s_BinaryLock.Lock();
+    {
+        const coreUint32 iTotalSize = 4u * sizeof(coreUint32) + sizeof(coreUint16) + s_aBinaryMap.size() * (sizeof(coreUint64) + 2u * sizeof(coreUint32)) + s_iBinarySize;
+
+        coreByte* pData   = new coreByte[iTotalSize];
+        coreByte* pCursor = pData;
+
+        // prepare header values
+        const coreUint32 iMagic   = CORE_SHADER_CACHE_MAGIC;
+        const coreUint32 iVersion = CORE_SHADER_CACHE_VERSION;
+        const coreUint32 iCheck   = coreProgram::__GetShaderCacheCheck();
+        const coreUint16 iNum     = s_aBinaryMap.size();
+
+        // write header values
+        std::memcpy(pCursor, &iMagic,     sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+        std::memcpy(pCursor, &iVersion,   sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+        std::memcpy(pCursor, &iTotalSize, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+        std::memcpy(pCursor, &iCheck,     sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+        std::memcpy(pCursor, &iNum,       sizeof(coreUint16)); pCursor += sizeof(coreUint16);
+
+        // loop through all shader-program binaries
+        FOR_EACH(it, s_aBinaryMap)
+        {
+            const coreUint64 iKey = (*s_aBinaryMap.get_key(it));
+
+            // write entry values
+            std::memcpy(pCursor, &iKey,        sizeof(coreUint64)); pCursor += sizeof(coreUint64);
+            std::memcpy(pCursor, &it->iSize,   sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+            std::memcpy(pCursor, &it->iFormat, sizeof(coreUint32)); pCursor += sizeof(coreUint32);
+            std::memcpy(pCursor, it->pData,    it->iSize);          pCursor += it->iSize;
+        }
+
+        // unlock before writing to disk
+        s_BinaryLock.Unlock();
+
+        ASSERT(iTotalSize == coreUint32(pCursor - pData))
+
+        // compress and save file
+        coreFile oFile(coreData::UserFolderShared(CORE_SHADER_CACHE_NAME), pData, iTotalSize);
+        oFile.Compress();
+        oFile.Save();
+
+        Core::Log->Info("Shader cache saved (%u entries, %.1f KB)", iNum, I_TO_F(s_iBinarySize) / 1024.0f);
+    }
+}
+
+
+// ****************************************************************
+/* remove all entries from the shader-cache */
+void coreProgram::ClearShaderCache()
+{
+    coreSpinLocker oLocker(&s_BinaryLock);
+
+    // delete entries
+    FOR_EACH(it, s_aBinaryMap)
+        DYNAMIC_DELETE(it->pData)
+
+    // clear memory
+    s_aBinaryMap.clear();
+
+    // reset properties
+    s_iBinarySize = 0u;
+}
+
+
+// ****************************************************************
+/* load shader-program binary */
+coreBool coreProgram::__LoadBinary()
+{
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return false;
+
+    ASSERT(m_iIdentifier && m_iHash)
+
+    // indicate the intention to retrieve the shader-program binary
+    glProgramParameteri(m_iIdentifier, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, 1);
+
+    coreSpinLocker oLocker(&s_BinaryLock);
+
+    if(s_aBinaryMap.count_bs(m_iHash))
+    {
+        GLint iStatus;
+
+        // load existing shader-program binary
+        const coreBinary& oEntry = s_aBinaryMap.at_bs(m_iHash);
+        glProgramBinary(m_iIdentifier, oEntry.iFormat, oEntry.pData, oEntry.iSize);
+
+        // check for link status (immediately)
+        glGetProgramiv(m_iIdentifier, GL_LINK_STATUS, &iStatus);
+        if(iStatus) return true;
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* save shader-program binary */
+void coreProgram::__SaveBinary()const
+{
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return;
+
+    ASSERT(m_iIdentifier && m_iHash)
+
+    GLint  iSize;
+    GLenum iFormat;
+
+    // get length of shader-program binary
+    glGetProgramiv(m_iIdentifier, GL_PROGRAM_BINARY_LENGTH, &iSize);
+
+    if(iSize)
+    {
+        coreSpinLocker oLocker(&s_BinaryLock);
+
+        coreBinary& oEntry = s_aBinaryMap.bs(m_iHash);
+
+        // retrieve shader-program binary
+        if(oEntry.iSize < coreUint32(iSize)) DYNAMIC_RESIZE(oEntry.pData, iSize)
+        glGetProgramBinary(m_iIdentifier, iSize, &iSize, &iFormat, oEntry.pData);
+
+        // adjust total size
+        s_iBinarySize -= oEntry.iSize;
+        s_iBinarySize += iSize;
+
+        // set properties
+        oEntry.iSize   = iSize;
+        oEntry.iFormat = iFormat;
+    }
+}
+
+
+// ****************************************************************
 /* write info-log to log file */
 void coreProgram::__WriteLog()const
 {
@@ -606,4 +848,12 @@ void coreProgram::__WriteInterface()const
         }
     }
     Core::Log->ListEnd();
+}
+
+
+// ****************************************************************
+/* calculate shader-cache verification value */
+coreUint32 coreProgram::__GetShaderCacheCheck()
+{
+    return coreHashXXH32(PRINT("%s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION)));
 }

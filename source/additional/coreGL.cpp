@@ -162,6 +162,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_enhanced_layouts,                 GLEW_VERSION_4_4)                                       // shader extension
         __IMPROVE(GLEW_ARB_framebuffer_sRGB,                 GLEW_VERSION_3_0 || GLEW_EXT_framebuffer_sRGB)
         __IMPROVE(GLEW_ARB_geometry_shader4,                 GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)
+        __IMPROVE(GLEW_ARB_get_program_binary,               GLEW_VERSION_4_1)
         __IMPROVE(GLEW_ARB_gpu_shader5,                      GLEW_VERSION_4_0)                                       // shader extension
         __IMPROVE(GLEW_ARB_half_float_vertex,                GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_instanced_arrays,                 GLEW_VERSION_3_3)

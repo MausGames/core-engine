@@ -22,6 +22,10 @@
 
 // ****************************************************************
 /* shader definitions */
+#define CORE_SHADER_CACHE_NAME                  "shader.cache"           // file name of the shader-cache
+#define CORE_SHADER_CACHE_MAGIC                 (UINT_LITERAL("CSC0"))   // magic number of the shader-cache
+#define CORE_SHADER_CACHE_VERSION               (0x00000001u)            // current file version of the shader-cache
+
 #define CORE_SHADER_BUFFER_TRANSFORM            "b_Transform"
 #define CORE_SHADER_BUFFER_AMBIENT              "b_Ambient"
 #define CORE_SHADER_BUFFER_TRANSFORM_NUM        (0u)
@@ -96,6 +100,8 @@ private:
     GLuint m_iIdentifier;                    // shader identifier
     GLenum m_iType;                          // shader type (e.g. GL_VERTEX_SHADER)
 
+    coreUint64 m_iHash;                      // shader code hash-value
+
     coreString m_sCustomCode;                // custom shader code added to the beginning of the shader
 
     static coreString   s_asGlobalCode[2];   // global shader code (0 = version | 1 = global shader file)
@@ -116,9 +122,10 @@ public:
     inline void SetCustomCode(const coreChar* pcCustomCode) {m_sCustomCode = pcCustomCode;}
 
     /* get object properties */
-    inline const GLuint&   GetIdentifier()const {return m_iIdentifier;}
-    inline const GLenum&   GetType      ()const {return m_iType;}
-    inline const coreChar* GetCustomCode()const {return m_sCustomCode.c_str();}
+    inline const GLuint&     GetIdentifier()const {return m_iIdentifier;}
+    inline const GLenum&     GetType      ()const {return m_iType;}
+    inline const coreUint64& GetHash      ()const {return m_iHash;}
+    inline const coreChar*   GetCustomCode()const {return m_sCustomCode.c_str();}
 
 
 private:
@@ -140,6 +147,19 @@ using coreShaderPtr = coreResourcePtr<coreShader>;
 class coreProgram final : public coreResource
 {
 private:
+    /* shader-program binary structure */
+    struct coreBinary final
+    {
+        coreByte*  pData;     // shader-program binary data
+        coreUint32 iSize;     // size of the data (in bytes)
+        GLenum     iFormat;   // internal data format
+    };
+
+    /* internal types */
+    using coreBinaryMap = coreMap<coreUint64, coreBinary>;
+
+
+private:
     GLuint m_iIdentifier;                             // shader-program identifier
 
     coreList<coreShaderPtr>       m_apShader;         // attached shader objects
@@ -150,9 +170,16 @@ private:
     coreMapStrFull<coreInt8>       m_aiAttribute;     // attribute locations
     coreMap<coreInt8, coreVector4> m_avCache;         // cached uniform values
 
+    coreUint64 m_iHash;                               // combined shader code hash-value
+    coreBool   m_bBinary;                             // shader-program binary loaded
+
     coreSync m_Sync;                                  // sync object for asynchronous shader-program loading
 
     static coreProgram* s_pCurrent;                   // currently active shader-program
+
+    static coreBinaryMap s_aBinaryMap;                // shader-program binary map (shader-cache)
+    static coreUint32    s_iBinarySize;               // total size of all data in the map (in bytes)
+    static coreSpinLock  s_BinaryLock;                // spinlock to prevent concurrent map access
 
 
 public:
@@ -204,11 +231,23 @@ public:
     /* get currently active shader-program */
     static inline coreProgram* GetCurrent() {return s_pCurrent;}
 
+    /* load and save shader-cache */
+    static coreBool LoadShaderCache();
+    static void     SaveShaderCache();
+    static void     ClearShaderCache();
+
 
 private:
+    /* load and save shader-program binary */
+    coreBool __LoadBinary();
+    void     __SaveBinary()const;
+
     /* write debug information to log file */
     void __WriteLog      ()const;
     void __WriteInterface()const;
+
+    /* calculate shader-cache verification value */
+    static coreUint32 __GetShaderCacheCheck();
 };
 
 

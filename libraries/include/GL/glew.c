@@ -713,6 +713,10 @@ PFNGLFRAMEBUFFERTEXTUREFACEARBPROC __glewFramebufferTextureFaceARB = NULL;
 PFNGLFRAMEBUFFERTEXTURELAYERARBPROC __glewFramebufferTextureLayerARB = NULL;
 PFNGLPROGRAMPARAMETERIARBPROC __glewProgramParameteriARB = NULL;
 
+PFNGLGETPROGRAMBINARYPROC __glewGetProgramBinary = NULL;
+PFNGLPROGRAMBINARYPROC __glewProgramBinary = NULL;
+PFNGLPROGRAMPARAMETERIPROC __glewProgramParameteri = NULL;
+
 PFNGLCOLORSUBTABLEPROC __glewColorSubTable = NULL;
 PFNGLCOLORTABLEPROC __glewColorTable = NULL;
 PFNGLCOLORTABLEPARAMETERFVPROC __glewColorTableParameterfv = NULL;
@@ -1258,6 +1262,7 @@ GLboolean __GLEW_ARB_enhanced_layouts = GL_FALSE;
 GLboolean __GLEW_ARB_framebuffer_object = GL_FALSE;
 GLboolean __GLEW_ARB_framebuffer_sRGB = GL_FALSE;
 GLboolean __GLEW_ARB_geometry_shader4 = GL_FALSE;
+GLboolean __GLEW_ARB_get_program_binary = GL_FALSE;
 GLboolean __GLEW_ARB_gpu_shader5 = GL_FALSE;
 GLboolean __GLEW_ARB_half_float_vertex = GL_FALSE;
 GLboolean __GLEW_ARB_imaging = GL_FALSE;
@@ -1378,6 +1383,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_geometry_shader4
   "GL_ARB_geometry_shader4",
+#endif
+#ifdef GL_ARB_get_program_binary
+  "GL_ARB_get_program_binary",
 #endif
 #ifdef GL_ARB_gpu_shader5
   "GL_ARB_gpu_shader5",
@@ -1678,6 +1686,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_geometry_shader4
   &__GLEW_ARB_geometry_shader4,
 #endif
+#ifdef GL_ARB_get_program_binary
+  &__GLEW_ARB_get_program_binary,
+#endif
 #ifdef GL_ARB_gpu_shader5
   &__GLEW_ARB_gpu_shader5,
 #endif
@@ -1936,6 +1947,7 @@ static GLboolean _glewInit_GL_ARB_direct_state_access (void);
 static GLboolean _glewInit_GL_ARB_draw_elements_base_vertex (void);
 static GLboolean _glewInit_GL_ARB_framebuffer_object (void);
 static GLboolean _glewInit_GL_ARB_geometry_shader4 (void);
+static GLboolean _glewInit_GL_ARB_get_program_binary (void);
 static GLboolean _glewInit_GL_ARB_imaging (void);
 static GLboolean _glewInit_GL_ARB_instanced_arrays (void);
 static GLboolean _glewInit_GL_ARB_invalidate_subdata (void);
@@ -2699,6 +2711,21 @@ static GLboolean _glewInit_GL_ARB_geometry_shader4 (void)
 }
 
 #endif /* GL_ARB_geometry_shader4 */
+
+#ifdef GL_ARB_get_program_binary
+
+static GLboolean _glewInit_GL_ARB_get_program_binary (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC)glewGetProcAddress((const GLubyte*)"glGetProgramBinary")) == NULL) || r;
+  r = ((glProgramBinary = (PFNGLPROGRAMBINARYPROC)glewGetProcAddress((const GLubyte*)"glProgramBinary")) == NULL) || r;
+  r = ((glProgramParameteri = (PFNGLPROGRAMPARAMETERIPROC)glewGetProcAddress((const GLubyte*)"glProgramParameteri")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_ARB_get_program_binary */
 
 #ifdef GL_ARB_imaging
 
@@ -3885,6 +3912,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_ARB_geometry_shader4
   if (glewExperimental || GLEW_ARB_geometry_shader4) GLEW_ARB_geometry_shader4 = !_glewInit_GL_ARB_geometry_shader4();
 #endif /* GL_ARB_geometry_shader4 */
+#ifdef GL_ARB_get_program_binary
+  if (glewExperimental || GLEW_ARB_get_program_binary) GLEW_ARB_get_program_binary = !_glewInit_GL_ARB_get_program_binary();
+#endif /* GL_ARB_get_program_binary */
 #ifdef GL_ARB_imaging
   if (glewExperimental || GLEW_ARB_imaging) GLEW_ARB_imaging = !_glewInit_GL_ARB_imaging();
 #endif /* GL_ARB_imaging */
@@ -4410,6 +4440,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"geometry_shader4", 16))
         {
           ret = GLEW_ARB_geometry_shader4;
+          continue;
+        }
+#endif
+#ifdef GL_ARB_get_program_binary
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"get_program_binary", 18))
+        {
+          ret = GLEW_ARB_get_program_binary;
           continue;
         }
 #endif

@@ -191,6 +191,10 @@ public:
     static constexpr coreUint32 ReverseBytes32(const coreUint32 iInput);
     static constexpr coreUint64 ReverseBytes64(const coreUint64 iInput);
 
+    /* hash operations */
+    static constexpr coreUint32 HashCombine32(const coreUint32 a, const coreUint32 b);
+    static constexpr coreUint64 HashCombine64(const coreUint64 a, const coreUint64 b);
+
     /* converting operations */
     static constexpr coreUint32 FloatToBits(const coreFloat  fInput);
     static constexpr coreFloat  BitsToFloat(const coreUint32 iInput);
@@ -681,6 +685,38 @@ constexpr coreUint64 coreMath::ReverseBytes64(const coreUint64 iInput)
     iOutput = ((iOutput >> 16u) & 0x0000FFFF0000FFFFu) | ((iOutput << 16u) & 0xFFFF0000FFFF0000u);
     iOutput = ((iOutput >>  8u) & 0x00FF00FF00FF00FFu) | ((iOutput <<  8u) & 0xFF00FF00FF00FF00u);
     return iOutput;
+}
+
+
+// ****************************************************************
+/* combine two 32-bit hash-values */
+constexpr coreUint32 coreMath::HashCombine32(const coreUint32 a, const coreUint32 b)
+{
+    coreUint32 x = a + b + 0x9E3779B9u;
+
+    x ^= x >> 16u;
+    x *= 0x21F0AAADu;
+    x ^= x >> 15u;
+    x *= 0x735A2D97u;
+    x ^= x >> 15u;
+
+    return x;
+}
+
+
+// ****************************************************************
+/* combine two 64-bit hash-values */
+constexpr coreUint64 coreMath::HashCombine64(const coreUint64 a, const coreUint64 b)
+{
+    coreUint64 x = a + b + 0x9E3779B97F4A7C15u;
+
+    x ^= x >> 32u;
+    x *= 0x0E9846AF9B1A615Du;
+    x ^= x >> 32u;
+    x *= 0x0E9846AF9B1A615Du;
+    x ^= x >> 28u;
+
+    return x;
 }
 
 

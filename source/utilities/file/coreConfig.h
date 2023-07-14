@@ -30,6 +30,7 @@
 #define CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY  "Graphics", "TextureAnisotropy",  (8)
 #define CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR   "Graphics", "TextureTrilinear",   (true)
 #define CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION "Graphics", "TextureCompression", (true)
+#define CORE_CONFIG_GRAPHICS_SHADERCACHE        "Graphics", "ShaderCache",        (true)
 #define CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS  "Graphics", "DisableExtensions",  ("")
 
 #define CORE_CONFIG_AUDIO_MODE                  "Audio",    "Mode",               (0)

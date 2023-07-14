@@ -28,6 +28,7 @@
 #define CORE_GL_ARB_copy_image                       false
 #define CORE_GL_ARB_depth_buffer_float               __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_direct_state_access              false
+#define CORE_GL_ARB_get_program_binary               false
 #define CORE_GL_ARB_multi_bind                       false
 #define CORE_GL_ARB_multisample                      false
 #define CORE_GL_ARB_pipeline_statistics_query        false
