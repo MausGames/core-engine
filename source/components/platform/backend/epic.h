@@ -257,14 +257,37 @@ inline coreBool coreBackendEpic::Init()
     nEOS_Logging_SetCallback(LoggingCallback);
     nEOS_Logging_SetLogLevel(EOS_ELogCategory::EOS_LC_ALL_CATEGORIES, DEFINED(_CORE_DEBUG_) ? EOS_ELogLevel::EOS_LOG_Verbose : EOS_ELogLevel::EOS_LOG_Warning);
 
+    // select sandbox ID and deployment ID
+    const coreChar* pcSandboxID    = coreData::GetCommandLine("epicsandboxid");
+    const coreChar* pcDeploymentID = NULL;
+    if(pcSandboxID)
+    {
+        // search requested IDs
+        for(coreUintW i = 0u; i < ARRAY_SIZE(CoreApp::Settings::Platform::EpicSandboxID); ++i)
+        {
+            if(!std::strcmp(pcSandboxID, CoreApp::Settings::Platform::EpicSandboxID[i]))
+            {
+                pcDeploymentID = CoreApp::Settings::Platform::EpicDeploymentID[i];
+                break;
+            }
+        }
+    }
+    if(!pcDeploymentID)
+    {
+        // use default IDs
+        pcSandboxID    = CoreApp::Settings::Platform::EpicSandboxID   [DEFINED(_CORE_DEBUG_) ? 0u : 2u];
+        pcDeploymentID = CoreApp::Settings::Platform::EpicDeploymentID[DEFINED(_CORE_DEBUG_) ? 0u : 2u];
+    }
+    STATIC_ASSERT((ARRAY_SIZE(CoreApp::Settings::Platform::EpicSandboxID) == 3u) && (ARRAY_SIZE(CoreApp::Settings::Platform::EpicDeploymentID) == 3u))
+
     // set platform options
     EOS_Platform_Options oPlatformOptions = {};
     oPlatformOptions.ApiVersion                     = EOS_PLATFORM_OPTIONS_API_LATEST;
     oPlatformOptions.ProductId                      = CoreApp::Settings::Platform::EpicProductID;
-    oPlatformOptions.SandboxId                      = CoreApp::Settings::Platform::EpicSandboxID;
+    oPlatformOptions.SandboxId                      = pcSandboxID;
     oPlatformOptions.ClientCredentials.ClientId     = CoreApp::Settings::Platform::EpicClientID;
     oPlatformOptions.ClientCredentials.ClientSecret = CoreApp::Settings::Platform::EpicClientSecret;
-    oPlatformOptions.DeploymentId                   = CoreApp::Settings::Platform::EpicDeploymentID;
+    oPlatformOptions.DeploymentId                   = pcDeploymentID;
     oPlatformOptions.Flags                          = EOS_PF_WINDOWS_ENABLE_OVERLAY_OPENGL;
     oPlatformOptions.TickBudgetInMilliseconds       = 5u;
 

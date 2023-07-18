@@ -664,6 +664,7 @@ public:
     struct INTERFACE Settings final
     {
         static const coreChar* const Name;             // project name
+        static const coreChar* const Version;          // version string
         static const coreChar* const IconPath;         // window icon file path
         static const coreChar* const CursorPath;       // mouse cursor file path
         static const coreBool        UserManagement;   // enable user-management (OS and platform)
@@ -675,21 +676,18 @@ public:
             static const coreBool  AlphaChannel;   // enable alpha channel (RGBA8)
             static const coreBool  DoubleBuffer;   // enable double buffering
             static const coreBool  StereoRender;   // enable stereo rendering
-        }
-        Graphics;
+        };
 
         struct INTERFACE Platform final
         {
-            static const coreUint32      SteamAppID;         // Steam app ID       (0 = ignore)
-            static const coreChar* const EpicProductID;      // Epic product ID    (NULL = ignore)
-            static const coreChar* const EpicSandboxID;      // Epic sandbox ID    (for store-related information)
-            static const coreChar* const EpicDeploymentID;   // Epic deployment ID (for user-related information)
-            static const coreChar* const EpicClientID;       // Epic client ID
-            static const coreChar* const EpicClientSecret;   // Epic client secret
-        }
-        Platform;
-    }
-    Settings;
+            static const coreUint32      SteamAppID;            // Steam app ID       (0 = ignore)
+            static const coreChar* const EpicProductID;         // Epic product ID    (NULL = ignore)
+            static const coreChar* const EpicSandboxID   [3];   // Epic sandbox ID    (for store-related information) (dev, stage, live)
+            static const coreChar* const EpicDeploymentID[3];   // Epic deployment ID (for user-related information)
+            static const coreChar* const EpicClientID;          // Epic client ID
+            static const coreChar* const EpicClientSecret;      // Epic client secret
+        };
+    };
 
 
 private:
