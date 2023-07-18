@@ -326,8 +326,32 @@ const coreChar* coreData::SystemOsName()
     default:   pcSubName = "-";                              break;
     }
 
+    // check for Wine compatibility layer
+    const coreChar* pcWineName = "native";
+    {
+        // open system library
+        void* pLibrary = coreData::OpenLibrary("ntdll.dll");
+        if(pLibrary)
+        {
+            using coreGetString = const coreChar* (__cdecl *)();
+
+            // load Wine specific functions
+            const coreGetString nWineGetVersion = r_cast<coreGetString>(coreData::GetAddress(pLibrary, "wine_get_version"));
+            const coreGetString nWineGetBuildId = r_cast<coreGetString>(coreData::GetAddress(pLibrary, "wine_get_build_id"));
+
+            // get Wine version and build ID
+            if(nWineGetVersion && nWineGetBuildId)
+            {
+                pcWineName = PRINT("Wine %s (%s)", nWineGetVersion(), nWineGetBuildId());
+            }
+
+            // close system library
+            coreData::CloseLibrary(pLibrary);
+        }
+    }
+
     // return full operating system name
-    return PRINT("Windows %s (%u.%u.%u.%u)", pcSubName, iMajor, iMinor, iBuild, iRevision);
+    return PRINT("Windows %s (%u.%u.%u.%u, %s)", pcSubName, iMajor, iMinor, iBuild, iRevision, pcWineName);
 
 #elif defined(_CORE_LINUX_)
 
