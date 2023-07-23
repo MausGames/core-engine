@@ -42,7 +42,9 @@ CoreAudio::CoreAudio()noexcept
     }
 
     // include additional config file
-    coreData::SetEnvironment("ALSOFT_CONF", coreData::UserFolderPrivate("config_openal.ini"));
+    const coreChar* pcUserFile = coreData::UserFolderPrivate("config_openal.ini");
+    const coreChar* pcDataFile = "data/other/config_openal.ini";
+    coreData::SetEnvironment("ALSOFT_CONF", coreData::FileExists(pcUserFile) ? pcUserFile : pcDataFile);
 
     // open audio device and create OpenAL context
     m_pDevice  = alcOpenDevice(NULL);
