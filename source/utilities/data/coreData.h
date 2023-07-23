@@ -135,7 +135,7 @@ public:
     static                 void* HeapCreate (const coreBool bThreadSafe);
     static                 void  HeapDestroy(void* pHeap);
     static RETURN_RESTRICT void* HeapMalloc (void* pHeap, const coreUintW iSize);
-    static RETURN_RESTRICT void* HeapCalloc (void* pHeap, const coreUintW iSize);
+    static RETURN_RESTRICT void* HeapCalloc (void* pHeap, const coreUintW iNum, const coreUintW iSize);
     static                 void  HeapRealloc(void* pHeap, void** OUTPUT ppPointer, const coreUintW iSize);
     static                 void  HeapFree   (void* pHeap, void** OUTPUT ppPointer);
 

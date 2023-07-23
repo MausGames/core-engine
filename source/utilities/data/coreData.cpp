@@ -1014,17 +1014,17 @@ RETURN_RESTRICT void* coreData::HeapMalloc(void* pHeap, const coreUintW iSize)
 
 // ****************************************************************
 /* allocate zero-initialized memory from private heap */
-RETURN_RESTRICT void* coreData::HeapCalloc(void* pHeap, const coreUintW iSize)
+RETURN_RESTRICT void* coreData::HeapCalloc(void* pHeap, const coreUintW iNum, const coreUintW iSize)
 {
     ASSERT(pHeap && iSize)
 
 #if defined(_CORE_WINDOWS_)
 
-    return ::HeapAlloc(pHeap, HEAP_ZERO_MEMORY, iSize);
+    return ::HeapAlloc(pHeap, HEAP_ZERO_MEMORY, iNum * iSize);
 
 #else
 
-    return std::calloc(iSize, 1u);
+    return std::calloc(iNum, iSize);
 
 #endif
 }

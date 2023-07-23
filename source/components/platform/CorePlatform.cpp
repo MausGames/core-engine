@@ -21,7 +21,7 @@ coreSet<coreBackend*> coreBackend::s_apBackendSet = {};
     #include "backend/epic.h"
 #endif
 
-static class coreBackendDummy final : public coreBackend {inline const coreChar* GetIdentifier()const final {return "Dummy";}} s_BackendDummy;
+static class coreBackendDefault final : public coreBackend {inline const coreChar* GetIdentifier()const final {return "Default";}} s_BackendDefault;
 
 
 // ****************************************************************

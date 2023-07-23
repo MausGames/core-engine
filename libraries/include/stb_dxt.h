@@ -466,11 +466,20 @@ static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned cha
 
    refinecount = (mode & STB_DXT_HIGHQUAL) ? 2 : 1;
 
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-   const unsigned int testmask = 0xFFFFFF00;
+#if defined(_M_X64) || defined(__x86_64__) || defined(_M_ARM64) || defined(__aarch64__)
+
+   const unsigned long long testmask = 0x00FFFFFF00FFFFFF;
+
+   // check if block is constant
+   for (i=1;i<8;i++)
+      if ((((unsigned long long *) block)[i] & testmask) != (((unsigned long long *) block)[0] & testmask))
+         break;
+
+   if(i == 8) { // constant color
+
 #else
+
    const unsigned int testmask = 0x00FFFFFF;
-#endif
 
    // check if block is constant
    for (i=1;i<16;i++)
@@ -478,6 +487,9 @@ static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned cha
          break;
 
    if(i == 16) { // constant color
+
+#endif
+
       int r = block[0], g = block[1], b = block[2];
       mask  = 0xaaaaaaaa;
       max16 = (stb__OMatch5[r][0]<<11) | (stb__OMatch6[g][0]<<5) | stb__OMatch5[b][0];
