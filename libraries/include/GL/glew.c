@@ -1934,6 +1934,10 @@ static GLboolean _glewInit_GL_VERSION_3_1 (void);
 static GLboolean _glewInit_GL_VERSION_3_2 (void);
 static GLboolean _glewInit_GL_VERSION_3_3 (void);
 static GLboolean _glewInit_GL_VERSION_4_0 (void);
+static GLboolean _glewInit_GL_VERSION_4_1 (void);
+static GLboolean _glewInit_GL_VERSION_4_2 (void);
+static GLboolean _glewInit_GL_VERSION_4_3 (void);
+static GLboolean _glewInit_GL_VERSION_4_4 (void);
 static GLboolean _glewInit_GL_VERSION_4_5 (void);
 static GLboolean _glewInit_GL_VERSION_4_6 (void);
 static GLboolean _glewInit_GL_AMD_framebuffer_multisample_advanced (void);
@@ -2052,6 +2056,9 @@ static GLboolean _glewInit_GL_VERSION_1_3 (void)
   r = ((glMultiTexCoord4s = (PFNGLMULTITEXCOORD4SPROC)glewGetProcAddress((const GLubyte*)"glMultiTexCoord4s")) == NULL) || r;
   r = ((glMultiTexCoord4sv = (PFNGLMULTITEXCOORD4SVPROC)glewGetProcAddress((const GLubyte*)"glMultiTexCoord4sv")) == NULL) || r;
   r = ((glSampleCoverage = (PFNGLSAMPLECOVERAGEPROC)glewGetProcAddress((const GLubyte*)"glSampleCoverage")) == NULL) || r;
+
+  // additional
+  _glewInit_GL_ARB_multisample();
 
   return r;
 }
@@ -2337,6 +2344,12 @@ static GLboolean _glewInit_GL_VERSION_3_0 (void)
   r = ((glVertexAttribI4usv = (PFNGLVERTEXATTRIBI4USVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribI4usv")) == NULL) || r;
   r = ((glVertexAttribIPointer = (PFNGLVERTEXATTRIBIPOINTERPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribIPointer")) == NULL) || r;
 
+  // additional
+  _glewInit_GL_EXT_framebuffer_blit();
+  _glewInit_GL_EXT_framebuffer_multisample();
+  _glewInit_GL_EXT_framebuffer_object();
+  _glewInit_GL_EXT_gpu_shader4();
+
   return r;
 }
 
@@ -2376,6 +2389,11 @@ static GLboolean _glewInit_GL_VERSION_3_2 (void)
   r = ((glGetBufferParameteri64v = (PFNGLGETBUFFERPARAMETERI64VPROC)glewGetProcAddress((const GLubyte*)"glGetBufferParameteri64v")) == NULL) || r;
   r = ((glGetInteger64i_v = (PFNGLGETINTEGER64I_VPROC)glewGetProcAddress((const GLubyte*)"glGetInteger64i_v")) == NULL) || r;
 
+  // additional
+  _glewInit_GL_ARB_geometry_shader4();
+  _glewInit_GL_ARB_timer_query();
+  _glewInit_GL_EXT_geometry_shader4();
+
   return r;
 }
 
@@ -2388,6 +2406,10 @@ static GLboolean _glewInit_GL_VERSION_3_3 (void)
   GLboolean r = GL_FALSE;
 
   r = ((glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribDivisor")) == NULL) || r;
+
+  // additional
+  _glewInit_GL_ARB_instanced_arrays();
+  _glewInit_GL_ARB_vertex_type_2_10_10_10_rev();
 
   return r;
 }
@@ -2406,10 +2428,82 @@ static GLboolean _glewInit_GL_VERSION_4_0 (void)
   r = ((glBlendFunci = (PFNGLBLENDFUNCIPROC)glewGetProcAddress((const GLubyte*)"glBlendFunci")) == NULL) || r;
   r = ((glMinSampleShading = (PFNGLMINSAMPLESHADINGPROC)glewGetProcAddress((const GLubyte*)"glMinSampleShading")) == NULL) || r;
 
+  // additional
+  _glewInit_GL_ARB_sample_shading();
+  _glewInit_GL_ARB_tessellation_shader();
+
   return r;
 }
 
 #endif /* GL_VERSION_4_0 */
+
+#ifdef GL_VERSION_4_1
+
+static GLboolean _glewInit_GL_VERSION_4_1 (void)
+{
+  GLboolean r = GL_FALSE;
+
+  // additional
+  _glewInit_GL_ARB_get_program_binary();
+
+  return r;
+}
+
+#endif /* GL_VERSION_4_1 */
+
+#ifdef GL_VERSION_4_2
+
+static GLboolean _glewInit_GL_VERSION_4_2 (void)
+{
+  GLboolean r = GL_FALSE;
+
+  // additional
+  _glewInit_GL_ARB_shader_image_load_store();
+  _glewInit_GL_ARB_texture_storage();
+  _glewInit_GL_EXT_shader_image_load_store();
+  _glewInit_GL_EXT_texture_storage();
+
+  return r;
+}
+
+#endif /* GL_VERSION_4_2 */
+
+#ifdef GL_VERSION_4_3
+
+static GLboolean _glewInit_GL_VERSION_4_3 (void)
+{
+  GLboolean r = GL_FALSE;
+
+  // additional
+  _glewInit_GL_ARB_clear_buffer_object();
+  _glewInit_GL_ARB_compute_shader();
+  _glewInit_GL_ARB_copy_image();
+  _glewInit_GL_ARB_invalidate_subdata();
+  _glewInit_GL_ARB_program_interface_query();
+  _glewInit_GL_ARB_vertex_attrib_binding();
+  _glewInit_GL_KHR_debug();
+  _glewInit_GL_NV_copy_image();
+
+  return r;
+}
+
+#endif /* GL_VERSION_4_3 */
+
+#ifdef GL_VERSION_4_4
+
+static GLboolean _glewInit_GL_VERSION_4_4 (void)
+{
+  GLboolean r = GL_FALSE;
+
+  // additional
+  _glewInit_GL_ARB_buffer_storage();
+  _glewInit_GL_ARB_clear_texture();
+  _glewInit_GL_ARB_multi_bind();
+
+  return r;
+}
+
+#endif /* GL_VERSION_4_4 */
 
 #ifdef GL_VERSION_4_5
 
@@ -2421,6 +2515,9 @@ static GLboolean _glewInit_GL_VERSION_4_5 (void)
   r = ((glGetnCompressedTexImage = (PFNGLGETNCOMPRESSEDTEXIMAGEPROC)glewGetProcAddress((const GLubyte*)"glGetnCompressedTexImage")) == NULL) || r;
   r = ((glGetnTexImage = (PFNGLGETNTEXIMAGEPROC)glewGetProcAddress((const GLubyte*)"glGetnTexImage")) == NULL) || r;
   r = ((glGetnUniformdv = (PFNGLGETNUNIFORMDVPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformdv")) == NULL) || r;
+
+  // additional
+  _glewInit_GL_ARB_direct_state_access();
 
   return r;
 }
@@ -3873,6 +3970,18 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_VERSION_4_0
   if (glewExperimental || GLEW_VERSION_4_0) GLEW_VERSION_4_0 = !_glewInit_GL_VERSION_4_0();
 #endif /* GL_VERSION_4_0 */
+#ifdef GL_VERSION_4_1
+  if (glewExperimental || GLEW_VERSION_4_1) GLEW_VERSION_4_1 = !_glewInit_GL_VERSION_4_1();
+#endif /* GL_VERSION_4_1 */
+#ifdef GL_VERSION_4_2
+  if (glewExperimental || GLEW_VERSION_4_2) GLEW_VERSION_4_2 = !_glewInit_GL_VERSION_4_2();
+#endif /* GL_VERSION_4_2 */
+#ifdef GL_VERSION_4_3
+  if (glewExperimental || GLEW_VERSION_4_3) GLEW_VERSION_4_3 = !_glewInit_GL_VERSION_4_3();
+#endif /* GL_VERSION_4_3 */
+#ifdef GL_VERSION_4_4
+  if (glewExperimental || GLEW_VERSION_4_4) GLEW_VERSION_4_4 = !_glewInit_GL_VERSION_4_4();
+#endif /* GL_VERSION_4_4 */
 #ifdef GL_VERSION_4_5
   if (glewExperimental || GLEW_VERSION_4_5) GLEW_VERSION_4_5 = !_glewInit_GL_VERSION_4_5();
 #endif /* GL_VERSION_4_5 */
