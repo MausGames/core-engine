@@ -487,7 +487,7 @@ coreDataBuffer* coreModel::CreateIndexBuffer(const coreUint32 iNumIndices, const
     // detect index type
     switch(iIndexSize)
     {
-    default: ASSERT(false)
+    default: UNREACHABLE
     case 4u: m_iIndexType = GL_UNSIGNED_INT;   break;
     case 2u: m_iIndexType = GL_UNSIGNED_SHORT; break;
     case 1u: m_iIndexType = GL_UNSIGNED_BYTE;  break;

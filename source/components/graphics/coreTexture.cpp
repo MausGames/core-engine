@@ -147,7 +147,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             GLenum iNewFormat = 0u;
             switch(m_Spec.iInternal)
             {
-            default: ASSERT(false)
+            default: UNREACHABLE
             case GL_LUMINANCE8:
             case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_RGTC1;          break;
             case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RG_RGTC2;           break;

@@ -436,6 +436,16 @@
 #endif
 
 #if defined(_CORE_DEBUG_)
+    #define UNREACHABLE             {ASSERT(false)}
+#else
+    #if defined(_CORE_MSVC_)
+        #define UNREACHABLE         {__assume(false);}
+    #else
+        #define UNREACHABLE         {__builtin_unreachable();}
+    #endif
+#endif
+
+#if defined(_CORE_DEBUG_)
     #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT(coreMath::IsAligned(pPointer, iAlign)) return pPointer;}(p, a))
 #else
     #if defined(_CORE_MSVC_)
