@@ -220,7 +220,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
         }
 
         // process all available texture levels
-        for(coreUintW i = 0u, ie = m_iLevels; i < ie; ++i)
+        for(coreUintW i = 0u, ie = LOOP_NONZERO(m_iLevels); i < ie; ++i)
         {
             const coreUint32 iCurWidth  = iWidth  >> i;
             const coreUint32 iCurHeight = iHeight >> i;
@@ -532,15 +532,15 @@ FUNC_NOALIAS void coreTexture::CreateNextLevel(const coreUintW iInWidth, const c
     const coreUintW iInOffset3 = iInOffset1 + iInOffset2;
 
     // loop through all output texels
-    for(coreUintW y = 0u; y < iOutHeight; ++y)
+    for(coreUintW y = 0u; y < LOOP_NONZERO(iOutHeight); ++y)
     {
-        for(coreUintW x = 0u; x < iOutWidth; ++x)
+        for(coreUintW x = 0u; x < LOOP_NONZERO(iOutWidth); ++x)
         {
             // calculate base memory positions
             const coreUintW iInBase  = (x + y*iInWidth)  * iComponents * 2u;
             const coreUintW iOutBase = (x + y*iOutWidth) * iComponents;
 
-            for(coreUintW i = 0u; i < iComponents; ++i)
+            for(coreUintW i = 0u; i < LOOP_NONZERO(iComponents); ++i)
             {
                 // gather all required input values
                 const coreUint16 A = pInput[iInBase + i];
@@ -574,9 +574,9 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
     const coreUintW iOutOffset = 16u * iComponents / stb_compress_dxt_ratio(iComponents);   // size per block
 
     // loop through all input texels
-    for(coreUintW y = 0u; y < iInHeight; y += 4u)
+    for(coreUintW y = 0u; y < LOOP_NONZERO(iInHeight); y += 4u)
     {
-        for(coreUintW x = 0u; x < iInWidth; x += 4u)
+        for(coreUintW x = 0u; x < LOOP_NONZERO(iInWidth); x += 4u)
         {
             alignas(ALIGNMENT_CACHE) coreByte aBlock[64];
 

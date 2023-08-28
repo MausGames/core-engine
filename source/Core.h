@@ -455,6 +455,18 @@
     #endif
 #endif
 
+#if defined(_CORE_DEBUG_)
+    #define LOOP_NONZERO(c)         ([](auto iNum) {ASSERT(iNum > 0) return iNum;}(c))
+#else
+    #if defined(_CORE_MSVC_)
+        #define LOOP_NONZERO(c)     (__assume((c) > 0), (c))
+    #elif defined(_CORE_GCC_)
+        #define LOOP_NONZERO(c)     ([[assume((c) > 0)]], (c))
+    #elif defined(_CORE_CLANG_)
+        #define LOOP_NONZERO(c)     (__builtin_assume((c) > 0), (c))
+    #endif
+#endif
+
 // disable constructor and destructor of the defined class
 #define DISABLE_CONSTRUCTION(c) \
      c() = delete;              \

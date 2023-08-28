@@ -148,7 +148,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
         const coreVector3 vPosition1 = vRelPosition;
         const coreFloat   fRadius1   = pObject1->GetCollisionRadius();
 
-        for(coreUintW m = 0u, me = pVolume2->GetNumClusters(); m < me; ++m)
+        for(coreUintW m = 0u, me = LOOP_NONZERO(pVolume2->GetNumClusters()); m < me; ++m)
         {
             const coreVector3 vPosition2 = vSize2 * pVolume2->GetClusterPosition(m);
             const coreFloat   fRadius2   = pVolume2->GetClusterRadius(m) * vSizeMax2;
@@ -167,7 +167,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     }
 
     // calculate collision between two precise volumes (Moeller97b)
-    for(coreUintW k = 0u, ke = pVolume1->GetNumClusters(); k < ke; ++k)
+    for(coreUintW k = 0u, ke = LOOP_NONZERO(pVolume1->GetNumClusters()); k < ke; ++k)
     {
         const coreVector3 vPosition1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pVolume1->GetClusterPosition(k));
         const coreFloat   fRadius1   = pVolume1->GetClusterRadius(k) * vSizeMax1;
@@ -175,7 +175,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
        if(vPosition1.LengthSq() > POW2(fRadius1 + pObject2->GetCollisionRadius()))   // if cluster 1 is not intersecting sphere 2
             continue;
 
-        for(coreUintW m = 0u, me = pVolume2->GetNumClusters(); m < me; ++m)
+        for(coreUintW m = 0u, me = LOOP_NONZERO(pVolume2->GetNumClusters()); m < me; ++m)
         {
             const coreVector3 vPosition2 = vSize2 * pVolume2->GetClusterPosition(m);
             const coreFloat   fRadius2   = pVolume2->GetClusterRadius(m) * vSizeMax2;
@@ -193,7 +193,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
             const coreUint16*  piClusterIndex1   = pVolume1->GetClusterIndex(k);
             const coreUint16*  piClusterIndex2   = pVolume2->GetClusterIndex(m);
 
-            for(coreUintW i = 0u, ie = pVolume1->GetClusterNumIndices(k); i < ie; i += 3u)
+            for(coreUintW i = 0u, ie = LOOP_NONZERO(pVolume1->GetClusterNumIndices(k)); i < ie; i += 3u)
             {
                 const coreVector3 A1 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i]]);
                 const coreVector3 A2 = vRelPosition + vRelRotation.QuatApply(vSize1 * pvVertexPosition1[piClusterIndex1[i+1u]]);
@@ -204,7 +204,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
                 if(POW2(coreVector3::Dot(A1 - vPosition2, vCross1)) > fRadius2Sq * vCross1.LengthSq())   // if triangle 1 is not intersecting cluster 2
                     continue;
 
-                for(coreUintW j = 0u, je = pVolume2->GetClusterNumIndices(m); j < je; j += 3u)
+                for(coreUintW j = 0u, je = LOOP_NONZERO(pVolume2->GetClusterNumIndices(m)); j < je; j += 3u)
                 {
                     coreVector3 B1 = vSize2 * pvVertexPosition2[piClusterIndex2[j]];
                     coreVector3 B2 = vSize2 * pvVertexPosition2[piClusterIndex2[j+1u]];
@@ -351,7 +351,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
         coreFloat afHitDistance[CORE_OBJECT_RAY_HITCOUNT + 1u] = {};
         coreUint8 iHitCount                                    = 0u;
 
-        for(coreUintW m = 0u, me = pVolume->GetNumClusters(); m < me; ++m)
+        for(coreUintW m = 0u, me = LOOP_NONZERO(pVolume->GetNumClusters()); m < me; ++m)
         {
             const coreVector3 vClusterPos  = vSize * pVolume->GetClusterPosition(m);
             const coreVector3 vClusterDiff = vClusterPos - vRelRayPos;
@@ -371,7 +371,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
             const coreVector3* pvVertexPosition = pVolume->GetVertexPosition();
             const coreUint16*  piClusterIndex   = pVolume->GetClusterIndex(m);
 
-            for(coreUintW j = 0u, je = pVolume->GetClusterNumIndices(m); j < je; j += 3u)
+            for(coreUintW j = 0u, je = LOOP_NONZERO(pVolume->GetClusterNumIndices(m)); j < je; j += 3u)
             {
                 const coreVector3 V1 = vSize * pvVertexPosition[piClusterIndex[j]];
                 const coreVector3 V2 = vSize * pvVertexPosition[piClusterIndex[j+1u]];

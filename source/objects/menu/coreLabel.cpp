@@ -223,12 +223,12 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
         // insert solid pixels
         const coreUintW iOffset = (pOutline->pitch + 1u) * iComponents * iRelOutline;
-        for(coreUintW j = 0u, je = pSolid->h; j < je; ++j)
+        for(coreUintW j = 0u, je = LOOP_NONZERO(pSolid->h); j < je; ++j)
         {
             const coreUintW b = j * pSolid  ->pitch;
             const coreUintW a = j * pOutline->pitch * iComponents + iOffset;
 
-            for(coreUintW i = 0u, ie = pSolid->pitch; i < ie; ++i)
+            for(coreUintW i = 0u, ie = LOOP_NONZERO(pSolid->pitch); i < ie; ++i)
             {
                 const coreUintW iIndex = a + i * iComponents;
 
@@ -238,12 +238,12 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
         }
 
         // insert outlined pixels
-        for(coreUintW j = 0u, je = pOutline->h; j < je; ++j)
+        for(coreUintW j = 0u, je = LOOP_NONZERO(pOutline->h); j < je; ++j)
         {
             const coreUintW b = j * pOutline->pitch;
             const coreUintW a = b * iComponents + 1u;
 
-            for(coreUintW i = 0u, ie = pOutline->pitch; i < ie; ++i)
+            for(coreUintW i = 0u, ie = LOOP_NONZERO(pOutline->pitch); i < ie; ++i)
             {
                 const coreUintW iIndex = a + i * iComponents;
 
