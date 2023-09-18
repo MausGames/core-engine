@@ -22,9 +22,13 @@ extern coreBool GLEW_V2_compatibility;
 
 // ****************************************************************
 /* handle OpenGL ES extensions */
+#define GLEW_ANGLE_texture_usage             false
 #define GLEW_EXT_draw_buffers                true
 #define GLEW_EXT_texture_norm16              true
 #define GLEW_EXT_texture_type_2_10_10_10_rev true
+
+#define GL_TEXTURE_USAGE_ANGLE          0x93A2
+#define GL_FRAMEBUFFER_ATTACHMENT_ANGLE 0x93A3
 
 
 // ****************************************************************

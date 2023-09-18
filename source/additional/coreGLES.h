@@ -14,7 +14,7 @@
 // TODO 3: always disable extensions which are only available in either GLES or WebGL in their specific mode, to improve dead-code removal
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
 // TODO 5: GL_EXT_clear_texture, GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
-// TODO 5: GL_ANGLE_texture_usage (set before allocation, coreTextureMode), GL_AMD_framebuffer_multisample_advanced
+// TODO 5: GL_ANGLE_program_cache_control (just for query, needs the EGL extension), GL_AMD_framebuffer_multisample_advanced
 // TODO 5: GL_EXT_disjoint_timer_query_webgl2
 
 
@@ -28,7 +28,6 @@
 #define CORE_GL_ARB_copy_image                       false
 #define CORE_GL_ARB_depth_buffer_float               __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_direct_state_access              false
-#define CORE_GL_ARB_get_program_binary               false
 #define CORE_GL_ARB_multi_bind                       false
 #define CORE_GL_ARB_multisample                      false
 #define CORE_GL_ARB_pipeline_statistics_query        false
@@ -51,6 +50,14 @@
     #define CORE_GL_ARB_program_interface_query      __CORE_GLES_VAR(bES31)
     #define CORE_GL_ARB_vertex_attrib_binding        __CORE_GLES_VAR(bES31)
 #endif
+
+
+// ****************************************************************
+/* GL_ANGLE_texture_usage */
+#define CORE_GL_ANGLE_texture_usage __CORE_GLES_VAR(GL_ANGLE_texture_usage)
+
+#define GL_TEXTURE_USAGE_ANGLE          0x93A2
+#define GL_FRAMEBUFFER_ATTACHMENT_ANGLE 0x93A3
 
 
 // ****************************************************************
@@ -264,6 +271,20 @@ using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum tar
 
 
 // ****************************************************************
+/* GL_OES_get_program_binary (mapped on GL_ARB_get_program_binary) */
+#define CORE_GL_ARB_get_program_binary __CORE_GLES_VAR(GL_OES_get_program_binary)
+
+#define GL_PROGRAM_BINARY_RETRIEVABLE_HINT 0x8257
+#define GL_PROGRAM_BINARY_LENGTH           0x8741
+
+using PFNGLGETPROGRAMBINARYPROC = void (GL_APIENTRY *) (GLuint program, GLsizei bufSize, GLsizei* length, GLenum *binaryFormat, void* binary);
+using PFNGLPROGRAMBINARYPROC    = void (GL_APIENTRY *) (GLuint program, GLenum binaryFormat, const void* binary, GLsizei length);
+#define glGetProgramBinary __CORE_GLES_FUNC(glGetProgramBinary)
+#define glProgramBinary    __CORE_GLES_FUNC(glProgramBinary)
+#define glProgramParameteri(...)
+
+
+// ****************************************************************
 /* GL_OES_packed_depth_stencil (mapped on GL_EXT_packed_depth_stencil) */
 #define CORE_GL_EXT_packed_depth_stencil __CORE_GLES_VAR(GL_OES_packed_depth_stencil)
 
@@ -379,6 +400,7 @@ struct coreContext final
     coreBool  __bES32;
 
     coreBool __GL_ANDROID_extension_pack_es31a;
+    coreBool __GL_ANGLE_texture_usage;
     coreBool __GL_CORE_texture_float;
     coreBool __GL_EXT_buffer_storage;
     coreBool __GL_EXT_color_buffer_float;
@@ -406,6 +428,7 @@ struct coreContext final
     coreBool __GL_NV_pixel_buffer_object;
     coreBool __GL_OES_depth_texture;
     coreBool __GL_OES_geometry_shader;
+    coreBool __GL_OES_get_program_binary;
     coreBool __GL_OES_packed_depth_stencil;
     coreBool __GL_OES_sample_shading;
     coreBool __GL_OES_tessellation_shader;
@@ -436,6 +459,8 @@ struct coreContext final
     PFNGLMAXSHADERCOMPILERTHREADSPROC       __glMaxShaderCompilerThreads;
     PFNGLBLITFRAMEBUFFERPROC                __glBlitFramebuffer;
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC __glRenderbufferStorageMultisample;
+    PFNGLGETPROGRAMBINARYPROC               __glGetProgramBinary;
+    PFNGLPROGRAMBINARYPROC                  __glProgramBinary;
     PFNGLMINSAMPLESHADINGPROC               __glMinSampleShading;
     PFNGLBINDVERTEXARRAYPROC                __glBindVertexArray;
     PFNGLDELETEVERTEXARRAYSPROC             __glDeleteVertexArrays;

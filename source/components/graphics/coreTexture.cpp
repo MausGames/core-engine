@@ -120,6 +120,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     const coreBool bAnisotropic = CORE_GL_SUPPORT(ARB_texture_filter_anisotropic)                && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bTarget      = CORE_GL_SUPPORT(ANGLE_texture_usage)                           && HAS_FLAG(eMode, CORE_TEXTURE_MODE_TARGET);
     const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS) && !CORE_GL_SUPPORT(ES2_restriction);
     const coreBool bTrilinear   = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR)   && bFilterable;
 
@@ -172,6 +173,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  m_iLevels - 1);
     if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY), 1, Core::Graphics->GetMaxAnisotropy())));
     if(bMipMapOld)   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,        GL_TRUE);
+    if(bTarget)      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_USAGE_ANGLE,    GL_FRAMEBUFFER_ATTACHMENT_ANGLE);
 
     if(CORE_GL_SUPPORT(ARB_texture_storage))
     {

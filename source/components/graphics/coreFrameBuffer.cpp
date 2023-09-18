@@ -93,7 +93,7 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
         if(pTarget->pTexture)
         {
             // create render target texture
-            pTarget->pTexture->Create(iWidth, iHeight, pTarget->oSpec, CORE_TEXTURE_MODE_DEFAULT);
+            pTarget->pTexture->Create(iWidth, iHeight, pTarget->oSpec, CORE_TEXTURE_MODE_TARGET);
 
             // attach render target texture to frame buffer
             glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetIdentifier(), 0);

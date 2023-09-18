@@ -40,6 +40,9 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_ANDROID_extension_pack_es31a, false);
     const coreBool bAndroidPack = g_CoreContext.__GL_ANDROID_extension_pack_es31a;
 
+    // implement GL_ANGLE_texture_usage
+    __CORE_GLES_CHECK(GL_ANGLE_texture_usage, false);
+
     // implement GL_EXT_buffer_storage
     if(__CORE_GLES_CHECK(GL_EXT_buffer_storage, false))
     {
@@ -211,6 +214,13 @@ void __coreInitOpenGLES()
     // implement GL_OES_geometry_shader
     __CORE_GLES_CHECK(GL_OES_geometry_shader, bES32 || bAndroidPack);
     if(g_sExtensions.contains("GL_EXT_geometry_shader ")) g_CoreContext.__GL_OES_geometry_shader = true;
+
+    // implement GL_OES_get_program_binary
+    if(__CORE_GLES_CHECK(GL_OES_get_program_binary, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glGetProgramBinary, OES, false)
+        __CORE_GLES_FUNC_FETCH(glProgramBinary,    OES, false)
+    }
 
     // implement GL_OES_packed_depth_stencil
     __CORE_GLES_CHECK(GL_OES_packed_depth_stencil, bES30);

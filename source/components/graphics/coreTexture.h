@@ -69,7 +69,8 @@ enum coreTextureMode : coreUint8
     CORE_TEXTURE_MODE_COMPRESS = 0x01u,   // perform color texture compression
     CORE_TEXTURE_MODE_FILTER   = 0x02u,   // perform anisotropic filtering and mipmapping
     CORE_TEXTURE_MODE_NEAREST  = 0x04u,   // perform nearest texture sampling (instead of linear)
-    CORE_TEXTURE_MODE_REPEAT   = 0x08u    // perform repeating texture sampling (for coordinates outside 0.0 and 1.0)
+    CORE_TEXTURE_MODE_REPEAT   = 0x08u,   // perform repeating texture sampling (for coordinates outside 0.0 and 1.0)
+    CORE_TEXTURE_MODE_TARGET   = 0x10u    // use texture as render target
 };
 ENABLE_BITWISE(coreTextureMode)
 
