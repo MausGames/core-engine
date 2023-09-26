@@ -150,6 +150,7 @@ Definitions
     #define CORE_GL_gpu_shader4
     #define CORE_GL_sample_shading
     #define CORE_GL_shader_image_load_store
+    #define CORE_GL_shader_io_blocks
     #define CORE_GL_standard_derivatives
 
 Functions

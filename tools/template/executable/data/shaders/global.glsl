@@ -25,9 +25,11 @@
     #extension GL_EXT_demote_to_helper_invocation : enable
     #extension GL_EXT_draw_buffers                : enable
     #extension GL_EXT_shader_group_vote           : enable
+    #extension GL_EXT_shader_io_blocks            : enable
     #extension GL_EXT_shadow_samplers             : enable
     #extension GL_NV_draw_buffers                 : enable
     #extension GL_OES_sample_variables            : enable
+    #extension GL_OES_shader_io_blocks            : enable
     #extension GL_OES_standard_derivatives        : enable
 #else
     #extension GL_AMD_conservative_depth          : enable
@@ -71,6 +73,9 @@
 #endif
 #if defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (CORE_GL_VERSION >= 420) || (CORE_GL_ES_VERSION >= 310)
     #define CORE_GL_shader_image_load_store
+#endif
+#if defined(GL_EXT_shader_io_blocks) || defined(GL_OES_shader_io_blocks) || (CORE_GL_VERSION >= 140) || (CORE_GL_ES_VERSION >= 320)
+    #define CORE_GL_shader_io_blocks
 #endif
 #if defined(GL_OES_standard_derivatives) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300)
     #define CORE_GL_standard_derivatives
@@ -150,7 +155,11 @@
 #endif
 
 // type definitions
-#if !defined(CORE_GL_gpu_shader4)
+#if defined(CORE_GL_gpu_shader4)
+    #if !defined(GL_ES) && (CORE_GL_VERSION < 130)
+        #define uint unsigned int
+    #endif
+#else
     #define uint  int
     #define uvec2 ivec2
     #define uvec3 ivec3
@@ -581,7 +590,7 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     #endif
 
-    #if (CORE_GL_VERSION >= 140) || (CORE_GL_ES_VERSION >= 310)
+    #if defined(CORE_GL_shader_io_blocks)
 
         // shader output
         out b_Varying
@@ -630,14 +639,13 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     void VertexMain();
     void ShaderMain()
     {
-    #if defined(_CORE_TARGET_MACOS_)
+        // compatibility for Intel and macOS
         v_v4VarColor   = vec4(0.0);
-        for(int i = 0; i < CORE_NUM_TEXTURES_2D; ++i) v_av2TexCoord[i] = vec2(0.0);
-        for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightPos[i] = vec4(0.0);
-        for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightDir[i] = vec4(0.0);
+        for(int i = 0; i < CORE_NUM_TEXTURES_2D; ++i) v_av2TexCoord[min(i, CORE_NUM_TEXTURES_2D - 1)] = vec2(0.0);
+        for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightPos[min(i, CORE_NUM_LIGHTS      - 1)] = vec4(0.0);
+        for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightDir[min(i, CORE_NUM_LIGHTS      - 1)] = vec4(0.0);
         v_v3TangentPos = vec3(0.0);
         v_v3TangentCam = vec3(0.0);
-    #endif
 
     #if defined(_CORE_OPTION_INSTANCING_)
         v_v4VarColor = a_v4DivColor;
@@ -730,7 +738,7 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     #endif
 
-    #if (CORE_GL_VERSION >= 140) || (CORE_GL_ES_VERSION >= 310)
+    #if defined(CORE_GL_shader_io_blocks)
 
         // shader input
         in b_Varying
@@ -874,10 +882,10 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     // ordered dithering function (modified)
     float coreDither(const in ivec2 i2PixelCoord)
     {
-        const mat4 c_m4Matrix = mat4( 0.0,  8.0,  2.0, 10.0,
-                                     12.0,  4.0, 14.0,  6.0,
-                                      3.0, 11.0,  1.0,  9.0,
-                                     15.0,  7.0, 13.0,  5.0) / 15.0 - 0.5;
+        mat4 c_m4Matrix = mat4( 0.0,  8.0,  2.0, 10.0,
+                               12.0,  4.0, 14.0,  6.0,
+                                3.0, 11.0,  1.0,  9.0,
+                               15.0,  7.0, 13.0,  5.0) / 15.0 - 0.5;
 
         ivec2 i2Index = coreIntMod(i2PixelCoord, 4);
         #if defined(GL_ES)
