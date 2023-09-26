@@ -173,6 +173,19 @@ else()
 
 endif()
 
+if(NOT CORE_DEBUG)
+
+    set_source_files_properties(
+        ${BASE_DIRECTORY}/source/components/graphics/coreModel.cpp
+        ${BASE_DIRECTORY}/source/components/graphics/coreTexture.cpp
+        ${BASE_DIRECTORY}/source/manager/coreObject.cpp
+        PROPERTIES
+        COMPILE_FLAGS -O3
+        SKIP_PRECOMPILE_HEADERS ON
+    )
+
+endif()
+
 if(CORE_TEST)
 
     target_compile_options(

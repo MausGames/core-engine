@@ -268,10 +268,20 @@
     <ClCompile Include="..\..\..\source\components\graphics\coreFont.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreFrameBuffer.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\CoreGraphics.cpp" />
-    <ClCompile Include="..\..\..\source\components\graphics\coreModel.cpp" />
+    <ClCompile Include="..\..\..\source\components\graphics\coreModel.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\components\graphics\coreShader.cpp" />
     <ClCompile Include="..\..\..\source\components\graphics\coreSync.cpp" />
-    <ClCompile Include="..\..\..\source\components\graphics\coreTexture.cpp" />
+    <ClCompile Include="..\..\..\source\components\graphics\coreTexture.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\components\input\CoreInput.cpp" />
     <ClCompile Include="..\..\..\source\components\platform\CorePlatform.cpp" />
     <ClCompile Include="..\..\..\source\components\system\CoreSystem.cpp" />
@@ -284,7 +294,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\source\manager\coreMemory.cpp" />
-    <ClCompile Include="..\..\..\source\manager\coreObject.cpp" />
+    <ClCompile Include="..\..\..\source\manager\coreObject.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
