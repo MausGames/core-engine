@@ -276,7 +276,7 @@ CoreSystem::CoreSystem()noexcept
     const coreInt32  iPos     = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
     const coreInt32  iSizeX   = F_TO_SI(m_vResolution.x);
     const coreInt32  iSizeY   = F_TO_SI(m_vResolution.y);
-    const coreUint32 iFlags   = SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | ((m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MOUSE_GRABBED) : ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) ? (bDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_BORDERLESS) : SDL_WINDOW_RESIZABLE));
+    const coreUint32 iFlags   = SDL_WINDOW_OPENGL | ((m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MOUSE_GRABBED) : ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) ? (bDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_BORDERLESS) : SDL_WINDOW_RESIZABLE));
 
     // create main window object
     m_pWindow = SDL_CreateWindow(NULL, iPos, iPos, iSizeX, iSizeY, iFlags);

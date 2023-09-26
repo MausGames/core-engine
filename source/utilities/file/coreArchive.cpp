@@ -96,6 +96,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     // mark file as existing
     if(!m_pArchive && !m_iArchivePos) m_iArchivePos = UINT32_MAX;
 
+    Core::Log->Info("File (%s, %.1f KB) written", m_sPath.c_str(), I_TO_F(m_iSize) / 1024.0f);
     return CORE_OK;
 }
 
@@ -481,6 +482,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     FOR_EACH(it, m_apFile)
         (*it)->UnloadData();
 
+    Core::Log->Info("Archive (%s, %u) written", m_sPath.c_str(), iNumFiles);
     return CORE_OK;
 }
 

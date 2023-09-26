@@ -218,18 +218,18 @@ void coreDataBuffer::Unmap()
             if(CORE_GL_SUPPORT(ARB_direct_state_access))
             {
                 // unmap buffer memory directly (new)
-                glUnmapNamedBuffer(m_iIdentifier);
+                WARN_IF(!glUnmapNamedBuffer(m_iIdentifier)) {}
             }
             else if(CORE_GL_SUPPORT(EXT_direct_state_access))
             {
                 // unmap buffer memory directly (old)
-                glUnmapNamedBufferEXT(m_iIdentifier);
+                WARN_IF(!glUnmapNamedBufferEXT(m_iIdentifier)) {}
             }
             else
             {
                 // bind and unmap buffer memory
                 this->Bind();
-                glUnmapBuffer(m_iTarget);
+                WARN_IF(!glUnmapBuffer(m_iTarget)) {}
             }
         }
     }

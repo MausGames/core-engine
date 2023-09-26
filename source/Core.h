@@ -66,6 +66,7 @@
 #endif
 #if defined(__clang__)
     #define _CORE_CLANG_
+    #undef  _CORE_MSVC_
     #undef  _CORE_GCC_
 #endif
 

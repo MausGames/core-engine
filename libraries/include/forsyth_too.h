@@ -57,7 +57,7 @@ namespace Forsyth
     //      lruCacheSize
     //          the size of the simulated post-transform cache (max:64)
     //-----------------------------------------------------------------------------
-    void OptimizeFaces(const uint16_t* indexList, uint32_t indexCount, uint32_t vertexCount, uint16_t* __restrict newIndexList, uint16_t lruCacheSize);
+    inline void OptimizeFaces(const uint16_t* indexList, uint32_t indexCount, uint32_t vertexCount, uint16_t* __restrict newIndexList, uint16_t lruCacheSize);
 
     namespace
     {
@@ -174,7 +174,7 @@ namespace Forsyth
         };
     }
 
-    void OptimizeFaces(const uint16_t* indexList, uint32_t indexCount, uint32_t vertexCount, uint16_t* __restrict newIndexList, uint16_t lruCacheSize)
+    inline void OptimizeFaces(const uint16_t* indexList, uint32_t indexCount, uint32_t vertexCount, uint16_t* __restrict newIndexList, uint16_t lruCacheSize)
     {
         ASSERT(indexList && indexCount && vertexCount && newIndexList && lruCacheSize)
 

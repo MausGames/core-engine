@@ -390,6 +390,11 @@ void coreResourceManager::__ExitThread()
 /* load all relevant default resources */
 void coreResourceManager::__LoadDefault()
 {
+    coreList<coreString> asArchiveList;
+
+    coreData::FolderScan("data/archives", "*.cfa", &asArchiveList);
+    FOR_EACH(it, asArchiveList) this->RetrieveArchive(it->c_str());
+
     this->Load<coreTexture>("default_black.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.png",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
     this->Load<coreTexture>("default_normal.png",        CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_normal.png", CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
     this->Load<coreTexture>("default_white.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.png",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);

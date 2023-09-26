@@ -517,8 +517,11 @@ void coreObjectManager::__UpdateObjects()
 
             // reconstruct index
             for(coreUintW i = 0u, ie = it->size(); i < ie; ++i)
-                m_aiIndex.emplace_bs((*it)[i], i);
+                m_aiIndex.emplace((*it)[i], i);
         }
+
+        // sort index explicitly (faster than sorting on reconstruction)
+        m_aiIndex.prepare_bs();
     }
 
     // loop through all collisions

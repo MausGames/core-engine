@@ -289,7 +289,7 @@ void CoreDebug::__StatStart()
                     (m_aStat.index() == CORE_DEBUG_STAT_CLIPPING))  &&
                     (m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))
                 {
-                    m_aStatOutput[0].SetText(PRINT("Primitives: %u (%.1f%% clipped)", m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult, (1.0f - I_TO_F(m_aStat[CORE_DEBUG_STAT_CLIPPING].iResult) * RCP(I_TO_F(m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))) * 100.0f));
+                    m_aStatOutput[0].SetText(PRINT("Primitives: %'u (%.1f%% clipped)", m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult, (1.0f - I_TO_F(m_aStat[CORE_DEBUG_STAT_CLIPPING].iResult) * RCP(I_TO_F(m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))) * 100.0f));
                 }
 
                 // write vertex statistics
@@ -297,13 +297,13 @@ void CoreDebug::__StatStart()
                     (m_aStat.index() == CORE_DEBUG_STAT_PRIMITIVES)) &&
                     (m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))
                 {
-                    m_aStatOutput[1].SetText(PRINT("Vertex Invocations: %u (%.2f per primitive)", m_aStat[CORE_DEBUG_STAT_VERTEX].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_VERTEX].iResult) * RCP(I_TO_F(m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))));
+                    m_aStatOutput[1].SetText(PRINT("Vertex Invocations: %'u (%.2f per primitive)", m_aStat[CORE_DEBUG_STAT_VERTEX].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_VERTEX].iResult) * RCP(I_TO_F(m_aStat[CORE_DEBUG_STAT_PRIMITIVES].iResult))));
                 }
 
                 // write fragment statistics
                 if(m_aStat.index() == CORE_DEBUG_STAT_FRAGMENT)
                 {
-                    m_aStatOutput[2].SetText(PRINT("Fragment Invocations: %u (%.2f per pixel)", m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult) * RCP(Core::Graphics->GetViewResolution().x * Core::Graphics->GetViewResolution().y)));
+                    m_aStatOutput[2].SetText(PRINT("Fragment Invocations: %'u (%.2f per pixel)", m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult, I_TO_F(m_aStat[CORE_DEBUG_STAT_FRAGMENT].iResult) * RCP(Core::Graphics->GetViewResolution().x * Core::Graphics->GetViewResolution().y)));
                 }
             }
 

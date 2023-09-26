@@ -1852,9 +1852,11 @@ const coreWchar* coreData::__ToWideChar(const coreChar* pcText)
     {
         STATIC_ASSERT(sizeof(coreWchar) == sizeof(coreChar) * 2u)
 
+        coreTempString& A = s_TempString;
+
         // use multiple temp-strings as single target
-        if(++s_TempString.iCurrent >= CORE_DATA_STRING_NUM - 1u) s_TempString.iCurrent = 0u;       // one less
-        coreWchar* pcString = r_cast<coreWchar*>(s_TempString.aacData[s_TempString.iCurrent++]);   // one more
+        if(++A.iCurrent >= CORE_DATA_STRING_NUM - 1u) A.iCurrent = 0u;       // one less
+        coreWchar* pcString = r_cast<coreWchar*>(A.aacData[A.iCurrent++]);   // one more
 
         // convert from UTF-8 string to UTF-16 string
         const coreInt32 iReturn = MultiByteToWideChar(CP_UTF8, 0u, pcText, -1, pcString, CORE_DATA_STRING_LEN);
