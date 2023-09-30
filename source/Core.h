@@ -144,8 +144,13 @@
     #define _CORE_MOBILE_
 #endif
 
+// ANGLE mode
+#if defined(__ANGLE__)
+    #define _CORE_ANGLE_
+#endif
+
 // OpenGL ES mode
-#if defined(_CORE_MOBILE_) || defined(_CORE_EMSCRIPTEN_)
+#if defined(_CORE_MOBILE_) || defined(_CORE_ANGLE_) || defined(_CORE_EMSCRIPTEN_)
     #define _CORE_GLES_
 #endif
 

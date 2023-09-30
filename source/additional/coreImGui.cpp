@@ -26,7 +26,11 @@
 
 // ****************************************************************
 /* use own OpenGL loader */
-#if !defined(__EMSCRIPTEN__)
+#if defined(__ANGLE__)
+
+    #define IMGUI_IMPL_OPENGL_ES3
+
+#elif !defined(__EMSCRIPTEN__)
 
     #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 

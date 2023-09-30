@@ -39,6 +39,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
     SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE,                 "0");
     SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING,      DEFINED(_CORE_DEBUG_) ? "0" : "1");
 
@@ -252,13 +253,6 @@ CoreSystem::CoreSystem()noexcept
         }
     }
 
-    // check for shared context
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))
-    {
-        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
-    }
-
     // check for debug context
     if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
     {
@@ -270,6 +264,13 @@ CoreSystem::CoreSystem()noexcept
     }
 
 #endif
+
+    // check for shared context
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))
+    {
+        SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
+    }
 
     // define window properties
     const coreBool   bDesktop = (m_vResolution == m_aDisplayData[m_iDisplayIndex].vDesktopRes);

@@ -46,7 +46,7 @@
     #define CORE_GL_ARB_program_interface_query      false
     #define CORE_GL_ARB_vertex_attrib_binding        false
 #else
-    #define CORE_GL_ARB_map_buffer_range             __CORE_GLES_VAR(bES30)
+    #define CORE_GL_ARB_map_buffer_range             __CORE_GLES_VAR(bES30) && !DEFINED(_CORE_ANGLE_)
     #define CORE_GL_ARB_program_interface_query      __CORE_GLES_VAR(bES31)
     #define CORE_GL_ARB_vertex_attrib_binding        __CORE_GLES_VAR(bES31)
 #endif
@@ -373,8 +373,8 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glCopyTextureSubImage2DEXT(...)
 #define glFlushMappedNamedBufferRange(...)
 #define glFlushMappedNamedBufferRangeEXT(...)
-#define glGenerateTextureMipmap(...)
-#define glGenerateTextureMipmapEXT(...)
+#define glGenerateTextureMipmap(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
+#define glGenerateTextureMipmapEXT(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
 #define glGetTexImage(...)
 #define glGetTextureImage(...)
 #define glGetTextureImageEXT(...)
