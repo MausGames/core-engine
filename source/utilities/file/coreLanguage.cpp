@@ -204,8 +204,14 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
     // save relative path
     m_sPath = pcPath;
 
-    // assign key as value to possible empty language-string
-    FOR_EACH(it, m_asStringList) if(it->empty()) it->assign(PRINT(CORE_LANGUAGE_KEY "%s", m_asStringList.get_string(it)));
+    FOR_EACH(it, m_asStringList)
+    {
+        // assign key as value to possible missing language-string
+        if(it->empty()) it->assign(PRINT(CORE_LANGUAGE_KEY "%s", m_asStringList.get_string(it)));
+
+        // handle empty language-strings
+        else if(it->front() == CORE_LANGUAGE_EMPTY[0]) it->clear();
+    }
 
     // reduce memory consumption
     FOR_EACH(it, m_asStringList) it->shrink_to_fit();

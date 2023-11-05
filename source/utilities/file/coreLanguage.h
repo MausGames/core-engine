@@ -14,13 +14,15 @@
 // TODO 2: currently key-identifier $ may cause problems in normal text, maybe use $$
 // TODO 3: reduce memory consumption with all the redundant keys in containers
 // TODO 3: determine number of entries and call reserve(x), or use property (e.g. RESERVE)
-// TODO 5: try to use strtok()
+// TODO 5: try to use strtok_s/_r()
+// TODO 3: use stream for FindString if possible
 
 
 // ****************************************************************
 /* language definitions */
 #define CORE_LANGUAGE_KEY    "$"   // prefix used to identify keys in the language file
 #define CORE_LANGUAGE_ASSIGN "="   // delimiter used to separate keys and their assigned strings
+#define CORE_LANGUAGE_EMPTY  "#"   // value used to mark empty strings
 
 #define CORE_LANGUAGE_BRAZILIAN  "brazilian"
 #define CORE_LANGUAGE_ENGLISH    "english"
