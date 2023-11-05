@@ -56,46 +56,45 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     glBindBuffer(m_iTarget, m_iIdentifier);
     s_aiBound[m_iTarget] = m_iIdentifier;
 
-    if(CORE_GL_SUPPORT(ARB_buffer_storage))
+    if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
     {
-        if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
+        ASSERT(pData)
+
+        if(CORE_GL_SUPPORT(ARB_buffer_storage))
         {
             // allocate static immutable buffer memory
             glBufferStorage(m_iTarget, m_iSize, pData, 0u);
         }
-        else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC))
-        {
-            if(CORE_GL_SUPPORT(ARB_map_buffer_range))
-            {
-                // allocate dynamic immutable buffer memory
-                glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
-
-                // map persistent mapped buffer
-                m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
-            }
-            else
-            {
-                // allocate dynamic immutable buffer memory (without persistent mapping)
-                glBufferStorage(m_iTarget, m_iSize, pData, GL_DYNAMIC_STORAGE_BIT);
-            }
-        }
         else
-        {
-            // allocate temporary immutable buffer memory
-            glBufferStorage(m_iTarget, m_iSize, pData, GL_CLIENT_STORAGE_BIT);
-        }
-    }
-    else
-    {
-        if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC))
         {
             // allocate static mutable buffer memory
             glBufferData(m_iTarget, m_iSize, pData, GL_STATIC_DRAW);
         }
-        else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC))
+    }
+    else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC))
+    {
+        if(CORE_GL_SUPPORT(ARB_buffer_storage) && CORE_GL_SUPPORT(ARB_map_buffer_range))
+        {
+            // allocate dynamic immutable buffer memory
+            glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
+
+            // map persistent mapped buffer
+            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
+        }
+        else
         {
             // allocate dynamic mutable buffer memory
             glBufferData(m_iTarget, m_iSize, pData, GL_DYNAMIC_DRAW);
+        }
+    }
+    else
+    {
+        ASSERT(pData)
+
+        if(CORE_GL_SUPPORT(ARB_buffer_storage))
+        {
+            // allocate temporary immutable buffer memory
+            glBufferStorage(m_iTarget, m_iSize, pData, GL_CLIENT_STORAGE_BIT);
         }
         else
         {
@@ -177,12 +176,20 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
     }
     else
     {
-        // create fallback memory
+        if(eMapType == CORE_DATABUFFER_MAP_INVALIDATE_ALL)
+        {
+            // manually orphan buffer memory (to reduce synchronization)
+            this->Bind();
+            glBufferData(m_iTarget, m_iSize, NULL, GL_DYNAMIC_DRAW);
+        }
+
         if(m_iFallbackSize < iLength)
         {
+            // create fallback memory
             DYNAMIC_RESIZE(m_pPersistentBuffer, iLength)
             m_iFallbackSize = iLength;
         }
+
         return m_pPersistentBuffer;
     }
 }

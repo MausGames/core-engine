@@ -23,9 +23,9 @@
 
 enum coreDataBufferStorage : coreUint8
 {
-    CORE_DATABUFFER_STORAGE_STATIC  = 0x01u,   // fast static buffer (STATIC_DRAW)
+    CORE_DATABUFFER_STORAGE_STATIC  = 0x01u,   // fast static buffer      (STATIC_DRAW)
     CORE_DATABUFFER_STORAGE_DYNAMIC = 0x02u,   // writable dynamic buffer (DYNAMIC_DRAW), persistent mapped if supported
-    CORE_DATABUFFER_STORAGE_STREAM  = 0x04u    // writable temporary buffer (STREAM_DRAW)
+    CORE_DATABUFFER_STORAGE_STREAM  = 0x04u    // temporary buffer        (STREAM_DRAW)
 };
 ENABLE_BITWISE(coreDataBufferStorage)
 
@@ -87,7 +87,7 @@ public:
     coreStatus Invalidate();
 
     /* check for current buffer status */
-    inline coreBool IsWritable  ()const {return !HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STATIC);}
+    inline coreBool IsWritable  ()const {return HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC);}
     inline coreBool IsPersistent()const {return (m_pPersistentBuffer && !m_iFallbackSize);}
     inline coreBool IsMapped    ()const {return (m_iMapLength  != 0u);}
     inline coreBool IsValid     ()const {return (m_iIdentifier != 0u);}
