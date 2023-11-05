@@ -22,6 +22,7 @@ coreMenu::coreMenu(const coreUint8 iNumSurfaces, const coreUint8 iStartSurface)n
 , m_aapRender    {}
 {
     // create surfaces
+    ASSERT(m_iNumSurfaces)
     m_papObject = new coreSet<coreObject2D*>[m_iNumSurfaces];
 }
 

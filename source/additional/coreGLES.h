@@ -66,6 +66,11 @@
 
 
 // ****************************************************************
+/* GL_CORE_vertex_type_2_10_10_10_rev (mapped on GL_ARB_vertex_type_2_10_10_10_rev) */
+#define CORE_GL_ARB_vertex_type_2_10_10_10_rev __CORE_GLES_VAR(GL_CORE_vertex_type_2_10_10_10_rev)
+
+
+// ****************************************************************
 /* GL_EXT_buffer_storage (mapped on GL_ARB_buffer_storage) */
 #define CORE_GL_ARB_buffer_storage __CORE_GLES_VAR(GL_EXT_buffer_storage)
 
@@ -194,7 +199,7 @@ using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei level
 
 // ****************************************************************
 /* GL_EXT_texture_type_2_10_10_10_rev */
-#define CORE_GL_EXT_texture_type_2_10_10_10_rev __CORE_GLES_VAR(GL_EXT_texture_type_2_10_10_10_rev)
+#define CORE_GL_EXT_texture_type_2_10_10_10_rev __CORE_GLES_VAR(GL_EXT_texture_type_2_10_10_10_REV)
 
 
 // ****************************************************************
@@ -328,11 +333,6 @@ using PFNGLGENVERTEXARRAYSPROC    = void (GL_APIENTRY *) (GLsizei n, GLuint* arr
 
 
 // ****************************************************************
-/* GL_OES_vertex_type_2_10_10_10_rev (mapped on GL_ARB_vertex_type_2_10_10_10_rev) */
-#define CORE_GL_ARB_vertex_type_2_10_10_10_rev __CORE_GLES_VAR(GL_OES_vertex_type_2_10_10_10_rev)
-
-
-// ****************************************************************
 /* other remapped identifiers */
 inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRangeElements;
 
@@ -402,6 +402,7 @@ struct coreContext final
     coreBool __GL_ANDROID_extension_pack_es31a;
     coreBool __GL_ANGLE_texture_usage;
     coreBool __GL_CORE_texture_float;
+    coreBool __GL_CORE_vertex_type_2_10_10_10_rev;
     coreBool __GL_EXT_buffer_storage;
     coreBool __GL_EXT_color_buffer_float;
     coreBool __GL_EXT_color_buffer_half_float;
@@ -417,7 +418,7 @@ struct coreContext final
     coreBool __GL_EXT_texture_norm16;
     coreBool __GL_EXT_texture_rg;
     coreBool __GL_EXT_texture_storage;
-    coreBool __GL_EXT_texture_type_2_10_10_10_rev;
+    coreBool __GL_EXT_texture_type_2_10_10_10_REV;   // big REV
     coreBool __GL_INTEL_conservative_rasterization;
     coreBool __GL_INTEL_framebuffer_CMAA;
     coreBool __GL_KHR_debug;
@@ -439,7 +440,6 @@ struct coreContext final
     coreBool __GL_OES_texture_stencil8;
     coreBool __GL_OES_vertex_array_object;
     coreBool __GL_OES_vertex_half_float;
-    coreBool __GL_OES_vertex_type_2_10_10_10_rev;
     coreBool __GL_WEBGL_color_buffer_float;
 
     PFNGLBUFFERSTORAGEPROC                  __glBufferStorage;

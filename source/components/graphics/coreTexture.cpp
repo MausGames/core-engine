@@ -57,6 +57,10 @@ coreStatus coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
+    // convert single-channel data (if not supported)
+    if((pData->format->BytesPerPixel == 1u) && !CORE_GL_SUPPORT(ARB_texture_rg))
+        pData = SDL_ConvertSurfaceFormat(pData, SDL_PIXELFORMAT_RGB24, 0u);
+
     // calculate data size
     const coreUint8  iComponents = pData->format->BytesPerPixel;
     const coreUint32 iDataSize   = pData->w * pData->h * iComponents;

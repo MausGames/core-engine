@@ -1,3 +1,5 @@
+# you can modify this file directly or add a copy with the same name into the folder of your config.ini
+
 # Game Controller DB for SDL in 2.0.16 format
 # https://github.com/gabomdq/SDL_GameControllerDB
 

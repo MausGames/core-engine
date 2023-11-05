@@ -15,6 +15,7 @@
 // TODO 3: implement swap-erase ?
 // TODO 3: erase and clear strings in coreMapStrFull ?
 // TODO 3: reserve and shrink_to_fit strings in coreMapStrFull ?
+// TODO 3: "deducing this" in C++23, to get rid of the const and non-const variants for at and at_bs (maybe somewhere else too)
 
 
 // ****************************************************************

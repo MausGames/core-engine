@@ -44,7 +44,7 @@ Module["preRun"].push(PreRun);
 // ****************************************************************
 function PostRun()
 {
-    FS.syncfs(function(sError)
+    FS.syncfs(false, function(sError)
     {
         if(sError) console.error(sError);
     });

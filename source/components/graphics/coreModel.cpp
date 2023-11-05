@@ -96,7 +96,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // apply post-transform vertex cache optimization to index data
     coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
-    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 32u);
+    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 16u);
 
     // apply pre-transform vertex cache optimization to vertex data
     coreUint16 iCurIndex = 0u;

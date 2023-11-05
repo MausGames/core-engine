@@ -43,6 +43,9 @@ void __coreInitOpenGLES()
     // implement GL_ANGLE_texture_usage
     __CORE_GLES_CHECK(GL_ANGLE_texture_usage, false);
 
+    // implement GL_CORE_vertex_type_2_10_10_10_rev
+    __CORE_GLES_CHECK(GL_CORE_vertex_type_2_10_10_10_rev, bES30);
+
     // implement GL_EXT_buffer_storage
     if(__CORE_GLES_CHECK(GL_EXT_buffer_storage, false))
     {
@@ -152,8 +155,8 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glTexStorage2D, EXT, bES30)
     }
 
-    // implement GL_EXT_texture_type_2_10_10_10_rev
-    __CORE_GLES_CHECK(GL_EXT_texture_type_2_10_10_10_rev, bES30);
+    // implement GL_EXT_texture_type_2_10_10_10_REV
+    __CORE_GLES_CHECK(GL_EXT_texture_type_2_10_10_10_REV, bES30);
 
     // implement GL_INTEL_conservative_rasterization
     __CORE_GLES_CHECK(GL_INTEL_conservative_rasterization, false);
@@ -261,9 +264,6 @@ void __coreInitOpenGLES()
 
     // implement GL_OES_vertex_half_float
     __CORE_GLES_CHECK(GL_OES_vertex_half_float, bES30);
-
-    // implement GL_OES_vertex_type_2_10_10_10_rev
-    __CORE_GLES_CHECK(GL_OES_vertex_type_2_10_10_10_rev, bES30);
 
     // implement GL_WEBGL_color_buffer_float
     __CORE_GLES_CHECK(GL_WEBGL_color_buffer_float, false);   // not used
