@@ -23,7 +23,8 @@
 #define CORE_LABEL_HEIGHT_FACTOR (CORE_LABEL_DETAIL / 800.0f)   // set real font height relative to current window resolution
 #define CORE_LABEL_TEXTURE       (1u)                           // default texture unit (other than 0, to reduce texture switches)
 
-#define CORE_LABEL_HEIGHT_RELATIVE(x) (F_TO_UI(I_TO_F(x) * CORE_LABEL_HEIGHT_FACTOR))
+#define CORE_LABEL_HEIGHT_RELATIVE(x)  (F_TO_UI(I_TO_F(x) * CORE_LABEL_HEIGHT_FACTOR))
+#define CORE_LABEL_OUTLINE_RELATIVE(x) ((x) ? MAX(CORE_LABEL_HEIGHT_RELATIVE(x), 1u) : 0u)
 
 enum coreLabelRefresh : coreUint8
 {
@@ -71,7 +72,7 @@ public:
     template <typename F> void RetrieveDesiredSize(F&& nRetrieveFunc)const;   // [](const coreVector2 vSize) -> void
 
     /* invoke texture generation */
-    inline void RegenerateTexture() {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL) m_vResolution = coreVector2(0.0f,0.0f);}
+    inline void RegenerateTexture() {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)}
 
     /* set object properties */
     coreBool    SetText        (const coreChar*       pcText);
@@ -118,8 +119,8 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
         m_pFont.OnUsableOnce([=, this]()
         {
             // get relative font height and outline
-            const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
-            const coreUint8  iRelOutline = CORE_LABEL_HEIGHT_RELATIVE(m_iOutline);
+            const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
+            const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
 
             // return the dimensions of the current text (may differ a bit)
             const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);

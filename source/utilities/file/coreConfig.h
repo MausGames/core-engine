@@ -97,7 +97,7 @@ private:
     coreBool __RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, coreString** OUTPUT ppsEntry);
 
     /* convert to type */
-    static inline coreBool  __ToBool (const coreString& sString) {return (sString[0] == 't') || (sString[0] == 'T') || (sString[0] == '1');}
+    static inline coreBool  __ToBool (const coreString& sString) {return (sString[0] != 'f') && (sString[0] != 'F') && (sString[0] != '0');}
     static inline coreInt32 __ToInt  (const coreString& sString) {return coreData::FromChars<coreInt32>(sString.c_str(), sString.length());}
     static inline coreFloat __ToFloat(const coreString& sString) {return coreData::FromChars<coreFloat>(sString.c_str(), sString.length());}
 

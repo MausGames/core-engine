@@ -296,7 +296,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     {
         for(coreUintW j = 0u; j < 3u; ++j)
         {
-            pOutput->aiIndexData[i*3u+j] = coreUint16(oSurface.pTriangle[i].aiIndex[2u-j]);
+            pOutput->aiIndexData[i * 3u + j] = coreUint16(oSurface.pTriangle[i].aiIndex[2u - j]);
         }
     }
 

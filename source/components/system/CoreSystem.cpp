@@ -258,12 +258,14 @@ CoreSystem::CoreSystem()noexcept
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
     }
-    else
+
+#endif
+
+    // check for no-error context
+    if(!Core::Debug->IsEnabled())
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, 1);
     }
-
-#endif
 
     // check for shared context
     if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))

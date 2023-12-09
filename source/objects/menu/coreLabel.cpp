@@ -167,6 +167,7 @@ void coreLabel::__Reset(const coreResourceReset eInit)
     {
         // unload texture resource data
         m_apTexture[CORE_LABEL_TEXTURE]->Unload();
+        m_vResolution = coreVector2(0.0f,0.0f);
     }
 }
 
@@ -191,8 +192,8 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     coreByte*        pData    = NULL;
 
     // get relative font height and outline
-    const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE(m_iHeight);
-    const coreUint8  iRelOutline = CORE_LABEL_HEIGHT_RELATIVE(m_iOutline);
+    const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
+    const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
 
     // create solid text surface data
     pSolid = m_pFont->CreateText(pcText, iRelHeight);

@@ -88,7 +88,7 @@ if(CORE_EMSCRIPTEN)
 
     target_link_options(
         CoreEngine INTERFACE
-        -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
+        -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sMALLOC=mimalloc -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
         --preload-file ../../../executable/data@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -sGL_ASSERTIONS=1 -sGL_DEBUG=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
     )

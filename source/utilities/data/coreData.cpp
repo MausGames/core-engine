@@ -231,7 +231,7 @@ coreBool coreData::SystemMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTP
 
     // could not get physical system memory
     if(piAvailable) (*piAvailable) = 0u;
-    if(piTotal)     (*piTotal)     = 1u;
+    if(piTotal)     (*piTotal)     = 0u;
     return false;
 }
 
@@ -268,7 +268,7 @@ coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPU
 
     // could not get disk space
     if(piAvailable) (*piAvailable) = 0u;
-    if(piTotal)     (*piTotal)     = 1u;
+    if(piTotal)     (*piTotal)     = 0u;
     return false;
 }
 
@@ -1275,6 +1275,10 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     if(!std::rename(pcFrom, pcTo)) return CORE_OK;
+
+#else
+
+    if((coreData::FileCopy(pcFrom, pcTo) == CORE_OK) && (coreData::FileDelete(pcFrom) == CORE_OK)) return CORE_OK;
 
 #endif
 

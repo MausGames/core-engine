@@ -25,6 +25,9 @@ void __coreInitOpenGLES()
     // get full extension string
     if(g_sExtensions.empty()) g_sExtensions.assign(r_cast<const coreChar*>(glGetString(GL_EXTENSIONS))).append(1, ' ');
 
+    // change extension status through configuration file (e.g. GL_EXT_framebuffer_object)
+    coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {g_sExtensions.replace(PRINT("%s ", pcToken), "");});
+
     // get OpenGL ES version
     g_CoreContext.__fVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
     g_CoreContext.__bES30    = (g_CoreContext.__fVersion >= 3.0f);
@@ -287,6 +290,25 @@ void coreExtensions(coreString* OUTPUT psOutput)
 /* get platform-specific extension string */
 void corePlatformExtensions(coreString* OUTPUT psOutput)
 {
+    // clear memory
+    psOutput->clear();
+
+#if defined(_CORE_ANGLE_)
+
+    // get connection to default display
+    EGLDisplay pDisplay = eglGetCurrentDisplay();
+    if(pDisplay)
+    {
+        // get full extension string (EGL)
+        (*psOutput) += eglQueryString(pDisplay,       EGL_EXTENSIONS);   // display extensions
+        (*psOutput) += ' ';
+        (*psOutput) += eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);   // client extensions
+    }
+
+#else
+
     // return nothing
     (*psOutput) = "Unknown Platform Extensions";
+
+#endif
 }

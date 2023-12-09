@@ -12,8 +12,8 @@
     #include <GL/wglew.h>
 #elif defined(_CORE_LINUX_)
     #include <EGL/egl.h>
-    #include <wayland-client.h>
     #include <GL/glx.h>
+    #include <wayland-client.h>
 #endif
 
 coreBool GLEW_V2_compatibility = false;

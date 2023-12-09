@@ -178,9 +178,9 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // reset scene
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
     SDL_GL_SwapWindow(Core::System->GetWindow());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
 
     if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))
     {
@@ -657,7 +657,7 @@ coreBool CoreGraphics::SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint6
 
     // could not get dedicated graphics memory
     if(piAvailable) (*piAvailable) = 0u;
-    if(piTotal)     (*piTotal)     = 1u;
+    if(piTotal)     (*piTotal)     = 0u;
     return false;
 }
 

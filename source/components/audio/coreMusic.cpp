@@ -482,7 +482,7 @@ coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
     coreInt32       iReadSize  = 0;
 
     // process the defined music stream chunk size
-    while(iReadSize < iChunkSize)
+    do
     {
         coreInt32 iResult;
 
@@ -493,6 +493,7 @@ coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
         if(iResult <= 0) break;
         iReadSize += iResult;
     }
+    while(iReadSize < iChunkSize);
 
     // music track finished
     if(iReadSize == 0) return false;
