@@ -9,6 +9,39 @@
 #include "Core.h"
 
 
+#if defined(_CORE_WINDOWS_) || defined(_CORE_SWITCH_)
+
+// ****************************************************************
+/* assign private heap to SDL library */
+static void* s_pHeap = NULL;   // private heap object
+
+static void* SDLCALL coreMalloc (const coreUintW iSize)                       {return coreData::HeapMalloc(s_pHeap, iSize);}
+static void* SDLCALL coreCalloc (const coreUintW iNum, const coreUintW iSize) {return coreData::HeapCalloc(s_pHeap, iNum, iSize);}
+static void* SDLCALL coreRealloc(void* pPointer, const coreUintW iSize)       {coreData::HeapRealloc(s_pHeap, &pPointer, iSize); return pPointer;}
+static void  SDLCALL coreFree   (void* pPointer)                              {coreData::HeapFree   (s_pHeap, &pPointer);}
+
+static struct coreInit final
+{
+    coreInit()noexcept
+    {
+        // create private heap object
+        s_pHeap = coreData::HeapCreate(true);
+
+        // register allocation functions
+        SDL_SetMemoryFunctions(coreMalloc, coreCalloc, coreRealloc, coreFree);
+    }
+
+    ~coreInit()
+    {
+        // destroy private heap object
+        coreData::HeapDestroy(s_pHeap);
+    }
+}
+s_Init;
+
+#endif
+
+
 // ****************************************************************
 /* constructor */
 coreMemoryPool::coreMemoryPool()noexcept
