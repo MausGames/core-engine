@@ -165,7 +165,7 @@ public:
 
     /* compress and decompress data */
     static coreStatus Compress  (const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel = ZSTD_CLEVEL_DEFAULT);
-    static coreStatus Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize);
+    static coreStatus Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreUint32 iLimit = UINT32_MAX);
     static void       Scramble  (coreByte* OUTPUT pData, const coreUintW iSize, const coreUint64 iKey = 0u);
     static void       Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint64 iKey = 0u);
 

@@ -130,7 +130,7 @@ coreStatus coreFile::Compress(const coreInt32 iLevel)
 
 // ****************************************************************
 /* decompress file data */
-coreStatus coreFile::Decompress()
+coreStatus coreFile::Decompress(const coreUint32 iLimit)
 {
     // check file data
     this->LoadData();
@@ -139,7 +139,7 @@ coreStatus coreFile::Decompress()
     // decompress data
     coreByte*  pNewData;
     coreUint32 iNewSize;
-    const coreStatus eError = coreData::Decompress(m_pData, m_iSize, &pNewData, &iNewSize);
+    const coreStatus eError = coreData::Decompress(m_pData, m_iSize, &pNewData, &iNewSize, iLimit);
 
     if(eError == CORE_OK)
     {

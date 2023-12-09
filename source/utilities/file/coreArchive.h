@@ -53,8 +53,8 @@ public:
     coreStatus Save(const coreChar* pcPath = NULL);
 
     /* compress and decompress file data */
-    coreStatus Compress  (const coreInt32 iLevel = ZSTD_CLEVEL_DEFAULT);
-    coreStatus Decompress();
+    coreStatus Compress  (const coreInt32  iLevel = ZSTD_CLEVEL_DEFAULT);
+    coreStatus Decompress(const coreUint32 iLimit = UINT32_MAX);
     coreStatus Scramble  (const coreUint64 iKey = 0u);
     coreStatus Unscramble(const coreUint64 iKey = 0u);
 
