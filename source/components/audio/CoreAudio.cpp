@@ -33,6 +33,8 @@ CoreAudio::CoreAudio()noexcept
 {
     Core::Log->Header("Audio Interface");
 
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
     // enable OpenAL logging
     if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
     {
@@ -40,6 +42,8 @@ CoreAudio::CoreAudio()noexcept
         coreData::SetEnvironment("ALSOFT_LOGLEVEL",   "3");
         coreData::SetEnvironment("ALSOFT_LOGFILE",    coreData::UserFolderShared("log_openal.txt"));
     }
+
+#endif
 
     // include additional config file
     const coreChar* pcUserFile = coreData::UserFolderPrivate("config_openal.ini");

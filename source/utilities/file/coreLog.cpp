@@ -21,7 +21,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_Lock        ()
 , m_sWorkString ("")
 {
-#if !defined(_CORE_EMSCRIPTEN_)
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
     // open and reset log file
     m_pFile = coreData::FileOpen(m_sPath.c_str(), "wb");

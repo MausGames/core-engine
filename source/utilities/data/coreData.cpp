@@ -662,7 +662,7 @@ coreStatus coreData::SetCurDir(const coreChar* pcPath)
 
     if(SetCurrentDirectoryW(coreData::__ToWideChar(pcPath))) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_SWITCH_)
 
     if(!chdir(pcPath)) return CORE_OK;
 
@@ -689,7 +689,7 @@ const coreChar* coreData::GetCurDir()
         return coreData::__ToAnsiChar(acPath);
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_SWITCH_)
 
     coreChar* pcString = coreData::__NextTempString();
 
@@ -773,7 +773,7 @@ coreStatus coreData::SetEnvironment(const coreChar* pcName, const coreChar* pcVa
     // create, replace, or remove environment variable
     if(!_wputenv_s(coreData::__ToWideChar(pcName), pcValue ? coreData::__ToWideChar(pcValue) : L"")) return CORE_OK;   // SetEnvironmentVariable is unreliable
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_SWITCH_)
 
     if(pcValue && pcValue[0])
     {
@@ -802,7 +802,7 @@ const coreChar* coreData::GetEnvironment(const coreChar* pcName)
 
     return coreData::__ToAnsiChar(_wgetenv(coreData::__ToWideChar(pcName)));
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_SWITCH_)
 
     return std::getenv(pcName);
 
@@ -1109,7 +1109,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && !HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     struct stat oBuffer;
 
@@ -1151,7 +1151,7 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
                (coreInt64(oAttributes.nFileSizeLow));
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     struct stat oBuffer;
 
@@ -1198,7 +1198,7 @@ std::time_t coreData::FileWriteTime(const coreChar* pcPath)
         return r_cast<coreUint64&>(oAttributes.ftLastWriteTime) / 10000000ull - 11644473600ull;
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     struct stat oBuffer;
 
@@ -1226,7 +1226,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
     // copy directly (with attributes)
     if(CopyFileW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), false)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     // open source file
     std::FILE* pFileFrom = coreData::FileOpen(pcFrom, "rb");
@@ -1292,7 +1292,7 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
     if(DeleteFileW(coreData::__ToWideChar(pcPath))) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     if(!unlink(pcPath)) return CORE_OK;
 
@@ -1318,7 +1318,7 @@ coreBool coreData::FolderExists(const coreChar* pcPath)
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     struct stat oBuffer;
 
@@ -1555,7 +1555,7 @@ coreBool coreData::CheckLastError()
         return true;
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     // get last error code
     const coreInt32 iError = errno;

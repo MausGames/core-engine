@@ -179,7 +179,7 @@
 #if !defined(_CORE_X86_) && !defined(_CORE_ARM_) && !defined(_CORE_WASM_)
     #error Architecture not supported!
 #endif
-#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_MACOS_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_) && !defined(_CORE_EMSCRIPTEN_)
+#if !defined(_CORE_WINDOWS_) && !defined(_CORE_LINUX_) && !defined(_CORE_MACOS_) && !defined(_CORE_ANDROID_) && !defined(_CORE_IOS_) && !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
     #error Operating System not supported!
 #endif
 #if !defined(_CORE_DEBUG_) && (defined(_CORE_RTTI_) || defined(_CORE_EXCEPTIONS_))
