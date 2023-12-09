@@ -47,7 +47,7 @@ CoreSystem::CoreSystem()noexcept
     UNUSED static const coreBool s_bOnce = []()
     {
         // enable SDL debug messages
-        SDL_LogSetAllPriority((Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_)) ? SDL_LOG_PRIORITY_INFO : SDL_LOG_PRIORITY_WARN);
+        SDL_LogSetAllPriority(Core::Debug->IsEnabled() ? SDL_LOG_PRIORITY_INFO : SDL_LOG_PRIORITY_WARN);
 
         // get default log callback (standard output)
         SDL_LogOutputFunction nOldFunc;
@@ -254,7 +254,7 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // check for debug context
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
+    if(Core::Debug->IsEnabled())
     {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
     }
@@ -392,7 +392,7 @@ CoreSystem::~CoreSystem()
 /* change the title of the window */
 void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 {
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
+    if(Core::Debug->IsEnabled())
     {
         // set new title (with additional info)
         SDL_SetWindowTitle(m_pWindow, PRINT("%s (%.0f x %.0f)", pcTitle, m_vResolution.x, m_vResolution.y));

@@ -217,7 +217,7 @@ coreStatus Core::Run()
     Core Engine;
 
     // set logging level
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_))
+    if(!Core::Debug->IsEnabled())
     {
         Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR);
         Core::Log->Warning ("Logging level reduced");

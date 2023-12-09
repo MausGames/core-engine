@@ -64,7 +64,7 @@ CoreDebug::CoreDebug()noexcept
 , m_bVisible    (false)
 , m_bHolding    (false)
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+    if(!CoreDebug::IsEnabled()) return;
 
     // enable the debug-monitor
     m_bEnabled = true;
@@ -264,6 +264,18 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
 
     // write formatted values to output label
     pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->fCurrentCPU, pMeasure->fCurrentGPU));
+}
+
+
+// ****************************************************************
+/* check for debug status */
+const coreBool& CoreDebug::IsEnabled()
+{
+    ASSERT(STATIC_ISVALID(Core::Config))
+
+    // only check once
+    static const coreBool s_bEnabled = Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_);
+    return s_bEnabled;
 }
 
 

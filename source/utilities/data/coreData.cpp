@@ -1536,7 +1536,7 @@ coreStatus coreData::SymlinkCreate(const coreChar* pcPath, const coreChar* pcTar
 /* check for system errors (per thread) */
 coreBool coreData::CheckLastError()
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return false;
+    if(!Core::Debug->IsEnabled()) return false;
 
 #if defined(_CORE_WINDOWS_)
 

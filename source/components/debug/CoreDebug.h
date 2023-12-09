@@ -120,8 +120,8 @@ public:
     inline void InspectValue(const coreHashString& sName, const coreVector4 vValue) {this->InspectValue(sName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
     inline void InspectValue(const coreHashString& sName, const void*       pValue) {this->InspectValue(sName, "0x%08X",                 P_TO_UI(pValue));}
 
-    /* check for debug-monitor status */
-    inline const coreBool& IsEnabled()const {return m_bEnabled;}
+    /* check for debug status */
+    static const coreBool& IsEnabled();
 
 
 private:

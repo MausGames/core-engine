@@ -568,7 +568,7 @@ void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLu
 /* enable OpenGL debug output */
 void CoreGraphics::DebugOpenGL()
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+    if(!Core::Debug->IsEnabled()) return;
 
     if(CORE_GL_SUPPORT(KHR_debug))
     {
@@ -606,7 +606,7 @@ void CoreGraphics::DebugOpenGL()
 /* manually check for OpenGL errors */
 void CoreGraphics::CheckOpenGL()
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+    if(!Core::Debug->IsEnabled()) return;
 
     // loop through all recent errors
     GLenum iError;

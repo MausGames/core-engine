@@ -795,7 +795,7 @@ void coreProgram::__WriteLog()const
 /* write interface to log file */
 void coreProgram::__WriteInterface()const
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_DEBUG_)) return;
+    if(!Core::Debug->IsEnabled()) return;
 
     Core::Log->ListStartInfo("Program Interface");
     {

@@ -36,7 +36,7 @@ CoreAudio::CoreAudio()noexcept
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
     // enable OpenAL logging
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_))
+    if(Core::Debug->IsEnabled())
     {
         coreData::SetEnvironment("ALSOFT_TRAP_ERROR", "1");
         coreData::SetEnvironment("ALSOFT_LOGLEVEL",   "3");
