@@ -24,8 +24,9 @@
 
 // ****************************************************************
 /* particle definitions */
-#define CORE_PARTICLE_INSTANCE_SIZE    (24u)   // instancing per-particle size (position (12), data (8), color (4))
-#define CORE_PARTICLE_INSTANCE_BUFFERS (3u)    // number of concurrent instance data buffer
+#define CORE_PARTICLE_INSTANCE_SIZE_HIGH (24u)   // instancing per-particle size (high quality) (position (12), data (8),  color (4))
+#define CORE_PARTICLE_INSTANCE_SIZE_LOW  (28u)   // instancing per-particle size (low quality)  (position (12), data (12), color (4))
+#define CORE_PARTICLE_INSTANCE_BUFFERS   (3u)    // number of concurrent instance data buffer
 
 
 // ****************************************************************

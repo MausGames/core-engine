@@ -18,7 +18,8 @@
 
 // ****************************************************************
 /* 3d-object definitions */
-#define CORE_BATCHLIST_INSTANCE_SIZE      (40u)   // instancing per-object size (position (12), size (8), rotation (8), color (4), texture-parameters (8))
+#define CORE_BATCHLIST_INSTANCE_SIZE_HIGH (40u)   // instancing per-object size (high quality) (position (12), size (8),  rotation (8), color (4), texture-parameters (8))
+#define CORE_BATCHLIST_INSTANCE_SIZE_LOW  (52u)   // instancing per-object size (low quality)  (position (12), size (12), rotation (8), color (4), texture-parameters (16))
 #define CORE_BATCHLIST_INSTANCE_BUFFERS   (3u)    // number of concurrent instance data buffer
 #define CORE_BATCHLIST_INSTANCE_THRESHOLD (4u)    // minimum number of objects to draw instanced
 

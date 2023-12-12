@@ -166,10 +166,9 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS"          " (%u) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS"         " (%u) \n", CORE_SHADER_OUTPUT_COLORS));
 
-    // include additional target adjustments
-#if defined(_CORE_MACOS_)
-    s_asGlobalCode[1].append("#define _CORE_TARGET_MACOS_ (1) \n");
-#endif
+    // prevent instancing if not supported
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object))
+        s_asGlobalCode[1].append("#undef _CORE_OPTION_INSTANCING_ \n");
 
     const auto nRetrieveFunc = [](const coreChar* pcPath)
     {
@@ -290,7 +289,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
             glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_SHADER_ATTRIBUTE_TANGENT);
 
             // bind instancing attribute locations
-            if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_uniform_buffer_object) && CORE_GL_SUPPORT(ARB_vertex_array_object) && CORE_GL_SUPPORT(ARB_half_float_vertex))
+            if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_vertex_array_object))
             {
                 glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_SHADER_ATTRIBUTE_DIV_POSITION);
                 glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_SHADER_ATTRIBUTE_DIV_SIZE);

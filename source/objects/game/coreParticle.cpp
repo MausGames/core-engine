@@ -89,27 +89,55 @@ void coreParticleSystem::Render()
             m_aiVertexArray  .next();
             m_aInstanceBuffer.next();
 
-            // map required area of the instance data buffer
-            coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
-            coreByte* pCursor = pRange;
-
-            FOR_EACH_REV(it, m_apRenderList)
+            if(CORE_GL_SUPPORT(ARB_half_float_vertex))
             {
-                // get current particle state
-                const coreParticle* pParticle = (*it);
-                const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
+                // map required area of the instance data buffer
+                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pCursor = pRange;
 
-                // compress data
-                const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition();
-                const coreUint64  iData     = coreVector4(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue(), 0.0f).PackFloat4x16();
-                const coreUint32  iColor    = pParticle->GetCurColor4().PackUnorm4x8();
-                ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
+                FOR_EACH_REV(it, m_apRenderList)
+                {
+                    // get current particle state
+                    const coreParticle* pParticle = (*it);
+                    const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
-                // write data to the buffer
-                std::memcpy(pCursor,       &vPosition, sizeof(coreVector3));
-                std::memcpy(pCursor + 12u, &iData,     sizeof(coreUint64));
-                std::memcpy(pCursor + 20u, &iColor,    sizeof(coreUint32));
-                pCursor += CORE_PARTICLE_INSTANCE_SIZE;
+                    // compress data
+                    const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition();
+                    const coreUint64  iData     = coreVector4(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue(), 0.0f).PackFloat4x16();
+                    const coreUint32  iColor    = pParticle->GetCurColor4().PackUnorm4x8();
+                    ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
+
+                    // write data to the buffer
+                    std::memcpy(pCursor,       &vPosition, sizeof(coreVector3));
+                    std::memcpy(pCursor + 12u, &iData,     sizeof(coreUint64));
+                    std::memcpy(pCursor + 20u, &iColor,    sizeof(coreUint32));
+                    pCursor += CORE_PARTICLE_INSTANCE_SIZE_HIGH;
+                }
+            }
+            else
+            {
+                // map required area of the instance data buffer
+                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pCursor = pRange;
+
+                FOR_EACH_REV(it, m_apRenderList)
+                {
+                    // get current particle state
+                    const coreParticle* pParticle = (*it);
+                    const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
+
+                    // compress data
+                    const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition();
+                    const coreVector3 vData     = coreVector3(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue());
+                    const coreUint32  iColor    = pParticle->GetCurColor4().PackUnorm4x8();
+                    ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
+
+                    // write data to the buffer
+                    std::memcpy(pCursor,       &vPosition, sizeof(coreVector3));
+                    std::memcpy(pCursor + 12u, &vData,     sizeof(coreVector3));
+                    std::memcpy(pCursor + 24u, &iColor,    sizeof(coreUint32));
+                    pCursor += CORE_PARTICLE_INSTANCE_SIZE_LOW;
+                }
             }
 
             // unmap buffer
@@ -139,9 +167,9 @@ void coreParticleSystem::Render()
             const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
             // update all particle uniforms
-            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition());
-            pProgram->SendUniform(CORE_SHADER_ATTRIBUTE_DIV_DATA,     coreVector3(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue()));
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,          pParticle->GetCurColor4());
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition());
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_DATA,     coreVector3(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue()));
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,        pParticle->GetCurColor4());
 
             // draw the model
             pModel->Enable();
@@ -328,7 +356,7 @@ void coreParticleSystem::Reallocate(const coreUint32 iNewSize)
 void coreParticleSystem::__Reset(const coreResourceReset eInit)
 {
     // check for OpenGL extensions
-    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
 
     if(eInit)
     {
@@ -344,11 +372,22 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
                 glBindVertexArray(m_aiVertexArray.current());
                 m_aiVertexArray.next();
 
-                // create instance data buffers
-                it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    8u,  false, 0u, 12u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 20u);
+                if(CORE_GL_SUPPORT(ARB_half_float_vertex))
+                {
+                    // create instance data buffers (high quality compression)
+                    it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE_HIGH, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     4u, GL_HALF_FLOAT,    8u,  false, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 20u);
+                }
+                else
+                {
+                    // create instance data buffers (low quality compression)
+                    it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE_LOW, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     3u, GL_FLOAT,         12u, false, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 24u);
+                }
 
                 // set vertex data
                 Core::Manager::Object->GetLowQuad()->GetVertexBuffer(0u)->Activate(0u);

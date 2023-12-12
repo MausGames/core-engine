@@ -12,7 +12,6 @@
 // #version                         (#)   // shader version
 // #define _CORE_*_SHADER_          (1)   // shader type (vertex, fragment, ...)
 // #define _CORE_OPTION_*_          (1)   // multiple preprocessor options
-// #define _CORE_TARGET_*_          (1)   // multiple target adjustments
 // #define _CORE_QUALITY_           (#)   // quality level
 // #define CORE_NUM_TEXTURES_2D     (#)   // number of 2d texture units
 // #define CORE_NUM_TEXTURES_SHADOW (#)   // number of shadow texture units
@@ -128,8 +127,6 @@
     #if defined(_CORE_FRAGMENT_SHADER_)
         #define varying in
     #endif
-#else
-    #undef _CORE_OPTION_INSTANCING_
 #endif
 #if !defined(CORE_GL_gpu_shader4)
     #define flat
@@ -560,35 +557,23 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 // ****************************************************************
 #if defined(_CORE_VERTEX_SHADER_)
 
-    #if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+    // vertex attributes
+    attribute vec3 a_v3RawPosition;
+    attribute vec2 a_v2RawTexCoord;
+    attribute vec3 a_v3RawNormal;
+    attribute vec4 a_v4RawTangent;
 
-        // vertex attributes
-        in vec3 a_v3RawPosition;
-        in vec2 a_v2RawTexCoord;
-        in vec3 a_v3RawNormal;
-        in vec4 a_v4RawTangent;
+    // instancing attributes
+    attribute vec3 a_v3DivPosition;
+    attribute vec3 a_v3DivSize;
+    attribute vec4 a_v4DivRotation;
+    attribute vec3 a_v3DivData;
+    attribute vec4 a_v4DivColor;
+    attribute vec4 a_v4DivTexParam;
 
-        // instancing attributes
-        in vec3 a_v3DivPosition;
-        in vec3 a_v3DivSize;
-        in vec4 a_v4DivRotation;
-        in vec3 a_v3DivData;
-        in vec4 a_v4DivColor;
-        in vec4 a_v4DivTexParam;
-
-    #else
-
-        // vertex attributes
-        attribute vec3 a_v3RawPosition;
-        attribute vec2 a_v2RawTexCoord;
-        attribute vec3 a_v3RawNormal;
-        attribute vec4 a_v4RawTangent;
-
-        // instancing uniforms
-        uniform highp   vec3 a_v3DivPosition;
-        uniform mediump vec3 a_v3DivData;
-
-    #endif
+    // instancing uniforms
+    uniform highp   vec3 u_v3DivPosition;
+    uniform mediump vec3 u_v3DivData;
 
     #if defined(CORE_GL_shader_io_blocks)
 
@@ -621,15 +606,17 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
     // remapped variables
     #if defined(_CORE_OPTION_INSTANCING_)
-        #define u_v3Position  (a_v3DivPosition)
-        #define u_v3Size      (a_v3DivSize)
-        #define u_v4Rotation  (a_v4DivRotation)
-        #define u_v4Color     (a_v4DivColor)
-        #define u_v2TexSize   (a_v4DivTexParam.xy)
-        #define u_v2TexOffset (a_v4DivTexParam.zw)
+        #define u_v3Position    (a_v3DivPosition)
+        #define u_v3Size        (a_v3DivSize)
+        #define u_v4Rotation    (a_v4DivRotation)
+        #define u_v4Color       (a_v4DivColor)
+        #define u_v2TexSize     (a_v4DivTexParam.xy)
+        #define u_v2TexOffset   (a_v4DivTexParam.zw)
     #else
-        #define u_v2TexSize   (u_v4TexParam.xy)
-        #define u_v2TexOffset (u_v4TexParam.zw)
+        #define a_v3DivPosition (u_v3DivPosition)
+        #define a_v3DivData     (u_v3DivData)
+        #define u_v2TexSize     (u_v4TexParam.xy)
+        #define u_v2TexOffset   (u_v4TexParam.zw)
     #endif
     #define a_v1DivScale (a_v3DivData.x)
     #define a_v1DivAngle (a_v3DivData.y)

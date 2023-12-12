@@ -462,7 +462,7 @@ void coreBatchList::ShrinkToFit()
 void coreBatchList::__Reset(const coreResourceReset eInit)
 {
     // check for OpenGL extensions
-    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_uniform_buffer_object) || !CORE_GL_SUPPORT(ARB_vertex_array_object) || !CORE_GL_SUPPORT(ARB_half_float_vertex)) return;
+    if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object)) return;
 
     if(eInit)
     {
@@ -478,13 +478,26 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                 glBindVertexArray(m_aiVertexArray.current());
                 m_aiVertexArray.next();
 
-                // create instance data buffer
-                it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    8u,  false, 0u, 12u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         8u,  false, 0u, 20u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 28u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    8u,  false, 0u, 32u);
+                if(CORE_GL_SUPPORT(ARB_half_float_vertex))
+                {
+                    // create instance data buffer (high quality compression)
+                    it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE_HIGH, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    8u,  false, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         8u,  false, 0u, 20u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 28u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_HALF_FLOAT,    8u,  false, 0u, 32u);
+                }
+                else
+                {
+                    // create instance data buffer (low quality compression)
+                    it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE_LOW, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3u, GL_FLOAT,         12u, false, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         8u,  false, 0u, 24u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    4u, GL_UNSIGNED_BYTE, 4u,  false, 0u, 32u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, 4u, GL_FLOAT,         16u, false, 0u, 36u);
+                }
 
                 // set vertex data (instancing only)
                 it->Activate(1u);
@@ -573,32 +586,65 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             m_aiVertexArray  .next();
             m_aInstanceBuffer.next();
 
-            // map required area of the instance data buffer
-            coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
-            coreByte* pCursor = pRange;
-
-            FOR_EACH(it, m_apObjectList)
+            if(CORE_GL_SUPPORT(ARB_half_float_vertex))
             {
-                const coreObject3D* pObject = (*it);
+                // map required area of the instance data buffer
+                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pCursor = pRange;
 
-                // render only enabled objects
-                if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+                FOR_EACH(it, m_apObjectList)
                 {
-                    // compress data
-                    const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f)                      .PackFloat4x16();
-                    const coreUint64 iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
-                    const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
-                    const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
-                    ASSERT((pObject->GetColor4   ().Min() >=  0.0f) && (pObject->GetColor4   ().Max() <= 1.0f))
-                    ASSERT((pObject->GetTexOffset().Min() >= -4.0f) && (pObject->GetTexOffset().Max() <= 4.0f))
+                    const coreObject3D* pObject = (*it);
 
-                    // write data to the buffer
-                    std::memcpy(pCursor,       &pObject->GetPosition(), sizeof(coreVector3));
-                    std::memcpy(pCursor + 12u, &iSize,                  sizeof(coreUint64));
-                    std::memcpy(pCursor + 20u, &iRotation,              sizeof(coreUint64));
-                    std::memcpy(pCursor + 28u, &iColor,                 sizeof(coreUint32));
-                    std::memcpy(pCursor + 32u, &iTexParams,             sizeof(coreUint64));
-                    pCursor += CORE_BATCHLIST_INSTANCE_SIZE;
+                    // render only enabled objects
+                    if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+                    {
+                        // compress data
+                        const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f)                      .PackFloat4x16();
+                        const coreUint64 iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
+                        const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
+                        const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
+                        ASSERT((pObject->GetColor4   ().Min() >=  0.0f) && (pObject->GetColor4   ().Max() <= 1.0f))
+                        ASSERT((pObject->GetTexOffset().Min() >= -4.0f) && (pObject->GetTexOffset().Max() <= 4.0f))
+
+                        // write data to the buffer
+                        std::memcpy(pCursor,       &pObject->GetPosition(), sizeof(coreVector3));
+                        std::memcpy(pCursor + 12u, &iSize,                  sizeof(coreUint64));
+                        std::memcpy(pCursor + 20u, &iRotation,              sizeof(coreUint64));
+                        std::memcpy(pCursor + 28u, &iColor,                 sizeof(coreUint32));
+                        std::memcpy(pCursor + 32u, &iTexParams,             sizeof(coreUint64));
+                        pCursor += CORE_BATCHLIST_INSTANCE_SIZE_HIGH;
+                    }
+                }
+            }
+            else
+            {
+                // map required area of the instance data buffer
+                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pCursor = pRange;
+
+                FOR_EACH(it, m_apObjectList)
+                {
+                    const coreObject3D* pObject = (*it);
+
+                    // render only enabled objects
+                    if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+                    {
+                        // compress data
+                        const coreUint64  iRotation  = pObject->GetRotation().PackSnorm4x16();
+                        const coreUint32  iColor     = pObject->GetColor4  ().PackUnorm4x8 ();
+                        const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
+                        ASSERT((pObject->GetColor4   ().Min() >=  0.0f) && (pObject->GetColor4   ().Max() <= 1.0f))
+                        ASSERT((pObject->GetTexOffset().Min() >= -4.0f) && (pObject->GetTexOffset().Max() <= 4.0f))
+
+                        // write data to the buffer
+                        std::memcpy(pCursor,       &pObject->GetPosition(), sizeof(coreVector3));
+                        std::memcpy(pCursor + 12u, &pObject->GetSize(),     sizeof(coreVector3));
+                        std::memcpy(pCursor + 24u, &iRotation,              sizeof(coreUint64));
+                        std::memcpy(pCursor + 32u, &iColor,                 sizeof(coreUint32));
+                        std::memcpy(pCursor + 36u, &vTexParams,             sizeof(coreVector4));
+                        pCursor += CORE_BATCHLIST_INSTANCE_SIZE_LOW;
+                    }
                 }
             }
 

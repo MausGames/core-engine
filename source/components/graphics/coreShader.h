@@ -51,6 +51,9 @@
 #define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_as2Texture2D[%zu]"
 #define CORE_SHADER_UNIFORM_TEXTURE_SHADOW      "u_as2TextureShadow[%zu]"
 
+#define CORE_SHADER_UNIFORM_DIV_POSITION        "u_v3DivPosition"
+#define CORE_SHADER_UNIFORM_DIV_DATA            "u_v3DivData"
+
 #define CORE_SHADER_ATTRIBUTE_POSITION          "a_v3RawPosition"
 #define CORE_SHADER_ATTRIBUTE_TEXCOORD          "a_v2RawTexCoord"
 #define CORE_SHADER_ATTRIBUTE_NORMAL            "a_v3RawNormal"
