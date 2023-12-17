@@ -445,7 +445,7 @@ void CoreDebug::__UpdateOutput()
             pDisplay->oOutput.Move();
 
             fOffsetX += pDisplay->oOutput.GetSize().x;
-            DYN_KEEP(it)
+            DYN_KEEP(it, m_apDisplay)
         }
     }
 

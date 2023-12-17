@@ -27,7 +27,7 @@
 #define CORE_MEMORY_SHARED  (STRING(__FILE__) ":" STRING(__LINE__))
 #define CORE_MEMORY_UNIQUE  (PRINT(CORE_MEMORY_SHARED ":%p", this))
 
-#define __ALLOC_CHECK(t,c)  ([](const coreUintW iSize) {STATIC_ASSERT(std::is_trivial<typename std::decay<t>::type>::value) ASSERT(iSize)}(c))
+#define __CHECK_ALLOC(t,c)  ([](const coreUintW iSize) {STATIC_ASSERT(std::is_trivial<typename std::decay<t>::type>::value) ASSERT(iSize)}(c))
 
 #define MANAGED_NEW(t,...)  (ASSUME_ALIGNED(new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__), alignof(t)))
 #define MANAGED_DELETE(p)   {if(p) {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), r_cast<void**>(&(p)));}}
@@ -35,13 +35,13 @@
 #define POOLED_NEW(m,t,...) (ASSUME_ALIGNED(new((m).Allocate()) t(__VA_ARGS__), alignof(t)))
 #define POOLED_DELETE(m,p)  {if(p) {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}}
 
-#define ALIGNED_NEW(t,c,a)  (__ALLOC_CHECK(t, c), ASSUME_ALIGNED(s_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))), (a)))
+#define ALIGNED_NEW(t,c,a)  (__CHECK_ALLOC(t, c), ASSUME_ALIGNED(s_cast<t*>(_aligned_malloc((c) * sizeof(t), (a))), (a)))
 #define ALIGNED_DELETE(p)   {_aligned_free(p); (p) = NULL;}
 
-#define ZERO_NEW(t,c)       (__ALLOC_CHECK(t, c), ASSUME_ALIGNED(s_cast<t*>(std::calloc((c), sizeof(t))), ALIGNMENT_NEW))
+#define ZERO_NEW(t,c)       (__CHECK_ALLOC(t, c), ASSUME_ALIGNED(s_cast<t*>(std::calloc((c), sizeof(t))), ALIGNMENT_NEW))
 #define ZERO_DELETE(p)      {std::free(p); (p) = NULL;}
 
-#define DYNAMIC_RESIZE(p,c) {__ALLOC_CHECK(decltype(*(p)), c); (p) = ASSUME_ALIGNED(s_cast<decltype(p)>(std::realloc((p), (c) * sizeof(*(p)))), ALIGNMENT_NEW);}
+#define DYNAMIC_RESIZE(p,c) {__CHECK_ALLOC(decltype(*(p)), c); (p) = ASSUME_ALIGNED(s_cast<decltype(p)>(std::realloc((p), (c) * sizeof(*(p)))), ALIGNMENT_NEW);}
 #define DYNAMIC_DELETE(p)   {std::free(p); (p) = NULL;}
 
 #define STATIC_MEMORY(t,p)  alignas(alignof(t)) static coreByte CONCAT(__m, __LINE__)[sizeof(t) + sizeof(coreBool)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));

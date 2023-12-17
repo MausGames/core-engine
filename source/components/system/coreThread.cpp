@@ -135,7 +135,7 @@ void coreThread::UpdateFunctions()
     FOR_EACH_DYN(it, m_anFuncActive)
     {
         // call function and remove when successful
-        if(it->nFunction()) DYN_KEEP  (it)
+        if(it->nFunction()) DYN_KEEP  (it, m_anFuncActive)
                        else DYN_REMOVE(it, m_anFuncActive)
     }
 }

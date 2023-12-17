@@ -511,7 +511,7 @@ void coreObjectManager::__UpdateObjects()
             FOR_EACH_DYN(et, *it)
             {
                 // check for invalid pointers and remove them
-                if(*et) DYN_KEEP  (et)
+                if(*et) DYN_KEEP  (et, *it)
                    else DYN_REMOVE(et, *it)
             }
 
@@ -529,7 +529,7 @@ void coreObjectManager::__UpdateObjects()
     FOR_EACH_DYN(it, m_aiObjectCollision)
     {
         // check for old entries and remove them
-        if((*it) == iCurFrame) DYN_KEEP  (it)
+        if((*it) == iCurFrame) DYN_KEEP  (it, m_aiObjectCollision)
                           else DYN_REMOVE(it, m_aiObjectCollision)
     }
 }

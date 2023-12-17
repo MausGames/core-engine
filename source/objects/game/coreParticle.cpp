@@ -194,7 +194,7 @@ void coreParticleSystem::Move()
             // remove finished particle
             DYN_REMOVE(it, m_apRenderList)
         }
-        else DYN_KEEP(it)
+        else DYN_KEEP(it, m_apRenderList)
     }
 
     // set the update status
@@ -283,7 +283,7 @@ void coreParticleSystem::Clear(const coreParticleEffect* pEffect)
             // remove particle
             DYN_REMOVE(it, m_apRenderList)
         }
-        else DYN_KEEP(it)
+        else DYN_KEEP(it, m_apRenderList)
     }
 }
 

@@ -393,27 +393,33 @@
 
 #define BIT(n)                      (1ull << (n))
 #define BITLINE(n)                  (BIT((n) - 1ull) * 2ull - 1ull)
-#define ADD_BIT(o,n)                { (o) |=  BIT(n);}
-#define ADD_FLAG(o,n)               { (o) |=     (n);}
-#define REMOVE_BIT(o,n)             { (o) &= ~BIT(n);}
-#define REMOVE_FLAG(o,n)            { (o) &=    ~(n);}
-#define TOGGLE_BIT(o,n)             { (o) ^=  BIT(n);}
-#define TOGGLE_FLAG(o,n)            { (o) ^=     (n);}
-#define SET_BIT(o,n,t)              { (o) ^=  BIT(n) & ((o) ^ ((t) ? ~0ull : 0ull));}
-#define SET_FLAG(o,n,t)             { (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
-#define HAS_BIT(o,n)                (((o) &   BIT(n)) != 0ull)
-#define HAS_FLAG(o,n)               (((o) &      (n)) == (n))
+#define ADD_BIT(o,n)                {__CHECK_BIT (o, n);  (o) |=  BIT(n);}
+#define ADD_FLAG(o,n)               {__CHECK_FLAG(o, n);  (o) |=     (n);}
+#define REMOVE_BIT(o,n)             {__CHECK_BIT (o, n);  (o) &= ~BIT(n);}
+#define REMOVE_FLAG(o,n)            {__CHECK_FLAG(o, n);  (o) &=    ~(n);}
+#define TOGGLE_BIT(o,n)             {__CHECK_BIT (o, n);  (o) ^=  BIT(n);}
+#define TOGGLE_FLAG(o,n)            {__CHECK_FLAG(o, n);  (o) ^=     (n);}
+#define SET_BIT(o,n,t)              {__CHECK_BIT (o, n);  (o) ^=  BIT(n) & ((o) ^ ((t) ? ~0ull : 0ull));}
+#define SET_FLAG(o,n,t)             {__CHECK_FLAG(o, n);  (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
+#define HAS_BIT(o,n)                (__CHECK_BIT (o, n), ((o) &   BIT(n)) != 0ull)
+#define HAS_FLAG(o,n)               (__CHECK_FLAG(o, n), ((o) &      (n)) == (n))
 
-#define BITVALUE(n,s,v)             (((v) & BITLINE(n)) << (s))
-#define SET_BITVALUE(o,n,s,v)       { (o) = BITVALUE(n, s, v) | ((o) & ~(BITLINE(n) << (s)));}
-#define GET_BITVALUE(o,n,s)         (((o) >> (s)) & BITLINE(n))
+#define BITVALUE(n,s,v)             (__CHECK_BITVALUE(n, v),     ((v) & BITLINE(n)) << (s))
+#define SET_BITVALUE(o,n,s,v)       {__CHECK_FLAG(o, (n) + (s));  (o) = BITVALUE(n, s, v) | ((o) & ~(BITLINE(n) << (s)));}
+#define GET_BITVALUE(o,n,s)         (__CHECK_FLAG(o, (n) + (s)), ((o) >> (s)) & BITLINE(n))
 
-#define FOR_EACH(i,c)               for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; ++i)
-#define FOR_EACH_REV(i,c)           for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; ++i)
-#define FOR_EACH_SET(i,s,c)         for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; ++i)
+#define FOR_EACH(i,c)               for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; __CHECK_ITERATOR    (i ## __e, c), ++i)
+#define FOR_EACH_REV(i,c)           for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; __CHECK_ITERATOR_REV(i ## __e, c), ++i)
+#define FOR_EACH_SET(i,s,c)         for(auto i = (s),          i ## __e = (c).end();  i != i ## __e; __CHECK_ITERATOR    (i ## __e, c), ++i)
 #define FOR_EACH_DYN(i,c)           for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; )
-#define DYN_KEEP(i)                 {++i;}
-#define DYN_REMOVE(i,c)             {i = (c).erase(i); i ## __e = (c).end();}
+#define DYN_KEEP(i,c)               {__CHECK_ITERATOR(i ## __e, c); ++i;}
+#define DYN_REMOVE(i,c)             {__CHECK_ITERATOR(i ## __e, c); i = (c).erase(i); i ## __e = (c).end();}
+
+#define __CHECK_BIT(o,n)            ([&]() {ASSERT(coreUintW(n) <          sizeof(o) * 8u)} ())
+#define __CHECK_FLAG(o,n)           ([&]() {ASSERT(coreUintW(n) <= BITLINE(sizeof(o) * 8u))}())
+#define __CHECK_BITVALUE(n,v)       ([&]() {ASSERT(coreUintW(v) <= BITLINE(n))}())
+#define __CHECK_ITERATOR(e,c)       ([&]() {ASSERT((e) == (c).end ())}())
+#define __CHECK_ITERATOR_REV(e,c)   ([&]() {ASSERT((e) == (c).rend())}())
 
 #define BIG_STATIC                  static thread_local
 #define FRIEND_CLASS(c)             friend class c;
