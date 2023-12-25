@@ -197,13 +197,13 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
     // create solid text surface data
     pSolid = m_pFont->CreateText(pcText, iRelHeight);
-    ASSERT(pSolid->format->BitsPerPixel == 8u)
+    ASSERT((pSolid->format->BitsPerPixel == 8u) && !SDL_MUSTLOCK(pSolid))
 
     if(iRelOutline)
     {
         // create outlined text surface data
         pOutline = m_pFont->CreateTextOutline(pcText, iRelHeight, iRelOutline);
-        ASSERT(pOutline->format->BitsPerPixel == 8u)
+        ASSERT((pOutline->format->BitsPerPixel == 8u) && !SDL_MUSTLOCK(pSolid))
     }
 
     // set texture properties

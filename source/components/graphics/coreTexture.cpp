@@ -59,7 +59,30 @@ coreStatus coreTexture::Load(coreFile* pFile)
 
     // convert single-channel data (if not supported)
     if((pData->format->BytesPerPixel == 1u) && !CORE_GL_SUPPORT(ARB_texture_rg))
+    {
         pData = SDL_ConvertSurfaceFormat(pData, SDL_PIXELFORMAT_RGB24, 0u);
+    }
+
+    // convert RGB texture to RG texture (if supported)
+    if(HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) && CORE_GL_SUPPORT(ARB_texture_rg))
+    {
+        ASSERT(pData->format->BytesPerPixel == 3u)
+        SDL_Surface* pNew = SDL_CreateRGBSurfaceWithFormat(0u, pData->w, pData->h, 16, SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 16, 2));
+
+        // manually copy texels
+        for(coreUintW i = 0u, ie = LOOP_NONZERO(pData->h); i < ie; ++i)
+        {
+            for(coreUintW j = 0u, je = LOOP_NONZERO(pData->w); j < je; ++j)
+            {
+                const coreUintW iOffset = j + i * je;
+                std::memcpy(s_cast<coreByte*>(pNew->pixels) + (iOffset * 2u), s_cast<coreByte*>(pData->pixels) + (iOffset * 3u), 2u);
+            }
+        }
+
+        pData = pNew;
+    }
+
+    ASSERT(!SDL_MUSTLOCK(pData))
 
     // calculate data size
     const coreUint8  iComponents = pData->format->BytesPerPixel;
