@@ -117,7 +117,37 @@ void coreLog::__Write(const coreBool bTimeStamp, coreWorkString& sMessage, const
 #if defined(_CORE_DEBUG_)
 
     // also write text to the standard output
-    SDL_Log("%s", sMessage.c_str());
+    this->__WriteStandard(sMessage);
 
 #endif
+}
+
+
+// ****************************************************************
+/* write text to the standard output */
+void coreLog::__WriteStandard(coreWorkString& sMessage)
+{
+    ASSERT(m_Lock.IsLocked())
+
+    coreUintW iFrom = 0u;
+
+    // remove all HTML tags (without nesting)
+    for(coreUintW i = 0u, ie = sMessage.length(); i < ie; ++i)
+    {
+        if(sMessage[i] == '<')
+        {
+            iFrom = i;
+        }
+        else if(sMessage[i] == '>')
+        {
+            const coreUintW iLen = i - iFrom + 1u;
+
+            sMessage.erase(iFrom, iLen);
+            i  -= iLen;
+            ie -= iLen;
+        }
+    }
+
+    // write text
+    if(!sMessage.empty()) SDL_Log("%s", sMessage.c_str());
 }

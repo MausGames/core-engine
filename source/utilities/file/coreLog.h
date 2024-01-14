@@ -13,6 +13,7 @@
 // TODO 4: define more log capturing spots, not only resource-loading/unloading and (few) errors
 // TODO 5: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts
 // TODO 2: should it be possible to create many log files ? console output and file header then ?
+// TODO 3: escape special HTML characters as normal text, <, >, &
 
 
 // ****************************************************************
@@ -84,6 +85,9 @@ public:
 private:
     /* write text to the log file */
     void __Write(const coreBool bTimeStamp, coreWorkString& sMessage, const coreChar* pcPre, const coreChar* pcPost);
+
+    /* write text to the standard output */
+    void __WriteStandard(coreWorkString& sMessage);
 };
 
 
