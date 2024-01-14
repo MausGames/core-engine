@@ -17,7 +17,7 @@
 #define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)   // enable debug features and extended logging
 #define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (true)    // enable asynchronous processing and resource loading
 #define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)   // disable all possible hardware features
-#define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (false)   // keep resources in memory
+#define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (false)   // load all resources on startup and keep them in memory
 
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (0)

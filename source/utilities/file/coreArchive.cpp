@@ -287,6 +287,16 @@ void coreFile::InternalNew(coreFile** OUTPUT ppTarget, const coreFile* pSource)
     // forward archive attributes
     (*ppTarget)->m_pArchive    = pSource->m_pArchive;
     (*ppTarget)->m_iArchivePos = pSource->m_iArchivePos;
+
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
+    {
+        // always load into memory
+        (*ppTarget)->LoadData();
+
+        // remove association
+        (*ppTarget)->m_pArchive    = NULL;
+        (*ppTarget)->m_iArchivePos = 0u;
+    }
 }
 
 void coreFile::InternalDelete(coreFile** OUTPUT ppTarget)

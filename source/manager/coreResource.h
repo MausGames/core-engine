@@ -103,7 +103,7 @@ public:
 
     /* control the reference-counter */
     inline void RefIncrease() {m_iRefCount.FetchAdd(1u); ASSERT(m_iRefCount)}
-    inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u) && !Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE)) this->Nullify();}
+    inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u)) this->Nullify();}
 
     /* handle resource loading */
     inline coreBool Update () {coreSpinLocker oLocker(&m_UpdateLock); if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic) {m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}

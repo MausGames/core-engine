@@ -22,6 +22,12 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 {
     // assign resource name
     m_pResource->AssignName(pcName);
+
+    // always load into memory
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
+    {
+        if(m_bAutomatic) this->RefIncrease();
+    }
 }
 
 
@@ -29,6 +35,12 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 /* destructor */
 coreResourceHandle::~coreResourceHandle()
 {
+    // unload from memory
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
+    {
+        if(m_bAutomatic) this->RefDecrease();
+    }
+
     ASSERT(!m_iRefCount)
 
     // delete resource object
