@@ -175,6 +175,7 @@ void __coreInitOpenGLES()
     {
         __CORE_GLES_FUNC_FETCH(glDebugMessageCallback, KHR, bES32)
         __CORE_GLES_FUNC_FETCH(glDebugMessageControl,  KHR, bES32)
+        __CORE_GLES_FUNC_FETCH(glObjectLabel,          KHR, bES32)
     }
 
     // implement GL_KHR_parallel_shader_compile

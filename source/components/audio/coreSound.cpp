@@ -49,7 +49,7 @@ coreStatus coreSound::Load(coreFile* pFile)
     // check file header
     if(std::memcmp(pData, "RIFF", 4u) || std::memcmp(pData + 8u, "WAVE", 4u))
     {
-        Core::Log->Warning("Sound (%s) is not a valid WAVE-file", pFile->GetPath());
+        Core::Log->Warning("Sound (%s) is not a valid WAVE-file", m_sName.c_str());
         return CORE_INVALID_DATA;
     }
     pData += 12u;
@@ -74,7 +74,7 @@ coreStatus coreSound::Load(coreFile* pFile)
     else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_MULAW) {if(!Core::Audio->GetSupportMULAW()) {coreDecodeMULAW(pSoundData, iSoundSize, &pRawData, &iSoundSize); pSoundData = pRawData;}}
     else if(m_Format.iAudioFormat != CORE_SOUND_FORMAT_PCM)
     {
-        Core::Log->Warning("Sound (%s) has unsupported audio format %u (valid formats: PCM 1, ALAW 6, MULAW 7)", pFile->GetPath(), m_Format.iAudioFormat);
+        Core::Log->Warning("Sound (%s) has unsupported audio format %u (valid formats: PCM 1, ALAW 6, MULAW 7)", m_sName.c_str(), m_Format.iAudioFormat);
         return CORE_INVALID_DATA;
     }
 
@@ -103,18 +103,15 @@ coreStatus coreSound::Load(coreFile* pFile)
     alBufferData(m_iBuffer, iSoundFormat, pSoundData, iSoundSize, m_Format.iSampleRate);
     if(pRawData) SAFE_DELETE_ARRAY(pRawData)
 
-    // save properties
-    m_sPath = pFile->GetPath();
-
     // check for errors
     const ALenum iError = alGetError();
     if(iError != AL_NO_ERROR)
     {
-        Core::Log->Warning("Sound (%s) could not be loaded (AL Error Code: 0x%08X)", pFile->GetPath(), iError);
+        Core::Log->Warning("Sound (%s) could not be loaded (AL Error Code: 0x%08X)", m_sName.c_str(), iError);
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Sound (%s, format %u, %u channels, %u bits, %u rate) loaded", pFile->GetPath(), m_Format.iAudioFormat, m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
+    Core::Log->Info("Sound (%s, format %u, %u channels, %u bits, %u rate) loaded", m_sName.c_str(), m_Format.iAudioFormat, m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
     return CORE_OK;
 }
 
@@ -131,10 +128,9 @@ coreStatus coreSound::Unload()
 
     // delete sound buffer
     alDeleteBuffers(1, &m_iBuffer);
-    if(!m_sPath.empty()) Core::Log->Info("Sound (%s) unloaded", m_sPath.c_str());
+    if(!m_sName.empty()) Core::Log->Info("Sound (%s) unloaded", m_sName.c_str());
 
     // reset properties
-    m_sPath      = "";
     m_iBuffer    = 0u;
     m_Format     = {};
     m_iCurSource = 0u;

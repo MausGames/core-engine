@@ -82,7 +82,7 @@ coreStatus coreShader::Load(coreFile* pFile)
     else if(!std::strcmp(pcExtension, "cs")  || !std::strcmp(pcExtension, "comp")) {m_iType = GL_COMPUTE_SHADER;         pcTypeDef = "#define _CORE_COMPUTE_SHADER_"         " (1) \n";}
     else
     {
-        Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag, cs, comp)", pFile->GetPath());
+        Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag, cs, comp)", m_sName.c_str());
         return CORE_INVALID_DATA;
     }
 
@@ -119,10 +119,10 @@ coreStatus coreShader::Load(coreFile* pFile)
         m_iHash = coreMath::HashCombine64(m_iHash, coreHashXXH64(r_cast<const coreByte*>(apcData[i]), aiSize[i]));
     }
 
-    // save properties
-    m_sPath = pFile->GetPath();
+    // add debug label
+    Core::Graphics->LabelOpenGL(GL_SHADER, m_iIdentifier, m_sName.c_str());
 
-    Core::Log->Info("Shader (%s:%u) loaded", pFile->GetPath(), m_iIdentifier);
+    Core::Log->Info("Shader (%s) loaded", m_sName.c_str());
     return CORE_OK;
 }
 
@@ -135,10 +135,9 @@ coreStatus coreShader::Unload()
 
     // delete shader
     glDeleteShader(m_iIdentifier);
-    if(!m_sPath.empty()) Core::Log->Info("Shader (%s) unloaded", m_sPath.c_str());
+    if(!m_sName.empty()) Core::Log->Info("Shader (%s) unloaded", m_sName.c_str());
 
     // reset properties
-    m_sPath       = "";
     m_iIdentifier = 0u;
     m_iType       = 0u;
     m_iHash       = 0u;
@@ -318,9 +317,6 @@ coreStatus coreProgram::Load(coreFile* pFile)
             glLinkProgram(m_iIdentifier);
         }
 
-        // save properties
-        FOR_EACH(it, m_apShader) m_sPath += PRINT("%s%s:%u", m_sPath.empty() ? "" : ", ", (*it).GetHandle()->GetName(), (*it)->GetIdentifier());
-
         m_eStatus = CORE_PROGRAM_LINKING;
         m_Sync.Create(CORE_SYNC_CREATE_FLUSHED);
         return CORE_BUSY;
@@ -342,7 +338,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
             glGetProgramiv(m_iIdentifier, GL_LINK_STATUS, &iStatus);
             WARN_IF(!iStatus)
             {
-                Core::Log->Warning("Program (%s) could not be linked", m_sPath.c_str());
+                Core::Log->Warning("Program (%s) could not be linked", m_sName.c_str());
                 this->__WriteLog();
 
                 m_eStatus = CORE_PROGRAM_FAILED;
@@ -367,7 +363,10 @@ coreStatus coreProgram::Load(coreFile* pFile)
             if(iAmbientBlock   != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
         }
 
-        Core::Log->Info("Program (%u, %s) loaded", m_iIdentifier, m_sPath.c_str());
+        // add debug label
+        Core::Graphics->LabelOpenGL(GL_PROGRAM, m_iIdentifier, m_sName.c_str());
+
+        Core::Log->Info("Program (%s) loaded", m_sName.c_str());
         this->__WriteInterface();
 
         m_eStatus = CORE_PROGRAM_SUCCESSFUL;
@@ -395,13 +394,12 @@ coreStatus coreProgram::Unload()
 
     // delete shader-program (with implicit shader object detachment)
     glDeleteProgram(m_iIdentifier);
-    if(!m_sPath.empty()) Core::Log->Info("Program (%s) unloaded", m_sPath.c_str());
+    if(!m_sName.empty()) Core::Log->Info("Program (%s) unloaded", m_sName.c_str());
 
     // delete sync object
     m_Sync.Delete();
 
     // reset properties
-    m_sPath       = "";
     m_iIdentifier = 0u;
     m_eStatus     = CORE_PROGRAM_DEFINED;
     m_iHash       = 0u;
@@ -767,7 +765,7 @@ void coreProgram::__WriteLog()const
         // loop through all attached shader objects
         FOR_EACH(it, m_apShader)
         {
-            Core::Log->ListDeeper("%s (%s)", it->GetHandle()->GetName(), (*it)->GetPath());
+            Core::Log->ListDeeper((*it)->GetName());
             {
                 // get length of shader info-log
                 glGetShaderiv((*it)->GetIdentifier(), GL_INFO_LOG_LENGTH, &iLength);

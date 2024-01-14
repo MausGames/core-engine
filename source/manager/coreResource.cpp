@@ -20,6 +20,8 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 , m_iRefCount  (0u)
 , m_UpdateLock ()
 {
+    // assign resource name
+    m_pResource->AssignName(pcName);
 }
 
 

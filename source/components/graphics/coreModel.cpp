@@ -73,21 +73,20 @@ coreStatus coreModel::Load(coreFile* pFile)
     else if(!std::memcmp(pcExtension, "md3", 3u)) coreImportMD3(pFile->GetData(), &oImport);
     else
     {
-        Core::Log->Warning("Model (%s) could not be identified (valid extensions: md5[mesh], md3)", pFile->GetPath());
+        Core::Log->Warning("Model (%s) could not be identified (valid extensions: md5[mesh], md3)", m_sName.c_str());
         return CORE_INVALID_DATA;
     }
 
     // check for success
     if(oImport.aVertexData.empty())
     {
-        Core::Log->Warning("Model (%s) could not be loaded", pFile->GetPath());
+        Core::Log->Warning("Model (%s) could not be loaded", m_sName.c_str());
         return CORE_INVALID_DATA;
     }
 
     // save properties
     m_iNumVertices = oImport.aVertexData.size();
     m_iNumIndices  = oImport.aiIndexData.size();
-    m_sPath        = pFile->GetPath();
     ASSERT((m_iNumVertices > 0u) && (m_iNumVertices <= 0xFFFFu) && m_iNumIndices)
 
     // prepare index-map (for deferred remapping)
@@ -306,12 +305,16 @@ coreStatus coreModel::Load(coreFile* pFile)
 
         // create index buffer
         this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), piOptimizedData, CORE_DATABUFFER_STORAGE_STATIC);
+
+        // add debug label
+        Core::Graphics->LabelOpenGL(GL_BUFFER, m_aVertexBuffer.front().GetIdentifier(), PRINT("%s.vertex", m_sName.c_str()));
+        Core::Graphics->LabelOpenGL(GL_BUFFER, m_IndexBuffer          .GetIdentifier(), PRINT("%s.index",  m_sName.c_str()));
     }
 
     // free index data
     SAFE_DELETE_ARRAY(piOptimizedData)
 
-    Core::Log->Info("Model (%s, %u vertices, %u indices, %u clusters, %.5f x %.5f x %.5f range, %.5f radius) loaded", pFile->GetPath(), m_iNumVertices, m_iNumIndices, m_iNumClusters, m_vBoundingRange.x, m_vBoundingRange.y, m_vBoundingRange.z, m_fBoundingRadius);
+    Core::Log->Info("Model (%s, %u vertices, %u indices, %u clusters, %.5f x %.5f x %.5f range, %.5f radius) loaded", m_sName.c_str(), m_iNumVertices, m_iNumIndices, m_iNumClusters, m_vBoundingRange.x, m_vBoundingRange.y, m_vBoundingRange.z, m_fBoundingRadius);
     return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_OK;
 }
 
@@ -341,13 +344,12 @@ coreStatus coreModel::Unload()
 
     // delete vertex array object
     if(m_iVertexArray) coreDelVertexArrays(1u, &m_iVertexArray);
-    if(!m_sPath.empty()) Core::Log->Info("Model (%s) unloaded", m_sPath.c_str());
+    if(!m_sName.empty()) Core::Log->Info("Model (%s) unloaded", m_sName.c_str());
 
     // delete sync object
     m_Sync.Delete();
 
     // reset properties
-    m_sPath           = "";
     m_iVertexArray    = 0u;
     m_iNumVertices    = 0u;
     m_iNumIndices     = 0u;
@@ -420,6 +422,9 @@ void coreModel::Enable()
 
             // force binding of index data
             coreDataBuffer::Unbind(GL_ELEMENT_ARRAY_BUFFER, false);
+
+            // add debug label
+            Core::Graphics->LabelOpenGL(GL_VERTEX_ARRAY, m_iVertexArray, m_sName.c_str());
         }
 
         // set vertex data

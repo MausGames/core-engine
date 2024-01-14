@@ -116,6 +116,7 @@ public:
     friend void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLuint iID, const GLenum iSeverity, const GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);
     void DebugOpenGL();
     void CheckOpenGL();
+    void LabelOpenGL(const GLenum iType, const GLuint iIdentifier, const coreChar* pcLabel);
 
     /* retrieve graphics memory */
     coreUint64 ProcessGpuMemory()const;

@@ -37,11 +37,11 @@ enum coreResourceReset : coreBool
 class INTERFACE coreResource
 {
 protected:
-    coreString m_sPath;   // relative path of the resource file
+    coreString m_sName;   // resource name from the resource manager
 
 
 public:
-    coreResource()noexcept : m_sPath ("") {}
+    coreResource()noexcept : m_sName ("") {}
     virtual ~coreResource() = default;
 
     ENABLE_COPY(coreResource)
@@ -50,8 +50,11 @@ public:
     virtual coreStatus Load(coreFile* pFile) = 0;
     virtual coreStatus Unload()              = 0;
 
+    /* assign resource name */
+    inline void AssignName(const coreChar* pcName) {m_sName = pcName;}
+
     /* get object properties */
-    inline const coreChar* GetPath()const {return m_sPath.c_str();}
+    inline const coreChar* GetName()const {return m_sName.c_str();}
 };
 
 

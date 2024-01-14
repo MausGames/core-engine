@@ -619,6 +619,20 @@ void CoreGraphics::CheckOpenGL()
 
 
 // ****************************************************************
+/* label OpenGL object for debug tooling */
+void CoreGraphics::LabelOpenGL(const GLenum iType, const GLuint iIdentifier, const coreChar* pcLabel)
+{
+    if(!Core::Debug->IsEnabled()) return;
+
+    if(CORE_GL_SUPPORT(KHR_debug))
+    {
+        // assign string to identifier
+        glObjectLabel(iType, iIdentifier, -1, pcLabel);
+    }
+}
+
+
+// ****************************************************************
 /* get amount of graphics memory assigned to the application (approximation) */
 coreUint64 CoreGraphics::ProcessGpuMemory()const
 {

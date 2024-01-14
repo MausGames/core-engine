@@ -223,8 +223,10 @@ using PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC = void (GL_APIENTRY *) (void);
 
 using PFNGLDEBUGMESSAGECALLBACKPROC = void (GL_APIENTRY *) (GLDEBUGPROC callback, const void* userParam);
 using PFNGLDEBUGMESSAGECONTROLPROC  = void (GL_APIENTRY *) (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
+using PFNGLOBJECTLABELPROC          = void (GL_APIENTRY *) (GLenum identifier, GLuint name, GLsizei length, const GLchar* label);
 #define glDebugMessageCallback __CORE_GLES_FUNC(glDebugMessageCallback)
 #define glDebugMessageControl  __CORE_GLES_FUNC(glDebugMessageControl)
+#define glObjectLabel          __CORE_GLES_FUNC(glObjectLabel)
 
 
 // ****************************************************************
@@ -456,6 +458,7 @@ struct coreContext final
     PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC __glApplyFramebufferAttachmentCMAA;
     PFNGLDEBUGMESSAGECALLBACKPROC           __glDebugMessageCallback;
     PFNGLDEBUGMESSAGECONTROLPROC            __glDebugMessageControl;
+    PFNGLOBJECTLABELPROC                    __glObjectLabel;
     PFNGLMAXSHADERCOMPILERTHREADSPROC       __glMaxShaderCompilerThreads;
     PFNGLBLITFRAMEBUFFERPROC                __glBlitFramebuffer;
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC __glRenderbufferStorageMultisample;

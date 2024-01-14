@@ -47,10 +47,7 @@ coreStatus coreFont::Load(coreFile* pFile)
 
 #endif
 
-    // save properties
-    m_sPath = pFile->GetPath();
-
-    Core::Log->Info("Font (%s) loaded", pFile->GetPath());
+    Core::Log->Info("Font (%s) loaded", m_sName.c_str());
     return CORE_OK;
 }
 
@@ -67,10 +64,7 @@ coreStatus coreFont::Unload()
 
     // delete file object
     coreFile::InternalDelete(&m_pFile);
-    if(!m_sPath.empty()) Core::Log->Info("Font (%s) unloaded", m_sPath.c_str());
-
-    // reset properties
-    m_sPath = "";
+    if(!m_sName.empty()) Core::Log->Info("Font (%s) unloaded", m_sName.c_str());
 
     return CORE_OK;
 }
@@ -185,7 +179,7 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
     TTF_Font* pNewFont = TTF_OpenFontRW(m_pFile->CreateReadStream(), 1, iHeight);
     if(!pNewFont)
     {
-        Core::Log->Warning("Sub-Font (%s, %u height, %u outline) could not be loaded", m_pFile->GetPath(), iHeight, iOutline);
+        Core::Log->Warning("Sub-Font (%s, %u height, %u outline) could not be loaded", m_sName.c_str(), iHeight, iOutline);
         return false;
     }
 
@@ -199,7 +193,7 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
     // save sub-font
     m_aapFont[iHeight].emplace(iOutline, pNewFont);
 
-    Core::Log->Info("Sub-Font (%s, %u height, %u outline) loaded", m_pFile->GetPath(), iHeight, iOutline);
+    Core::Log->Info("Sub-Font (%s, %u height, %u outline) loaded", m_sName.c_str(), iHeight, iOutline);
     return true;
 }
 

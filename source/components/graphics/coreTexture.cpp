@@ -53,7 +53,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), 1, coreData::StrExtension(pFile->GetPath()));
     if(!pData)
     {
-        Core::Log->Warning("Texture (%s) could not be loaded (SDL: %s)", pFile->GetPath(), SDL_GetError());
+        Core::Log->Warning("Texture (%s) could not be loaded (SDL: %s)", m_sName.c_str(), SDL_GetError());
         return CORE_INVALID_DATA;
     }
 
@@ -98,10 +98,10 @@ coreStatus coreTexture::Load(coreFile* pFile)
     this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eMode | CORE_TEXTURE_MODE_REPEAT);
     this->Modify(0u, 0u, pData->w, pData->h, iDataSize, s_cast<coreByte*>(pData->pixels));
 
-    // save properties
-    m_sPath = pFile->GetPath();
+    // add debug label
+    Core::Graphics->LabelOpenGL(GL_TEXTURE, m_iIdentifier, m_sName.c_str());
 
-    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", pFile->GetPath(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, m_bCompressed ? "compressed" : "standard");
+    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", m_sName.c_str(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, m_bCompressed ? "compressed" : "standard");
     return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_OK;
 }
 
@@ -118,13 +118,12 @@ coreStatus coreTexture::Unload()
 
     // delete texture
     coreDelTextures2D(1u, &m_iIdentifier);
-    if(!m_sPath.empty()) Core::Log->Info("Texture (%s) unloaded", m_sPath.c_str());
+    if(!m_sName.empty()) Core::Log->Info("Texture (%s) unloaded", m_sName.c_str());
 
     // delete sync object
     m_Sync.Delete();
 
     // reset properties
-    m_sPath       = "";
     m_iIdentifier = 0u;
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
