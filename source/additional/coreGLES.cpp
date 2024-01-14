@@ -284,6 +284,7 @@ void coreExtensions(coreString* OUTPUT psOutput)
 {
     // copy saved extension string
     (*psOutput) = g_sExtensions;
+    if(!psOutput->empty()) psOutput->pop_back();
 }
 
 

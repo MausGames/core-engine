@@ -138,14 +138,12 @@ void Core::Reset()
 
     // shut down main components
     STATIC_DELETE(Debug)
-    STATIC_DELETE(Input)
     STATIC_DELETE(Graphics)
     STATIC_DELETE(System)
 
     // start up main components
     STATIC_NEW(System)
     STATIC_NEW(Graphics)
-    STATIC_NEW(Input)
     STATIC_NEW(Debug)
 
     // load former state

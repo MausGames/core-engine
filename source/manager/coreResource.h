@@ -261,6 +261,11 @@ private:
 
 
 // ****************************************************************
+/* dummy resource access type */
+using coreDummyPtr = coreResourcePtr<coreResourceDummy>;
+
+
+// ****************************************************************
 /* attach asynchronous callbacks */
 template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction)const
 {

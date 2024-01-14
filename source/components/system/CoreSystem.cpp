@@ -87,6 +87,20 @@ CoreSystem::CoreSystem()noexcept
                             pVersionIMG->major, pVersionIMG->minor, pVersionIMG->patch);
         }
 
+        // execute main-thread with higher priority
+        SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
+
+        // disable screen saver
+        SDL_DisableScreenSaver();
+
+        // disable unwanted events
+        constexpr coreUint32 aiDisable[] = {SDL_DROPFILE, SDL_DROPTEXT, SDL_DROPBEGIN, SDL_DROPCOMPLETE, SDL_KEYMAPCHANGED};
+        for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_EventState(aiDisable[i], SDL_DISABLE);
+
+        // remove all events created during initialization
+        SDL_PumpEvents();
+        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+
         // automatically shut down SDL libraries on exit
         WARN_IF(std::atexit([]() {SDL_GL_UnloadLibrary(); IMG_Quit(); TTF_Quit(); SDL_Quit();})) {}
         return true;
@@ -300,20 +314,6 @@ CoreSystem::CoreSystem()noexcept
 
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
-
-    // execute main-thread with higher priority
-    SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
-
-    // disable screen saver
-    SDL_DisableScreenSaver();
-
-    // disable unwanted events
-    constexpr coreUint32 aiDisable[] = {SDL_DROPFILE, SDL_DROPTEXT, SDL_DROPBEGIN, SDL_DROPCOMPLETE, SDL_KEYMAPCHANGED};
-    for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_EventState(aiDisable[i], SDL_DISABLE);
-
-    // remove all events created during initialization
-    SDL_PumpEvents();
-    SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 
     // init high-precision time
     m_dPerfFrequency = 1.0 / coreDouble(SDL_GetPerformanceFrequency());

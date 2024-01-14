@@ -391,6 +391,10 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glUnmapNamedBuffer(...) (false)
 #define glUnmapNamedBufferEXT(...) (false)
 
+#if defined(_CORE_EMSCRIPTEN_)
+    #define glMapBufferRange(...) (I_TO_P(-1))
+#endif
+
 
 // ****************************************************************
 /* context structure */

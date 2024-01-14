@@ -46,6 +46,7 @@
 // TODO 5: in emscripten, look into support for web-simd (-msse4.2/-mavx -msimd128)
 // TODO 3: with OpenGL 4.2 or higher, normalized floating-point data is actually mapped to [-MAX,MAX] instead of [MIN,MAX], and the current conversion doesn't fit any of those, what about ES and WebGL ? is there an extension to check ?
 // TODO 4: noexcept = default, ~T()noexcept
+// TODO 3: own heaps for string-memory, list-memory, file-data (foreign allocations ?)
 
 
 // ****************************************************************
@@ -294,6 +295,7 @@
 // ****************************************************************
 /* standard libraries */
 #define _CRT_SECURE_NO_WARNINGS
+#define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
 #if !defined(_CORE_EXCEPTIONS_)
     #define _HAS_EXCEPTIONS 0
 #endif

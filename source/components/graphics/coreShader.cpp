@@ -537,7 +537,7 @@ void coreProgram::SendUniform(const coreHashString& sName, const coreMatrix4& mM
 /* load shader-cache from file */
 coreBool coreProgram::LoadShaderCache()
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return false;
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary) || DEFINED(_CORE_MACOS_) || DEFINED(_CORE_SWITCH_)) return false;
 
     ASSERT(s_aBinaryMap.empty() && !s_iBinarySize)
 
@@ -608,7 +608,7 @@ coreBool coreProgram::LoadShaderCache()
 /* save shader-cache to file */
 void coreProgram::SaveShaderCache()
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return;
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary) || DEFINED(_CORE_MACOS_) || DEFINED(_CORE_SWITCH_)) return;
 
     s_BinaryLock.Lock();
     {
@@ -679,7 +679,7 @@ void coreProgram::ClearShaderCache()
 /* load shader-program binary */
 coreBool coreProgram::__LoadBinary()
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return false;
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary) || DEFINED(_CORE_MACOS_) || DEFINED(_CORE_SWITCH_)) return false;
 
     ASSERT(m_iIdentifier && m_iHash)
 
@@ -709,7 +709,7 @@ coreBool coreProgram::__LoadBinary()
 /* save shader-program binary */
 void coreProgram::__SaveBinary()const
 {
-    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary)) return;
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE) || !CORE_GL_SUPPORT(ARB_get_program_binary) || DEFINED(_CORE_MACOS_) || DEFINED(_CORE_SWITCH_)) return;
 
     ASSERT(m_iIdentifier && m_iHash)
 

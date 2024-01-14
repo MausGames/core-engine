@@ -2,9 +2,12 @@
 cd bin/linux_x86_64
 
 # set library path
-export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"
 
-# start game
+# use mimalloc allocator (if available)
+export LD_PRELOAD="libmimalloc.so.2:$LD_PRELOAD"
+
+# launch with gamemode (if available)
 if type gamemoderun &> /dev/null; then
     gamemoderun ./CoreApp.elf "$@"
 else
