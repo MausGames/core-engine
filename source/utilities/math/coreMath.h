@@ -756,9 +756,60 @@ constexpr coreUint16 coreMath::Float32To16(const coreFloat fInput)
 #endif
 
     // normal calculation
-    const coreUint32 A = coreMath::FloatToBits(fInput);
-    return ((A & 0x7FFFFFFFu) > 0x38000000u) ? ((((A & 0x7FFFFFFFu) >> 13u) - 0x0001C000u) |
-                                                 ((A & 0x80000000u) >> 16u)) & 0xFFFFu : 0u;
+    return [](const coreInt32 A)
+    {
+        coreInt32 s = ((A >> 16) & 0x00008000);
+        coreInt32 e = ((A >> 23) & 0x000000FF) - (127 - 15);
+        coreInt32 m = ((A)       & 0x007FFFFF);
+
+        if(e <= 0)
+        {
+            if(e <= -11)
+            {
+                return s;
+            }
+            else
+            {
+                m = m | 0x00800000;
+
+                const coreInt32 t = 14 - e;
+                const coreInt32 a = (1 << (t - 1)) - 1;
+                const coreInt32 b = (m >> t) & 1;
+
+                return s | ((m + a + b) >> t);
+            }
+        }
+        else if(e == 0xFF - (127 - 15))
+        {
+            if(m == 0)
+            {
+                return s | 0x7C00;
+            }
+            else
+            {
+                return s | 0x7C00 | MAX(m >> 13, 1);
+            }
+        }
+        else
+        {
+            m = m + 0x00000FFF + ((m >> 13) & 1);
+
+            if(m & 0x00800000)
+            {
+                m = 0;
+                e = e + 1;
+            }
+
+            if(e >= 31)
+            {
+                return s | 0x7C00;
+            }
+            else
+            {
+                return s | (e << 10) | (m >> 13);
+            }
+        }
+    }(coreMath::FloatToBits(fInput));
 }
 
 
@@ -782,9 +833,39 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 #endif
 
     // normal calculation
-    const coreUint32 A = (iInput & 0x7C00u) ? (((coreUint32(iInput & 0x7FFFu) << 13u) + 0x38000000u) |
-                                                (coreUint32(iInput & 0x8000u) << 16u)) : 0u;
-    return coreMath::BitsToFloat(A);
+    return coreMath::BitsToFloat([](const coreInt32 A)
+    {
+        coreInt32 s = (A << 16) & 0x80000000;
+        coreInt32 e = (A >> 10) & 0x0000001F;
+        coreInt32 m = (A)       & 0x000003FF;
+
+        if(e == 0)
+        {
+            if(m == 0)
+            {
+                return s;
+            }
+            else
+            {
+                while(!(m & 0x00000400))
+                {
+                    e = e -  1;
+                    m = m << 1;
+                }
+
+                e = e +  1;
+                m = m & ~0x00000400;
+            }
+        }
+        else if(e == 31)
+        {
+            return s | 0x7F800000 | (m << 13);
+        }
+
+        e = e + (127 - 15);
+
+        return s | (e << 23) | (m << 13);
+    }(iInput));
 }
 
 
