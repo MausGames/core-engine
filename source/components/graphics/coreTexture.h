@@ -13,11 +13,12 @@
 // TODO 3: implement sampler objects
 // TODO 3: implement light unbind (like in model and program)
 // TODO 3: load, check proper use of PBO, maybe implement static buffer(s!) -> PBO seems to work, but not with automatic mipmap generation (stalls there)
-// TODO 3: improve mipmap filtering quality (replace box filter with better filter (e.g. gaussian, lanczos), check for border (repeat or clamp depending on sampling), consider overflow) (what about stb_image_resize.h ?)
+// TODO 3: improve mipmap filtering quality (replace box filter with better filter (e.g. gaussian, lanczos), check for border (repeat or clamp depending on sampling), consider overflow) (what about stb_image_resize.h ? in a (real) test the library took 3-20 times as long)
 // TODO 3: implement specialized mipmap generation for normal maps
 // TODO 3: implement normal map compression (e.g. use DXT5 for normal maps (g and a channel (max precision) for x and y -> reconstruct z in shader))
 // TODO 5: check out AMD compress library, when other formats are required (e.g. for Android)
 // TODO 5: <old comment style>
+// TODO 3: fill remaining mip-maps on compressed textures
 
 
 // ****************************************************************

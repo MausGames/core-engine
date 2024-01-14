@@ -147,7 +147,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bTarget      = CORE_GL_SUPPORT(ANGLE_texture_usage)                           && HAS_FLAG(eMode, CORE_TEXTURE_MODE_TARGET);
-    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS) && !CORE_GL_SUPPORT(ES2_restriction);
+    const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
     const coreBool bTrilinear   = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR)   && bFilterable;
 
     // save properties
@@ -165,6 +165,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     const GLenum iWrapMode = HAS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
     // set compression
+    coreUint32 iBlockSize = 0u;
     if(bCompress)
     {
         WARN_IF(!coreMath::IsPot(iWidth) || !coreMath::IsPot(iHeight) || (iWidth < 4u) || (iHeight < 4u)) {}
@@ -176,12 +177,12 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             {
             default: UNREACHABLE
             case GL_LUMINANCE8:
-            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RED_RGTC1;          break;
-            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) iNewFormat = GL_COMPRESSED_RG_RGTC2;           break;
-            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;  break;
-            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
+            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewFormat = GL_COMPRESSED_RED_RGTC1;          iBlockSize = stb_dxt_blocksize(1);} break;
+            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewFormat = GL_COMPRESSED_RG_RGTC2;           iBlockSize = stb_dxt_blocksize(2);} break;
+            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;  iBlockSize = stb_dxt_blocksize(3);} break;
+            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; iBlockSize = stb_dxt_blocksize(4);} break;
             }
-            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_bCompressed = true; if(bMipMap || bMipMapOld) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
+            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_bCompressed = true; if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(ES2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
     }
 
@@ -209,8 +210,23 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     else
     {
         // allocate mutable texture memory
-        glTexImage2D(GL_TEXTURE_2D, 0, CORE_GL_SUPPORT(ES2_restriction) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_bCompressed ? GL_RGBA : m_Spec.iFormat, m_bCompressed ? GL_UNSIGNED_BYTE : m_Spec.iType, NULL);
-        if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
+        if(m_bCompressed)
+        {
+            for(coreUintW i = 0u, ie = LOOP_NONZERO(m_iLevels); i < ie; ++i)
+            {
+                const coreUint32 iCurWidth  = MAX(iWidth  >> i, 1u);
+                const coreUint32 iCurHeight = MAX(iHeight >> i, 1u);
+                const coreUint32 iCurSize   = MAX(iCurWidth / 4u, 1u) * MAX(iCurHeight / 4u, 1u) * iBlockSize;
+
+                // create all compressed levels
+                glCompressedTexImage2D(GL_TEXTURE_2D, i, m_Spec.iInternal, iCurWidth, iCurHeight, 0, iCurSize, NULL);
+            }
+        }
+        else
+        {
+            // create only first standard level
+            glTexImage2D(GL_TEXTURE_2D, 0, CORE_GL_SUPPORT(ES2_restriction) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_Spec.iFormat, m_Spec.iType, NULL);
+        }
     }
 }
 
@@ -236,7 +252,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
 
         // calculate components and compressed size
         const coreUint32 iComponents = iDataSize / (iWidth * iHeight);
-        const coreUint32 iPackedSize = iDataSize / stb_compress_dxt_ratio(iComponents);
+        const coreUint32 iPackedSize = iDataSize / stb_dxt_ratio(iComponents);
 
         // allocate required image memory
         coreByte* pPackedData  = new coreByte[iPackedSize];
@@ -599,7 +615,7 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
     // save memory offsets
     const coreUintW iInOffsetX =  4u * iComponents;
     const coreUintW iInOffsetY =  3u * iComponents * iInWidth;
-    const coreUintW iOutOffset = 16u * iComponents / stb_compress_dxt_ratio(iComponents);   // size per block
+    const coreUintW iOutOffset = 16u * iComponents / stb_dxt_ratio(iComponents);   // size per block
 
     // loop through all input texels
     for(coreUintW y = 0u; y < LOOP_NONZERO(iInHeight); y += 4u)

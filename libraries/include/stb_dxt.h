@@ -606,7 +606,7 @@ inline void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigne
    }
 }
 
-inline int stb_compress_dxt_ratio(int components)
+inline int stb_dxt_ratio(int components)
 {
    switch(components)
    {
@@ -614,6 +614,19 @@ inline int stb_compress_dxt_ratio(int components)
    case 3: return 6;
    case 2: return 2;
    case 1: return 2;
+   }
+
+   return 1;
+}
+
+inline int stb_dxt_blocksize(int components)
+{
+   switch(components)
+   {
+   case 4: return 16;
+   case 3: return 8;
+   case 2: return 16;
+   case 1: return 8;
    }
 
    return 1;
