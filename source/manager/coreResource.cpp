@@ -140,10 +140,12 @@ coreResourceManager::~coreResourceManager()
 
 // ****************************************************************
 /* update the resource manager */
-void coreResourceManager::UpdateResources()
+void coreResourceManager::UpdateResources(const coreDouble dBudgetSec)
 {
     if(m_bActive)
     {
+        const coreUint64 iStart = SDL_GetPerformanceCounter();
+
         m_ResourceLock.Lock();
         {
             // loop through all resource handles
@@ -160,6 +162,9 @@ void coreResourceManager::UpdateResources()
                         pCurHandle->__AutoUpdate();
                     }
                     m_ResourceLock.Lock();
+
+                    // test current budget and stop processing
+                    if(coreDouble(SDL_GetPerformanceCounter() - iStart) * Core::System->GetPerfFrequency() >= dBudgetSec) break;
                 }
             }
         }

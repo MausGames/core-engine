@@ -217,10 +217,10 @@ coreStatus Core::Run()
     Core Engine;
 
     // set logging level
-    if(!Core::Debug->IsEnabled())
+    if(!Debug->IsEnabled())
     {
-        Core::Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR);
-        Core::Log->Warning ("Logging level reduced");
+        Log->SetLevel(CORE_LOG_LEVEL_WARNING | CORE_LOG_LEVEL_ERROR);
+        Log->Warning ("Logging level reduced");
     }
 
 #if defined(_CORE_EMSCRIPTEN_)
@@ -229,43 +229,43 @@ coreStatus Core::Run()
     emscripten_set_main_loop([]()
     {
         // update the Emscripten canvas
-        Core::Graphics->__UpdateEmscripten();
+        Graphics->__UpdateEmscripten();
 
 #else
 
     // execute until terminated (main loop)
-    while(!Core::System->GetTerminated())
+    while(!System->GetTerminated())
 
 #endif
 
     {
         // update the event system
-        Core::System->__UpdateEvents();
+        System->__UpdateEvents();
 
         // update the input button interface
-        Core::Input->__UpdateButtonsStart();
+        Input->__UpdateButtonsStart();
 
         // move and render the application
-        Core::Application->Move();
-        Core::Application->Render();
+        Application->Move();
+        Application->Render();
 
         // update the object manager
-        Core::Manager::Object->__UpdateObjects();
+        Manager::Object->__UpdateObjects();
 
         // update all remaining components
-        Core::Audio   ->__UpdateSources();
-        Core::Platform->__UpdateBackend();
-        Core::Debug   ->__UpdateOutput();
-        Core::Graphics->__UpdateScene();   // # contains frame terminator
-        Core::System  ->__UpdateWindow();
-        Core::System  ->__UpdateTime();
-        Core::Input   ->__UpdateButtonsEnd();
+        Audio   ->__UpdateSources();
+        Platform->__UpdateBackend();
+        Debug   ->__UpdateOutput();
+        Graphics->__UpdateScene();   // # contains frame terminator
+        System  ->__UpdateWindow();
+        System  ->__UpdateTime();
+        Input   ->__UpdateButtonsEnd();
 
         // update the resource manager on the main-thread
-        if(!Core::Manager::Resource->GetActive())
+        if(!Manager::Resource->GetActive())
         {
-            Core::Manager::Resource->UpdateResources();
-            Core::Manager::Resource->UpdateFunctions();
+            Manager::Resource->UpdateResources(0.004);
+            Manager::Resource->UpdateFunctions();
         }
     }
 
@@ -276,7 +276,7 @@ coreStatus Core::Run()
 #endif
 
     // reset logging level
-    Core::Log->SetLevel(CORE_LOG_LEVEL_ALL);
+    Log->SetLevel(CORE_LOG_LEVEL_ALL);
 
     return CORE_OK;
 }
