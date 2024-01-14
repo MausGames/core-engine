@@ -16,6 +16,7 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 , m_pFile      (pFile)
 , m_sName      (pcName)
 , m_bAutomatic (bAutomatic)
+, m_bProxy     (false)
 , m_eStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
 , m_iRefCount  (0u)
 , m_UpdateLock ()
@@ -266,6 +267,7 @@ void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHa
 
     // point resource proxy to foreign handle
     pProxy->m_pResource = pForeign ? pForeign->m_pResource : NULL;
+    pProxy->m_eStatus   = pForeign ? CORE_BUSY             : CORE_OK;
 
     if(pProxy->m_pResource)
     {
@@ -273,7 +275,6 @@ void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHa
         pForeign->RefIncrease();
 
         // forward status of the foreign handle
-        pProxy->m_eStatus = CORE_BUSY;
         pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus;});
     }
 

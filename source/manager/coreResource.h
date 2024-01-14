@@ -79,6 +79,7 @@ private:
 
     coreString m_sName;                    // identifier of this resource handle
     coreBool   m_bAutomatic;               // updated automatically by the resource manager
+    coreBool   m_bProxy;                   // resource proxy without own resource
 
     coreStatus             m_eStatus;      // current resource status
     coreAtomic<coreUint16> m_iRefCount;    // simple reference-counter
@@ -106,9 +107,9 @@ public:
     inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u)) this->Nullify();}
 
     /* handle resource loading */
-    inline coreBool Update () {coreSpinLocker oLocker(&m_UpdateLock); if(!this->IsLoaded() && m_iRefCount && !m_bAutomatic) {m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline coreBool Reload () {coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded())           {m_eStatus = m_pResource->Load(m_pFile);                      return true;} return false;}
-    inline coreBool Nullify() {coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded())           {m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;} return false;}
+    inline coreBool Update () {if(!m_bProxy) {coreSpinLocker oLocker(&m_UpdateLock); if(this->IsLoading() && !m_bAutomatic)      {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
+    inline coreBool Reload () {if(!m_bProxy) {coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
+    inline coreBool Nullify() {if(!m_bProxy) {coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;}} return false;}
 
     /* attach asynchronous callbacks */
     template <typename F> coreUint32 OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
@@ -121,7 +122,7 @@ public:
 
 private:
     /* handle automatic resource loading */
-    inline coreBool __CanAutoUpdate() {if(m_UpdateLock.TryLock()) {if(!this->IsLoaded() && m_iRefCount && m_bAutomatic) return true; m_UpdateLock.Unlock();} return false;}
+    inline coreBool __CanAutoUpdate() {if(m_UpdateLock.TryLock()) {if(this->IsLoading() && m_bAutomatic) return true; m_UpdateLock.Unlock();} return false;}
     inline void     __AutoUpdate   () {m_eStatus = m_pResource->Load(m_pFile); m_UpdateLock.Unlock();}
 };
 
@@ -375,6 +376,9 @@ inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& 
     coreResourceHandle* pNewProxy = this->Load<coreResourceDummy>(sName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
     SAFE_DELETE(pNewProxy->m_pResource)
 
+    // mark as resource proxy
+    pNewProxy->m_bProxy = true;
+
     // add resource proxy to manager
     m_apProxy.emplace(pNewProxy, NULL);
 
@@ -410,8 +414,7 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
         m_apProxy.erase(pHandle);
 
         // wait on possible resource loading
-        pHandle->m_UpdateLock.Lock();
-        pHandle->m_UpdateLock.Unlock();   // # locked again in destructor
+        while(pHandle->m_UpdateLock.IsLocked()) CORE_SPINLOCK_YIELD   // # locked again in destructor
 
         // delete resource handle
         (*pptResourcePtr) = NULL;
