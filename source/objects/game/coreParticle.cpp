@@ -83,7 +83,7 @@ void coreParticleSystem::Render()
         {
             // invalidate and synchronize previous buffer
             m_aInstanceBuffer.current().Invalidate();
-            m_aInstanceBuffer.current().Synchronize();
+            m_aInstanceBuffer.current().Synchronize(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
 
             // switch to next available array and buffer
             m_aiVertexArray  .next();

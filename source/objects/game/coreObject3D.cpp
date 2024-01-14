@@ -580,7 +580,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         {
             // invalidate and synchronize previous buffer
             m_aInstanceBuffer.current().Invalidate();
-            m_aInstanceBuffer.current().Synchronize();
+            m_aInstanceBuffer.current().Synchronize(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
 
             // switch to next available array and buffer
             m_aiVertexArray  .next();
@@ -711,7 +711,7 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
         {
             // invalidate and synchronize previous buffer
             m_paCustomBuffer->current().Invalidate();
-            m_paCustomBuffer->current().Synchronize();
+            m_paCustomBuffer->current().Synchronize(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
 
             // switch to next available buffer
             m_paCustomBuffer->select(m_aInstanceBuffer.index());
