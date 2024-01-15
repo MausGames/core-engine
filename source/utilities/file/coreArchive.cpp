@@ -15,8 +15,10 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
 : m_sPath       (pcPath)
 , m_pData       (NULL)
 , m_iSize       (0u)
-, m_iArchivePos (UINT32_MAX)
+, m_iArchivePos (__CORE_FILE_TYPE_DIRECT)
 , m_pArchive    (NULL)
+, m_iRefCount   (0u)
+, m_DataLock    ()
 {
     if(m_sPath.empty()) return;
 
@@ -33,8 +35,10 @@ coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSi
 : m_sPath       (pcPath)
 , m_pData       (pData)
 , m_iSize       (iSize)
-, m_iArchivePos (0u)
+, m_iArchivePos (__CORE_FILE_TYPE_MEMORY)
 , m_pArchive    (NULL)
+, m_iRefCount   (0u)
+, m_DataLock    ()
 {
 }
 
@@ -43,6 +47,8 @@ coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSi
 /* destructor */
 coreFile::~coreFile()
 {
+    ASSERT(!m_iRefCount)
+
     // delete file data
     SAFE_DELETE_ARRAY(m_pData)
 }
@@ -94,7 +100,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     }
 
     // mark file as existing
-    if(!m_pArchive && !m_iArchivePos) m_iArchivePos = UINT32_MAX;
+    if(!m_pArchive && (m_iArchivePos == __CORE_FILE_TYPE_MEMORY)) m_iArchivePos = __CORE_FILE_TYPE_DIRECT;
 
     Core::Log->Info("File (%s, %.1f KB) written", m_sPath.c_str(), I_TO_F(m_iSize) / 1024.0f);
     return CORE_OK;
@@ -185,7 +191,7 @@ coreStatus coreFile::Unscramble(const coreUint64 iKey)
 SDL_RWops* coreFile::CreateReadStream()const
 {
     SDL_RWops* pFile;
-    if(!m_iArchivePos)
+    if(m_iArchivePos == __CORE_FILE_TYPE_MEMORY)
     {
         // create memory stream
         if(!m_pData || !m_iSize) return NULL;
@@ -219,8 +225,10 @@ SDL_RWops* coreFile::CreateReadStream()const
 /* load file data */
 coreStatus coreFile::LoadData()
 {
-    // check file data
-    if(m_pData || !m_iSize || !m_iArchivePos) return CORE_INVALID_CALL;
+    coreSpinLocker oLocker(&m_DataLock);
+
+    // check current state
+    if(m_pData || !m_iSize || (m_iArchivePos == __CORE_FILE_TYPE_MEMORY)) return CORE_INVALID_CALL;
 
 #if defined(_CORE_DEBUG_)
 
@@ -268,13 +276,31 @@ coreStatus coreFile::LoadData()
 
 
 // ****************************************************************
+/* unload file data */
+coreStatus coreFile::UnloadData()
+{
+    coreSpinLocker oLocker(&m_DataLock);
+
+    // check current state
+    if(!m_pData || !m_iSize || (m_iArchivePos == __CORE_FILE_TYPE_MEMORY)) return CORE_INVALID_CALL;
+
+    // prevent early unloading
+    if(m_iRefCount) return CORE_BUSY;
+
+    // delete file data
+    SAFE_DELETE_ARRAY(m_pData)
+    return CORE_OK;
+}
+
+
+// ****************************************************************
 /* handle explicit copy (for internal use) */
 void coreFile::InternalNew(coreFile** OUTPUT ppTarget, const coreFile* pSource)
 {
     ASSERT(ppTarget && pSource)
 
     coreByte* pData = NULL;
-    if(!pSource->m_iArchivePos && pSource->m_pData && pSource->m_iSize)
+    if((pSource->m_iArchivePos == __CORE_FILE_TYPE_MEMORY) && pSource->m_pData && pSource->m_iSize)
     {
         // copy file data
         pData = new coreByte[pSource->m_iSize];
@@ -295,7 +321,7 @@ void coreFile::InternalNew(coreFile** OUTPUT ppTarget, const coreFile* pSource)
 
         // remove association
         (*ppTarget)->m_pArchive    = NULL;
-        (*ppTarget)->m_iArchivePos = 0u;
+        (*ppTarget)->m_iArchivePos = __CORE_FILE_TYPE_MEMORY;
     }
 }
 
@@ -303,6 +329,24 @@ void coreFile::InternalDelete(coreFile** OUTPUT ppTarget)
 {
     // delete copy
     MANAGED_DELETE(*ppTarget)
+}
+
+
+// ****************************************************************
+/* flush all writes to disk */
+void coreFile::FlushFilesystem()
+{
+#if defined(_CORE_EMSCRIPTEN_)
+
+    // write in-memory data to persistent data store
+    EM_ASM(
+        FS.syncfs(false, function(sError)
+        {
+            if(sError) console.error(sError);
+        });
+    );
+
+#endif
 }
 
 
@@ -391,7 +435,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
             coreFile* pNewFile      = new coreFile(acPath, NULL, iSize);
             pNewFile->m_pArchive    = this;
             pNewFile->m_iArchivePos = iArchivePos;
-            m_apFile.emplace(acPath, pNewFile);
+            m_apFile.emplace_bs(acPath, pNewFile);
         }
     }
 
@@ -420,8 +464,6 @@ coreArchive::~coreArchive()
 /* save archive */
 coreStatus coreArchive::Save(const coreChar* pcPath)
 {
-    if(m_apFile.empty()) return CORE_INVALID_CALL;
-
     // save path
     if(pcPath) m_sPath = pcPath;
     ASSERT(!m_sPath.empty())
@@ -502,7 +544,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)
 {
     // check already existing file
-    if(m_apFile.count(pcPath))
+    WARN_IF(m_apFile.count_bs(pcPath))
     {
         Core::Log->Warning("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str());
         return NULL;
@@ -521,7 +563,7 @@ coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const
 coreStatus coreArchive::AddFile(const coreChar* pcPath)
 {
     // check already existing file
-    if(m_apFile.count(pcPath))
+    WARN_IF(m_apFile.count_bs(pcPath))
     {
         Core::Log->Warning("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str());
         return CORE_INVALID_INPUT;
@@ -536,7 +578,7 @@ coreStatus coreArchive::AddFile(coreFile* pFile)
     if(pFile->m_pArchive) return CORE_INVALID_INPUT;
 
     // check already existing file
-    if(m_apFile.count(pFile->GetPath()))
+    WARN_IF(m_apFile.count_bs(pFile->GetPath()))
     {
         Core::Log->Warning("File (%s) already exists in Archive (%s)", pFile->GetPath(), m_sPath.c_str());
         return CORE_INVALID_INPUT;
@@ -546,11 +588,11 @@ coreStatus coreArchive::AddFile(coreFile* pFile)
     pFile->LoadData();
 
     // add new file object
-    m_apFile.emplace(pFile->GetPath(), pFile);
+    m_apFile.emplace_bs(pFile->GetPath(), pFile);
 
     // associate archive
     pFile->m_pArchive    = this;
-    pFile->m_iArchivePos = 0u;
+    pFile->m_iArchivePos = __CORE_FILE_TYPE_MEMORY;
 
     return CORE_OK;
 }
@@ -571,11 +613,11 @@ coreStatus coreArchive::DeleteFile(const coreUintW iIndex)
 
 coreStatus coreArchive::DeleteFile(const coreChar* pcPath)
 {
-    if(!m_apFile.count(pcPath)) return CORE_INVALID_INPUT;
+    if(!m_apFile.count_bs(pcPath)) return CORE_INVALID_INPUT;
 
     // remove and delete file object
-    SAFE_DELETE(m_apFile.at(pcPath))
-    m_apFile.erase(pcPath);
+    SAFE_DELETE(m_apFile.at_bs(pcPath))
+    m_apFile.erase_bs(pcPath);
 
     return CORE_OK;
 }
@@ -608,7 +650,7 @@ void coreArchive::__CalculatePositions()
     coreUint32 iCurPosition = 2u*sizeof(coreUint32) + sizeof(coreUint16);
     FOR_EACH(it, m_apFile)
     {
-        iCurPosition += sizeof(coreUint8) + std::strlen((*it)->GetPath()) + 2u*sizeof(coreUint32);
+        iCurPosition += sizeof(coreUint8) + MIN(std::strlen((*it)->GetPath()), 255u) + 2u*sizeof(coreUint32);
     }
 
     // set absolute data position
