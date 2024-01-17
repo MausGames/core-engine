@@ -13,15 +13,17 @@
 
 // ****************************************************************
 /* scope definitions */
-#define CORE_SCOPE_CLASS(c,t,f)                                     \
-    class c final : public coreScope<t>                             \
-    {                                                               \
-    public:                                                         \
-        constexpr c(t* pObject)noexcept : coreScope<t> (pObject) {} \
-        ~c() {f}                                                    \
-                                                                    \
-        ENABLE_COPY(c)                                              \
+#define CORE_SCOPE_CLASS(c,t,f,g)                                    \
+    class c final : public coreScope<t>                              \
+    {                                                                \
+    public:                                                          \
+        constexpr c(t* pObject)noexcept : coreScope<t> (pObject) {f} \
+        ~c() {g}                                                     \
+                                                                     \
+        ENABLE_COPY(c)                                               \
     };
+
+#define CORE_SCOPE_TEMPLATE(c,t,f,g) template <typename T> CORE_SCOPE_CLASS(c, t, f, g)
 
 
 // ****************************************************************
@@ -45,11 +47,12 @@ public:
     coreScope<T>& operator = (coreScope<T>&& m)noexcept;
 
     /* access associated object */
+    inline T*                      Get()const {ASSERT(m_ptObject) return m_ptObject;}
     inline          operator       T* ()      {return m_ptObject;}
     constexpr       operator const T* ()const {return m_ptObject;}
     inline explicit operator coreBool ()const {return m_ptObject != NULL;}
-    inline T*       operator ->       ()const {ASSERT(m_ptObject) return  m_ptObject;}
-    inline T&       operator *        ()const {ASSERT(m_ptObject) return *m_ptObject;}
+    inline T*       operator ->       ()const {return  this->Get();}
+    inline T&       operator *        ()const {return *this->Get();}
 };
 
 
@@ -80,8 +83,10 @@ template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope<T>&& m)n
 
 // ****************************************************************
 /* default scope types */
-CORE_SCOPE_CLASS(coreFileScope,    coreFile,    {if(m_ptObject) m_ptObject->UnloadData();})
-CORE_SCOPE_CLASS(coreSurfaceScope, SDL_Surface, {if(m_ptObject) SDL_FreeSurface(m_ptObject);})
+CORE_SCOPE_CLASS   (coreFileScope,    coreFile,    {if(m_ptObject) m_ptObject->Acquire();}, {if(m_ptObject) m_ptObject->Release();})
+CORE_SCOPE_CLASS   (coreSurfaceScope, SDL_Surface, {},                                      {if(m_ptObject) SDL_FreeSurface(m_ptObject);})
+CORE_SCOPE_TEMPLATE(coreDataScope,    T,           {},                                      {SAFE_DELETE_ARRAY(this->m_ptObject)})
+CORE_SCOPE_TEMPLATE(coreSDLScope,     T,           {},                                      {SDL_free(this->m_ptObject);})
 
 
 #endif /* _CORE_GUARD_SCOPE_H_ */
