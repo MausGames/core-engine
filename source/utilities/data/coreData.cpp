@@ -552,6 +552,16 @@ const coreChar* coreData::SystemDirAppData()
     // get internal storage path for this application
     return SDL_AndroidGetInternalStoragePath();
 
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    // use no specific path
+    return "";
+
+#elif defined(_CORE_SWITCH_)
+
+    // get default save-game path
+    return PRINT("%s", coreSDLScope(SDL_GetPrefPath(NULL, NULL)).Get());
+
 #endif
 
     return "";
@@ -840,9 +850,10 @@ void coreData::InitDefaultFolders()
     // set working directory
 #if defined(_CORE_MACOS_)
     coreData::SetCurDir(coreCocoaPathResource());
+#elif defined(_CORE_SWITCH_)
+    coreData::SetCurDir(coreSDLScope(SDL_GetBasePath()).Get());
 #else
-    coreData::SetCurDir(coreData::ProcessDir());
-    coreData::SetCurDir("../..");
+    coreData::SetCurDir(PRINT("%s/../..", coreData::ProcessDir()));
 #endif
 
     // get command line argument
@@ -857,10 +868,10 @@ void coreData::InitDefaultFolders()
     // use default user folder (and create folder hierarchy)
     if(!pcPath || !pcPath[0] || (coreData::FolderCreate(pcPath) != CORE_OK) || !coreData::FolderWritable(pcPath))
     {
-        #if defined(_CORE_MACOS_) || defined(_CORE_ANDROID_)
-            pcPath = coreData::SystemDirAppData();
-        #else
+        #if defined(_CORE_WINDOWS_) || defined(_CORE_LINUX_)
             pcPath = CoreApp::Settings::UserManagement ? coreData::SystemDirAppData() : "user/";
+        #else
+            pcPath = coreData::SystemDirAppData();
         #endif
 
         coreData::FolderCreate(pcPath);
