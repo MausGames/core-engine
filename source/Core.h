@@ -335,6 +335,7 @@
 #include <atomic>
 #include <bit>
 #include <charconv>
+#include <concepts>
 #include <deque>
 #include <functional>
 #include <ios>
