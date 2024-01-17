@@ -1499,15 +1499,20 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
 {
     ASSERT(pcPath && pcFilter && pasOutput)
 
+    coreChar acString[CORE_DATA_MAX_PATH];
+
+    // make local copy (to handle printed paths)
+    coreData::StrCopy(acString, ARRAY_SIZE(acString), pcPath);
+
 #if defined(_CORE_WINDOWS_)
 
     WIN32_FIND_DATAW oFile;
 
     // open folder
-    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", pcPath, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
+    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", acString, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
-        Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
+        Core::Log->Warning("Folder (%s/%s) could not be opened", acString, pcFilter);
         return CORE_ERROR_FILE;
     }
 
@@ -1517,7 +1522,7 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
         // check and add file path
         if(oFile.cFileName[0] != L'.')
         {
-            pasOutput->push_back(PRINT("%s/%s", pcPath, coreData::__ToAnsiChar(oFile.cFileName)));
+            pasOutput->push_back(PRINT("%s/%s", acString, coreData::__ToAnsiChar(oFile.cFileName)));
         }
     }
     while(FindNextFileW(pFolder, &oFile));
@@ -1530,10 +1535,10 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
     dirent* pFile;
 
     // open folder
-    DIR* pFolder = opendir(pcPath);
+    DIR* pFolder = opendir(acString);
     if(!pFolder)
     {
-        Core::Log->Warning("Folder (%s/%s) could not be opened", pcPath, pcFilter);
+        Core::Log->Warning("Folder (%s/%s) could not be opened", acString, pcFilter);
         return CORE_ERROR_FILE;
     }
 
@@ -1543,7 +1548,7 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
         // check and add file path
         if((pFile->d_name[0] != '.') && coreData::StrCmpLike(pFile->d_name, pcFilter))
         {
-            pasOutput->push_back(PRINT("%s/%s", pcPath, pFile->d_name));
+            pasOutput->push_back(PRINT("%s/%s", acString, pFile->d_name));
         }
     }
 
