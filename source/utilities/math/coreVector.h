@@ -124,6 +124,7 @@ public:
     static inline    coreVector2 Rand     (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector2 Rand     (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 RandUni  (coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector2 Reflect  (const coreVector2 vVelocity, const coreVector2 vNormal);
 
     /* packing functions */
@@ -461,26 +462,31 @@ inline coreVector2 coreVector2::Direction(const coreFloat fAngle)
 /* generate random vector */
 inline coreVector2 coreVector2::Rand(coreRand* OUTPUT pRand)
 {
-    return coreVector2(pRand->Float(2.0f) - 1.0f,
-                       pRand->Float(2.0f) - 1.0f).Normalized();
+    return coreVector2::Direction(pRand->Float(2.0f*PI));
 }
 
 inline coreVector2 coreVector2::Rand(const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector2(pRand->Float(2.0f) - 1.0f,
-                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMax);
+    return coreVector2::Direction(pRand->Float(2.0f*PI)) * pRand->Float(fMax);
 }
 
 inline coreVector2 coreVector2::Rand(const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand)
 {
-    return coreVector2(pRand->Float(2.0f) - 1.0f,
-                       pRand->Float(2.0f) - 1.0f).Normalized() * pRand->Float(fMin, fMax);
+    return coreVector2::Direction(pRand->Float(2.0f*PI)) * pRand->Float(fMin, fMax);
 }
 
 inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand)
 {
     return coreVector2(pRand->Float(fMinX, fMaxX),
                        pRand->Float(fMinY, fMaxY));
+}
+
+
+// ****************************************************************
+/* generate random vector (uniformly distributed) */
+inline coreVector2 RandUni(coreRand* OUTPUT pRand)
+{
+    return coreVector2::Direction(pRand->Float(2.0f*PI)) * SQRT(pRand->Float(1.0f));
 }
 
 
