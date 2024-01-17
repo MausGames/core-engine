@@ -17,7 +17,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_eLevel      (CORE_LOG_LEVEL_ALL)
 , m_iListStatus (0u)
 , m_iLastTime   (0u)
-, m_iMainThread (0u)
+, m_iThisThread (0u)
 , m_Lock        ()
 , m_sWorkString ("")
 {
@@ -54,7 +54,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         m_iLastTime = SDL_GetTicks();
 
         // save thread-ID from the creator
-        m_iMainThread = SDL_ThreadID();
+        m_iThisThread = SDL_ThreadID();
     }
 
 #endif
@@ -98,7 +98,7 @@ void coreLog::__Write(const coreBool bTimeStamp, coreWorkString& sMessage, const
             // write time-value and thread-ID
             std::fprintf(m_pFile, "<span class=\"time\">[%02u:%02u.%03u - %3u]</span> <span class=\"%s\">[%04lX]</span> ",
                          (iTime / 1000u) / 60u, (iTime / 1000u) % 60u, (iTime % 1000u), coreUint32(MIN(iTime - m_iLastTime, 999u)),
-                         (iThread == m_iMainThread) ? "thread1" : "thread2", iThread);
+                         (iThread == m_iThisThread) ? "thread1" : "thread2", iThread);
 
             // save time-value (for duration approximations)
             m_iLastTime = iTime;

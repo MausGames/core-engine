@@ -135,6 +135,11 @@ constexpr coreTimer::coreTimer()noexcept
 
 
 // ****************************************************************
+/* additional properties */
+template<> struct std::is_floating_point<coreFlow> : public std::true_type {};
+
+
+// ****************************************************************
 /* additional checks */
 STATIC_ASSERT(std::is_trivial<coreFlow>::value)
 

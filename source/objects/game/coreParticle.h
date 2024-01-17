@@ -80,7 +80,11 @@ public:
     inline void SetPositionStc(const coreVector3 vStatic) {this->SetPositionAbs(vStatic, vStatic);}
     inline void SetScaleStc   (const coreFloat   fStatic) {this->SetScaleAbs   (fStatic, fStatic);}
     inline void SetAngleStc   (const coreFloat   fStatic) {this->SetAngleAbs   (fStatic, fStatic);}
-    inline void SetColor4Stc  (const coreVector4 vStatic) {const coreUint32 iPack = vStatic.PackUnorm4x8(); m_BeginState.iColor = iPack; m_EndState.iColor = iPack; ASSERT((vStatic.Min() >= 0.0f) && (vStatic.Max() <= 1.0f))}
+    inline void SetColor4Stc  (const coreVector4 vStatic) {m_BeginState.iColor = m_EndState.iColor = vStatic.PackUnorm4x8(); ASSERT((vStatic.Min() >= 0.0f) && (vStatic.Max() <= 1.0f))}
+
+    /* edit state directly */
+    inline coreState& EditBeginState() {return m_BeginState;}
+    inline coreState& EditEndState  () {return m_EndState;}
 
     /* retrieve interpolated values */
     inline coreVector3 GetCurPosition()const {return LERP(m_EndState.vPosition,                           m_BeginState.vPosition,                           m_fValue);}

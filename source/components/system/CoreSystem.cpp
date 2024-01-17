@@ -26,6 +26,7 @@ CoreSystem::CoreSystem()noexcept
 , m_iSkipFrame       (1u)
 , m_dPerfFrequency   (0.0)
 , m_iPerfTime        (0u)
+, m_iMainThread      (0u)
 , m_bWinFocusLost    (false)
 , m_bWinPosChanged   (false)
 , m_bWinSizeChanged  (false)
@@ -325,6 +326,9 @@ CoreSystem::CoreSystem()noexcept
         m_afTime     [i] = 0.0f;
         m_afTimeSpeed[i] = 1.0f;
     }
+
+    // save thread-ID from the main-thread
+    m_iMainThread = SDL_ThreadID();
 
     // log platform information
     Core::Log->ListStartInfo("Platform Information");

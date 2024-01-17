@@ -15,6 +15,10 @@
     #define XXH_DEBUGLEVEL 1
 #endif
 
+#if defined(_CORE_MSVC_)
+    #pragma warning(disable : 4505)   // unreferenced function with internal linkage removed
+#endif
+
 #include <xxhash.h>
 
 

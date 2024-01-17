@@ -23,7 +23,7 @@
 #define CORE_RAND_SEED_ALWAYS (SDL_GetPerformanceCounter())                                // always use current time to seed the generator
 
 #define CORE_RAND_RUNTIME     (coreUint32(SDL_GetPerformanceCounter() & 0xFFFFFFFFu))
-#define CORE_RAND_COMPILE     (FORCE_COMPILE_TIME(coreHashFNV32(__DATE__ __TIME__)))
+#define CORE_RAND_COMPILE     (FORCE_COMPILE_TIME(coreHashXXH32(__DATE__ __TIME__)))
 
 
 // ****************************************************************

@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* configuration definitions */
-#define CORE_CONFIG_BASE_LANGUAGE               "Base",     "Language",           ("data/languages/english.lng")
+#define CORE_CONFIG_BASE_LANGUAGE               "Base",     "Language",           ("")
 #define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)   // enable debug features and extended logging
 #define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (true)    // enable asynchronous processing and resource loading
 #define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)   // disable all possible hardware features
@@ -41,7 +41,7 @@
 #define CORE_CONFIG_AUDIO_SOUNDVOLUME           "Audio",    "SoundVolume",        (1.0f)
 
 #define CORE_CONFIG_INPUT_RUMBLE                "Input",    "Rumble",             (true)
-#define CORE_CONFIG_INPUT_JOYSTICKDEAD          "Input",    "JoystickDead",       (0x2000)
+#define CORE_CONFIG_INPUT_JOYSTICKDEAD          "Input",    "JoystickDead",       (0x2800)
 #define CORE_CONFIG_INPUT_JOYSTICKMAX           "Input",    "JoystickMax",        (0x7000)
 
 

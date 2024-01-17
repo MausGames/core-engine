@@ -1420,7 +1420,7 @@ coreBool coreData::FolderWritable(const coreChar* pcPath)
     ASSERT(pcPath)
 
     // get temporary file name
-    const coreChar* pcTemp = PRINT("%s/check_%s", pcPath, coreData::DateTimePrint("%Y%m%d_%H%M%S"));
+    const coreChar* pcTemp = PRINT("%s/check_%u", pcPath, coreData::ProcessID());
 
 #if defined(_CORE_WINDOWS_)
 

@@ -305,11 +305,11 @@ template <typename T> constexpr coreUint32 coreData::TypeId()
 {
 #if defined(_CORE_MSVC_)
 
-    return FORCE_COMPILE_TIME(coreHashFNV32(__FUNCDNAME__));
+    return FORCE_COMPILE_TIME(coreHashXXH32(__FUNCDNAME__));
 
 #elif defined(_CORE_GCC_) || defined(_CORE_CLANG_)
 
-    return FORCE_COMPILE_TIME(coreHashFNV32(__PRETTY_FUNCTION__));
+    return FORCE_COMPILE_TIME(coreHashXXH32(__PRETTY_FUNCTION__));
 
 #endif
 }
@@ -343,7 +343,7 @@ template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, co
 {
     ASSERT(pcInput && pcDelimiter)
 
-    coreChar  acString[512];
+    coreChar  acString[1024];
     coreChar* pcContext = NULL;
 
     // make local copy

@@ -69,6 +69,8 @@ private:
     coreDouble m_dPerfFrequency;                   // high-precision time coefficient
     coreUint64 m_iPerfTime;                        // high-precision time value
 
+    SDL_threadID m_iMainThread;                    // thread-ID from the main-thread
+
     coreBool m_bWinFocusLost;                      // window/application lost focus (through event)
     coreBool m_bWinPosChanged;                     // window position changed (through event)
     coreBool m_bWinSizeChanged;                    // window size changed (through event)
@@ -114,6 +116,7 @@ public:
     inline const coreUint32&     GetCurFrame       ()const                       {return m_iCurFrame;}
     inline const coreDouble&     GetPerfFrequency  ()const                       {return m_dPerfFrequency;}
     inline const coreUint64&     GetPerfTime       ()const                       {return m_iPerfTime;}
+    inline const SDL_threadID&   GetMainThread     ()const                       {return m_iMainThread;}
     inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
     inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}
     inline const coreBool&       GetWinSizeChanged ()const                       {return m_bWinSizeChanged;}

@@ -213,7 +213,7 @@ public:
     DISABLE_COPY(coreResourceManager)
 
     /* update the resource manager */
-    void UpdateResources(const coreDouble dBudgetSec = DBL_MAX);
+    void UpdateResources(const coreFloat fBudgetSec = FLT_MAX);
     inline coreBool  IsLoading   ()const {return std::any_of  (m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
     inline coreUintW IsLoadingNum()const {return std::count_if(m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
 

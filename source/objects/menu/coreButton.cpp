@@ -42,7 +42,7 @@ coreButton::coreButton(const coreHashString& sIdle, const coreHashString& sBusy)
 coreButton::~coreButton()
 {
     // delete the label
-    SAFE_DELETE(m_pCaption)
+    MANAGED_DELETE(m_pCaption)
 }
 
 
@@ -51,7 +51,7 @@ coreButton::~coreButton()
 void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // create the label
-    if(!m_pCaption) m_pCaption = new coreLabel();
+    if(!m_pCaption) m_pCaption = MANAGED_NEW(coreLabel);
     m_pCaption->Construct(sFont, iHeight, iOutline);
 
     // construct remaining object

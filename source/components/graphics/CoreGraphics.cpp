@@ -62,7 +62,7 @@ CoreGraphics::CoreGraphics()noexcept
         m_iMaxSamples = MAX(iValue, 0);
 
         // handle coverage extension
-        if(CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)) m_iMaxSamples /= 2u;
+        if(CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)) m_iMaxSamples = MIN(m_iMaxSamples, 8u);
     }
 
     // get max texture filter level
@@ -586,7 +586,7 @@ void CoreGraphics::DebugOpenGL()
         glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE,        GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
         glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
 
-        // disable all shader compiler messages
+        // disable all shader compiler diagnostics and warnings
         glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, false);
     }
 
@@ -596,9 +596,9 @@ void CoreGraphics::DebugOpenGL()
     // 131204: Texture state usage warning: Texture # is base level inconsistent. Check texture size.
     // 131222: Program undefined behavior warning: Sampler object # is bound to non-depth texture #, yet it is used with a program that uses a shadow sampler. This is undefined behavior.
 
-    // 1: Shader Stats (SGPRs, VGPRs, Code Size, LDS, Scratch, Max Waves, Spilled SGPRs, Spilled VGPRs, PrivMem VGPRs)
-    // 2: LLVM Diagnostics (# instructions in function)
-    // #: extension # unsupported in # shader
+    // 1:      Shader Stats (SGPRs, VGPRs, Code Size, LDS, Scratch, Max Waves, Spilled SGPRs, Spilled VGPRs, PrivMem VGPRs)
+    // 2:      LLVM Diagnostics (# instructions in function)
+    // #:      extension # unsupported in # shader
 }
 
 

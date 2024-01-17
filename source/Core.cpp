@@ -262,7 +262,7 @@ coreStatus Core::Run()
         // update the resource manager on the main-thread
         if(!Manager::Resource->GetActive())
         {
-            Manager::Resource->UpdateResources(0.004);
+            Manager::Resource->UpdateResources(0.004f);
             Manager::Resource->UpdateFunctions();
         }
     }

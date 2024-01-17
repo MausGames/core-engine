@@ -12,6 +12,7 @@
 
 // TODO 3: implement insert-node function
 // TODO 3: make sure __CalcPosDir in Refine is properly inlined and compile-time resolved
+// TODO 3: add binary-search to node-search for sampling, maybe as separate "compiled" state, because EditNode will become problematic
 
 
 // ****************************************************************
@@ -74,7 +75,8 @@ public:
 
     /* get object properties */
     inline const coreNode&  GetNode         (const coreUintW iIndex)const {ASSERT(iIndex < m_apNode.size()) return m_apNode[iIndex];}
-    inline       coreUintW  GetNumNodes     ()const                       {return m_apNode.size();}
+    inline       coreUintW  GetSize         ()const                       {return m_apNode.size();}
+    inline       coreUintW  GetCapacity     ()const                       {return m_apNode.capacity();}
     inline const coreFloat& GetTotalDistance()const                       {return m_fTotalDistance;}
 
 

@@ -177,7 +177,7 @@ public:
     void     Update()final;
 
     /* process achievements */
-    coreBool UnlockAchievement(const coreAchievement& oData)final;
+    coreBool UnlockAchievement(const coreAchievement& oEntry)final;
 
     /* process general features */
     const coreChar* GetUserID  ()const final;
@@ -411,13 +411,13 @@ inline void coreBackendEpic::Update()
 
 // ****************************************************************
 /* unlock achievement */
-inline coreBool coreBackendEpic::UnlockAchievement(const coreAchievement& oData)
+inline coreBool coreBackendEpic::UnlockAchievement(const coreAchievement& oEntry)
 {
     if(m_pPlatform)
     {
-        if(HAS_BIT(m_iState, 1u) && HAS_BIT(m_iState, 2u))
+        if(HAS_BIT(m_iState, 2u) && HAS_BIT(m_iState, 3u))
         {
-            const coreChar* apcName[] = {oData.sEpicName.c_str()};
+            const coreChar* apcName[] = {oEntry.sEpicName.c_str()};
 
             // set unlock options
             EOS_Achievements_UnlockAchievementsOptions oOptions = {};
@@ -641,6 +641,9 @@ inline void EOS_CALL coreBackendEpic::__OnConnectLogin(const EOS_Connect_LoginCa
 
         // query base data
         pThis->__QueryData();
+
+        // mark login as finished
+        ADD_BIT(pThis->m_iState, 1u)
     }
 }
 
@@ -655,6 +658,9 @@ inline void EOS_CALL coreBackendEpic::__OnConnectCreateUser(const EOS_Connect_Cr
 
         // query base data
         pThis->__QueryData();
+
+        // mark login as finished
+        ADD_BIT(pThis->m_iState, 1u)
     }
 }
 
@@ -678,7 +684,7 @@ inline void EOS_CALL coreBackendEpic::__OnAchievementsQueryDefinitions(const EOS
     if(pData->ResultCode == EOS_EResult::EOS_Success)
     {
         // mark achievement definitions as valid
-        ADD_BIT(pThis->m_iState, 1u)
+        ADD_BIT(pThis->m_iState, 2u)
     }
 }
 
@@ -689,7 +695,7 @@ inline void EOS_CALL coreBackendEpic::__OnAchievementsQueryPlayerAchievements(co
     if(pData->ResultCode == EOS_EResult::EOS_Success)
     {
         // mark achievement status as valid
-        ADD_BIT(pThis->m_iState, 2u)
+        ADD_BIT(pThis->m_iState, 3u)
     }
 }
 

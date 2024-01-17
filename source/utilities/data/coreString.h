@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_STRING_H_
 #define _CORE_GUARD_STRING_H_
 
-// TODO 3: work-string should also handle NULL
 // TODO 3: remove custom contains function with C++23
 // TODO 4: when to use append, when to use += (which is only used rarely) ? change everything to append ?
 

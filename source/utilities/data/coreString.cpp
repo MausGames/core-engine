@@ -104,7 +104,7 @@ void coreWorkString::shrink_to_fit()
 /* assign new string */
 void coreWorkString::assign(const coreChar* pcText)
 {
-    ASSERT(pcText)
+    if(!pcText) pcText = "";
 
     const coreUintW iLen = std::strlen(pcText);
 
@@ -121,7 +121,7 @@ void coreWorkString::assign(const coreChar* pcText)
 /* append new string */
 void coreWorkString::append(const coreChar* pcText)
 {
-    ASSERT(pcText)
+    if(!pcText) pcText = "";
 
     const coreUintW iLen = std::strlen(pcText);
 
@@ -189,6 +189,8 @@ void coreWorkString::clear()
 /* create formatted string */
 void coreWorkString::print(const coreChar* pcFormat, ...)
 {
+    ASSERT(pcFormat)
+
     do
     {
         // prepare variable arguments

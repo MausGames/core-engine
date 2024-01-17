@@ -20,6 +20,7 @@
 // TODO 5: <old comment style>
 // TODO 3: implement quick free and quick reset to memory pool (but not to manager), without sorting (and without insertion?), for regular destruction
 // TODO 3: #define STATIC_EXTERN(t,p) extern t* const p; needs to be before Core class
+// TODO 2: add ASSERT when accessing static-memory without initialization
 
 
 // ****************************************************************
