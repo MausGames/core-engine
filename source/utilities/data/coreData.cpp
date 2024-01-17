@@ -14,6 +14,7 @@
     #include <Shlobj.h>
     #include <Lmcons.h>
 #elif defined(_CORE_LINUX_)
+    #include <fcntl.h>
     #include <gnu/libc-version.h>
 #elif defined(_CORE_MACOS_)
     #include <mach/mach.h>
@@ -1244,7 +1245,50 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
     // copy directly (with attributes)
     if(CopyFileW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), false)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+#elif defined(_CORE_LINUX_)
+
+    // open source file
+    coreInt32 iFileFrom = open(pcFrom, O_RDONLY);
+    if(iFileFrom != -1)
+    {
+        struct stat oBuffer;
+
+        // get POSIX file info
+        if(!fstat(iFileFrom, &oBuffer))
+        {
+            // open destination file
+            coreInt32 iFileTo = open(pcTo, O_WRONLY | O_CREAT | O_TRUNC, oBuffer.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+            if(iFileTo != -1)
+            {
+                coreIntW iRet;
+                coreIntW iLen = oBuffer.st_size;
+
+                // copy directly in kernel space
+                do
+                {
+                   iRet  = copy_file_range(iFileFrom, NULL, iFileTo, NULL, iLen, 0u);
+                   iLen -= iRet;
+                }
+                while((iLen > 0) && (iRet > 0));
+
+                // close both files
+                close(iFileTo);
+                close(iFileFrom);
+
+                return (iRet > 0) ? CORE_OK : CORE_ERROR_FILE;
+            }
+        }
+
+        // close source file
+        close(iFileFrom);
+    }
+
+#elif defined(_CORE_MACOS_)
+
+    // copy directly (with attributes)
+    if(!copyfile(pcFrom, pcTo, NULL, COPYFILE_ALL)) return CORE_OK;
+
+#else
 
     // open source file
     std::FILE* pFileFrom = coreData::FileOpen(pcFrom, "rb");
@@ -1294,9 +1338,9 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 
     if(!std::rename(pcFrom, pcTo)) return CORE_OK;
 
-#else
+#elif defined(_CORE_SWITCH_)
 
-    if((coreData::FileCopy(pcFrom, pcTo) == CORE_OK) && (coreData::FileDelete(pcFrom) == CORE_OK)) return CORE_OK;
+    if(coreData::FileExists(pcFrom)) {coreData::FileDelete(pcTo); if(!std::rename(pcFrom, pcTo)) return CORE_OK;}
 
 #endif
 
