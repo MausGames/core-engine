@@ -98,25 +98,26 @@ public:
     inline void Quit() {m_bTerminated = true;}
 
     /* get component properties */
-    inline       SDL_Window*     GetWindow         ()const                    {return m_pWindow;}
-    inline const coreDisplay&    GetDisplayData    ()const                    {return m_aDisplayData[m_iDisplayIndex];}
-    inline const coreDisplay&    GetDisplayData    (const coreUintW iID)const {ASSERT(iID < m_aDisplayData.size()) return m_aDisplayData[iID];}
-    inline       coreUintW       GetDisplayCount   ()const                    {return m_aDisplayData.size();}
-    inline const coreUint8&      GetDisplayIndex   ()const                    {return m_iDisplayIndex;}
-    inline const coreVector2&    GetResolution     ()const                    {return m_vResolution;}
-    inline const coreSystemMode& GetMode           ()const                    {return m_eMode;}
-    inline const coreDouble&     GetTotalTime      ()const                    {return m_dTotalTime;}
-    inline const coreDouble&     GetTotalTimeBefore()const                    {return m_dTotalTimeBefore;}
-    inline const coreFloat&      GetTime           ()const                    {return m_fLastTime;}
-    inline const coreFloat&      GetTime           (const coreInt8  iID)const {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const coreFloat&      GetTimeSpeed      (const coreUintW iID)const {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
-    inline const coreUint32&     GetCurFrame       ()const                    {return m_iCurFrame;}
-    inline const coreDouble&     GetPerfFrequency  ()const                    {return m_dPerfFrequency;}
-    inline const coreUint64&     GetPerfTime       ()const                    {return m_iPerfTime;}
-    inline const coreBool&       GetWinFocusLost   ()const                    {return m_bWinFocusLost;}
-    inline const coreBool&       GetWinPosChanged  ()const                    {return m_bWinPosChanged;}
-    inline const coreBool&       GetWinSizeChanged ()const                    {return m_bWinSizeChanged;}
-    inline const coreBool&       GetTerminated     ()const                    {return m_bTerminated;}
+    inline       SDL_Window*     GetWindow         ()const                       {return m_pWindow;}
+    inline const coreDisplay&    GetDisplayData    ()const                       {return m_aDisplayData[m_iDisplayIndex];}
+    inline const coreDisplay&    GetDisplayData    (const coreUintW iID)const    {ASSERT(iID < m_aDisplayData.size()) return m_aDisplayData[iID];}
+    inline       coreUintW       GetDisplayCount   ()const                       {return m_aDisplayData.size();}
+    inline const coreUint8&      GetDisplayIndex   ()const                       {return m_iDisplayIndex;}
+    inline const coreVector2&    GetResolution     ()const                       {return m_vResolution;}
+    inline const coreSystemMode& GetMode           ()const                       {return m_eMode;}
+    inline const coreDouble&     GetTotalTime      ()const                       {return m_dTotalTime;}
+    inline const coreDouble&     GetTotalTimeBefore()const                       {return m_dTotalTimeBefore;}
+    inline       coreFloat       GetTotalTimeFloat (const coreDouble dLoop)const {return coreFloat(FMOD(m_dTotalTime, dLoop));}
+    inline const coreFloat&      GetTime           ()const                       {return m_fLastTime;}
+    inline const coreFloat&      GetTime           (const coreInt8  iID)const    {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
+    inline const coreFloat&      GetTimeSpeed      (const coreUintW iID)const    {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
+    inline const coreUint32&     GetCurFrame       ()const                       {return m_iCurFrame;}
+    inline const coreDouble&     GetPerfFrequency  ()const                       {return m_dPerfFrequency;}
+    inline const coreUint64&     GetPerfTime       ()const                       {return m_iPerfTime;}
+    inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
+    inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}
+    inline const coreBool&       GetWinSizeChanged ()const                       {return m_bWinSizeChanged;}
+    inline const coreBool&       GetTerminated     ()const                       {return m_bTerminated;}
 
 
 private:

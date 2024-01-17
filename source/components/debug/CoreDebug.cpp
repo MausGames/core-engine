@@ -286,7 +286,7 @@ void CoreDebug::__StatStart()
     if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
     {
         // limit the processing frequency (because of high performance impact)
-        if(SDL_GL_GetSwapInterval() || (F_TO_UI(Core::System->GetTotalTime() * 4.0) % m_aStat.size() != m_aStat.index()))
+        if(SDL_GL_GetSwapInterval() || (F_TO_UI(Core::System->GetTotalTimeFloat(100.0) * 4.0f) % m_aStat.size() != m_aStat.index()))
         {
             // switch to next statistic object (only process one at a time, or it may crash)
             m_aStat.next();
