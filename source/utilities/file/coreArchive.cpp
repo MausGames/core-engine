@@ -70,7 +70,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     coreData::FolderCreate(m_sPath.c_str());
 
     // write to temporary file first (to improve robustness)
-    const coreChar* pcTemp = PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID());
+    const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
 
     // open file
     SDL_RWops* pFile = SDL_RWFromFile(pcTemp, "wb");
@@ -93,7 +93,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     }
 
     // move temporary file over real file
-    if(coreData::FileMove(pcTemp, m_sPath.c_str()))
+    if(DEFINED(CORE_FILE_SAFEWRITE) && coreData::FileMove(pcTemp, m_sPath.c_str()))
     {
         Core::Log->Warning("File (%s) could not be moved", m_sPath.c_str());
         return CORE_ERROR_FILE;
@@ -471,8 +471,12 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     // create folder hierarchy
     coreData::FolderCreate(m_sPath.c_str());
 
+    // cache missing file data
+    FOR_EACH(it, m_apFile)
+        (*it)->LoadData();
+
     // write to temporary file first (to improve robustness)
-    const coreChar* pcTemp = PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID());
+    const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
 
     // open archive
     SDL_RWops* pArchive = SDL_RWFromFile(pcTemp, "wb");
@@ -491,10 +495,6 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     // save number of files
     const coreUint16 iNumFiles = m_apFile.size();
     coreFile::__Write(pArchive, &iNumFiles, sizeof(coreUint16), 1u, &bSuccess);
-
-    // cache missing file data (works in place, due to temporary file)
-    FOR_EACH(it, m_apFile)
-        (*it)->LoadData();
 
     // save file headers
     this->__CalculatePositions();
@@ -524,7 +524,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     }
 
     // move temporary file over real file
-    if(coreData::FileMove(pcTemp, m_sPath.c_str()))
+    if(DEFINED(CORE_FILE_SAFEWRITE) && coreData::FileMove(pcTemp, m_sPath.c_str()))
     {
         Core::Log->Warning("Archive (%s) could not be moved", m_sPath.c_str());
         return CORE_ERROR_FILE;

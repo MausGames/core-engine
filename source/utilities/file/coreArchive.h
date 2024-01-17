@@ -30,6 +30,10 @@
 #define __CORE_FILE_TYPE_MEMORY (0u)
 #define __CORE_FILE_TYPE_DIRECT (UINT32_MAX)
 
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+    #define CORE_FILE_SAFEWRITE   // always write to temporary file first (to improve robustness)
+#endif
+
 
 // ****************************************************************
 /* file class */
