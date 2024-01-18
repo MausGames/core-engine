@@ -22,30 +22,33 @@
 
 // ****************************************************************
 /* input definitions */
-#define __CORE_INPUT_PRESS(x)       {SET_BIT(x, CORE_INPUT_RELEASE, false)                       SET_BIT(x, CORE_INPUT_PRESS, !HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_HOLD, true)}
-#define __CORE_INPUT_RELEASE(x)     {SET_BIT(x, CORE_INPUT_RELEASE, HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_PRESS, false)                        SET_BIT(x, CORE_INPUT_HOLD, false)}
-#define __CORE_INPUT_COUNT(x,c)     {if(x) for(coreUintW j = 0u; j < CORE_INPUT_TYPES; ++j) if(HAS_BIT(x, j)) {++(c)[j]; ADD_BIT(m_iAnyButton, j)}}
-#define __CORE_INPUT_JOYSTICK(i)    (m_aJoystick[MIN(i, m_aJoystick.size() - 1u)])
+#define __CORE_INPUT_PRESS(x)          {SET_BIT(x, CORE_INPUT_RELEASE, false)                       SET_BIT(x, CORE_INPUT_PRESS, !HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_HOLD, true)}
+#define __CORE_INPUT_RELEASE(x)        {SET_BIT(x, CORE_INPUT_RELEASE, HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_PRESS, false)                        SET_BIT(x, CORE_INPUT_HOLD, false)}
+#define __CORE_INPUT_COUNT(x,c)        {if(x) for(coreUintW j = 0u; j < CORE_INPUT_TYPES; ++j) if(HAS_BIT(x, j)) {++(c)[j]; ADD_BIT(m_iAnyButton, j)}}
+#define __CORE_INPUT_JOYSTICK(i)       (m_aJoystick[MIN(i, m_aJoystick.size() - 1u)])
 
-#define CORE_INPUT_BUTTONS_KEYBOARD (287u)   // number of handled keyboard buttons (#SDL_NUM_SCANCODES)
-#define CORE_INPUT_BUTTONS_MOUSE    (16u)    // number of handled mouse buttons
-#define CORE_INPUT_BUTTONS_JOYSTICK (32u)    // number of handled joystick buttons
-#define CORE_INPUT_AXIS             (8u)     // number of handled joystick axis
-#define CORE_INPUT_DIRECTIONS       (4u)     // number of handled joystick (hat) directions
-#define CORE_INPUT_TYPES            (4u)     // number of different status types
+#define CORE_INPUT_BUTTONS_KEYBOARD    (287u)   // number of handled keyboard buttons (#SDL_NUM_SCANCODES)
+#define CORE_INPUT_BUTTONS_MOUSE       (16u)    // number of handled mouse buttons
+#define CORE_INPUT_BUTTONS_JOYSTICK    (32u)    // number of handled joystick buttons
+#define CORE_INPUT_AXIS                (8u)     // number of handled joystick axis
+#define CORE_INPUT_DIRECTIONS          (4u)     // number of handled joystick (hat) directions
+#define CORE_INPUT_TYPES               (4u)     // number of different status types
 
 #if defined(_CORE_MOBILE_)
-    #define CORE_INPUT_FINGERS      (5u)     // maximum number of simultaneous fingers
+    #define CORE_INPUT_FINGERS         (5u)     // maximum number of simultaneous fingers
 #else
-    #define CORE_INPUT_FINGERS      (1u)
+    #define CORE_INPUT_FINGERS         (1u)
 #endif
 
-#define CORE_INPUT_INVALID_KEYBOARD (CORE_INPUT_KEY(UNKNOWN))
-#define CORE_INPUT_INVALID_MOUSE    (0xFFu)
-#define CORE_INPUT_INVALID_JOYSTICK (0xFFu)
+#define CORE_INPUT_INVALID_KEYBOARD    (CORE_INPUT_KEY(UNKNOWN))
+#define CORE_INPUT_INVALID_MOUSE       (0xFFu)
+#define CORE_INPUT_INVALID_JOYSTICK    (0xFFu)
 
-#define CORE_INPUT_KEY(k)           (SDL_SCANCODE_ ## k)
-#define CORE_INPUT_CHAR(c)          (SDLK_         ## c)
+#define CORE_INPUT_BUTTON_LEFTTRIGGER  (SDL_CONTROLLER_BUTTON_MAX + 0u)
+#define CORE_INPUT_BUTTON_RIGHTTRIGGER (SDL_CONTROLLER_BUTTON_MAX + 1u)
+
+#define CORE_INPUT_KEY(k)              (SDL_SCANCODE_ ## k)
+#define CORE_INPUT_CHAR(c)             (SDLK_         ## c)
 
 using coreInputKey  = SDL_Scancode;
 using coreInputChar = SDL_Keycode;

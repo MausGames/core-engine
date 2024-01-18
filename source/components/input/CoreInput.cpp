@@ -273,11 +273,22 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // move joystick axis
     case SDL_JOYAXISMOTION:
-        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jaxis.which)).pController) break; FALLTHROUGH
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jaxis.which)).pController && (oEvent.jaxis.axis < SDL_CONTROLLER_AXIS_MAX)) break; FALLTHROUGH
     case SDL_CONTROLLERAXISMOTION:
-        if(ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD))
-             this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(MAX(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX), 1))) * (((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)) ? -1.0f : 1.0f), -1.0f, 1.0f));
-        else this->SetJoystickRelative(this->__GetJoystickIndex(oEvent.jaxis.which), oEvent.jaxis.axis, 0.0f);
+        {
+            const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jaxis.which);
+            const coreBool  bNew   = (ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD));
+            const coreBool  bOld   = (this->GetJoystickRelative(iIndex, oEvent.jaxis.axis) != 0.0f);
+
+            if(bNew != bOld)
+            {
+                     if(oEvent.jaxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT)  this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_LEFTTRIGGER,  bNew);
+                else if(oEvent.jaxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT) this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_RIGHTTRIGGER, bNew);
+            }
+
+            if(bNew) this->SetJoystickRelative(iIndex, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(MAX(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX), 1))) * (((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)) ? -1.0f : 1.0f), -1.0f, 1.0f));
+                else this->SetJoystickRelative(iIndex, oEvent.jaxis.axis, 0.0f);
+        }
         break;
 
     // move joystick hat
