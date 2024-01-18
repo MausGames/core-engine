@@ -259,16 +259,38 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // press joystick button
     case SDL_JOYBUTTONDOWN:
-        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController) break; FALLTHROUGH
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController && (oEvent.jbutton.button < SDL_CONTROLLER_BUTTON_MAX)) break; FALLTHROUGH
     case SDL_CONTROLLERBUTTONDOWN:
-        this->SetJoystickButton(this->__GetJoystickIndex(oEvent.jbutton.which), oEvent.jbutton.button, true);
+        {
+            const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jbutton.which);
+
+                 if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  true);
+            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT) this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, true);
+            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  true);
+            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    true);
+            else
+            {
+                this->SetJoystickButton(iIndex, oEvent.jbutton.button, true);
+            }
+        }
         break;
 
     // release joystick button
     case SDL_JOYBUTTONUP:
-        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController) break; FALLTHROUGH
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController && (oEvent.jbutton.button < SDL_CONTROLLER_BUTTON_MAX)) break; FALLTHROUGH
     case SDL_CONTROLLERBUTTONUP:
-        this->SetJoystickButton(this->__GetJoystickIndex(oEvent.jbutton.which), oEvent.jbutton.button, false);
+        {
+            const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jbutton.which);
+
+                 if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  false);
+            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT) this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, false);
+            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  false);
+            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    false);
+            else
+            {
+                this->SetJoystickButton(iIndex, oEvent.jbutton.button, false);
+            }
+        }
         break;
 
     // move joystick axis
@@ -293,10 +315,14 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // move joystick hat
     case SDL_JOYHATMOTION:
-        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_LEFT,  oEvent.jhat.value & SDL_HAT_LEFT);
-        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_RIGHT, oEvent.jhat.value & SDL_HAT_RIGHT);
-        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_DOWN,  oEvent.jhat.value & SDL_HAT_DOWN);
-        this->SetJoystickHat(this->__GetJoystickIndex(oEvent.jhat.which), CORE_INPUT_DIR_UP,    oEvent.jhat.value & SDL_HAT_UP);
+        {
+            const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jhat.which);
+
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  oEvent.jhat.value & SDL_HAT_LEFT);
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, oEvent.jhat.value & SDL_HAT_RIGHT);
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  oEvent.jhat.value & SDL_HAT_DOWN);
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    oEvent.jhat.value & SDL_HAT_UP);
+        }
         break;
 
     // attach or detach joystick
@@ -328,6 +354,17 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
 #endif
     }
+
+    // test if events are identical
+    #define __COMPARE(a,b,x) STATIC_ASSERT((offsetof(a, x) == offsetof(b, x)) && (std::is_same<decltype(a::x), decltype(b::x)>::value))
+    {
+        __COMPARE(SDL_JoyButtonEvent, SDL_ControllerButtonEvent, which)
+        __COMPARE(SDL_JoyButtonEvent, SDL_ControllerButtonEvent, button)
+        __COMPARE(SDL_JoyAxisEvent,   SDL_ControllerAxisEvent,   which)
+        __COMPARE(SDL_JoyAxisEvent,   SDL_ControllerAxisEvent,   axis)
+        __COMPARE(SDL_JoyAxisEvent,   SDL_ControllerAxisEvent,   value)
+    }
+    #undef __COMPARE
 
     return true;
 }
