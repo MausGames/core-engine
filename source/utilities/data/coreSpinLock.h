@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_SPINLOCK_H_
 #define _CORE_GUARD_SPINLOCK_H_
 
+// TODO 3: what about read-write-locks, std::shared_mutex
+
 
 // ****************************************************************
 /* spinlock definitions */
@@ -33,17 +35,33 @@
     #endif
 #endif
 
+#if defined(_CORE_EMSCRIPTEN_)
+    #define CORE_SPINLOCK_DISABLED   // disable locking (if multi-threading is not supported or required)
+#elif defined(_CORE_SWITCH_)
+    #define CORE_SPINLOCK_MUTEX      // use regular mutexes (to prevent starvation)
+#endif
+
+#if defined(CORE_SPINLOCK_MUTEX)
+    #include <mutex>
+#endif
+
 
 // ****************************************************************
 /* spinlock class */
 class coreSpinLock final
 {
 private:
-    std::atomic_flag m_bState;   // atomic lock state
+#if defined(CORE_SPINLOCK_DISABLED)
+    coreBool m_State;             // simple boolean (instead of spinlock)
+#elif defined(CORE_SPINLOCK_MUTEX)
+    mutable std::mutex m_State;   // regular mutex (instead of spinlock)
+#else
+    std::atomic_flag m_State;     // atomic lock state
+#endif
 
 
 public:
-    constexpr coreSpinLock()noexcept : m_bState () {}
+    constexpr coreSpinLock()noexcept : m_State () {}
 
     DISABLE_COPY(coreSpinLock)
 
@@ -121,7 +139,13 @@ public:
 /* acquire the spinlock */
 FORCE_INLINE void coreSpinLock::Lock()
 {
+#if defined(CORE_SPINLOCK_DISABLED)
+    m_State = true;
+#elif defined(CORE_SPINLOCK_MUTEX)
+    m_State.lock();
+#else
     while(!this->TryLock()) CORE_SPINLOCK_YIELD
+#endif
 }
 
 
@@ -129,7 +153,13 @@ FORCE_INLINE void coreSpinLock::Lock()
 /* release the spinlock */
 FORCE_INLINE void coreSpinLock::Unlock()
 {
-    m_bState.clear(std::memory_order::release);
+#if defined(CORE_SPINLOCK_DISABLED)
+    m_State = false;
+#elif defined(CORE_SPINLOCK_MUTEX)
+    m_State.unlock();
+#else
+    m_State.clear(std::memory_order::release);
+#endif
 }
 
 
@@ -137,7 +167,13 @@ FORCE_INLINE void coreSpinLock::Unlock()
 /* try to acquire the spinlock */
 FORCE_INLINE coreBool coreSpinLock::TryLock()
 {
-    return !m_bState.test(std::memory_order::relaxed) && !m_bState.test_and_set(std::memory_order::acquire);
+#if defined(CORE_SPINLOCK_DISABLED)
+    return [this]() {const coreBool A = m_State; m_State = true; return !A;}();
+#elif defined(CORE_SPINLOCK_MUTEX)
+    return m_State.try_lock();
+#else
+    return !m_State.test(std::memory_order::relaxed) && !m_State.test_and_set(std::memory_order::acquire);
+#endif
 }
 
 
@@ -145,7 +181,13 @@ FORCE_INLINE coreBool coreSpinLock::TryLock()
 /* check for current lock state */
 FORCE_INLINE coreBool coreSpinLock::IsLocked()const
 {
-    return m_bState.test(std::memory_order::relaxed);
+#if defined(CORE_SPINLOCK_DISABLED)
+    return m_State;
+#elif defined(CORE_SPINLOCK_MUTEX)
+    return m_State.try_lock() ? (m_State.unlock(), false) : true;
+#else
+    return m_State.test(std::memory_order::relaxed);
+#endif
 }
 
 
