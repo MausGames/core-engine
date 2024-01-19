@@ -39,9 +39,10 @@ private:
     /* audio source data structure */
     struct coreSourceData
     {
-        ALuint    iBuffer;   // current sound buffer (for identification)
-        coreFloat fVolume;   // current volume
-        coreUint8 iType;     // sound type (e.g. effect, ambient, voice)
+        const void* pRef;      // current reference pointer (for identification)
+        ALuint      iBuffer;   // current sound buffer      (for identification)
+        coreFloat   fVolume;   // current volume
+        coreUint8   iType;     // sound type (e.g. effect, ambient, voice)
     };
 
 
@@ -98,10 +99,10 @@ public:
     void CancelSound(const coreUint8 iType = CORE_AUDIO_TYPES);
 
     /* handle audio sources */
-    ALuint   NextSource  (const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType);
+    ALuint   NextSource  (const void* pRef, const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType);
     void     FreeSources (const ALuint iBuffer);
     void     UpdateSource(const ALuint iSource, const coreFloat fVolume);
-    coreBool CheckSource (const ALuint iBuffer, const ALuint iSource)const;
+    coreBool CheckSource (const void* pRef, const ALuint iBuffer, const ALuint iSource)const;
 
     /* combine playback state changes */
     inline void DeferUpdates  ()const {m_nDeferUpdates  ();}

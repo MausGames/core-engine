@@ -310,6 +310,10 @@ void CoreAudio::CancelSound(const coreUint8 iType)
         {
             // collect audio sources
             aiSource[iNum++] = m_aiSource[i];
+
+            // reset identification properties
+            m_aSourceData[i].pRef    = NULL;
+            m_aSourceData[i].iBuffer = 0u;
         }
     }
 
@@ -320,7 +324,7 @@ void CoreAudio::CancelSound(const coreUint8 iType)
 
 // ****************************************************************
 /* retrieve next free audio source */
-ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType)
+ALuint CoreAudio::NextSource(const void* pRef, const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType)
 {
     ASSERT(iType < CORE_AUDIO_TYPES)
 
@@ -343,6 +347,7 @@ ALuint CoreAudio::NextSource(const ALuint iBuffer, const coreFloat fVolume, cons
             alSourcef(iSource, AL_GAIN, fVolume * fBase / CORE_AUDIO_MAX_GAIN);
 
             // save audio source data
+            m_aSourceData[i].pRef    = pRef;
             m_aSourceData[i].iBuffer = iBuffer;
             m_aSourceData[i].fVolume = fVolume;
             m_aSourceData[i].iType   = iType;
@@ -380,7 +385,8 @@ void CoreAudio::FreeSources(const ALuint iBuffer)
             alSourceStop(iSource);
             alSourcei(iSource, AL_BUFFER, 0);
 
-            // reset sound buffer
+            // reset identification properties
+            m_aSourceData[i].pRef    = NULL;
             m_aSourceData[i].iBuffer = 0u;
         }
     }
@@ -412,14 +418,14 @@ void CoreAudio::UpdateSource(const ALuint iSource, const coreFloat fVolume)
 
 // ****************************************************************
 /* check if audio source is still valid */
-coreBool CoreAudio::CheckSource(const ALuint iBuffer, const ALuint iSource)const
+coreBool CoreAudio::CheckSource(const void* pRef, const ALuint iBuffer, const ALuint iSource)const
 {
     for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
     {
         if(m_aiSource[i] == iSource)
         {
-            // test with sound buffer
-            return (m_aSourceData[i].iBuffer == iBuffer);
+            // test with identification properties
+            return (m_aSourceData[i].pRef == pRef) && (m_aSourceData[i].iBuffer == iBuffer);
         }
     }
     return false;

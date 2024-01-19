@@ -151,7 +151,7 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
     ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free audio source
-    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume, iType);
+    m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType);
     if(m_iCurSource)
     {
         // save audio source
@@ -191,7 +191,7 @@ void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const co
     ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free audio source
-    m_iCurSource = Core::Audio->NextSource(m_iBuffer, fVolume, iType);
+    m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType);
     if(m_iCurSource)
     {
         // save audio source
@@ -285,7 +285,7 @@ ALuint coreSound::CheckRef(const void* pRef)
 
     // check if audio source is still valid
     const ALuint iSource = m_aiSource.at(pRef);
-    if(Core::Audio->CheckSource(m_iBuffer, iSource)) return iSource;
+    if(Core::Audio->CheckSource(pRef, m_iBuffer, iSource)) return iSource;
 
     // remove invalid audio source
     m_aiSource.erase(pRef);
