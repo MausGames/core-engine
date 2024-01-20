@@ -23,6 +23,8 @@ coreObject3D::coreObject3D()noexcept
 , m_vCollisionModifier (coreVector3(1.0f,1.0f,1.0f))
 , m_vCollisionRange    (coreVector3(0.0f,0.0f,0.0f))
 , m_fCollisionRadius   (0.0f)
+, m_vVisualRange       (coreVector3(0.0f,0.0f,0.0f))
+, m_fVisualRadius      (0.0f)
 , m_iType              (0)
 {
 }
@@ -39,6 +41,8 @@ coreObject3D::coreObject3D(const coreObject3D& c)noexcept
 , m_vCollisionModifier (c.m_vCollisionModifier)
 , m_vCollisionRange    (c.m_vCollisionRange)
 , m_fCollisionRadius   (c.m_fCollisionRadius)
+, m_vVisualRange       (c.m_vVisualRange)
+, m_fVisualRadius      (c.m_fVisualRadius)
 , m_iType              (0)
 {
     // bind to object manager
@@ -57,6 +61,8 @@ coreObject3D::coreObject3D(coreObject3D&& m)noexcept
 , m_vCollisionModifier (m.m_vCollisionModifier)
 , m_vCollisionRange    (m.m_vCollisionRange)
 , m_fCollisionRadius   (m.m_fCollisionRadius)
+, m_vVisualRange       (m.m_vVisualRange)
+, m_fVisualRadius      (m.m_fVisualRadius)
 , m_iType              (0)
 {
     // bind to object manager
@@ -92,6 +98,8 @@ coreObject3D& coreObject3D::operator = (const coreObject3D& c)noexcept
     m_vCollisionModifier = c.m_vCollisionModifier;
     m_vCollisionRange    = c.m_vCollisionRange;
     m_fCollisionRadius   = c.m_fCollisionRadius;
+    m_vVisualRange       = c.m_vVisualRange;
+    m_fVisualRadius      = c.m_fVisualRadius;
 
     return *this;
 }
@@ -113,6 +121,8 @@ coreObject3D& coreObject3D::operator = (coreObject3D&& m)noexcept
     m_vCollisionModifier = m.m_vCollisionModifier;
     m_vCollisionRange    = m.m_vCollisionRange;
     m_fCollisionRadius   = m.m_fCollisionRadius;
+    m_vVisualRange       = m.m_vVisualRange;
+    m_fVisualRadius      = m.m_fVisualRadius;
 
     return *this;
 }
@@ -205,15 +215,27 @@ void coreObject3D::Move()
         {
             // cancel update without valid volume
             const coreModelPtr& pVolume = m_pVolume ? m_pVolume : m_pModel;
-            if(!pVolume.IsUsable() || !pVolume->GetBoundingRadius()) return;
+            if(!pVolume.IsUsable()) return;
 
-            // calculate extend and correction (resizing short range-axis should have low effect on radius)
+            // calculate extend and correction
             const coreVector3 vExtend     = m_vSize * m_vCollisionModifier;
-            const coreVector3 vCorrection = pVolume->GetBoundingRange() * RCP(pVolume->GetBoundingRadius());
+            const coreVector3 vCorrection = pVolume->GetBoundingRange() * RCP(MAX(pVolume->GetBoundingRange().Max(), CORE_MATH_PRECISION));
 
             // update collision range and radius
             m_vCollisionRange  = pVolume->GetBoundingRange () * (vExtend);
-            m_fCollisionRadius = pVolume->GetBoundingRadius() * (vExtend * (vCorrection * RCP(vCorrection.Max()))).Max();
+            m_fCollisionRadius = pVolume->GetBoundingRadius() * (vExtend * vCorrection).Max();
+        }
+        if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_VISUAL))
+        {
+            // cancel update without valid model
+            if(!m_pModel.IsUsable()) return;
+
+            // calculate correction
+            const coreVector3 vCorrection = m_pModel->GetBoundingRange() * RCP(MAX(m_pModel->GetBoundingRange().Max(), CORE_MATH_PRECISION));
+
+            // update visual range and radius
+            m_vVisualRange  = m_pModel->GetBoundingRange () * (m_vSize);
+            m_fVisualRadius = m_pModel->GetBoundingRadius() * (m_vSize * vCorrection).Max();
         }
 
         // reset the update status

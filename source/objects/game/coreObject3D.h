@@ -14,6 +14,8 @@
 // TODO 5: compress rotation and texture parameters (2x16 ?), color 4b, position and size
 // TODO 3: add MoveNormal() and MoveSort() (with callback)
 // TODO 3: SetPosition2, SetPosition3, same for other properties, same for Get
+// TODO 3: temporarily cache move (and render) function in batchlist, with assert-checks
+// TODO 2: handle broken volumes, reset to NULL ?
 
 
 // ****************************************************************
@@ -51,8 +53,11 @@ protected:
     coreVector4 m_vRotation;            // separate rotation quaternion
 
     coreVector3 m_vCollisionModifier;   // size-modifier for collision detection
-    coreVector3 m_vCollisionRange;      // total collision range (volume range * size * modifier)
-    coreFloat   m_fCollisionRadius;     // total collision radius (volume radius * maximum size * maximum modifier)
+    coreVector3 m_vCollisionRange;      // total collision range (volume range * modified size)
+    coreFloat   m_fCollisionRadius;     // total collision radius (volume radius * maximum modified size)
+
+    coreVector3 m_vVisualRange;         // visual range (model range)
+    coreFloat   m_fVisualRadius;        // visual radius (model radius)
 
     coreInt32 m_iType;                  // object type identifier (!0 = currently registered in the object manager)
 
@@ -68,9 +73,9 @@ public:
     coreObject3D& operator = (coreObject3D&&      m)noexcept;
 
     /* define the visual appearance */
-    inline void DefineModel (std::nullptr_t)                {m_pModel  = NULL;                                           ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
-    inline void DefineModel (const coreModelPtr&   pModel)  {m_pModel  = pModel;                                         ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
-    inline void DefineModel (const coreHashString& sName)   {m_pModel  = Core::Manager::Resource->Get<coreModel>(sName); ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
+    inline void DefineModel (std::nullptr_t)                {m_pModel  = NULL;                                           ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
+    inline void DefineModel (const coreModelPtr&   pModel)  {m_pModel  = pModel;                                         ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
+    inline void DefineModel (const coreHashString& sName)   {m_pModel  = Core::Manager::Resource->Get<coreModel>(sName); ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
     inline void DefineVolume(std::nullptr_t)                {m_pVolume = NULL;                                           ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
     inline void DefineVolume(const coreModelPtr&   pVolume) {m_pVolume = pVolume;                                        ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
     inline void DefineVolume(const coreHashString& sName)   {m_pVolume = Core::Manager::Resource->Get<coreModel>(sName); ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
@@ -88,10 +93,10 @@ public:
 
     /* set object properties */
     inline void SetPosition         (const coreVector3 vPosition)          {m_vPosition = vPosition;}
-    inline void SetSize             (const coreVector3 vSize)              {if(m_vSize              != vSize)              {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vSize              = vSize;}}
-    inline void SetDirection        (const coreVector3 vDirection)         {if(m_vDirection         != vDirection)         {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vDirection         = vDirection;}   ASSERT(vDirection  .IsNormalized())}
-    inline void SetOrientation      (const coreVector3 vOrientation)       {if(m_vOrientation       != vOrientation)       {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vOrientation       = vOrientation;} ASSERT(vOrientation.IsNormalized())}
-    inline void SetCollisionModifier(const coreVector3 vCollisionModifier) {if(m_vCollisionModifier != vCollisionModifier) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION) m_vCollisionModifier = vCollisionModifier;}}
+    inline void SetSize             (const coreVector3 vSize)              {if(m_vSize              != vSize)              {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL) m_vSize              = vSize;}}
+    inline void SetDirection        (const coreVector3 vDirection)         {if(m_vDirection         != vDirection)         {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM)                             m_vDirection         = vDirection;}   ASSERT(vDirection  .IsNormalized())}
+    inline void SetOrientation      (const coreVector3 vOrientation)       {if(m_vOrientation       != vOrientation)       {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM)                             m_vOrientation       = vOrientation;} ASSERT(vOrientation.IsNormalized())}
+    inline void SetCollisionModifier(const coreVector3 vCollisionModifier) {if(m_vCollisionModifier != vCollisionModifier) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)                             m_vCollisionModifier = vCollisionModifier;}}
 
     /* get object properties */
     inline const coreModelPtr& GetModel            ()const {return m_pModel;}
@@ -104,6 +109,8 @@ public:
     inline const coreVector3&  GetCollisionModifier()const {return m_vCollisionModifier;}
     inline const coreVector3&  GetCollisionRange   ()const {return m_vCollisionRange;}
     inline const coreFloat&    GetCollisionRadius  ()const {return m_fCollisionRadius;}
+    inline const coreVector3&  GetVisualRange      ()const {return m_vVisualRange;}
+    inline const coreFloat&    GetVisualRadius     ()const {return m_fVisualRadius;}
     inline const coreInt32&    GetType             ()const {return m_iType;}
 };
 

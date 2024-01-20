@@ -27,7 +27,8 @@ enum coreObjectUpdate : coreUint8
     CORE_OBJECT_UPDATE_NOTHING   = 0x00u,   // update nothing
     CORE_OBJECT_UPDATE_TRANSFORM = 0x01u,   // update transformation values
     CORE_OBJECT_UPDATE_COLLISION = 0x02u,   // update collision-relevant values
-    CORE_OBJECT_UPDATE_ALL       = 0x03u    // update everything
+    CORE_OBJECT_UPDATE_VISUAL    = 0x04u,   // update visual-relevant values
+    CORE_OBJECT_UPDATE_ALL       = 0x07u    // update everything
 };
 ENABLE_BITWISE(coreObjectUpdate)
 
