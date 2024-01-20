@@ -15,6 +15,7 @@
     #include <Lmcons.h>
 #elif defined(_CORE_LINUX_)
     #include <fcntl.h>
+    #include <sys/sendfile.h>
     #include <gnu/libc-version.h>
 #elif defined(_CORE_MACOS_)
     #include <mach/mach.h>
@@ -1251,6 +1252,9 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 {
     ASSERT(pcFrom && pcTo)
 
+    // do not copy to same file (unreliable check)
+    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
+
 #if defined(_CORE_WINDOWS_)
 
     // copy directly (with attributes)
@@ -1272,21 +1276,35 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
             if(iFileTo != -1)
             {
                 coreIntW iRet;
-                coreIntW iLen = oBuffer.st_size;
+                coreIntW iLen = oBuffer.st_size ? oBuffer.st_size : UINT32_MAX;
 
                 // copy directly in kernel space
-                do
+                if((iRet = copy_file_range(iFileFrom, NULL, iFileTo, NULL, iLen, 0u)) > 0)
                 {
-                   iRet  = copy_file_range(iFileFrom, NULL, iFileTo, NULL, iLen, 0u);
-                   iLen -= iRet;
+                    iLen -= iRet;
+
+                    do
+                    {
+                        // use fast function
+                        iLen -= iRet = copy_file_range(iFileFrom, NULL, iFileTo, NULL, iLen, 0u);
+                    }
+                    while((iLen > 0) && (iRet > 0));
                 }
-                while((iLen > 0) && (iRet > 0));
+                else
+                {
+                    do
+                    {
+                        // use reliable function
+                        iLen -= iRet = sendfile(iFileTo, iFileFrom, NULL, iLen);
+                    }
+                    while((iLen > 0) && (iRet > 0));
+                }
 
                 // close both files
                 close(iFileTo);
                 close(iFileFrom);
 
-                return (iRet > 0) ? CORE_OK : CORE_ERROR_FILE;
+                return (iRet > -1) ? CORE_OK : CORE_ERROR_FILE;
             }
         }
 
@@ -1340,6 +1358,9 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 {
     ASSERT(pcFrom && pcTo)
+
+    // do not move to same file (unreliable check)
+    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
 
 #if defined(_CORE_WINDOWS_)
 
