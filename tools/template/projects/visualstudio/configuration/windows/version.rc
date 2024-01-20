@@ -1,5 +1,7 @@
 #include "winres.h"
 
+IDI_ICON ICON DISCARDABLE "icon.ico"
+
 VS_VERSION_INFO VERSIONINFO
     PRODUCTVERSION  0,0,1,0
     FILEVERSION     0,0,1,0

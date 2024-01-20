@@ -31,7 +31,7 @@
     <ClInclude Include="..\..\..\source\main.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="version.rc" />
+    <ResourceCompile Include="windows\version.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{323E13E4-2099-4F61-B4D4-BC1612D1B6B0}</ProjectGuid>
@@ -137,7 +137,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
-      <AdditionalManifestFiles>manifest.xml</AdditionalManifestFiles>
+      <AdditionalManifestFiles>windows/manifest.xml</AdditionalManifestFiles>
     </Manifest>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
@@ -168,7 +168,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
-      <AdditionalManifestFiles>manifest.xml</AdditionalManifestFiles>
+      <AdditionalManifestFiles>windows/manifest.xml</AdditionalManifestFiles>
     </Manifest>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
@@ -211,7 +211,7 @@
       <Command>..\..\..\..\CoreEngine\tools\scripts\sign_application.bat $(OutDir)$(TargetFileName)</Command>
     </PostBuildEvent>
     <Manifest>
-      <AdditionalManifestFiles>manifest.xml</AdditionalManifestFiles>
+      <AdditionalManifestFiles>windows/manifest.xml</AdditionalManifestFiles>
     </Manifest>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
@@ -254,7 +254,7 @@
       <Command>..\..\..\..\CoreEngine\tools\scripts\sign_application.bat $(OutDir)$(TargetFileName)</Command>
     </PostBuildEvent>
     <Manifest>
-      <AdditionalManifestFiles>manifest.xml</AdditionalManifestFiles>
+      <AdditionalManifestFiles>windows/manifest.xml</AdditionalManifestFiles>
     </Manifest>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
