@@ -46,7 +46,7 @@ protected:
 
     coreObject2DStyle m_eStyle;     // style overrides
 
-    coreBool    m_bFocused;         // interaction status
+    coreUint8   m_iFocused;         // interaction status (0 = hold, 1 = enter, 2 = leave)
     coreBool    m_bFocusable;       // enabled interaction handling
     coreVector2 m_vFocusModifier;   // size-modifier for interaction handling
 
@@ -71,15 +71,17 @@ public:
     /* render and move the 2d-object */
     coreBool     Prepare(const coreProgramPtr& pProgram);
     coreBool     Prepare();
-    virtual void Render(const coreProgramPtr& pProgram);
-    virtual void Render();
-    virtual void Move  ();
+    virtual void Render (const coreProgramPtr& pProgram);
+    virtual void Render ();
+    virtual void Move   ();
 
     /* interact with the 2d-object */
     void Interact();
     coreBool IsClicked(const coreUint8 iButton = CORE_INPUT_LEFT, const coreInputType eType = CORE_INPUT_PRESS)const;
-    inline const coreBool& IsFocused  ()const {return m_bFocused;}
-    inline const coreBool& IsFocusable()const {return m_bFocusable;}
+    inline       coreBool  IsFocused     ()const {return HAS_BIT(m_iFocused, 0u);}
+    inline       coreBool  IsFocusedEnter()const {return HAS_BIT(m_iFocused, 1u);}
+    inline       coreBool  IsFocusedLeave()const {return HAS_BIT(m_iFocused, 2u);}
+    inline const coreBool& IsFocusable   ()const {return m_bFocusable;}
 
     /* retrieve transformation components */
     inline coreVector2 GetScreenPosition ()const {return coreMatrix3(m_mTransform).GetPosition ();}
@@ -94,7 +96,7 @@ public:
     inline void SetCenter       (const coreVector2       vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
     inline void SetAlignment    (const coreVector2       vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetStyle        (const coreObject2DStyle eStyle)         {if(m_eStyle     != eStyle)     {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_eStyle     = eStyle;}}
-    inline void SetFocused      (const coreBool          bFocused)       {m_bFocused       = bFocused;}
+    inline void SetFocused      (const coreBool          bFocused)       {SET_BIT(m_iFocused, 0u, bFocused)}
     inline void SetFocusable    (const coreBool          bFocusable)     {m_bFocusable     = bFocusable;}
     inline void SetFocusModifier(const coreVector2       vFocusModifier) {m_vFocusModifier = vFocusModifier;}
 

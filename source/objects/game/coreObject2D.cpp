@@ -20,7 +20,7 @@ coreObject2D::coreObject2D()noexcept
 , m_vAlignment     (coreVector2(0.0f,0.0f))
 , m_mTransform     (coreMatrix3x2::Identity())
 , m_eStyle         (CORE_OBJECT2D_STYLE_NOTHING)
-, m_bFocused       (false)
+, m_iFocused       (0u)
 , m_bFocusable     (false)
 , m_vFocusModifier (coreVector2(1.0f,1.0f))
 #if defined(_CORE_MOBILE_)
@@ -40,7 +40,7 @@ coreObject2D::coreObject2D(const coreObject2D& c)noexcept
 , m_vAlignment     (c.m_vAlignment)
 , m_mTransform     (c.m_mTransform)
 , m_eStyle         (c.m_eStyle)
-, m_bFocused       (c.m_bFocused)
+, m_iFocused       (c.m_iFocused)
 , m_bFocusable     (c.m_bFocusable)
 , m_vFocusModifier (c.m_vFocusModifier)
 #if defined(_CORE_MOBILE_)
@@ -60,7 +60,7 @@ coreObject2D::coreObject2D(coreObject2D&& m)noexcept
 , m_vAlignment     (m.m_vAlignment)
 , m_mTransform     (m.m_mTransform)
 , m_eStyle         (m.m_eStyle)
-, m_bFocused       (m.m_bFocused)
+, m_iFocused       (m.m_iFocused)
 , m_bFocusable     (m.m_bFocusable)
 , m_vFocusModifier (m.m_vFocusModifier)
 #if defined(_CORE_MOBILE_)
@@ -94,7 +94,7 @@ coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
     m_vAlignment     = c.m_vAlignment;
     m_mTransform     = c.m_mTransform;
     m_eStyle         = c.m_eStyle;
-    m_bFocused       = c.m_bFocused;
+    m_iFocused       = c.m_iFocused;
     m_bFocusable     = c.m_bFocusable;
     m_vFocusModifier = c.m_vFocusModifier;
 #if defined(_CORE_MOBILE_)
@@ -115,7 +115,7 @@ coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
     m_vAlignment     = m.m_vAlignment;
     m_mTransform     = m.m_mTransform;
     m_eStyle         = m.m_eStyle;
-    m_bFocused       = m.m_bFocused;
+    m_iFocused       = m.m_iFocused;
     m_bFocusable     = m.m_bFocusable;
     m_vFocusModifier = m.m_vFocusModifier;
 #if defined(_CORE_MOBILE_)
@@ -223,10 +223,12 @@ void coreObject2D::Move()
 /* interact with the 2d-object */
 void coreObject2D::Interact()
 {
+    const coreUint8 iOldFocused = m_iFocused;
+
     // skip interaction handling
     if(!m_bFocusable)
     {
-        m_bFocused = false;
+        m_iFocused = 0u;
         return;
     }
 
@@ -239,7 +241,7 @@ void coreObject2D::Interact()
 #if defined(_CORE_MOBILE_)
 
     // reset interaction status
-    m_bFocused = false;
+    m_iFocused = 0u;
     m_iFinger  = 0u;
 
     Core::Input->ForEachFinger(CORE_INPUT_HOLD, [&](const coreUintW i)
@@ -253,8 +255,8 @@ void coreObject2D::Interact()
         if((ABS(vRotated.x) < vScreenSize.x) &&
            (ABS(vRotated.y) < vScreenSize.y))
         {
-            m_bFocused = true;
-            ADD_BIT(m_iFinger, i)
+            ADD_BIT(m_iFocused, 0u)
+            ADD_BIT(m_iFinger,  i)
         }
     });
 
@@ -266,10 +268,14 @@ void coreObject2D::Interact()
                                  (vInput.y * vScreenDirection);
 
     // test for intersection
-    m_bFocused = (ABS(vRotated.x) < vScreenSize.x) &&
-                 (ABS(vRotated.y) < vScreenSize.y);
+    SET_BIT(m_iFocused, 0u, (ABS(vRotated.x) < vScreenSize.x) &&
+                            (ABS(vRotated.y) < vScreenSize.y))
 
 #endif
+
+    // handle enter and leave
+    SET_BIT(m_iFocused, 1u, !HAS_BIT(iOldFocused, 0u) &&  HAS_BIT(m_iFocused, 0u))
+    SET_BIT(m_iFocused, 2u,  HAS_BIT(iOldFocused, 0u) && !HAS_BIT(m_iFocused, 0u))
 }
 
 
@@ -294,7 +300,7 @@ coreBool coreObject2D::IsClicked(const coreUint8 iButton, const coreInputType eT
 #else
 
     // check for interaction status and mouse button
-    return (m_bFocused && Core::Input->GetMouseButton(iButton, eType));
+    return (HAS_BIT(m_iFocused, 0u) && Core::Input->GetMouseButton(iButton, eType));
 
 #endif
 }
