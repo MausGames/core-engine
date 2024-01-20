@@ -232,8 +232,8 @@ void coreObject2D::Interact()
 
     // get resolution-modified transformation parameters
     const coreVector2 vResolution      = Core::System->GetResolution();
-    const coreVector2 vScreenDirection = coreVector2(m_mTransform._12, m_mTransform._11).Normalized();
-    const coreVector2 vScreenPosition  = coreVector2(m_mTransform._31, m_mTransform._32);
+    const coreVector2 vScreenDirection = this->GetScreenDirection();
+    const coreVector2 vScreenPosition  = this->GetScreenPosition();
     const coreVector2 vScreenSize      = m_vSize * m_vFocusModifier * (0.5f * vResolution.Min());
 
 #if defined(_CORE_MOBILE_)

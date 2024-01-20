@@ -181,6 +181,12 @@ public:
     inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
     inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
 
+    /* component functions */
+    constexpr coreVector2 GetPosition ()const {return coreVector2(_31, _32);}
+    constexpr coreVector2 GetSize     ()const {return coreVector2(coreVector2(_11, _21).Length(), coreVector2(_12, _22).Length());}
+    inline    coreVector2 GetSize90   ()const {return coreVector2(ABS(_11) + ABS(_21),            ABS(_12) + ABS(_22));}
+    constexpr coreVector2 GetDirection()const {return coreVector2(_12, _11).Normalized();}
+
     /* direct functions */
     constexpr coreFloat Determinant()const;
 
@@ -260,6 +266,11 @@ public:
     inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
     inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
     inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
+
+    /* component functions */
+    constexpr coreVector3 GetPosition()const {return coreVector3(_31, _32, _33);}
+    constexpr coreVector3 GetSize    ()const {return coreVector3(coreVector3(_11, _21, _31).Length(), coreVector3(_12, _22, _32).Length(), coreVector3(_13, _23, _33).Length());}
+    inline    coreVector3 GetSize90  ()const {return coreVector3(ABS(_11) + ABS(_21) + ABS(_31),      ABS(_12) + ABS(_22) + ABS(_32),      ABS(_13) + ABS(_23) + ABS(_33));}
 
     /* direct functions */
     constexpr coreFloat Determinant()const;
