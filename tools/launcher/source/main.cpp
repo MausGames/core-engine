@@ -91,15 +91,48 @@ static bool IsWindows10OrGreater()
     oVersionInfo.dwMajorVersion   = 10u;
 
     // check for Windows 10 or greater
-    return (VerifyVersionInfoW(&oVersionInfo, VER_MAJORVERSION, VerSetConditionMask(0u, VER_MAJORVERSION, VER_GREATER_EQUAL)) != FALSE);
+    return VerifyVersionInfoW(&oVersionInfo, VER_MAJORVERSION, VerSetConditionMask(0u, VER_MAJORVERSION, VER_GREATER_EQUAL));
+}
+
+
+// ****************************************************************
+static int RunCommand(const wchar_t* pcPath, wchar_t* pcCmdLine)
+{
+    PROCESS_INFORMATION oProcessInfo = {};
+    STARTUPINFOW        oStartupInfo = {};
+
+    oStartupInfo.cb          = sizeof(STARTUPINFOW);
+    oStartupInfo.dwFlags     = STARTF_USESHOWWINDOW;
+    oStartupInfo.wShowWindow = SW_SHOWNORMAL;
+
+    // create child process
+    if(CreateProcessW(pcPath, pcCmdLine, NULL, NULL, FALSE, 0u, NULL, NULL, &oStartupInfo, &oProcessInfo))
+    {
+        // wait on initialization
+        WaitForInputIdle(oProcessInfo.hProcess, INFINITE);
+
+        // check for success
+        DWORD iExitCode;
+        if(GetExitCodeProcess(oProcessInfo.hProcess, &iExitCode) && (iExitCode == STILL_ACTIVE))
+        {
+            return EXIT_SUCCESS;
+        }
+    }
+
+    // use shell as fallback
+    return int(ShellExecuteW(NULL, L"open", pcPath, pcCmdLine, NULL, SW_SHOWNORMAL));
 }
 
 
 // ****************************************************************
 extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevInstance, _In_ LPWSTR pcCmdLine, _In_ int iCmdShow)
 {
+    // handle command line arguments
+    const bool bForce32 = std::wcsstr(pcCmdLine, L"--force-32");
+    const bool bForce64 = std::wcsstr(pcCmdLine, L"--force-64");
+
     // set working directory
-    const wchar_t* pcDirectory = (IsWow64() && IsWindows10OrGreater()) ? L"bin\\windows_x86_64\\" : L"bin\\windows_x86_32\\";
+    const wchar_t* pcDirectory = ((IsWow64() && IsWindows10OrGreater() && !bForce32) || bForce64) ? L"bin\\windows_x86_64\\" : L"bin\\windows_x86_32\\";
     if(!FolderExists(pcDirectory))
     {
         MessageBoxW(NULL, L"Could not find binary directory!", L"Launcher", MB_OK | MB_ICONERROR);
@@ -120,7 +153,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
     }
 
     // start real application
-    return int(ShellExecuteW(NULL, L"open", asFile[0].c_str(), pcCmdLine, NULL, SW_SHOWNORMAL));
+    return RunCommand(asFile[0].c_str(), pcCmdLine);
 }
 
 
