@@ -14,7 +14,6 @@
 // TODO 5: propagate size
 // TODO 3: propagate color and alpha (relative)
 // TODO 3: implement way to change view-data
-// TODO 3: don't render objects which are out of view (but don't disable them)
 // TODO 3: CORE_OBJECT_UPDATE_TRANSFORM when changing offset also updates the view-box object, even though it did not change
 
 

@@ -29,25 +29,38 @@ void coreViewBox::Render()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
 
-    // start scissor testing
     if(m_bScissor)
     {
-        const coreVector2 vResolution = Core::Graphics->GetViewResolution().xy();
-        const coreVector2 vPosition   = coreVector2(m_mTransform._31, m_mTransform._32);
-        const coreVector2 vSize       = coreVector2(coreVector2(m_mTransform._11, m_mTransform._21).Length(), coreVector2(m_mTransform._12, m_mTransform._22).Length());
-        const coreVector2 vLowerLeft  = (vPosition - vSize * 0.5f) / vResolution;
-        const coreVector2 vUpperRight = (vPosition + vSize * 0.5f) / vResolution;
+        const coreVector2 vPosition   = this->GetScreenPosition();
+        const coreVector2 vSize       = this->GetScreenSize90() * 0.5f;
+        const coreVector4 vResolution = Core::Graphics->GetViewResolution();
+        const coreVector2 vLowerLeft  = (vPosition - vSize) * vResolution.zw();
+        const coreVector2 vUpperRight = (vPosition + vSize) * vResolution.zw();
 
+        // start scissor testing
         Core::Graphics->StartScissorTest(vLowerLeft, vUpperRight);
-    }
 
-    // render view-objects
-    FOR_EACH(it, m_apObject) (*it)->Render();
+        // render view-objects
+        FOR_EACH(it, m_apObject)
+        {
+            const coreVector2 vObjPosition = (*it)->GetScreenPosition();
+            const coreVector2 vObjSize     = (*it)->GetScreenSize() * 0.5f;
 
-    // end scissor testing
-    if(m_bScissor)
-    {
+            // cull outside of view-box
+            if((ABS(vObjPosition.x - vPosition.x) <= vObjSize.x + vSize.x) &&
+               (ABS(vObjPosition.y - vPosition.y) <= vObjSize.y + vSize.y))
+            {
+                (*it)->Render();
+            }
+        }
+
+        // end scissor testing
         Core::Graphics->EndScissorTest();
+    }
+    else
+    {
+        // render view-objects (without culling)
+        FOR_EACH(it, m_apObject) (*it)->Render();
     }
 }
 
