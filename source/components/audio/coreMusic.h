@@ -15,6 +15,8 @@
 // TODO 4: split up: coreMusicFile.cpp, coreMusicPlayer.cpp
 // TODO 5: <old comment style>
 // TODO 3: on play, only stream first buffer, and move streaming other buffers to next iterations (queue them empty ?) (on update still keep loop, to handle possible catch-up, to not decay to single-buffering and stuttering if chunks-per-iteration > 1.0)
+// TODO 3: in the end of a track, if sound-buffers are not re-queued anymore (on norepeat, last track), and then switching to a different track, buffering-chain is broken which can cause stuttering
+// TODO 3: change std::recursive_mutex to SDL_Mutex ? (is also recursive) (needs many functions, maybe wrap into coreMutex)
 
 
 // ****************************************************************

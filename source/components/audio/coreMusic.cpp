@@ -114,10 +114,6 @@ coreMusicPlayer::~coreMusicPlayer()
     // kill music thread
     this->KillThread();
 
-    // clear audio source and sound buffers
-    this->Stop();
-    if(m_aiBuffer[0] != UINT32_MAX) alDeleteBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
-
     // remove all music objects
     this->ClearMusic();
 }
@@ -312,6 +308,10 @@ void coreMusicPlayer::ClearMusic()
     // stop the music
     this->Stop();
 
+    // clear sound buffers
+    if(m_aiBuffer[0] != UINT32_MAX) alDeleteBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
+    m_aiBuffer[0] = UINT32_MAX;
+
     // delete music objects
     FOR_EACH(it, m_apMusic)
         MANAGED_DELETE(*it)
@@ -481,7 +481,6 @@ coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
     const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), 4u * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;
 
-    // process the defined music stream chunk size
     do
     {
         coreInt32 iResult;
@@ -527,7 +526,7 @@ coreUintW coreMusicPlayer::__StreamList(const ALuint* piBuffer, const coreUintW 
                      if(m_eRepeat == CORE_MUSIC_SINGLE_NOREPEAT) {break;}
                 else if(m_eRepeat == CORE_MUSIC_SINGLE_REPEAT)   {m_pCurMusic->Rewind();}
                 else if(m_eRepeat == CORE_MUSIC_ALL_NOREPEAT)    {if((m_iCurIndex + 1u) >= m_apMusic.size()) break; this->Next();}
-                else if(m_eRepeat == CORE_MUSIC_ALL_REPEAT)      {this->Next();}
+                else if(m_eRepeat == CORE_MUSIC_ALL_REPEAT)      {this->Next(); if(m_apMusic.size() == 1u) m_pCurMusic->Rewind();}
             }
 
             // cancel on further failure
