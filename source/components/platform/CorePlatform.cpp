@@ -29,6 +29,8 @@ static class coreBackendDefault final : public coreBackend {inline const coreCha
 CorePlatform::CorePlatform()noexcept
 : m_pBackend     (NULL)
 , m_aAchievement {}
+, m_aStat        {}
+, m_aLeaderboard {}
 {
     Core::Log->Header("Platform Interface");
 
@@ -66,7 +68,7 @@ CorePlatform::~CorePlatform()
 void CorePlatform::DefineAchievement(const coreHashString& sName, const coreChar* pcSteamName, const coreChar* pcEpicName)
 {
     // create new achievement definition
-    coreAchievement oData = {};
+    corePlatformAchievement oData = {};
     oData.sSteamName = pcSteamName;
     oData.sEpicName  = pcEpicName;
 
@@ -82,7 +84,7 @@ void CorePlatform::UnlockAchievement(const coreHashString& sName)
     WARN_IF(!m_aAchievement.count_bs(sName)) return;
 
     // find achievement and update status
-    coreAchievement& oData = m_aAchievement.at_bs(sName);
+    corePlatformAchievement& oData = m_aAchievement.at_bs(sName);
     if(oData.iStatus == 0u)
     {
         oData.iStatus = 1u;
@@ -92,10 +94,154 @@ void CorePlatform::UnlockAchievement(const coreHashString& sName)
 
 
 // ****************************************************************
+/* define stat */
+void CorePlatform::DefineStat(const coreHashString& sName, const coreChar* pcSteamName, const coreChar* pcEpicName)
+{
+    // create new stat definition
+    corePlatformStat oData = {};
+    oData.sSteamName = pcSteamName;
+    oData.sEpicName  = pcEpicName;
+
+    // add definition to map
+    m_aStat.emplace_bs(sName, std::move(oData));
+}
+
+
+// ****************************************************************
+/* modify stat */
+void CorePlatform::ModifyStat(const coreHashString& sName, const coreInt32 iValue)
+{
+    WARN_IF(!m_aStat.count_bs(sName)) return;
+
+    // find stat and update value
+    corePlatformStat& oData = m_aStat.at_bs(sName);
+    if(oData.iValue != iValue)
+    {
+        const coreInt32 iOldValue = oData.iValue;
+
+        oData.iValue = iValue;
+        oData.bDirty = true;
+        Core::Log->Info("Stat (%s, %d -> %d) modified", sName.GetString(), iOldValue, iValue);
+    }
+}
+
+
+// ****************************************************************
+/* define leaderboard */
+void CorePlatform::DefineLeaderboard(const coreHashString& sName, const coreChar* pcSteamName, const coreChar* pcSwitchName)
+{
+    // create new leaderboard definition
+    corePlatformLeaderboard oData = {};
+    oData.sSteamName  = pcSteamName;
+    oData.sSwitchName = pcSwitchName;
+
+    // add definition to map
+    m_aLeaderboard.emplace_bs(sName, std::move(oData));
+}
+
+
+// ****************************************************************
+/* upload score value to leaderboard */
+void CorePlatform::UploadLeaderboard(const coreHashString& sName, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, corePlatformScoreUploadCallback nCallback)
+{
+    WARN_IF(!m_aLeaderboard.count_bs(sName)) return;
+
+    // set upload properties
+    corePlatformScoreUpload oEntry = {};
+    oEntry.iValue      = iValue;
+    oEntry.iDataSize   = iDataSize;
+    oEntry.iFileHandle = iFileHandle;
+    oEntry.nCallback   = std::move(nCallback);
+
+    // copy context data
+    ASSERT(iDataSize <= CORE_PLATFORM_SCORE_DATA_SIZE)
+    if(pData && iDataSize) std::memcpy(oEntry.aData, pData, iDataSize);
+
+    // add request to queue
+    m_aLeaderboard.at_bs(sName).aQueueUpload.push_back(std::move(oEntry));
+    Core::Log->Info("Leaderboard (%s, %u) uploaded", sName.GetString(), iValue);
+}
+
+
+// ****************************************************************
+/* download score values from leaderboard */
+void CorePlatform::DownloadLeaderboard(const coreHashString& sName, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo, corePlatformScoreDownloadCallback nCallback)
+{
+    WARN_IF(!m_aLeaderboard.count_bs(sName)) return;
+
+    // set download properties
+    corePlatformScoreDownload oEntry = {};
+    oEntry.eType      = eType;
+    oEntry.iRangeFrom = iRangeFrom;
+    oEntry.iRangeTo   = iRangeTo;
+    oEntry.nCallback  = std::move(nCallback);
+
+    // add request to queue
+    m_aLeaderboard.at_bs(sName).aQueueDownload.push_back(std::move(oEntry));
+    Core::Log->Info("Leaderboard (%s, %u, %d-%d) downloaded", sName.GetString(), eType, iRangeFrom, iRangeTo);
+}
+
+
+// ****************************************************************
+/* upload file to remote share */
+void CorePlatform::UploadFile(const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, corePlatformFileUploadCallback nCallback)
+{
+    ASSERT(pData && iDataSize && pcName)
+
+    m_pBackend->UploadFile(pData, iDataSize, pcName, std::move(nCallback));
+    Core::Log->Info("File (%s, %u) uploaded", pcName, iDataSize);
+}
+
+
+// ****************************************************************
+/* download file from remote share */
+void CorePlatform::DownloadFile(const corePlatformFileHandle iFileHandle, corePlatformFileDownloadCallback nCallback)
+{
+    ASSERT(iFileHandle)
+
+    m_pBackend->DownloadFile(iFileHandle, std::move(nCallback));
+    Core::Log->Info("File (%llu) downloaded", iFileHandle);
+}
+
+
+// ****************************************************************
+/* retrieve current file download progress */
+coreBool CorePlatform::ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const
+{
+    ASSERT(iFileHandle)
+
+    return m_pBackend->ProgressFile(iFileHandle, piCurrent, piTotal);
+}
+
+
+// ****************************************************************
+/* check for network connection (without user-interaction) */
+coreBool CorePlatform::HasConnection()const
+{
+    return m_pBackend->HasConnection();
+}
+
+
+// ****************************************************************
+/* try to establish network connection (with user-interaction) */
+coreBool CorePlatform::EnsureConnection()
+{
+    return m_pBackend->EnsureConnection();
+}
+
+
+// ****************************************************************
+/* check for ownership */
+coreBool CorePlatform::HasOwnership()const
+{
+    return m_pBackend->HasOwnership();
+}
+
+
+// ****************************************************************
 /* get user identifier */
 const coreChar* CorePlatform::GetUserID()const
 {
-    // get user identifier from backend
     return m_pBackend->GetUserID();
 }
 
@@ -104,7 +250,6 @@ const coreChar* CorePlatform::GetUserID()const
 /* get user name */
 const coreChar* CorePlatform::GetUserName()const
 {
-    // get user name from backend
     return m_pBackend->GetUserName();
 }
 
@@ -113,7 +258,6 @@ const coreChar* CorePlatform::GetUserName()const
 /* get language */
 const coreChar* CorePlatform::GetLanguage()const
 {
-    // get language from backend
     return m_pBackend->GetLanguage();
 }
 
@@ -129,6 +273,36 @@ void CorePlatform::__UpdateBackend()
         if((it->iStatus == 1u) && m_pBackend->UnlockAchievement(*it))
         {
             it->iStatus = 2u;
+        }
+    }
+
+    // loop through all stats
+    FOR_EACH(it, m_aStat)
+    {
+        // modify stat in backend
+        if(it->bDirty && m_pBackend->ModifyStat(*it, it->iValue))
+        {
+            it->bDirty = false;
+        }
+    }
+
+    // loop through all leaderboards
+    FOR_EACH(it, m_aLeaderboard)
+    {
+        FOR_EACH_DYN(et, it->aQueueUpload)
+        {
+            // upload score value in backend
+            if(m_pBackend->UploadLeaderboard(*it, et->iValue, et->aData, et->iDataSize, et->iFileHandle, et->nCallback))
+                 DYN_REMOVE(et, it->aQueueUpload)
+            else DYN_KEEP  (et, it->aQueueUpload)
+        }
+
+        FOR_EACH_DYN(et, it->aQueueDownload)
+        {
+            // download score value in backend
+            if(m_pBackend->DownloadLeaderboard(*it, et->eType, et->iRangeFrom, et->iRangeTo, et->nCallback))
+                 DYN_REMOVE(et, it->aQueueDownload)
+            else DYN_KEEP  (et, it->aQueueDownload)
         }
     }
 

@@ -48,8 +48,8 @@ static void* s_pSteamLibrary = NULL;   // Steam library handle
 
 __STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamPipe)
 __STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamUser)
-__STEAM_DEFINE_FUNCTION(SteamAPI_Init)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+__STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetAPICallResult)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_Init)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
@@ -57,6 +57,7 @@ __STEAM_DEFINE_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
 __STEAM_DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
 __STEAM_DEFINE_FUNCTION(SteamAPI_Shutdown)
 __STEAM_DEFINE_FUNCTION(SteamClient)
+__STEAM_DEFINE_FUNCTION(SteamInternal_SteamAPI_Init)
 
 static coreBool InitSteamLibrary()
 {
@@ -69,8 +70,8 @@ static coreBool InitSteamLibrary()
         // load all required functions
         __STEAM_LOAD_FUNCTION(SteamAPI_GetHSteamPipe)
         __STEAM_LOAD_FUNCTION(SteamAPI_GetHSteamUser)
-        __STEAM_LOAD_FUNCTION(SteamAPI_Init)
         __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
+        __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_GetAPICallResult)
         __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
         __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_Init)
         __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
@@ -78,6 +79,7 @@ static coreBool InitSteamLibrary()
         __STEAM_LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
         __STEAM_LOAD_FUNCTION(SteamAPI_Shutdown)
         __STEAM_LOAD_FUNCTION(SteamClient)
+        __STEAM_LOAD_FUNCTION(SteamInternal_SteamAPI_Init)
 
         return true;
     }
@@ -109,22 +111,37 @@ static void S_CALLTYPE WarningMessageCallback(const coreInt32 iSeverity, const c
 class coreBackendSteam final : public coreBackend
 {
 private:
-    ISteamClient* m_pClient;         // main communication instance
-    HSteamPipe    m_iPipe;           // Steam pipe handle
-    HSteamUser    m_iUser;           // Steam user handle
+    /* internal types */
+    using coreLeaderboardMap = coreMapStr<SteamLeaderboard_t>;
+    using coreAsync          = std::function<void(void*)>;
+    using coreAsyncMap       = coreMap<SteamAPICall_t, coreAsync>;
 
-    ISteamApps*      m_pApps;        // application interface
-    ISteamFriends*   m_pFriends;     // friends interface
-    ISteamUser*      m_pUser;        // user interface
-    ISteamUserStats* m_pUserStats;   // stats, achievement and leaderboard interface
-    ISteamUtils*     m_pUtils;       // utility interface
 
-    coreUint8 m_iStatsRequest;       // achievement request status (0 = idle | 1 = send query | 2 = wait on response)
-    coreUint8 m_iStatsStore;         // achievement store status   (0 = idle | 1 = send query | 2 = wait on response)
+private:
+    ISteamClient* m_pClient;                 // main communication instance
+    HSteamPipe    m_iPipe;                   // Steam pipe handle
+    HSteamUser    m_iUser;                   // Steam user handle
+
+    ISteamApps*          m_pApps;            // application interface
+    ISteamFriends*       m_pFriends;         // friends interface
+    ISteamRemoteStorage* m_pRemoteStorage;   // remote storage interface
+    ISteamUser*          m_pUser;            // user interface
+    ISteamUserStats*     m_pUserStats;       // achievement, stats and leaderboard interface
+    ISteamUtils*         m_pUtils;           // utility interface
+
+    coreUint8 m_iStatsRequest;               // achievement request status (0 = idle | 1 = send query | 2 = wait on response)
+    coreUint8 m_iStatsStore;                 // achievement store status   (0 = idle | 1 = send query | 2 = wait on response)
+
+    coreLeaderboardMap m_aiLeaderboard;      // leaderboard handles
+
+    coreAsyncMap m_anAsyncMap;               // asynchronous callbacks
+    coreByte*    m_pAsyncResult;             // callback result memory
+    coreUint32   m_iAsyncSize;               // current size of callback result memory
 
 
 public:
     coreBackendSteam()noexcept;
+    ~coreBackendSteam();
 
     DISABLE_COPY(coreBackendSteam)
 
@@ -134,7 +151,25 @@ public:
     void     Update()final;
 
     /* process achievements */
-    coreBool UnlockAchievement(const coreAchievement& oData)final;
+    coreBool UnlockAchievement(const corePlatformAchievement& oEntry)final;
+
+    /* process stats */
+    coreBool ModifyStat(const corePlatformStat& oEntry, const coreInt32 iValue)final;
+
+    /* process leaderboards */
+    coreBool UploadLeaderboard  (const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback   nCallback)final;
+    coreBool DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo,                        const corePlatformScoreDownloadCallback nCallback)final;
+
+    /* process files */
+    void     UploadFile  (const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, corePlatformFileUploadCallback   nCallback)final;
+    void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  corePlatformFileDownloadCallback nCallback)final;
+    coreBool ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const final;
+
+    /* process connection state */
+    coreBool HasConnection()const final;
+
+    /* process ownership state */
+    coreBool HasOwnership()const final;
 
     /* process general features */
     const coreChar* GetUserID  ()const final;
@@ -146,10 +181,13 @@ public:
 
 
 private:
+    /* retrieve leaderboard handle */
+    SteamLeaderboard_t __LoadLeaderboard(const corePlatformLeaderboard& oEntry);
+
     /* callback handlers */
-    void __OnGameOverlayActivated(const GameOverlayActivated_t* pCallback);
-    void __OnUserStatsReceived   (const UserStatsReceived_t*    pCallback);
-    void __OnUserStatsStored     (const UserStatsStored_t*      pCallback);
+    void __OnGameOverlayActivated(const GameOverlayActivated_t* pResult);
+    void __OnUserStatsReceived   (const UserStatsReceived_t*    pResult);
+    void __OnUserStatsStored     (const UserStatsStored_t*      pResult);
 
     /* exit the base system */
     void __ExitBase();
@@ -159,18 +197,32 @@ private:
 // ****************************************************************
 /* constructor */
 inline coreBackendSteam::coreBackendSteam()noexcept
-: coreBackend     ()
-, m_pClient       (NULL)
-, m_iPipe         (0u)
-, m_iUser         (0u)
-, m_pApps         (NULL)
-, m_pFriends      (NULL)
-, m_pUser         (NULL)
-, m_pUserStats    (NULL)
-, m_pUtils        (NULL)
-, m_iStatsRequest (0u)
-, m_iStatsStore   (0u)
+: coreBackend      ()
+, m_pClient        (NULL)
+, m_iPipe          (0u)
+, m_iUser          (0u)
+, m_pApps          (NULL)
+, m_pFriends       (NULL)
+, m_pRemoteStorage (NULL)
+, m_pUser          (NULL)
+, m_pUserStats     (NULL)
+, m_pUtils         (NULL)
+, m_iStatsRequest  (0u)
+, m_iStatsStore    (0u)
+, m_aiLeaderboard  {}
+, m_anAsyncMap     {}
+, m_pAsyncResult   (NULL)
+, m_iAsyncSize     (0u)
 {
+}
+
+
+// ****************************************************************
+/* destructor */
+inline coreBackendSteam::~coreBackendSteam()
+{
+    // 
+    DYNAMIC_DELETE(m_pAsyncResult)
 }
 
 
@@ -198,14 +250,15 @@ inline coreBool coreBackendSteam::Init()
 #endif
 
     // start up Steam library
-    m_pClient = nSteamAPI_Init() ? nSteamClient() : NULL;
+    SteamErrMsg acError = {};
+    m_pClient = (nSteamInternal_SteamAPI_Init(NULL, &acError) == k_ESteamAPIInitResult_OK) ? nSteamClient() : NULL;
 
     // check for library errors
     WARN_IF(!m_pClient)
     {
         this->__ExitBase();
 
-        Core::Log->Warning("Steam could not be initialized");
+        Core::Log->Warning("Steam could not be initialized (Steam: %s)", acError);
         return false;
     }
 
@@ -214,14 +267,15 @@ inline coreBool coreBackendSteam::Init()
     m_iUser = nSteamAPI_GetHSteamUser();
 
     // get communication interfaces
-    m_pApps      = m_pClient->GetISteamApps     (m_iUser, m_iPipe, STEAMAPPS_INTERFACE_VERSION);
-    m_pFriends   = m_pClient->GetISteamFriends  (m_iUser, m_iPipe, STEAMFRIENDS_INTERFACE_VERSION);
-    m_pUser      = m_pClient->GetISteamUser     (m_iUser, m_iPipe, STEAMUSER_INTERFACE_VERSION);
-    m_pUserStats = m_pClient->GetISteamUserStats(m_iUser, m_iPipe, STEAMUSERSTATS_INTERFACE_VERSION);
-    m_pUtils     = m_pClient->GetISteamUtils    (m_iPipe,          STEAMUTILS_INTERFACE_VERSION);
+    m_pApps          = m_pClient->GetISteamApps         (m_iUser, m_iPipe, STEAMAPPS_INTERFACE_VERSION);
+    m_pFriends       = m_pClient->GetISteamFriends      (m_iUser, m_iPipe, STEAMFRIENDS_INTERFACE_VERSION);
+    m_pRemoteStorage = m_pClient->GetISteamRemoteStorage(m_iUser, m_iPipe, STEAMREMOTESTORAGE_INTERFACE_VERSION);
+    m_pUser          = m_pClient->GetISteamUser         (m_iUser, m_iPipe, STEAMUSER_INTERFACE_VERSION);
+    m_pUserStats     = m_pClient->GetISteamUserStats    (m_iUser, m_iPipe, STEAMUSERSTATS_INTERFACE_VERSION);
+    m_pUtils         = m_pClient->GetISteamUtils        (m_iPipe,          STEAMUTILS_INTERFACE_VERSION);
 
     // check for interface errors
-    WARN_IF(!m_pApps || !m_pFriends || !m_pUser || !m_pUserStats || !m_pUtils)
+    WARN_IF(!m_pApps || !m_pFriends || !m_pRemoteStorage || !m_pUser || !m_pUserStats || !m_pUtils)
     {
         this->__ExitBase();
 
@@ -275,12 +329,43 @@ inline void coreBackendSteam::Update()
         CallbackMsg_t oMessage;
         while(nSteamAPI_ManualDispatch_GetNextCallback(m_iPipe, &oMessage))
         {
-            // dispatch to callback handler
-            switch(oMessage.m_iCallback)
+            if(oMessage.m_iCallback == SteamAPICallCompleted_t::k_iCallback)
             {
-            __STEAM_CALLBACK(GameOverlayActivated)
-            __STEAM_CALLBACK(UserStatsReceived)
-            __STEAM_CALLBACK(UserStatsStored)
+                const SteamAPICallCompleted_t* pCallback = r_cast<SteamAPICallCompleted_t*>(oMessage.m_pubParam);
+
+                // create callback result memory
+                if(m_iAsyncSize < pCallback->m_cubParam)
+                {
+                    DYNAMIC_RESIZE(m_pAsyncResult, pCallback->m_cubParam)
+                    m_iAsyncSize = pCallback->m_cubParam;
+                }
+
+                // retrieve callback result
+                coreBool bFailed;
+                if(nSteamAPI_ManualDispatch_GetAPICallResult(m_iPipe, pCallback->m_hAsyncCall, m_pAsyncResult, pCallback->m_cubParam, pCallback->m_iCallback, &bFailed))
+                {
+                    ASSERT(!bFailed)
+
+                    // find and execute asynchronous callback
+                    const auto it = m_anAsyncMap.find(pCallback->m_hAsyncCall);
+                    if(it != m_anAsyncMap.end())
+                    {
+                        const coreAsync nLocal = std::move(*it);
+                        m_anAsyncMap.erase(it);
+
+                        nLocal(m_pAsyncResult);
+                    }
+                }
+            }
+            else
+            {
+                // dispatch to callback handler
+                switch(oMessage.m_iCallback)
+                {
+                __STEAM_CALLBACK(GameOverlayActivated)
+                __STEAM_CALLBACK(UserStatsReceived)
+                __STEAM_CALLBACK(UserStatsStored)
+                }
             }
 
             // finish callback
@@ -295,19 +380,319 @@ inline void coreBackendSteam::Update()
 
 // ****************************************************************
 /* unlock achievement */
-inline coreBool coreBackendSteam::UnlockAchievement(const coreAchievement& oData)
+inline coreBool coreBackendSteam::UnlockAchievement(const corePlatformAchievement& oEntry)
 {
     if(m_pClient)
     {
-        // unlock achievement in Steam
-        if((m_iStatsRequest == 0u) && m_pUserStats->SetAchievement(oData.sSteamName.c_str()))
+        if(m_iStatsRequest == 0u)
         {
-            m_iStatsStore = 1u;
+            // unlock achievement in Steam
+            if(m_pUserStats->SetAchievement(oEntry.sSteamName.c_str()))
+            {
+                m_iStatsStore = 1u;
+            }
             return true;
         }
     }
 
     return false;
+}
+
+
+// ****************************************************************
+/* modify stat */
+inline coreBool coreBackendSteam::ModifyStat(const corePlatformStat& oEntry, const coreInt32 iValue)
+{
+    if(m_pClient)
+    {
+        if(m_iStatsRequest == 0u)
+        {
+            // modify stat in Steam
+            if(m_pUserStats->SetStat(oEntry.sSteamName.c_str(), iValue))
+            {
+                m_iStatsStore = 1u;
+            }
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* upload score value to leaderboard */
+inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback nCallback)
+{
+    if(m_pClient)
+    {
+        // retrieve leaderboard handle
+        const SteamLeaderboard_t iLeaderboard = this->__LoadLeaderboard(oEntry);
+        if(iLeaderboard)
+        {
+            // convert context data size
+            const coreInt32 iSize = coreMath::CeilAlign(iDataSize, sizeof(coreInt32)) / sizeof(coreInt32);
+            ASSERT(iSize <= k_cLeaderboardDetailsMax)
+
+            // start score upload
+            const SteamAPICall_t iHandle1 = m_pUserStats->UploadLeaderboardScore(iLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest, iValue, r_cast<const coreInt32*>(pData), iSize);
+            if(iHandle1)
+            {
+                // add asynchronous callback
+                m_anAsyncMap.emplace(iHandle1, [=, this](void* pResult)
+                {
+                    const LeaderboardScoreUploaded_t* pStruct1 = r_cast<LeaderboardScoreUploaded_t*>(pResult);
+
+                    if(iFileHandle && (iFileHandle != k_UGCHandleInvalid))
+                    {
+                        // attach previously uploaded file
+                        const SteamAPICall_t iHandle2 = m_pUserStats->AttachLeaderboardUGC(iLeaderboard, iFileHandle);
+                        if(iHandle2)
+                        {
+                            // add asynchronous callback (nested)
+                            m_anAsyncMap.emplace(iHandle2, [](void* pResult)
+                            {
+                                const LeaderboardUGCSet_t* pStruct2 = r_cast<LeaderboardUGCSet_t*>(pResult);
+
+                                // only check for success
+                                ASSERT(pStruct2->m_eResult == k_EResultOK)
+                            });
+                        }
+                    }
+
+                    // return results
+                    nCallback(pStruct1->m_bSuccess, pResult);
+                });
+
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* download score values from leaderboard */
+inline coreBool coreBackendSteam::DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo, const corePlatformScoreDownloadCallback nCallback)
+{
+    if(m_pClient)
+    {
+        // retrieve leaderboard handle
+        const SteamLeaderboard_t iLeaderboard = this->__LoadLeaderboard(oEntry);
+        if(iLeaderboard)
+        {
+            // convert leaderboard request type
+            ELeaderboardDataRequest eRequest;
+            switch(eType)
+            {
+            default: UNREACHABLE
+            case CORE_PLATFORM_LEADERBOARD_TYPE_GLOBAL:     eRequest = k_ELeaderboardDataRequestGlobal;           break;
+            case CORE_PLATFORM_LEADERBOARD_TYPE_FRIENDS:    eRequest = k_ELeaderboardDataRequestFriends;          break;
+            case CORE_PLATFORM_LEADERBOARD_TYPE_USER:       eRequest = k_ELeaderboardDataRequestGlobalAroundUser; break;
+            case CORE_PLATFORM_LEADERBOARD_TYPE_USER_CHECK: eRequest = k_ELeaderboardDataRequestGlobalAroundUser; break;
+            }
+
+            // start score download
+            const SteamAPICall_t iHandle = m_pUserStats->DownloadLeaderboardEntries(iLeaderboard, eRequest, iRangeFrom, iRangeTo);
+            if(iHandle)
+            {
+                // add asynchronous callback
+                m_anAsyncMap.emplace(iHandle, [=, this](void* pResult)
+                {
+                    const LeaderboardScoresDownloaded_t* pStruct = r_cast<LeaderboardScoresDownloaded_t*>(pResult);
+
+                    // allocate output list
+                    coreList<corePlatformScore> aScoreCache;
+                    aScoreCache.reserve(pStruct->m_cEntryCount);
+
+                    // loop through all leaderboard entries
+                    for(coreUintW i = 0u, ie = pStruct->m_cEntryCount; i < ie; ++i)
+                    {
+                        coreInt32 aiData[k_cLeaderboardDetailsMax] = {};
+
+                        // retrieve leaderboard entry
+                        LeaderboardEntry_t oEntry;
+                        if(m_pUserStats->GetDownloadedLeaderboardEntry(pStruct->m_hSteamLeaderboardEntries, i, &oEntry, aiData, k_cLeaderboardDetailsMax))
+                        {
+                            // copy score properties
+                            corePlatformScore oNewScore = {};
+                            oNewScore.pcName      = m_pFriends->GetFriendPersonaName(oEntry.m_steamIDUser);
+                            oNewScore.iRank       = oEntry.m_nGlobalRank;
+                            oNewScore.iValue      = oEntry.m_nScore;
+                            oNewScore.iDataSize   = oEntry.m_cDetails * sizeof(coreInt32);
+                            oNewScore.iFileHandle = (oEntry.m_hUGC != k_UGCHandleInvalid) ? oEntry.m_hUGC : 0u;
+
+                            // copy context data
+                            std::memcpy(oNewScore.aData, aiData, MIN(oNewScore.iDataSize, CORE_PLATFORM_SCORE_DATA_SIZE));
+
+                            // add to output list
+                            aScoreCache.push_back(oNewScore);
+                        }
+                    }
+
+                    // return results
+                    nCallback(aScoreCache.data(), pStruct->m_cEntryCount, m_pUserStats->GetLeaderboardEntryCount(iLeaderboard), pResult);
+                });
+
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* upload file to remote share */
+inline void coreBackendSteam::UploadFile(const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, corePlatformFileUploadCallback nCallback)
+{
+    if(m_pClient)
+    {
+        // start file upload
+        const SteamAPICall_t iHandle1 = m_pRemoteStorage->FileWriteAsync(pcName, pData, iDataSize);
+        if(iHandle1)
+        {
+            // copy path into lambda
+            coreString sNameCopy = pcName;
+            ASSERT(!sNameCopy.empty())
+
+            // add asynchronous callback
+            m_anAsyncMap.emplace(iHandle1, [=, this, sNameCopy = std::move(sNameCopy)](void* pResult)
+            {
+                const RemoteStorageFileWriteAsyncComplete_t* pStruct1 = r_cast<RemoteStorageFileWriteAsyncComplete_t*>(pResult);
+
+                if(pStruct1->m_eResult == k_EResultOK)
+                {
+                    // mark file as public (to retrieve file handle)
+                    const SteamAPICall_t iHandle2 = m_pRemoteStorage->FileShare(sNameCopy.c_str());
+                    if(iHandle2)
+                    {
+                        // add asynchronous callback (nested)
+                        m_anAsyncMap.emplace(iHandle2, [=](void* pResult)
+                        {
+                            const RemoteStorageFileShareResult_t* pStruct2 = r_cast<RemoteStorageFileShareResult_t*>(pResult);
+
+                            // return results
+                            nCallback((pStruct2->m_eResult == k_EResultOK) ? pStruct2->m_hFile : 0u, pResult);
+                        });
+                    }
+                }
+                else
+                {
+                    // return failure
+                    nCallback(0u, pResult);
+                }
+            });
+
+            return;
+        }
+    }
+
+    this->coreBackend::UploadFile(pData, iDataSize, pcName, nCallback);
+}
+
+
+// ****************************************************************
+/* download file from remote share */
+inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHandle, corePlatformFileDownloadCallback nCallback)
+{
+    if(m_pClient)
+    {
+        // start file download
+        const SteamAPICall_t iHandle = m_pRemoteStorage->UGCDownload(iFileHandle, 0u);
+        if(iHandle)
+        {
+            // add asynchronous callback
+            m_anAsyncMap.emplace(iHandle, [=, this](void* pResult)
+            {
+                const RemoteStorageDownloadUGCResult_t* pStruct = r_cast<RemoteStorageDownloadUGCResult_t*>(pResult);
+
+                if(pStruct->m_eResult == k_EResultOK)
+                {
+                    coreByte* pBuffer = new coreByte[pStruct->m_nSizeInBytes];
+                    coreInt32 iOffset = 0u;
+
+                    do
+                    {
+                        // copy file into memory
+                        const coreInt32 iResult = m_pRemoteStorage->UGCRead(pStruct->m_hFile, pBuffer + iOffset, 0x4000, iOffset, k_EUGCRead_ContinueReadingUntilFinished);
+
+                        if(iResult <= 0) break;
+                        iOffset += iResult;
+                    }
+                    while(iOffset < pStruct->m_nSizeInBytes);
+
+                    // return results
+                    nCallback(pStruct->m_hFile, pBuffer, pStruct->m_nSizeInBytes, pResult);
+                    SAFE_DELETE_ARRAY(pBuffer)
+                }
+                else
+                {
+                    // return failure
+                    nCallback(pStruct->m_hFile, NULL, 0u, pResult);
+                }
+            });
+
+            return;
+        }
+    }
+
+    this->coreBackend::DownloadFile(iFileHandle, nCallback);
+}
+
+
+// ****************************************************************
+/* retrieve current file download progress */
+inline coreBool coreBackendSteam::ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const
+{
+    if(m_pClient)
+    {
+        coreInt32 iCurrent = 0;
+        coreInt32 iTotal   = 0;
+
+        // query file download progress
+        if(m_pRemoteStorage->GetUGCDownloadProgress(iFileHandle, &iCurrent, &iTotal))
+        {
+            // return progress values
+            if(piCurrent) (*piCurrent) = CLAMP(iCurrent, 0, iTotal);
+            if(piTotal)   (*piTotal)   = iTotal;
+
+            return (iTotal > 0);
+        }
+    }
+
+    return this->coreBackend::ProgressFile(iFileHandle, piCurrent, piTotal);
+}
+
+
+// ****************************************************************
+/* check for network connection (without user-interaction) */
+inline coreBool coreBackendSteam::HasConnection()const
+{
+    if(m_pClient)
+    {
+        // retrieve Steam server connection state
+        return m_pUser->BLoggedOn();
+    }
+
+    return this->coreBackend::HasConnection();
+}
+
+
+// ****************************************************************
+/* check for ownership */
+inline coreBool coreBackendSteam::HasOwnership()const
+{
+    if(m_pClient)
+    {
+        // retrieve Steam app subscription state
+        return m_pApps->BIsSubscribed();
+    }
+
+    return this->coreBackend::HasOwnership();
 }
 
 
@@ -373,10 +758,41 @@ inline const coreChar* coreBackendSteam::GetLanguage()const
 
 
 // ****************************************************************
-/* callback handlers */
-inline void coreBackendSteam::__OnGameOverlayActivated(const GameOverlayActivated_t* pCallback)
+/* retrieve leaderboard handle */
+inline SteamLeaderboard_t coreBackendSteam::__LoadLeaderboard(const corePlatformLeaderboard& oEntry)
 {
-    if(pCallback->m_bActive)
+    // create hash-string
+    const coreHashString sName = oEntry.sSteamName.c_str();
+
+    if(!m_aiLeaderboard.count_bs(sName))
+    {
+        m_aiLeaderboard.emplace_bs(sName, 0u);
+
+        // find Steam leaderboard
+        const SteamAPICall_t iHandle = m_pUserStats->FindLeaderboard(sName.GetString());
+        if(iHandle)
+        {
+            // add asynchronous callback
+            m_anAsyncMap.emplace(iHandle, [=, this](void* pResult)
+            {
+                const LeaderboardFindResult_t* pStruct = r_cast<LeaderboardFindResult_t*>(pResult);
+
+                // store leaderboard handle
+                ASSERT(pStruct->m_bLeaderboardFound)
+                m_aiLeaderboard.at_bs(sName) = pStruct->m_hSteamLeaderboard;
+            });
+        }
+    }
+
+    return m_aiLeaderboard.bs(sName);
+}
+
+
+// ****************************************************************
+/* callback handlers */
+inline void coreBackendSteam::__OnGameOverlayActivated(const GameOverlayActivated_t* pResult)
+{
+    if(pResult->m_bActive)
     {
         // notify about focus loss
         SDL_Event oEvent = {SDL_USEREVENT};
@@ -384,21 +800,21 @@ inline void coreBackendSteam::__OnGameOverlayActivated(const GameOverlayActivate
     }
 }
 
-inline void coreBackendSteam::__OnUserStatsReceived(const UserStatsReceived_t* pCallback)
+inline void coreBackendSteam::__OnUserStatsReceived(const UserStatsReceived_t* pResult)
 {
-    if(pCallback->m_nGameID == CoreApp::Settings::Platform::SteamAppID)
+    if(pResult->m_nGameID == CoreApp::Settings::Platform::SteamAppID)
     {
         // check for success (or try again)
-        m_iStatsRequest = (pCallback->m_eResult == k_EResultOK) ? 0u : 1u;
+        m_iStatsRequest = (pResult->m_eResult == k_EResultOK) ? 0u : 1u;
     }
 }
 
-inline void coreBackendSteam::__OnUserStatsStored(const UserStatsStored_t* pCallback)
+inline void coreBackendSteam::__OnUserStatsStored(const UserStatsStored_t* pResult)
 {
-    if(pCallback->m_nGameID == CoreApp::Settings::Platform::SteamAppID)
+    if(pResult->m_nGameID == CoreApp::Settings::Platform::SteamAppID)
     {
         // check for success (or try again)
-        m_iStatsStore = (pCallback->m_eResult == k_EResultOK) ? 0u : 1u;
+        m_iStatsStore = (pResult->m_eResult == k_EResultOK) ? 0u : 1u;
     }
 }
 

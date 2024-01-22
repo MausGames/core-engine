@@ -12,7 +12,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 > - **Audio:** Sound Effects (.wav, compressed), Music Files (.ogg, streamed), Music Player (seamless, threaded)
 > - **Input:** Mouse, Keyboard, Joysticks/Gamepads, Touch, Rumble
 > - **Debug:** CPU and GPU Performance Monitor, Run-Time Value and Texture Inspection, Pipeline Statistics, Debug Visualizers (Natvis, LLDB), Crash Dumps
-> - **Platform:** Achievements, User Management, Dynamic Backend Loading (Steamworks, EOS)
+> - **Platform:** Achievements, Stats, Leaderboards, Data Sharing, User Management, Dynamic Backend Loading (Steamworks, EOS)
 > - Asynchronous Resource Management (Hot-Reloading, Indirections/Proxies), Memory Management (Global Sharing, Pool Allocations, Alignment)
 > - File Handling (Packaging, Mounting, Compression, Safe Writing), HTML Log, Configuration and Language Files
 > - Compile-Time Hashing, Random Numbers, Specialized Containers (List, Set, Map), General Utilities (String, Time, OS, etc.)

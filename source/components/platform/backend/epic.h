@@ -17,6 +17,7 @@
 #include <epic/eos_connect.h>
 #include <epic/eos_userinfo.h>
 #include <epic/eos_achievements.h>
+#include <epic/eos_stats.h>
 #include <epic/eos_ui.h>
 #include <epic/eos_logging.h>
 #include <epic/eos_version.h>
@@ -73,11 +74,13 @@ __EPIC_DEFINE_FUNCTION(EOS_Platform_GetAchievementsInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetActiveLocaleCode)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetAuthInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetConnectInterface)
+__EPIC_DEFINE_FUNCTION(EOS_Platform_GetStatsInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetUIInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetUserInfoInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_Release)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_Tick)
 __EPIC_DEFINE_FUNCTION(EOS_Shutdown)
+__EPIC_DEFINE_FUNCTION(EOS_Stats_IngestStat)
 __EPIC_DEFINE_FUNCTION(EOS_UI_AddNotifyDisplaySettingsUpdated)
 __EPIC_DEFINE_FUNCTION(EOS_UserInfo_CopyUserInfo)
 __EPIC_DEFINE_FUNCTION(EOS_UserInfo_QueryUserInfo)
@@ -112,11 +115,13 @@ static coreBool InitEpicLibrary()
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetActiveLocaleCode,         16)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetAuthInterface,            4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetConnectInterface,         4)
+        __EPIC_LOAD_FUNCTION(EOS_Platform_GetStatsInterface,           4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetUIInterface,              4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetUserInfoInterface,        4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_Release,                     4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_Tick,                        4)
         __EPIC_LOAD_FUNCTION(EOS_Shutdown,                             0)
+        __EPIC_LOAD_FUNCTION(EOS_Stats_IngestStat,                     16)
         __EPIC_LOAD_FUNCTION(EOS_UI_AddNotifyDisplaySettingsUpdated,   16)
         __EPIC_LOAD_FUNCTION(EOS_UserInfo_CopyUserInfo,                12)
         __EPIC_LOAD_FUNCTION(EOS_UserInfo_QueryUserInfo,               16)
@@ -158,6 +163,7 @@ private:
     EOS_HConnect      m_pConnect;        // connection interface
     EOS_HUserInfo     m_pUserInfo;       // user-info interface
     EOS_HAchievements m_pAchievements;   // achievements interface
+    EOS_HStats        m_pStats;          // stats interface
     EOS_HUI           m_pUI;             // UI interface
 
     EOS_EpicAccountId m_pAccountId;      // Epic account identifier (authentication)
@@ -177,7 +183,10 @@ public:
     void     Update()final;
 
     /* process achievements */
-    coreBool UnlockAchievement(const coreAchievement& oEntry)final;
+    coreBool UnlockAchievement(const corePlatformAchievement& oEntry)final;
+
+    /* process stats */
+    coreBool ModifyStat(const corePlatformStat& oEntry, const coreInt32 iValue)final;
 
     /* process general features */
     const coreChar* GetUserID  ()const final;
@@ -205,6 +214,7 @@ private:
     static void EOS_CALL __OnAchievementsQueryDefinitions       (const EOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo*        pData);
     static void EOS_CALL __OnAchievementsQueryPlayerAchievements(const EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo* pData);
     static void EOS_CALL __OnAchievementsUnlockAchievements     (const EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo*      pData);
+    static void EOS_CALL __OnStatsIngestStat                    (const EOS_Stats_IngestStatCompleteCallbackInfo*                       pData);
     static void EOS_CALL __OnUIAddNotifyDisplaySettingsUpdated  (const EOS_UI_OnDisplaySettingsUpdatedCallbackInfo*                    pData);
 };
 
@@ -217,6 +227,7 @@ inline coreBackendEpic::coreBackendEpic()noexcept
 , m_pAuth         (NULL)
 , m_pConnect      (NULL)
 , m_pUserInfo     (NULL)
+, m_pStats        (NULL)
 , m_pAchievements (NULL)
 , m_pUI           (NULL)
 , m_pAccountId    (NULL)
@@ -299,10 +310,11 @@ inline coreBool coreBackendEpic::Init()
     m_pConnect      = nEOS_Platform_GetConnectInterface     (m_pPlatform);
     m_pUserInfo     = nEOS_Platform_GetUserInfoInterface    (m_pPlatform);
     m_pAchievements = nEOS_Platform_GetAchievementsInterface(m_pPlatform);
+    m_pStats        = nEOS_Platform_GetStatsInterface       (m_pPlatform);
     m_pUI           = nEOS_Platform_GetUIInterface          (m_pPlatform);
 
     // check for interface errors
-    WARN_IF(!m_pPlatform || !m_pAuth || !m_pConnect || !m_pUserInfo || !m_pAchievements || !m_pUI)
+    WARN_IF(!m_pPlatform || !m_pAuth || !m_pConnect || !m_pUserInfo || !m_pAchievements || !m_pStats || !m_pUI)
     {
         this->__ExitBase();
 
@@ -411,7 +423,7 @@ inline void coreBackendEpic::Update()
 
 // ****************************************************************
 /* unlock achievement */
-inline coreBool coreBackendEpic::UnlockAchievement(const coreAchievement& oEntry)
+inline coreBool coreBackendEpic::UnlockAchievement(const corePlatformAchievement& oEntry)
 {
     if(m_pPlatform)
     {
@@ -428,6 +440,38 @@ inline coreBool coreBackendEpic::UnlockAchievement(const coreAchievement& oEntry
 
             // unlock achievement in Epic
             nEOS_Achievements_UnlockAchievements(m_pAchievements, &oOptions, this, coreBackendEpic::__OnAchievementsUnlockAchievements);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* modify stat */
+inline coreBool coreBackendEpic::ModifyStat(const corePlatformStat& oEntry, const coreInt32 iValue)
+{
+    if(m_pPlatform)
+    {
+        if(HAS_BIT(m_iState, 1u))
+        {
+            // set stat data
+            EOS_Stats_IngestData oStat = {};
+            oStat.ApiVersion   = EOS_STATS_INGESTDATA_API_LATEST;
+            oStat.StatName     = oEntry.sEpicName.c_str();
+            oStat.IngestAmount = iValue;
+
+            // set modify options
+            EOS_Stats_IngestStatOptions oOptions = {};
+            oOptions.ApiVersion   = EOS_STATS_INGESTSTAT_API_LATEST;
+            oOptions.LocalUserId  = m_pUserId;
+            oOptions.Stats        = &oStat;
+            oOptions.StatsCount   = 1u;
+            oOptions.TargetUserId = m_pUserId;
+
+            // modify stat in Epic
+            nEOS_Stats_IngestStat(m_pStats, &oOptions, this, coreBackendEpic::__OnStatsIngestStat);
             return true;
         }
     }
@@ -700,6 +744,11 @@ inline void EOS_CALL coreBackendEpic::__OnAchievementsQueryPlayerAchievements(co
 }
 
 inline void EOS_CALL coreBackendEpic::__OnAchievementsUnlockAchievements(const EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo* pData)
+{
+    ASSERT(pData->ResultCode == EOS_EResult::EOS_Success)
+}
+
+inline void EOS_CALL coreBackendEpic::__OnStatsIngestStat(const EOS_Stats_IngestStatCompleteCallbackInfo* pData)
 {
     ASSERT(pData->ResultCode == EOS_EResult::EOS_Success)
 }
