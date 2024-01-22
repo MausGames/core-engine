@@ -133,6 +133,8 @@ private:
     coreVector2            m_vSpriteViewDir;                        // global 2d-object rotation (override)
     coreVector2            m_vSpriteAltCenter;                      // global 2d-object screen space resolution (override)
 
+    coreBool m_bUpdateCollision;                                    // update recorded collsions
+
 
 private:
     coreObjectManager()noexcept;
@@ -159,6 +161,7 @@ public:
     /* set manager properties */
     inline void SetSpriteViewDir  (const coreVector2 vViewDir)   {m_vSpriteViewDir   = vViewDir; ASSERT(vViewDir.IsNormalized() && vViewDir.IsAligned())}
     inline void SetSpriteAltCenter(const coreVector2 vAltCenter) {m_vSpriteAltCenter = vAltCenter;}
+    inline void SetUpdateCollision(const coreBool    bUpdate)    {m_bUpdateCollision = bUpdate;}
 
     /* get manager properties */
     inline const coreObjectList& GetObjectList     (const coreInt32 iType) {return m_aapObjectList[iType];}   // # create if not available

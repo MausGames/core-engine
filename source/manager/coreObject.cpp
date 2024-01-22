@@ -37,6 +37,7 @@ coreObjectManager::coreObjectManager()noexcept
 , m_apSpriteList      {}
 , m_vSpriteViewDir    (coreVector2(0.0f,1.0f))
 , m_vSpriteAltCenter  (coreVector2(0.0f,0.0f))
+, m_bUpdateCollision  (true)
 {
     // allocate low-memory models
     m_pLowQuad     = Core::Manager::Resource->LoadNew<coreModel>();
@@ -524,13 +525,16 @@ void coreObjectManager::__UpdateObjects()
         m_aiIndex.prepare_bs();
     }
 
-    // loop through all collisions
-    const coreUint32 iCurFrame = Core::System->GetCurFrame();
-    FOR_EACH_DYN(it, m_aiObjectCollision)
+    if(m_bUpdateCollision)
     {
-        // check for old entries and remove them
-        if((*it) == iCurFrame) DYN_KEEP  (it, m_aiObjectCollision)
-                          else DYN_REMOVE(it, m_aiObjectCollision)
+        // loop through all collisions
+        const coreUint32 iCurFrame = Core::System->GetCurFrame();
+        FOR_EACH_DYN(it, m_aiObjectCollision)
+        {
+            // check for old entries and remove them
+            if((*it) == iCurFrame) DYN_KEEP  (it, m_aiObjectCollision)
+                              else DYN_REMOVE(it, m_aiObjectCollision)
+        }
     }
 }
 
