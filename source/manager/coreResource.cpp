@@ -201,7 +201,6 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
     coreArchive* pNewArchive = MANAGED_NEW(coreArchive, sPath.GetString());
     m_apArchive.emplace_bs(sPath, pNewArchive);
 
-    ASSERT(pNewArchive->GetNumFiles())
     return pNewArchive;
 }
 

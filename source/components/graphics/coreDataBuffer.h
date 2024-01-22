@@ -13,6 +13,7 @@
 // TODO 3: implement read and copy operations (currently only static and write/dynamic)
 // TODO 3: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays, may need reset
 // TODO 5: <old comment style>
+// TODO 5: check for GL_ARB_map_buffer_alignment and ASSUME_ALIGNED
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 

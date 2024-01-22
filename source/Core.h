@@ -238,11 +238,13 @@
     #pragma warning(disable : 4061)   // enumerator not handled in switch
     #pragma warning(disable : 4100)   // unreferenced formal parameter
     #pragma warning(disable : 4127)   // conditional expression is constant
+    #pragma warning(disable : 4191)   // unsafe conversion between function types
     #pragma warning(disable : 4201)   // nameless struct or union
     #pragma warning(disable : 4242)   // implicit conversion to different precision #1
     #pragma warning(disable : 4244)   // implicit conversion to different precision #2
     #pragma warning(disable : 4266)   // virtual function not overridden
     #pragma warning(disable : 4267)   // implicit conversion of std::size_t
+    #pragma warning(disable : 4296)   // expression is always true
     #pragma warning(disable : 4324)   // padding added due to alignment attribute
     #pragma warning(disable : 4365)   // implicit conversion between signed and unsigned
     #pragma warning(disable : 4514)   // unreferenced inline function removed
@@ -253,14 +255,18 @@
     #pragma warning(disable : 4625)   // copy constructor implicitly deleted
     #pragma warning(disable : 4626)   // copy assignment operator implicitly deleted
     #pragma warning(disable : 4668)   // preprocessor macro not defined
+    #pragma warning(disable : 4706)   // assignment within conditional expression
     #pragma warning(disable : 4710)   // function not inlined
     #pragma warning(disable : 4711)   // function automatically inlined
     #pragma warning(disable : 4774)   // format string not a string literal
+    #pragma warning(disable : 4800)   // implicit conversion to bool
     #pragma warning(disable : 4820)   // padding after data member
     #pragma warning(disable : 5026)   // move constructor implicitly deleted
     #pragma warning(disable : 5027)   // move assignment operator implicitly deleted
     #pragma warning(disable : 5039)   // potentially throwing function passed to extern C function
     #pragma warning(disable : 5045)   // possible Spectre vulnerability
+    #pragma warning(disable : 5262)   // implicit fall-through
+    #pragma warning(disable : 5264)   // const variable not used
 
     // check for floating-point results stored in memory, causing performance loss
     #if defined(_CORE_64BIT_)
@@ -434,7 +440,7 @@
     #if defined(_CORE_MSVC_)
         #define ASSERT(c)           {__assume(!!(c));}
     #elif defined(_CORE_GCC_)
-        #define ASSERT(c)           {if(!(c)) __builtin_unreachable();}
+        #define ASSERT(c)           {[[assume(!!(c))]];}
     #elif defined(_CORE_CLANG_)
         #define ASSERT(c)           {__builtin_assume(!!(c));}
     #endif
