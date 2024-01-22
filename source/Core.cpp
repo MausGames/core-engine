@@ -67,8 +67,7 @@ Core::Core()noexcept
     // init application
     Log->Header("Application Setup");
     STATIC_NEW(Application)
-    Manager::Resource->UpdateResources();
-    Manager::Resource->UpdateFunctions();
+    Manager::Resource->UpdateWait();
     Log->Header("Application Run");
 }
 

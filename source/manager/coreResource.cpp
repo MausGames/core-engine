@@ -175,6 +175,20 @@ void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
 
 
 // ****************************************************************
+/* update the resource manager (until loading is finished) */
+void coreResourceManager::UpdateWait()
+{
+    do
+    {
+        // update both resources and functions
+        this->UpdateResources();
+        this->UpdateFunctions();
+    }
+    while(this->IsLoading() && !DEFINED(_CORE_EMSCRIPTEN_));
+}
+
+
+// ****************************************************************
 /* retrieve archive */
 coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 {
