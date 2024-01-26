@@ -640,7 +640,12 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
         a_v2LowPosition = a_v3RawPosition.xy;
         a_v2LowTexCoord = vec2(0.5 + a_v3RawPosition.x, 0.5 - a_v3RawPosition.y);
+
         VertexMain();
+
+    #if defined(GL_ES)
+        v_v3TangentPos = v_v3TangentCam - v_v3TangentPos;
+    #endif
     }
 
 #endif // _CORE_VERTEX_SHADER_
@@ -751,7 +756,11 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #endif
 
     // pre-calculated view direction
-    vec3 v_v3ViewDir;
+    #if defined(GL_ES)
+        #define v_v3ViewDir (v_v3TangentPos)
+    #else
+        #define v_v3ViewDir (v_v3TangentCam - v_v3TangentPos)
+    #endif
 
     // remapped variables
     #if defined(_CORE_OPTION_INSTANCING_)
@@ -764,7 +773,6 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     void FragmentMain();
     void ShaderMain()
     {
-        v_v3ViewDir = v_v3TangentCam - v_v3TangentPos;
         FragmentMain();
     }
 
