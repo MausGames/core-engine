@@ -40,14 +40,16 @@ coreStatus coreFont::Load(coreFile* pFile)
     // copy file object for later sub-font creation
     coreFile::InternalNew(&m_pFile, pFile);
 
-#if defined(_CORE_DEBUG_)
-
     // create test sub-font
-    WARN_IF(!this->__InitHeight(1u, 0u)) {}
+    if(!this->__InitHeight(1u, 0u))
+    {
+        Core::Log->Warning("Font (%s) could not be loaded", m_sName.c_str());
+        coreFile::InternalDelete(&m_pFile);
 
-#endif
+        return CORE_INVALID_DATA;
+    }
 
-    Core::Log->Info("Font (%s) loaded", m_sName.c_str());
+    Core::Log->Info("Font (%s, %s, %s) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName());
     return CORE_OK;
 }
 
@@ -126,6 +128,40 @@ coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreU
 
 
 // ****************************************************************
+/* retrieve the vertical shift of a rendered string of text */
+coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
+{
+    coreInt32 iTotalMinY = INT32_MAX, iTotalMaxY = INT32_MIN;
+
+    // check for requested height and outline
+    this->__EnsureHeight(iHeight, iOutline);
+    TTF_Font* pFont = m_aapFont.at(iHeight).at(iOutline);
+
+    const coreChar* pcCursor = pcText;
+    while(*pcCursor)
+    {
+        // convert multibyte UTF-8 character to UTF-32 glyph
+        coreChar32 iGlyph;
+        pcCursor += coreFont::__ConvertToGlyph(pcCursor, &iGlyph);
+
+        // retrieve vertical bounds
+        coreInt32 iMinY, iMaxY;
+        TTF_GlyphMetrics32(pFont, iGlyph, NULL, NULL, &iMinY, &iMaxY, NULL);
+
+        iTotalMinY = MIN(iTotalMinY, iMinY);
+        iTotalMaxY = MAX(iTotalMaxY, iMaxY);
+    }
+
+    // retrieve baseline offsets
+    const coreInt32 iAscent  = TTF_FontAscent (pFont);
+    const coreInt32 iDescent = TTF_FontDescent(pFont);
+
+    // calculate final shift
+    return coreInt8(MIN(iAscent - iTotalMaxY, 0) + MAX(iDescent - iTotalMinY, 0));
+}
+
+
+// ****************************************************************
 /* check if a glyph if provided by the font */
 coreBool coreFont::IsGlyphProvided(const coreChar32 iGlyph)
 {
@@ -147,7 +183,7 @@ coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
 
 
 // ****************************************************************
-/* retrieve the dimensions of a glyph */
+/* retrieve dimensions of a glyph */
 void coreFont::RetrieveGlyphMetrics(const coreChar32 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
     // check for requested height and outline

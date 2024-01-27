@@ -47,9 +47,11 @@ private:
 
     coreVector2 m_vResolution;     // resolution of the generated texture
 
-    coreString m_sText;            // current text
-    coreFloat  m_fScale;           // scale factor
-    coreBool   m_bRectify;         // align texture with screen pixels
+    coreString  m_sText;           // current text
+    coreVector2 m_vScale;          // scale factor
+    coreUint8   m_iRectify;        // align texture with screen pixels (X, Y)
+
+    coreInt8 m_iShift;             // vertical shift for handling ascenders and descenders
 
     coreLabelRefresh m_eRefresh;   // refresh status (dirty flag)
 
@@ -78,8 +80,10 @@ public:
     coreBool    SetText        (const coreChar*       pcText);
     coreBool    SetText        (const coreChar*       pcText, const coreUint16 iNum);
     inline void SetTextLanguage(const coreHashString& sKey)     {this->_BindString(&m_sText, sKey);}
-    inline void SetScale       (const coreFloat       fScale)   {if(m_fScale   != fScale)   {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)      m_fScale   = fScale;}}
-    inline void SetRectify     (const coreBool        bRectify) {if(m_bRectify != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) m_bRectify = bRectify;}}
+    inline void SetScale       (const coreVector2     vScale)   {if(m_vScale != vScale)                      {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)      m_vScale = vScale;}}
+    inline void SetRectifyX    (const coreBool        bRectify) {if(HAS_FLAG(m_iRectify, 0x01u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x01u, bRectify)}}
+    inline void SetRectifyY    (const coreBool        bRectify) {if(HAS_FLAG(m_iRectify, 0x02u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x02u, bRectify)}}
+    inline void SetRectify     (const coreBool        bRectify) {if(HAS_FLAG(m_iRectify, 0x03u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x03u, bRectify)}}
 
     /* get object properties */
     inline const coreFontPtr& GetFont      ()const {return m_pFont;}
@@ -87,8 +91,8 @@ public:
     inline const coreUint8&   GetOutline   ()const {return m_iOutline;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreChar*    GetText      ()const {return m_sText.c_str();}
-    inline const coreFloat&   GetScale     ()const {return m_fScale;}
-    inline const coreBool&    GetRectify   ()const {return m_bRectify;}
+    inline const coreVector2& GetScale     ()const {return m_vScale;}
+    inline const coreUint8&   GetRectify   ()const {return m_iRectify;}
 
 
 private:
@@ -122,9 +126,9 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
             const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
             const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
 
-            // return the dimensions of the current text (may differ a bit)
+            // return the dimensions of the current text
             const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);
-            nRetrieveFunc(vDimensions * (CORE_LABEL_SIZE_FACTOR * m_fScale));
+            nRetrieveFunc(vDimensions * m_vScale * CORE_LABEL_SIZE_FACTOR);
         });
     }
     else

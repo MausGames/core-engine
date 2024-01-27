@@ -52,6 +52,7 @@ public:
 
     /* retrieve text-related attributes */
     coreVector2 RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
+    coreInt8    RetrieveTextShift     (const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
 
     /* retrieve glyph-related attributes */
     coreBool  IsGlyphProvided     (const coreChar32 iGlyph);

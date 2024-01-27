@@ -20,8 +20,9 @@ coreLabel::coreLabel()noexcept
 , m_iOutline           (0u)
 , m_vResolution        (coreVector2(0.0f,0.0f))
 , m_sText              ("")
-, m_fScale             (1.0f)
-, m_bRectify           (true)
+, m_vScale             (coreVector2(1.0f,1.0f))
+, m_iRectify           (0x03u)
+, m_iShift             (0)
 , m_eRefresh           (CORE_LABEL_REFRESH_NOTHING)
 {
 }
@@ -84,7 +85,7 @@ void coreLabel::Render()
         if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
         {
             // refresh the object size
-            this->SetSize(this->GetTexSize() * m_vResolution * (CORE_LABEL_SIZE_FACTOR * m_fScale));
+            this->SetSize(this->GetTexSize() * m_vResolution * m_vScale * CORE_LABEL_SIZE_FACTOR);
             this->__MoveRectified();
         }
 
@@ -280,6 +281,9 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
     // delete merge buffer
     if(pOutline) ZERO_DELETE(pData)
+
+    // calculate vertical shift
+    m_iShift = m_pFont->RetrieveTextShift(pcText, iRelHeight, iRelOutline);
 }
 
 
@@ -292,17 +296,23 @@ void coreLabel::__MoveRectified()
         // move the 2d-object
         this->coreObject2D::Move();
 
-        // align texture with screen pixels
-        if(m_bRectify)
-        {
-            const coreVector2 vResolution = Core::System->GetResolution();
+        // apply vertical shift
+        const coreVector2 vScreenDirection = this->GetScreenDirection();
+        m_mTransform._31 += vScreenDirection.x * I_TO_F(m_iShift) * 0.5f;
+        m_mTransform._32 -= vScreenDirection.y * I_TO_F(m_iShift) * 0.5f;
 
+        // align texture with screen pixels
+        if(HAS_FLAG(m_iRectify, 0x01u))
+        {
             m_mTransform._11 = ROUND(m_mTransform._11);
             m_mTransform._12 = ROUND(m_mTransform._12);
+            m_mTransform._31 = ROUND(m_mTransform._31) - FRACT(0.5f * ABS(m_mTransform._11 + m_mTransform._21 + Core::System->GetResolution().x)) * SIGN(this->GetAlignment().x);
+        }
+        if(HAS_FLAG(m_iRectify, 0x02u))
+        {
             m_mTransform._21 = ROUND(m_mTransform._21);
             m_mTransform._22 = ROUND(m_mTransform._22);
-            m_mTransform._31 = FLOOR(m_mTransform._31) + FRACT(0.5f * ABS(m_mTransform._11 + m_mTransform._21 + vResolution.x));
-            m_mTransform._32 = CEIL (m_mTransform._32) - FRACT(0.5f * ABS(m_mTransform._12 + m_mTransform._22 + vResolution.y));
+            m_mTransform._32 = ROUND(m_mTransform._32) - FRACT(0.5f * ABS(m_mTransform._12 + m_mTransform._22 + Core::System->GetResolution().y)) * SIGN(this->GetAlignment().y);
         }
     }
 }
