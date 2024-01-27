@@ -159,7 +159,7 @@ public:
     void ClearAll ();
 
     /* control memory allocation */
-    void Reallocate(const coreUint32 iNewSize);
+    void Reallocate(const coreUint32 iSize);
 
     /* update particles with custom simulation */
     template <typename F> void ForEachParticle   (const coreParticleEffect* pEffect, F&& nUpdateFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void

@@ -262,8 +262,8 @@ void coreObject3D::ChangeType(const coreInt32 iType)
 coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 : coreResourceRelation ()
 , m_apObjectList       {}
-, m_iCurCapacity       (iStartCapacity)
-, m_iCurEnabled        (0u)
+, m_iNumInstaces       (0u)
+, m_iNumEnabled        (0u)
 , m_pProgram           (NULL)
 , m_aiVertexArray      {}
 , m_aInstanceBuffer    {}
@@ -278,10 +278,6 @@ coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 {
     // reserve memory for objects
     m_apObjectList.reserve(iStartCapacity);
-
-    // create vertex array objects and instance data buffers
-    m_aiVertexArray.fill(0u);
-    if(iStartCapacity) this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
 
@@ -319,6 +315,9 @@ void coreBatchList::Render(const coreProgramPtr& pProgramInstanced, const corePr
     const coreUint32 iRenderCount = std::count_if(m_apObjectList.begin(), m_apObjectList.end(), [](const coreObject3D* pObject) {return pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER);});
     if(!iRenderCount) return;
 
+    // adjust buffer capacity (with additional space)
+    if(iRenderCount > m_iNumInstaces) this->Reallocate(MIN(iRenderCount + iRenderCount / 10u + 1u, m_apObjectList.capacity()));
+
     // check for custom vertex attributes
     if(this->IsCustom()) this->__RenderCustom (pProgramInstanced, pProgramSingle, iRenderCount);
                     else this->__RenderDefault(pProgramInstanced, pProgramSingle, iRenderCount);
@@ -338,7 +337,7 @@ void coreBatchList::Render()
 void coreBatchList::MoveNormal()
 {
     // reset render-count
-    m_iCurEnabled = 0u;
+    m_iNumEnabled = 0u;
 
     FOR_EACH(it, m_apObjectList)
     {
@@ -349,7 +348,7 @@ void coreBatchList::MoveNormal()
 
         // increase render-count (# after move)
         if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-            ++m_iCurEnabled;
+            ++m_iNumEnabled;
     }
 
     // set the update status
@@ -364,7 +363,7 @@ void coreBatchList::MoveSort()
     auto et = m_apObjectList.begin();
 
     // reset render-count
-    m_iCurEnabled = 0u;
+    m_iNumEnabled = 0u;
 
     // compare first object with nothing (never true)
     coreFloat fOldDistance    = 0.0f;
@@ -403,7 +402,7 @@ void coreBatchList::MoveSort()
 
         // increase render-count (# after move)
         if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
-            ++m_iCurEnabled;
+            ++m_iNumEnabled;
     }
 
     // set the update status
@@ -415,14 +414,6 @@ void coreBatchList::MoveSort()
 /* bind 3d-object */
 void coreBatchList::BindObject(coreObject3D* pObject)
 {
-    ASSERT(m_iCurCapacity)
-
-    if(m_apObjectList.size() >= m_iCurCapacity)
-    {
-        // increase current capacity by 50%
-        this->Reallocate(m_iCurCapacity + m_iCurCapacity / 2u + 1u);
-    }
-
     // add object to list
     m_apObjectList.insert(pObject);
 
@@ -444,23 +435,6 @@ void coreBatchList::UnbindObject(coreObject3D* pObject)
 
 
 // ****************************************************************
-/* change current capacity */
-void coreBatchList::Reallocate(const coreUint32 iNewCapacity)
-{
-         if(iNewCapacity == m_iCurCapacity)        return;
-    WARN_IF(iNewCapacity <  m_apObjectList.size()) return;
-
-    // change current capacity
-    m_iCurCapacity = iNewCapacity;
-    m_apObjectList.reserve(iNewCapacity);
-
-    // reallocate the instance data buffers
-    this->__Reset(CORE_RESOURCE_RESET_EXIT);
-    this->__Reset(CORE_RESOURCE_RESET_INIT);
-}
-
-
-// ****************************************************************
 /* remove all 3d-objects */
 void coreBatchList::Clear()
 {
@@ -470,12 +444,18 @@ void coreBatchList::Clear()
 
 
 // ****************************************************************
-/* remove unused capacity */
-void coreBatchList::ShrinkToFit()
+/* change current size */
+void coreBatchList::Reallocate(const coreUint32 iSize)
 {
-    // reallocate to current number of bound objects
-    this->Reallocate(m_apObjectList.size());
-    m_apObjectList.shrink_to_fit();
+         if(iSize == m_iNumInstaces) return;
+    WARN_IF(iSize <  m_iNumEnabled)  return;
+
+    // change current size
+    m_iNumInstaces = iSize;
+
+    // reallocate the instance data buffers
+    this->__Reset(CORE_RESOURCE_RESET_EXIT);
+    this->__Reset(CORE_RESOURCE_RESET_INIT);
 }
 
 
@@ -491,7 +471,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
         WARN_IF(m_aInstanceBuffer[0].IsValid()) return;
 
         // only allocate with enough capacity
-        if(m_iCurCapacity >= CORE_BATCHLIST_INSTANCE_THRESHOLD)
+        if(m_iNumInstaces >= CORE_BATCHLIST_INSTANCE_THRESHOLD)
         {
             FOR_EACH(it, m_aInstanceBuffer)
             {
@@ -503,7 +483,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                 if(CORE_GL_SUPPORT(ARB_half_float_vertex))
                 {
                     // create instance data buffer (high quality compression)
-                    it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE_HIGH, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                    it->Create(m_iNumInstaces, CORE_BATCHLIST_INSTANCE_SIZE_HIGH, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
                     it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
                     it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     4u, GL_HALF_FLOAT,    8u,  false, 0u, 12u);
                     it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         8u,  false, 0u, 20u);
@@ -513,7 +493,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                 else
                 {
                     // create instance data buffer (low quality compression)
-                    it->Create(m_iCurCapacity, CORE_BATCHLIST_INSTANCE_SIZE_LOW, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                    it->Create(m_iNumInstaces, CORE_BATCHLIST_INSTANCE_SIZE_LOW, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
                     it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, 3u, GL_FLOAT,         12u, false, 0u, 0u);
                     it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     3u, GL_FLOAT,         12u, false, 0u, 12u);
                     it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, 4u, GL_SHORT,         8u,  false, 0u, 24u);
@@ -530,7 +510,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                     m_paCustomBuffer->next();
 
                     // create custom attribute buffer
-                    oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+                    oBuffer.Create(m_iNumInstaces, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
                     m_nDefineBufferFunc(&oBuffer);
 
                     // set vertex data (custom only)

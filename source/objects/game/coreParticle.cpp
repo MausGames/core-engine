@@ -325,17 +325,17 @@ void coreParticleSystem::ClearAll()
 
 // ****************************************************************
 /* change current size */
-void coreParticleSystem::Reallocate(const coreUint32 iNewSize)
+void coreParticleSystem::Reallocate(const coreUint32 iSize)
 {
-         if(iNewSize == m_iNumParticles)       return;
-    WARN_IF(iNewSize <  m_apRenderList.size()) return;
+         if(iSize == m_iNumParticles)       return;
+    WARN_IF(iSize <  m_apRenderList.size()) return;
 
     const coreUintW iBefore = P_TO_UI(m_aParticle.data());
 
     // change current size
-    m_iNumParticles = iNewSize;
+    m_iNumParticles = iSize;
     m_iCurParticle  = 0u;
-    m_aParticle.resize(iNewSize);
+    m_aParticle.resize(iSize);
 
     const coreUintW iAfter = P_TO_UI(m_aParticle.data());
 

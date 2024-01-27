@@ -128,8 +128,8 @@ private:
 
 private:
     coreSet<coreObject3D*> m_apObjectList;                                            // list with pointers to similar 3d-objects
-    coreUint32 m_iCurCapacity;                                                        // current instance-capacity of all related resources
-    coreUint32 m_iCurEnabled;                                                         // current number of render-enabled 3d-objects (render-count)
+    coreUint32 m_iNumInstaces;                                                        // current instance-capacity of all buffers
+    coreUint32 m_iNumEnabled;                                                         // current number of render-enabled 3d-objects (render-count)
 
     coreProgramPtr m_pProgram;                                                        // shader-program object
 
@@ -161,7 +161,7 @@ public:
     void Undefine();
 
     /* render and move the batch list */
-    void Render(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle);
+    void Render    (const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle);
     void Render    ();
     void MoveNormal();
     void MoveSort  ();
@@ -169,17 +169,18 @@ public:
     /* bind and unbind 3d-objects */
     void BindObject  (coreObject3D* pObject);
     void UnbindObject(coreObject3D* pObject);
+    void Clear       ();
 
     /* control memory allocation */
-    void Reallocate(const coreUint32 iNewCapacity);
-    void Clear();
-    void ShrinkToFit();
+    void        Reallocate (const coreUint32 iSize);
+    inline void Reserve    (const coreUint32 iCapacity) {m_apObjectList.reserve(iCapacity);}
+    inline void ShrinkToFit()                           {m_apObjectList.shrink_to_fit();}
 
     /* control custom vertex attributes */
     template <typename F, typename G, typename H> void CreateCustom(const coreUint8 iVertexSize, F&& nDefineBufferFunc, G&& nUpdateDataFunc, H&& nUpdateShaderFunc);   // [](coreVertexBuffer* OUTPUT pBuffer) -> void, [](coreByte* OUTPUT pData, const coreObject3D* pObject) -> void, [](const coreProgramPtr& pProgram, const coreObject3D* pObject) -> void
 
     /* check for instancing status */
-    inline coreBool IsInstanced()const {return (m_aInstanceBuffer[0].IsValid() && (m_iCurEnabled >= CORE_BATCHLIST_INSTANCE_THRESHOLD));}
+    inline coreBool IsInstanced()const {return (CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_vertex_array_object) && (m_iNumEnabled >= CORE_BATCHLIST_INSTANCE_THRESHOLD));}
     inline coreBool IsCustom   ()const {return (m_paCustomBuffer != NULL);}
 
     /* access 3d-object list directly */
@@ -187,9 +188,10 @@ public:
     inline const coreSet<coreObject3D*>* List()const {return &m_apObjectList;}
 
     /* get object properties */
-    inline const coreProgramPtr& GetProgram    ()const {return m_pProgram;}
-    inline const coreUint32&     GetCurCapacity()const {return m_iCurCapacity;}
-    inline const coreUint32&     GetCurEnabled ()const {return m_iCurEnabled;}
+    inline const coreProgramPtr& GetProgram   ()const {return m_pProgram;}
+    inline       coreUint32      GetSize      ()const {return m_apObjectList.size();}
+    inline       coreUint32      GetCapacity  ()const {return m_apObjectList.capacity();}
+    inline const coreUint32&     GetNumEnabled()const {return m_iNumEnabled;}
 
 
 private:
@@ -231,7 +233,7 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
             glBindVertexArray(m_aiVertexArray[i]);
 
             // create custom attribute buffer
-            oBuffer.Create(m_iCurCapacity, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+            oBuffer.Create(m_iNumInstaces, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
             m_nDefineBufferFunc(&oBuffer);
 
             // set vertex data (custom only)
