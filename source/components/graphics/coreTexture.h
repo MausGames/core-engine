@@ -153,7 +153,7 @@ public:
     static        void DisableAll();
 
     /* reset content of the texture */
-    coreStatus Clear     (const coreUint8 iLevel);
+    void       Clear     (const coreUint8 iLevel);
     coreStatus Invalidate(const coreUint8 iLevel);
 
     /* process and convert image data */

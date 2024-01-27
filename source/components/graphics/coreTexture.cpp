@@ -520,19 +520,38 @@ void coreTexture::DisableAll()
 
 // ****************************************************************
 /* clear content of the texture */
-coreStatus coreTexture::Clear(const coreUint8 iLevel)
+void coreTexture::Clear(const coreUint8 iLevel)
 {
     ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
-    if(CORE_GL_SUPPORT(ARB_clear_texture))
+   if(CORE_GL_SUPPORT(ARB_clear_texture))
+   {
+       // clear the whole texture
+       glClearTexImage(m_iIdentifier, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
+   }
+   else
     {
-        // clear the whole texture
-        glClearTexImage(m_iIdentifier, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
+        coreByte* pEmpty = ZERO_NEW(coreByte, F_TO_UI(m_vResolution.x) * F_TO_UI(m_vResolution.y) * 4u);
 
-        return CORE_OK;
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // reset texture data directly (new)
+            glTextureSubImage2D(m_iIdentifier, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_Spec.iFormat, m_Spec.iType, pEmpty);
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // reset texture data directly (old)
+            glTextureSubImage2DEXT(m_iIdentifier, GL_TEXTURE_2D, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_Spec.iFormat, m_Spec.iType, pEmpty);
+        }
+        else
+        {
+            // bind texture and reset texture data
+            this->Enable(0u);
+            glTexSubImage2D(GL_TEXTURE_2D, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_Spec.iFormat, m_Spec.iType, pEmpty);
+        }
+
+        ZERO_DELETE(pEmpty)
     }
-
-    return CORE_ERROR_SUPPORT;
 }
 
 
