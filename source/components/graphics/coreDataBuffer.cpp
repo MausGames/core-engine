@@ -518,3 +518,117 @@ void coreVertexBuffer::Activate(const coreUint8 iDivisor)
         }
     }
 }
+
+
+// ****************************************************************
+/* constructor */
+coreUniformBuffer::coreUniformBuffer()noexcept
+: coreDataBuffer ()
+, m_iBinding     (0u)
+, m_iRangeCount  (0u)
+, m_iRangeSize   (0u)
+, m_aSync        {}
+{
+}
+
+coreUniformBuffer::coreUniformBuffer(coreUniformBuffer&& m)noexcept
+: coreDataBuffer (std::move(m))
+, m_iBinding     (m.m_iBinding)
+, m_iRangeCount  (m.m_iRangeCount)
+, m_iRangeSize   (m.m_iRangeSize)
+, m_aSync        (std::move(m.m_aSync))
+{
+}
+
+
+// ****************************************************************
+/* destructor */
+coreUniformBuffer::~coreUniformBuffer()
+{
+    // delete buffer storage
+    this->Delete();
+}
+
+
+// ****************************************************************
+/* assignment operations */
+coreUniformBuffer& coreUniformBuffer::operator = (coreUniformBuffer&& m)noexcept
+{
+    // swap properties
+    this->coreDataBuffer::operator = (std::move(m));
+    std::swap(m_iBinding,    m.m_iBinding);
+    std::swap(m_iRangeCount, m.m_iRangeCount);
+    std::swap(m_iRangeSize,  m.m_iRangeSize);
+    std::swap(m_aSync,       m.m_aSync);
+
+    return *this;
+}
+
+
+// ****************************************************************
+/* create buffer storage */
+void coreUniformBuffer::Create(const coreUint8 iBinding, const coreUint8 iRangeCount, const coreUint32 iRangeSize)
+{
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
+    {
+        // create buffer storage
+        this->coreDataBuffer::Create(GL_UNIFORM_BUFFER, iRangeCount * coreMath::CeilAlign(iRangeSize, 256u), NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+
+        // create sync objects
+        m_aSync.resize(iRangeCount);
+
+        // save properties
+        m_iBinding    = iBinding;
+        m_iRangeCount = iRangeCount;
+        m_iRangeSize  = iRangeSize;
+    }
+}
+
+
+// ****************************************************************
+/* delete buffer storage */
+void coreUniformBuffer::Delete()
+{
+    if(!this->GetIdentifier()) return;
+
+    // delete buffer storage
+    this->coreDataBuffer::Delete();
+
+    // delete sync objects
+    m_aSync.clear();
+
+    // reset properties
+    m_iBinding    = 0u;
+    m_iRangeCount = 0u;
+    m_iRangeSize  = 0u;
+}
+
+
+// ****************************************************************
+/* map and bind next buffer range */
+RETURN_RESTRICT coreByte* coreUniformBuffer::MapNext()
+{
+    ASSERT(this->GetIdentifier())
+
+    // invalidate previous buffer range
+    if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
+    {
+        if(!this->IsPersistent())
+        {
+            const coreUint32 iOldOffset = m_aSync.index() * coreMath::CeilAlign(m_iRangeSize, 256u);   // old
+            glInvalidateBufferSubData(this->GetIdentifier(), iOldOffset, coreMath::CeilAlign(m_iRangeSize, 256u));
+        }
+    }
+
+    // synchronize and switch to next sync object
+    m_aSync.current().Create(CORE_SYNC_CREATE_NORMAL);
+    m_aSync.next();
+    m_aSync.current().Check(CORE_SYNC_WAIT_FOREVER);
+
+    // bind next buffer range
+    const coreUint32 iNewOffset = m_aSync.index() * coreMath::CeilAlign(m_iRangeSize, 256u);   // new
+    glBindBufferRange(GL_UNIFORM_BUFFER, m_iBinding, this->GetIdentifier(), iNewOffset, coreMath::CeilAlign(m_iRangeSize, 16u));
+
+    // map buffer range
+    return this->Map(iNewOffset, m_iRangeSize, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+}

@@ -156,6 +156,40 @@ public:
 
 
 // ****************************************************************
+/* uniform buffer class */
+class coreUniformBuffer final : public coreDataBuffer
+{
+private:
+    coreUint8  m_iBinding;           // uniform buffer binding point index
+    coreUint8  m_iRangeCount;        // number of buffer ranges
+    coreUint32 m_iRangeSize;         // size of each buffer range in bytes
+
+    coreRingDyn<coreSync> m_aSync;   // sync objects (for each range)
+
+
+public:
+    coreUniformBuffer()noexcept;
+    coreUniformBuffer(coreUniformBuffer&& m)noexcept;
+    ~coreUniformBuffer();
+
+    /* assignment operations */
+    coreUniformBuffer& operator = (coreUniformBuffer&& m)noexcept;
+
+    /* control the uniform buffer object */
+    void Create(const coreUint8 iBinding, const coreUint8 iRangeCount, const coreUint32 iRangeSize);
+    void Delete();
+
+    /* map and bind next buffer range */
+    RETURN_RESTRICT coreByte* MapNext();
+
+    /* get object properties */
+    inline const coreUint8&  GetBinding   ()const {return m_iBinding;}
+    inline const coreUint8&  GetRangeCount()const {return m_iRangeCount;}
+    inline const coreUint32& GetRangeSize ()const {return m_iRangeSize;}
+};
+
+
+// ****************************************************************
 /* constructor */
 constexpr coreDataBuffer::coreDataBuffer()noexcept
 : m_iIdentifier       (0u)
