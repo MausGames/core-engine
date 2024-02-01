@@ -10,27 +10,26 @@
 #ifndef _CORE_GUARD_RING_H_
 #define _CORE_GUARD_RING_H_
 
-// TODO 3: create a dynamic-sized version with coreList ? (replacement in coreParticleSystem)
 // TODO 4: rename functions to better and more obvious names
 
 
 // ****************************************************************
-/* ring array class */
-template <typename T, coreUintW iSize> class coreRing final : public std::array<T, iSize>
+/* generic ring container class */
+template <typename T, typename S> class coreRingGen final : public S
 {
 private:
     coreUintW m_iCurIndex;   // index of the current item
 
 
 public:
-    constexpr coreRing()noexcept;
+    constexpr coreRingGen()noexcept;
 
-    ENABLE_COPY(coreRing)
+    ENABLE_COPY(coreRingGen)
 
     /* switch current item */
-    constexpr void select(const coreUintW iIndex) {ASSERT(iIndex < iSize)     m_iCurIndex = iIndex;}
-    constexpr void next    ()                     {if(++m_iCurIndex >= iSize) m_iCurIndex = 0u;}
-    constexpr void previous()                     {if(--m_iCurIndex >= iSize) m_iCurIndex = iSize - 1u;}
+    constexpr void select(const coreUintW iIndex) {ASSERT(iIndex < this->size())     m_iCurIndex = iIndex;}
+    constexpr void next    ()                     {if(++m_iCurIndex >= this->size()) m_iCurIndex = 0u;}
+    constexpr void previous()                     {if(--m_iCurIndex >= this->size()) m_iCurIndex = this->size() - 1u;}
 
     /* access reference to current item */
     constexpr       T&         current()      {return (*this)[m_iCurIndex];}
@@ -41,11 +40,17 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T, coreUintW iSize> constexpr coreRing<T, iSize>::coreRing()noexcept
-: std::array<T, iSize> ()
-, m_iCurIndex          (0u)
+template <typename T, typename S> constexpr coreRingGen<T, S>::coreRingGen()noexcept
+: S           ()
+, m_iCurIndex (0u)
 {
 }
+
+
+// ****************************************************************
+/* default ring container types */
+template <typename T, coreUintW iSize> using coreRing    = coreRingGen<T, std::array<T, iSize>>;
+template <typename T>                  using coreRingDyn = coreRingGen<T, coreList<T>>;
 
 
 #endif /* _CORE_GUARD_RING_H_ */
