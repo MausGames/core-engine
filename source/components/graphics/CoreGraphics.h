@@ -22,10 +22,11 @@
 
 // ****************************************************************
 /* graphics definitions */
-#define CORE_GRAPHICS_LIGHTS                 (2u)                                         // number of ambient lights
-#define CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE (284u)                                       // transformation uniform data size (view-projection (64), camera matrix (64), perspective (64), ortho (64), resolution (16), camera position (12))
-#define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE   (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))   // ambient uniform data size (light-positions (N*16), light-directions (N*16), light-values (N*16))
-#define CORE_GRAPHICS_UNIFORM_BUFFERS        (32u)                                        // number of concurrent uniform buffer objects
+#define CORE_GRAPHICS_LIGHTS                   (1u)                                         // number of ambient lights
+#define CORE_GRAPHICS_UNIFORM_TRANSFORM3D_SIZE (204u)                                       // 3d-transformation uniform data size (view-projection (64), camera matrix (64), perspective (64), camera position (12))
+#define CORE_GRAPHICS_UNIFORM_TRANSFORM2D_SIZE (80u)                                        // 2d-transformation uniform data size (ortho (64), resolution (16))
+#define CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE     (CORE_GRAPHICS_LIGHTS * sizeof(coreLight))   // ambient uniform data size (light-positions (N*16), light-directions (N*16), light-values (N*16))
+#define CORE_GRAPHICS_UNIFORM_BUFFERS          (32u)                                        // number of concurrent uniform buffer objects
 
 
 // ****************************************************************
@@ -43,38 +44,37 @@ private:
 
 
 private:
-    SDL_GLContext m_pRenderContext;                                       // primary OpenGL context for render operations
-    SDL_GLContext m_pResourceContext;                                     // secondary OpenGL context for resource loading
+    SDL_GLContext m_pRenderContext;             // primary OpenGL context for render operations
+    SDL_GLContext m_pResourceContext;           // secondary OpenGL context for resource loading
 
-    coreFloat m_fFOV;                                                     // field-of-view
-    coreFloat m_fNearClip;                                                // near clipping plane
-    coreFloat m_fFarClip;                                                 // far clipping plane
+    coreFloat m_fFOV;                           // field-of-view
+    coreFloat m_fNearClip;                      // near clipping plane
+    coreFloat m_fFarClip;                       // far clipping plane
 
-    coreVector3 m_vCamPosition;                                           // position of the camera
-    coreVector3 m_vCamDirection;                                          // direction of the camera
-    coreVector3 m_vCamOrientation;                                        // orientation of the camera
-    coreMatrix4 m_mCamera;                                                // camera matrix
+    coreVector3 m_vCamPosition;                 // position of the camera
+    coreVector3 m_vCamDirection;                // direction of the camera
+    coreVector3 m_vCamOrientation;              // orientation of the camera
+    coreMatrix4 m_mCamera;                      // camera matrix
 
-    coreMatrix4 m_mPerspective;                                           // perspective projection matrix
-    coreMatrix4 m_mOrtho;                                                 // orthographic projection matrix
-    coreVector4 m_vViewResolution;                                        // current viewport resolution (xy = normal, zw = reciprocal)
+    coreMatrix4 m_mPerspective;                 // perspective projection matrix
+    coreMatrix4 m_mOrtho;                       // orthographic projection matrix
+    coreVector4 m_vViewResolution;              // current viewport resolution (xy = normal, zw = reciprocal)
 
-    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];                             // global ambient lights
+    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];   // global ambient lights
 
-    coreDataBuffer m_TransformBuffer;                                     // uniform buffer objects for transformation data
-    coreDataBuffer m_AmbientBuffer;                                       // uniform buffer objects for ambient data
-    coreRing<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aTransformSync;   // transformation sync objects (for each sub-range)
-    coreRing<coreSync, CORE_GRAPHICS_UNIFORM_BUFFERS> m_aAmbientSync;     // ambient sync objects
-    coreUint8 m_iUniformUpdate;                                           // update status for the UBOs (dirty flag)
+    coreUniformBuffer m_Transform3DBuffer;      // uniform buffer object for 3d-transformation data
+    coreUniformBuffer m_Transform2DBuffer;      // uniform buffer object for 2d-transformation data
+    coreUniformBuffer m_AmbientBuffer;          // uniform buffer object for ambient data
+    coreUint8 m_iUniformUpdate;                 // update status for the UBOs (dirty flag)
 
-    coreUint32 m_aiScissorData[4];                                        // current scissor test properties
+    coreUint32 m_aiScissorData[4];              // current scissor test properties
 
-    coreUint64 m_iMemoryStart;                                            // available graphics memory at the start of the application (in bytes)
-    coreUint8  m_iMaxSamples;                                             // max multisample anti aliasing level
-    coreUint8  m_iMaxAnisotropy;                                          // max anisotropic texture filter level
-    coreUint8  m_iMaxTextures;                                            // max number of texture units (only for fragment shader)
-    coreFloat  m_fVersionOpenGL;                                          // available OpenGL version
-    coreFloat  m_fVersionGLSL;                                            // available GLSL version
+    coreUint64 m_iMemoryStart;                  // available graphics memory at the start of the application (in bytes)
+    coreUint8  m_iMaxSamples;                   // max multisample anti aliasing level
+    coreUint8  m_iMaxAnisotropy;                // max anisotropic texture filter level
+    coreUint8  m_iMaxTextures;                  // max number of texture units (only for fragment shader)
+    coreFloat  m_fVersionOpenGL;                // available OpenGL version
+    coreFloat  m_fVersionGLSL;                  // available GLSL version
 
 
 private:
@@ -127,21 +127,19 @@ public:
     inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolderPrivate(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
 
     /* get component properties */
-    inline const SDL_GLContext&  GetRenderContext  ()const                       {return m_pRenderContext;}
-    inline const SDL_GLContext&  GetResourceContext()const                       {return m_pResourceContext;}
-    inline const coreFloat&      GetFOV            ()const                       {return m_fFOV;}
-    inline const coreFloat&      GetNearClip       ()const                       {return m_fNearClip;}
-    inline const coreFloat&      GetFarClip        ()const                       {return m_fFarClip;}
-    inline const coreVector3&    GetCamPosition    ()const                       {return m_vCamPosition;}
-    inline const coreVector3&    GetCamDirection   ()const                       {return m_vCamDirection;}
-    inline const coreVector3&    GetCamOrientation ()const                       {return m_vCamOrientation;}
-    inline const coreMatrix4&    GetCamera         ()const                       {return m_mCamera;}
-    inline const coreMatrix4&    GetPerspective    ()const                       {return m_mPerspective;}
-    inline const coreMatrix4&    GetOrtho          ()const                       {return m_mOrtho;}
-    inline const coreVector4&    GetViewResolution ()const                       {return m_vViewResolution;}
-    inline const coreLight&      GetLight          (const coreUintW iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
-    inline const coreDataBuffer& GetTransformBuffer()const                       {return m_TransformBuffer;}
-    inline const coreDataBuffer& GetAmbientBuffer  ()const                       {return m_AmbientBuffer;}
+    inline const SDL_GLContext& GetRenderContext  ()const                       {return m_pRenderContext;}
+    inline const SDL_GLContext& GetResourceContext()const                       {return m_pResourceContext;}
+    inline const coreFloat&     GetFOV            ()const                       {return m_fFOV;}
+    inline const coreFloat&     GetNearClip       ()const                       {return m_fNearClip;}
+    inline const coreFloat&     GetFarClip        ()const                       {return m_fFarClip;}
+    inline const coreVector3&   GetCamPosition    ()const                       {return m_vCamPosition;}
+    inline const coreVector3&   GetCamDirection   ()const                       {return m_vCamDirection;}
+    inline const coreVector3&   GetCamOrientation ()const                       {return m_vCamOrientation;}
+    inline const coreMatrix4&   GetCamera         ()const                       {return m_mCamera;}
+    inline const coreMatrix4&   GetPerspective    ()const                       {return m_mPerspective;}
+    inline const coreMatrix4&   GetOrtho          ()const                       {return m_mOrtho;}
+    inline const coreVector4&   GetViewResolution ()const                       {return m_vViewResolution;}
+    inline const coreLight&     GetLight          (const coreUintW iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
 
     /* check OpenGL properties */
     inline const coreUint8& GetMaxSamples   ()const {return m_iMaxSamples;}

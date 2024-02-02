@@ -26,10 +26,12 @@
 #define CORE_SHADER_CACHE_MAGIC                 (UINT_LITERAL("CSC0"))   // magic number of the shader-cache
 #define CORE_SHADER_CACHE_VERSION               (0x00000001u)            // current file version of the shader-cache
 
-#define CORE_SHADER_BUFFER_TRANSFORM            "b_Transform"
+#define CORE_SHADER_BUFFER_TRANSFORM3D          "b_Transform3D"
+#define CORE_SHADER_BUFFER_TRANSFORM2D          "b_Transform2D"
 #define CORE_SHADER_BUFFER_AMBIENT              "b_Ambient"
-#define CORE_SHADER_BUFFER_TRANSFORM_NUM        (0u)
-#define CORE_SHADER_BUFFER_AMBIENT_NUM          (1u)
+#define CORE_SHADER_BUFFER_TRANSFORM3D_NUM      (0u)
+#define CORE_SHADER_BUFFER_TRANSFORM2D_NUM      (1u)
+#define CORE_SHADER_BUFFER_AMBIENT_NUM          (2u)
 
 #define CORE_SHADER_UNIFORM_VIEWPROJ            "u_m4ViewProj"
 #define CORE_SHADER_UNIFORM_CAMERA              "u_m4Camera"

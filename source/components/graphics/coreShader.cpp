@@ -420,10 +420,12 @@ coreStatus coreProgram::Load(coreFile* pFile)
         // bind uniform buffer objects
         if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
         {
-            const GLuint iTransformBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM);
-            const GLuint iAmbientBlock   = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_AMBIENT);
-            if(iTransformBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransformBlock, CORE_SHADER_BUFFER_TRANSFORM_NUM);
-            if(iAmbientBlock   != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,   CORE_SHADER_BUFFER_AMBIENT_NUM);
+            const GLuint iTransform3DBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM3D);
+            const GLuint iTransform2DBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM2D);
+            const GLuint iAmbientBlock     = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_AMBIENT);
+            if(iTransform3DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform3DBlock, CORE_SHADER_BUFFER_TRANSFORM3D_NUM);
+            if(iTransform2DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform2DBlock, CORE_SHADER_BUFFER_TRANSFORM2D_NUM);
+            if(iAmbientBlock     != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,     CORE_SHADER_BUFFER_AMBIENT_NUM);
         }
 
         // add debug label

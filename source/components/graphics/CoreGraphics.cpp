@@ -12,31 +12,30 @@
 // ****************************************************************
 /* constructor */
 CoreGraphics::CoreGraphics()noexcept
-: m_pRenderContext   (NULL)
-, m_pResourceContext (NULL)
-, m_fFOV             (0.0f)
-, m_fNearClip        (0.0f)
-, m_fFarClip         (0.0f)
-, m_vCamPosition     (coreVector3(0.0f,0.0f,0.0f))
-, m_vCamDirection    (coreVector3(0.0f,0.0f,0.0f))
-, m_vCamOrientation  (coreVector3(0.0f,0.0f,0.0f))
-, m_mCamera          (coreMatrix4::Identity())
-, m_mPerspective     (coreMatrix4::Identity())
-, m_mOrtho           (coreMatrix4::Identity())
-, m_vViewResolution  (coreVector4(0.0f,0.0f,0.0f,0.0f))
-, m_aLight           {}
-, m_TransformBuffer  ()
-, m_AmbientBuffer    ()
-, m_aTransformSync   {}
-, m_aAmbientSync     {}
-, m_iUniformUpdate   (0u)
-, m_aiScissorData    {}
-, m_iMemoryStart     (0u)
-, m_iMaxSamples      (0u)
-, m_iMaxAnisotropy   (0u)
-, m_iMaxTextures     (0u)
-, m_fVersionOpenGL   (0.0f)
-, m_fVersionGLSL     (0.0f)
+: m_pRenderContext    (NULL)
+, m_pResourceContext  (NULL)
+, m_fFOV              (0.0f)
+, m_fNearClip         (0.0f)
+, m_fFarClip          (0.0f)
+, m_vCamPosition      (coreVector3(0.0f,0.0f,0.0f))
+, m_vCamDirection     (coreVector3(0.0f,0.0f,0.0f))
+, m_vCamOrientation   (coreVector3(0.0f,0.0f,0.0f))
+, m_mCamera           (coreMatrix4::Identity())
+, m_mPerspective      (coreMatrix4::Identity())
+, m_mOrtho            (coreMatrix4::Identity())
+, m_vViewResolution   (coreVector4(0.0f,0.0f,0.0f,0.0f))
+, m_aLight            {}
+, m_Transform3DBuffer ()
+, m_Transform2DBuffer ()
+, m_AmbientBuffer     ()
+, m_iUniformUpdate    (0u)
+, m_aiScissorData     {}
+, m_iMemoryStart      (0u)
+, m_iMaxSamples       (0u)
+, m_iMaxAnisotropy    (0u)
+, m_iMaxTextures      (0u)
+, m_fVersionOpenGL    (0.0f)
+, m_fVersionGLSL      (0.0f)
 {
     Core::Log->Header("Graphics Interface");
 
@@ -161,11 +160,9 @@ CoreGraphics::CoreGraphics()noexcept
         glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
 
     // create uniform buffer objects
-    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
-    {
-        m_TransformBuffer.Create(GL_UNIFORM_BUFFER, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u) * CORE_GRAPHICS_UNIFORM_BUFFERS, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-        m_AmbientBuffer  .Create(GL_UNIFORM_BUFFER, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE,   256u) * CORE_GRAPHICS_UNIFORM_BUFFERS, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-    }
+    m_Transform3DBuffer.Create(CORE_SHADER_BUFFER_TRANSFORM3D_NUM, CORE_GRAPHICS_UNIFORM_BUFFERS, CORE_GRAPHICS_UNIFORM_TRANSFORM3D_SIZE);
+    m_Transform2DBuffer.Create(CORE_SHADER_BUFFER_TRANSFORM2D_NUM, CORE_GRAPHICS_UNIFORM_BUFFERS, CORE_GRAPHICS_UNIFORM_TRANSFORM2D_SIZE);
+    m_AmbientBuffer    .Create(CORE_SHADER_BUFFER_AMBIENT_NUM,     CORE_GRAPHICS_UNIFORM_BUFFERS, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
 
     // reset camera and view frustum
     this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
@@ -207,8 +204,9 @@ CoreGraphics::~CoreGraphics()
     coreProgram::ClearShaderCache();
 
     // delete uniform buffer objects
-    m_TransformBuffer.Delete();
-    m_AmbientBuffer  .Delete();
+    m_Transform3DBuffer.Delete();
+    m_Transform2DBuffer.Delete();
+    m_AmbientBuffer    .Delete();
 
     // exit OpenGL
     coreExitOpenGL();
@@ -319,40 +317,27 @@ void CoreGraphics::UpdateTransformation()
     if(!HAS_BIT(m_iUniformUpdate, 0u)) return;
     REMOVE_BIT(m_iUniformUpdate, 0u)
 
-    if(m_TransformBuffer.IsValid())
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
-        // invalidate previous buffer range
-        if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
-        {
-            if(!m_TransformBuffer.IsPersistent())
-            {
-                const coreUint32 iOldOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
-                glInvalidateBufferSubData(m_TransformBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u));
-            }
-        }
+        // map buffer range
+        coreByte* pRange3D = m_Transform3DBuffer.MapNext();
 
-        // synchronize and switch to next sync object
-        m_aTransformSync.current().Create(CORE_SYNC_CREATE_NORMAL);
-        m_aTransformSync.next();
-        m_aTransformSync.current().Check(CORE_SYNC_WAIT_FOREVER);
+        // update 3d-transformation data
+        std::memcpy(pRange3D,        &mViewProj,      sizeof(coreMatrix4));
+        std::memcpy(pRange3D + 64u,  &m_mCamera,      sizeof(coreMatrix4));
+        std::memcpy(pRange3D + 128u, &m_mPerspective, sizeof(coreMatrix4));
+        std::memcpy(pRange3D + 192u, &m_vCamPosition, sizeof(coreVector3));
+        m_Transform3DBuffer.Unmap();
 
-        // bind next buffer range
-        const coreUint32 iNewOffset = m_aTransformSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 256u);
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_TRANSFORM_NUM, m_TransformBuffer.GetIdentifier(), iNewOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, 16u));
+        // map buffer range
+        coreByte* pRange2D = m_Transform2DBuffer.MapNext();
 
-        // map required area of the UBO
-        coreByte* pRange = m_TransformBuffer.Map(iNewOffset, CORE_GRAPHICS_UNIFORM_TRANSFORM_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
-
-        // update transformation data
-        std::memcpy(pRange,        &mViewProj,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 64u,  &m_mCamera,         sizeof(coreMatrix4));
-        std::memcpy(pRange + 128u, &m_mPerspective,    sizeof(coreMatrix4));
-        std::memcpy(pRange + 192u, &m_mOrtho,          sizeof(coreMatrix4));
-        std::memcpy(pRange + 256u, &m_vViewResolution, sizeof(coreVector4));
-        std::memcpy(pRange + 272u, &m_vCamPosition,    sizeof(coreVector3));
-        m_TransformBuffer.Unmap();
+        // update 2d-transformation data
+        std::memcpy(pRange2D,       &m_mOrtho,          sizeof(coreMatrix4));
+        std::memcpy(pRange2D + 64u, &m_vViewResolution, sizeof(coreVector4));
+        m_Transform2DBuffer.Unmap();
     }
     else
     {
@@ -370,29 +355,10 @@ void CoreGraphics::UpdateAmbient()
     if(!HAS_BIT(m_iUniformUpdate, 1u)) return;
     REMOVE_BIT(m_iUniformUpdate, 1u)
 
-    if(m_AmbientBuffer.IsValid())
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
-        // invalidate previous buffer range
-        if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
-        {
-            if(!m_AmbientBuffer.IsPersistent())
-            {
-                const coreUint32 iOldOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
-                glInvalidateBufferSubData(m_AmbientBuffer.GetIdentifier(), iOldOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u));
-            }
-        }
-
-        // synchronize and switch to next sync object
-        m_aAmbientSync.current().Create(CORE_SYNC_CREATE_NORMAL);
-        m_aAmbientSync.next();
-        m_aAmbientSync.current().Check(CORE_SYNC_WAIT_FOREVER);
-
-        // bind next buffer range
-        const coreUint32 iNewOffset = m_aAmbientSync.index() * coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 256u);
-        glBindBufferRange(GL_UNIFORM_BUFFER, CORE_SHADER_BUFFER_AMBIENT_NUM, m_AmbientBuffer.GetIdentifier(), iNewOffset, coreMath::CeilAlign(CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, 16u));
-
-        // map required area of the UBO
-        coreByte* pRange = m_AmbientBuffer.Map(iNewOffset, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+        // map buffer range
+        coreByte* pRange = m_AmbientBuffer.MapNext();
 
         // update ambient data
         std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);
