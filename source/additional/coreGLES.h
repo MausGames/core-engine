@@ -13,7 +13,7 @@
 // TODO 3: add name-pooling to OpenGL ES (but not for WebGL, as there are no multi-gen functions)
 // TODO 3: always disable extensions which are only available in either GLES or WebGL in their specific mode, to improve dead-code removal
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
-// TODO 5: GL_EXT_clear_texture, GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
+// TODO 5: GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
 // TODO 5: GL_ANGLE_program_cache_control (just for query, needs the EGL extension), GL_AMD_framebuffer_multisample_advanced
 // TODO 5: GL_EXT_disjoint_timer_query_webgl2
 
@@ -22,7 +22,6 @@
 /* default extensions */
 #define CORE_GL_AMD_framebuffer_multisample_advanced false
 #define CORE_GL_ARB_clear_buffer_object              false
-#define CORE_GL_ARB_clear_texture                    false
 #define CORE_GL_ARB_compute_shader                   __CORE_GLES_VAR(bES31)
 #define CORE_GL_ARB_copy_buffer                      __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_copy_image                       false
@@ -80,6 +79,14 @@
 
 using PFNGLBUFFERSTORAGEPROC = void (GL_APIENTRY *) (GLenum target, GLsizeiptr size, const void* data, GLbitfield flags);
 #define glBufferStorage __CORE_GLES_FUNC(glBufferStorage)
+
+
+// ****************************************************************
+/* GL_EXT_clear_texture (mapped on GL_ARB_clear_texture) */
+#define CORE_GL_ARB_clear_texture __CORE_GLES_VAR(GL_EXT_clear_texture)
+
+using PFNGLCLEARTEXIMAGEPROC = void (GL_APIENTRY *) (GLuint texture, GLint level, GLenum format, GLenum type, const void* data);
+#define glClearTexImage __CORE_GLES_FUNC(glClearTexImage)
 
 
 // ****************************************************************
@@ -369,7 +376,6 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glClearBufferData(...)
 #define glClearNamedBufferData(...)
 #define glClearNamedBufferDataEXT(...)
-#define glClearTexImage(...)
 #define glCopyNamedBufferSubData(...)
 #define glCopyTextureSubImage2D(...)
 #define glCopyTextureSubImage2DEXT(...)
@@ -410,6 +416,7 @@ struct coreContext final
     coreBool __GL_CORE_texture_float;
     coreBool __GL_CORE_vertex_type_2_10_10_10_rev;
     coreBool __GL_EXT_buffer_storage;
+    coreBool __GL_EXT_clear_texture;
     coreBool __GL_EXT_color_buffer_float;
     coreBool __GL_EXT_color_buffer_half_float;
     coreBool __GL_EXT_depth_clamp;
@@ -449,6 +456,7 @@ struct coreContext final
     coreBool __GL_WEBGL_color_buffer_float;
 
     PFNGLBUFFERSTORAGEPROC                  __glBufferStorage;
+    PFNGLCLEARTEXIMAGEPROC                  __glClearTexImage;
     PFNGLDISCARDFRAMEBUFFERPROC             __glDiscardFramebuffer;
     PFNGLDELETEQUERIESPROC                  __glDeleteQueries;
     PFNGLGENQUERIESPROC                     __glGenQueries;

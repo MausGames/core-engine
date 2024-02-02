@@ -55,6 +55,12 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glBufferStorage, EXT, false)
     }
 
+    // implement GL_EXT_clear_texture
+    if(__CORE_GLES_CHECK(GL_EXT_clear_texture, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glClearTexImage, EXT, false)
+    }
+
     // implement GL_EXT_color_buffer_float
     __CORE_GLES_CHECK(GL_EXT_color_buffer_float, bES32);
 
