@@ -100,15 +100,18 @@ enum coreProgramStatus : coreUint8
 class coreShader final : public coreResource
 {
 private:
-    GLuint m_iIdentifier;                    // shader identifier
-    GLenum m_iType;                          // shader type (e.g. GL_VERTEX_SHADER)
+    GLuint m_iIdentifier;                            // shader identifier
+    GLenum m_iType;                                  // shader type (e.g. GL_VERTEX_SHADER)
 
-    coreUint64 m_iHash;                      // shader code hash-value
+    coreUint64 m_iHash;                              // shader code hash-value
 
-    coreString m_sCustomCode;                // custom shader code added to the beginning of the shader
+    coreString m_sCustomCode;                        // custom shader code added to the beginning of the shader
 
-    static coreString   s_asGlobalCode[2];   // global shader code (0 = version | 1 = global shader file)
-    static coreSpinLock s_GlobalLock;        // spinlock to prevent concurrent initialization of global shader code
+    static coreString   s_asGlobalCode[8];           // global shader code (0 = version | 1 = global shader file | >1 = type shader files)
+    static coreSpinLock s_GlobalLock;                // spinlock to prevent concurrent initialization of global shader code
+
+    static coreMapStr<coreString> s_asIncludeCode;   // include shader code
+    static std::recursive_mutex   s_IncludeLock;     // recursive mutex for asynchronous include shader code access
 
 
 public:
@@ -135,8 +138,9 @@ private:
     /* load global shader code */
     static void __LoadGlobalCode();
 
-    /* reduce shader code size */
-    static void __ReduceCodeSize(coreString* OUTPUT psCode);
+    /* parse and adapt shader code */
+    static void __ReduceSize     (coreString* OUTPUT psCode);
+    static void __ResolveIncludes(coreString* OUTPUT psCode, const coreFile* pFile);
 };
 
 

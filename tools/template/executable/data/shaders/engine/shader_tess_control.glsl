@@ -6,11 +6,15 @@
 //| Released under the zlib License                     |//
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
-#include "engine/data_transform_3d.glsl"
 
 
-void VertexMain()
-{
-    gl_Position      = coreObject3DPositionLow();
-    v_av2TexCoord[0] = coreObject3DTexCoordLow();
-}
+#if defined(_CORE_TESS_CONTROL_SHADER_)
+
+    // main function
+    void TessControlMain();
+    void ShaderMain()
+    {
+        TessControlMain();
+    }
+
+#endif // _CORE_TESS_CONTROL_SHADER_

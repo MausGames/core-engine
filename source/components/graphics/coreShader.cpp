@@ -8,8 +8,10 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
-coreString                 coreShader ::s_asGlobalCode[2] = {"", ""};
+coreString                 coreShader ::s_asGlobalCode[8] = {};
 coreSpinLock               coreShader ::s_GlobalLock      = coreSpinLock();
+coreMapStr<coreString>     coreShader ::s_asIncludeCode   = {};
+std::recursive_mutex       coreShader ::s_IncludeLock     = std::recursive_mutex();
 coreProgram*               coreProgram::s_pCurrent        = NULL;
 coreProgram::coreBinaryMap coreProgram::s_aBinaryMap      = {};
 coreUint32                 coreProgram::s_iBinarySize     = 0u;
@@ -74,12 +76,13 @@ coreStatus coreShader::Load(coreFile* pFile)
 
     // set shader type
     const coreChar* pcTypeDef;
-         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {m_iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_"          " (1) \n";}
-    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {m_iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_"    " (1) \n";}
-    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {m_iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_" " (1) \n";}
-    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {m_iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_"        " (1) \n";}
-    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {m_iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_"        " (1) \n";}
-    else if(!std::strcmp(pcExtension, "cs")  || !std::strcmp(pcExtension, "comp")) {m_iType = GL_COMPUTE_SHADER;         pcTypeDef = "#define _CORE_COMPUTE_SHADER_"         " (1) \n";}
+    coreUintW       iTypeIndex;
+         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {m_iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_"          " (1) \n"; iTypeIndex = 2u;}
+    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {m_iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_"    " (1) \n"; iTypeIndex = 3u;}
+    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {m_iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_" " (1) \n"; iTypeIndex = 4u;}
+    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {m_iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_"        " (1) \n"; iTypeIndex = 5u;}
+    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {m_iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_"        " (1) \n"; iTypeIndex = 6u;}
+    else if(!std::strcmp(pcExtension, "cs")  || !std::strcmp(pcExtension, "comp")) {m_iType = GL_COMPUTE_SHADER;         pcTypeDef = "#define _CORE_COMPUTE_SHADER_"         " (1) \n"; iTypeIndex = 7u;}
     else
     {
         Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag, cs, comp)", m_sName.c_str());
@@ -87,24 +90,26 @@ coreStatus coreShader::Load(coreFile* pFile)
     }
 
     // check for OpenGL extensions
-    if((m_iType == GL_TESS_CONTROL_SHADER || m_iType == GL_TESS_EVALUATION_SHADER) && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
-    if((m_iType == GL_GEOMETRY_SHADER)                                             && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
-    if((m_iType == GL_COMPUTE_SHADER)                                              && !CORE_GL_SUPPORT(ARB_compute_shader))      return CORE_OK;
+    if((m_iType == GL_TESS_CONTROL_SHADER)    && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
+    if((m_iType == GL_TESS_EVALUATION_SHADER) && !CORE_GL_SUPPORT(ARB_tessellation_shader)) return CORE_OK;
+    if((m_iType == GL_GEOMETRY_SHADER)        && !CORE_GL_SUPPORT(ARB_geometry_shader4))    return CORE_OK;
+    if((m_iType == GL_COMPUTE_SHADER)         && !CORE_GL_SUPPORT(ARB_compute_shader))      return CORE_OK;
 
     // load quality level and global shader data
     const coreChar* pcQualityDef = PRINT("#define _CORE_QUALITY_ (%d) \n", Core::Config->GetInt(CORE_CONFIG_GRAPHICS_QUALITY));
     coreShader::__LoadGlobalCode();
 
     // define separate entry-point (main-function needs to be at the bottom)
-    const coreChar acEntryPoint[] = "void main() {ShaderMain();}";
+    constexpr coreChar acEntryPoint[] = "\n void main() {ShaderMain();}";
 
-    // reduce shader code size
+    // parse and adapt shader code
     coreString sMainCode(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
-    coreShader::__ReduceCodeSize(&sMainCode);
+    coreShader::__ReduceSize     (&sMainCode);
+    coreShader::__ResolveIncludes(&sMainCode, pFile);
 
     // assemble the shader
-    const coreChar* apcData[] = {s_asGlobalCode[0].c_str(),             pcTypeDef,                         pcQualityDef,                         m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),             sMainCode.c_str(),             acEntryPoint};
-    const coreInt32 aiSize [] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()), coreInt32(sMainCode.length()), coreInt32(ARRAY_SIZE(acEntryPoint) - 1u)};
+    const coreChar* apcData[] = {s_asGlobalCode[0].c_str(),             pcTypeDef,                         pcQualityDef,                         m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),             s_asGlobalCode[iTypeIndex].c_str(),             sMainCode.c_str(),             acEntryPoint};
+    const coreInt32 aiSize [] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()), coreInt32(s_asGlobalCode[iTypeIndex].length()), coreInt32(sMainCode.length()), coreInt32(ARRAY_SIZE(acEntryPoint) - 1u)};
     STATIC_ASSERT(ARRAY_SIZE(apcData) == ARRAY_SIZE(aiSize))
 
     // create and compile the shader
@@ -169,38 +174,96 @@ void coreShader::__LoadGlobalCode()
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object))
         s_asGlobalCode[1].append("#undef _CORE_OPTION_INSTANCING_ \n");
 
-    const auto nRetrieveFunc = [](const coreChar* pcPath)
+    const auto nRetrieveFunc = [](const coreChar* pcPath, coreString* OUTPUT pString)
     {
         // retrieve shader file
         coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
         WARN_IF(!pFile->GetData()) return;
 
         // copy data
-        s_asGlobalCode[1].append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
-        s_asGlobalCode[1].append(1u, '\n');
+        pString->append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
+        pString->append("\n #line 1 \n");
+
+        // parse and adapt shader code
+        coreShader::__ReduceSize     (pString);
+        coreShader::__ResolveIncludes(pString, pFile);
+
+        // reduce memory consumption
+        pString->shrink_to_fit();
     };
-    nRetrieveFunc("data/shaders/global.glsl");
-    nRetrieveFunc("data/shaders/custom.glsl");
-
-    // reduce shader code size
-    coreShader::__ReduceCodeSize(&s_asGlobalCode[1]);
-
-    // reduce memory consumption
-    s_asGlobalCode[0].shrink_to_fit();
-    s_asGlobalCode[1].shrink_to_fit();
+    nRetrieveFunc("data/shaders/engine/global.glsl",                 &s_asGlobalCode[1]);
+    nRetrieveFunc("data/shaders/engine/shader_vertex.glsl",          &s_asGlobalCode[2]);
+    nRetrieveFunc("data/shaders/engine/shader_tess_control.glsl",    &s_asGlobalCode[3]);
+    nRetrieveFunc("data/shaders/engine/shader_tess_evaluation.glsl", &s_asGlobalCode[4]);
+    nRetrieveFunc("data/shaders/engine/shader_geometry.glsl",        &s_asGlobalCode[5]);
+    nRetrieveFunc("data/shaders/engine/shader_fragment.glsl",        &s_asGlobalCode[6]);
+    nRetrieveFunc("data/shaders/engine/shader_compute.glsl",         &s_asGlobalCode[7]);
 }
 
 
 // ****************************************************************
 /* reduce shader code size */
-void coreShader::__ReduceCodeSize(coreString* OUTPUT psCode)
+void coreShader::__ReduceSize(coreString* OUTPUT psCode)
 {
+    if(Core::Debug->IsEnabled()) return;
+
     // remove code comments
     for(coreUintW i = 0u; (i = psCode->find("//", i)) != coreString::npos; )
+    {
         psCode->erase(i, psCode->find_first_of('\n', i) - i);
+    }
 
     // remove redundant whitespaces
     psCode->replace("    ", " ");
+}
+
+
+// ****************************************************************
+/* resolve include directives */
+void coreShader::__ResolveIncludes(coreString* OUTPUT psCode, const coreFile* pFile)
+{
+    const std::lock_guard<std::recursive_mutex> oLocker(s_IncludeLock);
+
+    constexpr coreChar  acText[] = "#include \"";
+    constexpr coreUintW iTextLen = ARRAY_SIZE(acText) - 1u;
+
+    // get base directory
+    const coreChar* pcDirectory = coreData::StrDirectory(pFile->GetPath());
+
+    // find all include directives
+    for(coreUintW i = 0u; (i = psCode->find(acText, i)) != coreString::npos; )
+    {
+        const coreUintW      iLen  = psCode->find_first_of('\"', i + iTextLen) - i;
+        const coreHashString sPath = PRINT("%s%.*s", pcDirectory, coreInt32(iLen - iTextLen), psCode->c_str() + i + iTextLen);
+
+        if(!s_asIncludeCode.count_bs(sPath))
+        {
+            // retrieve shader file
+            coreFileScope pIncludeFile = Core::Manager::Resource->RetrieveFile(sPath);
+            WARN_IF(!pIncludeFile->GetData()) return;
+
+            // parse and adapt shader code (recursive)
+            coreString sIncludeCode(r_cast<const coreChar*>(pIncludeFile->GetData()), pIncludeFile->GetSize());
+            coreShader::__ReduceSize     (&sIncludeCode);
+            coreShader::__ResolveIncludes(&sIncludeCode, pIncludeFile);
+
+            // insert include-guards
+            sIncludeCode.insert(0u, PRINT("#ifndef x%X \n #define x%X \n", sPath.GetHash(), sPath.GetHash()));
+            sIncludeCode.append("\n #endif \n #line 1 \n");
+
+            // reduce memory consumption
+            sIncludeCode.shrink_to_fit();
+
+            // store in container
+            s_asIncludeCode.emplace_bs(sPath, std::move(sIncludeCode));
+        }
+
+        // replace include directive with shader code
+        const coreString& sReplace = s_asIncludeCode.at_bs(sPath);
+        psCode->replace(i, iLen + 1u, sReplace);
+
+        i += sReplace.length();
+    }
 }
 
 

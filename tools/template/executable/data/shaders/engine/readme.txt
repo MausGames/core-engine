@@ -155,60 +155,64 @@ Definitions
 
 Functions
 
-    T     coreMin3                (in T, in T, in T)                  // trinary minimum
-    T     coreMax3                (in T, in T, in T)                  // trinary maximum
-    T     coreMed3                (in T, in T, in T)                  // trinary median
-    bool  coreAnyInvocation       (in bool)                           // condition across group of shader invocations
+    T     coreMin3                (in T, in T, in T)                     // trinary minimum
+    T     coreMax3                (in T, in T, in T)                     // trinary maximum
+    T     coreMed3                (in T, in T, in T)                     // trinary median
+    bool  coreAnyInvocation       (in bool)                              // condition across group of shader invocations
     bool  coreAllInvocations      (in bool)
-    T     coreSaturate            (in T)                              // clamp values between 0.0 and 1.0
-    T     coreLinearStep          (in T, in T, in T)                  // linear interpolation between 0.0 and 1.0
-    T     coreSign                (in T)                              // extract the sign without returning 0.0
-    S     coreIsNan               (in T)                              // test if the parameter is not a number
-    T     coreIntMod              (in T, in S)                        // integer modulo operation
-    vec3  coreRgbToHsv            (in vec3)                           // RGB to HSV conversion
-    vec3  coreHsvToRgb            (in vec3)                           // HSV to RGB conversion
-    vec3  coreRgbToYiq            (in vec3)                           // RGB to YIQ conversion   (BT.601, NTSC)
-    vec3  coreYiqToRgb            (in vec3)                           // YIQ to RGB conversion   (BT.601, NTSC)
-    vec3  coreRgbToYuv            (in vec3)                           // RGB to YUV conversion   (BT.709)
-    vec3  coreYuvToRgb            (in vec3)                           // YUV to RGB conversion   (BT.709)
-    vec3  coreRgbToYcbcr          (in vec3)                           // RGB to YCbCr conversion (BT.601, JPEG)
-    vec3  coreYcbcrToRgb          (in vec3)                           // YCbCr to RGB conversion (BT.601, JPEG)
-    float coreLuminance           (in vec3)                           // luminance value         (BT.709)
-    float coreLengthSq            (in vec2)                           // vector square length
+    T     coreSaturate            (in T)                                 // clamp values between 0.0 and 1.0
+    T     coreLinearStep          (in T, in T, in T)                     // linear interpolation between 0.0 and 1.0
+    T     coreSign                (in T)                                 // extract the sign without returning 0.0
+    S     coreIsNan               (in T)                                 // test if the parameter is not a number
+    T     coreIntMod              (in T, in S)                           // integer modulo operation
+    float coreLengthSq            (in vec2)                              // vector square length
     float coreLengthSq            (in vec3)
-    vec2  corePackNormalSphere    (in vec3)                           // vector normal pack   (with Lambert azimuthal equal-area projection)
-    vec3  coreUnpackNormalSphere  (in vec2)                           // vector normal unpack (with Lambert azimuthal equal-area projection)
-    vec3  coreUnpackNormalMap     (in vec2)                           // vector normal unpack (with z-reconstruction)
-    vec3  coreUnpackNormalMapDeriv(in vec2)                           // vector normal unpack (with partial-derivative)
-    vec2  corePackNormalOcta      (in vec3)                           // vector normal pack   (with octahedron encoding)
-    vec3  coreUnpackNormalOcta    (in vec2)                           // vector normal unpack (with octahedron encoding)
-    vec3  coreQuatApply           (in vec4, in vec3)                  // quaternion transformation
-    mat2  coreTranspose           (in mat2)                           // matrix transpose
+    vec3  coreQuatApply           (in vec4, in vec3)                     // quaternion transformation
+
+    vec3  coreRgbToHsv            (in vec3)                              // RGB to HSV conversion
+    vec3  coreHsvToRgb            (in vec3)                              // HSV to RGB conversion
+    vec3  coreRgbToYiq            (in vec3)                              // RGB to YIQ conversion   (BT.601, NTSC)
+    vec3  coreYiqToRgb            (in vec3)                              // YIQ to RGB conversion   (BT.601, NTSC)
+    vec3  coreRgbToYuv            (in vec3)                              // RGB to YUV conversion   (BT.709)
+    vec3  coreYuvToRgb            (in vec3)                              // YUV to RGB conversion   (BT.709)
+    vec3  coreRgbToYcbcr          (in vec3)                              // RGB to YCbCr conversion (BT.601, JPEG)
+    vec3  coreYcbcrToRgb          (in vec3)                              // YCbCr to RGB conversion (BT.601, JPEG)
+    float coreLuminance           (in vec3)                              // luminance value         (BT.709)
+
+    vec2  corePackNormalSphere    (in vec3)                              // vector normal pack   (with Lambert azimuthal equal-area projection)
+    vec3  coreUnpackNormalSphere  (in vec2)                              // vector normal unpack (with Lambert azimuthal equal-area projection)
+    vec3  coreUnpackNormalMap     (in vec2)                              // vector normal unpack (with z-reconstruction)
+    vec3  coreUnpackNormalMapDeriv(in vec2)                              // vector normal unpack (with partial-derivative)
+    vec2  corePackNormalOcta      (in vec3)                              // vector normal pack   (with octahedron encoding)
+    vec3  coreUnpackNormalOcta    (in vec2)                              // vector normal unpack (with octahedron encoding)
+    uint  corePackUnorm4x8        (in vec4)                              // value pack   (4x 8bit float -> 1x 32bit uint)
+    vec4  coreUnpackUnorm4x8      (in uint)                              // value unpack (1x 32bit uint -> 4x 8bit float)
+
+    mat2  coreTranspose           (in mat2)                              // matrix transpose
     mat3  coreTranspose           (in mat3)
     mat4  coreTranspose           (in mat4)
-    mat3  coreInvert              (in mat3)                           // matrix invert
+    mat3  coreInvert              (in mat3)                              // matrix invert
     mat4  coreInvert              (in mat4)
-    mat3  coreMat4to3             (in mat4)                           // matrix convert
+    mat3  coreMat4to3             (in mat4)                              // matrix convert
     mat2  coreMat3to2             (in mat3)
     mat2  coreMat4to2             (in mat4)
-    uint  corePackUnorm4x8        (in vec4)                           // value pack   (4x 8bit float -> 1x 32bit uint)
-    vec4  coreUnpackUnorm4x8      (in uint)                           // value unpack (1x 32bit uint -> 4x 8bit float)
 
-    vec4  coreTexture2D        (in int v1Unit, in vec2 v2TexCoord)    // normal texture lookup
-    vec4  coreTextureProj      (in int v1Unit, in vec4 v4ProjCoord)   // normal texture lookup (with projection)
-    float coreTextureShadow    (in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures
-    vec4  coreTextureBase2D    (in int v1Unit, in vec2 v2TexCoord)    // only use base-level (if possible)
-    vec4  coreTextureBaseProj  (in int v1Unit, in vec4 v4ProjCoord)
-    float coreTextureBaseShadow(in int v1Unit, in vec4 v4ProjCoord)
+    vec4  coreTexture2D           (in int v1Unit, in vec2 v2TexCoord)    // normal texture lookup
+    vec4  coreTextureProj         (in int v1Unit, in vec4 v4ProjCoord)   // normal texture lookup (with projection)
+    float coreTextureShadow       (in int v1Unit, in vec4 v4ProjCoord)   // PCF depth-compare for shadow textures
+    vec4  coreTextureBase2D       (in int v1Unit, in vec2 v2TexCoord)    // only use base-level (if possible)
+    vec4  coreTextureBaseProj     (in int v1Unit, in vec4 v4ProjCoord)
+    float coreTextureBaseShadow   (in int v1Unit, in vec4 v4ProjCoord)
 
 Input
 
     mat4 u_m4ViewProj      // view-projection matrix (u_m4Perspective * u_m4Camera)
     mat4 u_m4Camera        // camera matrix
     mat4 u_m4Perspective   // perspective projection matrix
+    vec3 u_v3CamPosition   // camera position
+
     mat4 u_m4Ortho         // orthographic projection matrix
     vec4 u_v4Resolution    // current viewport resolution (xy = normal, zw = reciprocal)
-    vec3 u_v3CamPosition   // camera position
 
     vec4 u_v4Color         // color value
 
