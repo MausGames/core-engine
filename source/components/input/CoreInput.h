@@ -10,14 +10,16 @@
 #ifndef _CORE_GUARD_INPUT_H_
 #define _CORE_GUARD_INPUT_H_
 
-// TODO 5: touch-related functions empty on non-mobile
 // TODO 3: remove the 1-frame delay when using the Set* interface from game-code
-// TODO 3: pseudo-joystick should accumulate all input from other devices
 // TODO 2: press and release within the same frame gets ignored, but it is assumed that both cannot happen in the same loop
 // TODO 5: <old comment style>
 // TODO 3: allow loading game controller databases from archives
 // TODO 3: mouse button 0 is not used
 // TODO 2: in browser (Firefox?), xbox 360 controller: right stick is axis 3+4 (instead of 2+3), and d-pad is converted to another axis-pair 6+7
+// TODO 3: change hat to d-pad ? and handle d-pad buttons as actual buttons if required by game
+// TODO 3: SDL_CONTROLLERTOUCHPADDOWN, SDL_CONTROLLERTOUCHPADMOTION, SDL_CONTROLLERTOUCHPADUP
+// TODO 3: case SDL_CONTROLLERSENSORUPDATE, oEvent.csensor.type == SDL_SENSOR_ACCEL, SDL_SENSOR_GYRO; SDL_GameControllerSetSensorEnabled
+// TODO 3: implement last used joystick type, rumble and color for ANY, last used input mode (incl keyboard/mouse, touch)
 
 
 // ****************************************************************
@@ -44,8 +46,12 @@
 #define CORE_INPUT_INVALID_MOUSE       (0xFFu)
 #define CORE_INPUT_INVALID_JOYSTICK    (0xFFu)
 
+#define CORE_INPUT_JOYSTICK_ANY        (Core::Input->GetJoystickNum())
+
 #define CORE_INPUT_BUTTON_LEFTTRIGGER  (SDL_CONTROLLER_BUTTON_MAX + 0u)
 #define CORE_INPUT_BUTTON_RIGHTTRIGGER (SDL_CONTROLLER_BUTTON_MAX + 1u)
+
+#define CORE_INPUT_TYPE_STEAM          (SDL_CONTROLLER_TYPE_MAX + 0u)
 
 #define CORE_INPUT_KEY(k)              (SDL_SCANCODE_ ## k)
 #define CORE_INPUT_CHAR(c)             (SDLK_         ## c)
@@ -106,14 +112,17 @@ private:
     /* joystick structure */
     struct coreJoystick final
     {
-        SDL_GameController* pController;                   // game controller handle
-        SDL_Joystick*       pJoystick;                     // joystick device handle
+        SDL_GameController*    pController;                 // game controller handle
+        SDL_Joystick*          pJoystick;                   // joystick device handle
+        SDL_GameControllerType eControllerType;             // 
+        SDL_JoystickType       eJoystickType;               // 
 
-        coreUint8 aiButton[CORE_INPUT_BUTTONS_JOYSTICK];   // status of the joystick buttons
-        coreUint8 aiCount [CORE_INPUT_TYPES];              // number of joystick buttons with same status
-        coreUint8 iLast;                                   // last pressed joystick button
-        coreUint8 aiHat     [CORE_INPUT_DIRECTIONS];       // status of the joystick hat
-        coreFloat afRelative[CORE_INPUT_AXIS];             // relative movement of the joystick axis (0|1 = left stick, 2|3 = right stick, 4 = left shoulder, 5 = right shoulder)
+        coreUint8  aiButton[CORE_INPUT_BUTTONS_JOYSTICK];   // status of the joystick buttons
+        coreUint8  aiCount [CORE_INPUT_TYPES];              // number of joystick buttons with same status
+        coreUint8  iLast;                                   // last pressed joystick button
+        coreUint8  aiHat   [CORE_INPUT_DIRECTIONS];         // status of the joystick hat
+        coreFloat  afAxis  [CORE_INPUT_AXIS];               // value of the joystick axis (0|1 = left stick, 2|3 = right stick, 4 = left shoulder, 5 = right shoulder)
+        coreUint32 iColor;                                  // current LED color
     };
 
     /* touch structure */
@@ -149,6 +158,9 @@ public:
     FRIEND_CLASS(Core)
     DISABLE_COPY(CoreInput)
 
+    /* process input events */
+    coreBool ProcessEvent(const SDL_Event& oEvent);
+
     /* control the mouse cursor */
     void SetCursor (const coreChar* pcPath);
     void ShowCursor(const coreBool  bStatus);
@@ -159,47 +171,50 @@ public:
     void UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iButton1, const coreUint8 iButton2, const coreFloat fSpeed);
     void ForwardHatToStick   (const coreUintW iIndex);
 
-    /* get joystick data */
-    inline const coreChar* GetJoystickName     (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerName     (__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickName     (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
-    inline const coreChar* GetJoystickSerial   (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerGetSerial(__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickGetSerial(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
-    inline const coreChar* GetJoystickPath     (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerPath     (__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickPath     (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
-    inline const coreChar* GetJoystickGUID     (const coreUintW iIndex)const {if(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) {static coreChar s_acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), s_acGUID, ARRAY_SIZE(s_acGUID)); return s_acGUID;} return "";}
-    inline coreBool        GetJoystickHasRumble(const coreUintW iIndex)const {return (SDL_JoystickHasRumble(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}
-    inline coreBool        GetJoystickHasLED   (const coreUintW iIndex)const {return (SDL_JoystickHasLED   (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}
-    inline coreUintW       GetJoystickNum      ()const                       {return m_aJoystick.size() - 1u;}
+    /* retrieve joystick data */
+    inline const coreChar* GetJoystickName        (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerName(__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickName(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
+    inline const coreChar* GetJoystickSerial      (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick   ? SDL_JoystickGetSerial (__CORE_INPUT_JOYSTICK(iIndex).pJoystick)   : "";}
+    inline const coreChar* GetJoystickPath        (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick   ? SDL_JoystickPath      (__CORE_INPUT_JOYSTICK(iIndex).pJoystick)   : "";}
+    inline const coreChar* GetJoystickGUID        (const coreUintW iIndex)const {if(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) {static coreChar s_acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), s_acGUID, ARRAY_SIZE(s_acGUID)); return s_acGUID;} return "";}
+    inline coreBool        GetJoystickHasRumble   (const coreUintW iIndex)const {return (SDL_JoystickHasRumble(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}
+    inline coreBool        GetJoystickHasLED      (const coreUintW iIndex)const {return (SDL_JoystickHasLED   (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}
+    inline coreUint8       GetJoystickGamepadType (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eControllerType;}
+    inline coreUint8       GetJoystickJoystickType(const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eJoystickType;}
+    inline coreUintW       GetJoystickNum         ()const                       {return m_aJoystick.size() - 1u;}
 
-    /* process input events */
-    coreBool ProcessEvent(const SDL_Event& oEvent);
+    /* create joystick feedback */
+    void JoystickRumble   (const coreUintW iIndex, const coreFloat fStrengthLow, const coreFloat fStrengthHigh, const coreUint32 iLengthMs);
+    void JoystickChangeLED(const coreUintW iIndex, const coreVector3 vColor);
 
     /* access keyboard input */
-    inline void            SetKeyboardButton  (const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; SET_BIT(m_Keyboard.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Keyboard.iLast = iButton;}
-    inline void            SetKeyboardChar    (const coreInputChar iChar)                                   {(*r_cast<coreInputChar*>(m_Keyboard.acChar)) = iChar;}
-    inline void            SetKeyboardCharUTF8(const coreChar*     pcChar)                                  {coreData::StrCopy(m_Keyboard.acChar, ARRAY_SIZE(m_Keyboard.acChar), pcChar);}
-    inline coreBool        GetKeyboardButton  (const coreInputKey  iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_KEYBOARD) return HAS_BIT(m_Keyboard.aiButton[iButton], eType);}
-    inline coreInputChar   GetKeyboardChar    ()const                                                       {return (*r_cast<const coreInputChar*>(m_Keyboard.acChar));}
-    inline const coreChar* GetKeyboardCharUTF8()const                                                       {return m_Keyboard.acChar;}
+    inline void            SetKeyboardButton   (const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; SET_BIT(m_Keyboard.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Keyboard.iLast = iButton;}
+    inline void            SetKeyboardButtonNow(const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; this->SetKeyboardButton(iButton, bStatus); if(bStatus) __CORE_INPUT_PRESS(m_Keyboard.aiButton[iButton]) else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[iButton])}
+    inline void            SetKeyboardChar     (const coreInputChar iChar)                                   {(*r_cast<coreInputChar*>(m_Keyboard.acChar)) = iChar;}
+    inline void            SetKeyboardCharUTF8 (const coreChar*     pcChar)                                  {coreData::StrCopy(m_Keyboard.acChar, ARRAY_SIZE(m_Keyboard.acChar), pcChar);}
+    inline coreBool        GetKeyboardButton   (const coreInputKey  iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_KEYBOARD) return HAS_BIT(m_Keyboard.aiButton[iButton], eType);}
+    inline coreInputChar   GetKeyboardChar     ()const                                                       {return (*r_cast<const coreInputChar*>(m_Keyboard.acChar));}
+    inline const coreChar* GetKeyboardCharUTF8 ()const                                                       {return m_Keyboard.acChar;}
 
     /* access mouse input */
-    inline void               SetMouseButton  (const coreUint8 iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE) return; SET_BIT(m_Mouse.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Mouse.iLast = iButton;}
-    inline void               SetMousePosition(const coreVector2 vPosition)                             {m_Mouse.vPosition   = vPosition;}
-    inline void               SetMouseRelative(const coreVector2 vRelative)                             {m_Mouse.vRelative.x = vRelative.x; m_Mouse.vRelative.y = vRelative.y;}
-    inline void               SetMouseWheel   (const coreFloat fValue)                                  {m_Mouse.vRelative.z = fValue;}
-    inline coreBool           GetMouseButton  (const coreUint8 iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_MOUSE) return HAS_BIT(m_Mouse.aiButton[iButton], eType);}
-    inline const coreVector2& GetMousePosition()const                                                   {return m_Mouse.vPosition;}
-    inline const coreVector3& GetMouseRelative()const                                                   {return m_Mouse.vRelative;}
-    inline const coreFloat&   GetMouseWheel   ()const                                                   {return m_Mouse.vRelative.z;}
+    inline void               SetMouseButton   (const coreUint8 iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE) return; SET_BIT(m_Mouse.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Mouse.iLast = iButton;}
+    inline void               SetMouseButtonNow(const coreUint8 iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE) return; this->SetMouseButton(iButton, bStatus); if(bStatus) __CORE_INPUT_PRESS(m_Mouse.aiButton[iButton]) else __CORE_INPUT_RELEASE(m_Mouse.aiButton[iButton])}
+    inline void               SetMousePosition (const coreVector2 vPosition)                             {m_Mouse.vPosition   = vPosition;}
+    inline void               SetMouseRelative (const coreVector2 vRelative)                             {m_Mouse.vRelative.x = vRelative.x; m_Mouse.vRelative.y = vRelative.y;}
+    inline void               SetMouseWheel    (const coreFloat fValue)                                  {m_Mouse.vRelative.z = fValue;}
+    inline coreBool           GetMouseButton   (const coreUint8 iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_MOUSE) return HAS_BIT(m_Mouse.aiButton[iButton], eType);}
+    inline const coreVector2& GetMousePosition ()const                                                   {return m_Mouse.vPosition;}
+    inline const coreVector3& GetMouseRelative ()const                                                   {return m_Mouse.vRelative;}
+    inline const coreFloat&   GetMouseWheel    ()const                                                   {return m_Mouse.vRelative.z;}
 
     /* access joystick input */
-    inline void               SetJoystickButton   (const coreUintW iIndex, const coreUint8 iButton, const coreBool bStatus)                                         {WARN_IF(iButton    >= CORE_INPUT_BUTTONS_JOYSTICK) return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) __CORE_INPUT_JOYSTICK(iIndex).iLast = iButton;}
-    inline void               SetJoystickHat      (const coreUintW iIndex, const coreInputDir eDirection, const coreBool bStatus)                                   {WARN_IF(eDirection >= CORE_INPUT_DIRECTIONS)       return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], CORE_INPUT_DATA, bStatus)}
-    inline void               SetJoystickRelative (const coreUintW iIndex, const coreUint8 iAxis, const coreFloat fValue)                                           {WARN_IF(iAxis      >= CORE_INPUT_AXIS)             return; __CORE_INPUT_JOYSTICK(iIndex).afRelative[iAxis] = fValue;}
-    inline coreBool           GetJoystickButton   (const coreUintW iIndex, const coreUint8 iButton, const coreInputType eType)const                                 {ASSERT(iButton    < CORE_INPUT_BUTTONS_JOYSTICK) return HAS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], eType);}
-    inline coreBool           GetJoystickHat      (const coreUintW iIndex, const coreInputDir eDirection, const coreInputType eType)const                           {ASSERT(eDirection < CORE_INPUT_DIRECTIONS)       return HAS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], eType);}
-    inline const coreFloat&   GetJoystickRelative (const coreUintW iIndex, const coreUint8 iAxis)const                                                              {ASSERT(iAxis      < CORE_INPUT_AXIS)             return __CORE_INPUT_JOYSTICK(iIndex).afRelative[iAxis];}
-    inline const coreVector2& GetJoystickRelativeL(const coreUintW iIndex)const                                                                                     {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[SDL_CONTROLLER_AXIS_LEFTX]);}
-    inline const coreVector2& GetJoystickRelativeR(const coreUintW iIndex)const                                                                                     {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afRelative[SDL_CONTROLLER_AXIS_RIGHTX]);}
-    inline void               JoystickRumble      (const coreUintW iIndex, const coreFloat fStrengthLow, const coreFloat fStrengthHigh, const coreUint32 iLengthMs) {ASSERT((fStrengthLow >= 0.0f) && (fStrengthLow <= 1.0f) && (fStrengthHigh >= 0.0f) && (fStrengthHigh <= 1.0f)) if(Core::Config->GetBool(CORE_CONFIG_INPUT_RUMBLE)) SDL_JoystickRumble(__CORE_INPUT_JOYSTICK(iIndex).pJoystick, F_TO_UI(fStrengthLow * 65535.0f), F_TO_UI(fStrengthHigh * 65535.0f), iLengthMs);}
-    inline void               JoystickChangeLED   (const coreUintW iIndex, const coreVector3 vColor)                                                                {ASSERT((vColor >= coreVector3(0.0f,0.0f,0.0f)) && (vColor <= coreVector3(1.0f,1.0f,1.0f))) SDL_JoystickSetLED(__CORE_INPUT_JOYSTICK(iIndex).pJoystick, F_TO_UI(vColor.x * 255.0f), F_TO_UI(vColor.y * 255.0f), F_TO_UI(vColor.z * 255.0f));}
+    inline void               SetJoystickButton(const coreUintW iIndex, const coreUint8 iButton, const coreBool bStatus)               {WARN_IF(iButton    >= CORE_INPUT_BUTTONS_JOYSTICK) return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) __CORE_INPUT_JOYSTICK(iIndex).iLast = iButton;}
+    inline void               SetJoystickHat   (const coreUintW iIndex, const coreInputDir eDirection, const coreBool bStatus)         {WARN_IF(eDirection >= CORE_INPUT_DIRECTIONS)       return; SET_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], CORE_INPUT_DATA, bStatus)}
+    inline void               SetJoystickAxis  (const coreUintW iIndex, const coreUint8 iAxis, const coreFloat fValue)                 {WARN_IF(iAxis      >= CORE_INPUT_AXIS)             return; __CORE_INPUT_JOYSTICK(iIndex).afAxis[iAxis] = fValue;}
+    inline coreBool           GetJoystickButton(const coreUintW iIndex, const coreUint8 iButton, const coreInputType eType)const       {ASSERT(iButton    < CORE_INPUT_BUTTONS_JOYSTICK) return HAS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], eType);}
+    inline coreBool           GetJoystickHat   (const coreUintW iIndex, const coreInputDir eDirection, const coreInputType eType)const {ASSERT(eDirection < CORE_INPUT_DIRECTIONS)       return HAS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], eType);}
+    inline const coreFloat&   GetJoystickAxis  (const coreUintW iIndex, const coreUint8 iAxis)const                                    {ASSERT(iAxis      < CORE_INPUT_AXIS)             return __CORE_INPUT_JOYSTICK(iIndex).afAxis[iAxis];}
+    inline const coreVector2& GetJoystickStickL(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afAxis[SDL_CONTROLLER_AXIS_LEFTX]);}
+    inline const coreVector2& GetJoystickStickR(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afAxis[SDL_CONTROLLER_AXIS_RIGHTX]);}
 
     /* access touch input */
     inline void                SetTouchButton  (const coreUintW iIndex, const coreBool bStatus)         {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; SET_BIT(m_aTouch[iIndex].iButton, CORE_INPUT_DATA, bStatus)}
@@ -233,6 +248,7 @@ public:
     inline void ClearKeyboardButtonAll()                                                {std::memset(m_Keyboard                   .aiButton, 0, sizeof(m_Keyboard                   .aiButton));}
     inline void ClearMouseButtonAll   ()                                                {std::memset(m_Mouse                      .aiButton, 0, sizeof(m_Mouse                      .aiButton));}
     inline void ClearJoystickButtonAll(const coreUintW iIndex)                          {std::memset(__CORE_INPUT_JOYSTICK(iIndex).aiButton, 0, sizeof(__CORE_INPUT_JOYSTICK(iIndex).aiButton));}
+    inline void ClearJoystickButtonAll()                                                {for(coreUintW i = 0u, ie = this->GetJoystickNum() + 1u; i < ie; ++i) this->ClearJoystickButtonAll(i);}
     inline void ClearTouchButtonAll   ()                                                {for(coreUintW i = 0u; i < CORE_INPUT_FINGERS; ++i) m_aTouch[i].iButton = 0u;}
     inline void ClearAnyButton        ()                                                {m_iAnyButton = 0u;}
     void        ClearButtonAll        ();
