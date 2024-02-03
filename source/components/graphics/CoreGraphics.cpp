@@ -660,7 +660,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
     coreByte* pData = new coreByte[iSize * 2u];
     glReadPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
 
-    // copy path into another thread
+    // copy path into lambda
     coreString sPathCopy = pcPath;
     ASSERT(!sPathCopy.empty())
 

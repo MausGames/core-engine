@@ -11,6 +11,7 @@
 #define XXH_INLINE_ALL
 #define XXH_NO_STREAM
 #define XXH_SIZE_OPT 1
+
 #if defined(_CORE_DEBUG_)
     #define XXH_DEBUGLEVEL 1
 #endif

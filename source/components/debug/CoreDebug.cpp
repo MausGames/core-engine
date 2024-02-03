@@ -347,7 +347,7 @@ void CoreDebug::__UpdateOutput()
     if(!m_bEnabled) return;
 
     // toggle output visibility
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F1), CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F1), CORE_INPUT_PRESS) || Core::Input->GetJoystickButton(CORE_INPUT_JOYSTICK_ANY, SDL_CONTROLLER_BUTTON_LEFTSTICK, CORE_INPUT_PRESS))
         m_bVisible = !m_bVisible;
 
     // toggle vertical synchronization

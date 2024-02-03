@@ -1,23 +1,25 @@
 @ECHO OFF
 
 SET _EXECUTABLE_="%~dp0base\glslang.exe"
-SET _PARAMETERS_=-t -w
+SET _PARAMETERS_=-t
 
 SET _GLOBAL_="%~1\global.glsl"
 SET _CUSTOM_="%~1\custom.glsl"
 SET _LOG_=shader_log.txt
 
-SET _A_VERSION=(100 110 120 140 150 330 400 410 420 430 440 450)
+SET _VERSION_LIST_=(100 110 120 140 150 330 400 410 420 430 440 450 460)
 
 (@ECHO. ) > %_LOG_%
 
-FOR %%V IN %_A_VERSION% DO (
+FOR %%V IN %_VERSION_LIST_% DO (
 
     (@ECHO [%%V]) >> %_LOG_%
 
     FOR /R "%~1\" %%G IN (*.vert) DO (
 
         (@ECHO [%%G]) >> %_LOG_%
+
+        ECHO %%V %%G
 
         (@ECHO #version                       %%V) >  temp
         (@ECHO #define _CORE_VERTEX_SHADER_     1) >> temp
@@ -35,6 +37,8 @@ FOR %%V IN %_A_VERSION% DO (
     FOR /R "%~1\" %%G IN (*.frag) DO (
 
         (@ECHO [%%G]) >> %_LOG_%
+
+        ECHO %%V %%G
 
         (@ECHO #version                       %%V) >  temp
         (@ECHO #define _CORE_FRAGMENT_SHADER_   1) >> temp

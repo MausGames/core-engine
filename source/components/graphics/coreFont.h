@@ -28,12 +28,12 @@ private:
     coreMap<coreUint16, coreMap<coreUint8, TTF_Font*>> m_aapFont;   // list with sub-fonts in different heights <height, <outline>>
     coreFile* m_pFile;                                              // file object with resource data
 
-    coreUint8 m_iHinting;                                           // hinting-algorithm to use (NORMAL, LIGHT, MONO, NONE)
+    coreUint8 m_iHinting;                                           // hinting-algorithm to use (NORMAL, LIGHT, MONO, NONE, LIGHT_SUBPIXEL (very expensive))
     coreBool  m_bKerning;                                           // apply kerning if available
 
 
 public:
-    explicit coreFont(const coreUint8 iHinting = TTF_HINTING_NORMAL, const coreBool bKerning = true)noexcept;
+    explicit coreFont(const coreUint8 iHinting = TTF_HINTING_LIGHT, const coreBool bKerning = true)noexcept;
     ~coreFont()final;
 
     DISABLE_COPY(coreFont)
