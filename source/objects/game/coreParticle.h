@@ -37,10 +37,21 @@ public:
     /* state structure */
     struct coreState final
     {
-        coreVector3 vPosition;   // position of the particle
-        coreFloat   fScale;      // scale-factor of the particle
-        coreFloat   fAngle;      // orientation-angle of the particle
-        coreUint32  iColor;      // packed RGBA color-value
+        coreVector3 vPosition;   // configured position
+        coreFloat   fScale;      // configured scale-factor
+        coreFloat   fAngle;      // configured orientation-angle
+        coreUint32  iColor;      // configured RGBA color-value (packed)
+
+        inline coreVector4 GetColor4()const {return coreVector4::UnpackUnorm4x8(iColor);}
+    };
+
+    /* animation structure */
+    struct coreAnim final
+    {
+        coreVector3 vPosition;   // interpolated position
+        coreFloat   fScale;      // interpolated scale-factor
+        coreFloat   fAngle;      // interpolated orientation-angle
+        coreVector4 vColor;      // interpolated RGBA color-value
     };
 
 
@@ -48,8 +59,8 @@ private:
     coreState m_BeginState;          // initial state
     coreState m_EndState;            // final state
 
-    coreFloat m_fValue;              // current simulation value of the particle (from 1.0f and 0.0f)
-    coreFloat m_fSpeed;              // speed factor of the particle
+    coreFloat m_fValue;              // current simulation value (from 1.0f to 0.0f)
+    coreFloat m_fSpeed;              // speed factor
 
     coreParticleEffect* m_pEffect;   // associated particle effect object
 
@@ -82,23 +93,19 @@ public:
     inline void SetAngleStc   (const coreFloat   fStatic) {this->SetAngleAbs   (fStatic, fStatic);}
     inline void SetColor4Stc  (const coreVector4 vStatic) {m_BeginState.iColor = m_EndState.iColor = vStatic.PackUnorm4x8(); ASSERT((vStatic.Min() >= 0.0f) && (vStatic.Max() <= 1.0f))}
 
+    /* set object properties */
+    inline void SetSpeed(const coreFloat fSpeed) {m_fSpeed = fSpeed;}
+
     /* edit state directly */
     inline coreState& EditBeginState() {return m_BeginState;}
     inline coreState& EditEndState  () {return m_EndState;}
 
-    /* retrieve interpolated values */
-    inline coreVector3 GetCurPosition()const {return LERP(m_EndState.vPosition,                           m_BeginState.vPosition,                           m_fValue);}
-    inline coreFloat   GetCurScale   ()const {return LERP(m_EndState.fScale,                              m_BeginState.fScale,                              m_fValue);}
-    inline coreFloat   GetCurAngle   ()const {return LERP(m_EndState.fAngle,                              m_BeginState.fAngle,                              m_fValue);}
-    inline coreVector4 GetCurColor4  ()const {return LERP(coreVector4::UnpackUnorm4x8(m_EndState.iColor), coreVector4::UnpackUnorm4x8(m_BeginState.iColor), m_fValue);}
-
-    /* set object properties */
-    inline void SetSpeed(const coreFloat fSpeed) {m_fSpeed = fSpeed;}
-
     /* get object properties */
-    inline const coreFloat&    GetValue ()const {return m_fValue;}
-    inline const coreFloat&    GetSpeed ()const {return m_fSpeed;}
-    inline coreParticleEffect* GetEffect()const {return m_pEffect;}
+    inline const coreState&    GetBeginState()const {return m_BeginState;}
+    inline const coreState&    GetEndState  ()const {return m_EndState;}
+    inline const coreFloat&    GetValue     ()const {return m_fValue;}
+    inline const coreFloat&    GetSpeed     ()const {return m_fSpeed;}
+    inline coreParticleEffect* GetEffect    ()const {return m_pEffect;}
 
 
 private:
@@ -112,6 +119,11 @@ private:
 /* particle system class */
 class coreParticleSystem final : public coreResourceRelation
 {
+public:
+    /* internal types */
+    using coreAnimate = coreParticle::coreAnim (*) (const coreParticle& oParticle);
+
+
 private:
     coreList<coreParticle> m_aParticle;                                             // pre-allocated particles
     coreUint32             m_iNumParticles;                                         // number of particles
@@ -125,6 +137,8 @@ private:
 
     coreRing<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;     // vertex array objects
     coreRing<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aInstanceBuffer;   // instance data buffers
+
+    coreAnimate m_nAnimateFunc;                                                     // particle animation function
 
     coreBool m_bUpdate;                                                             // buffer update status (dirty flag)
 
@@ -164,6 +178,9 @@ public:
     /* update particles with custom simulation */
     template <typename F> void ForEachParticle   (const coreParticleEffect* pEffect, F&& nUpdateFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
     template <typename F> void ForEachParticleAll(F&& nUpdateFunc);                                      // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
+
+    /* override particle animation function */
+    template <typename F> inline void SetAnimateFunc(F&& nAnimateFunc) {m_nAnimateFunc = nAnimateFunc;}   // [](const coreParticle& oParticle) -> coreParticleAnim
 
     /* get object properties */
     inline const coreTexturePtr& GetTexture           (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}

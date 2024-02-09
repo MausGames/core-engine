@@ -10,6 +10,21 @@
 
 
 // ****************************************************************
+/* default particle animation function */
+static coreParticle::coreAnim DefaultAnimateFunc(const coreParticle& oParticle)
+{
+    coreParticle::coreAnim oAnim;
+
+    oAnim.vPosition = LERP(oParticle.GetEndState().vPosition,   oParticle.GetBeginState().vPosition,   oParticle.GetValue());
+    oAnim.fScale    = LERP(oParticle.GetEndState().fScale,      oParticle.GetBeginState().fScale,      oParticle.GetValue());
+    oAnim.fAngle    = LERP(oParticle.GetEndState().fAngle,      oParticle.GetBeginState().fAngle,      oParticle.GetValue());
+    oAnim.vColor    = LERP(oParticle.GetEndState().GetColor4(), oParticle.GetBeginState().GetColor4(), oParticle.GetValue());
+
+    return oAnim;
+}
+
+
+// ****************************************************************
 /* constructor */
 coreParticleSystem::coreParticleSystem(const coreUint32 iStartSize)noexcept
 : coreResourceRelation ()
@@ -22,6 +37,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iStartSize)noexcept
 , m_pDefaultEffect     (NULL)
 , m_aiVertexArray      {}
 , m_aInstanceBuffer    {}
+, m_nAnimateFunc       (DefaultAnimateFunc)
 , m_bUpdate            (false)
 {
     // pre-allocate particles
@@ -101,11 +117,14 @@ void coreParticleSystem::Render()
                     const coreParticle* pParticle = (*it);
                     const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
+                    // animate particle
+                    const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle);
+
                     // compress data
-                    const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition();
-                    const coreUint64  iData     = coreVector4(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue(), 0.0f).PackFloat4x16();
-                    const coreUint32  iColor    = pParticle->GetCurColor4().PackUnorm4x8();
-                    ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
+                    const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition;
+                    const coreUint64  iData     = coreVector4(oAnim.fScale, oAnim.fAngle, pParticle->GetValue(), 0.0f).PackFloat4x16();
+                    const coreUint32  iColor    = oAnim.vColor.PackUnorm4x8();
+                    ASSERT((oAnim.vColor.Min() >= 0.0f) && (oAnim.vColor.Max() <= 1.0f))
 
                     // write data to the buffer
                     std::memcpy(pCursor,       &vPosition, sizeof(coreVector3));
@@ -126,11 +145,14 @@ void coreParticleSystem::Render()
                     const coreParticle* pParticle = (*it);
                     const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
+                    // animate particle
+                    const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle);
+
                     // compress data
-                    const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition();
-                    const coreVector3 vData     = coreVector3(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue());
-                    const coreUint32  iColor    = pParticle->GetCurColor4().PackUnorm4x8();
-                    ASSERT((pParticle->GetCurColor4().Min() >= 0.0f) && (pParticle->GetCurColor4().Max() <= 1.0f))
+                    const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition;
+                    const coreVector3 vData     = coreVector3(oAnim.fScale, oAnim.fAngle, pParticle->GetValue());
+                    const coreUint32  iColor    = oAnim.vColor.PackUnorm4x8();
+                    ASSERT((oAnim.vColor.Min() >= 0.0f) && (oAnim.vColor.Max() <= 1.0f))
 
                     // write data to the buffer
                     std::memcpy(pCursor,       &vPosition, sizeof(coreVector3));
@@ -166,10 +188,13 @@ void coreParticleSystem::Render()
             const coreParticle* pParticle = (*it);
             const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
+            // animate particle
+            const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle);
+
             // update all particle uniforms
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + pParticle->GetCurPosition()) : pParticle->GetCurPosition());
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_DATA,     coreVector3(pParticle->GetCurScale(), pParticle->GetCurAngle(), pParticle->GetValue()));
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,        pParticle->GetCurColor4());
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition);
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_DATA,     coreVector3(oAnim.fScale, oAnim.fAngle, pParticle->GetValue()));
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,        oAnim.vColor);
 
             // draw the model
             pModel->Enable();
