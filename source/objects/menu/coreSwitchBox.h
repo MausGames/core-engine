@@ -28,7 +28,7 @@
 /* menu switch-box class */
 template <typename T> class coreSwitchBox : public coreObject2D, public coreTranslate
 {
-public:
+private:
     /* entry structure */
     struct coreEntry final
     {

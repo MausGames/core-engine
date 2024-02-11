@@ -237,7 +237,7 @@
     // disable unwanted compiler warnings (with /Wall)
     #pragma warning(disable : 4061)   // enumerator not handled in switch
     #pragma warning(disable : 4100)   // unreferenced formal parameter
-    #pragma warning(disable : 4127)   // conditional expression is constant
+    #pragma warning(disable : 4127)   // constant conditional expression
     #pragma warning(disable : 4191)   // unsafe conversion between function types
     #pragma warning(disable : 4201)   // nameless struct or union
     #pragma warning(disable : 4242)   // implicit conversion to different precision #1
@@ -413,9 +413,9 @@
 #define HAS_BIT(o,n)                (__CHECK_BIT (o, n), ((o) &   BIT(n)) != 0ull)
 #define HAS_FLAG(o,n)               (__CHECK_FLAG(o, n), ((o) &      (n)) == (n))
 
-#define BITVALUE(n,s,v)             (__CHECK_BITVALUE(n, v),     ((v) & BITLINE(n)) << (s))
-#define SET_BITVALUE(o,n,s,v)       {__CHECK_FLAG(o, (n) + (s));  (o) = BITVALUE(n, s, v) | ((o) & ~(BITLINE(n) << (s)));}
-#define GET_BITVALUE(o,n,s)         (__CHECK_FLAG(o, (n) + (s)), ((o) >> (s)) & BITLINE(n))
+#define BITVALUE(n,s,v)             (__CHECK_BITVALUE(n, v),              ((v) & BITLINE(n)) << (s))
+#define SET_BITVALUE(o,n,s,v)       {__CHECK_FLAG(o, BITLINE((n) + (s)));  (o) = BITVALUE(n, s, v) | ((o) & ~(BITLINE(n) << (s)));}
+#define GET_BITVALUE(o,n,s)         (__CHECK_FLAG(o, BITLINE((n) + (s))), ((o) >> (s)) & BITLINE(n))
 
 #define FOR_EACH(i,c)               for(auto i = (c).begin(),  i ## __e = (c).end();  i != i ## __e; __CHECK_ITERATOR    (i ## __e, c), ++i)
 #define FOR_EACH_REV(i,c)           for(auto i = (c).rbegin(), i ## __e = (c).rend(); i != i ## __e; __CHECK_ITERATOR_REV(i ## __e, c), ++i)
@@ -424,9 +424,9 @@
 #define DYN_KEEP(i,c)               {__CHECK_ITERATOR(i ## __e, c); ++i;}
 #define DYN_REMOVE(i,c)             {__CHECK_ITERATOR(i ## __e, c); i = (c).erase(i); i ## __e = (c).end();}
 
-#define __CHECK_BIT(o,n)            ([&]() {ASSERT(coreUintW(n) <          sizeof(o) * 8u)} ())
-#define __CHECK_FLAG(o,n)           ([&]() {ASSERT(coreUintW(n) <= BITLINE(sizeof(o) * 8u))}())
-#define __CHECK_BITVALUE(n,v)       ([&]() {ASSERT(coreUintW(v) <= BITLINE(n))}())
+#define __CHECK_BIT(o,n)            ([&]() {ASSERT(coreUint64(n) <          sizeof(o) * 8u)} ())
+#define __CHECK_FLAG(o,n)           ([&]() {ASSERT(coreUint64(n) <= BITLINE(sizeof(o) * 8u))}())
+#define __CHECK_BITVALUE(n,v)       ([&]() {ASSERT(coreUint64(v) <= BITLINE(n))}())
 #define __CHECK_ITERATOR(e,c)       ([&]() {ASSERT((e) == (c).end ())}())
 #define __CHECK_ITERATOR_REV(e,c)   ([&]() {ASSERT((e) == (c).rend())}())
 

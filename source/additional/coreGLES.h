@@ -378,6 +378,7 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define GL_PERSPECTIVE_CORRECTION_HINT                  0x0C50
 #define GL_PRIMITIVES_SUBMITTED                         0x82EF
 #define GL_TEXTURE_COMPRESSION_HINT                     0x84EF
+#define GL_TEXTURE_CUBE_MAP_SEAMLESS                    0x884F
 #define GL_VERTEX_SHADER_INVOCATIONS                    0x82F0
 
 #define glBindFragDataLocation(...)

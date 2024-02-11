@@ -185,7 +185,7 @@ public:
     constexpr coreVector2 GetPosition ()const {return coreVector2(_31, _32);}
     constexpr coreVector2 GetSize     ()const {return coreVector2(coreVector2(_11, _21).Length(), coreVector2(_12, _22).Length());}
     inline    coreVector2 GetSize90   ()const {return coreVector2(ABS(_11) + ABS(_21),            ABS(_12) + ABS(_22));}
-    constexpr coreVector2 GetDirection()const {return coreVector2(_12, _11).Normalized();}
+    constexpr coreVector2 GetDirection()const {return coreVector2(_21, _11).Normalized();}
 
     /* direct functions */
     constexpr coreFloat Determinant()const;

@@ -145,7 +145,6 @@ public:
     static constexpr coreFloat                                                     Rsqrt(const coreFloat fInput);
     static constexpr coreFloat                                                     Rcp  (const coreFloat fInput);
 
-
     /* exponential operations */
     template <std::floating_point T, std::floating_point S = T> static inline T Pow  (const T& tBase,  const S& tExp)  {return std::pow  (tBase, tExp);}
     template <std::floating_point T, std::floating_point S = T> static inline T LogB (const T& tValue, const S& tBase) {return LOG(tValue) * RCP(LOG(tBase));}

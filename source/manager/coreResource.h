@@ -402,19 +402,15 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
     coreResourceHandle* pHandle = pptResourcePtr->GetHandle();
     if(pHandle)
     {
-        m_ResourceLock.Lock();
+        if(!pHandle->m_sName.empty())
         {
-            // remove resource handle from manager
-            FOR_EACH(it, m_apHandle)
+            m_ResourceLock.Lock();
             {
-                if((*it) == pHandle)
-                {
-                    m_apHandle.erase(it);
-                    break;
-                }
+                // remove resource handle from manager
+                m_apHandle.erase_bs(pHandle->m_sName.c_str());
             }
+            m_ResourceLock.Unlock();
         }
-        m_ResourceLock.Unlock();
 
         // delete possible resource proxy
         m_apProxy.erase(pHandle);
