@@ -249,6 +249,13 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_OES_tessellation_shader, bES32 || bAndroidPack);
     if(g_sExtensions.contains("GL_EXT_tessellation_shader ")) g_CoreContext.__GL_OES_tessellation_shader = true;
 
+    // implement GL_OES_texture_3D
+    if(__CORE_GLES_CHECK(GL_OES_texture_3D, bES30))
+    {
+        __CORE_GLES_FUNC_FETCH(glTexImage3D,    OES, bES30)
+        __CORE_GLES_FUNC_FETCH(glTexSubImage3D, OES, bES30)
+    }
+
     // implement GL_OES_texture_float
     __CORE_GLES_CHECK(GL_OES_texture_float, bES30);   // not used
 

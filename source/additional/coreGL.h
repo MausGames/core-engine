@@ -32,6 +32,13 @@ extern coreBool GLEW_V2_compatibility;
 
 
 // ****************************************************************
+/* handle OpenGL extensions below minimum */
+#define GLEW_ARB_depth_texture true
+#define GLEW_ARB_multisample   true
+#define GLEW_EXT_texture3D     true
+
+
+// ****************************************************************
 /* generate and delete resource names */
 extern void coreGenTextures2D  (coreUintW iCount, GLuint* OUTPUT pNames);
 extern void coreGenBuffers     (coreUintW iCount, GLuint* OUTPUT pNames);

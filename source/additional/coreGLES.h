@@ -16,6 +16,7 @@
 // TODO 5: GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
 // TODO 5: GL_ANGLE_program_cache_control (just for query, needs the EGL extension), GL_AMD_framebuffer_multisample_advanced
 // TODO 5: GL_EXT_disjoint_timer_query_webgl2
+// TODO 5: GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
 
 
 // ****************************************************************
@@ -30,6 +31,7 @@
 #define CORE_GL_ARB_multi_bind                       false
 #define CORE_GL_ARB_multisample                      false
 #define CORE_GL_ARB_pipeline_statistics_query        false
+#define CORE_GL_ARB_seamless_cube_map                false
 #define CORE_GL_ARB_shader_image_load_store          __CORE_GLES_VAR(bES31)
 #define CORE_GL_ARB_sync                             __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_uniform_buffer_object            __CORE_GLES_VAR(bES30)   // controls shader-handling
@@ -317,6 +319,16 @@ using PFNGLMINSAMPLESHADINGPROC = void (GL_APIENTRY *) (GLclampf value);
 
 
 // ****************************************************************
+/* GL_OES_texture_3D (mapped on GL_EXT_texture3D) */
+#define CORE_GL_EXT_texture3D __CORE_GLES_VAR(GL_OES_texture_3D)
+
+using PFNGLTEXIMAGE3DPROC    = void (GL_APIENTRY *) (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void* pixels);
+using PFNGLTEXSUBIMAGE3DPROC = void (GL_APIENTRY *) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels);
+#define glTexImage3D GLEW_GET_FUN(glTexImage3D)
+#define glTexSubImage3D GLEW_GET_FUN(glTexSubImage3D)
+
+
+// ****************************************************************
 /* GL_OES_texture_stencil8 (mapped on GL_ARB_texture_stencil8) */
 #define CORE_GL_ARB_texture_stencil8 __CORE_GLES_VAR(GL_OES_texture_stencil8)
 
@@ -446,6 +458,7 @@ struct coreContext final
     coreBool __GL_OES_packed_depth_stencil;
     coreBool __GL_OES_sample_shading;
     coreBool __GL_OES_tessellation_shader;
+    coreBool __GL_OES_texture_3D;
     coreBool __GL_OES_texture_float;
     coreBool __GL_OES_texture_float_linear;
     coreBool __GL_OES_texture_half_float;
@@ -477,6 +490,8 @@ struct coreContext final
     PFNGLGETPROGRAMBINARYPROC               __glGetProgramBinary;
     PFNGLPROGRAMBINARYPROC                  __glProgramBinary;
     PFNGLMINSAMPLESHADINGPROC               __glMinSampleShading;
+    PFNGLTEXIMAGE3DPROC                     __glTexImage3D;
+    PFNGLTEXSUBIMAGE3DPROC                  __glTexSubImage3D;
     PFNGLBINDVERTEXARRAYPROC                __glBindVertexArray;
     PFNGLDELETEVERTEXARRAYSPROC             __glDeleteVertexArrays;
     PFNGLGENVERTEXARRAYSPROC                __glGenVertexArrays;

@@ -771,8 +771,6 @@ PFNGLBINDSAMPLERSPROC __glewBindSamplers = NULL;
 PFNGLBINDTEXTURESPROC __glewBindTextures = NULL;
 PFNGLBINDVERTEXBUFFERSPROC __glewBindVertexBuffers = NULL;
 
-PFNGLSAMPLECOVERAGEARBPROC __glewSampleCoverageARB = NULL;
-
 PFNGLMAXSHADERCOMPILERTHREADSARBPROC __glewMaxShaderCompilerThreadsARB = NULL;
 
 PFNGLGETPROGRAMINTERFACEIVPROC __glewGetProgramInterfaceiv = NULL;
@@ -1255,7 +1253,6 @@ GLboolean __GLEW_ARB_copy_buffer = GL_FALSE;
 GLboolean __GLEW_ARB_copy_image = GL_FALSE;
 GLboolean __GLEW_ARB_depth_buffer_float = GL_FALSE;
 GLboolean __GLEW_ARB_depth_clamp = GL_FALSE;
-GLboolean __GLEW_ARB_depth_texture = GL_FALSE;
 GLboolean __GLEW_ARB_direct_state_access = GL_FALSE;
 GLboolean __GLEW_ARB_draw_elements_base_vertex = GL_FALSE;
 GLboolean __GLEW_ARB_enhanced_layouts = GL_FALSE;
@@ -1270,13 +1267,13 @@ GLboolean __GLEW_ARB_instanced_arrays = GL_FALSE;
 GLboolean __GLEW_ARB_invalidate_subdata = GL_FALSE;
 GLboolean __GLEW_ARB_map_buffer_range = GL_FALSE;
 GLboolean __GLEW_ARB_multi_bind = GL_FALSE;
-GLboolean __GLEW_ARB_multisample = GL_FALSE;
 GLboolean __GLEW_ARB_parallel_shader_compile = GL_FALSE;
 GLboolean __GLEW_ARB_pipeline_statistics_query = GL_FALSE;
 GLboolean __GLEW_ARB_pixel_buffer_object = GL_FALSE;
 GLboolean __GLEW_ARB_program_interface_query = GL_FALSE;
 GLboolean __GLEW_ARB_provoking_vertex = GL_FALSE;
 GLboolean __GLEW_ARB_sample_shading = GL_FALSE;
+GLboolean __GLEW_ARB_seamless_cube_map = GL_FALSE;
 GLboolean __GLEW_ARB_shader_group_vote = GL_FALSE;
 GLboolean __GLEW_ARB_shader_image_load_store = GL_FALSE;
 GLboolean __GLEW_ARB_shading_language_packing = GL_FALSE;
@@ -1363,9 +1360,6 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_ARB_depth_clamp
   "GL_ARB_depth_clamp",
 #endif
-#ifdef GL_ARB_depth_texture
-  "GL_ARB_depth_texture",
-#endif
 #ifdef GL_ARB_direct_state_access
   "GL_ARB_direct_state_access",
 #endif
@@ -1408,9 +1402,6 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_ARB_multi_bind
   "GL_ARB_multi_bind",
 #endif
-#ifdef GL_ARB_multisample
-  "GL_ARB_multisample",
-#endif
 #ifdef GL_ARB_parallel_shader_compile
   "GL_ARB_parallel_shader_compile",
 #endif
@@ -1428,6 +1419,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_sample_shading
   "GL_ARB_sample_shading",
+#endif
+#ifdef GL_ARB_seamless_cube_map
+  "GL_ARB_seamless_cube_map",
 #endif
 #ifdef GL_ARB_shader_group_vote
   "GL_ARB_shader_group_vote",
@@ -1665,9 +1659,6 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_depth_clamp
   &__GLEW_ARB_depth_clamp,
 #endif
-#ifdef GL_ARB_depth_texture
-  &__GLEW_ARB_depth_texture,
-#endif
 #ifdef GL_ARB_direct_state_access
   &__GLEW_ARB_direct_state_access,
 #endif
@@ -1710,9 +1701,6 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_multi_bind
   &__GLEW_ARB_multi_bind,
 #endif
-#ifdef GL_ARB_multisample
-  &__GLEW_ARB_multisample,
-#endif
 #ifdef GL_ARB_parallel_shader_compile
   &__GLEW_ARB_parallel_shader_compile,
 #endif
@@ -1730,6 +1718,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_ARB_sample_shading
   &__GLEW_ARB_sample_shading,
+#endif
+#ifdef GL_ARB_seamless_cube_map
+  &__GLEW_ARB_seamless_cube_map,
 #endif
 #ifdef GL_ARB_shader_group_vote
   &__GLEW_ARB_shader_group_vote,
@@ -1957,7 +1948,6 @@ static GLboolean _glewInit_GL_ARB_instanced_arrays (void);
 static GLboolean _glewInit_GL_ARB_invalidate_subdata (void);
 static GLboolean _glewInit_GL_ARB_map_buffer_range (void);
 static GLboolean _glewInit_GL_ARB_multi_bind (void);
-static GLboolean _glewInit_GL_ARB_multisample (void);
 static GLboolean _glewInit_GL_ARB_parallel_shader_compile (void);
 static GLboolean _glewInit_GL_ARB_program_interface_query (void);
 static GLboolean _glewInit_GL_ARB_provoking_vertex (void);
@@ -2056,9 +2046,6 @@ static GLboolean _glewInit_GL_VERSION_1_3 (void)
   r = ((glMultiTexCoord4s = (PFNGLMULTITEXCOORD4SPROC)glewGetProcAddress((const GLubyte*)"glMultiTexCoord4s")) == NULL) || r;
   r = ((glMultiTexCoord4sv = (PFNGLMULTITEXCOORD4SVPROC)glewGetProcAddress((const GLubyte*)"glMultiTexCoord4sv")) == NULL) || r;
   r = ((glSampleCoverage = (PFNGLSAMPLECOVERAGEPROC)glewGetProcAddress((const GLubyte*)"glSampleCoverage")) == NULL) || r;
-
-  // additional
-  _glewInit_GL_ARB_multisample();
 
   return r;
 }
@@ -2933,19 +2920,6 @@ static GLboolean _glewInit_GL_ARB_multi_bind (void)
 }
 
 #endif /* GL_ARB_multi_bind */
-
-#ifdef GL_ARB_multisample
-
-static GLboolean _glewInit_GL_ARB_multisample (void)
-{
-  GLboolean r = GL_FALSE;
-
-  r = ((glSampleCoverageARB = (PFNGLSAMPLECOVERAGEARBPROC)glewGetProcAddress((const GLubyte*)"glSampleCoverageARB")) == NULL) || r;
-
-  return r;
-}
-
-#endif /* GL_ARB_multisample */
 
 #ifdef GL_ARB_parallel_shader_compile
 
@@ -4039,9 +4013,6 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_ARB_multi_bind
   if (glewExperimental || GLEW_ARB_multi_bind) GLEW_ARB_multi_bind = !_glewInit_GL_ARB_multi_bind();
 #endif /* GL_ARB_multi_bind */
-#ifdef GL_ARB_multisample
-  if (glewExperimental || GLEW_ARB_multisample) GLEW_ARB_multisample = !_glewInit_GL_ARB_multisample();
-#endif /* GL_ARB_multisample */
 #ifdef GL_ARB_parallel_shader_compile
   if (glewExperimental || GLEW_ARB_parallel_shader_compile) GLEW_ARB_parallel_shader_compile = !_glewInit_GL_ARB_parallel_shader_compile();
 #endif /* GL_ARB_parallel_shader_compile */
@@ -4503,13 +4474,6 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
-#ifdef GL_ARB_depth_texture
-        if (_glewStrSame3(&pos, &len, (const GLubyte*)"depth_texture", 13))
-        {
-          ret = GLEW_ARB_depth_texture;
-          continue;
-        }
-#endif
 #ifdef GL_ARB_direct_state_access
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"direct_state_access", 19))
         {
@@ -4608,13 +4572,6 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
-#ifdef GL_ARB_multisample
-        if (_glewStrSame3(&pos, &len, (const GLubyte*)"multisample", 11))
-        {
-          ret = GLEW_ARB_multisample;
-          continue;
-        }
-#endif
 #ifdef GL_ARB_parallel_shader_compile
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"parallel_shader_compile", 23))
         {
@@ -4654,6 +4611,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"sample_shading", 14))
         {
           ret = GLEW_ARB_sample_shading;
+          continue;
+        }
+#endif
+#ifdef GL_ARB_seamless_cube_map
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"seamless_cube_map", 17))
+        {
+          ret = GLEW_ARB_seamless_cube_map;
           continue;
         }
 #endif

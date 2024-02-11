@@ -161,7 +161,6 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_copy_image,                       GLEW_VERSION_4_3 || GLEW_NV_copy_image)
         __IMPROVE(GLEW_ARB_depth_buffer_float,               GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_depth_clamp,                      GLEW_VERSION_3_2 || GLEW_NV_depth_clamp)
-        __IMPROVE(GLEW_ARB_depth_texture,                    GLEW_VERSION_1_4)                                       // below minimum
         __IMPROVE(GLEW_ARB_direct_state_access,              GLEW_VERSION_4_5)
         __IMPROVE(GLEW_ARB_enhanced_layouts,                 GLEW_VERSION_4_4)                                       // shader extension
         __IMPROVE(GLEW_ARB_framebuffer_sRGB,                 GLEW_VERSION_3_0 || GLEW_EXT_framebuffer_sRGB)
@@ -173,12 +172,12 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_invalidate_subdata,               GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_map_buffer_range,                 GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_multi_bind,                       GLEW_VERSION_4_4)
-        __IMPROVE(GLEW_ARB_multisample,                      GLEW_VERSION_1_3)                                       // below minimum
         __IMPROVE(GLEW_ARB_parallel_shader_compile,          false            || GLEW_KHR_parallel_shader_compile)
         __IMPROVE(GLEW_ARB_pipeline_statistics_query,        GLEW_VERSION_4_6)
         __IMPROVE(GLEW_ARB_pixel_buffer_object,              GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)
         __IMPROVE(GLEW_ARB_program_interface_query,          GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_sample_shading,                   GLEW_VERSION_4_0)                                       // shader extension (also)
+        __IMPROVE(GLEW_ARB_seamless_cube_map,                GLEW_VERSION_3_1)
         __IMPROVE(GLEW_ARB_shader_group_vote,                GLEW_VERSION_4_6)                                       // shader extension
         __IMPROVE(GLEW_ARB_shader_image_load_store,          GLEW_VERSION_4_2 || GLEW_EXT_shader_image_load_store)   // shader extension (also)
         __IMPROVE(GLEW_ARB_shading_language_packing,         GLEW_VERSION_4_2)                                       // shader extension

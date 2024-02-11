@@ -2771,21 +2771,6 @@ typedef void (GLAPIENTRY * PFNGLCOPYIMAGESUBDATAPROC) (GLuint srcName, GLenum sr
 
 #endif /* GL_ARB_depth_clamp */
 
-/* -------------------------- GL_ARB_depth_texture ------------------------- */
-
-#ifndef GL_ARB_depth_texture
-#define GL_ARB_depth_texture 1
-
-#define GL_DEPTH_COMPONENT16_ARB 0x81A5
-#define GL_DEPTH_COMPONENT24_ARB 0x81A6
-#define GL_DEPTH_COMPONENT32_ARB 0x81A7
-#define GL_TEXTURE_DEPTH_SIZE_ARB 0x884A
-#define GL_DEPTH_TEXTURE_MODE_ARB 0x884B
-
-#define GLEW_ARB_depth_texture GLEW_GET_VAR(__GLEW_ARB_depth_texture)
-
-#endif /* GL_ARB_depth_texture */
-
 /* ----------------------- GL_ARB_direct_state_access ---------------------- */
 
 #ifndef GL_ARB_direct_state_access
@@ -3491,29 +3476,6 @@ typedef void (GLAPIENTRY * PFNGLBINDVERTEXBUFFERSPROC) (GLuint first, GLsizei co
 
 #endif /* GL_ARB_multi_bind */
 
-/* --------------------------- GL_ARB_multisample -------------------------- */
-
-#ifndef GL_ARB_multisample
-#define GL_ARB_multisample 1
-
-#define GL_MULTISAMPLE_ARB 0x809D
-#define GL_SAMPLE_ALPHA_TO_COVERAGE_ARB 0x809E
-#define GL_SAMPLE_ALPHA_TO_ONE_ARB 0x809F
-#define GL_SAMPLE_COVERAGE_ARB 0x80A0
-#define GL_SAMPLE_BUFFERS_ARB 0x80A8
-#define GL_SAMPLES_ARB 0x80A9
-#define GL_SAMPLE_COVERAGE_VALUE_ARB 0x80AA
-#define GL_SAMPLE_COVERAGE_INVERT_ARB 0x80AB
-#define GL_MULTISAMPLE_BIT_ARB 0x20000000
-
-typedef void (GLAPIENTRY * PFNGLSAMPLECOVERAGEARBPROC) (GLclampf value, GLboolean invert);
-
-#define glSampleCoverageARB GLEW_GET_FUN(__glewSampleCoverageARB)
-
-#define GLEW_ARB_multisample GLEW_GET_VAR(__GLEW_ARB_multisample)
-
-#endif /* GL_ARB_multisample */
-
 /* --------------------- GL_ARB_parallel_shader_compile -------------------- */
 
 #ifndef GL_ARB_parallel_shader_compile
@@ -3669,6 +3631,17 @@ typedef void (GLAPIENTRY * PFNGLMINSAMPLESHADINGARBPROC) (GLclampf value);
 #define GLEW_ARB_sample_shading GLEW_GET_VAR(__GLEW_ARB_sample_shading)
 
 #endif /* GL_ARB_sample_shading */
+
+/* ------------------------ GL_ARB_seamless_cube_map ----------------------- */
+
+#ifndef GL_ARB_seamless_cube_map
+#define GL_ARB_seamless_cube_map 1
+
+#define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
+
+#define GLEW_ARB_seamless_cube_map GLEW_GET_VAR(__GLEW_ARB_seamless_cube_map)
+
+#endif /* GL_ARB_seamless_cube_map */
 
 /* ------------------------ GL_ARB_shader_group_vote ----------------------- */
 
@@ -6030,8 +6003,6 @@ GLEW_FUN_EXPORT PFNGLBINDSAMPLERSPROC __glewBindSamplers;
 GLEW_FUN_EXPORT PFNGLBINDTEXTURESPROC __glewBindTextures;
 GLEW_FUN_EXPORT PFNGLBINDVERTEXBUFFERSPROC __glewBindVertexBuffers;
 
-GLEW_FUN_EXPORT PFNGLSAMPLECOVERAGEARBPROC __glewSampleCoverageARB;
-
 GLEW_FUN_EXPORT PFNGLMAXSHADERCOMPILERTHREADSARBPROC __glewMaxShaderCompilerThreadsARB;
 
 GLEW_FUN_EXPORT PFNGLGETPROGRAMINTERFACEIVPROC __glewGetProgramInterfaceiv;
@@ -6514,7 +6485,6 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_copy_buffer;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_copy_image;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_depth_buffer_float;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_depth_clamp;
-GLEW_VAR_EXPORT GLboolean __GLEW_ARB_depth_texture;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_direct_state_access;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_draw_elements_base_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_enhanced_layouts;
@@ -6529,13 +6499,13 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_instanced_arrays;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_invalidate_subdata;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_map_buffer_range;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_multi_bind;
-GLEW_VAR_EXPORT GLboolean __GLEW_ARB_multisample;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_parallel_shader_compile;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pipeline_statistics_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pixel_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_program_interface_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_provoking_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sample_shading;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_seamless_cube_map;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_group_vote;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_image_load_store;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shading_language_packing;
