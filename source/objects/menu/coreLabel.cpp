@@ -48,18 +48,27 @@ coreLabel::~coreLabel()
 /* construct the label */
 void coreLabel::Construct(const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline)
 {
+    // make sure to change texture format
+    if(coreBool(m_iOutline) != coreBool(iOutline))
+    {
+        m_vResolution = coreVector2(0.0f,0.0f);
+    }
+
     // save properties
     m_iHeight  = iHeight;
     m_iOutline = iOutline;
 
-    // set font object
+    // load font
     m_pFont = Core::Manager::Resource->Get<coreFont>(sFont);
+
+    // load shader-program
+    this->DefineProgram(iOutline ? "default_label_sharp_program" : "default_label_smooth_program");
 
     // allocate own texture to display text
     if(!m_apTexture[CORE_LABEL_TEXTURE]) m_apTexture[CORE_LABEL_TEXTURE] = Core::Manager::Resource->LoadNew<coreTexture>();
 
-    // load shader-program
-    this->DefineProgram(iOutline ? "default_label_sharp_program" : "default_label_smooth_program");
+    // invoke texture generation
+    this->RegenerateTexture();
 }
 
 
@@ -85,7 +94,7 @@ void coreLabel::Render()
         if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
         {
             // refresh the object size
-            this->SetSize(this->GetTexSize() * m_vResolution * m_vScale * CORE_LABEL_SIZE_FACTOR);
+            this->__RefreshSize();
             this->__MoveRectified();
         }
 
@@ -107,8 +116,20 @@ void coreLabel::Move()
     ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
+    // check if requested font is loaded
+    if(!m_pFont.IsUsable()) return;
+
+    if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
+    {
+        // refresh the object size
+        this->__RefreshSize();
+
+        // reset the refresh status
+        REMOVE_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)
+    }
+
     // move and adjust the label
-    if(!HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)) this->__MoveRectified();
+    this->__MoveRectified();
 }
 
 
@@ -188,6 +209,8 @@ void coreLabel::__Reshape()
 /* generate the texture */
 void coreLabel::__GenerateTexture(const coreChar* pcText)
 {
+    ASSERT(m_pFont.IsUsable())
+
     coreSurfaceScope pSolid   = NULL;
     coreSurfaceScope pOutline = NULL;
     coreByte*        pData    = NULL;
@@ -198,12 +221,14 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
     // create solid text surface data
     pSolid = m_pFont->CreateText(pcText, iRelHeight);
+    WARN_IF(!pSolid) return;
     ASSERT((pSolid->format->BitsPerPixel == 8u) && !SDL_MUSTLOCK(pSolid))
 
     if(iRelOutline)
     {
         // create outlined text surface data
         pOutline = m_pFont->CreateTextOutline(pcText, iRelHeight, iRelOutline);
+        WARN_IF(!pOutline) return;
         ASSERT((pOutline->format->BitsPerPixel == 8u) && !SDL_MUSTLOCK(pSolid))
     }
 
@@ -281,9 +306,33 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
     // delete merge buffer
     if(pOutline) ZERO_DELETE(pData)
+}
 
-    // calculate vertical shift
-    m_iShift = m_pFont->RetrieveTextShift(pcText, iRelHeight, iRelOutline);
+
+// ****************************************************************
+/* refresh the object size */
+void coreLabel::__RefreshSize()
+{
+    ASSERT(m_pFont.IsUsable())
+
+    // get relative font height and outline
+    const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
+    const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
+
+    if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE))
+    {
+        // set size by text dimensions
+        const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);
+        this->SetSize(vDimensions * m_vScale * CORE_LABEL_SIZE_FACTOR);
+    }
+    else
+    {
+        // set size by texture coordinates
+        this->SetSize(this->GetTexSize() * m_vResolution * m_vScale * CORE_LABEL_SIZE_FACTOR);
+    }
+
+    // retrieve vertical shift
+    m_iShift = m_pFont->RetrieveTextShift(m_sText.c_str(), iRelHeight, iRelOutline);
 }
 
 
@@ -296,23 +345,33 @@ void coreLabel::__MoveRectified()
         // move the 2d-object
         this->coreObject2D::Move();
 
+        // handle global 2d-object rotation
+        const coreVector2 vViewDir     = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR) ? Core::Manager::Object->GetSpriteViewDir() : coreVector2(0.0f,1.0f);
+        const coreVector2 vScreenDir   = this->GetDirection() * coreMatrix3::Rotation(vViewDir).m12();
+        const coreVector2 vScreenAlign = this->GetAlignment() * coreMatrix3::Rotation(vViewDir).m12();
+
         // apply vertical shift
-        const coreVector2 vScreenDirection = this->GetScreenDirection();
-        m_mTransform._31 += vScreenDirection.x * I_TO_F(m_iShift) * 0.5f;
-        m_mTransform._32 -= vScreenDirection.y * I_TO_F(m_iShift) * 0.5f;
+        m_mTransform._31 -= vScreenDir.x * I_TO_F(m_iShift) * 0.5f;
+        m_mTransform._32 -= vScreenDir.y * I_TO_F(m_iShift) * 0.5f;
 
         // align texture with screen pixels
-        if(HAS_FLAG(m_iRectify, 0x01u))
+        if(HAS_FLAG(m_iRectify, vViewDir.y ? 0x01u : 0x02u))
         {
             m_mTransform._11 = ROUND(m_mTransform._11);
-            m_mTransform._12 = ROUND(m_mTransform._12);
-            m_mTransform._31 = ROUND(m_mTransform._31) - FRACT(0.5f * ABS(m_mTransform._11 + m_mTransform._21 + Core::System->GetResolution().x)) * SIGN(this->GetAlignment().x);
-        }
-        if(HAS_FLAG(m_iRectify, 0x02u))
-        {
             m_mTransform._21 = ROUND(m_mTransform._21);
+
+            const coreFloat fHalf = FRACT(ABS(m_mTransform._11 + m_mTransform._21 + Core::System->GetResolution().x) * 0.5f) * SIGN(vScreenAlign.x);
+
+            m_mTransform._31 = ROUND(m_mTransform._31 - fHalf) + fHalf;
+        }
+        if(HAS_FLAG(m_iRectify, vViewDir.y ? 0x02u : 0x01u))
+        {
+            m_mTransform._12 = ROUND(m_mTransform._12);
             m_mTransform._22 = ROUND(m_mTransform._22);
-            m_mTransform._32 = ROUND(m_mTransform._32) - FRACT(0.5f * ABS(m_mTransform._12 + m_mTransform._22 + Core::System->GetResolution().y)) * SIGN(this->GetAlignment().y);
+
+            const coreFloat fHalf = FRACT(ABS(m_mTransform._12 + m_mTransform._22 + Core::System->GetResolution().y) * 0.5f) * SIGN(vScreenAlign.y);
+
+            m_mTransform._32 = ROUND(m_mTransform._32 - fHalf) + fHalf;
         }
     }
 }

@@ -10,10 +10,9 @@
 #ifndef _CORE_GUARD_LABEL_H_
 #define _CORE_GUARD_LABEL_H_
 
-// TODO 3: implement multi-line text with automatic newline if row is too long (snippet in p1) (single texture with line height) or TTF_RenderText_Blended_Wrapped
-// TODO 2: transformation matrix is not always immediately updated after a Move(), because re-generation must be in Render(), with Move() afterwards
-// TODO 3: change text-generation to per-glyph interface or gather all text into big textures -> enable instancing
 // TODO 5: <old comment style>
+// TODO 3: coreResourceRelation in coreLabel is spamming the resource-manager
+// TODO 2: right and bottom side bleeds on non-aligned text, maybe add dummy lines/row, or clear instead of invalidate on non-aligned
 
 
 // ****************************************************************
@@ -109,6 +108,7 @@ private:
     void __GenerateTexture(const coreChar* pcText);
 
     /* move and adjust the label */
+    void __RefreshSize();
     void __MoveRectified();
 };
 
