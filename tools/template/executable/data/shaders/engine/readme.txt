@@ -152,6 +152,7 @@ Definitions
     #define CORE_GL_shader_image_load_store
     #define CORE_GL_shader_io_blocks
     #define CORE_GL_standard_derivatives
+    #define CORE_GL_texture_3D
 
 Functions
 

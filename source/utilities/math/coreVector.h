@@ -41,19 +41,19 @@ public:
     constexpr coreBool operator >= (const coreVector2 v)const {return (x >= v.x) && (y >= v.y);}
 
     /* vector operations */
-    constexpr coreVector2  operator +  (const coreVector2 v)const {return coreVector2(x+v.x, y+v.y);}
-    constexpr coreVector2  operator -  (const coreVector2 v)const {return coreVector2(x-v.x, y-v.y);}
-    constexpr coreVector2  operator *  (const coreVector2 v)const {return coreVector2(x*v.x, y*v.y);}
-    constexpr coreVector2  operator /  (const coreVector2 v)const {return coreVector2(x*RCP(v.x), y*RCP(v.y));}
+    constexpr coreVector2  operator +  (const coreVector2 v)const {return coreVector2(x + v.x, y + v.y);}
+    constexpr coreVector2  operator -  (const coreVector2 v)const {return coreVector2(x - v.x, y - v.y);}
+    constexpr coreVector2  operator *  (const coreVector2 v)const {return coreVector2(x * v.x, y * v.y);}
+    constexpr coreVector2  operator /  (const coreVector2 v)const {return  *this * coreVector2(RCP(v.x), RCP(v.y));}
     inline    coreVector2& operator += (const coreVector2 v)      {return (*this = *this + v);}
     inline    coreVector2& operator -= (const coreVector2 v)      {return (*this = *this - v);}
     inline    coreVector2& operator *= (const coreVector2 v)      {return (*this = *this * v);}
     inline    coreVector2& operator /= (const coreVector2 v)      {return (*this = *this / v);}
 
     /* scalar operations */
-    constexpr coreVector2  operator +  (const coreFloat f)const {return coreVector2(x+f, y+f);}
-    constexpr coreVector2  operator -  (const coreFloat f)const {return coreVector2(x-f, y-f);}
-    constexpr coreVector2  operator *  (const coreFloat f)const {return coreVector2(x*f, y*f);}
+    constexpr coreVector2  operator +  (const coreFloat f)const {return coreVector2(x + f, y + f);}
+    constexpr coreVector2  operator -  (const coreFloat f)const {return coreVector2(x - f, y - f);}
+    constexpr coreVector2  operator *  (const coreFloat f)const {return coreVector2(x * f, y * f);}
     constexpr coreVector2  operator /  (const coreFloat f)const {return  *this * RCP(f);}
     inline    coreVector2& operator += (const coreFloat f)      {return (*this = *this + f);}
     inline    coreVector2& operator -= (const coreFloat f)      {return (*this = *this - f);}
@@ -168,19 +168,19 @@ public:
     constexpr coreBool operator >= (const coreVector3 v)const {return (x >= v.x) && (y >= v.y) && (z >= v.z);}
 
     /* vector operations */
-    constexpr coreVector3  operator +  (const coreVector3 v)const {return coreVector3(x+v.x, y+v.y, z+v.z);}
-    constexpr coreVector3  operator -  (const coreVector3 v)const {return coreVector3(x-v.x, y-v.y, z-v.z);}
-    constexpr coreVector3  operator *  (const coreVector3 v)const {return coreVector3(x*v.x, y*v.y, z*v.z);}
-    constexpr coreVector3  operator /  (const coreVector3 v)const {return coreVector3(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z));}
+    constexpr coreVector3  operator +  (const coreVector3 v)const {return coreVector3(x + v.x, y + v.y, z + v.z);}
+    constexpr coreVector3  operator -  (const coreVector3 v)const {return coreVector3(x - v.x, y - v.y, z - v.z);}
+    constexpr coreVector3  operator *  (const coreVector3 v)const {return coreVector3(x * v.x, y * v.y, z * v.z);}
+    constexpr coreVector3  operator /  (const coreVector3 v)const {return  *this * coreVector3(RCP(v.x), RCP(v.y), RCP(v.z));}
     inline    coreVector3& operator += (const coreVector3 v)      {return (*this = *this + v);}
     inline    coreVector3& operator -= (const coreVector3 v)      {return (*this = *this - v);}
     inline    coreVector3& operator *= (const coreVector3 v)      {return (*this = *this * v);}
     inline    coreVector3& operator /= (const coreVector3 v)      {return (*this = *this / v);}
 
     /* scalar operations */
-    constexpr coreVector3  operator +  (const coreFloat f)const {return coreVector3(x+f, y+f, z+f);}
-    constexpr coreVector3  operator -  (const coreFloat f)const {return coreVector3(x-f, y-f, z-f);}
-    constexpr coreVector3  operator *  (const coreFloat f)const {return coreVector3(x*f, y*f, z*f);}
+    constexpr coreVector3  operator +  (const coreFloat f)const {return coreVector3(x + f, y + f, z + f);}
+    constexpr coreVector3  operator -  (const coreFloat f)const {return coreVector3(x - f, y - f, z - f);}
+    constexpr coreVector3  operator *  (const coreFloat f)const {return coreVector3(x * f, y * f, z * f);}
     constexpr coreVector3  operator /  (const coreFloat f)const {return  *this * RCP(f);}
     inline    coreVector3& operator += (const coreFloat f)      {return (*this = *this + f);}
     inline    coreVector3& operator -= (const coreFloat f)      {return (*this = *this - f);}
@@ -323,19 +323,19 @@ public:
     constexpr coreBool operator >= (const coreVector4 v)const {return (x >= v.x) && (y >= v.y) && (z >= v.z) && (w >= v.w);}
 
     /* vector operations */
-    constexpr coreVector4  operator +  (const coreVector4 v)const {return coreVector4(x+v.x, y+v.y, z+v.z, w+v.w);}
-    constexpr coreVector4  operator -  (const coreVector4 v)const {return coreVector4(x-v.x, y-v.y, z-v.z, w-v.w);}
-    constexpr coreVector4  operator *  (const coreVector4 v)const {return coreVector4(x*v.x, y*v.y, z*v.z, w*v.w);}
-    constexpr coreVector4  operator /  (const coreVector4 v)const {return coreVector4(x*RCP(v.x), y*RCP(v.y), z*RCP(v.z), w*RCP(v.w));}
+    constexpr coreVector4  operator +  (const coreVector4 v)const {return coreVector4(x + v.x, y + v.y, z + v.z, w + v.w);}
+    constexpr coreVector4  operator -  (const coreVector4 v)const {return coreVector4(x - v.x, y - v.y, z - v.z, w - v.w);}
+    constexpr coreVector4  operator *  (const coreVector4 v)const {return coreVector4(x * v.x, y * v.y, z * v.z, w * v.w);}
+    constexpr coreVector4  operator /  (const coreVector4 v)const {return  *this * coreVector4(RCP(v.x), RCP(v.y), RCP(v.z), RCP(v.w));}
     inline    coreVector4& operator += (const coreVector4 v)      {return (*this = *this + v);}
     inline    coreVector4& operator -= (const coreVector4 v)      {return (*this = *this - v);}
     inline    coreVector4& operator *= (const coreVector4 v)      {return (*this = *this * v);}
     inline    coreVector4& operator /= (const coreVector4 v)      {return (*this = *this / v);}
 
     /* scalar operations */
-    constexpr coreVector4  operator +  (const coreFloat f)const {return coreVector4(x+f, y+f, z+f, w+f);}
-    constexpr coreVector4  operator -  (const coreFloat f)const {return coreVector4(x-f, y-f, z-f, w-f);}
-    constexpr coreVector4  operator *  (const coreFloat f)const {return coreVector4(x*f, y*f, z*f, w*f);}
+    constexpr coreVector4  operator +  (const coreFloat f)const {return coreVector4(x + f, y + f, z + f, w + f);}
+    constexpr coreVector4  operator -  (const coreFloat f)const {return coreVector4(x - f, y - f, z - f, w - f);}
+    constexpr coreVector4  operator *  (const coreFloat f)const {return coreVector4(x * f, y * f, z * f, w * f);}
     constexpr coreVector4  operator /  (const coreFloat f)const {return  *this * RCP(f);}
     inline    coreVector4& operator += (const coreFloat f)      {return (*this = *this + f);}
     inline    coreVector4& operator -= (const coreFloat f)      {return (*this = *this - f);}
@@ -487,7 +487,7 @@ inline coreVector2 coreVector2::Rand(const coreFloat fMinX, const coreFloat fMax
 
 // ****************************************************************
 /* generate random vector (uniformly distributed) */
-inline coreVector2 RandUni(coreRand* OUTPUT pRand)
+inline coreVector2 coreVector2::RandUni(coreRand* OUTPUT pRand)
 {
     return coreVector2::Direction(pRand->Float(2.0f*PI)) * SQRT(pRand->Float(1.0f));
 }

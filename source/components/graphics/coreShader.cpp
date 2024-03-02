@@ -332,6 +332,10 @@ coreStatus coreProgram::Load(coreFile* pFile)
         {
             m_iHash = coreMath::HashCombine64(m_iHash, (*it)->GetHash());
         }
+        FOR_EACH(it, m_aiAttribute)
+        {
+            m_iHash = coreMath::HashCombine64(m_iHash, coreHashXXH64(PRINT("%s %d", m_aiAttribute.get_string(it), (*it))));
+        }
 
         // try to load shader-program binary
         m_bBinary = this->__LoadBinary();

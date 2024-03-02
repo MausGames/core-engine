@@ -21,6 +21,7 @@
     #include <mach/mach.h>
     #include <mach-o/dyld.h>
     #include <sys/sysctl.h>
+    #include <copyfile.h>
     #include "additional/macos/cocoa.h"
 #elif defined(_CORE_ANDROID_)
     #include <sys/system_properties.h>
@@ -1263,7 +1264,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 #elif defined(_CORE_LINUX_)
 
     // open source file
-    coreInt32 iFileFrom = open(pcFrom, O_RDONLY);
+    const coreInt32 iFileFrom = open(pcFrom, O_RDONLY);
     if(iFileFrom != -1)
     {
         struct stat oBuffer;
@@ -1272,7 +1273,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
         if(!fstat(iFileFrom, &oBuffer))
         {
             // open destination file
-            coreInt32 iFileTo = open(pcTo, O_WRONLY | O_CREAT | O_TRUNC, oBuffer.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+            const coreInt32 iFileTo = open(pcTo, O_WRONLY | O_CREAT | O_TRUNC, oBuffer.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
             if(iFileTo != -1)
             {
                 coreIntW iRet;

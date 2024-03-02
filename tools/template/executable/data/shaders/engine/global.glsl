@@ -29,6 +29,7 @@
     #extension GL_OES_sample_variables            : enable
     #extension GL_OES_shader_io_blocks            : enable
     #extension GL_OES_standard_derivatives        : enable
+    #extension GL_OES_texture_3D                  : enable
 #else
     #extension GL_AMD_conservative_depth          : enable
     #extension GL_AMD_gpu_shader_half_float       : enable
@@ -77,6 +78,9 @@
 #endif
 #if defined(GL_OES_standard_derivatives) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300)
     #define CORE_GL_standard_derivatives
+#endif
+#if defined(GL_OES_texture_3D) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300)
+    #define CORE_GL_texture_3D
 #endif
 
 // precision qualifiers

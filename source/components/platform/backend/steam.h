@@ -48,6 +48,7 @@ static void* s_pSteamLibrary = NULL;   // Steam library handle
 
 __STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamPipe)
 __STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamUser)
+__STEAM_DEFINE_FUNCTION(SteamAPI_InitFlat)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetAPICallResult)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
@@ -57,7 +58,6 @@ __STEAM_DEFINE_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
 __STEAM_DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
 __STEAM_DEFINE_FUNCTION(SteamAPI_Shutdown)
 __STEAM_DEFINE_FUNCTION(SteamClient)
-__STEAM_DEFINE_FUNCTION(SteamInternal_SteamAPI_Init)
 
 static coreBool InitSteamLibrary()
 {
@@ -70,6 +70,7 @@ static coreBool InitSteamLibrary()
         // load all required functions
         __STEAM_LOAD_FUNCTION(SteamAPI_GetHSteamPipe)
         __STEAM_LOAD_FUNCTION(SteamAPI_GetHSteamUser)
+        __STEAM_LOAD_FUNCTION(SteamAPI_InitFlat)
         __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_FreeLastCallback)
         __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_GetAPICallResult)
         __STEAM_LOAD_FUNCTION(SteamAPI_ManualDispatch_GetNextCallback)
@@ -79,7 +80,6 @@ static coreBool InitSteamLibrary()
         __STEAM_LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
         __STEAM_LOAD_FUNCTION(SteamAPI_Shutdown)
         __STEAM_LOAD_FUNCTION(SteamClient)
-        __STEAM_LOAD_FUNCTION(SteamInternal_SteamAPI_Init)
 
         return true;
     }
@@ -251,7 +251,7 @@ inline coreBool coreBackendSteam::Init()
 
     // start up Steam library
     SteamErrMsg acError = {};
-    m_pClient = (nSteamInternal_SteamAPI_Init(NULL, &acError) == k_ESteamAPIInitResult_OK) ? nSteamClient() : NULL;
+    m_pClient = (nSteamAPI_InitFlat(&acError) == k_ESteamAPIInitResult_OK) ? nSteamClient() : NULL;
 
     // check for library errors
     WARN_IF(!m_pClient)

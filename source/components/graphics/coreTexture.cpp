@@ -140,6 +140,7 @@ coreStatus coreTexture::Unload()
 void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode)
 {
     WARN_IF(m_iIdentifier) this->Unload();
+    ASSERT(iWidth && iHeight)
 
     // check for OpenGL extensions
     const coreBool bFilterable  = !DEFINED(_CORE_GLES_) || ((oSpec.iFormat != GL_DEPTH_COMPONENT) && (oSpec.iFormat != GL_DEPTH_STENCIL));
