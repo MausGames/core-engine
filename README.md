@@ -8,7 +8,7 @@ The Core Engine is an extensive C++ framework based on the [SDL](https://libsdl.
 It is **designed to be supportive, versatile and powerful**, and to dynamically use efficient fallback methods where specific system features are not available.
 
 > - **System:** Hardware, Window and Event Handling, Timer, Threads
-> - **Graphics:** Camera, View Frustum and Lighting Control, Frame Buffers, Data Buffers, Models (.md3, .md5, packed), Textures (.png, compressed), Shaders (parallel compiled, cached), Fonts, Screenshots
+> - **Graphics:** Camera, View Frustum and Lighting Control, Frame Buffers, Data Buffers, Models (.md3, .md5, packed), Textures (.png, .webp, compressed), Shaders (parallel compiled, cached), Fonts, Screenshots
 > - **Audio:** Sound Effects (.wav, compressed), Music Files (.ogg, streamed), Music Player (seamless, threaded)
 > - **Input:** Mouse, Keyboard, Joysticks/Gamepads, Touch, Rumble
 > - **Debug:** CPU and GPU Performance Monitor, Run-Time Value and Texture Inspection, Pipeline Statistics, Debug Visualizers (Natvis, LLDB), Crash Dumps

@@ -76,7 +76,7 @@ CoreSystem::CoreSystem()noexcept
         const SDL_version* pVersionIMG = IMG_Linked_Version();
 
         // init SDL libraries
-        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) || TTF_Init() || !IMG_Init(IMG_INIT_PNG) || SDL_GL_LoadLibrary(NULL))
+        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) || TTF_Init() || !IMG_Init(IMG_INIT_PNG | IMG_INIT_WEBP) || SDL_GL_LoadLibrary(NULL))
         {
             Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
         }
