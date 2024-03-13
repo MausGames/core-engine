@@ -13,12 +13,17 @@
 // TODO 3: call OnLoad directly after load instead with delayed function callback ?
 // TODO 4: resources exist only within handles, redefine all interfaces
 // TODO 5: investigate possible GPU memory fragmentation when streaming in and out lots of resources
-// TODO 1: defer resource-unload on ref-count 0 to an explicit call at the end of a frame, and expose explicit unload function (nullify?)
+// TODO 1: defer resource-unload on ref-count 0 to an explicit call at the end of a frame, and expose explicit unload function (nullify?) -> can also be used for restart
 // TODO 3: set textures which are still loaded to default values (default_white.png, default_normal.png) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
+// TODO 3: set resources which could not be found (or loaded) to fallback values
 
 
 // ****************************************************************
 /* resource definitions */
+#define CORE_RESOURCE_INDICES (4096u)   // max number of concurrent resource indices
+
+using coreResourceIndex = coreUint16;   // resource index type
+
 enum coreResourceUpdate : coreBool
 {
     CORE_RESOURCE_UPDATE_MANUAL = false,   // updated and managed by the developer
@@ -81,9 +86,11 @@ private:
     coreBool   m_bAutomatic;               // updated automatically by the resource manager
     coreBool   m_bProxy;                   // resource proxy without own resource
 
+    coreResourceIndex m_iIndex;            // unique resource index
+
+    coreSpinLock           m_UpdateLock;   // spinlock to prevent concurrent resource loading
     coreStatus             m_eStatus;      // current resource status
     coreAtomic<coreUint16> m_iRefCount;    // simple reference-counter
-    coreSpinLock           m_UpdateLock;   // spinlock to prevent concurrent resource loading
 
 
 private:
@@ -115,50 +122,16 @@ public:
     template <typename F> coreUint32 OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
 
     /* get object properties */
-    inline const coreChar*   GetName    ()const {return m_sName.c_str();}
-    inline const coreStatus& GetStatus  ()const {return m_eStatus;}
-    inline       coreUint16  GetRefCount()const {return m_iRefCount;}
+    inline const coreChar*          GetName    ()const {return m_sName.c_str();}
+    inline const coreResourceIndex& GetIndex   ()const {return m_iIndex;}
+    inline const coreStatus&        GetStatus  ()const {return m_eStatus;}
+    inline       coreUint16         GetRefCount()const {return m_iRefCount;}
 
 
 private:
     /* handle automatic resource loading */
     inline coreBool __CanAutoUpdate() {if(m_UpdateLock.TryLock()) {if(this->IsLoading() && m_bAutomatic) return true; m_UpdateLock.Unlock();} return false;}
     inline void     __AutoUpdate   () {m_eStatus = m_pResource->Load(m_pFile); m_UpdateLock.Unlock();}
-};
-
-
-// ****************************************************************
-/* resource access class */
-template <typename T> class coreResourcePtr final
-{
-private:
-    coreResourceHandle* m_pHandle;   // resource handle
-
-
-public:
-    constexpr coreResourcePtr(std::nullptr_t p = NULL)noexcept;
-    coreResourcePtr(coreResourceHandle* pHandle)noexcept;
-    coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
-    coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
-    ~coreResourcePtr();
-
-    DISABLE_HEAP
-
-    /* assignment operations */
-    coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
-
-    /* access resource object and resource handle */
-    inline T*                  GetResource()const {ASSERT(m_pHandle) return d_cast<T*>(m_pHandle->GetRawResource());}
-    inline coreResourceHandle* GetHandle  ()const {return m_pHandle;}
-    inline explicit operator coreBool     ()const {return m_pHandle != NULL;}
-    inline T*       operator ->           ()const {return  this->GetResource();}
-    inline T&       operator *            ()const {return *this->GetResource();}
-
-    /* check for usable resource object */
-    inline coreBool IsUsable()const {return (m_pHandle && m_pHandle->IsSuccessful());}
-
-    /* attach asynchronous callbacks */
-    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_pHandle) return m_pHandle->OnLoadedOnce([=, pHandle = m_pHandle]() {if(pHandle->IsSuccessful()) nFunction();});}   // [](void) -> void
 };
 
 
@@ -188,18 +161,22 @@ private:
 class coreResourceManager final : public coreThread
 {
 private:
-    coreMapStr<coreResourceHandle*> m_apHandle;                    // resource handles
+    coreMapStr<coreResourceHandle*> m_apHandle;                            // resource handles
 
-    coreMapStr<coreArchive*> m_apArchive;                          // archives with resource files
-    coreMapStr<coreFile*>    m_apDirectFile;                       // direct resource files
+    coreMapStr<coreArchive*> m_apArchive;                                  // archives with resource files
+    coreMapStr<coreFile*>    m_apDirectFile;                               // direct resource files
 
-    coreMap<coreResourceHandle*, coreResourceHandle*> m_apProxy;   // resource proxies pointing to foreign handles <proxy, foreign>
+    coreMap<coreResourceHandle*, coreResourceHandle*> m_apProxy;           // resource proxies pointing to foreign handles <proxy, foreign>
 
-    coreSet<coreResourceRelation*> m_apRelation;                   // objects to reset with the resource manager
+    coreSet<coreResourceRelation*> m_apRelation;                           // objects to reset with the resource manager
 
-    coreSpinLock m_ResourceLock;                                   // spinlock to prevent invalid resource handle access
-    coreSpinLock m_FileLock;                                       // spinlock to prevent invalid resource file access
-    coreBool     m_bActive;                                        // current management status
+    coreSpinLock m_ResourceLock;                                           // spinlock to prevent invalid resource handle access
+    coreSpinLock m_FileLock;                                               // spinlock to prevent invalid resource file access
+    coreBool     m_bActive;                                                // current management status
+
+    static coreResourceHandle* s_apHandleTable  [CORE_RESOURCE_INDICES];   // resource handle index table
+    static coreResource*       s_apResourceTable[CORE_RESOURCE_INDICES];   // resource object index table (to remove one indirection)
+    static coreResourceIndex   s_iTableStart;                              // next index table entry to check
 
 
 private:
@@ -245,6 +222,12 @@ public:
     /* reshape all resources and relation-objects */
     void Reshape();
 
+    /* manage resource index table */
+    static void AllocIndex(coreResourceHandle* OUTPUT pHandle);
+    static void FreeIndex (coreResourceHandle* OUTPUT pHandle);
+    static inline coreResourceHandle* FetchHandle  (const coreResourceIndex iIndex) {ASSERT(iIndex < CORE_RESOURCE_INDICES) return s_apHandleTable  [iIndex];}
+    static inline coreResource*       FetchResource(const coreResourceIndex iIndex) {ASSERT(iIndex < CORE_RESOURCE_INDICES) return s_apResourceTable[iIndex];}
+
 
 private:
     /* resource thread implementations */
@@ -258,6 +241,41 @@ private:
     /* bind and unbind relation-objects */
     inline void __BindRelation  (coreResourceRelation* pRelation) {ASSERT(!m_apRelation.count_bs(pRelation)) m_apRelation.insert_bs(pRelation);}
     inline void __UnbindRelation(coreResourceRelation* pRelation) {ASSERT( m_apRelation.count_bs(pRelation)) m_apRelation.erase_bs (pRelation);}
+};
+
+
+// ****************************************************************
+/* resource access class */
+template <typename T> class coreResourcePtr final
+{
+private:
+    coreResourceIndex m_iIndex;   // resource index
+
+
+public:
+    constexpr coreResourcePtr(std::nullptr_t p = NULL)noexcept;
+    coreResourcePtr(coreResourceHandle* pHandle)noexcept;
+    coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
+    coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
+    ~coreResourcePtr();
+
+    DISABLE_HEAP
+
+    /* assignment operations */
+    coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
+
+    /* access resource object and resource handle */
+    inline T*                  GetResource()const {return d_cast<T*>(coreResourceManager::FetchResource(m_iIndex));}
+    inline coreResourceHandle* GetHandle  ()const {return coreResourceManager::FetchHandle(m_iIndex);}
+    inline explicit operator coreBool     ()const {return m_iIndex;}
+    inline T*       operator ->           ()const {return  this->GetResource();}
+    inline T&       operator *            ()const {return *this->GetResource();}
+
+    /* check for usable resource object */
+    inline coreBool IsUsable()const {return (m_iIndex && this->GetHandle()->IsSuccessful());}
+
+    /* attach asynchronous callbacks */
+    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_iIndex) coreResourceHandle* pHandle = this->GetHandle(); return pHandle->OnLoadedOnce([=, nFunction = std::forward<F>(nFunction)]() {if(pHandle->IsSuccessful()) nFunction();});}   // [](void) -> void
 };
 
 
@@ -299,51 +317,6 @@ template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction)
 
 
 // ****************************************************************
-/* constructor */
-template <typename T> constexpr coreResourcePtr<T>::coreResourcePtr(std::nullptr_t)noexcept
-: m_pHandle (NULL)
-{
-}
-
-template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pHandle)noexcept
-: m_pHandle (pHandle)
-{
-    if(m_pHandle) m_pHandle->RefIncrease();
-}
-
-template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr<T>& c)noexcept
-: m_pHandle (c.m_pHandle)
-{
-    if(m_pHandle) m_pHandle->RefIncrease();
-}
-
-template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m)noexcept
-: m_pHandle (m.m_pHandle)
-{
-    m.m_pHandle = NULL;
-}
-
-
-// ****************************************************************
-/* destructor */
-template <typename T> coreResourcePtr<T>::~coreResourcePtr()
-{
-    if(m_pHandle) m_pHandle->RefDecrease();
-}
-
-
-// ****************************************************************
-/* assignment operations */
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
-{
-    // swap properties
-    std::swap(m_pHandle, o.m_pHandle);
-
-    return *this;
-}
-
-
-// ****************************************************************
 /* create resource and resource handle */
 template <typename T, typename... A> coreResourceHandle* coreResourceManager::Load(const coreHashString& sName, const coreResourceUpdate eUpdate, const coreHashString& sPath, A&&... vArgs)
 {
@@ -351,7 +324,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     if(m_apHandle.count_bs(sName)) return m_apHandle.at_bs(sName);
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), eUpdate ? true : false);
+    coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, std::is_same<T, coreResourceDummy>::value ? NULL : new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), eUpdate ? true : false);
 
     m_ResourceLock.Lock();
     {
@@ -380,7 +353,6 @@ inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& 
 
     // create new resource proxy without own resource
     coreResourceHandle* pNewProxy = this->Load<coreResourceDummy>(sName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
-    SAFE_DELETE(pNewProxy->m_pResource)
 
     // mark as resource proxy
     pNewProxy->m_bProxy = true;
@@ -422,6 +394,51 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
         (*pptResourcePtr) = NULL;
         MANAGED_DELETE(pHandle)
     }
+}
+
+
+// ****************************************************************
+/* constructor */
+template <typename T> constexpr coreResourcePtr<T>::coreResourcePtr(std::nullptr_t)noexcept
+: m_iIndex (0u)
+{
+}
+
+template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pHandle)noexcept
+: m_iIndex (pHandle ? pHandle->GetIndex() : 0u)
+{
+    if(m_iIndex) pHandle->RefIncrease();
+}
+
+template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr<T>& c)noexcept
+: m_iIndex (c.m_iIndex)
+{
+    if(m_iIndex) this->GetHandle()->RefIncrease();
+}
+
+template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m)noexcept
+: m_iIndex (m.m_iIndex)
+{
+    m.m_iIndex = 0u;
+}
+
+
+// ****************************************************************
+/* destructor */
+template <typename T> coreResourcePtr<T>::~coreResourcePtr()
+{
+    if(m_iIndex) this->GetHandle()->RefDecrease();
+}
+
+
+// ****************************************************************
+/* assignment operations */
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
+{
+    // swap properties
+    std::swap(m_iIndex, o.m_iIndex);
+
+    return *this;
 }
 
 

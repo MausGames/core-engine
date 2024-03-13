@@ -8,6 +8,10 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
+alignas(ALIGNMENT_PAGE) coreResourceHandle* coreResourceManager::s_apHandleTable  [CORE_RESOURCE_INDICES] = {};   // # pages are only allocated on first access
+alignas(ALIGNMENT_PAGE) coreResource*       coreResourceManager::s_apResourceTable[CORE_RESOURCE_INDICES] = {};
+coreResourceIndex                           coreResourceManager::s_iTableStart                            = 1u;
+
 
 // ****************************************************************
 /* constructor */
@@ -17,12 +21,16 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 , m_sName      (pcName)
 , m_bAutomatic (bAutomatic)
 , m_bProxy     (false)
+, m_iIndex     (0u)
+, m_UpdateLock ()
 , m_eStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
 , m_iRefCount  (0u)
-, m_UpdateLock ()
 {
     // assign resource name
-    m_pResource->AssignName(pcName);
+    if(m_pResource) m_pResource->AssignName(pcName);
+
+    // acquire resource index table space
+    coreResourceManager::AllocIndex(this);
 
     // always load into memory
     if(Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
@@ -41,6 +49,9 @@ coreResourceHandle::~coreResourceHandle()
     {
         if(m_bAutomatic) this->RefDecrease();
     }
+
+    // release resource index table space
+    coreResourceManager::FreeIndex(this);
 
     ASSERT(!m_iRefCount)
 
@@ -291,6 +302,9 @@ void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHa
         pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus;});
     }
 
+    // update resource index table
+    s_apResourceTable[pProxy->m_iIndex] = pProxy->m_pResource;
+
     // save new foreign handle
     m_apProxy.at(pProxy) = pForeign;
 }
@@ -359,6 +373,55 @@ void coreResourceManager::Reshape()
     // reshape relation-objects
     FOR_EACH(it, apRelationCopy)
         if(m_apRelation.count_bs(*it)) (*it)->__Reshape();
+}
+
+
+// ****************************************************************
+/* acquire resource index table space */
+void coreResourceManager::AllocIndex(coreResourceHandle* OUTPUT pHandle)
+{
+    ASSERT(pHandle && !pHandle->m_iIndex && (SDL_ThreadID() == Core::System->GetMainThread()))
+
+    for(coreUintW i = s_iTableStart; i < CORE_RESOURCE_INDICES; ++i)
+    {
+        if(!s_apHandleTable[i])
+        {
+            // fill resource index table
+            s_apHandleTable  [i] = pHandle;
+            s_apResourceTable[i] = pHandle->m_pResource;
+
+            // advance table start
+            s_iTableStart = i + 1u;
+
+            // assign resource index
+            pHandle->m_iIndex = i;
+            return;
+        }
+    }
+
+    // no free resource index table space available
+    WARN_IF(true) {}
+}
+
+
+// ****************************************************************
+/* release resource index table space */
+void coreResourceManager::FreeIndex(coreResourceHandle* OUTPUT pHandle)
+{
+    ASSERT(pHandle && pHandle->m_iIndex && (SDL_ThreadID() == Core::System->GetMainThread()))
+
+    const coreResourceIndex iIndex = pHandle->m_iIndex;
+    ASSERT(pHandle == s_apHandleTable[iIndex])
+
+    // clear resource index table
+    s_apHandleTable  [iIndex] = NULL;
+    s_apResourceTable[iIndex] = NULL;
+
+    // rewind table start
+    s_iTableStart = MIN(s_iTableStart, iIndex);
+
+    // reset resource index
+    pHandle->m_iIndex = 0u;
 }
 
 

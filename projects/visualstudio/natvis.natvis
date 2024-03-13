@@ -2,12 +2,12 @@
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
     <Type Name="coreResourcePtr&lt;*&gt;">
-        <DisplayString Condition="m_pHandle-&gt;m_sName._Mypair._Myval2._Mysize == 0">{{&lt;custom&gt;}}</DisplayString>
-        <DisplayString Condition="m_pHandle == 0">{{&lt;null&gt;}}</DisplayString>
-        <DisplayString>{{{m_pHandle-&gt;m_sName}}}</DisplayString>
+        <DisplayString Condition="coreResourceManager::s_apHandleTable[m_iIndex]-&gt;m_sName._Mypair._Myval2._Mysize == 0">{{&lt;custom&gt;}}</DisplayString>
+        <DisplayString Condition="m_iIndex == 0">{{&lt;null&gt;}}</DisplayString>
+        <DisplayString>{{{coreResourceManager::s_apHandleTable[m_iIndex]-&gt;m_sName}}}</DisplayString>
         <Expand>
-            <Item Name="[resource]">($T1*)m_pHandle-&gt;m_pResource</Item>
-            <Item Name="[handle]">m_pHandle</Item>
+            <Item Name="[resource]">($T1*)coreResourceManager::s_apResourceTable[m_iIndex]</Item>
+            <Item Name="[handle]">coreResourceManager::s_apHandleTable[m_iIndex]</Item>
         </Expand>
     </Type>
 

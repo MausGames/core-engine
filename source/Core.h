@@ -679,6 +679,7 @@ class  coreObject2D;
 class  coreObject3D;
 class  coreParticleEffect;
 struct coreTextureSpec;
+template <typename T> class coreResourcePtr;
 
 class  coreLog;
 class  coreConfig;

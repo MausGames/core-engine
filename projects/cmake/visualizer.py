@@ -2,36 +2,51 @@
 import lldb
 
 
-def coreResourcePtrVisualizer(value, internal_dict):
+class coreResourceIndexSynthetic:
 
-    pCursor  = value.GetChildMemberWithName("m_pHandle")
-    iPointer = pCursor.GetValueAsUnsigned(0)
+    def __init__(self, value, dict):
+        self.value  = value
+        self.table0 = value.target.FindFirstGlobalVariable("coreResourceManager::s_apResourceTable")
+        self.table1 = value.target.FindFirstGlobalVariable("coreResourceManager::s_apHandleTable")
 
-    if iPointer == 0:
-        return "(null)"
+    def num_children(self):
+        return 2
 
-    pCursor  = pCursor.GetValueForExpressionPath(".m_sName._M_dataplus._M_p")
-    sSummary = pCursor.GetSummary()
+    def get_child_at_index(self, index):
+        if index == 0: return self.value.target.CreateValueFromData("[resource]", self.table0.GetPointeeData(self.value.GetValueAsUnsigned()), self.table0.GetType().GetArrayElementType())
+        if index == 1: return self.value.target.CreateValueFromData("[handle]",   self.table1.GetPointeeData(self.value.GetValueAsUnsigned()), self.table1.GetType().GetArrayElementType())
 
-    if sSummary == "\"\"":
-        return "(custom)"
 
-    return F"({sSummary})"
+def coreResourcePtrSummary(value, internal_dict):
+
+    index = value.GetChildMemberWithName("m_iIndex").GetValueAsUnsigned()
+
+    if index == 0: return "(null)"
+
+    table   = value.target.FindFirstGlobalVariable("coreResourceManager::s_apHandleTable")
+    handle  = value.target.CreateValueFromData("[handle]", table.GetPointeeData(index), table.GetType().GetArrayElementType())
+    summary = handle.GetValueForExpressionPath(".m_sName._M_dataplus._M_p").GetSummary()
+
+    if summary == "\"\"": return "(custom)"
+
+    return F"({summary})"
 
 
 def __lldb_init_module(debugger, internal_dict):
 
-    debugger.HandleCommand("type summary add --python-function " + __name__ + ".coreResourcePtrVisualizer -x \"coreResourcePtr<.+>\"")
-    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreList<.+>\"")
-    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreSet<.+>\"")
-    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreMapGen<.+>\"")
-    debugger.HandleCommand("type summary add --inline-children --omit-names -x \"coreMapStr<.+>\"")
-    debugger.HandleCommand("type summary add --inline-children --omit-names coreVector2")
-    debugger.HandleCommand("type summary add --inline-children --omit-names coreVector3")
-    debugger.HandleCommand("type summary add --inline-children --omit-names coreVector4")
-    debugger.HandleCommand("type summary add --inline-children --omit-names coreFlow")
-    debugger.HandleCommand("type summary add --inline-children --omit-names coreString")
-    debugger.HandleCommand("type summary add --inline-children --omit-names coreHashString")
+    debugger.HandleCommand("type synthetic add coreResourceIndex            --python-class    " + __name__ + ".coreResourceIndexSynthetic")
+    debugger.HandleCommand("type summary   add -x \"^coreResourcePtr<.+>$\" --python-function " + __name__ + ".coreResourcePtrSummary")
+    debugger.HandleCommand("type summary   add -x \"^coreList<.+>$\"        --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add -x \"^coreSet<.+>$\"         --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add -x \"^coreMapGen<.+>$\"      --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add -x \"^coreMapStrSlim<.+>$\"  --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add -x \"^coreMapStrFull<.+>$\"  --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add coreVector2                  --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add coreVector3                  --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add coreVector4                  --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add coreFlow                     --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add coreString                   --inline-children --omit-names")
+    debugger.HandleCommand("type summary   add coreHashString               --inline-children --omit-names")
 
 
 # command script import <path>/CoreEngine/projects/cmake/visualizer.py
