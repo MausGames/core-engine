@@ -120,7 +120,7 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
     if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
     {
         // check if requested font is loaded
-        m_pFont.OnUsableOnce([=, this]()
+        m_pFont.OnUsableOnce([this, nRetrieveFunc = std::forward<F>(nRetrieveFunc)]()
         {
             // get relative font height and outline
             const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);

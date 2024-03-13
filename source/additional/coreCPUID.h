@@ -55,7 +55,7 @@ private:
 
 
 private:
-    alignas(ALIGNMENT_CACHE) static const __coreCPUID s_CPUID;   // singleton object with pre-loaded processor information
+    static const __coreCPUID s_CPUID;   // singleton object with pre-loaded processor information
 
 
 public:

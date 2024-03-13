@@ -121,7 +121,7 @@ class coreParticleSystem final : public coreResourceRelation
 {
 public:
     /* internal types */
-    using coreAnimate = coreParticle::coreAnim (*) (const coreParticle& oParticle);
+    using coreAnimate = coreParticle::coreAnim (*) (const coreParticle&);
 
 
 private:
@@ -180,7 +180,7 @@ public:
     template <typename F> void ForEachParticleAll(F&& nUpdateFunc);                                      // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
     /* override particle animation function */
-    template <typename F> inline void SetAnimateFunc(F&& nAnimateFunc) {m_nAnimateFunc = nAnimateFunc;}   // [](const coreParticle& oParticle) -> coreParticleAnim
+    template <typename F> inline void SetAnimateFunc(F&& nAnimateFunc) {m_nAnimateFunc = std::forward<F>(nAnimateFunc);}   // [](const coreParticle& oParticle) -> coreParticle::coreAnim
 
     /* get object properties */
     inline const coreTexturePtr& GetTexture           (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
@@ -233,7 +233,7 @@ public:
     inline void Clear () {if(m_pSystem) m_pSystem->Clear (m_pThis);}
 
     /* update particles with custom simulation */
-    template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(m_pThis, nUpdateFunc);}   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
+    template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(m_pThis, std::forward<F>(nUpdateFunc));}   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
     /* change associated particle system object */
     void ChangeSystem(coreParticleSystem* pSystem, const coreBool bUnbind);

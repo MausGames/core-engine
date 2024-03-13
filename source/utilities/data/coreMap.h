@@ -523,7 +523,7 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
 template <typename K, typename I, typename T> template <typename F> void coreMapGen<K, I, T>::_sort(F&& nCompareFunc)
 {
     ASSERT(!this->empty())
-    this->_sort(nCompareFunc, 0u, m_atKeyList.size() - 1u);
+    this->_sort(std::forward<F>(nCompareFunc), 0u, m_atKeyList.size() - 1u);
 }
 
 template <typename K, typename I, typename T> template <typename F> void coreMapGen<K, I, T>::_sort(F&& nCompareFunc, const coreUintW a, const coreUintW b)

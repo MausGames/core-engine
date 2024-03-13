@@ -95,7 +95,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_DisableScreenSaver();
 
         // disable unwanted events
-        constexpr coreUint32 aiDisable[] = {SDL_DROPFILE, SDL_DROPTEXT, SDL_DROPBEGIN, SDL_DROPCOMPLETE, SDL_KEYMAPCHANGED};
+        constexpr coreUint32 aiDisable[] = {SDL_DROPFILE, SDL_DROPTEXT, SDL_DROPBEGIN, SDL_DROPCOMPLETE, SDL_KEYMAPCHANGED, SDL_CLIPBOARDUPDATE};
         for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_EventState(aiDisable[i], SDL_DISABLE);
 
         // remove all events created during initialization

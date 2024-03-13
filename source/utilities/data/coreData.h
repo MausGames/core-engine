@@ -83,8 +83,8 @@ public:
     static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
 
     /* convert between trivial value and string */
-    template <typename T> static const coreChar* ToChars  (const T& tValue);
-    template <typename T> static T               FromChars(const coreChar* pcString, const coreUintW iLen);
+    template <typename T>                static const coreChar* ToChars  (const T& tValue);
+    template <typename T, typename... A> static T               FromChars(const coreChar* pcString, const coreUintW iLen, A&&... vArgs);
 
     /* get application properties */
     static              coreUint32 ProcessID    ();
@@ -248,14 +248,14 @@ template <typename T> const coreChar* coreData::ToChars(const T& tValue)
 
 // ****************************************************************
 /* convert string to trivial value */
-template <typename T> T coreData::FromChars(const coreChar* pcString, const coreUintW iLen)
+template <typename T, typename... A> T coreData::FromChars(const coreChar* pcString, const coreUintW iLen, A&&... vArgs)
 {
     ASSERT(pcString)
 
     T tValue;
 
     // use high-performance conversion
-    const std::from_chars_result oResult = std::from_chars(pcString, pcString + iLen, tValue);
+    const std::from_chars_result oResult = std::from_chars(pcString, pcString + iLen, tValue, std::forward<A>(vArgs)...);
     WARN_IF(oResult.ec != std::errc()) return T(0);
 
     return tValue;

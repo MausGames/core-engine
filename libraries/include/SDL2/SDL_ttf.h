@@ -2117,7 +2117,7 @@ extern DECLSPEC int SDLCALL TTF_WasInit(void);
  *
  * \sa TTF_GetFontKerningSizeGlyphs
  */
-extern SDL_DEPRECATED DECLSPEC int TTF_GetFontKerningSize(TTF_Font *font, int prev_index, int index);
+extern SDL_DEPRECATED DECLSPEC int SDLCALL TTF_GetFontKerningSize(TTF_Font *font, int prev_index, int index);
 
 /**
  * Query the kerning size of two 16-bit glyphs.
@@ -2140,7 +2140,7 @@ extern SDL_DEPRECATED DECLSPEC int TTF_GetFontKerningSize(TTF_Font *font, int pr
  *
  * \sa TTF_GetFontKerningSizeGlyphs32
  */
-extern DECLSPEC int TTF_GetFontKerningSizeGlyphs(TTF_Font *font, Uint16 previous_ch, Uint16 ch);
+extern DECLSPEC int SDLCALL TTF_GetFontKerningSizeGlyphs(TTF_Font *font, Uint16 previous_ch, Uint16 ch);
 
 /**
  * Query the kerning size of two 32-bit glyphs.
@@ -2157,7 +2157,7 @@ extern DECLSPEC int TTF_GetFontKerningSizeGlyphs(TTF_Font *font, Uint16 previous
  *
  * \since This function is available since SDL_ttf 2.0.18.
  */
-extern DECLSPEC int TTF_GetFontKerningSizeGlyphs32(TTF_Font *font, Uint32 previous_ch, Uint32 ch);
+extern DECLSPEC int SDLCALL TTF_GetFontKerningSizeGlyphs32(TTF_Font *font, Uint32 previous_ch, Uint32 ch);
 
 /**
  * Enable Signed Distance Field rendering for a font.
@@ -2176,7 +2176,7 @@ extern DECLSPEC int TTF_GetFontKerningSizeGlyphs32(TTF_Font *font, Uint32 previo
  *
  * \sa TTF_GetFontSDF
  */
-extern DECLSPEC int TTF_SetFontSDF(TTF_Font *font, SDL_bool on_off);
+extern DECLSPEC int SDLCALL TTF_SetFontSDF(TTF_Font *font, SDL_bool on_off);
 
 /**
  * Query whether Signed Distance Field rendering is enabled for a font.
@@ -2189,7 +2189,7 @@ extern DECLSPEC int TTF_SetFontSDF(TTF_Font *font, SDL_bool on_off);
  *
  * \sa TTF_SetFontSDF
  */
-extern DECLSPEC SDL_bool TTF_GetFontSDF(const TTF_Font *font);
+extern DECLSPEC SDL_bool SDLCALL TTF_GetFontSDF(const TTF_Font *font);
 
 /**
  * Report SDL_ttf errors

@@ -86,7 +86,7 @@ template <typename F> coreUint32 coreThread::AttachFunction(F&& nFunction)
 
     // create new custom function
     coreCustomFunc oFunc;
-    oFunc.nFunction = nFunction;
+    oFunc.nFunction = std::forward<F>(nFunction);
     oFunc.iToken    = iToken;
 
     // add function to list

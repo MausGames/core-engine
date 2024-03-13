@@ -217,9 +217,9 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
     m_paCustomBuffer = new coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>();
 
     // save functions and vertex size
-    m_nDefineBufferFunc = nDefineBufferFunc;
-    m_nUpdateDataFunc   = nUpdateDataFunc;
-    m_nUpdateShaderFunc = nUpdateShaderFunc;
+    m_nDefineBufferFunc = std::forward<F>(nDefineBufferFunc);
+    m_nUpdateDataFunc   = std::forward<G>(nUpdateDataFunc);
+    m_nUpdateShaderFunc = std::forward<H>(nUpdateShaderFunc);
     m_iCustomSize       = iVertexSize;
 
     // immediately initialize if instance data buffers are already valid

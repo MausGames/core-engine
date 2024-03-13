@@ -324,8 +324,8 @@ using PFNGLMINSAMPLESHADINGPROC = void (GL_APIENTRY *) (GLclampf value);
 
 using PFNGLTEXIMAGE3DPROC    = void (GL_APIENTRY *) (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void* pixels);
 using PFNGLTEXSUBIMAGE3DPROC = void (GL_APIENTRY *) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels);
-#define glTexImage3D GLEW_GET_FUN(glTexImage3D)
-#define glTexSubImage3D GLEW_GET_FUN(glTexSubImage3D)
+#define glTexImage3D    __CORE_GLES_FUNC(glTexImage3D)
+#define glTexSubImage3D __CORE_GLES_FUNC(glTexSubImage3D)
 
 
 // ****************************************************************
@@ -407,6 +407,8 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glRenderbufferStorageMultisampleCoverageNV(...)
 #define glTextureSubImage2D(...)
 #define glTextureSubImage2DEXT(...)
+#define glTextureSubImage3D(...)
+#define glTextureSubImage3DEXT(...)
 #define glUnmapNamedBuffer(...) (false)
 #define glUnmapNamedBufferEXT(...) (false)
 

@@ -1796,7 +1796,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 
 
 // ****************************************************************
-/* scramble data with 32-bit key */
+/* scramble data with 64-bit key */
 void coreData::Scramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint64 iKey)
 {
     ASSERT(pData)

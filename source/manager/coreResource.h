@@ -297,7 +297,7 @@ template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction)
     else
     {
         // attach wrapper to the resource thread
-        return Core::Manager::Resource->AttachFunction([=, this]()
+        return Core::Manager::Resource->AttachFunction([this, nFunction = std::forward<F>(nFunction)]()
         {
             if(this->IsLoaded())
             {

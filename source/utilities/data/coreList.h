@@ -25,6 +25,9 @@ private:
     using coreIterator      = typename coreListBase<T>::iterator;
     using coreConstIterator = typename coreListBase<T>::const_iterator;
 
+    /* hide undesired function */
+    using coreListBase<T>::at;
+
 
 public:
     coreList() = default;

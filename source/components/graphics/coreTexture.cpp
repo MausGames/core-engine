@@ -68,7 +68,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     {
         const coreUintW iSource = pData->format->BytesPerPixel;
         const coreUintW iTarget = HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) ? 2u : 1u;
-        ASSERT(iSource == 3u)
+        WARN_IF(iSource != 3u) {}
 
         SDL_Surface* pNew = SDL_CreateRGBSurfaceWithFormat(0u, pData->w, pData->h, 8 * iTarget, SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget));
 
