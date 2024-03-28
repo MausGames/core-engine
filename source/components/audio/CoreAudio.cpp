@@ -29,6 +29,7 @@ CoreAudio::CoreAudio()noexcept
 , m_bSupportALAW    (false)
 , m_bSupportMULAW   (false)
 , m_bSupportFloat   (false)
+, m_bSupportQuery   (false)
 , m_aiAttributes    {}
 {
     Core::Log->Header("Audio Interface");
@@ -150,6 +151,9 @@ CoreAudio::CoreAudio()noexcept
     if(alIsExtensionPresent("AL_EXT_ALAW"))    m_bSupportALAW  = true;
     if(alIsExtensionPresent("AL_EXT_MULAW"))   m_bSupportMULAW = true;
     if(alIsExtensionPresent("AL_EXT_FLOAT32")) m_bSupportFloat = true;
+
+    // init other extensions
+    if(alIsExtensionPresent("AL_SOFT_buffer_length_query")) m_bSupportQuery = true;
 
     // reset listener
     this->DeferUpdates();

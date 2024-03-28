@@ -111,7 +111,11 @@ coreStatus coreSound::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Sound (%s, format %u, %u channels, %u bits, %u rate) loaded", m_sName.c_str(), m_Format.iAudioFormat, m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
+    // get sound length
+    coreFloat fLength = 0.0f;
+    if(Core::Audio->GetSupportQuery()) alGetBufferf(m_iBuffer, AL_SEC_LENGTH_SOFT, &fLength);
+
+    Core::Log->Info("Sound (%s, format %u, %.2f seconds, %u channels, %u bits, %u rate) loaded", m_sName.c_str(), m_Format.iAudioFormat, fLength, m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
     return CORE_OK;
 }
 

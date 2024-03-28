@@ -70,6 +70,7 @@ private:
     coreBool m_bSupportALAW;                            // support for A-law compression
     coreBool m_bSupportMULAW;                           // support for MU-law compression
     coreBool m_bSupportFloat;                           // support for raw float-data
+    coreBool m_bSupportQuery;                           // support for buffer queries
 
     ALint m_aiAttributes[11];                           // OpenAL context attributes
 
@@ -121,6 +122,7 @@ public:
     inline const coreBool& GetSupportALAW ()const {return m_bSupportALAW;}
     inline const coreBool& GetSupportMULAW()const {return m_bSupportMULAW;}
     inline const coreBool& GetSupportFloat()const {return m_bSupportFloat;}
+    inline const coreBool& GetSupportQuery()const {return m_bSupportQuery;}
 
 
 private:
