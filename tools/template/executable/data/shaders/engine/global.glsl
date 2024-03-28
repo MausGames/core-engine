@@ -12,6 +12,7 @@
 // #define _CORE_*_SHADER_          (1)   // shader type (vertex, fragment, ...)
 // #define _CORE_OPTION_*_          (1)   // multiple preprocessor options
 // #define _CORE_QUALITY_           (#)   // quality level
+// #define _CORE_WEBGL_             (1)   // WebGL environment
 // #define CORE_NUM_TEXTURES_2D     (#)   // number of 2d texture units
 // #define CORE_NUM_TEXTURES_SHADOW (#)   // number of shadow texture units
 // #define CORE_NUM_LIGHTS          (#)   // number of light sources
@@ -98,6 +99,9 @@
 #endif
 
 // layout qualifiers
+#if defined(_CORE_WEBGL_)
+    #define depth_unchanged depth_any
+#endif
 #if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_) && ((CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300))
     #if defined(CORE_GL_conservative_depth)
         layout(depth_unchanged) out float gl_FragDepth;

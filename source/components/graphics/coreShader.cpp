@@ -170,6 +170,13 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS"          " (%u) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS"         " (%u) \n", CORE_SHADER_OUTPUT_COLORS));
 
+#if defined(_CORE_EMSCRIPTEN_)
+
+    // add WebGL environment flag (as certain features and extensions behave differently)
+    s_asGlobalCode[1].append("#define _CORE_WEBGL_ (1) \n");
+
+#endif
+
     // prevent instancing if not supported
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object))
         s_asGlobalCode[1].append("#undef _CORE_OPTION_INSTANCING_ \n");
