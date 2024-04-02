@@ -1,7 +1,5 @@
 #!/bin/bash
 
-_PATH_="$(dirname "$(realpath "$0")")"
-
 _EXECUTABLE_="cwebp"
 _PARAMETERS_="-lossless -exact -q 100 -alpha_q 100 -m 6 -metadata none -progress -mt"
 

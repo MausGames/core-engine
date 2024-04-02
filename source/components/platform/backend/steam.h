@@ -620,7 +620,7 @@ inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHan
                         // copy file into memory
                         const coreInt32 iResult = m_pRemoteStorage->UGCRead(pStruct->m_hFile, pBuffer + iOffset, 0x4000, iOffset, k_EUGCRead_ContinueReadingUntilFinished);
 
-                        if(iResult <= 0) break;
+                        WARN_IF(iResult <= 0) break;
                         iOffset += iResult;
                     }
                     while(iOffset < pStruct->m_nSizeInBytes);

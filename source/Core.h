@@ -290,10 +290,10 @@
 #if !defined(_CORE_DEBUG_)
     #if defined(_CORE_MSVC_)
         #pragma fenv_access (off)   // ignore access to the floating-point environment (on purpose)
-        #pragma fp_contract (on)    // allow contracting of floating-point expressions
+        #pragma fp_contract (off)   // disallow contracting of floating-point expressions
     #elif defined(_CORE_CLANG_)
         #pragma STDC FENV_ACCESS OFF
-        #pragma STDC FP_CONTRACT ON
+        #pragma STDC FP_CONTRACT OFF
     #endif
 #endif
 

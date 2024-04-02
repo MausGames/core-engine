@@ -124,7 +124,9 @@ void coreMemoryPool::Reset()
 
     // delete all memory-pages
     FOR_EACH(it, m_apPageList)
+    {
         coreData::HeapFree(m_pHeap, r_cast<void**>(&(*it)));
+    }
 
     // clear memory
     m_apPageList .clear();
@@ -187,7 +189,9 @@ void coreMemoryPool::__AddPage()
 
     // add all containing memory-blocks to the free-stack
     for(coreUintW i = m_iPageSize; i--; )
+    {
         m_apFreeStack.push_back(pNewPage + (m_iBlockSize * i));
+    }
 }
 
 

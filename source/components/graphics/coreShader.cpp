@@ -77,15 +77,15 @@ coreStatus coreShader::Load(coreFile* pFile)
     // set shader type
     const coreChar* pcTypeDef;
     coreUintW       iTypeIndex;
-         if(!std::strcmp(pcExtension, "vs")  || !std::strcmp(pcExtension, "vert")) {m_iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_"          " (1) \n"; iTypeIndex = 2u;}
-    else if(!std::strcmp(pcExtension, "tcs") || !std::strcmp(pcExtension, "tesc")) {m_iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_"    " (1) \n"; iTypeIndex = 3u;}
-    else if(!std::strcmp(pcExtension, "tes") || !std::strcmp(pcExtension, "tese")) {m_iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_" " (1) \n"; iTypeIndex = 4u;}
-    else if(!std::strcmp(pcExtension, "gs")  || !std::strcmp(pcExtension, "geom")) {m_iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_"        " (1) \n"; iTypeIndex = 5u;}
-    else if(!std::strcmp(pcExtension, "fs")  || !std::strcmp(pcExtension, "frag")) {m_iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_"        " (1) \n"; iTypeIndex = 6u;}
-    else if(!std::strcmp(pcExtension, "cs")  || !std::strcmp(pcExtension, "comp")) {m_iType = GL_COMPUTE_SHADER;         pcTypeDef = "#define _CORE_COMPUTE_SHADER_"         " (1) \n"; iTypeIndex = 7u;}
+         if(!std::memcmp(pcExtension, "vert", 4u)) {m_iType = GL_VERTEX_SHADER;          pcTypeDef = "#define _CORE_VERTEX_SHADER_"          " (1) \n"; iTypeIndex = 2u;}
+    else if(!std::memcmp(pcExtension, "tesc", 4u)) {m_iType = GL_TESS_CONTROL_SHADER;    pcTypeDef = "#define _CORE_TESS_CONTROL_SHADER_"    " (1) \n"; iTypeIndex = 3u;}
+    else if(!std::memcmp(pcExtension, "tese", 4u)) {m_iType = GL_TESS_EVALUATION_SHADER; pcTypeDef = "#define _CORE_TESS_EVALUATION_SHADER_" " (1) \n"; iTypeIndex = 4u;}
+    else if(!std::memcmp(pcExtension, "geom", 4u)) {m_iType = GL_GEOMETRY_SHADER;        pcTypeDef = "#define _CORE_GEOMETRY_SHADER_"        " (1) \n"; iTypeIndex = 5u;}
+    else if(!std::memcmp(pcExtension, "frag", 4u)) {m_iType = GL_FRAGMENT_SHADER;        pcTypeDef = "#define _CORE_FRAGMENT_SHADER_"        " (1) \n"; iTypeIndex = 6u;}
+    else if(!std::memcmp(pcExtension, "comp", 4u)) {m_iType = GL_COMPUTE_SHADER;         pcTypeDef = "#define _CORE_COMPUTE_SHADER_"         " (1) \n"; iTypeIndex = 7u;}
     else
     {
-        Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vs, vert, tcs, tesc, tes, tese, gs, geom, fs, frag, cs, comp)", m_sName.c_str());
+        Core::Log->Warning("Shader (%s) could not be identified (valid extensions: vert, tesc, tese, geom, frag, comp)", m_sName.c_str());
         return CORE_INVALID_DATA;
     }
 
@@ -463,7 +463,7 @@ coreStatus coreProgram::Unload()
     if(s_pCurrent == this) coreProgram::Disable(true);
 
     // save shader-program binary
-    this->__SaveBinary();
+    if(m_eStatus == CORE_PROGRAM_SUCCESSFUL) this->__SaveBinary();
 
     // disable shader objects
     m_apShader.clear();

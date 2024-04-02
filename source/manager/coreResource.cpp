@@ -191,6 +191,8 @@ void coreResourceManager::UpdateWait()
 {
     do
     {
+        CORE_SPINLOCK_YIELD
+
         // update both resources and functions
         this->UpdateResources();
         this->UpdateFunctions();
