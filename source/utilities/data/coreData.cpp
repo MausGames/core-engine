@@ -36,7 +36,7 @@
     #include <sys/stat.h>
 #endif
 
-thread_local coreData::coreTempString coreData::s_TempString     = {};
+THREAD_LOCAL coreData::coreTempString coreData::s_TempString     = {};
 coreMapStrFull<const coreChar*>       coreData::s_apcCommandLine = {};
 coreString                            coreData::s_sUserFolder    = "";
 

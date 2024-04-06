@@ -28,7 +28,6 @@
 #define _CORE_GUARD_H_
 
 // TODO 3: define standard-path (data/) were everything is loaded from
-// TODO 3: check for performance penalties and alternatives for thread_local
 // TODO 3: unique pointers and move semantics for functions taking ownership of a pointer
 // TODO 3: video class
 // TODO 5: path/url class
@@ -202,6 +201,7 @@
     #define UNUSED           [[maybe_unused]]       // possibly unused variable (warnings 4100, 4101, 4189)
     #define OUTPUT           __restrict             // output parameter without aliasing
     #define INTERFACE        __declspec(novtable)   // pure interface class without direct instantiation
+    #define THREAD_LOCAL     __declspec(thread)     // thread-local storage without dynamic construction and destruction
     #define FORCE_INLINE     __forceinline          // always inline the function
     #define DONT_INLINE      __declspec(noinline)   // never inline the function
     #define WITHIN_INLINE                           // inline everything within the function
@@ -218,6 +218,7 @@
     #define UNUSED           [[maybe_unused]]
     #define OUTPUT           __restrict__
     #define INTERFACE
+    #define THREAD_LOCAL     __thread
     #define FORCE_INLINE     __attribute__((always_inline)) inline
     #define DONT_INLINE      __attribute__((noinline))
     #define WITHIN_INLINE    __attribute__((flatten))
@@ -430,7 +431,7 @@
 #define __CHECK_ITERATOR(e,c)       ([&]() {ASSERT((e) == (c).end ())}())
 #define __CHECK_ITERATOR_REV(e,c)   ([&]() {ASSERT((e) == (c).rend())}())
 
-#define BIG_STATIC                  static thread_local
+#define BIG_STATIC                  static THREAD_LOCAL
 #define FRIEND_CLASS(c)             friend class c;
 #define STATIC_ASSERT(c)            static_assert(c, "STATIC ASSERT [" #c "]");
 

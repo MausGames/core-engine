@@ -67,7 +67,7 @@ private:
 
 
 private:
-    static thread_local coreTempString s_TempString;           // thread-local temp-string container
+    static THREAD_LOCAL coreTempString s_TempString;           // thread-local temp-string container
 
     static coreMapStrFull<const coreChar*> s_apcCommandLine;   // parsed command line arguments
     static coreString                      s_sUserFolder;      // selected user folder
