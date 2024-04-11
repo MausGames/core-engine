@@ -141,8 +141,7 @@ template <typename T, typename... A> std::shared_ptr<T> coreMemoryManager::Share
         const std::weak_ptr<void>& pPointer = m_apPointer.at(sName);
 
         // check for valid pointer
-        if(!pPointer.expired())
-            return std::static_pointer_cast<T>(pPointer.lock());
+        if(!pPointer.expired()) return std::static_pointer_cast<T>(pPointer.lock());
     }
 
     // create new pointer

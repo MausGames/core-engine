@@ -270,7 +270,7 @@ inline coreBool coreBackendEpic::Init()
 
     // select sandbox ID and deployment ID
     const coreChar* pcSandboxID    = coreData::GetCommandLine("epicsandboxid");
-    const coreChar* pcDeploymentID = NULL;
+    const coreChar* pcDeploymentID = coreData::GetCommandLine("epicdeploymentid");
     if(pcSandboxID)
     {
         // search requested IDs

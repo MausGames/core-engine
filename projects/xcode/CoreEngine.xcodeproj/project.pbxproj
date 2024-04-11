@@ -12,6 +12,7 @@
 		5B660CE827E0B7AB009BB1CB /* XXH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B660CE627E0B7AB009BB1CB /* XXH.cpp */; };
 		5B77109B27CD488B00EB424C /* cocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B77109927CD488B00EB424C /* cocoa.h */; };
 		5B77109C27CD488B00EB424C /* cocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5B77109A27CD488B00EB424C /* cocoa.mm */; };
+		5B979FCC2A3C73A200C5292D /* epic.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B979FCB2A3C73A200C5292D /* epic.h */; };
 		5BB8C34127C94E4200BBB338 /* coreGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C2B927C94E4100BBB338 /* coreGL.h */; };
 		5BB8C34227C94E4200BBB338 /* coreGLES.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C2BA27C94E4100BBB338 /* coreGLES.h */; };
 		5BB8C34327C94E4200BBB338 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C2BC27C94E4100BBB338 /* main.c */; };
@@ -124,6 +125,7 @@
 		5B660CE627E0B7AB009BB1CB /* XXH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XXH.cpp; sourceTree = "<group>"; };
 		5B77109927CD488B00EB424C /* cocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa.h; sourceTree = "<group>"; };
 		5B77109A27CD488B00EB424C /* cocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa.mm; sourceTree = "<group>"; };
+		5B979FCB2A3C73A200C5292D /* epic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = epic.h; sourceTree = "<group>"; };
 		5BB8C29827C9489900BBB338 /* libCoreEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoreEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BB8C2B927C94E4100BBB338 /* coreGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreGL.h; sourceTree = "<group>"; };
 		5BB8C2BA27C94E4100BBB338 /* coreGLES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreGLES.h; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 		5BB8C2D327C94E4100BBB338 /* backend */ = {
 			isa = PBXGroup;
 			children = (
+				5B979FCB2A3C73A200C5292D /* epic.h */,
 				5BB8C2D527C94E4100BBB338 /* steam.h */,
 				5BB8C2D427C94E4100BBB338 /* windows.h */,
 			);
@@ -611,6 +614,7 @@
 				5BB8C37D27C94E4200BBB338 /* coreLog.h in Headers */,
 				5BB8C39D27C94E4200BBB338 /* coreMenu.h in Headers */,
 				5BB8C36F27C94E4200BBB338 /* coreShader.h in Headers */,
+				5B979FCC2A3C73A200C5292D /* epic.h in Headers */,
 				5BB8C36027C94E4200BBB338 /* coreSound.h in Headers */,
 				5B77109B27CD488B00EB424C /* cocoa.h in Headers */,
 				5BB8C36C27C94E4200BBB338 /* MD5.h in Headers */,
@@ -841,6 +845,7 @@
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;

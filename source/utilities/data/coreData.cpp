@@ -1806,7 +1806,9 @@ void coreData::Scramble(coreByte* OUTPUT pData, const coreUintW iSize, const cor
 
     // combine sequence with original data
     for(coreUintW i = 0u; i < iSize; ++i)
+    {
         pData[i] = (oRand.Raw() & 0xFFu) - pData[i];
+    }
 }
 
 void coreData::Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const coreUint64 iKey)

@@ -68,21 +68,24 @@ coreStatus coreTexture::Load(coreFile* pFile)
     {
         const coreUintW iSource = pData->format->BytesPerPixel;
         const coreUintW iTarget = HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) ? 2u : 1u;
+
         WARN_IF(iSource != 3u) {}
-
-        SDL_Surface* pNew = SDL_CreateRGBSurfaceWithFormat(0u, pData->w, pData->h, 8 * iTarget, SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget));
-
-        // manually copy texels
-        for(coreUintW i = 0u, ie = LOOP_NONZERO(pData->h); i < ie; ++i)
+        else
         {
-            for(coreUintW j = 0u, je = LOOP_NONZERO(pData->w); j < je; ++j)
-            {
-                const coreUintW iOffset = j + i * je;
-                std::memcpy(s_cast<coreByte*>(pNew->pixels) + (iOffset * iTarget), s_cast<coreByte*>(pData->pixels) + (iOffset * iSource), iTarget);
-            }
-        }
+            SDL_Surface* pNew = SDL_CreateRGBSurfaceWithFormat(0u, pData->w, pData->h, 8 * iTarget, SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget));
 
-        pData = pNew;
+            // manually copy texels
+            for(coreUintW i = 0u, ie = LOOP_NONZERO(pData->h); i < ie; ++i)
+            {
+                for(coreUintW j = 0u, je = LOOP_NONZERO(pData->w); j < je; ++j)
+                {
+                    const coreUintW iOffset = j + i * je;
+                    std::memcpy(s_cast<coreByte*>(pNew->pixels) + (iOffset * iTarget), s_cast<coreByte*>(pData->pixels) + (iOffset * iSource), iTarget);
+                }
+            }
+
+            pData = pNew;
+        }
     }
 
     ASSERT(!SDL_MUSTLOCK(pData))

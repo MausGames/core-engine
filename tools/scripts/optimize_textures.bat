@@ -9,6 +9,6 @@ IF EXIST "%~1\" (
 
 ) ELSE (
 
-    CALL %_EXECUTABLE_% %_PARAMETERS_% "%1"
+    CALL %_EXECUTABLE_% %_PARAMETERS_% "%~1"
 
 )
