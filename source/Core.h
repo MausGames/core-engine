@@ -378,6 +378,7 @@
 #endif
 #include <AL/alext.h>
 #include <zstd/zstd.h>
+#include <opus/opusfile.h>
 #include <stb_vorbis.h>
 
 

@@ -13,13 +13,18 @@
 
 // ****************************************************************
 /* constructor */
-coreSound::coreSound()noexcept
-: coreResource ()
-, m_iBuffer    (0u)
-, m_Format     {}
-, m_iCurSource (0u)
-, m_aiSource   {}
-, m_pCurRef    (NULL)
+coreSound::coreSound(const coreSoundLoad eLoad)noexcept
+: coreResource   ()
+, m_iBuffer      (0u)
+, m_Format       {}
+, m_iCurSource   (0u)
+, m_aiSource     {}
+, m_pCurRef      (NULL)
+, m_eLoad        (eLoad)
+, m_pDeferStream (NULL)
+, m_pDeferData   (NULL)
+, m_iDeferOffset (0)
+, m_iDeferTotal  (0)
 {
 }
 
@@ -38,43 +43,105 @@ coreStatus coreSound::Load(coreFile* pFile)
 {
     coreFileScope oUnloader(pFile);
 
-    WARN_IF(m_iBuffer) return CORE_INVALID_CALL;
-    if(!pFile)         return CORE_INVALID_INPUT;
+    WARN_IF(m_iBuffer)    return CORE_INVALID_CALL;
+    if(!pFile)            return CORE_INVALID_INPUT;
+    if(!pFile->GetSize()) return CORE_ERROR_FILE;   // do not load file data
 
-    // get file data
-    const coreByte* pData = pFile->GetData();
-    const coreByte* pEnd  = pData + pFile->GetSize();
-    if(!pData) return CORE_ERROR_FILE;
-
-    // check file header
-    if(std::memcmp(pData, "RIFF", 4u) || std::memcmp(pData + 8u, "WAVE", 4u))
-    {
-        Core::Log->Warning("Sound (%s) is not a valid WAVE-file", m_sName.c_str());
-        return CORE_INVALID_DATA;
-    }
-    pData += 12u;
-
-    // read sub-chunks
     const coreByte* pSoundData = NULL;
     coreUint32      iSoundSize = 0u;
-    while(pData < pEnd)
+    coreByte*       pTempData  = NULL;
+
+    // extract file extension
+    const coreChar* pcExtension = coreData::StrToLower(coreData::StrExtension(pFile->GetPath()));
+
+    // determine audio format
+    if(!std::memcmp(pcExtension, "opus", 4u))
     {
-        coreChar   acID[4]; std::memcpy(acID,   pData, 4u); pData += 4u;
-        coreUint32 iSize;   std::memcpy(&iSize, pData, 4u); pData += 4u;
+        if(!m_pDeferStream)
+        {
+            coreInt32 iError;
 
-             if(!std::memcmp(acID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format)); ASSERT(iSize >= sizeof(m_Format))}
-        else if(!std::memcmp(acID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize; iSize = coreMath::CeilAlign(iSize, 2u);}
+            // open sound stream
+            m_pDeferStream = op_open_callbacks(new coreOpusStream(pFile), &g_OpusCallbacks, NULL, 0u, &iError);
+            if(!m_pDeferStream)
+            {
+                Core::Log->Warning("Sound (%s) is not a valid OPUS-file (OP Error Code: %d)", pFile->GetPath(), iError);
+                return CORE_INVALID_DATA;
+            }
 
-        pData += iSize;
+            // disable noise-shaping dithering (to reduce decoding overhead)
+            op_set_dither_enabled(m_pDeferStream, 0);
+
+            // set format structure
+            m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, op_channel_count(m_pDeferStream, -1), CORE_MUSIC_OPUS_RATE, 16u);
+
+            // prepare deferred loading
+            m_iDeferTotal = op_pcm_total(m_pDeferStream, -1) * m_Format.iNumChannels;
+            m_pDeferData  = new coreByte[m_iDeferTotal * sizeof(coreInt16)];
+        }
+
+        // limit decoding amount per iteration (with overflow)
+        const coreInt32 iLimit = m_iDeferOffset + ((SDL_ThreadID() == Core::System->GetMainThread()) ? 100 : 500) * 1024;
+
+        do
+        {
+            if(m_iDeferOffset >= iLimit) return CORE_BUSY;
+
+            // read and decode data from the sound stream
+            const coreInt32 iResult = op_read(m_pDeferStream, r_cast<coreInt16*>(m_pDeferData) + m_iDeferOffset, m_iDeferTotal - m_iDeferOffset, NULL) * m_Format.iNumChannels;
+
+            WARN_IF(iResult <= 0) break;
+            m_iDeferOffset += iResult;
+        }
+        while(m_iDeferOffset < m_iDeferTotal);
+
+        // forward decoded data
+        pSoundData = m_pDeferData;
+        iSoundSize = m_iDeferTotal * sizeof(coreInt16);
+
+        // handle compression
+             if(HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_ALAW))  {if(Core::Audio->GetSupportALAW ()) {coreEncodeALAW (pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_ALAW,  m_Format.iNumChannels, m_Format.iSampleRate, 8u);}}
+        else if(HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_MULAW)) {if(Core::Audio->GetSupportMULAW()) {coreEncodeMULAW(pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_MULAW, m_Format.iNumChannels, m_Format.iSampleRate, 8u);}}
     }
-
-    // handle compression
-    coreByte* pRawData = NULL;
-         if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_ALAW)  {if(!Core::Audio->GetSupportALAW ()) {coreDecodeALAW (pSoundData, iSoundSize, &pRawData, &iSoundSize); pSoundData = pRawData;}}
-    else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_MULAW) {if(!Core::Audio->GetSupportMULAW()) {coreDecodeMULAW(pSoundData, iSoundSize, &pRawData, &iSoundSize); pSoundData = pRawData;}}
-    else if(m_Format.iAudioFormat != CORE_SOUND_FORMAT_PCM)
+    else if(!std::memcmp(pcExtension, "wav", 3u))
     {
-        Core::Log->Warning("Sound (%s) has unsupported audio format %u (valid formats: PCM 1, ALAW 6, MULAW 7)", m_sName.c_str(), m_Format.iAudioFormat);
+        // get file data
+        const coreByte* pData = pFile->GetData();
+        const coreByte* pEnd  = pData + pFile->GetSize();
+
+        // check file header
+        if(std::memcmp(pData, "RIFF", 4u) || std::memcmp(pData + 8u, "WAVE", 4u))
+        {
+            Core::Log->Warning("Sound (%s) is not a valid WAVE-file", m_sName.c_str());
+            return CORE_INVALID_DATA;
+        }
+        pData += 12u;
+
+        // read sub-chunks
+        while(pData < pEnd)
+        {
+            coreUint32 iID;   std::memcpy(&iID,   pData, 4u); pData += 4u;
+            coreUint32 iSize; std::memcpy(&iSize, pData, 4u); pData += 4u;
+
+                 if(!std::memcmp(&iID, "fmt ", 4u)) {std::memcpy(&m_Format, pData, sizeof(m_Format)); ASSERT(iSize >= sizeof(m_Format))}
+            else if(!std::memcmp(&iID, "data", 4u)) {pSoundData = pData; iSoundSize = iSize; iSize = coreMath::CeilAlign(iSize, 2u);}
+
+            pData += iSize;
+        }
+
+        // handle compression
+             if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_ALAW)  {if(!Core::Audio->GetSupportALAW ()) {coreDecodeALAW (pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
+        else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_MULAW) {if(!Core::Audio->GetSupportMULAW()) {coreDecodeMULAW(pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
+        else if(m_Format.iAudioFormat != CORE_SOUND_FORMAT_PCM)
+        {
+            Core::Log->Warning("Sound (%s) has unsupported audio format %u (valid formats: PCM 1, ALAW 6, MULAW 7)", m_sName.c_str(), m_Format.iAudioFormat);
+            return CORE_INVALID_DATA;
+        }
+        ASSERT(!HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_ALAW) && !HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_MULAW))
+    }
+    else
+    {
+        Core::Log->Warning("Sound (%s) could not be identified (valid extensions: opus, wav)", m_sName.c_str());
         return CORE_INVALID_DATA;
     }
 
@@ -82,16 +149,14 @@ coreStatus coreSound::Load(coreFile* pFile)
     ALenum iSoundFormat = 0;
     if(m_Format.iNumChannels == 1u)
     {
-             if(pRawData)                                           iSoundFormat = AL_FORMAT_MONO16;
-        else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_ALAW)  iSoundFormat = AL_FORMAT_MONO_ALAW_EXT;
+             if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_ALAW)  iSoundFormat = AL_FORMAT_MONO_ALAW_EXT;
         else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_MULAW) iSoundFormat = AL_FORMAT_MONO_MULAW_EXT;
         else if(m_Format.iBitsPerSample ==  8u)                     iSoundFormat = AL_FORMAT_MONO8;
         else if(m_Format.iBitsPerSample == 16u)                     iSoundFormat = AL_FORMAT_MONO16;
     }
     else if(m_Format.iNumChannels == 2u)
     {
-             if(pRawData)                                           iSoundFormat = AL_FORMAT_STEREO16;
-        else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_ALAW)  iSoundFormat = AL_FORMAT_STEREO_ALAW_EXT;
+             if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_ALAW)  iSoundFormat = AL_FORMAT_STEREO_ALAW_EXT;
         else if(m_Format.iAudioFormat   == CORE_SOUND_FORMAT_MULAW) iSoundFormat = AL_FORMAT_STEREO_MULAW_EXT;
         else if(m_Format.iBitsPerSample ==  8u)                     iSoundFormat = AL_FORMAT_STEREO8;
         else if(m_Format.iBitsPerSample == 16u)                     iSoundFormat = AL_FORMAT_STEREO16;
@@ -101,7 +166,10 @@ coreStatus coreSound::Load(coreFile* pFile)
     // create sound buffer
     alGenBuffers(1, &m_iBuffer);
     alBufferData(m_iBuffer, iSoundFormat, pSoundData, iSoundSize, m_Format.iSampleRate);
-    if(pRawData) SAFE_DELETE_ARRAY(pRawData)
+    if(pTempData) SAFE_DELETE_ARRAY(pTempData)
+
+    // clear deferred loading data
+    this->__ClearDefer();
 
     // check for errors
     const ALenum iError = alGetError();
@@ -124,6 +192,9 @@ coreStatus coreSound::Load(coreFile* pFile)
 /* unload sound resource data */
 coreStatus coreSound::Unload()
 {
+    // clear deferred loading data (always)
+    this->__ClearDefer();
+
     if(!m_iBuffer) return CORE_INVALID_CALL;
 
     // unbind sound buffer from all audio sources
@@ -146,9 +217,12 @@ coreStatus coreSound::Unload()
 
 // ****************************************************************
 /* play the sound with positional behavior */
-void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition)
+void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition, const coreFloat fRefDistance, const coreFloat fMaxDistance, const coreFloat fRolloff)
 {
-    ASSERT(m_iBuffer)
+    WARN_IF(!m_iBuffer) return;
+
+    __CORE_AUDIO_CHECK_VOLUME(fVolume)
+    __CORE_AUDIO_CHECK_PITCH (fPitch)
 
     // set active reference pointer
     m_pCurRef = pRef;
@@ -172,9 +246,9 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
 
             alSourcefv(m_iCurSource, AL_POSITION,           vPosition.ptr());
             alSourcefv(m_iCurSource, AL_VELOCITY,           coreVector3(0.0f,0.0f,0.0f).ptr());
-            alSourcef (m_iCurSource, AL_REFERENCE_DISTANCE, 1.0f);
-            alSourcef (m_iCurSource, AL_MAX_DISTANCE,       5.0f);
-            alSourcef (m_iCurSource, AL_ROLLOFF_FACTOR,     1.0f);
+            alSourcef (m_iCurSource, AL_REFERENCE_DISTANCE, fRefDistance);
+            alSourcef (m_iCurSource, AL_MAX_DISTANCE,       fMaxDistance);
+            alSourcef (m_iCurSource, AL_ROLLOFF_FACTOR,     fRolloff);
         }
         Core::Audio->ProcessUpdates();
 
@@ -188,7 +262,10 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
 /* play the sound with relative behavior */
 void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType)
 {
-    ASSERT(m_iBuffer)
+    WARN_IF(!m_iBuffer) return;
+
+    __CORE_AUDIO_CHECK_VOLUME(fVolume)
+    __CORE_AUDIO_CHECK_PITCH (fPitch)
 
     // set active reference pointer
     m_pCurRef = pRef;
@@ -294,4 +371,43 @@ ALuint coreSound::CheckRef(const void* pRef)
     // remove invalid audio source
     m_aiSource.erase(pRef);
     return 0u;
+}
+
+
+// ****************************************************************
+/* clear deferred loading data */
+void coreSound::__ClearDefer()
+{
+    if(m_pDeferStream)
+    {
+        // close sound stream
+        op_free(m_pDeferStream);
+        m_pDeferStream = NULL;
+    }
+
+    // delete target buffer
+    SAFE_DELETE_ARRAY(m_pDeferData)
+    m_iDeferOffset = 0;
+    m_iDeferTotal  = 0;
+}
+
+
+// ****************************************************************
+/* create format structure */
+coreSound::coreWaveFormat coreSound::__CreateWaveFormat(const coreUint16 iAudioFormat, const coreUint16 iNumChannels, const coreUint32 iSampleRate, const coreUint16 iBitsPerSample)
+{
+    // calculate missing parameters
+    const coreUint16 iBlockAlign = iNumChannels * ((iBitsPerSample + 7u) / 8u);
+    const coreUint32 iByteRate   = iSampleRate  * iBlockAlign;
+
+    // create structure
+    coreWaveFormat oFormat;
+    oFormat.iAudioFormat   = iAudioFormat;
+    oFormat.iNumChannels   = iNumChannels;
+    oFormat.iSampleRate    = iSampleRate;
+    oFormat.iByteRate      = iByteRate;
+    oFormat.iBlockAlign    = iBlockAlign;
+    oFormat.iBitsPerSample = iBitsPerSample;
+
+    return oFormat;
 }

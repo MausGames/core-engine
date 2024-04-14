@@ -12,8 +12,31 @@
 
 
 // ****************************************************************
+/* MU-law encoding lookup table  */
+alignas(ALIGNMENT_CACHE) static constexpr coreUint8 g_aiTableEncodeMULAW[] =
+{
+    0u, 0u, 1u, 1u, 2u, 2u, 2u, 2u, 3u, 3u, 3u, 3u, 3u, 3u, 3u, 3u,
+    4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u,
+    5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u,
+    5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u
+};
+
+
+// ****************************************************************
 /* MU-law decoding lookup table  */
-alignas(ALIGNMENT_CACHE) static constexpr coreInt16 g_aiTableMULAW[] =
+alignas(ALIGNMENT_CACHE) static constexpr coreInt16 g_aiTableDecodeMULAW[] =
 {
     -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956,
     -23932, -22908, -21884, -20860, -19836, -18812, -17788, -16764,
@@ -51,18 +74,49 @@ alignas(ALIGNMENT_CACHE) static constexpr coreInt16 g_aiTableMULAW[] =
 
 
 // ****************************************************************
+/* MU-law sample encoding function */
+inline coreUint8 coreEncodeSampleMULAW(const coreInt16 iSample)
+{
+    const coreUint16 iValue    = MIN(ABS(iSample), 0x7F7B) + 0x84;
+    const coreUint8  iSign     = HAS_BIT(iSample,  15u);
+    const coreUint8  iExponent = g_aiTableEncodeMULAW[iValue >> 7u];
+    const coreUint8  iMantissa = (iValue >> (iExponent + 3u)) & 0x0Fu;
+
+    return ~((iSign << 7u) | (iExponent << 4u) | iMantissa);
+}
+
+
+// ****************************************************************
+/* MU-law encoding function */
+inline void coreEncodeMULAW(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
+{
+    const coreUint32 iCount   = iInputSize / sizeof(coreInt16);
+    coreUint8*       piBuffer = new coreUint8[iCount];
+
+    for(coreUintW i = 0u, ie = iCount; i < ie; ++i)
+    {
+        piBuffer[i] = coreEncodeSampleMULAW(r_cast<const coreInt16*>(pInput)[i]);
+    }
+
+    (*ppOutput)     = r_cast<coreByte*>(piBuffer);
+    (*piOutputSize) = iCount * sizeof(coreUint8);
+}
+
+
+// ****************************************************************
 /* MU-law decoding function */
 inline void coreDecodeMULAW(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
 {
-    coreInt16* pBuffer = new coreInt16[iInputSize];
+    const coreUint32 iCount   = iInputSize / sizeof(coreUint8);
+    coreInt16*       piBuffer = new coreInt16[iCount];
 
-    for(coreUintW i = 0u, ie = iInputSize; i < ie; ++i)
+    for(coreUintW i = 0u, ie = iCount; i < ie; ++i)
     {
-        pBuffer[i] = g_aiTableMULAW[pInput[i]];
+        piBuffer[i] = g_aiTableDecodeMULAW[pInput[i]];
     }
 
-    (*ppOutput)     = r_cast<coreByte*>(pBuffer);
-    (*piOutputSize) = iInputSize * sizeof(coreInt16);
+    (*ppOutput)     = r_cast<coreByte*>(piBuffer);
+    (*piOutputSize) = iCount * sizeof(coreInt16);
 }
 
 

@@ -152,6 +152,7 @@ typedef struct stb_vorbis stb_vorbis;
 typedef struct
 {
    unsigned int sample_rate;
+   unsigned int bit_rate;
    int channels;
 
    unsigned int setup_memory_required;
@@ -809,6 +810,7 @@ struct stb_vorbis
 {
   // user-accessible info
    unsigned int sample_rate;
+   unsigned int bit_rate;
    int channels;
 
    unsigned int setup_memory_required;
@@ -3643,7 +3645,7 @@ static int start_decoder(vorb *f)
    if (f->channels > STB_VORBIS_MAX_CHANNELS)       return error(f, VORBIS_too_many_channels);
    f->sample_rate = get32(f); if (!f->sample_rate)  return error(f, VORBIS_invalid_first_page);
    get32(f); // bitrate_maximum
-   get32(f); // bitrate_nominal
+   f->bit_rate = get32(f); // bitrate_nominal
    get32(f); // bitrate_minimum
    x = get8(f);
    {
@@ -4330,6 +4332,7 @@ stb_vorbis_info stb_vorbis_get_info(stb_vorbis *f)
    stb_vorbis_info d;
    d.channels = f->channels;
    d.sample_rate = f->sample_rate;
+   d.bit_rate = f->bit_rate;
    d.setup_memory_required = f->setup_memory_required;
    d.setup_temp_memory_required = f->setup_temp_memory_required;
    d.temp_memory_required = f->temp_memory_required;

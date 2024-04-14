@@ -11,8 +11,9 @@
 #define _CORE_GUARD_SOUND_H_
 
 // TODO 3: implement sound pause
-// TODO 3: cache and check audio source properties (reduce OpenAL function calls)
+// TODO 3: cache and check audio source properties (reduce OpenAL function calls) (required per source) (pitch and loop at least)
 // TODO 5: <old comment style>
+// TODO 3: AL_EXT_STATIC_BUFFER and alBufferDataStatic
 
 
 // ****************************************************************
@@ -23,6 +24,14 @@
 
 #define __CORE_SOUND_ASSERT {ASSERT(this->CheckRef(m_pCurRef) == m_iCurSource)}   // may check for missing reference pointer update
 
+enum coreSoundLoad : coreUint8
+{
+    CORE_SOUND_LOAD_DEFAULT = 0x00u,   // use default configuration
+    CORE_SOUND_LOAD_ALAW    = 0x01u,   // convert to A-law compression  (Opus only)
+    CORE_SOUND_LOAD_MULAW   = 0x02u    // convert to MU-law compression (Opus only)
+};
+ENABLE_BITWISE(coreSoundLoad)
+
 
 // ****************************************************************
 /* sound class */
@@ -32,12 +41,12 @@ public:
     /* WAVE-format structure */
     struct coreWaveFormat final
     {
-        coreUint16 iAudioFormat;     // internal audio format (1 = PCM | 6 = ALAW | 7 = MULAW)
-        coreUint16 iNumChannels;     // number of sound channels (1 = mono | 2 = stereo)
-        coreUint32 iSampleRate;      // playback frequency (e.g. 44100 Hz)
-        coreUint32 iByteRate;        // required data transfer rate (iSampleRate * iBlockAlign)
+        coreUint16 iAudioFormat;     // internal audio format         (1 = PCM | 6 = ALAW | 7 = MULAW)
+        coreUint16 iNumChannels;     // number of sound channels      (1 = mono | 2 = stereo)
+        coreUint32 iSampleRate;      // playback frequency            (e.g. 44100 Hz)
+        coreUint32 iByteRate;        // required data transfer rate   (iSampleRate * iBlockAlign)
         coreUint16 iBlockAlign;      // size per sound frame in bytes (iNumChannels * ((iBitsPerSample + 7) / 8))
-        coreUint16 iBitsPerSample;   // sample resolution
+        coreUint16 iBitsPerSample;   // sample resolution             (e.g. 16 bit)
     };
 
 
@@ -50,9 +59,16 @@ private:
 
     const void* m_pCurRef;                     // reference pointer to active audio source
 
+    coreSoundLoad m_eLoad;                     // resource load configuration
+
+    OggOpusFile* m_pDeferStream;               // Opus stream for deferred loading
+    coreByte*    m_pDeferData;                 // target buffer
+    coreInt32    m_iDeferOffset;               // current offset in target buffer
+    coreInt32    m_iDeferTotal;                // total size of target buffer
+
 
 public:
-    coreSound()noexcept;
+    explicit coreSound(const coreSoundLoad eLoad = CORE_SOUND_LOAD_DEFAULT)noexcept;
     ~coreSound()final;
 
     DISABLE_COPY(coreSound)
@@ -62,15 +78,15 @@ public:
     coreStatus Unload()final;
 
     /* control playback */
-    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition);
+    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition, const coreFloat fRefDistance = 1.0f, const coreFloat fMaxDistance = FLT_MAX, const coreFloat fRolloff = 0.0f);
     void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType);
     void Stop();
     coreBool IsPlaying();
 
     /* set various audio source properties */
     void SetSource(const coreVector3 vPosition, const coreVector3 vVelocity);
-    inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); ASSERT((fVolume >= 0.0f) && (fVolume <= CORE_AUDIO_MAX_GAIN))}
-    inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      ASSERT((fPitch  >= 0.5f) && (fPitch  <= 2.0f))}
+    inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); __CORE_AUDIO_CHECK_VOLUME(fVolume)}
+    inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      __CORE_AUDIO_CHECK_PITCH (fPitch)}
     inline void SetLoop  (const coreBool  bLoop)   {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcei(m_iCurSource, AL_LOOPING, bLoop);}
 
     /* enable active audio source with reference pointer */
@@ -80,6 +96,14 @@ public:
     /* get object properties */
     inline const ALuint&         GetBuffer()const {return m_iBuffer;}
     inline const coreWaveFormat& GetFormat()const {return m_Format;}
+
+
+private:
+    /* clear deferred loading data */
+    void __ClearDefer();
+
+    /* create format structure */
+    static coreWaveFormat __CreateWaveFormat(const coreUint16 iAudioFormat, const coreUint16 iNumChannels, const coreUint32 iSampleRate, const coreUint16 iBitsPerSample);
 };
 
 

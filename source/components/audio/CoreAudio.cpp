@@ -199,6 +199,9 @@ CoreAudio::CoreAudio()noexcept
     // check for errors
     const ALenum iError = alGetError();
     WARN_IF(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: 0x%08X)", iError);
+
+    // log Opus library version
+    Core::Log->Info("Opus initialized (%s)", opus_get_version_string());
 }
 
 
@@ -555,7 +558,8 @@ const ALint* CoreAudio::__RetrieveAttributes()
     case CORE_AUDIO_MODE_HEADPHONES: iOutputMode = ALC_STEREO_HRTF_SOFT; iHRTF = ALC_TRUE;           break;
     }
 
-    // set audio source numbers
+    // set standard attributes
+    nAttributeFunc(ALC_FREQUENCY,      48000u);
     nAttributeFunc(ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES);
     nAttributeFunc(ALC_STEREO_SOURCES, CORE_AUDIO_SOURCES);
 

@@ -22,6 +22,9 @@
 #define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    // sound buffer identifier for music
 #define CORE_AUDIO_MAX_GAIN      (4.0f)                                                  // maximum supported gain per audio source
 
+#define __CORE_AUDIO_CHECK_VOLUME(x) {ASSERT(((x) >= 0.0f) && ((x) <= CORE_AUDIO_MAX_GAIN))}
+#define __CORE_AUDIO_CHECK_PITCH(x)  {ASSERT(((x) >= 0.5f) && ((x) <= 2.0f))}
+
 enum coreAudioMode : coreUint8
 {
     CORE_AUDIO_MODE_AUTO       = 0u,   // auto-detect from system when possible
@@ -72,7 +75,7 @@ private:
     coreBool m_bSupportFloat;                           // support for raw float-data
     coreBool m_bSupportQuery;                           // support for buffer queries
 
-    ALint m_aiAttributes[11];                           // OpenAL context attributes
+    ALint m_aiAttributes[13];                           // OpenAL context attributes
 
 
 private:

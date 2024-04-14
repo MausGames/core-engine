@@ -12,8 +12,31 @@
 
 
 // ****************************************************************
+/* A-law encoding lookup table */
+alignas(ALIGNMENT_CACHE) static constexpr coreUint8 g_aiTableEncodeALAW[] =
+{
+    0u, 1u, 2u, 2u, 3u, 3u, 3u, 3u,
+    4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u,
+    5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u,
+    5u, 5u, 5u, 5u, 5u, 5u, 5u, 5u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    6u, 6u, 6u, 6u, 6u, 6u, 6u, 6u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u,
+    7u, 7u, 7u, 7u, 7u, 7u, 7u, 7u
+};
+
+
+// ****************************************************************
 /* A-law decoding lookup table */
-alignas(ALIGNMENT_CACHE) static constexpr coreInt16 g_aiTableALAW[] =
+alignas(ALIGNMENT_CACHE) static constexpr coreInt16 g_aiTableDecodeALAW[] =
 {
      -5504,  -5248,  -6016,  -5760,  -4480,  -4224,  -4992,  -4736,
      -7552,  -7296,  -8064,  -7808,  -6528,  -6272,  -7040,  -6784,
@@ -51,18 +74,49 @@ alignas(ALIGNMENT_CACHE) static constexpr coreInt16 g_aiTableALAW[] =
 
 
 // ****************************************************************
+/* A-law sample encoding function */
+inline coreUint8 coreEncodeSampleALAW(const coreInt16 iSample)
+{
+    const coreUint16 iValue    = MIN(ABS(iSample), 0x7F7B);
+    const coreUint8  iSign     = HAS_BIT(iSample,  15u);
+    const coreUint8  iExponent = g_aiTableEncodeALAW[iValue >> 8u];
+    const coreUint8  iMantissa = (iValue >> MAX(iExponent + 3u, 4u)) & 0x0Fu;
+
+    return ((iSign << 7u) | (iExponent << 4u) | iMantissa) ^ 0xD5u;
+}
+
+
+// ****************************************************************
+/* A-law encoding function */
+inline void coreEncodeALAW(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
+{
+    const coreUint32 iCount   = iInputSize / sizeof(coreInt16);
+    coreUint8*       piBuffer = new coreUint8[iCount];
+
+    for(coreUintW i = 0u, ie = iCount; i < ie; ++i)
+    {
+        piBuffer[i] = coreEncodeSampleALAW(r_cast<const coreInt16*>(pInput)[i]);
+    }
+
+    (*ppOutput)     = r_cast<coreByte*>(piBuffer);
+    (*piOutputSize) = iCount * sizeof(coreUint8);
+}
+
+
+// ****************************************************************
 /* A-law decoding function */
 inline void coreDecodeALAW(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize)
 {
-    coreInt16* pBuffer = new coreInt16[iInputSize];
+    const coreUint32 iCount   = iInputSize / sizeof(coreUint8);
+    coreInt16*       piBuffer = new coreInt16[iCount];
 
-    for(coreUintW i = 0u, ie = iInputSize; i < ie; ++i)
+    for(coreUintW i = 0u, ie = iCount; i < ie; ++i)
     {
-        pBuffer[i] = g_aiTableALAW[pInput[i]];
+        piBuffer[i] = g_aiTableDecodeALAW[pInput[i]];
     }
 
-    (*ppOutput)     = r_cast<coreByte*>(pBuffer);
-    (*piOutputSize) = iInputSize * sizeof(coreInt16);
+    (*ppOutput)     = r_cast<coreByte*>(piBuffer);
+    (*piOutputSize) = iCount * sizeof(coreInt16);
 }
 
 
