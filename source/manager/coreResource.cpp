@@ -493,20 +493,20 @@ void coreResourceManager::__LoadDefault()
     coreData::FolderScan("data/archives", "*.cfa", &asArchiveList);
     FOR_EACH(it, asArchiveList) this->RetrieveArchive(it->c_str());
 
-    this->Load<coreTexture>("default_black.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.png",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
-    this->Load<coreTexture>("default_normal.png",        CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_normal.png", CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
-    this->Load<coreTexture>("default_white.png",         CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.png",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
-    this->Load<coreShader> ("default_2d.vert",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert");
-    this->Load<coreShader> ("default_2d.frag",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag");
-    this->Load<coreShader> ("default_3d_low.vert",       CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_low.vert");
-    this->Load<coreShader> ("default_3d_raw.vert",       CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_raw.vert");
-    this->Load<coreShader> ("default_3d.frag",           CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d.frag");
-    this->Load<coreShader> ("default_label.vert",        CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.vert");
-    this->Load<coreShader> ("default_label_sharp.frag",  CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_sharp.frag");
-    this->Load<coreShader> ("default_label_smooth.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_smooth.frag");
-    this->Load<coreShader> ("default_particle.vert",     CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.vert", CORE_SHADER_OPTION_INSTANCING);
-    this->Load<coreShader> ("default_particle.frag",     CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.frag", CORE_SHADER_OPTION_INSTANCING);
-    this->Load<coreFont>   ("default.ttf",               CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
+    this->Load<coreTexture>("default_black.webp",             CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.webp",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
+    this->Load<coreTexture>("default_normal.webp",            CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_normal.webp", CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
+    this->Load<coreTexture>("default_white.webp",             CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.webp",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
+    this->Load<coreShader> ("default_2d.vert",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert");
+    this->Load<coreShader> ("default_2d.frag",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag");
+    this->Load<coreShader> ("default_3d_low.vert",            CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_low.vert");
+    this->Load<coreShader> ("default_3d_raw.vert",            CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_raw.vert");
+    this->Load<coreShader> ("default_3d.frag",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d.frag");
+    this->Load<coreShader> ("default_label.vert",             CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label.vert");
+    this->Load<coreShader> ("default_label_sharp.frag",       CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_sharp.frag");
+    this->Load<coreShader> ("default_label_smooth.frag",      CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_smooth.frag");
+    this->Load<coreShader> ("default_particle.vert",          CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.vert", CORE_SHADER_OPTION_INSTANCING);
+    this->Load<coreShader> ("default_particle.frag",          CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.frag", CORE_SHADER_OPTION_INSTANCING);
+    this->Load<coreFont>   ("default.ttf",                    CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
 
     d_cast<coreProgram*>(this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
         ->AttachShader  (this->Get <coreShader> ("default_2d.vert"))

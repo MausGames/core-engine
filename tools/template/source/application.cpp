@@ -11,8 +11,8 @@
 // project settings
 const coreChar* const CoreApp::Settings::Name                          = "Core Application";
 const coreChar* const CoreApp::Settings::Version                       = "0.0.1";
-const coreChar* const CoreApp::Settings::IconPath                      = "data/textures/game_icon.png";
-const coreChar* const CoreApp::Settings::CursorPath                    = "data/textures/default_cursor.png";
+const coreChar* const CoreApp::Settings::IconPath                      = "data/textures/game_icon.webp";
+const coreChar* const CoreApp::Settings::CursorPath                    = "data/textures/default_cursor.webp";
 const coreBool        CoreApp::Settings::UserManagement                = false;
 const coreUint8       CoreApp::Settings::Graphics::DepthSize           = 24u;
 const coreUint8       CoreApp::Settings::Graphics::StencilSize         = 8u;

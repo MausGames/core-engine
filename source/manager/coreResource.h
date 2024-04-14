@@ -14,7 +14,7 @@
 // TODO 4: resources exist only within handles, redefine all interfaces
 // TODO 5: investigate possible GPU memory fragmentation when streaming in and out lots of resources
 // TODO 1: defer resource-unload on ref-count 0 to an explicit call at the end of a frame, and expose explicit unload function (nullify?) -> can also be used for restart
-// TODO 3: set textures which are still loaded to default values (default_white.png, default_normal.png) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
+// TODO 3: set textures which are still loaded to default values (default_white.webp, default_normal.webp) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
 // TODO 3: set resources which could not be found (or loaded) to fallback values
 
 

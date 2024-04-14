@@ -121,7 +121,7 @@ else()
     target_link_libraries(
         CoreEngine INTERFACE
         -ldl -lpthread -lGL
-        -l:libSDL2.so.0 -l:libSDL2_ttf.so.0 -l:libSDL2_image.so.0 -l:libopenal.so.1 -l:libzstd.so.1
+        -l:libSDL2.so -l:libSDL2_ttf.so -l:libSDL2_image.so -l:libopenal.so -l:libzstd.so -l:libopusfile.so
     )
 
     target_link_options(
@@ -161,7 +161,8 @@ else()
 
         target_link_libraries(
             CoreEngine INTERFACE
-            -lm -lc -lc++
+            -lm -lc
+            -l:libc++.so
         )
 
         target_link_options(

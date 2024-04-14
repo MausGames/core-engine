@@ -104,7 +104,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>EnableAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;__ANGLE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
@@ -116,6 +116,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
       <CallingConvention>VectorCall</CallingConvention>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
@@ -136,6 +137,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
       <CallingConvention>VectorCall</CallingConvention>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Lib>
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
@@ -144,7 +146,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>EnableAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;__ANGLE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -163,6 +165,7 @@
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
       <CallingConvention>VectorCall</CallingConvention>
       <DisableSpecificWarnings>4577</DisableSpecificWarnings>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <PreBuildEvent>
       <Command>del $(IntDir)coreLog.obj</Command>
@@ -193,6 +196,7 @@
       <PrecompiledHeaderFile>Core.h</PrecompiledHeaderFile>
       <CallingConvention>VectorCall</CallingConvention>
       <DisableSpecificWarnings>4577</DisableSpecificWarnings>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <PreBuildEvent>
       <Command>del $(IntDir)coreLog.obj</Command>

@@ -85,7 +85,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include\angle;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows_x86_32;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows_x86_32;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows_x86_32\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
@@ -99,7 +99,7 @@
     <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\source;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\include\angle;$(MSBuildProjectDirectory)\..\..\..\source;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\libraries\bin\windows_x86_32;$(MSBuildProjectDirectory)\..\..\..\..\CoreEngine\output\windows_x86_32;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\executable\bin\windows_x86_32\</OutDir>
     <IntDir>..\.tmp\$(Platform)\$(Configuration)\</IntDir>
@@ -115,7 +115,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>EnableAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;__ANGLE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
@@ -179,7 +179,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>EnableAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;__ANGLE__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
