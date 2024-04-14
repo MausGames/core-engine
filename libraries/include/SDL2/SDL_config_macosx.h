@@ -35,11 +35,6 @@
 /* General platform specific identifiers */
 #include "SDL_platform.h"
 
-/* Make sure that this isn't included by Visual C++ */
-#ifdef _MSC_VER
-#error You should run git checkout -f include/SDL_config.h
-#endif
-
 /* C language features */
 /* #undef const */
 /* #undef inline */
@@ -81,7 +76,7 @@
 #define HAVE_WCHAR_H 1
 /* #undef HAVE_LINUX_INPUT_H */
 /* #undef HAVE_PTHREAD_NP_H */
-#define HAVE_LIBUNWIND_H 1
+/* #undef HAVE_LIBUNWIND_H */
 
 /* C library functions */
 #define HAVE_DLOPEN 1
@@ -148,7 +143,7 @@
 /* #undef HAVE__STRNICMP */
 #define HAVE_STRNCASECMP 1
 #define HAVE_STRCASESTR 1
-/* #undef HAVE_SSCANF */
+#define HAVE_SSCANF 1
 #define HAVE_VSSCANF 1
 /* #undef HAVE_SNPRINTF */
 #define HAVE_VSNPRINTF 1
