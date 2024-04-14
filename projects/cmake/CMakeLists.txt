@@ -82,14 +82,25 @@ if(CORE_EMSCRIPTEN)
 
     target_compile_options(
         CoreEngine PUBLIC
-        -pipe -Wall -Wextra -Wpedantic
+        -msimd128 -msse3 -pipe -Wall -Wextra -Wpedantic
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
+    )
+
+    target_link_directories(
+        CoreEngine INTERFACE
+        ${BASE_DIRECTORY}/libraries/bin/emscripten
+    )
+
+    target_link_libraries(
+        CoreEngine INTERFACE
+        -lopenal -lidbfs.js
+        -l:libSDL2.a -l:libSDL2_ttf.a -l:libharfbuzz.a -l:libfreetype.a -l:libSDL2_image.a -l:libwebp.a -l:libzstd.a -l:libopusfile.a -l:libopus.a -l:libogg.a
     )
 
     target_link_options(
         CoreEngine INTERFACE
-        -lopenal -lidbfs.js -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sUSE_SDL_IMAGE=2 -sSDL2_IMAGE_FORMATS=png -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sGL_ENABLE_GET_PROC_ADDRESS=1 -sMALLOC=mimalloc -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
-        --preload-file ../../../executable/data@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
+        -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sGL_ENABLE_GET_PROC_ADDRESS=1 -sMALLOC=mimalloc -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
+        --preload-file ../../../executable/data_web@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -sGL_ASSERTIONS=1 -sGL_DEBUG=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
     )
 

@@ -1726,12 +1726,6 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm*
 /* compress data with Zstandard library */
 coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel)
 {
-#if defined(_CORE_EMSCRIPTEN_)
-
-    return CORE_ERROR_SUPPORT;
-
-#else
-
     ASSERT(pInput && iInputSize && ppOutput && piOutputSize && (iLevel >= ZSTD_minCLevel()) && (iLevel <= ZSTD_maxCLevel()))
 
     // retrieve required output size
@@ -1742,20 +1736,51 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
     const coreUintW iWritten = ZSTD_compress(pBuffer + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
     if(ZSTD_isError(iWritten))
     {
-        Core::Log->Warning("Error compressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
         SAFE_DELETE_ARRAY(pBuffer)
 
+        Core::Log->Warning("Error compressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
         return CORE_INVALID_INPUT;
     }
 
-    // store original size and return compressed data
+    // store original size
     (*r_cast<coreUint32*>(pBuffer)) = iInputSize;
+
+    // return compressed data and size
     (*ppOutput)     = pBuffer;
     (*piOutputSize) = iWritten + sizeof(coreUint32);
 
     return CORE_OK;
+}
 
-#endif
+coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSize, coreByte* OUTPUT pOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel)
+{
+    ASSERT(pInput && iInputSize && pOutput && piOutputSize && (iLevel >= ZSTD_minCLevel()) && (iLevel <= ZSTD_maxCLevel()))
+
+    // retrieve required output size
+    const coreUintW iBound = ZSTD_compressBound(iInputSize);
+
+    // check for target buffer space
+    if((*piOutputSize) < iBound + sizeof(coreUint32))
+    {
+        (*piOutputSize) = iBound + sizeof(coreUint32);
+        return CORE_INVALID_DATA;
+    }
+
+    // compress data
+    const coreUintW iWritten = ZSTD_compress(pOutput + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
+    if(ZSTD_isError(iWritten))
+    {
+        Core::Log->Warning("Error compressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
+        return CORE_INVALID_INPUT;
+    }
+
+    // store original size
+    (*r_cast<coreUint32*>(pOutput)) = iInputSize;
+
+    // return compressed size
+    (*piOutputSize) = iWritten + sizeof(coreUint32);
+
+    return CORE_OK;
 }
 
 
@@ -1763,12 +1788,6 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
 /* decompress data with Zstandard library */
 coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreUint32 iLimit)
 {
-#if defined(_CORE_EMSCRIPTEN_)
-
-    return CORE_ERROR_SUPPORT;
-
-#else
-
     ASSERT(pInput && iInputSize && ppOutput && piOutputSize && iLimit)
 
     // retrieve original size
@@ -1779,19 +1798,45 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
     const coreUintW iWritten = ZSTD_decompress(pBuffer, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
     if(ZSTD_isError(iWritten) || (iWritten != iBound))
     {
-        Core::Log->Warning("Error decompressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
         SAFE_DELETE_ARRAY(pBuffer)
 
+        Core::Log->Warning("Error decompressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
         return CORE_INVALID_INPUT;
     }
 
-    // return decompressed data
+    // return decompressed data and size
     (*ppOutput)     = pBuffer;
     (*piOutputSize) = iBound;
 
     return CORE_OK;
+}
 
-#endif
+coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte* OUTPUT pOutput, coreUint32* OUTPUT piOutputSize)
+{
+    ASSERT(pInput && iInputSize && pOutput && piOutputSize)
+
+    // retrieve original size
+    const coreUint32 iBound = (*r_cast<const coreUint32*>(pInput));
+
+    // check for target buffer space
+    if((*piOutputSize) < iBound)
+    {
+        (*piOutputSize) = iBound;
+        return CORE_INVALID_DATA;
+    }
+
+    // decompress data
+    const coreUintW iWritten = ZSTD_decompress(pOutput, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
+    if(ZSTD_isError(iWritten) || (iWritten != iBound))
+    {
+        Core::Log->Warning("Error decompressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
+        return CORE_INVALID_INPUT;
+    }
+
+    // return decompressed size
+    (*piOutputSize) = iBound;
+
+    return CORE_OK;
 }
 
 

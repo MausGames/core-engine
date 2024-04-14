@@ -368,12 +368,8 @@ CoreSystem::CoreSystem()noexcept
     coreInt32 iMajorHB, iMinorHB, iPatchHB; TTF_GetHarfBuzzVersion(&iMajorHB, &iMinorHB, &iPatchHB);
     if(iMajorHB) Core::Log->Info("HarfBuzz initialized (%d.%d.%d)", iMajorHB, iMinorHB, iPatchHB);
 
-#if !defined(_CORE_EMSCRIPTEN_)
-
     // log Zstandard library version
     Core::Log->Info("Zstandard initialized (%s, %s-threaded)", ZSTD_versionString(), ZSTD_cParam_getBounds(ZSTD_c_nbWorkers).upperBound ? "multi" : "single");
-
-#endif
 
     // log xxHash library version
     Core::Log->Info("xxHash initialized (%s)", XXH_versionString());
