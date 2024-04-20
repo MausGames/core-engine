@@ -13,10 +13,8 @@
 // TODO 3: better integration of instancing (allow instanced and non-instaced shaders to exist in the same program object (on demand, or per registry-attribute))
 // TODO 5: check for compressed uniform sends (e.g. colors as byte-array instead of float-vector)
 // TODO 5: <old comment style>
-// TODO 4: GLSL ES 3.00 does not support attribute aliasing, remove and remap (#define) one of the variables ?
 // TODO 5: shared uniform-buffer layout might be more efficient, but needs many queries
-
-// NOTE: GL/GLES below 3.0 (130/300) or without UBO support always has GLSL version 110/100
+// TODO 3: make shader version configurable from config.ini ? (clamp)
 
 
 // ****************************************************************

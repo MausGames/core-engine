@@ -143,6 +143,7 @@ Definitions
     // version wrappers
     #define CORE_GL_VERSION
     #define CORE_GL_ES_VERSION
+    #define CORE_GL_MODERN_API
 
     // extension wrappers
     #define CORE_GL_conservative_depth
@@ -153,6 +154,8 @@ Definitions
     #define CORE_GL_shader_io_blocks
     #define CORE_GL_standard_derivatives
     #define CORE_GL_texture_3D
+    #define CORE_GL_texture_query_lod
+    #define CORE_GL_uniform_buffer_object
 
 Functions
 
@@ -204,6 +207,7 @@ Functions
     vec4  coreTextureBase2D       (in int v1Unit, in vec2 v2TexCoord)    // only use base-level (if possible)
     vec4  coreTextureBaseProj     (in int v1Unit, in vec4 v4ProjCoord)
     float coreTextureBaseShadow   (in int v1Unit, in vec4 v4ProjCoord)
+    vec4  coreTextureSharp2D      (in int v1Unit, in vec2 v2TexCoord, in float v1LodShift)
 
 Input
 

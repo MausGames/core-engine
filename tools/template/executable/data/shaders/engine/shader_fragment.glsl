@@ -36,13 +36,13 @@
 
     #endif
 
-    #if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+    #if defined(CORE_GL_gpu_shader4)
 
         // shader output
         out vec4 o_av4OutColor[CORE_NUM_OUTPUTS];
         #define gl_FragColor (o_av4OutColor[0])
 
-    #else
+    #elif defined(CORE_GL_draw_buffers)
 
         // shader output
         #define o_av4OutColor (gl_FragData)
@@ -83,7 +83,7 @@
     // ordered dithering function (modified)
     float coreDither(const in ivec2 i2PixelCoord)
     {
-        mat4 c_m4Matrix = mat4( 0.0,  8.0,  2.0, 10.0,
+        mat4 c_m4Matrix = mat4( 0.0,  8.0,  2.0, 10.0,   // # Intel hotfix: do not declare as const
                                12.0,  4.0, 14.0,  6.0,
                                 3.0, 11.0,  1.0,  9.0,
                                15.0,  7.0, 13.0,  5.0) / 15.0 - 0.5;

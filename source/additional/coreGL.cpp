@@ -180,12 +180,14 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_seamless_cube_map,                GLEW_VERSION_3_1)
         __IMPROVE(GLEW_ARB_shader_group_vote,                GLEW_VERSION_4_6)                                       // shader extension
         __IMPROVE(GLEW_ARB_shader_image_load_store,          GLEW_VERSION_4_2 || GLEW_EXT_shader_image_load_store)   // shader extension (also)
+        __IMPROVE(GLEW_ARB_shader_texture_lod,               GLEW_VERSION_3_0)                                       // shader extension
         __IMPROVE(GLEW_ARB_shading_language_packing,         GLEW_VERSION_4_2)                                       // shader extension
         __IMPROVE(GLEW_ARB_sync,                             GLEW_VERSION_3_2)
         __IMPROVE(GLEW_ARB_tessellation_shader,              GLEW_VERSION_4_0)
         __IMPROVE(GLEW_ARB_texture_compression_rgtc,         GLEW_VERSION_3_0 || GLEW_EXT_texture_compression_rgtc)
         __IMPROVE(GLEW_ARB_texture_filter_anisotropic,       GLEW_VERSION_4_6 || GLEW_EXT_texture_filter_anisotropic)
         __IMPROVE(GLEW_ARB_texture_float,                    GLEW_VERSION_3_0)
+        __IMPROVE(GLEW_ARB_texture_query_lod,                GLEW_VERSION_4_0)                                       // shader extension
         __IMPROVE(GLEW_ARB_texture_rg,                       GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_texture_stencil8,                 GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_texture_storage,                  GLEW_VERSION_4_2 || GLEW_EXT_texture_storage)
@@ -285,10 +287,6 @@ void __coreInitOpenGL()
 
     // handle support for deprecated features
     GLEW_V2_compatibility = !GLEW_VERSION_3_1;
-
-    // disable all features related to uniform buffer objects
-    if(!GLEW_VERSION_3_0 || Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
-        __GLEW_ARB_uniform_buffer_object = false;
 
     // change extension status through configuration file (e.g. GL_EXT_framebuffer_object)
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});

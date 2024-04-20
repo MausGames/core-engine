@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////
 
 
-#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+#if defined(CORE_GL_uniform_buffer_object)
 
     // ambient uniforms
     layout(std140) uniform b_Ambient

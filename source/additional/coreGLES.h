@@ -17,6 +17,8 @@
 // TODO 5: GL_ANGLE_program_cache_control (just for query, needs the EGL extension), GL_AMD_framebuffer_multisample_advanced
 // TODO 5: GL_EXT_disjoint_timer_query_webgl2
 // TODO 5: GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
+// TODO 3: static functions for WebGL (removing GetProcAddress, extension-checks could be enough, how to merge extensions-functions?)
+// TODO 4: add all missing "shader extensions"
 
 
 // ****************************************************************
@@ -34,9 +36,9 @@
 #define CORE_GL_ARB_seamless_cube_map                false
 #define CORE_GL_ARB_shader_image_load_store          __CORE_GLES_VAR(bES31)
 #define CORE_GL_ARB_sync                             __CORE_GLES_VAR(bES30)
-#define CORE_GL_ARB_uniform_buffer_object            __CORE_GLES_VAR(bES30)   // controls shader-handling
+#define CORE_GL_ARB_uniform_buffer_object            __CORE_GLES_VAR(bES30)
 #define CORE_GL_EXT_direct_state_access              false
-#define CORE_GL_EXT_framebuffer_object               true                     // always available
+#define CORE_GL_EXT_framebuffer_object               true   // always available
 #define CORE_GL_EXT_gpu_shader4                      __CORE_GLES_VAR(bES30)
 #define CORE_GL_NVX_gpu_memory_info                  false
 #define CORE_GL_NV_framebuffer_multisample_coverage  false

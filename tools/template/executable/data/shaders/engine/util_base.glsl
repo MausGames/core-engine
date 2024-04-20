@@ -76,7 +76,7 @@ vec4  coreLinearStep(const in vec4  e0, const in vec4  e1, const in vec4  v) {re
 // ****************************************************************
 // extract the sign without returning 0.0
 float coreSign(const in float v) {return (v >= 0.0) ? 1.0 : -1.0;}
-#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+#if (CORE_GL_VERSION >= 450) || (CORE_GL_ES_VERSION >= 300)
     vec2 coreSign(const in vec2 v) {return mix(vec2(-1.0), vec2(1.0), greaterThanEqual(v, vec2(0.0)));}
     vec3 coreSign(const in vec3 v) {return mix(vec3(-1.0), vec3(1.0), greaterThanEqual(v, vec3(0.0)));}
     vec4 coreSign(const in vec4 v) {return mix(vec4(-1.0), vec4(1.0), greaterThanEqual(v, vec4(0.0)));}

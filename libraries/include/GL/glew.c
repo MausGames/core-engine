@@ -1276,6 +1276,7 @@ GLboolean __GLEW_ARB_sample_shading = GL_FALSE;
 GLboolean __GLEW_ARB_seamless_cube_map = GL_FALSE;
 GLboolean __GLEW_ARB_shader_group_vote = GL_FALSE;
 GLboolean __GLEW_ARB_shader_image_load_store = GL_FALSE;
+GLboolean __GLEW_ARB_shader_texture_lod = GL_FALSE;
 GLboolean __GLEW_ARB_shading_language_packing = GL_FALSE;
 GLboolean __GLEW_ARB_sync = GL_FALSE;
 GLboolean __GLEW_ARB_tessellation_shader = GL_FALSE;
@@ -1283,6 +1284,7 @@ GLboolean __GLEW_ARB_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_ARB_texture_filter_anisotropic = GL_FALSE;
 GLboolean __GLEW_ARB_texture_float = GL_FALSE;
 GLboolean __GLEW_ARB_texture_multisample = GL_FALSE;
+GLboolean __GLEW_ARB_texture_query_lod = GL_FALSE;
 GLboolean __GLEW_ARB_texture_rg = GL_FALSE;
 GLboolean __GLEW_ARB_texture_stencil8 = GL_FALSE;
 GLboolean __GLEW_ARB_texture_storage = GL_FALSE;
@@ -1429,6 +1431,9 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_ARB_shader_image_load_store
   "GL_ARB_shader_image_load_store",
 #endif
+#ifdef GL_ARB_shader_texture_lod
+  "GL_ARB_shader_texture_lod",
+#endif
 #ifdef GL_ARB_shading_language_packing
   "GL_ARB_shading_language_packing",
 #endif
@@ -1449,6 +1454,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_texture_multisample
   "GL_ARB_texture_multisample",
+#endif
+#ifdef GL_ARB_texture_query_lod
+  "GL_ARB_texture_query_lod",
 #endif
 #ifdef GL_ARB_texture_rg
   "GL_ARB_texture_rg",
@@ -1728,6 +1736,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_shader_image_load_store
   &__GLEW_ARB_shader_image_load_store,
 #endif
+#ifdef GL_ARB_shader_texture_lod
+  &__GLEW_ARB_shader_texture_lod,
+#endif
 #ifdef GL_ARB_shading_language_packing
   &__GLEW_ARB_shading_language_packing,
 #endif
@@ -1748,6 +1759,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_ARB_texture_multisample
   &__GLEW_ARB_texture_multisample,
+#endif
+#ifdef GL_ARB_texture_query_lod
+  &__GLEW_ARB_texture_query_lod,
 #endif
 #ifdef GL_ARB_texture_rg
   &__GLEW_ARB_texture_rg,
@@ -4635,6 +4649,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
+#ifdef GL_ARB_shader_texture_lod
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"shader_texture_lod", 18))
+        {
+          ret = GLEW_ARB_shader_texture_lod;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_shading_language_packing
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"shading_language_packing", 24))
         {
@@ -4681,6 +4702,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_multisample", 19))
         {
           ret = GLEW_ARB_texture_multisample;
+          continue;
+        }
+#endif
+#ifdef GL_ARB_texture_query_lod
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_query_lod", 17))
+        {
+          ret = GLEW_ARB_texture_query_lod;
           continue;
         }
 #endif

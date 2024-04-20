@@ -82,7 +82,7 @@
     #if defined(GL_ES)
         #define CORE_OVERFLOW_GUARD(i, n) (i)
     #else
-        #define CORE_OVERFLOW_GUARD(i, n) (min(i, (n) - 1))
+        #define CORE_OVERFLOW_GUARD(i, n) (min(i, (n) - 1))   // # Intel hotfix: prevent compiler-generated overflow
     #endif
 
         // compatibility for Intel and macOS

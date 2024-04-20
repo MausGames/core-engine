@@ -160,7 +160,7 @@ void coreShader::__LoadGlobalCode()
     if(!s_asGlobalCode[0].empty()) return;
 
     // determine best shader version
-    const coreUint16 iVersion = (CORE_GL_SUPPORT(ARB_uniform_buffer_object)) ? F_TO_UI(Core::Graphics->GetVersionGLSL() * 100.0f) : (DEFINED(_CORE_GLES_) ? 100u : 110u);
+    const coreUint16 iVersion = (Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE)) ? (DEFINED(_CORE_GLES_) ? 100u : 110u) : F_TO_UI(Core::Graphics->GetVersionGLSL() * 100.0f);
     const coreChar*  pcType   = (DEFINED(_CORE_GLES_) && (iVersion >= 300u)) ? "es" : "";
 
     // set global shader definitions
@@ -379,7 +379,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
             }
 
             // bind output locations
-            if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
+            if(CORE_GL_SUPPORT(EXT_gpu_shader4))
             {
                 for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
                 {
@@ -841,7 +841,7 @@ void coreProgram::__WriteLog()const
         // loop through all attached shader objects
         FOR_EACH(it, m_apShader)
         {
-            Core::Log->ListDeeper((*it)->GetName());
+            Core::Log->ListDeeper(CORE_LOG_BOLD("%s"), (*it)->GetName());
             {
                 // get length of shader info-log
                 glGetShaderiv((*it)->GetIdentifier(), GL_INFO_LOG_LENGTH, &iLength);
@@ -874,6 +874,13 @@ void coreProgram::__WriteInterface()const
     {
         GLint iNumInput;
         GLint iNumUniform;
+
+        // write all attached shader objects
+        Core::Log->ListDeeper(CORE_LOG_BOLD("Shaders:") " %u", m_apShader.size());
+        {
+            FOR_EACH(it, m_apShader) Core::Log->ListAdd((*it)->GetName());
+        }
+        Core::Log->ListEnd();
 
         if(CORE_GL_SUPPORT(ARB_program_interface_query))
         {

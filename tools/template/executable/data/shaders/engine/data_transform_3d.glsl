@@ -10,12 +10,12 @@
 #include "util_matrix.glsl"
 
 
-#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
+#if defined(CORE_GL_uniform_buffer_object)
 
     // transformation uniforms
     layout(std140) uniform b_Transform3D
     {
-        layoutEx(align = 16) highp mat4 u_m4ViewProj;
+        layoutEx(align = 16) highp mat4 u_m4ViewProj;   // # AMD hotfix: use explicit alignment (everywhere)
         layoutEx(align = 16) highp mat4 u_m4Camera;
         layoutEx(align = 16) highp mat4 u_m4Perspective;
         layoutEx(align = 16) highp vec3 u_v3CamPosition;
