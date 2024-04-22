@@ -674,7 +674,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
         }
 
         // create SDL surface
-        coreSurfaceScope pSurface = SDL_CreateRGBSurfaceFrom(pConvert, iWidthDst, iHeight, 24, iPitchDst, CORE_TEXTURE_MASK);
+        coreSurfaceScope pSurface = SDL_CreateRGBSurfaceWithFormatFrom(pConvert, iWidthDst, iHeight, 24, iPitchDst, SDL_PIXELFORMAT_RGB24);
         if(pSurface)
         {
             const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? PRINT("%s.png", sPathCopy.c_str()) : sPathCopy.c_str();

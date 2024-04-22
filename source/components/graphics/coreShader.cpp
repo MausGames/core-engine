@@ -229,7 +229,7 @@ void coreShader::__ReduceSize(coreString* OUTPUT psCode)
 /* resolve include directives */
 void coreShader::__ResolveIncludes(coreString* OUTPUT psCode, const coreFile* pFile)
 {
-    const std::lock_guard<std::recursive_mutex> oLocker(s_IncludeLock);
+    const std::lock_guard oLocker(s_IncludeLock);
 
     constexpr coreChar  acText[] = "#include \"";
     constexpr coreUintW iTextLen = ARRAY_SIZE(acText) - 1u;
@@ -255,8 +255,8 @@ void coreShader::__ResolveIncludes(coreString* OUTPUT psCode, const coreFile* pF
             coreShader::__ResolveIncludes(&sIncludeCode, pIncludeFile);
 
             // insert include-guards
-            sIncludeCode.insert(0u, PRINT("#ifndef x%X \n #define x%X \n", sPath.GetHash(), sPath.GetHash()));
-            sIncludeCode.append("\n #endif \n #line 1 \n");
+            sIncludeCode.prepend(PRINT("#ifndef x%X \n #define x%X \n", sPath.GetHash(), sPath.GetHash()));
+            sIncludeCode.append ("\n #endif \n #line 1 \n");
 
             // reduce memory consumption
             sIncludeCode.shrink_to_fit();

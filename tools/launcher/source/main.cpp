@@ -98,8 +98,8 @@ static bool IsWindows10OrGreater()
 // ****************************************************************
 static int RunCommand(const wchar_t* pcPath, wchar_t* pcCmdLine)
 {
-    PROCESS_INFORMATION oProcessInfo = {};
     STARTUPINFOW        oStartupInfo = {};
+    PROCESS_INFORMATION oProcessInfo = {};
 
     oStartupInfo.cb          = sizeof(STARTUPINFOW);
     oStartupInfo.dwFlags     = STARTF_USESHOWWINDOW;
@@ -113,10 +113,13 @@ static int RunCommand(const wchar_t* pcPath, wchar_t* pcCmdLine)
 
         // check for success
         DWORD iExitCode;
-        if(GetExitCodeProcess(oProcessInfo.hProcess, &iExitCode) && (iExitCode == STILL_ACTIVE))
-        {
-            return EXIT_SUCCESS;
-        }
+        const bool bSuccess = (GetExitCodeProcess(oProcessInfo.hProcess, &iExitCode) && (iExitCode == STILL_ACTIVE));
+
+        // always close handles
+        CloseHandle(oProcessInfo.hProcess);
+        CloseHandle(oProcessInfo.hThread);
+
+        if(bSuccess) return EXIT_SUCCESS;
     }
 
     // use shell as fallback

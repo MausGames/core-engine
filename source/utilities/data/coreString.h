@@ -46,6 +46,10 @@ public:
     using coreStringBase::operator +=;
     constexpr coreString& operator += (const coreChar* pcText) {return this->append(pcText);}
 
+    /* prepend new string */
+    constexpr coreString& prepend(const coreChar* pcText)                       {this->insert(0u, pcText);       return *this;}
+    constexpr coreString& prepend(const coreChar* pcText, const coreUintW iNum) {this->insert(0u, pcText, iNum); return *this;}
+
     /* replace all occurrences of a sub-string with another one */
     using coreStringBase::replace;
     coreString& replace(const coreChar* pcOld, const coreChar* pcNew);

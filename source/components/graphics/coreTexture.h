@@ -23,12 +23,6 @@
 
 // ****************************************************************
 /* texture definitions */
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    #define CORE_TEXTURE_MASK (0xFF000000u), (0x00FF0000u), (0x0000FF00u), (0x000000FFu)
-#else
-    #define CORE_TEXTURE_MASK (0x000000FFu), (0x0000FF00u), (0x00FF0000u), (0xFF000000u)
-#endif
-
 #define GL_RED_LUMINANCE   (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_RED : GL_LUMINANCE)
 #define GL_R8_LUMINANCE8   (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_R8  : GL_LUMINANCE8)
 #define GL_R16_LUMINANCE16 (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_R16 : GL_LUMINANCE16)

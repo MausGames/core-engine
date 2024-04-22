@@ -27,7 +27,7 @@
 #define CORE_MUSIC_BUFFERS   (DEFINED(_CORE_EMSCRIPTEN_) ? 4u      : 3u)        // number of sound buffers (with chunks)
 #define CORE_MUSIC_OPUS_RATE (48000u)                                           // Opus is always coded at 48 kHz sample rate
 
-#define __CORE_MUSIC_LOCKER const std::lock_guard<std::recursive_mutex> oLocker(m_Mutex);
+#define __CORE_MUSIC_LOCKER const std::lock_guard oLocker(m_Mutex);
 
 enum coreMusicRepeat : coreUint8
 {
