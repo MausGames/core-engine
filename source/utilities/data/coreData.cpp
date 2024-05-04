@@ -796,6 +796,25 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
 
 
 // ****************************************************************
+/* log all current environment variables */
+void coreData::LogEnvironment()
+{
+    Core::Log->ListStartInfo("Environment Variables");
+    {
+        for(coreChar** pcEnviron = environ; (*pcEnviron); ++pcEnviron)
+        {
+            const coreChar* pcAssign = std::strchr((*pcEnviron), '=');
+            if(pcAssign)
+            {
+                Core::Log->ListAdd("%.*s = %s", coreInt32(pcAssign - (*pcEnviron)), (*pcEnviron), pcAssign + 1u);
+            }
+        }
+    }
+    Core::Log->ListEnd();
+}
+
+
+// ****************************************************************
 /* set environment variable (of current process) */
 coreStatus coreData::SetEnvironment(const coreChar* pcName, const coreChar* pcValue)
 {

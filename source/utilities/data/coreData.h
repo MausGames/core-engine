@@ -118,6 +118,7 @@ public:
     static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {ASSERT(coreData::StrIsLower(sArgument.GetString())) return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
 
     /* control environment variables */
+    static void            LogEnvironment();
     static coreStatus      SetEnvironment(const coreChar* pcName, const coreChar* pcValue);
     static const coreChar* GetEnvironment(const coreChar* pcName);
 

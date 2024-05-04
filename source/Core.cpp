@@ -40,6 +40,7 @@ Core::Core()noexcept
     STATIC_NEW(Language)
     STATIC_NEW(Rand)
     coreData::LogCommandLine();
+    coreData::LogEnvironment();
 
     // init main components
     STATIC_NEW(System)
