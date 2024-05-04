@@ -25,6 +25,8 @@
     #include "additional/macos/cocoa.h"
 #elif defined(_CORE_ANDROID_)
     #include <sys/system_properties.h>
+#elif defined(_CORE_EMSCRIPTEN_)
+    #include <mimalloc.h>
 #endif
 #if !defined(_CORE_WINDOWS_)
     #include <unistd.h>
@@ -997,6 +999,10 @@ void* coreData::HeapCreate(const coreBool bThreadSafe)
 
     return ::HeapCreate((bThreadSafe ? 0u : HEAP_NO_SERIALIZE) | (DEFINED(_CORE_DEBUG_) ? HEAP_GENERATE_EXCEPTIONS : 0u), 0u, 0u);
 
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    return mi_heap_new();
+
 #else
 
     return I_TO_P(-1);
@@ -1019,6 +1025,10 @@ void coreData::HeapDestroy(void* pHeap)
 
     WARN_IF(!::HeapDestroy(pHeap)) {}
 
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    mi_heap_destroy(s_cast<mi_heap_t*>(pHeap));
+
 #else
 
     ASSERT(pHeap == I_TO_P(-1))
@@ -1037,6 +1047,10 @@ RETURN_RESTRICT void* coreData::HeapMalloc(void* pHeap, const coreUintW iSize)
 
     return ::HeapAlloc(pHeap, 0u, iSize);
 
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    return mi_heap_malloc(s_cast<mi_heap_t*>(pHeap), iSize);
+
 #else
 
     return std::malloc(iSize);
@@ -1054,6 +1068,10 @@ RETURN_RESTRICT void* coreData::HeapCalloc(void* pHeap, const coreUintW iNum, co
 
     return ::HeapAlloc(pHeap, HEAP_ZERO_MEMORY, iNum * iSize);
 
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    return mi_heap_calloc(s_cast<mi_heap_t*>(pHeap), iNum, iSize);
+
 #else
 
     return std::calloc(iNum, iSize);
@@ -1070,6 +1088,10 @@ void coreData::HeapRealloc(void* pHeap, void** OUTPUT ppPointer, const coreUintW
 #if defined(_CORE_WINDOWS_)
 
     (*ppPointer) = (*ppPointer) ? ::HeapReAlloc(pHeap, 0u, *ppPointer, iSize) : ::HeapAlloc(pHeap, 0u, iSize);
+
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    (*ppPointer) = mi_heap_realloc(s_cast<mi_heap_t*>(pHeap), *ppPointer, iSize);
 
 #else
 
@@ -1092,6 +1114,10 @@ void coreData::HeapFree(void* pHeap, void** OUTPUT ppPointer)
     #endif
 
     WARN_IF(!::HeapFree(pHeap, 0u, *ppPointer)) {}
+
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    mi_free(*ppPointer);
 
 #else
 

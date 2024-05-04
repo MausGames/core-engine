@@ -9,7 +9,7 @@
 #include "Core.h"
 
 
-#if defined(_CORE_WINDOWS_) || defined(_CORE_SWITCH_)
+#if defined(_CORE_WINDOWS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
 // ****************************************************************
 /* assign private heap to SDL library */

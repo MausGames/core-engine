@@ -43,7 +43,6 @@
 // TODO 3: automatic Core::Reshape() if not handled, currently it's explicit in every application, CoreApp callback ?
 // TODO 3: with OpenGL 4.2 or higher, normalized floating-point data is actually mapped to [-MAX,MAX] instead of [MIN,MAX], and the current conversion doesn't fit any of those, what about ES and WebGL ? is there an extension to check ?
 // TODO 4: noexcept = default, ~T()noexcept
-// TODO 3: own heaps for string-memory, list-memory, file-data (foreign allocations ?)
 
 
 // ****************************************************************
