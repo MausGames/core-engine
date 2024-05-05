@@ -49,6 +49,7 @@ coreMemoryPool::coreMemoryPool()noexcept
 , m_apFreeStack {}
 , m_iBlockSize  (0u)
 , m_iPageSize   (0u)
+, m_bValid      (true)
 , m_pHeap       (NULL)
 {
 }
@@ -64,6 +65,7 @@ coreMemoryPool::coreMemoryPool(coreMemoryPool&& m)noexcept
 , m_apFreeStack (std::move(m.m_apFreeStack))
 , m_iBlockSize  (m.m_iBlockSize)
 , m_iPageSize   (m.m_iPageSize)
+, m_bValid      (m.m_bValid)
 , m_pHeap       (m.m_pHeap)
 {
     m.m_pHeap = NULL;
@@ -91,6 +93,7 @@ coreMemoryPool& coreMemoryPool::operator = (coreMemoryPool&& m)noexcept
     std::swap(m_apFreeStack, m.m_apFreeStack);
     std::swap(m_iBlockSize,  m.m_iBlockSize);
     std::swap(m_iPageSize,   m.m_iPageSize);
+    std::swap(m_bValid,      m.m_bValid);
     std::swap(m_pHeap,       m.m_pHeap);
 
     return *this;
@@ -120,7 +123,7 @@ void coreMemoryPool::Configure(const coreUintW iBlockSize, const coreUintW iPage
 /* reset memory-pool to its initial state */
 void coreMemoryPool::Reset()
 {
-    ASSERT(m_apFreeStack.size() == (m_apPageList.size() * m_iPageSize))
+    ASSERT((m_apFreeStack.size() == (m_apPageList.size() * m_iPageSize)) || !m_bValid)
 
     // delete all memory-pages
     FOR_EACH(it, m_apPageList)
@@ -135,9 +138,20 @@ void coreMemoryPool::Reset()
 
 
 // ****************************************************************
+/* shutdown memory-pool (for faster cleanup) */
+void coreMemoryPool::Shutdown()
+{
+    // invalidate memory-pool
+    m_bValid = false;
+}
+
+
+// ****************************************************************
 /* create memory-block */
 RETURN_RESTRICT void* coreMemoryPool::Allocate()
 {
+    ASSERT(m_bValid)
+
     // check for free memory-block
     if(m_apFreeStack.empty()) this->__AddPage();
     ASSERT(!m_apFreeStack.empty())
@@ -156,12 +170,16 @@ void coreMemoryPool::Free(void** OUTPUT ppPointer)
 {
     ASSERT(this->Contains(*ppPointer))
 
-    // find target location with binary search
-    ASSERT(std::is_sorted(m_apFreeStack.begin(), m_apFreeStack.end(), std::greater()))
-    const auto it = std::lower_bound(m_apFreeStack.begin(), m_apFreeStack.end(), *ppPointer, std::greater());
+    // only return pointer if memory-pool is still valid
+    if(m_bValid)
+    {
+        // find target location with binary search
+        ASSERT(std::is_sorted(m_apFreeStack.begin(), m_apFreeStack.end(), std::greater()))
+        const auto it = std::lower_bound(m_apFreeStack.begin(), m_apFreeStack.end(), *ppPointer, std::greater());
 
-    // return pointer to the free-stack
-    m_apFreeStack.insert(it, *ppPointer);
+        // return pointer to the free-stack
+        m_apFreeStack.insert(it, *ppPointer);
+    }
 
     // remove reference
     (*ppPointer) = NULL;

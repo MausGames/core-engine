@@ -18,7 +18,6 @@
 // TODO 5: __declspec(allocator)
 // TODO 3: pointer to next free block inside unused block (linked list) instead of free-stack (consider sorting)
 // TODO 5: <old comment style>
-// TODO 3: implement quick free and quick reset to memory pool (but not to manager), without sorting (and without insertion?), for regular destruction
 // TODO 3: #define STATIC_EXTERN(t,p) extern t* const p; needs to be before Core class
 // TODO 2: add ASSERT when accessing static-memory without initialization
 
@@ -71,6 +70,7 @@ private:
 
     coreUintW m_iBlockSize;              // memory-block size (in bytes)
     coreUintW m_iPageSize;               // memory-page size (in number of containing memory-blocks)
+    coreBool  m_bValid;                  // current working state
 
     void* m_pHeap;                       // private heap object
 
@@ -87,6 +87,7 @@ public:
     /* control state of the memory-pool */
     void Configure(const coreUintW iBlockSize, const coreUintW iPageSize);
     void Reset();
+    void Shutdown();
 
     /* create and remove memory-blocks */
     RETURN_RESTRICT void* Allocate();
