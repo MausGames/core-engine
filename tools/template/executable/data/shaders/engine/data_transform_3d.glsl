@@ -82,4 +82,4 @@
     }
     mat3 coreTangentSpaceMatrix() {return coreTangentSpaceMatrix(u_v4Rotation, a_v3RawNormal, a_v4RawTangent);}
 
-#endif // _CORE_VERTEX_SHADER_
+#endif

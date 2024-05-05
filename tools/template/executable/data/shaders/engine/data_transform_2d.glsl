@@ -33,4 +33,4 @@
     // default texture coordinate transformation
     vec2 coreObject2DTexCoord() {return a_v2LowTexCoord * u_v2TexSize + u_v2TexOffset;}
 
-#endif // _CORE_VERTEX_SHADER_
+#endif

@@ -97,4 +97,4 @@
     }
     float coreDither() {return coreDither(ivec2(gl_FragCoord.xy));}
 
-#endif // _CORE_FRAGMENT_SHADER_
+#endif

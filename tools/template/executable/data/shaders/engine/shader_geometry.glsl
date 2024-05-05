@@ -41,4 +41,4 @@
         GeometryMain();
     }
 
-#endif // _CORE_GEOMETRY_SHADER_
+#endif

@@ -44,4 +44,4 @@
     void coreLightingTransformRaw() {coreLightingTransform(coreObject3DTransformRaw());}
     void coreLightingTransformLow() {coreLightingTransform(coreObject3DTransformLow());}
 
-#endif // _CORE_VERTEX_SHADER_
+#endif

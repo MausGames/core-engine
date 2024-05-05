@@ -17,4 +17,4 @@
         TessControlMain();
     }
 
-#endif // _CORE_TESS_CONTROL_SHADER_
+#endif

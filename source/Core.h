@@ -35,11 +35,10 @@
 // TODO 3: fix constexpr msvc bug (or confirm already fixed) (constexpr-results are not saved after compilation, functions often re-evaluated at run-time)
 // TODO 3: disallow two instances (or create yes/no message box) of the same application
 // TODO 3: improve MSVC debug allocator usage, #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-// TODO 5: check out NVAPI and ADL/AGS
+// TODO 5: check out NVAPI and ADLX/AGS
 // TODO 4: handle implicit conversions, (enable MSVC warnings 4242, 4244, 4267 4365 again)
 // TODO 4: unify/clarify const void* and const coreByte*
 // TODO 4: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
-// TODO 3: overflow check in I_TO_F
 // TODO 3: automatic Core::Reshape() if not handled, currently it's explicit in every application, CoreApp callback ?
 // TODO 3: with OpenGL 4.2 or higher, normalized floating-point data is actually mapped to [-MAX,MAX] instead of [MIN,MAX], and the current conversion doesn't fit any of those, what about ES and WebGL ? is there an extension to check ?
 // TODO 4: noexcept = default, ~T()noexcept

@@ -114,9 +114,9 @@ public:
     inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u)) this->Nullify();}
 
     /* handle resource loading */
-    inline coreBool Update () {if(!m_bProxy) {coreSpinLocker oLocker(&m_UpdateLock); if(this->IsLoading() && !m_bAutomatic)      {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
-    inline coreBool Reload () {if(!m_bProxy) {coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
-    inline coreBool Nullify() {if(!m_bProxy) {coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;}} return false;}
+    inline coreBool Update () {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); if(this->IsLoading() && !m_bAutomatic)      {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
+    inline coreBool Reload () {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
+    inline coreBool Nullify() {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;}} return false;}
 
     /* attach asynchronous callbacks */
     template <typename F> coreUint32 OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
@@ -275,7 +275,7 @@ public:
     inline coreBool IsUsable()const {return (m_iIndex && this->GetHandle()->IsSuccessful());}
 
     /* attach asynchronous callbacks */
-    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_iIndex) coreResourceHandle* pHandle = this->GetHandle(); return pHandle->OnLoadedOnce([=, nFunction = std::forward<F>(nFunction)]() {if(pHandle->IsSuccessful()) nFunction();});}   // [](void) -> void
+    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_iIndex) const coreResourceHandle* pHandle = this->GetHandle(); return pHandle->OnLoadedOnce([=, nFunction = std::forward<F>(nFunction)]() {if(pHandle->IsSuccessful()) nFunction();});}   // [](void) -> void
 };
 
 

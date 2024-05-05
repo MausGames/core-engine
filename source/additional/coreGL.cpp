@@ -89,14 +89,14 @@ void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
     const auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
 
     // generate 2D texture names
-    coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
+    const coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
     CORE_GL_POOL_GENERATE(s_PoolTextures2D, nCreateFunc, glGenTextures)
 }
 
 void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate data buffer names
-    coreSpinLocker oLocker(&s_PoolBuffers.oLock);
+    const coreSpinLocker oLocker(&s_PoolBuffers.oLock);
     CORE_GL_POOL_GENERATE(s_PoolBuffers, glCreateBuffers, glGenBuffers)
 }
 
@@ -114,14 +114,14 @@ void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames)
 void coreDelTextures2D(coreUintW iCount, const GLuint* pNames)
 {
     // delete 2D texture names
-    coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
+    const coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
     CORE_GL_POOL_DELETE(s_PoolTextures2D, glDeleteTextures)
 }
 
 void coreDelBuffers(coreUintW iCount, const GLuint* pNames)
 {
     // delete data buffer names
-    coreSpinLocker oLocker(&s_PoolBuffers.oLock);
+    const coreSpinLocker oLocker(&s_PoolBuffers.oLock);
     CORE_GL_POOL_DELETE(s_PoolBuffers, glDeleteBuffers)
 }
 

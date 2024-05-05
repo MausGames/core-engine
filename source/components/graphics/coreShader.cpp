@@ -155,7 +155,7 @@ coreStatus coreShader::Unload()
 /* load global shader code */
 void coreShader::__LoadGlobalCode()
 {
-    coreSpinLocker oLocker(&s_GlobalLock);
+    const coreSpinLocker oLocker(&s_GlobalLock);
 
     if(!s_asGlobalCode[0].empty()) return;
 
@@ -737,7 +737,7 @@ void coreProgram::SaveShaderCache()
 /* remove all entries from the shader-cache */
 void coreProgram::ClearShaderCache()
 {
-    coreSpinLocker oLocker(&s_BinaryLock);
+    const coreSpinLocker oLocker(&s_BinaryLock);
 
     // delete entries
     FOR_EACH(it, s_aBinaryMap)
@@ -762,7 +762,7 @@ coreBool coreProgram::__LoadBinary()
     // indicate the intention to retrieve the shader-program binary
     glProgramParameteri(m_iIdentifier, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, 1);
 
-    coreSpinLocker oLocker(&s_BinaryLock);
+    const coreSpinLocker oLocker(&s_BinaryLock);
 
     if(s_aBinaryMap.count_bs(m_iHash))
     {
@@ -797,7 +797,7 @@ void coreProgram::__SaveBinary()const
 
     if(iSize)
     {
-        coreSpinLocker oLocker(&s_BinaryLock);
+        const coreSpinLocker oLocker(&s_BinaryLock);
 
         coreBinary& oEntry = s_aBinaryMap.bs(m_iHash);
 

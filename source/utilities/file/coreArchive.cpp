@@ -225,7 +225,7 @@ SDL_RWops* coreFile::CreateReadStream()const
 /* load file data */
 coreStatus coreFile::LoadData()
 {
-    coreSpinLocker oLocker(&m_DataLock);
+    const coreSpinLocker oLocker(&m_DataLock);
 
     // check current state
     if(m_pData || !m_iSize || (m_iArchivePos == __CORE_FILE_TYPE_MEMORY)) return CORE_INVALID_CALL;
@@ -279,7 +279,7 @@ coreStatus coreFile::LoadData()
 /* unload file data */
 coreStatus coreFile::UnloadData()
 {
-    coreSpinLocker oLocker(&m_DataLock);
+    const coreSpinLocker oLocker(&m_DataLock);
 
     // check current state
     if(!m_pData || !m_iSize || (m_iArchivePos == __CORE_FILE_TYPE_MEMORY)) return CORE_INVALID_CALL;

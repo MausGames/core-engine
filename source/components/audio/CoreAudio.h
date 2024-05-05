@@ -75,7 +75,7 @@ private:
     coreBool m_bSupportFloat;                           // support for raw float-data
     coreBool m_bSupportQuery;                           // support for buffer queries
 
-    ALint m_aiAttributes[13];                           // OpenAL context attributes
+    ALint m_aiAttributes[11];                           // OpenAL context attributes
 
 
 private:

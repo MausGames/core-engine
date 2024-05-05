@@ -17,4 +17,4 @@
         ComputeMain();
     }
 
-#endif // _CORE_COMPUTE_SHADER_
+#endif

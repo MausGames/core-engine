@@ -222,7 +222,7 @@ coreMemoryManager::~coreMemoryManager()
 /* create memory-block from internal memory-pool */
 RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 {
-    coreSpinLocker oLocker(&m_PoolLock);
+    const coreSpinLocker oLocker(&m_PoolLock);
 
     // check and create memory-pool
     if(!m_aMemoryPool.count(iSize)) m_aMemoryPool.emplace(iSize, iSize, 128u);
@@ -236,7 +236,7 @@ RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
 /* remove memory-block to internal memory-pool */
 void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT ppPointer)
 {
-    coreSpinLocker oLocker(&m_PoolLock);
+    const coreSpinLocker oLocker(&m_PoolLock);
 
     // forward request to internal memory-pool
     m_aMemoryPool.at(iSize).Free(ppPointer);

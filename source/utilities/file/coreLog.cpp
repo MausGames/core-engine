@@ -65,7 +65,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 /* destructor */
 coreLog::~coreLog()
 {
-    coreSpinLocker oLocker(&m_Lock);
+    const coreSpinLocker oLocker(&m_Lock);
 
     // append final line
     this->__Write(false, __CORE_LOG_CLEAR, "<hr>", "");

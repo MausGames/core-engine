@@ -202,7 +202,7 @@ if(CORE_TEST)
 
     target_compile_options(
         CoreEngine PUBLIC
-        -fsanitize=undefined,address
+        -fsanitize=undefined,address -fverify-intermediate-code
     )
 
     target_link_options(

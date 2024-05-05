@@ -55,7 +55,7 @@ coreConfig::~coreConfig()
 /* load configuration file */
 coreStatus coreConfig::Load()
 {
-    coreSpinLocker oLocker(&m_Lock);
+    const coreSpinLocker oLocker(&m_Lock);
 
     // load configuration file
     coreFile oFile(m_sPath.c_str());
@@ -145,7 +145,7 @@ coreStatus coreConfig::Save()
     // check for pending changes
     if(!m_bDirty) return CORE_BUSY;
 
-    coreSpinLocker oLocker(&m_Lock);
+    const coreSpinLocker oLocker(&m_Lock);
 
     // prepare target buffer
     coreString sBuffer;

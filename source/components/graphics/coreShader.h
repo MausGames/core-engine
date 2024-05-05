@@ -234,13 +234,13 @@ public:
     inline coreShader*   GetShader    (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return d_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
     inline coreUintW     GetNumShaders()const                       {return m_apShaderHandle.size();}
 
-    /* get currently active shader-program */
-    static inline coreProgram* GetCurrent() {return s_pCurrent;}
-
     /* load and save shader-cache */
     static coreBool LoadShaderCache();
     static void     SaveShaderCache();
     static void     ClearShaderCache();
+
+    /* get currently active shader-program */
+    static inline coreProgram* GetCurrent() {return s_pCurrent;}
 
 
 private:

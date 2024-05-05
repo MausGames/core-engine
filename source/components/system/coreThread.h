@@ -79,7 +79,7 @@ private:
 /* attach custom function */
 template <typename F> coreUint32 coreThread::AttachFunction(F&& nFunction)
 {
-    coreSpinLocker oLocker(&m_LockNew);
+    const coreSpinLocker oLocker(&m_LockNew);
 
     // get unique token
     const coreUint32 iToken = (++m_iTokenCount);

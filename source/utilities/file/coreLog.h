@@ -62,17 +62,17 @@ public:
     DISABLE_COPY(coreLog)
 
     /* message functions */
-    template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {coreSpinLocker oLocker(&m_Lock); this->__Write(true, __CORE_LOG_PRINT, "[I] ",                         "<br>");}}
-    template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {coreSpinLocker oLocker(&m_Lock); this->__Write(true, __CORE_LOG_PRINT, "[W] <span class=\"warning\">", "</span><br>");}}
+    template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {const coreSpinLocker oLocker(&m_Lock); this->__Write(true, __CORE_LOG_PRINT, "[I] ",                         "<br>");}}
+    template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {const coreSpinLocker oLocker(&m_Lock); this->__Write(true, __CORE_LOG_PRINT, "[W] <span class=\"warning\">", "</span><br>");}}
     template <typename... A> FUNC_TERMINATE void Error  (const coreChar* pcText, A&&... vArgs);
 
     /* special functions */
-    template <typename... A> inline void Header          (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {coreSpinLocker oLocker(&m_Lock); this->__Write(false, __CORE_LOG_PRINT, "<hr><span class=\"header\">",                       "</span><br>");}}
-    template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {m_Lock.Lock();                   this->__Write(true,  __CORE_LOG_PRINT, "[I] <span><span class=\"list\">",                   "</span><ul>"); ++m_iListStatus;}}
-    template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {m_Lock.Lock();                   this->__Write(true,  __CORE_LOG_PRINT, "[W] <span class=\"warning\"><span class=\"list\">", "</span><ul>"); ++m_iListStatus;}}
-    template <typename... A> inline void ListDeeper      (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                                               {this->__Write(false, __CORE_LOG_PRINT, "<li>",                                              "</li><ul>");   ++m_iListStatus;}}
-    template <typename... A> inline void ListAdd         (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                                               {this->__Write(false, __CORE_LOG_PRINT, "<li>",                                              "</li>");}}
-    inline                          void ListEnd         ()                                     {if(m_iListStatus)                                                               {this->__Write(false, __CORE_LOG_CLEAR, "</ul></span>",                                      ""); if(!(--m_iListStatus)) m_Lock.Unlock();}}
+    template <typename... A> inline void Header          (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {const coreSpinLocker oLocker(&m_Lock); this->__Write(false, __CORE_LOG_PRINT, "<hr><span class=\"header\">",                       "</span><br>");}}
+    template <typename... A> inline void ListStartInfo   (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {m_Lock.Lock();                         this->__Write(true,  __CORE_LOG_PRINT, "[I] <span><span class=\"list\">",                   "</span><ul>"); ++m_iListStatus;}}
+    template <typename... A> inline void ListStartWarning(const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {m_Lock.Lock();                         this->__Write(true,  __CORE_LOG_PRINT, "[W] <span class=\"warning\"><span class=\"list\">", "</span><ul>"); ++m_iListStatus;}}
+    template <typename... A> inline void ListDeeper      (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                                                     {this->__Write(false, __CORE_LOG_PRINT, "<li>",                                              "</li><ul>");   ++m_iListStatus;}}
+    template <typename... A> inline void ListAdd         (const coreChar* pcText, A&&... vArgs) {if(m_iListStatus)                                                                     {this->__Write(false, __CORE_LOG_PRINT, "<li>",                                              "</li>");}}
+    inline                          void ListEnd         ()                                     {if(m_iListStatus)                                                                     {this->__Write(false, __CORE_LOG_CLEAR, "</ul></span>",                                      ""); if(!(--m_iListStatus)) m_Lock.Unlock();}}
 
     /* set object properties */
     inline void SetLevel(const coreLogLevel eLevel) {m_eLevel = eLevel;}

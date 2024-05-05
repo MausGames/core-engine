@@ -205,7 +205,7 @@ void coreResourceManager::UpdateWait()
 /* retrieve archive */
 coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 {
-    coreSpinLocker oLocker(&m_FileLock);
+    const coreSpinLocker oLocker(&m_FileLock);
 
     // check for existing archive
     if(m_apArchive.count_bs(sPath)) return m_apArchive.at_bs(sPath);
@@ -222,7 +222,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
 /* retrieve resource file */
 coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 {
-    coreSpinLocker oLocker(&m_FileLock);
+    const coreSpinLocker oLocker(&m_FileLock);
 
     // try to open direct resource file first
     if(!coreData::FileExists(sPath.GetString()))

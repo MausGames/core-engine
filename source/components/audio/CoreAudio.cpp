@@ -559,7 +559,6 @@ const ALint* CoreAudio::__RetrieveAttributes()
     }
 
     // set standard attributes
-    nAttributeFunc(ALC_FREQUENCY,      48000u);
     nAttributeFunc(ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES);
     nAttributeFunc(ALC_STEREO_SOURCES, CORE_AUDIO_SOURCES);
 

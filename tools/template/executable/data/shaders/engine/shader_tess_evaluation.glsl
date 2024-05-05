@@ -17,4 +17,4 @@
         TessEvaluationMain();
     }
 
-#endif // _CORE_TESS_EVALUATION_SHADER_
+#endif

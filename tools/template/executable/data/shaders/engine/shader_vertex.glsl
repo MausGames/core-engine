@@ -107,4 +107,4 @@
     #endif
     }
 
-#endif // _CORE_VERTEX_SHADER_
+#endif

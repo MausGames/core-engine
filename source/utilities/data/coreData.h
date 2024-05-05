@@ -21,6 +21,10 @@
 // TODO 3: manually convert Win32 paths to \\?\ format, only for absolute paths (expand relative paths ? similar to user-folder ?), and requires changing path-delimiter '/' to '\' (what about SDL RWops ?)
 // TODO 1: handle distinction between user-folder (read+write) and data-folder (read only), for all platforms, and all file+directory functions
 // TODO 3: implement proper UTF8 versions for toupper, tolower, isupper, islower (wchar_t is only 2-bytes on Windows)
+// TODO 3: StrVersion should work with integers (sscanf ?)
+// TODO 2: implement locked/scoped temp-string return
+// TODO 3: localtime_s/_r and gmtime_s/_r
+// TODO 3: getpwuid_r and getlogin_r
 
 
 // ****************************************************************
