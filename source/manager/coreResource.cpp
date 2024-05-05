@@ -352,6 +352,9 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
         // unload all resources
         FOR_EACH(it, m_apHandle)
             (*it)->Nullify();
+
+        // clear global shader code
+        coreShader::ClearGlobalCode();
     }
 }
 

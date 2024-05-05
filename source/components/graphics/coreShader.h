@@ -132,6 +132,9 @@ public:
     inline const coreUint64& GetHash      ()const {return m_iHash;}
     inline const coreChar*   GetCustomCode()const {return m_sCustomCode.c_str();}
 
+    /* clear global shader code */
+    static void ClearGlobalCode();
+
 
 private:
     /* load global shader code */

@@ -152,6 +152,24 @@ coreStatus coreShader::Unload()
 
 
 // ****************************************************************
+/* clear global shader code */
+void coreShader::ClearGlobalCode()
+{
+    const coreSpinLocker  oLocker1(&s_GlobalLock);
+    const std::lock_guard oLocker2(s_IncludeLock);
+
+    // delete global shader code
+    for(coreUintW i = 0u; i < ARRAY_SIZE(s_asGlobalCode); ++i)
+    {
+        s_asGlobalCode[i].clear();
+    }
+
+    // also delete include shader code
+    s_asIncludeCode.clear();
+}
+
+
+// ****************************************************************
 /* load global shader code */
 void coreShader::__LoadGlobalCode()
 {
