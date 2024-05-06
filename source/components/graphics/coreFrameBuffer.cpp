@@ -93,7 +93,7 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
         if(pTarget->pTexture)
         {
             // create render target texture
-            pTarget->pTexture->Create(iWidth, iHeight, pTarget->oSpec, CORE_TEXTURE_MODE_TARGET);
+            pTarget->pTexture->Create(iWidth, iHeight, pTarget->oSpec, pTarget->eMode | CORE_TEXTURE_MODE_TARGET);
 
             // attach render target texture to frame buffer
             glFramebufferTexture2D(GL_FRAMEBUFFER, iAttachment, GL_TEXTURE_2D, pTarget->pTexture->GetIdentifier(), 0);
@@ -207,10 +207,10 @@ void coreFrameBuffer::Delete()
 
 // ****************************************************************
 /* attach render target texture */
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreTextureMode eMode, const coreChar* pcName)
 {
     // get requested render target structure
-    coreRenderTarget* pTarget = this->__AttachTarget(eTarget, iColorIndex, oSpec);
+    coreRenderTarget* pTarget = this->__AttachTarget(eTarget, iColorIndex, oSpec, eMode);
     if(pTarget)
     {
         // check for OpenGL extensions
@@ -232,8 +232,8 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
 coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
 {
     // get requested render target structure
-    if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (eTarget, iColorIndex, oSpec);
-                                         else return this->AttachTargetTexture(eTarget, iColorIndex, oSpec);
+    if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (eTarget, iColorIndex, oSpec, CORE_TEXTURE_MODE_DEFAULT);
+                                         else return this->AttachTargetTexture(eTarget, iColorIndex, oSpec, CORE_TEXTURE_MODE_DEFAULT);
 }
 
 
@@ -501,7 +501,7 @@ coreStatus coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
 
 // ****************************************************************
 /* attach default render target */
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreTextureMode eMode)
 {
     ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
@@ -520,6 +520,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
 
     // set properties
     pTarget->oSpec = oSpec;
+    pTarget->eMode = eMode;
 
     return pTarget;
 }

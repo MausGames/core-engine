@@ -55,6 +55,7 @@ private:
         coreTexturePtr  pTexture;   // render target texture (readable)
         GLuint          iBuffer;    // render target buffer (fast, multisampled)
         coreTextureSpec oSpec;      // texture and buffer specification (format)
+        coreTextureMode eMode;      // texture mode (sampling)
 
         constexpr coreRenderTarget()noexcept;
         inline coreBool IsTexture()const {return pTexture ? true : false;}
@@ -93,7 +94,7 @@ public:
     void       Delete();
 
     /* attach render targets */
-    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreChar* pcName = NULL);
+    coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreTextureMode eMode, const coreChar* pcName = NULL);
     coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
     void DetachTargets();
 
@@ -127,7 +128,7 @@ public:
 
 private:
     /* attach render targets */
-    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
+    coreRenderTarget* __AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreTextureMode eMode);
 };
 
 
@@ -137,6 +138,7 @@ constexpr coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
 : pTexture (NULL)
 , iBuffer  (0u)
 , oSpec    (coreTextureSpec(0u, 0u, 0u))
+, eMode    (CORE_TEXTURE_MODE_DEFAULT)
 {
 }
 
