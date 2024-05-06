@@ -14,8 +14,8 @@
 coreViewBox::coreViewBox()noexcept
 : coreObject2D ()
 , m_apObject   {}
-, m_aData      {}
 , m_vOffset    (coreVector2(0.0f,0.0f))
+, m_vOffsetOld (coreVector2(0.0f,0.0f))
 , m_bScissor   (true)
 {
     // enable interaction handling
@@ -71,15 +71,16 @@ void coreViewBox::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
-    if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
+    // check for position offset changes
+    const coreVector2 vMove = m_vOffset - m_vOffsetOld;
+    if(!vMove.IsNull())
     {
         // update relative view-object transformations
         FOR_EACH(it, m_apObject)
         {
             coreObject2D* pObject = (*it);
 
-            const coreViewData& oData = m_aData[m_apObject.index(it)];
-            pObject->SetPosition(this->GetPosition() + oData.vPosition + m_vOffset);
+            pObject->SetPosition(pObject->GetPosition() + vMove);
         }
     }
 
@@ -112,6 +113,9 @@ void coreViewBox::Move()
 
     // move the 2d-object
     this->coreObject2D::Move();
+
+    // store position offset
+    m_vOffsetOld = m_vOffset;
 }
 
 
@@ -121,15 +125,9 @@ void coreViewBox::BindObject(coreObject2D* pObject)
 {
     ASSERT(pObject)
 
-    // create new view-data
-    coreViewData oData = {};
-    oData.vPosition = pObject->GetPosition() - this->GetPosition();
-
     // add view-object to list
+    pObject->SetAlpha(0.0f);
     m_apObject.insert(pObject);
-
-    // add view-data to list
-    m_aData.push_back(oData);
 }
 
 
@@ -140,8 +138,5 @@ void coreViewBox::UnbindObject(coreObject2D* pObject)
     ASSERT(pObject)
 
     // remove view-object from list
-    const coreUintW iIndex = m_apObject.index(m_apObject.erase(pObject));
-
-    // remove view-data from list
-    if(iIndex < m_aData.size()) m_aData.erase(m_aData.begin() + iIndex);
+    m_apObject.index(m_apObject.erase(pObject));
 }

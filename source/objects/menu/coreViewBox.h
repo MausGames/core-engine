@@ -13,8 +13,6 @@
 // TODO 3: propagate direction
 // TODO 5: propagate size
 // TODO 3: propagate color and alpha (relative)
-// TODO 3: implement way to change view-data
-// TODO 3: CORE_OBJECT_UPDATE_TRANSFORM when changing offset also updates the view-box object, even though it did not change
 
 
 // ****************************************************************
@@ -22,18 +20,10 @@
 class coreViewBox : public coreObject2D
 {
 private:
-    /* view-object data */
-    struct coreViewData final
-    {
-        coreVector2 vPosition;   // relative position
-    };
-
-
-private:
     coreSet<coreObject2D*> m_apObject;   // pointers to view-objects
-    coreList<coreViewData> m_aData;      // additional data for each view-object
 
     coreVector2 m_vOffset;               // position offset for the whole content
+    coreVector2 m_vOffsetOld;            // old position offset (to handle movement)
     coreBool    m_bScissor;              // use scissor testing
 
 
@@ -43,7 +33,7 @@ public:
 
     DISABLE_COPY(coreViewBox)
 
-    /* move the view-box */
+    /* render and move the view-box */
     virtual void Render()override;
     virtual void Move  ()override;
 
@@ -51,8 +41,11 @@ public:
     void BindObject  (coreObject2D* pObject);
     void UnbindObject(coreObject2D* pObject);
 
+    /* check if view-object belongs to the view-box */
+    inline coreBool ContainsObject(coreObject2D* pObject)const {return m_apObject.count(pObject);}
+
     /* set object properties */
-    void SetOffset (const coreVector2 vOffset)  {if(m_vOffset != vOffset) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vOffset = vOffset;}}
+    void SetOffset (const coreVector2 vOffset)  {m_vOffset  = vOffset;}
     void SetScissor(const coreBool    bScissor) {m_bScissor = bScissor;}
 
     /* get object properties */
