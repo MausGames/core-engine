@@ -185,6 +185,8 @@ coreStatus coreConfig::Save()
 /* retrieve configuration entry */
 coreBool coreConfig::__RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, coreString** OUTPUT ppsEntry)
 {
+    ASSERT(m_Lock.IsLocked())
+
     // check for existence
     const coreBool bExists = (m_aasSection.count(sSection) && m_aasSection.at(sSection).count(sKey));
 
@@ -193,4 +195,23 @@ coreBool coreConfig::__RetrieveEntry(const coreHashString& sSection, const coreH
     (*ppsEntry) = &m_aasSection.at(sSection).at(sKey);
 
     return bExists;
+}
+
+
+// ****************************************************************
+/* change configuration entry */
+void coreConfig::__ChangeEntry(const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcValue)
+{
+    const coreSpinLocker oLocker(&m_Lock);
+
+    // retrieve configuration entry
+    coreString* psEntry;
+    if(!this->__RetrieveEntry(sSection, sKey, &psEntry) || std::strcmp(psEntry->c_str(), pcValue))
+    {
+        Core::Log->Info("Configuration value changed (%s.%s, %s -> %s)", sSection.GetString(), sKey.GetString(), psEntry->c_str(), pcValue);
+
+        // set new value
+        m_bDirty   = true;
+        (*psEntry) = pcValue;
+    }
 }

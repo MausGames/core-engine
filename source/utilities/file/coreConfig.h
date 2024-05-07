@@ -10,6 +10,9 @@
 #ifndef _CORE_GUARD_CONFIG_H_
 #define _CORE_GUARD_CONFIG_H_
 
+// TODO 3: add a way to control default values per project (dynamically ?)
+// TODO 3: changing a bool to an int can cause problems with existing config values, remove bool entirely ?
+
 
 // ****************************************************************
 /* configuration definitions */
@@ -18,6 +21,7 @@
 #define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (true)    // enable asynchronous processing and resource loading
 #define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)   // disable all possible hardware features
 #define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (false)   // load all resources on startup and keep them in memory
+#define CORE_CONFIG_BASE_VERSION                "Base",     "Version",            (0)
 
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (0)
@@ -73,14 +77,14 @@ public:
     coreStatus Save();
 
     /* set configuration values */
-    inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool,  const coreBool  bValue)  {this->SetBool  (sSection, sKey, bValue);}
-    inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32, const coreInt32 iValue)  {this->SetInt   (sSection, sKey, iValue);}
-    inline void SetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat, const coreFloat fValue)  {this->SetFloat (sSection, sKey, fValue);}
-    inline void SetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar*, const coreChar* pcValue) {this->SetString(sSection, sKey, pcValue);}
-    inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey,                  const coreBool  bValue)  {this->SetString(sSection, sKey, coreConfig::__FromBool (bValue));}
-    inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey,                  const coreInt32 iValue)  {this->SetString(sSection, sKey, coreConfig::__FromInt  (iValue));}
-    inline void SetFloat (const coreHashString& sSection, const coreHashString& sKey,                  const coreFloat fValue)  {this->SetString(sSection, sKey, coreConfig::__FromFloat(fValue));}
-    inline void SetString(const coreHashString& sSection, const coreHashString& sKey,                  const coreChar* pcValue) {coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry) || std::strcmp(psEntry->c_str(), pcValue)) {m_bDirty = true; (*psEntry) = pcValue;}}
+    inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool,  const coreBool  bValue)  {this->SetBool      (sSection, sKey, bValue);}
+    inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32, const coreInt32 iValue)  {this->SetInt       (sSection, sKey, iValue);}
+    inline void SetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat, const coreFloat fValue)  {this->SetFloat     (sSection, sKey, fValue);}
+    inline void SetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar*, const coreChar* pcValue) {this->SetString    (sSection, sKey, pcValue);}
+    inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey,                  const coreBool  bValue)  {this->__ChangeEntry(sSection, sKey, coreConfig::__FromBool (bValue));}
+    inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey,                  const coreInt32 iValue)  {this->__ChangeEntry(sSection, sKey, coreConfig::__FromInt  (iValue));}
+    inline void SetFloat (const coreHashString& sSection, const coreHashString& sKey,                  const coreFloat fValue)  {this->__ChangeEntry(sSection, sKey, coreConfig::__FromFloat(fValue));}
+    inline void SetString(const coreHashString& sSection, const coreHashString& sKey,                  const coreChar* pcValue) {this->__ChangeEntry(sSection, sKey, pcValue);}
 
     /* get configuration values */
     inline coreBool        GetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool  bDefault)  {const coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromBool (bDefault);} return coreConfig::__ToBool (*psEntry);}
@@ -93,8 +97,9 @@ public:
 
 
 private:
-    /* retrieve configuration entry */
+    /* handle configuration entries */
     coreBool __RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, coreString** OUTPUT ppsEntry);
+    void     __ChangeEntry  (const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcValue);
 
     /* convert to type */
     static inline coreBool  __ToBool (const coreString& sString) {return (sString[0] != 'f') && (sString[0] != 'F') && (sString[0] != '0');}
