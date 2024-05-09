@@ -233,7 +233,7 @@ inline coreBool coreBackendSteam::Init()
     ASSERT(!m_pClient)
 
     // load Steam library
-    if(!CoreApp::Settings::Platform::SteamAppID || !InitSteamLibrary())
+    if(!CoreApp::Settings::Platform::SteamAppID[CoreApp::Settings::IsDemo()] || !InitSteamLibrary())
     {
         return false;   // DRM free
     }
@@ -241,7 +241,7 @@ inline coreBool coreBackendSteam::Init()
 #if !defined(_CORE_DEBUG_)
 
     // make sure Steam launched the application
-    if(nSteamAPI_RestartAppIfNecessary(CoreApp::Settings::Platform::SteamAppID))
+    if(nSteamAPI_RestartAppIfNecessary(CoreApp::Settings::Platform::SteamAppID[CoreApp::Settings::IsDemo()]))
     {
         Core::Log->Warning("Steam will launch the application");
         std::exit(EXIT_SUCCESS);
@@ -802,7 +802,7 @@ inline void coreBackendSteam::__OnGameOverlayActivated(const GameOverlayActivate
 
 inline void coreBackendSteam::__OnUserStatsReceived(const UserStatsReceived_t* pResult)
 {
-    if(pResult->m_nGameID == CoreApp::Settings::Platform::SteamAppID)
+    if(pResult->m_nGameID == CoreApp::Settings::Platform::SteamAppID[CoreApp::Settings::IsDemo()])
     {
         // check for success (or try again)
         m_iStatsRequest = (pResult->m_eResult == k_EResultOK) ? 0u : 1u;
@@ -811,7 +811,7 @@ inline void coreBackendSteam::__OnUserStatsReceived(const UserStatsReceived_t* p
 
 inline void coreBackendSteam::__OnUserStatsStored(const UserStatsStored_t* pResult)
 {
-    if(pResult->m_nGameID == CoreApp::Settings::Platform::SteamAppID)
+    if(pResult->m_nGameID == CoreApp::Settings::Platform::SteamAppID[CoreApp::Settings::IsDemo()])
     {
         // check for success (or try again)
         m_iStatsStore = (pResult->m_eResult == k_EResultOK) ? 0u : 1u;

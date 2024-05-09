@@ -722,13 +722,16 @@ public:
 
         struct INTERFACE Platform final
         {
-            static const coreUint32      SteamAppID;            // Steam app ID       (0 = ignore)
-            static const coreChar* const EpicProductID;         // Epic product ID    (NULL = ignore)
-            static const coreChar* const EpicSandboxID   [3];   // Epic sandbox ID    (for store-related information) (dev, stage, live)
-            static const coreChar* const EpicDeploymentID[3];   // Epic deployment ID (for user-related information)
+            static const coreUint32      SteamAppID[2];         // Steam application ID  (0 = ignore) (full, demo)
+            static const coreChar* const EpicProductID;         // Epic product ID       (NULL = ignore)
+            static const coreChar* const EpicSandboxID   [3];   // Epic sandbox ID       (for store-related information) (dev, stage, live)
+            static const coreChar* const EpicDeploymentID[3];   // Epic deployment ID    (for user-related information)
             static const coreChar* const EpicClientID;          // Epic client ID
             static const coreChar* const EpicClientSecret;      // Epic client secret
         };
+
+        /* dynamic project settings */
+        static coreBool IsDemo();
     };
 
 
