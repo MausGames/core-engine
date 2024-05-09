@@ -23,6 +23,8 @@ STATIC_MEMORY(coreResourceManager, Core::Manager::Resource)
 STATIC_MEMORY(coreObjectManager,   Core::Manager::Object)
 STATIC_MEMORY(CoreApp,             Core::Application)
 
+static coreBool s_bRestart = false;   // requested application restart
+
 
 // ****************************************************************
 /* constructor */
@@ -187,6 +189,15 @@ void Core::Reshape()
 
 
 // ****************************************************************
+/* restart application */
+void Core::Restart()
+{
+    // deferr actual restart
+    s_bRestart = true;
+}
+
+
+// ****************************************************************
 /* main function */
 coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
 {
@@ -237,6 +248,13 @@ coreStatus Core::Run()
 #endif
 
     {
+        // perform deferred application restart
+        if(s_bRestart)
+        {
+            Core::__PerformRestart();
+            s_bRestart = false;
+        }
+
         // update the event system
         System->__UpdateEvents();
 
@@ -277,4 +295,21 @@ coreStatus Core::Run()
     Log->SetLevel(CORE_LOG_LEVEL_ALL);
 
     return CORE_OK;
+}
+
+
+// ****************************************************************
+/* perform deferred application restart */
+void Core::__PerformRestart()
+{
+    Log->Warning("Application Restart");
+
+    // restart application
+    Application->Exit();
+    Application->Init();
+
+    // reload all resources
+    Manager::Resource->UpdateWait();
+
+    Log->Header("Application Run");
 }

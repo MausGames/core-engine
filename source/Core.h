@@ -796,11 +796,17 @@ public:
     /* reshape engine */
     static void Reshape();
 
+    /* restart application */
+    static void Restart();
+
 
 private:
     /* run engine */
     friend coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv);
     static coreStatus Run();
+
+    /* perform deferred application restart */
+    static void __PerformRestart();
 };
 
 
