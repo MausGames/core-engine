@@ -82,7 +82,8 @@ if(CORE_EMSCRIPTEN)
 
     target_compile_options(
         CoreEngine PUBLIC
-        -msimd128 -msse3 -pipe -Wall -Wextra -Wpedantic
+        -msse3 -pipe -Wall -Wextra -Wpedantic
+        -matomics -mbulk-memory -mmultivalue -mmutable-globals -mnontrapping-fptoint -mreference-types -msimd128 -msign-ext
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -fno-rtti -fno-exceptions -Werror>
     )
 
