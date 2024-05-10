@@ -38,9 +38,13 @@
     #include <sys/stat.h>
 #endif
 
-THREAD_LOCAL coreData::coreTempString coreData::s_TempString     = {};
-coreMapStrFull<const coreChar*>       coreData::s_apcCommandLine = {};
-coreString                            coreData::s_sUserFolder    = "";
+THREAD_LOCAL coreData::coreTempString coreData::s_TempString         = {};
+coreMapStrFull<const coreChar*>       coreData::s_apcCommandLine     = {};
+coreString                            coreData::s_sUserFolder        = "";
+ZSTD_CCtx*                            coreData::s_pCompressContext   = ZSTD_createCCtx();   // never cleaned up
+ZSTD_DCtx*                            coreData::s_pDecompressContext = ZSTD_createDCtx();
+coreSpinLock                          coreData::s_CompressLock       = coreSpinLock();
+coreSpinLock                          coreData::s_DecompressLock     = coreSpinLock();
 
 extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
 
@@ -1777,8 +1781,10 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
     const coreUintW iBound  = ZSTD_compressBound(iInputSize);
     coreByte*       pBuffer = new coreByte[iBound + sizeof(coreUint32)];
 
+    const coreSpinLocker oLocker(&s_CompressLock);
+
     // compress data
-    const coreUintW iWritten = ZSTD_compress(pBuffer + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
+    const coreUintW iWritten = ZSTD_compressCCtx(s_pCompressContext, pBuffer + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
     if(ZSTD_isError(iWritten))
     {
         SAFE_DELETE_ARRAY(pBuffer)
@@ -1811,8 +1817,10 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
         return CORE_INVALID_DATA;
     }
 
+    const coreSpinLocker oLocker(&s_CompressLock);
+
     // compress data
-    const coreUintW iWritten = ZSTD_compress(pOutput + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
+    const coreUintW iWritten = ZSTD_compressCCtx(s_pCompressContext, pOutput + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
     if(ZSTD_isError(iWritten))
     {
         Core::Log->Warning("Error compressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
@@ -1839,8 +1847,10 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
     const coreUint32 iBound  = MIN(*r_cast<const coreUint32*>(pInput), iLimit);
     coreByte*        pBuffer = new coreByte[iBound];
 
+    const coreSpinLocker oLocker(&s_DecompressLock);
+
     // decompress data
-    const coreUintW iWritten = ZSTD_decompress(pBuffer, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
+    const coreUintW iWritten = ZSTD_decompressDCtx(s_pDecompressContext, pBuffer, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
     if(ZSTD_isError(iWritten) || (iWritten != iBound))
     {
         SAFE_DELETE_ARRAY(pBuffer)
@@ -1870,8 +1880,10 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
         return CORE_INVALID_DATA;
     }
 
+    const coreSpinLocker oLocker(&s_DecompressLock);
+
     // decompress data
-    const coreUintW iWritten = ZSTD_decompress(pOutput, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
+    const coreUintW iWritten = ZSTD_decompressDCtx(s_pDecompressContext, pOutput, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
     if(ZSTD_isError(iWritten) || (iWritten != iBound))
     {
         Core::Log->Warning("Error decompressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));

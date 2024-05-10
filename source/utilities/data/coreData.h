@@ -11,7 +11,6 @@
 #define _CORE_GUARD_DATA_H_
 
 // TODO 3: implement constexpr strright
-// TODO 3: reuse context on compression and decompression (ZSTD_createCCtx & co), but needs to be thread-safe ?
 // TODO 3: --headless
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 // TODO 3: make !temp and !appdata replace instead
@@ -75,6 +74,11 @@ private:
 
     static coreMapStrFull<const coreChar*> s_apcCommandLine;   // parsed command line arguments
     static coreString                      s_sUserFolder;      // selected user folder
+
+    static ZSTD_CCtx*   s_pCompressContext;                    // reusable compression context
+    static ZSTD_DCtx*   s_pDecompressContext;                  // reusable decompression context
+    static coreSpinLock s_CompressLock;                        // compression context spinlock
+    static coreSpinLock s_DecompressLock;                      // decompression context spinlock
 
 
 public:
