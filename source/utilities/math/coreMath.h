@@ -59,6 +59,7 @@
 #define STEPBR coreMath::StepBreakRev
 #define STEPH3 coreMath::StepHermite3
 #define STEPH5 coreMath::StepHermite5
+#define FMODR  coreMath::FmodRange
 #define FMOD   coreMath::Fmod
 #define TRUNC  coreMath::Trunc
 #define FRACT  coreMath::Fract
@@ -134,16 +135,17 @@ public:
     static constexpr coreFloat               StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)       {return BLENDH5(STEP(a, b, x));}             // smootherstep
 
     /* base operations */
-    template <std::floating_point T, std::floating_point S = T> static inline    T Fmod (const T& tNum, const S& tDenom) {return std::fmod (tNum, tDenom);}
-    template <std::floating_point T>                            static inline    T Trunc(const T& tInput)                {return std::trunc(tInput);}
-    template <std::floating_point T>                            static inline    T Fract(const T& tInput)                {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
-    template <std::floating_point T>                            static inline    T Cbrt (const T& tInput)                {return std::cbrt (tInput);}
-    template <std::floating_point T>                            static inline    T Sqrt (const T& tInput)                {return std::sqrt (tInput);}
-    template <std::floating_point T>                            static inline    T Rsqrt(const T& tInput)                {return T(1) / SQRT(tInput);}
-    template <std::floating_point T>                            static constexpr T Rcp  (const T& tInput)                {return T(1) / tInput;}
-    static constexpr coreFloat                                                     Sqrt (const coreFloat fInput);
-    static constexpr coreFloat                                                     Rsqrt(const coreFloat fInput);
-    static constexpr coreFloat                                                     Rcp  (const coreFloat fInput);
+    template <std::floating_point T, std::floating_point S = T> static inline    T FmodRange(const T& tNum, const S& tFrom, const S& tTo);
+    template <std::floating_point T, std::floating_point S = T> static inline    T Fmod     (const T& tNum, const S& tDenom) {return std::fmod (tNum, tDenom);}
+    template <std::floating_point T>                            static inline    T Trunc    (const T& tInput)                {return std::trunc(tInput);}
+    template <std::floating_point T>                            static inline    T Fract    (const T& tInput)                {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
+    template <std::floating_point T>                            static inline    T Cbrt     (const T& tInput)                {return std::cbrt (tInput);}
+    template <std::floating_point T>                            static inline    T Sqrt     (const T& tInput)                {return std::sqrt (tInput);}
+    template <std::floating_point T>                            static inline    T Rsqrt    (const T& tInput)                {return T(1) / SQRT(tInput);}
+    template <std::floating_point T>                            static constexpr T Rcp      (const T& tInput)                {return T(1) / tInput;}
+    static constexpr coreFloat                                                     Sqrt     (const coreFloat fInput);
+    static constexpr coreFloat                                                     Rsqrt    (const coreFloat fInput);
+    static constexpr coreFloat                                                     Rcp      (const coreFloat fInput);
 
     /* exponential operations */
     template <std::floating_point T, std::floating_point S = T> static inline T Pow  (const T& tBase,  const S& tExp)  {return std::pow  (tBase, tExp);}
@@ -168,6 +170,9 @@ public:
     template <std::floating_point T> static inline    T  Ceil         (const T& tInput)                          {return std::ceil     (tInput);}
     template <std::floating_point T> static inline    T  Floor        (const T& tInput)                          {return std::floor    (tInput);}
     template <std::floating_point T> static inline    T  Round        (const T& tInput)                          {return std::round    (tInput);}
+    template <std::floating_point T> static inline    T  CeilFactor   (const T& tInput, const T& tFactor)        {return CEIL (tInput * RCP(tFactor)) * tFactor;}
+    template <std::floating_point T> static inline    T  FloorFactor  (const T& tInput, const T& tFactor)        {return FLOOR(tInput * RCP(tFactor)) * tFactor;}
+    template <std::floating_point T> static inline    T  RoundFactor  (const T& tInput, const T& tFactor)        {return ROUND(tInput * RCP(tFactor)) * tFactor;}
     template <std::integral       T> static constexpr T  CeilPot      (const T& tInput)                          {return std::bit_ceil (tInput);}
     template <std::integral       T> static constexpr T  FloorPot     (const T& tInput)                          {return std::bit_floor(tInput);}
     template <std::integral       T> static constexpr T  CeilAlign    (const T& tInput,  const coreUintW iAlign) {const T k = tInput + iAlign - 1u; return k - (k % iAlign);}
@@ -211,6 +216,19 @@ public:
     static inline void EnableRoundToNearest();
     static inline void DisableDenormals();
 };
+
+
+// ****************************************************************
+/* loop value within specific range */
+template <std::floating_point T, std::floating_point S> inline T coreMath::FmodRange(const T& tNum, const S& tFrom, const S& tTo)
+{
+    ASSERT(tFrom < tTo)
+
+    if(tNum >= tTo)   return FMOD(tNum - tFrom, tTo   - tFrom) + tFrom;
+    if(tNum <  tFrom) return FMOD(tNum - tTo,   tFrom - tTo)   + tTo;
+
+    return tNum;
+}
 
 
 // ****************************************************************

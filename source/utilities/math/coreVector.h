@@ -17,6 +17,7 @@
 // TODO 2: fix flipped rotation in 2d-space (Rotated90 etc. goes into the wrong direction, normal rotation is CCW)
 
 // NOTE: normalization needs to be safe by default, because an accidental null-normalization is hard to predict or detect in gameplay-code and can be fatal
+// NOTE: 2d-vectors start at the top and rotate CCW
 
 
 // ****************************************************************
@@ -89,6 +90,30 @@ public:
     constexpr coreVector2 Rotated120()const {return coreVector2(-x, -y) * 0.5f + coreVector2( y, -x) * 0.8660254037844386467637231707529f;}
     constexpr coreVector2 Rotated150()const {return coreVector2( y, -x) * 0.5f + coreVector2(-x, -y) * 0.8660254037844386467637231707529f;}
 
+    /* project vector */
+    constexpr        coreVector2 MapToAxis           (const coreVector2 vAxis)const;
+    constexpr        coreVector2 MapToAxisInv        (const coreVector2 vAxis)const;
+    constexpr        coreVector2 MapStepRotated45    (const coreUint8   iStep)const;
+    constexpr        coreVector2 MapStepRotated45X   (const coreUint8   iStep)const {return this->MapStepRotated45 (iStep).MapToAxis(coreVector2(0.382683456f, 0.923879504f));}
+    constexpr        coreVector2 MapStepRotated90    (const coreUint8   iStep)const {return this->MapStepRotated45 (iStep * 2u);}
+    constexpr        coreVector2 MapStepRotated90X   (const coreUint8   iStep)const {return this->MapStepRotated45 (iStep * 2u + 1u);}
+    constexpr        coreVector2 MapStepRotatedInv45 (const coreUint8   iStep)const {return this->MapStepRotated45 ((8u - iStep) % 8u);}
+    constexpr        coreVector2 MapStepRotatedInv45X(const coreUint8   iStep)const {return this->MapStepRotated45X((8u - iStep) % 8u);}
+    constexpr        coreVector2 MapStepRotatedInv90 (const coreUint8   iStep)const {return this->MapStepRotated90 ((4u - iStep) % 4u);}
+    constexpr        coreVector2 MapStepRotatedInv90X(const coreUint8   iStep)const {return this->MapStepRotated90X((4u - iStep) % 4u);}
+    static constexpr coreVector2 StepRotated45       (const coreUint8   iStep)      {ASSERT(iStep < 8u) return coreVector2::UnpackWay8(iStep);}
+    static constexpr coreVector2 StepRotated45X      (const coreUint8   iStep)      {ASSERT(iStep < 8u) return coreVector2::UnpackWay8(iStep).MapToAxis(coreVector2(0.382683456f, 0.923879504f));}
+    static constexpr coreVector2 StepRotated90       (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8(iStep * 2u);}
+    static constexpr coreVector2 StepRotated90X      (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8(iStep * 2u + 1u);}
+
+    /* constrain vector */
+    inline coreVector2 AlongWay4       ()const {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y))) * this->Length();}
+    inline coreVector2 AlongWay4Normal ()const {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y)));}
+    inline coreVector2 AlongWay4X      ()const {return -this->Rotated45().AlongWay4      ().Rotated135();}
+    inline coreVector2 AlongWay4XNormal()const {return -this->Rotated45().AlongWay4Normal().Rotated135();}
+    inline coreVector2 AlongWay8       ()const {return UnpackWay8(this->PackWay8()) * this->Length();}
+    inline coreVector2 AlongWay8Normal ()const {return UnpackWay8(this->PackWay8());}
+
     /* normalize vector */
     constexpr coreVector2 Normalized             (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
     constexpr coreVector2 NormalizedUnsafe       ()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
@@ -114,27 +139,34 @@ public:
     constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f);}
     constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}
+    inline    coreBool    IsHorizontal()const {return (ABS(x) > ABS(y));}
     constexpr coreBool    IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f);}
     constexpr coreBool    IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f);}
 
     /* static functions */
-    static constexpr coreFloat   Dot      (const coreVector2 v1, const coreVector2 v2);
-    static inline    coreFloat   Angle    (const coreVector2 v1, const coreVector2 v2);
-    static inline    coreVector2 Direction(const coreFloat fAngle);
-    static inline    coreVector2 Rand     (coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector2 Rand     (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector2 Rand     (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector2 Rand     (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector2 RandUni  (coreRand* OUTPUT pRand = Core::Rand);
-    static constexpr coreVector2 Reflect  (const coreVector2 vVelocity, const coreVector2 vNormal);
+    static constexpr coreFloat   Dot       (const coreVector2 v1, const coreVector2 v2);
+    static constexpr coreBool    SameDir   (const coreVector2 v1, const coreVector2 v2);
+    static constexpr coreBool    SameDir90 (const coreVector2 v1, const coreVector2 v2);
+    static constexpr coreBool    SameDir180(const coreVector2 v1, const coreVector2 v2);
+    static inline    coreFloat   Angle     (const coreVector2 v1, const coreVector2 v2);
+    static inline    coreVector2 Direction (const coreFloat fAngle);
+    static inline    coreVector2 Rand      (coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 Rand      (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 Rand      (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 Rand      (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 RandUni   (coreRand* OUTPUT pRand = Core::Rand);
+    static constexpr coreVector2 Reflect   (const coreVector2 vVelocity, const coreVector2 vNormal);
+    static inline    coreBool    Intersect (const coreVector2 vPosition1, const coreVector2 vDirection1, const coreVector2 vPosition2, const coreVector2 vDirection2, coreVector2* OUTPUT pvIntersection);
 
     /* packing functions */
+    inline           coreUint8   PackWay8       ()const;
     constexpr        coreUint16  PackUnorm2x8   ()const;
     constexpr        coreUint16  PackSnorm2x8   ()const;
     constexpr        coreUint32  PackUnorm2x16  ()const;
     constexpr        coreUint32  PackSnorm2x16  ()const;
     constexpr        coreUint32  PackFloat2x16  ()const;
     constexpr        coreUint64  PackFloat2x32  ()const;
+    static constexpr coreVector2 UnpackWay8     (const coreUint8  iNumber);
     static constexpr coreVector2 UnpackUnorm2x8 (const coreUint16 iNumber);
     static constexpr coreVector2 UnpackSnorm2x8 (const coreUint16 iNumber);
     static constexpr coreVector2 UnpackUnorm2x16(const coreUint32 iNumber);
@@ -260,15 +292,18 @@ public:
     constexpr coreBool    IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f) && (z >= -1.0f) && (z <= 1.0f);}
 
     /* static functions */
-    static constexpr coreFloat   Dot    (const coreVector3 v1, const coreVector3 v2);
-    static constexpr coreVector3 Cross  (const coreVector3 v1, const coreVector3 v2);
-    static inline    coreFloat   Angle  (const coreVector3 v1, const coreVector3 v2);
-    static inline    coreVector3 Rand   (coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector3 Rand   (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector3 Rand   (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector3 Rand   (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, coreRand* OUTPUT pRand = Core::Rand);
-    static constexpr coreVector3 Reflect(const coreVector3 vVelocity, const coreVector3 vNormal);
-    static inline    coreBool    Visible(const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
+    static constexpr coreFloat   Dot       (const coreVector3 v1, const coreVector3 v2);
+    static constexpr coreVector3 Cross     (const coreVector3 v1, const coreVector3 v2);
+    static constexpr coreBool    SameDir   (const coreVector3 v1, const coreVector3 v2);
+    static constexpr coreBool    SameDir90 (const coreVector3 v1, const coreVector3 v2);
+    static constexpr coreBool    SameDir180(const coreVector3 v1, const coreVector3 v2);
+    static inline    coreFloat   Angle     (const coreVector3 v1, const coreVector3 v2);
+    static inline    coreVector3 Rand      (coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector3 Rand      (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector3 Rand      (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector3 Rand      (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, coreRand* OUTPUT pRand = Core::Rand);
+    static constexpr coreVector3 Reflect   (const coreVector3 vVelocity, const coreVector3 vNormal);
+    static inline    coreBool    Visible   (const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
 
     /* packing functions */
     constexpr        coreUint16  PackUnorm565   ()const;
@@ -438,10 +473,64 @@ constexpr coreVector4 operator * (const coreFloat f, const coreVector4 v) {retur
 
 
 // ****************************************************************
+/* transform into new direction */
+constexpr coreVector2 coreVector2::MapToAxis(const coreVector2 vAxis)const
+{
+    ASSERT(vAxis.IsNormalized())
+    return (x * vAxis.Rotated90()) +
+           (y * vAxis);
+}
+
+constexpr coreVector2 coreVector2::MapToAxisInv(const coreVector2 vAxis)const
+{
+    return this->MapToAxis(vAxis.InvertedX());
+}
+
+constexpr coreVector2 coreVector2::MapStepRotated45(const coreUint8 iStep)const
+{
+    // 1 0 7
+    // 2 ^ 6
+    // 3 4 5
+    switch(iStep)
+    {
+    default: UNREACHABLE
+    case 0u: return  (*this);
+    case 1u: return -this->Rotated135();
+    case 2u: return -this->Rotated90 ();
+    case 3u: return -this->Rotated45 ();
+    case 4u: return -(*this);
+    case 5u: return  this->Rotated135();
+    case 6u: return  this->Rotated90 ();
+    case 7u: return  this->Rotated45 ();
+    }
+}
+
+
+// ****************************************************************
 /* calculate dot product */
 constexpr coreFloat coreVector2::Dot(const coreVector2 v1, const coreVector2 v2)
 {
     return (v1.x*v2.x + v1.y*v2.y);
+}
+
+
+// ****************************************************************
+/* calculate similarity between two vectors */
+constexpr coreBool coreVector2::SameDir(const coreVector2 v1, const coreVector2 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (coreVector2::Dot(v1, v2) >= (1.0f) - CORE_MATH_PRECISION);
+}
+
+constexpr coreBool coreVector2::SameDir90(const coreVector2 v1, const coreVector2 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (coreVector2::Dot(v1, v2) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
+}
+
+constexpr coreBool coreVector2::SameDir180(const coreVector2 v1, const coreVector2 v2)
+{
+    return (coreVector2::Dot(v1, v2) >= (0.0f));
 }
 
 
@@ -503,6 +592,34 @@ constexpr coreVector2 coreVector2::Reflect(const coreVector2 vVelocity, const co
 
 
 // ****************************************************************
+/* calculate intersection between two rays */
+inline coreBool coreVector2::Intersect(const coreVector2 vPosition1, const coreVector2 vDirection1, const coreVector2 vPosition2, const coreVector2 vDirection2, coreVector2* OUTPUT pvIntersection)
+{
+    ASSERT(vDirection1.IsNormalized() && vDirection2.IsNormalized() && pvIntersection)
+
+    // calculate determinant
+    const coreFloat fDet = coreVector2::Dot(vDirection1.Rotated90(), vDirection2);
+    if(coreMath::IsNear(fDet, 0.0f)) return false;   // parallel rays
+
+    // calculate distance to intersection
+    const coreVector2 vDiff = vPosition2 - vPosition1;
+    const coreFloat   fLen  = coreVector2::Dot(vDiff.Rotated90(), vDirection2) * RCP(fDet);
+
+    // return intersection point
+    (*pvIntersection) = vPosition1 + vDirection1 * fLen;
+    return true;
+}
+
+
+// ****************************************************************
+/* compress normalized vector into 4 bits (with null) */
+inline coreUint8 coreVector2::PackWay8()const
+{
+    return this->IsNull() ? 8u : (F_TO_UI(ROUND(this->Angle() / (0.25f*PI))) & 0x07u);
+}
+
+
+// ****************************************************************
 /* compress 0.0 to 1.0 vector into YX packed uint16 */
 constexpr coreUint16 coreVector2::PackUnorm2x8()const
 {
@@ -556,6 +673,29 @@ constexpr coreUint32 coreVector2::PackFloat2x16()const
 constexpr coreUint64 coreVector2::PackFloat2x32()const
 {
     return std::bit_cast<coreUint64>(*this);
+}
+
+
+// ****************************************************************
+/* uncompress 4 bits into normalized vector (with null) */
+constexpr coreVector2 coreVector2::UnpackWay8(const coreUint8 iNumber)
+{
+    // 1 0 7
+    // 2 8 6
+    // 3 4 5
+    switch(iNumber)
+    {
+    default: UNREACHABLE
+    case 0u: return coreVector2( 0.0f, 1.0f);
+    case 1u: return coreVector2(-1.0f, 1.0f) * (1.0f/SQRT2);
+    case 2u: return coreVector2(-1.0f, 0.0f);
+    case 3u: return coreVector2(-1.0f,-1.0f) * (1.0f/SQRT2);
+    case 4u: return coreVector2( 0.0f,-1.0f);
+    case 5u: return coreVector2( 1.0f,-1.0f) * (1.0f/SQRT2);
+    case 6u: return coreVector2( 1.0f, 0.0f);
+    case 7u: return coreVector2( 1.0f, 1.0f) * (1.0f/SQRT2);
+    case 8u: return coreVector2( 0.0f, 0.0f);
+    }
 }
 
 
@@ -633,6 +773,26 @@ constexpr coreVector3 coreVector3::Cross(const coreVector3 v1, const coreVector3
     return coreVector3(v1.y*v2.z - v1.z*v2.y,
                        v1.z*v2.x - v1.x*v2.z,
                        v1.x*v2.y - v1.y*v2.x);
+}
+
+
+// ****************************************************************
+/* calculate similarity between two vectors */
+constexpr coreBool coreVector3::SameDir(const coreVector3 v1, const coreVector3 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (coreVector3::Dot(v1, v2) >= (1.0f) - CORE_MATH_PRECISION);
+}
+
+constexpr coreBool coreVector3::SameDir90(const coreVector3 v1, const coreVector3 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (coreVector3::Dot(v1, v2) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
+}
+
+constexpr coreBool coreVector3::SameDir180(const coreVector3 v1, const coreVector3 v2)
+{
+    return (coreVector3::Dot(v1, v2) >= (0.0f));
 }
 
 
