@@ -805,12 +805,12 @@ void coreData::LogEnvironment()
 {
     Core::Log->ListStartInfo("Environment Variables");
     {
-        for(coreChar** pcEnviron = environ; (*pcEnviron); ++pcEnviron)
+        for(coreChar** ppcEnviron = environ; (*ppcEnviron); ++ppcEnviron)
         {
-            const coreChar* pcAssign = std::strchr((*pcEnviron), '=');
+            const coreChar* pcAssign = std::strchr((*ppcEnviron), '=');
             if(pcAssign)
             {
-                Core::Log->ListAdd("%.*s = %s", coreInt32(pcAssign - (*pcEnviron)), (*pcEnviron), pcAssign + 1u);
+                Core::Log->ListAdd("%.*s = %s", coreInt32(pcAssign - (*ppcEnviron)), (*ppcEnviron), pcAssign + 1u);
             }
         }
     }

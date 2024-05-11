@@ -263,8 +263,8 @@ ZSTDLIB_API int         ZSTDLIB_CALL ZSTD_defaultCLevel(void);           /*!< de
  *         use one different context per thread for parallel execution.
  */
 typedef struct ZSTD_CCtx_s ZSTD_CCtx;
-ZSTDLIB_API ZSTD_CCtx* ZSTD_createCCtx(void);
-ZSTDLIB_API size_t     ZSTD_freeCCtx(ZSTD_CCtx* cctx);  /* accept NULL pointer */
+ZSTDLIB_API ZSTD_CCtx* ZSTDLIB_CALL ZSTD_createCCtx(void);
+ZSTDLIB_API size_t     ZSTDLIB_CALL ZSTD_freeCCtx(ZSTD_CCtx* cctx);  /* accept NULL pointer */
 
 /*! ZSTD_compressCCtx() :
  *  Same as ZSTD_compress(), using an explicit ZSTD_CCtx.
@@ -274,10 +274,10 @@ ZSTDLIB_API size_t     ZSTD_freeCCtx(ZSTD_CCtx* cctx);  /* accept NULL pointer *
  *  If any advanced parameter was set using the advanced API,
  *  they will all be reset. Only `compressionLevel` remains.
  */
-ZSTDLIB_API size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx,
-                                     void* dst, size_t dstCapacity,
-                               const void* src, size_t srcSize,
-                                     int compressionLevel);
+ZSTDLIB_API size_t ZSTDLIB_CALL ZSTD_compressCCtx(ZSTD_CCtx* cctx,
+                                                  void* dst, size_t dstCapacity,
+                                            const void* src, size_t srcSize,
+                                                  int compressionLevel);
 
 /*= Decompression context
  *  When decompressing many times,
@@ -286,17 +286,17 @@ ZSTDLIB_API size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx,
  *  This will make workload friendlier for system's memory.
  *  Use one context per thread for parallel execution. */
 typedef struct ZSTD_DCtx_s ZSTD_DCtx;
-ZSTDLIB_API ZSTD_DCtx* ZSTD_createDCtx(void);
-ZSTDLIB_API size_t     ZSTD_freeDCtx(ZSTD_DCtx* dctx);  /* accept NULL pointer */
+ZSTDLIB_API ZSTD_DCtx* ZSTDLIB_CALL ZSTD_createDCtx(void);
+ZSTDLIB_API size_t     ZSTDLIB_CALL ZSTD_freeDCtx(ZSTD_DCtx* dctx);  /* accept NULL pointer */
 
 /*! ZSTD_decompressDCtx() :
  *  Same as ZSTD_decompress(),
  *  requires an allocated ZSTD_DCtx.
  *  Compatible with sticky parameters (see below).
  */
-ZSTDLIB_API size_t ZSTD_decompressDCtx(ZSTD_DCtx* dctx,
-                                       void* dst, size_t dstCapacity,
-                                 const void* src, size_t srcSize);
+ZSTDLIB_API size_t ZSTDLIB_CALL ZSTD_decompressDCtx(ZSTD_DCtx* dctx,
+                                                    void* dst, size_t dstCapacity,
+                                              const void* src, size_t srcSize);
 
 
 /*********************************************

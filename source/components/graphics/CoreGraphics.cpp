@@ -113,6 +113,7 @@ CoreGraphics::CoreGraphics()noexcept
 
     // setup texturing and packing
     if(CORE_GL_SUPPORT(V2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    if(CORE_GL_SUPPORT(ARB_seamless_cube_map))                    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);

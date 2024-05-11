@@ -248,8 +248,7 @@ void coreObject2D::Interact()
     {
         // get relative finger position
         const coreVector2 vInput   = Core::Input->GetTouchPosition(i) * vResolution - vScreenPosition;
-        const coreVector2 vRotated = (vInput.x * vScreenDirection.Rotated90()) +
-                                     (vInput.y * vScreenDirection);
+        const coreVector2 vRotated = vInput.MapToAxis(vScreenDirection);
 
         // test for intersection
         if((ABS(vRotated.x) < vScreenSize.x) &&
@@ -264,8 +263,7 @@ void coreObject2D::Interact()
 
     // get relative mouse cursor position
     const coreVector2 vInput   = Core::Input->GetMousePosition() * vResolution - vScreenPosition;
-    const coreVector2 vRotated = (vInput.x * vScreenDirection.Rotated90()) +
-                                 (vInput.y * vScreenDirection);
+    const coreVector2 vRotated = vInput.MapToAxis(vScreenDirection);
 
     // test for intersection
     SET_BIT(m_iFocused, 0u, (ABS(vRotated.x) < vScreenSize.x) &&

@@ -16,8 +16,6 @@
 
 // NOTE: row major
 
-#define CONSTEXPR inline
-
 
 // ****************************************************************
 /* 3x2-matrix class (storage only) */
@@ -164,10 +162,10 @@ public:
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 9u) return (&_11)[i];}
     constexpr const coreFloat& arr (const coreUintW i)const {ASSERT(i < 9u) return (&_11)[i];}
     constexpr const coreFloat* ptr ()const                  {return (&_11);}
-    CONSTEXPR coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
-    CONSTEXPR coreMatrix2      m12 ()const                  {return coreMatrix2  (_11, _12, _21, _22);}
-    CONSTEXPR coreMatrix2      m13 ()const                  {return coreMatrix2  (_11, _13, _31, _33);}
-    CONSTEXPR coreMatrix2      m23 ()const                  {return coreMatrix2  (_22, _23, _32, _33);}
+    constexpr coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
+    constexpr coreMatrix2      m12 ()const                  {return coreMatrix2  (_11, _12, _21, _22);}
+    constexpr coreMatrix2      m13 ()const                  {return coreMatrix2  (_11, _13, _31, _33);}
+    constexpr coreMatrix2      m23 ()const                  {return coreMatrix2  (_22, _23, _32, _33);}
 
     /* transpose matrix */
     constexpr coreMatrix3 Transposed()const;
@@ -248,12 +246,12 @@ public:
     inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 16u) return (&_11)[i];}
     constexpr const coreFloat& arr (const coreUintW i)const {ASSERT(i < 16u) return (&_11)[i];}
     constexpr const coreFloat* ptr ()const                  {return (&_11);}
-    CONSTEXPR coreMatrix4x3    m4x3()const                  {return coreMatrix4x3(_11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43);}
-    CONSTEXPR coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
-    CONSTEXPR coreMatrix3      m123()const                  {return coreMatrix3  (_11, _12, _13, _21, _22, _23, _31, _32, _33);}
-    CONSTEXPR coreMatrix3      m124()const                  {return coreMatrix3  (_11, _12, _14, _21, _22, _24, _41, _42, _44);}
-    CONSTEXPR coreMatrix3      m134()const                  {return coreMatrix3  (_11, _13, _14, _31, _33, _34, _41, _43, _44);}
-    CONSTEXPR coreMatrix3      m234()const                  {return coreMatrix3  (_22, _23, _24, _32, _33, _34, _42, _43, _44);}
+    constexpr coreMatrix4x3    m4x3()const                  {return coreMatrix4x3(_11, _12, _13, _21, _22, _23, _31, _32, _33, _41, _42, _43);}
+    constexpr coreMatrix3x2    m3x2()const                  {return coreMatrix3x2(_11, _12, _21, _22, _31, _32);}
+    constexpr coreMatrix3      m123()const                  {return coreMatrix3  (_11, _12, _13, _21, _22, _23, _31, _32, _33);}
+    constexpr coreMatrix3      m124()const                  {return coreMatrix3  (_11, _12, _14, _21, _22, _24, _41, _42, _44);}
+    constexpr coreMatrix3      m134()const                  {return coreMatrix3  (_11, _13, _14, _31, _33, _34, _41, _43, _44);}
+    constexpr coreMatrix3      m234()const                  {return coreMatrix3  (_22, _23, _24, _32, _33, _34, _42, _43, _44);}
 
     /* transpose matrix */
     constexpr coreMatrix4 Transposed()const;
@@ -302,9 +300,9 @@ public:
 
 // ****************************************************************
 /* global scalar operations */
-CONSTEXPR coreMatrix2 operator * (const coreFloat f, const coreMatrix2& m) {return m * f;}
-CONSTEXPR coreMatrix3 operator * (const coreFloat f, const coreMatrix3& m) {return m * f;}
-CONSTEXPR coreMatrix4 operator * (const coreFloat f, const coreMatrix4& m) {return m * f;}
+constexpr coreMatrix2 operator * (const coreFloat f, const coreMatrix2& m) {return m * f;}
+constexpr coreMatrix3 operator * (const coreFloat f, const coreMatrix3& m) {return m * f;}
+constexpr coreMatrix4 operator * (const coreFloat f, const coreMatrix4& m) {return m * f;}
 
 
 // ****************************************************************
