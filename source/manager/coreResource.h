@@ -46,7 +46,7 @@ protected:
 
 
 public:
-    coreResource()noexcept : m_sName ("") {}
+    constexpr coreResource()noexcept : m_sName ("") {}
     virtual ~coreResource() = default;
 
     ENABLE_COPY(coreResource)
@@ -385,7 +385,11 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
         }
 
         // delete possible resource proxy
-        m_apProxy.erase(pHandle);
+        if(m_apProxy.count(pHandle))
+        {
+            this->AssignProxy(pHandle, NULL);
+            m_apProxy.erase(pHandle);
+        }
 
         // wait on possible resource loading
         while(pHandle->m_UpdateLock.IsLocked()) CORE_SPINLOCK_YIELD   // # locked again in destructor

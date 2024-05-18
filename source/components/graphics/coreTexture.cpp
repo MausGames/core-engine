@@ -57,8 +57,8 @@ coreStatus coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    // convert from single-channel data (if not supported)
-    if((pData->format->BytesPerPixel == 1u) && !CORE_GL_SUPPORT(ARB_texture_rg))
+    // convert from low-channel data (if not supported)
+    if((pData->format->BytesPerPixel < 3u) && !CORE_GL_SUPPORT(ARB_texture_rg))
     {
         pData = SDL_ConvertSurfaceFormat(pData, SDL_PIXELFORMAT_RGB24, 0u);
     }

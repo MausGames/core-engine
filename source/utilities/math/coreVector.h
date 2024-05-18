@@ -117,7 +117,7 @@ public:
     /* normalize vector */
     constexpr coreVector2 Normalized             (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
     constexpr coreVector2 NormalizedUnsafe       ()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
-    constexpr coreVector2 NormalizedUnsafePrecise()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * (1.0f / SQRT(this->LengthSq()));}
+    constexpr coreVector2 NormalizedUnsafePrecise()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * (1.0f / this->Length());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
@@ -152,7 +152,7 @@ public:
     static inline    coreVector2 Direction (const coreFloat fAngle);
     static inline    coreVector2 Rand      (coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector2 Rand      (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector2 Rand      (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector2 Rand      (const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector2 Rand      (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector2 RandUni   (coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector2 Reflect   (const coreVector2 vVelocity, const coreVector2 vNormal);
@@ -268,7 +268,7 @@ public:
     /* normalize vector */
     constexpr coreVector3 Normalized             (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
     constexpr coreVector3 NormalizedUnsafe       ()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
-    constexpr coreVector3 NormalizedUnsafePrecise()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * (1.0f / SQRT(this->LengthSq()));}
+    constexpr coreVector3 NormalizedUnsafePrecise()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * (1.0f / this->Length());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
@@ -300,7 +300,7 @@ public:
     static inline    coreFloat   Angle     (const coreVector3 v1, const coreVector3 v2);
     static inline    coreVector3 Rand      (coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector3 Rand      (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector3 Rand      (const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector3 Rand      (const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector3 Rand      (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector3 Reflect   (const coreVector3 vVelocity, const coreVector3 vNormal);
     static inline    coreBool    Visible   (const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
@@ -406,7 +406,7 @@ public:
     /* normalize vector */
     constexpr coreVector4 Normalized             (const coreVector4 vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
     constexpr coreVector4 NormalizedUnsafe       ()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
-    constexpr coreVector4 NormalizedUnsafePrecise()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * (1.0f / SQRT(this->LengthSq()));}
+    constexpr coreVector4 NormalizedUnsafePrecise()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * (1.0f / this->Length());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector4 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
@@ -433,7 +433,7 @@ public:
     static constexpr coreFloat   Dot (const coreVector4 v1, const coreVector4 v2);
     static inline    coreVector4 Rand(coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector4 Rand(const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
-    static inline    coreVector4 Rand(const coreFloat fMin,  const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
+    static inline    coreVector4 Rand(const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector4 Rand(const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, const coreFloat fMinW, const coreFloat fMaxW, coreRand* OUTPUT pRand = Core::Rand);
 
     /* packing functions */

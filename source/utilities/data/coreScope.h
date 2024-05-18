@@ -23,7 +23,7 @@
         ENABLE_COPY(c)                                               \
     };
 
-#define CORE_SCOPE_TEMPLATE(c,t,f,g) template <typename T> CORE_SCOPE_CLASS(c, t, f, g)
+#define CORE_SCOPE_TEMPLATE(c,t,f,g) template <typename t> CORE_SCOPE_CLASS(c, t, f, g)
 
 
 // ****************************************************************

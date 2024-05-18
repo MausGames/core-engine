@@ -14,7 +14,7 @@
 // TODO 3: array textures
 // TODO 3: wrap glDisable, glDepthMask, glCullFace, glClearColor, etc. within the class (reference-counter for nested calls ?)
 // TODO 3: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision, breaks depth-dependent rendering (water, shadow) in Project One
-// TODO 3: async glReadPixels, improve screenshot with pixel-pack-buffer
+// TODO 3: async glReadPixels, improve screenshot with pixel-pack-buffer (currently cannot move-only into lambda, and engine-reset can be problematic)
 // TODO 5: <old comment style>
 // TODO 3: check for max number of draw buffers and color attachments, max render buffer size and view-port dimension, max number of vertex attributes, max texture size
 

@@ -151,16 +151,17 @@ public:
     void       Clear     (const coreUint8 iLevel);
     coreStatus Invalidate(const coreUint8 iLevel);
 
-    /* process and convert image data */
-    static FUNC_NOALIAS void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
-    static              void CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
-
     /* get object properties */
     inline const GLuint&          GetIdentifier()const {return m_iIdentifier;}
     inline const coreVector2&     GetResolution()const {return m_vResolution;}
     inline const coreUint8&       GetLevels    ()const {return m_iLevels;}
+    inline const coreBool&        GetCompressed()const {return m_bCompressed;}
     inline const coreTextureMode& GetMode      ()const {return m_eMode;}
     inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
+
+    /* process and convert image data */
+    static FUNC_NOALIAS void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static              void CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
 
 
 private:

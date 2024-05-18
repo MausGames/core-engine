@@ -121,13 +121,13 @@ public:
     virtual coreBool ModifyStat(const corePlatformStat& oEntry, const coreInt32 iValue) {return true;}
 
     /* process leaderboards */
-    virtual coreBool UploadLeaderboard  (const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback   nCallback) {return true;}
-    virtual coreBool DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo,                        const corePlatformScoreDownloadCallback nCallback) {return true;}
+    virtual coreBool UploadLeaderboard  (const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback&   nCallback) {return true;}
+    virtual coreBool DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo,                        const corePlatformScoreDownloadCallback& nCallback) {return true;}
 
     /* process files */
-    virtual void     UploadFile  (const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, corePlatformFileUploadCallback   nCallback) {nCallback(0u, NULL);}
-    virtual void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  corePlatformFileDownloadCallback nCallback) {nCallback(0u, NULL, 0u, NULL);}
-    virtual coreBool ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const               {if(piCurrent) (*piCurrent) = 0u; if(piTotal) (*piTotal) = 0u; return false;}
+    virtual void     UploadFile  (const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, const corePlatformFileUploadCallback   nCallback) {nCallback(0u, NULL);}
+    virtual void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  const corePlatformFileDownloadCallback nCallback) {nCallback(0u, NULL, 0u, NULL);}
+    virtual coreBool ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const                     {if(piCurrent) (*piCurrent) = 0u; if(piTotal) (*piTotal) = 0u; return false;}
 
     /* process connection state */
     virtual coreBool HasConnection   ()const {return true;}

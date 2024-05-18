@@ -157,12 +157,12 @@ public:
     coreBool ModifyStat(const corePlatformStat& oEntry, const coreInt32 iValue)final;
 
     /* process leaderboards */
-    coreBool UploadLeaderboard  (const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback   nCallback)final;
-    coreBool DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo,                        const corePlatformScoreDownloadCallback nCallback)final;
+    coreBool UploadLeaderboard  (const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback&   nCallback)final;
+    coreBool DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo,                        const corePlatformScoreDownloadCallback& nCallback)final;
 
     /* process files */
-    void     UploadFile  (const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, corePlatformFileUploadCallback   nCallback)final;
-    void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  corePlatformFileDownloadCallback nCallback)final;
+    void     UploadFile  (const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, const corePlatformFileUploadCallback   nCallback)final;
+    void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  const corePlatformFileDownloadCallback nCallback)final;
     coreBool ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const final;
 
     /* process connection state */
@@ -422,7 +422,7 @@ inline coreBool coreBackendSteam::ModifyStat(const corePlatformStat& oEntry, con
 
 // ****************************************************************
 /* upload score value to leaderboard */
-inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback nCallback)
+inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboard& oEntry, const coreUint32 iValue, const coreByte* pData, const coreUint16 iDataSize, const corePlatformFileHandle iFileHandle, const corePlatformScoreUploadCallback& nCallback)
 {
     if(m_pClient)
     {
@@ -475,7 +475,7 @@ inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboar
 
 // ****************************************************************
 /* download score values from leaderboard */
-inline coreBool coreBackendSteam::DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo, const corePlatformScoreDownloadCallback nCallback)
+inline coreBool coreBackendSteam::DownloadLeaderboard(const corePlatformLeaderboard& oEntry, const corePlatformLeaderboardType eType, const coreInt32 iRangeFrom, const coreInt32 iRangeTo, const corePlatformScoreDownloadCallback& nCallback)
 {
     if(m_pClient)
     {
@@ -547,7 +547,7 @@ inline coreBool coreBackendSteam::DownloadLeaderboard(const corePlatformLeaderbo
 
 // ****************************************************************
 /* upload file to remote share */
-inline void coreBackendSteam::UploadFile(const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, corePlatformFileUploadCallback nCallback)
+inline void coreBackendSteam::UploadFile(const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, const corePlatformFileUploadCallback nCallback)
 {
     if(m_pClient)
     {
@@ -597,7 +597,7 @@ inline void coreBackendSteam::UploadFile(const coreByte* pData, const coreUint32
 
 // ****************************************************************
 /* download file from remote share */
-inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHandle, corePlatformFileDownloadCallback nCallback)
+inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHandle, const corePlatformFileDownloadCallback nCallback)
 {
     if(m_pClient)
     {
