@@ -113,8 +113,9 @@ public:
     static const coreChar*  SystemDirTemp   ();
 
     /* get build properties */
-    static const coreChar* BuildCompiler();
-    static const coreChar* BuildLibrary ();
+    static const coreChar* BuildCompiler  ();
+    static const coreChar* BuildLibraryC  ();
+    static const coreChar* BuildLibraryCpp();
 
     /* control current working directory */
     static       coreStatus SetCurDir(const coreChar* pcPath);

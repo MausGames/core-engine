@@ -652,8 +652,40 @@ const coreChar* coreData::BuildCompiler()
 
 
 // ****************************************************************
-/* get standard library name and version */
-const coreChar* coreData::BuildLibrary()
+/* get C standard library name (and version) */
+const coreChar* coreData::BuildLibraryC()
+{
+#if defined(_CORE_WINDOWS_)
+
+    return "CRT " STRING(_WIN32_WINNT);
+
+#elif defined(_CORE_LINUX_)
+
+    return "glibc " STRING(__GLIBC__) "." STRING(__GLIBC_MINOR__) " (POSIX " STRING(_POSIX_C_SOURCE) ")";
+
+#elif defined(_CORE_MACOS_)
+
+    return "BSD libc " STRING(__MAC_OS_X_VERSION_MIN_REQUIRED) "/" STRING(__MAC_OS_X_VERSION_MAX_ALLOWED);
+
+#elif defined(_CORE_ANDROID_)
+
+    return "Bionic " STRING(__ANDROID_API__) " (NDK " STRING(__NDK_MAJOR__) "." STRING(__NDK_MINOR__) "." STRING(__NDK_BUILD__) ")";
+
+#elif defined(_CORE_IOS_)
+
+    return "BSD libc " STRING(__IPHONE_OS_VERSION_MIN_REQUIRED) "/" STRING(__IPHONE_OS_VERSION_MAX_ALLOWED);
+
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    return "musl";
+
+#endif
+}
+
+
+// ****************************************************************
+/* get C++ standard library name and version */
+const coreChar* coreData::BuildLibraryCpp()
 {
 #if defined(_CORE_STL_)
 
