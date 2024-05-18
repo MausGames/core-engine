@@ -364,6 +364,9 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 #define glDrawBuffer(a)                  CALL(const GLenum A = (a); glDrawBuffers(1, &A);)
 #define glDrawRangeElements(a,b,c,d,e,f) CALL(if(__CORE_GLES_VAR(bES30)) __glDrawRangeElements(a, b, c, d, e, f); else glDrawElements(a, d, e, f);)
 
+using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr offset, GLsizeiptr size, void* data);
+#define glGetBufferSubData __CORE_GLES_FUNC(glGetBufferSubData)
+
 
 // ****************************************************************
 /* unused definitions and functions */
@@ -416,6 +419,7 @@ inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRange
 
 #if defined(_CORE_EMSCRIPTEN_)
     #define glMapBufferRange(...) (I_TO_P(-1))
+    #define glUnmapBuffer(...) (false)
 #endif
 
 
@@ -500,6 +504,7 @@ struct coreContext final
     PFNGLBINDVERTEXARRAYPROC                __glBindVertexArray;
     PFNGLDELETEVERTEXARRAYSPROC             __glDeleteVertexArrays;
     PFNGLGENVERTEXARRAYSPROC                __glGenVertexArrays;
+    PFNGLGETBUFFERSUBDATAPROC               __glGetBufferSubData;
 };
 
 extern coreString  g_sExtensions;   // full extension string

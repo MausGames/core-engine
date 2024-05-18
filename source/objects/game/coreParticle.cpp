@@ -108,7 +108,7 @@ void coreParticleSystem::Render()
             if(CORE_GL_SUPPORT(ARB_half_float_vertex))
             {
                 // map required area of the instance data buffer
-                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pRange  = m_aInstanceBuffer.current().MapWrite(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
                 coreByte* pCursor = pRange;
 
                 FOR_EACH_REV(it, m_apRenderList)
@@ -136,7 +136,7 @@ void coreParticleSystem::Render()
             else
             {
                 // map required area of the instance data buffer
-                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pRange  = m_aInstanceBuffer.current().MapWrite(0u, m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
                 coreByte* pCursor = pRange;
 
                 FOR_EACH_REV(it, m_apRenderList)

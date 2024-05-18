@@ -10,10 +10,10 @@
 #ifndef _CORE_GUARD_DATABUFFER_H_
 #define _CORE_GUARD_DATABUFFER_H_
 
-// TODO 3: implement read and copy operations (currently only static and write/dynamic)
 // TODO 3: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays, may need reset
 // TODO 5: <old comment style>
 // TODO 5: check for GL_ARB_map_buffer_alignment and ASSUME_ALIGNED
+// TODO 4: why do I need CORE_VERTEXBUFFER_ATTRIBUTES ? was this an OpenGL hard limit ?
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 
@@ -26,7 +26,8 @@ enum coreDataBufferStorage : coreUint8
 {
     CORE_DATABUFFER_STORAGE_STATIC  = 0x01u,   // fast static buffer      (STATIC_DRAW)
     CORE_DATABUFFER_STORAGE_DYNAMIC = 0x02u,   // writable dynamic buffer (DYNAMIC_DRAW), persistent mapped if supported
-    CORE_DATABUFFER_STORAGE_STREAM  = 0x04u    // temporary buffer        (STREAM_DRAW)
+    CORE_DATABUFFER_STORAGE_STREAM  = 0x04u,   // temporary buffer        (STREAM_DRAW)
+    CORE_DATABUFFER_STORAGE_READ    = 0x08u    // readable buffer         (STREAM_READ)
 };
 ENABLE_BITWISE(coreDataBufferStorage)
 
@@ -75,10 +76,13 @@ public:
     static inline void Bind  (const GLenum iTarget, const GLuint iIdentifier) {if(s_aiBound.count(iTarget)) {if(s_aiBound.at(iTarget) == iIdentifier) return;} s_aiBound[iTarget] = iIdentifier; glBindBuffer(iTarget, iIdentifier);}
     static inline void Unbind(const GLenum iTarget, const coreBool bFull)     {if(bFull) coreDataBuffer::Bind(iTarget, 0u); else s_aiBound[iTarget] = 0u;}
 
-    /* modify buffer memory */
-    RETURN_RESTRICT coreByte* Map  (const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType);
-    void                      Unmap();
-    coreStatus                Copy (const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
+    /* map buffer memory */
+    RETURN_RESTRICT coreByte* MapWrite(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType);
+    RETURN_RESTRICT coreByte* MapRead (const coreUint32 iOffset, const coreUint32 iLength);
+    void                      Unmap   ();
+
+    /* copy buffer memory */
+    coreStatus Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
 
     /* protect buffer memory up to now */
     inline void Synchronize(const coreDataBufferMap eMapType) {if(CORE_GL_SUPPORT(ARB_map_buffer_range) && (HAS_FLAG(eMapType, CORE_DATABUFFER_MAP_UNSYNCHRONIZED) || this->IsPersistent())) m_Sync.Create(CORE_SYNC_CREATE_NORMAL);}
@@ -89,6 +93,7 @@ public:
 
     /* check for current buffer status */
     inline coreBool IsWritable  ()const {return HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_DYNAMIC);}
+    inline coreBool IsReadable  ()const {return HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_READ);}
     inline coreBool IsPersistent()const {return (m_pPersistentBuffer && !m_iFallbackSize);}
     inline coreBool IsMapped    ()const {return (m_iMapLength  != 0u);}
     inline coreBool IsValid     ()const {return (m_iIdentifier != 0u);}
@@ -180,7 +185,7 @@ public:
     void Delete();
 
     /* map and bind next buffer range */
-    RETURN_RESTRICT coreByte* MapNext();
+    RETURN_RESTRICT coreByte* MapWriteNext();
 
     /* get object properties */
     inline const coreUint8&  GetBinding   ()const {return m_iBinding;}

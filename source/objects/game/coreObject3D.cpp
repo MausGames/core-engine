@@ -591,7 +591,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             if(CORE_GL_SUPPORT(ARB_half_float_vertex))
             {
                 // map required area of the instance data buffer
-                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pRange  = m_aInstanceBuffer.current().MapWrite(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
                 coreByte* pCursor = pRange;
 
                 FOR_EACH(it, m_apObjectList)
@@ -622,7 +622,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             else
             {
                 // map required area of the instance data buffer
-                coreByte* pRange  = m_aInstanceBuffer.current().Map(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pRange  = m_aInstanceBuffer.current().MapWrite(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
                 coreByte* pCursor = pRange;
 
                 FOR_EACH(it, m_apObjectList)
@@ -720,7 +720,7 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
             if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)) m_paCustomBuffer->next();
 
             // map required area of the custom attribute buffer
-            coreByte* pRange  = m_paCustomBuffer->current().Map(0u, iRenderCount * m_iCustomSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            coreByte* pRange  = m_paCustomBuffer->current().MapWrite(0u, iRenderCount * m_iCustomSize, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
             coreByte* pCursor = pRange;
 
             FOR_EACH(it, m_apObjectList)

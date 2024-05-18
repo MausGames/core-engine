@@ -323,7 +323,7 @@ void CoreGraphics::UpdateTransformation()
         const coreMatrix4 mViewProj = m_mCamera * m_mPerspective;
 
         // map buffer range
-        coreByte* pRange3D = m_Transform3DBuffer.MapNext();
+        coreByte* pRange3D = m_Transform3DBuffer.MapWriteNext();
 
         // update 3d-transformation data
         std::memcpy(pRange3D,        &mViewProj,      sizeof(coreMatrix4));
@@ -333,7 +333,7 @@ void CoreGraphics::UpdateTransformation()
         m_Transform3DBuffer.Unmap();
 
         // map buffer range
-        coreByte* pRange2D = m_Transform2DBuffer.MapNext();
+        coreByte* pRange2D = m_Transform2DBuffer.MapWriteNext();
 
         // update 2d-transformation data
         std::memcpy(pRange2D,       &m_mOrtho,          sizeof(coreMatrix4));
@@ -359,7 +359,7 @@ void CoreGraphics::UpdateAmbient()
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
         // map buffer range
-        coreByte* pRange = m_AmbientBuffer.MapNext();
+        coreByte* pRange = m_AmbientBuffer.MapWriteNext();
 
         // update ambient data
         std::memcpy(pRange, m_aLight, CORE_GRAPHICS_UNIFORM_AMBIENT_SIZE);

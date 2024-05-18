@@ -87,7 +87,7 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
             glBufferData(m_iTarget, m_iSize, pData, GL_DYNAMIC_DRAW);
         }
     }
-    else
+    else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_STREAM))
     {
         ASSERT(pData)
 
@@ -102,6 +102,20 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
             glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_DRAW);
         }
     }
+    else if(HAS_FLAG(m_eStorageType, CORE_DATABUFFER_STORAGE_READ))
+    {
+        if(CORE_GL_SUPPORT(ARB_buffer_storage))
+        {
+            // allocate readable immutable buffer memory
+            glBufferStorage(m_iTarget, m_iSize, pData, GL_CLIENT_STORAGE_BIT | GL_MAP_READ_BIT);
+        }
+        else
+        {
+            // allocate readable mutable buffer memory
+            glBufferData(m_iTarget, m_iSize, pData, GL_STREAM_READ);
+        }
+    }
+    else WARN_IF(true) {}
 }
 
 
@@ -141,9 +155,9 @@ void coreDataBuffer::Delete()
 
 // ****************************************************************
 /* map buffer memory for writing operations */
-RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType)
+RETURN_RESTRICT coreByte* coreDataBuffer::MapWrite(const coreUint32 iOffset, const coreUint32 iLength, const coreDataBufferMap eMapType)
 {
-    ASSERT(m_iIdentifier && this->IsWritable() && iLength && (iOffset + iLength <= m_iSize))
+    ASSERT(m_iIdentifier && this->IsWritable() && !this->IsMapped() && iLength && (iOffset + iLength <= m_iSize))
 
     // save mapping attributes
     m_iMapOffset = iOffset;
@@ -189,6 +203,53 @@ RETURN_RESTRICT coreByte* coreDataBuffer::Map(const coreUint32 iOffset, const co
             DYNAMIC_RESIZE(m_pPersistentBuffer, iLength)
             m_iFallbackSize = iLength;
         }
+
+        return m_pPersistentBuffer;
+    }
+}
+
+
+// ****************************************************************
+/* map buffer memory for reading operations */
+RETURN_RESTRICT coreByte* coreDataBuffer::MapRead(const coreUint32 iOffset, const coreUint32 iLength)
+{
+    ASSERT(m_iIdentifier && this->IsReadable() && !this->IsMapped() && iLength && (iOffset + iLength <= m_iSize))
+
+    // save mapping attributes
+    m_iMapOffset = iOffset;
+    m_iMapLength = iLength;
+
+    if(CORE_GL_SUPPORT(ARB_map_buffer_range))
+    {
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // map buffer memory directly (new)
+            return s_cast<coreByte*>(glMapNamedBufferRange(m_iIdentifier, iOffset, iLength, GL_MAP_READ_BIT));
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // map buffer memory directly (old)
+            return s_cast<coreByte*>(glMapNamedBufferRangeEXT(m_iIdentifier, iOffset, iLength, GL_MAP_READ_BIT));
+        }
+        else
+        {
+            // bind and map buffer memory
+            this->Bind();
+            return s_cast<coreByte*>(glMapBufferRange(m_iTarget, iOffset, iLength, GL_MAP_READ_BIT));
+        }
+    }
+    else
+    {
+        if(m_iFallbackSize < iLength)
+        {
+            // create fallback memory
+            DYNAMIC_RESIZE(m_pPersistentBuffer, iLength)
+            m_iFallbackSize = iLength;
+        }
+
+        // retrieve data from the data buffer
+        this->Bind();
+        glGetBufferSubData(m_iTarget, iOffset, iLength, m_pPersistentBuffer);
 
         return m_pPersistentBuffer;
     }
@@ -244,9 +305,12 @@ void coreDataBuffer::Unmap()
     {
         ASSERT(m_pPersistentBuffer)
 
-        // send new data to the data buffer
-        this->Bind();
-        glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, m_pPersistentBuffer);
+        if(this->IsWritable())
+        {
+            // send new data to the data buffer
+            this->Bind();
+            glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, m_pPersistentBuffer);
+        }
     }
 
     // reset mapping attributes
@@ -606,7 +670,7 @@ void coreUniformBuffer::Delete()
 
 // ****************************************************************
 /* map and bind next buffer range */
-RETURN_RESTRICT coreByte* coreUniformBuffer::MapNext()
+RETURN_RESTRICT coreByte* coreUniformBuffer::MapWriteNext()
 {
     ASSERT(this->GetIdentifier())
 
@@ -630,5 +694,5 @@ RETURN_RESTRICT coreByte* coreUniformBuffer::MapNext()
     glBindBufferRange(GL_UNIFORM_BUFFER, m_iBinding, this->GetIdentifier(), iNewOffset, coreMath::CeilAlign(m_iRangeSize, 16u));
 
     // map buffer range
-    return this->Map(iNewOffset, m_iRangeSize, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
+    return this->MapWrite(iNewOffset, m_iRangeSize, CORE_DATABUFFER_MAP_UNSYNCHRONIZED);
 }
