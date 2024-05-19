@@ -78,11 +78,11 @@ public:
     /* set object properties */
     coreBool    SetText        (const coreChar*       pcText);
     coreBool    SetText        (const coreChar*       pcText, const coreUint16 iNum);
-    inline void SetTextLanguage(const coreHashString& sKey)     {this->_BindString(&m_sText, sKey);}
-    inline void SetScale       (const coreVector2     vScale)   {if(m_vScale != vScale)                      {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)      m_vScale = vScale;}}
-    inline void SetRectifyX    (const coreBool        bRectify) {if(HAS_FLAG(m_iRectify, 0x01u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x01u, bRectify)}}
-    inline void SetRectifyY    (const coreBool        bRectify) {if(HAS_FLAG(m_iRectify, 0x02u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x02u, bRectify)}}
-    inline void SetRectify     (const coreBool        bRectify) {if(HAS_FLAG(m_iRectify, 0x03u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x03u, bRectify)}}
+    inline void SetTextLanguage(const coreHashString& sKey, coreAssembleFunc nFunc = NULL) {this->_BindString(&m_sText, sKey, std::move(nFunc));}
+    inline void SetScale       (const coreVector2     vScale)                              {if(m_vScale != vScale)                      {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)      m_vScale = vScale;}}
+    inline void SetRectifyX    (const coreBool        bRectify)                            {if(HAS_FLAG(m_iRectify, 0x01u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x01u, bRectify)}}
+    inline void SetRectifyY    (const coreBool        bRectify)                            {if(HAS_FLAG(m_iRectify, 0x02u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x02u, bRectify)}}
+    inline void SetRectify     (const coreBool        bRectify)                            {if(HAS_FLAG(m_iRectify, 0x03u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x03u, bRectify)}}
 
     /* get object properties */
     inline const coreFontPtr& GetFont      ()const {return m_pFont;}
@@ -102,7 +102,7 @@ private:
     void __Reshape()final;
 
     /* update object after modification */
-    inline void __Update()final {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)}
+    inline void __UpdateTranslate()final {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)}
 
     /* generate the texture */
     void __GenerateTexture(const coreChar* pcText);

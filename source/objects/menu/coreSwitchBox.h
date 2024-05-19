@@ -68,7 +68,7 @@ public:
 
     /* manage entries */
     void AddEntry        (const coreChar*       pcText, const T& tValue);
-    void AddEntryLanguage(const coreHashString& sKey,   const T& tValue);
+    void AddEntryLanguage(const coreHashString& sKey,   const T& tValue, coreAssembleFunc nFunc = NULL);
     void DeleteEntry     (const coreUintW       iIndex);
     void ClearEntries();
 
@@ -104,7 +104,7 @@ public:
 
 private:
     /* update object after modification */
-    inline void __Update()final {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].psText->c_str());}
+    inline void __UpdateTranslate()final {m_Caption.SetText(m_aEntry.empty() ? "" : m_aEntry[m_iCurIndex].psText->c_str());}
 };
 
 
@@ -306,14 +306,14 @@ template <typename T> void coreSwitchBox<T>::AddEntry(const coreChar* pcText, co
     m_aEntry.push_back(oNewEntry);
 
     // update text
-    if(m_aEntry.size() == 1u) this->__Update();
+    if(m_aEntry.size() == 1u) this->__UpdateTranslate();
 }
 
-template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreHashString& sKey, const T& tValue)
+template <typename T> void coreSwitchBox<T>::AddEntryLanguage(const coreHashString& sKey, const T& tValue, coreAssembleFunc nFunc)
 {
     // create and bind new entry
     this->AddEntry("", tValue);
-    this->_BindString(m_aEntry.back().psText, sKey);
+    this->_BindString(m_aEntry.back().psText, sKey, std::move(nFunc));
 }
 
 
@@ -333,7 +333,7 @@ template <typename T> void coreSwitchBox<T>::DeleteEntry(const coreUintW iIndex)
     if(iIndex < m_iCurIndex) --m_iCurIndex;
 
     // update text
-    this->__Update();
+    this->__UpdateTranslate();
 }
 
 
@@ -353,7 +353,7 @@ template <typename T> void coreSwitchBox<T>::ClearEntries()
     m_iCurIndex = 0u;
 
     // update text
-    this->__Update();
+    this->__UpdateTranslate();
 }
 
 
@@ -368,7 +368,7 @@ template <typename T> void coreSwitchBox<T>::SelectIndex(const coreUintW iIndex)
     m_iCurIndex = iIndex;
 
     // update text
-    this->__Update();
+    this->__UpdateTranslate();
 }
 
 template <typename T> coreBool coreSwitchBox<T>::SelectText(const coreChar* pcText)
@@ -417,7 +417,7 @@ template <typename T> void coreSwitchBox<T>::Next()
         m_iCurIndex = m_bEndless ? 0u : (m_aEntry.size() - 1u);
 
     // update text
-    this->__Update();
+    this->__UpdateTranslate();
 }
 
 
@@ -432,7 +432,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
         m_iCurIndex = m_bEndless ? (m_aEntry.size() - 1u) : 0u;
 
     // update text
-    this->__Update();
+    this->__UpdateTranslate();
 }
 
 

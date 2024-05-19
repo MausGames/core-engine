@@ -11,12 +11,11 @@
 #define _CORE_GUARD_LANGUAGE_H_
 
 // TODO 3: save current main language file to config
-// TODO 2: currently key-identifier $ may cause problems in normal text, maybe use $$
+// TODO 3: currently key-identifier $ may cause problems in normal text, maybe use $$
 // TODO 3: reduce memory consumption with all the redundant keys in containers
 // TODO 3: determine number of entries and call reserve(x), or use property (e.g. RESERVE)
 // TODO 5: try to use strtok_s/_r()
-// TODO 3: use stream for FindString if possible
-// TODO 3: functions (on language level) to set strings with with parameters
+// TODO 3: use stream/mmap for FindString if possible
 
 
 // ****************************************************************
@@ -41,6 +40,8 @@
 #define CORE_LANGUAGE_TCHINESE   "tchinese"
 #define CORE_LANGUAGE_UKRAINIAN  "ukrainian"
 
+using coreAssembleFunc = std::function<void(coreString* OUTPUT)>;
+
 
 // ****************************************************************
 /* translation interface */
@@ -64,16 +65,19 @@ public:
     /* change associated language file */
     void ChangeLanguage(coreLanguage* pLanguage);
 
+    /* manually refresh own string pointers */
+    void RefreshLanguage();
+
 
 protected:
     /* bind and unbind own string pointers */
-    void _BindString  (coreString* psString, const coreHashString& sKey);
+    void _BindString  (coreString* psString, const coreHashString& sKey, coreAssembleFunc nFunc);
     void _UnbindString(coreString* psString);
 
 
 private:
     /* update object after modification */
-    virtual void __Update() = 0;
+    virtual void __UpdateTranslate() = 0;
 };
 
 
@@ -82,12 +86,13 @@ private:
 class coreLanguage final
 {
 private:
-    coreMapStrFull<coreString> m_asStringList;       // list with language-strings to specific keys
+    coreMapStrFull<coreString> m_asStringList;             // list with language-strings to specific keys
 
-    coreMap<coreString*, coreString> m_apsForeign;   // foreign string pointers connected with keys <foreign, key>
-    coreSet<coreTranslate*> m_apObject;              // objects to update after modification
+    coreMap<coreString*, coreString>       m_asForeign;    // foreign string pointers connected with keys <foreign, key>
+    coreMap<coreString*, coreAssembleFunc> m_anAssemble;   // possible assemble functions (to allow complex text construction)
+    coreSet<coreTranslate*>                m_apObject;     // objects to update after modification
 
-    coreString m_sPath;                              // relative path of the file
+    coreString m_sPath;                                    // relative path of the file
 
 
 public:
@@ -104,23 +109,29 @@ public:
     inline coreBool        HasString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey);}
 
     /* bind and unbind foreign string pointers */
-    void        BindForeign  (coreString* psForeign, const coreHashString& sKey);
-    inline void UnbindForeign(coreString* psForeign) {ASSERT(m_apsForeign.count_bs(psForeign)) m_apsForeign.erase_bs(psForeign);}
+    void        BindForeign  (coreString* psForeign, const coreHashString& sKey, coreAssembleFunc nFunc = NULL);
+    inline void UnbindForeign(coreString* psForeign) {ASSERT(m_asForeign.count_bs(psForeign)) m_asForeign.erase_bs(psForeign); m_anAssemble.erase_bs(psForeign);}
+
+    /* manually refresh foreign string pointers */
+    void RefreshForeign(coreString* psForeign, const coreHashString& sKey);
 
     /* get object properties */
     inline const coreChar* GetPath      ()const {return m_sPath.c_str();}
     inline       coreUintW GetNumStrings()const {return m_asStringList.size();}
 
     /* access language files directly */
-    static coreBool FindString(const coreChar* pcPath, const coreChar* pcKey, coreString* OUTPUT psOutput);
-    static void GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreMap<coreString, coreString>* OUTPUT pasOutput);
-    static void GetAvailableLanguages(coreMap<coreString, coreString>* OUTPUT pasOutput);
+    static coreBool FindString           (const coreChar* pcPath, const coreChar* pcKey, coreString* OUTPUT psOutput);
+    static void     GetAvailableLanguages(const coreChar* pcPath, const coreChar* pcFilter, coreMap<coreString, coreString>* OUTPUT pasOutput);
+    static void     GetAvailableLanguages(coreMap<coreString, coreString>* OUTPUT pasOutput);
 
 
 private:
     /* bind and unbind translation objects */
     inline void __BindObject  (coreTranslate* pObject) {ASSERT(!m_apObject.count_bs(pObject)) m_apObject.insert_bs(pObject);}
     inline void __UnbindObject(coreTranslate* pObject) {ASSERT( m_apObject.count_bs(pObject)) m_apObject.erase_bs (pObject);}
+
+    /* update the foreign string */
+    void __Assemble(coreString* psForeign, const coreString& sText);
 };
 
 

@@ -54,6 +54,9 @@ public:
     using coreStringBase::replace;
     coreString& replace(const coreChar* pcOld, const coreChar* pcNew);
 
+    /* replace multiple sub-strings at once */
+    template <typename... A> coreString& replace_many(A&&... vArgs);
+
     /* trim string on both sides */
     coreString& trim(const coreChar* pcRemove = " \n\r\t");
 
@@ -105,6 +108,25 @@ public:
     inline coreUintW length  ()const {return m_iSize -  1u;}
     inline coreBool  empty   ()const {return m_iSize == 1u;}
 };
+
+
+// ****************************************************************
+/* replace multiple sub-strings at once */
+template <typename... A> coreString& coreString::replace_many(A&&... vArgs)
+{
+    STATIC_ASSERT(coreMath::IsAligned(sizeof...(A), 2u))
+
+    // allow variadic argument iteration
+    const coreChar* apcText[] = {vArgs...};
+
+    // replace all available sub-strings
+    for(coreUintW i = 0u; i < sizeof...(A); i += 2u)
+    {
+        this->replace(apcText[i + 0u], apcText[i + 1u]);
+    }
+
+    return *this;
+}
 
 
 // ****************************************************************
