@@ -27,25 +27,29 @@
 #define GL_R8_LUMINANCE8   (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_R8  : GL_LUMINANCE8)
 #define GL_R16_LUMINANCE16 (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_R16 : GL_LUMINANCE16)
 
-#define CORE_TEXTURE_SPEC_R8               (coreTextureSpec(GL_R8_LUMINANCE8,      GL_RED_LUMINANCE,   GL_UNSIGNED_BYTE))                  // ARB_texture_rg (wrapped)
-#define CORE_TEXTURE_SPEC_RG8              (coreTextureSpec(GL_RG8,                GL_RG,              GL_UNSIGNED_BYTE))                  // ARB_texture_rg
-#define CORE_TEXTURE_SPEC_RGB8             (coreTextureSpec(GL_RGB8,               GL_RGB,             GL_UNSIGNED_BYTE))                  // -
-#define CORE_TEXTURE_SPEC_RGBA8            (coreTextureSpec(GL_RGBA8,              GL_RGBA,            GL_UNSIGNED_BYTE))                  // -
-#define CORE_TEXTURE_SPEC_R16              (coreTextureSpec(GL_R16_LUMINANCE16,    GL_RED_LUMINANCE,   GL_UNSIGNED_SHORT))                 // EXT_texture_norm16 ARB_texture_rg (wrapped)
-#define CORE_TEXTURE_SPEC_RG16             (coreTextureSpec(GL_RG16,               GL_RG,              GL_UNSIGNED_SHORT))                 // EXT_texture_norm16 ARB_texture_rg
-#define CORE_TEXTURE_SPEC_RGB16            (coreTextureSpec(GL_RGB16,              GL_RGB,             GL_UNSIGNED_SHORT))                 // EXT_texture_norm16
-#define CORE_TEXTURE_SPEC_RGBA16           (coreTextureSpec(GL_RGBA16,             GL_RGBA,            GL_UNSIGNED_SHORT))                 // EXT_texture_norm16
-#define CORE_TEXTURE_SPEC_R16F             (coreTextureSpec(GL_R16F,               GL_RED,             GL_HALF_FLOAT))                     // ARB_texture_float ARB_texture_rg
-#define CORE_TEXTURE_SPEC_RG16F            (coreTextureSpec(GL_RG16F,              GL_RG,              GL_HALF_FLOAT))                     // ARB_texture_float ARB_texture_rg
-#define CORE_TEXTURE_SPEC_RGB16F           (coreTextureSpec(GL_RGB16F,             GL_RGB,             GL_HALF_FLOAT))                     // ARB_texture_float
-#define CORE_TEXTURE_SPEC_RGBA16F          (coreTextureSpec(GL_RGBA16F,            GL_RGBA,            GL_HALF_FLOAT))                     // ARB_texture_float
-#define CORE_TEXTURE_SPEC_RGB10_A2         (coreTextureSpec(GL_RGB10_A2,           GL_RGBA,            GL_UNSIGNED_INT_2_10_10_10_REV))    // EXT_texture_type_2_10_10_10_rev
-#define CORE_TEXTURE_SPEC_R11F_G11F_B10F   (coreTextureSpec(GL_R11F_G11F_B10F,     GL_RGB,             GL_UNSIGNED_INT_10F_11F_11F_REV))   // EXT_packed_float
-#define CORE_TEXTURE_SPEC_DEPTH16          (coreTextureSpec(GL_DEPTH_COMPONENT16,  GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT))                 // -
-#define CORE_TEXTURE_SPEC_DEPTH24          (coreTextureSpec(GL_DEPTH_COMPONENT24,  GL_DEPTH_COMPONENT, GL_UNSIGNED_INT))                   // -
-#define CORE_TEXTURE_SPEC_DEPTH32F         (coreTextureSpec(GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT))                          // ARB_depth_buffer_float
-#define CORE_TEXTURE_SPEC_STENCIL8         (coreTextureSpec(GL_STENCIL_INDEX8,     GL_STENCIL_INDEX,   GL_UNSIGNED_BYTE))                  // ARB_texture_stencil8
-#define CORE_TEXTURE_SPEC_DEPTH24_STENCIL8 (coreTextureSpec(GL_DEPTH24_STENCIL8,   GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8))              // EXT_packed_depth_stencil
+#define CORE_TEXTURE_SPEC_R8               (coreTextureSpec(GL_R8_LUMINANCE8,                 GL_RED_LUMINANCE,                 GL_UNSIGNED_BYTE,                1u, 1u))   // ARB_texture_rg (wrapped)
+#define CORE_TEXTURE_SPEC_RG8              (coreTextureSpec(GL_RG8,                           GL_RG,                            GL_UNSIGNED_BYTE,                2u, 2u))   // ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RGB8             (coreTextureSpec(GL_RGB8,                          GL_RGB,                           GL_UNSIGNED_BYTE,                3u, 3u))   // -
+#define CORE_TEXTURE_SPEC_RGBA8            (coreTextureSpec(GL_RGBA8,                         GL_RGBA,                          GL_UNSIGNED_BYTE,                4u, 4u))   // -
+#define CORE_TEXTURE_SPEC_R16              (coreTextureSpec(GL_R16_LUMINANCE16,               GL_RED_LUMINANCE,                 GL_UNSIGNED_SHORT,               1u, 2u))   // EXT_texture_norm16 ARB_texture_rg (wrapped)
+#define CORE_TEXTURE_SPEC_RG16             (coreTextureSpec(GL_RG16,                          GL_RG,                            GL_UNSIGNED_SHORT,               2u, 4u))   // EXT_texture_norm16 ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RGB16            (coreTextureSpec(GL_RGB16,                         GL_RGB,                           GL_UNSIGNED_SHORT,               3u, 6u))   // EXT_texture_norm16
+#define CORE_TEXTURE_SPEC_RGBA16           (coreTextureSpec(GL_RGBA16,                        GL_RGBA,                          GL_UNSIGNED_SHORT,               4u, 8u))   // EXT_texture_norm16
+#define CORE_TEXTURE_SPEC_R16F             (coreTextureSpec(GL_R16F,                          GL_RED,                           GL_HALF_FLOAT,                   1u, 2u))   // ARB_texture_float ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RG16F            (coreTextureSpec(GL_RG16F,                         GL_RG,                            GL_HALF_FLOAT,                   2u, 4u))   // ARB_texture_float ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RGB16F           (coreTextureSpec(GL_RGB16F,                        GL_RGB,                           GL_HALF_FLOAT,                   3u, 6u))   // ARB_texture_float
+#define CORE_TEXTURE_SPEC_RGBA16F          (coreTextureSpec(GL_RGBA16F,                       GL_RGBA,                          GL_HALF_FLOAT,                   4u, 8u))   // ARB_texture_float
+#define CORE_TEXTURE_SPEC_RGB10_A2         (coreTextureSpec(GL_RGB10_A2,                      GL_RGBA,                          GL_UNSIGNED_INT_2_10_10_10_REV,  4u, 4u))   // EXT_texture_type_2_10_10_10_rev
+#define CORE_TEXTURE_SPEC_R11F_G11F_B10F   (coreTextureSpec(GL_R11F_G11F_B10F,                GL_RGB,                           GL_UNSIGNED_INT_10F_11F_11F_REV, 3u, 4u))   // EXT_packed_float
+#define CORE_TEXTURE_SPEC_DEPTH16          (coreTextureSpec(GL_DEPTH_COMPONENT16,             GL_DEPTH_COMPONENT,               GL_UNSIGNED_SHORT,               1u, 2u))   // -
+#define CORE_TEXTURE_SPEC_DEPTH24          (coreTextureSpec(GL_DEPTH_COMPONENT24,             GL_DEPTH_COMPONENT,               GL_UNSIGNED_INT,                 1u, 3u))   // -
+#define CORE_TEXTURE_SPEC_DEPTH32F         (coreTextureSpec(GL_DEPTH_COMPONENT32F,            GL_DEPTH_COMPONENT,               GL_FLOAT,                        1u, 4u))   // ARB_depth_buffer_float
+#define CORE_TEXTURE_SPEC_STENCIL8         (coreTextureSpec(GL_STENCIL_INDEX8,                GL_STENCIL_INDEX,                 GL_UNSIGNED_BYTE,                1u, 1u))   // ARB_texture_stencil8 (as texture)
+#define CORE_TEXTURE_SPEC_DEPTH24_STENCIL8 (coreTextureSpec(GL_DEPTH24_STENCIL8,              GL_DEPTH_STENCIL,                 GL_UNSIGNED_INT_24_8,            2u, 4u))   // EXT_packed_depth_stencil
+#define CORE_TEXTURE_SPEC_COMPRESSED_RGTC1 (coreTextureSpec(GL_COMPRESSED_RED_RGTC1,          GL_COMPRESSED_RED_RGTC1,          GL_UNSIGNED_BYTE,                1u, 0u))   // ARB_texture_compression_rgtc
+#define CORE_TEXTURE_SPEC_COMPRESSED_RGTC2 (coreTextureSpec(GL_COMPRESSED_RG_RGTC2,           GL_COMPRESSED_RG_RGTC2,           GL_UNSIGNED_BYTE,                2u, 0u))   // ARB_texture_compression_rgtc
+#define CORE_TEXTURE_SPEC_COMPRESSED_DXT1  (coreTextureSpec(GL_COMPRESSED_RGB_S3TC_DXT1_EXT,  GL_COMPRESSED_RGB_S3TC_DXT1_EXT,  GL_UNSIGNED_BYTE,                3u, 0u))   // EXT_texture_compression_s3tc
+#define CORE_TEXTURE_SPEC_COMPRESSED_DXT5  (coreTextureSpec(GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_UNSIGNED_BYTE,                4u, 0u))   // EXT_texture_compression_s3tc
 
 #define CORE_TEXTURE_SPEC_COMPONENTS(i)    \
     ((i == 4u) ? CORE_TEXTURE_SPEC_RGBA8 : \
@@ -85,12 +89,14 @@ ENABLE_BITWISE(coreTextureLoad)
 /* texture specification structure */
 struct coreTextureSpec final
 {
-    GLenum iInternal;   // internal memory format (e.g. GL_RGBA8)
-    GLenum iFormat;     // pixel data format (e.g. GL_RGBA)
-    GLenum iType;       // pixel data type (e.g. GL_UNSIGNED_BYTE)
+    GLenum    iInternal;     // internal memory format (e.g. GL_RGBA8)
+    GLenum    iFormat;       // pixel data format (e.g. GL_RGBA)
+    GLenum    iType;         // pixel data type (e.g. GL_UNSIGNED_BYTE)
+    coreUint8 iComponents;   // number of components
+    coreUint8 iBytes;        // size per texel
 
     coreTextureSpec() = default;
-    constexpr coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType)noexcept;
+    constexpr coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType, const coreUint8 iComponents, const coreUint8 iBytes)noexcept;
 };
 
 
@@ -162,6 +168,7 @@ public:
     /* process and convert image data */
     static FUNC_NOALIAS void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
     static              void CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static SDL_Surface*      CreateReduction (const coreUintW iComponents, const SDL_Surface* pInput, SDL_Surface* OUTPUT pOutput = NULL);
 
 
 private:

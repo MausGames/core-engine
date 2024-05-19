@@ -19,6 +19,7 @@
 // TODO 3: implement native depth_stencil support and check for GL_EXT_packed_depth_stencil (forced on ARB)
 // TODO 3: change R and RG targets to RGB if not supported ? also change some other targets if not supported
 // TODO 5: <old comment style>
+// TODO 4: do I still need the name parameter ?
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 
@@ -137,7 +138,7 @@ private:
 constexpr coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
 : pTexture (NULL)
 , iBuffer  (0u)
-, oSpec    (coreTextureSpec(0u, 0u, 0u))
+, oSpec    (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
 , eMode    (CORE_TEXTURE_MODE_DEFAULT)
 {
 }

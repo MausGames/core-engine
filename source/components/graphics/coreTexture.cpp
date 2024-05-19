@@ -22,7 +22,7 @@ coreTexture::coreTexture(const coreTextureLoad eLoad)noexcept
 , m_iLevels     (0u)
 , m_bCompressed (false)
 , m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
-, m_Spec        (coreTextureSpec(0u, 0u, 0u))
+, m_Spec        (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
 , m_eLoad       (eLoad)
 , m_Sync        ()
 {
@@ -63,29 +63,11 @@ coreStatus coreTexture::Load(coreFile* pFile)
         pData = SDL_ConvertSurfaceFormat(pData, SDL_PIXELFORMAT_RGB24, 0u);
     }
 
-    // convert to different texture format (if supported)
+    // convert to smaller texture format (if supported)
     if((HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) || HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_R)) && CORE_GL_SUPPORT(ARB_texture_rg))
     {
-        const coreUintW iSource = pData->format->BytesPerPixel;
-        const coreUintW iTarget = HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) ? 2u : 1u;
-
-        WARN_IF(iSource != 3u) {}
-        else
-        {
-            SDL_Surface* pNew = SDL_CreateRGBSurfaceWithFormat(0u, pData->w, pData->h, 8 * iTarget, SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget));
-
-            // manually copy texels
-            for(coreUintW i = 0u, ie = LOOP_NONZERO(pData->h); i < ie; ++i)
-            {
-                for(coreUintW j = 0u, je = LOOP_NONZERO(pData->w); j < je; ++j)
-                {
-                    const coreUintW iOffset = j + i * je;
-                    std::memcpy(s_cast<coreByte*>(pNew->pixels) + (iOffset * iTarget), s_cast<coreByte*>(pData->pixels) + (iOffset * iSource), iTarget);
-                }
-            }
-
-            pData = pNew;
-        }
+        WARN_IF(pData->format->BytesPerPixel != 3u) {}
+        else pData = coreTexture::CreateReduction(HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) ? 2u : 1u, pData);
     }
 
     ASSERT(!SDL_MUSTLOCK(pData))
@@ -135,7 +117,7 @@ coreStatus coreTexture::Unload()
     m_iLevels     = 0u;
     m_bCompressed = false;
     m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
-    m_Spec        = coreTextureSpec(0u, 0u, 0u);
+    m_Spec        = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
 
     return CORE_OK;
 }
@@ -179,17 +161,17 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
         else
         {
             // overwrite with appropriate compressed texture format (RGTC or S3TC)
-            GLenum iNewFormat = 0u;
+            coreTextureSpec iNewSpec = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
             switch(m_Spec.iInternal)
             {
             default: UNREACHABLE
             case GL_LUMINANCE8:
-            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewFormat = GL_COMPRESSED_RED_RGTC1;          iBlockSize = stb_dxt_blocksize(1);} break;
-            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewFormat = GL_COMPRESSED_RG_RGTC2;           iBlockSize = stb_dxt_blocksize(2);} break;
-            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;  iBlockSize = stb_dxt_blocksize(3);} break;
-            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; iBlockSize = stb_dxt_blocksize(4);} break;
+            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC1; iBlockSize = stb_dxt_blocksize(1);} break;
+            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC2; iBlockSize = stb_dxt_blocksize(2);} break;
+            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT1;  iBlockSize = stb_dxt_blocksize(3);} break;
+            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT5;  iBlockSize = stb_dxt_blocksize(4);} break;
             }
-            if(iNewFormat) {m_Spec.iInternal = m_Spec.iFormat = iNewFormat; m_bCompressed = true; if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(ES2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
+            if(iNewSpec.iInternal) {m_Spec = iNewSpec; m_bCompressed = true; if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(ES2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
     }
 
@@ -667,6 +649,38 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
         // skip already processed texture lines
         pInput += iInOffsetY;
     }
+}
+
+
+// ****************************************************************
+/* convert to smaller texture format */
+SDL_Surface* coreTexture::CreateReduction(const coreUintW iComponents, const SDL_Surface* pInput, SDL_Surface* OUTPUT pOutput)
+{
+    ASSERT(iComponents && pInput)
+
+    const coreUintW iSource = pInput->format->BytesPerPixel;
+    const coreUintW iTarget = iComponents;
+    ASSERT(iTarget < iSource)
+
+    // create SDL surface (on demand)
+    if(!pOutput) pOutput = SDL_CreateRGBSurfaceWithFormat(0u, pInput->w, pInput->h, 8 * iTarget, SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget));
+    ASSERT((pOutput->w == pInput->w) && (pOutput->h == pInput->h) && (pOutput->format->BytesPerPixel == iTarget))
+
+    // assume no memory aliasing
+    const coreByte*  pInputMem  = s_cast<const coreByte*>(pInput ->pixels);
+    coreByte* OUTPUT pOutputMem = s_cast<coreByte*>      (pOutput->pixels);
+
+    // manually copy texels
+    for(coreUintW i = 0u, ie = LOOP_NONZERO(pInput->h); i < ie; ++i)
+    {
+        for(coreUintW j = 0u, je = LOOP_NONZERO(pInput->w); j < je; ++j)
+        {
+            const coreUintW iOffset = j + i * je;
+            std::memcpy(pOutputMem + (iOffset * iTarget), pInputMem + (iOffset * iSource), iTarget);
+        }
+    }
+
+    return pOutput;
 }
 
 

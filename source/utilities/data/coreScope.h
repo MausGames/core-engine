@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_SCOPE_H_
 #define _CORE_GUARD_SCOPE_H_
 
+// NOTE: assigning the same object to multiple scopes is not supported and not detected
+
 
 // ****************************************************************
 /* scope definitions */
@@ -76,6 +78,9 @@ template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope<T>&& m)n
 {
     // swap properties
     std::swap(m_ptObject, m.m_ptObject);
+
+    // handle re-assignment
+    if(m_ptObject == m.m_ptObject) m.m_ptObject = NULL;
 
     return *this;
 }

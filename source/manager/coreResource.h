@@ -196,13 +196,14 @@ public:
     inline coreUintW IsLoadingNum()const {return std::count_if(m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
 
     /* create and delete resource and resource handle */
-    template <typename T, typename... A>                 coreResourceHandle* Load     (const coreHashString& sName, const coreResourceUpdate eUpdate, const coreHashString& sPath, A&&... vArgs);
-    template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew  (A&&... vArgs)const;
-    inline                                               coreResourceHandle* LoadProxy(const coreHashString& sName);
-    template <typename T>                                void                Free     (coreResourcePtr<T>* OUTPUT pptResourcePtr);
+    template <typename T, typename... A>                 coreResourceHandle* Load        (const coreHashString& sName, const coreResourceUpdate eUpdate, const coreHashString& sPath, A&&... vArgs);
+    template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew     (A&&... vArgs)const;
+    inline                                               coreResourceHandle* LoadProxy   (const coreHashString& sName);
+    inline                               RETURN_RESTRICT coreResourceHandle* LoadProxyNew();
+    template <typename T>                                void                Free        (coreResourcePtr<T>* OUTPUT pptResourcePtr);
 
     /* get existing resource handle */
-    template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count_bs(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_AUTO, NULL);}
+    template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count_bs(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_MANUAL, NULL);}
 
     /* retrieve archives and resource files */
     coreArchive* RetrieveArchive(const coreHashString& sPath);
@@ -214,6 +215,10 @@ public:
     inline void AssignProxy(coreResourceHandle*   pProxy, const coreHashString& sForeign) {this->AssignProxy(pProxy,                               this->Get<coreResourceDummy>(sForeign));}
     inline void AssignProxy(const coreHashString& sProxy, coreResourceHandle*   pForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), pForeign);}
     inline void AssignProxy(const coreHashString& sProxy, const coreHashString& sForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), this->Get<coreResourceDummy>(sForeign));}
+
+    /* refresh resource proxy */
+    void        RefreshProxy(coreResourceHandle*   pProxy);
+    inline void RefreshProxy(const coreHashString& sProxy) {this->RefreshProxy(this->Get<coreResourceDummy>(sProxy));}
 
     /* reset all resources and relation-objects */
     void Reset(const coreResourceReset eInit);
@@ -258,8 +263,6 @@ public:
     coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
     coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
     ~coreResourcePtr();
-
-    DISABLE_HEAP
 
     /* assignment operations */
     coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
@@ -339,7 +342,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
 template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadNew(A&&... vArgs)const
 {
     // create unique unmanaged resource handle
-    return MANAGED_NEW(coreResourceHandle, new T(std::forward<A>(vArgs)...), NULL, "", false);
+    return MANAGED_NEW(coreResourceHandle, std::is_same<T, coreResourceDummy>::value ? NULL : new T(std::forward<A>(vArgs)...), NULL, "", false);
 }
 
 inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& sName)
@@ -353,6 +356,20 @@ inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& 
 
     // create new resource proxy without own resource
     coreResourceHandle* pNewProxy = this->Load<coreResourceDummy>(sName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
+
+    // mark as resource proxy
+    pNewProxy->m_bProxy = true;
+
+    // add resource proxy to manager
+    m_apProxy.emplace(pNewProxy, NULL);
+
+    return pNewProxy;
+}
+
+inline RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadProxyNew()
+{
+    // create unique unmanaged resource proxy without own resource
+    coreResourceHandle* pNewProxy = this->LoadNew<coreResourceDummy>();
 
     // mark as resource proxy
     pNewProxy->m_bProxy = true;

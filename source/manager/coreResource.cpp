@@ -285,6 +285,9 @@ void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHa
 {
     ASSERT(m_apProxy.count(pProxy) && !m_apProxy.count(pForeign) && (pProxy != pForeign))
 
+    // check current foreign handle (to prevent reloading)
+    if(m_apProxy.at(pProxy) == pForeign) return;
+
     if(pProxy->m_pResource)
     {
         // decrease old reference-counter
@@ -313,6 +316,21 @@ void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHa
 
 
 // ****************************************************************
+/* refresh resource proxy */
+void coreResourceManager::RefreshProxy(coreResourceHandle* pProxy)
+{
+    // retrieve foreign handle
+    coreResourceHandle* pForeign = m_apProxy.at(pProxy);
+    if(pForeign)
+    {
+        // reset and forward status again
+        pProxy->m_eStatus = CORE_BUSY;
+        pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus;});
+    }
+}
+
+
+// ****************************************************************
 /* reset all resources and relation-objects */
 void coreResourceManager::Reset(const coreResourceReset eInit)
 {
@@ -327,9 +345,9 @@ void coreResourceManager::Reset(const coreResourceReset eInit)
 
     if(m_bActive)
     {
-        // reload resource proxies
+        // refresh resource proxies
         FOR_EACH(it, m_apProxy)
-            this->AssignProxy((*m_apProxy.get_key(it)), (*it));
+            this->RefreshProxy(*m_apProxy.get_key(it));
 
         // start up relation-objects
         FOR_EACH(it, apRelationCopy)

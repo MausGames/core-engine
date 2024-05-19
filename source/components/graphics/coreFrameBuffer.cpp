@@ -251,7 +251,7 @@ void coreFrameBuffer::DetachTargets()
         if(apTarget[i]->pTexture) Core::Manager::Resource->Free(&apTarget[i]->pTexture);
 
         // reset properties
-        apTarget[i]->oSpec = coreTextureSpec(0u, 0u, 0u);
+        apTarget[i]->oSpec = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
     }
 }
 
