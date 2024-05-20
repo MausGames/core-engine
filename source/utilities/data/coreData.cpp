@@ -1567,7 +1567,7 @@ coreStatus coreData::FolderCreate(const coreChar* pcPath)
     ASSERT(pcPath[0])
 
     coreChar  acString[CORE_DATA_MAX_PATH];
-    coreChar* pcCursor = acString + 1u;
+    coreChar* pcCursor = acString + 1u;   // # handle possible first path delimiter
 
     // make local copy
     coreData::StrCopy(acString, ARRAY_SIZE(acString), pcPath);
@@ -1589,6 +1589,11 @@ coreStatus coreData::FolderCreate(const coreChar* pcPath)
 
             // reset path
             (*pcCursor) = '/';
+        }
+        else if((*pcCursor) == ':')
+        {
+            // skip volume and scheme components
+            while(((*(pcCursor + 1u)) == '/') || ((*(pcCursor + 1u)) == '\\')) ++pcCursor;
         }
     }
 
