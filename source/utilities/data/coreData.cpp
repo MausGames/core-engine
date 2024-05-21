@@ -1703,8 +1703,8 @@ coreStatus coreData::SymlinkCreate(const coreChar* pcPath, const coreChar* pcTar
 {
 #if defined(_CORE_WINDOWS_)
 
-    const wchar_t* pcWidePath   = coreData::__ToWideChar(pcPath);
-    const wchar_t* pcWideTarget = coreData::__ToWideChar(pcTarget);
+    const coreWchar* pcWidePath   = coreData::__ToWideChar(pcPath);
+    const coreWchar* pcWideTarget = coreData::__ToWideChar(pcTarget);
 
     // check for directory attribute
     const coreUint32 iFlags = HAS_FLAG(GetFileAttributesW(pcWideTarget), FILE_ATTRIBUTE_DIRECTORY) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0u;

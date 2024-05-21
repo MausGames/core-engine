@@ -21,6 +21,7 @@ target_sources(
     ${BASE_DIRECTORY}/source/components/audio/coreMusic.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreSound.cpp
     ${BASE_DIRECTORY}/source/components/debug/CoreDebug.cpp
+    ${BASE_DIRECTORY}/source/components/graphics/coreAnimation.cpp
     ${BASE_DIRECTORY}/source/components/graphics/coreDataBuffer.cpp
     ${BASE_DIRECTORY}/source/components/graphics/coreFont.cpp
     ${BASE_DIRECTORY}/source/components/graphics/coreFrameBuffer.cpp

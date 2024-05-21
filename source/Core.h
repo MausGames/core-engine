@@ -855,6 +855,7 @@ private:
 #include "components/graphics/coreShader.h"
 #include "components/graphics/coreFont.h"
 #include "components/graphics/coreFrameBuffer.h"
+#include "components/graphics/coreAnimation.h"
 #include "components/audio/CoreAudio.h"
 #include "components/audio/coreSound.h"
 #include "components/audio/coreMusic.h"

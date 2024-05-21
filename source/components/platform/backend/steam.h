@@ -439,9 +439,9 @@ inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboar
             if(iHandle1)
             {
                 // add asynchronous callback
-                m_anAsyncMap.emplace(iHandle1, [=, this](void* pResult)
+                m_anAsyncMap.emplace(iHandle1, [=, this](void* pResult1)
                 {
-                    const LeaderboardScoreUploaded_t* pStruct1 = r_cast<LeaderboardScoreUploaded_t*>(pResult);
+                    const LeaderboardScoreUploaded_t* pStruct1 = s_cast<LeaderboardScoreUploaded_t*>(pResult1);
 
                     if(iFileHandle && (iFileHandle != k_UGCHandleInvalid))
                     {
@@ -450,9 +450,9 @@ inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboar
                         if(iHandle2)
                         {
                             // add asynchronous callback (nested)
-                            m_anAsyncMap.emplace(iHandle2, [](void* pResult)
+                            m_anAsyncMap.emplace(iHandle2, [](void* pResult2)
                             {
-                                const LeaderboardUGCSet_t* pStruct2 = r_cast<LeaderboardUGCSet_t*>(pResult);
+                                const LeaderboardUGCSet_t* pStruct2 = s_cast<LeaderboardUGCSet_t*>(pResult2);
 
                                 // only check for success
                                 ASSERT(pStruct2->m_eResult == k_EResultOK)
@@ -461,7 +461,7 @@ inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboar
                     }
 
                     // return results
-                    nCallback(pStruct1->m_bSuccess, pResult);
+                    nCallback(pStruct1->m_bSuccess, pResult1);
                 });
 
                 return true;
@@ -501,7 +501,7 @@ inline coreBool coreBackendSteam::DownloadLeaderboard(const corePlatformLeaderbo
                 // add asynchronous callback
                 m_anAsyncMap.emplace(iHandle, [=, this](void* pResult)
                 {
-                    const LeaderboardScoresDownloaded_t* pStruct = r_cast<LeaderboardScoresDownloaded_t*>(pResult);
+                    const LeaderboardScoresDownloaded_t* pStruct = s_cast<LeaderboardScoresDownloaded_t*>(pResult);
 
                     // allocate output list
                     coreList<corePlatformScore> aScoreCache;
@@ -560,9 +560,9 @@ inline void coreBackendSteam::UploadFile(const coreByte* pData, const coreUint32
             ASSERT(!sNameCopy.empty())
 
             // add asynchronous callback
-            m_anAsyncMap.emplace(iHandle1, [=, this, sNameCopy = std::move(sNameCopy)](void* pResult)
+            m_anAsyncMap.emplace(iHandle1, [=, this, sNameCopy = std::move(sNameCopy)](void* pResult1)
             {
-                const RemoteStorageFileWriteAsyncComplete_t* pStruct1 = r_cast<RemoteStorageFileWriteAsyncComplete_t*>(pResult);
+                const RemoteStorageFileWriteAsyncComplete_t* pStruct1 = s_cast<RemoteStorageFileWriteAsyncComplete_t*>(pResult1);
 
                 if(pStruct1->m_eResult == k_EResultOK)
                 {
@@ -571,19 +571,19 @@ inline void coreBackendSteam::UploadFile(const coreByte* pData, const coreUint32
                     if(iHandle2)
                     {
                         // add asynchronous callback (nested)
-                        m_anAsyncMap.emplace(iHandle2, [=](void* pResult)
+                        m_anAsyncMap.emplace(iHandle2, [=](void* pResult2)
                         {
-                            const RemoteStorageFileShareResult_t* pStruct2 = r_cast<RemoteStorageFileShareResult_t*>(pResult);
+                            const RemoteStorageFileShareResult_t* pStruct2 = s_cast<RemoteStorageFileShareResult_t*>(pResult2);
 
                             // return results
-                            nCallback((pStruct2->m_eResult == k_EResultOK) ? pStruct2->m_hFile : 0u, pResult);
+                            nCallback((pStruct2->m_eResult == k_EResultOK) ? pStruct2->m_hFile : 0u, pResult2);
                         });
                     }
                 }
                 else
                 {
                     // return failure
-                    nCallback(0u, pResult);
+                    nCallback(0u, pResult1);
                 }
             });
 
@@ -608,7 +608,7 @@ inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHan
             // add asynchronous callback
             m_anAsyncMap.emplace(iHandle, [=, this](void* pResult)
             {
-                const RemoteStorageDownloadUGCResult_t* pStruct = r_cast<RemoteStorageDownloadUGCResult_t*>(pResult);
+                const RemoteStorageDownloadUGCResult_t* pStruct = s_cast<RemoteStorageDownloadUGCResult_t*>(pResult);
 
                 if(pStruct->m_eResult == k_EResultOK)
                 {
@@ -775,7 +775,7 @@ inline SteamLeaderboard_t coreBackendSteam::__LoadLeaderboard(const corePlatform
             // add asynchronous callback
             m_anAsyncMap.emplace(iHandle, [=, this](void* pResult)
             {
-                const LeaderboardFindResult_t* pStruct = r_cast<LeaderboardFindResult_t*>(pResult);
+                const LeaderboardFindResult_t* pStruct = s_cast<LeaderboardFindResult_t*>(pResult);
 
                 // store leaderboard handle
                 ASSERT(pStruct->m_bLeaderboardFound)

@@ -184,10 +184,12 @@ using coreTexturePtr = coreResourcePtr<coreTexture>;
 
 // ****************************************************************
 /* constructor */
-constexpr coreTextureSpec::coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType)noexcept
-: iInternal (iInternal)
-, iFormat   (iFormat)
-, iType     (iType)
+constexpr coreTextureSpec::coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType, const coreUint8 iComponents, const coreUint8 iBytes)noexcept
+: iInternal   (iInternal)
+, iFormat     (iFormat)
+, iType       (iType)
+, iComponents (iComponents)
+, iBytes      (iBytes)
 {
 }
 

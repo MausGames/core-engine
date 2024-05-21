@@ -87,6 +87,9 @@
     <ClCompile Include="..\..\..\source\components\graphics\coreTexture.cpp">
       <Filter>components\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\components\graphics\coreAnimation.cpp">
+      <Filter>components\graphics</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\components\system\coreThread.cpp">
       <Filter>components\system</Filter>
     </ClCompile>
@@ -226,6 +229,9 @@
       <Filter>components\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\graphics\coreTexture.h">
+      <Filter>components\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\components\graphics\coreAnimation.h">
       <Filter>components\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\system\coreThread.h">

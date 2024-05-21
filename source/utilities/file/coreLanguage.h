@@ -105,7 +105,7 @@ public:
 
     /* load and access the language file */
     coreStatus Load(const coreChar* pcPath);
-    inline const coreChar* GetString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey) ? m_asStringList.at_bs(sKey).c_str() : sKey.GetString();}
+    inline const coreChar* GetString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey) ? m_asStringList.at_bs(sKey).c_str() : PRINT(CORE_LANGUAGE_KEY "%s", sKey.GetString());}
     inline coreBool        HasString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey);}
 
     /* bind and unbind foreign string pointers */
