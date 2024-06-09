@@ -142,7 +142,7 @@ template <> inline constexpr bool std::is_floating_point_v<coreFlow> = true;
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_trivial<coreFlow>::value)
+STATIC_ASSERT(std::is_trivial_v<coreFlow>)
 
 
 #endif /* _CORE_GUARD_TIMER_H_ */

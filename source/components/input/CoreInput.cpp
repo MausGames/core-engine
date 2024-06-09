@@ -232,7 +232,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     }
 
     // test if events are identical
-    #define __COMPARE(a,b,x) STATIC_ASSERT((offsetof(a, x) == offsetof(b, x)) && (std::is_same<decltype(a::x), decltype(b::x)>::value))
+    #define __COMPARE(a,b,x) STATIC_ASSERT((offsetof(a, x) == offsetof(b, x)) && (std::is_same_v<decltype(a::x), decltype(b::x)>))
     {
         __COMPARE(SDL_JoyButtonEvent, SDL_ControllerButtonEvent, which)
         __COMPARE(SDL_JoyButtonEvent, SDL_ControllerButtonEvent, button)

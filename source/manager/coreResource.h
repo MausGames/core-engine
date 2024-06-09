@@ -327,7 +327,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     if(m_apHandle.count_bs(sName)) return m_apHandle.at_bs(sName);
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, std::is_same<T, coreResourceDummy>::value ? NULL : new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), eUpdate ? true : false);
+    coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, std::is_same_v<T, coreResourceDummy> ? NULL : new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), eUpdate ? true : false);
 
     m_ResourceLock.Lock();
     {
@@ -342,7 +342,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
 template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadNew(A&&... vArgs)const
 {
     // create unique unmanaged resource handle
-    return MANAGED_NEW(coreResourceHandle, std::is_same<T, coreResourceDummy>::value ? NULL : new T(std::forward<A>(vArgs)...), NULL, "", false);
+    return MANAGED_NEW(coreResourceHandle, std::is_same_v<T, coreResourceDummy> ? NULL : new T(std::forward<A>(vArgs)...), NULL, "", false);
 }
 
 inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& sName)

@@ -1178,11 +1178,11 @@ constexpr coreVector3 coreVector3::YcbcrToRgb()const
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_trivial<coreMatrix3x2>::value)
-STATIC_ASSERT(std::is_trivial<coreMatrix4x3>::value)
-STATIC_ASSERT(std::is_trivial<coreMatrix2>  ::value)
-STATIC_ASSERT(std::is_trivial<coreMatrix3>  ::value)
-STATIC_ASSERT(std::is_trivial<coreMatrix4>  ::value)
+STATIC_ASSERT(std::is_trivial_v<coreMatrix3x2>)
+STATIC_ASSERT(std::is_trivial_v<coreMatrix4x3>)
+STATIC_ASSERT(std::is_trivial_v<coreMatrix2>)
+STATIC_ASSERT(std::is_trivial_v<coreMatrix3>)
+STATIC_ASSERT(std::is_trivial_v<coreMatrix4>)
 
 
 #endif /* _CORE_GUARD_MATRIX_H_ */

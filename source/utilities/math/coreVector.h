@@ -1307,9 +1307,9 @@ constexpr coreVector3 coreVector4::QuatApply(const coreVector3 v)const
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_trivial<coreVector2>::value)
-STATIC_ASSERT(std::is_trivial<coreVector3>::value)
-STATIC_ASSERT(std::is_trivial<coreVector4>::value)
+STATIC_ASSERT(std::is_trivial_v<coreVector2>)
+STATIC_ASSERT(std::is_trivial_v<coreVector3>)
+STATIC_ASSERT(std::is_trivial_v<coreVector4>)
 
 
 #endif /* _CORE_GUARD_VECTOR_H_ */

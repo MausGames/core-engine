@@ -515,13 +515,13 @@
     void  operator delete[] (void*)       = delete;
 
 // enable bitwise-operations with the defined enumeration
-#define ENABLE_BITWISE(e)                                                                                                                                       \
-    constexpr e  operator ~  (const e   a)            {return s_cast<e>(~s_cast<std::underlying_type<e>::type>(a));}                                            \
-    constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) & s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) | s_cast<std::underlying_type<e>::type>(b));} \
-    constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type<e>::type>(a) ^ s_cast<std::underlying_type<e>::type>(b));} \
-    inline    e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                                     \
-    inline    e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                                     \
+#define ENABLE_BITWISE(e)                                                                                                                               \
+    constexpr e  operator ~  (const e   a)            {return s_cast<e>(~s_cast<std::underlying_type_t<e>>(a));}                                        \
+    constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) & s_cast<std::underlying_type_t<e>>(b));} \
+    constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) | s_cast<std::underlying_type_t<e>>(b));} \
+    constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) ^ s_cast<std::underlying_type_t<e>>(b));} \
+    inline    e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                             \
+    inline    e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                             \
     inline    e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
 
 // safely convert pointers and references along the inheritance hierarchy
@@ -550,7 +550,7 @@ using coreInt8   = std::int8_t;
 using coreInt16  = std::int16_t;
 using coreInt32  = std::int32_t;
 using coreInt64  = long long;
-using coreIntW   = std::make_signed<std::size_t>::type;
+using coreIntW   = std::make_signed_t<std::size_t>;
 using coreLong   = long;
 using coreUint8  = std::uint8_t;
 using coreUint16 = std::uint16_t;
@@ -593,21 +593,21 @@ template <typename T, coreUintW iSize> coreByte (&__ARRAY_SIZE(T (&)[iSize]))[iS
 #define ARRAY_SIZE(a) (sizeof(__ARRAY_SIZE(a)))
 
 // retrieve compile-time function and lambda properties
-template <typename T>                            struct INTERFACE coreFunctionTraits final                        : public coreFunctionTraits<decltype(&std::decay<T>::type::operator())> {};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const noexcept> : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const>          : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)noexcept>       : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
-template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)>               : public coreFunctionTraits<R(A...)>                                    {using coreClassType = C;};
-template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)noexcept>       : public coreFunctionTraits<R(A...)>                                    {};
-template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)>               : public coreFunctionTraits<R(A...)>                                    {};
-template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)noexcept>       : public coreFunctionTraits<R(A...)>                                    {};
+template <typename T>                            struct INTERFACE coreFunctionTraits final                        : public coreFunctionTraits<decltype(&std::decay_t<T>::operator())> {};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const noexcept> : public coreFunctionTraits<R(A...)>                                {using coreClassType = C;};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)const>          : public coreFunctionTraits<R(A...)>                                {using coreClassType = C;};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)noexcept>       : public coreFunctionTraits<R(A...)>                                {using coreClassType = C;};
+template <typename R, typename C, typename... A> struct INTERFACE coreFunctionTraits<R(C::*)(A...)>               : public coreFunctionTraits<R(A...)>                                {using coreClassType = C;};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)noexcept>       : public coreFunctionTraits<R(A...)>                                {};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R   (*)(A...)>               : public coreFunctionTraits<R(A...)>                                {};
+template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)noexcept>       : public coreFunctionTraits<R(A...)>                                {};
 template <typename R,             typename... A> struct INTERFACE coreFunctionTraits<R      (A...)>
 {
-    using coreFuncType   = R(*)(A...);                                                                             // function type (without class)
-    using coreClassType  = void;                                                                                   // class type
-    using coreReturnType = R;                                                                                      // return type
-    template <coreUintW iIndex> using coreArgType = typename std::tuple_element<iIndex, std::tuple<A...>>::type;   // argument types
-    enum : coreUintW {iArity = sizeof...(A)};                                                                      // number of arguments
+    using coreFuncType   = R(*)(A...);                                                                // function type (without class)
+    using coreClassType  = void;                                                                      // class type
+    using coreReturnType = R;                                                                         // return type
+    template <coreUintW iIndex> using coreArgType = std::tuple_element_t<iIndex, std::tuple<A...>>;   // argument types
+    enum : coreUintW {iArity = sizeof...(A)};                                                         // number of arguments
 };
 #define TRAIT_FUNC_TYPE(f)   coreFunctionTraits<f>::coreFuncType
 #define TRAIT_CLASS_TYPE(f)  coreFunctionTraits<f>::coreClassType
@@ -623,8 +623,8 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 #define FORCE_COMPILE_TIME(x) (coreForceCompileTime<decltype(x), x>::tResult)
 
 // directly call constructor and destructor on pointer
-#define CALL_CONSTRUCTOR(p,...) {using __t = typename std::decay<decltype(*(p))>::type; new(p) __t(__VA_ARGS__);}
-#define CALL_DESTRUCTOR(p)      {using __t = typename std::decay<decltype(*(p))>::type; (p)->~__t();}
+#define CALL_CONSTRUCTOR(p,...) {using __t = std::decay_t<decltype(*(p))>; new(p) __t(__VA_ARGS__);}
+#define CALL_DESTRUCTOR(p)      {using __t = std::decay_t<decltype(*(p))>; (p)->~__t();}
 
 // default color values
 #define COLOR_WHITE   (coreVector3(1.000f, 1.000f, 1.000f))
