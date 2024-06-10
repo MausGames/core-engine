@@ -195,7 +195,7 @@ public:
     static inline       coreBool  StrIsLower  (const coreChar* pcInput)              {while(*pcInput) if(IS_UPPER(*(pcInput++))) return false; return true;}
     static const coreChar*        StrLeft     (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrRight    (const coreChar* pcInput, const coreUintW iNum);
-    static const coreChar*        StrFilename (const coreChar* pcInput);
+    static const coreChar*        StrFilename (const coreChar* pcInput, const coreBool bExtension = true);
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);

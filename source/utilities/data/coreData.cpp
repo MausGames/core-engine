@@ -1991,18 +1991,28 @@ const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW iNum
 
 // ****************************************************************
 /* safely get file name from path */
-const coreChar* coreData::StrFilename(const coreChar* pcInput)
+const coreChar* coreData::StrFilename(const coreChar* pcInput, const coreBool bExtension)
 {
     WARN_IF(!pcInput) return "";
 
-    // return after last path-delimiter
-    for(const coreChar* pcCursor = pcInput + std::strlen(pcInput) - 1u; pcCursor >= pcInput; --pcCursor)
+    if(bExtension)
     {
-        if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
-            return pcCursor + 1u;
-    }
+        // return after last path-delimiter
+        for(const coreChar* pcCursor = pcInput + std::strlen(pcInput) - 1u; pcCursor >= pcInput; --pcCursor)
+        {
+            if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
+                return pcCursor + 1u;
+        }
 
-    return pcInput;
+        return pcInput;
+    }
+    else
+    {
+        // get file name without extension
+        const coreChar* pcFull = coreData::StrFilename(pcInput);
+        const coreChar* pcDot  = std::strrchr(pcFull, '.');
+        return pcDot ? coreData::StrLeft(pcFull, pcDot - pcFull) : pcFull;
+    }
 }
 
 
@@ -2012,17 +2022,8 @@ const coreChar* coreData::StrDirectory(const coreChar* pcInput)
 {
     WARN_IF(!pcInput) return "";
 
-    coreChar* pcString = coreData::__NextTempString();
-
-    // identify file name
     const coreChar* pcName = coreData::StrFilename(pcInput);
-    const coreUintW iLen   = MIN(coreUintW(pcName - pcInput), CORE_DATA_STRING_LEN - 1u);
-
-    // copy remaining path
-    std::memcpy(pcString, pcInput, iLen);
-    pcString[iLen] = '\0';
-
-    return pcString;
+    return coreData::StrLeft(pcInput, pcName - pcInput);
 }
 
 

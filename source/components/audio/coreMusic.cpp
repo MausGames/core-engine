@@ -657,7 +657,7 @@ coreStatus coreMusicPlayer::__AddMusic(coreFile* pFile)
     __CORE_MUSIC_LOCKER
 
     // extract and store file name
-    const coreChar* pcName = coreData::StrFilename(pFile->GetPath());
+    const coreChar* pcName = coreData::StrFilename(pFile->GetPath(), false);
     WARN_IF(m_apMusic.count(pcName))
     {
         MANAGED_DELETE(pNewMusic)
