@@ -67,13 +67,25 @@ coreStatus coreModel::Load(coreFile* pFile)
     // extract file extension
     const coreChar* pcExtension = coreData::StrToLower(coreData::StrExtension(pFile->GetPath()));
 
+    // handle custom compression
+    coreDataScope<coreByte> pDecompressed = NULL;
+    if((*coreData::StrRight(pcExtension, 1u)) == 'z')
+    {
+        coreByte*  pNewData;
+        coreUint32 iNewSize;
+        if(coreData::Decompress(pFile->GetData(), pFile->GetSize(), &pNewData, &iNewSize) == CORE_OK)
+        {
+            pDecompressed = pNewData;
+        }
+    }
+
     // import model file
     coreImport oImport;
-         if(!std::memcmp(pcExtension, "md5", 3u)) coreImportMD5(pFile->GetData(), &oImport);
-    else if(!std::memcmp(pcExtension, "md3", 3u)) coreImportMD3(pFile->GetData(), &oImport);
+         if(!std::memcmp(pcExtension, "md5", 3u)) coreImportMD5(pDecompressed ? pDecompressed.Get() : pFile->GetData(), &oImport);
+    else if(!std::memcmp(pcExtension, "md3", 3u)) coreImportMD3(pDecompressed ? pDecompressed.Get() : pFile->GetData(), &oImport);
     else
     {
-        Core::Log->Warning("Model (%s) could not be identified (valid extensions: md5[mesh], md3)", m_sName.c_str());
+        Core::Log->Warning("Model (%s) could not be identified (valid extensions: md5[z], md3[z])", m_sName.c_str());
         return CORE_INVALID_DATA;
     }
 

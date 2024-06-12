@@ -568,7 +568,7 @@ const coreChar* coreData::SystemDirAppData()
 #elif defined(_CORE_SWITCH_)
 
     // get default save-game path
-    return PRINT("%s", coreSDLScope(SDL_GetPrefPath(NULL, NULL)).Get());
+    return PRINT("%s", corePathScope(SDL_GetPrefPath(NULL, NULL)).Get());
 
 #endif
 
@@ -910,7 +910,7 @@ void coreData::InitDefaultFolders()
 #if defined(_CORE_MACOS_)
     coreData::SetCurDir(coreCocoaPathResource());
 #elif defined(_CORE_SWITCH_)
-    coreData::SetCurDir(coreSDLScope(SDL_GetBasePath()).Get());
+    coreData::SetCurDir(corePathScope(SDL_GetBasePath()).Get());
 #else
     coreData::SetCurDir(PRINT("%s/../..", coreData::ProcessDir()));
 #endif
@@ -1880,6 +1880,14 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 {
     ASSERT(pInput && iInputSize && ppOutput && piOutputSize && iLimit)
 
+    // check data integrity
+    const coreUint64 iContentSize = ZSTD_getFrameContentSize(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
+    if((iContentSize == ZSTD_CONTENTSIZE_ERROR) || ((iContentSize > iLimit) && (iContentSize != ZSTD_CONTENTSIZE_UNKNOWN)))
+    {
+        Core::Log->Warning("Error checking data integrity (size: %llu)", iContentSize);
+        return CORE_INVALID_DATA;
+    }
+
     // retrieve original size
     const coreUint32 iBound  = MIN(*r_cast<const coreUint32*>(pInput), iLimit);
     coreByte*        pBuffer = new coreByte[iBound];
@@ -1906,6 +1914,14 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte* OUTPUT pOutput, coreUint32* OUTPUT piOutputSize)
 {
     ASSERT(pInput && iInputSize && pOutput && piOutputSize)
+
+    // check data integrity
+    const coreUint64 iContentSize = ZSTD_getFrameContentSize(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
+    if(iContentSize == ZSTD_CONTENTSIZE_ERROR)
+    {
+        Core::Log->Warning("Error checking data integrity (size: %llu)", iContentSize);
+        return CORE_INVALID_DATA;
+    }
 
     // retrieve original size
     const coreUint32 iBound = (*r_cast<const coreUint32*>(pInput));
