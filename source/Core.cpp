@@ -237,8 +237,16 @@ coreStatus Core::Run()
     // execute with requestAnimationFrame (main loop)
     emscripten_set_main_loop([]()
     {
-        // update the Emscripten canvas
-        Graphics->__UpdateEmscripten();
+        // wait until loading is finished
+        Manager::Resource->UpdateWait();
+        if(Manager::Resource->IsLoading()) return;
+
+        // switch to the inner loop
+        emscripten_cancel_main_loop();
+        emscripten_set_main_loop([]()
+        {
+            // update the Emscripten canvas
+            Graphics->__UpdateEmscripten();
 
 #else
 
@@ -287,6 +295,7 @@ coreStatus Core::Run()
 
 #if defined(_CORE_EMSCRIPTEN_)
 
+        }, 0, 1);
     }, 0, 1);
 
 #endif
