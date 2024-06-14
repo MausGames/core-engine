@@ -536,6 +536,7 @@
 #define d_cast coreDynamicCast
 #define r_cast reinterpret_cast
 #define c_cast const_cast
+#define ident  std::type_identity_t
 
 // type conversion macros
 #define F_TO_SI(x) ((coreInt32)            (x))   // float to signed int
