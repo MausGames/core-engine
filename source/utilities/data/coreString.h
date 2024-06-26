@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_STRING_H_
 #define _CORE_GUARD_STRING_H_
 
-// TODO 3: remove custom contains function with C++23
 // TODO 4: when to use append, when to use += (which is only used rarely) ? change everything to append ?
 
 
@@ -59,9 +58,6 @@ public:
 
     /* trim string on both sides */
     coreString& trim(const coreChar* pcRemove = " \n\r\t");
-
-    /* check for existence of a sub-string */
-    constexpr coreBool contains(const coreChar* pcText)const {return (this->find(pcText) != coreString::npos);}
 };
 
 
@@ -78,10 +74,12 @@ private:
 
 public:
     constexpr coreWorkString()noexcept;
-    coreWorkString(const coreChar* pcText)noexcept;
+    inline coreWorkString(const coreChar* pcText)noexcept;
+    inline coreWorkString(coreWorkString&& m)noexcept;
     ~coreWorkString();
 
-    DISABLE_COPY(coreWorkString)
+    /* assignment operations */
+    coreWorkString& operator = (coreWorkString&& m)noexcept;
 
     /* access string buffer */
     inline const coreChar& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < m_iCapacity) return m_pcBuffer[iIndex];}
@@ -101,12 +99,18 @@ public:
     void clear();
 
     /* create formatted string */
-    void print(SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, ...) SDL_PRINTF_VARARG_FUNC(2);
+    template <typename... A> inline void print_assign(const coreChar* pcFormat, A&&... vArgs) {this->__print(0u,             pcFormat, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void print_append(const coreChar* pcFormat, A&&... vArgs) {this->__print(this->length(), pcFormat, std::forward<A>(vArgs)...);}
 
     /* get object properties */
     inline coreUintW capacity()const {return m_iCapacity;}
     inline coreUintW length  ()const {return m_iSize -  1u;}
     inline coreBool  empty   ()const {return m_iSize == 1u;}
+
+
+private:
+    /* create formatted string */
+    void __print(const coreUintW iOffset, SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, ...) SDL_PRINTF_VARARG_FUNC(3);
 };
 
 
@@ -143,6 +147,14 @@ inline coreWorkString::coreWorkString(const coreChar* pcText)noexcept
 {
     // assign initial string
     this->assign(pcText);
+}
+
+inline coreWorkString::coreWorkString(coreWorkString&& m)noexcept
+: m_pcBuffer  (m.m_pcBuffer)
+, m_iSize     (m.m_iSize)
+, m_iCapacity (m.m_iCapacity)
+{
+    m.m_pcBuffer = NULL;
 }
 
 

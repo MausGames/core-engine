@@ -60,6 +60,19 @@ coreWorkString::~coreWorkString()
 
 
 // ****************************************************************
+/* assignment operations */
+coreWorkString& coreWorkString::operator = (coreWorkString&& m)noexcept
+{
+    // swap properties
+    std::swap(m_pcBuffer,  m.m_pcBuffer);
+    std::swap(m_iSize,     m.m_iSize);
+    std::swap(m_iCapacity, m.m_iCapacity);
+
+    return *this;
+}
+
+
+// ****************************************************************
 /* reserve string memory */
 coreBool coreWorkString::reserve(const coreUintW iCapacity)
 {
@@ -187,9 +200,9 @@ void coreWorkString::clear()
 
 // ****************************************************************
 /* create formatted string */
-void coreWorkString::print(const coreChar* pcFormat, ...)
+void coreWorkString::__print(const coreUintW iOffset, const coreChar* pcFormat, ...)
 {
-    ASSERT(pcFormat)
+    if(!pcFormat) pcFormat = "";
 
     do
     {
@@ -198,7 +211,7 @@ void coreWorkString::print(const coreChar* pcFormat, ...)
         va_start(oArgs, pcFormat);
 
         // assemble string
-        m_iSize = coreData::PrintBaseV(m_pcBuffer, m_iCapacity, pcFormat, oArgs) + 1u;
+        m_iSize = coreData::PrintBaseV(m_pcBuffer + iOffset, m_iCapacity - iOffset, pcFormat, oArgs) + iOffset + 1u;
         va_end(oArgs);
 
         // check for success
