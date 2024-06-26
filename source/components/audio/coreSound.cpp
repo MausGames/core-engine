@@ -336,7 +336,7 @@ coreBool coreSound::IsPlaying()
 
 // ****************************************************************
 /* change the audio source position and velocity */
-void coreSound::SetSource(const coreVector3 vPosition, const coreVector3 vVelocity)
+void coreSound::SetSource(const coreVector3 vPosition)
 {
     __CORE_SOUND_ASSERT
     if(m_iCurSource)
@@ -349,10 +349,18 @@ void coreSound::SetSource(const coreVector3 vPosition, const coreVector3 vVeloci
         ASSERT(!iStatus)
 
 #endif
-        // set position and velocity
+        // set position
         alSourcefv(m_iCurSource, AL_POSITION, vPosition.ptr());
-        alSourcefv(m_iCurSource, AL_VELOCITY, vVelocity.ptr());
     }
+}
+
+void coreSound::SetSource(const coreVector3 vPosition, const coreVector3 vVelocity)
+{
+    // set position (with checks)
+    this->SetSource(vPosition);
+
+    // set velocity
+    if(m_iCurSource) alSourcefv(m_iCurSource, AL_VELOCITY, vVelocity.ptr());
 }
 
 

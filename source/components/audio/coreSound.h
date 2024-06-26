@@ -84,6 +84,7 @@ public:
     coreBool IsPlaying();
 
     /* set various audio source properties */
+    void SetSource(const coreVector3 vPosition);
     void SetSource(const coreVector3 vPosition, const coreVector3 vVelocity);
     inline void SetVolume(const coreFloat fVolume) {__CORE_SOUND_ASSERT if(m_iCurSource) Core::Audio->UpdateSource(m_iCurSource, fVolume); __CORE_AUDIO_CHECK_VOLUME(fVolume)}
     inline void SetPitch (const coreFloat fPitch)  {__CORE_SOUND_ASSERT if(m_iCurSource) alSourcef(m_iCurSource, AL_PITCH,   fPitch);      __CORE_AUDIO_CHECK_PITCH (fPitch)}
