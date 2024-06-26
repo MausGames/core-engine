@@ -132,12 +132,12 @@ coreStatus coreSound::Load(coreFile* pFile)
         // handle compression
              if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_ALAW)  {if(!Core::Audio->GetSupportALAW ()) {coreDecodeALAW (pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
         else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_MULAW) {if(!Core::Audio->GetSupportMULAW()) {coreDecodeMULAW(pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
-        else if(m_Format.iAudioFormat != CORE_SOUND_FORMAT_PCM)
+        else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_PCM)   {ASSERT(!HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_ALAW) && !HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_MULAW))}
+        else
         {
             Core::Log->Warning("Sound (%s) has unsupported audio format %u (valid formats: PCM 1, ALAW 6, MULAW 7)", m_sName.c_str(), m_Format.iAudioFormat);
             return CORE_INVALID_DATA;
         }
-        ASSERT(!HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_ALAW) && !HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_MULAW))
     }
     else
     {

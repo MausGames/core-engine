@@ -284,7 +284,7 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     for(coreUintW i = 0u; i < iNumVertices; ++i)
     {
         // handle degenerate triangles
-        if(pvOrtho1[i].IsNull()) pvOrtho1[i] = coreVector3(0.0f,0.0f,1.0f);
+        if(pvOrtho1[i].IsNull()) pvOrtho1[i] = pVertex[i].vNormal.zxy();
 
         // finish the Gram-Schmidt process to calculate the tangent vector and bitangent sign (w)
         pVertex[i].vTangent = coreVector4((pvOrtho1[i] - pVertex[i].vNormal * coreVector3::Dot(pVertex[i].vNormal, pvOrtho1[i])).NormalizedUnsafePrecise(),

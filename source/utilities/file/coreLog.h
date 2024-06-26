@@ -19,7 +19,7 @@
 
 // ****************************************************************
 /* log definitions */
-#define __CORE_LOG_PRINT (m_sWorkString.print(pcText, std::forward<A>(vArgs)...), m_sWorkString)
+#define __CORE_LOG_PRINT (m_sWorkString.print_assign(pcText, std::forward<A>(vArgs)...), m_sWorkString)
 #define __CORE_LOG_CLEAR (m_sWorkString.clear(), m_sWorkString)
 
 #define CORE_LOG_BOLD(s)       "<b>" s "</b>"   // display text bold

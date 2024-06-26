@@ -66,7 +66,7 @@
 #if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300)
     #define CORE_GL_MODERN_API
 #endif
-#if (defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth) || (CORE_GL_VERSION >= 420))
+#if (defined(GL_AMD_conservative_depth) || defined(GL_ARB_conservative_depth) || defined(GL_EXT_conservative_depth) || (CORE_GL_VERSION >= 420)) && !defined(_CORE_WEBGL_)
     #define CORE_GL_conservative_depth
 #endif
 #if (defined(GL_EXT_draw_buffers) || defined(GL_NV_draw_buffers) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300))
@@ -112,9 +112,6 @@
 #endif
 
 // layout qualifiers
-#if defined(_CORE_WEBGL_)
-    #define depth_unchanged depth_any
-#endif
 #if defined(_CORE_FRAGMENT_SHADER_) && !defined(_CORE_OPTION_NO_EARLY_DEPTH_)
     #if defined(CORE_GL_conservative_depth)
         layout(depth_unchanged) out float gl_FragDepth;

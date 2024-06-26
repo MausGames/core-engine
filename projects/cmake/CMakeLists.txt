@@ -8,7 +8,7 @@ add_library(CoreEngine STATIC)
 set_target_properties(
     CoreEngine PROPERTIES
     C_STANDARD 17
-    CXX_STANDARD 20
+    CXX_STANDARD 23
     DEBUG_POSTFIX _debug
     UNITY_BUILD ON
 )
@@ -103,7 +103,7 @@ if(CORE_EMSCRIPTEN)
         CoreEngine INTERFACE
         -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sGL_ENABLE_GET_PROC_ADDRESS=1 -sWASM_BIGINT=1 -sMALLOC=mimalloc -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
         --preload-file ../../../executable/data_web@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -sGL_ASSERTIONS=1 -sGL_DEBUG=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -sGL_ASSERTIONS=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
     )
 
 else()

@@ -39,10 +39,10 @@ coreOpusStream::~coreOpusStream()
 
 // ****************************************************************
 /* callback functions for Opus streams */
-static coreInt32 coreRead (const coreOpusStream* pStream, coreByte* OUTPUT pData, const coreInt32 iSize)    {return (SDL_RWread(pStream->pContext, pData, 1u, iSize));}
-static coreInt32 coreSeek (const coreOpusStream* pStream, const coreInt64 iOffset, const coreInt32 iWhence) {return (SDL_RWseek(pStream->pContext, iOffset + pStream->aiSeekOffset[iWhence], pStream->aiSeekType[iWhence]) < 0);}
-static coreInt64 coreTell (const coreOpusStream* pStream)                                                   {return (SDL_RWtell(pStream->pContext) - pStream->aiSeekOffset[0]);}
-static coreInt32 coreClose(const coreOpusStream* pStream)                                                   {SAFE_DELETE(pStream) return 0;}
+static coreInt32 OPUS_CALL coreRead (const coreOpusStream* pStream, coreByte* OUTPUT pData, const coreInt32 iSize)    {return (SDL_RWread(pStream->pContext, pData, 1u, iSize));}
+static coreInt32 OPUS_CALL coreSeek (const coreOpusStream* pStream, const coreInt64 iOffset, const coreInt32 iWhence) {return (SDL_RWseek(pStream->pContext, iOffset + pStream->aiSeekOffset[iWhence], pStream->aiSeekType[iWhence]) < 0);}
+static coreInt64 OPUS_CALL coreTell (const coreOpusStream* pStream)                                                   {return (SDL_RWtell(pStream->pContext) - pStream->aiSeekOffset[0]);}
+static coreInt32 OPUS_CALL coreClose(const coreOpusStream* pStream)                                                   {SAFE_DELETE(pStream) return 0;}
 
 const OpusFileCallbacks g_OpusCallbacks =
 {
