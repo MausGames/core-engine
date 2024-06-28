@@ -659,7 +659,8 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 
     // read pixel data from the frame buffer
     coreByte* pData = new coreByte[iSize * 2u];
-    glReadPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, pData);
+    if(CORE_GL_SUPPORT(ARB_robustness)) glReadnPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, iSize, pData);
+                                   else glReadPixels (0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE,        pData);
 
     // copy path into lambda
     coreString sPathCopy = pcPath;
@@ -723,6 +724,12 @@ void CoreGraphics::__UpdateScene()
     Core::Debug->MeasureEnd  (CORE_DEBUG_OVERALL_NAME);
     SDL_GL_SwapWindow(Core::System->GetWindow());
     Core::Debug->MeasureStart(CORE_DEBUG_OVERALL_NAME);
+
+    // reset engine on OpenGL context loss
+    if(CORE_GL_SUPPORT(ARB_robustness))
+    {
+        if(glGetGraphicsResetStatus() != GL_NO_ERROR) Core::Reset();
+    }
 
 #if !defined(_CORE_EMSCRIPTEN_)
 

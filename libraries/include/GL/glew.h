@@ -3616,6 +3616,65 @@ typedef void (GLAPIENTRY * PFNGLPROVOKINGVERTEXPROC) (GLenum mode);
 
 #endif /* GL_ARB_provoking_vertex */
 
+/* --------------------------- GL_ARB_robustness --------------------------- */
+
+#ifndef GL_ARB_robustness
+#define GL_ARB_robustness 1
+
+#define GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB 0x00000004
+#define GL_LOSE_CONTEXT_ON_RESET_ARB 0x8252
+#define GL_GUILTY_CONTEXT_RESET_ARB 0x8253
+#define GL_INNOCENT_CONTEXT_RESET_ARB 0x8254
+#define GL_UNKNOWN_CONTEXT_RESET_ARB 0x8255
+#define GL_RESET_NOTIFICATION_STRATEGY_ARB 0x8256
+#define GL_NO_RESET_NOTIFICATION_ARB 0x8261
+
+typedef GLenum (GLAPIENTRY * PFNGLGETGRAPHICSRESETSTATUSARBPROC) (void);
+typedef void (GLAPIENTRY * PFNGLGETNCOLORTABLEARBPROC) (GLenum target, GLenum format, GLenum type, GLsizei bufSize, void* table);
+typedef void (GLAPIENTRY * PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC) (GLenum target, GLint lod, GLsizei bufSize, void* img);
+typedef void (GLAPIENTRY * PFNGLGETNCONVOLUTIONFILTERARBPROC) (GLenum target, GLenum format, GLenum type, GLsizei bufSize, void* image);
+typedef void (GLAPIENTRY * PFNGLGETNHISTOGRAMARBPROC) (GLenum target, GLboolean reset, GLenum format, GLenum type, GLsizei bufSize, void* values);
+typedef void (GLAPIENTRY * PFNGLGETNMAPDVARBPROC) (GLenum target, GLenum query, GLsizei bufSize, GLdouble* v);
+typedef void (GLAPIENTRY * PFNGLGETNMAPFVARBPROC) (GLenum target, GLenum query, GLsizei bufSize, GLfloat* v);
+typedef void (GLAPIENTRY * PFNGLGETNMAPIVARBPROC) (GLenum target, GLenum query, GLsizei bufSize, GLint* v);
+typedef void (GLAPIENTRY * PFNGLGETNMINMAXARBPROC) (GLenum target, GLboolean reset, GLenum format, GLenum type, GLsizei bufSize, void* values);
+typedef void (GLAPIENTRY * PFNGLGETNPIXELMAPFVARBPROC) (GLenum map, GLsizei bufSize, GLfloat* values);
+typedef void (GLAPIENTRY * PFNGLGETNPIXELMAPUIVARBPROC) (GLenum map, GLsizei bufSize, GLuint* values);
+typedef void (GLAPIENTRY * PFNGLGETNPIXELMAPUSVARBPROC) (GLenum map, GLsizei bufSize, GLushort* values);
+typedef void (GLAPIENTRY * PFNGLGETNPOLYGONSTIPPLEARBPROC) (GLsizei bufSize, GLubyte* pattern);
+typedef void (GLAPIENTRY * PFNGLGETNSEPARABLEFILTERARBPROC) (GLenum target, GLenum format, GLenum type, GLsizei rowBufSize, void* row, GLsizei columnBufSize, void*column, void*span);
+typedef void (GLAPIENTRY * PFNGLGETNTEXIMAGEARBPROC) (GLenum target, GLint level, GLenum format, GLenum type, GLsizei bufSize, void* img);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMDVARBPROC) (GLuint program, GLint location, GLsizei bufSize, GLdouble* params);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMFVARBPROC) (GLuint program, GLint location, GLsizei bufSize, GLfloat* params);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMIVARBPROC) (GLuint program, GLint location, GLsizei bufSize, GLint* params);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMUIVARBPROC) (GLuint program, GLint location, GLsizei bufSize, GLuint* params);
+typedef void (GLAPIENTRY * PFNGLREADNPIXELSARBPROC) (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, void* data);
+
+#define glGetGraphicsResetStatusARB GLEW_GET_FUN(__glewGetGraphicsResetStatusARB)
+#define glGetnColorTableARB GLEW_GET_FUN(__glewGetnColorTableARB)
+#define glGetnCompressedTexImageARB GLEW_GET_FUN(__glewGetnCompressedTexImageARB)
+#define glGetnConvolutionFilterARB GLEW_GET_FUN(__glewGetnConvolutionFilterARB)
+#define glGetnHistogramARB GLEW_GET_FUN(__glewGetnHistogramARB)
+#define glGetnMapdvARB GLEW_GET_FUN(__glewGetnMapdvARB)
+#define glGetnMapfvARB GLEW_GET_FUN(__glewGetnMapfvARB)
+#define glGetnMapivARB GLEW_GET_FUN(__glewGetnMapivARB)
+#define glGetnMinmaxARB GLEW_GET_FUN(__glewGetnMinmaxARB)
+#define glGetnPixelMapfvARB GLEW_GET_FUN(__glewGetnPixelMapfvARB)
+#define glGetnPixelMapuivARB GLEW_GET_FUN(__glewGetnPixelMapuivARB)
+#define glGetnPixelMapusvARB GLEW_GET_FUN(__glewGetnPixelMapusvARB)
+#define glGetnPolygonStippleARB GLEW_GET_FUN(__glewGetnPolygonStippleARB)
+#define glGetnSeparableFilterARB GLEW_GET_FUN(__glewGetnSeparableFilterARB)
+#define glGetnTexImageARB GLEW_GET_FUN(__glewGetnTexImageARB)
+#define glGetnUniformdvARB GLEW_GET_FUN(__glewGetnUniformdvARB)
+#define glGetnUniformfvARB GLEW_GET_FUN(__glewGetnUniformfvARB)
+#define glGetnUniformivARB GLEW_GET_FUN(__glewGetnUniformivARB)
+#define glGetnUniformuivARB GLEW_GET_FUN(__glewGetnUniformuivARB)
+#define glReadnPixelsARB GLEW_GET_FUN(__glewReadnPixelsARB)
+
+#define GLEW_ARB_robustness GLEW_GET_VAR(__GLEW_ARB_robustness)
+
+#endif /* GL_ARB_robustness */
+
 /* ------------------------- GL_ARB_sample_shading ------------------------- */
 
 #ifndef GL_ARB_sample_shading
@@ -5315,6 +5374,34 @@ typedef void (GLAPIENTRY * PFNGLMAXSHADERCOMPILERTHREADSKHRPROC) (GLuint count);
 
 #endif /* GL_KHR_parallel_shader_compile */
 
+/* --------------------------- GL_KHR_robustness --------------------------- */
+
+#ifndef GL_KHR_robustness
+#define GL_KHR_robustness 1
+
+#define GL_CONTEXT_LOST 0x0507
+#define GL_LOSE_CONTEXT_ON_RESET 0x8252
+#define GL_GUILTY_CONTEXT_RESET 0x8253
+#define GL_INNOCENT_CONTEXT_RESET 0x8254
+#define GL_UNKNOWN_CONTEXT_RESET 0x8255
+#define GL_RESET_NOTIFICATION_STRATEGY 0x8256
+#define GL_NO_RESET_NOTIFICATION 0x8261
+#define GL_CONTEXT_ROBUST_ACCESS 0x90F3
+
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMFVPROC) (GLuint program, GLint location, GLsizei bufSize, GLfloat* params);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMIVPROC) (GLuint program, GLint location, GLsizei bufSize, GLint* params);
+typedef void (GLAPIENTRY * PFNGLGETNUNIFORMUIVPROC) (GLuint program, GLint location, GLsizei bufSize, GLuint* params);
+typedef void (GLAPIENTRY * PFNGLREADNPIXELSPROC) (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, void *data);
+
+#define glGetnUniformfv GLEW_GET_FUN(__glewGetnUniformfv)
+#define glGetnUniformiv GLEW_GET_FUN(__glewGetnUniformiv)
+#define glGetnUniformuiv GLEW_GET_FUN(__glewGetnUniformuiv)
+#define glReadnPixels GLEW_GET_FUN(__glewReadnPixels)
+
+#define GLEW_KHR_robustness GLEW_GET_VAR(__GLEW_KHR_robustness)
+
+#endif /* GL_KHR_robustness */
+
 /* ------------------------- GL_NVX_gpu_memory_info ------------------------ */
 
 #ifndef GL_NVX_gpu_memory_info
@@ -6032,6 +6119,27 @@ GLEW_FUN_EXPORT PFNGLGETPROGRAMRESOURCEIVPROC __glewGetProgramResourceiv;
 
 GLEW_FUN_EXPORT PFNGLPROVOKINGVERTEXPROC __glewProvokingVertex;
 
+GLEW_FUN_EXPORT PFNGLGETGRAPHICSRESETSTATUSARBPROC __glewGetGraphicsResetStatusARB;
+GLEW_FUN_EXPORT PFNGLGETNCOLORTABLEARBPROC __glewGetnColorTableARB;
+GLEW_FUN_EXPORT PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC __glewGetnCompressedTexImageARB;
+GLEW_FUN_EXPORT PFNGLGETNCONVOLUTIONFILTERARBPROC __glewGetnConvolutionFilterARB;
+GLEW_FUN_EXPORT PFNGLGETNHISTOGRAMARBPROC __glewGetnHistogramARB;
+GLEW_FUN_EXPORT PFNGLGETNMAPDVARBPROC __glewGetnMapdvARB;
+GLEW_FUN_EXPORT PFNGLGETNMAPFVARBPROC __glewGetnMapfvARB;
+GLEW_FUN_EXPORT PFNGLGETNMAPIVARBPROC __glewGetnMapivARB;
+GLEW_FUN_EXPORT PFNGLGETNMINMAXARBPROC __glewGetnMinmaxARB;
+GLEW_FUN_EXPORT PFNGLGETNPIXELMAPFVARBPROC __glewGetnPixelMapfvARB;
+GLEW_FUN_EXPORT PFNGLGETNPIXELMAPUIVARBPROC __glewGetnPixelMapuivARB;
+GLEW_FUN_EXPORT PFNGLGETNPIXELMAPUSVARBPROC __glewGetnPixelMapusvARB;
+GLEW_FUN_EXPORT PFNGLGETNPOLYGONSTIPPLEARBPROC __glewGetnPolygonStippleARB;
+GLEW_FUN_EXPORT PFNGLGETNSEPARABLEFILTERARBPROC __glewGetnSeparableFilterARB;
+GLEW_FUN_EXPORT PFNGLGETNTEXIMAGEARBPROC __glewGetnTexImageARB;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMDVARBPROC __glewGetnUniformdvARB;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMFVARBPROC __glewGetnUniformfvARB;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMIVARBPROC __glewGetnUniformivARB;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMUIVARBPROC __glewGetnUniformuivARB;
+GLEW_FUN_EXPORT PFNGLREADNPIXELSARBPROC __glewReadnPixelsARB;
+
 GLEW_FUN_EXPORT PFNGLMINSAMPLESHADINGARBPROC __glewMinSampleShadingARB;
 
 GLEW_FUN_EXPORT PFNGLBINDIMAGETEXTUREPROC __glewBindImageTexture;
@@ -6430,6 +6538,11 @@ GLEW_FUN_EXPORT PFNGLPUSHDEBUGGROUPPROC __glewPushDebugGroup;
 
 GLEW_FUN_EXPORT PFNGLMAXSHADERCOMPILERTHREADSKHRPROC __glewMaxShaderCompilerThreadsKHR;
 
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMFVPROC __glewGetnUniformfv;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMIVPROC __glewGetnUniformiv;
+GLEW_FUN_EXPORT PFNGLGETNUNIFORMUIVPROC __glewGetnUniformuiv;
+GLEW_FUN_EXPORT PFNGLREADNPIXELSPROC __glewReadnPixels;
+
 GLEW_FUN_EXPORT PFNGLSUBPIXELPRECISIONBIASNVPROC __glewSubpixelPrecisionBiasNV;
 
 GLEW_FUN_EXPORT PFNGLCOPYIMAGESUBDATANVPROC __glewCopyImageSubDataNV;
@@ -6522,6 +6635,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pipeline_statistics_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pixel_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_program_interface_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_provoking_vertex;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robustness;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sample_shading;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_seamless_cube_map;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_group_vote;
@@ -6564,6 +6678,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_framebuffer_CMAA;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_debug;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_parallel_shader_compile;
+GLEW_VAR_EXPORT GLboolean __GLEW_KHR_robustness;
 GLEW_VAR_EXPORT GLboolean __GLEW_NVX_gpu_memory_info;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_conservative_raster;
 GLEW_VAR_EXPORT GLboolean __GLEW_NV_copy_image;

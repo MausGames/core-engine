@@ -136,6 +136,23 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glVertexAttribDivisor,   NV, false)
     }
 
+    // implement GL_EXT_robustness
+    if(__CORE_GLES_CHECK(GL_EXT_robustness, bES32))
+    {
+        __CORE_GLES_FUNC_FETCH(glGetGraphicsResetStatus, EXT, bES32)
+        __CORE_GLES_FUNC_FETCH(glGetnUniformfv,          EXT, bES32)
+        __CORE_GLES_FUNC_FETCH(glGetnUniformiv,          EXT, bES32)
+        __CORE_GLES_FUNC_FETCH(glReadnPixels,            EXT, bES32)
+    }
+    else if(g_sExtensions.contains("GL_KHR_robustness "))
+    {
+        g_CoreContext.__GL_EXT_robustness = true;
+        __CORE_GLES_FUNC_FETCH(glGetGraphicsResetStatus, KHR, false)
+        __CORE_GLES_FUNC_FETCH(glGetnUniformfv,          KHR, false)
+        __CORE_GLES_FUNC_FETCH(glGetnUniformiv,          KHR, false)
+        __CORE_GLES_FUNC_FETCH(glReadnPixels,            KHR, false)
+    }
+
     // implement GL_EXT_sRGB_write_control
     __CORE_GLES_CHECK(GL_EXT_sRGB_write_control, false);
 

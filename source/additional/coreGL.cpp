@@ -176,6 +176,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_pipeline_statistics_query,        GLEW_VERSION_4_6)
         __IMPROVE(GLEW_ARB_pixel_buffer_object,              GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)
         __IMPROVE(GLEW_ARB_program_interface_query,          GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_robustness,                       GLEW_VERSION_4_5 || GLEW_KHR_robustness)
         __IMPROVE(GLEW_ARB_sample_shading,                   GLEW_VERSION_4_0)                                       // shader extension (also)
         __IMPROVE(GLEW_ARB_seamless_cube_map,                GLEW_VERSION_3_1)
         __IMPROVE(GLEW_ARB_shader_group_vote,                GLEW_VERSION_4_6)                                       // shader extension
@@ -229,6 +230,16 @@ void __coreInitOpenGL()
     if(!glDrawArraysInstanced)   glDrawArraysInstanced   = glDrawArraysInstancedARB;
     if(!glDrawElementsInstanced) glDrawElementsInstanced = glDrawElementsInstancedARB;
     if(!glVertexAttribDivisor)   glVertexAttribDivisor   = glVertexAttribDivisorARB;
+
+    // remap GL_ARB_robustness to OpenGL 4.5
+    if(!glGetGraphicsResetStatus) glGetGraphicsResetStatus = glGetGraphicsResetStatusARB;
+    if(!glGetnCompressedTexImage) glGetnCompressedTexImage = glGetnCompressedTexImageARB;
+    if(!glGetnTexImage)           glGetnTexImage           = glGetnTexImageARB;
+    if(!glGetnUniformdv)          glGetnUniformdv          = glGetnUniformdvARB;
+    if(!glGetnUniformfv)          glGetnUniformfv          = glGetnUniformfvARB;
+    if(!glGetnUniformiv)          glGetnUniformiv          = glGetnUniformivARB;
+    if(!glGetnUniformuiv)         glGetnUniformuiv         = glGetnUniformuivARB;
+    if(!glReadnPixels)            glReadnPixels            = glReadnPixelsARB;
 
     // remap GL_ARB_sample_shading to OpenGL 4.0
     if(!glMinSampleShading) glMinSampleShading = glMinSampleShadingARB;

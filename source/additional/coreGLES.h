@@ -155,6 +155,24 @@ using PFNGLVERTEXATTRIBDIVISORARBPROC   = void (GL_APIENTRY *) (GLuint index, GL
 
 
 // ****************************************************************
+/* GL_EXT_robustness (mapped on GL_ARB_robustness) */
+#define CORE_GL_ARB_robustness __CORE_GLES_VAR(GL_EXT_robustness)
+
+#define GL_GUILTY_CONTEXT_RESET   0x8253
+#define GL_INNOCENT_CONTEXT_RESET 0x8254
+#define GL_UNKNOWN_CONTEXT_RESET  0x8255
+
+using PFNGLGETGRAPHICSRESETSTATUSPROC = GLenum (GL_APIENTRY *) ();
+using PFNGLGETNUNIFORMFVPROC          = void   (GL_APIENTRY *) (GLuint program, GLint location, GLsizei bufSize, GLfloat* params);
+using PFNGLGETNUNIFORMIVPROC          = void   (GL_APIENTRY *) (GLuint program, GLint location, GLsizei bufSize, GLint* params);
+using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, void* data);
+#define glGetGraphicsResetStatus __CORE_GLES_FUNC(glGetGraphicsResetStatus)
+#define glGetnUniformfv          __CORE_GLES_FUNC(glGetnUniformfv)
+#define glGetnUniformiv          __CORE_GLES_FUNC(glGetnUniformiv)
+#define glReadnPixels            __CORE_GLES_FUNC(glReadnPixels)
+
+
+// ****************************************************************
 /* GL_EXT_sRGB_write_control (mapped on GL_ARB_framebuffer_sRGB) */
 #define CORE_GL_ARB_framebuffer_sRGB __CORE_GLES_VAR(GL_EXT_sRGB_write_control)
 
@@ -445,6 +463,7 @@ struct coreContext final
     coreBool __GL_EXT_disjoint_timer_query;
     coreBool __GL_EXT_draw_buffers;
     coreBool __GL_EXT_instanced_arrays;
+    coreBool __GL_EXT_robustness;
     coreBool __GL_EXT_sRGB_write_control;
     coreBool __GL_EXT_texture_compression_rgtc;
     coreBool __GL_EXT_texture_compression_s3tc;
@@ -488,6 +507,10 @@ struct coreContext final
     PFNGLDRAWARRAYSINSTANCEDARBPROC         __glDrawArraysInstanced;
     PFNGLDRAWELEMENTSINSTANCEDARBPROC       __glDrawElementsInstanced;
     PFNGLVERTEXATTRIBDIVISORARBPROC         __glVertexAttribDivisor;
+    PFNGLGETGRAPHICSRESETSTATUSPROC         __glGetGraphicsResetStatus;
+    PFNGLGETNUNIFORMFVPROC                  __glGetnUniformfv;
+    PFNGLGETNUNIFORMIVPROC                  __glGetnUniformiv;
+    PFNGLREADNPIXELSPROC                    __glReadnPixels;
     PFNGLTEXSTORAGE2DPROC                   __glTexStorage2D;
     PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC __glApplyFramebufferAttachmentCMAA;
     PFNGLDEBUGMESSAGECALLBACKPROC           __glDebugMessageCallback;

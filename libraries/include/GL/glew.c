@@ -782,6 +782,27 @@ PFNGLGETPROGRAMRESOURCEIVPROC __glewGetProgramResourceiv = NULL;
 
 PFNGLPROVOKINGVERTEXPROC __glewProvokingVertex = NULL;
 
+PFNGLGETGRAPHICSRESETSTATUSARBPROC __glewGetGraphicsResetStatusARB = NULL;
+PFNGLGETNCOLORTABLEARBPROC __glewGetnColorTableARB = NULL;
+PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC __glewGetnCompressedTexImageARB = NULL;
+PFNGLGETNCONVOLUTIONFILTERARBPROC __glewGetnConvolutionFilterARB = NULL;
+PFNGLGETNHISTOGRAMARBPROC __glewGetnHistogramARB = NULL;
+PFNGLGETNMAPDVARBPROC __glewGetnMapdvARB = NULL;
+PFNGLGETNMAPFVARBPROC __glewGetnMapfvARB = NULL;
+PFNGLGETNMAPIVARBPROC __glewGetnMapivARB = NULL;
+PFNGLGETNMINMAXARBPROC __glewGetnMinmaxARB = NULL;
+PFNGLGETNPIXELMAPFVARBPROC __glewGetnPixelMapfvARB = NULL;
+PFNGLGETNPIXELMAPUIVARBPROC __glewGetnPixelMapuivARB = NULL;
+PFNGLGETNPIXELMAPUSVARBPROC __glewGetnPixelMapusvARB = NULL;
+PFNGLGETNPOLYGONSTIPPLEARBPROC __glewGetnPolygonStippleARB = NULL;
+PFNGLGETNSEPARABLEFILTERARBPROC __glewGetnSeparableFilterARB = NULL;
+PFNGLGETNTEXIMAGEARBPROC __glewGetnTexImageARB = NULL;
+PFNGLGETNUNIFORMDVARBPROC __glewGetnUniformdvARB = NULL;
+PFNGLGETNUNIFORMFVARBPROC __glewGetnUniformfvARB = NULL;
+PFNGLGETNUNIFORMIVARBPROC __glewGetnUniformivARB = NULL;
+PFNGLGETNUNIFORMUIVARBPROC __glewGetnUniformuivARB = NULL;
+PFNGLREADNPIXELSARBPROC __glewReadnPixelsARB = NULL;
+
 PFNGLMINSAMPLESHADINGARBPROC __glewMinSampleShadingARB = NULL;
 
 PFNGLBINDIMAGETEXTUREPROC __glewBindImageTexture = NULL;
@@ -1180,6 +1201,11 @@ PFNGLPUSHDEBUGGROUPPROC __glewPushDebugGroup = NULL;
 
 PFNGLMAXSHADERCOMPILERTHREADSKHRPROC __glewMaxShaderCompilerThreadsKHR = NULL;
 
+PFNGLGETNUNIFORMFVPROC __glewGetnUniformfv = NULL;
+PFNGLGETNUNIFORMIVPROC __glewGetnUniformiv = NULL;
+PFNGLGETNUNIFORMUIVPROC __glewGetnUniformuiv = NULL;
+PFNGLREADNPIXELSPROC __glewReadnPixels = NULL;
+
 PFNGLSUBPIXELPRECISIONBIASNVPROC __glewSubpixelPrecisionBiasNV = NULL;
 
 PFNGLCOPYIMAGESUBDATANVPROC __glewCopyImageSubDataNV = NULL;
@@ -1272,6 +1298,7 @@ GLboolean __GLEW_ARB_pipeline_statistics_query = GL_FALSE;
 GLboolean __GLEW_ARB_pixel_buffer_object = GL_FALSE;
 GLboolean __GLEW_ARB_program_interface_query = GL_FALSE;
 GLboolean __GLEW_ARB_provoking_vertex = GL_FALSE;
+GLboolean __GLEW_ARB_robustness = GL_FALSE;
 GLboolean __GLEW_ARB_sample_shading = GL_FALSE;
 GLboolean __GLEW_ARB_seamless_cube_map = GL_FALSE;
 GLboolean __GLEW_ARB_shader_group_vote = GL_FALSE;
@@ -1314,6 +1341,7 @@ GLboolean __GLEW_INTEL_framebuffer_CMAA = GL_FALSE;
 GLboolean __GLEW_KHR_debug = GL_FALSE;
 GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
+GLboolean __GLEW_KHR_robustness = GL_FALSE;
 GLboolean __GLEW_NVX_gpu_memory_info = GL_FALSE;
 GLboolean __GLEW_NV_conservative_raster = GL_FALSE;
 GLboolean __GLEW_NV_copy_image = GL_FALSE;
@@ -1418,6 +1446,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_provoking_vertex
   "GL_ARB_provoking_vertex",
+#endif
+#ifdef GL_ARB_robustness
+  "GL_ARB_robustness",
 #endif
 #ifdef GL_ARB_sample_shading
   "GL_ARB_sample_shading",
@@ -1544,6 +1575,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_KHR_parallel_shader_compile
   "GL_KHR_parallel_shader_compile",
+#endif
+#ifdef GL_KHR_robustness
+  "GL_KHR_robustness",
 #endif
 #ifdef GL_NVX_gpu_memory_info
   "GL_NVX_gpu_memory_info",
@@ -1724,6 +1758,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_provoking_vertex
   &__GLEW_ARB_provoking_vertex,
 #endif
+#ifdef GL_ARB_robustness
+  &__GLEW_ARB_robustness,
+#endif
 #ifdef GL_ARB_sample_shading
   &__GLEW_ARB_sample_shading,
 #endif
@@ -1850,6 +1887,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_KHR_parallel_shader_compile
   &__GLEW_KHR_parallel_shader_compile,
 #endif
+#ifdef GL_KHR_robustness
+  &__GLEW_KHR_robustness,
+#endif
 #ifdef GL_NVX_gpu_memory_info
   &__GLEW_NVX_gpu_memory_info,
 #endif
@@ -1965,6 +2005,7 @@ static GLboolean _glewInit_GL_ARB_multi_bind (void);
 static GLboolean _glewInit_GL_ARB_parallel_shader_compile (void);
 static GLboolean _glewInit_GL_ARB_program_interface_query (void);
 static GLboolean _glewInit_GL_ARB_provoking_vertex (void);
+static GLboolean _glewInit_GL_ARB_robustness (void);
 static GLboolean _glewInit_GL_ARB_sample_shading (void);
 static GLboolean _glewInit_GL_ARB_shader_image_load_store (void);
 static GLboolean _glewInit_GL_ARB_sync (void);
@@ -1987,6 +2028,7 @@ static GLboolean _glewInit_GL_EXT_texture_storage (void);
 static GLboolean _glewInit_GL_INTEL_framebuffer_CMAA (void);
 static GLboolean _glewInit_GL_KHR_debug (void);
 static GLboolean _glewInit_GL_KHR_parallel_shader_compile (void);
+static GLboolean _glewInit_GL_KHR_robustness (void);
 static GLboolean _glewInit_GL_NV_conservative_raster (void);
 static GLboolean _glewInit_GL_NV_copy_image (void);
 static GLboolean _glewInit_GL_NV_framebuffer_multisample_coverage (void);
@@ -2519,6 +2561,8 @@ static GLboolean _glewInit_GL_VERSION_4_5 (void)
 
   // additional
   _glewInit_GL_ARB_direct_state_access();
+  _glewInit_GL_ARB_robustness();
+  _glewInit_GL_KHR_robustness();
 
   return r;
 }
@@ -2978,6 +3022,38 @@ static GLboolean _glewInit_GL_ARB_provoking_vertex (void)
 }
 
 #endif /* GL_ARB_provoking_vertex */
+
+#ifdef GL_ARB_robustness
+
+static GLboolean _glewInit_GL_ARB_robustness (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glGetGraphicsResetStatusARB = (PFNGLGETGRAPHICSRESETSTATUSARBPROC)glewGetProcAddress((const GLubyte*)"glGetGraphicsResetStatusARB")) == NULL) || r;
+  r = ((glGetnColorTableARB = (PFNGLGETNCOLORTABLEARBPROC)glewGetProcAddress((const GLubyte*)"glGetnColorTableARB")) == NULL) || r;
+  r = ((glGetnCompressedTexImageARB = (PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC)glewGetProcAddress((const GLubyte*)"glGetnCompressedTexImageARB")) == NULL) || r;
+  r = ((glGetnConvolutionFilterARB = (PFNGLGETNCONVOLUTIONFILTERARBPROC)glewGetProcAddress((const GLubyte*)"glGetnConvolutionFilterARB")) == NULL) || r;
+  r = ((glGetnHistogramARB = (PFNGLGETNHISTOGRAMARBPROC)glewGetProcAddress((const GLubyte*)"glGetnHistogramARB")) == NULL) || r;
+  r = ((glGetnMapdvARB = (PFNGLGETNMAPDVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnMapdvARB")) == NULL) || r;
+  r = ((glGetnMapfvARB = (PFNGLGETNMAPFVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnMapfvARB")) == NULL) || r;
+  r = ((glGetnMapivARB = (PFNGLGETNMAPIVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnMapivARB")) == NULL) || r;
+  r = ((glGetnMinmaxARB = (PFNGLGETNMINMAXARBPROC)glewGetProcAddress((const GLubyte*)"glGetnMinmaxARB")) == NULL) || r;
+  r = ((glGetnPixelMapfvARB = (PFNGLGETNPIXELMAPFVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnPixelMapfvARB")) == NULL) || r;
+  r = ((glGetnPixelMapuivARB = (PFNGLGETNPIXELMAPUIVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnPixelMapuivARB")) == NULL) || r;
+  r = ((glGetnPixelMapusvARB = (PFNGLGETNPIXELMAPUSVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnPixelMapusvARB")) == NULL) || r;
+  r = ((glGetnPolygonStippleARB = (PFNGLGETNPOLYGONSTIPPLEARBPROC)glewGetProcAddress((const GLubyte*)"glGetnPolygonStippleARB")) == NULL) || r;
+  r = ((glGetnSeparableFilterARB = (PFNGLGETNSEPARABLEFILTERARBPROC)glewGetProcAddress((const GLubyte*)"glGetnSeparableFilterARB")) == NULL) || r;
+  r = ((glGetnTexImageARB = (PFNGLGETNTEXIMAGEARBPROC)glewGetProcAddress((const GLubyte*)"glGetnTexImageARB")) == NULL) || r;
+  r = ((glGetnUniformdvARB = (PFNGLGETNUNIFORMDVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformdvARB")) == NULL) || r;
+  r = ((glGetnUniformfvARB = (PFNGLGETNUNIFORMFVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformfvARB")) == NULL) || r;
+  r = ((glGetnUniformivARB = (PFNGLGETNUNIFORMIVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformivARB")) == NULL) || r;
+  r = ((glGetnUniformuivARB = (PFNGLGETNUNIFORMUIVARBPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformuivARB")) == NULL) || r;
+  r = ((glReadnPixelsARB = (PFNGLREADNPIXELSARBPROC)glewGetProcAddress((const GLubyte*)"glReadnPixelsARB")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_ARB_robustness */
 
 #ifdef GL_ARB_sample_shading
 
@@ -3619,6 +3695,22 @@ static GLboolean _glewInit_GL_KHR_parallel_shader_compile (void)
 
 #endif /* GL_KHR_parallel_shader_compile */
 
+#ifdef GL_KHR_robustness
+
+static GLboolean _glewInit_GL_KHR_robustness (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glGetnUniformfv = (PFNGLGETNUNIFORMFVPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformfv")) == NULL) || r;
+  r = ((glGetnUniformiv = (PFNGLGETNUNIFORMIVPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformiv")) == NULL) || r;
+  r = ((glGetnUniformuiv = (PFNGLGETNUNIFORMUIVPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformuiv")) == NULL) || r;
+  r = ((glReadnPixels = (PFNGLREADNPIXELSPROC)glewGetProcAddress((const GLubyte*)"glReadnPixels")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_KHR_robustness */
+
 #ifdef GL_NV_conservative_raster
 
 static GLboolean _glewInit_GL_NV_conservative_raster (void)
@@ -4036,6 +4128,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_ARB_provoking_vertex
   if (glewExperimental || GLEW_ARB_provoking_vertex) GLEW_ARB_provoking_vertex = !_glewInit_GL_ARB_provoking_vertex();
 #endif /* GL_ARB_provoking_vertex */
+#ifdef GL_ARB_robustness
+  if (glewExperimental || GLEW_ARB_robustness) GLEW_ARB_robustness = !_glewInit_GL_ARB_robustness();
+#endif /* GL_ARB_robustness */
 #ifdef GL_ARB_sample_shading
   if (glewExperimental || GLEW_ARB_sample_shading) GLEW_ARB_sample_shading = !_glewInit_GL_ARB_sample_shading();
 #endif /* GL_ARB_sample_shading */
@@ -4102,6 +4197,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_KHR_parallel_shader_compile
   if (glewExperimental || GLEW_KHR_parallel_shader_compile) GLEW_KHR_parallel_shader_compile = !_glewInit_GL_KHR_parallel_shader_compile();
 #endif /* GL_KHR_parallel_shader_compile */
+#ifdef GL_KHR_robustness
+  if (glewExperimental || GLEW_KHR_robustness) GLEW_KHR_robustness = !_glewInit_GL_KHR_robustness();
+#endif /* GL_KHR_robustness */
 #ifdef GL_NV_conservative_raster
   if (glewExperimental || GLEW_NV_conservative_raster) GLEW_NV_conservative_raster = !_glewInit_GL_NV_conservative_raster();
 #endif /* GL_NV_conservative_raster */
@@ -4621,6 +4719,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
+#ifdef GL_ARB_robustness
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"robustness", 10))
+        {
+          ret = GLEW_ARB_robustness;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_sample_shading
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"sample_shading", 14))
         {
@@ -4921,6 +5026,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"parallel_shader_compile", 23))
         {
           ret = GLEW_KHR_parallel_shader_compile;
+          continue;
+        }
+#endif
+#ifdef GL_KHR_robustness
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"robustness", 10))
+        {
+          ret = GLEW_KHR_robustness;
           continue;
         }
 #endif

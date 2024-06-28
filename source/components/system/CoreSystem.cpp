@@ -197,16 +197,18 @@ CoreSystem::CoreSystem()noexcept
 
     // configure the OpenGL context
     SDL_GL_ResetAttributes();
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,           8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,         8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,          8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,         CoreApp::Settings::Graphics::AlphaChannel               ? 8 : 0);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         CoreApp::Settings::Graphics::DepthSize);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       CoreApp::Settings::Graphics::StencilSize);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,       CoreApp::Settings::Graphics::DoubleBuffer               ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_STEREO,             CoreApp::Settings::Graphics::StereoRender               ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE,                   8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,                 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,                  8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,                 CoreApp::Settings::Graphics::AlphaChannel               ? 8 : 0);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,                 CoreApp::Settings::Graphics::DepthSize);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,               CoreApp::Settings::Graphics::StencilSize);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,               CoreApp::Settings::Graphics::DoubleBuffer               ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_STEREO,                     CoreApp::Settings::Graphics::StereoRender               ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,         Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_RESET_NOTIFICATION, SDL_GL_CONTEXT_RESET_LOSE_CONTEXT);
 
 #if defined(_CORE_GLES_)
 
@@ -286,7 +288,6 @@ CoreSystem::CoreSystem()noexcept
     if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))
     {
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
     }
 
     // define window properties
