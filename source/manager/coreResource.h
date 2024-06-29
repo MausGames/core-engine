@@ -22,6 +22,9 @@
 /* resource definitions */
 #define CORE_RESOURCE_INDICES (4096u)   // max number of concurrent resource indices
 
+#define CORE_RESOURCE_WAIT_DEFAULT (1.0f)
+#define CORE_RESOURCE_WAIT_STARTUP ((Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_)) ? 10.0f : 3.0f)
+
 using coreResourceIndex = coreUint16;   // resource index type
 
 enum coreResourceUpdate : coreBool
@@ -191,7 +194,7 @@ public:
 
     /* update the resource manager */
     void UpdateResources(const coreFloat fBudgetSec = FLT_MAX);
-    void UpdateWait();
+    void UpdateWait     (const coreFloat fWaitSec   = CORE_RESOURCE_WAIT_DEFAULT);
     inline coreBool  IsLoading   ()const {return std::any_of  (m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
     inline coreUintW IsLoadingNum()const {return std::count_if(m_apHandle.begin(), m_apHandle.end(), [](const coreResourceHandle* pHandle) {return pHandle->IsLoading();});}
 

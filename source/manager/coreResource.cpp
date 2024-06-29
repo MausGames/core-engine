@@ -187,8 +187,10 @@ void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
 
 // ****************************************************************
 /* update the resource manager (until loading is finished) */
-void coreResourceManager::UpdateWait()
+void coreResourceManager::UpdateWait(const coreFloat fWaitSec)
 {
+    const coreUint64 iStart = SDL_GetPerformanceCounter();
+
     do
     {
         CORE_SPINLOCK_YIELD
@@ -196,6 +198,9 @@ void coreResourceManager::UpdateWait()
         // update both resources and functions
         this->UpdateResources();
         this->UpdateFunctions();
+
+        // limit waiting time to prevent deadlocks
+        if(coreFloat(coreDouble(SDL_GetPerformanceCounter() - iStart) * Core::System->GetPerfFrequency()) >= fWaitSec) break;
     }
     while(this->IsLoading() && !DEFINED(_CORE_EMSCRIPTEN_));
 }

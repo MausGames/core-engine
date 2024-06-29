@@ -70,7 +70,7 @@ Core::Core()noexcept
     // init application
     Log->Header("Application Setup");
     STATIC_NEW(Application)
-    Manager::Resource->UpdateWait();
+    Manager::Resource->UpdateWait(CORE_RESOURCE_WAIT_STARTUP);
     Log->Header("Application Run");
 }
 
@@ -318,7 +318,7 @@ void Core::__PerformRestart()
     Application->Init();
 
     // reload all resources
-    Manager::Resource->UpdateWait();
+    Manager::Resource->UpdateWait(CORE_RESOURCE_WAIT_STARTUP);
 
     Log->Header("Application Run");
 }
