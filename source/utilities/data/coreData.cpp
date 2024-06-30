@@ -837,6 +837,7 @@ void coreData::LogEnvironment()
 {
     Core::Log->ListStartInfo("Environment Variables");
     {
+        extern coreChar** environ;
         for(coreChar** ppcEnviron = environ; (*ppcEnviron); ++ppcEnviron)
         {
             const coreChar* pcAssign = std::strchr((*ppcEnviron), '=');

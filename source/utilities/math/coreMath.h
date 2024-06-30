@@ -108,12 +108,12 @@ public:
     DISABLE_CONSTRUCTION(coreMath)
 
     /* special operations */
-    template <typename T, typename... A> static constexpr T Min         (const T& x, const ident<T>& y, A&&... vArgs)                  {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename... A> static constexpr T Max         (const T& x, const ident<T>& y, A&&... vArgs)                  {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T>                static constexpr T Min         (const T& x, const ident<T>& y)                                {return (x < y) ? T(x) : T(y);}
-    template <typename T>                static constexpr T Max         (const T& x, const ident<T>& y)                                {return (x > y) ? T(x) : T(y);}
-    template <typename T>                static constexpr T Med         (const T& x, const ident<T>& y, const ident<T>& z)             {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
-    template <typename T>                static constexpr T Clamp       (const T& x, const ident<T>& a, const ident<T>& b)             {return MIN(MAX(x, a), b);}
+    template <typename T, typename... A> static constexpr T Min         (const T& x, const t_ident<T>& y, A&&... vArgs)                {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
+    template <typename T, typename... A> static constexpr T Max         (const T& x, const t_ident<T>& y, A&&... vArgs)                {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
+    template <typename T>                static constexpr T Min         (const T& x, const t_ident<T>& y)                              {return (x < y) ? T(x) : T(y);}
+    template <typename T>                static constexpr T Max         (const T& x, const t_ident<T>& y)                              {return (x > y) ? T(x) : T(y);}
+    template <typename T>                static constexpr T Med         (const T& x, const t_ident<T>& y, const t_ident<T>& z)         {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
+    template <typename T>                static constexpr T Clamp       (const T& x, const t_ident<T>& a, const t_ident<T>& b)         {return MIN(MAX(x, a), b);}
     template <typename T>                static constexpr T Sign        (const T& x)                                                   {return (x < T(0)) ? T(-1) : T(1);}          // never return 0
     template <typename T>                static constexpr T Signum      (const T& x)                                                   {return (x) ? SIGN(x) : T(0);}
     template <typename T>                static inline    T Abs         (const T& x)                                                   {return std::abs(x);}
@@ -135,27 +135,27 @@ public:
     static constexpr coreFloat                              StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)      {return BLENDH5(STEP(a, b, x));}             // smootherstep
 
     /* base operations */
-    template <std::floating_point T> static inline    T FmodRange(const T& tNum, const ident<T>& tFrom, const ident<T>& tTo);
-    template <std::floating_point T> static inline    T Fmod     (const T& tNum, const ident<T>& tDenom) {return std::fmod (tNum, tDenom);}
-    template <std::floating_point T> static inline    T Trunc    (const T& tInput)                       {return std::trunc(tInput);}
-    template <std::floating_point T> static inline    T Fract    (const T& tInput)                       {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
-    template <std::floating_point T> static inline    T Cbrt     (const T& tInput)                       {return std::cbrt (tInput);}
-    template <std::floating_point T> static inline    T Sqrt     (const T& tInput)                       {return std::sqrt (tInput);}
-    template <std::floating_point T> static inline    T Rsqrt    (const T& tInput)                       {return T(1) / SQRT(tInput);}
-    template <std::floating_point T> static constexpr T Rcp      (const T& tInput)                       {return T(1) / tInput;}
+    template <std::floating_point T> static inline    T FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo);
+    template <std::floating_point T> static inline    T Fmod     (const T& tNum, const t_ident<T>& tDenom) {return std::fmod (tNum, tDenom);}
+    template <std::floating_point T> static inline    T Trunc    (const T& tInput)                         {return std::trunc(tInput);}
+    template <std::floating_point T> static inline    T Fract    (const T& tInput)                         {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
+    template <std::floating_point T> static inline    T Cbrt     (const T& tInput)                         {return std::cbrt (tInput);}
+    template <std::floating_point T> static inline    T Sqrt     (const T& tInput)                         {return std::sqrt (tInput);}
+    template <std::floating_point T> static inline    T Rsqrt    (const T& tInput)                         {return T(1) / SQRT(tInput);}
+    template <std::floating_point T> static constexpr T Rcp      (const T& tInput)                         {return T(1) / tInput;}
     static constexpr coreFloat                          Sqrt     (const coreFloat fInput);
     static constexpr coreFloat                          Rsqrt    (const coreFloat fInput);
     static constexpr coreFloat                          Rcp      (const coreFloat fInput);
 
     /* exponential operations */
-    template <std::floating_point T> static inline T Pow  (const T& tBase,  const ident<T>& tExp)  {return std::pow  (tBase, tExp);}
-    template <std::floating_point T> static inline T LogB (const T& tValue, const ident<T>& tBase) {return LOG(tValue) * RCP(LOG(tBase));}
-    template <std::floating_point T> static inline T Log  (const T& tInput)                        {return std::log  (tInput);}
-    template <std::floating_point T> static inline T Log2 (const T& tInput)                        {return std::log2 (tInput);}
-    template <std::floating_point T> static inline T Log10(const T& tInput)                        {return std::log10(tInput);}
-    template <std::floating_point T> static inline T Exp  (const T& tInput)                        {return std::exp  (tInput);}
-    template <std::floating_point T> static inline T Exp2 (const T& tInput)                        {return std::exp2 (tInput);}
-    template <std::floating_point T> static inline T Exp10(const T& tInput)                        {return POW(T(10), tInput);}
+    template <std::floating_point T> static inline T Pow  (const T& tBase,  const t_ident<T>& tExp)  {return std::pow  (tBase, tExp);}
+    template <std::floating_point T> static inline T LogB (const T& tValue, const t_ident<T>& tBase) {return LOG(tValue) * RCP(LOG(tBase));}
+    template <std::floating_point T> static inline T Log  (const T& tInput)                          {return std::log  (tInput);}
+    template <std::floating_point T> static inline T Log2 (const T& tInput)                          {return std::log2 (tInput);}
+    template <std::floating_point T> static inline T Log10(const T& tInput)                          {return std::log10(tInput);}
+    template <std::floating_point T> static inline T Exp  (const T& tInput)                          {return std::exp  (tInput);}
+    template <std::floating_point T> static inline T Exp2 (const T& tInput)                          {return std::exp2 (tInput);}
+    template <std::floating_point T> static inline T Exp10(const T& tInput)                          {return POW(T(10), tInput);}
 
     /* trigonometric operations */
     template <std::floating_point T> static inline T Sin (const T& tInput) {return std::sin (tInput);}
@@ -220,7 +220,7 @@ public:
 
 // ****************************************************************
 /* loop value within specific range */
-template <std::floating_point T> inline T coreMath::FmodRange(const T& tNum, const ident<T>& tFrom, const ident<T>& tTo)
+template <std::floating_point T> inline T coreMath::FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo)
 {
     ASSERT(tFrom < tTo)
 

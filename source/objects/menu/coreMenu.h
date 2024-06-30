@@ -54,6 +54,9 @@ public:
     /* control surfaces */
     coreBool ChangeSurface(const coreUint8 iNewSurface, const coreFloat fSpeed);
 
+    /* access menu object list directly */
+    inline const coreSet<coreObject2D*>* List(const coreUintW iSurface)const {ASSERT(iSurface < m_iNumSurfaces) return &m_papObject[iSurface];}
+
     /* get object properties */
     inline coreObject2D*    GetCurObject  ()const {return m_pCurObject;}
     inline const coreUint8& GetNumSurfaces()const {return m_iNumSurfaces;}
