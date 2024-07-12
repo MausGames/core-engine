@@ -559,14 +559,17 @@ void CoreInput::__OpenJoysticks()
                 oJoystick.eControllerType = SDL_GameControllerGetType(oJoystick.pController);
                 oJoystick.eJoystickType   = SDL_JoystickGetType      (oJoystick.pJoystick);
 
-                // get device information
-                coreUint16 iVendor, iProduct;
-                SDL_GetJoystickGUIDInfo(SDL_JoystickGetGUID(oJoystick.pJoystick), &iVendor, &iProduct, NULL, NULL);
-
-                // identify special controller type
-                if((iVendor == 0x28DEu) && (iProduct == 0x11FFu))
+                if(oJoystick.eControllerType == SDL_CONTROLLER_TYPE_UNKNOWN)
                 {
-                    oJoystick.eControllerType = SDL_GameControllerType(CORE_INPUT_TYPE_STEAM);
+                    // get device information
+                    coreUint16 iVendor, iProduct;
+                    SDL_GetJoystickGUIDInfo(SDL_JoystickGetGUID(oJoystick.pJoystick), &iVendor, &iProduct, NULL, NULL);
+
+                    // identify special controller type
+                    if((iVendor == 0x28DEu) && (iProduct == 0x11FFu))
+                    {
+                        oJoystick.eControllerType = SDL_GameControllerType(CORE_INPUT_TYPE_STEAM);
+                    }
                 }
 
                 // get device features
