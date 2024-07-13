@@ -93,7 +93,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalOptions>/utf-8 /Gw /GA /Ob3 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /Gw /GA /Ob3 /jumptablerdata %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MinSpace</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <ControlFlowGuard>Guard</ControlFlowGuard>

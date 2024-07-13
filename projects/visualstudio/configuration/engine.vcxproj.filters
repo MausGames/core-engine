@@ -414,6 +414,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\macos\cocoa.h">
       <Filter>additional\macos</Filter>
+    <ClInclude Include="..\..\..\source\components\platform\backend\epic.h">
+      <Filter>components\platform\backend</Filter>
+    </ClInclude>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
