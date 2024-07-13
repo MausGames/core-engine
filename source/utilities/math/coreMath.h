@@ -277,13 +277,13 @@ constexpr coreFloat coreMath::Rsqrt(const coreFloat fInput)
 
     if(!std::is_constant_evaluated())
     {
-#if defined(_CORE_SSE_)
+#if defined(_CORE_SSE_) && defined(_CORE_FASTMATH_)
 
         // optimized calculation with SSE
         const coreFloat A = _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(fInput)));
         return 0.5f * A * (3.0f - (fInput * A) * A);
 
-#elif defined(_CORE_NEON_)
+#elif defined(_CORE_NEON_) && defined(_CORE_FASTMATH_)
 
         // optimized calculation with NEON
         const coreFloat A = vrsqrtes_f32(fInput);
@@ -305,13 +305,13 @@ constexpr coreFloat coreMath::Rcp(const coreFloat fInput)
 
     if(!std::is_constant_evaluated())
     {
-#if defined(_CORE_SSE_)
+#if defined(_CORE_SSE_) && defined(_CORE_FASTMATH_)
 
         // optimized calculation with SSE
         const coreFloat A = _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(fInput)));
         return A * (2.0f - fInput * A);
 
-#elif defined(_CORE_NEON_)
+#elif defined(_CORE_NEON_) && defined(_CORE_FASTMATH_)
 
         // optimized calculation with NEON
         const coreFloat A = vrecpes_f32(fInput);
